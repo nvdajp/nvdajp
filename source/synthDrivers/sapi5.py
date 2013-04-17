@@ -1,6 +1,7 @@
 #synthDrivers/sapi5.py
 #A part of NonVisual Desktop Access (NVDA)
 #Copyright (C) 2006-2011 NVDA Contributors <http://www.nvda-project.org/>
+#Copyright (C) 2013 Masamitsu Misono (043.jp)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
 
@@ -154,3 +155,11 @@ class SynthDriver(SynthDriver):
 	def pause(self,switch):
 		if switch:
 			self.cancel()
+
+	def isSpeaking(self):
+		running=None
+		if 2==self.tts.Status.RunningState: # SRSEIsSpeaking
+			running=True
+		elif 1==self.tts.Status.RunningState: # Status.SRSEDone
+			running=False
+		return running

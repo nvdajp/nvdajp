@@ -417,6 +417,9 @@ the NVDAObject for IAccessible
 		if windowClassName.lower().startswith('mscandui'):
 			import mscandui
 			mscandui.findExtraOverlayClasses(self,clsList)
+		elif windowClassName.startswith('ATOK2'):
+			import atok
+			atok.findExtraOverlayClasses(self,clsList)
 		elif windowClassName=="GeckoPluginWindow" and self.event_objectID==0 and self.IAccessibleChildID==0:
 			from mozilla import GeckoPluginWindowRoot
 			clsList.append(GeckoPluginWindowRoot)
