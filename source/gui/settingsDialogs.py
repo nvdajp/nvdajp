@@ -1326,6 +1326,12 @@ class BrailleSettingsDialog(SettingsDialog):
 			gui.messageBox(_("Could not load the %s display.")%display, _("Braille Display Error"), wx.OK|wx.ICON_WARNING, self)
 			return 
 		config.conf["braille"]["translationTable"] = self.tableNames[self.tableList.GetSelection()]
+		# nvdajp start [added japanese support]
+		if "ja-jp-comp6.utb" == self.tableNames[self.tableList.GetSelection()]:
+			config.conf["braille"]["japaneseBrailleSupport"] = True
+		else:
+			config.conf["braille"]["japaneseBrailleSupport"] = False
+		# nvdajp end [added japanese support]
 		config.conf["braille"]["inputTable"] = self.inputTableNames[self.inputTableList.GetSelection()]
 		config.conf["braille"]["expandAtCursor"] = self.expandAtCursorCheckBox.GetValue()
 		try:
@@ -1462,3 +1468,95 @@ class SpeechSymbolsDialog(SettingsDialog):
 			log.error("Error saving user symbols info: %s" % e)
 		characterProcessing._localeSpeechSymbolProcessors.invalidateLocaleData(self.symbolProcessor.locale)
 		super(SpeechSymbolsDialog, self).onOk(evt)
+
+class LanguageSettingsDialog(SettingsDialog):
+	title = _("Language Settings")
+
+	def makeSettings(self, settingsSizer):
+		self.nconvAsNVDAModifierCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Use NonConvert as an NVDA modifier key"))
+		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
+		settingsSizer.Add(self.nconvAsNVDAModifierCheckBox,border=10,flag=wx.BOTTOM)
+
+		self.convAsNVDAModifierCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Use Convert as an NVDA modifier key"))
+		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
+		settingsSizer.Add(self.convAsNVDAModifierCheckBox,border=10,flag=wx.BOTTOM)
+
+		self.nvdajpImeBeepCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Beep for IME mode change"))
+		self.nvdajpImeBeepCheckBox.SetValue(config.conf["keyboard"]["nvdajpImeBeep"])
+		settingsSizer.Add(self.nvdajpImeBeepCheckBox,border=10,flag=wx.BOTTOM)
+
+		self.jpPhoneticReadingKanaCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Phonetic reading for Kana"))
+		self.jpPhoneticReadingKanaCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingKana"])
+		settingsSizer.Add(self.jpPhoneticReadingKanaCheckBox,border=10,flag=wx.BOTTOM)
+
+		self.jpPhoneticReadingLatinCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Phonetic reading for Latin"))
+		self.jpPhoneticReadingLatinCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingLatin"])
+		settingsSizer.Add(self.jpPhoneticReadingLatinCheckBox,border=10,flag=wx.BOTTOM)
+
+		self.sayJpKatakanaCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Say Japanese Katakana"))
+		self.sayJpKatakanaCheckBox.SetValue(config.conf["language"]["sayJpKatakana"])
+		settingsSizer.Add(self.sayJpKatakanaCheckBox,border=10,flag=wx.BOTTOM)
+
+		sizer = wx.BoxSizer(wx.HORIZONTAL)
+		jpKatakanaPitchChangeLabel=wx.StaticText(self,-1,label=_("Katakana pitch change percentage"))
+		sizer.Add(jpKatakanaPitchChangeLabel)
+		self.jpKatakanaPitchChangeEdit=wx.TextCtrl(self,wx.NewId())
+		self.jpKatakanaPitchChangeEdit.SetValue(str(config.conf["language"]["jpKatakanaPitchChange"]))
+		sizer.Add(self.jpKatakanaPitchChangeEdit)
+		settingsSizer.Add(sizer, border=10, flag=wx.BOTTOM)
+
+		self.sayHalfShapeCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Say half shape"))
+		self.sayHalfShapeCheckBox.SetValue(config.conf["language"]["sayHalfShape"])
+		settingsSizer.Add(self.sayHalfShapeCheckBox,border=10,flag=wx.BOTTOM)
+
+		sizer = wx.BoxSizer(wx.HORIZONTAL)
+		halfShapePitchChangeLabel=wx.StaticText(self,-1,label=_("Half shape pitch change percentage"))
+		sizer.Add(halfShapePitchChangeLabel)
+		self.halfShapePitchChangeEdit=wx.TextCtrl(self,wx.NewId())
+		self.halfShapePitchChangeEdit.SetValue(str(config.conf["language"]["halfShapePitchChange"]))
+		sizer.Add(self.halfShapePitchChangeEdit)
+		settingsSizer.Add(sizer, border=10, flag=wx.BOTTOM)
+
+		self.announceCandidateNumberCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Announce candidate number"))
+		self.announceCandidateNumberCheckBox.SetValue(config.conf["language"]["announceCandidateNumber"])
+		settingsSizer.Add(self.announceCandidateNumberCheckBox,border=10,flag=wx.BOTTOM)
+
+		self.nvdajpEnableKeyEventsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Use IME support of nvdajp"))
+		self.nvdajpEnableKeyEventsCheckBox.SetValue(config.conf["keyboard"]["nvdajpEnableKeyEvents"])
+		settingsSizer.Add(self.nvdajpEnableKeyEventsCheckBox,border=10,flag=wx.BOTTOM)
+
+		self.enableUIACheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable UIA"))
+		self.enableUIACheckBox.SetValue(config.conf["UIA"]["enabled"])
+		settingsSizer.Add(self.enableUIACheckBox,border=10,flag=wx.BOTTOM)
+
+	def postInit(self):
+		self.nconvAsNVDAModifierCheckBox.SetFocus()
+
+	def onOk(self,evt):
+		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"]=self.nconvAsNVDAModifierCheckBox.IsChecked()
+		config.conf["keyboard"]["useConvertAsNVDAModifierKey"]=self.convAsNVDAModifierCheckBox.IsChecked()
+		config.conf["language"]["jpPhoneticReadingKana"]=self.jpPhoneticReadingKanaCheckBox.IsChecked()
+		config.conf["language"]["jpPhoneticReadingLatin"]=self.jpPhoneticReadingLatinCheckBox.IsChecked()
+		config.conf["keyboard"]["nvdajpEnableKeyEvents"]=self.nvdajpEnableKeyEventsCheckBox.IsChecked()
+		config.conf["keyboard"]["nvdajpImeBeep"]=self.nvdajpImeBeepCheckBox.IsChecked()
+		config.conf["language"]["sayJpKatakana"]=self.sayJpKatakanaCheckBox.IsChecked()
+		config.conf["language"]["sayHalfShape"]=self.sayHalfShapeCheckBox.IsChecked()
+		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
+		config.conf["UIA"]["enabled"]=self.enableUIACheckBox.IsChecked()
+
+		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
+		try:
+			jpKatakanaPitchChange=int(jpKatakanaPitchChange)
+		except ValueError:
+			jpKatakanaPitchChange=0
+		config.conf["language"]["jpKatakanaPitchChange"]=min(max(jpKatakanaPitchChange,-100),100)
+
+		halfShapePitchChange=self.halfShapePitchChangeEdit.Value
+		try:
+			halfShapePitchChange=int(halfShapePitchChange)
+		except ValueError:
+			halfShapePitchChange=0
+		config.conf["language"]["halfShapePitchChange"]=min(max(halfShapePitchChange,-100),100)
+
+		super(LanguageSettingsDialog, self).onOk(evt)
+
