@@ -311,9 +311,21 @@ def replace_digit_morphs(li):
 	new_li = []
 	num_morphs = []
 	for mo in li:
-		if mo.hinshi2 == '数' and not mo.output.isdigit() and \
-				not mo.hyouki in ('・', '万', '億', '兆', '京'):
+		if mo.hinshi2 == '数' and mo.hyouki == '，':
+			# カンマ
+			m = copy.deepcopy(mo)
+			m.yomi = m.output = ','
+			num_morphs.append(m)
+		elif mo.hinshi2 == '数' and not mo.output.isdigit() and \
+				not mo.hyouki in ('・', '万', '億', '兆', '京', '．'):
+			# 漢数字の結合
 			num_morphs.append(mo)
+		elif mo.hinshi2 == '数' and mo.hyouki in '０１２３４５６７８９':
+			# 算用数字の結合
+			m = copy.deepcopy(mo)
+			y = unicode_normalize(m.hyouki)
+			m.output = m.hyouki = m.nhyouki = m.yomi = y
+			num_morphs.append(m)
 		else:
 			if num_morphs:
 				new_li.append(concatinate_morphs(num_morphs))
@@ -383,6 +395,44 @@ def replace_alphabet_morphs(li):
 		m.hinshi2 = 'アルファベット'
 		m.nhyouki = m.output = unicode_normalize(m.nhyouki)
 		new_li.append(m)
+	return new_li
+
+# 日付の和語読み処理
+# すでに output 属性に半角数字が格納されている前提
+
+# 後続する '日' と形態素を結合する
+WAGO_DIC = {
+	'1': 'ツイタチ', 
+	'2': 'フツカ',
+	'3': 'ミッカ',
+	'4': 'ヨッカ',
+	'5': 'イツカ',
+	'6': 'ムイカ',
+	'7': 'ナノカ',
+	'8': 'ヨーカ',
+	'9': 'ココノカ',
+	'10': 'トオカ',
+	'20': 'ハツカ',
+}
+
+def fix_japanese_date_morphs(li):
+	new_li = []
+	for i in xrange(0, len(li)):
+		prev_mo = li[i-1] if i-1>=0 else None
+		mo = li[i]
+		if mo.hyouki == '日' and mo.hinshi3 == '助数詞' and prev_mo is not None:
+			if prev_mo.hyouki in ('14', '24', '十四', '一四', '二四', '二十四'):
+				li[i].output = 'カ'
+				new_li.append(li[i])
+			elif prev_mo.output in WAGO_DIC:
+				m = copy.deepcopy(mo)
+				m.output = WAGO_DIC[prev_mo.output]
+				new_li.pop()
+				new_li.append(m)
+			else:
+				new_li.append(li[i])
+		else:
+			new_li.append(li[i])
 	return new_li
 
 def should_separate(mo, prev_mo, prev2_mo):
@@ -814,6 +864,10 @@ def japanese_braille_separate(inbuf, logwrite):
 			else:
 				mo.output = mo.output.replace('&', ' & ')
 	
+	# 日付の和語読み処理
+	li = fix_japanese_date_morphs(li)
+
+	# 分かち書き判定
 	for i in xrange(1, len(li)):
 		prev2_mo = li[i-2] if i-2 >= 0 else None
 		prev_mo = li[i-1]
