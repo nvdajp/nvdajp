@@ -502,10 +502,10 @@ def should_separate(mo, prev_mo, prev2_mo):
 		if mo.output.isdigit(): return True
 		if mo.hinshi1 == '動詞' and mo.hinshi2 == '非自立': return False
 
-	# アルファベットの後の助詞
+	# アルファベットの後の助詞、助動詞
 	# ＣＤ,CD,名詞,一般,*,*,シーディー,シーディー,3/4,シーディー,0
 	# を,を,助詞,格助詞,一般,*,ヲ,ヲ,0/1,ヲ,0
-	if is_alpha(prev_mo.nhyouki) and mo.hinshi1 == '助詞':
+	if is_alpha(prev_mo.nhyouki) and mo.hinshi1 in ('助詞', '助動詞'):
 		return True
 
 	# ピリオドの後の助詞
