@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2013-3-9
+- last update: 2013-04-20
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -46,6 +46,7 @@ NVDA Japanese is provided "as is", without warranty.
 - [NVDAJP ticket 28859 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=28859]
 - [NVDA ticket 2730 http://www.nvda-project.org/ticket/2730]
 - NVDAJP 2013.1jp removed legacy Japanese input support by Japanese Team. Stability is improved.
+- For Japanese input support, Keyboard Settings "Speak Typed Characters" should be enabled, "Speak Typed Words" should be disabled. Input Composition Setting "Automatically report all available candidates" should be disabled.
 
 
 + Enhancements +
@@ -390,4 +391,5 @@ It uses braille Unicode font. For Windows XP, the braille font is available if L
 We use launchpad.net as bazaar source-code repository.
 
 - sourceforge.jp: http://en.sourceforge.jp/projects/nvdajp/
-- launchpad.net: https://code.launchpad.net/nvdajp
+- GitHub: https://github.com/nvdajp
+- Bitbucket: https://bitbucket.org/nvdajp

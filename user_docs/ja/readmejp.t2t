@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2013年4月5日
+- 最終更新日：2013年4月20日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -46,6 +46,7 @@ NVDA日本語版は無保証です。ご自身の責任でご利用ください�
 - [本家チケット2730 http://www.nvda-project.org/ticket/2730]
 - NVDA日本語版 2013.1jp では日本語版独自のIMEサポートを廃止し、 NVDA 本家版の実装に基づく新しい日本語入力メソッド対応を行いました。
 - 2012.3.1jp までの日本語入力サポートと比べて安定性や互換性が改善されました。
+- キーボード設定「入力文字の読み上げ」は有効に、「入力単語の読み上げ」は無効に、入力メソッド設定「候補リストの自動通知」は無効にしてください。
 
 
 + NVDA日本語版の機能 +
@@ -394,10 +395,11 @@ Windows XP で点字ビューアーを使うためには点字フォントが必
 
 ++ ソースコード ++
 
-NVDA日本語版のソースコードは以下で公開しています。
+NVDA日本語版のソースコード管理には2013年4月から git を使用しています。レポジトリは以下で公開しています。
 
 - sourceforge.jp: http://en.sourceforge.jp/projects/nvdajp/
-- launchpad.net: https://code.launchpad.net/nvdajp
+- GitHub: https://github.com/nvdajp
+- Bitbucket: https://bitbucket.org/nvdajp
 
 
 + 関連情報 +
