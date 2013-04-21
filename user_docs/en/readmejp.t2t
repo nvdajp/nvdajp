@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2013-04-20
+- last update: 2013-04-21
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -163,6 +163,15 @@ For candidates of Japanese input methods, pitch change is not available.
 The default of 'Use IME support of nvdajp' is enabled.
 
 To disable, turn off the option.
+
+
++++ Enable Windows 8 Toast +++
+
+Windows 8 Toast support is disabled as work around issue 2712 (freeze of Skype 6 on Windows 8)
+
+- http://community.nvda-project.org/ticket/2712
+- https://jira.skype.com/browse/SCW-4107
+- http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=30703
 
 
 ++ Character dictionary ++
