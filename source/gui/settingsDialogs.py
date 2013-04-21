@@ -1525,8 +1525,8 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.nvdajpEnableKeyEventsCheckBox.SetValue(config.conf["keyboard"]["nvdajpEnableKeyEvents"])
 		settingsSizer.Add(self.nvdajpEnableKeyEventsCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.enableUIACheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable UIA"))
-		self.enableUIACheckBox.SetValue(config.conf["UIA"]["enabled"])
+		self.enableUIACheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable Windows 8 Toast"))
+		self.enableUIACheckBox.SetValue(config.conf["UIA"]["enabledTooltip"])
 		settingsSizer.Add(self.enableUIACheckBox,border=10,flag=wx.BOTTOM)
 
 	def postInit(self):
@@ -1542,7 +1542,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["language"]["sayJpKatakana"]=self.sayJpKatakanaCheckBox.IsChecked()
 		config.conf["language"]["sayHalfShape"]=self.sayHalfShapeCheckBox.IsChecked()
 		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
-		config.conf["UIA"]["enabled"]=self.enableUIACheckBox.IsChecked()
+		config.conf["UIA"]["enabledTooltip"]=self.enableUIACheckBox.IsChecked()
 
 		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
 		try:

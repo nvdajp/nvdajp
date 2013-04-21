@@ -103,10 +103,15 @@ UIAEventIdsToNVDAEventNames={
 	UIA_SelectionItem_ElementRemovedFromSelectionEventId:"stateChange",
 	#UIA_MenuModeEndEventId:"menuModeEnd",
 	#UIA_Text_TextSelectionChangedEventId:"caret",
-	UIA_ToolTipOpenedEventId:"alert",
+	#UIA_ToolTipOpenedEventId:"alert",
 	#UIA_AsyncContentLoadedEventId:"documentLoadComplete",
 	#UIA_ToolTipClosedEventId:"hide",
 }
+#nvdajp begin
+import config
+if config.conf["UIA"]["enabledTooltip"]:
+	UIAEventIdsToNVDAEventNames[UIA_ToolTipOpenedEventId] = "alert"
+#nvdajp end
 
 class UIAHandler(COMObject):
 	_com_interfaces_=[IUIAutomationEventHandler,IUIAutomationFocusChangedEventHandler,IUIAutomationPropertyChangedEventHandler]

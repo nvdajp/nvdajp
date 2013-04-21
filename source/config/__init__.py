@@ -191,6 +191,7 @@ confspec = ConfigObj(StringIO(
 [UIA]
 	minWindowsVersion = float(default=6.1)
 	enabled = boolean(default=true)
+	enabledTooltip = boolean(default=false) # nvdajp
 
 [update]
 	autoCheck = boolean(default=false) # nvdajp
