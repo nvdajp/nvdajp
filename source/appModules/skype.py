@@ -17,3 +17,10 @@ class AppModule(appModuleHandler.AppModule):
 		if obj.value and obj.windowClassName in ["TMainUserList", "TConversationList", "TInboxList", "TActiveConversationList", "TConversationsControl"] and not obj.role in [controlTypes.ROLE_MENUBAR, controlTypes.ROLE_MENUITEM, controlTypes.ROLE_POPUPMENU]:
 			obj.name=obj.value
 			obj.value=None
+
+#nvdajp begin
+import config
+if config.conf["UIA"]["skypeWin8Hack"]:
+	orgAppModule = AppModule
+	from _skypeWin8Hack import *
+#nvdajp end

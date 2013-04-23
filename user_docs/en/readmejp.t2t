@@ -165,9 +165,9 @@ The default of 'Use IME support of nvdajp' is enabled.
 To disable, turn off the option.
 
 
-+++ Enable Windows 8 Toast +++
++++ Skype Windows 8 Hack +++
 
-Windows 8 Toast support is disabled as work around issue 2712 (freeze of Skype 6 on Windows 8)
+Enables work around issue 2712 (freeze of Skype 6 on Windows 8)
 
 - http://community.nvda-project.org/ticket/2712
 - https://jira.skype.com/browse/SCW-4107
