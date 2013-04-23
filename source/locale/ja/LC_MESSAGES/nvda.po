@@ -179,8 +179,8 @@ msgid "Announce candidate number"
 msgstr "変換候補の番号の通知"
 
 #: settingDialogs.py:1528
-msgid "Enable Windows 8 Toast"
-msgstr "Windows 8トースト通知(再起動が必要)"
+msgid "Skype Windows 8 hack"
+msgstr "Skypeフリーズ対策(再起動が必要)"
 
 #: speech.py:196
 #, python-format
