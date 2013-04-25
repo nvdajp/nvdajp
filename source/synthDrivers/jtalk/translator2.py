@@ -435,7 +435,7 @@ def fix_japanese_date_morphs(li):
 			new_li.append(li[i])
 	return new_li
 
-def should_separate(mo, prev_mo, prev2_mo):
+def should_separate(prev2_mo, prev_mo, mo, next_mo):
 	if mo.hyouki == 'ー': return False
 	if prev_mo.hyouki == 'ー': return False
 	if mo.hyouki in 'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヵヶ': return False
@@ -578,13 +578,13 @@ def should_separate(mo, prev_mo, prev2_mo):
 		return False
 
 	# 不幸,に,し,て
+	# 今,に,し,て
+	# 居,ながら,に,し,て
 	# 労,せ,ず,し,て
 	# 若く,し,て
 	# 私,を,し,て
 	# 「して」が文語的表現の助詞である場合は前に続けて書く
 	if mo.hyouki == 'し' and mo.kihon == 'する':
-		if prev_mo.hyouki == 'に' and prev_mo.hinshi1 == '助詞':
-			return False
 		if prev_mo.hyouki == 'ず' and prev_mo.hinshi1 == '助動詞':
 			return False
 		if prev_mo.hinshi1 == '形容詞' and prev_mo.type2 == '連用テ接続':
@@ -593,9 +593,12 @@ def should_separate(mo, prev_mo, prev2_mo):
 			return False
 		if prev_mo.type1 == '文語・ベシ':
 			return False
-		if prev_mo.hyouki == 'を':
-			return False
-	
+		if next_mo and next_mo.hyouki == 'て':
+			if prev_mo.hyouki == 'に' and prev_mo.hinshi1 == '助詞':
+				return False
+			if prev2_mo and prev2_mo.hyouki == '私' and prev_mo.hyouki == 'を':
+				return False
+
 	# 「・・ですこと」の「こと」は接尾語なので前に続ける
 	if prev_mo.hyouki == 'です' and mo.hyouki == 'こと':
 		return False
@@ -871,7 +874,8 @@ def japanese_braille_separate(inbuf, logwrite):
 	for i in xrange(1, len(li)):
 		prev2_mo = li[i-2] if i-2 >= 0 else None
 		prev_mo = li[i-1]
-		li[i-1].sepflag = should_separate(li[i], prev_mo, prev2_mo)
+		next_mo = li[i+1] if i+1 < len(li) else None
+		li[i-1].sepflag = should_separate(prev2_mo, prev_mo, li[i], next_mo)
 
 	for mo in li:
 		mo.write(logwrite)
