@@ -643,6 +643,9 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo):
 	if prev_mo.hinshi1 == '助詞' and mo.hyouki == 'よう': return False # のように
 	if prev_mo.hinshi1 == '助詞' and mo.hinshi1 == '接頭詞': return True
 
+	# 人名
+	if prev_mo.hinshi4 in ('姓', '名') and mo.hinshi2 == '接尾' and mo.hinshi3 == '人名': return True
+
 	if prev_mo.is_substantive_word() and mo.is_independent_word(): return True
 	if prev_mo.is_independent_word() and mo.is_independent_word(): return True
 	return False
