@@ -615,6 +615,12 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo):
 
 	if prev_mo.hinshi1 == '名詞' and mo.hinshi1 == '名詞':
 		if mo.hinshi2 == '数': return False
+		# 人名
+		if prev_mo.hinshi4 in ('姓', '名') and mo.hinshi2 == '接尾' and mo.hinshi3 == '人名': return True
+		# 複合名詞内部の2拍以下は切らない
+		if not prev_mo.hinshi2 in ('数', 'アルファベット') and not mo.hinshi2 in ('数', 'アルファベット'):
+			if len(prev_mo.yomi) <= 2 and len(mo.yomi) >= 3: return False
+			if len(prev_mo.yomi) >= 3 and len(mo.yomi) <= 2: return False
 		if mo.hinshi2 != '接尾': return True
 
 	if prev_mo.hinshi1 == '形容詞' and mo.hyouki == 'ん': return False # いいんですけど
@@ -642,9 +648,6 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo):
 
 	if prev_mo.hinshi1 == '助詞' and mo.hyouki == 'よう': return False # のように
 	if prev_mo.hinshi1 == '助詞' and mo.hinshi1 == '接頭詞': return True
-
-	# 人名
-	if prev_mo.hinshi4 in ('姓', '名') and mo.hinshi2 == '接尾' and mo.hinshi3 == '人名': return True
 
 	if prev_mo.is_substantive_word() and mo.is_independent_word(): return True
 	if prev_mo.is_independent_word() and mo.is_independent_word(): return True
