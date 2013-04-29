@@ -167,6 +167,8 @@ _	アンダーライン	some
 ；	セミコロン	some
 ？	ギモンフ	some
 ！	カンタンフ	some
+゙	ダクテン	char	always
+゚	ハンダクテン	char	always
 ゛	ダクテン	char	always
 ゜	ハンダクテン	char	always
 ´	アクサンテギュー	most
