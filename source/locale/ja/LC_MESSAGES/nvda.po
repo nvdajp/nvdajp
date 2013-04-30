@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: nvda-translations@freelists.org\n"
 "POT-Creation-Date: 2013-02-14 05:30+0000\n"
-"PO-Revision-Date: 2013-04-06 16:38+0900\n"
+"PO-Revision-Date: 2013-04-30 23:15+0900\n"
 "Last-Translator: Takuya Nishimoto <nishimotz@gmail.com>\n"
 "Language-Team: NVDA Japanese Team <nishimotz@gmail.com>\n"
 "Language: ja\n"
@@ -134,33 +134,17 @@ msgstr "全角 %s"
 msgid "full shape space"
 msgstr "全角スペース"
 
-#: settingDialogs.py:1428
-msgid "Say Japanese Hiragana"
-msgstr "ひらがなの通知"
-
-#: settingDialogs.py:1432
-msgid "Hiragana pitch change percentage"
-msgstr "ひらがなの声の高さの変化(-100から100)"
-
 #: settingDialogs.py:1438
 msgid "Say Japanese Katakana"
-msgstr "カタカナの通知"
+msgstr "カタカナの前にカタカナと読む"
 
 #: settingDialogs.py:1442
 msgid "Katakana pitch change percentage"
 msgstr "カタカナの声の高さの変化(-100から100)"
 
 #: settingDialogs.py:1438
-msgid "Say Japanese Hankaku Katakana"
-msgstr "半角カタカナの通知"
-
-#: settingDialogs.py:1442
-msgid "Hankaku Katakana pitch change percentage"
-msgstr "半角カタカナの声の高さの変化(-100から100)"
-
-#: settingDialogs.py:1438
 msgid "Say half shape"
-msgstr "半角の通知"
+msgstr "半角の前に半角と読む"
 
 #: settingDialogs.py:1442
 msgid "Half shape pitch change percentage"
