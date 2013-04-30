@@ -233,8 +233,7 @@ NVDA日本語版は点字ディスプレイドライバ "KGS BrailleMemoシリ�
 [BMシリーズ機器用ユーティリティ http://www.kgs-jpn.co.jp/bmutil_j/]をインストールしてお使いください。
 
 USB 接続で使う場合は[ケージーエスUSB/仮想Commドライバ http://www.kgs-jpn.co.jp/USB_driver_j/index.htm]をインストールしてください。（関連チケット28226, 27953, 30285）
-ブレイルメモポケット(BMPK)をUSB接続で使う場合は、機器の通信速度を 9600BPS に設定してください。
-BM24/BM46/BM32/BT46 をUSB接続で使う場合は、機器の通信速度の設定は無視されます。
+機器の通信速度が変更できる場合は 9600BPS に設定してください。
 
 以下は KGS Braille Memo のコマンド割り当てです。
 

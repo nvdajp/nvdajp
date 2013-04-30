@@ -226,8 +226,7 @@ Both automatic and manual port setting can be used. It also works with Bluetooth
 [The BM Utility (Japanese page) http://www.kgs-jpn.co.jp/bmutil_j/] must be installed to the computer.
 
 For USB connection, [virtual serial driver (Japanese page) http://www.kgs-jpn.co.jp/USB_driver_j/index.htm] must also be installed.
-Braille Memo Pocket (BMPK) should be configured to use 9600BPS connection speed for virtual serial driver.
-BM24, BM46, BM32 and BT46 ignore connection speed for virtual serial driver.
+The device should be configured to use 9600BPS connection speed for virtual serial driver.
 
 KGS Braille Memo driver supports following commands:
 
