@@ -3014,6 +3014,7 @@ tests = [
 	{
 		'text': '世界保健機関(World Health Organization)の活動',
 		'input': 'セカイ ホケン キカン(⠦World Health Organization⠴)ノ カツドー',
+		'output': '⠻⠡⠃ ⠮⠫⠴ ⠣⠡⠴⠶⠦⠠⠺⠕⠗⠇⠙ ⠠⠓⠑⠁⠇⠞⠓ ⠠⠕⠗⠛⠁⠝⠊⠵⠁⠞⠊⠕⠝⠴⠶⠎ ⠡⠝⠐⠞⠒',
 		},
 	{
 		'text': 'MY FAIR LADY, a Broadway play, is a musical.',
