@@ -374,7 +374,7 @@ def replace_alphabet_morphs(li):
 					 (not next_mo)):
 			alp_morphs.append(mo)
 		elif alp_morphs and mo.nhyouki == ' ' and \
-				next_mo and next_mo.nhyouki.isalpha():
+				next_mo and is_alpha(next_mo.nhyouki):
 			alp_morphs.append(mo)
 		elif alp_morphs and mo.nhyouki.isdigit():
 			alp_morphs.append(mo)
