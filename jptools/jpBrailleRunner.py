@@ -157,14 +157,12 @@ def make_doc():
 	timestamp = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
 	with open(outfile, 'w') as f:
 		__writeln(f, u"""
-= NVDA 日本語版 点訳テストケース """ + timestamp + u""" =
+NVDA 日本語版 点訳テストケース """ + timestamp + u"""
 
-%!includeconf: ../user_docs/userGuide.t2tconf
+%!Target: xhtml
+%!Encoding: UTF-8
 
-% Remove double spacing from the beginning of each line as txt2tags seems to indent preformatted text by two spaces
-%!PostProc(html): '^  ' ''
-
-= 目次 =[toc]
+目次
 %%toc
 
 """)
