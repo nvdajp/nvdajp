@@ -391,7 +391,7 @@ It uses braille Unicode font. For Windows XP, the braille font is available if L
 
 ++ Miscellaneous changes ++
 
-- AppModules for Search Aid, VoicePopper and WinAltair (popular self-voicing applications in Japan) are added.
+- AppModule for WinAltair (popular self-voicing applications in Japan) is added.
 - Log Viewer may contain multi-byte characters for output.
 - Report Time (NVDA+f12) is modified for Japanese environment.
 
