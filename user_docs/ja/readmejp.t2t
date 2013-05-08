@@ -9,13 +9,13 @@
 + はじめに +
 
 
-- 最終更新日：2013年4月21日
+- 最終更新日：2013年5月8日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
 NVDA日本語版はNVDA日本語チームが NVDA Project の成果を利用して開発したものです。
 この文書では NVDA Project のことを「本家」と書くことがあります。
-NVDA 2013.1jp は NVDA 2013.1 ブランチのリビジョン ?? をベースにしています。
+NVDA 2013.1jp は NVDA の本家 git レポジトリ(ブランチ release-2013.1)をベースにしています。
 
 これは日本語でNVDAを利用するための機能拡張を含んでいます。
 
@@ -415,6 +415,20 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 
 + 関連情報 +
 
+++ 対応アプリケーションの紹介 ++
+
+- [NVDA 日本語版が対応しているソフトウェアと点字ディスプレイ http://sourceforge.jp/projects/nvdajp/wiki/ApplicationSupport]
+- オープンソースのオフィスソフト OpenOffice.org および LibreOffice は Java 実行環境および Java Access Bridge (JAB) を使うことで NVDA に対応します。NVDA日本語チームは LibreOffice 3.6.6 と Java 7u21 の組み合わせで動作を確認しています。
+- [LibreOffice 3.6 の動作確認 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29213]
+- [JAB についての情報 http://sourceforge.jp/projects/nvdajp/wiki/JavaAccessBridge]
+
+
+++ 操作ガイド ++
+
+- NVDA と Firefox で Web ページを閲覧する方法 [NVDA 日本語版 操作ガイド http://nvdajp.sourceforge.jp/howto/manual/]
+- NVDAの活用の仕方を説明した教材 [DemekinText教材共有 https://sites.google.com/a/demekintext.com/share/]
+
+
 ++ SAPI 5 日本語音声エンジン ++
 
 SAPI 5 (Speech API バージョン 5) 対応エンジンは NVDA 本家版および NVDA 日本語版で使用できます。
@@ -465,20 +479,9 @@ SAPI4 の ProTALKER での不具合については下記を参照してくださ
 - [チケット29870(ProTALKERの話速設定) http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29870]
 
 
-++ OpenOffice.org および LibreOffice ++
-
-- オープンソースのオフィスソフト OpenOffice.org および LibreOffice は Java 実行環境および Java Access Bridge (JAB) を使うことで NVDA に対応します。
-- [JAB についての情報 http://sourceforge.jp/projects/nvdajp/wiki/JavaAccessBridge]
-
-
 ++ クリップボードの読み上げ ++
 
 [クリップボードの更新を監視して自動的に読み上げる方法 http://sourceforge.jp/projects/nvdajp/wiki/ClipboardNotification]
-
-
-++ Mozilla Firefox の利用 ++
-
-NVDA と Firefox で Web ページを閲覧する方法が [NVDA 日本語版 操作ガイド http://nvdajp.sourceforge.jp/howto/manual/] にまとめられています。
 
 
 ++ メーリングリスト ++
