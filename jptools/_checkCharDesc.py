@@ -16,7 +16,7 @@ CS_FILE = LOCALE_JA + r'\characters.dic'
 import re
 
 def my_print(s):
-	print(s.encode(CONSOLE_ENCODING))
+	print(s.encode(CONSOLE_ENCODING, 'ignore'))
 
 def read_symbol_file(sy_file):
 	with open(sy_file) as sy:
@@ -45,6 +45,8 @@ def read_symbol_file(sy_file):
 				if len(a) >= 2:
 					if len(a[0]) != 1: continue
 					#my_print("%d %s %s" % (c, a[0], a[1]))
+					if ar.has_key(a[0]):
+						my_print("duplicated %04x %s (line %d and %d)" % (ord(a[0]), a[0], ar[a[0]][0], c))
 					ar[a[0]] = [c, a[1]]
 	return ar
 
