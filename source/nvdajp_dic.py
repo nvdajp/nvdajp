@@ -57,6 +57,9 @@ def isLatinCharacter(c):
 def isFullShapeSymbol(c):
 	return c in u'　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂'
 
+def isUpper(c):
+	return re.search(ur'[A-ZＡ-Ｚ]', c) is not None
+
 def replaceSpecialKanaCharacter(c):
 	if c in SPECIAL_KANA_CHARACTERS:
 		c = get_short_desc(c)
@@ -99,7 +102,7 @@ def getJapaneseDiscriminantReading(name):
 	attrs = []
 	for c in name:
 		attrs.append((c, CharAttr(
-				c.isupper(), 
+				isUpper(c),
 				isZenkakuHiragana(c),
 				isZenkakuKatakana(c),
 				isHalfShape(c) or isHankakuKatakana(c),
