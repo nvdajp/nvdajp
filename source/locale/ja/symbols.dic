@@ -216,9 +216,9 @@ _	アンダーライン	some
 』	ニジューカギトジ	most
 【	クロカッコ	most
 】	クロカッコトジ	most
-＋	プラス	all
-－	マイナス	all
-±	プラスマイナス	all
+＋	プラス	some
+－	マイナス	some
+±	プラスマイナス	some
 ×	カケル	some
 ÷	ワル	some
 ＝	イコール	some
