@@ -239,6 +239,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	return 0
 
 def handleInputCandidateListUpdate(candidatesString,selectionIndex,inputMethod):
+	log.info(u"(%s) (%s) (%s)" % (unicode(candidatesString).replace('\n','|'),str(selectionIndex),unicode(inputMethod)))
 	candidateStrings=candidatesString.split('\n')
 	import speech
 	from NVDAObjects.inputComposition import InputComposition, CandidateList, CandidateItem

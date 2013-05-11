@@ -326,7 +326,19 @@ static bool handleCandidates(HWND hwnd) {
 	}
 
 	/* Concatenate currently shown candidates into a string */
+#if 0
 	WCHAR* cand_str = (WCHAR*)malloc(len);
+#else
+	size_t buflen = 1; // make sure len != 0
+	for (DWORD n = list->dwPageStart;  n < pageEnd; ++n) {
+		DWORD offset = list->dwOffset[n];
+		WCHAR* cand = (WCHAR*)(((char*)list) + offset);
+		size_t clen = wcslen(cand);
+		buflen += (clen + 1) * sizeof(WCHAR);
+	}
+	WCHAR* cand_str = (WCHAR*)malloc(buflen);
+	cand_str[0] = '\0';
+#endif
 	WCHAR* ptr = cand_str;
 	for (DWORD n = list->dwPageStart, count = 0;  n < pageEnd;  ++n) {
 		DWORD offset = list->dwOffset[n];
