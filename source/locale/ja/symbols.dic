@@ -210,10 +210,10 @@ _	アンダーライン	some
 ′	フン	all
 ″	ビョー	all
 ℃	ドシー	all
-％	パーセント	all
+％	パーセント	some
 ＃	シャープ	some
-＆	アンド	all
-＊	アスタリスク	all
+＆	アンド	some
+＊	アスタリスク	some
 ＠	アット	some
 §	セクション	all
 ☆	ホシ	some
