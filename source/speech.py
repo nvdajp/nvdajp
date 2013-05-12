@@ -1078,6 +1078,14 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 			# Translators: Speaks the heading level (example output: heading level 2).
 			text=_("heading level %d")%headingLevel
 			textList.append(text)
+	# nvdajp begin
+	fontSize=attrs.get("font-size")
+	firstLineIndent=attrs.get("first-line-indent")
+	oldFirstLineIndent=attrsCache.get("first-line-indent") if attrsCache is not None else None
+	if fontSize and firstLineIndent and firstLineIndent != oldFirstLineIndent and float(firstLineIndent) > 0:
+		text = _('paragraph indent') + " %g" % (float(firstLineIndent) / float(fontSize[0:-2]))
+		textList.append(text)
+	# nvdajp end
 	if  formatConfig["reportStyle"]:
 		style=attrs.get("style")
 		oldStyle=attrsCache.get("style") if attrsCache is not None else None
