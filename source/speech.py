@@ -1079,12 +1079,24 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 			text=_("heading level %d")%headingLevel
 			textList.append(text)
 	# nvdajp begin
-	fontSize=attrs.get("font-size")
 	firstLineIndent=attrs.get("first-line-indent")
 	oldFirstLineIndent=attrsCache.get("first-line-indent") if attrsCache is not None else None
-	if fontSize and firstLineIndent and firstLineIndent != oldFirstLineIndent and float(firstLineIndent) > 0:
-		text = _('paragraph indent') + " %g" % (float(firstLineIndent) / float(fontSize[0:-2]))
-		textList.append(text)
+	if firstLineIndent and firstLineIndent != oldFirstLineIndent:
+		fli = float(firstLineIndent)
+		fontSize=attrs.get("font-size")
+		if fontSize and fontSize[-2:] == 'pt' and float(fontSize[0:-2]) > 0.0:
+			s = " %g" % abs(fli / float(fontSize[0:-2]))
+		else:
+			s = (" %g" % abs(fli)) + "pt"
+		if fli > 0.01:
+			text = _('paragraph indent') + s
+			textList.append(text)
+		elif fli < -0.01:
+			text = _('hanging indent') + s
+			textList.append(text)
+		else:
+			text = _('no paragraph indent')
+			textList.append(text)
 	# nvdajp end
 	if  formatConfig["reportStyle"]:
 		style=attrs.get("style")

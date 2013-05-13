@@ -134,6 +134,14 @@ msgstr "全角 %s"
 msgid "paragraph indent"
 msgstr "段落字下げ"
 
+#: speech.py:1086
+msgid "hanging indent"
+msgstr "段落ぶら下がり"
+
+#: speech.py:1086
+msgid "no paragraph indent"
+msgstr "段落字下げなし"
+
 #: NVDAHelper.py:163
 msgid "full shape space"
 msgstr "全角スペース"
