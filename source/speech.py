@@ -1079,24 +1079,38 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 			text=_("heading level %d")%headingLevel
 			textList.append(text)
 	# nvdajp begin
+	leftIndent=attrs.get("left-indent")
+	oldLeftIndent=attrsCache.get("left-indent") if attrsCache is not None else None
+	fontSize=attrs.get("font-size")
+	fontSizePt = float(fontSize[0:-2]) if fontSize and fontSize[-2:] == "pt" and float(fontSize[0:-2]) > 0.0 else None
 	firstLineIndent=attrs.get("first-line-indent")
 	oldFirstLineIndent=attrsCache.get("first-line-indent") if attrsCache is not None else None
 	if firstLineIndent and firstLineIndent != oldFirstLineIndent:
-		fli = float(firstLineIndent)
-		fontSize=attrs.get("font-size")
-		if fontSize and fontSize[-2:] == 'pt' and float(fontSize[0:-2]) > 0.0:
-			s = " %g" % abs(fli / float(fontSize[0:-2]))
+		n = float(firstLineIndent)
+		if -0.001 < n < 0.001:
+			textList.append(_("no paragraph indent"))
 		else:
-			s = (" %g" % abs(fli)) + "pt"
-		if fli > 0.01:
-			text = _('paragraph indent') + s
-			textList.append(text)
-		elif fli < -0.01:
-			text = _('hanging indent') + s
-			textList.append(text)
+			s = _("%g characters") % abs(n / fontSizePt) if fontSizePt else _("%g pt") % abs(n)
+			if n > 0:
+				textList.append(_("paragraph indent") + " " + s)
+			else:
+				textList.append(_("hanging indent") + " " + s)
+	if leftIndent and leftIndent != oldLeftIndent:
+		n = float(leftIndent)
+		if n < 0.001:
+			textList.append(_("no left indent"))
 		else:
-			text = _('no paragraph indent')
-			textList.append(text)
+			s = _("%g characters") % abs(n / fontSizePt) if fontSizePt else _("%g pt") % abs(n)
+			textList.append(_("left indent") + " " + s)
+	rightIndent=attrs.get("right-indent")
+	oldRightIndent=attrsCache.get("right-indent") if attrsCache is not None else None
+	if rightIndent and rightIndent != oldRightIndent:
+		n = float(rightIndent)
+		if n < 0.001:
+			textList.append(_("no right indent"))
+		else:
+			s = _("%g characters") % abs(n / fontSizePt) if fontSizePt else _("%g pt") % abs(n)
+			textList.append(_("right indent") + " " + s)
 	# nvdajp end
 	if  formatConfig["reportStyle"]:
 		style=attrs.get("style")

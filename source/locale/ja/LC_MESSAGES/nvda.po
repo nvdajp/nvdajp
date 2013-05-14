@@ -142,6 +142,30 @@ msgstr "段落ぶら下がり"
 msgid "no paragraph indent"
 msgstr "段落字下げなし"
 
+#: speech.py:1086
+msgid "left indent"
+msgstr "段落左インデント"
+
+#: speech.py:1086
+msgid "no left indent"
+msgstr "段落左インデントなし"
+
+#: speech.py:1086
+msgid "right indent"
+msgstr "段落右インデント"
+
+#: speech.py:1086
+msgid "no right indent"
+msgstr "段落右インデントなし"
+
+#: speech.py:1086
+msgid "%g characters"
+msgstr "%g文字"
+
+#: speech.py:1086
+msgid "%g pt"
+msgstr "%gpt"
+
 #: NVDAHelper.py:163
 msgid "full shape space"
 msgstr "全角スペース"
