@@ -325,9 +325,17 @@ void generateXMLAttribsForFormatting(IDispatch* pDispatchRange, int startOffset,
 				}
 			}
 			// nvdajp begin
-			// ParagraphFormat.FirstLineIndent (in point) dispid:108
+			// ParagraphFormat RightIndent, LeftIndent, FirstLineIndent (in point)
+			const int wdDISPID_PARAGRAPHFORMAT_RIGHTINDENT = 106;
+			const int wdDISPID_PARAGRAPHFORMAT_LEFTINDENT = 107;
 			const int wdDISPID_PARAGRAPHFORMAT_FIRSTLINEINDENT = 108;
 			float fVal=0.0;
+			if(_com_dispatch_raw_propget(pDispatchParagraphFormat,wdDISPID_PARAGRAPHFORMAT_RIGHTINDENT,VT_R4,&fVal)==S_OK) {
+				formatAttribsStream<<L"right-indent=\"" << fVal <<L"\" ";
+			}
+			if(_com_dispatch_raw_propget(pDispatchParagraphFormat,wdDISPID_PARAGRAPHFORMAT_LEFTINDENT,VT_R4,&fVal)==S_OK) {
+				formatAttribsStream<<L"left-indent=\"" << fVal <<L"\" ";
+			}
 			if(_com_dispatch_raw_propget(pDispatchParagraphFormat,wdDISPID_PARAGRAPHFORMAT_FIRSTLINEINDENT,VT_R4,&fVal)==S_OK) {
 				formatAttribsStream<<L"first-line-indent=\"" << fVal <<L"\" ";
 			}
