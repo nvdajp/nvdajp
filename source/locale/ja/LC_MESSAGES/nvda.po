@@ -132,31 +132,31 @@ msgstr "全角 %s"
 
 #: speech.py:1086
 msgid "paragraph indent"
-msgstr "段落字下げ"
+msgstr "字下げ"
 
 #: speech.py:1086
 msgid "hanging indent"
-msgstr "段落ぶら下がり"
+msgstr "ぶら下げ"
 
 #: speech.py:1086
 msgid "no paragraph indent"
-msgstr "段落字下げなし"
+msgstr "字下げなし"
 
 #: speech.py:1086
 msgid "left indent"
-msgstr "段落左インデント"
+msgstr "左インデント"
 
 #: speech.py:1086
 msgid "no left indent"
-msgstr "段落左インデントなし"
+msgstr "左インデントなし"
 
 #: speech.py:1086
 msgid "right indent"
-msgstr "段落右インデント"
+msgstr "右インデント"
 
 #: speech.py:1086
 msgid "no right indent"
-msgstr "段落右インデントなし"
+msgstr "右インデントなし"
 
 #: speech.py:1086
 msgid "%g characters"
