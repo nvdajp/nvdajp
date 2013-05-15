@@ -1078,40 +1078,6 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 			# Translators: Speaks the heading level (example output: heading level 2).
 			text=_("heading level %d")%headingLevel
 			textList.append(text)
-	# nvdajp begin
-	leftIndent=attrs.get("left-indent")
-	oldLeftIndent=attrsCache.get("left-indent") if attrsCache is not None else None
-	fontSize=attrs.get("font-size")
-	fontSizePt = float(fontSize[0:-2]) if fontSize and fontSize[-2:] == "pt" and float(fontSize[0:-2]) > 0.0 else None
-	firstLineIndent=attrs.get("first-line-indent")
-	oldFirstLineIndent=attrsCache.get("first-line-indent") if attrsCache is not None else None
-	if firstLineIndent and firstLineIndent != oldFirstLineIndent:
-		n = float(firstLineIndent)
-		if -0.001 < n < 0.001:
-			textList.append(_("no paragraph indent"))
-		else:
-			s = _("%g characters") % abs(n / fontSizePt) if fontSizePt else _("%g pt") % abs(n)
-			if n > 0:
-				textList.append(_("paragraph indent") + " " + s)
-			else:
-				textList.append(_("hanging indent") + " " + s)
-	if leftIndent and leftIndent != oldLeftIndent:
-		n = float(leftIndent)
-		if n < 0.001:
-			textList.append(_("no left indent"))
-		else:
-			s = _("%g characters") % abs(n / fontSizePt) if fontSizePt else _("%g pt") % abs(n)
-			textList.append(_("left indent") + " " + s)
-	rightIndent=attrs.get("right-indent")
-	oldRightIndent=attrsCache.get("right-indent") if attrsCache is not None else None
-	if rightIndent and rightIndent != oldRightIndent:
-		n = float(rightIndent)
-		if n < 0.001:
-			textList.append(_("no right indent"))
-		else:
-			s = _("%g characters") % abs(n / fontSizePt) if fontSizePt else _("%g pt") % abs(n)
-			textList.append(_("right indent") + " " + s)
-	# nvdajp end
 	if  formatConfig["reportStyle"]:
 		style=attrs.get("style")
 		oldStyle=attrsCache.get("style") if attrsCache is not None else None
@@ -1218,6 +1184,40 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 				# i.e. not superscript or subscript.
 				text=_("baseline")
 			textList.append(text)
+	# nvdajp begin
+	fontSize=attrs.get("font-size")
+	fontSizePt = float(fontSize[0:-2]) if fontSize and fontSize[-2:] == "pt" and float(fontSize[0:-2]) > 0.0 else None
+	leftIndent=attrs.get("left-indent")
+	oldLeftIndent=attrsCache.get("left-indent") if attrsCache is not None else None
+	if leftIndent and leftIndent != oldLeftIndent:
+		n = float(leftIndent)
+		if abs(n) < 0.001:
+			textList.append(_("no left indent"))
+		else:
+			s = _("%g characters") % (n / fontSizePt) if fontSizePt else _("%g pt") % n
+			textList.append(_("left indent") + " " + s)
+	firstLineIndent=attrs.get("first-line-indent")
+	oldFirstLineIndent=attrsCache.get("first-line-indent") if attrsCache is not None else None
+	if firstLineIndent and firstLineIndent != oldFirstLineIndent:
+		n = float(firstLineIndent)
+		if -0.001 < n < 0.001:
+			textList.append(_("no paragraph indent"))
+		else:
+			s = _("%g characters") % abs(n / fontSizePt) if fontSizePt else _("%g pt") % abs(n)
+			if n > 0:
+				textList.append(_("paragraph indent") + " " + s)
+			else:
+				textList.append(_("hanging indent") + " " + s)
+	rightIndent=attrs.get("right-indent")
+	oldRightIndent=attrsCache.get("right-indent") if attrsCache is not None else None
+	if rightIndent and rightIndent != oldRightIndent:
+		n = float(rightIndent)
+		if abs(n) < 0.001:
+			textList.append(_("no right indent"))
+		else:
+			s = _("%g characters") % (n / fontSizePt) if fontSizePt else _("%g pt") % n
+			textList.append(_("right indent") + " " + s)
+	# nvdajp end
 	if formatConfig["reportAlignment"]:
 		textAlign=attrs.get("text-align")
 		oldTextAlign=attrsCache.get("text-align") if attrsCache is not None else None
