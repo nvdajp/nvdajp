@@ -1184,6 +1184,28 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 				# i.e. not superscript or subscript.
 				text=_("baseline")
 			textList.append(text)
+	if formatConfig["reportAlignment"]:
+		textAlign=attrs.get("text-align")
+		oldTextAlign=attrsCache.get("text-align") if attrsCache is not None else None
+		if (textAlign or oldTextAlign is not None) and textAlign!=oldTextAlign:
+			textAlign=textAlign.lower() if textAlign else textAlign
+			if textAlign=="left":
+				# Translators: Reported when text is left-aligned.
+				text=_("align left")
+			elif textAlign=="center":
+				# Translators: Reported when text is centered.
+				text=_("align center")
+			elif textAlign=="right":
+				# Translators: Reported when text is right-aligned.
+				text=_("align right")
+			elif textAlign=="justify":
+				# Translators: Reported when text is justified.
+				# See http://en.wikipedia.org/wiki/Typographic_alignment#Justified
+				text=_("align justify")
+			else:
+				# Translators: Reported when text has reverted to default alignment.
+				text=_("align default")
+			textList.append(text)
 	# nvdajp begin
 	fontSize=attrs.get("font-size")
 	fontSizePt = float(fontSize[0:-2]) if fontSize and fontSize[-2:] == "pt" and float(fontSize[0:-2]) > 0.0 else None
@@ -1218,28 +1240,6 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 			s = _("%g characters") % (n / fontSizePt) if fontSizePt else _("%g pt") % n
 			textList.append(_("right indent") + " " + s)
 	# nvdajp end
-	if formatConfig["reportAlignment"]:
-		textAlign=attrs.get("text-align")
-		oldTextAlign=attrsCache.get("text-align") if attrsCache is not None else None
-		if (textAlign or oldTextAlign is not None) and textAlign!=oldTextAlign:
-			textAlign=textAlign.lower() if textAlign else textAlign
-			if textAlign=="left":
-				# Translators: Reported when text is left-aligned.
-				text=_("align left")
-			elif textAlign=="center":
-				# Translators: Reported when text is centered.
-				text=_("align center")
-			elif textAlign=="right":
-				# Translators: Reported when text is right-aligned.
-				text=_("align right")
-			elif textAlign=="justify":
-				# Translators: Reported when text is justified.
-				# See http://en.wikipedia.org/wiki/Typographic_alignment#Justified
-				text=_("align justify")
-			else:
-				# Translators: Reported when text has reverted to default alignment.
-				text=_("align default")
-			textList.append(text)
 	if  formatConfig["reportLinks"]:
 		link=attrs.get("link")
 		oldLink=attrsCache.get("link") if attrsCache is not None else None
