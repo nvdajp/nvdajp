@@ -22,6 +22,7 @@ from logHandler import log
 
 fConnection = False
 numCells = 0
+lastReleaseTime = None
 
 #BM_DISPMODE_FOREGROUND = 0x01
 #BM_DISPMODE_BACKGROUND = 0x02
@@ -144,6 +145,14 @@ def _fixConnection(hBrl, devName, port):
 	global fConnection
 	SPEED = 3 # 9600bps
 	fConnection = False
+	if lastReleaseTime and time.time() - lastReleaseTime < 5.0:
+		for loop in xrange(10):
+			time.sleep(0.5)
+			tones.beep(450-(loop*20), 20)
+			msg=ctypes.wintypes.MSG()
+			if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
+				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
+				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
 	ret = hBrl.bmStart(devName, _port, SPEED, nvdaKgsStatusChangedProc)
 	for loop in xrange(20):
 		try:
@@ -187,20 +196,21 @@ def bmConnect(hBrl, port, execEndConnection=False):
 	devName = getKbdcName(hBrl)
 	if not devName:
 		return False
-	if port=="auto" or port == None:
+	if port is None or port=="auto":
 		ret, pName = _autoConnection(hBrl, devName, port)
 	else:
 		ret, pName = _fixConnection(hBrl, devName, port)
 	return ret, pName
 
 def bmDisConnect(hBrl, port):
-	global fConnection, numCells
+	global fConnection, numCells, lastReleaseTime
 	ret = hBrl.bmEndDisplayMode()
 	log.info("BmEndDisplayMode %s %d" % (port, ret))
 	ret = hBrl.bmEnd()
 	log.info("BmEnd %s %d" % (port, ret))
 	numCells=0
 	fConnection = False
+	lastReleaseTime = time.time()
 	return ret
 
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
@@ -242,13 +252,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		super(BrailleDisplayDriver, self).terminate()
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
-			for loop in xrange(10):
-				time.sleep(0.5)
-				tones.beep(450+(loop*20), 20)
-				msg=ctypes.wintypes.MSG()
-				if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
-					ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
-					ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
 			ret = windll.kernel32.FreeLibrary(self._directBM._handle)
 			# ret is not zero if success
 			log.info("KGS driver terminated %d" % ret)
