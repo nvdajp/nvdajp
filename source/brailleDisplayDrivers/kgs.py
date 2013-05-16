@@ -137,15 +137,15 @@ def getKbdcName(hBrl):
 	return devName
 
 def _fixConnection(hBrl, devName, port):
+	global fConnection, lastReleaseTime
 	log.info("scanning port %s" % port)
 	if port[:3] == 'COM':
 		_port = int(port[3:])-1
 	else:
 		return False, None
-	global fConnection
 	SPEED = 3 # 9600bps
 	fConnection = False
-	if lastReleaseTime and time.time() - lastReleaseTime < 5.0:
+	if lastReleaseTime is not None and time.time() - lastReleaseTime < 5.0:
 		for loop in xrange(10):
 			time.sleep(0.5)
 			tones.beep(450-(loop*20), 20)
