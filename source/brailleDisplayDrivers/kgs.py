@@ -162,6 +162,7 @@ def _fixConnection(hBrl, devName, port):
 		bmDisConnect(hBrl, _port)
 		port = None
 		tones.beep(200, 100)
+	log.info("connection:%d port:%d" % (fConnection, _port))
 	return fConnection, port
 
 def _autoConnection(hBrl, devName, port):
@@ -172,7 +173,7 @@ def _autoConnection(hBrl, devName, port):
 		hwID = portInfo["hardwareID"]
 		frName = portInfo.get("friendlyName")
 		btName = portInfo.get("bluetoothName")
-		log.debug(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
+		log.info(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
 		#if hwID[:3] != 'USB':
 		#	continue
 		ret, Port = _fixConnection(hBrl, devName, _port)
@@ -206,6 +207,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	name = "kgs"
 	description = _(u"KGS BrailleMemo series")
 	_portName = None
+	_directBM = None
 
 	def __init__(self, port="auto"):
 		super(BrailleDisplayDriver,self).__init__()
@@ -238,10 +240,20 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	def terminate(self):
 		super(BrailleDisplayDriver, self).terminate()
-		ret = windll.kernel32.FreeLibrary(self._directBM._handle)
-		# ret is not zero if success
-		log.info("KGS driver terminated %d" % ret)
-		del self._directBM
+		if self._directBM and self._directBM._handle:
+			bmDisConnect(self._directBM, self._portName)
+			for loop in xrange(10):
+				time.sleep(0.5)
+				tones.beep(450+(loop*20), 20)
+				msg=ctypes.wintypes.MSG()
+				if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
+					ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
+					ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+			ret = windll.kernel32.FreeLibrary(self._directBM._handle)
+			# ret is not zero if success
+			log.info("KGS driver terminated %d" % ret)
+		self._directBM = None
+		self._portName = None
 
 	@classmethod
 	def check(cls):
