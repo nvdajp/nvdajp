@@ -160,7 +160,7 @@ msgstr "右インデントなし"
 
 #: speech.py:1086
 msgid "%g characters"
-msgstr "%g文字"
+msgstr "%gモジ"
 
 #: speech.py:1086
 msgid "%g pt"
