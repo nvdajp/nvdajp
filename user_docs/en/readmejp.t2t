@@ -9,11 +9,11 @@
 + Overview +
 
 
-- last update: 2013-04-21
+- last update: 2013-05-19
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
-Release by NVDA Japanese Team (nvdajp), based on NVDA from nvda-project.org.
+Release by NVDA Japanese Team (nvdajp), based on NVDA from NV Access.
 This document describes difference between original release of NVDA and the NVDAJP.
 NVDA jpdev snapshot is based on NV Access's main branch.
 
@@ -29,8 +29,8 @@ NVDA Japanese is provided "as is", without warranty.
 - For other releases from NVDAJP, please visit: http://www.nvda.jp/en/
 - Development or beta versions of NVDAJP may not be signed, there are some limitations regarding the privilege.
 - Application icon is changed to the goldfish.
-- Windows shortcut for starting NVDA is CTRL-ALT-N, if installed. It may conflicts to other screen reader which is popular in Japan. This shortcut can be modified using the property (ALT-Enter) of NVDAJP icon of Windows desktop.
-- Fixed issue: NVDA fails to start when temp path contains certain multibyte characters [NVDA ticket #2729 http://www.nvda-project.org/ticket/2729]
+- Windows shortcut for starting NVDA is CTRL+ALT+N, if installed. It may conflicts to other screen reader which is popular in Japan. This shortcut can be modified using the property (ALT+Enter) of NVDAJP icon of Windows desktop.
+- Fixed issue: NVDA fails to start when temp path contains certain multibyte characters [NVDA ticket #2729 http://community.nvda-project.org/ticket/2729]
 
 
 + NVDA with Japanese language +
@@ -40,11 +40,26 @@ NVDA Japanese is provided "as is", without warranty.
 - Original NVDA cannot output Japanese braille.
 
 
++ Japanese input with Windows 8 +
+
+Japanese characters cannot input correctly to text edit of NVDA on Windows 8.
+- [NVDAJP ticket 31343 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31343]
+- [NVDA ticket 3233 http://community.nvda-project.org/ticket/3233]
+- [NVDA ticket 2909 http://community.nvda-project.org/ticket/2909]
+
+
+Work around this:
+
+- Add English layout to Windows 8.
+- When text edit of NVDA is selected, press Shift+Alt twice, i.e. switch to English layout then back to Japanese layout.
+- Enable Japanese input by pressing half-shape/full-shape key (or Alt+tilde with US-keyboard array). After this, Japanese characters can type correctly.
+
+
 + Japanese input methods +
 
 - NVDA 2012.3 can use with Microsoft Japanese IME. NVDAJP 2013.1jp contains the work around the remained issues.
 - [NVDAJP ticket 28859 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=28859]
-- [NVDA ticket 2730 http://www.nvda-project.org/ticket/2730]
+- [NVDA ticket 2730 http://community.nvda-project.org/ticket/2730]
 - NVDAJP 2013.1jp removed legacy Japanese input support by Japanese Team. Stability is improved.
 - For Japanese input support, Keyboard Settings "Speak Typed Characters" should be enabled, "Speak Typed Words" should be disabled. Input Composition Setting "Automatically report all available candidates" should be disabled.
 
@@ -158,6 +173,13 @@ Default is 20.
 
 For candidates of Japanese input methods, pitch change is not available.
 
++++ Announce candidate number +++
+
+The default of 'Announce candidate number' is disabled.
+If checked, items in candidate window of Japanese input methods such as Micosoft IME are annonced with numbers.
+If 'IME support of nvdajp' is disabled, this option has no effect.
+
+
 +++ Use IME support of nvdajp +++
 
 The default of 'Use IME support of nvdajp' is enabled.
@@ -170,7 +192,6 @@ To disable, turn off the option.
 Enables work around issue 2712 (freeze of Skype 6 on Windows 8)
 
 - http://community.nvda-project.org/ticket/2712
-- https://jira.skype.com/browse/SCW-4107
 - http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=30703
 
 
@@ -389,11 +410,21 @@ It uses braille Unicode font. For Windows XP, the braille font is available if L
 - Update check is disabled. Default setting of update-autoCheck is changed to false.
 
 
+++ Microsoft Word support ++
+
+- Paragraph indent of Microsoft Word is announced when using NVDA+F.
+- Both "Report alignment" and "Report font size" in "Document Format" setting should be enabled to use this.
+- "Announce formatting changes after the cursor" is also supported.
+- Announce of font size is in real numbers such as '10.5pt', rather than integers such as '10pt'.
+
+
 ++ Miscellaneous changes ++
 
 - AppModule for WinAltair (popular self-voicing applications in Japan) is added.
+- Since 2013.1jp, automatic sleep modules for Search Aid and VoicePopper are removed (nvdajp ticket 25653)
 - Log Viewer may contain multi-byte characters for output.
 - Report Time (NVDA+f12) is modified for Japanese environment.
+- Memory allocation issue in ime.cpp [(NVDA ticket 3234) http://community.nvda-project.org/ticket/3234] is fixed.
 
 
 ++ Source code ++
