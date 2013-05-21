@@ -19,6 +19,13 @@ from ctypes import *
 from ctypes.wintypes import *
 import config
 from logHandler import log
+import sys
+
+kgs_dir = unicode(os.path.dirname(__file__), 'mbcs')
+if (not 'addons' in kgs_dir.split("\\")) and hasattr(sys,'frozen'):
+	d = os.path.join(os.getcwdu(), 'brailleDisplayDrivers')
+	if os.path.isdir(d):
+		kgs_dir = d
 
 fConnection = False
 numCells = 0
@@ -234,7 +241,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info("first connection %s" % port)
 			execEndConnection = False
 			self.numCells = 0
-		self._directBM = windll.LoadLibrary(r"brailleDisplayDrivers\DirectBM.dll")
+		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
+		self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
 		if not self._directBM:
 			raise RuntimeError("No KGS instance found")
 		ret,self._portName = bmConnect(self._directBM, port, execEndConnection)
