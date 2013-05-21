@@ -82,7 +82,7 @@ typedef struct tagINPUTCONTEXT2 {
 
 HWND curIMEWindow=NULL;
 static HWND candidateIMEWindow=0;
-static BOOL lastOpenStatus=true;
+static BOOL lastOpenStatus=false;
 static HMODULE gImm32Module = NULL;
 static DWORD lastConversionModeFlags=0;
 bool disableIMEConversionModeUpdateReporting=false;
@@ -326,7 +326,19 @@ static bool handleCandidates(HWND hwnd) {
 	}
 
 	/* Concatenate currently shown candidates into a string */
+#if 0
 	WCHAR* cand_str = (WCHAR*)malloc(len);
+#else
+	size_t buflen = 1; // make sure len != 0
+	for (DWORD n = list->dwPageStart;  n < pageEnd; ++n) {
+		DWORD offset = list->dwOffset[n];
+		WCHAR* cand = (WCHAR*)(((char*)list) + offset);
+		size_t clen = wcslen(cand);
+		buflen += (clen + 1) * sizeof(WCHAR);
+	}
+	WCHAR* cand_str = (WCHAR*)malloc(buflen);
+	cand_str[0] = '\0';
+#endif
 	WCHAR* ptr = cand_str;
 	for (DWORD n = list->dwPageStart, count = 0;  n < pageEnd;  ++n) {
 		DWORD offset = list->dwOffset[n];
@@ -350,6 +362,7 @@ static bool handleCandidates(HWND hwnd) {
 	return (count > 0);
 }
 
+#if 0
 static WCHAR* getCompositionString(HIMC imc, DWORD index) {
 	int len = ImmGetCompositionStringW(imc, index, 0, 0);
 	if (len < sizeof(WCHAR))  return NULL;
@@ -358,6 +371,35 @@ static WCHAR* getCompositionString(HIMC imc, DWORD index) {
 	wstr[len] = L'\0';
 	 return wstr;
 }
+#else
+static WCHAR* getCompositionString(HIMC imc, DWORD index) {
+	int len = ImmGetCompositionStringW(imc, index, 0, 0);
+	if (len < sizeof(WCHAR))  return NULL;
+	WCHAR* wstr = (WCHAR*)malloc(len * 2 + sizeof(WCHAR) * 2);
+	len = ImmGetCompositionStringW(imc, index, wstr, len) / sizeof(WCHAR);
+	wstr[len] = L'\t';
+	// append compAttr string
+	// example: L"222221111000"
+	// 0: not converted
+	// 1: selected
+	// 2: not selected
+	BYTE *attr = (BYTE*)calloc(len, sizeof(BYTE));
+	if (!attr) {
+		wstr[len] = 0;
+		return wstr;
+	}
+	LONG count = ImmGetCompositionStringW(imc, GCS_COMPATTR, attr, len);
+	if (count) {
+		if (len < count) count = len;
+		for (LONG i = 0; i < count; i++) {
+			wstr[len + 1 + i] = L'0' + attr[i];
+		}
+	}
+	wstr[len + 1 + count] = 0;
+	free(attr);
+	return wstr;
+}
+#endif
 
 static bool handleComposition(HWND hwnd, WPARAM wParam, LPARAM lParam) {
 	/* Obtain IME context */

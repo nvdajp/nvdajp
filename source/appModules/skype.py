@@ -117,6 +117,7 @@ class AppModule(appModuleHandler.AppModule):
 			# The value includes the Skype name,
 			# but we care more about the additional info (e.g. new event count) included in the name.
 			obj.value=None
+<<<<<<< HEAD
 		elif isinstance(obj, NVDAObjects.IAccessible.IAccessible) and obj.IAccessibleRole == oleacc.ROLE_SYSTEM_PANE and not obj.name:
 			# Prevent extraneous reporting of pane when tabbing through a conversation form.
 			obj.shouldAllowIAccessibleFocusEvent = False
@@ -166,3 +167,10 @@ class AppModule(appModuleHandler.AppModule):
 	def event_appModule_loseFocus(self):
 		if self.chatWindow:
 			self.conversationLostFocus()
+
+#nvdajp begin
+import config
+if config.conf["UIA"]["skypeWin8Hack"]:
+	orgAppModule = AppModule
+	from _skypeWin8Hack import *
+#nvdajp end
