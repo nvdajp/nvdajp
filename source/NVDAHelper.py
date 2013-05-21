@@ -60,6 +60,43 @@ def nvdaController_brailleMessage(text):
 	queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,text)
 	return 0
 
+@WINFUNCTYPE(c_long,c_wchar_p)
+def nvdaController_speakSpelling(text):
+	focus=api.getFocusObject()
+	if focus.sleepMode==focus.SLEEP_FULL:
+		return -1
+	import queueHandler
+	import speech
+	queueHandler.queueFunction(queueHandler.eventQueue,speech.speakSpelling,text,None,True)
+	return 0
+
+@WINFUNCTYPE(c_long)
+def nvdaController_isSpeaking():
+	from synthDriverHandler import *
+	return getSynth().isSpeaking()
+
+@WINFUNCTYPE(c_long)
+def nvdaController_getPitch():
+	from synthDriverHandler import *
+	return getSynth()._get_pitch()
+
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setPitch(nPitch):
+	from synthDriverHandler import *
+	getSynth()._set_pitch(nPitch)
+	return 0
+
+@WINFUNCTYPE(c_long)
+def nvdaController_getRate():
+	from synthDriverHandler import *
+	return getSynth()._get_rate()
+
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setRate(nRate):
+	from synthDriverHandler import *
+	getSynth()._set_rate(nRate)
+	return 0
+
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf=create_unicode_buffer(1024)
 	bufSize=c_int(2048)
@@ -121,6 +158,13 @@ def handleInputCompositionEnd(result):
 	from NVDAObjects.inputComposition import InputComposition
 	from NVDAObjects.behaviors import CandidateItem
 	focus=api.getFocusObject()
+	#nvdajp begin
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
+			config.conf["keyboard"]["speakTypedCharacters"] and \
+			result == u'\u3000':
+		speech.speakText(_('full shape space'))
+		return
+	#nvdajp end
 	result=result.lstrip(u'\u3000 ')
 	curInputComposition=None
 	if isinstance(focus,InputComposition):
@@ -165,6 +209,25 @@ def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,is
 @WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
 	from NVDAObjects.inputComposition import InputComposition
+	#nvdajp begin
+	if '\t' in compositionString:
+		ar = compositionString.split('\t')
+		compositionString, compAttr = ar
+		if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
+				'1' in compAttr and '2' in compAttr:
+			s = ''
+			for p in range(len(compAttr)):
+				if compAttr[p] == '1':
+					s += compositionString[p]
+			log.debug("(%s) (%s) (%s)" % (compositionString, compAttr, s))
+			from NVDAObjects import inputComposition
+			inputComposition.reportPartialSelection(s)
+			return 0
+		else:
+			log.debug("(%s) (%s)" % (compositionString, compAttr))
+	else:
+		log.debug(compositionString)
+	#nvdajp end
 	if selectionStart==-1:
 		queueHandler.queueFunction(queueHandler.eventQueue,handleInputCompositionEnd,compositionString)
 		return 0
@@ -176,10 +239,24 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	return 0
 
 def handleInputCandidateListUpdate(candidatesString,selectionIndex,inputMethod):
+	log.debug(u"(%s) (%s) (%s)" % (unicode(candidatesString).replace('\n','|'),str(selectionIndex),unicode(inputMethod)))
 	candidateStrings=candidatesString.split('\n')
 	import speech
 	from NVDAObjects.inputComposition import InputComposition, CandidateList, CandidateItem
 	focus=api.getFocusObject()
+	#nvdajp begin
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+		from NVDAObjects import inputComposition
+		if inputComposition.lastKeyGesture:
+			log.debug("lastKeyCode %x" % inputComposition.lastKeyGesture.vkCode)
+		if not inputComposition.needDiscriminantReading(inputComposition.lastKeyGesture):
+			if isinstance(focus,CandidateItem):
+				oldSpeechMode=speech.speechMode
+				speech.speechMode=speech.speechMode_off
+				eventHandler.executeEvent("gainFocus",focus.parent)
+				speech.speechMode=oldSpeechMode
+			return
+	#nvdajp end
 	if not (0<=selectionIndex<len(candidateStrings)):
 		if isinstance(focus,CandidateItem):
 			oldSpeechMode=speech.speechMode
@@ -272,6 +349,15 @@ def nvdaControllerInternal_inputConversionModeUpdate(oldFlags,newFlags,lcid):
 
 @WINFUNCTYPE(c_long,c_long)
 def nvdaControllerInternal_IMEOpenStatusUpdate(opened):
+	#nvdajp begin
+	if config.conf["keyboard"]["nvdajpImeBeep"]:
+		import tones
+		if opened:
+			tones.beep(880,20) 
+		else:
+			tones.beep(440,20)
+		return 0
+	#nvdajp end
 	if opened:
 		# Translators: a message when the IME open status changes to opened
 		message=_("IME opened")
@@ -410,6 +496,12 @@ def initialize():
 		("nvdaController_speakText",nvdaController_speakText),
 		("nvdaController_cancelSpeech",nvdaController_cancelSpeech),
 		("nvdaController_brailleMessage",nvdaController_brailleMessage),
+		("nvdaController_speakSpelling",nvdaController_speakSpelling),
+		("nvdaController_isSpeaking",nvdaController_isSpeaking),
+		("nvdaController_getPitch",nvdaController_getPitch),
+		("nvdaController_setPitch",nvdaController_setPitch),
+		("nvdaController_getRate",nvdaController_getRate),
+		("nvdaController_setRate",nvdaController_setRate),
 		("nvdaControllerInternal_requestRegistration",nvdaControllerInternal_requestRegistration),
 		("nvdaControllerInternal_inputLangChangeNotify",nvdaControllerInternal_inputLangChangeNotify),
 		("nvdaControllerInternal_typedCharacterNotify",nvdaControllerInternal_typedCharacterNotify),

@@ -7,6 +7,15 @@ import config
 from NVDAObjects.window import Window
 from behaviors import EditableTextWithAutoSelectDetection, CandidateItem as CandidateItemBehavior 
 from textInfos.offsets import OffsetsTextInfo
+#nvdajp begin
+from logHandler import log
+import nvdajp_dic
+import win32con
+import time
+import braille
+import re
+RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
+#nvdajp end
 
 def calculateInsertedChars(oldComp,newComp):
 	oldLen=len(oldComp)
@@ -40,6 +49,44 @@ class InputCompositionTextInfo(OffsetsTextInfo):
 	def _getStoryLength(self):
 		return len(self._getStoryText())
 
+#nvdajp begin
+# from keyboardHandler.internal_keyDownEvent
+lastKeyGesture = None
+def reportKeyDownEvent(gesture):
+	global lastKeyGesture
+	lastKeyGesture = gesture
+
+def needDiscriminantReading(gesture):
+	if not gesture: return False
+	if (win32con.VK_CONTROL, False) in gesture.generalizedModifiers or \
+			gesture.vkCode in \
+			(win32con.VK_SPACE, win32con.VK_CONVERT, 
+			 win32con.VK_LEFT, win32con.VK_RIGHT,
+			 win32con.VK_UP, win32con.VK_DOWN,
+			 win32con.VK_F6, win32con.VK_F7, win32con.VK_F8,
+			 win32con.VK_F9, win32con.VK_F10,
+			 win32con.VK_NONCONVERT, win32con.VK_ESCAPE,
+			 win32con.VK_TAB):
+		return True
+	return False
+
+lastCompositionText = None
+lastCompositionTime = None
+
+# from NVDAHelper.nvdaControllerInternal_inputCompositionUpdate
+def reportPartialSelection(sel):
+	global lastCompositionText, lastCompositionTime
+	newText = nvdajp_dic.getJapaneseDiscriminantReading(sel)
+	if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 0.1:
+		newText = None
+	if newText:
+		log.debug(newText)
+		lastCompositionTime = time.time()
+		lastCompositionText = newText
+		queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newText)
+		queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
+#nvdajp end
+
 class InputComposition(EditableTextWithAutoSelectDetection,Window):
 
 	TextInfo=InputCompositionTextInfo
@@ -68,9 +115,30 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 		return clsList
 
 	def reportNewText(self,oldString,newString):
+		global lastCompositionText, lastCompositionTime #nvdajp
 		if (config.conf["keyboard"]["speakTypedCharacters"] or config.conf["keyboard"]["speakTypedWords"]):
 			newText=calculateInsertedChars(oldString.strip(u'\u3000'),newString.strip(u'\u3000'))
+			#nvdajp begin
+			if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
+					needDiscriminantReading(lastKeyGesture):
+				newText = nvdajp_dic.getJapaneseDiscriminantReading(newString.strip(u'\u3000'))
+			if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 1.0:
+				newText = None
+			#nvdajp end
 			if newText:
+				#nvdajp begin
+				if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+					log.debug(newText)
+					if RE_HIRAGANA.match(newText):
+						newText = ''.join([unichr(ord(c) + 0x60) for c in newText])
+						log.debug('convert hiragana to katakana: ' + newText)
+					if newText == u'\u30fc':
+						newText = nvdajp_dic.getJapaneseDiscriminantReading(newText)
+						log.debug('katakana-hiragana prolonged sound mark')
+					lastCompositionTime = time.time()
+					lastCompositionText = newText
+					queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newText)
+				#nvdajp end
 				queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
 
 	def compositionUpdate(self,compositionString,selectionStart,selectionEnd,isReading,announce=True):
