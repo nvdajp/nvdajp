@@ -147,7 +147,7 @@ class GlobalCommands(ScriptableObject):
 				if mo:
 					hour, minute = mo.group(1), mo.group(2)
 					if minute[0] == '0': minute = minute[1:]
-					text = u'%s時%s分' % (hour, minute)
+					text = _('%s:%s') % (hour, minute)
 			# nvdajp end
 		else:
 			text=winKernel.GetDateFormat(winKernel.LOCALE_USER_DEFAULT, winKernel.DATE_LONGDATE, None, None)
