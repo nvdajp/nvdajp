@@ -617,30 +617,43 @@ class GlobalCommands(ScriptableObject):
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_CHARACTER)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
+		#if scriptCount==0:
+		#	speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		#elif scriptCount==1:
+		#	speech.spellTextInfo(info,useCharacterDescriptions=True)
+		#else:
+		#	try:
+		#		c = ord(info.text)
+		#		speech.speakMessage("%d," % c)
+		#		speech.speakSpelling(hex(c))
+		#	except:
+		#		speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		#nvdajp begin
 		if scriptCount==0:
-			#speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
-			#nvdajp
 			if characterDescriptionMode:
 				speech.spellTextInfo(info,useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		elif scriptCount==1:
-			#speech.spellTextInfo(info,useCharacterDescriptions=True)
-			#nvdajp
+			import nvdajp_dic
+			import languageHandler
+			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
+			speech.speakMessage(speech.processText(languageHandler.getLanguage(), s, characterProcessing.SYMLVL_ALL))
+		elif scriptCount==2:
+			try:
+				c = ord(info.text)
+				speech.speakMessage("%d 0x" % c)
+				speech.speakSpelling(hex(c)[2:])
+			except:
+				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		else:
 			if characterDescriptionMode:
 				speech.speakMessage(_("Character description mode disabled"))
 				characterDescriptionMode = False
 			else:
 				speech.speakMessage(_("Character description mode enabled"))
 				characterDescriptionMode = True
-			#nvdajp end
-		else:
-			try:
-				c = ord(info.text)
-				speech.speakMessage("%d," % c)
-				speech.speakSpelling(hex(c))
-			except:
-				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		#nvdajp end
 	script_review_currentCharacter.__doc__=_("Reports the character of the current navigator object where the review cursor is situated. Pressing twice reports a description or example of that character. Pressing three times reports the numeric value of the character in decimal and hexadecimal")
 
 	def script_review_nextCharacter(self,gesture):
