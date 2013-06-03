@@ -56,3 +56,6 @@ source/synthDrivers/jtalk/m001
 source/synthDrivers/jtalk/mecabrc
 source/synthDrivers/jtalk/mei_normal
 source/synthDrivers/jtalk/voice
+*~
+*.nvda-addon
+nvdaHelper/docs
