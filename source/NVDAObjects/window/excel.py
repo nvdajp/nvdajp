@@ -309,6 +309,20 @@ class ExcelSelection(ExcelBase):
 	def _get_name(self):
 		firstCell=self.excelRangeObject.Item(1)
 		lastCell=self.excelRangeObject.Item(self.excelRangeObject.Count)
+		# nvdajp begin
+		# if count of cells is less than or equals 6, use their contents.
+		if self.excelRangeObject.Count <= 6:
+			items = []
+			for p in xrange(1, self.excelRangeObject.Count + 1):
+				c = self.excelRangeObject.Item(p).Text or _("empty")
+				items.append(c)
+			items.append(_("{firstAddress} through {lastAddress}").format(firstAddress=self.getCellAddress(firstCell),lastAddress=self.getCellAddress(lastCell)))
+			return u' '.join(items)
+		# if there are more than 6 cells, use first cell, last cell, and the count of cells.
+		c1 = firstCell.Text or _("empty")
+		c2 = lastCell.Text or _("empty")
+		return _("{firstAddress} {firstContent} through {lastAddress} {lastContent} count {cellCount}").format(firstAddress=self.getCellAddress(firstCell),firstContent=c1,lastAddress=self.getCellAddress(lastCell),lastContent=c2,cellCount=self.excelRangeObject.Count)
+		# nvdajp end
 		# Translators: This is presented in Excel to show the current selection, for example 'a1 c3 through a10 c10'
 		return _("{firstAddress} {firstContent} through {lastAddress} {lastContent}").format(firstAddress=self.getCellAddress(firstCell),firstContent=firstCell.Text,lastAddress=self.getCellAddress(lastCell),lastContent=lastCell.Text)
 
