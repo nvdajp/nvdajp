@@ -83,7 +83,7 @@ def read_characters_file(cs_file):
 			if len(a) >= 4:
 				ar[a[0]] = [c, a[3]]
 				count += 1
-	my_print("total characters: %d" % count)
+	#my_print("total characters: %d" % count)
 	return ar
 
 def print_diff(sy, ch):
@@ -99,14 +99,16 @@ def equals_ignore_spaces(s1, s2):
 	if s1 == s2: return True
 	return False
 	
-def print_diff_ignore_spaces(sy, ch):
+def print_different(sy, ch, skip_included=False):
 	ar = {}
 	for k,v in ch.items():
 		if k in sy:
 			s1 = v[1]
 			s2 = sy[k][1]
 			if equals_ignore_spaces(s1, s2): continue
-			ar[sy[k][0]] = "%04x sy %d %s / ch %d %s %s" % (ord(k), sy[k][0], sy[k][1], v[0], k, v[1])
+			if skip_included and (s1 in s2) or (s2 in s1): continue
+			output = "%04x sy %d %s / ch %d %s %s" % (ord(k), sy[k][0], sy[k][1], v[0], k, v[1])
+			ar[sy[k][0]] = output
 	for s in sorted(ar.items(), key=lambda x:int(x[0])):
 		my_print(s[1])
 		
