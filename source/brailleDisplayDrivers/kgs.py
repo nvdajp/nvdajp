@@ -154,7 +154,7 @@ def _fixConnection(hBrl, devName, port):
 				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
 				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
 	ret = hBrl.bmStart(devName, _port, SPEED, nvdaKgsStatusChangedProc)
-	for loop in xrange(20):
+	for loop in xrange(30):
 		try:
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, nvdaKgsHandleKeyInfoProc)
