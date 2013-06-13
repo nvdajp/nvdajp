@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2013-06-04
+- last update: 2013-06-13
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -393,6 +393,32 @@ Symbols:
 | ' (apostrophe) | 3 |
 
 Select button works as Shift, rather than Enter, since 2013.1jp.
+
+
++++ KGS BrailleNote 46C/46D +++
+
+The driver for braille display "KGS BrailleNote 46C/46D" from [KGS Corporation http://www.kgs-jpn.co.jp/eindex.html] is added.
+
+[The BM Utility (Japanese page) http://www.kgs-jpn.co.jp/bmutil_j/] must be installed to the computer.
+
+For USB connection, [virtual serial driver (Japanese page) http://www.kgs-jpn.co.jp/USB_driver_j/index.htm] must also be installed.
+The device should be configured to use 9600BPS connection speed for virtual serial driver.
+
+BrailleNote 46C/46D driver supports following commands:
+
+|| Name | Key |
+| NVDA menu | f1 |
+| move to cell | tether |
+| scroll back | sl |
+| scroll forward | sr |
+| review previous line | f2+bk |
+| review next line | f2+lf |
+| review previous word | f2+sl |
+| review next word | f2+sr |
+| up arrow | bk |
+| down arrow | lf |
+| left arrow | f3 |
+| right arrow | f4 |
 
 
 +++ Braille Viewer +++
