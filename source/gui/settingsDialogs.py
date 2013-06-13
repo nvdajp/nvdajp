@@ -1493,10 +1493,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.jpPhoneticReadingLatinCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingLatin"])
 		settingsSizer.Add(self.jpPhoneticReadingLatinCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.sayJpKatakanaCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Say Japanese Katakana"))
-		self.sayJpKatakanaCheckBox.SetValue(config.conf["language"]["sayJpKatakana"])
-		settingsSizer.Add(self.sayJpKatakanaCheckBox,border=10,flag=wx.BOTTOM)
-
 		sizer = wx.BoxSizer(wx.HORIZONTAL)
 		jpKatakanaPitchChangeLabel=wx.StaticText(self,-1,label=_("Katakana pitch change percentage"))
 		sizer.Add(jpKatakanaPitchChangeLabel)
@@ -1504,10 +1500,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.jpKatakanaPitchChangeEdit.SetValue(str(config.conf["language"]["jpKatakanaPitchChange"]))
 		sizer.Add(self.jpKatakanaPitchChangeEdit)
 		settingsSizer.Add(sizer, border=10, flag=wx.BOTTOM)
-
-		self.sayHalfShapeCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Say half shape"))
-		self.sayHalfShapeCheckBox.SetValue(config.conf["language"]["sayHalfShape"])
-		settingsSizer.Add(self.sayHalfShapeCheckBox,border=10,flag=wx.BOTTOM)
 
 		sizer = wx.BoxSizer(wx.HORIZONTAL)
 		halfShapePitchChangeLabel=wx.StaticText(self,-1,label=_("Half shape pitch change percentage"))
@@ -1539,8 +1531,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["language"]["jpPhoneticReadingLatin"]=self.jpPhoneticReadingLatinCheckBox.IsChecked()
 		config.conf["keyboard"]["nvdajpEnableKeyEvents"]=self.nvdajpEnableKeyEventsCheckBox.IsChecked()
 		config.conf["keyboard"]["nvdajpImeBeep"]=self.nvdajpImeBeepCheckBox.IsChecked()
-		config.conf["language"]["sayJpKatakana"]=self.sayJpKatakanaCheckBox.IsChecked()
-		config.conf["language"]["sayHalfShape"]=self.sayHalfShapeCheckBox.IsChecked()
 		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
 		config.conf["UIA"]["skypeWin8Hack"]=self.skypeWin8HackCheckBox.IsChecked()
 
