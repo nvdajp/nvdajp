@@ -106,7 +106,21 @@ def print_different(sy, ch, skip_included=False):
 			s1 = v[1]
 			s2 = sy[k][1]
 			if equals_ignore_spaces(s1, s2): continue
-			if skip_included and (s1 in s2) or (s2 in s1): continue
+			if skip_included:
+				# 片方がもう一方に含まれる場合はスキップ
+				if (s1 in s2) or (s2 in s1): continue
+				# 'セン' を取り除いて、片方がもう一方に含まれる場合はスキップ
+				s1_ = s1.replace(u'セン', '')
+				s2_ = s2.replace(u'セン', '')
+				if (s1_ in s2_) or (s2_ in s1_): continue
+				# 'ノ ナカニ' を取り除いて、片方がもう一方に含まれる場合はスキップ
+				s1_ = s1.replace(u'ノ ナカニ', '')
+				s2_ = s2.replace(u'ノ ナカニ', '')
+				if (s1_ in s2_) or (s2_ in s1_): continue
+				# 'スーガク' を取り除いて、片方がもう一方に含まれる場合はスキップ
+				s1_ = s1.replace(u' ', '')
+				s2_ = s2.replace(u' ', '')
+				if (s1_ in s2_) or (s2_ in s1_): continue
 			output = "%04x sy %d %s / ch %d %s %s" % (ord(k), sy[k][0], sy[k][1], v[0], k, v[1])
 			ar[sy[k][0]] = output
 	for s in sorted(ar.items(), key=lambda x:int(x[0])):
