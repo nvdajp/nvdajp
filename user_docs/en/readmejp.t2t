@@ -145,26 +145,12 @@ Default is off.
 If checked, Latin characters are reported using phonetic reading for character review (when description mode is enabled).
 Default is off.
 
-+++ Say Japanese Katakana +++
-
-If checked, Katakana characters are reported followed by 'Katakana' for character review.
-Default is off.
-
-For candidates of Japanese input methods, 'Katakana' or 'Hiragana' is always reported.
-
 +++ Katakana pitch change percentage +++
 
 The amount that the pitch of the voice will change when speaking a Katakana letter for character review.
 Default is -20.
 
 For candidates of Japanese input methods, pitch change is not available.
-
-+++ Say half-shape +++
-
-If checked, half shape characters are reported followed by 'half-shape' for character review.
-Default is off.
-
-For candidates of Japanese input methods, 'half-shape' is always reported.
 
 +++ Half-shape pitch change percentage +++
 

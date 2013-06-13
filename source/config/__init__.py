@@ -55,9 +55,7 @@ confspec = ConfigObj(StringIO(
 
 # nvdajp
 [language]
-	sayJpKatakana = boolean(default=false)
 	jpKatakanaPitchChange = integer(default=-20,min=-100,max=100)
-	sayHalfShape = boolean(default=false)
 	halfShapePitchChange = integer(default=20,min=-100,max=100)
 	jpPhoneticReadingLatin = boolean(default=false) 
 	jpPhoneticReadingKana = boolean(default=false)
