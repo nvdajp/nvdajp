@@ -639,6 +639,7 @@ class GlobalCommands(ScriptableObject):
 			import languageHandler
 			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
 			speech.speakMessage(speech.processText(languageHandler.getLanguage(), s, characterProcessing.SYMLVL_ALL))
+			braille.handler.message(s)
 		elif scriptCount==2:
 			try:
 				c = ord(info.text)
