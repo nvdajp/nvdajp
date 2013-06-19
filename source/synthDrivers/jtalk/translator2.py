@@ -455,6 +455,10 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo):
 	if prev_mo.hinshi2 == '接尾' and prev_mo.hinshi3 == '地域' and \
 			mo.hinshi2 == '固有名詞' and mo.hinshi3 == '地域':
 		return True
+	# 東京/都 交通/局
+	if prev_mo.hinshi2 == '接尾' and prev_mo.hinshi3 == '地域' and \
+			mo.hinshi1 == '名詞' and mo.hinshi2 == '一般':
+		return True
 	# 永田町 １
 	if prev_mo.hinshi2 == '固有名詞' and prev_mo.hinshi3 == '地域' and \
 			mo.hinshi2 == '数':
