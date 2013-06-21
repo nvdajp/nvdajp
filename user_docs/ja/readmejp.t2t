@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2013年6月17日
+- 最終更新日：2013年6月21日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -42,8 +42,8 @@ NVDA日本語版は無保証です。ご自身の責任でご利用ください�
 
 + Windows 8 での日本語入力の注意 +
 
-Windows 8 で NVDA のテキスト入力（読み上げ辞書の編集や NVDA+Ctrl+F の検索文字列など）において日本語を正しく入力できない場合があります。
-- [関連チケット31343 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31343]
+Windows 8 で NVDA のテキスト入力（読み上げ辞書の編集や NVDA+Ctrl+F の検索文字列など）において日本語を入力したあとで、NVDA を正常に終了できない場合があります。
+- [関連チケット31592 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31592]
 - [本家チケット3233 http://community.nvda-project.org/ticket/3233]
 - [本家チケット2909 http://community.nvda-project.org/ticket/2909]
 
@@ -51,8 +51,7 @@ Windows 8 で NVDA のテキスト入力（読み上げ辞書の編集や NVDA+C
 この問題は以下の方法で回避できます：
 
 - Windows 8 のコントロールパネル「言語の追加」で「英語（米国）」を追加する。Shift+Alt で日本語と英語のレイアウトが切り替えできるようになる。
-- NVDA のテキスト入力で（Firefox で Ctrl+NVDA+F を押したとき、あるいは辞書登録でパターンや読みの入力になったとき）Shift+Alt を押していったん英語に切り替えて、もう一度日本語に戻す。
-- その後、半角全角キーを押して日本語入力をすると、文字化けしないで入力できる。 
+- NVDA を終了するダイアログを開いたら Shift+Alt を押していったん英語に切り替える。それから「はい」ボタンを押して NVDA を終了する。
 
 
 + 日本語入力 +
