@@ -42,8 +42,8 @@ NVDA Japanese is provided "as is", without warranty.
 
 + Japanese input with Windows 8 +
 
-Japanese characters cannot input correctly to text edit of NVDA on Windows 8.
-- [NVDAJP ticket 31343 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31343]
+After the Japanese input session with NVDA edit controls on Windows 8, exiting NVDA (NVDA+Q) cannot be performed correctly. The ending music is not played and the NVDA processes are still alive.
+- [NVDAJP ticket 31592 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=313592]
 - [NVDA ticket 3233 http://community.nvda-project.org/ticket/3233]
 - [NVDA ticket 2909 http://community.nvda-project.org/ticket/2909]
 
@@ -51,8 +51,7 @@ Japanese characters cannot input correctly to text edit of NVDA on Windows 8.
 Work around this:
 
 - Add English layout to Windows 8.
-- When text edit of NVDA is selected, press Shift+Alt twice, i.e. switch to English layout then back to Japanese layout.
-- Enable Japanese input by pressing half-shape/full-shape key (or Alt+tilde with US-keyboard array). After this, Japanese characters can type correctly.
+- When Quit NVDA dialog opens, press Shift+Alt and switch from Japanese layout to English layout. After that, you can press OK button and quit NVDA correctly.
 
 
 + Japanese input methods +
