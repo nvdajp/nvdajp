@@ -642,9 +642,11 @@ class GlobalCommands(ScriptableObject):
 			braille.handler.message(s)
 		elif scriptCount==2:
 			try:
+				import nvdajp_dic
 				c = ord(info.text)
-				speech.speakMessage("%d 0x" % c)
-				speech.speakSpelling(hex(c)[2:])
+				s = nvdajp_dic.hex2kana(c)
+				o = u"%d %s" % (c, s)
+				speech.speakMessage(o)
 			except:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		else:
