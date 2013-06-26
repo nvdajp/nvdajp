@@ -35,10 +35,12 @@ def isZenkakuHiragana(c):
 	return re.search(ur'[ぁ-ゞ]', c) is not None
 
 def isZenkakuKatakana(c):
+	if c == u'ー':
+		return False
 	return re.search(ur'[ァ-ヾ]', c) is not None
 
 def isHankakuKatakana(c):
-	return re.search(ur'[ｦ-ﾝ｢｣]', c) is not None
+	return re.search(ur'[ｦ-ﾝ｢｣､｡ｰ]', c) is not None
 
 def isHalfShape(c):
 	return (32 < ord(c)) and (ord(c) < 128)
@@ -96,7 +98,12 @@ def hex2kana(code):
 	src = hex(code)[2:]
 	src = ("000" + src)[-4:]
 	for c in src:
-		s += get_short_desc(c)
+		if c == '2':
+			s += u'ニー'
+		elif c == '5':
+			s += u'ゴー'
+		else:
+			s += get_short_desc(c)
 	return s
 
 def getCandidateCharDesc(c, a):
@@ -123,6 +130,13 @@ def getCandidateCharDesc(c, a):
 		return ' ' + d + ' '
 	return d
 
+def useAttrDesc(a):
+	if a[0] == u'ー':
+		return False
+	if a[1].half or a[1].upper or a[1].hira or a[1].kata or a[1].full:
+		return True
+	return False
+
 #TODO: merge _get_description() and getJapaneseDiscriminantReading().
 #nvdajp must modify locale/ja/characterDescriptions.dic and nvdajp_dic.py.
 def getJapaneseDiscriminantReading(name):
@@ -142,20 +156,14 @@ def getJapaneseDiscriminantReading(name):
 	prevAttr = None
 	prevChar = None
 	for a in attrs:
-		# symbols treated as 'attribute unchanged'
-		if prevAttr and (prevAttr.hira or prevAttr.kata) and a[0] in (u'ー', u'、', u'。'):
-			if a[0] == u'ー' and prevChar in SMALL_KANA_CHARACTERS:
-				s += ' ' + get_short_desc(a[0]) + ' '
-			else:
-				s += a[0]
 		# attribute unchanged
-		elif prevAttr == a[1]:
+		if prevAttr == a[1]:
 			s += getCandidateCharDesc(a[0], a[1])
 			prevAttr = a[1]
 		else:
 			if s:
-				s += u' ' + getAttrDesc(a[1]) + ' '
-			elif (a[1].kata and a[0] != u'ー') or a[1].half or a[1].upper or a[1].hira or a[1].full:
+				s += u' '
+			if useAttrDesc(a):
 				s += getAttrDesc(a[1]) + ' '
 			s += getCandidateCharDesc(a[0], a[1])
 			prevAttr = a[1]
