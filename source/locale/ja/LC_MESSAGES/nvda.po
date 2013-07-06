@@ -186,18 +186,6 @@ msgstr "日本語6点情報処理点字"
 msgid "%s:%s"
 msgstr "%s時%s分"
 
-#: NVDAObjects/window/excel.py:318
-msgid "empty"
-msgstr "空白"
-
-#: NVDAObjects/window/excel.py:320
-msgid "{firstAddress} through {lastAddress}"
-msgstr "{firstAddress}から{lastAddress}"
-
-#: NVDAObjects/window/excel.py:322
-msgid "{firstAddress} {firstContent} through {lastAddress} {lastContent} count {cellCount}"
-msgstr "{firstContent} {firstAddress}から {lastContent} {lastAddress} {cellCount}セル"
-
 # end of nvdajp
 
 #: globalCommands.py:880
