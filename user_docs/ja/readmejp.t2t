@@ -459,7 +459,6 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 NVDA 日本語チームは以下の不具合への対応や改良を行いました。
 
 - [読み上げに対応していなかった罫線文字の追加 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31396]
-- [Excel セル番地の読み上げの変更 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31413]
 - [特定の文字について音声エンジンに依存せず読み付与する http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31441]
 - [点字用の記号の追加（米印、左向き矢印、右向き矢印） http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31442]
 - [KGS ブレイルノート46C/46D などへの対応 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31455]
