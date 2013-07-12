@@ -823,7 +823,7 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 		@param obj: The object in question.
 		@type obj: L{NVDAObjects.NVDAObject}
 		"""
-		return obj.role not in self.APPLICATION_ROLES and controlTypes.STATE_FOCUSABLE in obj.states
+		return obj.role not in self.APPLICATION_ROLES and obj.isFocusable
 
 	def script_activateLongDesc(self,gesture):
 		info=self.makeTextInfo(textInfos.POSITION_CARET)
@@ -966,7 +966,7 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 		states = obj.states
 		role = obj.role
 		# Menus sometimes get focus due to menuStart events even though they don't report as focused/focusable.
-		if controlTypes.STATE_FOCUSABLE not in states and controlTypes.STATE_FOCUSED not in states and role != controlTypes.ROLE_POPUPMENU:
+		if not obj.isFocusable and controlTypes.STATE_FOCUSED not in states and role != controlTypes.ROLE_POPUPMENU:
 			return False
 		if controlTypes.STATE_READONLY in states and role not in (controlTypes.ROLE_EDITABLETEXT, controlTypes.ROLE_COMBOBOX):
 			return False
@@ -1016,18 +1016,14 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 	script_disablePassThrough.ignoreTreeInterceptorPassThrough = True
 
 	def script_collapseOrExpandControl(self, gesture):
-		if self.passThrough:
-			gesture.send()
-			if not self.disableAutoPassThrough:
-				self.passThrough = False
-				reportPassThrough(self)
-		else:
-			oldFocus = api.getFocusObject()
-			oldFocusStates = oldFocus.states
-			gesture.send()
-			if oldFocus.role == controlTypes.ROLE_COMBOBOX and controlTypes.STATE_COLLAPSED in oldFocusStates:
-				self.passThrough = True
-				reportPassThrough(self)
+		oldFocus = api.getFocusObject()
+		oldFocusStates = oldFocus.states
+		gesture.send()
+		if controlTypes.STATE_COLLAPSED in oldFocusStates:
+			self.passThrough = True
+		elif not self.disableAutoPassThrough:
+			self.passThrough = False
+		reportPassThrough(self)
 	script_collapseOrExpandControl.ignoreTreeInterceptorPassThrough = True
 
 	def _tabOverride(self, direction):

@@ -141,8 +141,10 @@ Please check out the NVDA website for how to do this.
 
 When NVDA starts for the first time, you will be greeted by a dialog box which provides you with some basic information about the NVDA modifier key and the NVDA menu.
 (Please see further sections about these topics.)
-The dialog box also contains two checkboxes.
-The first lets you control if NVDA should use the capslock as an NVDA modifier key, and the second lets you control if this Welcome dialog should appear each time NVDA starts.
+The dialog box also contains three checkboxes.
+The first lets you control if NVDA should use the capslock as an NVDA modifier key.
+The second specifies whether NVDA should start automatically after you log on to Windows and is only available for installed copies of NVDA.
+The third lets you control if this Welcome dialog should appear each time NVDA starts.
 
 ++ About NVDA keyboard commands ++
 
@@ -516,6 +518,12 @@ NVDA provides its own extra commands for some applications to make certain tasks
 | Set row headers | NVDA+shift+r | Pressing this once tells NVDA this is the column that contains row headers, which should be automatically announced when moving between rows after  this column. Pressing twice will clear the setting. | 
 %kc:endInclude
 
+++ Microsoft PowerPoint ++
+%kc:beginInclude
+|| Name | Key | Description |
+| Toggle speaker notes reading | control+shift+s | When in a running slide show, this command will toggle between the speaker notes for the slide and the content for the slide. This only affects what NVDA reads, not what is displayed on screen. | 
+%kc:endInclude
+
 ++ foobar2000 ++
 %kc:beginInclude
 || Name | Key | Description |
@@ -730,7 +738,8 @@ This option allows the word that is under the cursor to be displayed in non-cont
 This option is a numerical field that allows you to change the blink rate of the cursor in milliseconds.
 
 ==== Message Timeout (sec) ====
-This option is a numerical field that controls how long system messages are displayed on the braille display.
+This option is a numerical field that controls how long NVDA messages are displayed on the braille display.
+Specifying 0 disables displaying of these messages completely.
 
 %kc:setting
 ==== Braille Tethered to ====[BrailleTether]
@@ -1082,9 +1091,16 @@ These packages are provided by the community and contain custom code that may ad
 The Add-ons Manager contains a list that displays all the add-ons currently installed in your NVDA user configuration. 
 A package name, version and author are shown for each add-on, though further information such as a description and URL can be viewed by selecting the add-on and pressing the About add-on button.
 
-To install an Add-on, press the Install button.
+To browse and download availible add-ons online, press the Get add-ons button.
+This button opens the [NVDA Add-ons page http://addons.nvda-project.org/].
+If NVDA is installed on your system, you can open the add-on directly from the browser to begin the installation process as described below.
+Otherwise, save the add-on package and follow the instructions below.
+
+To install an Add-on you previously obtained, press the Install button.
 This will allow you to browse for an add-on package (.nvda-addon file) somewhere on your computer or on a network.
-Once you press Open, NVDA will ask if you really wish to install the add-on.
+Once you press Open, the installation process will begin.
+
+When an add-on is being installed, NVDA will first ask you to confirm that you really wish to install the add-on.
 As the functionality of add-ons is unrestricted inside NVDA, which in theory could include accessing your personal data or even the entire system if NVDA is an installed copy, it is very important to only install add-ons from sources you trust.
 Once the add-on is installed, NVDA must be restarted for the add-on to start running. 
 Until you do, a status of "install" will show for that add-on in the list.
