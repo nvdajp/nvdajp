@@ -78,7 +78,7 @@ bool installIA2Support() {
 		return FALSE;
 	}
 	if((res=CoRegisterClassObject(IAccessible2ProxyIID,ia2ClassObjPunk,CLSCTX_INPROC_SERVER,REGCLS_MULTIPLEUSE,(LPDWORD)&IA2RegCooky))!=S_OK) {
-		LOG_DEBUG(L"Error registering class object, code "<<res); // nvdajp
+		LOG_DEBUGWARNING(L"Error registering class object, code "<<res);
 		ia2ClassObjPunk->Release();
 		CoFreeLibrary(IA2DllHandle);
 		IA2DllHandle=0;
