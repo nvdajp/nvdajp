@@ -427,6 +427,10 @@ def fix_japanese_date_morphs(li):
 			elif prev_mo.output in WAGO_DIC:
 				m = copy.deepcopy(mo)
 				m.output = WAGO_DIC[prev_mo.output]
+				m.hyouki = m.nhyouki = m.kana = m.yomi = m.output
+				m.hinshi2 = '日付'
+				m.hinshi3 = '*'
+				# FIXME: m.accent
 				new_li.pop()
 				new_li.append(m)
 			else:
@@ -447,8 +451,21 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo):
 		if mo.hinshi2 == '括弧開': return True
 		if mo.hinshi1 == '名詞': return True
 
+	# 東京/都 千代田/区
+	if prev_mo.hinshi2 == '接尾' and prev_mo.hinshi3 == '地域' and \
+			mo.hinshi2 == '固有名詞' and mo.hinshi3 == '地域':
+		return True
+	# 東京/都 交通/局
+	if prev_mo.hinshi2 == '接尾' and prev_mo.hinshi3 == '地域' and \
+			mo.hinshi1 == '名詞' and mo.hinshi2 == '一般':
+		return True
+	# 永田町 １
+	if prev_mo.hinshi2 == '固有名詞' and prev_mo.hinshi3 == '地域' and \
+			mo.hinshi2 == '数':
+		return True
+
 	# 数字の前のマスアケ
-	if prev_mo.nhyouki in ('零下', '西暦', 'ボーイング', 'ベスト', 'ルイ', '先', '振替', 'No.') \
+	if prev_mo.nhyouki in ('零下', '西暦', 'ボーイング', 'ベスト', 'ルイ', '先', '振替', 'No.', '一人当り') \
 			and mo.output.isdigit():
 		return True
 

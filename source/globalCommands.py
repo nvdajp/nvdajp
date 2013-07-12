@@ -147,7 +147,7 @@ class GlobalCommands(ScriptableObject):
 				if mo:
 					hour, minute = mo.group(1), mo.group(2)
 					if minute[0] == '0': minute = minute[1:]
-					text = u'%s時%s分' % (hour, minute)
+					text = _('%s:%s') % (hour, minute)
 			# nvdajp end
 		else:
 			text=winKernel.GetDateFormat(winKernel.LOCALE_USER_DEFAULT, winKernel.DATE_LONGDATE, None, None)
@@ -618,30 +618,46 @@ class GlobalCommands(ScriptableObject):
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_CHARACTER)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
+		#if scriptCount==0:
+		#	speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		#elif scriptCount==1:
+		#	speech.spellTextInfo(info,useCharacterDescriptions=True)
+		#else:
+		#	try:
+		#		c = ord(info.text)
+		#		speech.speakMessage("%d," % c)
+		#		speech.speakSpelling(hex(c))
+		#	except:
+		#		speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		#nvdajp begin
 		if scriptCount==0:
-			#speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
-			#nvdajp
 			if characterDescriptionMode:
 				speech.spellTextInfo(info,useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		elif scriptCount==1:
-			#speech.spellTextInfo(info,useCharacterDescriptions=True)
-			#nvdajp
+			import nvdajp_dic
+			import languageHandler
+			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
+			speech.speakMessage(speech.processText(languageHandler.getLanguage(), s, characterProcessing.SYMLVL_ALL))
+			braille.handler.message(s)
+		elif scriptCount==2:
+			try:
+				import nvdajp_dic
+				c = ord(info.text)
+				s = nvdajp_dic.hex2kana(c)
+				o = u"%d %s" % (c, s)
+				speech.speakMessage(o)
+			except:
+				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		else:
 			if characterDescriptionMode:
 				speech.speakMessage(_("Character description mode disabled"))
 				characterDescriptionMode = False
 			else:
 				speech.speakMessage(_("Character description mode enabled"))
 				characterDescriptionMode = True
-			#nvdajp end
-		else:
-			try:
-				c = ord(info.text)
-				speech.speakMessage("%d," % c)
-				speech.speakSpelling(hex(c))
-			except:
-				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		#nvdajp end
 	script_review_currentCharacter.__doc__=_("Reports the character of the current navigator object where the review cursor is situated. Pressing twice reports a description or example of that character. Pressing three times reports the numeric value of the character in decimal and hexadecimal")
 
 	def script_review_nextCharacter(self,gesture):
