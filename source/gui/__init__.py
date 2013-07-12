@@ -1,6 +1,7 @@
+# -*- coding: UTF-8 -*-
 #gui/__init__.py
 #A part of NonVisual Desktop Access (NVDA)
-#Copyright (C) 2006-2011 NVDA Contributors <http://www.nvda-project.org/>
+#Copyright (C) 2006-2013 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Mesar Hameed
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
 
@@ -521,21 +522,27 @@ class WelcomeDialog(wx.Dialog):
 		mainSizer=wx.BoxSizer(wx.VERTICAL)
 		welcomeText = wx.StaticText(self, wx.ID_ANY, self.WELCOME_MESSAGE)
 		mainSizer.Add(welcomeText,border=20,flag=wx.LEFT|wx.RIGHT|wx.TOP)
-		optionsSizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _("Options")), wx.VERTICAL) # HORIZONTAL
+		optionsSizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _("Options")), wx.VERTICAL)
 		#nvdajp
 		self.nconvAsNVDAModifierCheckBox = wx.CheckBox(self, wx.ID_ANY, _("Use NonConvert as an NVDA modifier key"))
 		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
-		optionsSizer.Add(self.nconvAsNVDAModifierCheckBox,flag=wx.TOP|wx.RIGHT,border=10)
+		optionsSizer.Add(self.nconvAsNVDAModifierCheckBox,flag=wx.TOP|wx.LEFT,border=10)
 		self.convAsNVDAModifierCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Use Convert as an NVDA modifier key"))
 		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
-		optionsSizer.Add(self.convAsNVDAModifierCheckBox,flag=wx.TOP|wx.RIGHT,border=10)
+		optionsSizer.Add(self.convAsNVDAModifierCheckBox,flag=wx.TOP|wx.LEFT,border=10)
 		#nvdajp done
 		self.capsAsNVDAModifierCheckBox = wx.CheckBox(self, wx.ID_ANY, _("Use CapsLock as an NVDA modifier key"))
 		self.capsAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"])
-		optionsSizer.Add(self.capsAsNVDAModifierCheckBox,flag=wx.TOP|wx.RIGHT,border=10)
+		optionsSizer.Add(self.capsAsNVDAModifierCheckBox,flag=wx.TOP|wx.LEFT,border=10)
+		# Translators: The label of a check box in the Welcome dialog.
+		self.startAfterLogonCheckBox = wx.CheckBox(self, label=_("&Automatically start NVDA after I log on to Windows"))
+		self.startAfterLogonCheckBox.Value = config.getStartAfterLogon()
+		if globalVars.appArgs.secure or not config.isInstalledCopy():
+			self.startAfterLogonCheckBox.Disable()
+		optionsSizer.Add(self.startAfterLogonCheckBox,flag=wx.TOP|wx.LEFT,border=10)
 		self.showWelcomeDialogAtStartupCheckBox = wx.CheckBox(self, wx.ID_ANY, _("Show this dialog when NVDA starts"))
 		self.showWelcomeDialogAtStartupCheckBox.SetValue(config.conf["general"]["showWelcomeDialogAtStartup"])
-		optionsSizer.Add(self.showWelcomeDialogAtStartupCheckBox,flag=wx.TOP|wx.RIGHT,border=10) # LEFT
+		optionsSizer.Add(self.showWelcomeDialogAtStartupCheckBox,flag=wx.TOP|wx.LEFT,border=10)
 		mainSizer.Add(optionsSizer,flag=wx.LEFT|wx.TOP|wx.RIGHT,border=20)
 		mainSizer.Add(self.CreateButtonSizer(wx.OK),flag=wx.TOP|wx.BOTTOM|wx.ALIGN_CENTER_HORIZONTAL,border=20)
 		self.Bind(wx.EVT_BUTTON, self.onOk, id=wx.ID_OK)
@@ -548,6 +555,8 @@ class WelcomeDialog(wx.Dialog):
 		config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"] = self.capsAsNVDAModifierCheckBox.IsChecked()
 		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = self.nconvAsNVDAModifierCheckBox.IsChecked() #nvdajp
 		config.conf["keyboard"]["useConvertAsNVDAModifierKey"]=self.convAsNVDAModifierCheckBox.IsChecked()
+		if self.startAfterLogonCheckBox.Enabled:
+			config.setStartAfterLogon(self.startAfterLogonCheckBox.Value)
 		config.conf["general"]["showWelcomeDialogAtStartup"] = self.showWelcomeDialogAtStartupCheckBox.IsChecked()
 		try:
 			config.save()
