@@ -18,6 +18,10 @@ def get_long_desc(s):
 	return s
 
 def get_short_desc(s):
+	s2 = characterProcessing.processSpeechSymbol('ja', s)
+	if s != s2:
+		log.debug("(%s)-(%s)" % (s, s2))
+		return s2
 	return characterProcessing.getCharacterReading('ja', s.lower())
 
 # characters which use dictionary for spelling reading
@@ -31,10 +35,12 @@ def isZenkakuHiragana(c):
 	return re.search(ur'[ぁ-ゞ]', c) is not None
 
 def isZenkakuKatakana(c):
+	if c == u'ー':
+		return False
 	return re.search(ur'[ァ-ヾ]', c) is not None
 
 def isHankakuKatakana(c):
-	return re.search(ur'[ｦ-ﾝ]', c) is not None
+	return re.search(ur'[ｦ-ﾝ｢｣､｡ｰ]', c) is not None
 
 def isHalfShape(c):
 	return (32 < ord(c)) and (ord(c) < 128)
@@ -55,7 +61,7 @@ def isLatinCharacter(c):
 	return isFullShapeAlphabet(c) or isHalfShapeAlphabet(c)
 
 def isFullShapeSymbol(c):
-	return c in u'　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂'
+	return c in u'　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜'
 
 def isUpper(c):
 	return re.search(ur'[A-ZＡ-Ｚ]', c) is not None
@@ -83,17 +89,53 @@ def getAttrDesc(a):
 		d.append(u'オーモジ')
 	return ' '.join(d)
 
+def hex2kana(code):
+	"""
+	input 0x123a
+　	output u'イチニーサンエー'
+	"""
+	s = ''
+	src = hex(code)[2:]
+	src = ("000" + src)[-4:]
+	for c in src:
+		if c == '2':
+			s += u'ニー'
+		elif c == '5':
+			s += u'ゴー'
+		else:
+			s += get_short_desc(c)
+	return s
+
 def getCandidateCharDesc(c, a):
 	d = ''
 	if a.half or isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c):
 		d = get_short_desc(c)
+		log.debug(u"shortdesc (%s) %s" % (c, d))
 	elif a.hira or a.kata:
 		d = replaceSpecialKanaCharacter(c)
+		log.debug(u"kana (%s) %s" % (c, d))
 	else:
 		d = get_long_desc(c)
+		if d != c:
+			log.debug(u"longdesc (%s) %s" % (c, d))
+		else:
+			d2 = characterProcessing.processSpeechSymbol('ja', c)
+			if d != d2:
+				log.debug(u"sym (%s) %s" % (c, d2))
+				d = d2
+			else:
+				d = hex2kana(ord(c[0]))
+				log.debug(u"code (%s) %s" % (c, d))
 	if len(d) > 1:
 		return ' ' + d + ' '
 	return d
+
+def useAttrDesc(a):
+	if a[0] == u'ー':
+		return False
+	if a[1].half or a[1].upper or a[1].hira or a[1].kata or a[1].full:
+		return True
+	return False
 
 #TODO: merge _get_description() and getJapaneseDiscriminantReading().
 #nvdajp must modify locale/ja/characterDescriptions.dic and nvdajp_dic.py.
@@ -101,31 +143,27 @@ def getJapaneseDiscriminantReading(name):
 	if not name: return ''
 	attrs = []
 	for c in name:
-		attrs.append((c, CharAttr(
-				isUpper(c),
-				isZenkakuHiragana(c),
-				isZenkakuKatakana(c),
-				isHalfShape(c) or isHankakuKatakana(c),
-				isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c),
-				isLatinCharacter(c))))
+		ca = CharAttr(
+			isUpper(c),
+			isZenkakuHiragana(c),
+			isZenkakuKatakana(c),
+			isHalfShape(c) or isHankakuKatakana(c),
+			isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c),
+			isLatinCharacter(c))
+		log.debug(u"(%s) %s" % (c, getAttrDesc(ca)))
+		attrs.append((c, ca))
 	s = ''
 	prevAttr = None
 	prevChar = None
 	for a in attrs:
-		# symbols treated as 'attribute unchanged'
-		if prevAttr and (prevAttr.hira or prevAttr.kata) and a[0] in (u'ー', u'、', u'。'):
-			if a[0] == u'ー' and prevChar in SMALL_KANA_CHARACTERS:
-				s += ' ' + get_short_desc(a[0]) + ' '
-			else:
-				s += a[0]
 		# attribute unchanged
-		elif prevAttr == a[1]:
+		if prevAttr == a[1]:
 			s += getCandidateCharDesc(a[0], a[1])
 			prevAttr = a[1]
 		else:
 			if s:
-				s += u' ' + getAttrDesc(a[1]) + ' '
-			elif (a[1].kata and a[0] != u'ー') or a[1].half or a[1].upper or a[1].hira:
+				s += u' '
+			if useAttrDesc(a):
 				s += getAttrDesc(a[1]) + ' '
 			s += getCandidateCharDesc(a[0], a[1])
 			prevAttr = a[1]

@@ -110,26 +110,6 @@ msgstr "読みかたモード"
 msgid "Character description mode enabled"
 msgstr "説明モード"
 
-#: speech.py:203
-#, python-format
-msgid "hiragana %s"
-msgstr "ひらがな %s"
-
-#: speech.py:205
-#, python-format
-msgid "katakana %s"
-msgstr "カタカナ %s"
-
-#: speech.py:205
-#, python-format
-msgid "half shape %s"
-msgstr "半角 %s"
-
-#: speech.py:205
-#, python-format
-msgid "full shape %s"
-msgstr "全角 %s"
-
 #: speech.py:1086
 msgid "paragraph indent"
 msgstr "字下げ"
@@ -170,17 +150,9 @@ msgstr "%gpt"
 msgid "full shape space"
 msgstr "全角スペース"
 
-#: settingDialogs.py:1438
-msgid "Say Japanese Katakana"
-msgstr "カタカナの前にカタカナと読む"
-
 #: settingDialogs.py:1442
 msgid "Katakana pitch change percentage"
 msgstr "カタカナの声の高さの変化(-100から100)"
-
-#: settingDialogs.py:1438
-msgid "Say half shape"
-msgstr "半角の前に半角と読む"
 
 #: settingDialogs.py:1442
 msgid "Half shape pitch change percentage"
@@ -202,11 +174,6 @@ msgstr "変換候補の番号の通知"
 msgid "Skype Windows 8 hack"
 msgstr "Skypeフリーズ対策(再起動が必要)"
 
-#: speech.py:196
-#, python-format
-msgid "cap half shape %s"
-msgstr "大文字 半角 %s"
-
 #: installer.py:158
 msgid "NVDAJP web site"
 msgstr "NVDA日本語版 Webサイト"
@@ -214,6 +181,10 @@ msgstr "NVDA日本語版 Webサイト"
 #: braille.py:142
 msgid "Japanese 6 dot computer braille"
 msgstr "日本語6点情報処理点字"
+
+#: globalCommands.py:150
+msgid "%s:%s"
+msgstr "%s時%s分"
 
 # end of nvdajp
 

@@ -11,4 +11,4 @@ from _checkCharDesc import *
 sy = read_symbol_file(SY_FILE)
 #ch = read_chardesc_file(CH_FILE)
 ch = read_characters_file(CS_FILE)
-print_diff_ignore_spaces(sy, ch)
+print_different(sy, ch, skip_included=True)

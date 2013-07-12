@@ -161,13 +161,13 @@ def _fixConnection(hBrl, devName, port):
 				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
 				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
 	ret = hBrl.bmStart(devName, _port, SPEED, nvdaKgsStatusChangedProc)
-	for loop in xrange(20):
+	for loop in xrange(30):
 		try:
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, nvdaKgsHandleKeyInfoProc)
 				break
 			time.sleep(0.5)
-			tones.beep(450+(loop*20), 20)
+			tones.beep(400+(loop*20), 20)
 			msg=ctypes.wintypes.MSG()
 			if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
 				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))

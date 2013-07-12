@@ -213,17 +213,7 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions):
 				char=characterProcessing.processSpeechSymbol(locale,char.lower())
 			if uppercase and synthConfig["sayCapForCapitals"]:
 				# Translators: cap will be spoken before the given letter when it is capitalized.
-				#char=_("cap %s")%char
-				if halfShape and config.conf['language']['sayHalfShape']:
-					char=_("cap half shape %s")%char.lower()
-				else:
-					char=_("cap %s")%char.lower()
-			elif halfShape and config.conf['language']['sayHalfShape']:
-				char=_("half shape %s")%char.lower()
-			elif jpZenkakuKatakana and config.conf['language']['sayJpKatakana']:
-				char=_("katakana %s")%char
-			elif jpHankakuKatakana and config.conf['language']['sayHalfShape']:
-				char=_("half shape %s")%char
+				char=_("cap %s")%char
 			# nvdajp begin
 			#if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
 			#	oldPitch=synthConfig["pitch"]

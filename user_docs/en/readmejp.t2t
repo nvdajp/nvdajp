@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2013-05-19
+- last update: 2013-06-13
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -42,8 +42,8 @@ NVDA Japanese is provided "as is", without warranty.
 
 + Japanese input with Windows 8 +
 
-Japanese characters cannot input correctly to text edit of NVDA on Windows 8.
-- [NVDAJP ticket 31343 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31343]
+After the Japanese input session with NVDA edit controls on Windows 8, exiting NVDA (NVDA+Q) cannot be performed correctly. The ending music is not played and the NVDA processes are still alive.
+- [NVDAJP ticket 31592 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=313592]
 - [NVDA ticket 3233 http://community.nvda-project.org/ticket/3233]
 - [NVDA ticket 2909 http://community.nvda-project.org/ticket/2909]
 
@@ -51,8 +51,7 @@ Japanese characters cannot input correctly to text edit of NVDA on Windows 8.
 Work around this:
 
 - Add English layout to Windows 8.
-- When text edit of NVDA is selected, press Shift+Alt twice, i.e. switch to English layout then back to Japanese layout.
-- Enable Japanese input by pressing half-shape/full-shape key (or Alt+tilde with US-keyboard array). After this, Japanese characters can type correctly.
+- When Quit NVDA dialog opens, press Shift+Alt and switch from Japanese layout to English layout. After that, you can press OK button and quit NVDA correctly.
 
 
 + Japanese input methods +
@@ -106,12 +105,12 @@ JTalk2 experimental driver:
 
 Character description mode can be changed for caret moves by left arrow or right arrow key and character review commands.
 Laptop key is changed since NVDA 2013.1.
-Pressing "Report current character in review" (numpad2 or NVDA+period) twice can enable or disable the description mode.
+Pressing "Report current character in review" (numpad2 or NVDA+period) four-times can enable or disable the description mode.
 
 %kc:beginInclude
 || Name | Desktop key | Laptop key | Touch | Description |
 | Move to previous character in review | numpad1 | NVDA+left arrow | flick left (text mode) | Moves the review cursor to the previous character on the current line in the text. If description mode is enabled, the character is described. |
-| Report current character in review | numpad2 | NVDA+period | none | Announces the current character on the line of text where the review cursor is positioned. If description mode is enabled, the character is described. Pressing twice toggles the description mode. Pressing three times reports the numeric value of the character in decimal and hexadecimal. |
+| Report current character in review | numpad2 | NVDA+period | none | Announces the current character on the line of text where the review cursor is positioned. If description mode is enabled, the character is described. Pressing twice reports the character with its attributes. Pressing three times reports the numeric value of the character in decimal and hexadecimal. Pressing four-times toggles the description mode. |
 | Move to next character in review | numpad3 | NVDA+right arrow | flick right (text mode) | Move the review cursor to the next character on the current line of text. If description mode is enabled, the character is described. |
 %kc:endInclude
 
@@ -145,26 +144,12 @@ Default is off.
 If checked, Latin characters are reported using phonetic reading for character review (when description mode is enabled).
 Default is off.
 
-+++ Say Japanese Katakana +++
-
-If checked, Katakana characters are reported followed by 'Katakana' for character review.
-Default is off.
-
-For candidates of Japanese input methods, 'Katakana' or 'Hiragana' is always reported.
-
 +++ Katakana pitch change percentage +++
 
 The amount that the pitch of the voice will change when speaking a Katakana letter for character review.
 Default is -20.
 
 For candidates of Japanese input methods, pitch change is not available.
-
-+++ Say half-shape +++
-
-If checked, half shape characters are reported followed by 'half-shape' for character review.
-Default is off.
-
-For candidates of Japanese input methods, 'half-shape' is always reported.
 
 +++ Half-shape pitch change percentage +++
 
@@ -393,6 +378,32 @@ Symbols:
 | ' (apostrophe) | 3 |
 
 Select button works as Shift, rather than Enter, since 2013.1jp.
+
+
++++ KGS BrailleNote 46C/46D +++
+
+The driver for braille display "KGS BrailleNote 46C/46D" from [KGS Corporation http://www.kgs-jpn.co.jp/eindex.html] is added.
+
+[The BM Utility (Japanese page) http://www.kgs-jpn.co.jp/bmutil_j/] must be installed to the computer.
+
+For USB connection, [virtual serial driver (Japanese page) http://www.kgs-jpn.co.jp/USB_driver_j/index.htm] must also be installed.
+The device should be configured to use 9600BPS connection speed for virtual serial driver.
+
+BrailleNote 46C/46D driver supports following commands:
+
+|| Name | Key |
+| NVDA menu | f1 |
+| move to cell | tether |
+| scroll back | sl |
+| scroll forward | sr |
+| review previous line | f2+bk |
+| review next line | f2+lf |
+| review previous word | f2+sl |
+| review next word | f2+sr |
+| up arrow | bk |
+| down arrow | lf |
+| left arrow | f3 |
+| right arrow | f4 |
 
 
 +++ Braille Viewer +++
