@@ -16,10 +16,13 @@ class AddonsDialog(wx.Dialog):
 	_instance = None
 	def __new__(cls, *args, **kwargs):
 		if AddonsDialog._instance is None:
-			AddonsDialog._instance = super(AddonsDialog, cls).__new__(cls, *args, **kwargs)
+			return super(AddonsDialog, cls).__new__(cls, *args, **kwargs)
 		return AddonsDialog._instance
 
 	def __init__(self,parent):
+		if AddonsDialog._instance is not None:
+			return
+		AddonsDialog._instance = self
 		# Translators: The title of the Addons Dialog
 		super(AddonsDialog,self).__init__(parent,title=_("Add-ons Manager"))
 		self.needsRestart=False
@@ -220,8 +223,8 @@ Description: {description}
 		gui.messageBox(message, title, wx.OK)
 
 	def OnGetAddonsClick(self,evt):
-		ADDONS_URL = "http://addons.nvda-project.org/index.{lang}.html"
-		os.startfile(ADDONS_URL.format(lang=languageHandler.getLanguage()))
+		ADDONS_URL = "http://addons.nvda-project.org"
+		os.startfile(ADDONS_URL)
 
 	def __del__(self):
 		AddonsDialog._instance = None
