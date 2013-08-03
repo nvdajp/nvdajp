@@ -309,6 +309,19 @@ class ExcelSelection(ExcelBase):
 	def _get_name(self):
 		firstCell=self.excelRangeObject.Item(1)
 		lastCell=self.excelRangeObject.Item(self.excelRangeObject.Count)
+		# nvdajp begin
+		items = []
+		for p in xrange(1, self.excelRangeObject.Count + 1):
+			c = self.excelRangeObject.Item(p).Text or u'\u30d6\u30e9\u30f3\u30af' #"blank"
+			items.append(c)
+		items.append(
+			#_("{firstAddress} through {lastAddress}")
+			u"{firstAddress}\u304b\u3089{lastAddress}".format(
+				firstAddress=self.getCellAddress(firstCell),
+				lastAddress=self.getCellAddress(lastCell))
+			)
+		return u' '.join(items)
+		# nvdajp end
 		# Translators: This is presented in Excel to show the current selection, for example 'a1 c3 through a10 c10'
 		return _("{firstAddress} {firstContent} through {lastAddress} {lastContent}").format(firstAddress=self.getCellAddress(firstCell),firstContent=firstCell.Text,lastAddress=self.getCellAddress(lastCell),lastContent=lastCell.Text)
 
