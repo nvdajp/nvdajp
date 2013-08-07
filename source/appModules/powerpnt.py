@@ -1,6 +1,6 @@
 #appModules/powerpnt.py
 #A part of NonVisual Desktop Access (NVDA)
-#Copyright (C) 2006-2010 NVDA Contributors <http://www.nvda-project.org/>
+#Copyright (C) 2012-2013 NV Access Limited
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
 
@@ -52,7 +52,6 @@ class ppEApplicationSink(comtypes.COMObject):
 		oldFocus.treeInterceptor.rootNVDAObject.handleSlideChange()
 
 	def WindowSelectionChange(self,sel):
-		print sel
 		i=winUser.getGUIThreadInfo(0)
 		oldFocus=api.getFocusObject()
 		if not isinstance(oldFocus,Window) or i.hwndFocus!=oldFocus.windowHandle:
@@ -250,6 +249,7 @@ class PaneClassDC(Window):
 			self.ppObjectModel=m
 			return self.ppObjectModel
 
+	_cache_currentSlide=False
 	def _get_currentSlide(self):
 		try:
 			ppSlide=self.ppObjectModel.view.slide
@@ -410,11 +410,19 @@ class DocumentWindow(PaneClassDC):
 
 	def handleSelectionChange(self):
 		"""Pushes focus to the newly selected object."""
-		obj=self.selection
-		if not obj:
-			obj=DocumentWindow(windowHandle=self.windowHandle)
-		if obj and obj!=api.getFocusObject():
-			eventHandler.queueEvent("gainFocus",obj)
+		if getattr(self,"_isHandlingSelectionChange",False):
+			# #3394: A COM event can cause this function to run within itself.
+			# This can cause double speaking, so stop here if we're already running.
+			return
+		self._isHandlingSelectionChange=True
+		try:
+			obj=self.selection
+			if not obj:
+				obj=DocumentWindow(windowHandle=self.windowHandle)
+			if obj and obj!=eventHandler.lastQueuedFocusObject:
+				eventHandler.queueEvent("gainFocus",obj)
+		finally:
+			self._isHandlingSelectionChange=False
 
 	def event_gainFocus(self):
 		"""Bounces focus to the currently selected slide, shape or Text frame."""
@@ -429,6 +437,15 @@ class DocumentWindow(PaneClassDC):
 		gesture.send()
 		self.handleSelectionChange()
 	script_selectionChange.canPropagate=True
+
+	__gestures={k:"selectionChange" for k in (
+		"kb:tab","kb:shift+tab",
+		"kb:leftArrow","kb:rightArrow","kb:upArrow","kb:downArrow",
+		"kb:shift+leftArrow","kb:shift+rightArrow","kb:shift+upArrow","kb:shift+downArrow",
+		"kb:pageUp","kb:pageDown",
+		"kb:home","kb:control+home","kb:end","kb:control+end",
+		"kb:shift+home","kb:shift+control+home","kb:shift+end","kb:shift+control+end",
+	)}
 
 class OutlinePane(EditableTextWithoutAutoSelectDetection,PaneClassDC):
 	TextInfo=EditableTextDisplayModelTextInfo
@@ -455,6 +472,10 @@ class PpObject(Window):
 
 	def script_selectionChange(self,gesture):
 		return self.documentWindow.script_selectionChange(gesture)
+
+	__gestures={
+		"kb:escape":"selectionChange",
+	}
 
 class SlideBase(PpObject):
 
@@ -556,6 +577,11 @@ class Shape(PpObject):
 		if self.ppObject.hasTextFrame:
 			return self.ppObject.textFrame.textRange.text
 
+	__gestures={
+		"kb:enter":"selectionChange",
+		"kb:f2":"selectionChange",
+	}
+
 class TextFrameTextInfo(textInfos.offsets.OffsetsTextInfo):
 
 	def _getCaretOffset(self):
@@ -580,7 +606,10 @@ class TextFrameTextInfo(textInfos.offsets.OffsetsTextInfo):
 		#Therefore walk through all the lines until one surrounds  the offset.
 		lines=self.obj.ppObject.textRange.lines()
 		length=lines.length
-		offset=min(offset,length-1)
+		# #3403: handle case where offset is at end of the text in in a control with only one line
+		# The offset should be limited to the last offset in the text, but only if the text does not end in a line feed.
+		if length and offset>=length and self._getTextRange(length-1,length)!='\n':
+			offset=min(offset,length-1)
 		for line in lines:
 			start=line.start-1
 			end=start+line.length
@@ -694,6 +723,11 @@ class SlideShowTreeInterceptorTextInfo(NVDAObjectTextInfo):
 	def _getStoryText(self):
 		return self.obj.rootNVDAObject.basicText
 
+	def _getOffsetsFromNVDAObject(self,obj):
+		if obj==self.obj.rootNVDAObject:
+			return (0,self._getStoryLength())
+		raise LookupError
+
 class SlideShowTreeInterceptor(TreeInterceptor):
 	"""A TreeInterceptor for showing Slide show content. Has no caret navigation, a CursorManager must be used on top. """
 
@@ -737,7 +771,16 @@ class SlideShowTreeInterceptor(TreeInterceptor):
 	# Translators: The description for a script
 	script_toggleNotesMode.__doc__=_("Toggles between reporting the speaker notes or the actual slide content. This does not change what is visible on-screen, but only what the user can read with NVDA")
 
+	def script_slideChange(self,gesture):
+		gesture.send()
+		self.rootNVDAObject.handleSlideChange()
+
 	__gestures={
+		"kb:space":"slideChange",
+		"kb:enter":"slideChange",
+		"kb:backspace":"slideChange",
+		"kb:pageUp":"slideChange",
+		"kb:pageDown":"slideChange",
 		"kb:control+shift+s":"toggleNotesMode",
 	}
 
@@ -746,6 +789,8 @@ class ReviewableSlideshowTreeInterceptor(ReviewCursorManager,SlideShowTreeInterc
 	pass
 
 class SlideShowWindow(PaneClassDC):
+
+	_lastSlideChangeID=None
 
 	treeInterceptorClass=ReviewableSlideshowTreeInterceptor
 	notesMode=False #: If true then speaker notes will be exposed as this object's basicText, rather than the actual slide content.
@@ -822,12 +867,15 @@ class SlideShowWindow(PaneClassDC):
 				self.basicText=_("Empty slide")
 		return self.basicText or _("Empty slide")
 
-
 	def handleSlideChange(self):
 		try:
 			del self.__dict__['currentSlide']
 		except KeyError:
 			pass
+		curSlideChangeID=self.name
+		if curSlideChangeID==self._lastSlideChangeID:
+			return
+		self._lastSlideChangeID=curSlideChangeID
 		try:
 			del self.__dict__['basicText']
 		except KeyError:
