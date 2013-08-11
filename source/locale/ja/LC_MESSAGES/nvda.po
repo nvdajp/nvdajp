@@ -263,6 +263,11 @@ msgstr "文字変換"
 msgid "IME closed"
 msgstr "変換停止"
 
+#. Translators: a message when the IME cancelation status 
+#: NVDAHelper.py:
+msgid "Clear"
+msgstr "クリア"
+
 #. Translators: the label for an unknown language when switching input methods.
 #: NVDAHelper.py:308
 msgid "unknown language"
