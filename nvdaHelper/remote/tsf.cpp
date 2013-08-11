@@ -105,6 +105,59 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 }
 #endif // NVDAJP
 
+#ifdef NVDAJP
+BOOL _FindComposingRange(TfEditCookie ec, ITfContext *pContext, ITfRange *pSelection, ITfRange **ppRange)
+{
+    if (ppRange == NULL)
+    {
+        return FALSE;
+    }
+
+    *ppRange = NULL;
+
+    // find GUID_PROP_COMPOSING
+    ITfProperty* pPropComp = NULL;
+    IEnumTfRanges* enumComp = NULL;
+
+    HRESULT hr = pContext->GetProperty(GUID_PROP_COMPOSING, &pPropComp);
+    if (FAILED(hr) || pPropComp == NULL)
+    {
+        return FALSE;
+    }
+
+    hr = pPropComp->EnumRanges(ec, &enumComp, pSelection);
+    if (FAILED(hr) || enumComp == NULL)
+    {
+        pPropComp->Release();
+        return FALSE;
+    }
+
+    BOOL isCompExist = FALSE;
+    VARIANT var;
+    ULONG  fetched = 0;
+
+    while (enumComp->Next(1, ppRange, &fetched) == S_OK && fetched == 1)
+    {
+        hr = pPropComp->GetValue(ec, *ppRange, &var);
+        if (hr == S_OK)
+        {
+            if (var.vt == VT_I4 && var.lVal != 0)
+            {
+                isCompExist = TRUE;
+                break;
+            }
+        }
+        (*ppRange)->Release();
+        *ppRange = NULL;
+    }
+
+    pPropComp->Release();
+    enumComp->Release();
+
+    return isCompExist;
+}
+#endif // NVDAJP
+
 
 class TsfSink;
 typedef map<DWORD,TsfSink*> sinkMap_t;
