@@ -178,14 +178,14 @@ def handleInputCompositionEnd(result):
 		curInputComposition=focus.parent
 		focus.parent=focus.parent.parent
 	if curInputComposition and not result:
-		result=curInputComposition.compositionString.lstrip(u'\u3000 ')
-	if result:
 		#nvdajp begin
-		#speech.speakText(result,symbolLevel=characterProcessing.SYMLVL_ALL)
 		import ui
 		#. Translators: a message when the IME cancelation status 
 		ui.message(_("Clear"))
 		#nvdajp end
+		#result=curInputComposition.compositionString.lstrip(u'\u3000 ')
+	if result:
+		speech.speakText(result,symbolLevel=characterProcessing.SYMLVL_ALL)
 
 def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,isReading):
 	import speech
