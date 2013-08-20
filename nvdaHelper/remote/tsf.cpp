@@ -42,6 +42,123 @@ bool fetchRangeExtent(ITfRange* pRange, long* start, ULONG* length) {
 	return true?(res==S_OK):false;
 }
 
+#define NVDAJP 1
+
+#ifdef NVDAJP
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms629224%28v=vs.85%29.aspx
+HRESULT getDispAttrFromRange(ITfContext *pContext,
+							 ITfRange *pRange,
+							 TfEditCookie ec,
+							 TF_DISPLAYATTRIBUTE *pDispAttr)
+{
+    HRESULT hr;
+    ITfCategoryMgr *pCategoryMgr;
+    hr = CoCreateInstance(CLSID_TF_CategoryMgr,
+						  NULL,
+						  CLSCTX_INPROC_SERVER,
+						  IID_ITfCategoryMgr,
+						  (LPVOID*)&pCategoryMgr);
+    if(FAILED(hr)){
+        return hr;
+    }
+    ITfDisplayAttributeMgr *pDispMgr;
+    hr = CoCreateInstance(CLSID_TF_DisplayAttributeMgr,
+						  NULL,
+						  CLSCTX_INPROC_SERVER,
+						  IID_ITfDisplayAttributeMgr,
+						  (LPVOID*)&pDispMgr);
+    if(FAILED(hr)){
+        pCategoryMgr->Release();
+        return hr;
+    }
+    ITfProperty *pProp;
+    hr = pContext->GetProperty(GUID_PROP_ATTRIBUTE, &pProp);
+    if(SUCCEEDED(hr)){
+        VARIANT var;
+        VariantInit(&var);
+        hr = pProp->GetValue(ec, pRange, &var);
+        if(S_OK == hr){
+            if(VT_I4 == var.vt){
+                GUID guid;
+                hr = pCategoryMgr->GetGUID((TfGuidAtom)var.lVal, &guid);
+                if(SUCCEEDED(hr)){
+                    ITfDisplayAttributeInfo *pDispInfo;
+                    hr = pDispMgr->GetDisplayAttributeInfo(guid, &pDispInfo, NULL);
+                    if(SUCCEEDED(hr)){
+                        hr = pDispInfo->GetAttributeInfo(pDispAttr);
+						if(SUCCEEDED(hr)){
+							OutputDebugString(L"GetAttributeInfo() succeeded");
+						}
+                        pDispInfo->Release();
+                    }
+                }
+            } else {
+                hr = E_FAIL;
+            }
+            VariantClear(&var);
+        }
+		pProp->Release();
+    }
+    pCategoryMgr->Release();
+    pDispMgr->Release();
+    return hr;
+}
+#endif // NVDAJP
+
+#ifdef NVDAJP
+BOOL _FindComposingRange(TfEditCookie ec, ITfContext *pContext, ITfRange *pSelection, ITfRange **ppRange)
+{
+    if (ppRange == NULL)
+    {
+        return FALSE;
+    }
+
+    *ppRange = NULL;
+
+    // find GUID_PROP_COMPOSING
+    ITfProperty* pPropComp = NULL;
+    IEnumTfRanges* enumComp = NULL;
+
+    HRESULT hr = pContext->GetProperty(GUID_PROP_COMPOSING, &pPropComp);
+    if (FAILED(hr) || pPropComp == NULL)
+    {
+        return FALSE;
+    }
+
+    hr = pPropComp->EnumRanges(ec, &enumComp, pSelection);
+    if (FAILED(hr) || enumComp == NULL)
+    {
+        pPropComp->Release();
+        return FALSE;
+    }
+
+    BOOL isCompExist = FALSE;
+    VARIANT var;
+    ULONG  fetched = 0;
+
+    while (enumComp->Next(1, ppRange, &fetched) == S_OK && fetched == 1)
+    {
+        hr = pPropComp->GetValue(ec, *ppRange, &var);
+        if (hr == S_OK)
+        {
+            if (var.vt == VT_I4 && var.lVal != 0)
+            {
+                isCompExist = TRUE;
+                break;
+            }
+        }
+        (*ppRange)->Release();
+        *ppRange = NULL;
+    }
+
+    pPropComp->Release();
+    enumComp->Release();
+
+    return isCompExist;
+}
+#endif // NVDAJP
+
+
 class TsfSink;
 typedef map<DWORD,TsfSink*> sinkMap_t;
 
@@ -412,6 +529,9 @@ WCHAR* TsfSink::HandleCompositionView(ITfContext* pCtx, TfEditCookie cookie) {
 
 WCHAR* TsfSink::HandleEditRecord(TfEditCookie cookie, ITfEditRecord* pEditRec) {
 	// Make sure that are is a valid range enumerator
+#ifdef NVDAJP
+	OutputDebugString(L"TsfSink::HandleEditRecord");
+#endif
 	IEnumTfRanges* enum_range = NULL;
 	HRESULT hr = pEditRec->GetTextAndPropertyUpdates(
 		TF_GTP_INCL_TEXT, NULL, 0, &enum_range);
@@ -492,6 +612,7 @@ STDMETHODIMP TsfSink::EndUIElement(DWORD elementId) {
 	return S_OK;
 }
 
+
 STDMETHODIMP TsfSink::OnEndEdit(
 		ITfContext* pCtx, TfEditCookie cookie, ITfEditRecord* pEditRec) {
 	// TSF input processor performing composition
@@ -527,6 +648,17 @@ STDMETHODIMP TsfSink::OnEndEdit(
 	}
 	selStart=max(0,selStart-compStart);
 	selEnd=max(0,selEnd-compStart);
+#ifdef NVDAJP
+	TF_DISPLAYATTRIBUTE dispAttr;
+	TF_DA_ATTR_INFO attr = TF_ATTR_OTHER; // -1
+	HRESULT hr = getDispAttrFromRange(pCtx, pRange, cookie, &dispAttr);
+	if (hr == S_OK) {
+		attr = dispAttr.bAttr;
+	}
+	wchar_t buf_[200];
+	wsprintf(buf_, L"TsfSink::OnEndEdit %ld %ld %d %d (%s)", selStart, selEnd, hr, attr, buf);
+	OutputDebugString(buf_);
+#endif
 	nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
 	return S_OK;
 }
@@ -647,6 +779,9 @@ TsfSink* fetchCurrentTsfSink() {
 }
 
 void TSF_inProcess_initialize() {
+#ifdef NVDAJP
+	OutputDebugString(L"TSF_inProcess_initialize");
+#endif
 	//Allow use of UIElementMgr on Vista and higher (crashes things on XP)
 	if((GetVersion()&0xff)>5) isUIElementMgrSafe=true;
 	// Initialize TLS and use window hook to create TSF sink in each thread
@@ -656,6 +791,9 @@ void TSF_inProcess_initialize() {
 }
 
 void TSF_inProcess_terminate() {
+#ifdef NVDAJP
+	OutputDebugString(L"TSF_inProcess_terminate");
+#endif
 	if (gTsfIndex == TLS_OUT_OF_INDEXES)  return;
 
 	// Remove window hook and clean up TLS
