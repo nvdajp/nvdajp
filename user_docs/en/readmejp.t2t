@@ -9,13 +9,13 @@
 + Overview +
 
 
-- last update: 2013-06-13
+- last update: 2013-08-23
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
 Release by NVDA Japanese Team (nvdajp), based on NVDA from NV Access.
 This document describes difference between original release of NVDA and the NVDAJP.
-NVDA jpdev snapshot is based on NV Access's main branch.
+NVDAJP releases are based on NV Access's rc branch.
 
 This release contains enhancements for Japanese language users.
 
@@ -168,6 +168,8 @@ If 'IME support of nvdajp' is disabled, this option has no effect.
 +++ Use IME support of nvdajp +++
 
 The default of 'Use IME support of nvdajp' is enabled.
+
+If this option is enabled, pressing escape key to clear the input method session will announce as 'clear', rather than announcing the cancelled text itself.
 
 To disable, turn off the option.
 
