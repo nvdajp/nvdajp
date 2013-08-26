@@ -1565,10 +1565,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.nvdajpEnableKeyEventsCheckBox.SetValue(config.conf["keyboard"]["nvdajpEnableKeyEvents"])
 		settingsSizer.Add(self.nvdajpEnableKeyEventsCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.skypeWin8HackCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Skype Windows 8 hack"))
-		self.skypeWin8HackCheckBox.SetValue(config.conf["UIA"]["skypeWin8Hack"])
-		settingsSizer.Add(self.skypeWin8HackCheckBox,border=10,flag=wx.BOTTOM)
-
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
 
@@ -1580,7 +1576,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["keyboard"]["nvdajpEnableKeyEvents"]=self.nvdajpEnableKeyEventsCheckBox.IsChecked()
 		config.conf["keyboard"]["nvdajpImeBeep"]=self.nvdajpImeBeepCheckBox.IsChecked()
 		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
-		config.conf["UIA"]["skypeWin8Hack"]=self.skypeWin8HackCheckBox.IsChecked()
 
 		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
 		try:

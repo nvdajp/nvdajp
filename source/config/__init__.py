@@ -189,7 +189,6 @@ confspec = ConfigObj(StringIO(
 [UIA]
 	minWindowsVersion = float(default=6.1)
 	enabled = boolean(default=true)
-	skypeWin8Hack = boolean(default=true) # nvdajp
 
 [update]
 	autoCheck = boolean(default=false) # nvdajp

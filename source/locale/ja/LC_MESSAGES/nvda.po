@@ -169,10 +169,6 @@ msgstr "全角の声の高さの変化(-100から100)"
 msgid "Announce candidate number"
 msgstr "変換候補の番号の通知"
 
-#: settingDialogs.py:1528
-msgid "Skype Windows 8 hack"
-msgstr "Skypeフリーズ対策(再起動が必要)"
-
 #: installer.py:158
 msgid "NVDAJP web site"
 msgstr "NVDA日本語版 Webサイト"
