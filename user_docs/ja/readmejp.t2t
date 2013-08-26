@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2013年8月23日
+- 最終更新日：2013年8月26日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -172,14 +172,6 @@ NVDAメニュー「設定」「日本語設定」で日本語の文字説明と�
 この設定が有効のとき、日本語入力の途中で Esc キーが押されて未確定文字列がクリアされると、消去された文字列ではなく「クリア」と通知します。
 
 この設定をチェックなしにすると、NVDA 本家版の「東アジア言語文字入力」の処理と同じ動作になります。
-
-
-+++ Skypeフリーズ対策 +++
-
-Windows 8 において Skype 6 のフリーズを回避する処理が有効になっています。将来 Skype のバージョンアップでこの問題が解決したら、この設定を無効にしてお使いください。設定を変更したらNVDAの再起動が必要です。
-
-- [本家チケット2712 http://community.nvda-project.org/ticket/2712]
-- [NVDA日本語版チケット30703 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=30703]
 
 
 ++ 文字説明辞書 ++
@@ -450,6 +442,15 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 
 
 + 関連情報 +
+
+++ 2013.2jp の変更点 ++
+
+NVDA 日本語チームは以下の変更および改良を行いました。
+
+- [日本語入力中にエスケープキーを押すとクリアと通知 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31905]
+- [日本語版のSkypeフリーズ対策の廃止、本家のSkypeモジュールの有効化 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31906]
+- [テキスト解析辞書の更新 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31933]
+
 
 ++ 2013.1jp から 2013.1.1jp への変更点 ++
 
