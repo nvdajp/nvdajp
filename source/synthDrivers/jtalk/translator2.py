@@ -464,6 +464,14 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo):
 			mo.hinshi2 == '数':
 		return True
 
+	# 晴れ/所に より
+	if prev_mo.hinshi1 == '名詞' and mo.hyouki == '所により':
+		return True
+
+	# 一時/雨
+	if prev_mo.hyouki == '一時' and mo.hyouki == '雨':
+		return True
+
 	# 数字の前のマスアケ
 	if prev_mo.nhyouki in ('零下', '西暦', 'ボーイング', 'ベスト', 'ルイ', '先', '振替', 'No.', '一人当り') \
 			and mo.output.isdigit():
