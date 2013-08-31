@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2013年8月26日
+- 最終更新日：2013年8月31日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -471,15 +471,15 @@ NVDA 日本語チームは以下の不具合への対応や改良を行いまし
 
 ++ アドオンの紹介 ++
 
+- [NVDA コミュニティによるアドオン紹介 http://addons.nvda-project.org/]
 - [NVDA 日本語版のアドオン http://sourceforge.jp/projects/nvdajp/wiki/Addons]
 
 
 ++ 対応アプリケーションの紹介 ++
 
 - [NVDA 日本語版が対応しているソフトウェアと点字ディスプレイ http://sourceforge.jp/projects/nvdajp/wiki/ApplicationSupport]
-- オープンソースのオフィスソフト OpenOffice.org および LibreOffice は Java 実行環境および Java Access Bridge (JAB) を使うことで NVDA に対応します。NVDA日本語チームは LibreOffice 3.6.6 と Java 7u21 の組み合わせで動作を確認しています。
-- [LibreOffice 3.6 の動作確認 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29213]
-- [JAB についての情報 http://sourceforge.jp/projects/nvdajp/wiki/JavaAccessBridge]
+- オープンソースのオフィスソフト OpenOffice.org および LibreOffice は Java 実行環境および Java Access Bridge (JAB) を使うことで NVDA に対応します。Windows およびアプリケーションの追加設定が必要な場合もあります。
+- [Java Access Bridge と OpenOffice/LibreOffice の情報 http://sourceforge.jp/projects/nvdajp/wiki/JavaAccessBridge]
 
 
 ++ 操作ガイド ++
