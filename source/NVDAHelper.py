@@ -180,16 +180,21 @@ def handleInputCompositionEnd(result):
 	if curInputComposition and not result:
 		#nvdajp begin
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-			if winUser.getAsyncKeyState(winUser.VK_ESCAPE)<0 or \
-				( winUser.getAsyncKeyState(winUser.VK_SHIFT)<0 and winUser.getAsyncKeyState(winUser.VK_ESCAPE)<0 ) or \
-				( winUser.getAsyncKeyState(winUser.VK_CONTROL)<0 and winUser.getAsyncKeyState('z')<0 ) or \
-				( winUser.getAsyncKeyState(winUser.VK_CONTROL)<0 and winUser.getAsyncKeyState('[')<0 ) :
+			from NVDAObjects import inputComposition
+			# VK Key conbination constants
+			# 0x1B : ESC
+			# 0x5A : ctrl+z
+			# 0xDB : ctrl+[
+			# 0x41 : backspace
+			if inputComposition.lastKeyGesture.vkCode == 0x1B or \
+				inputComposition.lastKeyGesture.vkCode == 0x5A or \
+				inputComposition.lastKeyGesture.vkCode == 0xDB :
 				import ui
 				#. Translators: a message when the IME cancelation status
 				ui.message(_("Clear"))
 			else:
 				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
-				if winUser.getAsyncKeyState(winUser.VK_BACK)&1 :
+				if  inputComposition.lastKeyGesture.vkCode == 0x41 :
 					#. Translators: a message when the IME cancelation status
 					result+=" "+_("Clear")
 		else:
