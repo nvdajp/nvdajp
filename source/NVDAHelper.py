@@ -189,6 +189,9 @@ def handleInputCompositionEnd(result):
 				ui.message(_("Clear"))
 			else:
 				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
+				if winUser.getAsyncKeyState(winUser.VK_BACK)&1 :
+					#. Translators: a message when the IME cancelation status
+					result+=" "+_("Clear")
 		else:
 			result=curInputComposition.compositionString.lstrip(u'\u3000 ')
 		#nvdajp end
