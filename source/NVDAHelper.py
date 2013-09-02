@@ -180,9 +180,15 @@ def handleInputCompositionEnd(result):
 	if curInputComposition and not result:
 		#nvdajp begin
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-			import ui
-			#. Translators: a message when the IME cancelation status
-			ui.message(_("Clear"))
+			if winUser.getAsyncKeyState(winUser.VK_ESCAPE)<0 or \
+				( winUser.getAsyncKeyState(winUser.VK_SHIFT)<0 and winUser.getAsyncKeyState(winUser.VK_ESCAPE)<0 ) or \
+				( winUser.getAsyncKeyState(winUser.VK_CONTROL)<0 and winUser.getAsyncKeyState('z')<0 ) or \
+				( winUser.getAsyncKeyState(winUser.VK_CONTROL)<0 and winUser.getAsyncKeyState('[')<0 ) :
+				import ui
+				#. Translators: a message when the IME cancelation status
+				ui.message(_("Clear"))
+			else:
+				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
 		else:
 			result=curInputComposition.compositionString.lstrip(u'\u3000 ')
 		#nvdajp end
