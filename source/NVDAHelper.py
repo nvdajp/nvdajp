@@ -194,7 +194,8 @@ def handleInputCompositionEnd(result):
 				ui.message(_("Clear"))
 			else:
 				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
-				if  inputComposition.lastKeyGesture.vkCode == 0x41 :
+				if inputComposition.lastKeyGesture.vkCode == 0x41 or \
+					inputComposition.lastKeyGesture.vkCode == 0x20 :
 					#. Translators: a message when the IME cancelation status
 					result+=" "+_("Clear")
 		else:
