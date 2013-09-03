@@ -198,6 +198,7 @@ def handleInputCompositionEnd(result):
 					inputComposition.lastKeyGesture.vkCode == 0x41 or \
 					inputComposition.lastKeyGesture.vkCode == 0x45 or \
 					inputComposition.lastKeyGesture.vkCode == 0x49 or \
+					inputComposition.lastKeyGesture.vkCode == 0x4D or \
 					inputComposition.lastKeyGesture.vkCode == 0x4F or \
 					inputComposition.lastKeyGesture.vkCode == 0x55 :
 					#. Translators: a message when the IME cancelation status
