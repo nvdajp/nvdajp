@@ -181,26 +181,22 @@ def handleInputCompositionEnd(result):
 		#nvdajp begin
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			from NVDAObjects import inputComposition
-			# VK Key conbination constants
-			# 0x1B : ESC
-			# 0x5A : ctrl+z
-			# 0xDB : ctrl+[
-			# 0x41 : backspace
-			if inputComposition.lastKeyGesture.vkCode == 0x1B or \
-				inputComposition.lastKeyGesture.vkCode == 0x5A or \
-				inputComposition.lastKeyGesture.vkCode == 0xDB :
-				import ui
+			import ui
+			if inputComposition.lastKeyGesture.vkCode == 0x1B :\
 				#. Translators: a message when the IME cancelation status
 				ui.message(_("Clear"))
+			elif winUser.getAsyncKeyState(winUser.VK_CONTROL)&1 :
+				if inputComposition.lastKeyGesture.vkCode == 0x5A or \
+					inputComposition.lastKeyGesture.vkCode == 0xDB :
+					#. Translators: a message when the IME cancelation status
+					ui.message(_("Clear"))
+			elif winUser.getAsyncKeyState(winUser.VK_SHIFT)&1 :
+				if inputComposition.lastKeyGesture.vkCode == winUser.VK_ESCAPE :
+					#. Translators: a message when the IME cancelation status
+					ui.message(_("Clear"))
 			else:
 				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
-				if inputComposition.lastKeyGesture.vkCode == 0x20 or \
-					inputComposition.lastKeyGesture.vkCode == 0x41 or \
-					inputComposition.lastKeyGesture.vkCode == 0x45 or \
-					inputComposition.lastKeyGesture.vkCode == 0x49 or \
-					inputComposition.lastKeyGesture.vkCode == 0x4D or \
-					inputComposition.lastKeyGesture.vkCode == 0x4F or \
-					inputComposition.lastKeyGesture.vkCode == 0x55 :
+				if winUser.getAsyncKeyState(winUser.VK_BACK) :
 					#. Translators: a message when the IME cancelation status
 					result+=" "+_("Clear")
 		else:
