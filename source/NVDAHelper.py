@@ -179,7 +179,8 @@ def handleInputCompositionEnd(result):
 		focus.parent=focus.parent.parent
 	if curInputComposition and not result:
 		#nvdajp begin
-		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+		if not config.conf["keyboard"]["speakCommandKeys"] and \
+				config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			from NVDAObjects import inputComposition
 			import ui
 			if winUser.getAsyncKeyState(winUser.VK_ESCAPE)&32768 :\
