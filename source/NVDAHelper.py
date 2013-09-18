@@ -182,15 +182,16 @@ def handleInputCompositionEnd(result):
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			from NVDAObjects import inputComposition
 			gesture = inputComposition.lastKeyGesture
+			ctrl = (winUser.VK_CONTROL, False) in gesture.generalizedModifiers
 			import ui
 			if (gesture.vkCode == winUser.VK_ESCAPE) or \
-					(winUser.VK_CONTROL, False) in gesture.generalizedModifiers and \
-					gesture.vkCode in (0x5A, 0xDB):
+					ctrl and gesture.vkCode in (0x5A, 0xDB):
 				#. Translators: a message when the IME cancelation status
-				ui.message(_("Clear"))
+				speech.speakMessage(_("Clear"))
 			else:
 				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
-				if winUser.getAsyncKeyState(winUser.VK_BACK)&1 :
+				if (gesture.vkCode != winUser.VK_RETURN) and \
+						ctrl and gesture.vkCode != 0x4D:
 					#. Translators: a message when the IME cancelation status
 					result+=" "+_("Clear")
 		else:
