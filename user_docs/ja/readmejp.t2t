@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2013年8月31日
+- 最終更新日：2013年9月7日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -447,7 +447,6 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-- [日本語入力中にエスケープキーを押すとクリアと通知 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31905]
 - [日本語版のSkypeフリーズ対策の廃止、本家のSkypeモジュールの有効化 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31906]
 - [テキスト解析辞書の更新 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31933]
 
