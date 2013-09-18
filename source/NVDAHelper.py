@@ -179,6 +179,10 @@ def handleInputCompositionEnd(result):
 		focus.parent=focus.parent.parent
 	if curInputComposition and not result:
 		#nvdajp begin
+		# when composition is finished,
+		# (1) say 'clear' if following keys are pressed:
+		# Escape, Shift+Escape, Ctrl+Z, Ctrl+[
+		# (2) say the result, followed by 'clear' if Backspace is pressed.
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			from NVDAObjects import inputComposition
 			gesture = inputComposition.lastKeyGesture
@@ -190,8 +194,7 @@ def handleInputCompositionEnd(result):
 				speech.speakMessage(_("Clear"))
 			else:
 				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
-				if (gesture.vkCode != winUser.VK_RETURN) and \
-						ctrl and gesture.vkCode != 0x4D:
+				if winUser.getAsyncKeyState(winUser.VK_BACK)&1:
 					#. Translators: a message when the IME cancelation status
 					result+=" "+_("Clear")
 		else:
