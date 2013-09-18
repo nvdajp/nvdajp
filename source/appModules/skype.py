@@ -166,10 +166,3 @@ class AppModule(appModuleHandler.AppModule):
 	def event_appModule_loseFocus(self):
 		if self.chatWindow:
 			self.conversationLostFocus()
-
-#nvdajp begin
-import config
-if config.conf["UIA"]["skypeWin8Hack"]:
-	orgAppModule = AppModule
-	from _skypeWin8Hack import *
-#nvdajp end

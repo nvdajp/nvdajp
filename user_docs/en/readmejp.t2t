@@ -174,14 +174,6 @@ If this option is enabled, pressing escape key to clear the input method session
 To disable, turn off the option.
 
 
-+++ Skype Windows 8 Hack +++
-
-Enables work around issue 2712 (freeze of Skype 6 on Windows 8)
-
-- http://community.nvda-project.org/ticket/2712
-- http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=30703
-
-
 ++ Character dictionary ++
 
 NVDAJP can modify character descriptions and spelling readings by users. A dictionary file can be created in the user config directory.

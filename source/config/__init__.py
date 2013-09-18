@@ -161,6 +161,7 @@ confspec = ConfigObj(StringIO(
 	reportFontName = boolean(default=false)
 	reportFontSize = boolean(default=false)
 	reportFontAttributes = boolean(default=false)
+	reportRevisions = boolean(default=false)
 	reportColor = boolean(default=False)
 	reportAlignment = boolean(default=false)
 	reportStyle = boolean(default=false)
@@ -189,7 +190,6 @@ confspec = ConfigObj(StringIO(
 [UIA]
 	minWindowsVersion = float(default=6.1)
 	enabled = boolean(default=true)
-	skypeWin8Hack = boolean(default=true) # nvdajp
 
 [update]
 	autoCheck = boolean(default=false) # nvdajp
