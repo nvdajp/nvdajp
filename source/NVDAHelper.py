@@ -179,22 +179,15 @@ def handleInputCompositionEnd(result):
 		focus.parent=focus.parent.parent
 	if curInputComposition and not result:
 		#nvdajp begin
-		if not config.conf["keyboard"]["speakCommandKeys"] and \
-				config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			from NVDAObjects import inputComposition
+			gesture = inputComposition.lastKeyGesture
 			import ui
-			if winUser.getAsyncKeyState(winUser.VK_ESCAPE)&32768 :\
+			if (gesture.vkCode == winUser.VK_ESCAPE) or \
+					(winUser.VK_CONTROL, False) in gesture.generalizedModifiers and \
+					gesture.vkCode in (0x5A, 0xDB):
 				#. Translators: a message when the IME cancelation status
 				ui.message(_("Clear"))
-			elif winUser.getAsyncKeyState(winUser.VK_CONTROL)&32768 :
-				if inputComposition.lastKeyGesture.vkCode == 0x5A or \
-					inputComposition.lastKeyGesture.vkCode == 0xDB :
-					#. Translators: a message when the IME cancelation status
-					ui.message(_("Clear"))
-			elif winUser.getAsyncKeyState(winUser.VK_SHIFT)&32768 :
-				if inputComposition.lastKeyGesture.vkCode == winUser.VK_ESCAPE :
-					#. Translators: a message when the IME cancelation status
-					ui.message(_("Clear"))
 			else:
 				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
 				if winUser.getAsyncKeyState(winUser.VK_BACK)&1 :
