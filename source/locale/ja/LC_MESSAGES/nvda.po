@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-12 19:09+1000\n"
-"PO-Revision-Date: 2013-08-13 18:04+0900\n"
+"PO-Revision-Date: 2013-09-18 14:42+0900\n"
 "Last-Translator: Takuya Nishimoto <nishimotz@gmail.com>\n"
 "Language-Team: NVDA Japanese Team <nishimotz@gmail.com>\n"
 "Language: ja\n"
@@ -17,7 +17,6 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 
 # nvdajp from here
-
 #: keyLabels.py:139
 msgid "IME non convert"
 msgstr "無変換"
@@ -46,13 +45,11 @@ msgstr "日本語版の文字入力拡張"
 msgid "Beep for IME mode change"
 msgstr "半角全角キーが押されたらビープ音を鳴らす"
 
-#: source\gui\__init__.py:416
-#: source\gui\settingsDialogs.py:469
+#: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
 msgid "Use NonConvert as an NVDA modifier key"
 msgstr "無変換をNVDAキーとして使用"
 
-#: source\gui\__init__.py:416
-#: source\gui\settingsDialogs.py:469
+#: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
 msgid "Use Convert as an NVDA modifier key"
 msgstr "変換をNVDAキーとして使用"
 
@@ -182,7 +179,6 @@ msgid "%s:%s"
 msgstr "%s時%s分"
 
 # end of nvdajp
-
 #. Translators: Message to indicate User Account Control (UAC) or other secure desktop screen is active.
 #: IAccessibleHandler.py:679
 msgid "Secure Desktop"
@@ -1901,7 +1897,7 @@ msgstr "詳細説明あり"
 #. Translators: a state that denotes that an object is pinned in its current location
 #: controlTypes.py:519
 msgid "pinned"
-msgstr ""
+msgstr "ピン留め"
 
 #. Translators: This is presented when a selectable object (e.g. a list item) is not selected.
 #: controlTypes.py:524
@@ -5942,7 +5938,7 @@ msgstr "行番号の通知(&L)"
 
 #. Translators: This message is presented in the document formatting settings dialogue
 #. If this option is selected, NVDA will cound the leading spaces and tabs of a line and speak it.
-#. 
+#.
 #: gui\settingsDialogs.py:1039
 msgid "Report l&ine indentation"
 msgstr "行インデントの通知(&I)"
