@@ -32,7 +32,6 @@ if hasattr(sys,'frozen'):
 		jtalk_dir = d
 
 DEBUG = False
-MULTILANG = False
 
 RATE_BOOST_MULTIPLIER = 1.5
 
@@ -133,11 +132,11 @@ espeakMark = 10000
 
 # call from BgThread
 def _speak(arg):
-	global MULTILANG, currentEngine, lastIndex, espeakMark
+	global currentEngine, lastIndex, espeakMark
 	msg, lang, index, prop = arg
 	if DEBUG: logwrite('[' + lang + ']' + msg)
 	if DEBUG: logwrite("_speak(%s)" % msg)
-	if MULTILANG and lang != 'ja':
+	if lang != 'ja':
 		currentEngine = 1
 		msg = unicode(msg)
 		msg.translate({ord(u'\01'):None,ord(u'<'):u'&lt;',ord(u'>'):u'&gt;'})
@@ -153,16 +152,23 @@ def _speak(arg):
 	else:
 		_jtalk_speak(msg, index, prop)
 
+import re
+RE_ASCII = re.compile(u'^[\w\s\']+$', re.M)
+
 def speak(msg, lang, index=None, voiceProperty_=None):
 	msg = msg.strip()
 	if len(msg) == 0: return
 	if voiceProperty_ is None: return
+	if RE_ASCII.match(msg):
+		#import tones
+		#tones.beep(1000, 10)
+		lang = 'en'
 	arg = [msg, lang, index, copy.deepcopy(voiceProperty_)]
 	_bgthread.execWhenDone(_speak, arg, mustBeAsync=True)
 
 def stop():
-	global MULTILANG, currentEngine
-	if MULTILANG and currentEngine == 1:
+	global currentEngine
+	if currentEngine == 1:
 		_espeak.stop()
 		currentEngine = 0
 		return
@@ -190,18 +196,15 @@ def stop():
 
 def pause(switch):
 	global player
-	global MULTILANG, currentEngine
-	if MULTILANG and currentEngine == 1:
+	global currentEngine
+	if currentEngine == 1:
 		_espeak.pause(switch)
 		return
 	player.pause(switch)
 
 def initialize(voice = default_jtalk_voice, _multilang = False):
-	global MULTILANG
-	MULTILANG = _multilang
-	if MULTILANG:
-		_espeak.initialize()
-		log.info("jtalk using eSpeak version %s" % _espeak.info())
+	_espeak.initialize()
+	log.info("jtalk using eSpeak version %s" % _espeak.info())
 	global player, logwrite, voice_args
 	global speaker_attenuation
 	voice_args = voice
@@ -228,14 +231,12 @@ def initialize(voice = default_jtalk_voice, _multilang = False):
 	if DEBUG: logwrite("jtalk for NVDA started. voice:" + voice_args['dir'])
 
 def terminate():
-	global MULTILANG
 	global player
 	stop()
 	_bgthread.terminate()
 	player.close()
 	player = None
-	if MULTILANG:
-		_espeak.terminate()
+	_espeak.terminate()
 
 def get_rate(rateBoost):
 	f = fperiod
