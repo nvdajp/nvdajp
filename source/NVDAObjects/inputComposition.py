@@ -116,30 +116,34 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 
 	def reportNewText(self,oldString,newString):
 		global lastCompositionText, lastCompositionTime #nvdajp
-		if (config.conf["keyboard"]["speakTypedCharacters"] or config.conf["keyboard"]["speakTypedWords"]):
-			newText=calculateInsertedChars(oldString.strip(u'\u3000'),newString.strip(u'\u3000'))
-			#nvdajp begin
-			if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
-					needDiscriminantReading(lastKeyGesture):
-				newText = nvdajp_dic.getJapaneseDiscriminantReading(newString.strip(u'\u3000'))
-			if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 1.0:
-				newText = None
-			#nvdajp end
-			if newText:
-				#nvdajp begin
-				if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-					log.debug(newText)
-					if RE_HIRAGANA.match(newText):
-						newText = ''.join([unichr(ord(c) + 0x60) for c in newText])
-						log.debug('convert hiragana to katakana: ' + newText)
-					if newText == u'\u30fc':
-						newText = nvdajp_dic.getJapaneseDiscriminantReading(newText)
-						log.debug('katakana-hiragana prolonged sound mark')
-					lastCompositionTime = time.time()
-					lastCompositionText = newText
-					queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newText)
-				#nvdajp end
+		#nvdajp begin
+		newText=calculateInsertedChars(oldString.strip(u'\u3000'),newString.strip(u'\u3000'))
+		isCandidate = False
+		if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
+				needDiscriminantReading(lastKeyGesture):
+			newText = nvdajp_dic.getJapaneseDiscriminantReading(newString.strip(u'\u3000'))
+			isCandidate = True
+		if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 1.0:
+			newText = None
+			isCandidate = False
+		#if isCandidate:
+		#	import tones
+		#	tones.beep(1000,10)
+		if newText:
+			if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+				log.debug(newText)
+				if RE_HIRAGANA.match(newText):
+					newText = ''.join([unichr(ord(c) + 0x60) for c in newText])
+					log.debug('convert hiragana to katakana: ' + newText)
+				if newText == u'\u30fc':
+					newText = nvdajp_dic.getJapaneseDiscriminantReading(newText)
+					log.debug('katakana-hiragana prolonged sound mark')
+				lastCompositionTime = time.time()
+				lastCompositionText = newText
+				queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newText)
+			if config.conf["keyboard"]["speakTypedCharacters"] or isCandidate:
 				queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
+		#nvdajp end
 
 	def compositionUpdate(self,compositionString,selectionStart,selectionEnd,isReading,announce=True):
 		if isReading and not config.conf["inputComposition"]["reportReadingStringChanges"]: return
