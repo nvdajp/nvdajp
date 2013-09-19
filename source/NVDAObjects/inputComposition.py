@@ -116,17 +116,21 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 
 	def reportNewText(self,oldString,newString):
 		global lastCompositionText, lastCompositionTime #nvdajp
-		if (config.conf["keyboard"]["speakTypedCharacters"] or config.conf["keyboard"]["speakTypedWords"]):
+		#nvdajp begin
+		if True: #(config.conf["keyboard"]["speakTypedCharacters"] or config.conf["keyboard"]["speakTypedWords"])
 			newText=calculateInsertedChars(oldString.strip(u'\u3000'),newString.strip(u'\u3000'))
-			#nvdajp begin
+			isCandidate = False
 			if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
 					needDiscriminantReading(lastKeyGesture):
 				newText = nvdajp_dic.getJapaneseDiscriminantReading(newString.strip(u'\u3000'))
+				isCandidate = True
 			if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 1.0:
 				newText = None
-			#nvdajp end
+				isCandidate = False
+			if isCandidate:
+				import tones
+				tones.beep(1000,10)
 			if newText:
-				#nvdajp begin
 				if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 					log.debug(newText)
 					if RE_HIRAGANA.match(newText):
@@ -138,8 +142,9 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 					lastCompositionTime = time.time()
 					lastCompositionText = newText
 					queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newText)
-				#nvdajp end
-				queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
+				if config.conf["keyboard"]["speakTypedCharacters"] or isCandidate:
+					queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
+		#nvdajp end
 
 	def compositionUpdate(self,compositionString,selectionStart,selectionEnd,isReading,announce=True):
 		if isReading and not config.conf["inputComposition"]["reportReadingStringChanges"]: return
