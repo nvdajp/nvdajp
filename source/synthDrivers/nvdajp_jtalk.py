@@ -16,7 +16,7 @@ import speech
 import synthDriverHandler
 import languageHandler
 from jtalk import _nvdajp_jtalk
-from jtalk import _nvdajp_spellchar
+#from jtalk import _nvdajp_spellchar
 from jtalk._nvdajp_jtalk import VoiceProperty
 
 class SynthDriver(SynthDriver):
@@ -55,8 +55,8 @@ class SynthDriver(SynthDriver):
 		currentLang = lang
 		for item in speechSequence:
 			if isinstance(item,basestring):
-				if spellState and currentLang == 'ja':
-					item = _nvdajp_spellchar.convert(item)
+				#if spellState and currentLang == 'ja':
+				#	item = _nvdajp_spellchar.convert(item)
 				p = VoiceProperty()
 				p.pitch = self._pitch
 				p.inflection = self._inflection
