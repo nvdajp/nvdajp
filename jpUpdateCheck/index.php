@@ -1,4 +1,13 @@
 <?php 
+define("LATEST_VERSION", "jpnext130920");
+define("LATEST_LAUNCHER", "https://dl.dropboxusercontent.com/u/62564469/nvda_jpnext130920.exe");
+$version = '';
+if (isset($_GET['version'])) {
+	$version = $_GET['version'];
+}
 header('Content-type: text/plain');
-echo "version: jpnext130920" . PHP_EOL;
-echo "launcherUrl: https://dl.dropboxusercontent.com/u/62564469/nvda_jpnext130920.exe" . PHP_EOL;
+if ($version === '' || $version === LATEST_VERSION) {
+	exit();
+}
+echo "version: " . LATEST_VERSION . PHP_EOL;
+echo "launcherUrl: " . LATEST_LAUNCHER . PHP_EOL;
