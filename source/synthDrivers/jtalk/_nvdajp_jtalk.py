@@ -79,8 +79,8 @@ def _jtalk_speak(msg, index=None, prop=None):
 		fperiod_current = voice_args['fperiod']
 	else:
 		fperiod_current = fperiod
-	if msg == u'ー': msg = u'チョーオン'
-	if msg == u'ン': msg = u'ウン'
+	#if msg == u'ー': msg = u'チョーオン'
+	#if msg == u'ン': msg = u'ウン'
 	msg = _nvdajp_predic.convert(msg)
 	lw = None
 	if DEBUG: lw = logwrite
@@ -170,7 +170,7 @@ def speak(msg, lang, index=None, voiceProperty_=None):
 	msg = msg.strip()
 	if len(msg) == 0: return
 	if voiceProperty_ is None: return
-	lang = guessLang(msg, lang)
+	#lang = guessLang(msg, lang)
 	arg = [msg, lang, index, copy.deepcopy(voiceProperty_)]
 	_bgthread.execWhenDone(_speak, arg, mustBeAsync=True)
 
