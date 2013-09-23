@@ -130,27 +130,30 @@ def _jtalk_speak(msg, index=None, prop=None):
 
 espeakMark = 10000
 
+def _espeak_speak(msg, lang, index=None, prop=None):
+	global currentEngine, lastIndex, espeakMark
+	currentEngine = 1
+	msg = unicode(msg)
+	msg.translate({ord(u'\01'):None,ord(u'<'):u'&lt;',ord(u'>'):u'&gt;'})
+	msg = u"<voice xml:lang=\"%s\">%s</voice>" % (lang, msg)
+	msg += u"<mark name=\"%d\" />" % espeakMark
+	_espeak.speak(msg)
+	while currentEngine == 1 and _espeak.lastIndex != espeakMark:
+		time.sleep(0.1)
+		watchdog.alive()
+	lastIndex = index
+	currentEngine = 0
+	espeakMark += 1
+
 # call from BgThread
 def _speak(arg):
-	global currentEngine, lastIndex, espeakMark
 	msg, lang, index, prop = arg
 	if DEBUG: logwrite('[' + lang + ']' + msg)
 	if DEBUG: logwrite("_speak(%s)" % msg)
-	if lang != 'ja':
-		currentEngine = 1
-		msg = unicode(msg)
-		msg.translate({ord(u'\01'):None,ord(u'<'):u'&lt;',ord(u'>'):u'&gt;'})
-		msg = u"<voice xml:lang=\"%s\">%s</voice>" % (lang, msg)
-		msg += u"<mark name=\"%d\" />" % espeakMark
-		_espeak.speak(msg)
-		while currentEngine == 1 and _espeak.lastIndex != espeakMark:
-			time.sleep(0.1)
-			watchdog.alive()
-		lastIndex = index
-		currentEngine = 0
-		espeakMark += 1
-	else:
+	if lang == 'ja':
 		_jtalk_speak(msg, index, prop)
+	else:
+		_espeak_speak(msg, lang, index, prop)
 
 #import re
 #RE_ASCII = re.compile(u'^[\w\s\']+$', re.M)
