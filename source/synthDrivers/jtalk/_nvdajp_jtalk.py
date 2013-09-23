@@ -38,9 +38,9 @@ RATE_BOOST_MULTIPLIER = 1.5
 
 # math.log(150) = 5.0, math.log(350) = 5.86
 _jtalk_voices = [
-	{"id": "V1", "name": "m001", "lang":"ja", "samp_rate": 48000, "fperiod": 240, "alpha": 0.55, "lf0_base":5.0,  "use_lpf":1, "speaker_attenuation":1.0, "dir": "m001"},
-	{"id": "V2", "name": "mei",  "lang":"ja", "samp_rate": 48000, "fperiod": 240, "alpha": 0.55, "lf0_base":5.86, "use_lpf":1, "speaker_attenuation":0.5, "dir": "mei_normal"},
-	{"id": "V3", "name": "lite", "lang":"ja", "samp_rate": 16000, "fperiod":  80, "alpha": 0.42, "lf0_base":5.0,  "use_lpf":0, "speaker_attenuation":1.0, "dir": "voice"},
+	{"id": "V1", "name": "m001", "lang":"ja", "samp_rate": 48000, "fperiod": 240, "alpha": 0.55, "lf0_base":5.0,  "use_lpf":1, "speaker_attenuation":1.0, "dir": "m001", "espeak_variant": "max"},
+	{"id": "V2", "name": "mei",  "lang":"ja", "samp_rate": 48000, "fperiod": 240, "alpha": 0.55, "lf0_base":5.86, "use_lpf":1, "speaker_attenuation":0.5, "dir": "mei_normal", "espeak_variant": "f1"},
+	{"id": "V3", "name": "lite", "lang":"ja", "samp_rate": 16000, "fperiod":  80, "alpha": 0.42, "lf0_base":5.0,  "use_lpf":0, "speaker_attenuation":1.0, "dir": "voice", "espeak_variant": "max"},
 ]
 default_jtalk_voice = _jtalk_voices[1] # V2
 voice_args = None
@@ -141,6 +141,8 @@ def _espeak_speak(msg, lang, index=None, prop=None):
 	while currentEngine == 1 and _espeak.lastIndex != espeakMark:
 		time.sleep(0.1)
 		watchdog.alive()
+	time.sleep(0.4)
+	watchdog.alive()
 	lastIndex = index
 	currentEngine = 0
 	espeakMark += 1
@@ -213,6 +215,8 @@ def pause(switch):
 
 def initialize(voice = default_jtalk_voice):
 	_espeak.initialize()
+	_espeak.setVoiceByLanguage("en")
+	_espeak.setVoiceAndVariant(variant=voice["espeak_variant"])
 	log.info("jtalk using eSpeak version %s" % _espeak.info())
 	global player, logwrite, voice_args
 	global speaker_attenuation
