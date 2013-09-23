@@ -23,85 +23,18 @@ def convert(msg):
 
 def load():
 	return [
-		### Unicode REPLACEMENT CHARACTER
-		[re.compile(u'\ufffd'), u' '],
-		### zenkaku space normalize
-		[re.compile(u'　'), u' '],
-		
+		[re.compile(u'^ー$'), u'チョーオン'],
+		[re.compile(u'^ン$'), u'ウン'],
+		[re.compile(u'\\sー$'), u' チョーオン'],
+		[re.compile(u'\\sン$'), u' ウン'],
+
 		## 人々 昔々 家々 山々 
  		[re.compile(u'(.)々'), u'\\1\\1'],
 
 		## isolated hiragana HA (mecab replaces to WA)
 		## は 
 		[re.compile(u'^は$'), u'ハ'],
-		[re.compile(u'\\sは$'), u'ハ'],
-		
-		### zenkaku alphabet convert
-		[re.compile(u'Ａ'), u'A'],
-		[re.compile(u'Ｂ'), u'B'],
-		[re.compile(u'Ｃ'), u'C'],
-		[re.compile(u'Ｄ'), u'D'],
-		[re.compile(u'Ｅ'), u'E'],
-		[re.compile(u'Ｆ'), u'F'],
-		[re.compile(u'Ｇ'), u'G'],
-		[re.compile(u'Ｈ'), u'H'],
-		[re.compile(u'Ｉ'), u'I'],
-		[re.compile(u'Ｊ'), u'J'],
-		[re.compile(u'Ｋ'), u'K'],
-		[re.compile(u'Ｌ'), u'L'],
-		[re.compile(u'Ｍ'), u'M'],
-		[re.compile(u'Ｎ'), u'N'],
-		[re.compile(u'Ｏ'), u'O'],
-		[re.compile(u'Ｐ'), u'P'],
-		[re.compile(u'Ｑ'), u'Q'],
-		[re.compile(u'Ｒ'), u'R'],
-		[re.compile(u'Ｓ'), u'S'],
-		[re.compile(u'Ｔ'), u'T'],
-		[re.compile(u'Ｕ'), u'U'],
-		[re.compile(u'Ｖ'), u'V'],
-		[re.compile(u'Ｗ'), u'W'],
-		[re.compile(u'Ｘ'), u'X'],
-		[re.compile(u'Ｙ'), u'Y'],
-		[re.compile(u'Ｚ'), u'Z'],
-		
-		[re.compile(u'ａ'), u'a'],
-		[re.compile(u'ｂ'), u'b'],
-		[re.compile(u'ｃ'), u'c'],
-		[re.compile(u'ｄ'), u'd'],
-		[re.compile(u'ｅ'), u'e'],
-		[re.compile(u'ｆ'), u'f'],
-		[re.compile(u'ｇ'), u'g'],
-		[re.compile(u'ｈ'), u'h'],
-		[re.compile(u'ｉ'), u'i'],
-		[re.compile(u'ｊ'), u'j'],
-		[re.compile(u'ｋ'), u'k'],
-		[re.compile(u'ｌ'), u'l'],
-		[re.compile(u'ｍ'), u'm'],
-		[re.compile(u'ｎ'), u'n'],
-		[re.compile(u'ｏ'), u'o'],
-		[re.compile(u'ｐ'), u'p'],
-		[re.compile(u'ｑ'), u'q'],
-		[re.compile(u'ｒ'), u'r'],
-		[re.compile(u'ｓ'), u's'],
-		[re.compile(u'ｔ'), u't'],
-		[re.compile(u'ｕ'), u'u'],
-		[re.compile(u'ｖ'), u'v'],
-		[re.compile(u'ｗ'), u'w'],
-		[re.compile(u'ｘ'), u'x'],
-		[re.compile(u'ｙ'), u'y'],
-		[re.compile(u'ｚ'), u'z'],
-		
-		### zenkaku numbers convert
-		[re.compile(u'０'), u'0'],
-		[re.compile(u'１'), u'1'],
-		[re.compile(u'２'), u'2'],
-		[re.compile(u'３'), u'3'],
-		[re.compile(u'４'), u'4'],
-		[re.compile(u'５'), u'5'],
-		[re.compile(u'６'), u'6'],
-		[re.compile(u'７'), u'7'],
-		[re.compile(u'８'), u'8'],
-		[re.compile(u'９'), u'9'],
+		[re.compile(u'\\sは$'), u' ハ'],
 		
 		## 59 名
 		[re.compile(u'(\\d) 名'), u'\\1名'],
@@ -118,6 +51,9 @@ def load():
 		[re.compile(u'(\\d+)\\s*MHz'), u'\\1メガヘルツ'],
 		[re.compile(u'(\\d+)\\s*GHz'), u'\\1ギガヘルツ'],
 
+		## 2013 年 1 月 2 日
+		[re.compile(u'(\\d+)\\s+年\\s+(\\d+)\\s+月\\s+(\\d+)\\s+日'), u'\\1年\\2月\\3日'],
+
 		### zenkaku symbols convert
 		## ２０１１．０３．１１
 		## １，２３４円
@@ -133,6 +69,12 @@ def load():
 		[re.compile(u'(\\d{2})\\,(\\d{3})'), u'\\1\\2'],
 		[re.compile(u'(\\d{3})\\,(\\d{3})'), u'\\1\\2'],
 		[re.compile(u'(\\d)\\,(\\d{1,2})'), u'\\1カンマ\\2'],
+
+		[re.compile(u'(\\d{1,4})\\.(\\d{1,4})\\.(\\d{1,4})\\.(\\d{1,4})'), u'\\1テン\\2テン\\3テン\\4'],
+		[re.compile(u'(\\d{1,4})\\.(\\d{1,4})\\.(\\d{1,4})'), u'\\1テン\\2テン\\3'],
+
+		# do not replace '0' after '.' to phonetic symbols (prepare)
+		[re.compile(u'\\.0'), u'.0０'],
 
 		[re.compile(u'\\b0(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)'), u'  ０0  ０\\1  ０\\2  ０\\3  ０\\4  ０\\5  ０\\6  ０\\7  ０\\8  ０\\9 '],
 		[re.compile(u'\\b0(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)'), u'  ０0  ０\\1  ０\\2  ０\\3  ０\\4  ０\\5  ０\\6  ０\\7  ０\\8 '],
@@ -154,5 +96,8 @@ def load():
 		[re.compile(u' ０7'), u'ナナ'],
 		[re.compile(u' ０8'), u'ハチ'],
 		[re.compile(u' ０9'), u'キュー'],
+
+		# do not replace '0' after '.' to phonetic symbols (finalize)
+		[re.compile(u'\\.0０'), u'.0'],
 	]
 
