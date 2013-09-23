@@ -19,6 +19,7 @@ import nvwave
 from .. import _espeak
 import _jtalk_core
 import _nvdajp_predic 
+from _nvdajp_unicode import unicode_normalize
 import _bgthread
 import sys
 import time
@@ -79,8 +80,7 @@ def _jtalk_speak(msg, index=None, prop=None):
 		fperiod_current = voice_args['fperiod']
 	else:
 		fperiod_current = fperiod
-	#if msg == u'ー': msg = u'チョーオン'
-	#if msg == u'ン': msg = u'ウン'
+	msg = unicode_normalize(msg)
 	msg = _nvdajp_predic.convert(msg)
 	lw = None
 	if DEBUG: lw = logwrite
