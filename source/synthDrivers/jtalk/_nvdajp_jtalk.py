@@ -210,7 +210,7 @@ def pause(switch):
 		return
 	player.pause(switch)
 
-def initialize(voice = default_jtalk_voice, _multilang = False):
+def initialize(voice = default_jtalk_voice):
 	_espeak.initialize()
 	log.info("jtalk using eSpeak version %s" % _espeak.info())
 	global player, logwrite, voice_args
