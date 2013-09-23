@@ -206,12 +206,10 @@ def stop():
 	lastIndex = None
 
 def pause(switch):
-	global player
-	global currentEngine
 	if currentEngine == 1:
 		_espeak.pause(switch)
-		return
-	player.pause(switch)
+	elif currentEngine == 2:
+		player.pause(switch)
 
 def initialize(voice = default_jtalk_voice):
 	_espeak.initialize()
