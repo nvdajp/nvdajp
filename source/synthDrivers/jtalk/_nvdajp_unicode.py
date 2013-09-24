@@ -16,10 +16,3 @@ def unicode_normalize(s):
 	s = s.replace('\u301c', '~')  # 0x301C WAVE DASH
 	return s
 
-def guessLang(msg, lang):
-	log.info(unicode(lang) + u':' + msg)
-	for i in xrange(len(msg)):
-		c = ord(msg[i])
-		if c > 0x7f:
-			return lang
-	return 'en'
