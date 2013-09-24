@@ -157,25 +157,10 @@ def _speak(arg):
 	else:
 		_espeak_speak(msg, lang, index, prop)
 
-#import re
-#RE_ASCII = re.compile(u'^[\w\s\']+$', re.M)
-#def guessLang(msg, lang):
-#	if RE_ASCII.match(msg):
-#		return 'en'
-#	return lang
-def guessLang(msg, lang):
-	log.info(unicode(lang) + u':' + msg)
-	for i in xrange(len(msg)):
-		c = ord(msg[i])
-		if c > 0x7f:
-			return lang
-	return 'en'
-
 def speak(msg, lang, index=None, voiceProperty_=None):
 	msg = msg.strip()
 	if len(msg) == 0: return
 	if voiceProperty_ is None: return
-	#lang = guessLang(msg, lang)
 	arg = [msg, lang, index, copy.deepcopy(voiceProperty_)]
 	_bgthread.execWhenDone(_speak, arg, mustBeAsync=True)
 
