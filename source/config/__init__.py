@@ -192,7 +192,7 @@ confspec = ConfigObj(StringIO(
 	enabled = boolean(default=true)
 
 [update]
-	autoCheck = boolean(default=false) # nvdajp
+	autoCheck = boolean(default=true)
 
 [inputComposition]
 	autoReportAllCandidates = boolean(default=False) # nvdajp
