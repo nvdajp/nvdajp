@@ -7,15 +7,16 @@ from logHandler import log
 import re
 import copy
 from _nvdajp_unicode import unicode_normalize
+from speech import CharacterModeCommand
 
 _logwrite = log.debug
 
-def guessLang(msg):
-	for i in xrange(len(msg)):
-		c = ord(msg[i])
+def isJapaneseLang(msg):
+	for i in msg:
+		c = ord(i)
 		if (0x3040 <= c <= 0x30ff) or (0x3100 <= c <= 0x9fff):
-			return 'ja'
-	return None
+			return True
+	return False
 
 kanadic = None
 
@@ -225,12 +226,23 @@ def replaceJapanese(msg):
 	return msg
 
 def replaceJapaneseFromSpeechSequence(speechSequence):
+	# we don't want to use CharacterMode for replaced Japanese text
 	a = []
+	charmode = False
 	for item in speechSequence:
-		item = copy.deepcopy(item)
-		if isinstance(item,basestring):
+		disableCharMode = False
+		if isinstance(item, basestring):
 			item = unicode_normalize(item)
-			if guessLang(item):
+			if isJapaneseLang(item):
 				item = replaceJapanese(item)
+				if charmode:
+					disableCharMode = True
+		elif isinstance(item, CharacterModeCommand):
+			cmstate = item.state
+		if disableCharMode:
+			a.append(CharacterModeCommand(False))
+			disableCharMode = False
 		a.append(item)
+		if charmode:
+			a.append(CharacterModeCommand(True))
 	return a
