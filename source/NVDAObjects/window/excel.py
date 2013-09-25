@@ -329,15 +329,15 @@ class ExcelSelection(ExcelBase):
 		lastCell=self.excelRangeObject.Item(self.excelRangeObject.Count)
 		# nvdajp begin
 		items = []
-		for p in xrange(1, self.excelRangeObject.Count + 1):
-			c = self.excelRangeObject.Item(p).Text or u'\u30d6\u30e9\u30f3\u30af' #"blank"
-			items.append(c)
 		items.append(
 			#_("{firstAddress} through {lastAddress}")
 			u"{firstAddress}\u304b\u3089{lastAddress}".format(
 				firstAddress=self.getCellAddress(firstCell),
 				lastAddress=self.getCellAddress(lastCell))
 			)
+		for p in xrange(1, self.excelRangeObject.Count + 1):
+			c = self.excelRangeObject.Item(p).Text or u'\u30d6\u30e9\u30f3\u30af' #"blank"
+			items.append(c)
 		return u' '.join(items)
 		# nvdajp end
 		# Translators: This is presented in Excel to show the current selection, for example 'a1 c3 through a10 c10'
