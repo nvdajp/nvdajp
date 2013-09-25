@@ -241,8 +241,10 @@ def replaceJapaneseFromSpeechSequence(speechSequence):
 			cmstate = item.state
 		if disableCharMode:
 			a.append(CharacterModeCommand(False))
+			a.append(item)
+			if charmode:
+				a.append(CharacterModeCommand(True))
 			disableCharMode = False
-		a.append(item)
-		if charmode:
-			a.append(CharacterModeCommand(True))
+		else:
+			a.append(item)
 	return a
