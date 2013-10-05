@@ -1,6 +1,6 @@
 <?php 
-define("LATEST_VERSION", "jpnext130925a");
-define("LATEST_LAUNCHER", "https://dl.dropboxusercontent.com/u/62564469/nvda_jpnext130925a.exe");
+define("LATEST_VERSION", "jpnext131005");
+define("LATEST_LAUNCHER", "https://dl.dropboxusercontent.com/u/62564469/nvda_jpnext131005.exe");
 $version = '';
 if (isset($_GET['version'])) {
 	$version = $_GET['version'];
