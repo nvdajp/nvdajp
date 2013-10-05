@@ -103,6 +103,14 @@ class MainFrame(wx.Frame):
 		super(MainFrame, self).__init__(None, wx.ID_ANY, versionInfo.name, size=(1,1), style=style)
 		self.Bind(wx.EVT_CLOSE, self.onExitCommand)
 		self.sysTrayIcon = SysTrayIcon(self)
+		#: The focus before the last popup or C{None} if unknown.
+		#: This is only valid before L{prePopup} is called,
+		#: so it should be used as early as possible in any popup that needs it.
+		#: @type: L{NVDAObject}
+		self.prevFocus = None
+		#: The focus ancestors before the last popup or C{None} if unknown.
+		#: @type: list of L{NVDAObject}
+		self.prevFocusAncestors = None
 		# This makes Windows return to the previous foreground window and also seems to allow NVDA to be brought to the foreground.
 		self.Show()
 		self.Hide()
@@ -123,7 +131,12 @@ class MainFrame(wx.Frame):
 		L{postPopup} should be called after the dialog or menu has been shown.
 		@postcondition: A dialog or menu may be shown.
 		"""
-		if winUser.getWindowThreadProcessID(winUser.getForegroundWindow())[0] != os.getpid():
+		nvdaPid = os.getpid()
+		focus = api.getFocusObject()
+		if focus.processID != nvdaPid:
+			self.prevFocus = focus
+			self.prevFocusAncestors = api.getFocusAncestors()
+		if winUser.getWindowThreadProcessID(winUser.getForegroundWindow())[0] != nvdaPid:
 			# This process is not the foreground process, so bring it to the foreground.
 			self.Raise()
 
@@ -131,6 +144,8 @@ class MainFrame(wx.Frame):
 		"""Clean up after a popup dialog or menu.
 		This should be called after a dialog or menu was popped up for the user.
 		"""
+		self.prevFocus = None
+		self.prevFocusAncestors = None
 		if not winUser.isWindowVisible(winUser.getForegroundWindow()):
 			# The current foreground window is invisible, so we want to return to the previous foreground window.
 			# Showing and hiding our main window seems to achieve this.
@@ -244,6 +259,9 @@ class MainFrame(wx.Frame):
 
 	def onSpeechSymbolsCommand(self, evt):
 		self._popupSettingsDialog(SpeechSymbolsDialog)
+
+	def onInputGesturesCommand(self, evt):
+		self._popupSettingsDialog(InputGesturesDialog)
 
 	def onAboutCommand(self,evt):
 		# Translators: The title of the dialog to show about info for NVDA.
@@ -376,6 +394,9 @@ class SysTrayIcon(wx.TaskBarIcon):
 			# Translators: The label for the menu item to open Punctuation/symbol pronunciation dialog.
 			item = menu_preferences.Append(wx.ID_ANY, _("&Punctuation/symbol pronunciation..."))
 			self.Bind(wx.EVT_MENU, frame.onSpeechSymbolsCommand, item)
+			# Translators: The label for the menu item to open the Input Gestures dialog.
+			item = menu_preferences.Append(wx.ID_ANY, _("I&nput gestures..."))
+			self.Bind(wx.EVT_MENU, frame.onInputGesturesCommand, item)
 		# Translators: The label for Preferences submenu in NVDA menu.
 		self.menu.AppendMenu(wx.ID_ANY,_("&Preferences"),menu_preferences)
 
@@ -434,13 +455,13 @@ class SysTrayIcon(wx.TaskBarIcon):
 			# Translators: The label for the menu item to open What's New document.
 			item = menu_help.Append(wx.ID_ANY, _("What's &new"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("changes"), item)
-			item = menu_help.Append(wx.ID_ANY, _("NVDA web site"))
+			item = menu_help.Append(wx.ID_ANY, _("NVDA &web site"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("http://www.nvda-project.org/"), item)
 			# Translators: The label for the menu item to view NVDA License document.
-			item = menu_help.Append(wx.ID_ANY, _("License"))
+			item = menu_help.Append(wx.ID_ANY, _("L&icense"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(getDocFilePath("copying.txt", False)), item)
 			# Translators: The label for the menu item to view NVDA Contributors list document.
-			item = menu_help.Append(wx.ID_ANY, _("Contributors"))
+			item = menu_help.Append(wx.ID_ANY, _("C&ontributors"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(getDocFilePath("contributors.txt", False)), item)
 		# Translators: The label for the menu item to open NVDA Welcome Dialog.
 		item = menu_help.Append(wx.ID_ANY, _("We&lcome dialog"))
@@ -448,7 +469,7 @@ class SysTrayIcon(wx.TaskBarIcon):
 		menu_help.AppendSeparator()
 		if updateCheck:
 			# Translators: The label of a menu item to manually check for an updated version of NVDA.
-			item = menu_help.Append(wx.ID_ANY, _("Check for update..."))
+			item = menu_help.Append(wx.ID_ANY, _("&Check for update..."))
 			self.Bind(wx.EVT_MENU, frame.onCheckForUpdateCommand, item)
 		# Translators: The label for the menu item to open About dialog to get information about NVDA.
 		item = menu_help.Append(wx.ID_ABOUT, _("About..."), _("About NVDA"))
@@ -484,7 +505,15 @@ class SysTrayIcon(wx.TaskBarIcon):
 
 	def onActivate(self, evt):
 		mainFrame.prePopup()
+		import appModules.nvda
+		if not appModules.nvda.nvdaMenuIaIdentity:
+			# The NVDA app module doesn't know how to identify the NVDA menu yet.
+			# Signal that the NVDA menu has just been opened.
+			appModules.nvda.nvdaMenuIaIdentity = True
 		self.PopupMenu(self.menu)
+		if appModules.nvda.nvdaMenuIaIdentity is True:
+			# The NVDA menu didn't actually appear for some reason.
+			appModules.nvda.nvdaMenuIaIdentity = None
 		mainFrame.postPopup()
 
 def initialize():

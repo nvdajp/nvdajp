@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-03 19:08+1000\n"
-"PO-Revision-Date: 2013-10-05 08:49+0900\n"
+"PO-Revision-Date: 2013-10-05 09:01+0900\n"
 "Last-Translator: Takuya Nishimoto <nishimotz@gmail.com>\n"
 "Language-Team: NVDA Japanese Team <nishimotz@gmail.com>\n"
 "Language: ja\n"
@@ -179,6 +179,7 @@ msgid "%s:%s"
 msgstr "%s時%s分"
 
 # end of nvdajp
+
 #. Translators: Message to indicate User Account Control (UAC) or other secure desktop screen is active.
 #: IAccessibleHandler.py:679
 msgid "Secure Desktop"
@@ -2018,7 +2019,7 @@ msgstr "点字"
 #. Translators: The label for the Tools submenu in NVDA menu.
 #: globalCommands.py:63 gui\__init__.py:396
 msgid "Tools"
-msgstr "ツール(&T)"
+msgstr "ツール"
 
 #. Translators: The name of a category of NVDA commands.
 #: globalCommands.py:66
@@ -3093,7 +3094,7 @@ msgstr "システムキーボードのキー入力エミュレート"
 #. Translators: The name of a category of NVDA commands.
 #: inputCore.py:37
 msgid "Miscellaneous"
-msgstr "その他"
+msgstr "全般"
 
 #. Translators: The name of a category of NVDA commands.
 #: inputCore.py:40
@@ -4798,7 +4799,7 @@ msgstr "句読点/記号読み辞書(&P)..."
 #. Translators: The label for the menu item to open the Input Gestures dialog.
 #: gui\__init__.py:364
 msgid "I&nput gestures..."
-msgstr "入力ジェスチャー(&N)"
+msgstr "入力ジェスチャー(&N)..."
 
 #. Translators: The label for Preferences submenu in NVDA menu.
 #: gui\__init__.py:367
