@@ -144,6 +144,7 @@ confspec = ConfigObj(StringIO(
 	speakCommandKeys = boolean(default=false)
 	speechInterruptForCharacters = boolean(default=true)
 	speechInterruptForEnter = boolean(default=true)
+	allowSkimReadingInSayAll = boolean(default=False)
 
 [virtualBuffers]
 	maxLineLength = integer(default=100)
