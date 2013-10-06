@@ -65,11 +65,11 @@ class SettingsDialog(wx.Dialog):
 		@param parent: The parent for this dialog; C{None} for no parent.
 		@type parent: wx.Window
 		"""
-		super(SettingsDialog, self).__init__(parent, wx.ID_ANY, self.title)
+		super(SettingsDialog, self).__init__(parent, wx.ID_ANY, self.title, style=wx.DEFAULT_FRAME_STYLE)
 		mainSizer=wx.BoxSizer(wx.VERTICAL)
 		self.settingsSizer=wx.BoxSizer(wx.VERTICAL)
 		self.makeSettings(self.settingsSizer)
-		mainSizer.Add(self.settingsSizer,border=20,flag=wx.LEFT|wx.RIGHT|wx.TOP)
+		mainSizer.Add(self.settingsSizer,border=20,flag=wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND)
 		buttonSizer=self.CreateButtonSizer(wx.OK|wx.CANCEL)
 		mainSizer.Add(buttonSizer,border=20,flag=wx.LEFT|wx.RIGHT|wx.BOTTOM)
 		mainSizer.Fit(self)
