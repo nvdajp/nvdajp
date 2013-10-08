@@ -95,6 +95,9 @@ badUIAWindowClassNames=[
 	"UIItem",
 	"UIImage",
 	"msctls_statusbar32",
+	"SysLink",
+	"Static",
+	"CiceroUIWndFrame", # Microsoft Office IME 2010 Japanese
 ]
 
 NVDAUnitsToUIAUnits={
@@ -295,6 +298,7 @@ class UIAHandler(COMObject):
 			# #2816: Outlook 2010 auto complete does not fire enough UIA events, IAccessible is better.
 			if winUser.getClassName(parentHwnd)=="Net UI Tool Window":
 				return False
+		log.info(windowClass)
 		# Ask the window if it supports UIA natively
 		return windll.UIAutomationCore.UiaHasServerSideProvider(hwnd)
 
