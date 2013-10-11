@@ -92,19 +92,21 @@ def getAttrDesc(a):
 def hex2kana(code):
 	"""
 	input 0x123a
-　	output u'イチニーサンエー'
+　	#output 'イチニーサンエー'
+　	output 'u+123a'
 	"""
 	s = ''
 	src = hex(code)[2:]
 	src = ("000" + src)[-4:]
-	for c in src:
-		if c == '2':
-			s += u'ニー'
-		elif c == '5':
-			s += u'ゴー'
-		else:
-			s += get_short_desc(c)
-	return s
+	return 'u+' + src
+	#for c in src:
+	#	if c == '2':
+	#		s += u'ニー'
+	#	elif c == '5':
+	#		s += u'ゴー'
+	#	else:
+	#		s += get_short_desc(c)
+	#return s
 
 def getCandidateCharDesc(c, a):
 	d = ''
