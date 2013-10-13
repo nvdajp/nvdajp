@@ -89,24 +89,32 @@ def getAttrDesc(a):
 		d.append(u'オーモジ')
 	return ' '.join(d)
 
-def hex2kana(code):
+def code2kana(code):
 	"""
 	input 0x123a
-　	#output 'イチニーサンエー'
+　	output 'イチニーサンエー'
+	"""
+	s = ''
+	src = hex(code)[2:]
+	src = ("000" + src)[-4:]
+	for c in src:
+		if c == '2':
+			s += u'ニー'
+		elif c == '5':
+			s += u'ゴー'
+		else:
+			s += get_short_desc(c)
+	return s
+
+def code2hex(code):
+	"""
+	input 0x123a
 　	output 'u+123a'
 	"""
 	s = ''
 	src = hex(code)[2:]
 	src = ("000" + src)[-4:]
 	return 'u+' + src
-	#for c in src:
-	#	if c == '2':
-	#		s += u'ニー'
-	#	elif c == '5':
-	#		s += u'ゴー'
-	#	else:
-	#		s += get_short_desc(c)
-	#return s
 
 def getCandidateCharDesc(c, a):
 	d = ''
@@ -126,7 +134,7 @@ def getCandidateCharDesc(c, a):
 				log.debug(u"sym (%s) %s" % (c, d2))
 				d = d2
 			else:
-				d = hex2kana(ord(c[0]))
+				d = code2hex(ord(c[0]))
 				log.debug(u"code (%s) %s" % (c, d))
 	if len(d) > 1:
 		return ' ' + d + ' '
