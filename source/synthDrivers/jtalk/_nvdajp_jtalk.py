@@ -38,9 +38,42 @@ RATE_BOOST_MULTIPLIER = 1.5
 
 # math.log(150) = 5.0, math.log(350) = 5.86
 _jtalk_voices = [
-	{"id": "V1", "name": "m001", "lang":"ja", "samp_rate": 48000, "fperiod": 240, "alpha": 0.55, "lf0_base":5.0,  "use_lpf":1, "speaker_attenuation":1.0, "dir": "m001", "espeak_variant": "max"},
-	{"id": "V2", "name": "mei",  "lang":"ja", "samp_rate": 48000, "fperiod": 240, "alpha": 0.55, "lf0_base":5.86, "use_lpf":1, "speaker_attenuation":0.5, "dir": "mei_normal", "espeak_variant": "f1"},
-	{"id": "V3", "name": "lite", "lang":"ja", "samp_rate": 16000, "fperiod":  80, "alpha": 0.42, "lf0_base":5.0,  "use_lpf":0, "speaker_attenuation":1.0, "dir": "voice", "espeak_variant": "max"},
+	{"id": "V1",
+	 "name": "m001",
+	 "lang":"ja",
+	 "samp_rate": 48000,
+	 "fperiod": 240,
+	 "alpha": 0.55,
+	 "lf0_base": 5.0,
+	 "pitch_bias": 0,
+	 "use_lpf": 1,
+	 "speaker_attenuation": 1.0,
+	 "dir": "m001",
+	 "espeak_variant": "max"},
+	{"id": "V2",
+	 "name": "mei",
+	 "lang":"ja",
+	 "samp_rate": 48000,
+	 "fperiod": 240,
+	 "alpha": 0.55,
+	 "lf0_base": 5.86,
+	 "pitch_bias": -10,
+	 "use_lpf": 1,
+	 "speaker_attenuation": 0.5,
+	 "dir": "mei_normal",
+	 "espeak_variant": "f1"},
+	{"id": "V3",
+	 "name": "lite",
+	 "lang":"ja",
+	 "samp_rate": 16000,
+	 "fperiod": 80,
+	 "alpha": 0.42,
+	 "lf0_base": 5.0,
+	 "pitch_bias": 0,
+	 "use_lpf": 0,
+	 "speaker_attenuation": 1.0,
+	 "dir": "voice",
+	 "espeak_variant": "max"},
 ]
 default_jtalk_voice = _jtalk_voices[1] # V2
 voice_args = None
@@ -88,7 +121,7 @@ def _jtalk_speak(msg, index=None, prop=None):
 	currentEngine = 2
 	if DEBUG: logwrite("p:%d i:%d msg:%s" % (prop.pitch, prop.inflection, msg))
 	la = 0.020 * prop.inflection # 50 = original range
-	ls = 0.015 * (prop.pitch - 50.0) # 50 = no shift
+	ls = 0.015 * (prop.pitch - 50.0 + voice_args['pitch_bias']) # 50 = no shift
 	lo = ls + voice_args['lf0_base'] * (1 - la)
 	if DEBUG: logwrite("lo:%f la:%f" % (lo, la))
 	for m in string.split(msg):
