@@ -3,11 +3,12 @@
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
-#Copyright (C) 2006-2010 Michael Curran <mick@kulgan.net>, James Teh <jamie@jantrid.net>, Peter Vágner <peter.v@datagate.sk>, Aleksey Sadovoy <lex@onm.su>
+#Copyright (C) 2006-2013 NV Access Limited, Peter Vágner, Aleksey Sadovoy
 
 """Keyboard support"""
 
 import time
+import re
 import wx
 import winUser
 import vkCodes
@@ -200,6 +201,11 @@ def internal_keyUpEvent(vkCode,scanCode,extended,injected):
 		if keyCode != stickyNVDAModifier:
 			currentModifiers.discard(keyCode)
 
+		# help inputCore  manage its sayAll state for keyboard modifiers -- inputCore itself has no concept of key releases
+		if not currentModifiers:
+			inputCore.manager.lastModifierWasInSayAll=False
+
+
 		if keyCode in trappedKeys:
 			trappedKeys.remove(keyCode)
 			return False
@@ -261,12 +267,16 @@ class KeyboardInputGesture(inputCore.InputGesture):
 	NORMAL_MODIFIER_KEYS = {
 		winUser.VK_LCONTROL: winUser.VK_CONTROL,
 		winUser.VK_RCONTROL: winUser.VK_CONTROL,
+		winUser.VK_CONTROL: None,
 		winUser.VK_LSHIFT: winUser.VK_SHIFT,
 		winUser.VK_RSHIFT: winUser.VK_SHIFT,
+		winUser.VK_SHIFT: None,
 		winUser.VK_LMENU: winUser.VK_MENU,
 		winUser.VK_RMENU: winUser.VK_MENU,
+		winUser.VK_MENU: None,
 		winUser.VK_LWIN: VK_WIN,
 		winUser.VK_RWIN: VK_WIN,
+		VK_WIN: None,
 	}
 
 	#: All possible toggle key vk codes.
@@ -332,6 +342,11 @@ class KeyboardInputGesture(inputCore.InputGesture):
 				return "plus"
 			return unichr(vkChar).lower()
 
+		if self.vkCode == 0xFF:
+			# #3468: This key is unknown to Windows.
+			# GetKeyNameText often returns something inappropriate in these cases
+			# due to disregarding the extended flag.
+			return "unknown_%02x" % self.scanCode
 		return winUser.getKeyNameText(self.scanCode, self.isExtended)
 
 	def _get_modifierNames(self):
@@ -352,7 +367,11 @@ class KeyboardInputGesture(inputCore.InputGesture):
 			key="+".join(self._keyNamesInDisplayOrder))
 
 	def _get_displayName(self):
-		return "+".join(localizedKeyLabels.get(key, key) for key in self._keyNamesInDisplayOrder)
+		return "+".join(
+			# Translators: Reported for an unknown key press.
+			# %s will be replaced with the key code.
+			_("unknown %s") % key[8:] if key.startswith("unknown_")
+			else localizedKeyLabels.get(key.lower(), key) for key in self._keyNamesInDisplayOrder)
 
 	def _get_identifiers(self):
 		keyNames = set(self.modifierNames)
@@ -367,6 +386,11 @@ class KeyboardInputGesture(inputCore.InputGesture):
 		if self.isExtended and winUser.VK_VOLUME_MUTE <= self.vkCode <= winUser.VK_VOLUME_UP:
 			# Don't report volume controlling keys.
 			return False
+		if self.vkCode == 0xFF:
+			# #3468: This key is unknown to Windows.
+			# This could be for an event such as gyroscope movement,
+			# so don't report it.
+			return False
 		# Aside from space, a key name of more than 1 character is a command.
 		if self.vkCode != winUser.VK_SPACE and len(self.mainKeyName) > 1:
 			return True
@@ -380,6 +404,11 @@ class KeyboardInputGesture(inputCore.InputGesture):
 		if inputCore.manager.isInputHelpActive:
 			return self.SPEECHEFFECT_CANCEL
 		if self.isExtended and winUser.VK_VOLUME_MUTE <= self.vkCode <= winUser.VK_VOLUME_UP:
+			return None
+		if self.vkCode == 0xFF:
+			# #3468: This key is unknown to Windows.
+			# This could be for an event such as gyroscope movement,
+			# so don't interrupt speech.
 			return None
 		if not config.conf['keyboard']['speechInterruptForCharacters'] and (not self.shouldReportAsCommand or self.vkCode in (winUser.VK_SHIFT, winUser.VK_LSHIFT, winUser.VK_RSHIFT)):
 			return None
@@ -397,7 +426,7 @@ class KeyboardInputGesture(inputCore.InputGesture):
 		toggleState = winUser.getKeyState(self.vkCode) & 1
 		key = self.mainKeyName
 		ui.message(u"{key} {state}".format(
-			key=localizedKeyLabels.get(key, key),
+			key=localizedKeyLabels.get(key.lower(), key),
 			state=_("on") if toggleState else _("off")))
 
 	def send(self):
@@ -471,3 +500,45 @@ class KeyboardInputGesture(inputCore.InputGesture):
 			raise ValueError
 
 		return cls(keys[:-1], vk, 0, ext)
+
+	RE_IDENTIFIER = re.compile(r"^kb(?:\((.+?)\))?:(.*)$")
+	@classmethod
+	def getDisplayTextForIdentifier(cls, identifier):
+		layout, keys = cls.RE_IDENTIFIER.match(identifier).groups()
+		dispSource = None
+		if layout:
+			try:
+				# Translators: Used when describing keys on the system keyboard with a particular layout.
+				# %s is replaced with the layout name.
+				# For example, in English, this might produce "laptop keyboard".
+				dispSource = _("%s keyboard") % cls.LAYOUTS[layout]
+			except KeyError:
+				pass
+		if not dispSource:
+			# Translators: Used when describing keys on the system keyboard applying to all layouts.
+			dispSource = _("keyboard, all layouts")
+
+		keys = set(keys.split("+"))
+		names = []
+		main = None
+		try:
+			# If present, the NVDA key should appear first.
+			keys.remove("nvda")
+			names.append("NVDA")
+		except KeyError:
+			pass
+		for key in keys:
+			label = localizedKeyLabels.get(key, key)
+			vk = vkCodes.byName.get(key)
+			# vkCodes.byName values are (vk, ext)
+			if vk:
+				vk = vk[0]
+			if vk in cls.NORMAL_MODIFIER_KEYS:
+				names.append(label)
+			else:
+				# The main key must be last, so handle that outside the loop.
+				main = label
+		names.append(main)
+		return dispSource, "+".join(names)
+
+inputCore.registerGestureSource("kb", KeyboardInputGesture)
