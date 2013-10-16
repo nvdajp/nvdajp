@@ -762,7 +762,7 @@ class GlobalCommands(ScriptableObject):
 			try:
 				import nvdajp_dic
 				c = ord(info.text)
-				s = nvdajp_dic.hex2kana(c)
+				s = nvdajp_dic.code2kana(c)
 				o = u"%d %s" % (c, s)
 				speech.speakMessage(o)
 			except:
