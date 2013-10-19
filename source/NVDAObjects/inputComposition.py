@@ -63,8 +63,11 @@ def needDiscriminantReading(gesture):
 			(win32con.VK_SPACE, win32con.VK_CONVERT, 
 			 win32con.VK_LEFT, win32con.VK_RIGHT,
 			 win32con.VK_UP, win32con.VK_DOWN,
+			 win32con.VK_F2, win32con.VK_F3,
+			 win32con.VK_F4, win32con.VK_F5,
 			 win32con.VK_F6, win32con.VK_F7, win32con.VK_F8,
 			 win32con.VK_F9, win32con.VK_F10,
+			 win32con.VK_F11,
 			 win32con.VK_NONCONVERT, win32con.VK_ESCAPE,
 			 win32con.VK_TAB):
 		return True
