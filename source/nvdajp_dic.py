@@ -180,3 +180,12 @@ def getJapaneseDiscriminantReading(name):
 		prevChar = a[0]
 	s = s.replace('  ', ' ')
 	return s.strip(' ')
+
+def processHexCode(locale, msg):
+	if isJapaneseLocale(locale):
+		try:
+			msg = re.sub(r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x"+x.group(1),16)), unicode(msg))
+		except Exception, e:
+			log.debug(e)
+			pass
+	return msg
