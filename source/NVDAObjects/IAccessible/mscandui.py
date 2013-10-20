@@ -70,41 +70,43 @@ class MSCandUI_candidateListItem(BaseCandidateItem):
 	def event_stateChange(self):
 		if controlTypes.STATE_SELECTED in self.states:
 			reportSelectedCandidate(self)
-		import tones
-		import windowUtils
-		import NVDAObjects.IAccessible
-		import time
-		import winUser
-		import speech
-		import mouseHandler
-		from logHandler import log
-		import nvdajp_dic
-		parent = api.getDesktopObject().windowHandle
-		try:
-			obj = NVDAObjects.IAccessible.getNVDAObjectFromEvent(
-				windowUtils.findDescendantWindow(parent, className='mscandui40.comment'),
-				winUser.OBJID_CLIENT, 0)
-		except LookupError:
-			return
-		if not obj or not obj.firstChild or not obj.firstChild.children:
-			return
-		if not winUser.isWindowVisible(obj.windowHandle):
-			return
-		tones.beep(880,20)
-		msg = ''
-		for o in obj.firstChild.children:
-			s = o.name
-			d = o.decodedAccDescription
-			#log.info(unicode(s) + ' ' + unicode(d))
-			if d == 'Headword':
-				s = _('heading') + ' ' + nvdajp_dic.getJapaneseDiscriminantReading(s)
-			elif d:
-				s = None # ignore objects which have description
-			if s:
-				if msg:
-					msg += ' '
-				msg += s
-		queueHandler.queueFunction(queueHandler.eventQueue,ui.message,msg)
+			#nvdajp
+			import wx
+			wx.CallLater(1000, notifyCandidateComment, self)
+
+def notifyCandidateComment(item):
+	import tones
+	import windowUtils
+	import NVDAObjects.IAccessible
+	import winUser
+	from logHandler import log
+	import nvdajp_dic
+	parent = api.getDesktopObject().windowHandle
+	try:
+		obj = NVDAObjects.IAccessible.getNVDAObjectFromEvent(
+			windowUtils.findDescendantWindow(parent, className='mscandui40.comment', visible=True),
+			winUser.OBJID_CLIENT, 0)
+	except LookupError:
+		return
+	if not obj or not obj.firstChild or not obj.firstChild.children:
+		return
+	currDiscReading = item.name
+	msg = ''
+	isCurrItem = False
+	for o in obj.firstChild.children:
+		s = o.name
+		d = o.decodedAccDescription
+		if d == 'Headword':
+			if currDiscReading == nvdajp_dic.getJapaneseDiscriminantReading(s):
+				isCurrItem = True
+			else:
+				isCurrItem = False
+		if d:
+			s = None
+		if s and isCurrItem:
+			msg += s
+	if msg:
+		ui.message(msg)
 
 class MSCandUI21_candidateMenuItem(BaseCandidateItem):
 
