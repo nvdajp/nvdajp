@@ -70,6 +70,27 @@ class MSCandUI_candidateListItem(BaseCandidateItem):
 	def event_stateChange(self):
 		if controlTypes.STATE_SELECTED in self.states:
 			reportSelectedCandidate(self)
+		import tones
+		import windowUtils
+		import NVDAObjects.IAccessible
+		import time
+		import winUser
+		import speech
+		import mouseHandler
+		from logHandler import log
+		time.sleep(1.0)
+		tones.beep(1000,10)
+		parent = api.getDesktopObject().windowHandle
+		try:
+			obj = NVDAObjects.IAccessible.getNVDAObjectFromEvent(
+				windowUtils.findDescendantWindow(parent, visible=True, className='mscandui40.comment'),
+				winUser.OBJID_CLIENT, 0)
+		except LookupError:
+			return
+		if not obj:
+			return
+		log.info(obj)
+		speech.speakMessage(obj.name)
 
 class MSCandUI21_candidateMenuItem(BaseCandidateItem):
 
