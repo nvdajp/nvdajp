@@ -765,14 +765,15 @@ class GlobalCommands(ScriptableObject):
 				s = nvdajp_dic.code2kana(c)
 				o = u"%d %s" % (c, s)
 				speech.speakMessage(o)
+				braille.handler.message(u"%d %s" % (c, nvdajp_dic.code2hex(c)))
 			except:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		else:
 			if characterDescriptionMode:
-				speech.speakMessage(_("Character description mode disabled"))
+				ui.message(_("Character description mode disabled"))
 				characterDescriptionMode = False
 			else:
-				speech.speakMessage(_("Character description mode enabled"))
+				ui.message(_("Character description mode enabled"))
 				characterDescriptionMode = True
 		#nvdajp end
 	# Translators: Input help mode message for report current character under review cursor command.
