@@ -78,19 +78,33 @@ class MSCandUI_candidateListItem(BaseCandidateItem):
 		import speech
 		import mouseHandler
 		from logHandler import log
-		time.sleep(1.0)
-		tones.beep(1000,10)
+		import nvdajp_dic
 		parent = api.getDesktopObject().windowHandle
 		try:
 			obj = NVDAObjects.IAccessible.getNVDAObjectFromEvent(
-				windowUtils.findDescendantWindow(parent, visible=True, className='mscandui40.comment'),
+				windowUtils.findDescendantWindow(parent, className='mscandui40.comment'),
 				winUser.OBJID_CLIENT, 0)
 		except LookupError:
 			return
-		if not obj:
+		if not obj or not obj.firstChild or not obj.firstChild.children:
 			return
-		log.info(obj)
-		speech.speakMessage(obj.name)
+		if not winUser.isWindowVisible(obj.windowHandle):
+			return
+		tones.beep(880,20)
+		msg = ''
+		for o in obj.firstChild.children:
+			s = o.name
+			d = o.decodedAccDescription
+			#log.info(unicode(s) + ' ' + unicode(d))
+			if d == 'Headword':
+				s = _('heading') + ' ' + nvdajp_dic.getJapaneseDiscriminantReading(s)
+			elif d:
+				s = None # ignore objects which have description
+			if s:
+				if msg:
+					msg += ' '
+				msg += s
+		queueHandler.queueFunction(queueHandler.eventQueue,ui.message,msg)
 
 class MSCandUI21_candidateMenuItem(BaseCandidateItem):
 
