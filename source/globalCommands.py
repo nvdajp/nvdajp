@@ -752,6 +752,9 @@ class GlobalCommands(ScriptableObject):
 				speech.spellTextInfo(info,useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			import nvdajp_dic
+			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
+			braille.handler.message(s)
 		elif scriptCount==1:
 			import nvdajp_dic
 			import languageHandler
