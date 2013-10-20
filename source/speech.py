@@ -71,6 +71,10 @@ def isBlank(text):
 RE_CONVERT_WHITESPACE = re.compile("[\0\r\n]")
 
 def processText(locale,text,symbolLevel):
+	#nvdajp begin
+	import nvdajp_dic
+	text = nvdajp_dic.processHexCode(locale, text)
+	#nvdajp end
 	text = speechDictHandler.processText(text)
 	text = characterProcessing.processSpeechSymbols(locale, text, symbolLevel)
 	text = RE_CONVERT_WHITESPACE.sub(u" ", text)
