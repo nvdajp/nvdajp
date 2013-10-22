@@ -768,7 +768,7 @@ class GlobalCommands(ScriptableObject):
 				import nvdajp_dic
 				c = ord(info.text)
 				s = nvdajp_dic.code2kana(c)
-				o = u"%d %s" % (c, s)
+				o = u"%d u+%s" % (c, s)
 				speech.speakMessage(o)
 				braille.handler.message(u"%d %s" % (c, nvdajp_dic.code2hex(c)))
 			except:
