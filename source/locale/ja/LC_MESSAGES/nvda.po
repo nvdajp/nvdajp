@@ -146,6 +146,10 @@ msgstr "%gpt"
 msgid "full shape space"
 msgstr "全角スペース"
 
+#: NVDAHelper.py:194
+msgid "Clear"
+msgstr "クリア"
+
 #: settingDialogs.py:1442
 msgid "Katakana pitch change percentage"
 msgstr "カタカナの声の高さの変化(-100から100)"
