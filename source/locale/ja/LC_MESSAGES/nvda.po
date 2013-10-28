@@ -182,6 +182,11 @@ msgstr "日本語6点情報処理点字"
 msgid "%s:%s"
 msgstr "%s時%s分"
 
+#. Translators: The label for the Tools submenu in NVDA menu.
+msgctxt "nvdaMenu"
+msgid "Tools"
+msgstr "ツール(&T)"
+
 # end of nvdajp
 
 #. Translators: Message to indicate User Account Control (UAC) or other secure desktop screen is active.
