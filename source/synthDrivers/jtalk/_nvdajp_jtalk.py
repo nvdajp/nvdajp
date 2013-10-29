@@ -19,6 +19,7 @@ import nvwave
 from .. import _espeak
 import _jtalk_core
 import _nvdajp_predic 
+from _nvdajp_unicode import unicode_normalize
 import _bgthread
 import sys
 import time
@@ -32,15 +33,47 @@ if hasattr(sys,'frozen'):
 		jtalk_dir = d
 
 DEBUG = False
-MULTILANG = False
 
 RATE_BOOST_MULTIPLIER = 1.5
 
 # math.log(150) = 5.0, math.log(350) = 5.86
 _jtalk_voices = [
-	{"id": "V1", "name": "m001", "lang":"ja", "samp_rate": 48000, "fperiod": 240, "alpha": 0.55, "lf0_base":5.0,  "pitch_bias": 0,   "use_lpf":1, "speaker_attenuation":1.0, "dir": "m001"},
-	{"id": "V2", "name": "mei",  "lang":"ja", "samp_rate": 48000, "fperiod": 240, "alpha": 0.55, "lf0_base":5.86, "pitch_bias": -10, "use_lpf":1, "speaker_attenuation":0.5, "dir": "mei_normal"},
-	{"id": "V3", "name": "lite", "lang":"ja", "samp_rate": 16000, "fperiod":  80, "alpha": 0.42, "lf0_base":5.0,  "pitch_bias": 0,   "use_lpf":0, "speaker_attenuation":1.0, "dir": "voice"},
+	{"id": "V1",
+	 "name": "m001",
+	 "lang":"ja",
+	 "samp_rate": 48000,
+	 "fperiod": 240,
+	 "alpha": 0.55,
+	 "lf0_base": 5.0,
+	 "pitch_bias": 0,
+	 "use_lpf": 1,
+	 "speaker_attenuation": 1.0,
+	 "dir": "m001",
+	 "espeak_variant": "max"},
+	{"id": "V2",
+	 "name": "mei",
+	 "lang":"ja",
+	 "samp_rate": 48000,
+	 "fperiod": 240,
+	 "alpha": 0.55,
+	 "lf0_base": 5.86,
+	 "pitch_bias": -10,
+	 "use_lpf": 1,
+	 "speaker_attenuation": 0.5,
+	 "dir": "mei_normal",
+	 "espeak_variant": "f1"},
+	{"id": "V3",
+	 "name": "lite",
+	 "lang":"ja",
+	 "samp_rate": 16000,
+	 "fperiod": 80,
+	 "alpha": 0.42,
+	 "lf0_base": 5.0,
+	 "pitch_bias": 0,
+	 "use_lpf": 0,
+	 "speaker_attenuation": 1.0,
+	 "dir": "voice",
+	 "espeak_variant": "max"},
 ]
 default_jtalk_voice = _jtalk_voices[1] # V2
 voice_args = None
@@ -80,8 +113,7 @@ def _jtalk_speak(msg, index=None, prop=None):
 		fperiod_current = voice_args['fperiod']
 	else:
 		fperiod_current = fperiod
-	if msg == u'ー': msg = u'チョーオン'
-	if msg == u'ン': msg = u'ウン'
+	msg = unicode_normalize(msg)
 	msg = _nvdajp_predic.convert(msg)
 	lw = None
 	if DEBUG: lw = logwrite
@@ -131,27 +163,32 @@ def _jtalk_speak(msg, index=None, prop=None):
 
 espeakMark = 10000
 
+def _espeak_speak(msg, lang, index=None, prop=None):
+	global currentEngine, lastIndex, espeakMark
+	currentEngine = 1
+	msg = unicode(msg)
+	msg.translate({ord(u'\01'):None,ord(u'<'):u'&lt;',ord(u'>'):u'&gt;'})
+	msg = u"<voice xml:lang=\"%s\">%s</voice>" % (lang, msg)
+	msg += u"<mark name=\"%d\" />" % espeakMark
+	_espeak.speak(msg)
+	while currentEngine == 1 and _espeak.lastIndex != espeakMark:
+		time.sleep(0.1)
+		watchdog.alive()
+	time.sleep(0.4)
+	watchdog.alive()
+	lastIndex = index
+	currentEngine = 0
+	espeakMark += 1
+
 # call from BgThread
 def _speak(arg):
-	global MULTILANG, currentEngine, lastIndex, espeakMark
 	msg, lang, index, prop = arg
 	if DEBUG: logwrite('[' + lang + ']' + msg)
 	if DEBUG: logwrite("_speak(%s)" % msg)
-	if MULTILANG and lang != 'ja':
-		currentEngine = 1
-		msg = unicode(msg)
-		msg.translate({ord(u'\01'):None,ord(u'<'):u'&lt;',ord(u'>'):u'&gt;'})
-		msg = u"<voice xml:lang=\"%s\">%s</voice>" % (lang, msg)
-		msg += u"<mark name=\"%d\" />" % espeakMark
-		_espeak.speak(msg)
-		while currentEngine == 1 and _espeak.lastIndex != espeakMark:
-			time.sleep(0.1)
-			watchdog.alive()
-		lastIndex = index
-		currentEngine = 0
-		espeakMark += 1
-	else:
+	if lang == 'ja':
 		_jtalk_speak(msg, index, prop)
+	else:
+		_espeak_speak(msg, lang, index, prop)
 
 def speak(msg, lang, index=None, voiceProperty_=None):
 	msg = msg.strip()
@@ -161,8 +198,8 @@ def speak(msg, lang, index=None, voiceProperty_=None):
 	_bgthread.execWhenDone(_speak, arg, mustBeAsync=True)
 
 def stop():
-	global MULTILANG, currentEngine
-	if MULTILANG and currentEngine == 1:
+	global currentEngine
+	if currentEngine == 1:
 		_espeak.stop()
 		currentEngine = 0
 		return
@@ -189,19 +226,16 @@ def stop():
 	lastIndex = None
 
 def pause(switch):
-	global player
-	global MULTILANG, currentEngine
-	if MULTILANG and currentEngine == 1:
+	if currentEngine == 1:
 		_espeak.pause(switch)
-		return
-	player.pause(switch)
+	elif currentEngine == 2:
+		player.pause(switch)
 
-def initialize(voice = default_jtalk_voice, _multilang = False):
-	global MULTILANG
-	MULTILANG = _multilang
-	if MULTILANG:
-		_espeak.initialize()
-		log.info("jtalk using eSpeak version %s" % _espeak.info())
+def initialize(voice = default_jtalk_voice):
+	_espeak.initialize()
+	_espeak.setVoiceByLanguage("en")
+	_espeak.setVoiceAndVariant(variant=voice["espeak_variant"])
+	log.info("jtalk using eSpeak version %s" % _espeak.info())
 	global player, logwrite, voice_args
 	global speaker_attenuation
 	voice_args = voice
@@ -228,14 +262,12 @@ def initialize(voice = default_jtalk_voice, _multilang = False):
 	if DEBUG: logwrite("jtalk for NVDA started. voice:" + voice_args['dir'])
 
 def terminate():
-	global MULTILANG
 	global player
 	stop()
 	_bgthread.terminate()
 	player.close()
 	player = None
-	if MULTILANG:
-		_espeak.terminate()
+	_espeak.terminate()
 
 def get_rate(rateBoost):
 	f = fperiod

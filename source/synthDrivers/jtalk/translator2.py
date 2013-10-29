@@ -8,7 +8,7 @@
 from __future__ import unicode_literals
 import os
 import copy
-import unicodedata
+from _nvdajp_unicode import unicode_normalize
 from mecab import *
 import translator1
 
@@ -140,15 +140,6 @@ def update_phonetic_symbols(mo):
 		if (mo.yomi[p] == 'ジ' and mo.kana[p] == 'ヂ') or (
 			mo.yomi[p] == 'ズ' and mo.kana[p] == 'ヅ'):
 			mo.output = mo.output[:p] + mo.kana[p] + mo.output[p+1:]
-
-def unicode_normalize(s):
-	# Mecab_text2mecab() で全角に変換され NFKC で戻せない文字
-	s = s.replace('．', '.')
-	s = unicodedata.normalize('NFKC', s)
-	s = s.replace('\u2212', '-')  # 0x2212 MUNUS SIGN to 0x002D HYPHEN-MINUS
-	s = s.replace('\u00a5', '\\') # 0x00A5 YEN SIGN
-	s = s.replace('\u301c', '~')  # 0x301C WAVE DASH
-	return s
 
 def mecab_to_morphs(mf):
 	li = []
