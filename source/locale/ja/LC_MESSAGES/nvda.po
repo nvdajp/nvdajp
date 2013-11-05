@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-16 19:08+1000\n"
-"PO-Revision-Date: 2013-10-17 10:00+0900\n"
+"POT-Creation-Date: 2013-10-31 21:12+1000\n"
+"PO-Revision-Date: 2013-11-02 20:32+0900\n"
 "Last-Translator: Takuya Nishimoto <nishimotz@gmail.com>\n"
 "Language-Team: NVDA Japanese Team <nishimotz@gmail.com>\n"
 "Language: ja\n"
@@ -706,11 +706,11 @@ msgstr "コウホ アリ"
 
 #. Translators: Displayed in braille when an object (e.g. a tree view item) is expanded.
 msgid "-"
-msgstr "オープン"
+msgstr "テンカイ"
 
 #. Translators: Displayed in braille when an object (e.g. a tree view item) is collapsed.
 msgid "+"
-msgstr "クローズ"
+msgstr "オリタタミ"
 
 #. Translators: Displayed in braille when an object (e.g. an editable text field) is read-only.
 msgid "ro"
@@ -4361,7 +4361,7 @@ msgstr "編集中"
 msgid "manual"
 msgstr "手動"
 
-#. Translators: Reported for a profile which has been triggered
+#. Translators: Reported for a profile which is currently triggered
 #. in the Configuration Profiles dialog.
 msgid "triggered"
 msgstr "トリガーしました"
@@ -6018,6 +6018,10 @@ msgstr "デスクトップ"
 msgid "default color"
 msgstr "標準色"
 
+#. Translators: Used to express an address range in excel.
+msgid "{start} through {end}"
+msgstr "{start} から {end}"
+
 #. Translators: a message reported in the SetColumnHeaderRow script for Excel.
 #. Translators: a message reported in the SetRowHeaderColumn script for Excel.
 msgid ""
@@ -6058,7 +6062,7 @@ msgstr ""
 
 #. Translators: This is presented in Excel when the current cell contains a formula.
 msgid "has formula"
-msgstr "数式があります"
+msgstr "数式"
 
 #. Translators: This is presented in Excel to show the current selection, for example 'a1 c3 through a10 c10'
 msgid "{firstAddress} {firstContent} through {lastAddress} {lastContent}"
@@ -6139,10 +6143,10 @@ msgid "Endnotes"
 msgstr "エンドノート"
 
 msgid "Even pages footer"
-msgstr "奇数ページフッター"
+msgstr "偶数ページフッター"
 
 msgid "Even pages header"
-msgstr "奇数ページヘッダー"
+msgstr "偶数ページヘッダー"
 
 msgid "First page footer"
 msgstr "先頭ページフッター"
@@ -6186,4 +6190,3 @@ msgstr "HIMS社製 Braille Sense/Braille EDGE シリーズ"
 #. Translators: The name of a braille display.
 msgid "HIMS SyncBraille"
 msgstr "HIMS社製 SyncBraille"
-
