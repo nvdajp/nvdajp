@@ -220,11 +220,15 @@ Windows 32ビット版および64ビット版のいずれをお使いの場合�
 - MSSpeech_TTS_ja-JP_Haruka.msi
 -
 
-++ ProTALKER ++
+++ Vocalizer ++
 
-SAPI4 の ProTALKER での不具合については下記を参照してください。
+Tiflotecnia が販売する Vocalizer for NVDA は NVDA のアドオンになっており、インストール環境とポータブル環境のどちらでも利用できます。
 
-- [チケット29870(ProTALKERの話速設定) http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29870]
+日本語音声 Kyoko が提供されています。
+
+NVDA 日本語チームはこの Vocalizer ドライバの翻訳を担当しています。
+
+- [Vocalizer for NVDA https://vocalizer-nvda.com/]
 
 
 + 点字ディスプレイ +
