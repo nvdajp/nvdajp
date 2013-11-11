@@ -139,11 +139,11 @@ class IA2TextTextInfo(textInfos.offsets.OffsetsTextInfo):
 			text=self._getTextRange(self._startOffset,self._endOffset)
 			try:
 				self._startOffset=text.rindex(u'\ufffc',0,oldStart-self._startOffset)
-			except ValueError:
+			except (ValueError, AttributeError):
 				pass
 			try:
 				self._endOffset=text.index(u'\ufffc',oldEnd-self._startOffset)
-			except ValueError:
+			except (ValueError, AttributeError):
 				pass
 
 	def _getCaretOffset(self):
