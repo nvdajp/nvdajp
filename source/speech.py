@@ -559,6 +559,9 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 	extraDetail=unit in (textInfos.UNIT_CHARACTER,textInfos.UNIT_WORD)
 	if not formatConfig:
 		formatConfig=config.conf["documentFormatting"]
+	if extraDetail:
+		formatConfig=formatConfig.copy()
+		formatConfig['extraDetail']=True
 	reportIndentation=unit==textInfos.UNIT_LINE and formatConfig["reportLineIndentation"]
 
 	speechSequence=[]
@@ -885,7 +888,7 @@ def getControlFieldSpeech(attrs,ancestorAttrs,fieldType,formatConfig=None,extraD
 		formatConfig=config.conf["documentFormatting"]
 
 	presCat=attrs.getPresentationCategory(ancestorAttrs,formatConfig, reason=reason)
-	childCount=int(attrs.get('_childcount',"0"))
+	childControlCount=int(attrs.get('_childcontrolcount',"0"))
 	if reason==controlTypes.REASON_FOCUS or attrs.get('alwaysReportName',False):
 		name=attrs.get('name',"")
 	else:
@@ -942,7 +945,7 @@ def getControlFieldSpeech(attrs,ancestorAttrs,fieldType,formatConfig=None,extraD
 	if speakEntry and fieldType=="start_addedToControlFieldStack" and role==controlTypes.ROLE_LIST and controlTypes.STATE_READONLY in states:
 		# List.
 		# Translators: Speaks number of items in a list (example output: list with 5 items).
-		return roleText+" "+_("with %s items")%childCount
+		return roleText+" "+_("with %s items")%childControlCount
 	elif fieldType=="start_addedToControlFieldStack" and role==controlTypes.ROLE_TABLE and tableID:
 		# Table.
 		return " ".join((roleText, getSpeechTextForProperties(_tableID=tableID, rowCount=attrs.get("table-rowcount"), columnCount=attrs.get("table-columncount")),levelText))
@@ -1059,6 +1062,15 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 			# Translators: Indicates the line number of the text.
 			# %s will be replaced with the line number.
 			text=_("line %s")%lineNumber
+			textList.append(text)
+	if  formatConfig["reportRevisions"]:
+		revision=attrs.get("revision")
+		oldRevision=attrsCache.get("revision") if attrsCache is not None else None
+		if (revision or oldRevision is not None) and revision!=oldRevision:
+			# Translators: Reported when text is revised.
+			text=(_("revised %s"%revision) if revision
+				# Translators: Reported when text is not revised.
+				else _("unrevised"))
 			textList.append(text)
 	if  formatConfig["reportFontAttributes"]:
 		bold=attrs.get("bold")

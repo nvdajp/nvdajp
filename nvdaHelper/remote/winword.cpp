@@ -35,6 +35,11 @@ using namespace std;
 #define wdDISPID_SELECTION_RANGE 400
 #define wdDISPID_SELECTION_SETRANGE 100
 #define wdDISPID_SELECTION_STARTISACTIVE 404
+#define wdDISPID_RANGE_INRANGE 126
+#define wdDISPID_RANGE_DUPLICATE 6
+#define wdDISPID_RANGE_REVISIONS 150
+#define wdDISPID_REVISIONS_ITEM 0
+#define wdDISPID_REVISION_TYPE 4
 #define wdDISPID_RANGE_STORYTYPE 7
 #define wdDISPID_RANGE_MOVEEND 111
 #define wdDISPID_RANGE_COLLAPSE 101
@@ -47,9 +52,25 @@ using namespace std;
 #define wdDISPID_RANGE_INFORMATION 313
 #define wdDISPID_RANGE_STYLE 151
 #define wdDISPID_RANGE_LANGUAGEID 153
+#define wdDISPID_RANGE_DUPLICATE 6
+#define wdDISPID_RANGE_FORMFIELDS 65
+#define wdDISPID_RANGE_CONTENTCONTROLS 424
+#define wdDISPID_FORMFIELDS_ITEM 0
+#define wdDISPID_FORMFIELD_RANGE 17
+#define wdDISPID_FORMFIELD_TYPE 0
+#define wdDISPID_FORMFIELD_RESULT 10
+#define wdDISPID_FORMFIELD_STATUSTEXT 8
+#define wdDISPID_CONTENTCONTROLS_ITEM 0
+#define wdDISPID_CONTENTCONTROL_RANGE 1
+#define wdDISPID_CONTENTCONTROL_TYPE 5
+#define wdDISPID_CONTENTCONTROL_CHECKED 28
+#define wdDISPID_CONTENTCONTROL_TITLE 12
 #define wdDISPID_STYLE_NAMELOCAL 0
 #define wdDISPID_RANGE_SPELLINGERRORS 316
 #define wdDISPID_SPELLINGERRORS_COUNT 1
+#define wdDISPID_RANGE_APPLICATION 1000
+#define wdDISPID_APPLICATION_ISSANDBOX 492
+
 #define wdDISPID_RANGE_FONT 5
 #define wdDISPID_FONT_COLOR 159
 #define wdDISPID_FONT_BOLD 130
@@ -102,6 +123,7 @@ using namespace std;
 
 #define wdCharacter 1
 #define wdWord 2
+#define wdParagraph 4
 #define wdLine 5
 #define wdCharacterFormatting 13
 
@@ -139,6 +161,7 @@ using namespace std;
 #define formatConfig_reportComments 4096
 #define formatConfig_reportHeadings 8192
 #define formatConfig_reportLanguage 16384
+#define formatConfig_reportRevisions 32768
 
 #define formatConfig_fontFlags (formatConfig_reportFontName|formatConfig_reportFontSize|formatConfig_reportFontAttributes|formatConfig_reportColor)
 #define formatConfig_initialFormatFlags (formatConfig_reportPage|formatConfig_reportLineNumber|formatConfig_reportTables|formatConfig_reportHeadings)
@@ -192,6 +215,70 @@ void winword_expandToLine_helper(HWND hwnd, winword_expandToLine_args* args) {
 	_com_dispatch_raw_propput(pDispatchApplication,wdDISPID_APPLICATION_SCREENUPDATING,VT_BOOL,true);
 }
 
+BOOL generateFormFieldXML(IDispatch* pDispatchRange, wostringstream& XMLStream, int& chunkEnd) {
+	IDispatchPtr pDispatchRange2=NULL;
+	if(_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_DUPLICATE,VT_DISPATCH,&pDispatchRange2)!=S_OK||!pDispatchRange2) {
+		return false;
+	}
+	_com_dispatch_raw_method(pDispatchRange2,wdDISPID_RANGE_EXPAND,DISPATCH_METHOD,VT_EMPTY,NULL,L"\x0003",wdParagraph,1);
+	BOOL foundFormField=false;
+	IDispatchPtr pDispatchFormFields=NULL;
+	_com_dispatch_raw_propget(pDispatchRange2,wdDISPID_RANGE_FORMFIELDS,VT_DISPATCH,&pDispatchFormFields);
+	if(pDispatchFormFields) for(int count=1;!foundFormField&&count<100;++count) {
+		IDispatchPtr pDispatchFormField=NULL;
+		if(_com_dispatch_raw_method(pDispatchFormFields,wdDISPID_FORMFIELDS_ITEM,DISPATCH_METHOD,VT_DISPATCH,&pDispatchFormField,L"\x0003",count)!=S_OK||!pDispatchFormField) {
+			break;
+		}
+		IDispatchPtr pDispatchFormFieldRange=NULL;
+		if(_com_dispatch_raw_propget(pDispatchFormField,wdDISPID_FORMFIELD_RANGE,VT_DISPATCH,&pDispatchFormFieldRange)!=S_OK||!pDispatchFormFieldRange) {
+			break;
+		}
+		if(_com_dispatch_raw_method(pDispatchRange,wdDISPID_RANGE_INRANGE,DISPATCH_METHOD,VT_BOOL,&foundFormField,L"\x0009",pDispatchFormFieldRange)!=S_OK||!foundFormField) {
+			continue;
+		}
+		long fieldType=-1;
+		_com_dispatch_raw_propget(pDispatchFormField,wdDISPID_FORMFIELD_TYPE,VT_I4,&fieldType);
+		BSTR fieldResult=NULL;
+		_com_dispatch_raw_propget(pDispatchFormField,wdDISPID_FORMFIELD_RESULT,VT_BSTR,&fieldResult);
+		BSTR fieldStatusText=NULL;
+		_com_dispatch_raw_propget(pDispatchFormField,wdDISPID_FORMFIELD_STATUSTEXT,VT_BSTR,&fieldStatusText);
+		XMLStream<<L"<control wdFieldType=\""<<fieldType<<L"\" wdFieldResult=\""<<(fieldResult?fieldResult:L"")<<L"\" wdFieldStatusText=\""<<(fieldStatusText?fieldStatusText:L"")<<L"\">";
+		if(fieldResult) SysFreeString(fieldResult);
+		if(fieldStatusText) SysFreeString(fieldStatusText);
+		_com_dispatch_raw_propget(pDispatchFormFieldRange,wdDISPID_RANGE_END,VT_I4,&chunkEnd);
+		_com_dispatch_raw_propput(pDispatchRange,wdDISPID_RANGE_END,VT_I4,chunkEnd);
+		break;
+	}
+	if(foundFormField) return true;
+	IDispatchPtr pDispatchContentControls=NULL;
+	_com_dispatch_raw_propget(pDispatchRange2,wdDISPID_RANGE_CONTENTCONTROLS,VT_DISPATCH,&pDispatchContentControls);
+	if(pDispatchContentControls)for(int count=1;!foundFormField&&count<100;++count) {
+		IDispatchPtr pDispatchContentControl=NULL;
+		if(_com_dispatch_raw_method(pDispatchContentControls,wdDISPID_CONTENTCONTROLS_ITEM,DISPATCH_METHOD,VT_DISPATCH,&pDispatchContentControl,L"\x0003",count)!=S_OK||!pDispatchContentControl) {
+			break;
+		}
+		IDispatchPtr pDispatchContentControlRange=NULL;
+		if(_com_dispatch_raw_propget(pDispatchContentControl,wdDISPID_CONTENTCONTROL_RANGE,VT_DISPATCH,&pDispatchContentControlRange)!=S_OK||!pDispatchContentControlRange) {
+			break;
+		}
+		if(_com_dispatch_raw_method(pDispatchRange,wdDISPID_RANGE_INRANGE,DISPATCH_METHOD,VT_BOOL,&foundFormField,L"\x0009",pDispatchContentControlRange)!=S_OK||!foundFormField) {
+			continue;
+		}
+		long fieldType=-1;
+		_com_dispatch_raw_propget(pDispatchContentControl,wdDISPID_CONTENTCONTROL_TYPE,VT_I4,&fieldType);
+		BOOL fieldChecked=false;
+		_com_dispatch_raw_propget(pDispatchContentControl,wdDISPID_CONTENTCONTROL_CHECKED,VT_BOOL,&fieldChecked);
+		BSTR fieldTitle=NULL;
+		_com_dispatch_raw_propget(pDispatchContentControl,wdDISPID_CONTENTCONTROL_TITLE,VT_BSTR,&fieldTitle);
+		XMLStream<<L"<control wdContentControlType=\""<<fieldType<<L"\" wdContentControlChecked=\""<<fieldChecked<<L"\" wdContentControlTitle=\""<<(fieldTitle?fieldTitle:L"")<<L"\">";
+		if(fieldTitle) SysFreeString(fieldTitle);
+		_com_dispatch_raw_propget(pDispatchContentControlRange,wdDISPID_RANGE_END,VT_I4,&chunkEnd);
+		_com_dispatch_raw_propput(pDispatchRange,wdDISPID_RANGE_END,VT_I4,chunkEnd);
+		break;
+	}
+	return foundFormField;
+}
+
 int generateHeadingXML(IDispatch* pDispatchRange, wostringstream& XMLStream) {
 	IDispatchPtr pDispatchParagraphs=NULL;
 	IDispatchPtr pDispatchParagraph=NULL;
@@ -207,6 +294,25 @@ int generateHeadingXML(IDispatch* pDispatchRange, wostringstream& XMLStream) {
 	}
 	XMLStream<<L"<control role=\"heading\" level=\""<<level<<L"\">";
 	return 1;
+}
+
+int getRevisionType(IDispatch* pDispatchOrigRange) {
+	IDispatchPtr pDispatchRange=NULL;
+	//If range is not duplicated here, revisions collection represents revisions at the start of the range when it was first created
+	if(_com_dispatch_raw_propget(pDispatchOrigRange,wdDISPID_RANGE_DUPLICATE,VT_DISPATCH,&pDispatchRange)!=S_OK||!pDispatchRange) {
+		return 0;
+	}
+	IDispatchPtr pDispatchRevisions=NULL;
+	if(_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_REVISIONS,VT_DISPATCH,&pDispatchRevisions)!=S_OK||!pDispatchRevisions) {
+		return 0;
+	}
+	IDispatchPtr pDispatchRevision=NULL;
+	if(_com_dispatch_raw_method(pDispatchRevisions,wdDISPID_REVISIONS_ITEM,DISPATCH_METHOD,VT_DISPATCH,&pDispatchRevision,L"\x0003",1)!=S_OK||!pDispatchRevision) {
+		return 0;
+	}
+	long revisionType=0;
+	_com_dispatch_raw_propget(pDispatchRevision,wdDISPID_REVISION_TYPE,VT_I4,&revisionType);
+	return revisionType;
 }
 
 int getHyperlinkCount(IDispatch* pDispatchRange) {
@@ -362,6 +468,10 @@ void generateXMLAttribsForFormatting(IDispatch* pDispatchRange, int startOffset,
 	if((formatConfig&formatConfig_reportLinks)&&getHyperlinkCount(pDispatchRange)>0) {
 		formatAttribsStream<<L"link=\"1\" ";
 	}
+	if(formatConfig&formatConfig_reportRevisions) {
+		long revisionType=getRevisionType(pDispatchRange);
+		formatAttribsStream<<L"wdRevisionType=\""<<revisionType<<L"\" ";
+	}
 	if(formatConfig&formatConfig_reportStyle) {
 		IDispatchPtr pDispatchStyle=NULL;
 		if(_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_STYLE,VT_DISPATCH,&pDispatchStyle)==S_OK&&pDispatchStyle) {
@@ -409,11 +519,20 @@ void generateXMLAttribsForFormatting(IDispatch* pDispatchRange, int startOffset,
 		}
 	} 
 	if(formatConfig&formatConfig_reportSpellingErrors) {
-		IDispatchPtr pDispatchSpellingErrors=NULL;
-		if(_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_SPELLINGERRORS,VT_DISPATCH,&pDispatchSpellingErrors)==S_OK&&pDispatchSpellingErrors) {
-			_com_dispatch_raw_propget(pDispatchSpellingErrors,wdDISPID_SPELLINGERRORS_COUNT,VT_I4,&iVal);
-			if(iVal>0) {
-				formatAttribsStream<<L"invalid-spelling=\""<<iVal<<L"\" ";
+		IDispatchPtr pDispatchApplication=NULL;
+		if(_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_APPLICATION ,VT_DISPATCH,&pDispatchApplication)==S_OK && pDispatchApplication) {
+			bool isSandbox = true;
+			// We need to ironically enter the if block if the call to get IsSandbox property fails
+			// for backward compatibility because IsSandbox was introduced with word 2010 and earlier versions will return a failure for this property access.
+			// This however, means that if this property access fails for some reason in word 2010, then we will incorrectly enter this section.
+			if(_com_dispatch_raw_propget(pDispatchApplication,wdDISPID_APPLICATION_ISSANDBOX ,VT_BOOL,&isSandbox)!=S_OK || !isSandbox ) {
+				IDispatchPtr pDispatchSpellingErrors=NULL;
+				if(_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_SPELLINGERRORS,VT_DISPATCH,&pDispatchSpellingErrors)==S_OK&&pDispatchSpellingErrors) {
+					_com_dispatch_raw_propget(pDispatchSpellingErrors,wdDISPID_SPELLINGERRORS_COUNT,VT_I4,&iVal);
+					if(iVal>0) {
+						formatAttribsStream<<L"invalid-spelling=\""<<iVal<<L"\" ";
+					}
+				}
 			}
 		}
 	}
@@ -464,7 +583,11 @@ inline int generateInlineShapeXML(IDispatch* pDispatchRange, wostringstream& XML
 	if(_com_dispatch_raw_propget(pDispatchShape,wdDISPID_INLINESHAPE_ALTERNATIVETEXT,VT_BSTR,&altText)!=S_OK) {
 		return 0;
 	}
-	XMLStream<<L"<control _startOfNode=\"1\" role=\""<<(shapeType==3?L"graphic":L"object")<<L"\" value=\""<<(altText?altText:L"")<<L"\">";
+	wstring altTextStr=L"";
+	if(altText) for(int i=0;altText[i]!='\0';++i) {
+		appendCharToXML(altText[i],altTextStr,true);
+	}
+	XMLStream<<L"<control _startOfNode=\"1\" role=\""<<(shapeType==3?L"graphic":L"object")<<L"\" value=\""<<altTextStr<<L"\">";
 	if(altText) SysFreeString(altText);
 	return count;
 }
@@ -544,15 +667,28 @@ void winword_getTextInRange_helper(HWND hwnd, winword_getTextInRange_args* args)
 	int chunkEndOffset=chunkStartOffset;
 	int unitsMoved=0;
 	BSTR text=NULL;
+	if(initialFormatConfig&formatConfig_reportTables) {
+		neededClosingControlTagCount+=generateTableXML(pDispatchRange,args->startOffset,args->endOffset,XMLStream);
+	}
+	if(initialFormatConfig&formatConfig_reportHeadings) {
+		neededClosingControlTagCount+=generateHeadingXML(pDispatchRange,XMLStream);
+	}
+	generateXMLAttribsForFormatting(pDispatchRange,chunkStartOffset,chunkEndOffset,initialFormatConfig,initialFormatAttribsStream);
+	bool firstLoop=true;
 	//Walk the range from the given start to end by characterFormatting or word units
 	//And grab any text and formatting and generate appropriate xml
-	bool firstLoop=true;
 	do {
-		//Move the end by word
-		if(_com_dispatch_raw_method(pDispatchRange,wdDISPID_RANGE_MOVEEND,DISPATCH_METHOD,VT_I4,&unitsMoved,L"\x0003\x0003",wdWord,1)!=S_OK||unitsMoved<=0) {
-			break;
+		int curDisabledFormatConfig=0;
+		//generated form field xml if in a form field
+		//Also automatically extends the range and chunkEndOffset to the end of the field
+		BOOL isFormField=generateFormFieldXML(pDispatchRange,XMLStream,chunkEndOffset);
+		if(!isFormField) {
+			//Move the end by word
+			if(_com_dispatch_raw_method(pDispatchRange,wdDISPID_RANGE_MOVEEND,DISPATCH_METHOD,VT_I4,&unitsMoved,L"\x0003\x0003",wdWord,1)!=S_OK||unitsMoved<=0) {
+				break;
+			}
+			_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_END,VT_I4,&chunkEndOffset);
 		}
-		_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_END,VT_I4,&chunkEndOffset);
 		//Make sure  that the end is not past the requested end after the move
 		if(chunkEndOffset>(args->endOffset)) {
 			_com_dispatch_raw_propput(pDispatchRange,wdDISPID_RANGE_END,VT_I4,args->endOffset);
@@ -564,34 +700,33 @@ void winword_getTextInRange_helper(HWND hwnd, winword_getTextInRange_args* args)
 			break;
 		}
 		_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_TEXT,VT_BSTR,&text);
+		if(!text) SysAllocString(L"");
 		if(text) {
-			//Force a new chunk before and after control+b (note characters)
 			int noteCharOffset=-1;
-			for(int i=0;text[i]!=L'\0';++i) {
-				if(text[i]==L'\x0002') {
-					noteCharOffset=i;
-					if(i==0) text[i]=L' ';
-					break;
+			bool isNoteChar=false;
+			if(!isFormField) {
+				//Force a new chunk before and after control+b (note characters)
+				for(int i=0;text[i]!=L'\0';++i) {
+					if(text[i]==L'\x0002') {
+						noteCharOffset=i;
+						if(i==0) text[i]=L' ';
+						break;
+					}  else if(text[i]==L'\x0007'&&(chunkEndOffset-chunkStartOffset)==1) {
+						text[i]=L'\0';
+						//Collecting revision info does not work on cell delimiters
+						curDisabledFormatConfig|=formatConfig_reportRevisions;
+					}
 				}
-			}
-			bool isNoteChar=(noteCharOffset==0);
-			if(noteCharOffset==0) noteCharOffset=1;
-			if(noteCharOffset>0) {
-				text[noteCharOffset]=L'\0';
-				_com_dispatch_raw_method(pDispatchRange,wdDISPID_RANGE_COLLAPSE,DISPATCH_METHOD,VT_EMPTY,NULL,L"\x0003",wdCollapseStart);
-				if(_com_dispatch_raw_method(pDispatchRange,wdDISPID_RANGE_MOVEEND,DISPATCH_METHOD,VT_I4,&unitsMoved,L"\x0003\x0003",wdCharacter,noteCharOffset)!=S_OK||unitsMoved<=0) {
-					break;
+				isNoteChar=(noteCharOffset==0);
+				if(noteCharOffset==0) noteCharOffset=1;
+				if(noteCharOffset>0) {
+					text[noteCharOffset]=L'\0';
+					_com_dispatch_raw_method(pDispatchRange,wdDISPID_RANGE_COLLAPSE,DISPATCH_METHOD,VT_EMPTY,NULL,L"\x0003",wdCollapseStart);
+					if(_com_dispatch_raw_method(pDispatchRange,wdDISPID_RANGE_MOVEEND,DISPATCH_METHOD,VT_I4,&unitsMoved,L"\x0003\x0003",wdCharacter,noteCharOffset)!=S_OK||unitsMoved<=0) {
+						break;
+					}
+					_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_END,VT_I4,&chunkEndOffset);
 				}
-				_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_END,VT_I4,&chunkEndOffset);
-			}
-			if(firstLoop) {
-				if(initialFormatConfig&formatConfig_reportTables) {
-					neededClosingControlTagCount+=generateTableXML(pDispatchRange,args->startOffset,args->endOffset,XMLStream);
-				}
-				if(initialFormatConfig&formatConfig_reportHeadings) {
-					neededClosingControlTagCount+=generateHeadingXML(pDispatchRange,XMLStream);
-				}
-				generateXMLAttribsForFormatting(pDispatchRange,chunkStartOffset,chunkEndOffset,initialFormatConfig,initialFormatAttribsStream);
 			}
 			if(isNoteChar) {
 				isNoteChar=generateFootnoteEndnoteXML(pDispatchRange,XMLStream,true);
@@ -607,9 +742,9 @@ void winword_getTextInRange_helper(HWND hwnd, winword_getTextInRange_args* args)
 				}
 				_com_dispatch_raw_propget(pDispatchRange,wdDISPID_RANGE_END,VT_I4,&chunkEndOffset);
 			}
-			XMLStream<<L"<text ";
+			XMLStream<<L"<text _startOffset=\""<<chunkStartOffset<<L"\" _endOffset=\""<<chunkEndOffset<<L"\" ";
 			XMLStream<<initialFormatAttribsStream.str();
-			generateXMLAttribsForFormatting(pDispatchRange,chunkStartOffset,chunkEndOffset,formatConfig,XMLStream);
+			generateXMLAttribsForFormatting(pDispatchRange,chunkStartOffset,chunkEndOffset,formatConfig&(~curDisabledFormatConfig),XMLStream);
 			XMLStream<<L">";
 			if(firstLoop) {
 				formatConfig&=(~formatConfig_reportLists);
@@ -625,6 +760,7 @@ void winword_getTextInRange_helper(HWND hwnd, winword_getTextInRange_args* args)
 			SysFreeString(text);
 			text=NULL;
 			XMLStream<<L"</text>";
+			if(isFormField) XMLStream<<L"</control>";
 			if(isNoteChar) XMLStream<<L"</control>";
 			if(inlineShapesCount>0) XMLStream<<L"</control>";
 		}

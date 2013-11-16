@@ -7,6 +7,7 @@
 from comtypes import COMError
 import comtypes.automation
 import wx
+import time
 import re
 import oleacc
 import ui
@@ -14,8 +15,11 @@ import config
 import textInfos
 import colors
 import eventHandler
+import api
+from logHandler import log
 import gui
 import winUser
+from displayModel import DisplayModelTextInfo
 import controlTypes
 from . import Window
 from .. import NVDAObjectTextInfo
@@ -39,11 +43,22 @@ class ExcelBase(Window):
 
 	@staticmethod
 	def getCellAddress(cell, external=False,format=xlA1):
-		return cell.Address(False, False, format, external)
+		text=cell.Address(False, False, format, external)
+		textList=text.split(':')
+		if len(textList)==2:
+			# Translators: Used to express an address range in excel.
+			text=_("{start} through {end}").format(start=textList[0], end=textList[1])
+		return text
 
 	def fireFocusOnSelection(self):
 		selection=self.excelWindowObject.Selection
-		if selection.Count>1:
+		try:
+			isMerged=selection.mergeCells
+		except (COMError,NameError):
+			isMerged=False
+		if isMerged:
+			obj=ExcelMergedCell(windowHandle=self.windowHandle,excelWindowObject=self.excelWindowObject,excelCellObject=selection.item(1))
+		elif selection.Count>1:
 			obj=ExcelSelection(windowHandle=self.windowHandle,excelWindowObject=self.excelWindowObject,excelRangeObject=selection)
 		else:
 			obj=ExcelCell(windowHandle=self.windowHandle,excelWindowObject=self.excelWindowObject,excelCellObject=selection)
@@ -120,6 +135,7 @@ class ExcelWorksheet(ExcelBase):
 		"kb:control+space",
 		"kb:control+pageUp",
 		"kb:control+pageDown",
+		"kb:control+a",
 		"kb:control+v",
 	)
 
@@ -167,6 +183,43 @@ class ExcelCell(ExcelBase):
 		rowHeaderColumn=self.rowHeaderColumns.get(tableID) or None
 		if rowHeaderColumn and columnNumber>rowHeaderColumn:
 			return self.excelCellObject.parent.cells(rowNumber,rowHeaderColumn).text
+
+	def _getDropdown(self):
+		w=winUser.getAncestor(self.windowHandle,winUser.GA_ROOT)
+		if not w:
+			log.debugWarning("Could not get ancestor window (GA_ROOT)")
+			return
+		obj=Window(windowHandle=w,chooseBestAPI=False)
+		if not obj:
+			log.debugWarning("Could not instnaciate NVDAObject for ancestor window")
+			return
+		threadID=obj.windowThreadID
+		while not eventHandler.isPendingEvents("gainFocus"):
+			obj=obj.previous
+			if not obj or not isinstance(obj,Window) or obj.windowThreadID!=threadID:
+				log.debugWarning("Could not locate dropdown list in previous objects")
+				return
+			if obj.windowClassName=='EXCEL:':
+				break
+		return obj
+
+	def script_openDropdown(self,gesture):
+		gesture.send()
+		count=0
+		d=None
+		while count<5:
+			d=self._getDropdown()
+			if d:
+				break
+			count+=1
+			log.debugWarning("get dropdown fail %d"%count)
+			api.processPendingEvents(processEventQueue=False)
+			time.sleep(0.1)
+		if not d:
+			log.debugWarning("Failed to get dropDown, giving up")
+			return
+		d.parent=self
+		eventHandler.queueEvent("gainFocus",d)
 
 	def script_setColumnHeaderRow(self,gesture):
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
@@ -223,7 +276,14 @@ class ExcelCell(ExcelBase):
 		self.excelCellObject=excelCellObject
 		super(ExcelCell,self).__init__(windowHandle=windowHandle)
 
-	role=controlTypes.ROLE_TABLECELL
+	def _get_role(self):
+		try:
+			linkCount=self.excelCellObject.hyperlinks.count
+		except (COMError,NameError,AttributeError):
+			linkCount=None
+		if linkCount:
+			return controlTypes.ROLE_LINK
+		return controlTypes.ROLE_TABLECELL
 
 	TextInfo=ExcelCellTextInfo
 
@@ -238,10 +298,8 @@ class ExcelCell(ExcelBase):
 			return False
 		return thisAddr==otherAddr
 
-	name=None
-
 	def _get_cellCoordsText(self):
-		return self.getCellAddress(self.excelCellObject) 
+		return self.getCellAddress(self.excelCellObject)
 
 	def _get__rowAndColumnNumber(self):
 		rc=self.excelCellObject.address(False,False,xlRC,False)
@@ -259,13 +317,26 @@ class ExcelCell(ExcelBase):
 		ID="%s %s"%(ID,self.windowHandle)
 		return ID
 
-		
-	def _get_value(self):
+	def _get_name(self):
 		return self.excelCellObject.Text
 
-	def _get_description(self):
-		# Translators: This is presented in Excel when the current cell contains a formula.
-		return _("has formula") if self.excelCellObject.HasFormula else ""
+	def _get_states(self):
+		states=super(ExcelCell,self).states
+		if self.excelCellObject.HasFormula:
+			states.add(controlTypes.STATE_HASFORMULA)
+		try:
+			validationType=self.excelCellObject.validation.type
+		except (COMError,NameError,AttributeError):
+			validationType=None
+		if validationType==3:
+			states.add(controlTypes.STATE_HASPOPUP)
+		try:
+			comment=self.excelCellObject.comment
+		except (COMError,NameError,AttributeError):
+			comment=None
+		if comment:
+			states.add(controlTypes.STATE_HASCOMMENT)
+		return states
 
 	def _get_parent(self):
 		worksheet=self.excelCellObject.Worksheet
@@ -290,6 +361,7 @@ class ExcelCell(ExcelBase):
 	__gestures = {
 		"kb:NVDA+shift+c": "setColumnHeaderRow",
 		"kb:NVDA+shift+r": "setRowHeaderColumn",
+		"kb:alt+downArrow":"openDropdown",
 	}
 
 class ExcelSelection(ExcelBase):
@@ -321,3 +393,111 @@ class ExcelSelection(ExcelBase):
 		if position==textInfos.POSITION_SELECTION:
 			position=textInfos.POSITION_ALL
 		return super(ExcelSelection,self).makeTextInfo(position)
+
+class ExcelDropdownItem(Window):
+
+	firstChild=None
+	lastChild=None
+	children=[]
+	role=controlTypes.ROLE_LISTITEM
+
+	def __init__(self,parent=None,name=None,states=None,index=None):
+		self.name=name
+		self.states=states
+		self.parent=parent
+		self.index=index
+		super(ExcelDropdownItem,self).__init__(windowHandle=parent.windowHandle)
+
+	def _get_previous(self):
+		newIndex=self.index-1
+		if newIndex>=0:
+			return self.parent.children[newIndex]
+
+	def _get_next(self):
+		newIndex=self.index+1
+		if newIndex<self.parent.childCount:
+			return self.parent.children[newIndex]
+
+	def _get_positionInfo(self):
+		return {'indexInGroup':self.index+1,'similarItemsInGroup':self.parent.childCount,}
+
+class ExcelDropdown(Window):
+
+	@classmethod
+	def kwargsFromSuper(cls,kwargs,relation=None):
+		return kwargs
+
+	role=controlTypes.ROLE_LIST
+	excelCell=None
+
+	def _get__highlightColors(self):
+		background=colors.RGB.fromCOLORREF(winUser.user32.GetSysColor(13))
+		foreground=colors.RGB.fromCOLORREF(winUser.user32.GetSysColor(14))
+		self._highlightColors=(background,foreground)
+		return self._highlightColors
+
+	def _get_children(self):
+		children=[]
+		index=0
+		states=set()
+		for item in DisplayModelTextInfo(self,textInfos.POSITION_ALL).getTextWithFields():
+			if isinstance(item,textInfos.FieldCommand) and item.command=="formatChange":
+				states=set([controlTypes.STATE_SELECTABLE])
+				foreground=item.field.get('color',None)
+				background=item.field.get('background-color',None)
+				if (background,foreground)==self._highlightColors:
+					states.add(controlTypes.STATE_SELECTED)
+			if isinstance(item,basestring):
+				obj=ExcelDropdownItem(parent=self,name=item,states=states,index=index)
+				children.append(obj)
+				index+=1
+		return children
+
+	def _get_childCount(self):
+		return len(self.children)
+
+	def _get_firstChild(self):
+		return self.children[0]
+	def _get_selection(self):
+		for child in self.children:
+			if controlTypes.STATE_SELECTED in child.states:
+				return child
+
+	def script_selectionChange(self,gesture):
+		gesture.send()
+		newFocus=self.selection or self
+		if eventHandler.lastQueuedFocusObject is newFocus: return
+		eventHandler.queueEvent("gainFocus",newFocus)
+	script_selectionChange.canPropagate=True
+
+	def script_closeDropdown(self,gesture):
+		gesture.send()
+		eventHandler.queueEvent("gainFocus",self.parent)
+	script_closeDropdown.canPropagate=True
+
+	__gestures={
+		"kb:downArrow":"selectionChange",
+		"kb:upArrow":"selectionChange",
+		"kb:leftArrow":"selectionChange",
+		"kb:rightArrow":"selectionChange",
+		"kb:home":"selectionChange",
+		"kb:end":"selectionChange",
+		"kb:escape":"closeDropdown",
+		"kb:enter":"closeDropdown",
+		"kb:space":"closeDropdown",
+	}
+
+	def event_gainFocus(self):
+		child=self.selection
+		if not child and self.childCount>0:
+			child=self.children[0]
+		if child:
+			eventHandler.queueEvent("focusEntered",self)
+			eventHandler.queueEvent("gainFocus",child)
+		else:
+			super(ExcelDropdown,self).event_gainFocus()
+
+class ExcelMergedCell(ExcelCell):
+
+	def _get_cellCoordsText(self):
+		return self.getCellAddress(self.excelCellObject.mergeArea)
