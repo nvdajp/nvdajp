@@ -345,6 +345,15 @@ class Terminal(LiveText, EditableText):
 class CandidateItem(NVDAObject):
 
 	def getFormattedCandidateName(self,number,candidate):
+		#nvdajp begin
+		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+			import nvdajp_dic
+			c = nvdajp_dic.getJapaneseDiscriminantReading(candidate)
+			log.debug(u"{number} {candidate} {c}".format(number=number,candidate=candidate,c=c))
+			if config.conf["language"]["announceCandidateNumber"]:
+				return _(u"{number} {candidate}").format(number=number,candidate=c)
+			return c
+		#nvdajp end
 		if config.conf["inputComposition"]["alwaysIncludeShortCharacterDescriptionInCandidateName"]:
 			describedSymbols=[]
 			for symbol in candidate:

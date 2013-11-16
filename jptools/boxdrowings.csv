@@ -1,0 +1,48 @@
+罫線,名称（日本語）,説明読み,簡易読み,名称（英語）,シフトJIS,Unicode
+─,横細線素片,ｹｲｾﾝ ﾖｺｾﾝ,ﾖｺｾﾝ,BOX DRAWINGS LIGHT HORIZONTAL,849F,U+2500
+│,縦細線素片,ｹｲｾﾝ ﾀﾃｾﾝ,ﾀﾃｾﾝ,BOX DRAWINGS LIGHT VERTICAL,84A0,U+2502
+┌,細線素片左上,ｹｲｾﾝ ﾋﾀﾞﾘｳｴ,ﾋﾀﾞﾘｳｴ,BOX DRAWINGS LIGHT DOWN AND RIGHT,84A1,U+250C
+┐,細線素片右上,ｹｲｾﾝ ﾐｷﾞｳｴ,ﾐｷﾞｳｴ,BOX DRAWINGS LIGHT DOWN AND LEFT,84A2,U+2510
+┘,細線素片右下,ｹｲｾﾝ ﾐｷﾞｼﾀ,ﾐｷﾞｼﾀ,BOX DRAWINGS LIGHT UP AND LEFT,84A3,U+2518
+└,細線素片左下,ｹｲｾﾝ ﾋﾀﾞﾘｼﾀ,ﾋﾀﾞﾘｼﾀ,BOX DRAWINGS LIGHT UP AND RIGHT,84A4,U+2514
+├,細線素片左,ｹｲｾﾝ ﾀﾃｾﾝﾐｷﾞ,ﾀﾃｾﾝﾐｷﾞ,BOX DRAWINGS LIGHT VERTICAL AND RIGHT,84A5,U+251C
+┬,細線素片上,ｹｲｾﾝ ﾖｺｾﾝｼﾀ,ﾖｺｾﾝｼﾀ,BOX DRAWINGS LIGHT DOWN AND HORIZONTAL,84A6,U+252C
+┤,細線素片右,ｹｲｾﾝ ﾀﾃｾﾝﾋﾀﾞﾘ,ﾀﾃｾﾝﾋﾀﾞﾘ,BOX DRAWINGS LIGHT VERTICAL AND LEFT,84A7,U+2524
+┴,細線素片下,ｹｲｾﾝ ﾖｺｾﾝｳｴ,ﾖｺｾﾝｳｴ,BOX DRAWINGS LIGHT UP AND HORIZONTAL,84A8,U+2534
+┼,細線素片中央,ｹｲｾﾝ ｸﾛｽ,ｸﾛｽ,BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL,84A9,U+253C
+━,横太線素片,ｹｲｾﾝ ﾖｺｾﾝﾀﾞｲ,ﾖｺｾﾝﾀﾞｲ,BOX DRAWINGS HEAVY HORIZONTAL,84AA,U+2501
+┃,縦太線素片,ｹｲｾﾝ ﾀﾃｾﾝﾀﾞｲ,ﾀﾃｾﾝﾀﾞｲ,BOX DRAWINGS HEAVY VERTICAL,84AB,U+2503
+┏,太線素片左上,ｹｲｾﾝ ﾋﾀﾞﾘｳｴﾀﾞｲ,ﾋﾀﾞﾘｳｴﾀﾞｲ,BOX DRAWINGS HEAVY DOWN AND RIGHT,84AC,U+250F
+┓,太線素片右上,ｹｲｾﾝ ﾐｷﾞｳｴﾀﾞｲ,ﾐｷﾞｳｴﾀﾞｲ,BOX DRAWINGS HEAVY DOWN AND LEFT,84AD,U+2513
+┛,太線素片右下,ｹｲｾﾝ ﾐｷﾞｼﾀﾀﾞｲ,ﾐｷﾞｼﾀﾀﾞｲ,BOX DRAWINGS HEAVY UP AND LEFT,84AE,U+251B
+┗,太線素片左下,ｹｲｾﾝ ﾋﾀﾞﾘｼﾀﾀﾞｲ,ﾋﾀﾞﾘｼﾀﾀﾞｲ,BOX DRAWINGS HEAVY UP AND RIGHT,84AF,U+2517
+┣,太線素片左,ｹｲｾﾝ ﾀﾃｾﾝﾐｷﾞ ﾀﾞｲ,ﾀﾃｾﾝﾐｷﾞ ﾀﾞｲ,BOX DRAWINGS HEAVY VERTICAL AND RIGHT,84B0,U+2523
+┳,太線素片上,ｹｲｾﾝ ﾖｺｾﾝｼﾀ ﾀﾞｲ,ﾖｺｾﾝｼﾀ ﾀﾞｲ,BOX DRAWINGS HEAVY DOWN AND HORIZONTAL,84B1,U+2533
+┫,太線素片右,ｹｲｾﾝ ﾀﾃｾﾝﾋﾀﾞﾘ ﾀﾞｲ,ﾀﾃｾﾝﾋﾀﾞﾘ ﾀﾞｲ,BOX DRAWINGS HEAVY VERTICAL AND LEFT,84B2,U+252B
+┻,太線素片下,ｹｲｾﾝ ﾖｺｾﾝｳｴ ﾀﾞｲ,ﾖｺｾﾝｳｴ ﾀﾞｲ,BOX DRAWINGS HEAVY UP AND HORIZONTAL,84B3,U+253B
+╋,太線素片中央,ｹｲｾﾝ ｸﾛｽ ﾀﾞｲ,ｸﾛｽ ﾀﾞｲ,BOX DRAWINGS HEAVY VERTICAL AND HORIZONTAL,84B4,U+254B
+┠,縦太線横細線素片左,ｹｲｾﾝ ﾀﾃｾﾝﾐｷﾞ ｸﾐ,ﾀﾃｾﾝﾐｷﾞ ｸﾐ,BOX DRAWINGS VERTICAL HEAVY AND RIGHT LIGHT,84B5,U+2520
+┯,横太線縦細線素片上,ｹｲｾﾝ ﾖｺｾﾝｼﾀ ｸﾐ,ﾖｺｾﾝｼﾀ ｸﾐ,BOX DRAWINGS DOWN LIGHT AND HORIZONTAL HEAVY,84B6,U+252F
+┨,縦太線横細線素片右,ｹｲｾﾝ ﾀﾃｾﾝﾋﾀﾞﾘ ｸﾐ,ﾀﾃｾﾝﾋﾀﾞﾘ ｸﾐ,BOX DRAWINGS VERTICAL HEAVY AND LEFT LIGHT,84B7,U+2528
+┷,横太線縦細線素片下,ｹｲｾﾝ ﾖｺｾﾝｳｴ ｸﾐ,ﾖｺｾﾝｳｴ ｸﾐ,BOX DRAWINGS UP LIGHT AND HORIZONTAL HEAVY,84B8,U+2537
+┿,縦細線横太線素片中央,ｹｲｾﾝ ﾖｺﾌﾄ ｸﾛｽ ｸﾐ,ﾖｺﾌﾄ ｸﾛｽ ｸﾐ,BOX DRAWINGS VERTICAL LIGHT AND HORIZONTAL HEAVY,84B9,U+253F
+┝,縦細線横太線素片左,ｹｲｾﾝ ﾀﾃｾﾝﾐｷﾞ ｸﾐ,ﾀﾃｾﾝﾐｷﾞ ｸﾐ,BOX DRAWINGS VERTICAL LIGHT AND RIGHT HEAVY,84BA,U+251D
+┰,横細線縦太線素片上,ｹｲｾﾝ ﾖｺｾﾝｼﾀ ｸﾐ,ﾖｺｾﾝｼﾀ ｸﾐ,BOX DRAWINGS DOWN HEAVY AND HORIZONTAL LIGHT,84BB,U+2530
+┥,縦細線横太線素片右,ｹｲｾﾝ ﾀﾃｾﾝﾋﾀﾞﾘ ｸﾐ,ﾀﾃｾﾝﾋﾀﾞﾘ ｸﾐ,BOX DRAWINGS VERTICAL LIGHT AND LEFT HEAVY,84BC,U+2525
+┸,横細線縦太線素片下,ｹｲｾﾝ ﾖｺｾﾝｳｴ ｸﾐ,ﾖｺｾﾝｳｴ ｸﾐ,BOX DRAWINGS UP HEAVY AND HORIZONTAL LIGHT,84BD,U+2538
+╂,横細線縦太線素片中央,ｹｲｾﾝ ﾀﾃﾌﾄ ｸﾛｽ ｸﾐ,ﾀﾃﾌﾄ ｸﾛｽ ｸﾐ,BOX DRAWINGS VERTICAL HEAVY AND HORIZONTAL LIGHT,84BE,U+2542
+⎾,左上角素片,ｹｲｾﾝ ﾋﾀﾞﾘｳｴ,ﾋﾀﾞﾘｳｴ,DENTISTRY SYMBOL LIGHT VERTICAL AND TOP RIGHT,,U+23BE
+⎿,左下角素片,ｹｲｾﾝ ﾋﾀﾞﾘｼﾀ,ﾋﾀﾞﾘｼﾀ,DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM RIGHT,,U+23BF
+⏀,丸付き縦線素片,ｹｲｾﾝ ﾏﾙﾂｷ ﾀﾃｾﾝ,ﾏﾙﾂｷ ﾀﾃｾﾝ,DENTISTRY SYMBOL LIGHT VERTICAL WITH CIRCLE,,U+23C0
+⏁,丸付き上横縦線素片,ｹｲｾﾝ ﾏﾙﾂｷ ﾖｺｾﾝｼﾀ,ﾏﾙﾂｷ ﾖｺｾﾝｼﾀ,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH CIRCLE,,U+23C1
+⏂,丸付き下横縦線素片,ｹｲｾﾝ ﾏﾙﾂｷ ﾖｺｾﾝｳｴ,ﾏﾙﾂｷ ﾖｺｾﾝｳｴ,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH CIRCLE,,U+23C2
+⏃,三角付き縦線素片,ｹｲｾﾝ ｻﾝｶｸﾂｷ ﾀﾃｾﾝ,ｻﾝｶｸﾂｷ ﾀﾃｾﾝ,DENTISTRY SYMBOL LIGHT VERTICAL WITH TRIANGLE,,U+23C3
+⏄,三角付き上横縦線素片,ｹｲｾﾝ ｻﾝｶｸﾂｷ ﾖｺｾﾝｼﾀ,ｻﾝｶｸﾂｷ ﾖｺｾﾝｼﾀ,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH TRIANGLE,,U+23C4
+⏅,三角付き下横縦線素片,ｹｲｾﾝ ｻﾝｶｸﾂｷ ﾖｺｾﾝｳｴ,ｻﾝｶｸﾂｷ ﾖｺｾﾝｳｴ,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH TRIANGLE,,U+23C5
+⏆,波付き縦線素片,ｹｲｾﾝ ﾅﾐﾂｷ ﾀﾃｾﾝ,ﾅﾐﾂｷ ﾀﾃｾﾝ,DENTISTRY SYMBOL LIGHT VERTICAL AND WAVE,,U+23C6
+⏇,波付き上横縦線素片,ｹｲｾﾝ ﾅﾐﾂｷ ﾖｺｾﾝｼﾀ,ﾅﾐﾂｷ ﾖｺｾﾝｼﾀ,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH WAVE,,U+23C7
+⏈,波付き下横縦線素片,ｹｲｾﾝ ﾅﾐﾂｷ ﾖｺｾﾝｳｴ,ﾅﾐﾂｷ ﾖｺｾﾝｳｴ,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH WAVE,,U+23C8
+⏉,上横縦線素片,ｹｲｾﾝ ﾖｺｾﾝｼﾀ,ﾖｺｾﾝｼﾀ,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL,,U+23C9
+⏊,下横縦線素片,ｹｲｾﾝ ﾖｺｾﾝｳｴ,ﾖｺｾﾝｳｴ,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL,,U+23CA
+⏋,右上角素片,ｹｲｾﾝ ﾐｷﾞｳｴ,ﾐｷﾞｳｴ,DENTISTRY SYMBOL LIGHT VERTICAL AND TOP LEFT,,U+23CB
+⏌,右下角素片,ｹｲｾﾝ ﾐｷﾞｼﾀ,ﾐｷﾞｼﾀ,DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM LEFT,,U+23CC

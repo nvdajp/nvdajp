@@ -49,7 +49,11 @@ class NewLaptopKeyboardLayout(wx.Dialog):
 		self.EndModal(0)
 
 	def onWhatsNew(self, evt):
-		os.startfile(gui.getDocFilePath("changes.html"))
+		#os.startfile(gui.getDocFilePath("changes.html"))
+		# nvdajp begin
+		from gui import openDocFileAsHTA
+		openDocFileAsHTA("changes")
+		# nvdajp end
 		self.Close()
 
 	@classmethod

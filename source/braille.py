@@ -139,6 +139,11 @@ TABLES = (
 	# Translators: The name of a braille table displayed in the
 	# braille settings dialog.
 	("it-it-comp8.utb", _("Italian 8 dot computer braille"), True),
+	# nvdajp start
+	# Translators: The name of a braille table displayed in the
+	# braille settings dialog.
+	("ja-jp-comp6.utb", _("Japanese 6 dot computer braille"), False),
+	# nvdajp end
 	# Translators: The name of a braille table displayed in the
 	# braille settings dialog.
 	("ko-g1.ctb", _("Korean grade 1"), False),
@@ -370,13 +375,21 @@ class Region(object):
 		if config.conf["braille"]["expandAtCursor"] and self.cursorPos is not None:
 			mode |= louis.compbrlAtCursor
 		text=unicode(self.rawText).replace('\0','')
-		braille, self.brailleToRawPos, self.rawToBraillePos, brailleCursorPos = louis.translate(
-			[os.path.join(TABLES_DIR, config.conf["braille"]["translationTable"]),
-				"braille-patterns.cti"],
-			text,
-			# liblouis mutates typeform if it is a list.
-			typeform=tuple(self.rawTextTypeforms) if isinstance(self.rawTextTypeforms, list) else self.rawTextTypeforms,
-			mode=mode, cursorPos=self.cursorPos or 0)
+		# nvdajp begin
+		if config.conf["braille"]["japaneseBrailleSupport"]:
+			log.debug(text)
+			from synthDrivers.jtalk.translator2 import translate as jpTranslate
+			braille, self.brailleToRawPos, self.rawToBraillePos, brailleCursorPos = jpTranslate(text, cursorPos=self.cursorPos or 0)
+		else:
+			louisTranslationTable = config.conf["braille"]["translationTable"]
+			braille, self.brailleToRawPos, self.rawToBraillePos, brailleCursorPos = louis.translate(
+				[os.path.join(TABLES_DIR, louisTranslationTable),
+					"braille-patterns.cti"],
+				text,
+				# liblouis mutates typeform if it is a list.
+				typeform=tuple(self.rawTextTypeforms) if isinstance(self.rawTextTypeforms, list) else self.rawTextTypeforms,
+				mode=mode, cursorPos=self.cursorPos or 0)
+		# nvdajp end
 		# liblouis gives us back a character string of cells, so convert it to a list of ints.
 		# For some reason, the highest bit is set, so only grab the lower 8 bits.
 		self.brailleCells = [ord(cell) & 255 for cell in braille]
@@ -429,8 +442,18 @@ class TextRegion(Region):
 def getBrailleTextForProperties(**propertyValues):
 	textList = []
 	name = propertyValues.get("name")
-	if name:
-		textList.append(name)
+	#nvdajp begin
+	#if name:
+	#	textList.append(name)
+	isComposition = True
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+		if name and name != _("Composition"):
+			isComposition = False
+			textList.append(name)
+	else:
+		if name:
+			textList.append(name)
+	#nvdajp end
 	role = propertyValues.get("role")
 	states = propertyValues.get("states")
 	positionInfo = propertyValues.get("positionInfo")
@@ -457,6 +480,11 @@ def getBrailleTextForProperties(**propertyValues):
 	else:
 		role = propertyValues.get("_role")
 		roleText = None
+	#nvdajp begin
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
+			isComposition and role == controlTypes.ROLE_EDITABLETEXT:
+		roleText = None
+	#nvdajp end
 	value = propertyValues.get("value")
 	if value and role not in controlTypes.silentValuesForRoles:
 		textList.append(value)

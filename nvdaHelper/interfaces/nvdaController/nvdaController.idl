@@ -57,4 +57,59 @@ interface NvdaController {
  */
 	error_status_t __stdcall brailleMessage([in,string] const wchar_t* message);
 
+/**
+ * #nvdajp
+ * Instructs NVDA to speak the given text using character description dictionary.
+ * @param text the text to speak.
+ */
+	error_status_t __stdcall speakSpelling([in,string] const wchar_t* text);
+
+/**
+ * #nvdajp
+ * Is speaking status
+ */
+	error_status_t __stdcall isSpeaking();
+
+/**
+ * #nvdajp
+ * Get pitch voice
+ */
+	error_status_t __stdcall getPitch();
+
+/**
+ * #nvdajp
+ * Set pitch voice
+ * @param nPitch set the pitch to speak.
+ */
+	error_status_t __stdcall setPitch(const int nPitch);
+
+/**
+ * #nvdajp
+ * Get rate voice
+ */
+	error_status_t __stdcall getRate();
+
+/**
+ * #nvdajp
+ * Set rate voice
+ * @param nRate set the pitch to speak.
+ */
+	error_status_t __stdcall setRate(const int nRate);
+
+/**
+ * #nvdajp
+ * Notify input method events.
+ * @param cursorPos position of caret. 0 is the left boundary of pre-edit or composition.
+ * @param deltaStart position of starting 'delta' within pre-edit or composition.
+ * @param composition both pre-edit and composition string can be obtained.
+ * @param compAttr attribute values for each characters, such as L"222221111000". 0: not converted, 1: selected, 2: not selected.
+ * @param result available if an IME session is just finished.
+ * @param textService composition text, available at ITfTextEditSink::OnEndEdit event. 
+ */
+	error_status_t __stdcall inputMethodCallback([in] unsigned int cursorPos, 
+						     [in] unsigned int deltaStart,
+						     [in,string] const wchar_t* composition,
+						     [in,string] const wchar_t* compAttr,
+						     [in,string] const wchar_t* result,
+						     [in,string] const wchar_t* textService);
 };
