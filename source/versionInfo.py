@@ -31,13 +31,14 @@ name="NVDA"
 longName=_("NonVisual Desktop Access")
 version="2013.3dev"
 publisher="unknown"
-updateVersionType=None
+updateVersionType="nvdajp"
 try:
 	from _buildVersion import version, publisher, updateVersionType
 except ImportError:
 	_updateVersionFromVCS()
 description=_("A free and open source screen reader for Microsoft Windows")
 url="http://www.nvaccess.org/"
+url_nvdajp="http://www.nvda.jp/"
 copyrightYears="2006-2013"
 copyright=_("Copyright (C) {years} NVDA Contributors").format(
 	years=copyrightYears)

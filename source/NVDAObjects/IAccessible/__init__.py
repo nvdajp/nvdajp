@@ -139,11 +139,11 @@ class IA2TextTextInfo(textInfos.offsets.OffsetsTextInfo):
 			text=self._getTextRange(self._startOffset,self._endOffset)
 			try:
 				self._startOffset=text.rindex(u'\ufffc',0,oldStart-self._startOffset)
-			except ValueError:
+			except (ValueError, AttributeError):
 				pass
 			try:
 				self._endOffset=text.index(u'\ufffc',oldEnd-self._startOffset)
-			except ValueError:
+			except (ValueError, AttributeError):
 				pass
 
 	def _getCaretOffset(self):
@@ -417,6 +417,9 @@ the NVDAObject for IAccessible
 		if windowClassName.lower().startswith('mscandui'):
 			import mscandui
 			mscandui.findExtraOverlayClasses(self,clsList)
+		elif windowClassName.startswith('ATOK2'):
+			import atok
+			atok.findExtraOverlayClasses(self,clsList)
 		elif windowClassName=="GeckoPluginWindow" and self.event_objectID==0 and self.IAccessibleChildID==0:
 			from mozilla import GeckoPluginWindowRoot
 			clsList.append(GeckoPluginWindowRoot)

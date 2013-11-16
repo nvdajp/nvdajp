@@ -66,6 +66,10 @@ def isNVDAModifierKey(vkCode,extended):
 		return True
 	elif config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"] and vkCode==winUser.VK_CAPITAL:
 		return True
+	elif config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] and vkCode==winUser.VK_NONCONVERT: #nvdajp
+		return True
+	elif config.conf["keyboard"]["useConvertAsNVDAModifierKey"] and vkCode==winUser.VK_CONVERT: #nvdajp
+		return True
 	else:
 		return False
 
@@ -161,6 +165,11 @@ def internal_keyDownEvent(vkCode,scanCode,extended,injected):
 				return False
 	except:
 		log.error("internal_keyDownEvent", exc_info=True)
+	#nvdajp begin
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+		from NVDAObjects import inputComposition
+		inputComposition.reportKeyDownEvent(gesture)
+	#nvdajp end
 	return True
 
 def internal_keyUpEvent(vkCode,scanCode,extended,injected):

@@ -12,6 +12,7 @@ import winsound
 import traceback
 from types import MethodType
 import globalVars
+import re
 
 ERROR_INVALID_WINDOW_HANDLE = 1400
 ERROR_TIMEOUT = 1460
@@ -110,6 +111,10 @@ class Logger(logging.Logger):
 			msg += ("\nStack trace:\n"
 				+ stripBasePathFromTracebackText("".join(traceback.format_list(stack_info)).rstrip()))
 
+		try:
+			msg = re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x"+x.group(1),16)), unicode(msg))
+		except:
+			pass
 		res = logging.Logger._log(self,level, msg, args, exc_info, extra)
 
 		if activateLogViewer:
