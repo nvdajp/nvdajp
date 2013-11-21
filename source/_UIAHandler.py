@@ -40,6 +40,7 @@ badUIAWindowClassNames=[
 	"EXCEL7",
 	"Button",
 	"SysLink",
+	"ClockWndMain",
 ]
 
 NVDAUnitsToUIAUnits={
