@@ -480,6 +480,8 @@ The driver for braille display "KGS BrailleNote 46C/46D" from [KGS Corporation h
 
 The BM Utility must be installed to the computer.
 
+BrailleNote 46X is supported by "KGS BrailleMemo series" driver. Please do not use this driver for BrailleNote 46X.
+
 For USB connection, virtual serial driver must also be installed.
 The device should be configured to use 9600BPS connection speed for virtual serial driver.
 
@@ -543,6 +545,22 @@ It uses braille Unicode font. For Windows XP, the braille font is available if L
 - Both "Report alignment" and "Report font size" in "Document Format" setting should be enabled to use this.
 - "Announce formatting changes after the cursor" is also supported.
 - Announce of font size is in real numbers such as '10.5pt', rather than integers such as '10pt'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
