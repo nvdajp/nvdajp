@@ -480,6 +480,8 @@ NVDA日本語版は点字ディスプレイドライバ "BrailleNote 46C/46D" �
 
 [ケージーエス株式会社 http://www.kgs-jpn.co.jp/] が提供する「BMシリーズ機器用ユーティリティ」をインストールしてお使いください。
 
+なお、ブレイルノート 46X にはこのドライバではなく、「BrailleMemoシリーズ」の点字ディスプレイドライバで使用してください。BM ユーティリティが必要です。
+
 USB 接続で使う場合は「ケージーエスUSB/仮想Commドライバ」をインストールしてください。
 機器の通信速度が変更できる場合は 9600BPS に設定してください。
 
@@ -548,6 +550,22 @@ Microsoft Word において段落インデントの読み上げを独自にサ�
 「カーソル移動後に書式変化を通知」でも段落インデントの変化を通知します。
 
 フォントサイズの通知を '10pt' のような整数ではなく '10.5pt' などの実数で通知するように変更されています。
+
+
+++ ATOK 候補コメント ++
+
+日本語入力システム ATOK の変換候補にコメントウィンドウがある場合に、下記のように動作します。
+
+- コメントウィンドウが表示されたらビープを鳴らし、ナビゲーターオブジェクトをコメントウィンドウに移動する。
+- さらに、コメントウィンドウの中央にマウスポインタを移動する。
+
+
+この状況で、下記の操作ができることを ATOK 2013 と Windows 8.1 の組み合わせで確認しています。
+
+- コメントウィンドウが開いたときに NVDA+Shift+A でコメントウィンドウを読み上げる（内容によっては最初の1行しか読み上げない）
+- マウス右クリックを押すキー操作（ラップトップ配列で NVDA+] ＝閉じ大カッコ）をしてコンテクストメニューを開く。この中に「コピー」「確定」と辞書の切り替えがある。
+- コピーを選ぶと、コメントウィンドウの内容がクリップボードにコピーされる。これは（1024文字以内なら） NVDA+C で内容を確認できる。
+- 確定を選ぶと、編集中のエディットコントロールにコメントウィンドウの内容を書き込む。ATOK のセッションを中断して、上下の矢印キーでコメントウィンドウの内容を読むことができる。
 
 
 + カスタマイズ +
@@ -635,6 +653,19 @@ NVDA 日本語版のバグは NVDA 本家コミュニティのチケットシス
 NVDA 日本語チームは以下の変更および改良を行いました。
 
 - JTalk2 音声ドライバーの言語自動切り替え機能を JTalk で利用できるようにして、JTalk2 ドライバーを廃止しました。
+- [更新の自動チェックとアップデートを有効にする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=28159]
+- [タスクトレイの「時計」にアクセスすると何もしゃべらなくなる不具合への対応 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32466]
+- [既定の入力システムがMicrosoft Office IME 2010でファイルの上書きをするとフリーズする不具合への対応 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32145]
+- [Microsoft IMEの候補コメントの読み上げ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32314]
+- [ATOKでF2キーなどの変換操作を詳細読み https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32255]
+- [JTalk mei の声をすこし低くする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32238]
+- [文字コード説明で16進数の数字出力を音声と点字ディスプレイのそれぞれに最適化 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32189]
+- [ATOKの候補コメントの読み上げ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32176]
+- [eSpeak に日本語テキストの読み上げ処理を追加 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32115]
+- [JTalk が 1.01 のような数字で小数点を読むように https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32087]
+- [日本語入力中にエスケープキーを押すとクリアと通知する https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31905]
+- [「文字の読み上げ」無効のときの日本語文字変換候補の読み上げ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31796]
+- [文字説明の点字ディスプレイ出力 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29531]
 
 
 ++ 2013.2jp の変更点 ++
