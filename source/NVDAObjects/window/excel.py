@@ -27,6 +27,7 @@ import scriptHandler
 
 xlA1 = 1
 xlRC = 2
+xlUnderlineStyleNone=-4142
 
 re_RC=re.compile(r'R(?:\[(\d+)\])?C(?:\[(\d+)\])?')
 
@@ -50,7 +51,26 @@ class ExcelBase(Window):
 			text=_("{start} through {end}").format(start=textList[0], end=textList[1])
 		return text
 
-	def fireFocusOnSelection(self):
+	def _getDropdown(self):
+		w=winUser.getAncestor(self.windowHandle,winUser.GA_ROOT)
+		if not w:
+			log.debugWarning("Could not get ancestor window (GA_ROOT)")
+			return
+		obj=Window(windowHandle=w,chooseBestAPI=False)
+		if not obj:
+			log.debugWarning("Could not instnaciate NVDAObject for ancestor window")
+			return
+		threadID=obj.windowThreadID
+		while not eventHandler.isPendingEvents("gainFocus"):
+			obj=obj.previous
+			if not obj or not isinstance(obj,Window) or obj.windowThreadID!=threadID:
+				log.debugWarning("Could not locate dropdown list in previous objects")
+				return
+			if obj.windowClassName=='EXCEL:':
+				break
+		return obj
+
+	def _getSelection(self):
 		selection=self.excelWindowObject.Selection
 		try:
 			isMerged=selection.mergeCells
@@ -62,7 +82,7 @@ class ExcelBase(Window):
 			obj=ExcelSelection(windowHandle=self.windowHandle,excelWindowObject=self.excelWindowObject,excelRangeObject=selection)
 		else:
 			obj=ExcelCell(windowHandle=self.windowHandle,excelWindowObject=self.excelWindowObject,excelCellObject=selection)
-		eventHandler.executeEvent("gainFocus",obj)
+		return obj
 
 class Excel7Window(ExcelBase):
 	"""An overlay class for Window for the EXCEL7 window class, which simply bounces focus to the active excel cell."""
@@ -71,7 +91,15 @@ class Excel7Window(ExcelBase):
 		return self.excelWindowObjectFromWindow(self.windowHandle)
 
 	def event_gainFocus(self):
-		self.fireFocusOnSelection()
+		selection=self._getSelection()
+		dropdown=self._getDropdown()
+		if dropdown:
+			if selection:
+				dropdown.parent=selection
+			eventHandler.executeEvent('gainFocus',dropdown)
+			return
+		if selection:
+			eventHandler.executeEvent('gainFocus',selection)
 
 class ExcelWorksheet(ExcelBase):
 
@@ -97,11 +125,27 @@ class ExcelWorksheet(ExcelBase):
 		return ExcelCell(windowHandle=self.windowHandle,excelWindowObject=self.excelWindowObject,excelCellObject=cell)
 
 	def script_changeSelection(self,gesture):
+		oldSelection=self._getSelection()
 		gesture.send()
-		if scriptHandler.isScriptWaiting():
-			# Prevent lag if keys are pressed rapidly.
-			return
-		self.fireFocusOnSelection()
+		import eventHandler
+		import time
+		import api
+		newSelection=None
+		curTime=startTime=time.time()
+		while (curTime-startTime)<=0.15:
+			if scriptHandler.isScriptWaiting():
+				# Prevent lag if keys are pressed rapidly
+				return
+			if eventHandler.isPendingEvents('gainFocus'):
+				return
+			newSelection=self._getSelection()
+			if newSelection and newSelection!=oldSelection:
+				break
+			api.processPendingEvents(processEventQueue=False)
+			time.sleep(0.015)
+			curTime=time.time()
+		if newSelection:
+			eventHandler.executeEvent('gainFocus',newSelection)
 	script_changeSelection.canPropagate=True
 
 	__changeSelectionGestures = (
@@ -151,7 +195,8 @@ class ExcelCellTextInfo(NVDAObjectTextInfo):
 		if formatConfig['reportFontAttributes']:
 			formatField['bold']=fontObj.bold
 			formatField['italic']=fontObj.italic
-			formatField['underline']=fontObj.underline
+			underline=fontObj.underline
+			formatField['underline']=False if underline is None or underline==xlUnderlineStyleNone else True
 		if formatConfig['reportColor']:
 			try:
 				formatField['color']=colors.RGB.fromCOLORREF(int(fontObj.color))
@@ -184,37 +229,22 @@ class ExcelCell(ExcelBase):
 		if rowHeaderColumn and columnNumber>rowHeaderColumn:
 			return self.excelCellObject.parent.cells(rowNumber,rowHeaderColumn).text
 
-	def _getDropdown(self):
-		w=winUser.getAncestor(self.windowHandle,winUser.GA_ROOT)
-		if not w:
-			log.debugWarning("Could not get ancestor window (GA_ROOT)")
-			return
-		obj=Window(windowHandle=w,chooseBestAPI=False)
-		if not obj:
-			log.debugWarning("Could not instnaciate NVDAObject for ancestor window")
-			return
-		threadID=obj.windowThreadID
-		while not eventHandler.isPendingEvents("gainFocus"):
-			obj=obj.previous
-			if not obj or not isinstance(obj,Window) or obj.windowThreadID!=threadID:
-				log.debugWarning("Could not locate dropdown list in previous objects")
-				return
-			if obj.windowClassName=='EXCEL:':
-				break
-		return obj
-
 	def script_openDropdown(self,gesture):
 		gesture.send()
-		count=0
 		d=None
-		while count<5:
+		curTime=startTime=time.time()
+		while (curTime-startTime)<=0.25:
+			if scriptHandler.isScriptWaiting():
+				# Prevent lag if keys are pressed rapidly
+				return
+			if eventHandler.isPendingEvents('gainFocus'):
+				return
 			d=self._getDropdown()
 			if d:
 				break
-			count+=1
-			log.debugWarning("get dropdown fail %d"%count)
 			api.processPendingEvents(processEventQueue=False)
-			time.sleep(0.1)
+			time.sleep(0.025)
+			curTime=time.time()
 		if not d:
 			log.debugWarning("Failed to get dropDown, giving up")
 			return
