@@ -3,6 +3,41 @@
 
 %!includeconf: ../changes.t2tconf
 
+= 2014.1 =
+
+== New Features ==
+- Support for Microsoft PowerPoint 2013. Note that protected view is not supported. (#3578)
+- In Microsoft word and Excel, NVDA can now read the selected symbol when choosing symbols using the Insert Symbols dialog. (#3538)
+- It is now possible to choose if content in documents should be identified as clickable, via a new option in the Document Formatting settings dialog. This option is on by default (previous behaviour). (#3556)
+- Support for braille displays connected via Bluetooth on a computer running the Widcomm Bluetooth Software. (#2418)
+- When editing text in PowerPoint, hyperlinks are now reported. (#3416)
+
+
+== Changes ==
+- For Papenmeier braille displays, the move to flat review/focus command has been removed. Users can assign their own keys using the Input Gestures dialog. (#3652)
+- NVDA now relies  on the Microsoft VC runtime version 11, which means it can no longer be run on Operating systems older than Windows XP Service Pack 2 or Windows Server 2003 Service Pack 1.
+
+
+== Bug Fixes ==
+- When moving around or selecting cells in Microsoft Excel, NVDA should no longer inappropriately announce the old cell rather than the new cell when Microsoft Excel is slow to move the selection. (#3558)
+- NVDA properly handles opening a dropdown list for a cell in Microsoft Excel via the context menu. (#3586)
+- New page content in iTunes 11 store pages is now shown properly in browse mode when following a link in the store or when opening the store initially. (#3625)
+- Buttons for previewing songs in the iTunes 11 store now show their label in browse mode. (#3638)
+- In browse mode in Google Chrome, the labels of check boxes and radio buttons are now rendered correctly. (#1562)
+- In Instantbird, NVDA no longer reports useless information every time you move to a contact in the Contacts list. (#2667)
+- In browse mode in Adobe Reader, the correct text is now rendered for buttons, etc. where the label has been overridden using a tooltip or other means. (#3640)
+- In browse mode in Adobe Reader, extraneous graphics containing the text "mc-ref" will no longer be rendered. (#3645)
+- NVDA no longer reports all cells in Microsoft Excel as underlined in their formatting information. (#3669)
+- No longer show meaningless characters in browse mode documents such as those found in the Unicode private usage range. In some cases these were stopping more useful labels to be shown. (#2963).
+- Input composition for entering east-asian characters no longer fails in PuTTY (#3432)
+
+
+== Changes for Developers ==
+- AppModules now contain productName and productVersion properties. This info is also now included in Developer Info (NVDA+f1). (#1625)
+- In the Python Console, you can now press the tab key to complete the current identifier. (#433)
+ - If there are multiple possibilities, you can press tab a second time to choose from a list.
+
+
 = 2013.3 =
 
 == New Features ==
