@@ -37,7 +37,10 @@ del /Q libopenjtalk\lib\libopenjtalk.lib
 cd ..\..
 del /Q jptools\mecabHarness.pyc
 del /Q source\synthDrivers\jtalk\mecab.pyc
-git checkout -- source/synthDrivers/jtalk/*
+del /Q source\synthDrivers\jtalk\dic\DIC_VERSION
+del /Q source\synthDrivers\jtalk\dic\sys.dic
+del /Q source\synthDrivers\jtalk\dic\unk.dic
+del /Q source\synthDrivers\jtalk\libopenjtalk.dll
 cd ..\jptools
 
 
