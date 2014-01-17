@@ -11,11 +11,9 @@ clientLib.nvdaController_speakText(
 """This is test case.
 The case nvdaController_isSpeaking beep out when speaking with nvda!
 """)
-while True:
+while clientLib.nvdaController_isSpeaking():
 	time.sleep(0.5)
 	ctypes.windll.kernel32.Beep(500, 100)
-	if not clientLib.nvdaController_isSpeaking():
-		break
 ctypes.windll.kernel32.Beep(1000, 100)
 clientLib.nvdaController_cancelSpeech()
 clientLib.nvdaController_speakText("Finished!")
