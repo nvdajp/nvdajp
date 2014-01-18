@@ -6,6 +6,8 @@ import wx
 
 DLLPATH = r'..\client\nvdaControllerClient32.dll'
 clientLib = windll.LoadLibrary(DLLPATH)
+if clientLib:
+	clientLib.nvdaController_setAppSleepMode.argtypes = [c_ulonglong, c_int]
 
 def nvdaRunning():
 	if clientLib:
@@ -35,16 +37,21 @@ class MyFrame(wx.Frame):
 		
 		self.Centre()
 		self.Show(True)
+		self.windowHandle = self.GetHandle()
 
 	def OnSpeak(self, event):
 		if nvdaRunning():
-			clientLib.nvdaController_speakText(self.tc.Value)
+			res = clientLib.nvdaController_speakText(self.tc.Value)
 
 	def OnSleep(self, event):
-		pass
+		if nvdaRunning():
+			res = clientLib.nvdaController_setAppSleepMode(self.windowHandle, 1)
+			print "setAppSleepMode(%x,1):%x" % (self.windowHandle, res)
 
 	def OnWakeup(self, event):
-		pass
+		if nvdaRunning():
+			res = clientLib.nvdaController_setAppSleepMode(self.windowHandle, 0)
+			print "setAppSleepMode(%x,0):%x" % (self.windowHandle, res)
 
 	def OnQuit(self, event):
 		self.Close()

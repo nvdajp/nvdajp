@@ -97,6 +97,18 @@ def nvdaController_setRate(nRate):
 	getSynth()._set_rate(nRate)
 	return 0
 
+@WINFUNCTYPE(c_long, c_ulonglong, c_int)
+def nvdaController_setAppSleepMode(windowHandle, mode):
+	#import oleacc
+	#import appModuleHandler
+	#processHandle=oleacc.GetProcessHandleFromHwnd(windowHandle)
+	#appName = appModuleHandler.getAppNameFromProcessID(processHandle)
+	#log.info(appName)
+	import api
+	curApp = api.getForegroundObject().appModule
+	curApp.sleepMode = True if mode == 1 else False
+	return 0
+
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf=create_unicode_buffer(1024)
 	bufSize=c_int(2048)
@@ -523,6 +535,7 @@ def initialize():
 		("nvdaController_setPitch",nvdaController_setPitch),
 		("nvdaController_getRate",nvdaController_getRate),
 		("nvdaController_setRate",nvdaController_setRate),
+		("nvdaController_setAppSleepMode",nvdaController_setAppSleepMode),
 		("nvdaControllerInternal_requestRegistration",nvdaControllerInternal_requestRegistration),
 		("nvdaControllerInternal_inputLangChangeNotify",nvdaControllerInternal_inputLangChangeNotify),
 		("nvdaControllerInternal_typedCharacterNotify",nvdaControllerInternal_typedCharacterNotify),

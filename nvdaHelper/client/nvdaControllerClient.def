@@ -23,3 +23,4 @@ EXPORTS
 	nvdaController_setPitch
 	nvdaController_getRate
 	nvdaController_setRate
+	nvdaController_setAppSleepMode

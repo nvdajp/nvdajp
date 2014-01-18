@@ -1,4 +1,4 @@
-SET VERSION=nvdajp-client-140117
+SET VERSION=nvdajp-client-140118
 SET ARGS=publisher=nvdajp release=1 version=%VERSION%
 cd ..
 call scons.bat nvdaHelper\client %ARGS%
