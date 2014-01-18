@@ -12,6 +12,6 @@ copy ..\..\build\x86_64\client\nvdaControllerClient64.dll client
 copy ..\..\build\x86_64\client\nvdaControllerClient64.exp client
 copy ..\..\build\x86_64\client\nvdaControllerClient64.lib client
 del /Q %VERSION%.zip
-7z a -xr!*~ -xr!.git* %VERSION%.zip client python
+7z a -xr!*~ -xr!.git* ..\..\%VERSION%.zip client python license.txt readme.html readmejp.txt
 cd ..
 
