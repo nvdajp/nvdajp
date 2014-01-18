@@ -49,7 +49,7 @@ class MyFrame(wx.Frame):
 	def OnQuit(self, event):
 		self.Close()
 
-app = wx.PySimpleApp()
+app = wx.App(False)
 frame = MyFrame()
 frame.Show()
 app.MainLoop()
