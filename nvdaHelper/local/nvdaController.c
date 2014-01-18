@@ -63,8 +63,7 @@ error_status_t __stdcall nvdaController_testIfRunning() {
 	return 0;
 }
 
-// #nvdajp
-error_status_t(__stdcall *_nvdaController_inputMethodCallback)(UINT,UINT,const wchar_t*,const wchar_t*,const wchar_t*,const wchar_t*);
-error_status_t __stdcall nvdaController_inputMethodCallback(UINT cursorPos,UINT deltaStart,const wchar_t* composition,const wchar_t* compAttr,const wchar_t* result,const wchar_t* textService) {
-	return _nvdaController_inputMethodCallback(cursorPos,deltaStart,composition,compAttr,result,textService);
+error_status_t(__stdcall *_nvdaController_setAppSleepMode)(const unsigned __int64 hWnd, const int mode);
+error_status_t __stdcall nvdaController_setAppSleepMode(const unsigned __int64 hWnd, const int mode) {
+	return _nvdaController_setAppSleepMode(hWnd, mode);
 }

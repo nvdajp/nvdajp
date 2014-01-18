@@ -26,5 +26,5 @@ interface NvdaController {
 	[fault_status,comm_status] setPitch();
 	[fault_status,comm_status] getRate();
 	[fault_status,comm_status] setRate();
-	[fault_status,comm_status] inputMethodCallback(); // #nvdajp
+	[fault_status,comm_status] setAppSleepMode();
 }
