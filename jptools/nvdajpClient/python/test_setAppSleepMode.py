@@ -9,7 +9,7 @@ clientLib = windll.LoadLibrary(DLLPATH)
 if clientLib:
 	clientLib.nvdaController_setAppSleepMode.argtypes = [c_uint, c_int]
 
-procId = windll.kernel32.GetProcessId(windll.kernel32.GetCurrentProcess())
+procId = windll.kernel32.GetCurrentProcessId()
 
 def nvdaRunning():
 	if clientLib:
