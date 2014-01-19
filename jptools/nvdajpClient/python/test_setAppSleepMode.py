@@ -7,7 +7,9 @@ import wx
 DLLPATH = r'..\client\nvdaControllerClient32.dll'
 clientLib = windll.LoadLibrary(DLLPATH)
 if clientLib:
-	clientLib.nvdaController_setAppSleepMode.argtypes = [c_ulonglong, c_int]
+	clientLib.nvdaController_setAppSleepMode.argtypes = [c_uint, c_int]
+
+procId = windll.kernel32.GetProcessId(windll.kernel32.GetCurrentProcess())
 
 def nvdaRunning():
 	if clientLib:
@@ -24,20 +26,19 @@ class MyFrame(wx.Frame):
 
 		self.menubar = wx.MenuBar()
 		self.fileMenu = wx.Menu()
-		self.speakItem = self.fileMenu.Append(-1, 'Speak')
+		self.speakItem = self.fileMenu.Append(-1, '&Speak')
 		self.Bind(wx.EVT_MENU, self.OnSpeak, self.speakItem)
-		self.sleepItem = self.fileMenu.Append(-1, 'Sleep')
+		self.sleepItem = self.fileMenu.Append(-1, 'Sleep O&n')
 		self.Bind(wx.EVT_MENU, self.OnSleep, self.sleepItem)
-		self.wakeupItem = self.fileMenu.Append(-1, 'Wakeup')
+		self.wakeupItem = self.fileMenu.Append(-1, 'Sleep O&ff')
 		self.Bind(wx.EVT_MENU, self.OnWakeup, self.wakeupItem)
-		self.quitItem = self.fileMenu.Append(-1, 'Quit', 'Quit application')
+		self.quitItem = self.fileMenu.Append(-1, '&Quit')
 		self.Bind(wx.EVT_MENU, self.OnQuit, self.quitItem)
 		self.menubar.Append(self.fileMenu, '&File')
 		self.SetMenuBar(self.menubar)
 		
 		self.Centre()
 		self.Show(True)
-		self.windowHandle = self.GetHandle()
 
 	def OnSpeak(self, event):
 		if nvdaRunning():
@@ -45,13 +46,13 @@ class MyFrame(wx.Frame):
 
 	def OnSleep(self, event):
 		if nvdaRunning():
-			res = clientLib.nvdaController_setAppSleepMode(self.windowHandle, 1)
-			print "setAppSleepMode(%x,1):%x" % (self.windowHandle, res)
+			res = clientLib.nvdaController_setAppSleepMode(procId, 1)
+			print "setAppSleepMode(%d,1):%d" % (procId, res)
 
 	def OnWakeup(self, event):
 		if nvdaRunning():
-			res = clientLib.nvdaController_setAppSleepMode(self.windowHandle, 0)
-			print "setAppSleepMode(%x,0):%x" % (self.windowHandle, res)
+			res = clientLib.nvdaController_setAppSleepMode(procId, 0)
+			print "setAppSleepMode(%d,0):%d" % (procId, res)
 
 	def OnQuit(self, event):
 		self.Close()

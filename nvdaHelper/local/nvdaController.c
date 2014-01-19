@@ -63,7 +63,7 @@ error_status_t __stdcall nvdaController_testIfRunning() {
 	return 0;
 }
 
-error_status_t(__stdcall *_nvdaController_setAppSleepMode)(const unsigned __int64 hWnd, const int mode);
-error_status_t __stdcall nvdaController_setAppSleepMode(const unsigned __int64 hWnd, const int mode) {
-	return _nvdaController_setAppSleepMode(hWnd, mode);
+error_status_t(__stdcall *_nvdaController_setAppSleepMode)(const unsigned __int32 procId, const int mode);
+error_status_t __stdcall nvdaController_setAppSleepMode(const unsigned __int32 procId, const int mode) {
+	return _nvdaController_setAppSleepMode(procId, mode);
 }

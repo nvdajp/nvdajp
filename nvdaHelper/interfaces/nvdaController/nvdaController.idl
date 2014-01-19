@@ -99,6 +99,6 @@ interface NvdaController {
 /**
  * #nvdajp
  */
-	error_status_t __stdcall setAppSleepMode([in] const unsigned __int64 hWnd, [in] const int mode);
+  error_status_t __stdcall setAppSleepMode([in] const unsigned __int32 procId, [in] const int mode);
 
 };

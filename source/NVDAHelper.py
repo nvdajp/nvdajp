@@ -97,12 +97,9 @@ def nvdaController_setRate(nRate):
 	getSynth()._set_rate(nRate)
 	return 0
 
-@WINFUNCTYPE(c_long, c_ulonglong, c_int)
-def nvdaController_setAppSleepMode(windowHandle, mode):
+@WINFUNCTYPE(c_long, c_ulong, c_int)
+def nvdaController_setAppSleepMode(procId, mode):
 	import appModuleHandler
-	p = c_ulong()
-	threadId = windll.user32.GetWindowThreadProcessId(windowHandle, byref(p))
-	procId = p.value
 	curApp = appModuleHandler.getAppModuleFromProcessID(procId)
 	curApp.sleepMode = True if mode == 1 else False
 	return 0
