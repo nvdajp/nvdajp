@@ -97,10 +97,16 @@ def nvdaController_setRate(nRate):
 	getSynth()._set_rate(nRate)
 	return 0
 
-@WINFUNCTYPE(c_long, c_ulong, c_int)
-def nvdaController_setAppSleepMode(procId, mode):
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setAppSleepMode(mode):
 	import appModuleHandler
-	curApp = appModuleHandler.getAppModuleFromProcessID(procId)
+	pid=c_long()
+	windll.rpcrt4.I_RpcBindingInqLocalClientPID(None,byref(pid))
+	pid=pid.value
+	if not pid:
+		log.error("Could not get process ID for RPC call")
+		return -1;
+	curApp = appModuleHandler.getAppModuleFromProcessID(pid)
 	curApp.sleepMode = True if mode == 1 else False
 	return 0
 
