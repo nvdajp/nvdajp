@@ -1,4 +1,4 @@
-SET VERSION=nvdajp-client-140119a
+SET VERSION=nvdajp-client-140121
 SET ARGS=publisher=nvdajp release=1 version=%VERSION%
 cd ..
 call scons.bat nvdaHelper\client %ARGS%
@@ -12,6 +12,5 @@ copy ..\..\build\x86_64\client\nvdaControllerClient64.dll client
 copy ..\..\build\x86_64\client\nvdaControllerClient64.exp client
 copy ..\..\build\x86_64\client\nvdaControllerClient64.lib client
 del /Q %VERSION%.zip
-7z a -xr!*~ -xr!.git* ..\..\%VERSION%.zip client python license.txt readme.html readmejp.txt
+7z a -xr!*~ -xr!.git* ..\..\output\%VERSION%.zip client python license.txt readme.html readmejp.txt
 cd ..
-
