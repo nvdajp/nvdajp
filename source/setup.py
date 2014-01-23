@@ -154,7 +154,7 @@ setup(
 			"script": "nvda_slave.pyw",
 			"icon_resources":nvdajpIcons,
 			"version": "0.0.0.0",
-			"description": "NVDA slave",
+			"description": name,
 			"product_version": version,
 			"copyright": copyright,
 			"company_name": publisher,
