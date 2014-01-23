@@ -173,10 +173,13 @@ def handleInputCompositionEnd(result):
 	focus=api.getFocusObject()
 	#nvdajp begin
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
-			config.conf["keyboard"]["speakTypedCharacters"] and \
-			result == u'\u3000':
-		speech.speakText(_('full shape space'))
-		return
+			config.conf["keyboard"]["speakTypedCharacters"]:
+		if result == u'\u3000':
+			speech.speakText(_('full shape space'))
+			return
+		elif result == u'\u0020':
+			speech.speakText(_('space'))
+			return
 	#nvdajp end
 	result=result.lstrip(u'\u3000 ')
 	curInputComposition=None
