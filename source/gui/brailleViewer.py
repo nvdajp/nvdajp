@@ -14,9 +14,10 @@ class brailleViewerFrame(wx.Frame):
 	def __init__(self):
 		super(brailleViewerFrame, self).__init__(gui.mainFrame, wx.ID_ANY, _("NVDA Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER | wx.STAY_ON_TOP | wx.SYSTEM_MENU | wx.CLOSE_BOX | wx.MAXIMIZE_BOX)
 		self.Bind(wx.EVT_CLOSE, self.onClose)
-		self.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,"DejaVu Sans"))
+		self.SetFont(wx.Font(16,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,"DejaVu Sans"))
+		self.SetTransparent(int(255.0 * 0.80))
 		sizer = wx.BoxSizer(wx.VERTICAL)
-		self.textCtrl = wx.TextCtrl(self, -1,size=(500,500),style=wx.TE_READONLY|wx.TE_MULTILINE)
+		self.textCtrl = wx.TextCtrl(self, -1,size=(500,500),style=wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_RICH)
 		sizer.Add(self.textCtrl, proportion=1, flag=wx.EXPAND)
 		sizer.Fit(self)
 		self.SetSizer(sizer)
