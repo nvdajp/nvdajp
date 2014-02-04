@@ -74,7 +74,7 @@ confspec = ConfigObj(StringIO(
 # Speech settings
 [speech]
 	# The synthesiser to use
-	synth = string(default=nvdajp_jtalk) # nvdajp
+	synth = string(default=auto)
 	symbolLevel = integer(default=100)
 	beepSpeechModePitch = integer(default=10000,min=50,max=11025)
 	outputDevice = string(default=default)
