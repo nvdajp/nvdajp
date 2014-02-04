@@ -20,6 +20,8 @@ import synthDrivers
 _curSynth=None
 _audioOutputDevice=None
 
+DEFAULT_DRIVER='nvdajp_jtalk' # nvdajp changed from 'espeak'
+
 def initialize():
 	config.addConfigDirsToPythonPackagePath(synthDrivers)
 
@@ -66,7 +68,7 @@ def setSynth(name,isFallback=False):
 		_curSynth=None
 		return True
 	if name=='auto':
-		name='espeak'
+		name=DEFAULT_DRIVER
 	if _curSynth:
 		_curSynth.cancel()
 		_curSynth.terminate()
@@ -98,9 +100,9 @@ def setSynth(name,isFallback=False):
 		log.error("setSynth", exc_info=True)
 		if prevSynthName:
 			setSynth(prevSynthName,isFallback=True)
-		elif name not in ('espeak','silence'):
-			setSynth('espeak',isFallback=True)
-		elif name=='espeak':
+		elif name not in (DEFAULT_DRIVER,'silence'):
+			setSynth(DEFAULT_DRIVER,isFallback=True)
+		elif name==DEFAULT_DRIVER:
 			setSynth('silence',isFallback=True)
 		return False
 
