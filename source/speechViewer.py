@@ -15,7 +15,7 @@ class SpeechViewerFrame(wx.Frame):
 		self.SetFont(wx.Font(16,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False))
 		self.SetTransparent(int(255.0 * 0.90))
 		sizer = wx.BoxSizer(wx.VERTICAL)
-		self.textCtrl = wx.TextCtrl(self, -1,size=(500,500),style=wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_RICH)
+		self.textCtrl = wx.TextCtrl(self, -1,size=(500,500),style=wx.TE_READONLY|wx.TE_MULTILINE)
 		sizer.Add(self.textCtrl, proportion=1, flag=wx.EXPAND)
 		sizer.Fit(self)
 		self.SetSizer(sizer)
