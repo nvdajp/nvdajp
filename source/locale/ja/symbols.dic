@@ -521,6 +521,9 @@ _	アンダーライン	some
 ♢	ダイヤ	most
 ♣	クラブ	most
 
+◯	オオキナマル	all	# U+25ef
+☓	ナナメジュージ	all	# U+2613
+
 䪼	セツ	none	# 䪼 U+4abc
 䯒	コー	none	# 䯒 U+4bd2
 俠	キョー	none	# 俠 U+4fe0
