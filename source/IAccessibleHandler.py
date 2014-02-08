@@ -565,6 +565,8 @@ def winEventCallback(handle,eventID,window,objectID,childID,threadID,timestamp):
 			# If we send a WM_NULL to this window at this point (which happens in accessibleObjectFromEvent), Messenger will silently exit (#677).
 			# Therefore, completely ignore these events, which is useless to us anyway.
 			return
+		if not eventHandler.shouldAcceptEvent(winEventIDsToNVDAEventNames[eventID], windowHandle=window):
+			return
 		winEventLimiter.addEvent(eventID,window,objectID,childID,threadID)
 	except:
 		log.error("winEventCallback", exc_info=True)
@@ -620,11 +622,6 @@ def processFocusWinEvent(window,objectID,childID,force=False):
 	# However, we don't want to ignore focus if the child ID isn't 0,
 	# as this is a child control and the SDM MSAA events don't handle child controls.
 	if childID==0 and not windowClassName.startswith('bosa_sdm') and winUser.getClassName(winUser.getAncestor(window,winUser.GA_PARENT)).startswith('bosa_sdm'):
-		return False
-	rootWindow=winUser.getAncestor(window,winUser.GA_ROOT)
-	# If this window is not within the foreground window and this window or its root window is not a popup window, and this window's root window is not the highest in the z-order
-	if not winUser.isDescendantWindow(winUser.getForegroundWindow(),window) and not (winUser.getWindowStyle(window) & winUser.WS_POPUP or winUser.getWindowStyle(rootWindow)&winUser.WS_POPUP) and winUser.getPreviousWindow(rootWindow)!=0: 
-		# This is a focus event from a background window, so ignore it.
 		return False
 	#Notify appModuleHandler of this new foreground window
 	appModuleHandler.update(winUser.getWindowThreadProcessID(window)[0])

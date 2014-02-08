@@ -13,6 +13,8 @@ import globalVars
 import controlTypes
 from logHandler import log
 import globalPluginHandler
+import config
+import winUser
 
 #Some dicts to store event counts by name and or obj
 _pendingEventCountsByName={}
@@ -173,3 +175,20 @@ def doPreDocumentLoadComplete(obj):
 			#Focus may be in this new treeInterceptor, so force focus to look up its treeInterceptor
 			focusObject.treeInterceptor=treeInterceptorHandler.getTreeInterceptor(focusObject)
 	return True
+
+def shouldAcceptEvent(eventName, windowHandle=None):
+	"""Check whether an event should be accepted from a platform API.
+	Creating NVDAObjects and executing events can be expensive
+	and might block the main thread noticeably if the object is slow to respond.
+	Therefore, this should be used before NVDAObject creation to filter out any unnecessary events.
+	A platform API handler may do its own filtering before this.
+	"""
+	if not windowHandle:
+		# We can't filter without a window handle.
+		return True
+	if eventName == "valueChange" and config.conf["presentation"]["progressBarUpdates"]["reportBackgroundProgressBars"]:
+		return True
+	fg = winUser.getForegroundWindow()
+	root=winUser.getAncestor(windowHandle,winUser.GA_ROOT)
+	# If this window is  within the foreground window or this window or its root window is  a popup window, or this window's root window is  the highest in the z-order
+	return winUser.isDescendantWindow(fg,windowHandle) or (winUser.getWindowStyle(windowHandle) & winUser.WS_POPUP or winUser.getWindowStyle(root)&winUser.WS_POPUP) or not winUser.getPreviousWindow(root)
