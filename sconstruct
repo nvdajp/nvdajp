@@ -68,7 +68,7 @@ vars.Add(PathVariable("certFile", "The certificate file with which to sign execu
 vars.Add("certPassword", "The password for the private key in the signing certificate", "")
 vars.Add("certTimestampServer", "The URL of the timestamping server to use to timestamp authenticode signatures", "")
 vars.Add(PathVariable("outputDir", "The directory where the final built archives and such will be placed", "output",PathVariable.PathIsDirCreate))
-vars.Add(ListVariable("nvdaHelperDebugFlags", "a list of debugging features you require", 'symbols', ["symbols","debugCRT","RTC","noOptimize"]))
+vars.Add(ListVariable("nvdaHelperDebugFlags", "a list of debugging features you require", 'none', ["debugCRT","RTC"]))
 vars.Add(EnumVariable('nvdaHelperLogLevel','The level of logging you wish to see, lower is more verbose','15',allowed_values=[str(x) for x in xrange(60)]))
 
 #Base environment for this and sub sconscripts
@@ -195,7 +195,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 	if env.get("uiAccess"):
 		buildCmd.append("--enable-uiAccess")
 	if certFile:
-		for prog in "nvda_noUIAccess", "nvda_uiAccess", "nvda_slave", "nvda_service":
+		for prog in "nvda_noUIAccess", "nvda_uiAccess", "nvda_slave", "nvda_service", "nvda_eoaProxy":
 			action.append(signExec[:-1] + [os.path.join(target[0].path, "%s.exe" % prog)])
 
 	for ext in "", "c", "o":

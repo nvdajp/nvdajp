@@ -38,7 +38,7 @@ launcher/nvda_logo.wav
 uninstaller/UAC.nsh
 *.pyc
 *.pyo
-_*.cmd
+*.dmp
 __*.txt
 source/brlapi.pyd
 source/configobj.py

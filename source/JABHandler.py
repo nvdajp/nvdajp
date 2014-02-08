@@ -17,6 +17,7 @@ import api
 import eventHandler
 import controlTypes
 import NVDAObjects.JAB
+import core
 
 #Some utility functions to help with function defines
 
@@ -263,6 +264,7 @@ internalFunctionQueue.__name__="JABHandler.internalFunctionQueue"
 
 def internalQueueFunction(func,*args,**kwargs):
 	internalFunctionQueue.put_nowait((func,args,kwargs))
+	core.requestPump()
 
 class JABContext(object):
 

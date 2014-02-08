@@ -1,7 +1,7 @@
 EXPORTS
 	createRemoteBindingHandle
 	cancellableSendMessageTimeout
-	cancelSendMessage
+	cancelCallEvent
 	_notifySendMessageCancelled
 	nvdaHelperLocal_initialize
 	nvdaHelperLocal_terminate
@@ -9,6 +9,7 @@ EXPORTS
 	nvdaInProcUtils_registerNVDAProcess
 	nvdaInProcUtils_unregisterNVDAProcess
 	nvdaInProcUtils_sysListView32_getGroupInfo
+	nvdaInProcUtils_dumpOnCrash
 	nvdaInProcUtils_getActiveObject
 	nvdaInProcUtils_winword_expandToLine
 	nvdaInProcUtils_winword_getTextInRange
