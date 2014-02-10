@@ -449,7 +449,7 @@ class SysTrayIcon(wx.TaskBarIcon):
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("readmejp"), item)
 			item = subMenu_jp.Append(wx.ID_ANY, _("NVDA web site") + " (nvdajp)")
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("http://www.nvda.jp/"), item)
-			item = subMenu_jp.Append(wx.ID_ANY, _("Contributors") + " (nvdajp)")
+			item = subMenu_jp.Append(wx.ID_ANY, _("C&ontributors") + " (nvdajp)")
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("http://sourceforge.jp/projects/nvdajp/wiki/contributors_ja"), item)
 		menu_help.AppendMenu(wx.ID_ANY,_("Help for Japanese version"),subMenu_jp)
 		#nvdajp end
