@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2013年11月11日
+- 最終更新日：2014年2月11日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -171,7 +171,7 @@ NVDA 日本語版の初期設定では音声エンジンは JTalk に設定さ�
 
 ++ eSpeak ++
 
-NVDA 日本語版 2013.3jp では音声エンジン eSpeak に簡易的な日本語の読み上げ処理を追加しています。
+NVDA 日本語版では音声エンジン eSpeak に簡易的な日本語の読み上げ処理を追加しています。
 
 NVDA 本家版の eSpeak は日本語に対応していません。
 
@@ -508,14 +508,16 @@ USB 接続で使う場合は「ケージーエスUSB/仮想Commドライバ」�
 
 NVDAメニューに「日本語版ヘルプ」というサブメニューが追加されています。
 
-この中には「NVDA日本語版の説明」「NVDA日本語版 Webサイト」「NVDA日本語版 貢献者」があります。
+この中には「NVDA日本語版の説明」「NVDA Webサイト(nvdajp)」「貢献者(nvdajp)」があります。
 
 NVDA 本家版はHTMLファイルに関連付けされたデフォルトのブラウザでヘルプを開きますが、NVDA 日本語版では独自のウィンドウでヘルプを開きます。この独自ウィンドウではブラウズモードの操作ができます。Alt+F4 でウィンドウを閉じることができます。
 
 
-++ 点字ビューワー ++
+++ スピーチビューワーと点字ビューワー ++
 
-ツール「点字ビューワー」を追加しています。
+NVDA 日本語版はツール「スピーチビューワー」を Alt+Tab で切り替え可能にする、Alt+スペースでシステムメニューを開いて最大化できるようにする、文字を大きめにしてウィンドウの不透明度を90パーセントにする、など変更しています。
+
+また NVDA 日本語版はツール「点字ビューワー」を追加しています。
 
 点字ビューワーは音声出力される情報を点字に変換しているので、点字ディスプレイへの実際の出力と内容が一致しないことがあります。
 
@@ -560,7 +562,7 @@ Microsoft Word において段落インデントの読み上げを独自にサ�
 - さらに、コメントウィンドウの中央にマウスポインタを移動する。
 
 
-この状況で、下記の操作ができることを ATOK 2013 と Windows 8.1 の組み合わせで確認しています。
+この状況で、下記の操作ができることを ATOK 2014 と Windows 8.1 の組み合わせで確認しています。
 
 - コメントウィンドウが開いたときに NVDA+Shift+A でコメントウィンドウを読み上げる（内容によっては最初の1行しか読み上げない）
 - マウス右クリックを押すキー操作（ラップトップ配列で NVDA+] ＝閉じ大カッコ）をしてコンテクストメニューを開く。この中に「コピー」「確定」と辞書の切り替えがある。
@@ -600,6 +602,13 @@ UTF-8 エンコーディングのテキストファイル、以下のフォー�
 
 
 + 既知の問題 +
+
+++ 日本語入力の文節ごとの読み上げ ++
+
+入力システムとアプリケーションがテキストサービス(TSF)に対応している場合に、文節移動後の候補読み上げができません。
+
+- [関連チケット31358 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31358]
+
 
 ++ Windows 8 での日本語入力 ++
 
@@ -644,9 +653,33 @@ NVDA 日本語版のバグは NVDA 本家コミュニティのチケットシス
 
 - [NVDA に対応したアプリケーションの開発 http://sourceforge.jp/projects/nvdajp/wiki/ControllerClient]
 - NVDA 日本語版における [コントローラークライアントAPIの拡張 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29342]
+- [動的に読み上げをON/OFFするAPI https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32444] を 2014.1jp で追加しました。
 
 
 + バージョンごとの変更点 +
+
+++ 2014.1jp の変更点 ++
+
+NVDA 日本語チームは以下の変更および改良を行いました。
+
+- [Open JTalk 1.07 への移行  https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=30704]
+- [動的に読み上げをON/OFFするAPI https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32444]
+- [簡単音声設定でJTalkの速さが5ずつ変化するように修正 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32590]
+- [IME使用時にShift+スペースの別幅空白のキーエコー https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32749]
+- [行頭にキャレットがある場合に点字ディスプレイのカーソル点滅位置がずれる不具合への対応 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32825]
+- [保存された設定の音声エンジンが初期化できないときに eSpeak が選択されないように修正 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32986]
+- [スピーチビューワーにフォーカスを切り替える操作を容易にする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33071]
+- [大きな丸、斜め十字の記号読み上げ対応 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33104]
+- [コマンド一覧表をデフォルトのブラウザで開かないように修正 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33140]
+
+また、以下の変更は NVDA 本家版 2014.1 と日本語版 2014.1jp の両方に反映されました。
+
+- [「自動的に確認してNVDAを更新する」の記述を修正 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32619]
+- [詳細説明を開く(NVDA+D)の説明を更新 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32672]
+- [入力ヘルプの文体の統一 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32841]
+- [「1度押す」「1回押す」の表現の統一 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33013]
+- [「コマンドクイックリファレンス」から「コマンド一覧表」に翻訳を変更 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33110]
+
 
 ++ 2013.3jp の変更点 ++
 
