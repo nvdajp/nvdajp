@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-07 18:54+1000\n"
-"PO-Revision-Date: 2014-02-06 21:50+0900\n"
+"PO-Revision-Date: 2014-02-11 22:41+0900\n"
 "Last-Translator: Takuya Nishimoto <nishimotz@gmail.com>\n"
 "Language-Team: NVDA Japanese Team <nishimotz@gmail.com>\n"
 "Language: ja\n"
@@ -89,10 +89,6 @@ msgstr "KGS BrailleMemo シリーズ"
 #: gui\__init.py:315
 msgid "Language settings..."
 msgstr "日本語設定(&L)..."
-
-#: gui\__init.py:378
-msgid "Help for Japanese version"
-msgstr "日本語版ヘルプ(&J)"
 
 #: settingDialogs.py:637
 msgid "Language Settings"
