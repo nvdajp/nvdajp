@@ -4,6 +4,7 @@
 #Copyright (C) 2006-2013 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Mesar Hameed
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
+# nvdajp modification by Takuya Nishimoto, Masataka.Shinke
 
 import time
 import os
@@ -28,7 +29,7 @@ import logViewer
 import speechViewer
 import winUser
 import api
-import brailleViewer #nvdajp (Masataka.Shinke)
+import brailleViewer #nvdajp
 
 def openDocFileAsHTA(basename):
 	b = unicode(basename, 'mbcs')
@@ -303,7 +304,7 @@ class MainFrame(wx.Frame):
 		globalPluginHandler.reloadGlobalPlugins()
 		NVDAObject.clearDynamicClassCache()
 
-	#nvdajp begin (Masataka.Shinke)
+	#nvdajp begin
 	def onToggleBrailleViewerCommand(self, evt):
 		if not brailleViewer.isActive:
 			brailleViewer.activate()
@@ -434,7 +435,7 @@ class SysTrayIcon(wx.TaskBarIcon):
 		# Translators: The label for the menu item to reload plugins.
 		item = menu_tools.Append(wx.ID_ANY, _("Reload plugins"))
 		self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
-		#nvdajp begin (Masataka.Shinke)
+		#nvdajp begin
 		item=self.menu_tools_toggleBrailleViewer = menu_tools.AppendCheckItem(wx.ID_ANY, _("Braille viewer"))
 		self.Bind(wx.EVT_MENU, frame.onToggleBrailleViewerCommand, item)
 		#nvdajp end
