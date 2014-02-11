@@ -444,15 +444,9 @@ class SysTrayIcon(wx.TaskBarIcon):
 
 		menu_help = self.helpMenu = wx.Menu()
 		#nvdajp begin
-		subMenu_jp = wx.Menu()
 		if not globalVars.appArgs.secure:
-			item = subMenu_jp.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
+			item = menu_help.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("readmejp"), item)
-			item = subMenu_jp.Append(wx.ID_ANY, _("NVDA web site") + " (nvdajp)")
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("http://www.nvda.jp/"), item)
-			item = subMenu_jp.Append(wx.ID_ANY, _("C&ontributors") + " (nvdajp)")
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("http://sourceforge.jp/projects/nvdajp/wiki/contributors_ja"), item)
-		menu_help.AppendMenu(wx.ID_ANY,_("Help for Japanese version"),subMenu_jp)
 		#nvdajp end
 		if not globalVars.appArgs.secure:
 			item = menu_help.Append(wx.ID_ANY, _("User Guide"))
