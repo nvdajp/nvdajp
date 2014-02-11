@@ -459,7 +459,6 @@ class SysTrayIcon(wx.TaskBarIcon):
 			# Translators: The label of a menu item to open the Commands Quick Reference document.
 			item = menu_help.Append(wx.ID_ANY, _("Commands &Quick Reference"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("keyCommands"), item)
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(getDocFilePath("keyCommands.html")), item)
 			# Translators: The label for the menu item to open What's New document.
 			item = menu_help.Append(wx.ID_ANY, _("What's &new"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("changes"), item)
