@@ -672,12 +672,13 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 - [大きな丸、斜め十字の記号読み上げ対応 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33104]
 - [コマンド一覧表をデフォルトのブラウザで開かないように修正 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33140]
 
+
 また、以下の変更は NVDA 本家版 2014.1 と日本語版 2014.1jp の両方に反映されました。
 
 - [「自動的に確認してNVDAを更新する」の記述を修正 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32619]
 - [詳細説明を開く(NVDA+D)の説明を更新 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32672]
 - [入力ヘルプの文体の統一 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32841]
-- [「1度押す」「1回押す」の表現の統一 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33013]
+- [「1度押す」「1回押す」の表現の統一 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33103]
 - [「コマンドクイックリファレンス」から「コマンド一覧表」に翻訳を変更 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33110]
 
 
