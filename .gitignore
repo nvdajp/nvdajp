@@ -39,6 +39,7 @@ uninstaller/UAC.nsh
 *.pyc
 *.pyo
 *.dmp
+_*.cmd
 __*.txt
 source/brlapi.pyd
 source/configobj.py
