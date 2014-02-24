@@ -51,6 +51,7 @@ EXPORTS
 	_nvdaController_setAppSleepMode
 	_nvdaControllerInternal_vbufChangeNotify
 	displayModel_getWindowTextInRect
+	displayModel_getCaretRect
 	displayModel_requestTextChangeNotificationsForWindow
 	calculateWordOffsets
 	findWindowWithClassInThread
