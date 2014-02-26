@@ -422,6 +422,10 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		lineNum=self._getLineNumFromOffset(offset)
 		start=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEINDEX,lineNum,0)
 		length=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINELENGTH,offset,0)
+		if not self.obj.isWindowUnicode:
+			import tones
+			tones.beep(880,10)
+			log.info("lineNum %d, start %d, length %d" % (lineNum, start, length))
 		end=start+length
 		#If we just seem to get invalid line info, calculate manually
 		if start<=0 and end<=0 and lineNum<=0 and self._getLineCount()<=0 and self._getStoryLength()>0:
