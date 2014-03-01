@@ -416,24 +416,37 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 			res=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_EXLINEFROMCHAR,0,offset)
 			return res
 		else:
+			if not self.obj.isWindowUnicode:
+				# offset in unicode chars to offset in bytes
+				s = self._getStoryText()[0:offset]
+				offset = len(s.encode('mbcs', 'replace'))
 			return watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEFROMCHAR,offset,0)
 
 	def _getLineOffsets(self,offset):
 		lineNum=self._getLineNumFromOffset(offset)
 		start=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEINDEX,lineNum,0)
+		if not self.obj.isWindowUnicode:
+			# offset in unicode chars to offset in bytes
+			s = self._getStoryText()[0:offset]
+			offset = len(s.encode('mbcs', 'replace'))
 		length=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINELENGTH,offset,0)
 		end=start+length
 		if not self.obj.isWindowUnicode:
+			# start/end in bytes to start/end in unicode chars
 			story_text = self._getStoryText()
-			buf = story_text.encode('mbcs', 'replace')[start:end]
-			buf = buf.decode('mbcs', 'replace')
-			try:
-				start_new = story_text.index(buf)
-				end_new = start_new + len(buf)
-				log.info("offset %d lineNum %d start %d end %d buf %s start_new %d end_new %d" % (offset, lineNum, start, end, buf, start_new, end_new))
+			start_new = end_new = 0
+			bytepos = 0
+			for charpos, ch in enumerate(story_text):
+				cb = len(ch.encode('mbcs', 'replace'))
+				if bytepos == start:
+					start_new = charpos
+				if bytepos == end:
+					end_new = charpos
+					break
+				bytepos += cb
+			if start_new >= 0 and end_new >= 0:
+				log.debug("offset %d lineNum %d start %d length %d end %d start_new %d end_new %d" % (offset, lineNum, start, length, end, start_new, end_new))
 				return (start_new, end_new)
-			except:
-				pass
 		#If we just seem to get invalid line info, calculate manually
 		if start<=0 and end<=0 and lineNum<=0 and self._getLineCount()<=0 and self._getStoryLength()>0:
 			return super(EditTextInfo,self)._getLineOffsets(offset)
