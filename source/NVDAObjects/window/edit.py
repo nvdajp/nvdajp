@@ -430,7 +430,7 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		if not self.obj.isWindowUnicode:
 			# start/end in bytes to start/end in unicode chars
 			story_text = self._getStoryText()
-			start_new = end_new = 0
+			start_new = end_new = -1
 			bytepos = 0
 			for charpos, ch in enumerate(story_text):
 				cb = len(ch.encode('mbcs', 'replace'))
@@ -440,9 +440,10 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 					end_new = charpos
 					break
 				bytepos += cb
-			if start_new >= 0 and end_new >= 0:
-				log.debug("offset %d lineNum %d start %d length %d end %d start_new %d end_new %d" % (offset, lineNum, start, length, end, start_new, end_new))
-				return (start_new, end_new)
+			if end_new == -1:
+				end_new = len(story_text)
+			log.debug("offset %d lineNum %d start %d length %d end %d start_new %d end_new %d" % (offset, lineNum, start, length, end, start_new, end_new))
+			return (start_new, end_new)
 		#If we just seem to get invalid line info, calculate manually
 		if start<=0 and end<=0 and lineNum<=0 and self._getLineCount()<=0 and self._getStoryLength()>0:
 			return super(EditTextInfo,self)._getLineOffsets(offset)
