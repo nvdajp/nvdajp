@@ -422,11 +422,18 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		lineNum=self._getLineNumFromOffset(offset)
 		start=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEINDEX,lineNum,0)
 		length=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINELENGTH,offset,0)
-		if not self.obj.isWindowUnicode:
-			import tones
-			tones.beep(880,10)
-			log.info("lineNum %d, start %d, length %d" % (lineNum, start, length))
 		end=start+length
+		if not self.obj.isWindowUnicode:
+			story_text = self._getStoryText()
+			buf = story_text.encode('mbcs', 'replace')[start:end]
+			buf = buf.decode('mbcs', 'replace')
+			try:
+				start_new = story_text.index(buf)
+				end_new = start_new + len(buf)
+				log.info("offset %d lineNum %d start %d end %d buf %s start_new %d end_new %d" % (offset, lineNum, start, end, buf, start_new, end_new))
+				return (start_new, end_new)
+			except:
+				pass
 		#If we just seem to get invalid line info, calculate manually
 		if start<=0 and end<=0 and lineNum<=0 and self._getLineCount()<=0 and self._getStoryLength()>0:
 			return super(EditTextInfo,self)._getLineOffsets(offset)
