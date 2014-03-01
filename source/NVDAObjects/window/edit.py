@@ -416,19 +416,15 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 			res=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_EXLINEFROMCHAR,0,offset)
 			return res
 		else:
-			if not self.obj.isWindowUnicode:
-				# offset in unicode chars to offset in bytes
-				s = self._getStoryText()[0:offset]
-				offset = len(s.encode('mbcs', 'replace'))
 			return watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEFROMCHAR,offset,0)
 
 	def _getLineOffsets(self,offset):
-		lineNum=self._getLineNumFromOffset(offset)
-		start=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEINDEX,lineNum,0)
 		if not self.obj.isWindowUnicode:
 			# offset in unicode chars to offset in bytes
 			s = self._getStoryText()[0:offset]
 			offset = len(s.encode('mbcs', 'replace'))
+		lineNum=self._getLineNumFromOffset(offset)
+		start=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEINDEX,lineNum,0)
 		length=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINELENGTH,offset,0)
 		end=start+length
 		if not self.obj.isWindowUnicode:
