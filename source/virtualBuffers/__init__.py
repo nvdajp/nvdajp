@@ -16,7 +16,7 @@ import review
 import NVDAHelper
 import XMLFormatting
 import scriptHandler
-from scriptHandler import isScriptWaiting
+from scriptHandler import isScriptWaiting, willSayAllResume
 import speech
 import NVDAObjects
 import api
@@ -588,6 +588,7 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 			self.rootNVDAObject.appModule._vbufRememberedCaretPositions = {}
 		self._lastCaretPosition = None
 		self.rootIdentifiers[self.rootDocHandle, self.rootID] = self
+		self._enteringFromOutside = True
 
 	def prepare(self):
 		self.shouldPrepare=False
@@ -910,14 +911,15 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 			speech.speakMessage(errorMessage)
 			return
 		info = self.makeTextInfo(textInfos.offsets.Offsets(startOffset, endOffset))
-		if readUnit:
-			fieldInfo = info.copy()
-			info.collapse()
-			info.move(readUnit, 1, endPoint="end")
-			if info.compareEndPoints(fieldInfo, "endToEnd") > 0:
-				# We've expanded past the end of the field, so limit to the end of the field.
-				info.setEndPoint(fieldInfo, "endToEnd")
-		speech.speakTextInfo(info, reason=controlTypes.REASON_FOCUS)
+		if not willSayAllResume(gesture):
+			if readUnit:
+				fieldInfo = info.copy()
+				info.collapse()
+				info.move(readUnit, 1, endPoint="end")
+				if info.compareEndPoints(fieldInfo, "endToEnd") > 0:
+					# We've expanded past the end of the field, so limit to the end of the field.
+					info.setEndPoint(fieldInfo, "endToEnd")
+			speech.speakTextInfo(info, reason=controlTypes.REASON_FOCUS)
 		info.collapse()
 		self._set_selection(info, reason=self.REASON_QUICKNAV)
 
@@ -1091,6 +1093,8 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 			gesture.send()
 
 	def event_focusEntered(self,obj,nextHandler):
+		if obj==self.rootNVDAObject:
+			self._enteringFromOutside = True
 		if self.passThrough:
 			 nextHandler()
 
@@ -1120,12 +1124,15 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 				log.exception("Error executing focusEntered event: %s" % parent)
 
 	def event_gainFocus(self, obj, nextHandler):
+		enteringFromOutside=self._enteringFromOutside
+		self._enteringFromOutside=False
 		if not self.isReady:
 			if self.passThrough:
 				nextHandler()
 			return
-		if not self.passThrough and self._lastFocusObj==obj:
-			# This was the last non-document node with focus, so don't handle this focus event.
+		if enteringFromOutside and not self.passThrough and self._lastFocusObj==obj:
+			# We're entering the document from outside (not returning from an inside object/application; #3145)
+			# and this was the last non-root node with focus, so ignore this focus event.
 			# Otherwise, if the user switches away and back to this document, the cursor will jump to this node.
 			# This is not ideal if the user was positioned over a node which cannot receive focus.
 			return
@@ -1155,11 +1162,12 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 		if not self._hadFirstGainFocus or not focusInfo.isOverlapping(caretInfo):
 			# The virtual buffer caret is not within the focus node.
 			oldPassThrough=self.passThrough
-			if not oldPassThrough:
+			passThrough=self.shouldPassThrough(obj,reason=controlTypes.REASON_FOCUS)
+			if not oldPassThrough and (passThrough or sayAllHandler.isRunning()):
 				# If pass-through is disabled, cancel speech, as a focus change should cause page reading to stop.
 				# This must be done before auto-pass-through occurs, as we want to stop page reading even if pass-through will be automatically enabled by this focus change.
 				speech.cancelSpeech()
-			self.passThrough=self.shouldPassThrough(obj,reason=controlTypes.REASON_FOCUS)
+			self.passThrough=passThrough
 			if not self.passThrough:
 				# We read the info from the buffer instead of the control itself.
 				speech.speakTextInfo(focusInfo,reason=controlTypes.REASON_FOCUS)
@@ -1454,8 +1462,10 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 			return
 		container.collapse()
 		self._set_selection(container, reason=self.REASON_QUICKNAV)
-		container.expand(textInfos.UNIT_LINE)
-		speech.speakTextInfo(container, reason=controlTypes.REASON_FOCUS)
+		if not willSayAllResume(gesture):
+			container.expand(textInfos.UNIT_LINE)
+			speech.speakTextInfo(container, reason=controlTypes.REASON_FOCUS)
+	script_moveToStartOfContainer.resumeSayAllMode=sayAllHandler.CURSOR_CARET
 	# Translators: Description for the Move to start of container command in browse mode. 
 	script_moveToStartOfContainer.__doc__=_("Moves to the start of the container element, such as a list or table")
 
@@ -1474,8 +1484,10 @@ class VirtualBuffer(cursorManager.CursorManager, treeInterceptorHandler.TreeInte
 			# Landing at the end of a browse mode document when trying to jump to the end of the current container. 
 			ui.message(_("bottom"))
 		self._set_selection(container, reason=self.REASON_QUICKNAV)
-		container.expand(textInfos.UNIT_LINE)
-		speech.speakTextInfo(container, reason=controlTypes.REASON_FOCUS)
+		if not willSayAllResume(gesture):
+			container.expand(textInfos.UNIT_LINE)
+			speech.speakTextInfo(container, reason=controlTypes.REASON_FOCUS)
+	script_movePastEndOfContainer.resumeSayAllMode=sayAllHandler.CURSOR_CARET
 	# Translators: Description for the Move past end of container command in browse mode. 
 	script_movePastEndOfContainer.__doc__=_("Moves past the end  of the container element, such as a list or table")
 

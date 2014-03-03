@@ -310,6 +310,15 @@ class NVDAObject(baseObject.ScriptableObject):
 		"""
 		raise NotImplementedError
 
+	#: Whether to create a tree interceptor for this object.
+	#: This is only relevant if L{treeInterceptorClass} is valid.
+	#: Normally, this should be C{True}.
+	#: However, for some objects (e.g. ARIA applications), a tree interceptor shouldn't be used by default,
+	#: but the user may wish to override this.
+	#: In this case, this can be set to C{False} and updated later.
+	#: @type: bool
+	shouldCreateTreeInterceptor = True
+
 	def _get_treeInterceptor(self):
 		"""Retreaves the treeInterceptor associated with this object.
 		If a treeInterceptor has not been specifically set, the L{treeInterceptorHandler} is asked if it can find a treeInterceptor containing this object.
@@ -986,6 +995,16 @@ This code is executed if a gain focus event is received by this object.
 		except Exception as e:
 			ret = "exception: %s" % e
 		info.append("appModule: %s" % ret)
+		try:
+			ret = repr(self.appModule.productName)
+		except Exception as e:
+			ret = "exception: %s" % e
+		info.append("appModule.productName: %s" % ret)
+		try:
+			ret = repr(self.appModule.productVersion)
+		except Exception as e:
+			ret = "exception: %s" % e
+		info.append("appModule.productVersion: %s" % ret)
 		try:
 			ret = repr(self.TextInfo)
 		except Exception as e:

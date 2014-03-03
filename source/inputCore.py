@@ -86,7 +86,7 @@ class InputGesture(baseObject.AutoPropertyObject):
 		@return: The display name.
 		@rtype: str
 		"""
-		raise NotImplementedError
+		return self.getDisplayTextForIdentifier(self.identifiers[0])[1]
 
 	#: Whether this gesture should be reported when reporting of command gestures is enabled.
 	#: @type: bool
@@ -113,7 +113,8 @@ class InputGesture(baseObject.AutoPropertyObject):
 		@return: The script to be executed.
 		@rtype: script function
 		"""
-		return scriptHandler.findScript(self)
+		self.script=scriptHandler.findScript(self)
+		return self.script
 
 	def send(self):
 		"""Send this gesture to the operating system.

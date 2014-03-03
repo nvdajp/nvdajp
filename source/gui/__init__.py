@@ -4,6 +4,7 @@
 #Copyright (C) 2006-2013 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Mesar Hameed
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
+# nvdajp modification by Takuya Nishimoto, Masataka.Shinke
 
 import time
 import os
@@ -28,7 +29,7 @@ import logViewer
 import speechViewer
 import winUser
 import api
-import brailleViewer #nvdajp (Masataka.Shinke)
+import brailleViewer #nvdajp
 
 def openDocFileAsHTA(basename):
 	b = unicode(basename, 'mbcs')
@@ -52,7 +53,7 @@ except RuntimeError:
 ### Constants
 NVDA_PATH = os.getcwdu()
 ICON_PATH=os.path.join(NVDA_PATH, "images", "nvdajp.ico")
-DONATE_URL = "http://www.nvaccess.org/wiki/Donate"
+DONATE_URL = "http://www.nvda.jp/donate.html"
 
 ### Globals
 mainFrame = None
@@ -303,7 +304,7 @@ class MainFrame(wx.Frame):
 		globalPluginHandler.reloadGlobalPlugins()
 		NVDAObject.clearDynamicClassCache()
 
-	#nvdajp begin (Masataka.Shinke)
+	#nvdajp begin
 	def onToggleBrailleViewerCommand(self, evt):
 		if not brailleViewer.isActive:
 			brailleViewer.activate()
@@ -434,7 +435,7 @@ class SysTrayIcon(wx.TaskBarIcon):
 		# Translators: The label for the menu item to reload plugins.
 		item = menu_tools.Append(wx.ID_ANY, _("Reload plugins"))
 		self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
-		#nvdajp begin (Masataka.Shinke)
+		#nvdajp begin
 		item=self.menu_tools_toggleBrailleViewer = menu_tools.AppendCheckItem(wx.ID_ANY, _("Braille viewer"))
 		self.Bind(wx.EVT_MENU, frame.onToggleBrailleViewerCommand, item)
 		#nvdajp end
@@ -443,15 +444,9 @@ class SysTrayIcon(wx.TaskBarIcon):
 
 		menu_help = self.helpMenu = wx.Menu()
 		#nvdajp begin
-		subMenu_jp = wx.Menu()
 		if not globalVars.appArgs.secure:
-			item = subMenu_jp.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
+			item = menu_help.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("readmejp"), item)
-			item = subMenu_jp.Append(wx.ID_ANY, _("NVDA web site") + " (nvdajp)")
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("http://www.nvda.jp/"), item)
-			item = subMenu_jp.Append(wx.ID_ANY, _("Contributors") + " (nvdajp)")
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("http://sourceforge.jp/projects/nvdajp/wiki/contributors_ja"), item)
-		menu_help.AppendMenu(wx.ID_ANY,_("Help for Japanese version"),subMenu_jp)
 		#nvdajp end
 		if not globalVars.appArgs.secure:
 			item = menu_help.Append(wx.ID_ANY, _("User Guide"))
@@ -459,7 +454,6 @@ class SysTrayIcon(wx.TaskBarIcon):
 			# Translators: The label of a menu item to open the Commands Quick Reference document.
 			item = menu_help.Append(wx.ID_ANY, _("Commands &Quick Reference"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("keyCommands"), item)
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(getDocFilePath("keyCommands.html")), item)
 			# Translators: The label for the menu item to open What's New document.
 			item = menu_help.Append(wx.ID_ANY, _("What's &new"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("changes"), item)

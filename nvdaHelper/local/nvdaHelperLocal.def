@@ -9,6 +9,8 @@ EXPORTS
 	nvdaInProcUtils_registerNVDAProcess
 	nvdaInProcUtils_unregisterNVDAProcess
 	nvdaInProcUtils_sysListView32_getGroupInfo
+	nvdaInProcUtils_dumpOnCrash
+	nvdaInProcUtils_getActiveObject
 	nvdaInProcUtils_winword_expandToLine
 	nvdaInProcUtils_winword_getTextInRange
 	VBuf_createBuffer
@@ -46,9 +48,10 @@ EXPORTS
 	_nvdaController_setPitch
 	_nvdaController_getRate
 	_nvdaController_setRate
-	_nvdaController_inputMethodCallback
+	_nvdaController_setAppSleepMode
 	_nvdaControllerInternal_vbufChangeNotify
 	displayModel_getWindowTextInRect
+	displayModel_getCaretRect
 	displayModel_requestTextChangeNotificationsForWindow
 	calculateWordOffsets
 	findWindowWithClassInThread

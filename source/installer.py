@@ -177,7 +177,7 @@ def registerInstallation(installDir,startMenuFolder,shouldCreateDesktopShortcut,
 	# Translators: A label for a shortcut in start menu and a menu entry in NVDA menu (to go to NVDA website).
 	createShortcut(os.path.join(startMenuFolder,_("NVDA web site")+".lnk"),targetPath=versionInfo.url,prependSpecialFolder="AllUsersPrograms")
 	#nvdajp begin
-	createShortcut(os.path.join(startMenuFolder,_("NVDAJP web site")+".lnk"),targetPath=versionInfo.url_nvdajp,prependSpecialFolder="AllUsersPrograms")
+	createShortcut(os.path.join(startMenuFolder,_("NVDAJP web site")+".lnk"),targetPath="http://www.nvda.jp/",prependSpecialFolder="AllUsersPrograms")
 	#nvdajp end
 	# Translators: A label for a shortcut item in start menu to uninstall NVDA from the computer.
 	createShortcut(os.path.join(startMenuFolder,_("Uninstall NVDA")+".lnk"),targetPath=os.path.join(installDir,"uninstall.exe"),workingDirectory=installDir,prependSpecialFolder="AllUsersPrograms")

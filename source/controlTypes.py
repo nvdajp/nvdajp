@@ -184,6 +184,8 @@ STATE_SORTED_DESCENDING=0x200000000
 STATES_SORTED=frozenset([STATE_SORTED,STATE_SORTED_ASCENDING,STATE_SORTED_DESCENDING])
 STATE_HASLONGDESC=0x400000000
 STATE_PINNED=0x800000000
+STATE_HASFORMULA=0x1000000000 #Mostly for spreadsheets
+STATE_HASCOMMENT=0X2000000000
 
 roleLabels={
 	# Translators: The word for an unknown control type.
@@ -540,6 +542,10 @@ stateLabels={
 	STATE_HASLONGDESC:_("has long description"),
 	# Translators: a state that denotes that an object is pinned in its current location
 	STATE_PINNED:_("pinned"),
+	# Translators: a state that denotes the existance of a formula on a spreadsheet cell
+	STATE_HASFORMULA:_("has formula"),
+	# Translators: a state that denotes the existance of a comment.
+	STATE_HASCOMMENT:_("has comment"),
 }
 
 negativeStateLabels={
@@ -608,9 +614,11 @@ def processPositiveStates(role, states, reason, positiveStates):
 	if role == ROLE_COMBOBOX:
 		# Combo boxes inherently have a popup, so don't report it.
 		positiveStates.discard(STATE_HASPOPUP)
-	if role in (ROLE_LINK, ROLE_BUTTON, ROLE_CHECKBOX, ROLE_RADIOBUTTON, ROLE_TOGGLEBUTTON, ROLE_MENUITEM, ROLE_TAB, ROLE_SLIDER, ROLE_DOCUMENT):
-		# This control is clearly clickable according to its role
-		# or reporting clickable just isn't useful.
+	import config
+	if not config.conf['documentFormatting']['reportClickable'] or role in (ROLE_LINK, ROLE_BUTTON, ROLE_CHECKBOX, ROLE_RADIOBUTTON, ROLE_TOGGLEBUTTON, ROLE_MENUITEM, ROLE_TAB, ROLE_SLIDER, ROLE_DOCUMENT):
+		# This control is clearly clickable according to its role,
+		# or reporting clickable just isn't useful,
+		# or the user has explicitly requested no reporting clickable
 		positiveStates.discard(STATE_CLICKABLE)
 	if reason == REASON_QUERY:
 		return positiveStates

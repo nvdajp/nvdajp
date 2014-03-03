@@ -98,18 +98,7 @@ interface NvdaController {
 
 /**
  * #nvdajp
- * Notify input method events.
- * @param cursorPos position of caret. 0 is the left boundary of pre-edit or composition.
- * @param deltaStart position of starting 'delta' within pre-edit or composition.
- * @param composition both pre-edit and composition string can be obtained.
- * @param compAttr attribute values for each characters, such as L"222221111000". 0: not converted, 1: selected, 2: not selected.
- * @param result available if an IME session is just finished.
- * @param textService composition text, available at ITfTextEditSink::OnEndEdit event. 
  */
-	error_status_t __stdcall inputMethodCallback([in] unsigned int cursorPos, 
-						     [in] unsigned int deltaStart,
-						     [in,string] const wchar_t* composition,
-						     [in,string] const wchar_t* compAttr,
-						     [in,string] const wchar_t* result,
-						     [in,string] const wchar_t* textService);
+	error_status_t __stdcall setAppSleepMode([in] const int mode);
+
 };

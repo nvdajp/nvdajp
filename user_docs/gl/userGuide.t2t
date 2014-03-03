@@ -57,13 +57,15 @@ Para máis detalles, podes [ver a licencia completa.  http://www.gnu.org/license
 
 + Requerimentos do Sistema +
 - Sistemas Operativos: todas as versións de 32 e 64 bits de Windows XP, Windows Vista, Windows 7 e Windows 8 (incluíndo sistemas operativos servidor), poderá funcionar parcialmente en Windows 2000.
+- Para o Windows XP 32 bits, NVDA require o Service Pack 2 ou superior.
+ - Para o Windows Server 2003, NVDA require o Service Pack 1 ou superior.
 - Memoria: 256 mb ou máis de RAM
 - Velocidade de Procesador: 1.0 ghz ou superior
 - Aproximadamente 50 MB de espazo de almacenamento.
 -
 
 + Obtendo e Instalando NVDA +
-Se aínda non tes unha copia do NVDA, podes descargala de [www.nvda-project.org NVDA_URL].
+Se aínda non tes unha copia do NVDA, podes descargala de [www.nvaccess.org NVDA_URL].
 
 Vai á sección download e atoparás unha liga para descargar a derradeira versión do NVDA.
 
@@ -220,11 +222,11 @@ Mentres esteas na axuda de entrada, premendo calquera tecla ou realizando calque
 As ordes actuais non se executarán mentres se esté no modo de axuda de entrada.
 
 ++ O Menú NVDA ++
-O menú NVDA permíteche controlar as opcións do NVDA, acceder á axuda, gardar/voltar á túa configuración, Modificar os diccionarios da fala, ler o ficheiro do log, e saír do NVDA.
+O menú NVDA permíteche controlar as opcións do NVDA, acceder á axuda, gardar/voltar á túa configuración, Modificar os diccionarios da fala, ler o ficheiro do rexistro, e saír do NVDA.
 
 Para despregar o menú NVDA dende calquer lugar de Windows mentres NVDA se está a executar, preme NVDA+n no teclado ou realiza un doble toque con 2 dedos na pantalla tactil.
 Tamén podes despregar o menú NVDA a través da bandexa de sistema de windows. 
-Ou facendo clic co o botón dereito sobre o icono NVDA atopado na bandexa de sistema, ou accediendo á bandexa de sistema premendo a tecla co logo de windows+B, flecha abaixo ata o icono de  NVDA e premendo a tecla aplicacións atopada seguidamente á tecla de control da dereita na maioría dos teclados. 
+Ou facendo clic co o botón dereito sobre o icono NVDA atopado na bandexa de sistema, ou accedendo á bandexa de sistema premendo a tecla co logo de windows+B, flecha abaixo ata o icono de  NVDA e premendo a tecla aplicacións atopada seguidamente á tecla de control da dereita na maioría dos teclados. 
 Cando apareza o menú, podes utilizar as teclas de cursor para navegar polo menú, e a tecla intro para activar un elemento. 
 
 ++ Ordes Básicas do NVDA ++
@@ -554,7 +556,7 @@ Nota: El atajo de teclado de anunciado del tiempo restante sólo funciona con la
 %kc:beginInclude
 || Nome | Tecla | Descripción |
 | Anunciar ventá de Comentarios | control+shift+c | Anuncia calquera comentario na ventá de comentarios.  |
-| Anunciar ventá de comentarios automáticos | control+shift+a | Anuncia calquera comentario na ventá de Comentarios automáticos.  |
+| Anunciar notas para traductores | control+shift+a | Anuncia calquera nota para os traductores.  |
 %kc:endInclude
 
 + Configurando NVDA +
@@ -586,8 +588,8 @@ Esta opción é unha casiña de verificación que, cando se marca, di ó NVDA qu
 Esta opción é unha casiña de verificación que che permite elexir se si ou se non apareze un diálogo cando saias do NVDA que che pregunte se che gostaría saír ou non do NVDA. 
 Cando estea marcada, un diálogo aparecerá cando intentes saír do NVDA preguntándoche se queres ou non saír.
 
-==== Nivel do Log ====
-Este é un cadro combinado que che permite elexir canto NVDA porá no log segundo se executa. 
+==== Nivel do Rexistro ====
+Este é un cadro combinado que che permite elexir canto NVDA porá no rexistro segundo se executa. 
 Xeralmente os usuarios non deberían necesitar tocar esto xa que non é demasiado amigable. 
 Sen embargo se queres proporcionar información nun informe sobre un fallo etc, entón poderá ser unha boa opción.
 
@@ -1138,9 +1140,11 @@ Mira [máis abaixo #ConfigProfileTriggers] para máis información acerca dos di
 Premendo Aceptar crearase o perfil e pecharase o cadro de diálogo de configuración de perfiles para que podas editalo.
 
 +++ Activación Manual +++[ConfigProfileManual]
-Podes activar manualmente un perfil seleccionando un perfil e premendo o botón Activación Manual/edición.
+Podes activar manualmente un perfil seleccioanndo un perfil e premendo o botón Activación Manual.
 Unha vez activado, aínda se poden activar outros perfiles debido ós disparadores, pero as opcións do perfil activado manualmente teñen prioridade.
-Ademáis, as opcións que modifiques gardaranse nese perfil.
+Por exemplo, se un perfil se dispara para a aplicación actual e o anunciado de ligas está activado nese perfil, pero desactivado no perfil activado manualmente, as ligas non se anunciarán.
+Nembargantes, se cambiaches a voz no perfil disparado, pero nunca se cambióu no perfil activado manualmente, utilizarase a voz a partires do perfil disparado.
+Os valores que se modifiquen gardaranse no perfil activado manualmente.
 Para desactivar un perfil activado manualmente, selecciónao no cadro de diálogo Perfiles de configuración e preme o botón desactivar Manual.
 
 +++ Disparadores +++[ConfigProfileTriggers]
@@ -1182,11 +1186,11 @@ Para cambiar como se configura NVDA nas pantallas de logon/UAC, configura a NVDA
 
 + Ferramentas Extra +
 
-++ Visualizador do Log ++
-O visualizador do log, atopado en Ferramentas no menú NVDA, permítenche ver toda a saída que ocurrira ata agora dende cando iniciaches NVDA por última vez.
+++ Visualizador do Rexistro ++
+O visualizador do rexistro, atopado en Ferramentas no menú NVDA, permítenche ver toda a saída que ocurrira ata agora dende cando iniciaches NVDA por última vez.
 
-Ademáis de ler o contido, tamén podes gardar unha copia do ficheiro do log, ou refrescar o visualizador tal que se amose a saída máis recente dende que o visualizador do Log foi aberto.
-Estas accións están dispoñibles baixo o menú de visualizador do Log.
+Ademáis de ler o contido, tamén podes gardar unha copia do ficheiro do rexistro, ou refrescar o visualizador tal que se amose a saída máis recente dende que o visualizador do rexistro foi aberto.
+Estas accións están dispoñibles baixo o menú de visualizador do Rexistro.
 
 ++ Visualizador de Voz ++
 Para desenroladores de Software videntes ou xente demostrando NVDA a unha audiencia vidente, está dispoñible unha ventá flotante que che permite ver todo o texto que NVDA estea falando actualmente.
@@ -1232,7 +1236,7 @@ Aíndaque esta versión do NVDA aínda poderá cargalos, Non se amosarán no Adm
 
 ++ Consola de Python ++
 A consola de Python do NVDA, atopada baixo Ferramentas no menú NVDA, é unha ferramenta de desenrolo que é útil para depuración, inspección xeral do interior  do NVDA ou inspeción da xerarquía de accesibilidade de unha aplicación.
-Para máis información, por favor mira [O artigo The Python Console no sitio Web de NVDA NVDA_URLwiki/PythonConsole].
+Para máis información, por favor olla a Guía do desenvolvedor dispoñible na [sección de desenvolvemento da páxina web do NVDA http://community.nvda-project.org/wiki/Development].
 
 ++ Recargar plugins ++
 Este elemento, unha vez activado, recarga app modules e plugins globais sen reiniciar ó NVDA, o cal é útil para desenroladores.
@@ -1303,8 +1307,8 @@ Esta sección contén información acerca das liñas braille soportadas polo NVD
 ++ Freedom Scientific Focus/PAC Mate Series ++
 Todas as liñas Focus e PAC Mate de [Freedom Scientific http://www.freedomscientific.com/] sopórtanse.
 Necesitarás os controladores de liñas braille de Freedom Scientific instalados no teu sistema.
-Se non os tes aínda, podes obtelos dende http://www.freedomscientific.com/downloads/focus-40-blue/focus-40-blue-downloads.asp.
-Aíndaque esta páxina só menciona a liña Focus 40 Blue, o controlador soporta todas as liñas de Freedom Scientific.
+Se non os tes aínda, podes obtelos dende http://www.freedomscientific.com/downloads/focus-40-blue/focus-40-14-blue-downloads.asp.
+Aíndaque esta páxina só mencione a liña Focus 40 Blue, o controlador soporta todas as liñas Focus e Pacmate de Freedom Scientific.
 Se o teu sistema executa un Windows de 64 bit e os controladores xa se instalaron por outro lector de pantalla, posiblemente aínda necesitarás instalar os controladores dende esta liga, posto que os ficheiros que require NVDA posiblemente non foron instalados polo outro lector de pantalla.
 
 Predeterminadamente, NVDA pode detectar automáticamente e conectarse a estas líneas tanto a traverso de USB como de bluetooth.
@@ -1537,6 +1541,9 @@ Por favor mira a documentación da liña para descripcións de onde poden atopar
 ++ Series da HIMS Braille Sense/Braille EDGE ++
 NVDA soporta as liñas Braille Sense e Braille EDGE de [Hims http://www.hims-inc.com/] cando se conectan a través do USB ou bluetooth. 
 Se se conectan a través do USB, necesitarás instalar os controladores USB de HIMS no sistema.
+Podes descargar éstos dende o Centro de Recursos de HIMS: http://www.hims-inc.com/resource-center/
+Nesta páxina, selecciona o dispositivo e descarga o controlador na sección Window-Eyes.
+Aíndaque  a sección só mencione a Window-Eyes, este é un controlador USB xeral que funcionará co NVDA tamén.
 
 Seguidamente van as asignacións de teclas para estas liñas co NVDA.
 Por favor mira a documentación das liñas para descripcións de onde poden atoparse estas teclas.
@@ -1674,7 +1681,6 @@ Seguidamente van as asignacións de ordes da Papenmeier para o NVDA:
 | Ir á celda braille | sensores |
 | Anunciar carácter actual en revisión  | l1 |
 | Activar actual navegador de obxectos  | l2 |
-| Mover a revisión cha/foco | r1 |
 | Anunciar título | l1+arriba |
 | Anunciar barra de estado | l2+abaixo |
 | Mover ó obxecto contido | arriba2 |
@@ -1751,7 +1757,6 @@ Dispositivos co EAB:
 | Ir á celda braille | sensores |
 | Anunciar carácter actual en revisión | l1 |
 | Activar navegador de obxectos actual | l2 |
-| Moverse á revisión chan / foco | r1 |
 | Anunciar título | l1up |
 | Anunciar Barra de Estado| l2down |
 | Moverse ó obxecto contedor | up2 |
@@ -1769,7 +1774,6 @@ BRAILLEX Tiny:
 | Mover liña braille á liña anterior | up |
 | Mover liña braille á liña seguinte | dn |
 | Activar e desactivar seguemento do braille | r2 |
-| Moverse ó modo de revisión chan / foco | r1 |
 | Moverse ó obxecto contedor | r1+up |
 | Moverse ó primeiro obxecto contido | r1+dn |
 | Moverse ó obxecto anterior | r1+left |
@@ -1784,7 +1788,6 @@ BRAILLEX 2D Screen:
 | Anunciar formato de texto | reportf |
 | Mover liña braille á liña anterior| up |
 | Desprazar liña braille atrás | left |
-| Moverse á revisión chan / foco | r1 |
 | Desprazar liña braille adiante | right |
 | Mover liña braille á liña seguinte | dn |
 | Moverse ó obxecto seguinte | left2 |
@@ -1869,7 +1872,7 @@ Por exemplo, podes especificar se o símbolo dibuxado debería enviarse ó sinte
 
 Para facer esto, debes editar o ficheiro de información de pronunciación de símbolos no teu directorio de configuración de usuario do NVDA.
 O ficheiro chámase symbols-xx.dic, onde xx é o código de lingua.
-O formato de este ficheiro documentóuse na sección Symbol Pronunciation da Guía de Desenrolo do NVDA, que está dispoñible dende [A sección do desenrolador do sitio Web do NVDA NVDA_URLwiki/Development].
+O formato deste ficheiro documentóuse na sección Symbol Pronunciation da Guía de Desenrolo do NVDA, que está dispoñible dende [a Sección Desenvolvemento do sitio web do NVDA http://community.nvda-project.org/wiki/Development].
 Polo tanto, non é posible para os usuarios definir símbolos comprexos. 
 
 + Información Adicional +

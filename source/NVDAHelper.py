@@ -97,6 +97,19 @@ def nvdaController_setRate(nRate):
 	getSynth()._set_rate(nRate)
 	return 0
 
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setAppSleepMode(mode):
+	import appModuleHandler
+	pid=c_long()
+	windll.rpcrt4.I_RpcBindingInqLocalClientPID(None,byref(pid))
+	pid=pid.value
+	if not pid:
+		log.error("Could not get process ID for RPC call")
+		return -1;
+	curApp = appModuleHandler.getAppModuleFromProcessID(pid)
+	curApp.sleepMode = True if mode == 1 else False
+	return 0
+
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf=create_unicode_buffer(1024)
 	bufSize=c_int(2048)
@@ -160,10 +173,13 @@ def handleInputCompositionEnd(result):
 	focus=api.getFocusObject()
 	#nvdajp begin
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
-			config.conf["keyboard"]["speakTypedCharacters"] and \
-			result == u'\u3000':
-		speech.speakText(_('full shape space'))
-		return
+			config.conf["keyboard"]["speakTypedCharacters"]:
+		if result == u'\u3000':
+			speech.speakText(_('full shape space'))
+			return
+		elif result == u'\u0020':
+			speech.speakText(_('space'))
+			return
 	#nvdajp end
 	result=result.lstrip(u'\u3000 ')
 	curInputComposition=None
@@ -523,6 +539,7 @@ def initialize():
 		("nvdaController_setPitch",nvdaController_setPitch),
 		("nvdaController_getRate",nvdaController_getRate),
 		("nvdaController_setRate",nvdaController_setRate),
+		("nvdaController_setAppSleepMode",nvdaController_setAppSleepMode),
 		("nvdaControllerInternal_requestRegistration",nvdaControllerInternal_requestRegistration),
 		("nvdaControllerInternal_inputLangChangeNotify",nvdaControllerInternal_inputLangChangeNotify),
 		("nvdaControllerInternal_typedCharacterNotify",nvdaControllerInternal_typedCharacterNotify),

@@ -1,7 +1,7 @@
 /*
 This file is a part of the NVDA project.
 URL: http://www.nvda-project.org/
-Copyright 2007-2012 NV Access Limited
+Copyright 2007-2013 NV Access Limited
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2.0, as published by
     the Free Software Foundation.
@@ -427,6 +427,10 @@ VBufStorage_fieldNode_t* GeckoVBufBackend_t::fillVBuf(IAccessible2* pacc,
 	}
 	parentNode->isBlock=isBlockElement;
 
+	// force   isHidden to True if this has an ARIA role of presentation but its focusble -- Gecko does not hide this itself.
+	if((states&STATE_SYSTEM_FOCUSABLE)&&parentNode->matchAttributes(L"IAccessible2\\:\\:attribute_xml-roles:~wpresentation;")) {
+		parentNode->isHidden=true;
+	}
 	BSTR name=NULL;
 	if(pacc->get_accName(varChild,&name)!=S_OK)
 		name=NULL;
@@ -471,13 +475,16 @@ VBufStorage_fieldNode_t* GeckoVBufBackend_t::fillVBuf(IAccessible2* pacc,
 	bool isEditable = (role == ROLE_SYSTEM_TEXT && (states & STATE_SYSTEM_FOCUSABLE || states & STATE_SYSTEM_UNAVAILABLE)) || IA2States & IA2_STATE_EDITABLE;
 	// Whether this node is a link or inside a link.
 	int inLink = states & STATE_SYSTEM_LINKED;
+	// Whether this is the root node.
+	bool isRoot = ID == this->rootID;
 	// Whether this node is interactive.
 	// Certain objects are never interactive, even if other checks are true.
-	bool isNeverInteractive = !isEditable && (role == ROLE_SYSTEM_DOCUMENT || role == IA2_ROLE_INTERNAL_FRAME);
+	bool isNeverInteractive = parentNode->isHidden||(!isEditable && (isRoot || role == ROLE_SYSTEM_DOCUMENT || role == IA2_ROLE_INTERNAL_FRAME));
 	bool isInteractive = !isNeverInteractive && (isEditable || inLink || states & STATE_SYSTEM_FOCUSABLE || states & STATE_SYSTEM_UNAVAILABLE || role == ROLE_SYSTEM_APPLICATION || role == ROLE_SYSTEM_DIALOG || role == IA2_ROLE_EMBEDDED_OBJECT);
 	// We aren't finished calculating isInteractive yet; actions are handled below.
 	// Whether the name is the content of this node.
-	bool nameIsContent = role == ROLE_SYSTEM_LINK || role == ROLE_SYSTEM_PUSHBUTTON || role == IA2_ROLE_TOGGLE_BUTTON || role == ROLE_SYSTEM_MENUITEM || role == ROLE_SYSTEM_GRAPHIC || (role == ROLE_SYSTEM_TEXT && !isEditable) || role == IA2_ROLE_SECTION || role == IA2_ROLE_TEXT_FRAME || role == IA2_ROLE_HEADING || role == ROLE_SYSTEM_PAGETAB || role == ROLE_SYSTEM_BUTTONMENU;
+	bool nameIsContent = role == ROLE_SYSTEM_LINK || role == ROLE_SYSTEM_PUSHBUTTON || role == IA2_ROLE_TOGGLE_BUTTON || role == ROLE_SYSTEM_MENUITEM || role == ROLE_SYSTEM_GRAPHIC || (role == ROLE_SYSTEM_TEXT && !isEditable) || role == IA2_ROLE_SECTION || role == IA2_ROLE_TEXT_FRAME || role == IA2_ROLE_HEADING || role == ROLE_SYSTEM_PAGETAB || role == ROLE_SYSTEM_BUTTONMENU
+		|| ((role == ROLE_SYSTEM_CHECKBUTTON || role == ROLE_SYSTEM_RADIOBUTTON) && !isLabelVisible(pacc));
 
 	IAccessibleText* paccText=NULL;
 	IAccessibleHypertext* paccHypertext=NULL;
@@ -515,7 +522,13 @@ VBufStorage_fieldNode_t* GeckoVBufBackend_t::fillVBuf(IAccessible2* pacc,
 		isVisible = false;
 	} else {
 		isVisible = width > 0 && height > 0;
-		if (IA2TextIsUnneededSpace || role == ROLE_SYSTEM_COMBOBOX || (role == ROLE_SYSTEM_LIST && !(states & STATE_SYSTEM_READONLY)) || role == IA2_ROLE_EMBEDDED_OBJECT || role == ROLE_SYSTEM_APPLICATION || role == ROLE_SYSTEM_DIALOG || role == ROLE_SYSTEM_OUTLINE)
+		if (IA2TextIsUnneededSpace
+			|| role == ROLE_SYSTEM_COMBOBOX
+			|| (role == ROLE_SYSTEM_LIST && !(states & STATE_SYSTEM_READONLY))
+			|| role == IA2_ROLE_EMBEDDED_OBJECT
+			|| (!isRoot && (role == ROLE_SYSTEM_APPLICATION || role == ROLE_SYSTEM_DIALOG))
+			|| role == ROLE_SYSTEM_OUTLINE
+		)
 			renderChildren = false;
 		else {
 			if(pacc->get_accChildCount(&childCount)==S_OK) {

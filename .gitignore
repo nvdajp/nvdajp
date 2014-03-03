@@ -5,7 +5,6 @@ source/userConfig
 build
 build_debug
 dist
-dist_installer
 *.dll
 *.exe
 *.manifest
@@ -25,9 +24,9 @@ source/waves
 *_S.c
 dlldata.c
 *.pdb
-include/*
 .sconsign.dblite
 user_docs/*/*.html
+extras/controllerClient/x86/nvdaController.h
 extras/controllerClient/x64
 source/_buildVersion.py
 user_docs/*/keyCommands.t2t
@@ -39,6 +38,8 @@ launcher/nvda_logo.wav
 uninstaller/UAC.nsh
 *.pyc
 *.pyo
+
+*.dmp
 _*.cmd
 __*.txt
 source/brlapi.pyd
@@ -56,6 +57,12 @@ source/synthDrivers/jtalk/m001
 source/synthDrivers/jtalk/mecabrc
 source/synthDrivers/jtalk/mei_normal
 source/synthDrivers/jtalk/voice
+source/synthDrivers/jtalk/*.py
+source/synthDrivers/nvdajp_jtalk.py
+jptools/harness.py
+jptools/jpBrailleRunner.py
+jptools/jtalk*.py
+jptools/make_html.cmd
 *~
 *.nvda-addon
 nvdaHelper/docs
