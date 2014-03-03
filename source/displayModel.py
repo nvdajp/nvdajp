@@ -12,6 +12,7 @@ import textInfos
 from textInfos.offsets import OffsetsTextInfo
 import watchdog
 from logHandler import log
+import windowUtils
 
 def detectStringDirection(s):
 	direction=0
@@ -149,6 +150,16 @@ def initialize():
 	_getWindowTextInRect=CFUNCTYPE(c_long,c_long,c_long,c_int,c_int,c_int,c_int,c_int,c_int,c_bool,POINTER(BSTR),POINTER(BSTR))(('displayModel_getWindowTextInRect',NVDAHelper.localLib),((1,),(1,),(1,),(1,),(1,),(1,),(1,),(1,),(1,),(2,),(2,)))
 	_requestTextChangeNotificationsForWindow=NVDAHelper.localLib.displayModel_requestTextChangeNotificationsForWindow
 
+def getCaretRect(obj):
+	left=c_long()
+	top=c_long()
+	right=c_long()
+	bottom=c_long()
+	res=watchdog.cancellableExecute(NVDAHelper.localLib.displayModel_getCaretRect, obj.appModule.helperLocalBindingHandle, obj.windowThreadID, byref(left),byref(top),byref(right),byref(bottom))
+	if res!=0:
+			raise RuntimeError("displayModel_getCaretRect failed with res %d"%res)
+	return RECT(left,top,right,bottom)
+
 def getWindowTextInRect(bindingHandle, windowHandle, left, top, right, bottom,minHorizontalWhitespace,minVerticalWhitespace,stripOuterWhitespace=True):
 	text, cpBuf = watchdog.cancellableExecute(_getWindowTextInRect, bindingHandle, windowHandle, left, top, right, bottom,minHorizontalWhitespace,minVerticalWhitespace,stripOuterWhitespace)
 	if not text or not cpBuf:
@@ -200,6 +211,7 @@ class DisplayModelTextInfo(OffsetsTextInfo):
 
 	_cache__storyFieldsAndRects = True
 	def _get__storyFieldsAndRects(self):
+		# All returned coordinates are logical coordinates.
 		if self._location:
 			left, top, right, bottom = self._location
 		else:
@@ -214,6 +226,8 @@ class DisplayModelTextInfo(OffsetsTextInfo):
 		if not bindingHandle:
 			log.debugWarning("AppModule does not have a binding handle")
 			return [],[],[]
+		left,top=windowUtils.physicalToLogicalPoint(self.obj.windowHandle,left,top)
+		right,bottom=windowUtils.physicalToLogicalPoint(self.obj.windowHandle,right,bottom)
 		text,rects=getWindowTextInRect(bindingHandle, self.obj.windowHandle, left, top, right, bottom, self.minHorizontalWhitespace, self.minVerticalWhitespace,self.stripOuterWhitespace)
 		if not text:
 			return [],[],[]
@@ -333,19 +347,25 @@ class DisplayModelTextInfo(OffsetsTextInfo):
 			field['background-color']=colors.RGB.fromCOLORREF(int(bkColor))
 
 	def _getPointFromOffset(self, offset):
+		# Returns physical coordinates.
 		rects=self._storyFieldsAndRects[1]
 		if not rects or offset>=len(rects):
 			raise LookupError
 		x,y=rects[offset][:2]
+		x,y=windowUtils.logicalToPhysicalPoint(self.obj.windowHandle,x,y)
 		return textInfos.Point(x, y)
 
 	def _getOffsetFromPoint(self, x, y):
+		# Accepts physical coordinates.
+		x,y=windowUtils.physicalToLogicalPoint(self.obj.windowHandle,x,y)
 		for charOffset, (charLeft, charTop, charRight, charBottom) in enumerate(self._storyFieldsAndRects[1]):
 			if charLeft<=x<charRight and charTop<=y<charBottom:
 				return charOffset
 		raise LookupError
 
 	def _getClosestOffsetFromPoint(self,x,y):
+		# Accepts physical coordinates.
+		x,y=windowUtils.physicalToLogicalPoint(self.obj.windowHandle,x,y)
 		#Enumerate the character rectangles
 		a=enumerate(self._storyFieldsAndRects[1])
 		#Convert calculate center points for all the rectangles
@@ -372,7 +392,8 @@ class DisplayModelTextInfo(OffsetsTextInfo):
 	def _getOffsetsFromNVDAObject(self,obj):
 		l=obj.location
 		if not l:
-			raise RuntimeError
+			log.debugWarning("object has no location")
+			raise LookupError
 		x=l[0]+(l[2]/2)
 		y=l[1]+(l[3]/2)
 		offset=self._getClosestOffsetFromPoint(x,y)
@@ -422,6 +443,7 @@ class EditableTextDisplayModelTextInfo(DisplayModelTextInfo):
 	stripOuterWhitespace=False
 
 	def _findCaretOffsetFromLocation(self,caretRect,validateBaseline=True,validateDirection=True):
+		# Accepts logical coordinates.
 		for charOffset, ((charLeft, charTop, charRight, charBottom),charBaseline,charDirection) in enumerate(self._getStoryOffsetLocations()):
 			# Skip any character that does not overlap the caret vertically
 			if (caretRect.bottom<=charTop or caretRect.top>=charBottom):
@@ -442,20 +464,17 @@ class EditableTextDisplayModelTextInfo(DisplayModelTextInfo):
 		raise LookupError
 
 	def _getCaretOffset(self):
-		caretRect = winUser.getGUIThreadInfo(self.obj.windowThreadID).rcCaret
+		caretRect=getCaretRect(self.obj)
 		objLocation=self.obj.location
 		objRect=RECT(objLocation[0],objLocation[1],objLocation[0]+objLocation[2],objLocation[1]+objLocation[3])
-		tempPoint = winUser.POINT()
-		tempPoint.x=caretRect.left
-		tempPoint.y=caretRect.top
-		winUser.user32.ClientToScreen(self.obj.windowHandle, byref(tempPoint))
-		caretRect.left=max(objRect.left,tempPoint.x)
-		caretRect.top=max(objRect.top,tempPoint.y)
-		tempPoint.x=caretRect.right
-		tempPoint.y=caretRect.bottom
-		winUser.user32.ClientToScreen(self.obj.windowHandle, byref(tempPoint))
-		caretRect.right=min(objRect.right,tempPoint.x)
-		caretRect.bottom=min(objRect.bottom,tempPoint.y)
+		objRect.left,objRect.top=windowUtils.physicalToLogicalPoint(
+			self.obj.windowHandle,objRect.left,objRect.top)
+		objRect.right,objRect.bottom=windowUtils.physicalToLogicalPoint(
+			self.obj.windowHandle,objRect.right,objRect.bottom)
+		caretRect.left=max(objRect.left,caretRect.left)
+		caretRect.top=max(objRect.top,caretRect.top)
+		caretRect.right=min(objRect.right,caretRect.right)
+		caretRect.bottom=min(objRect.bottom,caretRect.bottom)
 		# Find a character offset where the caret overlaps vertically, overlaps horizontally, overlaps the baseline and is totally within or on the correct side for the reading order
 		try:
 			return self._findCaretOffsetFromLocation(caretRect,validateBaseline=True,validateDirection=True)
@@ -479,6 +498,7 @@ class EditableTextDisplayModelTextInfo(DisplayModelTextInfo):
 		left,top,right,bottom=rects[offset]
 		x=left #+(right-left)/2
 		y=top+(bottom-top)/2
+		x,y=windowUtils.logicalToPhysicalPoint(x,y)
 		oldX,oldY=winUser.getCursorPos()
 		winUser.setCursorPos(x,y)
 		winUser.mouse_event(winUser.MOUSEEVENTF_LEFTDOWN,0,0,None,None)

@@ -1,6 +1,6 @@
 #versionInfo.py
 #A part of NonVisual Desktop Access (NVDA)
-#Copyright (C) 2006-2013 NV Access Limited
+#Copyright (C) 2006-2014 NV Access Limited
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
 
@@ -29,7 +29,7 @@ def _updateVersionFromVCS():
 
 name="NVDA"
 longName=_("NonVisual Desktop Access")
-version="2013.3dev"
+version="2014.1dev"
 publisher="unknown"
 updateVersionType="nvdajp"
 try:
@@ -38,8 +38,7 @@ except ImportError:
 	_updateVersionFromVCS()
 description=_("A free and open source screen reader for Microsoft Windows")
 url="http://www.nvaccess.org/"
-url_nvdajp="http://www.nvda.jp/"
-copyrightYears="2006-2013"
+copyrightYears="2006-2014"
 copyright=_("Copyright (C) {years} NVDA Contributors").format(
 	years=copyrightYears)
 aboutMessage=_(u"""{longName} ({name})

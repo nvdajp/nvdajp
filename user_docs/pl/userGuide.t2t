@@ -57,13 +57,15 @@ Dokładne brzmienie licencji znajdziesz online: [Pełna treść licencji. http:/
 
 + Wymagania Systemowe +
 - Systemy operacyjne: wsparcie wszystkich 32-bitowych i 64-bitowych wersji systemu Windows XP, Windows Vista, Windows 7 i Windows 8 (w tym systemów operacyjnych dla serwerów).
+ - Dla 32-bitowego Windows XP, NVDA wymaga Service Pack 2 lub wyższego.
+ - Dla Windows Server 2003, NVDA wymaga Service Pack 1 lub wyższego.
 - Pamięć operacyjna: przynajmniej 256 MB
 - Procesor: częstotliwość przynajmniej 1.0 GHz
 - Około 50 MB wolnego miejsca na dysku.
 -
 
 + Pobieranie i instalacja NVDA +
-Program NVDA można pobrać ze strony internetowej znajdującej sie pod adresem: www.nvda-project.org.
+Program NVDA można pobrać ze strony internetowej znajdującej sie pod adresem: [www.nvaccess.org NVDA_URL].
 
 Przejdź na stronie do sekcji "Download" gdzie znajduje się link do najnowszej wersji programu. Możesz udać się także na polską stronę społeczności nvda pod adresem www.nvda.pl
 
@@ -554,7 +556,7 @@ Opisana komenda działa tylko dla domyślnego ustawienia formatowania linii stat
 %kc:beginInclude
 || Działanie | Skrót klawiszowy | Opis |
 | odczytaj okno komentarzy | Control+shift+c | czyta komentarze znajdujące się w oknie komentarzy. |
-| Odczytaj okno automatycznych komentarzy | control+shift+a | Czyta komentarze z okna automatycznych komentarzy. |
+| Odczytaj uwagi dla tłumaczy | control+shift+a | Zgłasza wszelkie uwagi dla tłumaczy. |
 %kc:endInclude
 
 + Konfigurowanie NVDA +
@@ -781,6 +783,10 @@ Jeśli zaznaczysz to pole, dodatkowy Insert (na większości klawiatur znajdują
 
 ==== Użyj numerycznego Insert jako klawisza NVDA ====
 Jeśli zaznaczysz to pole, Insert na klawiaturze numerycznej będzie pełnić rolę specjalnego klawisza NVDA.
+
+Jeśli żaden klawisz nie został wybrany jako klawisz NVDA, nie będzie możliwy dostęp do niektórych funkcji programu.
+W związku z tym, przy zamykaniu okna dialogowego pojawi się stosowny komunikat o błędzie, jeśli wszystkie pola wyboru klawiszy NVDA są nieoznaczone i naciśnięto przycisk OK.
+Po zamknięciu okna z tym komunikatem, musisz wybrać przynajmniej jeden klawisz NVDA, aby prawidłowo zamknąć okno ustawień klawiatury.
 
 %kc:setting
 ==== Czytaj pisane znaki ====
@@ -1094,7 +1100,80 @@ Przydatne są także następujące klawisze poleceń NVDA:
 | Przywróć zapisane ustawienia | NVDA+kontrol+r | NVDA+kontrol+r | Naciśnięty raz, przywraca ostatnio zapisane ustawienia. Naciśnięty szybko 3-krotnie, przywraca ustawienia fabryczne |
 %kc:endInclude
 
-++ Pliki Konfiguracyjne i Profile Użytkownika ++
+++ Profile konfiguracji ++
+Czasem może być przydatne posiadanie różnych ustawień dla różnych sytuacji.
+Dla przykładu: możesz chcieć mieć włączone ogłaszanie wcięć podczas edycji, albo zgłaszanie atrybutów czcionek podczas poprawiania tekstu.
+NVDA pozwala to osiągnąć za pomocą profili konfiguracyjnych.
+
+Profil konfiguracyjny zawiera tylko te ustawienia, które zostały zmienione podczas edycji profilu.
+Większość ustawień może być zmieniona w profilach konfiguracyjnych, wyłączając ustawienia znajdujące się w oknie Ustawienia ogólne, które mają zastosowanie do całego programu.
+
+Profile konfiguracyjne mogą być aktywowane ręcznie.
+Mogą być również aktywowane automatycznie przez wyzwalacze, takie jak przejście do określonej aplikacji.
+
++++ Podstawowe zarządzanie +++
+Profilami zarządzasz wybierając polecenie "Profile konfiguracji" w menu NVDA.
+Możesz zrobić to również za pomocą skrótu klawiszowego:
+%kc:beginInclude
+- NVDA+control+p: wyświetl okno profili konfiguracji.
+-
+%kc:endInclude
+
+Lista w tym oknie dialogowym, zawiera wszystkie dostępne profile.
+Po otwarciu okna, domyślnie wybrany jest aktualnie edytowany profil.
+Dla profili aktywnych wyświetlane są również dodatkowe informacje, określające, czy są ręcznie aktywowane, aktywowane przez wyzwalacze i/lub będące w trakcie edycji.
+
+Aby zmienić nazwę lub usunąć profil, naciśnij odpowiedni przycisk w oknie dialogowym.
+
+Naciśnij przycisk Zamknij, aby zamknąć okno.
+
++++ Tworzenie profilu +++
+Aby utworzyć profil, naciśnij przycisk "Nowy"..
+
+W oknie nowego profilu, możesz określić jego nazwę.
+Możesz również wybrać, jak ten profil powinien być używany.
+Jeśli chcesz aktywować go tylko ręcznie, wybierz aktywację ręczną (ustawienie domyślne).
+W innym wypadku wybierz wyzwalacz, który powinien uruchamiać ten profil.
+Dla ułatwienia, jeśli nie wybrałeś nazwy profilu, wybór wyzwalacza automatycznie wypełni pole nazwy.
+Zobacz [poniżej #ConfigProfileTriggers] aby uzyskać więcej informacji o wyzwalaczach.
+
+Naciśnięcie przycisku OK spowoduje utworzenie profilu i zamknięcie okna profili konfiguracji abyś mógł edytować utworzony profil.
+
++++ Ręczna aktywacja +++[ConfigProfileManual]
+Możesz ręcznie aktywować profil, wybierając go na liście i naciskając przycisk Aktywuj ręcznie.
+Po aktywacji, inne profile będą mogły być aktywowane przez wyzwalacze, ale każde ustawienie obecne w profilu ręcznie aktywowanym będzie nadrzędne.
+Dla przykładu, jeśli profil został uruchomiony przez wyzwalacz dla aktualnej aplikacji i zgłaszanie linków jest włączone w tym profilu, ale wyłączone w profilu ręcznie aktywowanym, linki nie będą zgłaszane.
+Jeśli jednak zmieniłeś głos w profilu uruchomionym przez wyzwalacz, ale nie zmieniałeś głosu w profilu ręcznie aktywowanym, użyty będzie głos z profilu automatycznie aktywowanego przez wyzwalacz.
+Wszystkie dokonane zmiany zostaną zapisane w profilu ręcznie aktywowanym.
+Aby unieaktywnić ręcznie aktywowany profil, wybierz go w oknie profili konfiguracji i naciśnij przycisk Dezaktywuj.
+
++++ Wyzwalacze +++[ConfigProfileTriggers]
+Naciśnięcie przycisku Wyzwalacze w oknie profili konfiguracji, pozwala zmienić profile, które powinny być aktywowane automatycznie.
+
+Lista wyzwalaczy wyświetla dostępne wyzwalacze, które są następujące:
+- Aktualna aplikacja: uruchamiany, gdy przełączysz się do aktualnej aplikacji.
+- Czytaj wszystko: aktywowany podczas czytania poleceniem Czytaj wszystko.
+-
+
+Aby zmienić profil, który powinien być automatycznie aktywowany przez wyzwalacz, wybierz wyzwalacz, a następnie wybierz pożądany profil na liście profili.
+Możesz wybrać (konfiguracja normalna) jeśli nie chcesz, aby profil był używany.
+
+Naciśnij przycisk Zamknij, aby powrócić do profili konfiguracji.
+
++++ Edycja profilu +++
+Jeśli aktywowałeś ręcznie jakiś profil, każda zmiana ustawień zostanie zapisana w tym profilu.
+W przeciwnym wypadku, każda zmiana ustawień zostanie zapisana do profilu ostatnio aktywowanego przez wyzwalacz.
+Dla przykładu: jeśli masz profil konfiguracyjny skojarzony z Notatnikiem i przełączysz się do notatnika, jakiekolwiek zmienione ustawienie zostanie zapisane do profilu.
+Jeśli żaden profil nie jest aktywowany ręcznie ani automatycznie, wszystkie zmienione ustawienia zostaną zapisane w normalnym pliku konfiguracyjnym.
+
+Aby edytować profil skojarzony z funkcją czytaj wszystko, musisz [aktywować ręcznie #ConfigProfileManual] ten profil.
+
++++ Tymczasowe wyłączenie wyzwalaczy +++
+Czasem jest przydatne czasowe wyłączenie wszystkich wyzwalaczy.
+Dla przykładu: możesz chcieć edytować profil aktywowany ręcznie,  albo plik normalnej konfiguracji, bez wpływu na to profili aktywowanych przez wyzwalacze.
+Możesz to osiągnąć przez oznaczenie pola wyboru Tymczasowo wyłącz wszystkie wyzwalacze w oknie dialogowym profili konfiguracji.
+
+++ Lokalizacja plików konfiguracyjnych ++
 Wszystkie ustawienia wersji przenośnej NVDA, katalog appModules oraz niestandardowe sterowniki znajdują się w katalogu o nazwie userConfig w katalogu głównym NVDA.
 
 Instalacyjna wersja NVDA przechowuje wszystkie ustawienia, takie jak appModules oraz niestandardowe sterowniki w specjalnym katalogu NVDA w profilu użytkownika systemu Windows.
@@ -1157,7 +1236,7 @@ Najlepiej byłoby usunąć takie pliki z folderu konfiguracji i zainstalować od
 
 ++ Konsola Pythona ++
 Konsola Pythona NVDA znajduje się w menu Narzędzia  w NVDA. Jest narzędziem dla programistów i jest używana do debugowania, przeglądania wewnątrz NVDA lub sprawdzania hierarchii dostępności aplikacji.
-Więcej informacji znajduje się w podręczniku dla twórców dostępnego w [sekcji Development na stronie NVDA NVDA_URLwiki/Development].
+Więcej informacji znajduje się w podręczniku dla twórców dostępnego w [sekcji Development na stronie NVDA http://community.nvda-project.org/wiki/Development].
 
 ++ przeładuj wtyczki ++
 Po aktywacji tego polecenia wszystkie moduły aplikacji oraz wtyczki zostaną przeładowane bez potrzeby restartu nvda. Jest to użyteczne dla programistów.
@@ -1228,8 +1307,8 @@ Ten rozdział zawiera informacje na temat monitorów brajlowskich wspieranych pr
 ++ Freedom Scientific Focus/PAC Mate Series ++
 Wszystkie monitory Focus i PAC Mate firmy [Freedom Scientific http://www.freedomscientific.com/] są obsługiwane w trybie połączeń USB i Bluetooth.
 Niezbędne są sterowniki brajlowskie Freedom Scientific zainstalowane w systemie.
-Jeśli nie zostały one jeszcze zainstalowane, to należy je pobrać ze strony: http://www.freedomscientific.com/downloads/focus-40-blue/focus-40-blue-downloads.asp.
-Na podanej stronie wymieniony jest tylko sterownik monitora Focus 40 Blue, ale obsługuje on wszystkie monitory Freedom Scientific.
+Jeśli nie zostały one jeszcze zainstalowane, to należy je pobrać ze strony: http://www.freedomscientific.com/downloads/focus-40-blue/focus-40-14-blue-downloads.asp.
+Na podanej stronie wymieniony jest tylko sterownik monitora Focus Blue, ale obsługuje on wszystkie monitory Freedom Scientific i Pacmate.
 Jeśli używasz 64-bitowego Windowsa i sterowniki zostały zainstalowane przez inny program czytający ekran, prawdopodobnie i tak będziesz musiał zainstalować sterowniki z tego linku, ponieważ pliki wymagane przez NVDA nie zostały prawdopodobnie zainstalowane przez inny program czytający ekran.
 
 Domyślnie NVDA może wykryć i podłączyć się do tych monitorów przez USB lub bluetooth.
@@ -1462,6 +1541,9 @@ Aby odnaleźć opisywane klawisze, zajrzyj do dokumentacji urządzenia:
 ++ HIMS Braille Sense/Braille EDGE Series ++
 NVDA obsługuje monitory Braille Sense i Braille EDGE produkcji [Hims http://www.hims-inc.com/] przy połączeniu przez USB i bluetooth. 
 Aby korzystać z połączenia USB, musisz zainstalować sterowniki USB HIMS w swoim systemie.
+Możesz je pobrać z Centrum zasobów HIMS: http://www.hims-inc.com/resource-center/
+Na tej stronie, wybierz swoje urządzenie i pobierz sterownik z sekcji Window-eyes.
+Strona wymienia tylko Window-eyes, jest to jednak sterownik USB ogólnego przeznaczenia i będzie pracował również z NVDA.
 
 Poniżej skróty klawiszowe dla tych monitorów, które działają w nvda.
 Aby odnaleźć opisywane klawisze, zajrzyj do dokumentacji urządzenia:
@@ -1599,7 +1681,6 @@ Poniżej znajdują się komendy Papenmeier dla NVDA:
 | Przywołaj do komórki brajla | routing |
 | Raportuj aktualny znak w punkcie przeglądu | l1 |
 | Aktywuj aktualny obiekt nawigatora | l2 |
-| Przełącz na przegląd/punkt uwagi | r1 |
 | Raportuj tytuł | l1+up |
 | Raportuj pasek stanu | l2+down |
 | Przejdź do obiektu nadrzędnego | up2 |
@@ -1676,7 +1757,6 @@ Urządzenia z EAB:
 | Przywołaj do komórki brajla | routing |
 | Raportuj aktualny znak w punkcie przeglądu | l1 |
 | Aktywuj aktualny obiekt nawigatora | l2 |
-| Przełącz na przegląd/punkt uwagi | r1 |
 | Raportuj tytuł | l1+up |
 | Raportuj pasek stanu | l2+down |
 | Przejdź do obiektu nadrzędnego | up2 |
@@ -1694,7 +1774,6 @@ BRAILLEX Tiny:
 | Przenieś wyświetlacz brajla do poprzedniej linii | up |
 | Przenieś wyświetlacz brajla do następnej linii | dn |
 | Przełącz "Brajl związany z..." | r2 |
-| Przełącz na przegląd/punkt uwagi | r1 |
 | Przejdź do obiektu nadrzędnego | r1+up |
 | Przejdź do pierwszego obiektu podrzędnego | r1+dn |
 | Przejdź do poprzedniego obiektu | r1+left |
@@ -1709,7 +1788,6 @@ BRAILLEX 2D Screen:
 | Raportuj formatowanie tekstu | reportf |
 | Przenieś wyświetlacz brajla do poprzedniej linii | up |
 | Przewiń wyświetlacz brajla wstecz | left |
-| Przełącz na przegląd/punkt uwagi | r1 |
 | Przewiń wyświetlacz brajla w przód | right |
 | Przenieś wyświetlacz brajla do następnej linii | dn |
 | Przejdź do następnego obiektu | left2 |
@@ -1794,7 +1872,7 @@ Przykładowo, NVDA może przepuścić znak wprost do syntezatora. Możemy w ten 
 
 Aby tego dokonać, musisz wyedytować plik symboli wymowy znajdujący się w folderze konfiguracji użytkownika NVDA.
 Plik nazywa się symbols-xx.dic, gdzie xx jest kodem języka.
-Format tego pliku jest opisany w rozdziale "Symbol Pronunciation" podręcznika dla twórców NVDA , znajdującego się w [sekcji Development na stronie NVDA NVDA_URLwiki/Development].
+Format tego pliku jest opisany w rozdziale "Symbol Pronunciation" podręcznika dla twórców NVDA , znajdującego się w [sekcji Development na stronie NVDA http://community.nvda-project.org/wiki/Development].
 Nie jest możliwe dla użytkowników definiowanie skomplikowanych symboli.
 
 + Dodatkowe Informacje +

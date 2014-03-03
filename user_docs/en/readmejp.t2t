@@ -9,102 +9,42 @@
 + Overview +
 
 
-- last update: 2013-08-23
+- last update: 2013-12-05
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
-Release by NVDA Japanese Team (nvdajp), based on NVDA from NV Access.
+Release by [NVDA Japanese Team (nvdajp) http://www.nvda.jp/en/], based on NVDA from NV Access.
+
 This document describes difference between original release of NVDA and the NVDAJP.
 NVDAJP releases are based on NV Access's rc branch.
-
-This release contains enhancements for Japanese language users.
+Please read this document and NVDA User Guide as well.
 
 NVDA Japanese is provided "as is", without warranty.
 
 
 ++ Install ++
 
-- NVDAJP requires 120MB storage space.
-- Launcher package of stable version is available at http://i.nvda.jp
-- For other releases from NVDAJP, please visit: http://www.nvda.jp/en/
-- Development or beta versions of NVDAJP may not be signed, there are some limitations regarding the privilege.
-- Application icon is changed to the goldfish.
-- Windows shortcut for starting NVDA is CTRL+ALT+N, if installed. It may conflicts to other screen reader which is popular in Japan. This shortcut can be modified using the property (ALT+Enter) of NVDAJP icon of Windows desktop.
-- Fixed issue: NVDA fails to start when temp path contains certain multibyte characters [NVDA ticket #2729 http://community.nvda-project.org/ticket/2729]
+NVDAJP requires 120MB storage space.
+
+Launcher package of stable version is available at http://i.nvda.jp
+
+Application icon is changed to the goldfish.
 
 
-+ NVDA with Japanese language +
++ Launching NVDA +
 
-- CapsLock key of Japanese keyboard array cannot be used as NVDA modifier key, because of the limitation of the Windows device driver.
-- eSpeak cannot speak Japanese language.
-- Original NVDA cannot output Japanese braille.
+Windows shortcut for starting NVDA is CTRL+ALT+N, if installed.
 
+It may conflicts to other screen reader which is popular in Japan.
 
-+ Japanese input with Windows 8 +
+This shortcut can be modified using the property (ALT+Enter) of NVDAJP icon of Windows desktop.
 
-After the Japanese input session with NVDA edit controls on Windows 8, exiting NVDA (NVDA+Q) cannot be performed correctly. The ending music is not played and the NVDA processes are still alive.
-- [NVDAJP ticket 31592 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=313592]
-- [NVDA ticket 3233 http://community.nvda-project.org/ticket/3233]
-- [NVDA ticket 2909 http://community.nvda-project.org/ticket/2909]
-
-
-Work around this:
-
-- Add English layout to Windows 8.
-- When Quit NVDA dialog opens, press Shift+Alt and switch from Japanese layout to English layout. After that, you can press OK button and quit NVDA correctly.
-
-
-+ Japanese input methods +
-
-- NVDA 2012.3 can use with Microsoft Japanese IME. NVDAJP 2013.1jp contains the work around the remained issues.
-- [NVDAJP ticket 28859 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=28859]
-- [NVDA ticket 2730 http://community.nvda-project.org/ticket/2730]
-- NVDAJP 2013.1jp removed legacy Japanese input support by Japanese Team. Stability is improved.
-- For Japanese input support, Keyboard Settings "Speak Typed Characters" should be enabled, "Speak Typed Words" should be disabled. Input Composition Setting "Automatically report all available candidates" should be disabled.
-
-
-+ Enhancements +
-
-++ Japanese keyboard ++
-
-- NonConvert or Convert key of Japanese keyboard can be used as NVDA modifier key. Welcome dialog has additional options.
-- Japanese translations added for Input Help Mode: "IME Non convert", "IME Convert", "Pause".
-- NVDA key settings are available at Welcome dialog, Language setting, and Keyboard setting.
-
-
-++ Documentations ++
-
-- Help menu includes 'Japanese Help' submenu, which includes this release note, link to NVDAJP web page, and link to NVDAJP contributers page.
-- Help documents are opened by HTML application (HTA) window, not the system's default web browser. This is because Japanese popular voice web browser for screen reader users is difficult to use with NVDA.
-
-
-++ Spelling reading ++
-
-For spelling reading, NVDAJP uses built-in character dictionary. 'Spelling functionarity setting' is not used.
-
-
-++ Synthesizer ++
-
-JTalk driver is the default synthesizer of NVDAJP, which supports Japanese language.
-
-- JTalk (Japanese TTS) has M001, Lite, and Mei voices. M001 and Lite are male voices. Mei is female voice. 
-- M001 and Mei are at sampling rate of 48kHz. Lite is at sampling rate of 16kHz. 
-- Speed, Volume, Pitch, Inflection can be changed.
-- Rate boost option is available.
-- 'Automatic Language switching' and 'Automatic Dialect switching' are not supported.
-
-
-JTalk2 experimental driver: 
-
-- 'Automatic Language switching' is supported. language switching among Japanese and other languages, which are supported by eSpeak.
-- Speed, Volume, Pitch, Inflection setting is only available for Japanese.
-- eSpeak voices are used for languages other than Japanese.
-
++ Object Navigation +
 
 ++ Character description mode ++
 
 Character description mode can be changed for caret moves by left arrow or right arrow key and character review commands.
-Laptop key is changed since NVDA 2013.1.
+
 Pressing "Report current character in review" (numpad2 or NVDA+period) four-times can enable or disable the description mode.
 
 %kc:beginInclude
@@ -114,6 +54,9 @@ Pressing "Report current character in review" (numpad2 or NVDA+period) four-time
 | Move to next character in review | numpad3 | NVDA+right arrow | flick right (text mode) | Move the review cursor to the next character on the current line of text. If description mode is enabled, the character is described. |
 %kc:endInclude
 
+
++ Configuration +
+
 ++ Language settings ++
 
 Language settings dialog contains settings for Japanese keyboard, character description, and input composition.
@@ -121,18 +64,17 @@ Language settings dialog contains settings for Japanese keyboard, character desc
 +++ Use NonConvert as NVDA key +++
 
 If checked, NonConvert key can be used as NVDA modifier key. Default is on.
+The Welcome dialog also has this option.
 
 +++ Use Convert as NVDA key +++
 
 If checked, Convert key can be used as NVDA modifier key. Default is off.
+The Welcome dialog also has this option.
 
 +++ Beep if IME mode is changed +++
 
 If checked, the press of Half-shape/Full-shape key is announced only with beep.
 Default is off.
-
-NVDAJP 2013.1jp reports input composition mode (such as Hiragana Romaji) when they are changed, not when IME is opened or closed.
-
 
 +++ Phonetic reading for Kana +++
 
@@ -164,7 +106,6 @@ The default of 'Announce candidate number' is disabled.
 If checked, items in candidate window of Japanese input methods such as Micosoft IME are annonced with numbers.
 If 'IME support of nvdajp' is disabled, this option has no effect.
 
-
 +++ Use IME support of nvdajp +++
 
 The default of 'Use IME support of nvdajp' is enabled.
@@ -174,58 +115,218 @@ If this option is enabled, pressing escape key to clear the input method session
 To disable, turn off the option.
 
 
-++ Character dictionary ++
+++ Voice settings ++
 
-NVDAJP can modify character descriptions and spelling readings by users. A dictionary file can be created in the user config directory.
++++ Beep for capitals +++
 
-User config directory (Windows XP):
-```
-C:\Documents and Settings\(User Name)\Application Data\nvda
-```
-(Windows Vista, 7, 8):
-```
-C:\Users\(User Name)\AppData\Roaming\nvda
-```
-
-The dictionary file name should be characters-ja.dic. ('ja' is the locale identifier.)
-
-The file should be plain text with UTF-8 encoding. The lines should be tab-separated values.
-
-```
-field 1: character
-field 2: Unicode hexadicimal character code
-field 3: spelling reading quoted with [ and ]
-field 4 (or later): field 2 or later items of charactersDescriptions.dic
-```
-
-If the line starts with '#', it is ignored. If the line starts with '\#', the character is '#' itself.
-
-Details (in Japanese) [NVDAJP ticket 29872 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29872]
-
-For obsolated enhancement, see [NVDAJP ticket 26926 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=26926]
+'Beep for capitals beep' is enabled by default.
+This is because NVDAJP uses pitch for indicating types of phonetic characters of Japanese language.
 
 
-++ Braille display ++
++++ Use spelling functionality if supported +++
 
-Japanese braille support is updated for NVDAJP 2013.1jp.
+NVDAJP uses internal dictionary for spelling reading rather than using functionarity of speech synthesizers.
 
+This option should be turned off with some Japanese TTS, because of issues with the functionality.
+
+
+++ Braille settings ++
 
 +++ Japanese braille table +++
 
-"Japanese 6 dot computer braille" output table is added and changed to the default. It is 'pseudo' table and it does not use LibLouis. It does not support input. 
+"Japanese 6 dot computer braille" output table is added and changed to the default. It is 'pseudo' table and it does not use LibLouis. It does not support input.
 
 Cursor position mapping is implemented for Japanese output table.
 
+'Expand to computer braille for the word at the cursor' is not supported with Japanese braille translator.
 
-+++ KGS Braille Memo series +++
 
-The driver for braille display "KGS BrailleMemo series" from [KGS Corporation http://www.kgs-jpn.co.jp/eindex.html] is added. BM46 is used for development and tests. BM32 is tested by the community members.
+++ Keyboard settings ++
+
+Caps Lock key of Japanese keyboard array cannot be used as NVDA modifier key.
+
+'Speak typed words' should be turned off if Japanese input method editor is used.
+
+Candidates of Japanese input method editor is announced, even if 'Speak typed characters' is disabled.
+
+
+++ Input composition settings ++
+
+'Automatically report all available candidates' should be turned off for the use of Japanese input method editors, such as Microsoft IME or ATOK.
+
+
++ Synthesizer +
+
+++ Jtalk ++
+
+JTalk driver is the default synthesizer of NVDAJP, which supports Japanese language.
+
+- JTalk (Japanese TTS) has M001, Lite, and Mei voices. M001 and Lite are male voices. Mei is female voice.
+- M001 and Mei are at sampling rate of 48kHz. Lite is at sampling rate of 16kHz.
+- Speed, Volume, Pitch, Inflection can be changed.
+- Rate boost option is available.
+- 'Automatic Language switching' is supported. If the content has language attributes, it is used for selecting voices. eSpeak voices are used other than Japanese voice. Speech rate or other settings are not applied to voices other than Japanese.
+- 'Automatic Dialect switching' is not supported.
+
+
+++ eSpeak ++
+
+eSpeak of NVDAJP supports reading of Japanese characters and Chinese characters. It uses Japanese text processing of Jtalk internally.
+
+eSpeak of NVDA cannot handle Japanese language.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++ Braille display +
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+++ KGS Braille Memo series ++
+
+The driver for braille display "KGS BrailleMemo series" from [KGS Corporation http://www.kgs-jpn.co.jp/] is added. BM46 is used for development and tests. BM32 is tested by the community members.
 
 Both automatic and manual port setting can be used. It also works with Bluetooth.
 
-[The BM Utility (Japanese page) http://www.kgs-jpn.co.jp/bmutil_j/] must be installed to the computer.
+The BM Utility must be installed to the computer.
 
-For USB connection, [virtual serial driver (Japanese page) http://www.kgs-jpn.co.jp/USB_driver_j/index.htm] must also be installed.
+For USB connection, virtual serial driver must also be installed.
 The device should be configured to use 9600BPS connection speed for virtual serial driver.
 
 KGS Braille Memo driver supports following commands:
@@ -371,16 +472,17 @@ Symbols:
 | ! (exclamation) | 235 |
 | ' (apostrophe) | 3 |
 
-Select button works as Shift, rather than Enter, since 2013.1jp.
 
 
-+++ KGS BrailleNote 46C/46D +++
+++ KGS BrailleNote 46C/46D ++
 
-The driver for braille display "KGS BrailleNote 46C/46D" from [KGS Corporation http://www.kgs-jpn.co.jp/eindex.html] is added.
+The driver for braille display "KGS BrailleNote 46C/46D" from [KGS Corporation http://www.kgs-jpn.co.jp/] is added.
 
-[The BM Utility (Japanese page) http://www.kgs-jpn.co.jp/bmutil_j/] must be installed to the computer.
+The BM Utility must be installed to the computer.
 
-For USB connection, [virtual serial driver (Japanese page) http://www.kgs-jpn.co.jp/USB_driver_j/index.htm] must also be installed.
+BrailleNote 46X is supported by "KGS BrailleMemo series" driver. Please do not use this driver for BrailleNote 46X.
+
+For USB connection, virtual serial driver must also be installed.
 The device should be configured to use 9600BPS connection speed for virtual serial driver.
 
 BrailleNote 46C/46D driver supports following commands:
@@ -400,7 +502,18 @@ BrailleNote 46C/46D driver supports following commands:
 | right arrow | f4 |
 
 
-+++ Braille Viewer +++
++ NVDA Menu +
+
+
+
+
+
+
+
+
+
+
+++ Braille Viewer ++
 
 "Braille Viewer" is added in Tools menu. Available for Japanese language.
 
@@ -409,10 +522,21 @@ It translates spoken words to Japanese braille pattens, so it is not exactly sam
 It uses braille Unicode font. For Windows XP, the braille font is available if LibreOffice or OpenOffice.org is installed.
 
 
-++ Default settings ++
 
-- "Beep for capitals" is enabled.
-- Update check is disabled. Default setting of update-autoCheck is changed to false.
+
+
+
+
+
+
+
+
+
++ Applications +
+
+
+
+
 
 
 ++ Microsoft Word support ++
@@ -423,18 +547,80 @@ It uses braille Unicode font. For Windows XP, the braille font is available if L
 - Announce of font size is in real numbers such as '10.5pt', rather than integers such as '10pt'.
 
 
-++ Miscellaneous changes ++
 
-- AppModule for WinAltair (popular self-voicing applications in Japan) is added.
-- Since 2013.1jp, automatic sleep modules for Search Aid and VoicePopper are removed (nvdajp ticket 25653)
-- Log Viewer may contain multi-byte characters for output.
-- Report Time (NVDA+f12) is modified for Japanese environment.
-- Memory allocation issue in ime.cpp [(NVDA ticket 3234) http://community.nvda-project.org/ticket/3234] is fixed.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++ Configurations +
+
+++ Character dictionary ++
+
+NVDAJP can modify character descriptions and spelling readings by users. A dictionary file can be created in the user config directory.
+
+User config directory (Windows XP):
+```
+C:\Documents and Settings\(User Name)\Application Data\nvda
+```
+(Windows Vista, 7, 8):
+```
+C:\Users\(User Name)\AppData\Roaming\nvda
+```
+
+The dictionary file name should be characters-ja.dic. ('ja' is the locale identifier.)
+
+The file should be plain text with UTF-8 encoding. The lines should be tab-separated values.
+
+```
+field 1: character
+field 2: Unicode hexadicimal character code
+field 3: spelling reading quoted with [ and ]
+field 4 (or later): field 2 or later items of charactersDescriptions.dic
+```
+
+If the line starts with '#', it is ignored. If the line starts with '\#', the character is '#' itself.
+
+Details (in Japanese) [NVDAJP ticket 29872 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29872]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++ Miscellaneous +
 
 ++ Source code ++
 
-We use launchpad.net as bazaar source-code repository.
+We use git hosting services as follows:
 
 - sourceforge.jp: http://en.sourceforge.jp/projects/nvdajp/
 - GitHub: https://github.com/nvdajp

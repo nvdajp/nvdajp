@@ -18,7 +18,7 @@ import braille
 import speech
 import config
 import eventHandler
-from scriptHandler import isScriptWaiting
+from scriptHandler import isScriptWaiting, willSayAllResume
 import textInfos
 import controlTypes
 
@@ -72,7 +72,7 @@ class EditableText(ScriptableObject):
 			elapsed += retryInterval
 		return (False,newInfo)
 
-	def _caretScriptPostMovedHelper(self, speakUnit, info=None):
+	def _caretScriptPostMovedHelper(self, speakUnit, gesture, info=None):
 		if isScriptWaiting():
 			return
 		if not info:
@@ -81,9 +81,10 @@ class EditableText(ScriptableObject):
 			except:
 				return
 		review.handleCaretMove(info)
-		if speakUnit:
+		if speakUnit and not willSayAllResume(gesture):
 			info.expand(speakUnit)
 			speech.speakTextInfo(info, unit=speakUnit, reason=controlTypes.REASON_CARET)
+		braille.handler.handleCaretMove(self)
 
 	def _caretMovementScriptHelper(self, gesture, unit):
 		try:
@@ -96,7 +97,7 @@ class EditableText(ScriptableObject):
 		caretMoved,newInfo=self._hasCaretMoved(bookmark) 
 		if not caretMoved and self.shouldFireCaretMovementFailedEvents:
 			eventHandler.executeEvent("caretMovementFailed", self, gesture=gesture)
-		self._caretScriptPostMovedHelper(unit,newInfo)
+		self._caretScriptPostMovedHelper(unit,gesture,newInfo)
 
 	def script_caret_moveByLine(self,gesture):
 		self._caretMovementScriptHelper(gesture, textInfos.UNIT_LINE)
@@ -135,7 +136,7 @@ class EditableText(ScriptableObject):
 			speech.speakMessage(delChunk)
 		else:
 			speech.speakSpelling(delChunk)
-		self._caretScriptPostMovedHelper(None,newInfo)
+		self._caretScriptPostMovedHelper(None,gesture,newInfo)
 
 	def script_caret_backspaceCharacter(self,gesture):
 		self._backspaceScriptHelper(textInfos.UNIT_CHARACTER,gesture)
@@ -153,7 +154,7 @@ class EditableText(ScriptableObject):
 		gesture.send()
 		# We'll try waiting for the caret to move, but we don't care if it doesn't.
 		caretMoved,newInfo=self._hasCaretMoved(bookmark)
-		self._caretScriptPostMovedHelper(textInfos.UNIT_CHARACTER,newInfo)
+		self._caretScriptPostMovedHelper(textInfos.UNIT_CHARACTER,gesture,newInfo)
 		braille.handler.handleCaretMove(self)
 
 	__gestures = {

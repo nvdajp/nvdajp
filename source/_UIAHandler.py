@@ -1,11 +1,13 @@
 from ctypes import *
 from ctypes.wintypes import *
 import comtypes.client
+from comtypes.automation import VT_EMPTY
 from comtypes import *
 import weakref
 import threading
 import time
 import api
+import appModuleHandler
 import queueHandler
 import controlTypes
 import NVDAHelper
@@ -40,6 +42,7 @@ badUIAWindowClassNames=[
 	"EXCEL7",
 	"Button",
 	"SysLink",
+	"ClockWndMain",
 ]
 
 NVDAUnitsToUIAUnits={
@@ -212,6 +215,9 @@ class UIAHandler(COMObject):
 		eventHandler.queueEvent("gainFocus",obj)
 
 	def IUIAutomationPropertyChangedEventHandler_HandlePropertyChangedEvent(self,sender,propertyId,newValue):
+		# #3867: For now manually force this VARIANT type to empty to get around a nasty double free in comtypes/ctypes.
+		# We also don't use the value in this callback.
+		newValue.vt=VT_EMPTY
 		if not self.MTAThreadInitEvent.isSet():
 			# UIAHandler hasn't finished initialising yet, so just ignore this event.
 			return
@@ -228,7 +234,8 @@ class UIAHandler(COMObject):
 
 	def _isUIAWindowHelper(self,hwnd):
 		# UIA in NVDA's process freezes in Windows 7 and below
-		if windll.kernel32.GetCurrentProcessId()==winUser.getWindowThreadProcessID(hwnd)[0]:
+		processID=winUser.getWindowThreadProcessID(hwnd)[0]
+		if windll.kernel32.GetCurrentProcessId()==processID:
 			return False
 		import NVDAObjects.window
 		windowClass=NVDAObjects.window.Window.normalizeWindowClassName(winUser.getClassName(hwnd))
@@ -240,6 +247,10 @@ class UIAHandler(COMObject):
 			# #2816: Outlook 2010 auto complete does not fire enough UIA events, IAccessible is better.
 			if winUser.getClassName(parentHwnd)=="Net UI Tool Window":
 				return False
+		# allow the appModule for the window to also choose if this window is bad
+		appModule=appModuleHandler.getAppModuleFromProcessID(processID)
+		if appModule and appModule.isBadUIAWindow(hwnd):
+			return False
 		# Ask the window if it supports UIA natively
 		return windll.UIAutomationCore.UiaHasServerSideProvider(hwnd)
 

@@ -17,6 +17,39 @@ from logHandler import log
 import shlobj
 import baseObject
 
+def validateConfig(configObj,validator,validationResult=None,keyList=None):
+	"""
+	@deprecated: Add-ons which need this should provide their own implementation.
+	"""
+	import warnings
+	warnings.warn("config.validateConfig deprecated. Callers should provide their own implementation.",
+		DeprecationWarning, 2)
+	if validationResult is None:
+		validationResult=configObj.validate(validator,preserve_errors=True)
+	if validationResult is True:
+		return None #No errors
+	if validationResult is False:
+		return "Badly formed configuration file"
+	errorStrings=[]
+	for k,v in validationResult.iteritems():
+		if v is True:
+			continue
+		newKeyList=list(keyList) if keyList is not None else []
+		newKeyList.append(k)
+		if isinstance(v,dict):
+			errorStrings.extend(validateConfig(configObj[k],validator,v,newKeyList))
+		else:
+			#If a key is invalid configObj does not record its default, thus we need to get and set the default manually 
+			defaultValue=validator.get_default_value(configObj.configspec[k])
+			configObj[k]=defaultValue
+			if k not in configObj.defaults:
+				configObj.defaults.append(k)
+			errorStrings.append("%s: %s, defaulting to %s"%(k,v,defaultValue))
+	return errorStrings
+
+#: @deprecated: Use C{conf.validator} instead.
+val = Validator()
+
 #: The configuration specification
 #: @type: ConfigObj
 confspec = ConfigObj(StringIO(
@@ -41,7 +74,7 @@ confspec = ConfigObj(StringIO(
 # Speech settings
 [speech]
 	# The synthesiser to use
-	synth = string(default=nvdajp_jtalk) # nvdajp
+	synth = string(default=auto)
 	symbolLevel = integer(default=100)
 	beepSpeechModePitch = integer(default=10000,min=50,max=11025)
 	outputDevice = string(default=default)
@@ -158,6 +191,7 @@ confspec = ConfigObj(StringIO(
 	reportBlockQuotes = boolean(default=true)
 	reportLandmarks = boolean(default=true)
 	reportFrames = boolean(default=true)
+	reportClickable = boolean(default=true)
 
 [reviewCursor]
 	simpleReviewMode = boolean(default=True)
@@ -192,6 +226,15 @@ conf = None
 def initialize():
 	global conf
 	conf = ConfigManager()
+
+def save():
+	"""
+	@deprecated: Use C{conf.save} instead.
+	"""
+	import warnings
+	warnings.warn("config.save deprecated. Use config.conf.save instead.",
+		DeprecationWarning, 2)
+	conf.save()
 
 def saveOnExit():
 	"""Save the configuration if configured to save on exit.
@@ -423,7 +466,7 @@ class ConfigManager(object):
 		#: Whether profile triggers are enabled (read-only).
 		#: @type: bool
 		self.profileTriggersEnabled = True
-		self.validator = Validator()
+		self.validator = val
 		self.rootSection = None
 		self._shouldHandleProfileSwitch = True
 		self._pendingHandleProfileSwitch = False
@@ -698,7 +741,11 @@ class ConfigManager(object):
 			self._suspendedTriggers[trigger] = "enter"
 			return
 
-		profile = trigger._profile = self._getProfile(trigger.profileName)
+		try:
+			profile = trigger._profile = self._getProfile(trigger.profileName)
+		except:
+			trigger._profile = None
+			raise
 		profile.triggered = True
 		if len(self.profiles) > 1 and self.profiles[-1].manual:
 			# There's a manually activated profile.
@@ -723,10 +770,15 @@ class ConfigManager(object):
 			return
 
 		profile = trigger._profile
-		if not profile:
+		if profile is None:
 			return
 		profile.triggered = False
-		self.profiles.remove(profile)
+		try:
+			self.profiles.remove(profile)
+		except ValueError:
+			# This is probably due to the user resetting the configuration.
+			log.debugWarning("Profile not active when exiting trigger")
+			return
 		self._handleProfileSwitch()
 
 	@contextlib.contextmanager
@@ -1056,7 +1108,7 @@ class ProfileTrigger(object):
 			conf._triggerProfileEnter(self)
 		except:
 			log.error("Error entering trigger %s, profile %s"
-				% (self.spec, self.profile), exc_info=True)
+				% (self.spec, self.profileName), exc_info=True)
 	__enter__ = enter
 
 	def exit(self):

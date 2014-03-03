@@ -139,11 +139,11 @@ class IA2TextTextInfo(textInfos.offsets.OffsetsTextInfo):
 			text=self._getTextRange(self._startOffset,self._endOffset)
 			try:
 				self._startOffset=text.rindex(u'\ufffc',0,oldStart-self._startOffset)
-			except ValueError:
+			except (ValueError, AttributeError):
 				pass
 			try:
 				self._endOffset=text.index(u'\ufffc',oldEnd-self._startOffset)
-			except ValueError:
+			except (ValueError, AttributeError):
 				pass
 
 	def _getCaretOffset(self):
@@ -441,8 +441,12 @@ the NVDAObject for IAccessible
 			from . import mozilla
 			mozilla.findExtraOverlayClasses(self, clsList)
 		elif windowClassName.startswith('bosa_sdm'):
-			from .msOffice import SDM
-			clsList.append(SDM)
+			if role==oleacc.ROLE_SYSTEM_GRAPHIC and controlTypes.STATE_FOCUSED in self.states:
+				from .msOffice import SDMSymbols
+				clsList.append(SDMSymbols)
+			else:
+				from .msOffice import SDM
+				clsList.append(SDM)
 		elif windowClassName == "DirectUIHWND" and role == oleacc.ROLE_SYSTEM_TEXT:
 			from NVDAObjects.window import DisplayModelEditableText
 			clsList.append(DisplayModelEditableText)
@@ -919,7 +923,7 @@ the NVDAObject for IAccessible
 				#Hack around bad MSAA implementations that deliberately skip the window root IAccessible in the ancestry (Skype, iTunes)
 				if parentObj.windowHandle!=self.windowHandle and self.IAccessibleRole!=oleacc.ROLE_SYSTEM_WINDOW and winUser.getAncestor(self.windowHandle,winUser.GA_PARENT)==parentObj.windowHandle:
 					windowObj=Window(windowHandle=self.windowHandle)
-					if windowObj and windowObj.IAccessibleRole==oleacc.ROLE_SYSTEM_WINDOW and windowObj.parent==parentObj:
+					if windowObj and isinstance(windowObj,IAccessible) and windowObj.IAccessibleRole==oleacc.ROLE_SYSTEM_WINDOW and windowObj.parent==parentObj:
 						return windowObj
 			return self.correctAPIForRelation(parentObj,relation="parent") or super(IAccessible,self).parent
 		return super(IAccessible,self).parent

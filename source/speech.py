@@ -9,6 +9,7 @@
 """ 
 
 import itertools
+import weakref
 import colors
 import globalVars
 from logHandler import log
@@ -41,6 +42,8 @@ curWordChars=[]
 from controlTypes import REASON_FOCUS, REASON_FOCUSENTERED, REASON_MOUSE, REASON_QUERY, REASON_CHANGE, REASON_MESSAGE, REASON_SAYALL, REASON_CARET, REASON_ONLYCACHE
 
 #: The string used to separate distinct chunks of text when multiple chunks should be spoken without pauses.
+# #555: Use two spaces so that numbers from adjacent chunks aren't treated as a single number
+# for languages such as French and German which use space as a thousands separator.
 CHUNK_SEPARATOR = "  "
 
 oldTreeLevel=None
@@ -509,7 +512,7 @@ def speak(speechSequence,symbolLevel=None):
 		if autoLanguageSwitching and isinstance(item,LangChangeCommand):
 			curLanguage=item.lang
 		if isinstance(item,basestring):
-			speechSequence[index]=processText(curLanguage,item,symbolLevel)+" "
+			speechSequence[index]=processText(curLanguage,item,symbolLevel)+CHUNK_SEPARATOR
 	getSynth().speak(speechSequence)
 
 def speakSelectionMessage(message,text):
@@ -618,7 +621,42 @@ def speakTypedCharacters(ch):
 	if config.conf["keyboard"]["speakTypedCharacters"] and ord(ch)>=32:
 		speakSpelling(realChar)
 
+class SpeakTextInfoState(object):
+	"""Caches the state of speakTextInfo such as the current controlField stack, current formatfield and indentation."""
+
+	__slots__=[
+		'objRef',
+		'controlFieldStackCache',
+		'formatFieldAttributesCache',
+		'indentationCache',
+	]
+
+	def __init__(self,obj):
+		if isinstance(obj,SpeakTextInfoState):
+			oldState=obj
+			self.objRef=oldState.objRef
+		else:
+			self.objRef=weakref.ref(obj)
+			oldState=getattr(obj,'_speakTextInfoState',None)
+		self.controlFieldStackCache=list(oldState.controlFieldStackCache) if oldState else []
+		self.formatFieldAttributesCache=oldState.formatFieldAttributesCache if oldState else {}
+		self.indentationCache=oldState.indentationCache if oldState else ""
+
+	def updateObj(self):
+		obj=self.objRef()
+		if obj:
+			obj._speakTextInfoState=self.copy()
+
+	def copy(self):
+		return self.__class__(self)
+
 def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlTypes.REASON_QUERY,index=None):
+	if isinstance(useCache,SpeakTextInfoState):
+		speakTextInfoState=useCache
+	elif useCache:
+		 speakTextInfoState=SpeakTextInfoState(info.obj)
+	else:
+		speakTextInfoState=None
 	autoLanguageSwitching=config.conf['speech']['autoLanguageSwitching']
 	extraDetail=unit in (textInfos.UNIT_CHARACTER,textInfos.UNIT_WORD)
 	if not formatConfig:
@@ -630,8 +668,8 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 
 	speechSequence=[]
 	#Fetch the last controlFieldStack, or make a blank one
-	controlFieldStackCache=getattr(info.obj,'_speakTextInfo_controlFieldStackCache',[]) if useCache else []
-	formatFieldAttributesCache=getattr(info.obj,'_speakTextInfo_formatFieldAttributesCache',{}) if useCache else {}
+	controlFieldStackCache=speakTextInfoState.controlFieldStackCache if speakTextInfoState else []
+	formatFieldAttributesCache=speakTextInfoState.formatFieldAttributesCache if speakTextInfoState else {}
 	textWithFields=info.getTextWithFields(formatConfig)
 	# We don't care about node bounds, especially when comparing fields.
 	# Remove them.
@@ -729,16 +767,17 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 	if unit in (textInfos.UNIT_CHARACTER,textInfos.UNIT_WORD) and len(textWithFields)>0 and len(textWithFields[0])==1 and all((isinstance(x,textInfos.FieldCommand) and x.command=="controlEnd") for x in itertools.islice(textWithFields,1,None) ): 
 		if any(isinstance(x,basestring) for x in speechSequence):
 			speak(speechSequence)
+		#nvdajp begin
 		#speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
-		#nvdajp
 		from globalCommands import characterDescriptionMode
-		if characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET:
-			speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None,useCharacterDescriptions=True)
-		else:
-			speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
+		useCharacterDescriptions = (characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET)
+		speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
 		#nvdajp end
-		info.obj._speakTextInfo_controlFieldStackCache=list(newControlFieldStack)
-		info.obj._speakTextInfo_formatFieldAttributesCache=formatFieldAttributesCache
+		if useCache:
+			speakTextInfoState.controlFieldStackCache=newControlFieldStack
+			speakTextInfoState.formatFieldAttributesCache=formatFieldAttributesCache
+			if not isinstance(useCache,SpeakTextInfoState):
+				speakTextInfoState.updateObj()
 		return
 
 	#Move through the field commands, getting speech text for all controlStarts, controlEnds and formatChange commands
@@ -797,7 +836,7 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 				if autoLanguageSwitching and newLanguage!=lastLanguage:
 					relativeSpeechSequence.append(LangChangeCommand(newLanguage))
 					lastLanguage=newLanguage
-	if reportIndentation and allIndentation!=getattr(info.obj,"_speakTextInfo_lineIndentationCache",""):
+	if reportIndentation and speakTextInfoState and allIndentation!=speakTextInfoState.indentationCache:
 		indentationSpeech=getIndentationSpeech(allIndentation)
 		if autoLanguageSwitching and speechSequence[-1].lang is not None:
 			# Indentation must be spoken in the default language,
@@ -806,7 +845,7 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 			speechSequence.insert(-1, indentationSpeech)
 		else:
 			speechSequence.append(indentationSpeech)
-		info.obj._speakTextInfo_lineIndentationCache=allIndentation
+		if speakTextInfoState: speakTextInfoState.indentationCache=allIndentation
 	# Don't add this text if it is blank.
 	relativeBlank=True
 	for x in relativeSpeechSequence:
@@ -835,8 +874,10 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 
 	#Cache a copy of the new controlFieldStack for future use
 	if useCache:
-		info.obj._speakTextInfo_controlFieldStackCache=list(newControlFieldStack)
-		info.obj._speakTextInfo_formatFieldAttributesCache=formatFieldAttributesCache
+		speakTextInfoState.controlFieldStackCache=list(newControlFieldStack)
+		speakTextInfoState.formatFieldAttributesCache=formatFieldAttributesCache
+		if not isinstance(useCache,SpeakTextInfoState):
+			speakTextInfoState.updateObj()
 
 	if speechSequence:
 		if reason==controlTypes.REASON_SAYALL:

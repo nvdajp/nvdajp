@@ -3,14 +3,87 @@ Quoi de Neuf dans NVDA
 
 %!includeconf: ../changes.t2tconf
 
+= 2014.1 =
+
+== Nouyvelles fonctionnalités ==
+- Support de Microsoft PowerPoint 2013. Notez que le mode protégé n'est pas supporté. (#3578)
+- Dans Microsoft Word et Excel, NVDA peut maintenant lire le symbole sélectionné en choisissant un symbole dans la boîte de dialogue d'insertion de symbole. (#3538)
+- Il est maintenant possible de définir si du contenu dans des documents peut être identifié comme clicable, via une nouvelle option dans la boîte de dialogue Mise en Forme des Documents. Cette option est activée par défaut (conformément au comportement précédant). (#3556)
+- Support des afficheurs braille connectés via Bluetooth sur des ordinateurs utilisant Widcomm Bluetooth Software. (#2418)
+- Lors de l'édition de texte dans Powerpoint, les liens sont maintenant rapportés. (#3416)
+- Dans les applications ARIA ou les dialogues Web, il est maintenant possible de forcer NVDA à passer en mode navigation avec NVDA+Espace, permettant le parcourt de cette application ou de ce dialogue tel que dans un document. (#2023)
+- Dans Outlook Express / Windows Mail / Windows Live Mail, NVDA annonce maintenant si un message a une pièce jointe ou s'il est marqué. (#1594)
+- Lors de la navigation dans des tableaux dans les applications Java accessibles, les coordonnées de lignes et de colonnes sont maintenant signalés, y compris les en-têtes de colonnes et de lignes, si elles existent. (#3756)
+
+
+== Changements ==
+- Pour les afficheurs braille Papenmeier, la commande passer en mode revue/focus a été supprimée. Les utilisateurs peuvent assigner leur propre combinaisons en utilisant la boîte de dialogue Geste d'entrée. (#3652)
+- NVDA dépend maintenant des runtimes Microsoft VC version 11, ce qui signifi qu'il ne peut plus être exécuté sur les systèmes d'exploitations plus vieux que Windows XP SP2 ou ou Windows Server 2003 SP1.
+- Le niveau de symboles et ponctuations Quelques-uns annonce maintenant les caractères astérisque (*) et plus (plus). (#3614)
+- Mise à jour d'eSpeak vers la version 1.48.02 qui inclut de nombreuses corrections de langue et corrige plusieurs plentages. (#3842, #3739)
+
+
+== Corrections de bogues ==
+- Lorsque l'on se déplace ou que l'on sélectione des cellules dans Microsoft Excel, NVDA ne devrait plus annoncer l'ancienne cellule plutôt que la nouvelle cellule lorsque Microsoft Excel est lent à déplacer la sélection. (#3558)
+- NVDA gère correctement l'ouverture d'une liste déroulante pour une cellule dans Microsoft Excel via le menu contextuel. (#3586)
+- Le nouveau contenu des pages du magasin iTunes 11 est correctement affiché en mode navigation lorsqu'on suit un lien dans le magasin ou en ouvrant le magasin. (#3625)
+- Les boutons pour la prévisualisation des chansons dans la boutique iTunes 11 montrent maintenant leur label en mode navigation. (#3638)
+- En mode navigation dans Google Chrome, les étiquettes des cases à cocher et des boutons radio sont maintenant affichées correctement. (#1562)
+- Dans Instantbird, NVDA ne signale plus d'informations inutiles chaque fois que vous vous déplacez à un contact dans la liste des contacts. (#2667)
+- En mode navigation dans Adobe Reader, le texte correct est maintenant rendu pour les boutons, etc où l'étiquette a été remplacé à l'aide d'une info-bulle ou d'autres moyens. (#3640)
+- En mode navigation dans Adobe Reader, les graphiques étrangers contenant le texte "mc-ref" ne seront plus rendus. (#3645)
+- NVDA ne signale plus toutes les cellules dans Microsoft Excel comme souligné dans leurs informations de formatage. (#3669)
+- NVDA n'affiche plus de caractères illisibles dans les documents en mode de navigation tels que ceux trouvés dans la gamme de l'usage privé Unicode. Dans certains cas, cela empêchait l'affichage de certains intitulés de champs. (#2963).
+- Les langues d'entrée est-asiatiques n'échouent plus dans PuTTY. (#3432)
+- Naviguer dans un document après avoir annulé Dire Tout n'annonce plus la sortie d'un conteneur dans lequel NVDA n'est pas passé pendant Dire Tout. (#3688)
+- Lorsque l'on utilise les touches de navigation rapide en mode dire tout avec le survole activé, NVDA annonce plus précisément le nouveau champ (ex : il annonce maintenant un titre est un titre au lieux de n'annoncer que son texte). (#3689)
+- Les touches de navigation rapide pour sauter au début ou à la fin d'un conteneur fonctionnent maintenant correctement en mode dire tout quand le survol est activé au lieux d'intérompre la lacture. (#3675)
+- Les noms de gestes tactiles listés dans la boîte de dialogue Gestes d'Entrée de NVDA sont maintenant mieux només et traduits. (#3624)
+- NVDA ne cause plus le plentage de certains programmes lorsque l'on déplace la souris sur leur zone d'édition riche (TRichEdit). Ces programmes incluent Jarte 5.1 et BRfácil. (#3693, #3603, #3581)
+- Dans Internet Explorer et autres composants MSHTML, les conteneurs comme les tableaux marqués comme présentation par ARIA ne sont plus rapportés à l'utilisateur. (#3713)
+- Dans Microsoft Word, NVDA ne répette plus les informations de ligne/collone d'une cellule d'un tableau de manière inappropriée en braille. (#3702)
+- Dans les langues utilisant l'espace comme séparateur de groupes de nombres ou de milliers comme le Français ou l'Allemand, les groupes distints de textes ne sont plus prononcés comme un nombre. Cela était particulièrement problémathique dans les cellules de tableaux. (#3698)
+- Le Braille n'échoue plus à la mise à jours lorsque le curseur système est déplacé dans Microsoft Word 2013. (#3784)
+- Lorsque l'on est sur le premier caractère d'un titre dans Microsoft Word, le texte indiquant qu'il s'agit d'un titre (y compris son niveau) ne disparaît plus de l'afficheur braille.  (#3701)
+- Lorsqu'un profile de configuration est déclenché par une application et que celle-cie est quittée, NVDA n'échoue plus en désactivant le profile. (#3732)
+- Lors de la saisie en langue d'entrée d'Asie dans un contrôle de NVDA lui-même (ex : la boîte de dialogue rechercher en mode navigation), NVDA n'est plus annoncé à la place du candidat. (#3726)
+- Les onglets de la boîte de dialogue des options d'Outlook 2013 sont maintenant signalés. (#3826)
+- Amélioration du support des ARIA Live Regions dans Firefox et les autres applications basées sur Mozilla Gecko :
+ - Support des mise à jours aria-atomic et du filtrage des mise à jours aria-busy (#2640)
+ - Le texte alternatif (comme l'attribut alt ou aria-label) est inclu s'il n'y a aucun autre texte. (#3329)
+ - Les mise à jour de région ARIA-live ne sont plus cilencieuses si elle se produisent en même temps que le focus bouge. (#3777)
+- Certains éléments de présentation dans Firefox et dans les autres applications Mozilla Gecko ne sont plus montrées en mode navigation (spécifiquement quand l'élément est marqué avec aria-presentation mais est aussi activable). (#3781)
+- Amélioration des performances lors de la navigation sur un document dans Microsoft Word avec l'annonce des erreurs d'orthographe activée. (#3785)
+- Plusieurs correctifs pour le support des applications Java accessibles :
+ - Le premier contrôle actif dans un cadre ou dialogue n'échoue plus à être déclarés lorsque le cadre ou dialogue vient au premier plan. (#3753)
+ - Les informations de position inutiles ne sont plus annoncées pour les boutons radio (par exemple 1 sur 1). (#3754)
+ - Meilleur rendu des contrôles JComboBox (html n'est plus rapportée, meilleure communication des États développés et réduits). (#3755)
+ - Lors de l'annonce du texte d'une boîte de dialogue, certains textes menquant jusqu'alors sont maintenant lu. (#3857)
+ - Les changement dans le nom, la valeur ou la description du contrôle ayant le focus sont maintenant rapportés avec plus de précision. (#3770)
+- Correction d'un crash de NVDA sous Windows 8 lors de l'activation de certains contrôles RichEdit contenant de grandes quantités de texte (visionneuse de journaux NVDA, ou dans windbg par exemple). (#3867)
+- Sur les systèmes avec un paramètre d'affichage haute DPI (la plupart des écrans modernes), NVDA ne place plus la souris au mauvais endroit dans certaines applications. (#3758, #3703)
+- Correction d'un problème occasionnel lors de la navigation sur le web où NVDA cessait de fonctionner correctement jusqu'à ce qu'on le redémarres, même si elle ne s'est pas figé ou s'il n'a pas plenté. (#3804)
+- Un afficheur braille Papenmeier peut maintenant être utilisé même si aucun afficheur braille Papenmeier n'a déjà été branché en USB. (#3712)
+- NVDA ne se bloque plus lorsque l'ansien modèle d'afficheur braille Papenmeier BRAILLEX est sélectionné sans qu'un afficheur ne soit connecté.
+
+
+== Changements pour les développeurs ==
+- AppModule contient maintenant les propriétés productName et productVersion. Ces informations sont maintenant également affichées dans les informations pour les développeurs (NVDA+F1). (#1625)
+- Dans la console Python, on peut maintenant appuyer sur Tab pour avoir une auto-complétion. (#433)
+ - S'il y a plusieurs possibilités, on peut appuyer une deuxième fois sur Tab à fin de choisir dans une liste.
+
+
 = 2013.3 =
 
 == Nouvelles Fonctionnalités ==
 - Les champs de formulaires sont maintenant annoncés dans les documents Microsoft Word. (#2295)
-- NVDA peut maintenant annoncer les informations de révision dans Microsoft Word lorsque le suivi des modifications est activé. Notez que annoncer les révisions de l'éditeur dans la boîte de dialogue Paramètres de préférences de mise en forme des document de NVDA (désactivée par défaut) doit être activé également pour qu'elles soient annoncées. (#1670)
-- Les listes déroulantes dans Microsoft Excel 2003 à 2010 sont maintenant annoncés lors de leur ouverture et lorsque l'on navigue autour. (#3382)
-- Une nouvelle option "Permettre la lecture rapide dans dire tout" dans la boîte de dialogue de configuration du clavier permet de naviguer dans un document avec les commandes de navigation rapides en mode navigation, ou de se déplacer entre les lignes ou paragraphes tout en restant dans dire tout. Cette option est désactivée par défaut. (#2766)
+- NVDA peut maintenant annoncer les informations de révision dans Microsoft Word lorsque le suivi des modifications est activé. Notez qu'annoncer les révisions de l'éditeur dans la boîte de dialogue Paramètres de préférences de mise en forme des document de NVDA (désactivée par défaut) doit être activée également pour qu'elles soient annoncées. (#1670)
+- Les listes déroulantes dans Microsoft Excel 2003 à 2010 sont maintenant annoncées lors de leur ouverture et lorsqu'on navigue autour. (#3382)
+- Une nouvelle option "Permettre la lecture rapide dans dire tout" dans la boîte de dialogue de configuration du clavier permet de naviguer dans un document avec les commandes de navigation rapide en mode navigation, ou de se déplacer entre les lignes ou paragraphes tout en restant dans dire tout. Cette option est désactivée par défaut. (#2766)
 - Il existe maintenant une boîte de dialogue Geste de Saisie qui permet une configuration plus aisée des gestes d'entrée (comme les touches de raccourcis clavier) des commandes NVDA. (#1532)
+- Il est maintenant possible d'avoir des paramètres différents pour différentes situations à l'aide de profils de configuration. Les profils peuvent être activés manuellement ou automatiquement (par exemple pour une application particulière). (#87, #667, #1913)
+- Dans Microsoft Excel, les cellules qui sont des liens sont maintenant annoncés comme liens. (#3042)
+- Dans Microsoft Excel, l'existence de commentaires sur une cellule est maintenant signalé à l'utilisateur. (#2921)
 
 
 == Corrections de Bogues ==
@@ -18,16 +91,29 @@ Quoi de Neuf dans NVDA
 - Le changement d'état de certaines cases à cocher dans la boîte de dialogue des règles de messages de Microsoft Outlook 2010 est maintenant annoncé. (#3063)
 - NVDA signale maintenant l'état épinglé pour des éléments épinglés comme des onglets dans Mozilla Firefox. (#3372)
 - Il est maintenant possible de lier des scripts à des touches de raccourci contenant les touches Alt et/ou Windows comme modificateurs. précédemment, si cela était fait, l'exécution de ces script causait l'activation de la barre de menus ou du menu démarrer. (#3472)
-- Sélectionnez du texte dans des documents en mode navigation (ex : en utilisant ctrl+maj+fin) ne cause plus le changement de disposition du clavier dans les systèmes ayant plusieurs dispositions clavier installées. (#3472)
+- Sélectionner du texte dans des documents en mode navigation (ex : en utilisant ctrl+maj+fin) ne cause plus le changement de disposition du clavier dans les systèmes ayant plusieurs dispositions clavier installées. (#3472)
 - Internet Explorer ne devrait plus se bloquer ou devenir inutilisable lors de la fermeture de NVDA. (#3397)
-- certains gestes physique et autres événements sur certains ordinateurs récents ne sont plus considérés comme des appuis de touches inappropriés. Auparavant, ceux-ci arrêtaient la parole et parfois déclenchaient des commandes NVDA. (#3468)
+- certains gestes physiques et autres événements sur certains ordinateurs récents ne sont plus considérés comme des appuis de touches inappropriés. Auparavant, ceux-ci arrêtaient la parole et parfois déclenchaient des commandes NVDA. (#3468)
 - NVDA se comporte maintenant comme prévu dans Poedit 1.5.7. Les utilisateurs utilisant des versions antérieures devront mettre à jour poedit. (#3485)
 - NVDA peut maintenant lire des documents protégés dans Microsoft Word 2010, ne causant plus aucun plentage de Microsoft Word. (#1686)
-- Passer un paramètre de ligne de commande inconnue au package de distribution de NVDA ne provoque plus une boucle sans fin de boîte de dialogues de message d'erreur. (#3463)
+- Passer un paramètre de ligne de commande inconnue au package de distribution de NVDA ne provoque plus une boucle sans fin de boîtes de dialogue de message d'erreur. (#3463)
+- NVDA n'échoue plus lors de l'annonce du texte alt des graphiques et des objets dans Microsoft Word si le texte alt contient des guillemets ou d'autres caractères non-standards. (#3579)
+- Le nombre d'éléments pour certaines listes horizontales en mode Navigation est maintenant correct. Auparavant, il pouvait être le double de la quantité réelle. (#2151)
+- Lorsque vous appuyez sur Ctrl + A dans une feuille de calcul Microsoft Excel, la sélection mise à jour sera maintenant signalée. (#3043)
+- NVDA peut maintenant lire correctement les documents XHTML dans Microsoft Internet Explorer et autres contrôles MSHTML. (#3542)
+- dialogue des paramètres du clavier : si aucune touche n'a été choisie pour être utilisée comme touche NVDA, une erreur est présentée à l'utilisateur lorsqu'il a fermé la boîte de dialogue. Au moins une touche doit être choisie pour utiliser correctement NVDA. (#2871)
+- Dans Microsoft Excel, NVDA annonce maintenant  les cellules fusionnées de manière différente que plusieurs cellules sélectionnées. (#3567)
+- Le curseur du mode navigation n'est plus incorrectement positionné en quittant une boîte de dialogue ou une application du document. (#3145)
+- Correction d'un problème où le pilote Braille des afficheures braille HumanWare de séries Brailliant BI/B n'était pas affiché comme choix possible dans la boîte de dialogue des paramètres braille sur certains systèmes, même si un tel afficheur est connecté via USB.
+- NVDA n'échoue plus pour passer en revue de l'écran lorsque l'objet du navigateur n'a pas d'emplacement réel sur l'écran. Dans ce cas, le curseur de revue est maintenant placé en haut de l'écran. (#3454)
+- Correction d'un problème qui causait l'échec du pilote de l'afficheur braille Freedom Scientific dans certaines circonstances lorsque le port a été réglé sur USB. (#3509, #3662)
+- Correction d'un problème où les touches des afficheurs braille Freedom Scientific n'étaient pas détectés dans certaines circonstances. (#3401, #3662)
 
 
 == Changements pour les développeurs ==
 - On peut maintenant spécifier la catégorie affichée à l'utilisateur pour les scripts en utilisant l'attribut scriptCategory de la classe ScriptableObject et l'attribut category sur les méthodes de scripts. Reportez-vous à la documentation de baseObject.ScriptableObject pour plus de détails. (#1532)
+- config.save est obsolète et pourrait être supprimée dans une version future. Utilisez plutôt config.conf.save. (#667)
+- config.validateConfig est obsolète et pourrait être supprimée dans une version future. Les modules complémentaires utilisant cette fonction devraient proposer leur propre implémentation. (#667, #3632)
 
 
 = 2013.2 =

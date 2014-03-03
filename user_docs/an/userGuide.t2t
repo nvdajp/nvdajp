@@ -1,4 +1,4 @@
-﻿Guida de l'Usuario de 		 NVDA_VERSION
+﻿Guida de l'Usuario d'o NVDA NVDA_VERSION
 
 
 %!includeconf: ../userGuide.t2tconf
@@ -56,14 +56,16 @@ Isto s'aplica a l'orichinal y a las copias modificadas d'o programa, mas qualsiq
 Ta mas detalles, puetz [veyer a licencia completa.  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html]
 
 + Requerimientos d'o Sistema +
-- Sistemas Operativos: todas as versions de 32 y 64 bits de Windows XP, Windows Vista, Windows 7 y Windows 8 (incluindo os sistemas operativos servidor).
+- Sistemas Operativos: todas as versions de 32 y 64 bits d'o Windows XP, Windows Vista, Windows 7 y Windows 8 (incluindo os sistemas operativos servidors).
+- Ta lo Windows XP de 32 bits, o NVDA requier  o Service Pack 2 u superior.
+- Ta lo Windows Server 2003, o NVDA requier  o Service Pack 1 u superior.
 - Memoria: 256 mb u mas de RAM
 - Velocidat de Procesador: 1.0 ghz u superior
 - Aproximadament 50 MB d'espacio d'almagazenamiento.
 -
 
-+ Obtenendo y Instalando NVDA +
-Si encara no tiens una copia de NVDA, puetz descargar-la de [www.nvda-project.org NVDA_URL].
++ Obtenendo y Instalando lo NVDA +
+Si agún no tiens una copia d'o NVDA, puetz descargar-la de [www.nvaccess.org NVDA_URL].
 
 Ve ta la sección download y trobarás un vinclo ta descargar a zaguera versión de NVDA.
 
@@ -553,8 +555,8 @@ Nota: L'alcorce de teclau d'anunciau d'o tiempo restante solament funciona con a
 ++ Poedit ++
 %kc:beginInclude
 || Nombre | Tecla | Descripción |
-| Anunciar finestra de Comentarios | control+shift+c | Anuncia qualsiquier comentario en a finestra de comentarios.  |
-| Anunciar finestra de comentarios automaticos | control+shift+a | Anuncia qualsiquier comentario en a finestra de Comentarios automaticos.  |
+| Anunciar a finestra de Comentarios | control+shift+c | Anuncia qualsiquier comentario en a finestra de comentarios.  |
+| Anunciar as notas ta os traductors | control+shift+a | Anuncia qualsiquier nota ta os traductors.  |
 %kc:endInclude
 
 + Configurando NVDA +
@@ -972,13 +974,13 @@ Ista opción ye activada por defecto.
 
 ==== Incluir as Tablas de Disenyo ====
 Ista opción afecta a cómo NVDA manea as tablas utilizadas exclusivament con fins de disenyo.
-Quan ye activada, NVDA las tracta como tablas normals, anunciando-las basando-se en as [Opcions de Formato de Documento #DocumentFormattingSettings] y localizando-las con as ordens de navegación rapida.
+Quan ye activada, NVDA las tracta como tablas normals, anunciando-las basando-se en as [Opcions de Formatiau de Documento #DocumentFormattingSettings] y localizando-las con as ordens de navegación rapida.
 Quan ye desactivada, no s'anuncian ni se troban con a navegación rapida.
 Manimenos, o conteniu d'as tablas encara s'incluirá como texto normal.
 Ista opción ye desactivada de traza predeterminada.
 
 ==== Configurando l'anunciau de campos tals como vinclos y encabezaus ====
-Por favor troba as nuevas opcions en o [dialogo Opcions de Formato de documento #DocumentFormattingSettings]. 
+Por favor troba as nuevas opcions en o [dialogo Opcions de Formatiau de documento #DocumentFormattingSettings]. 
 
 ==== Modo de foco automatico ta cambeos d'o foco ====
 Ista opción permite a o modo foco invocar-se si o foco cambea. 
@@ -991,8 +993,8 @@ Por eixemplo, si se va pretando flecha abaixo por una pachina Web y cayes sobre 
 ==== Indicación d'Audio d'os modos Foco y Navegación ====
 Si ista opción ye activada, NVDA reproducirá sons especials quan cambee entre modo navegación y modo foco en cuenta de charrar o cambeo.
 
-+++ Opcions de Formato de Documento (NVDA+control+d) +++[DocumentFormattingSettings]
-Iste quadro de dialogo se troba en o menú Preferencias, baixo "Formato de Documento...". 
++++ Formatiau de Documentos (NVDA+control+d) +++[DocumentFormattingSettings]
+Iste quadro de dialogo se troba en o menú Preferencias, baixo "Formatiau de Documentos...". 
 
 A mayoría d'as caixetas de verificación en iste dialogo son ta configurar qué tipo de formato deseyas escuitar automaticament quan muevas o cursor por os documentos. 
 Por Eixemplo, si marcas a caixeta de verificación anunciar o nombre d'a fuent, cada vegada que navegues por o texto con una fuent diferent, o nombre d'a fuent será anunciau.
@@ -1027,7 +1029,7 @@ De forma predeterminada, NVDA detectará o formato en a posición d'o cursor d'o
  
 Activa ista opción mientras comprebas a lectura de documentos en aplicacions tals como Microsoft Word, an o formato siga important.
 
-+++ Diccionarios d'o Fabla +++
++++ Diccionarios d'a Fabla +++
 O menú de Diccionarios d'a fabla, (trobau en o menú Preferencias) contién dialogos que te permiten controlar o modo en que NVDA pronuncia parolas u frases particulars. 
 Bi ha actualment tres tipos diferents de diccionarios d'a fabla. 
 son:
@@ -1039,8 +1041,8 @@ son:
 Totz os dialogos de diccionario contienen una lista de reglas que serán utilizadas ta procesar a voz. 
 O dialogo tamién contién os botons Adhibir, Editar y Eliminar.
 
-Ta adhibir una nueva regla a o diccionario, preta o botón Adhibir, y replena os campos d'o quadro de dialogo que amaneixe y alavez preta Acceptar. 
-Alavez berás a tuya nueva regla en a lista de reglas. 
+Ta adhibir un nuevo regle a lo diccionario, preta o botón Adhibir, y replena os campos d'o quadro de dialogo que amaneix y allora preta Acceptar. 
+Allora berás o tuya nueva regle en a lista de regles. 
 Asinasmesmo ta asegurar-te que a tuya regla ye actualment alzada, asegura-te de pretar Acceptar ta salir completament d'o dialogo de diccionario Una vegada haigas finalizau d'adhibir/editar reglas.
 
 As reglas ta os diccionarios de voz de NVDA te permiten cambiar una cadena de caracters por unatra. 
@@ -1062,7 +1064,7 @@ Ta cambiar un simbolo, en primeras selecciona-lo en a lísta de Simbolos.
 O campo Reemplazar te permite cambiar o texto que habría de verbalizarse en cuenta d'iste simbolo.
 Fendo servir o campo Ran, puetz achustar o ran mas baixo d'o simbolo a o como iste simbolo habría de charrar-se.
 
-Quan remates, preta o botón Acceptar ta alzar os tuyos cambeos u o botón Cancelar ta descartar-los.
+Quan remates, preta o botón Acceptar ta alzar os tuyos cambeos u lo botón Cancelar ta descartar-los.
 
 +++ Cenyos de Dentrada +++
 En iste dialogo, puetz personalizar os cenyos de dentrada (teclas en o teclau, botons en a pantalla braille, etc.) ta ordens de NVDA.
@@ -1138,9 +1140,11 @@ Mira [mas abaixo #ConfigProfileTriggers] ta mas información sobre os disparador
 Pretando l'Acceptar se creyará o perfil y se zarrará o quadro de dialogo de configuración de perfils ta que puedas editar-lo.
 
 +++ Enchegau Manual +++[ConfigProfileManual]
-Puetz enchegar manualment un perfil seleccionando un perfil y pretando o botón enchegau Manual/edición..
+Puetz enchegar manualment un perfil seleccionando un perfil y pretando lo botón enchegau Manual.
 Una vegada enchegau, encara se pueden enchegar belatros perfils a causa d'os disparadors, pero as opcions d'o perfil enchegau manualment tienen prioridat.
-Amás, as opcions que modifiques s'alzarán en ixe perfil.
+Por eixemplo, si un perfil se dispara ta l'aplicación actual y l'anunciau de vinclos ye activau en ixe perfil, pero desactivau en o perfil activau manualment, os vinclos no s'anunciarán.
+Manimenos, si has cambiau a voz en o perfil disparau, pero nunca no s'ha cambiau en o perfil activau manualment, se ferá servir a voz a partir d'o perfil disparau.
+As valors que se modifiquen s'alzarán en o perfil activau manualment.
 Ta desenchegar un perfil enchegau manualment, selecciona-lo en o quadro de dialogo Perfils de configuración y preta o botón desenchegau Manual.
 
 +++ Disparadors +++[ConfigProfileTriggers]
@@ -1170,8 +1174,6 @@ Por eixemplo, podrías deseyar editar un perfil enchegau manualment u a configur
 Puetz fer isto marcando a caixeta de verificación Desactivar Temporalment Totz os Disparadors en o quadro de dialogo  de perfils de configuración.
 
 ++ Ubicación d'os Fichers de Configuración++
-As versions portatils de NVDA almagazenan todas as suyas opcions,  appModules personals y controladors personals en un directorio clamau userConfig, que se troba en o directorio de NVDA.
-
 As versions portatils de NVDA almagazenan todas as suyas opcions,  appModules personals y controladors personals en un directorio clamau userConfig, que se troba en o directorio de NVDA.
 
 As versions instaladas de NVDA almagazenan todas as suyas opcions, appModules personals y controladors personals en un directorio especial de NVDA localizau en o tuyo perfil d'usuario de Windows. 
@@ -1234,10 +1236,10 @@ Ye millor eliminar istos fichers d'a tuya configuración y instalar o complement
 
 ++ Consola de Python ++
 A consola de Python de NVDA, trobada baixo Ferramientas en o menú NVDA, ye una ferramienta de desembolique que ye util ta depuración, inspección cheneral de l'interior  de NVDA u inspeción d'a hierarquía d'accesibilidat  d'una aplicación.
-Ta mas información, por favor mira [l'articlo The Python Console en o puesto Web de NVDA NVDA_URLwiki/PythonConsole].
+Ta mas información, por favor mira la Guida d'o desembolicador disponible en [a sección de Desembolique d'a pachina web d'o NVDA http://community.nvda-project.org/wiki/development].
 
-++ Recargar plugins ++
-Iste elemento, una vegada activau, recarga app modules y plugins globals sin reiniciar a NVDA, o qual ye util ta desembolicadors.
+++ Recargar os plugins ++
+Iste elemento, una vegada activau, recarga os modulos d'aplicación y os plugins globals sin reenchegar o NVDA, o qual ye util ta desembolicadors.
 
 + Sintetizadors de Voz Suportaus +[SupportedSpeechSynths]
 Ista sección contién información sobre os sintetizadors de voz suportaus por NVDA.
@@ -1305,9 +1307,9 @@ Ista sección contién información sobre as linias braille suportadas por NVDA.
 ++ Series d'a Freedom Scientific Focus/PAC Mate ++
 Todas as linias Focus y PAC Mate de [Freedom Scientific http://www.freedomscientific.com/] se suportan.
 Amenesterás os controladors de linias braille de Freedom Scientific instalaus en o tuyo sistema.
-Si no los tiens encara, puetz obtener-los dende http://www.freedomscientific.com/downloads/focus-40-blue/focus-40-blue-downloads.asp.
-Encara que ista pachina solament menciona a linia Focus 40 Blue, o controlador suporta todas as linias de Freedom Scientific.
-Si o tuyo sistema executa un Windows de 64 bit y os controladors ya s'instaloron por unatro lector de pantalla, posiblement encara amenesterás instalar os controladors dende iste vinclo, ya que os fichers que requiere NVDA posiblement no estioron instalaus por l'atro lector de pantalla.
+Si no los tiens encara, puetz obtener-los dende http://www.freedomscientific.com/downloads/focus-40-blue/focus-40-14-blue-downloads.asp.
+Encara que ista pachina no mencione que a pantalla Focus 40 Blue, o controlador suporta todas as pantallas Focus y Pacmate de Freedom Scientific.
+Si o tuyo sistema executa un Windows de 64 bits y os controladors ya s'instaloron por unatro lector de pantalla, posiblement encara amenesterás instalar os controladors dende iste vinclo, ya que os fichers que requiere NVDA posiblement no estioron instalaus por l'atro lector de pantalla.
 
 Predeterminadament, NVDA puet detectar automaticament y connectar-se a istas linias tanto a traviés d'USB como de bluetooth.
 Manimenos, quan se configura a linia, puetz seleccionar explicitament os puertos "USB" u "Bluetooth" ta restrinchir o tipo de connexión a emplegar.
@@ -1539,6 +1541,9 @@ Por favor mira a documentación d'a linia ta descripcions d'án pueden trobar-se
 ++ Series d'a HIMS Braille Sense/Braille EDGE ++
 NVDA suporta as linias Braille Sense y Braille EDGE de [Hims http://www.hims-inc.com/] quan se connectan a traviés d'USB u bluetooth. 
 Si se connectan a traviés d'USB, amenesterás instalar os controladors USB d'HIMS en o sistema.
+Puetz descargar-los dende o Centro de Recursos d'HIMS: http://www.hims-inc.com/resource-center/
+En ista pachina, selecciona o dispositivo y descarga o controlador en a sección Window-Eyes.
+Encara que a sección no mencione que a Window-Eyes, este ye un controlador USB cheneral que funcionará con NVDA tamién.
 
 Seguidament van as asignacions de teclas ta istas linias con NVDA.
 Por favor mira a documentación d'as linias ta descripcions d'án pueden trobar-se istas teclas.
@@ -1675,14 +1680,13 @@ Seguidament van as asignacions d'ordens d'a Papenmeier ta NVDA:
 | Mover linia braille a la linia siguient | dn |
 | Ir a la celda braille | sensores |
 | Anunciar caracter actual en revisión  | l1 |
-| Activar actual navegador d'obchectos  | l2 |
-| Mover a revisión plana/foco | r1 |
-| Anunciar titol | l1+alto |
-| Anunciar barra d'estau | l2+abaixo |
-| Mover a l'obchecto conteniu | alto2 |
-| Mover a o primer obchecto conteniu | dn2 |
-| Mover a l'obchecto anterior | dreita2 |
-| Mover a lo siguient obchecto | cucha2 |
+| Activar l'actual navegador d'obchectos  | l2 |
+| Anunciar o titol | l1+alto |
+| Anunciar a barra d'estau | l2+abaixo |
+| Mover-se ta l'obchecto conteniu | alto2 |
+| Mover-se ta lo primer obchecto conteniu | dn2 |
+| Mover-se ta l'obchecto anterior | dreita2 |
+| Mover-se ta lo siguient obchecto | cucha2 |
 | Anunciar o formato de texto | ringlera de sensors superior |
 %kc:endInclude
 
@@ -1750,49 +1754,46 @@ Dispositivos con EAB:
 | Desplazar a linia braille abance | dreita |
 | Mover a linia braille a la linia anterior | alto |
 | Mover a linia braille a la linia siguient | abaixo |
-| Ir a la celda braille | sensores |
-| Anunciar caracter actual en revisión | l1 |
-| Activar navegador d'obchectos actual | l2 |
-| Mover-se a la revisión plana / foco | r1 |
-| Anunciar titol | l1up |
-| Anunciar Barra d'Estau| l2down |
-| Mover-se a l'obchecto contenedor | up2 |
-| Mover-se a o primer obchecto conteniu | dn2 |
-| Mover-se a o siguient obchecto | left2 |
-| Mover-se a l'obchecto anterior | right2 |
-| Anunciar formato de texto | Upper routing strip |
+| Ir ta la celda braille | sensores |
+| Anunciar o caracter actual en revisión | l1 |
+| Activar o navegador d'obchectos actual | l2 |
+| Anunciar o titol | l1up |
+| Anunciar a Barra d'Estau| l2down |
+| Mover-se ta l'obchecto contenedor | up2 |
+| Mover-se ta lo primer obchecto conteniu | dn2 |
+| Mover-se ta lo siguient obchecto | left2 |
+| Mover-se ta l'obchecto anterior | right2 |
+| Anunciar o formato de texto | Upper routing strip |
 
 BRAILLEX Tiny:
 || Nombre | Tecla |
-| Anunciar caracter actual en revisión | l1 |
-| Activar navegador d'obchectos actual | l2 |
-| Desplazar linia braille dezaga | left |
-| Desplazar linia braille abance | right |
-| Mover linia braille a la linia anterior | up |
-| Mover linia braille a la linia siguient | dn |
-| Activar y desactivar seguimiento de braille | r2 |
-| Mover-se a o modo de revisión pplana / foco | r1 |
-| Mover-se a l'obchecto contenedor | r1+up |
-| Mover-se a o primer obchecto conteniu | r1+dn |
-| Mover-se a l'obchecto anterior | r1+left |
-| Mover-se a o siguient obchecto | r1+right |
-| Anunciar formato de texto | reportf |
+| Anunciar o caracter actual en revisión | l1 |
+| Activar o navegador d'obchectos actual | l2 |
+| Desplazar a linia braille dezaga | left |
+| Desplazar a linia braille abance | right |
+| Mover a linia braille ta la linia anterior | up |
+| Mover a linia braille ta la linia siguient | dn |
+| Activar y desactivar o seguimiento de braille | r2 |
+| Mover-se ta l'obchecto contenedor | r1+up |
+| Mover-se ta lo primer obchecto conteniu | r1+dn |
+| Mover-se ta l'obchecto anterior | r1+left |
+| Mover-se ta lo siguient obchecto | r1+right |
+| Anunciar o formato de texto | reportf |
 
 BRAILLEX 2D Screen:
 || Nombre | Tecla |
-| Anunciar caracter actual en revisión | l1 |
-| Activar navegador d'obchectos actual | l2 |
-| Activar u desactivar seguimiento de braille | r2 |
-| Anunciar formato de texto | reportf |
-| Mover linia braille a la linia anterior| up |
-| Desplazar linia braille dezaga | left |
-| Mover-se a revisión plana / foco | r1 |
-| Desplazar linia braille abance | right |
-| Mover linia braille a la linia siguient | dn |
-| Mover-se a l'obchecto siguient | left2 |
-| Mover-se a l'obchecto contenedor | up2 |
-| Mover-se a o primer obchecto conteniu | dn2 |
-| Mover-se a l'obchecto anterior | right2 |
+| Anunciar o caracter actual en revisión | l1 |
+| Activar o navegador d'obchectos actual | l2 |
+| Activar u desactivar o seguimiento de braille | r2 |
+| Anunciar o formato de texto | reportf |
+| Mover a linia braille ta la linia anterior| up |
+| Desplazar a linia braille dezaga | left |
+| Desplazar a linia braille adebant | right |
+| Mover a linia braille ta la linia siguient | dn |
+| Mover-se ta l'obchecto siguient | left2 |
+| Mover-se ta l'obchecto contenedor | up2 |
+| Mover-se ta lo primer obchecto conteniu | dn2 |
+| Mover-se ta l'obchecto anterior | right2 |
 %kc:endInclude
 
 ++ HumanWare BrailleNote ++
@@ -1871,7 +1872,7 @@ Por eixemplo, puetz especificar si o simbolo dibuixau habría de ninviar-se a o 
 
 Ta fer isto, has d'editar o fichero d'información de pronuncia de simbolos en o tuyo directorio de configuración d'usuario de NVDA.
 O fichero se diz symbols-xx.dic, an xx ye o codigo d'idioma.
-O formato d'iste fichero se documentó en a sección Symbol Pronunciation de la Guida de Desembolique de NVDA, que ye disponible dende [A sección d'o desembolicador d'o puesto Web de NVDA NVDA_URLwiki/Development].
+O formato d'iste fichero se documentó en a sección Symbol Pronunciation d'a Guida de Desembolique d'o NVDA, que ye disponible dende [a sección de Desembolique d'a pachina web d'o NVDA http://community.nvda-project.org/wiki/development].
 Por tanto, no ye posible ta os usuarios definir simbolos complexos. 
 
 + Información Adicional +
