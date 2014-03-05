@@ -419,10 +419,31 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 			return watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEFROMCHAR,offset,0)
 
 	def _getLineOffsets(self,offset):
+		if not self.obj.isWindowUnicode:
+			# offset in unicode chars to offset in bytes
+			s = self._getStoryText()[0:offset]
+			offset = len(s.encode('mbcs', 'replace'))
 		lineNum=self._getLineNumFromOffset(offset)
 		start=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEINDEX,lineNum,0)
 		length=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINELENGTH,offset,0)
 		end=start+length
+		if not self.obj.isWindowUnicode:
+			# start/end in bytes to start/end in unicode chars
+			story_text = self._getStoryText()
+			start_new = end_new = -1
+			bytepos = 0
+			for charpos, ch in enumerate(story_text):
+				cb = len(ch.encode('mbcs', 'replace'))
+				if bytepos == start:
+					start_new = charpos
+				if bytepos == end:
+					end_new = charpos
+					break
+				bytepos += cb
+			if end_new == -1:
+				end_new = len(story_text)
+			log.debug("offset %d lineNum %d start %d length %d end %d start_new %d end_new %d" % (offset, lineNum, start, length, end, start_new, end_new))
+			return (start_new, end_new)
 		#If we just seem to get invalid line info, calculate manually
 		if start<=0 and end<=0 and lineNum<=0 and self._getLineCount()<=0 and self._getStoryLength()>0:
 			return super(EditTextInfo,self)._getLineOffsets(offset)
