@@ -2,6 +2,17 @@
 
 
 %!includeconf: ../changes.t2tconf
+ 
+= 2014.2 =
+
+== neue Funktionen ==
+- der Markierte Text in Eingabefeldern wird korrekt erkannt, wenn der angezeigte Text (über die API Displaymodel) benutzt werden muss. (#770)
+- in zugänglichen Java-Anwendungen werden Positionsinformationen (z.B. in Auswahlschaltern) korrekt angezeigt. (#3754)
+- in zugänglichen Java-Anwendungen werden Tastenkombinationen korrekt erkannt. (#3881)
+
+== Fehlerbehebungen ==
+- in zugänglichen Java-Awnwendungen wird das Systemmenü nich mehr unterdrückt (#3882)
+
 = 2014.1 =
 
 == neue Funktionen ==
@@ -18,6 +29,7 @@
 - die Befehle zum Umschalten von/in den Flächenmodus wurden aus der Tastenbelegung für Papenmeier-Braillezeilen entfernt. Sie können im Dialog einstellungen/Eingaben jedoch eine eigene Tastenkombination zuweisen. (#3652)
 - NVDA benötigt nun mindestens VC Runtime Version 11. Dies bedeutet, dass nun mindestens Windows xp sp2 oder Windows server 2003 sp1 benötigt wird.
 - In der Satzzeichen- und Symbolebene «einige» werden die Zeichen Stern (*) und Plus (+) angesagt. (#3614)
+- Espeak auf version 1.48.03 aktualisiert Dadurch werden etliche Fehler beseitigt. (#3842, #3739)
 
 == Fehlerbehebungen ==
 - Beim Navigieren durch und Markieren von Zellen in Microsoft Excel wird der markierte Zellenbereich korrekt erkannt, wenn Microsoft Excel langsam reagiert. (#3558)
@@ -56,8 +68,12 @@
  - verbesserte Anzeige von Konbinationsfeldern (es wird kein html mehr angezeigt; der Status [erweitert/reduziert] wird korrekt erkannt). (#3755)
  - beim automatischen Vorlesen von Dialogfeldern wird mehr Text angezeigt. (#3857)
  - Die Änderung von Namen, Wert oder Beschreibung des fokussierten Steuerelements wird besser verfolgt. (#3770)
-
-
+- Prroblem behoben, wonach NVDA unter Windows 8 manchmal abstürzt, wenn man ein Erweitertes Eingabefeld (wie den Protokollbetrachter oder windbg) in den Fokus nimmt. (#3867)
+- auf Systemen mit modernen Monitoren wird nun die Maus nicht mehr an die falsche Stelle gesetzt. (#3758, #3703)
+- Problem behoben, wonach NVDA beim Lesen einer Webseite nicht richtig funktioniert. (#3804)
+- eine Papenmeier-Braillezeile kann jetzt problemlos verwendet werden, auch wenn sie zuvor noch nie per USB verbunden war. (#3712)
+- nvda wird nicht mehr stehenbleiben, wenn Sie versuchen, den Treiber für ältere Papenmeier-Braillezeilen auszuwählen, obwohl keine Braillezeile angeschlossen ist.
+ 
 == Änderungen für Entwickler ==
 - Alle Anwendungsmodule enthalten nun die Eigenschaften productName und productVersion. Diese Informationen werden auch in der Entwicklerinfo angezeigt, die mit der Tastenkombination NVDA+f1 abgerufen werden kann. (#1625)
 - Sie können nun in der Python-Konsole Tab drücken, um den aktuellen Bezeichner zu vervollständigen. (#433)
