@@ -70,6 +70,7 @@ confspec = ConfigObj(StringIO(
 	jpPhoneticReadingLatin = boolean(default=false) 
 	jpPhoneticReadingKana = boolean(default=false)
 	announceCandidateNumber = boolean(default=false)
+	workAroundEncoding = boolean(default=true)
 
 # Speech settings
 [speech]
