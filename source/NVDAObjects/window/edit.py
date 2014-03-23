@@ -419,9 +419,7 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 			return watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEFROMCHAR,offset,0)
 
 	def _needsWorkAroundEncoding(self):
-		return config.conf["language"]["workAroundEncoding"] and \
-			(not self.obj.isWindowUnicode) and \
-			(self.obj.editAPIVersion == 0)
+		return config.conf["language"]["jpAnsiEditbox"] and (not self.obj.isWindowUnicode)
 
 	def _getLineOffsets(self,offset):
 		if self._needsWorkAroundEncoding():
