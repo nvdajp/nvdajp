@@ -42,6 +42,10 @@ msgstr "日本語版の文字入力拡張"
 msgid "Beep for IME mode change"
 msgstr "半角全角キーが押されたらビープ音を鳴らす"
 
+#: gui\settingsDialogs.py:1758
+msgid "Work around ANSI editbox"
+msgstr "改行位置の不具合対策"
+
 #: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
 msgid "Use NonConvert as an NVDA modifier key"
 msgstr "無変換をNVDAキーとして使用"
