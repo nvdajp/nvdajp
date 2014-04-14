@@ -418,8 +418,11 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		else:
 			return watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEFROMCHAR,offset,0)
 
+	def _needsWorkAroundEncoding(self):
+		return config.conf["language"]["jpAnsiEditbox"] and (not self.obj.isWindowUnicode)
+
 	def _getLineOffsets(self,offset):
-		if not self.obj.isWindowUnicode:
+		if self._needsWorkAroundEncoding():
 			# offset in unicode chars to offset in bytes
 			s = self._getStoryText()[0:offset]
 			offset = len(s.encode('mbcs', 'replace'))
@@ -427,7 +430,7 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		start=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEINDEX,lineNum,0)
 		length=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINELENGTH,offset,0)
 		end=start+length
-		if not self.obj.isWindowUnicode:
+		if self._needsWorkAroundEncoding():
 			# start/end in bytes to start/end in unicode chars
 			story_text = self._getStoryText()
 			start_new = end_new = -1

@@ -1755,6 +1755,10 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.nvdajpEnableKeyEventsCheckBox.SetValue(config.conf["keyboard"]["nvdajpEnableKeyEvents"])
 		settingsSizer.Add(self.nvdajpEnableKeyEventsCheckBox,border=10,flag=wx.BOTTOM)
 
+		self.jpAnsiEditCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Work around ANSI editbox"))
+		self.jpAnsiEditCheckBox.SetValue(config.conf["language"]["jpAnsiEditbox"])
+		settingsSizer.Add(self.jpAnsiEditCheckBox,border=10,flag=wx.BOTTOM)
+
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
 
@@ -1766,6 +1770,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["keyboard"]["nvdajpEnableKeyEvents"]=self.nvdajpEnableKeyEventsCheckBox.IsChecked()
 		config.conf["keyboard"]["nvdajpImeBeep"]=self.nvdajpImeBeepCheckBox.IsChecked()
 		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
+		config.conf["language"]["jpAnsiEditbox"]=self.jpAnsiEditCheckBox.IsChecked()
 
 		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
 		try:
