@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: NVDA bzr main:9675\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-07 18:54+1000\n"
-"PO-Revision-Date: 2014-03-13 10:49+0100\n"
+"PO-Revision-Date: 2014-04-06 18:39+0100\n"
 "Last-Translator: Michel Such <michel.such@free.fr>\n"
 "Language-Team: fra <LL@li.org>\n"
 "Language: fr_FR\n"
@@ -95,7 +95,7 @@ msgstr "Erreur dans appModule %s"
 
 #. Translators: Reported for the banner landmark, normally found on web pages.
 msgid "banner"
-msgstr "de bannière"
+msgstr "bannière"
 
 #. Translators: Reported for the complementary landmark, normally found on web pages.
 msgid "complementary"
@@ -103,24 +103,24 @@ msgstr "Complémentaire"
 
 #. Translators: Reported for the contentinfo landmark, normally found on web pages.
 msgid "content info"
-msgstr "d'information sur le contenu"
+msgstr "information sur le contenu"
 
 #. Translators: Reported for the main landmark, normally found on web pages.
 msgid "main"
-msgstr "principal"
+msgstr "principale"
 
 #. Translators: Reported for the navigation landmark, normally found on web pages.
 msgid "navigation"
-msgstr "de navigation"
+msgstr "navigation"
 
 #. Translators: Reported for the search landmark, normally found on web pages.
 msgid "search"
-msgstr "de recherche"
+msgstr "recherche"
 
 #. Translators: Reported for the form landmark, normally found on web pages.
 #. Translators: Identifies a form (controls such as edit boxes, combo boxes and so on).
 msgid "form"
-msgstr "de formulaire"
+msgstr "formulaire"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -925,7 +925,7 @@ msgstr "paragraphe"
 #. i.e. a long quotation in a separate paragraph distinguished by indentation, etc.
 #. See http://en.wikipedia.org/wiki/Block_quotation
 msgid "block quote"
-msgstr "balise de citation"
+msgstr "citation"
 
 #. Translators: Identifies a table header (a short text at the start of a table which describes what the table is about).
 msgid "table header"
@@ -3974,7 +3974,7 @@ msgstr "&Annonce des symboles et ponctuations..."
 
 #. Translators: The label for the menu item to open the Input Gestures dialog.
 msgid "I&nput gestures..."
-msgstr "&Gestes de commandes"
+msgstr "&Gestes de commande..."
 
 #. Translators: The label for Preferences submenu in NVDA menu.
 msgid "&Preferences"
@@ -5232,12 +5232,12 @@ msgstr "Annoncer les &listes"
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings dialog.
 msgid "Report block &quotes"
-msgstr "Annoncer les &balises de citation"
+msgstr "Annoncer les &citation"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings dialog.
 msgid "Report lan&dmarks"
-msgstr "Annoncer les &Repères"
+msgstr "Annoncer les &Régions"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings dialog.
@@ -5387,7 +5387,7 @@ msgstr "&Niveau"
 
 #. Translators: The title of the Input Gestures dialog where the user can remap input gestures for commands.
 msgid "Input Gestures"
-msgstr "Gestes de commandes"
+msgstr "Gestes de commande"
 
 #. Translators: Describes a gesture in the Input Gestures dialog.
 #. {main} is replaced with the main part of the gesture; e.g. alt+tab.
@@ -5463,7 +5463,7 @@ msgstr "mot"
 #. Translators: This is spoken and brailled to indicate a landmark (example output: main landmark).
 #, python-format
 msgid "%s landmark"
-msgstr "repère %s"
+msgstr "région %s"
 
 #. Translators: The label of a radio button to select the type of element
 #. in the browse mode Elements List dialog.
@@ -5478,7 +5478,7 @@ msgstr "&Titres"
 #. Translators: The label of a radio button to select the type of element
 #. in the browse mode Elements List dialog.
 msgid "Lan&dmarks"
-msgstr "R&epères"
+msgstr "R&égions"
 
 #. Translators: The title of the browse mode Elements List dialog.
 msgid "Elements List"
@@ -5546,7 +5546,7 @@ msgstr ""
 
 #. Translators: the description for the elements list dialog script on virtualBuffers.
 msgid "Presents a list of links, headings or landmarks"
-msgstr "Présente une liste de liens, titres ou repères"
+msgstr "Présente une liste de liens, titres ou régions"
 
 #. Translators: The message reported when a user attempts to use a table movement command
 #. when the cursor is not within a table.
@@ -5938,19 +5938,19 @@ msgstr "plus de graphique"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 msgid "moves to the next block quote"
-msgstr "aller à la balise de citation suivante"
+msgstr "aller à la citation suivante"
 
 #. Translators: Message presented when the browse mode element is not found.
 msgid "no next block quote"
-msgstr "plus de balise de citation"
+msgstr "plus de citation"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 msgid "moves to the previous block quote"
-msgstr "aller à la balise de citation précédente"
+msgstr "aller à la citation précédente"
 
 #. Translators: Message presented when the browse mode element is not found.
 msgid "no previous block quote"
-msgstr "plus de balise de citation"
+msgstr "plus de citation"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 msgid "skips forward past a block of links"
@@ -5970,19 +5970,19 @@ msgstr "Plus de texte avant un bloc de liens"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 msgid "moves to the next landmark"
-msgstr "Aller au repère suivant"
+msgstr "aller à la région suivante"
 
 #. Translators: Message presented when the browse mode element is not found.
 msgid "no next landmark"
-msgstr "plus de repère"
+msgstr "plus de région"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 msgid "moves to the previous landmark"
-msgstr "aller au repère précédent"
+msgstr "aller à la région précédente"
 
 #. Translators: Message presented when the browse mode element is not found.
 msgid "no previous landmark"
-msgstr "plus de repère"
+msgstr "plus de région"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 msgid "moves to the next embedded object"
