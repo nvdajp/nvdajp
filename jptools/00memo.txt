@@ -1,3 +1,7 @@
+サブモジュールの取得：
+
+git submodule update --init --recursive
+
 スナップショットのビルド：
 
 最上位のディレクトリで以下を実行
