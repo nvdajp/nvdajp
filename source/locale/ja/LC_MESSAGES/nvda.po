@@ -46,6 +46,10 @@ msgstr "半角全角キーが押されたらビープ音を鳴らす"
 msgid "Work around ANSI editbox"
 msgstr "改行位置の不具合対策"
 
+#: gui\settingsDialogs.py:1768
+msgid "Enable UIA (requires restart)"
+msgstr "UIAの有効化(再起動が必要)"
+
 #: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
 msgid "Use NonConvert as an NVDA modifier key"
 msgstr "無変換をNVDAキーとして使用"
