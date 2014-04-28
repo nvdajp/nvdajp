@@ -1428,7 +1428,7 @@ class BrailleSettingsDialog(SettingsDialog):
 			val = int(self.messageTimeoutEdit.GetValue())
 		except (ValueError, TypeError):
 			val = None
-		if 0 <= val <= 20:
+		if 0 <= val <= 10000:
 			config.conf["braille"]["messageTimeout"] = val
 		braille.handler.tether = self.tetherValues[self.tetherList.GetSelection()][0]
 		config.conf["braille"]["readByParagraph"] = self.readByParagraphCheckBox.Value
