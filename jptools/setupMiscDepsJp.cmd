@@ -1,3 +1,4 @@
+cd miscDepsJp
 del /Q nvdajp-miscdep.7z
 cd jptools
 cd ..\include\jtalk
