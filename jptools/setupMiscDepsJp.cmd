@@ -1,4 +1,3 @@
-cd ..\miscDepsJp
 del /Q nvdajp-miscdep.7z
 cd jptools
 cd ..\include\jtalk
@@ -44,6 +43,4 @@ del /Q source\synthDrivers\jtalk\dic\unk.dic
 del /Q source\synthDrivers\jtalk\libopenjtalk.dll
 cd ..\jptools
 call cleanMiscDepsJp.cmd
-
-
-
+cd ..
