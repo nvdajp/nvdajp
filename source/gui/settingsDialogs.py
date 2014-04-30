@@ -1765,6 +1765,10 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.jpAnsiEditCheckBox.SetValue(config.conf["language"]["jpAnsiEditbox"])
 		settingsSizer.Add(self.jpAnsiEditCheckBox,border=10,flag=wx.BOTTOM)
 
+		self.uiaEnabledCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable UIA (requires restart)"))
+		self.uiaEnabledCheckBox.SetValue(config.conf["UIA"]["enabled"])
+		settingsSizer.Add(self.uiaEnabledCheckBox,border=10,flag=wx.BOTTOM)
+
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
 
@@ -1777,6 +1781,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["keyboard"]["nvdajpImeBeep"]=self.nvdajpImeBeepCheckBox.IsChecked()
 		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
 		config.conf["language"]["jpAnsiEditbox"]=self.jpAnsiEditCheckBox.IsChecked()
+		config.conf["UIA"]["enabled"]=self.uiaEnabledCheckBox.IsChecked()
 
 		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
 		try:
