@@ -98,7 +98,7 @@ confspec = ConfigObj(StringIO(
 	inputTable = string(default=en-us-comp8.ctb)
 	expandAtCursor = boolean(default=true)
 	cursorBlinkRate = integer(default=500,min=0,max=2000)
-	messageTimeout = integer(default=4,min=0,max=20)
+	messageTimeout = integer(default=4,min=0,max=10000)
 	tetherTo = string(default="focus")
 	readByParagraph = boolean(default=false)
 	wordWrap = boolean(default=true)
