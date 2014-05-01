@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2013-12-05
+- last update: 2014-05-01
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -20,6 +20,16 @@ NVDAJP releases are based on NV Access's rc branch.
 Please read this document and NVDA User Guide as well.
 
 NVDA Japanese is provided "as is", without warranty.
+
+
+++ Web site ++
+
+[NVDA Japanese www.nvda.jp/en http://www.nvda.jp/en/]
+
+
+++ Contributors ++
+
+[Contributors for NVDA Japanese https://sourceforge.jp/projects/nvdajp/wiki/contributors_ja]
 
 
 ++ Install ++
@@ -38,6 +48,10 @@ Windows shortcut for starting NVDA is CTRL+ALT+N, if installed.
 It may conflicts to other screen reader which is popular in Japan.
 
 This shortcut can be modified using the property (ALT+Enter) of NVDAJP icon of Windows desktop.
+
+
+
+
 
 + Object Navigation +
 
@@ -114,6 +128,20 @@ If this option is enabled, pressing escape key to clear the input method session
 
 To disable, turn off the option.
 
++++ Work around ANSI editbox +++
+
+NVDA Japanese have made a work around edit control for ANSI applications. Because of this, some applications cannot handle line ending positions correctly.
+If this option is turned off, edit controls are treated as same as the original version of NVDA.
+If you use Winbiff e-mail software, please turn this option off.
+
++++ Enable UIA +++
+
+NVDA uses UI Automation for Windows 7 and later versions.
+This option allows enabling or disabling UIA, which is unofficial feature in original version of NVDA.
+NVDA should be restarted for your changes can take effect.
+Configuration profiles will not affect this option.
+
+
 
 ++ Voice settings ++
 
@@ -139,6 +167,15 @@ This option should be turned off with some Japanese TTS, because of issues with 
 Cursor position mapping is implemented for Japanese output table.
 
 'Expand to computer braille for the word at the cursor' is not supported with Japanese braille translator.
+
++++ Message Timeout +++
+
+NVDA Japanese allows from 0 sec to 10000 sec for the braille message timeout option.
+
+If you specify the value larger than 20 and use the settings with original version of NVDA, it may cause errors at the initialization or modification regarding this option.
+
+
+
 
 
 ++ Keyboard settings ++
