@@ -95,7 +95,8 @@ Before overriding the last object, this function calls event_loseFocus on the ob
 				if ancestors and origAncestors:
 					# ancestors[0].container=origAncestors[-1]
 					# reverting #3873 for nvdajp ti33778
-					if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+					if config.conf["keyboard"]["nvdajpEnableKeyEvents"] \
+							and braille.handler.display.name != 'noBraille':
 						ancestors[0].parent=origAncestors[-1]
 					else:
 						ancestors[0].container=origAncestors[-1]
