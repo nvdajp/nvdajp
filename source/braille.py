@@ -1374,7 +1374,9 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		If a key is pressed the message will be dismissed by the next text being written to the display
 		@postcondition: The message is displayed.
 		"""
-		if not self.enabled or config.conf["braille"]["messageTimeout"] == 0:
+		#if not self.enabled or config.conf["braille"]["messageTimeout"] == 0:
+		#	return
+		if not self.enabled or (config.conf["braille"]["messageTimeout"] == 0 and config.conf["braille"]["nvdajpMessageTimeout"]):
 			return
 		if self.buffer is self.messageBuffer:
 			self.buffer.clear()
