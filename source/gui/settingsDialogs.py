@@ -1428,7 +1428,7 @@ class BrailleSettingsDialog(SettingsDialog):
 			val = int(self.messageTimeoutEdit.GetValue())
 		except (ValueError, TypeError):
 			val = None
-		if 0 <= val <= 10000:
+		if 0 <= val <= 20:
 			config.conf["braille"]["messageTimeout"] = val
 		braille.handler.tether = self.tetherValues[self.tetherList.GetSelection()][0]
 		config.conf["braille"]["readByParagraph"] = self.readByParagraphCheckBox.Value
@@ -1769,6 +1769,10 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.uiaEnabledCheckBox.SetValue(config.conf["UIA"]["enabled"])
 		settingsSizer.Add(self.uiaEnabledCheckBox,border=10,flag=wx.BOTTOM)
 
+		self.msgTimeoutCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable Braille message timeout"))
+		self.msgTimeoutCheckBox.SetValue(config.conf["braille"]["nvdajpMessageTimeout"])
+		settingsSizer.Add(self.msgTimeoutCheckBox,border=10,flag=wx.BOTTOM)
+
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
 
@@ -1782,6 +1786,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
 		config.conf["language"]["jpAnsiEditbox"]=self.jpAnsiEditCheckBox.IsChecked()
 		config.conf["UIA"]["enabled"]=self.uiaEnabledCheckBox.IsChecked()
+		config.conf["braille"]["nvdajpMessageTimeout"]=self.msgTimeoutCheckBox.IsChecked()
 
 		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
 		try:
