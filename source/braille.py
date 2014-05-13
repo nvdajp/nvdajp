@@ -1394,6 +1394,8 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		"""
 		# Configured timeout is in seconds.
 		timeout = config.conf["braille"]["messageTimeout"] * 1000
+		if not config.conf["braille"]["nvdajpMessageTimeout"]:
+			timeout = 10000 * 1000
 		if self._messageCallLater:
 			self._messageCallLater.Restart(timeout)
 		else:
