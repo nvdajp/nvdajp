@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2014-05-01
+- last update: 2014-05-13
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -143,6 +143,10 @@ Configuration profiles will not affect this option.
 
 
 
++++ Enable Braille message timeout +++
+
+This option allows disabling Braille message timeout. If this option is turned off, Braille massage is displayed almost forever (10000sec).
+
 ++ Voice settings ++
 
 +++ Beep for capitals +++
@@ -170,9 +174,7 @@ Cursor position mapping is implemented for Japanese output table.
 
 +++ Message Timeout +++
 
-NVDA Japanese allows from 0 sec to 10000 sec for the braille message timeout option.
-
-If you specify the value larger than 20 and use the settings with original version of NVDA, it may cause errors at the initialization or modification regarding this option.
+If Language setting "Enable Braille message timeout" is tuened off, this setting is ignored and messages will not erased for 10000 sec.
 
 
 
