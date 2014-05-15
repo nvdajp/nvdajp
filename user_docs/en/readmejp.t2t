@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2014-05-13
+- last update: 2014-05-15
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -367,6 +367,9 @@ The BM Utility must be installed to the computer.
 
 For USB connection, virtual serial driver must also be installed.
 The device should be configured to use 9600BPS connection speed for virtual serial driver.
+
+This driver allows you to choose connection port from COM1 to COM64.
+If automatic setting fails, please choose the COM port directly.
 
 KGS Braille Memo driver supports following commands:
 
