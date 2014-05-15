@@ -273,7 +273,17 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	@classmethod
 	def getPossiblePorts(cls):
 		ar = [cls.AUTOMATIC_PORT]
-		ar.extend([ (p["port"], p["friendlyName"]) for p in hwPortUtils.listComPorts() ])
+		ports = {}
+		for p in hwPortUtils.listComPorts(onlyAvailable=True):
+			ports[p["port"]] = p["friendlyName"]
+		log.info(ports)
+		for i in xrange(64):
+			p = "COM%d" % (i + 1)
+			if p in ports:
+				fname = ports[p]
+			else:
+				fname = p
+			ar.append( (p, fname) )
 		return OrderedDict(ar)
 
 	def display(self, data):
