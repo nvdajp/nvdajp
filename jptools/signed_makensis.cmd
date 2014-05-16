@@ -1,2 +1,2 @@
 del output\nvda_2014.2jp-beta.exe
-"C:\Program Files (x86)\NSIS\makensis.exe" /V2 /DVERSION=2014.1jp-beta /DPUBLISHER="nvdajp" /DCOPYRIGHT="Copyright (C) 2006-2014 NVDA Contributors" /DNVDADistDir=C:\work\nvda\nvdajp\dist /DLAUNCHEREXE=C:\work\nvda\nvdajp\output\nvda_2014.2jp-beta.exe launcher\nvdaLauncher.nsi
+miscDeps\tools\NSIS\makensis.exe /V2 /DVERSION=2014.1jp-beta /DPUBLISHER="nvdajp" /DCOPYRIGHT="Copyright (C) 2006-2014 NVDA Contributors" /DNVDADistDir=C:\work\nvda\nvdajp\dist /DLAUNCHEREXE=C:\work\nvda\nvdajp\output\nvda_2014.2jp-beta.exe launcher\nvdaLauncher.nsi
