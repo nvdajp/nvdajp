@@ -1,2 +1,2 @@
-7z a nvda-2014.1jp-140313-dist-self.zip dist\*.exe
-copy nvda-2014.1jp-140313-dist-self.zip c:\users\nishimotz\dropbox\public\
+7z a nvda-2014.2jp-beta-140516-dist-self.zip dist\*.exe
+copy nvda-2014.2jp-beta-140516-dist-self.zip c:\users\nishimotz\dropbox\public\
