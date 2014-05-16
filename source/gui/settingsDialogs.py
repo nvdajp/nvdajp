@@ -202,6 +202,10 @@ class GeneralSettingsDialog(SettingsDialog):
 				item.Disable()
 			settingsSizer.Add(item)
 
+		self.uiaEnabledCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable UIA (requires restart)"))
+		self.uiaEnabledCheckBox.SetValue(config.conf["UIA"]["enabled"])
+		settingsSizer.Add(self.uiaEnabledCheckBox,border=10,flag=wx.TOP|wx.BOTTOM)
+
 	def postInit(self):
 		self.languageList.SetFocus()
 
@@ -284,6 +288,7 @@ class GeneralSettingsDialog(SettingsDialog):
 			)==wx.OK:
 				config.conf.save()
 				queueHandler.queueFunction(queueHandler.eventQueue,core.restart)
+		config.conf["UIA"]["enabled"]=self.uiaEnabledCheckBox.IsChecked()
 		super(GeneralSettingsDialog, self).onOk(evt)
 
 class SynthesizerDialog(SettingsDialog):
@@ -1765,10 +1770,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.jpAnsiEditCheckBox.SetValue(config.conf["language"]["jpAnsiEditbox"])
 		settingsSizer.Add(self.jpAnsiEditCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.uiaEnabledCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable UIA (requires restart)"))
-		self.uiaEnabledCheckBox.SetValue(config.conf["UIA"]["enabled"])
-		settingsSizer.Add(self.uiaEnabledCheckBox,border=10,flag=wx.BOTTOM)
-
 		self.msgTimeoutCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable Braille message timeout"))
 		self.msgTimeoutCheckBox.SetValue(config.conf["braille"]["nvdajpMessageTimeout"])
 		settingsSizer.Add(self.msgTimeoutCheckBox,border=10,flag=wx.BOTTOM)
@@ -1785,7 +1786,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["keyboard"]["nvdajpImeBeep"]=self.nvdajpImeBeepCheckBox.IsChecked()
 		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
 		config.conf["language"]["jpAnsiEditbox"]=self.jpAnsiEditCheckBox.IsChecked()
-		config.conf["UIA"]["enabled"]=self.uiaEnabledCheckBox.IsChecked()
 		config.conf["braille"]["nvdajpMessageTimeout"]=self.msgTimeoutCheckBox.IsChecked()
 
 		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
