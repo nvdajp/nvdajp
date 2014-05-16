@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2014-05-15
+- last update: 2014-05-16
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -70,6 +70,17 @@ Pressing "Report current character in review" (numpad2 or NVDA+period) four-time
 
 
 + Configuration +
+
+++ General settings ++
+
++++ Enable UIA +++
+
+NVDA uses UI Automation for Windows 7 and later versions.
+This option allows enabling or disabling UIA, which is unofficial feature in original version of NVDA.
+NVDA should be restarted for your changes can take effect.
+Configuration profiles will not affect this option.
+
+
 
 ++ Language settings ++
 
@@ -133,15 +144,6 @@ To disable, turn off the option.
 NVDA Japanese have made a work around edit control for ANSI applications. Because of this, some applications cannot handle line ending positions correctly.
 If this option is turned off, edit controls are treated as same as the original version of NVDA.
 If you use Winbiff e-mail software, please turn this option off.
-
-+++ Enable UIA +++
-
-NVDA uses UI Automation for Windows 7 and later versions.
-This option allows enabling or disabling UIA, which is unofficial feature in original version of NVDA.
-NVDA should be restarted for your changes can take effect.
-Configuration profiles will not affect this option.
-
-
 
 +++ Enable Braille message timeout +++
 
