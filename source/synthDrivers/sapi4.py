@@ -80,6 +80,7 @@ class SynthDriver(SynthDriver):
 		if len(self._enginesList)==0:
 			raise RuntimeError("No Sapi4 engines available")
 		self.voice=str(self._enginesList[0].gModeID)
+		self._rate = None
 
 	def terminate(self):
 		self._bufSink._allowDelete = True
@@ -242,12 +243,17 @@ class SynthDriver(SynthDriver):
 		return voices
 
 	def _get_rate(self):
+		if self._rate is not None:
+			return self._rate
 		val=DWORD()
 		self._ttsAttrs.SpeedGet(byref(val))
-		return self._paramToPercent(val.value,self._minRate,self._maxRate)
+		ret = self._paramToPercent(val.value,self._minRate,self._maxRate)
+		return min(100, ret)
 
 	def _set_rate(self,val):
+		self._rate = val
 		val=self._percentToParam(val,self._minRate,self._maxRate)
+		val=min(self._maxRate, val)
 		self._ttsAttrs.SpeedSet(val)
 
 	def _get_pitch(self):
