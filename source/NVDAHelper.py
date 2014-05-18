@@ -73,28 +73,43 @@ def nvdaController_speakSpelling(text):
 @WINFUNCTYPE(c_long)
 def nvdaController_isSpeaking():
 	from synthDriverHandler import *
-	return getSynth().isSpeaking()
+	try:
+		return getSynth().isSpeaking()
+	except:
+		return False
 
 @WINFUNCTYPE(c_long)
 def nvdaController_getPitch():
 	from synthDriverHandler import *
-	return getSynth()._get_pitch()
+	try:
+		return getSynth()._get_pitch()
+	except:
+		return 50
 
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setPitch(nPitch):
 	from synthDriverHandler import *
-	getSynth()._set_pitch(nPitch)
+	try:
+		getSynth()._set_pitch(nPitch)
+	except:
+		pass
 	return 0
 
 @WINFUNCTYPE(c_long)
 def nvdaController_getRate():
 	from synthDriverHandler import *
-	return getSynth()._get_rate()
+	try:
+		return getSynth()._get_rate()
+	except:
+		return 50
 
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setRate(nRate):
 	from synthDriverHandler import *
-	getSynth()._set_rate(nRate)
+	try:
+		getSynth()._set_rate(nRate)
+	except:
+		pass
 	return 0
 
 @WINFUNCTYPE(c_long, c_int)
