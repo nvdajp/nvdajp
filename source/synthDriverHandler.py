@@ -135,7 +135,7 @@ class SynthSetting(object):
 
 class NumericSynthSetting(SynthSetting):
 	"""Represents a numeric synthesizer setting such as rate, volume or pitch."""
-	configSpec="integer(default=50,min=0,max=100)"
+	configSpec="integer(default=50,min=0,max=101)"
 
 	def __init__(self,name,i18nName,availableInSynthSettingsRing=True,minStep=1,normalStep=5,largeStep=10):
 		"""
@@ -478,6 +478,9 @@ class SynthDriver(baseObject.AutoPropertyObject):
 			if onlyChanged and getattr(self,s.name)==val:
 				continue
 			setattr(self,s.name,val)
+		if self.name == "sapi4" and ("rate" in c) and c["rate"] == 101:
+			c["rate"] = 100
+			config.conf.save()
 
 	def _get_initialSettingsRingSetting (self):
 		if not self.isSupported("rate") and len(self.supportedSettings)>0:
