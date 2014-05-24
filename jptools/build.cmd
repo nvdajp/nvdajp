@@ -1,6 +1,5 @@
-@rem SET VERSION=2014.2jp
-@rem SET VERSION=jpbeta140516
-SET VERSION=2014.2jp-beta
+SET VERSION=2014.2jp
+@rem SET VERSION=jpbeta140523
 
 SET DEBUG=
 @rem SET DEBUG=nvdaHelperDebugFlags=noOptimize,RTC,debugCRT,symbols
