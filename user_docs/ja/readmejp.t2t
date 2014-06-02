@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2014年5月15日
+- 最終更新日：2014年6月2日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -692,12 +692,18 @@ NVDA日本語チームでは SourceForge JP の [チケット http://sourceforge
 
 NVDA 日本語版のバグは NVDA 本家コミュニティのチケットシステムではなく NVDA 日本語チームに報告してください。
 
+メールアドレス nvdajp@nvda.jp へのご連絡につきまして、 バグ報告、ご要望、使い方の質問などには、 原則として個別にお返事をいたしませんので、ご了承ください。
+
+日本語チームとして対応させていただく場合には、 ご連絡の内容を、個人を特定できないように編集したうえで、 チケットシステムで公開して検討させていただきます。 
+
+NVDA 日本語版を音声や点字の出力先として選択できるアプリ（NVDA の API を使用するアプリ）の不具合は、アプリ開発者様に報告することをお勧めします。
 
 ++ NVDA の API ++
 
 - [NVDA に対応したアプリケーションの開発 http://sourceforge.jp/projects/nvdajp/wiki/ControllerClient]
 - NVDA 日本語版における [コントローラークライアントAPIの拡張 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29342]
-- [動的に読み上げをON/OFFするAPI https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32444] を 2014.1jp で追加しました。
+- [動的に読み上げをON/OFFするAPI http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=32444] を 2014.1jp で追加しました。
+- [NVDA APIの C#版デモアプリケーション http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33804]
 
 
 + バージョンごとの変更点 +
@@ -706,18 +712,28 @@ NVDA 日本語版のバグは NVDA 本家コミュニティのチケットシス
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-- [「点字メッセージを待ち時間で消去」オプション https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33644]
-- [UIオートメーションの設定 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33616]
-- [改行位置の不具合対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33555]
-- [テキスト解析辞書の更新 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33527]
+- [SAPI4 の声の高さが簡単音声設定で変更できない不具合への対応 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33821]
+- [アプリケーションが isSpeaking API を使うと非対応の音声エンジンがエラーを出す不具合への対応 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33819]
+- [ブレイルメモBMスマート40がUSB接続で認識されない不具合への対応 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33777]
+- [「点字メッセージを待ち時間で消去」オプションの追加 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33644]
+- [UIオートメーションの設定の追加 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33616]
+- [Winbiff メール内容の読み上げの不具合への対応（「改行位置の不具合対策」オプションの追加） http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33555]
+- [テキスト解析辞書の更新 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33527]
+- [SAPI4 ProTALKERの話速設定の影響で音声エンジンが起動できない不具合への対策 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29870]
 
 
 また、以下の変更は NVDA 本家版 2014.2 と日本語版 2014.2jp の両方に反映されました。
 
-- [ユーザーガイドなどの翻訳 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33306]
-- [フォーカス追跡モード、キャレット追跡モードなどの翻訳 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33554]
-- [レビュー機能に関する翻訳 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33273]
-- [キャレットなどの用語の検討 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33226]
+- [ユーザーガイドなどの翻訳 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33306]
+- [フォーカス追跡モード、キャレット追跡モードなどの翻訳 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33554]
+- [レビュー機能に関する翻訳 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33273]
+- [キャレットなどの用語の検討 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33226]
+
+
+以下の NVDA 本家版 2014.2 の不具合には日本語版 2014.2jp で独自に対応しました。
+
+- [日本語入力の候補ウィンドウを閉じたあとでキャレット移動の読み上げができない不具合への対応 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33812]
+- [ユーザーガイドの目次からページ内リンクでジャンプできない不具合への対応 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33838]
 
 
 ++ 2014.1jp の変更点 ++
