@@ -262,7 +262,7 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 			formatField["background-color"]=colors.RGB.fromCOLORREF(charFormat.crBackColor) if not charFormat.dwEffects&CFE_AUTOBACKCOLOR else _("default color")
 		if formatConfig["reportLineNumber"]:
 			formatField["line-number"]=self._getLineNumFromOffset(offset)+1
-		if formatConfig["reportLinks"]:
+		if sys.getwindowsversion().major >= 6 and formatConfig["reportLinks"]:
 			if charFormat is None: charFormat=self._getCharFormat(offset)
 			formatField["link"]=bool(charFormat.dwEffects&CFM_LINK)
 		return formatField,(startOffset,endOffset)
@@ -424,11 +424,35 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		else:
 			return watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEFROMCHAR,offset,0)
 
+	def _needsWorkAroundEncoding(self):
+		return config.conf["language"]["jpAnsiEditbox"] and (not self.obj.isWindowUnicode)
+
 	def _getLineOffsets(self,offset):
+		if self._needsWorkAroundEncoding():
+			# offset in unicode chars to offset in bytes
+			s = self._getStoryText()[0:offset]
+			offset = len(s.encode('mbcs', 'replace'))
 		lineNum=self._getLineNumFromOffset(offset)
 		start=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINEINDEX,lineNum,0)
 		length=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINELENGTH,offset,0)
 		end=start+length
+		if self._needsWorkAroundEncoding():
+			# start/end in bytes to start/end in unicode chars
+			story_text = self._getStoryText()
+			start_new = end_new = -1
+			bytepos = 0
+			for charpos, ch in enumerate(story_text):
+				cb = len(ch.encode('mbcs', 'replace'))
+				if bytepos == start:
+					start_new = charpos
+				if bytepos == end:
+					end_new = charpos
+					break
+				bytepos += cb
+			if end_new == -1:
+				end_new = len(story_text)
+			log.debug("offset %d lineNum %d start %d length %d end %d start_new %d end_new %d" % (offset, lineNum, start, length, end, start_new, end_new))
+			return (start_new, end_new)
 		#If we just seem to get invalid line info, calculate manually
 		if start<=0 and end<=0 and lineNum<=0 and self._getLineCount()<=0 and self._getStoryLength()>0:
 			return super(EditTextInfo,self)._getLineOffsets(offset)
@@ -531,7 +555,7 @@ class ITextDocumentTextInfo(textInfos.TextInfo):
 				formatField["text-position"]="super"
 			elif fontObj.subscript:
 				formatField["text-position"]="sub"
-		if formatConfig["reportLinks"]:
+		if sys.getwindowsversion().major >= 6 and formatConfig["reportLinks"]:
 			if charFormat is None: charFormat=self._getCharFormat(range)
 			formatField["link"]=bool(charFormat.dwEffects&CFM_LINK)
 		return formatField

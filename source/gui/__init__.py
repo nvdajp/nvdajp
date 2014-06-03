@@ -4,6 +4,7 @@
 #Copyright (C) 2006-2013 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Mesar Hameed
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
+# nvdajp modification by Takuya Nishimoto, Masataka.Shinke
 
 import time
 import os
@@ -28,6 +29,22 @@ import logViewer
 import speechViewer
 import winUser
 import api
+import brailleViewer #nvdajp
+
+def openDocFileAsHTA(basename):
+	b = unicode(basename, 'mbcs')
+	d = getDocFilePath(b + u".html")
+	if d:
+		# tempfile.tempdir is overrided in nvda.pyw
+		import tempfile
+		hta = os.path.join(unicode(tempfile.mkdtemp(), 'mbcs'), b + u".hta")
+		import shutil
+		shutil.copyfile(d, hta)
+		os.startfile(hta)
+	else:
+		log.debugWarning("open %s" % basename, exc_info=True)
+
+
 try:
 	import updateCheck
 except RuntimeError:
@@ -35,8 +52,8 @@ except RuntimeError:
 
 ### Constants
 NVDA_PATH = os.getcwdu()
-ICON_PATH=os.path.join(NVDA_PATH, "images", "nvda.ico")
-DONATE_URL = "http://www.nvaccess.org/wiki/Donate"
+ICON_PATH=os.path.join(NVDA_PATH, "images", "nvdajp.ico")
+DONATE_URL = "http://www.nvda.jp/donate.html"
 
 ### Globals
 mainFrame = None
@@ -209,6 +226,10 @@ class MainFrame(wx.Frame):
 	def onGeneralSettingsCommand(self,evt):
 		self._popupSettingsDialog(GeneralSettingsDialog)
 
+	#nvdajp
+	def onLanguageSettingsCommand(self,evt):
+		self._popupSettingsDialog(LanguageSettingsDialog)
+
 	def onSynthesizerCommand(self,evt):
 		self._popupSettingsDialog(SynthesizerDialog)
 
@@ -285,6 +306,16 @@ class MainFrame(wx.Frame):
 		globalPluginHandler.reloadGlobalPlugins()
 		NVDAObject.clearDynamicClassCache()
 
+	#nvdajp begin
+	def onToggleBrailleViewerCommand(self, evt):
+		if not brailleViewer.isActive:
+			brailleViewer.activate()
+			self.sysTrayIcon.menu_tools_toggleBrailleViewer.Check(True)
+		else:
+			brailleViewer.deactivate()
+			self.sysTrayIcon.menu_tools_toggleBrailleViewer.Check(False)
+	#nvdajp end
+	
 	def onCreatePortableCopyCommand(self,evt):
 		if isInMessageBox:
 			return
@@ -323,6 +354,10 @@ class SysTrayIcon(wx.TaskBarIcon):
 		# Translators: The label for the menu item to open general Settings dialog.
 		item = menu_preferences.Append(wx.ID_ANY,_("&General settings..."),_("General settings"))
 		self.Bind(wx.EVT_MENU, frame.onGeneralSettingsCommand, item)
+		#nvdajp begin
+		item = menu_preferences.Append(wx.ID_ANY,_("Language settings..."),_("Configure language dependent options"))
+		self.Bind(wx.EVT_MENU, frame.onLanguageSettingsCommand, item)
+		#nvdajp end
 		# Translators: The label for the menu item to open Synthesizer settings dialog.
 		item = menu_preferences.Append(wx.ID_ANY,_("&Synthesizer..."),_("Change the synthesizer to be used"))
 		self.Bind(wx.EVT_MENU, frame.onSynthesizerCommand, item)
@@ -402,19 +437,28 @@ class SysTrayIcon(wx.TaskBarIcon):
 		# Translators: The label for the menu item to reload plugins.
 		item = menu_tools.Append(wx.ID_ANY, _("Reload plugins"))
 		self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
+		#nvdajp begin
+		item=self.menu_tools_toggleBrailleViewer = menu_tools.AppendCheckItem(wx.ID_ANY, _("Braille viewer"))
+		self.Bind(wx.EVT_MENU, frame.onToggleBrailleViewerCommand, item)
+		#nvdajp end
 		# Translators: The label for the Tools submenu in NVDA menu.
-		self.menu.AppendMenu(wx.ID_ANY, _("Tools"), menu_tools)
+		self.menu.AppendMenu(wx.ID_ANY, pgettext("nvdaMenu", "Tools"), menu_tools)
 
 		menu_help = self.helpMenu = wx.Menu()
+		#nvdajp begin
+		if not globalVars.appArgs.secure:
+			item = menu_help.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
+			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("readmejp"), item)
+		#nvdajp end
 		if not globalVars.appArgs.secure:
 			item = menu_help.Append(wx.ID_ANY, _("User Guide"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(getDocFilePath("userGuide.html")), item)
+			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("userGuide"), item)
 			# Translators: The label of a menu item to open the Commands Quick Reference document.
 			item = menu_help.Append(wx.ID_ANY, _("Commands &Quick Reference"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(getDocFilePath("keyCommands.html")), item)
+			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("keyCommands"), item)
 			# Translators: The label for the menu item to open What's New document.
 			item = menu_help.Append(wx.ID_ANY, _("What's &new"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(getDocFilePath("changes.html")), item)
+			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("changes"), item)
 			item = menu_help.Append(wx.ID_ANY, _("NVDA &web site"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("http://www.nvda-project.org/"), item)
 			# Translators: The label for the menu item to view NVDA License document.
@@ -563,6 +607,14 @@ class WelcomeDialog(wx.Dialog):
 		welcomeText = wx.StaticText(self, wx.ID_ANY, self.WELCOME_MESSAGE)
 		mainSizer.Add(welcomeText,border=20,flag=wx.LEFT|wx.RIGHT|wx.TOP)
 		optionsSizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _("Options")), wx.VERTICAL)
+		#nvdajp
+		self.nconvAsNVDAModifierCheckBox = wx.CheckBox(self, wx.ID_ANY, _("Use NonConvert as an NVDA modifier key"))
+		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
+		optionsSizer.Add(self.nconvAsNVDAModifierCheckBox,flag=wx.TOP|wx.LEFT,border=10)
+		self.convAsNVDAModifierCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Use Convert as an NVDA modifier key"))
+		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
+		optionsSizer.Add(self.convAsNVDAModifierCheckBox,flag=wx.TOP|wx.LEFT,border=10)
+		#nvdajp done
 		self.capsAsNVDAModifierCheckBox = wx.CheckBox(self, wx.ID_ANY, _("Use CapsLock as an NVDA modifier key"))
 		self.capsAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"])
 		optionsSizer.Add(self.capsAsNVDAModifierCheckBox,flag=wx.TOP|wx.LEFT,border=10)
@@ -582,10 +634,12 @@ class WelcomeDialog(wx.Dialog):
 
 		self.SetSizer(mainSizer)
 		mainSizer.Fit(self)
-		self.capsAsNVDAModifierCheckBox.SetFocus()
+		self.nconvAsNVDAModifierCheckBox.SetFocus() # capsAsNVDAModifierCheckBox
 
 	def onOk(self, evt):
 		config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"] = self.capsAsNVDAModifierCheckBox.IsChecked()
+		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = self.nconvAsNVDAModifierCheckBox.IsChecked() #nvdajp
+		config.conf["keyboard"]["useConvertAsNVDAModifierKey"]=self.convAsNVDAModifierCheckBox.IsChecked()
 		if self.startAfterLogonCheckBox.Enabled:
 			config.setStartAfterLogon(self.startAfterLogonCheckBox.Value)
 		config.conf["general"]["showWelcomeDialogAtStartup"] = self.showWelcomeDialogAtStartupCheckBox.IsChecked()

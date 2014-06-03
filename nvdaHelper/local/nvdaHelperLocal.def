@@ -43,6 +43,13 @@ EXPORTS
 	_nvdaController_brailleMessage
 	_nvdaController_cancelSpeech
 	_nvdaController_speakText
+	_nvdaController_speakSpelling
+	_nvdaController_isSpeaking
+	_nvdaController_getPitch
+	_nvdaController_setPitch
+	_nvdaController_getRate
+	_nvdaController_setRate
+	_nvdaController_setAppSleepMode
 	_nvdaControllerInternal_vbufChangeNotify
 	displayModel_getWindowTextInRect
 	displayModel_getFocusRect

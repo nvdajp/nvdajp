@@ -37,7 +37,6 @@ import inputCore
 import virtualBuffers
 import characterProcessing
 from baseObject import ScriptableObject
-
 #: Script category for text review  commands.
 # Translators: The name of a category of NVDA commands.
 SCRCAT_TEXTREVIEW = _("Text review")
@@ -74,6 +73,9 @@ SCRCAT_SYSTEM = _("System status")
 #: Script category for input  commands.
 # Translators: The name of a category of NVDA commands.
 SCRCAT_INPUT = _("Input")
+
+# nvdajp
+characterDescriptionMode = True
 
 class GlobalCommands(ScriptableObject):
 	"""Commands that are available at all times, regardless of the current focus.
@@ -191,6 +193,16 @@ class GlobalCommands(ScriptableObject):
 	def script_dateTime(self,gesture):
 		if scriptHandler.getLastScriptRepeatCount()==0:
 			text=winKernel.GetTimeFormat(winKernel.LOCALE_USER_DEFAULT, winKernel.TIME_NOSECONDS, None, None)
+			# nvdajp
+			import languageHandler
+			if languageHandler.getLanguage() == 'ja_JP':
+				import re
+				mo = re.match('(\d{1,2}):(\d{2})', text)
+				if mo:
+					hour, minute = mo.group(1), mo.group(2)
+					if minute[0] == '0': minute = minute[1:]
+					text = _('%s:%s') % (hour, minute)
+			# nvdajp end
 		else:
 			text=winKernel.GetDateFormat(winKernel.LOCALE_USER_DEFAULT, winKernel.DATE_LONGDATE, None, None)
 		ui.message(text)
@@ -692,6 +704,7 @@ class GlobalCommands(ScriptableObject):
 	script_review_startOfLine.category=SCRCAT_TEXTREVIEW
 
 	def script_review_previousCharacter(self,gesture):
+		global characterDescriptionMode #nvdajp
 		lineInfo=api.getReviewPosition().copy()
 		lineInfo.expand(textInfos.UNIT_LINE)
 		charInfo=api.getReviewPosition().copy()
@@ -702,35 +715,82 @@ class GlobalCommands(ScriptableObject):
 			speech.speakMessage(_("left"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#nvdajp
+			if characterDescriptionMode:
+				speech.spellTextInfo(reviewInfo,useCharacterDescriptions=True)
+			else:
+				speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#nvdajp end
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#nvdajp
+			if characterDescriptionMode:
+				speech.spellTextInfo(charInfo,useCharacterDescriptions=True)
+			else:
+				speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#nvdajp end
 	# Translators: Input help mode message for move review cursor to previous character command.
 	script_review_previousCharacter.__doc__=_("Moves the review cursor to the previous character of the current navigator object and speaks it")
 	script_review_previousCharacter.category=SCRCAT_TEXTREVIEW
 
 	def script_review_currentCharacter(self,gesture):
+		global characterDescriptionMode #nvdajp
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_CHARACTER)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
+		#if scriptCount==0:
+		#	speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		#elif scriptCount==1:
+		#	speech.spellTextInfo(info,useCharacterDescriptions=True)
+		#else:
+		#	try:
+		#		c = ord(info.text)
+		#		speech.speakMessage("%d," % c)
+		#		speech.speakSpelling(hex(c))
+		#	except:
+		#		speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		#nvdajp begin
 		if scriptCount==0:
-			speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			if characterDescriptionMode:
+				speech.spellTextInfo(info,useCharacterDescriptions=True)
+			else:
+				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			import nvdajp_dic
+			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
+			braille.handler.message(s)
 		elif scriptCount==1:
-			speech.spellTextInfo(info,useCharacterDescriptions=True)
-		else:
+			import nvdajp_dic
+			import languageHandler
+			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
+			speech.speakMessage(speech.processText(languageHandler.getLanguage(), s, characterProcessing.SYMLVL_ALL))
+			braille.handler.message(s)
+		elif scriptCount==2:
 			try:
+				import nvdajp_dic
 				c = ord(info.text)
-				speech.speakMessage("%d," % c)
-				speech.speakSpelling(hex(c))
+				s = nvdajp_dic.code2kana(c)
+				o = u"%d u+%s" % (c, s)
+				speech.speakMessage(o)
+				braille.handler.message(u"%d %s" % (c, nvdajp_dic.code2hex(c)))
 			except:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+		else:
+			if characterDescriptionMode:
+				ui.message(_("Character description mode disabled"))
+				characterDescriptionMode = False
+			else:
+				ui.message(_("Character description mode enabled"))
+				characterDescriptionMode = True
+		#nvdajp end
 	# Translators: Input help mode message for report current character under review cursor command.
 	script_review_currentCharacter.__doc__=_("Reports the character of the current navigator object where the review cursor is situated. Pressing twice reports a description or example of that character. Pressing three times reports the numeric value of the character in decimal and hexadecimal")
 	script_review_currentCharacter.category=SCRCAT_TEXTREVIEW
 
 	def script_review_nextCharacter(self,gesture):
+		global characterDescriptionMode #nvdajp
 		lineInfo=api.getReviewPosition().copy()
 		lineInfo.expand(textInfos.UNIT_LINE)
 		charInfo=api.getReviewPosition().copy()
@@ -741,11 +801,23 @@ class GlobalCommands(ScriptableObject):
 			speech.speakMessage(_("right"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#nvdajp
+			if characterDescriptionMode:
+				speech.spellTextInfo(reviewInfo,useCharacterDescriptions=True)
+			else:
+				speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#nvdajp end
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#nvdajp
+			if characterDescriptionMode:
+				speech.spellTextInfo(charInfo,useCharacterDescriptions=True)
+			else:
+				speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
+			#nvdajp end
 	# Translators: Input help mode message for move review cursor to next character command.
 	script_review_nextCharacter.__doc__=_("Moves the review cursor to the next character of the current navigator object and speaks it")
 	script_review_nextCharacter.category=SCRCAT_TEXTREVIEW

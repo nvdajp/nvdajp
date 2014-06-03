@@ -10,3 +10,6 @@
 [submodule "include/espeak"]
 	path = include/espeak
 	url = https://bitbucket.org/nvaccess/espeak.git
+[submodule "miscDepsJp"]
+	path = miscDepsJp
+	url = https://bitbucket.org/nvdajp/nvdajpmiscdep.git

@@ -25,6 +25,7 @@ import queueHandler
 import speechDictHandler
 import characterProcessing
 import languageHandler
+import nvdajp_dic
 
 speechMode_off=0
 speechMode_beeps=1
@@ -73,6 +74,10 @@ def isBlank(text):
 RE_CONVERT_WHITESPACE = re.compile("[\0\r\n]")
 
 def processText(locale,text,symbolLevel):
+	#nvdajp begin
+	import nvdajp_dic
+	text = nvdajp_dic.processHexCode(locale, text)
+	#nvdajp end
 	text = speechDictHandler.processText(text)
 	text = characterProcessing.processSpeechSymbols(locale, text, symbolLevel)
 	text = RE_CONVERT_WHITESPACE.sub(u" ", text)
@@ -186,31 +191,81 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions):
 		textLength=len(text)
 		for count,char in enumerate(text): 
 			uppercase=char.isupper()
+			# nvdajp begin
+			jpZenkakuHiragana = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isZenkakuHiragana(char)
+			jpZenkakuKatakana = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isZenkakuKatakana(char)
+			jpHankakuKatakana = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isHankakuKatakana(char)
+			jpLatinCharacter = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isLatinCharacter(char)
+			jpFullShapeAlphabet = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isFullShapeAlphabet(char)
+			jpFullShapeSymbol = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isFullShapeSymbol(char)
+			jpFullShape = jpFullShapeAlphabet or jpFullShapeSymbol
+			halfShape = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isHalfShape(char)
+			pitchChanged = False
+			# nvdajp end
 			charDesc=None
 			if useCharacterDescriptions:
-				charDesc=characterProcessing.getCharacterDescription(locale,char.lower())
+				#nvdajp begin
+				#charDesc=characterProcessing.getCharacterDescription(locale,char.lower())
+				if jpLatinCharacter and not config.conf["language"]["jpPhoneticReadingLatin"]:
+					charDesc = (nvdajp_dic.get_short_desc(char.lower()),)
+				elif (jpZenkakuHiragana or jpZenkakuKatakana or jpHankakuKatakana) and not config.conf["language"]["jpPhoneticReadingKana"]:
+					charDesc = (nvdajp_dic.get_short_desc(char),)
+				else:
+					charDesc=characterProcessing.getCharacterDescription(locale,char.lower())
+				#nvdajp end
 			if charDesc:
 				#Consider changing to multiple synth speech calls
 				char=charDesc[0] if textLength>1 else u"\u3001".join(charDesc)
 			else:
-				char=characterProcessing.processSpeechSymbol(locale,char)
+				char=characterProcessing.processSpeechSymbol(locale,char.lower())
 			if uppercase and synthConfig["sayCapForCapitals"]:
 				# Translators: cap will be spoken before the given letter when it is capitalized.
 				char=_("cap %s")%char
-			if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
-				oldPitch=synthConfig["pitch"]
-				synth.pitch=max(0,min(oldPitch+synthConfig["capPitchChange"],100))
+			# nvdajp begin
+			#if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
+			#	oldPitch=synthConfig["pitch"]
+			#	synth.pitch=max(0,min(oldPitch+synthConfig["capPitchChange"],100))
+			if synth.isSupported("pitch"):
+				if uppercase and synthConfig["capPitchChange"]:
+					oldPitch=synthConfig["pitch"]
+					synth.pitch=max(0,min(oldPitch+synthConfig["capPitchChange"],100))
+					pitchChanged = True
+				elif jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
+					oldPitch=synthConfig["pitch"]
+					synth.pitch=max(0,min(oldPitch+config.conf['language']['jpKatakanaPitchChange'],100))
+					pitchChanged = True
+				elif jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
+					oldPitch=synthConfig["pitch"]
+					synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
+					pitchChanged = True
+				elif halfShape and config.conf['language']['halfShapePitchChange']:
+					oldPitch=synthConfig["pitch"]
+					synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
+					pitchChanged = True
+			# nvdajp end
 			index=count+1
 			log.io("Speaking character %r"%char)
 			speechSequence=[LangChangeCommand(locale)] if config.conf['speech']['autoLanguageSwitching'] else []
-			if len(char) == 1 and synthConfig["useSpellingFunctionality"]:
-				speechSequence.append(CharacterModeCommand(True))
+			# nvdajp begin
+			#if len(char) == 1 and synthConfig["useSpellingFunctionality"]:
+			#	speechSequence.append(CharacterModeCommand(True))
+			if nvdajp_dic.isJapaneseLocale(locale):
+				if len(char) == 1:
+					char = nvdajp_dic.get_short_desc(char)
+			else:
+				if len(char) == 1 and synthConfig["useSpellingFunctionality"]:
+					speechSequence.append(CharacterModeCommand(True))
+			# nvdajp end
 			if index is not None:
 				speechSequence.append(IndexCommand(index))
 			speechSequence.append(char)
 			synth.speak(speechSequence)
-			if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
+			# nvdajp begin
+			#if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
+			#	synth.pitch=oldPitch
+			if pitchChanged:
 				synth.pitch=oldPitch
+			# nvdajp end
 			while textLength>1 and (isPaused or getLastSpeechIndex()!=index):
 				for x in xrange(2):
 					args=yield
@@ -402,6 +457,15 @@ def speak(speechSequence,symbolLevel=None):
 		for item in speechSequence:
 			if isinstance(item,basestring):
 				speechViewer.appendText(item)
+	# nvdajp (Takuya Nishimoto + Masataka.Shinke)
+	from gui import brailleViewer
+	if brailleViewer.isActive:
+		s = ""
+		for item in speechSequence:
+			if isinstance(item,basestring):
+				s += item
+		if s: brailleViewer.appendText(s)
+	# nvdajp end
 	global beenCanceled, curWordChars
 	curWordChars=[]
 	if speechMode==speechMode_off:
@@ -706,7 +770,12 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 	if unit in (textInfos.UNIT_CHARACTER,textInfos.UNIT_WORD) and len(textWithFields)>0 and len(textWithFields[0])==1 and all((isinstance(x,textInfos.FieldCommand) and x.command=="controlEnd") for x in itertools.islice(textWithFields,1,None) ): 
 		if any(isinstance(x,basestring) for x in speechSequence):
 			speak(speechSequence)
-		speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
+		#nvdajp begin
+		#speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
+		from globalCommands import characterDescriptionMode
+		useCharacterDescriptions = (characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET)
+		speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
+		#nvdajp end
 		if useCache:
 			speakTextInfoState.controlFieldStackCache=newControlFieldStack
 			speakTextInfoState.formatFieldAttributesCache=formatFieldAttributesCache

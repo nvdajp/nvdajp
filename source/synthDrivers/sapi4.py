@@ -27,6 +27,9 @@ class SynthDriverBufSink(COMObject):
 	def ITTSBufNotifySink_BookMark(self, this, qTimeStamp, dwMarkNum):
 		self._synthDriver.lastIndex=dwMarkNum
 
+	def ITTSBufNotifySink_TextDataDone(self, this, qTimeStamp, dwMarkNum):
+		self._synthDriver.setSpeaking(False)
+
 	def IUnknown_Release(self, this, *args, **kwargs):
 		if not self._allowDelete and self._refcnt.value == 1:
 			log.debugWarning("ITTSBufNotifySink::Release called too many times by engine")
@@ -38,6 +41,8 @@ class SynthDriver(SynthDriver):
 	name="sapi4"
 	description="Microsoft Speech API version 4"
 	supportedSettings=[SynthDriver.VoiceSetting()]
+
+	isRunning = False
 
 	@classmethod
 	def check(cls):
@@ -75,6 +80,7 @@ class SynthDriver(SynthDriver):
 		if len(self._enginesList)==0:
 			raise RuntimeError("No Sapi4 engines available")
 		self.voice=str(self._enginesList[0].gModeID)
+		self._rate = None
 
 	def terminate(self):
 		self._bufSink._allowDelete = True
@@ -84,6 +90,7 @@ class SynthDriver(SynthDriver):
 		charMode=False
 		for item in speechSequence:
 			if isinstance(item,basestring):
+				item = item.replace(u"\u2022", '').replace(u"\uf0b7", '') # nvdajp (bullet)
 				textList.append(item.replace('\\','\\\\'))
 			elif isinstance(item,speech.IndexCommand):
 				textList.append("\\mrk=%d\\"%item.index)
@@ -99,9 +106,13 @@ class SynthDriver(SynthDriver):
 			textList.append("\\RmS=0\\")
 		text="".join(textList)
 		flags=TTSDATAFLAG_TAGGED
+		global isRunning
+		isRunning = True
 		self._ttsCentral.TextData(VOICECHARSET.CHARSET_TEXT, flags,TextSDATA(text),self._bufSinkPtr,ITTSBufNotifySink._iid_)
 
 	def cancel(self):
+		global isRunning
+		isRunning = True
 		self._ttsCentral.AudioReset()
 		self.lastIndex=None
 
@@ -113,6 +124,13 @@ class SynthDriver(SynthDriver):
 				pass
 		else:
 			self._ttsCentral.AudioResume()
+
+	def setSpeaking(self, switch):
+		global isRunning
+		isRunning = switch
+
+	def isSpeaking(self):
+		return isRunning
 
 	def removeSetting(self,name):
 		#Putting it here because currently no other synths make use of it. OrderedDict, where you are?
@@ -225,12 +243,17 @@ class SynthDriver(SynthDriver):
 		return voices
 
 	def _get_rate(self):
+		if self._rate is not None:
+			return self._rate
 		val=DWORD()
 		self._ttsAttrs.SpeedGet(byref(val))
-		return self._paramToPercent(val.value,self._minRate,self._maxRate)
+		ret = self._paramToPercent(val.value,self._minRate,self._maxRate)
+		return min(100, ret)
 
 	def _set_rate(self,val):
+		self._rate = val
 		val=self._percentToParam(val,self._minRate,self._maxRate)
+		val=min(self._maxRate, val)
 		self._ttsAttrs.SpeedSet(val)
 
 	def _get_pitch(self):

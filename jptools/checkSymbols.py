@@ -1,0 +1,14 @@
+# coding: UTF-8
+#checkSymbols.py
+#A part of NonVisual Desktop Access (NVDA)
+#Copyright (C) 2012 Takuya Nishimoto (NVDA Japanese Team)
+# usage:
+# > python jptools\checkSymbols.py
+
+import sys
+sys.path.append(r'..\source\synthDrivers\jtalk')
+from _checkCharDesc import *
+sy = read_symbol_file(SY_FILE)
+#ch = read_chardesc_file(CH_FILE)
+ch = read_characters_file(CS_FILE)
+print_different(sy, ch, skip_included=True)

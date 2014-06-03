@@ -20,4 +20,11 @@ interface NvdaController {
 	[fault_status,comm_status] speakText();
 	[fault_status,comm_status] cancelSpeech();
 	[fault_status,comm_status] brailleMessage();
+	[fault_status,comm_status] speakSpelling();
+	[fault_status,comm_status] isSpeaking();
+	[fault_status,comm_status] getPitch();
+	[fault_status,comm_status] setPitch();
+	[fault_status,comm_status] getRate();
+	[fault_status,comm_status] setRate();
+	[fault_status,comm_status] setAppSleepMode();
 }

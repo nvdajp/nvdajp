@@ -392,32 +392,58 @@ _	アンダーライン	some
 э	エー	none
 ю	ユー	none
 я	ヤー	none
-─	ケイセン	most
-│	ケイセン	most
-┌	ヒダリウエ	most
-┐	ミギウエ	most
-┘	ミギシタ	most
-└	ヒダリシタ	most
-├	タテセンミギ	most
-┬	ヨコセンシタ	most
-┤	タテセンヒダリ	most
-┴	ヨコセンウエ	most
-┼	クロス	most
-┣	タテセンミギ	most
-┳	ヨコセンシタ	most
-┫	タテセンヒダリ	most
-┻	ヨコセンウエ	most
-╋	クロス	most
-┠	タテセンミギ	most
-┯	ヨコセンシタ	most
-┨	タテセンヒダリ	most
-┷	ヨコセンウエ	most
-┿	ヨコフト クロス	most
-┝	タテセンミギ	most
-┰	ヨコセンシタ	most
-┥	タテセンヒダリ	most
-┸	ヨコセンウエ	most
-╂	タテフト クロス	most
+
+# U+23BE..U+23CC
+⎾	ヒダリウエ	all
+⎿	ヒダリシタ	all
+⏀	マルツキ タテセン	all
+⏁	マルツキ ヨコセンシタ	all
+⏂	マルツキ ヨコセンウエ	all
+⏃	サンカクツキ タテセン	all
+⏄	サンカクツキ ヨコセンシタ	all
+⏅	サンカクツキ ヨコセンウエ	all
+⏆	ナミツキ タテセン	all
+⏇	ナミツキ ヨコセンシタ	all
+⏈	ナミツキ ヨコセンウエ	all
+⏉	ヨコセンシタ	all
+⏊	ヨコセンウエ	all
+⏋	ミギウエ	all
+⏌	ミギシタ	all
+
+# U+2500..U+254B
+─	ヨコセン	all
+━	ヨコセンダイ	all
+│	タテセン	all
+┃	タテセンダイ	all
+┌	ヒダリウエ	all
+┏	ヒダリウエダイ	all
+┐	ミギウエ	all
+┓	ミギウエダイ	all
+└	ヒダリシタ	all
+┗	ヒダリシタダイ	all
+┘	ミギシタ	all
+┛	ミギシタダイ	all
+├	タテセンミギ	all
+┝	タテセンミギ クミ	all
+┠	タテセンミギ クミ	all
+┣	タテセンミギ ダイ	all
+┤	タテセンヒダリ	all
+┥	タテセンヒダリ クミ	all
+┨	タテセンヒダリ クミ	all
+┫	タテセンヒダリ ダイ	all
+┬	ヨコセンシタ	all
+┯	ヨコセンシタ クミ	all
+┰	ヨコセンシタ クミ	all
+┳	ヨコセンシタ ダイ	all
+┴	ヨコセンウエ	all
+┷	ヨコセンウエ クミ	all
+┸	ヨコセンウエ クミ	all
+┻	ヨコセンウエ ダイ	all
+┼	クロス	all
+┿	ヨコフト クロス クミ	all
+╂	タテフト クロス クミ	all
+╋	クロス ダイ	all
+
 ①	マル 1	none
 ②	マル 2	none
 ③	マル 3	none
@@ -494,3 +520,77 @@ _	アンダーライン	some
 ♡	ハート	most
 ♢	ダイヤ	most
 ♣	クラブ	most
+
+◯	オオキナマル	some	# U+25ef
+☓	ナナメジュージ	some	# U+2613
+
+䪼	セツ	none	# 䪼 U+4abc
+䯒	コー	none	# 䯒 U+4bd2
+俠	キョー	none	# 俠 U+4fe0
+呃	アク	none	# 呃 U+5443
+嘈	ソー	none	# 嘈 U+5608
+噦	エツ	none	# 噦 U+5666
+噯	アイ	none	# 噯 U+566f
+嚨	ロー	none	# 嚨 U+56a8
+囊	ノー	none	# 囊 U+56ca
+搐	チク	none	# 搐 U+6410
+攢	サン	none	# 攢 U+6522
+暍	エツ	none	# 暍 U+668d
+欬	ガイ	none	# 欬 U+6b2c
+涿	タク	none	# 涿 U+6dbf
+滎	エイ	none	# 滎 U+6ece
+濇	ショク	none	# 濇 U+6fc7
+濼	レキ	none	# 濼 U+6ffc
+瀆	トク	none	# 瀆 U+7006
+炷	シュ	none	# 炷 U+70b7
+焠	サイ	none	# 焠 U+7120
+燾	トー	none	# 燾 U+71fe
+牖	ユー	none	# 牖 U+7256
+璇	セン	none	# 璇 U+7487
+璣	キ	none	# 璣 U+74a3
+痤	ザ	none	# 痤 U+75e4
+痹	ヒ	none	# 痹 U+75f9
+瘀	オ	none	# 瘀 U+7600
+瘂	ア	none	# 瘂 U+7602
+瘈	ケイ	none	# 瘈 U+7608
+瘙	ソー	none	# 瘙 U+7619
+瘭	ヒョー	none	# 瘭 U+762d
+癃	リュー	none	# 癃 U+7643
+癤	セツ	none	# 癤 U+7664
+皶	サ	none	# 皶 U+76b6
+砭	ヘン	none	# 砭 U+782d
+窠	カ	none	# 窠 U+7aa0
+糙	ソー	none	# 糙 U+7cd9
+胦	ヨー	none	# 胦 U+80e6
+脖	ボツ	none	# 脖 U+8116
+脘	カン	none	# 脘 U+8118
+腠	ソー	none	# 腠 U+8160
+腧	ユ	none	# 腧 U+8167
+膻	ダン	none	# 膻 U+81bb
+臊	ソー	none	# 臊 U+81ca
+臏	ヒン	none	# 臏 U+81cf
+芤	コー	none	# 芤 U+82a4
+芩	キン	none	# 芩 U+82a9
+薏	ヨク	none	# 薏 U+858f
+蟜	キョー	none	# 蟜 U+87dc
+譆	キ	none	# 譆 U+8b46
+譩	イ	none	# 譩 U+8b69
+跗	フ	none	# 跗 U+8dd7
+蹻	キョー	none	# 蹻 U+8e7b
+軀	ク	none	# 軀 U+8ec0
+邈	バク	none	# 邈 U+9088
+郄	ゲキ	none	# 郄 U+90c4
+鈹	ヒ	none	# 鈹 U+9239
+鍉	テイ	none	# 鍉 U+9349
+鑱	ザン	none	# 鑱 U+9471
+鞕	コウ	none	# 鞕 U+9795
+頄	キュー	none	# 頄 U+9804
+頰	キョー	none	# 頰 U+9830
+顖	シン	none	# 顖 U+9856
+顙	ソー	none	# 顙 U+9859
+飧	ソン	none	# 飧 U+98e7
+饞	ザン	none	# 饞 U+995e
+髁	カ	none	# 髁 U+9ac1
+髃	グー	none	# 髃 U+9ac3
+髆	ハク	none	# 髆 U+9ac6
+髎	リョー	none	# 髎 U+9ace

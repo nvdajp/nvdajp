@@ -57,4 +57,48 @@ interface NvdaController {
  */
 	error_status_t __stdcall brailleMessage([in,string] const wchar_t* message);
 
+/**
+ * #nvdajp
+ * Instructs NVDA to speak the given text using character description dictionary.
+ * @param text the text to speak.
+ */
+	error_status_t __stdcall speakSpelling([in,string] const wchar_t* text);
+
+/**
+ * #nvdajp
+ * Is speaking status
+ */
+	error_status_t __stdcall isSpeaking();
+
+/**
+ * #nvdajp
+ * Get pitch voice
+ */
+	error_status_t __stdcall getPitch();
+
+/**
+ * #nvdajp
+ * Set pitch voice
+ * @param nPitch set the pitch to speak.
+ */
+	error_status_t __stdcall setPitch(const int nPitch);
+
+/**
+ * #nvdajp
+ * Get rate voice
+ */
+	error_status_t __stdcall getRate();
+
+/**
+ * #nvdajp
+ * Set rate voice
+ * @param nRate set the pitch to speak.
+ */
+	error_status_t __stdcall setRate(const int nRate);
+
+/**
+ * #nvdajp
+ */
+	error_status_t __stdcall setAppSleepMode([in] const int mode);
+
 };

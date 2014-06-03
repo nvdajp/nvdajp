@@ -148,7 +148,7 @@ def removeOldProgramFiles(destPath):
 uninstallerRegInfo={
 	"DisplayName":versionInfo.name,
 	"DisplayVersion":versionInfo.version,
-	"DisplayIcon":u"{installDir}\\images\\nvda.ico",
+	"DisplayIcon":u"{installDir}\\images\\nvdajp3.ico",
 	"InstallDir":u"{installDir}",
 	"Publisher":versionInfo.publisher,
 	"UninstallDirectory":u"{installDir}",
@@ -180,6 +180,9 @@ def registerInstallation(installDir,startMenuFolder,shouldCreateDesktopShortcut,
 	createShortcut(os.path.join(startMenuFolder,"NVDA.lnk"),targetPath=NVDAExe,workingDirectory=installDir,prependSpecialFolder="AllUsersPrograms")
 	# Translators: A label for a shortcut in start menu and a menu entry in NVDA menu (to go to NVDA website).
 	createShortcut(os.path.join(startMenuFolder,_("NVDA web site")+".lnk"),targetPath=versionInfo.url,prependSpecialFolder="AllUsersPrograms")
+	#nvdajp begin
+	createShortcut(os.path.join(startMenuFolder,_("NVDAJP web site")+".lnk"),targetPath="http://www.nvda.jp/",prependSpecialFolder="AllUsersPrograms")
+	#nvdajp end
 	# Translators: A label for a shortcut item in start menu to uninstall NVDA from the computer.
 	createShortcut(os.path.join(startMenuFolder,_("Uninstall NVDA")+".lnk"),targetPath=os.path.join(installDir,"uninstall.exe"),workingDirectory=installDir,prependSpecialFolder="AllUsersPrograms")
 	# Translators: A label for a shortcut item in start menu to open current user's NVDA configuration directory.
@@ -190,6 +193,9 @@ def registerInstallation(installDir,startMenuFolder,shouldCreateDesktopShortcut,
 	createShortcut(os.path.join(docFolder,_("Commands Quick Reference")+".lnk"),targetPath=getDocFilePath("keyCommands.html",installDir),prependSpecialFolder="AllUsersPrograms")
 	# Translators: A label for a shortcut in start menu and a menu entry in NVDA menu (to open the user guide).
 	createShortcut(os.path.join(docFolder,_("User Guide")+".lnk"),targetPath=getDocFilePath("userGuide.html",installDir),prependSpecialFolder="AllUsersPrograms")
+	#nvdajp begin
+	createShortcut(os.path.join(docFolder,_("&Readme (nvdajp)")+".lnk"),targetPath=getDocFilePath("readmejp.html",installDir),prependSpecialFolder="AllUsersPrograms")
+	#nvdajp end
 	registerAddonFileAssociation(slaveExe)
 
 def isDesktopShortcutInstalled():

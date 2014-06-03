@@ -16,6 +16,187 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 1.5.7\n"
 
+# nvdajp from here
+#: keyLabels.py:139
+msgid "IME non convert"
+msgstr "無変換"
+
+#: keyLabels.py:141
+msgid "IME convert"
+msgstr "変換"
+
+#: keyLabels.py:143
+msgid "pause"
+msgstr "ポーズ"
+
+#: gui\settingsDialogs.py:497
+msgid "Phonetic reading for Kana"
+msgstr "かな文字をフォネティック読みする"
+
+#: gui\settingsDialogs.py:494
+msgid "Phonetic reading for Latin"
+msgstr "アルファベットをフォネティック読みする"
+
+#: gui\settingsDialogs.py:549
+msgid "Use IME support of nvdajp"
+msgstr "日本語版の文字入力拡張"
+
+#: gui\settingsDialogs.py:552
+msgid "Beep for IME mode change"
+msgstr "半角全角キーが押されたらビープ音を鳴らす"
+
+#: gui\settingsDialogs.py:1758
+msgid "Work around ANSI editbox"
+msgstr "改行位置の不具合対策"
+
+#: gui\settingsDialogs.py:1768
+msgid "Enable UIA (requires restart)"
+msgstr "UIオートメーションの有効化(設定を有効にするには再起動が必要)"
+
+#: gui\settingsDialogs.py:1768
+msgid "Enable Braille message timeout"
+msgstr "点字メッセージの表示終了待ち時間の設定を有効にする"
+
+#: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
+msgid "Use NonConvert as an NVDA modifier key"
+msgstr "無変換をNVDAキーとして使用"
+
+#: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
+msgid "Use Convert as an NVDA modifier key"
+msgstr "変換をNVDAキーとして使用"
+
+#: source\gui\__init__.py:416
+msgid "&Readme (nvdajp)"
+msgstr "NVDA日本語版の説明"
+
+#: nvdajp_keyEvents.py:50
+#, python-format
+msgid "candidate %d"
+msgstr "候補%d"
+
+#: nvdajp_keyEvents.py:160
+msgid "stop input method"
+msgstr "変換停止"
+
+#: nvdajp_keyEvents.py:168
+msgid "start input method"
+msgstr "日本語変換"
+
+#: nvdajp_keyEvents.py:177
+msgid "toggle input method"
+msgstr "半角全角"
+
+#: gui\settingsDialogs.py:302
+msgid "Braille viewer"
+msgstr "点字ビューワー(&B)"
+
+#: gui\brailleViewer.py:18
+msgid "NVDA Braille Viewer"
+msgstr "NVDA点字ビューワー"
+
+#: brailleDisplayDrivers\kgs.py
+msgid "KGS BrailleMemo series"
+msgstr "KGS BrailleMemo シリーズ"
+
+#: gui\__init.py:315
+msgid "Language settings..."
+msgstr "日本語設定(&L)..."
+
+#: settingDialogs.py:637
+msgid "Language Settings"
+msgstr "日本語設定"
+
+#: globalCommands.py:587
+msgid "Character description mode disabled"
+msgstr "読みかたモード"
+
+#: globalCommands.py:590
+msgid "Character description mode enabled"
+msgstr "説明モード"
+
+#: speech.py:1086
+msgid "paragraph indent"
+msgstr "字下げ"
+
+#: speech.py:1086
+msgid "hanging indent"
+msgstr "ぶら下げ"
+
+#: speech.py:1086
+msgid "no paragraph indent"
+msgstr "字下げなし"
+
+#: speech.py:1086
+msgid "left indent"
+msgstr "左インデント"
+
+#: speech.py:1086
+msgid "no left indent"
+msgstr "左インデントなし"
+
+#: speech.py:1086
+msgid "right indent"
+msgstr "右インデント"
+
+#: speech.py:1086
+msgid "no right indent"
+msgstr "右インデントなし"
+
+#: speech.py:1086
+msgid "%g characters"
+msgstr "%gモジ"
+
+#: speech.py:1086
+msgid "%g pt"
+msgstr "%gpt"
+
+#: NVDAHelper.py:163
+msgid "full shape space"
+msgstr "全角スペース"
+
+#: NVDAHelper.py:194
+msgid "Clear"
+msgstr "クリア"
+
+#: settingDialogs.py:1442
+msgid "Katakana pitch change percentage"
+msgstr "カタカナの声の高さの変化(-100から100)"
+
+#: settingDialogs.py:1442
+msgid "Half shape pitch change percentage"
+msgstr "半角の声の高さの変化(-100から100)"
+
+#: settingDialogs.py:1438
+msgid "Say full shape"
+msgstr "全角の通知"
+
+#: settingDialogs.py:1442
+msgid "Full shape pitch change percentage"
+msgstr "全角の声の高さの変化(-100から100)"
+
+#: settingDialogs.py:1520
+msgid "Announce candidate number"
+msgstr "変換候補の番号の通知"
+
+#: installer.py:158
+msgid "NVDAJP web site"
+msgstr "NVDA日本語版 Webサイト"
+
+#: braille.py:142
+msgid "Japanese 6 dot computer braille"
+msgstr "日本語6点情報処理点字"
+
+#: globalCommands.py:150
+msgid "%s:%s"
+msgstr "%s時%s分"
+
+#. Translators: The label for the Tools submenu in NVDA menu.
+msgctxt "nvdaMenu"
+msgid "Tools"
+msgstr "ツール(&T)"
+
+# end of nvdajp
+
 #. Translators: Message to indicate User Account Control (UAC) or other secure desktop screen is active.
 msgid "Secure Desktop"
 msgstr "セキュアデスクトップ"

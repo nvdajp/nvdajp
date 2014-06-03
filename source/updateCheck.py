@@ -30,7 +30,8 @@ import config
 import shellapi
 
 #: The URL to use for update checks.
-CHECK_URL = "http://www.nvda-project.org/updateCheck"
+#CHECK_URL = "http://www.nvda-project.org/updateCheck"
+CHECK_URL = "http://www.nvda.jp/updateCheck"
 #: The time to wait between checks.
 CHECK_INTERVAL = 86400 # 1 day
 #: The time to wait before retrying a failed check.

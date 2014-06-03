@@ -29,6 +29,41 @@ error_status_t __stdcall nvdaController_brailleMessage(const wchar_t* text) {
 	return _nvdaController_brailleMessage(text);
 }
 
+error_status_t(__stdcall *_nvdaController_speakSpelling)(const wchar_t*);
+error_status_t __stdcall nvdaController_speakSpelling(const wchar_t* text) {
+	return _nvdaController_speakSpelling(text);
+}
+
+error_status_t(__stdcall *_nvdaController_isSpeaking)();
+error_status_t __stdcall nvdaController_isSpeaking() {
+	return _nvdaController_isSpeaking();
+}
+
+error_status_t(__stdcall *_nvdaController_getPitch)();
+error_status_t __stdcall nvdaController_getPitch() {
+	return _nvdaController_getPitch();
+}
+
+error_status_t(__stdcall *_nvdaController_setPitch)(const int);
+error_status_t __stdcall nvdaController_setPitch(const int nPitch) {
+	return _nvdaController_setPitch(nPitch);
+}
+
+error_status_t(__stdcall *_nvdaController_getRate)();
+error_status_t __stdcall nvdaController_getRate() {
+	return _nvdaController_getRate();
+}
+
+error_status_t(__stdcall *_nvdaController_setRate)(const int);
+error_status_t __stdcall nvdaController_setRate(const int nRate) {
+	return _nvdaController_setRate(nRate);
+}
+
 error_status_t __stdcall nvdaController_testIfRunning() {
 	return 0;
+}
+
+error_status_t(__stdcall *_nvdaController_setAppSleepMode)(const int mode);
+error_status_t __stdcall nvdaController_setAppSleepMode(const int mode) {
+	return _nvdaController_setAppSleepMode(mode);
 }

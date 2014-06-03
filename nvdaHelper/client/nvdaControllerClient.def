@@ -17,3 +17,10 @@ EXPORTS
 	nvdaController_speakText
 	nvdaController_cancelSpeech
 	nvdaController_brailleMessage
+	nvdaController_speakSpelling
+	nvdaController_isSpeaking
+	nvdaController_getPitch
+	nvdaController_setPitch
+	nvdaController_getRate
+	nvdaController_setRate
+	nvdaController_setAppSleepMode

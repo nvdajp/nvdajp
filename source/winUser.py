@@ -477,7 +477,7 @@ def RedrawWindow(hwnd, rcUpdate, rgnUpdate, flags):
 
 def getKeyNameText(scanCode,extended):
 	buf=create_unicode_buffer(32)
-	user32.GetKeyNameTextW((scanCode<<16)|(extended<<24),buf,31)
+	user32.GetKeyNameTextW(((0xff & scanCode)<<16)|(extended<<24),buf,31) # nvdajp scanCode must be 8bit
 	return buf.value
 
 def FindWindow(className, windowName):

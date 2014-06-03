@@ -66,6 +66,15 @@ confspec = ConfigObj(StringIO(
 	loggingLevel = string(default="INFO")
 	showWelcomeDialogAtStartup = boolean(default=true)
 
+# nvdajp
+[language]
+	jpKatakanaPitchChange = integer(default=-20,min=-100,max=100)
+	halfShapePitchChange = integer(default=20,min=-100,max=100)
+	jpPhoneticReadingLatin = boolean(default=false) 
+	jpPhoneticReadingKana = boolean(default=false)
+	announceCandidateNumber = boolean(default=false)
+	jpAnsiEditbox = boolean(default=true)
+
 # Speech settings
 [speech]
 	# The synthesiser to use
@@ -77,22 +86,28 @@ confspec = ConfigObj(StringIO(
 	autoDialectSwitching = boolean(default=false)
 
 	[[__many__]]
-		capPitchChange = integer(default=30,min=-100,max=100)
+		capPitchChange = integer(default=0,min=-100,max=100)
 		sayCapForCapitals = boolean(default=false)
-		beepForCapitals = boolean(default=false)
+		beepForCapitals = boolean(default=true)
 		useSpellingFunctionality = boolean(default=true)
 
 # Braille settings
 [braille]
 	display = string(default=noBraille)
-	translationTable = string(default=en-us-comp8.ctb)
+	# nvdajp start
+	#translationTable = string(default=en-us-comp8.ctb)
+	translationTable = string(default=ja-jp-comp6.utb)
+	# nvdajp end
 	inputTable = string(default=en-us-comp8.ctb)
 	expandAtCursor = boolean(default=true)
 	cursorBlinkRate = integer(default=500,min=0,max=2000)
 	messageTimeout = integer(default=4,min=0,max=20)
+	nvdajpMessageTimeout = boolean(default=true)
 	tetherTo = string(default="focus")
 	readByParagraph = boolean(default=false)
 	wordWrap = boolean(default=true)
+	japaneseBrailleSupport = boolean(default=true) #nvdajp
+	nvdajpComPort = integer(default=0) #nvdajp
 
 	# Braille display driver settings
 	[[__many__]]
@@ -130,6 +145,10 @@ confspec = ConfigObj(StringIO(
 
 #Keyboard settings
 [keyboard]
+	nvdajpEnableKeyEvents = boolean(default=true) #nvdajp
+	nvdajpImeBeep = boolean(default=false) #nvdajp
+	useNonConvertAsNVDAModifierKey = boolean(default=true) #nvdajp
+	useConvertAsNVDAModifierKey = boolean(default=false) #nvdajp
 	useCapsLockAsNVDAModifierKey = boolean(default=false)
 	useNumpadInsertAsNVDAModifierKey = boolean(default=true)
 	useExtendedInsertAsNVDAModifierKey = boolean(default=true)
@@ -194,7 +213,7 @@ confspec = ConfigObj(StringIO(
 	autoCheck = boolean(default=true)
 
 [inputComposition]
-	autoReportAllCandidates = boolean(default=True)
+	autoReportAllCandidates = boolean(default=False) # nvdajp
 	announceSelectedCandidate = boolean(default=True)
 	alwaysIncludeShortCharacterDescriptionInCandidateName = boolean(default=True)
 	reportReadingStringChanges = boolean(default=True)
@@ -466,7 +485,7 @@ class ConfigManager(object):
 
 	#: Sections that only apply to the base configuration;
 	#: i.e. they cannot be overridden in profiles.
-	BASE_ONLY_SECTIONS = {"general", "update", "upgrade"}
+	BASE_ONLY_SECTIONS = {"general", "update", "upgrade", "UIA"}
 
 	def __init__(self):
 		self.spec = confspec

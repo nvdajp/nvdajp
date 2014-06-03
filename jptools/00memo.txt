@@ -1,0 +1,42 @@
+サブモジュールの取得：
+
+git submodule update --init --recursive
+
+スナップショットのビルド：
+
+最上位のディレクトリで以下を実行
+
+1) jptools\setup-vc2013.cmd
+2) jptools\setupMiscDepsJp.cmd
+3) jptools\build.cmd
+
+日本語エンジン系を更新しない場合は 1) 2) は不要。
+
+
+その他の作業用スクリプト：
+
+レポジトリにプッシュ
+jptools\push_remote.cmd
+
+clean miscdep
+jptools\clean_miscdep.cmd
+
+copy Japanese character symbols to subversion repo
+jptools\copy_symbols_to_srt.cmd
+
+
+電子署名つきリリースの手順：
+
+http://ja.nishimotz.com/nvdajp_certfile
+
+管理者としてコマンドプロンプトを実行
+
+jptools\selfcert_clean.cmd 初期化
+jptools\selfcert_setup.cmd パスフレーズを空欄で設定
+jptools\selfcert_scons.cmd ビルド
+jptools\selfcert_pack_dist.cmd: distの中身をアーカイブ nvda-*jp-*-dist-self.zip を送付。
+
+戻ってきたファイルで dist の中身を上書き。
+
+jptools\signed_makensis.cmd: 署名されたdistをmakensisでlauncherに変換。
+jptools\signed_output_pack.cmd: outputフォルダの中のlauncherをアーカイブ nvda-*jp-*-launcher-unsigned.zip して送付。 

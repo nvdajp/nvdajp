@@ -20,6 +20,8 @@ import synthDrivers
 _curSynth=None
 _audioOutputDevice=None
 
+DEFAULT_DRIVER='nvdajp_jtalk' # nvdajp changed from 'espeak'
+
 def initialize():
 	config.addConfigDirsToPythonPackagePath(synthDrivers)
 
@@ -66,7 +68,7 @@ def setSynth(name,isFallback=False):
 		_curSynth=None
 		return True
 	if name=='auto':
-		name='espeak'
+		name=DEFAULT_DRIVER
 	if _curSynth:
 		_curSynth.cancel()
 		_curSynth.terminate()
@@ -98,9 +100,9 @@ def setSynth(name,isFallback=False):
 		log.error("setSynth", exc_info=True)
 		if prevSynthName:
 			setSynth(prevSynthName,isFallback=True)
-		elif name not in ('espeak','silence'):
-			setSynth('espeak',isFallback=True)
-		elif name=='espeak':
+		elif name not in (DEFAULT_DRIVER,'silence'):
+			setSynth(DEFAULT_DRIVER,isFallback=True)
+		elif name==DEFAULT_DRIVER:
 			setSynth('silence',isFallback=True)
 		return False
 
@@ -133,7 +135,7 @@ class SynthSetting(object):
 
 class NumericSynthSetting(SynthSetting):
 	"""Represents a numeric synthesizer setting such as rate, volume or pitch."""
-	configSpec="integer(default=50,min=0,max=100)"
+	configSpec="integer(default=50,min=0,max=101)"
 
 	def __init__(self,name,i18nName,availableInSynthSettingsRing=True,minStep=1,normalStep=5,largeStep=10):
 		"""
@@ -476,6 +478,9 @@ class SynthDriver(baseObject.AutoPropertyObject):
 			if onlyChanged and getattr(self,s.name)==val:
 				continue
 			setattr(self,s.name,val)
+		if self.name == "sapi4" and ("rate" in c) and c["rate"] == 101:
+			c["rate"] = 100
+			config.conf.save()
 
 	def _get_initialSettingsRingSetting (self):
 		if not self.isSupported("rate") and len(self.supportedSettings)>0:

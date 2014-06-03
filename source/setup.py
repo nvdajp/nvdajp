@@ -134,6 +134,7 @@ def getRecursiveDataFiles(dest,source,excludes=()):
 
 compiledModExtention = getModuleExtention(imp.PY_COMPILED)
 sourceModExtention = getModuleExtention(imp.PY_SOURCE)
+nvdajpIcons = [(0,"images/nvdajp3.ico"),(1,"images/nvdajp.ico"),(2,"images/nvdajp2.ico")]
 setup(
 	name = name,
 	version=version,
@@ -156,7 +157,7 @@ setup(
 			"script":"nvda.pyw",
 			"dest_base":"nvda_noUIAccess",
 			"uac_info": ("asInvoker", False),
-			"icon_resources":[(1,"images/nvda.ico")],
+			"icon_resources":nvdajpIcons,
 			"version":"0.0.0.0",
 			"description":"NVDA application",
 			"product_version":version,
@@ -166,7 +167,7 @@ setup(
 		# The nvda_uiAccess target will be added at runtime if required.
 		{
 			"script": "nvda_slave.pyw",
-			"icon_resources": [(1,"images/nvda.ico")],
+			"icon_resources":nvdajpIcons,
 			"version": "0.0.0.0",
 			"description": name,
 			"product_version": version,
@@ -187,7 +188,7 @@ setup(
 	],
 	service=[{
 		"modules": ["nvda_service"],
-		"icon_resources": [(1, "images/nvda.ico")],
+		"icon_resources":nvdajpIcons,
 		"version": "0.0.0.0",
 		"description": "NVDA service",
 		"product_version": version,

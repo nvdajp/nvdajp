@@ -14,6 +14,7 @@ import languageHandler
 from synthDriverHandler import SynthDriver,VoiceInfo,BooleanSynthSetting
 import speech
 from logHandler import log
+from jtalk._nvdajp_espeak import replaceJapaneseFromSpeechSequence
 
 class SynthDriver(SynthDriver):
 	name = "espeak"
@@ -51,6 +52,7 @@ class SynthDriver(SynthDriver):
 		return self._language
 
 	def speak(self,speechSequence):
+		speechSequence = replaceJapaneseFromSpeechSequence(speechSequence)
 		defaultLanguage=self._language
 		textList=[]
 		langChanged=False
