@@ -8,6 +8,7 @@
 
 import wx
 import gui
+import config
 
 class brailleViewerFrame(wx.MiniFrame):
 
@@ -44,7 +45,7 @@ def appendText(text):
 	if _guiFrame.FindFocus()==_guiFrame.textCtrl:
 		return
 	translate = __import__("synthDrivers.jtalk.translator2", globals(), locals(), ('getReadingAndBraille',))
-	(sp, tr) = getattr(translate, 'getReadingAndBraille')(text)
+	(sp, tr) = getattr(translate, 'getReadingAndBraille')(text, nabcc=config.conf["braille"]["expandAtCursor"])
 	if tr:
 		_guiFrame.textCtrl.AppendText(sp+"\n")
 		_guiFrame.textCtrl.AppendText(tr+"\n")
