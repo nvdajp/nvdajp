@@ -386,7 +386,7 @@ class Region(object):
 		if config.conf["braille"]["japaneseBrailleSupport"]:
 			log.debug(text)
 			from synthDrivers.jtalk.translator2 import translate as jpTranslate
-			braille, self.brailleToRawPos, self.rawToBraillePos, brailleCursorPos = jpTranslate(text, cursorPos=self.cursorPos or 0)
+			braille, self.brailleToRawPos, self.rawToBraillePos, brailleCursorPos = jpTranslate(text, cursorPos=self.cursorPos or 0, nabcc=config.conf["braille"]["expandAtCursor"])
 		else:
 			louisTranslationTable = config.conf["braille"]["translationTable"]
 			braille, self.brailleToRawPos, self.rawToBraillePos, brailleCursorPos = louis.translate(
