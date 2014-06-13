@@ -440,6 +440,7 @@ class WordDocumentTextInfo(textInfos.TextInfo):
 		elif which=="startToEnd":
 			self._rangeObj.Start=other._rangeObj.End
 		elif which=="endToStart":
+			print "start %s, end %s, otherStart %s, otherEnd %s"%(self._rangeObj.start,self._rangeObj.end,other._rangeObj.start,other._rangeObj.end)
 			self._rangeObj.End=other._rangeObj.Start
 		elif which=="endToEnd":
 			self._rangeObj.End=other._rangeObj.End
@@ -626,8 +627,9 @@ class WordDocument(EditableTextWithoutAutoSelectDetection, Window):
 
 	def script_increaseDecreaseOutlineLevel(self,gesture):
 		val=self._WaitForValueChangeForAction(lambda: gesture.send(),lambda: self.WinwordSelectionObject.paragraphFormat.outlineLevel)
-		# Translators: a message when toggling paragraph formatting in Microsoft Word
-		ui.message(_("Outline level {level}").format(level=val))
+		style=self.WinwordSelectionObject.style.nameLocal
+		# Translators: the message when the outline level / style is changed in Microsoft word
+		ui.message(_("{styleName} style, outline level {outlineLevel}").format(styleName=style,outlineLevel=val))
 
 	def script_increaseDecreaseFontSize(self,gesture):
 		val=self._WaitForValueChangeForAction(lambda: gesture.send(),lambda: self.WinwordSelectionObject.font.size)
@@ -645,6 +647,28 @@ class WordDocument(EditableTextWithoutAutoSelectDetection, Window):
 		if not isCollapsed:
 			speech.speakTextInfo(info,reason=controlTypes.REASON_FOCUS)
 		braille.handler.handleCaretMove(info)
+
+	def script_reportCurrentComment(self,gesture):
+		info=self.makeTextInfo(textInfos.POSITION_CARET)
+		info.expand(textInfos.UNIT_CHARACTER)
+		fields=info.getTextWithFields(formatConfig={'reportComments':True})
+		for field in reversed(fields):
+			if isinstance(field,textInfos.FieldCommand) and isinstance(field.field,textInfos.FormatField): 
+				commentReference=field.field.get('comment')
+				if commentReference:
+					offset=int(commentReference)
+					range=self.WinwordDocumentObject.range(offset,offset+1)
+					try:
+						text=range.comments[1].range.text
+					except COMError:
+						break
+					if text:
+						ui.message(text)
+						return
+		# Translators: a message when there is no comment to report in Microsoft Word
+		ui.message(_("no comments"))
+	# Translators: a description for a script
+	script_reportCurrentComment.__doc__=_("Reports the text of the comment where the System caret is located.")
 
 	def _moveInTable(self,row=True,forward=True):
 		info=self.makeTextInfo(textInfos.POSITION_CARET)
@@ -724,6 +748,10 @@ class WordDocument(EditableTextWithoutAutoSelectDetection, Window):
 		"kb:control+j":"toggleAlignment",
 		"kb:alt+shift+rightArrow":"increaseDecreaseOutlineLevel",
 		"kb:alt+shift+leftArrow":"increaseDecreaseOutlineLevel",
+		"kb:control+shift+n":"increaseDecreaseOutlineLevel",
+		"kb:control+alt+1":"increaseDecreaseOutlineLevel",
+		"kb:control+alt+2":"increaseDecreaseOutlineLevel",
+		"kb:control+alt+3":"increaseDecreaseOutlineLevel",
 		"kb:tab": "tab",
 		"kb:shift+tab": "tab",
 		"kb:control+alt+upArrow": "previousRow",
@@ -732,5 +760,6 @@ class WordDocument(EditableTextWithoutAutoSelectDetection, Window):
 		"kb:control+alt+rightArrow": "nextColumn",
 		"kb:control+pageUp": "caret_moveByLine",
 		"kb:control+pageDown": "caret_moveByLine",
+		"kb:NVDA+alt+c":"reportCurrentComment",
 	}
 
