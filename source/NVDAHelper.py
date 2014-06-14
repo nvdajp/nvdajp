@@ -386,6 +386,7 @@ JapaneseInputConversionModeMessages= {
 
 def handleInputConversionModeUpdate(oldFlags,newFlags,lcid):
 	import speech
+	import braille
 	textList=[]
 	if newFlags!=oldFlags and lcid&0xff==0x11: #Japanese
 		msg=JapaneseInputConversionModeMessages.get(newFlags)
@@ -402,6 +403,8 @@ def handleInputConversionModeUpdate(oldFlags,newFlags,lcid):
 				textList.append(msgs[0] if newOn else msgs[1])
 	if len(textList)>0:
 		queueHandler.queueFunction(queueHandler.eventQueue,speech.speakMessage," ".join(textList))
+		queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message," ".join(textList))
+
 
 @WINFUNCTYPE(c_long,c_long,c_long,c_ulong)
 def nvdaControllerInternal_inputConversionModeUpdate(oldFlags,newFlags,lcid):
