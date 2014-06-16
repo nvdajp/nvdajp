@@ -523,14 +523,14 @@ def getBrailleTextForProperties(**propertyValues):
 	rowHeaderText = propertyValues.get("rowHeaderText")
 	if rowHeaderText:
 		textList.append(rowHeaderText)
-	columnHeaderText = propertyValues.get("columnHeaderText")
-	if columnHeaderText:
-		textList.append(columnHeaderText)
 	if rowNumber:
 		if includeTableCellCoords and not cellCoordsText: 
 			# Translators: Displayed in braille for a table cell row number.
 			# %s is replaced with the row number.
 			textList.append(_("r%s") % rowNumber)
+	columnHeaderText = propertyValues.get("columnHeaderText")
+	if columnHeaderText:
+		textList.append(columnHeaderText)
 	if columnNumber:
 		if includeTableCellCoords and not cellCoordsText:
 			# Translators: Displayed in braille for a table cell column number.
@@ -613,7 +613,7 @@ def getControlFieldBraille(field, ancestors, reportStart, formatConfig):
 		}
 		if reportTableHeaders:
 			props["columnHeaderText"] = field.get("table-columnheadertext")
-			props["rowHeaderText"] = fields.get("table-rowheadertext")
+			props["rowHeaderText"] = field.get("table-rowheadertext")
 		return getBrailleTextForProperties(**props)
 
 	elif reportStart:
