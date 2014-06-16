@@ -520,15 +520,18 @@ def getBrailleTextForProperties(**propertyValues):
 			# Translators: Displayed in braille when an object (e.g. a tree view item) has a hierarchical level.
 			# %s is replaced with the level.
 			textList.append(_('lv %s')%positionInfo['level'])
+	rowHeaderText = propertyValues.get("rowHeaderText")
+	if rowHeaderText:
+		textList.append(rowHeaderText)
+	columnHeaderText = propertyValues.get("columnHeaderText")
+	if columnHeaderText:
+		textList.append(columnHeaderText)
 	if rowNumber:
 		if includeTableCellCoords and not cellCoordsText: 
 			# Translators: Displayed in braille for a table cell row number.
 			# %s is replaced with the row number.
 			textList.append(_("r%s") % rowNumber)
 	if columnNumber:
-		columnHeaderText = propertyValues.get("columnHeaderText")
-		if columnHeaderText:
-			textList.append(columnHeaderText)
 		if includeTableCellCoords and not cellCoordsText:
 			# Translators: Displayed in braille for a table cell column number.
 			# %s is replaced with the column number.
@@ -564,6 +567,8 @@ class NVDAObjectRegion(Region):
 			keyboardShortcut=obj.keyboardShortcut if presConfig["reportKeyboardShortcuts"] else None,
 			positionInfo=obj.positionInfo if presConfig["reportObjectPositionInformation"] else None,
 			cellCoordsText=obj.cellCoordsText if config.conf["documentFormatting"]["reportTableCellCoords"] else None,
+			columnHeaderText=obj.columnHeaderText if hasattr(obj, "columnHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"] else None,
+			rowHeaderText=obj.rowHeaderText if hasattr(obj, "rowHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"] else None,
 		)
 		self.rawText = text + self.appendText
 		super(NVDAObjectRegion, self).update()
@@ -608,6 +613,7 @@ def getControlFieldBraille(field, ancestors, reportStart, formatConfig):
 		}
 		if reportTableHeaders:
 			props["columnHeaderText"] = field.get("table-columnheadertext")
+			props["rowHeaderText"] = fields.get("table-rowheadertext")
 		return getBrailleTextForProperties(**props)
 
 	elif reportStart:
