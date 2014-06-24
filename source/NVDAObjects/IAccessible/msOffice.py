@@ -17,6 +17,13 @@ import eventHandler
 
 class SDM(IAccessible):
 
+	def _get_shouldAllowIAccessibleFocusEvent(self):
+		# #4199: Some SDM controls can incorrectly firefocus when they are not focused
+		# E.g. File recovery pane, clipboard manager pane
+		if winUser.getGUIThreadInfo(0).hwndFocus!=self.windowHandle:
+			return False
+		return super(SDM,self).shouldAllowIAccessibleFocusEvent
+
 	def _get_name(self):
 		name=super(SDM,self).name
 		if not name and self.role==controlTypes.ROLE_LISTITEM:
@@ -50,6 +57,24 @@ class MSOUNISTAT(IAccessible):
 
 	def _get_role(self):
 		return controlTypes.ROLE_STATICTEXT
+
+class MsoCommandBarToolBar(IAccessible):
+
+	def _get_isPresentableFocusAncestor(self):
+		# #4096: Many single controls are  wrapped in their own SmoCommandBar toolbar.
+		# Therefore suppress reporting of these toolbars in focus ancestry if they only have one child.
+		if self.childCount==1:
+			return False
+		return super(MsoCommandBarToolBar,self).isPresentableFocusAncestor
+
+	def _get_name(self):
+		name=super(MsoCommandBarToolBar,self).name
+		# #3407: overly verbose and programmatic toolbar label
+		if name and name.startswith('MSO Generic Control Container'):
+			name=u""
+		return name
+
+	description=None
 
 class BrokenMsoCommandBar(IAccessible):
 	"""Work around broken IAccessible implementation for Microsoft Office XP-2003 toolbars.
