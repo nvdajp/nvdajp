@@ -71,6 +71,7 @@ class MSCandUI_candidateListItem(BaseCandidateItem):
 		if controlTypes.STATE_SELECTED in self.states:
 			reportSelectedCandidate(self)
 			#nvdajp
+			if not config.conf["inputComposition"]["announceSelectedCandidate"]: return
 			import wx
 			wx.CallLater(1000, notifyCandidateComment, self)
 

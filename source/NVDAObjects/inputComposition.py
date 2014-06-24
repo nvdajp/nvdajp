@@ -123,6 +123,7 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 		newText=calculateInsertedChars(oldString.strip(u'\u3000'),newString.strip(u'\u3000'))
 		isCandidate = False
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
+				config.conf["inputComposition"]["announceSelectedCandidate"] and \
 				needDiscriminantReading(lastKeyGesture):
 			newText = nvdajp_dic.getJapaneseDiscriminantReading(newString.strip(u'\u3000'))
 			isCandidate = True
