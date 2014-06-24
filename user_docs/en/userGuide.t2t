@@ -588,6 +588,9 @@ This option is a checkbox that, when checked, tells NVDA to automatically save t
 This option is a checkbox that allows you to choose whether or not a dialog appears when you exit NVDA that asks whether or not you would like to exit.
 When checked, a dialog will appear when you attempt to exit NVDA asking whether or not you want to exit.
 
+==== Play sounds when starting or exiting NVDA ====
+This option is a checkbox that, when checked, tells NVDA to play sounds when it starts or exits.
+
 ==== Logging level ====
 This is a combo box that permits you to choose how much NVDA will log as it's running.
 Generally users should not need to touch this as not too much is logged.
@@ -1211,6 +1214,7 @@ These packages are provided by the community and contain custom code that may ad
 
 The Add-ons Manager contains a list that displays all the add-ons currently installed in your NVDA user configuration. 
 A package name, version and author are shown for each add-on, though further information such as a description and URL can be viewed by selecting the add-on and pressing the About add-on button.
+If there is help available for the selected add-on, you can access it by pressing the Add-on help button.
 
 To browse and download available add-ons online, press the Get add-ons button.
 This button opens the [NVDA Add-ons page http://addons.nvda-project.org/].
