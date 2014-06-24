@@ -758,7 +758,7 @@ def processShowWinEvent(window,objectID,childID):
 		if NVDAEvent:
 			eventHandler.queueEvent(*NVDAEvent)
 	#nvdajp begin
-	if className.startswith('ATOK2'):
+	if winUser.getClassName(window).startswith('ATOK2'):
 		NVDAEvent=winEventToNVDAEvent(winUser.EVENT_OBJECT_SHOW,window,objectID,childID)
 		if NVDAEvent:
 			eventHandler.queueEvent(*NVDAEvent)
