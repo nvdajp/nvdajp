@@ -160,6 +160,10 @@ class GeneralSettingsDialog(SettingsDialog):
 		self.askToExitCheckBox=wx.CheckBox(self,wx.NewId(),label=_("&Warn before exiting NVDA"))
 		self.askToExitCheckBox.SetValue(config.conf["general"]["askToExit"])
 		settingsSizer.Add(self.askToExitCheckBox,border=10,flag=wx.BOTTOM)
+		# Translators: The label for a setting in general settings to play sounds when NVDA starts or exits.
+		self.playStartAndExitSoundsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("&Play sounds when starting or exiting NVDA"))
+		self.playStartAndExitSoundsCheckBox.SetValue(config.conf["general"]["playStartAndExitSounds"])
+		settingsSizer.Add(self.playStartAndExitSoundsCheckBox,border=10,flag=wx.BOTTOM)
 		logLevelSizer=wx.BoxSizer(wx.HORIZONTAL)
 		# Translators: The label for a setting in general settings to select logging level of NVDA as it runs (available options and what they are logged are found under comments for the logging level messages themselves).
 		logLevelLabel=wx.StaticText(self,-1,label=_("L&ogging level:"))
@@ -185,13 +189,13 @@ class GeneralSettingsDialog(SettingsDialog):
 		# Translators: The label for a setting in general settings to allow NVDA to come up in Windows login screen (useful if user needs to enter passwords or if multiple user accounts are present to allow user to choose the correct account).
 		self.startOnLogonScreenCheckBox = wx.CheckBox(self, wx.ID_ANY, label=_("Use NVDA on the Windows logon screen (requires administrator privileges)"))
 		self.startOnLogonScreenCheckBox.SetValue(config.getStartOnLogonScreen())
-		if globalVars.appArgs.secure or not config.isServiceInstalled():
+		if globalVars.appArgs.secure or not config.canStartOnSecureScreens():
 			self.startOnLogonScreenCheckBox.Disable()
 		settingsSizer.Add(self.startOnLogonScreenCheckBox)
 		# Translators: The label for a button in general settings to copy current user settings to system settings (to allow current settings to be used in secure screens such as User Account Control (UAC) dialog).
 		self.copySettingsButton= wx.Button(self, wx.ID_ANY, label=_("Use currently saved settings on the logon and other secure screens (requires administrator privileges)"))
 		self.copySettingsButton.Bind(wx.EVT_BUTTON,self.onCopySettings)
-		if globalVars.appArgs.secure or not config.isServiceInstalled():
+		if globalVars.appArgs.secure or not config.canStartOnSecureScreens():
 			self.copySettingsButton.Disable()
 		settingsSizer.Add(self.copySettingsButton)
 		if updateCheck:
@@ -265,6 +269,7 @@ class GeneralSettingsDialog(SettingsDialog):
 		config.conf["general"]["language"]=newLanguage
 		config.conf["general"]["saveConfigurationOnExit"]=self.saveOnExitCheckBox.IsChecked()
 		config.conf["general"]["askToExit"]=self.askToExitCheckBox.IsChecked()
+		config.conf["general"]["playStartAndExitSounds"]=self.playStartAndExitSoundsCheckBox.IsChecked()
 		logLevel=self.LOG_LEVELS[self.logLevelList.GetSelection()][0]
 		config.conf["general"]["loggingLevel"]=logHandler.levelNames[logLevel]
 		logHandler.setLogLevelFromConfig()
@@ -1073,6 +1078,11 @@ class DocumentFormattingDialog(SettingsDialog):
 		self.lineIndentationCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report l&ine indentation"))
 		self.lineIndentationCheckBox.SetValue(config.conf["documentFormatting"]["reportLineIndentation"])
 		settingsSizer.Add(self.lineIndentationCheckBox,border=10,flag=wx.BOTTOM)
+		# Translators: This message is presented in the document formatting settings dialogue
+		# If this option is selected, NVDA will report paragraph indentation if available. 
+		self.paragraphIndentationCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &paragraph indentation"))
+		self.paragraphIndentationCheckBox.SetValue(config.conf["documentFormatting"]["reportParagraphIndentation"])
+		settingsSizer.Add(self.paragraphIndentationCheckBox,border=10,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.tablesCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &tables"))
@@ -1140,6 +1150,7 @@ class DocumentFormattingDialog(SettingsDialog):
 		config.conf["documentFormatting"]["reportPage"]=self.pageCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportLineNumber"]=self.lineNumberCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportLineIndentation"]=self.lineIndentationCheckBox.IsChecked()
+		config.conf["documentFormatting"]["reportParagraphIndentation"]=self.paragraphIndentationCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportTables"]=self.tablesCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportTableHeaders"]=self.tableHeadersCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportTableCellCoords"]=self.tableCellCoordsCheckBox.IsChecked() 

@@ -650,7 +650,7 @@ class SpeakTextInfoState(object):
 	def copy(self):
 		return self.__class__(self)
 
-def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlTypes.REASON_QUERY,index=None):
+def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlTypes.REASON_QUERY,index=None,onlyInitialFields=False,suppressBlanks=False):
 	if isinstance(useCache,SpeakTextInfoState):
 		speakTextInfoState=useCache
 	elif useCache:
@@ -767,15 +767,14 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 		speechSequence.append(LangChangeCommand(language))
 		lastLanguage=language
 
-	if unit in (textInfos.UNIT_CHARACTER,textInfos.UNIT_WORD) and len(textWithFields)>0 and len(textWithFields[0])==1 and all((isinstance(x,textInfos.FieldCommand) and x.command=="controlEnd") for x in itertools.islice(textWithFields,1,None) ): 
-		if any(isinstance(x,basestring) for x in speechSequence):
+	if onlyInitialFields or (unit in (textInfos.UNIT_CHARACTER,textInfos.UNIT_WORD) and len(textWithFields)>0 and len(textWithFields[0])==1 and all((isinstance(x,textInfos.FieldCommand) and x.command=="controlEnd") for x in itertools.islice(textWithFields,1,None) )): 
+		if onlyInitialFields or any(isinstance(x,basestring) for x in speechSequence):
 			speak(speechSequence)
-		#nvdajp begin
-		#speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
-		from globalCommands import characterDescriptionMode
-		useCharacterDescriptions = (characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET)
-		speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
-		#nvdajp end
+		if not onlyInitialFields: 
+			#speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
+			from globalCommands import characterDescriptionMode
+			useCharacterDescriptions = (characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET)
+			speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
 		if useCache:
 			speakTextInfoState.controlFieldStackCache=newControlFieldStack
 			speakTextInfoState.formatFieldAttributesCache=formatFieldAttributesCache
@@ -871,7 +870,7 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 				isTextBlank=False
 
 	# If there is nothing  that should cause the TextInfo to be considered non-blank, blank should be reported, unless we are doing a say all.
-	if reason != controlTypes.REASON_SAYALL and isTextBlank:
+	if not suppressBlanks and reason != controlTypes.REASON_SAYALL and isTextBlank:
 		# Translators: This is spoken when the line is considered blank.
 		speechSequence.append(_("blank"))
 
@@ -1259,40 +1258,41 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 				# Translators: Reported when text has reverted to default alignment.
 				text=_("align default")
 			textList.append(text)
-	# nvdajp begin
-	fontSize=attrs.get("font-size")
-	fontSizePt = float(fontSize[0:-2]) if fontSize and fontSize[-2:] == "pt" and float(fontSize[0:-2]) > 0.0 else None
-	leftIndent=attrs.get("left-indent")
-	oldLeftIndent=attrsCache.get("left-indent") if attrsCache is not None else None
-	if leftIndent and leftIndent != oldLeftIndent:
-		n = float(leftIndent)
-		if abs(n) < 0.001:
-			textList.append(_("no left indent"))
-		else:
-			s = _("%g characters") % (n / fontSizePt) if fontSizePt else _("%g pt") % n
-			textList.append(_("left indent") + " " + s)
-	firstLineIndent=attrs.get("first-line-indent")
-	oldFirstLineIndent=attrsCache.get("first-line-indent") if attrsCache is not None else None
-	if firstLineIndent and firstLineIndent != oldFirstLineIndent:
-		n = float(firstLineIndent)
-		if -0.001 < n < 0.001:
-			textList.append(_("no paragraph indent"))
-		else:
-			s = _("%g characters") % abs(n / fontSizePt) if fontSizePt else _("%g pt") % abs(n)
-			if n > 0:
-				textList.append(_("paragraph indent") + " " + s)
-			else:
-				textList.append(_("hanging indent") + " " + s)
-	rightIndent=attrs.get("right-indent")
-	oldRightIndent=attrsCache.get("right-indent") if attrsCache is not None else None
-	if rightIndent and rightIndent != oldRightIndent:
-		n = float(rightIndent)
-		if abs(n) < 0.001:
-			textList.append(_("no right indent"))
-		else:
-			s = _("%g characters") % (n / fontSizePt) if fontSizePt else _("%g pt") % n
-			textList.append(_("right indent") + " " + s)
-	# nvdajp end
+	if formatConfig["reportParagraphIndentation"]:
+		indentLabels={
+			'left-indent':(
+				# Translators: the label for paragraph format left indent
+				_("left indent"),
+				# Translators: the message when there is no paragraph format left indent
+				_("no left indent"),
+			),
+			'right-indent':(
+				# Translators: the label for paragraph format right indent
+				_("right indent"),
+				# Translators: the message when there is no paragraph format right indent
+				_("no right indent"),
+			),
+			'hanging-indent':(
+				# Translators: the label for paragraph format hanging indent
+				_("hanging indent"),
+				# Translators: the message when there is no paragraph format hanging indent
+				_("no hanging indent"),
+			),
+			'first-line-indent':(
+				# Translators: the label for paragraph format first line indent 
+				_("first line indent"),
+				# Translators: the message when there is no paragraph format first line indent
+				_("no first line indent"),
+			),
+		}
+		for attr,(label,noVal) in indentLabels.iteritems():
+			newVal=attrs.get(attr)
+			oldVal=attrsCache.get(attr) if attrsCache else None
+			if (newVal or oldVal is not None) and newVal!=oldVal:
+				if newVal:
+					textList.append(u"%s %s"%(label,newVal))
+				else:
+					textList.append(noVal)
 	if  formatConfig["reportLinks"]:
 		link=attrs.get("link")
 		oldLink=attrsCache.get("link") if attrsCache is not None else None
@@ -1302,10 +1302,15 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 	if  formatConfig["reportComments"]:
 		comment=attrs.get("comment")
 		oldComment=attrsCache.get("comment") if attrsCache is not None else None
-		if comment and comment!=oldComment:
-			# Translators: Reported when text contains a comment.
-			text=_("has comment")
-			textList.append(text)
+		if (comment or oldComment is not None) and comment!=oldComment:
+			if comment:
+				# Translators: Reported when text contains a comment.
+				text=_("has comment")
+				textList.append(text)
+			elif extraDetail:
+				# Translators: Reported when text no longer contains a comment.
+				text=_("out of comment")
+				textList.append(text)
 	if formatConfig["reportSpellingErrors"]:
 		invalidSpelling=attrs.get("invalid-spelling")
 		oldInvalidSpelling=attrsCache.get("invalid-spelling") if attrsCache is not None else None

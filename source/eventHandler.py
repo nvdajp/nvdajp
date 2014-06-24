@@ -14,6 +14,8 @@ import globalVars
 import controlTypes
 from logHandler import log
 import globalPluginHandler
+import config
+import winUser
 
 #Some dicts to store event counts by name and or obj
 _pendingEventCountsByName={}
@@ -178,3 +180,45 @@ def doPreDocumentLoadComplete(obj):
 			#Focus may be in this new treeInterceptor, so force focus to look up its treeInterceptor
 			focusObject.treeInterceptor=treeInterceptorHandler.getTreeInterceptor(focusObject)
 	return True
+
+def shouldAcceptEvent(eventName, windowHandle=None):
+	"""Check whether an event should be accepted from a platform API.
+	Creating NVDAObjects and executing events can be expensive
+	and might block the main thread noticeably if the object is slow to respond.
+	Therefore, this should be used before NVDAObject creation to filter out any unnecessary events.
+	A platform API handler may do its own filtering before this.
+	"""
+	if not windowHandle:
+		# We can't filter without a window handle.
+		return True
+	if eventName == "valueChange" and config.conf["presentation"]["progressBarUpdates"]["reportBackgroundProgressBars"]:
+		return True
+	if eventName == "show":
+		# Only accept 'show' events for tooltips, IMM candidates and notification bars as otherwize we get flooded.
+		return winUser.getClassName(windowHandle) in ("Frame Notification Bar", "tooltips_class32", "mscandui21.candidate", "mscandui40.candidate", "MSCandUIWindow_Candidate")
+	if eventName == "alert" and winUser.getClassName(winUser.getAncestor(windowHandle, winUser.GA_PARENT)) == "ToastChildWindowClass":
+		# Toast notifications.
+		return True
+	if windowHandle == winUser.getDesktopWindow():
+		# #3897: We fire some events such as switchEnd and menuEnd on the desktop window
+		# because the original window is now invalid.
+		return True
+
+	fg = winUser.getForegroundWindow()
+	if (winUser.isDescendantWindow(fg, windowHandle)
+			or winUser.isDescendantWindow(fg, winUser.getAncestor(windowHandle, winUser.GA_ROOTOWNER))):
+		# This is for the foreground application.
+		return True
+	if (winUser.user32.GetWindowLongW(windowHandle, winUser.GWL_EXSTYLE) & winUser.WS_EX_TOPMOST
+			or winUser.user32.GetWindowLongW(winUser.getAncestor(windowHandle, winUser.GA_ROOT), winUser.GWL_EXSTYLE) & winUser.WS_EX_TOPMOST):
+		# This window or its root is a topmost window.
+		# This includes menus, combo box pop-ups and the task switching list.
+		return True
+	if (winUser.getClassName(fg) in ("Progman", "WorkerW")
+			and winUser.getWindowStyle(winUser.getAncestor(windowHandle, winUser.GA_ROOT)) & winUser.WS_POPUP
+			and winUser.getWindowThreadProcessID(windowHandle)[0] == winUser.getWindowThreadProcessID(fg)[0]):
+		# When the Shut Down Windows dialog is invoked by pressing alt+f4 on the Desktop,
+		# the foreground window is still reported as the Desktop for a while,
+		# even though events look fine and we don't get another foreground event after.
+		return True
+	return False
