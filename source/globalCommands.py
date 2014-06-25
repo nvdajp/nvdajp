@@ -920,6 +920,7 @@ class GlobalCommands(ScriptableObject):
 		gui.showGui()
 	# Translators: Input help mode message for show NVDA menu command.
 	script_showGui.__doc__=_("Shows the NVDA menu")
+	script_showGui.allowInSleepMode=True
 
 	def script_review_sayAll(self,gesture):
 		sayAllHandler.readText(sayAllHandler.CURSOR_REVIEW)
