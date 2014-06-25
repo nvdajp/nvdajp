@@ -9,6 +9,7 @@ import api
 import time
 import winUser
 import mouseHandler
+import config
 
 class ATOK26Cand(IAccessible):
 	name=_("Candidate")
@@ -26,6 +27,7 @@ class ATOK26UIComment(IAccessible):
 		return name
 
 	def event_show(self):
+		if not (config.conf["keyboard"]["nvdajpEnableKeyEvents"] and config.conf["inputComposition"]["announceSelectedCandidate"]): return
 		tones.beep(880,20)
 		api.setNavigatorObject(self)
 		speech.cancelSpeech()
