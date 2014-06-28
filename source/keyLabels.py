@@ -136,13 +136,13 @@ localizedKeyLabels = {
 	# Translators: This is the name of a key on the keyboard.
 	'tab': pgettext("keyLabel", "tab"),
 	# Translators: This is the name of a key on the keyboard.
-	'IMENonconvert': _("IME non convert"),
+	'imenonconvert': _("IME non convert"),
 	# Translators: This is the name of a key on the keyboard.
-	'IMEConvert': _("IME convert"),
+	'imeconvert': _("IME convert"),
 	# Translators: This is the name of a key on the keyboard.
-	'IMEChangeStatus2': _("toggle input method"),
+	'imechangestatus2': _("toggle input method"),
 	# Translators: This is the name of a key on the keyboard.
-	'IMEChangeStatus3': _("toggle input method"),
+	'imechangestatus3': _("toggle input method"),
 	# Translators: This is the name of a key on the keyboard.
 	'pause': _("pause"),
 }
