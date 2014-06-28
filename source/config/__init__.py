@@ -97,7 +97,7 @@ confspec = ConfigObj(StringIO(
 	translationTable = string(default=ja-jp-comp6.utb)
 	# nvdajp end
 	inputTable = string(default=en-us-comp8.ctb)
-	expandAtCursor = boolean(default=true)
+	expandAtCursor = boolean(default=false) #nvdajp
 	cursorBlinkRate = integer(default=500,min=0,max=2000)
 	messageTimeout = integer(default=4,min=0,max=20)
 	nvdajpMessageTimeout = boolean(default=true)
