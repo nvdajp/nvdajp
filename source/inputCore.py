@@ -423,6 +423,14 @@ class InputManager(baseObject.AutoPropertyObject):
 
 		if config.conf["keyboard"]["speakCommandKeys"] and gesture.shouldReportAsCommand:
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
+		# nvdajp begin
+		elif gesture.shouldReportAsEnterKey:
+			if config.conf["keyboard"]["nvdajpImeBeep"]:
+				import tones
+				tones.beep(700,10,left=10,right=10)
+			else:
+				queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
+		# nvdajp end
 
 		gesture.reportExtra()
 
