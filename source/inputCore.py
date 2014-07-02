@@ -425,11 +425,13 @@ class InputManager(baseObject.AutoPropertyObject):
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
 		# nvdajp begin
 		elif gesture.shouldReportAsEnterKey:
-			if config.conf["keyboard"]["nvdajpImeBeep"]:
-				import tones
-				tones.beep(700,10,left=10,right=10)
-			else:
-				queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
+			focus = api.getFocusObject()
+			if (focus.role == controlTypes.ROLE_EDITABLETEXT) and (controlTypes.STATE_READONLY not in focus._get_states()):
+				if config.conf["keyboard"]["nvdajpImeBeep"]:
+					import tones
+					tones.beep(700,10,left=10,right=10)
+				else:
+					queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
 		# nvdajp end
 
 		gesture.reportExtra()
