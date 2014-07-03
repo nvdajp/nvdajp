@@ -241,6 +241,10 @@ def handleInputCompositionEnd(result):
 			result=curInputComposition.compositionString.lstrip(u'\u3000 ')
 		#nvdajp end
 	if result:
+		#nvdajp begin
+		queueHandler.dequeueAll()
+		speech.cancelSpeech()
+		#nvdajp end
 		if not config.conf["inputComposition"]["announceSelectedCandidate"]: return #nvdajp
 		speech.speakText(result,symbolLevel=characterProcessing.SYMLVL_ALL)
 
