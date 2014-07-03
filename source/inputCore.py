@@ -434,7 +434,7 @@ class InputManager(baseObject.AutoPropertyObject):
 			if controlTypes.STATE_READONLY not in states:
 				if (focus.role == controlTypes.ROLE_EDITABLETEXT) or \
 						((focus.role == controlTypes.ROLE_UNKNOWN) and (controlTypes.STATE_MULTILINE in states)) or \
-						(focus.__class__.__name__ == 'Dynamic_EditableTextWithAutoSelectDetectionMozillaIAccessible'):
+						('Dynamic_EditableText' in focus.__class__.__name__):
 					if config.conf["keyboard"]["nvdajpImeBeep"]:
 						import tones
 						tones.beep(700,10,left=10,right=10)
