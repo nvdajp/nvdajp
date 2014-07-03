@@ -426,12 +426,20 @@ class InputManager(baseObject.AutoPropertyObject):
 		# nvdajp begin
 		elif gesture.shouldReportAsEnterKey:
 			focus = api.getFocusObject()
-			if (focus.role == controlTypes.ROLE_EDITABLETEXT) and (controlTypes.STATE_READONLY not in focus._get_states()):
-				if config.conf["keyboard"]["nvdajpImeBeep"]:
-					import tones
-					tones.beep(700,10,left=10,right=10)
-				else:
-					queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
+			states = set()
+			try:
+				states = focus._get_states()
+			except:
+				pass
+			if controlTypes.STATE_READONLY not in states:
+				if (focus.role == controlTypes.ROLE_EDITABLETEXT) or \
+						((focus.role == controlTypes.ROLE_UNKNOWN) and (controlTypes.STATE_MULTILINE in states)) or \
+						(focus.__class__.__name__ == 'Dynamic_EditableTextWithAutoSelectDetectionMozillaIAccessible'):
+					if config.conf["keyboard"]["nvdajpImeBeep"]:
+						import tones
+						tones.beep(700,10,left=10,right=10)
+					else:
+						queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
 		# nvdajp end
 
 		gesture.reportExtra()
