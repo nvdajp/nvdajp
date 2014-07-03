@@ -37,6 +37,14 @@ def queueFunction(queue,func,*args,**kwargs):
 	queue.put_nowait((func,args,kwargs))
 	core.requestPump()
 
+#nvdajp begin
+def dequeueAll():
+	global eventQueue
+	eventQueueNew = Queue()
+	eventQueueNew.__name__="eventQueue"
+	eventQueue = eventQueueNew
+#nvdajp end
+
 def isRunningGenerators():
 	res=len(generators)>0
 	log.debug("generators running: %s"%res)
