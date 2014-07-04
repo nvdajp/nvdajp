@@ -242,8 +242,9 @@ def handleInputCompositionEnd(result):
 		#nvdajp end
 	if result:
 		#nvdajp begin
-		queueHandler.dequeueAll()
-		speech.cancelSpeech()
+		if not config.conf["keyboard"]["speakCommandKeys"]:
+			queueHandler.dequeueAll()
+			speech.cancelSpeech()
 		#nvdajp end
 		if not config.conf["inputComposition"]["announceSelectedCandidate"]: return #nvdajp
 		speech.speakText(result,symbolLevel=characterProcessing.SYMLVL_ALL)
