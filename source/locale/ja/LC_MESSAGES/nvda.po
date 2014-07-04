@@ -57,6 +57,10 @@ msgstr "UIオートメーションの有効化(設定を有効にするには再
 msgid "Enable Braille message timeout"
 msgstr "点字メッセージの表示終了待ち時間の設定を有効にする"
 
+#: gui\settingsDialogs.py:1768
+msgid "Announce return key in editable text"
+msgstr "テキスト編集でEnterキーを通知"
+
 #: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
 msgid "Use NonConvert as an NVDA modifier key"
 msgstr "無変換をNVDAキーとして使用"

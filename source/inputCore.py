@@ -425,21 +425,21 @@ class InputManager(baseObject.AutoPropertyObject):
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
 		# nvdajp begin
 		elif gesture.shouldReportAsEnterKey:
-			focus = api.getFocusObject()
-			states = set()
-			try:
-				states = focus._get_states()
-			except:
-				pass
-			if controlTypes.STATE_READONLY not in states:
-				if (focus.role == controlTypes.ROLE_EDITABLETEXT) or \
-						((focus.role == controlTypes.ROLE_UNKNOWN) and (controlTypes.STATE_MULTILINE in states)) or \
-						('Dynamic_EditableText' in focus.__class__.__name__):
-					if config.conf["keyboard"]["nvdajpImeBeep"]:
-						import tones
-						tones.beep(700,10,left=10,right=10)
-					else:
-						queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
+			import winUser
+			dummy = winUser.getAsyncKeyState(winUser.VK_BACK)
+			if config.conf["language"]["jpAnnounceReturnKey"]:
+				focus = api.getFocusObject()
+				states = set()
+				try:
+					states = focus._get_states()
+				except:
+					pass
+				if controlTypes.STATE_READONLY not in states:
+					if (focus.role == controlTypes.ROLE_EDITABLETEXT) or \
+							((focus.role == controlTypes.ROLE_UNKNOWN) and (controlTypes.STATE_MULTILINE in states)) or \
+							('Dynamic_EditableText' in focus.__class__.__name__):
+						import core
+						core.callLater(100, queueHandler.queueFunction, queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
 		# nvdajp end
 
 		gesture.reportExtra()
