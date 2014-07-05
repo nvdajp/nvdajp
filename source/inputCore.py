@@ -28,6 +28,8 @@ from logHandler import log
 import globalVars
 import languageHandler
 import controlTypes
+import winUser
+import core
 
 #: Script category for emulated keyboard keys.
 # Translators: The name of a category of NVDA commands.
@@ -424,8 +426,7 @@ class InputManager(baseObject.AutoPropertyObject):
 		if config.conf["keyboard"]["speakCommandKeys"] and gesture.shouldReportAsCommand:
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
 		# nvdajp begin
-		elif gesture.shouldReportAsEnterKey:
-			import winUser
+		elif hasattr(gesture, "vkCode") and gesture.vkCode == winUser.VK_RETURN:
 			dummy = winUser.getAsyncKeyState(winUser.VK_BACK)
 			if config.conf["language"]["jpAnnounceReturnKey"]:
 				focus = api.getFocusObject()
@@ -438,7 +439,6 @@ class InputManager(baseObject.AutoPropertyObject):
 					if (focus.role == controlTypes.ROLE_EDITABLETEXT) or \
 							((focus.role == controlTypes.ROLE_UNKNOWN) and (controlTypes.STATE_MULTILINE in states)) or \
 							('Dynamic_EditableText' in focus.__class__.__name__):
-						import core
 						core.callLater(100, queueHandler.queueFunction, queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
 		# nvdajp end
 
