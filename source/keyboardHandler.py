@@ -401,11 +401,6 @@ class KeyboardInputGesture(inputCore.InputGesture):
 			return True
 		return False
 
-	# nvdajp begin
-	def _get_shouldReportAsEnterKey(self):
-		return self.vkCode == winUser.VK_RETURN
-	# nvdajp end
-
 	def _get_speechEffectWhenExecuted(self):
 		if inputCore.manager.isInputHelpActive:
 			return self.SPEECHEFFECT_CANCEL
