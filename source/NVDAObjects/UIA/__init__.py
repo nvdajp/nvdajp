@@ -269,6 +269,10 @@ class UIA(Window):
 			clsList.append(ListItem)
 		if self.UIAIsWindowElement and UIAClassName in ("#32770","NUIDialog"):
 			clsList.append(Dialog)
+		if UIAClassName=="ModeTile":
+			clsList.append(ModeTile)
+		elif UIAClassName=="Input Flyout":
+			clsList.append(InputFlyout)
 
 		clsList.append(UIA)
 
@@ -769,3 +773,18 @@ class WpfTextView(UIA):
 
 	def event_stateChange(self):
 		return
+
+class InputFlyout(UIA):
+	role=controlTypes.ROLE_WINDOW
+
+class ModeTile(UIA):
+	role=controlTypes.ROLE_BUTTON
+
+	def _get_description(self):
+		return ""
+
+	def event_gainFocus(self):
+		#import tones
+		#tones.beep(1000, 10)
+		speech.cancelSpeech()
+		super(ModeTile,self).event_gainFocus()
