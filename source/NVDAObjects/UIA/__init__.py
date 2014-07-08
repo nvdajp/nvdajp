@@ -784,7 +784,10 @@ class ModeTile(UIA):
 		return ""
 
 	def event_gainFocus(self):
-		#import tones
-		#tones.beep(1000, 10)
 		speech.cancelSpeech()
 		super(ModeTile,self).event_gainFocus()
+		self._updateFocus()
+
+	def _updateFocus(self):
+		if eventHandler.oldFocus:
+			api.setFocusObject(eventHandler.oldFocus)
