@@ -190,6 +190,7 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 				jpAttrBuf[pos] = a;
 			}
 		}
+		jpAttrBuf[length1] = L'\0';
 	}
 	pProp->Release();
     pCategoryMgr->Release();
