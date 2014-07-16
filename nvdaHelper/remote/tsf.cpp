@@ -42,7 +42,79 @@ bool fetchRangeExtent(ITfRange* pRange, long* start, ULONG* length) {
 	return true?(res==S_OK):false;
 }
 
-// http://msdn.microsoft.com/en-us/library/windows/desktop/ms629224%28v=vs.85%29.aspx
+bool getDispAttrFromRangeWithShift(
+	ITfProperty *pProp,
+	ITfCategoryMgr *pCategoryMgr,
+	ITfDisplayAttributeMgr *pDispMgr,
+	ITfRange *pRange,
+	TfEditCookie ec,
+	long shiftStart,
+	long shiftEnd,
+	TF_DISPLAYATTRIBUTE *pDispAttr
+	) {
+	HRESULT hr;
+	bool success = true;
+
+	ITfRange *pRangeNew = NULL;
+	pRange->Clone(&pRangeNew);
+	LONG cch1 = 0;
+	HRESULT hr1 = pRangeNew->ShiftStart(ec, shiftStart, &cch1, NULL);
+	LONG cch2 = 0;
+	HRESULT hr2  = pRangeNew->ShiftEnd(ec, shiftEnd, &cch2, NULL);
+
+	long start2;
+	ULONG length2;
+	if (!fetchRangeExtent(pRangeNew,&start2,&length2)) {
+		start2 = length2 = 0;
+	}
+
+	VARIANT var;
+	VariantInit(&var);
+	hr = pProp->GetValue(ec, pRangeNew, &var);
+
+#if 0
+	wchar_t buf_[200];
+	wsprintf(buf_, L"getDispAttr ShiftStart cch:%d /ShiftEnd cch:%d /pRangeNew st:%d len:%d /GetValue hr:%d", cch1, cch2, start2, length2, hr);
+	OutputDebugString(buf_);
+#endif
+
+	if(hr == S_OK){
+		if(var.vt == VT_I4){
+			GUID guid;
+			hr = pCategoryMgr->GetGUID((TfGuidAtom)var.lVal, &guid);
+			if(SUCCEEDED(hr)){
+				ITfDisplayAttributeInfo *pDispInfo;
+				hr = pDispMgr->GetDisplayAttributeInfo(guid, &pDispInfo, NULL);
+				if(SUCCEEDED(hr)){
+					hr = pDispInfo->GetAttributeInfo(pDispAttr);
+					if(SUCCEEDED(hr)){
+						//OutputDebugString(L"GetAttributeInfo() succeeded");
+
+						TF_DA_ATTR_INFO attr = pDispAttr->bAttr;
+
+						wchar_t buf__[256];
+						ULONG len_ = ARRAYSIZE(buf__) - 1;
+						pRangeNew->GetText(ec, 0, buf__, len_, &len_);
+						buf__[min(len_,255)]=L'\0';
+
+						wchar_t buf_[200];
+						wsprintf(buf_, L"attr:%d (%s)", attr, buf__);
+						OutputDebugString(buf_);
+					}
+					pDispInfo->Release();
+				}
+			}
+		} else {
+			hr = E_FAIL;
+			success = false;
+		}
+		VariantClear(&var);
+	} else {
+		success = false;
+	}
+	return success;
+}
+
 HRESULT getDispAttrFromRange(ITfContext *pContext,
 							 ITfRange *pRange,
 							 TfEditCookie ec,
@@ -72,77 +144,39 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
     ITfProperty *pProp;
     hr = pContext->GetProperty(GUID_PROP_ATTRIBUTE, &pProp);
     if(SUCCEEDED(hr)){
-		//OutputDebugString(L"GetProperty() succeeded");
-        VARIANT var;
-        VariantInit(&var);
-
 		long start1;
 		ULONG length1;
 		if (!fetchRangeExtent(pRange,&start1,&length1)) {
 			start1 = length1 = 0;
 		}
 
-		ITfRange *pRangeNew = NULL;
-		pRange->Clone(&pRangeNew);
-		LONG cch1 = 0;
-		HRESULT hr1 = pRangeNew->ShiftStart(ec, -1, &cch1, NULL);
-		LONG cch2 = 0;
-		HRESULT hr2  = pRangeNew->ShiftEnd(ec, -1, &cch2, NULL);
-		hr = pProp->GetValue(ec, pRangeNew, &var);
-
-		long start2;
-		ULONG length2;
-		if (!fetchRangeExtent(pRangeNew,&start2,&length2)) {
-			start2 = length2 = 0;
-		}
-
 		wchar_t buf_[200];
-		wsprintf(buf_, L"getDispAttr st:%d len:%d /ShiftStart hr:%d cch:%d /ShiftEnd hr:%d cch:%d /st:%d len:%d /GetValue hr:%d", start1, length1, hr1, cch1, hr2, cch2, start2, length2, hr);
+		wsprintf(buf_, L"pRange st:%d len:%d", start1, length1);
 		OutputDebugString(buf_);
-        if(S_OK == hr){
-			//OutputDebugString(L"hr == S_OK");
-            if(VT_I4 == var.vt){
-				//OutputDebugString(L"var.vt == VT_I4");
-                GUID guid;
-                hr = pCategoryMgr->GetGUID((TfGuidAtom)var.lVal, &guid);
-                if(SUCCEEDED(hr)){
-                    ITfDisplayAttributeInfo *pDispInfo;
-                    hr = pDispMgr->GetDisplayAttributeInfo(guid, &pDispInfo, NULL);
-                    if(SUCCEEDED(hr)){
-                        hr = pDispInfo->GetAttributeInfo(pDispAttr);
-						if(SUCCEEDED(hr)){
-							//OutputDebugString(L"GetAttributeInfo() succeeded");
 
-							// TF_ATTR_INPUT                = 0,
-							// TF_ATTR_TARGET_CONVERTED     = 1,
-							// TF_ATTR_CONVERTED            = 2,
-							// TF_ATTR_TARGET_NOTCONVERTED  = 3,
-							// TF_ATTR_INPUT_ERROR          = 4,
-							// TF_ATTR_FIXEDCONVERTED       = 5,
-							// TF_ATTR_OTHER                = -1
-							// http://msdn.microsoft.com/en-us/library/windows/desktop/ms629063%28v=vs.85%29.aspx
+		for (long pos = 0; pos < (long)length1; pos++) {
+			long shiftStart = pos;
+			long shiftEnd = -((long)length1 - pos - 1);
+			getDispAttrFromRangeWithShift(
+				pProp,
+				pCategoryMgr,
+				pDispMgr,
+				pRange,
+				ec,
+				shiftStart,
+				shiftEnd,
+				pDispAttr
+				);
+			// TF_ATTR_INPUT                = 0,
+			// TF_ATTR_TARGET_CONVERTED     = 1,
+			// TF_ATTR_CONVERTED            = 2,
+			// TF_ATTR_TARGET_NOTCONVERTED  = 3,
+			// TF_ATTR_INPUT_ERROR          = 4,
+			// TF_ATTR_FIXEDCONVERTED       = 5,
 
-							TF_DA_ATTR_INFO attr = pDispAttr->bAttr;
-
-							wchar_t buf__[256];
-							ULONG len_ = ARRAYSIZE(buf__) - 1;
-							pRangeNew->GetText(ec, 0, buf__, len_, &len_);
-							buf__[min(len_,255)]=L'\0';
-
-							wchar_t buf_[200];
-							wsprintf(buf_, L"attr:%d (%s)", attr, buf__);
-							OutputDebugString(buf_);
-						}
-                        pDispInfo->Release();
-                    }
-                }
-            } else {
-                hr = E_FAIL;
-            }
-            VariantClear(&var);
-        }
-		pProp->Release();
-    }
+		}
+	}
+	pProp->Release();
     pCategoryMgr->Release();
     pDispMgr->Release();
     return hr;
