@@ -88,8 +88,7 @@ bool getDispAttrFromRangeWithShift(
 				if(SUCCEEDED(hr)){
 					hr = pDispInfo->GetAttributeInfo(pDispAttr);
 					if(SUCCEEDED(hr)){
-						//OutputDebugString(L"GetAttributeInfo() succeeded");
-
+#if 0
 						TF_DA_ATTR_INFO attr = pDispAttr->bAttr;
 
 						wchar_t buf__[256];
@@ -100,6 +99,7 @@ bool getDispAttrFromRangeWithShift(
 						wchar_t buf_[200];
 						wsprintf(buf_, L"attr:%d (%s)", attr, buf__);
 						OutputDebugString(buf_);
+#endif
 					}
 					pDispInfo->Release();
 				}
@@ -118,9 +118,14 @@ bool getDispAttrFromRangeWithShift(
 HRESULT getDispAttrFromRange(ITfContext *pContext,
 							 ITfRange *pRange,
 							 TfEditCookie ec,
-							 TF_DISPLAYATTRIBUTE *pDispAttr)
+							 wchar_t *jpAttrBuf,
+							 long jpAttrLen)
 {
-	//OutputDebugString(L"getDispAttrFromRange()");
+	// example: L"222221111000"
+	// 0: not converted
+	// 1: selected
+	// 2: not selected
+
     HRESULT hr;
     ITfCategoryMgr *pCategoryMgr;
     hr = CoCreateInstance(CLSID_TF_CategoryMgr,
@@ -149,12 +154,13 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 		if (!fetchRangeExtent(pRange,&start1,&length1)) {
 			start1 = length1 = 0;
 		}
-
+#if 0
 		wchar_t buf_[200];
 		wsprintf(buf_, L"pRange st:%d len:%d", start1, length1);
 		OutputDebugString(buf_);
-
+#endif
 		for (long pos = 0; pos < (long)length1; pos++) {
+			TF_DISPLAYATTRIBUTE dispAttr;
 			long shiftStart = pos;
 			long shiftEnd = -((long)length1 - pos - 1);
 			getDispAttrFromRangeWithShift(
@@ -165,7 +171,7 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 				ec,
 				shiftStart,
 				shiftEnd,
-				pDispAttr
+				&dispAttr
 				);
 			// TF_ATTR_INPUT                = 0,
 			// TF_ATTR_TARGET_CONVERTED     = 1,
@@ -174,6 +180,15 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 			// TF_ATTR_INPUT_ERROR          = 4,
 			// TF_ATTR_FIXEDCONVERTED       = 5,
 
+			if (pos < jpAttrLen) {
+				wchar_t a = L'0';
+				if (dispAttr.bAttr == 1 || dispAttr.bAttr == 3) {
+					a = L'1';
+				} else if (dispAttr.bAttr == 2 || dispAttr.bAttr == 5) {
+					a = L'2';
+				}
+				jpAttrBuf[pos] = a;
+			}
 		}
 	}
 	pProp->Release();
@@ -637,7 +652,6 @@ STDMETHODIMP TsfSink::OnEndEdit(
 	// TSF input processor performing composition
 	ITfRange* pRange=CombineCompRange(pCtx,cookie);
 	if(!pRange) {
-		OutputDebugString(L"TsfSink::OnEndEdit !pRange");
 		if(inComposition) {
 			inComposition=false;
 			if(!curIMEWindow) {
@@ -650,16 +664,12 @@ STDMETHODIMP TsfSink::OnEndEdit(
 		}
 		return S_OK;
 	}
-	{
-		ITfRange *pr = pRange;
-		TF_DISPLAYATTRIBUTE dispAttr;
-		HRESULT hr = getDispAttrFromRange(pCtx, pr, cookie, &dispAttr);
-	}
 	inComposition=true;
 	wchar_t buf[256];
 	ULONG len = ARRAYSIZE(buf) - 1;
 	pRange->GetText(cookie, 0, buf, len, &len);
 	buf[min(len,255)]=L'\0';
+	long jpAttrLen = min(len,255);
 	long compStart=0;
 	fetchRangeExtent(pRange,&compStart,&len);
 	long selStart=compStart;
@@ -673,7 +683,16 @@ STDMETHODIMP TsfSink::OnEndEdit(
 	}
 	selStart=max(0,selStart-compStart);
 	selEnd=max(0,selEnd-compStart);
-	nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
+	// nvdajp begin
+	//nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
+	wchar_t jpAttrBuf[256];
+	HRESULT hr = getDispAttrFromRange(pCtx, pRange, cookie, jpAttrBuf, jpAttrLen);
+	wchar_t jpBuf[513];
+	wcscpy(jpBuf, buf);
+	wcscat(jpBuf, L"\t");
+	wcscat(jpBuf, jpAttrBuf);
+	nvdaControllerInternal_inputCompositionUpdate(jpBuf,selStart,selEnd,0);
+	// nvdajp end
 	return S_OK;
 }
 
