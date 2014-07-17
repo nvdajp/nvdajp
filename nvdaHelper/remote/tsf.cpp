@@ -122,9 +122,12 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 							 long jpAttrLen)
 {
 	// example: L"222221111000"
-	// 0: not converted
-	// 1: selected
-	// 2: not selected
+	// TF_ATTR_INPUT                = 0
+	// TF_ATTR_TARGET_CONVERTED     = 1
+	// TF_ATTR_CONVERTED            = 2
+	// TF_ATTR_TARGET_NOTCONVERTED  = 3
+	// TF_ATTR_INPUT_ERROR          = 4
+	// TF_ATTR_FIXEDCONVERTED       = 5
 
     HRESULT hr;
     ITfCategoryMgr *pCategoryMgr;
@@ -173,24 +176,18 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 				shiftEnd,
 				&dispAttr
 				);
-			// TF_ATTR_INPUT                = 0,
-			// TF_ATTR_TARGET_CONVERTED     = 1,
-			// TF_ATTR_CONVERTED            = 2,
-			// TF_ATTR_TARGET_NOTCONVERTED  = 3,
-			// TF_ATTR_INPUT_ERROR          = 4,
-			// TF_ATTR_FIXEDCONVERTED       = 5,
-
 			if (pos < jpAttrLen) {
 				wchar_t a = L'0';
-				if (dispAttr.bAttr == 1 || dispAttr.bAttr == 3) {
-					a = L'1';
-				} else if (dispAttr.bAttr == 2 || dispAttr.bAttr == 5) {
-					a = L'2';
+				if (dispAttr.bAttr > 0) {
+					a = L'0' + dispAttr.bAttr;
 				}
 				jpAttrBuf[pos] = a;
 			}
 		}
 		jpAttrBuf[length1] = L'\0';
+#if 0
+		OutputDebugString(jpAttrBuf);
+#endif
 	}
 	pProp->Release();
     pCategoryMgr->Release();
@@ -688,11 +685,15 @@ STDMETHODIMP TsfSink::OnEndEdit(
 	//nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
 	wchar_t jpAttrBuf[256];
 	HRESULT hr = getDispAttrFromRange(pCtx, pRange, cookie, jpAttrBuf, jpAttrLen);
-	wchar_t jpBuf[513];
-	wcscpy(jpBuf, buf);
-	wcscat(jpBuf, L"\t");
-	wcscat(jpBuf, jpAttrBuf);
-	nvdaControllerInternal_inputCompositionUpdate(jpBuf,selStart,selEnd,0);
+	if (hr == S_OK) {
+		wchar_t jpBuf[513];
+		wcscpy(jpBuf, buf);
+		wcscat(jpBuf, L"\t");
+		wcscat(jpBuf, jpAttrBuf);
+		nvdaControllerInternal_inputCompositionUpdate(jpBuf,selStart,selEnd,0);
+	} else {
+		nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
+	}
 	// nvdajp end
 	return S_OK;
 }

@@ -275,16 +275,21 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	if '\t' in compositionString:
 		ar = compositionString.split('\t')
 		compositionString, compAttr = ar
-		if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
-				'1' in compAttr and '2' in compAttr:
+		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			s = ''
-			for p in range(len(compAttr)):
-				if compAttr[p] == '1':
-					s += compositionString[p]
-			log.debug("(%s) (%s) (%s)" % (compositionString, compAttr, s))
-			from NVDAObjects import inputComposition
-			inputComposition.reportPartialSelection(s)
-			return 0
+			if '3' in compAttr:
+				for p in range(len(compAttr)):
+					if compAttr[p] == '3':
+						s += compositionString[p]
+			elif '1' in compAttr:
+				for p in range(len(compAttr)):
+					if compAttr[p] == '1':
+						s += compositionString[p]
+			if s:
+				log.debug("(%s) (%s) (%s)" % (compositionString, compAttr, s))
+				from NVDAObjects import inputComposition
+				inputComposition.reportPartialSelection(s)
+				return 0
 		else:
 			log.debug("(%s) (%s)" % (compositionString, compAttr))
 	else:
