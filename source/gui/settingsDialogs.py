@@ -1785,7 +1785,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.msgTimeoutCheckBox.SetValue(config.conf["braille"]["nvdajpMessageTimeout"])
 		settingsSizer.Add(self.msgTimeoutCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.jpAnnounceReturnKeyCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Announce return key in editable text"))
+		self.jpAnnounceReturnKeyCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Announce new line in editable text"))
 		self.jpAnnounceReturnKeyCheckBox.SetValue(config.conf["language"]["jpAnnounceReturnKey"])
 		settingsSizer.Add(self.jpAnnounceReturnKeyCheckBox,border=10,flag=wx.BOTTOM)
 
