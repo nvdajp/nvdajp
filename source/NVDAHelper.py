@@ -241,11 +241,6 @@ def handleInputCompositionEnd(result):
 			result=curInputComposition.compositionString.lstrip(u'\u3000 ')
 		#nvdajp end
 	if result:
-		#nvdajp begin
-		if not config.conf["keyboard"]["speakCommandKeys"]:
-			queueHandler.dequeueAll()
-			speech.cancelSpeech()
-		#nvdajp end
 		if not config.conf["inputComposition"]["announceSelectedCandidate"]: return #nvdajp
 		speech.speakText(result,symbolLevel=characterProcessing.SYMLVL_ALL)
 
@@ -273,13 +268,17 @@ def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,is
 		speech.speechMode=oldSpeechMode
 	focus.compositionUpdate(compositionString,selectionStart,selectionEnd,isReading)
 
+lastCompAttr = None #nvdajp
+
 @WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
+	global lastCompAttr
 	from NVDAObjects.inputComposition import InputComposition
 	#nvdajp begin
 	if '\t' in compositionString:
 		ar = compositionString.split('\t')
 		compositionString, compAttr = ar
+		lastCompAttr = compAttr
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
 				'1' in compAttr and '2' in compAttr:
 			s = ''

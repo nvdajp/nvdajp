@@ -428,18 +428,19 @@ class InputManager(baseObject.AutoPropertyObject):
 		# nvdajp begin
 		elif hasattr(gesture, "vkCode") and gesture.vkCode == winUser.VK_RETURN:
 			dummy = winUser.getAsyncKeyState(winUser.VK_BACK)
-			if config.conf["language"]["jpAnnounceReturnKey"]:
+			if config.conf["keyboard"]["speakTypedCharacters"] and config.conf["language"]["jpAnnounceReturnKey"]:
 				focus = api.getFocusObject()
 				states = set()
 				try:
 					states = focus._get_states()
 				except:
 					pass
-				if controlTypes.STATE_READONLY not in states:
+				import NVDAHelper
+				if (not NVDAHelper.lastCompAttr) and controlTypes.STATE_READONLY not in states:
 					if (focus.role == controlTypes.ROLE_EDITABLETEXT) or \
 							((focus.role == controlTypes.ROLE_UNKNOWN) and (controlTypes.STATE_MULTILINE in states)) or \
 							('Dynamic_EditableText' in focus.__class__.__name__):
-						core.callLater(100, queueHandler.queueFunction, queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
+						queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, gesture.displayName)
 		# nvdajp end
 
 		gesture.reportExtra()
