@@ -292,6 +292,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		else:
 			log.debug("(%s) (%s)" % (compositionString, compAttr))
 	else:
+		lastCompAttr = None
 		log.debug(compositionString)
 	#nvdajp end
 	if selectionStart==-1:
