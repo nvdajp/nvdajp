@@ -275,10 +275,16 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	if '\t' in compositionString:
 		ar = compositionString.split('\t')
 		compositionString, compAttr = ar
+		# TF_ATTR_INPUT                = 0
+		# TF_ATTR_TARGET_CONVERTED     = 1
+		# TF_ATTR_CONVERTED            = 2
+		# TF_ATTR_TARGET_NOTCONVERTED  = 3
+		# TF_ATTR_INPUT_ERROR          = 4
+		# TF_ATTR_FIXEDCONVERTED       = 5
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			s = ''
 			e = 0
-			if '3' in compAttr:
+			if ('3' in compAttr) and ('1' not in compAttr):
 				e = len(compositionString)
 				for p in range(len(compAttr)):
 					if compAttr[p] == '3':
