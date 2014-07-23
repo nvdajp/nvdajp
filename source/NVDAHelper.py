@@ -268,13 +268,17 @@ def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,is
 		speech.speechMode=oldSpeechMode
 	focus.compositionUpdate(compositionString,selectionStart,selectionEnd,isReading)
 
+lastCompAttr = None #nvdajp
+
 @WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
+	global lastCompAttr
 	from NVDAObjects.inputComposition import InputComposition
 	#nvdajp begin
 	if '\t' in compositionString:
 		ar = compositionString.split('\t')
 		compositionString, compAttr = ar
+		lastCompAttr = compAttr
 		# TF_ATTR_INPUT                = 0
 		# TF_ATTR_TARGET_CONVERTED     = 1
 		# TF_ATTR_CONVERTED            = 2
@@ -301,6 +305,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		else:
 			log.debug("(%s) (%s)" % (compositionString, compAttr))
 	else:
+		lastCompAttr = None
 		log.debug(compositionString)
 	#nvdajp end
 	if selectionStart==-1:

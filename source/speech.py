@@ -774,6 +774,8 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 			#speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
 			# nvdajp begin
 			from globalCommands import characterDescriptionMode
+			from NVDAHelper import lastCompAttr
+			if lastCompAttr: return
 			useCharacterDescriptions = (characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET)
 			speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
 			# nvdajp end
