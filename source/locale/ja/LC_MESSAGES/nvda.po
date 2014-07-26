@@ -118,38 +118,6 @@ msgstr "説明モード"
 msgid "paragraph indent"
 msgstr "字下げ"
 
-#: speech.py:1086
-msgid "hanging indent"
-msgstr "ぶら下げ"
-
-#: speech.py:1086
-msgid "no paragraph indent"
-msgstr "字下げなし"
-
-#: speech.py:1086
-msgid "left indent"
-msgstr "左インデント"
-
-#: speech.py:1086
-msgid "no left indent"
-msgstr "左インデントなし"
-
-#: speech.py:1086
-msgid "right indent"
-msgstr "右インデント"
-
-#: speech.py:1086
-msgid "no right indent"
-msgstr "右インデントなし"
-
-#: speech.py:1086
-msgid "%g characters"
-msgstr "%gモジ"
-
-#: speech.py:1086
-msgid "%g pt"
-msgstr "%gpt"
-
 #: NVDAHelper.py:163
 msgid "full shape space"
 msgstr "全角スペース"
@@ -6527,29 +6495,3 @@ msgstr "HIMS社製 Braille Sense/Braille EDGE シリーズ"
 #. Translators: The name of a braille display.
 msgid "HIMS SyncBraille"
 msgstr "HIMS社製 SyncBraille"
-
-#~ msgid "Set column header row"
-#~ msgstr "列見出しの行を設定"
-
-#~ msgid "Cleared column header row"
-#~ msgstr "列見出しの行をクリアしました。"
-
-#~ msgid ""
-#~ "Pressing once will set the current row as the row where column headers "
-#~ "should be found. Pressing twice clears the setting."
-#~ msgstr ""
-#~ "1回押すと現在の行を列見出しの行として設定します。2回押すと設定をクリアしま"
-#~ "す。"
-
-#~ msgid "Set row header column"
-#~ msgstr "行見出しの列を設定"
-
-#~ msgid "Cleared row header column"
-#~ msgstr "行見出しの列をクリアしました。"
-
-#~ msgid ""
-#~ "Pressing once will set the current column as the column where row headers "
-#~ "should be found. Pressing twice clears the setting."
-#~ msgstr ""
-#~ "1回押すと現在の列を行見出しの列として設定します。2回押すと設定をクリアしま"
-#~ "す。"
