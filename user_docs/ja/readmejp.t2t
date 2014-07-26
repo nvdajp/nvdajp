@@ -172,7 +172,7 @@ NVDA日本語版の初期設定は音声設定「大文字をビープで通知�
 
 日本語の点訳エンジンはタッチカーソルに対応しています。
 
-日本語の点訳エンジンは文字入力をサポートしていません。また「カーソル位置の単語をコンピューター点字に展開」がチェックされていれば、カーソル位置に関わらずアルファベット、数字、記号をNABCCで出力します。
+日本語の点訳エンジンは文字入力をサポートしていません。また「コンピューター点字(NABCC)を使用」がチェックされていれば、カーソル位置に関わらずアルファベット、数字、記号をNABCCで出力します。
 
 +++ 点字表示待ち時間 +++
 
@@ -689,6 +689,7 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 - sourceforge.jp: http://en.sourceforge.jp/projects/nvdajp/
 - GitHub: https://github.com/nvdajp
 - Bitbucket: https://bitbucket.org/nvdajp
+- [NVDA日本語チームの git ブランチ運用 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31635]
 
 
 ++ アドオンの紹介 ++
@@ -723,8 +724,21 @@ NVDA 日本語版を音声や点字の出力先として選択できるアプリ
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-- [IME を独自に制御するアプリで読み上げの重複を回避する https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33660]
+- [日本語点字とコンピューター点字(NABCC)の併用モード https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31182]
 - [日本語入力(TSF)で文節ごとの候補の読み上げ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31358]
+- [IME を独自に制御するアプリで読み上げの重複を回避する https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33660]
+- [「英数かな」のトグル操作を点字ディスプレイに通知 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33873]
+- [タブを含むテキストで点字ディスプレイ出力がずれる不具合の修正 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33922]
+- [Unicode点字文字列をそのまま点字出力できるようにする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33950]
+- [コマンドキーの読み上げでの「半角全角」などの読み上げ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33974]
+- [点字ディスプレイ出力で chk rbtn などの略語表記を選択可能にする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33982]
+- [Windows 8 の Win+スペース 操作のあとでフォーカスが戻らない不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33999]
+- [TeraTerm に ATOK で日本語入力するとエラーが出る不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34015]
+
+
+また、以下の変更は NVDA 本家版 2014.3 と日本語版 2014.3jp の両方に反映されました。
+
+- 点字設定「カーソル位置の単語をコンピューター点字に展開」オプションを「コンピューター点字(NABCC)を使用」という表記に変更しました。
 
 
 ++ 2014.2jp の変更点 ++
