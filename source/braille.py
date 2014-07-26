@@ -328,6 +328,10 @@ nabccPositiveStateLabels = {
 nabccNegativeStateLabels = {
 	controlTypes.STATE_CHECKED: "( )",
 }
+def _nvdajp(s):
+	if config.conf["braille"]["expandAtCursor"]:
+		return s
+	return _(s)
 # nvdajp end
 
 DOT7 = 64
@@ -506,13 +510,13 @@ def getBrailleTextForProperties(**propertyValues):
 		if role == controlTypes.ROLE_HEADING and level:
 			# Translators: Displayed in braille for a heading with a level.
 			# %s is replaced with the level.
-			roleText = _("h%s") % level
+			roleText = _nvdajp("h%s") % level
 			level = None
 		elif role == controlTypes.ROLE_LINK and states and controlTypes.STATE_VISITED in states:
 			states = states.copy()
 			states.discard(controlTypes.STATE_VISITED)
 			# Translators: Displayed in braille for a link which has been visited.
-			roleText = _("vlnk")
+			roleText = _nvdajp("vlnk")
 		elif (name or cellCoordsText or rowNumber or columnNumber) and role in controlTypes.silentRolesOnFocus:
 			roleText = None
 		else:
