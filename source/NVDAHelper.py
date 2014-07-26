@@ -268,26 +268,44 @@ def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,is
 		speech.speechMode=oldSpeechMode
 	focus.compositionUpdate(compositionString,selectionStart,selectionEnd,isReading)
 
+lastCompAttr = None #nvdajp
+
 @WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
+	global lastCompAttr
 	from NVDAObjects.inputComposition import InputComposition
 	#nvdajp begin
 	if '\t' in compositionString:
 		ar = compositionString.split('\t')
 		compositionString, compAttr = ar
-		if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
-				'1' in compAttr and '2' in compAttr:
+		lastCompAttr = compAttr
+		# TF_ATTR_INPUT                = 0
+		# TF_ATTR_TARGET_CONVERTED     = 1
+		# TF_ATTR_CONVERTED            = 2
+		# TF_ATTR_TARGET_NOTCONVERTED  = 3
+		# TF_ATTR_INPUT_ERROR          = 4
+		# TF_ATTR_FIXEDCONVERTED       = 5
+		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			s = ''
-			for p in range(len(compAttr)):
-				if compAttr[p] == '1':
-					s += compositionString[p]
-			log.debug("(%s) (%s) (%s)" % (compositionString, compAttr, s))
-			from NVDAObjects import inputComposition
-			inputComposition.reportPartialSelection(s)
-			return 0
+			e = 0
+			if ('3' in compAttr) and ('1' not in compAttr):
+				e = len(compositionString)
+				for p in range(len(compAttr)):
+					if compAttr[p] == '3':
+						s += compositionString[p]
+			elif '1' in compAttr:
+				for p in range(len(compAttr)):
+					if compAttr[p] == '1':
+						s += compositionString[p]
+			if s:
+				focus=api.getFocusObject()
+				if isinstance(focus,InputComposition):
+					focus.compositionUpdate(s, 0, e, 0)
+				return 0
 		else:
 			log.debug("(%s) (%s)" % (compositionString, compAttr))
 	else:
+		lastCompAttr = None
 		log.debug(compositionString)
 	#nvdajp end
 	if selectionStart==-1:

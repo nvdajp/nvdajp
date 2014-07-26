@@ -142,7 +142,10 @@ def executeEvent(eventName,obj,**kwargs):
 	except:
 		log.exception("error executing event: %s on %s with extra args of %s"%(eventName,obj,kwargs))
 
+oldFocus = None
+
 def doPreGainFocus(obj,sleepMode=False):
+	global oldFocus
 	oldForeground=api.getForegroundObject()
 	oldFocus=api.getFocusObject()
 	oldTreeInterceptor=oldFocus.treeInterceptor if oldFocus else None

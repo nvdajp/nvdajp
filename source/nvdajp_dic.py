@@ -10,6 +10,8 @@ import re
 import collections
 from logHandler import log
 
+RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
+
 def get_long_desc(s):
 	try:
 		s = characterProcessing.getCharacterDescription('ja', s)[0]
@@ -189,3 +191,13 @@ def processHexCode(locale, msg):
 			log.debug(e)
 			pass
 	return msg
+
+def fixNewText(newText):
+	log.debug(newText)
+	if RE_HIRAGANA.match(newText):
+		newText = ''.join([unichr(ord(c) + 0x60) for c in newText])
+		log.debug('convert hiragana to katakana: ' + newText)
+	if newText == u'\u30fc':
+		newText = getJapaneseDiscriminantReading(newText)
+		log.debug('katakana-hiragana prolonged sound mark')
+	return newText
