@@ -105,6 +105,7 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 	compositionSelectionOffsets=(0,0)
 	readingSelectionOffsets=(0,0)
 	isReading=False
+	IAccessibleRole=role
 
 	def __init__(self,parent=None):
 		self.parent=parent

@@ -576,7 +576,20 @@ It uses braille Unicode font. For Windows XP, the braille font is available if L
 
 
 
+
+
 + Applications +
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -585,10 +598,10 @@ It uses braille Unicode font. For Windows XP, the braille font is available if L
 
 ++ Microsoft Word support ++
 
-- Paragraph indent of Microsoft Word is announced when using NVDA+F.
-- Both "Report alignment" and "Report font size" in "Document Format" setting should be enabled to use this.
-- "Announce formatting changes after the cursor" is also supported.
-- Announce of font size is in real numbers such as '10.5pt', rather than integers such as '10pt'.
+Paragraph indent of Microsoft Word is now supported by NVDA. ([#4165 http://community.nvda-project.org/ticket/4165])
+
+
+
 
 
 
