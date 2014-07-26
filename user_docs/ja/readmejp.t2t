@@ -658,11 +658,11 @@ UTF-8 エンコーディングのテキストファイル、以下のフォー�
 
 + 既知の問題 +
 
-++ 日本語入力の文節ごとの読み上げ ++
 
-入力システムとアプリケーションがテキストサービス(TSF)に対応している場合に、文節移動後の候補読み上げができません。
 
-- [関連チケット31358 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31358]
+
+
+
 
 
 ++ Windows 8 での日本語入力 ++
@@ -724,6 +724,7 @@ NVDA 日本語版を音声や点字の出力先として選択できるアプリ
 NVDA 日本語チームは以下の変更および改良を行いました。
 
 - [IME を独自に制御するアプリで読み上げの重複を回避する https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33660]
+- [日本語入力(TSF)で文節ごとの候補の読み上げ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31358]
 
 
 ++ 2014.2jp の変更点 ++
