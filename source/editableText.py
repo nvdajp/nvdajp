@@ -113,7 +113,7 @@ class EditableText(ScriptableObject):
 		caretMoved,newInfo=self._hasCaretMoved(bookmark) 
 		# nvdajp begin
 		from NVDAHelper import lastCompAttr
-		if caretMoved and (not lastCompAttr) and config.conf["keyboard"]["speakTypedCharacters"] and config.conf["language"]["jpAnnounceReturnKey"]:
+		if caretMoved and (not lastCompAttr) and config.conf["keyboard"]["speakTypedCharacters"] and config.conf["language"]["jpAnnounceNewLine"]:
 			import queueHandler
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, _("new line"))
 		# nvdajp end
