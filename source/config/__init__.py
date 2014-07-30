@@ -72,7 +72,7 @@ confspec = ConfigObj(StringIO(
 	jpPhoneticReadingKana = boolean(default=false)
 	announceCandidateNumber = boolean(default=false)
 	jpAnsiEditbox = boolean(default=true)
-	jpAnnounceReturnKey = boolean(default=true)
+	jpAnnounceNewLine = boolean(default=false)
 
 # Speech settings
 [speech]
