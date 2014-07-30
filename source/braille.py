@@ -297,6 +297,43 @@ negativeStateLabels = {
 	controlTypes.STATE_CHECKED: _("( )"),
 }
 
+# nvdajp begin
+nabccRoleLabels = {
+	controlTypes.ROLE_EDITABLETEXT: "edt",
+	controlTypes.ROLE_LIST: "lst",
+	controlTypes.ROLE_MENUBAR: "mnubar",
+	controlTypes.ROLE_POPUPMENU: "mnu",
+	controlTypes.ROLE_BUTTON: "btn",
+	controlTypes.ROLE_CHECKBOX: "chk",
+	controlTypes.ROLE_RADIOBUTTON: "rbtn",
+	controlTypes.ROLE_COMBOBOX: "cbo",
+	controlTypes.ROLE_LINK: "lnk",
+	controlTypes.ROLE_DIALOG: "dlg",
+	controlTypes.ROLE_TREEVIEW: "tv",
+	controlTypes.ROLE_TABLE: "tb",
+	controlTypes.ROLE_SEPARATOR: "-----",
+	controlTypes.ROLE_GRAPHIC: "gra",
+}
+nabccPositiveStateLabels = {
+	controlTypes.STATE_CHECKED: "(x)",
+	controlTypes.STATE_HALFCHECKED: "(-)",
+	controlTypes.STATE_SELECTED: "sel",
+	controlTypes.STATE_HASPOPUP: "submnu",
+	controlTypes.STATE_AUTOCOMPLETE: "...",
+	controlTypes.STATE_EXPANDED: "-",
+	controlTypes.STATE_COLLAPSED: "+",
+	controlTypes.STATE_READONLY: "ro",
+	controlTypes.STATE_CLICKABLE: "clk",
+}
+nabccNegativeStateLabels = {
+	controlTypes.STATE_CHECKED: "( )",
+}
+def _nvdajp(s):
+	if config.conf["braille"]["expandAtCursor"]:
+		return s
+	return _(s)
+# nvdajp end
+
 DOT7 = 64
 DOT8 = 128
 
@@ -473,17 +510,24 @@ def getBrailleTextForProperties(**propertyValues):
 		if role == controlTypes.ROLE_HEADING and level:
 			# Translators: Displayed in braille for a heading with a level.
 			# %s is replaced with the level.
-			roleText = _("h%s") % level
+			roleText = _nvdajp("h%s") % level
 			level = None
 		elif role == controlTypes.ROLE_LINK and states and controlTypes.STATE_VISITED in states:
 			states = states.copy()
 			states.discard(controlTypes.STATE_VISITED)
 			# Translators: Displayed in braille for a link which has been visited.
-			roleText = _("vlnk")
+			roleText = _nvdajp("vlnk")
 		elif (name or cellCoordsText or rowNumber or columnNumber) and role in controlTypes.silentRolesOnFocus:
 			roleText = None
 		else:
-			roleText = roleLabels.get(role, controlTypes.roleLabels[role])
+			# nvdajp begin
+			# roleText = roleLabels.get(role, controlTypes.roleLabels[role])
+			if config.conf["braille"]["expandAtCursor"]:
+				roleText = nabccRoleLabels.get(role, controlTypes.roleLabels[role])
+			else:
+				roleText = roleLabels.get(role, controlTypes.roleLabels[role])
+			# nvdajp end
+
 	else:
 		role = propertyValues.get("_role")
 		roleText = None
@@ -497,9 +541,21 @@ def getBrailleTextForProperties(**propertyValues):
 		textList.append(value)
 	if states:
 		positiveStates = controlTypes.processPositiveStates(role, states, controlTypes.REASON_FOCUS, states)
-		textList.extend(positiveStateLabels.get(state, controlTypes.stateLabels[state]) for state in positiveStates)
+		# nvdajp begin
+		# textList.extend(positiveStateLabels.get(state, controlTypes.stateLabels[state]) for state in positiveStates)
+		if config.conf["braille"]["expandAtCursor"]:
+			textList.extend(nabccPositiveStateLabels.get(state, controlTypes.stateLabels[state]) for state in positiveStates)
+		else:
+			textList.extend(positiveStateLabels.get(state, controlTypes.stateLabels[state]) for state in positiveStates)
+		# nvdajp end
 		negativeStates = controlTypes.processNegativeStates(role, states, controlTypes.REASON_FOCUS, None)
-		textList.extend(negativeStateLabels.get(state, controlTypes.negativeStateLabels.get(state, _("not %s") % controlTypes.stateLabels[state])) for state in negativeStates)
+		# nvdajp begin
+		# textList.extend(negativeStateLabels.get(state, controlTypes.negativeStateLabels.get(state, _("not %s") % controlTypes.stateLabels[state])) for state in negativeStates)
+		if config.conf["braille"]["expandAtCursor"]:
+			textList.extend(nabccNegativeStateLabels.get(state, controlTypes.negativeStateLabels.get(state, _("not %s") % controlTypes.stateLabels[state])) for state in negativeStates)
+		else:
+			textList.extend(negativeStateLabels.get(state, controlTypes.negativeStateLabels.get(state, _("not %s") % controlTypes.stateLabels[state])) for state in negativeStates)
+		# nvdajp end
 	if roleText:
 		textList.append(roleText)
 	description = propertyValues.get("description")
