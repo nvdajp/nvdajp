@@ -270,6 +270,21 @@ def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,is
 
 lastCompAttr = None #nvdajp
 
+# work around ti34120
+# https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120
+def badCompositionUpdate(compositionString, compAttr):
+	if len(compositionString) <= 2:
+		return False
+	if any(c != '0' for c in compAttr):
+		return False
+	from unicodedata import category
+	if any(category(c) == 'Ll' for c in compositionString[1:-1]) and \
+			category(compositionString[0]) == 'Lo' and \
+			category(compositionString[-1]) == 'Lo':
+		log.info("(%s) (%s) should be ignored" % (compositionString, compAttr))
+		return True
+	return False
+
 @WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
 	global lastCompAttr
@@ -286,6 +301,9 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		# TF_ATTR_INPUT_ERROR          = 4
 		# TF_ATTR_FIXEDCONVERTED       = 5
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+			if badCompositionUpdate(compositionString, compAttr):
+				return 0
+			log.info("(%s) (%s)" % (compositionString, compAttr))
 			s = ''
 			e = 0
 			if ('3' in compAttr) and ('1' not in compAttr):
@@ -302,8 +320,6 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 				if isinstance(focus,InputComposition):
 					focus.compositionUpdate(s, 0, e, 0)
 				return 0
-		else:
-			log.debug("(%s) (%s)" % (compositionString, compAttr))
 	else:
 		lastCompAttr = None
 		log.debug(compositionString)
