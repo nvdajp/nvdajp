@@ -315,6 +315,10 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 				for p in range(len(compAttr)):
 					if compAttr[p] == '1':
 						s += compositionString[p]
+			elif ('0' in compAttr) and ('2' in compAttr):
+				for p in range(len(compAttr)):
+					if compAttr[p] == '0':
+						s += compositionString[p]
 			if s:
 				focus=api.getFocusObject()
 				if isinstance(focus,InputComposition):
