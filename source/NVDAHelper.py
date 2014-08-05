@@ -281,7 +281,7 @@ def badCompositionUpdate(compositionString, compAttr):
 	if any(category(c) == 'Ll' for c in compositionString[1:-1]) and \
 			category(compositionString[0]) == 'Lo' and \
 			category(compositionString[-1]) == 'Lo':
-		log.info("(%s) (%s) should be ignored" % (compositionString, compAttr))
+		log.debug("(%s) (%s) should be ignored" % (compositionString, compAttr))
 		return True
 	return False
 
@@ -303,7 +303,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
-			log.info("(%s) (%s)" % (compositionString, compAttr))
+			log.debug("(%s) (%s)" % (compositionString, compAttr))
 			s = ''
 			e = 0
 			if ('3' in compAttr) and ('1' not in compAttr):
