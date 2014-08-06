@@ -190,17 +190,20 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions):
 	buf=[(text,locale,useCharacterDescriptions)]
 	for text,locale,useCharacterDescriptions in buf:
 		textLength=len(text)
+		isJp = nvdajp_dic.isJapaneseLocale(locale) # nvdajp
 		for count,char in enumerate(text): 
 			uppercase=char.isupper()
 			# nvdajp begin
-			jpZenkakuHiragana = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isZenkakuHiragana(char)
-			jpZenkakuKatakana = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isZenkakuKatakana(char)
-			jpHankakuKatakana = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isHankakuKatakana(char)
-			jpLatinCharacter = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isLatinCharacter(char)
-			jpFullShapeAlphabet = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isFullShapeAlphabet(char)
-			jpFullShapeSymbol = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isFullShapeSymbol(char)
+			jpZenkakuHiragana = isJp and nvdajp_dic.isZenkakuHiragana(char)
+			jpZenkakuKatakana = isJp and nvdajp_dic.isZenkakuKatakana(char)
+			jpHankakuKatakana = isJp and nvdajp_dic.isHankakuKatakana(char)
+			jpLatinCharacter = isJp and nvdajp_dic.isLatinCharacter(char)
+			nonJpLatinCharacter = (not isJp) and nvdajp_dic.isLatinCharacter(char)
+			jpFullShapeAlphabet = isJp and nvdajp_dic.isFullShapeAlphabet(char)
+			nonJpFullShapeAlphabet = (not isJp) and nvdajp_dic.isFullShapeAlphabet(char)
+			jpFullShapeSymbol = isJp and nvdajp_dic.isFullShapeSymbol(char)
 			jpFullShape = jpFullShapeAlphabet or jpFullShapeSymbol
-			halfShape = nvdajp_dic.isJapaneseLocale(locale) and nvdajp_dic.isHalfShape(char)
+			halfShape = isJp and nvdajp_dic.isHalfShape(char)
 			pitchChanged = False
 			# nvdajp end
 			charDesc=None
@@ -209,6 +212,14 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions):
 				#charDesc=characterProcessing.getCharacterDescription(locale,char.lower())
 				if jpLatinCharacter and not config.conf["language"]["jpPhoneticReadingLatin"]:
 					charDesc = (nvdajp_dic.get_short_desc(char.lower()),)
+				elif nonJpLatinCharacter and not config.conf["language"]["jpPhoneticReadingLatin"]:
+					charDesc = (char.lower(),)
+				elif nonJpFullShapeAlphabet and not config.conf["language"]["jpPhoneticReadingLatin"]:
+					import unicodedata
+					charDesc = (unicodedata.normalize('NFKC', char.lower()),)
+				elif nonJpFullShapeAlphabet and config.conf["language"]["jpPhoneticReadingLatin"]:
+					import unicodedata
+					charDesc = characterProcessing.getCharacterDescription(locale, unicodedata.normalize('NFKC', char.lower()))
 				elif (jpZenkakuHiragana or jpZenkakuKatakana or jpHankakuKatakana) and not config.conf["language"]["jpPhoneticReadingKana"]:
 					charDesc = (nvdajp_dic.get_short_desc(char),)
 				else:
