@@ -171,6 +171,10 @@ msgctxt "nvdaMenu"
 msgid "Tools"
 msgstr "ツール(&T)"
 
+msgctxt "nvdaMenu"
+msgid "User Guide"
+msgstr "ユーザーガイド(&U)"
+
 # end of nvdajp
 
 #. Translators: Message to indicate User Account Control (UAC) or other secure desktop screen is active.
