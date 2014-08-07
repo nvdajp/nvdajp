@@ -276,6 +276,7 @@ Tiflotecnia が販売する Vocalizer for NVDA は NVDA のアドオンになっ
 NVDA 日本語チームはこの Vocalizer ドライバの翻訳を担当しています。
 
 - [Vocalizer for NVDA https://vocalizer-nvda.com/]
+- [旧バージョンの日本語ページ https://vocalizer-nvda.com/old/jp/index.htm]
 
 
 + 点字ディスプレイ +
@@ -605,9 +606,9 @@ IME の読み上げを抑止したいアプリを、設定プロファイルの�
 
 ++ Microsoft Word サポート ++
 
-Microsoft Word における段落インデントの読み上げは、NVDA 日本語版 2014.3jp 以降では本家の実装に置き換えられています。 ([本家チケット4165 http://community.nvda-project.org/ticket/4165])
+Microsoft Word における段落インデントの読み上げは、NVDA 日本語版 2014.3jp 以降では本家の実装に置き換えられています。 ([本家チケット4165 http://community.nvda-project.org/ticket/4165] [日本語版チケット31399 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31399])
 
-書式設定「段落インデントの通知」を有効にしてお使いください。
+書式情報「段落インデントの通知」を有効にしてお使いください。
 
 
 
@@ -731,17 +732,19 @@ NVDA 日本語版を音声や点字の出力先として選択できるアプリ
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
+- [Excel などの見出し自動通知を点字ディスプレイ出力で有効にする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=30308]
 - [日本語点字とコンピューター点字(NABCC)の併用モード https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31182]
 - [日本語入力(TSF)で文節ごとの候補の読み上げ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=31358]
 - [IME を独自に制御するアプリで読み上げの重複を回避する https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33660]
 - [「英数かな」のトグル操作を点字ディスプレイに通知 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33873]
 - [タブを含むテキストで点字ディスプレイ出力がずれる不具合の修正 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33922]
 - [Unicode点字文字列をそのまま点字出力できるようにする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33950]
+- [テキスト編集で改行を通知するオプションの追加 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33969]
 - [コマンドキーの読み上げでの「半角全角」などの読み上げ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33974]
 - [点字ディスプレイ出力で chk rbtn などの略語表記を選択可能にする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33982]
 - [Windows 8 の Win+スペース 操作のあとでフォーカスが戻らない不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33999]
 - [TeraTerm に ATOK で日本語入力するとエラーが出る不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34015]
-- [テキスト編集で改行を通知 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33969]
+- [日本語入力のプリエディット文字列が不正確に通知される不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120]
 
 
 また、以下の変更は NVDA 本家版 2014.3 と日本語版 2014.3jp の両方に反映されました。
