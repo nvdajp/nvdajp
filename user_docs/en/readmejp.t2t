@@ -271,6 +271,14 @@ eSpeak of NVDA cannot handle Japanese language.
 
 
 
+
+
+
+
+
+
+
+
 + Braille display +
 
 
@@ -673,6 +681,13 @@ Details (in Japanese) [NVDAJP ticket 29872 http://sourceforge.jp/ticket/browse.p
 
 
 
+
+
+
+
+
+
+
 + Miscellaneous +
 
 ++ Source code ++
@@ -682,3 +697,28 @@ We use git hosting services as follows:
 - sourceforge.jp: http://en.sourceforge.jp/projects/nvdajp/
 - GitHub: https://github.com/nvdajp
 - Bitbucket: https://bitbucket.org/nvdajp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+++ Controller Client API ++
+
+- [Controller Client enhancement by NVDAJP http://sourceforge.jp/projects/nvdajp/wiki/ControllerClient]
+- [NvdaDemoApp (bitbucket.org) https://bitbucket.org/nishimotz/nvdademoapp]
