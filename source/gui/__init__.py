@@ -449,7 +449,7 @@ class SysTrayIcon(wx.TaskBarIcon):
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("readmejp"), item)
 		#nvdajp end
 		if not globalVars.appArgs.secure:
-			item = menu_help.Append(wx.ID_ANY, _("User Guide"))
+			item = menu_help.Append(wx.ID_ANY, pgettext("nvdaMenu", "User Guide"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("userGuide"), item)
 			# Translators: The label of a menu item to open the Commands Quick Reference document.
 			item = menu_help.Append(wx.ID_ANY, _("Commands &Quick Reference"))
