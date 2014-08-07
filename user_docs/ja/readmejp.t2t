@@ -744,7 +744,9 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 - [点字ディスプレイ出力で chk rbtn などの略語表記を選択可能にする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33982]
 - [Windows 8 の Win+スペース 操作のあとでフォーカスが戻らない不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33999]
 - [TeraTerm に ATOK で日本語入力するとエラーが出る不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34015]
+- [点訳エンジンが「二十一二」「二十二三」など漢数字の連続を誤変換する不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34107]
 - [日本語入力のプリエディット文字列が不正確に通知される不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120]
+- [音声エンジンが英語の場合に「アルファベットをフォネティック読みする」の設定が反映されるようにする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34141]
 
 
 また、以下の変更は NVDA 本家版 2014.3 と日本語版 2014.3jp の両方に反映されました。
