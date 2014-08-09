@@ -745,6 +745,7 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 - [Windows 8 の Win+スペース 操作のあとでフォーカスが戻らない不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=33999]
 - [TeraTerm に ATOK で日本語入力するとエラーが出る不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34015]
 - [点訳エンジンが「二十一二」「二十二三」など漢数字の連続を誤変換する不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34107]
+- [複数文節の日本語変換をした直後にすべての文節を通知する https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34110]
 - [日本語入力のプリエディット文字列が不正確に通知される不具合への対策 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120]
 - [音声エンジンが英語の場合に「アルファベットをフォネティック読みする」の設定が反映されるようにする https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34141]
 
