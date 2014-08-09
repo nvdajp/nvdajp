@@ -269,6 +269,7 @@ def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,is
 	focus.compositionUpdate(compositionString,selectionStart,selectionEnd,isReading)
 
 lastCompAttr = None #nvdajp
+lastCompString = None #nvdajp
 
 # work around ti34120
 # https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120
@@ -287,13 +288,19 @@ def badCompositionUpdate(compositionString, compAttr):
 
 @WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
-	global lastCompAttr
+	global lastCompAttr, lastCompString
 	from NVDAObjects.inputComposition import InputComposition
 	#nvdajp begin
+	compAttr = ''
 	if '\t' in compositionString:
 		ar = compositionString.split('\t')
 		compositionString, compAttr = ar
+		if (lastCompString == compositionString) and (lastCompAttr == compAttr):
+			log.debug("ignored (%s) (%s)" % (compositionString, compAttr))
+			return 0
+		_lastCompAttr = lastCompAttr
 		lastCompAttr = compAttr
+		lastCompString = compositionString
 		# TF_ATTR_INPUT                = 0
 		# TF_ATTR_TARGET_CONVERTED     = 1
 		# TF_ATTR_CONVERTED            = 2
@@ -311,7 +318,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 				for p in range(len(compAttr)):
 					if compAttr[p] == '3':
 						s += compositionString[p]
-			elif '1' in compAttr:
+			elif ('1' in compAttr) and (_lastCompAttr is None or any([c != '0' for c in _lastCompAttr])):
 				for p in range(len(compAttr)):
 					if compAttr[p] == '1':
 						s += compositionString[p]
