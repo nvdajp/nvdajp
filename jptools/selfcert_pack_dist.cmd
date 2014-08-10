@@ -1,4 +1,3 @@
-SET VERSION=2014.2jp
-SET REV=140524
-7z a nvda-%VERSION%-%REV%-dist-self.zip dist\*.exe
-copy nvda-%VERSION%-%REV%-dist-self.zip c:\users\nishimotz\dropbox\public\
+SET ZIPREV=2014.3jp-140811
+7z a nvda-%ZIPREV%-dist-self.zip dist\*.exe
+copy nvda-%ZIPREV%-dist-self.zip c:\users\nishimotz\dropbox\public\
