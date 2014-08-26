@@ -1,19 +1,49 @@
-サブモジュールの取得：
+1. ビルド環境
+
+NVDA 2014.3jp の場合
+
+(1) Windows 7 SP1 64ビット
+
+備考：Windows 8.1 でビルドして 7 にインストールするとエラーが出る問題
+https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34057
+
+(2) Visual Studio 2012 Express for Desktop (Update 4)
+(3) Visual Studio 2013 Express for Desktop (Update 3)
+
+備考：
+VS2012 は NVDA コアのコンパイルに必要、VS2013 は JTalk のコンパイルで使用。
+後述の setup-vc2013 を変更すれば JTalk は VS2012 でコンパイルできると思われるが、
+確認していない。
+Express ではなく Pro や Ultimate でもよい。
+
+
+(4) git (msysgit 1.9.2)
+
+備考：
+git push するためには push 先のアカウントのセットアップや公開鍵の設定、
+権限の取得が必要。
+
+
+(5) 7z (:\Program Files (x86)\7-Zip\7z.exe に PATH が通っていること）
+
+
+2. サブモジュールの取得
 
 git submodule update --init --recursive
 
-スナップショットのビルド：
+
+3. スナップショットのビルド
 
 最上位のディレクトリで以下を実行
 
-1) jptools\setup-vc2013.cmd
-2) jptools\setupMiscDepsJp.cmd
-3) jptools\build.cmd
+(1) jptools\setup-vc2013.cmd
+(2) jptools\setupMiscDepsJp.cmd
+(3) jptools\build.cmd
 
-日本語エンジン系を更新しない場合は 1) 2) は不要。
+日本語エンジン系を更新しない場合は (1) (2) は不要。
 
 
-その他の作業用スクリプト：
+4. その他の作業用スクリプト
 
 レポジトリにプッシュ
 jptools\push_remote.cmd
@@ -25,18 +55,24 @@ copy Japanese character symbols to subversion repo
 jptools\copy_symbols_to_srt.cmd
 
 
-電子署名つきリリースの手順：
+5. 電子署名つきリリースの手順
 
-http://ja.nishimotz.com/nvdajp_certfile
+まず、管理者としてコマンドプロンプトを実行する。
 
-管理者としてコマンドプロンプトを実行
+上記 3. と同様に日本語エンジン系をビルド。
 
-jptools\selfcert_clean.cmd 初期化
-jptools\selfcert_setup.cmd パスフレーズを空欄で設定
-jptools\selfcert_scons.cmd ビルド
-jptools\selfcert_pack_dist.cmd: distの中身をアーカイブ nvda-*jp-*-dist-self.zip を送付。
+(1) jptools\setup-vc2013.cmd
+(2) jptools\setupMiscDepsJp.cmd
+
+(3) jptools\selfcert_clean.cmd 初期化
+(4) jptools\selfcert_setup.cmd パスフレーズを空欄で設定
+(5) jptools\selfcert_scons.cmd ビルド
+(6) jptools\selfcert_pack_dist.cmd: distの中身をアーカイブ nvda-*jp-*-dist-self.zip を送付。
 
 戻ってきたファイルで dist の中身を上書き。
 
-jptools\signed_makensis.cmd: 署名されたdistをmakensisでlauncherに変換。
-jptools\signed_output_pack.cmd: outputフォルダの中のlauncherをアーカイブ nvda-*jp-*-launcher-unsigned.zip して送付。 
+(7) jptools\signed_makensis.cmd: 署名されたdistをmakensisでlauncherに変換。
+(8) jptools\signed_output_pack.cmd: outputフォルダの中のlauncherをアーカイブ nvda-*jp-*-launcher-unsigned.zip して送付。
+
+過去の記録
+http://ja.nishimotz.com/nvdajp_certfile
