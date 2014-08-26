@@ -1,6 +1,6 @@
 @rem set VERSION=2014.3jp
 set BUILDTYPE=jpbeta
-set VERSION=%BUILDTYPE%140810
+set VERSION=%BUILDTYPE%140811
 set PUBLISHER=nvdajp
 set PAUSE=0
 set CLEAN=1
@@ -35,7 +35,7 @@ call scons.bat source\comInterfaces %ARGS%
 
 @if "%PAUSE%"=="1" pause
 call scons.bat NVDAHelper %ARGS%
-@if not "%ERRORLEVEL%"=="0" goto onerror
+@rem @if not "%ERRORLEVEL%"=="0" goto onerror
 
 @if "%PAUSE%"=="1" pause
 call scons.bat source dist launcher %ARGS%
