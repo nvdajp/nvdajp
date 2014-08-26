@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-06 23:27+1000\n"
-"PO-Revision-Date: 2014-08-06 20:34+0100\n"
+"POT-Creation-Date: 2014-08-11 19:10+1000\n"
+"PO-Revision-Date: 2014-08-07 18:31+0100\n"
 "Last-Translator: Bart Simons <bart@bartsimons.be>\n"
 "Language-Team: Dutch <nvda-nl@googlegroups.com> (http://www.transifex.net/"
 "projects/p/nvda/language/nl/)\n"
@@ -3094,11 +3094,11 @@ msgstr "uitvullen"
 #. Translators: Reported when text is justified with character spacing (Japanese etc)
 #. See http://kohei.us/2010/01/21/distributed-text-justification/
 msgid "align distributed"
-msgstr ""
+msgstr "verdeeld uitlijnen"
 
 #. Translators: Reported when text has reverted to default alignment.
 msgid "align default"
-msgstr "standaard uitlijning"
+msgstr "standaard uitlijnen"
 
 #. Translators: the label for paragraph format left indent
 msgid "left indent"
@@ -3134,35 +3134,35 @@ msgstr "eerste regel niet inspringen"
 
 #. Translators: Reported when text is vertically top-aligned.
 msgid "vertical align top"
-msgstr ""
+msgstr "verticaal boven uitlijnen"
 
 #. Translators: Reported when text is vertically middle aligned.
 msgid "vertical align middle"
-msgstr ""
+msgstr "verticaal midden uitlijnen"
 
 #. Translators: Reported when text is vertically bottom-aligned.
 msgid "vertical align bottom"
-msgstr ""
+msgstr "verticaal beneden uitlijnen"
 
 #. Translators: Reported when text is vertically aligned on the baseline.
 msgid "vertical align baseline"
-msgstr ""
+msgstr "verticaal op de baseline uitlijnen"
 
 #. Translators: Reported when text is vertically justified.
 msgid "vertical align justified"
-msgstr ""
+msgstr "verticaal uitvullen"
 
 #. Translators: Reported when text is vertically justified but with character spacing (For some Asian content).
 msgid "vertical align distributed"
-msgstr ""
+msgstr "verticaal verdeeld uitlijnen"
 
 #. Translators: Reported when text has reverted to default vertical alignment.
 msgid "vertical align default"
-msgstr ""
+msgstr "verticaal standaard uitlijnen"
 
 #. Translators: Reported when text no longer contains a comment.
 msgid "out of comment"
-msgstr "Buiten opmerking"
+msgstr "buiten opmerking"
 
 #. Translators: Reported when text contains a spelling error.
 msgid "spelling error"
@@ -6295,6 +6295,9 @@ msgid ""
 "lower and to the right of it within this region. Pressing twice will forget "
 "the current column header for this cell."
 msgstr ""
+"Eenmaal drukken, stelt deze cel in als eerste kolomhoofding voor alle cellen "
+"eronder en rechts ervan, binnen dit gebied. Tweemaal drukken vergeet de "
+"huidige kolomhoofding voor deze cel."
 
 #. Translators: a message reported in the SetRowHeader script for Excel.
 msgid "Set {address} as start of row headers"
@@ -6317,6 +6320,9 @@ msgid ""
 "and to the right of it within this region. Pressing twice will forget the "
 "current row header for this cell."
 msgstr ""
+"Eenmaal drukken, stelt deze cel in als eerste rijhoofding voor alle cellen "
+"eronder en rechts ervan, binnen dit gebied. Tweemaal drukken vergeet de "
+"huidige rijhoofding voor deze cel."
 
 #. Translators: A message in Excel when there is no comment
 msgid "Not on a comment"
@@ -6476,6 +6482,9 @@ msgid ""
 "lower and to the right of it within this table. Pressing twice will forget "
 "the current column header for this cell."
 msgstr ""
+"Eenmaal drukken, stelt deze cel in als eerste kolomhoofding voor alle cellen "
+"eronder en rechts ervan, binnen deze tabel. Tweemaal drukken vergeet de "
+"huidige kolomhoofding voor deze cel."
 
 #. Translators: a message reported in the SetRowHeader script for Microsoft Word.
 msgid "Set row {rowNumber} column {columnNumber} as start of row headers"
@@ -6503,6 +6512,9 @@ msgid ""
 "and to the right of it within this table. Pressing twice will forget the "
 "current row header for this cell."
 msgstr ""
+"Eenmaal drukken, stelt deze cel in als eerste rijhoofding voor alle cellen "
+"eronder en rechts ervan, binnen deze tabel. Tweemaal drukken vergeet de "
+"huidige rijhoofding voor deze cel."
 
 #. Translators: a message when toggling formatting in Microsoft word
 msgid "Bold on"
@@ -6546,11 +6558,11 @@ msgstr "Uitgevuld"
 
 #. Translators: the message when the outline level / style is changed in Microsoft word
 msgid "{styleName} style, outline level {outlineLevel}"
-msgstr ""
+msgstr "{styleName} stijl, kopniveau {outlineLevel}"
 
 #. Translators: a message when increasing or decreasing font size in Microsoft Word
 msgid "{size:g} point font"
-msgstr ""
+msgstr "lettergrootte {size:g} punten"
 
 #. Translators: a measurement in Microsoft Word
 msgid "{offset:.3g} characters"
