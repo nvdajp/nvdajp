@@ -1,3 +1,7 @@
+NVDA 日本語版 開発者メモ
+
+NVDA日本語チーム 西本卓也
+
 1. ビルド環境
 
 NVDA 2014.3jp の場合
@@ -66,7 +70,7 @@ jptools\copy_symbols_to_srt.cmd
 
 (3) jptools\selfcert_clean.cmd 初期化
 (4) jptools\selfcert_setup.cmd パスフレーズを空欄で設定
-(5) jptools\selfcert_scons.cmd ビルド
+(5) jptools\selfcert_scons.cmd SET VERSION の値を更新してビルド実行
 (6) jptools\selfcert_pack_dist.cmd: distの中身をアーカイブ nvda-*jp-*-dist-self.zip を送付。
 
 戻ってきたファイルで dist の中身を上書き。
@@ -76,3 +80,71 @@ jptools\copy_symbols_to_srt.cmd
 
 過去の記録
 http://ja.nishimotz.com/nvdajp_certfile
+
+
+以下、過去の 00readme.txt の内容。更新予定：
+
+A part of NonVisual Desktop Access (NVDA)
+This file is covered by the GNU General Public License.
+See the file COPYING for more details.
+Copyright (C) 2013 Takuya Nishimoto
+
+checkCharDesc.py
+====================================
+
+character description consistency check
+
+> cd jptools
+> python checkCharDesc.py
+
+
+checkSymbols.py
+====================================
+
+symbols consistency check
+
+> cd jptools
+> python checkSymbols.py
+
+
+updateCharDesc.py
+====================================
+
+convert characters.dic to characterDescriptions.dic
+
+> cd jptools
+> python updateCharDesc.py > newfile.dic
+
+
+jtalkRunner.py
+====================================
+
+JTalk test runner.
+
+> cd jptools
+> python jtalkRunner.py
+
+
+jpBrailleRunner.py
+====================================
+
+Japanese braille test harness (new version)
+
+> cd jptools
+> python jpBrailleRunner.py
+
+Output files:
+
+  * __h1output.txt
+  * __h2output.txt
+  * __h2log.txt
+
+evaluate.py
+====================================
+
+Japanese braille test harness (legacy version)
+
+> cd jptools
+> python evaluate.py
+
+
