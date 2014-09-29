@@ -33,7 +33,32 @@ git push するためには push 先のアカウントのセットアップや�
 
 2. サブモジュールの取得
 
+git submodule sync
 git submodule update --init --recursive
+
+
+2.1 git submodule のエラー対応
+
+> git submodule update --init
+
+fatal: reference is not a tree: 1e1e7587cfbc263b351644e52fdaf2684103d6c8
+Unable to checkout '1e1e7587cfbc263b351644e52fdaf2684103d6c8' in submodule path
+'include/liblouis'
+
+include/liblouis サブモジュールの checkout に失敗している。
+liblouis に cd して git fetch -t してからやり直してみる：
+
+> cd include\liblouis
+> git fetch -t
+
+remote: Counting objects: 412, done.
+remote: Compressing objects: 100% (144/144), done.
+rRemote: Total 412 (delta 268), reused 412 (delta 268)eceiving objects:  91% (37
+Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
+（略）
+
+> cd ..\..
+> git submodule update --init --recursive
 
 
 3. スナップショットのビルド
