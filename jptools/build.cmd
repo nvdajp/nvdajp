@@ -1,15 +1,17 @@
 set BUILDTYPE=jpbeta
-set VERSION=%BUILDTYPE%140907
+for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
+set VERSION=%BUILDTYPE%%NOWDATE%
 set PUBLISHER=nvdajp
 set PAUSE=0
 set CLEAN=1
 set CLIENT=1
+set PROCESS=1
 
 set DEBUG=
 @rem set DEBUG=nvdaHelperDebugFlags=noOptimize,RTC,debugCRT,symbols
 @rem set DEBUG=nvdaHelperDebugFlags=symbols
 
-set ARGS=-j4 publisher=%PUBLISHER% release=1 version=%VERSION% %DEBUG%
+set ARGS=-j%PROCESS% publisher=%PUBLISHER% release=1 version=%VERSION% %DEBUG%
 
 del /Q output\nvda_%VERSION%.exe
 @if not "%ERRORLEVEL%"=="0" goto onerror
