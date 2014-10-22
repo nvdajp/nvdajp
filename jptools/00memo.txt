@@ -69,7 +69,7 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 (2) jptools\setupMiscDepsJp.cmd
 (3) jptools\build.cmd
 
-日本語エンジン系を更新しない場合は (1) (2) は不要。
+JTalk または日本語点訳エンジンを更新しない場合は (1) (2) は不要。
 
 
 4. その他の作業用スクリプト
