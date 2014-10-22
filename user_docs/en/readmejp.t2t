@@ -367,6 +367,7 @@ eSpeak of NVDA cannot handle Japanese language.
 
 
 
+
 ++ KGS Braille Memo series ++
 
 The driver for braille display "KGS BrailleMemo series" from [KGS Corporation http://www.kgs-jpn.co.jp/] is added. BM46 is used for development and tests. BM32 is tested by the community members.
