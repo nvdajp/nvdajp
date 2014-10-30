@@ -78,12 +78,7 @@ class SettingsDialog(wx.Dialog):
 		self.Bind(wx.EVT_BUTTON,self.onOk,id=wx.ID_OK)
 		self.Bind(wx.EVT_BUTTON,self.onCancel,id=wx.ID_CANCEL)
 		self.postInit()
-		dw, dh = self.GetSizeTuple()
-		import api
-		left, top, width, height = api.getDesktopObject().location
-		x = (width - dw) / 2
-		y = (height - dh) / 2
-		self.SetPosition((x, y))
+		self.Center(wx.BOTH | wx.CENTER_ON_SCREEN)
 
 	def __del__(self):
 		SettingsDialog._hasInstance=False
