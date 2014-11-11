@@ -727,6 +727,7 @@ class ExitDialog(wx.Dialog):
 		self.Center(wx.BOTH | wx.CENTER_ON_SCREEN)
 		self.Sizer = mainSizer
 		self.actionsList.SetFocus()
+		self.Center(wx.BOTH | wx.CENTER_ON_SCREEN)
 
 	def onOk(self, evt):
 		action=self.actionsList.GetSelection()
