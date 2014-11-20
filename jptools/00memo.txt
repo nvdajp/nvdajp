@@ -4,7 +4,7 @@ NVDA日本語チーム 西本卓也
 
 1. ビルド環境
 
-NVDA 2014.3jp の場合
+NVDA 2014.4jp の場合
 
 (1) Windows 7 SP1 64ビット
 
@@ -30,8 +30,12 @@ git push するためには push 先のアカウントのセットアップや�
 
 (5) 7z (:\Program Files (x86)\7-Zip\7z.exe に PATH が通っていること）
 
+miscDepsJp から sources へのコピーで使用している。
+
 
 (6) Python 2.7.8 (Windows 32bit)
+
+C:\Python27\python.exe に PATH が通っていること。
 
 
 2. サブモジュールの取得
@@ -80,23 +84,39 @@ JTalk または日本語点訳エンジンを更新しない場合は (1) (2) �
 
 4. その他の作業用スクリプト
 
-レポジトリにプッシュ
+4.1 事前に不要ファイルの確認
+
+jptools\findBackupFiles.cmd
+
+必要に応じて削除。
+
+4.2 レポジトリにプッシュ
+
 jptools\push_remote.cmd
 
-clean miscdep
+git remote -v の状況：
+
+origin  git@bitbucket.org:nvdajp/nvdajp.git (fetch)
+origin  git@bitbucket.org:nvdajp/nvdajp.git (push)
+gh      git@github.com:nvdajp/nvdajp.git (fetch)
+gh      git@github.com:nvdajp/nvdajp.git (push)
+sfjp    nishimoto@git.sourceforge.jp:/gitroot/nvdajp/nvdajp.git (fetch)
+sfjp    nishimoto@git.sourceforge.jp:/gitroot/nvdajp/nvdajp.git (push)
+nvaccess        git://git.nvaccess.org/nvda.git (fetch)
+nvaccess        git://git.nvaccess.org/nvda.git (push)
+
+
+4.3 clean miscdep
+
 jptools\clean_miscdep.cmd
 
-copy Japanese character symbols to subversion repo
+
+4.4 copy Japanese character symbols to subversion repo
+
 jptools\copy_symbols_to_srt.cmd
 
 
 5. 2014.4jp 以降の署名つきビルド
-
-事前に不要ファイルの確認
-
-(0) jptools\findBackupFiles.cmd
-
-必要に応じて削除。
 
 署名つきビルドは、最上位のディレクトリで以下を実行
 
