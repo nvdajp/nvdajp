@@ -6,7 +6,7 @@ NVDA日本語チーム 西本卓也
 
 NVDA 2014.4jp の場合
 
-(1) Windows 7 SP1 64ビット
+(1) Windows 7 SP1 32ビットまたは64ビット
 
 備考：Windows 8.1 でビルドして 7 にインストールするとエラーが出る問題
 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34057
