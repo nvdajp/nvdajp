@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2014年10月22日
+- 最終更新日：2014年11月20日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -728,6 +728,24 @@ NVDA 日本語版を音声や点字の出力先として選択できるアプリ
 
 
 + バージョンごとの変更点 +
+
+++ 2014.4jp の変更点 ++
+
+NVDA 日本語チームは以下の変更および改良を行いました。
+
+- [電子署名の対象ファイルを増やす http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34160]
+- [郵便番号の記号などの点字 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34369]
+- [ダイアログが必ず画面の中心に来るようにする http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34404]
+- [日本語点訳で長音記号の直前の数字がカナになる不具合への対応 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34438]
+- [既定の言語が日本語でない場合に JTalk が日本語を読み上げない不具合への対応 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34542]
+- [点訳で数字とアルファベットのあいだに外字符が入らない不具合への対応 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34545]
+
+
+また、以下の変更は NVDA 本家版 2014.4 と日本語版 2014.4jp の両方に反映されました。
+
+- [句読点記号読み上げレベルの仕様がわかりにくいことへの対応として、句読点記号辞書のダイアログ表記を「最低読み上げレベル」という表記に変更 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34502]
+
+
 
 ++ 2014.3jp の変更点 ++
 
