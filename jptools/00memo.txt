@@ -2,17 +2,22 @@ NVDA 日本語版 開発者メモ
 
 NVDA日本語チーム 西本卓也
 
+
 1. ビルド環境
 
+
 NVDA 2014.4jp の場合
+
 
 (1) Windows 7 SP1 32ビットまたは64ビット
 
 備考：Windows 8.1 でビルドして 7 にインストールするとエラーが出る問題
 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34057
 
+
 (2) Visual Studio 2012 Express for Desktop (Update 4)
-(3) Visual Studio 2013 Express for Desktop (Update 3)
+
+(3) Visual Studio 2013 Express for Desktop (Update 4)
 
 備考：
 VS2012 は NVDA コアのコンパイルに必要、VS2013 は JTalk のコンパイルで使用。
@@ -40,8 +45,8 @@ C:\Python27\python.exe に PATH が通っていること。
 
 2. サブモジュールの取得
 
-git submodule sync
-git submodule update --init --recursive
+> git submodule sync
+> git submodule update --init --recursive
 
 
 2.1 git submodule のエラー対応
@@ -84,11 +89,13 @@ JTalk または日本語点訳エンジンを更新しない場合は (1) (2) �
 
 4. その他の作業用スクリプト
 
+
 4.1 事前に不要ファイルの確認
 
 jptools\findBackupFiles.cmd
 
 必要に応じて削除。
+
 
 4.2 レポジトリにプッシュ
 
@@ -120,13 +127,16 @@ jptools\copy_symbols_to_srt.cmd
 
 署名つきビルドは、最上位のディレクトリで以下を実行
 
-(1) jptools\setup-vc2013.cmd
-(2) jptools\setupMiscDepsJp.cmd
-(3) jptools\kcCertMiscDepsJp.cmd
-(4) jptools\kcCertBuild.cmd
+(1) scons -c
+(2) jptools\setup-vc2013.cmd
+(3) jptools\setupMiscDepsJp.cmd
+(4) jptools\kcCertMiscDepsJp.cmd
+(5) jptools\kcCertBuild.cmd
 
-JTalk または日本語点訳エンジンを更新しない場合は (1) (2) (3) は不要。
-(3) は libopenjtalk, libmecab, directbm の各DLLを署名する。
+補足:
+(3) は JTalk と日本語点訳エンジンを更新する。
+(4) は libopenjtalk, libmecab, directbm の各DLLを署名する。
+(4) で署名ツールがエラーを出したらやり直す。
 
 
 6. 2014.3jp までの署名つきリリースの手順
