@@ -1,7 +1,8 @@
 set BUILDTYPE=jpbeta
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
 @rem set VERSION=%BUILDTYPE%%NOWDATE%
-set VERSION=2014.4jp-beta-141124
+@rem set VERSION=2014.4jp-beta-%NOWDATE%
+set VERSION=2014.4jp
 set PUBLISHER=nvdajp
 set PFX=..\..\kc\pfx\knowlec-key141016.pfx
 set PWFILE=..\..\kc\pfx\knowlec-key-pass.txt
