@@ -73,57 +73,7 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 > git submodule update --init --recursive
 
 
-3. 署名なしビルド
-
-署名なしビルドは、最上位のディレクトリで以下を実行
-
-(1) jptools\setup-vc2013.cmd
-(2) jptools\setupMiscDepsJp.cmd
-(3) jptools\build.cmd
-
-JTalk または日本語点訳エンジンを更新しない場合は (1) (2) は不要。
-
-出力は output フォルダに作られる。
-実行した日付のついた nvda_jpbetaYYMMDD.exe というファイル名になる。
-
-
-4. その他の作業用スクリプト
-
-
-4.1 事前に不要ファイルの確認
-
-jptools\findBackupFiles.cmd
-
-必要に応じて削除。
-
-
-4.2 レポジトリにプッシュ
-
-jptools\push_remote.cmd
-
-git remote -v の状況：
-
-origin  git@bitbucket.org:nvdajp/nvdajp.git (fetch)
-origin  git@bitbucket.org:nvdajp/nvdajp.git (push)
-gh      git@github.com:nvdajp/nvdajp.git (fetch)
-gh      git@github.com:nvdajp/nvdajp.git (push)
-sfjp    nishimoto@git.sourceforge.jp:/gitroot/nvdajp/nvdajp.git (fetch)
-sfjp    nishimoto@git.sourceforge.jp:/gitroot/nvdajp/nvdajp.git (push)
-nvaccess        git://git.nvaccess.org/nvda.git (fetch)
-nvaccess        git://git.nvaccess.org/nvda.git (push)
-
-
-4.3 clean miscdep
-
-jptools\clean_miscdep.cmd
-
-
-4.4 copy Japanese character symbols to subversion repo
-
-jptools\copy_symbols_to_srt.cmd
-
-
-5. 2014.4jp 以降の署名つきビルド
+3. 2014.4jp 以降の署名つきビルド
 
 署名つきビルドは、最上位のディレクトリで以下を実行
 
@@ -139,7 +89,57 @@ jptools\copy_symbols_to_srt.cmd
 (4) で署名ツールがエラーを出したらやり直す。
 
 
-6. 2014.3jp までの署名つきリリースの手順
+4. 署名なしビルド
+
+署名なしビルドは、最上位のディレクトリで以下を実行
+
+(1) jptools\setup-vc2013.cmd
+(2) jptools\setupMiscDepsJp.cmd
+(3) jptools\build.cmd
+
+JTalk または日本語点訳エンジンを更新しない場合は (1) (2) は不要。
+
+出力は output フォルダに作られる。
+実行した日付のついた nvda_jpbetaYYMMDD.exe というファイル名になる。
+
+
+5. その他の作業用スクリプト
+
+
+5.1 事前に不要ファイルの確認
+
+jptools\findBackupFiles.cmd
+
+必要に応じて削除。
+
+
+5.2 レポジトリにプッシュ
+
+jptools\push_remote.cmd
+
+git remote -v の状況：
+
+origin  git@bitbucket.org:nvdajp/nvdajp.git (fetch)
+origin  git@bitbucket.org:nvdajp/nvdajp.git (push)
+gh      git@github.com:nvdajp/nvdajp.git (fetch)
+gh      git@github.com:nvdajp/nvdajp.git (push)
+sfjp    nishimoto@git.sourceforge.jp:/gitroot/nvdajp/nvdajp.git (fetch)
+sfjp    nishimoto@git.sourceforge.jp:/gitroot/nvdajp/nvdajp.git (push)
+nvaccess        git://git.nvaccess.org/nvda.git (fetch)
+nvaccess        git://git.nvaccess.org/nvda.git (push)
+
+
+5.3 clean miscdep
+
+jptools\clean_miscdep.cmd
+
+
+5.4 copy Japanese character symbols to subversion repo
+
+jptools\copy_symbols_to_srt.cmd
+
+
+5.5 2014.3jp までの署名つきリリースの手順
 
 まず、管理者としてコマンドプロンプトを実行する。
 
@@ -162,7 +162,7 @@ jptools\copy_symbols_to_srt.cmd
 http://ja.nishimotz.com/nvdajp_certfile
 
 
-7. 過去の 00readme.txt の内容
+6. 過去の 00readme.txt の内容
 
 更新予定
 
