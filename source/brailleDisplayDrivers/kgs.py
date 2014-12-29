@@ -200,9 +200,10 @@ def _autoConnection(hBrl, devName, port):
 def bmConnect(hBrl, port, execEndConnection=False):
 	if execEndConnection:
 		bmDisConnect(hBrl, port)
-	devName = getKbdcName(hBrl)
-	if not devName:
-		return False
+	#devName = getKbdcName(hBrl)
+	#if devName:
+	#	log.info("kbdc name:%s" % unicode(devName, 'mbcs'))
+	devName = u"BMシリーズ機器".encode('shift-jis')
 	if port is None or port=="auto":
 		ret, pName = _autoConnection(hBrl, devName, port)
 	else:
@@ -257,7 +258,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			raise RuntimeError("No KGS display found")
 
 	def terminate(self):
-		super(BrailleDisplayDriver, self).terminate()
+		log.info("KGS driver terminating")
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
 			ret = windll.kernel32.FreeLibrary(self._directBM._handle)
@@ -265,6 +266,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info("KGS driver terminated %d" % ret)
 		self._directBM = None
 		self._portName = None
+		super(BrailleDisplayDriver, self).terminate()
+		log.info("KGS driver terminating done")
 
 	@classmethod
 	def check(cls):
