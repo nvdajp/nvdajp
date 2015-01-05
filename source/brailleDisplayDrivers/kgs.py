@@ -20,6 +20,7 @@ from ctypes.wintypes import *
 import config
 from logHandler import log
 import sys
+import _winreg
 
 kgs_dir = unicode(os.path.dirname(__file__), 'mbcs')
 if (not 'addons' in kgs_dir.split("\\")) and hasattr(sys,'frozen'):
@@ -129,19 +130,43 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 		return True
 	return False
 
-def getKbdcName(hBrl):
-	DEVNAME_JA = u"BMシリーズ機器".encode('shift-jis')
-	DEVNAME_EN = u"BM series"
-	REGKEY_KBDC110_PATH_JA = r"SOFTWARE\KGS\KBDC110"
-	REGKEY_KBDC110_PATH_EN = r"SOFTWARE\KGS\KBDC110-E"
-	ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_JA)
-	if ret:
-		devName = DEVNAME_JA
-	else:
-		ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_EN)
-		if ret:
-			devName = DEVNAME_EN
-	return devName
+#def getKbdcName(hBrl):
+#	DEVNAME_JA = u"BMシリーズ機器".encode('shift-jis')
+#	DEVNAME_EN = u"BM series"
+#	REGKEY_KBDC110_PATH_JA = r"SOFTWARE\KGS\KBDC110"
+#	REGKEY_KBDC110_PATH_EN = r"SOFTWARE\KGS\KBDC110-E"
+#	ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_JA)
+#	if ret:
+#		devName = DEVNAME_JA
+#	else:
+#		ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_EN)
+#		if ret:
+#			devName = DEVNAME_EN
+#	return devName
+
+def _listComPorts():
+	ports = []
+
+	# BM-SMART USB
+	try:
+		rootKey = _winreg.OpenKey(
+			_winreg.HKEY_LOCAL_MACHINE,
+			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0301\00000000-0000-0000-0000-000042000000\Device Parameters"
+		)
+		portName = _winreg.QueryValueEx(rootKey, "PortName")[0]
+		ports.append({
+			'friendlyName': u'KGS BM-SMART USB Serial (%s)' % portName,
+			'hardwareID': u'',
+			'port': unicode(portName)
+		})
+	except WindowsError as e:
+		log.info(str(e))
+
+	# available ports
+	for entry in hwPortUtils.listComPorts():
+		ports.append(entry)
+	log.info(unicode(ports))
+	return ports
 
 def _fixConnection(hBrl, devName, port):
 	global fConnection, lastReleaseTime
@@ -184,7 +209,7 @@ def _fixConnection(hBrl, devName, port):
 def _autoConnection(hBrl, devName, port):
 	Port = _port = None
 	ret = False
-	for portInfo in hwPortUtils.listComPorts(onlyAvailable=True):
+	for portInfo in _listComPorts():
 		_port = portInfo["port"]
 		hwID = portInfo["hardwareID"]
 		frName = portInfo.get("friendlyName")
@@ -275,9 +300,12 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	@classmethod
 	def getPossiblePorts(cls):
+		#for portType, port in _getPorts():
+		#	log.info(str(portType) + " " + str(port))
 		ar = [cls.AUTOMATIC_PORT]
 		ports = {}
-		for p in hwPortUtils.listComPorts(onlyAvailable=True):
+		for p in _listComPorts():
+			log.info(p)
 			ports[p["port"]] = p["friendlyName"]
 		log.info(ports)
 		for i in xrange(64):
