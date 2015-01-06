@@ -21,6 +21,7 @@ import config
 from logHandler import log
 import sys
 import _winreg
+import itertools
 
 kgs_dir = unicode(os.path.dirname(__file__), 'mbcs')
 if (not 'addons' in kgs_dir.split("\\")) and hasattr(sys,'frozen'):
@@ -151,21 +152,59 @@ def _listComPorts():
 	try:
 		rootKey = _winreg.OpenKey(
 			_winreg.HKEY_LOCAL_MACHINE,
-			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0301\00000000-0000-0000-0000-000042000000\Device Parameters"
+			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0301"
 		)
-		portName = _winreg.QueryValueEx(rootKey, "PortName")[0]
-		ports.append({
-			'friendlyName': u'KGS BM-SMART USB Serial (%s)' % portName,
-			'hardwareID': u'',
-			'port': unicode(portName)
-		})
 	except WindowsError as e:
-		log.info(str(e))
+		pass
+	else:
+		with rootKey:
+			for index in itertools.count():
+				try:
+					keyName = _winreg.EnumKey(rootKey, index)
+				except WindowsError:
+					break
+				try:
+					with _winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
+						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
+						ports.append({
+							'friendlyName': u'%s KGS BM-SMART USB Serial' % portName,
+							'hardwareID': ur'USB\VID_1148&PID_0301',
+							'port': unicode(portName)
+						})
+				except WindowsError:
+					continue
+
+	# KGS USB for BM46
+	try:
+		rootKey = _winreg.OpenKey(
+			_winreg.HKEY_LOCAL_MACHINE,
+			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0001"
+		)
+	except WindowsError as e:
+		pass
+	else:
+		with rootKey:
+			for index in itertools.count():
+				try:
+					keyName = _winreg.EnumKey(rootKey, index)
+				except WindowsError:
+					break
+				try:
+					with _winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
+						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
+						ports.append({
+							'friendlyName': u'%s KGS USB To Serial Com Port' % portName,
+							'hardwareID': ur'USB\VID_1148&PID_0001',
+							'port': unicode(portName)
+						})
+				except WindowsError:
+					continue
 
 	# available ports
+	# use bluetooth name if KGS devices are found
 	for p in hwPortUtils.listComPorts():
 		if 'bluetoothName' in p and p['bluetoothName'] in (u'BM Series', u'BMsmart-KGS'):
-			p['friendlyName'] = u"%s (%s)" % (p['bluetoothName'], p['port'])
+			p['friendlyName'] = u"%s %s" % (p['port'], p['bluetoothName'])
 			ports.append(p)
 	log.info(unicode(ports))
 	return ports
