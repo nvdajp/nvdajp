@@ -163,8 +163,10 @@ def _listComPorts():
 		log.info(str(e))
 
 	# available ports
-	for entry in hwPortUtils.listComPorts():
-		ports.append(entry)
+	for p in hwPortUtils.listComPorts():
+		if 'bluetoothName' in p and p['bluetoothName'] in (u'BM Series', u'BMsmart-KGS'):
+			p['friendlyName'] = u"%s (%s)" % (p['bluetoothName'], p['port'])
+			ports.append(p)
 	log.info(unicode(ports))
 	return ports
 
@@ -300,8 +302,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	@classmethod
 	def getPossiblePorts(cls):
-		#for portType, port in _getPorts():
-		#	log.info(str(portType) + " " + str(port))
 		ar = [cls.AUTOMATIC_PORT]
 		ports = {}
 		for p in _listComPorts():
