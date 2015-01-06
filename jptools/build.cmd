@@ -6,14 +6,23 @@ set PAUSE=0
 set CLEAN=1
 set CLIENT=1
 set PROCESS=1
+set RELEASE=1
 
+@if "%RELEASE%"=="0" goto set_debug_option
 set DEBUG=
-@rem set DEBUG=nvdaHelperDebugFlags=noOptimize,RTC,debugCRT,symbols
-@rem set DEBUG=nvdaHelperDebugFlags=symbols
+goto endif_set_debug_option
+:set_debug_option
+set DEBUG=nvdaHelperDebugFlags=RTC,debugCRT
+:endif_set_debug_option
 
-set ARGS=-j%PROCESS% publisher=%PUBLISHER% release=1 version=%VERSION% %DEBUG%
+set ARGS=-j%PROCESS% publisher=%PUBLISHER% release=%RELEASE% version=%VERSION% %DEBUG%
 
+@if "%RELEASE%"=="0" goto del_snapshot
 del /Q output\nvda_%VERSION%.exe
+goto endif_del_snapshot
+:del_snapshot
+del /Q output\nvda_snapshot_%VERSION%.exe
+:endif_del_snapshot
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 @if "%CLEAN%"=="0" goto skip_clean
