@@ -23,8 +23,8 @@ import sys
 import _winreg
 import itertools
 
-kgs_dir = unicode(os.path.dirname(__file__), 'mbcs')
-if (not 'addons' in kgs_dir.split("\\")) and hasattr(sys,'frozen'):
+kgs_dir = unicode(os.path.dirname(__file__), "mbcs")
+if (not 'addons' in os.path.split(kgs_dir)) and hasattr(sys, 'frozen'):
 	d = os.path.join(os.getcwdu(), 'brailleDisplayDrivers')
 	if os.path.isdir(d):
 		kgs_dir = d
@@ -40,7 +40,9 @@ lastReleaseTime = None
 KGS_DISPMODE = 0x02|0x04
 
 # void (CALLBACK *pStatusChanged)(int nStatus, int nDispSize)
-@WINFUNCTYPE(c_void_p, c_int, c_int)
+#@WINFUNCTYPE(c_void_p, c_int, c_int)
+KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)
+
 def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	global fConnection, numCells
 	if 0==nStatus: #BMDRVS_DISCONNECTED
@@ -76,7 +78,9 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 		log.info("status changed to %d" % nStatus)
 
 # BOOL (CALLBACK *pHandleKeyInfo)(BYTE info[4])
-@WINFUNCTYPE(c_int, POINTER(c_ubyte))
+# @WINFUNCTYPE(c_int, POINTER(c_ubyte))
+KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))
+
 def nvdaKgsHandleKeyInfoProc(lpKeys):
 	keys = (lpKeys[0], lpKeys[1], lpKeys[2], lpKeys[3])
 	log.io("keyInfo %d %d %d %d" % keys)
@@ -130,20 +134,6 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 		inputCore.manager.executeGesture(InputGesture(names, routingIndex))
 		return True
 	return False
-
-#def getKbdcName(hBrl):
-#	DEVNAME_JA = u"BMシリーズ機器".encode('shift-jis')
-#	DEVNAME_EN = u"BM series"
-#	REGKEY_KBDC110_PATH_JA = r"SOFTWARE\KGS\KBDC110"
-#	REGKEY_KBDC110_PATH_EN = r"SOFTWARE\KGS\KBDC110-E"
-#	ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_JA)
-#	if ret:
-#		devName = DEVNAME_JA
-#	else:
-#		ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_EN)
-#		if ret:
-#			devName = DEVNAME_EN
-#	return devName
 
 def _listComPorts():
 	ports = []
@@ -209,7 +199,7 @@ def _listComPorts():
 	log.info(unicode(ports))
 	return ports
 
-def _fixConnection(hBrl, devName, port):
+def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	global fConnection, lastReleaseTime
 	log.info("scanning port %s" % port)
 	if port[:3] == 'COM':
@@ -226,11 +216,11 @@ def _fixConnection(hBrl, devName, port):
 			if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
 				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
 				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
-	ret = hBrl.bmStart(devName, _port, SPEED, nvdaKgsStatusChangedProc)
+	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
 	for loop in xrange(30):
 		try:
 			if fConnection:
-				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, nvdaKgsHandleKeyInfoProc)
+				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
 				break
 			time.sleep(0.5)
 			tones.beep(400+(loop*20), 20)
@@ -247,7 +237,7 @@ def _fixConnection(hBrl, devName, port):
 	log.info("connection:%d port:%d" % (fConnection, _port))
 	return fConnection, port
 
-def _autoConnection(hBrl, devName, port):
+def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	Port = _port = None
 	ret = False
 	for portInfo in _listComPorts():
@@ -258,22 +248,19 @@ def _autoConnection(hBrl, devName, port):
 		log.info(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
 		#if hwID[:3] != 'USB':
 		#	continue
-		ret, Port = _fixConnection(hBrl, devName, _port)
+		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
 		if ret:
 			break
 	return ret, Port
 
-def bmConnect(hBrl, port, execEndConnection=False):
+def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
 		bmDisConnect(hBrl, port)
-	#devName = getKbdcName(hBrl)
-	#if devName:
-	#	log.info("kbdc name:%s" % unicode(devName, 'mbcs'))
 	devName = u"BMシリーズ機器".encode('shift-jis')
 	if port is None or port=="auto":
-		ret, pName = _autoConnection(hBrl, devName, port)
+		ret, pName = _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
 	else:
-		ret, pName = _fixConnection(hBrl, devName, port)
+		ret, pName = _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
 	return ret, pName
 
 def bmDisConnect(hBrl, port):
@@ -312,7 +299,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
 		if not self._directBM:
 			raise RuntimeError("No KGS instance found")
-		ret,self._portName = bmConnect(self._directBM, port, execEndConnection)
+		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
+		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
+		ret,self._portName = bmConnect(self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
 		if ret:
 			config.conf["braille"][self.name] = {"port" : self._portName}
 			self.numCells = numCells
@@ -325,6 +314,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	def terminate(self):
 		log.info("KGS driver terminating")
+		super(BrailleDisplayDriver, self).terminate()
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
 			ret = windll.kernel32.FreeLibrary(self._directBM._handle)
@@ -332,7 +322,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info("KGS driver terminated %d" % ret)
 		self._directBM = None
 		self._portName = None
-		super(BrailleDisplayDriver, self).terminate()
+		self._keyCallbackInst = None
+		self._statusCallbackInst = None
 		log.info("KGS driver terminating done")
 
 	@classmethod
