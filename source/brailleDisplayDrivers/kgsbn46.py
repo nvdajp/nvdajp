@@ -107,22 +107,6 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 		return True
 	return False
 
-def getKbdcName(hBrl):
-	#DEVNAME_JA = u"BMシリーズ機器".encode('shift-jis')
-	#DEVNAME_EN = u"BM series"
-	DEVNAME_JA = u"ブレイルノート46C/46D".encode('shift-jis')
-	DEVNAME_EN = u"BrailleNote46C/46D"
-	REGKEY_KBDC110_PATH_JA = r"SOFTWARE\KGS\KBDC110"
-	REGKEY_KBDC110_PATH_EN = r"SOFTWARE\KGS\KBDC110-E"
-	ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_JA)
-	if ret:
-		devName = DEVNAME_JA
-	else:
-		ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_EN)
-		if ret:
-			devName = DEVNAME_EN
-	return devName
-
 def _fixConnection(hBrl, devName, port):
 	global fConnection, lastReleaseTime
 	log.info("scanning port %s" % port)
@@ -180,9 +164,7 @@ def _autoConnection(hBrl, devName, port):
 def bmConnect(hBrl, port, execEndConnection=False):
 	if execEndConnection:
 		bmDisConnect(hBrl, port)
-	devName = getKbdcName(hBrl)
-	if not devName:
-		return False
+	devName = u"ブレイルノート46C/46D".encode('shift-jis')
 	if port is None or port=="auto":
 		ret, pName = _autoConnection(hBrl, devName, port)
 	else:
