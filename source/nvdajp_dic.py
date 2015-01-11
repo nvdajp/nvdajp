@@ -9,6 +9,7 @@ import config
 import re
 import collections
 from logHandler import log
+import speech
 
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 
@@ -30,7 +31,9 @@ def get_short_desc(s):
 SMALL_KANA_CHARACTERS = u'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヵヶｧｨｩｪｫｬｭｮｯ'
 SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + u'をヲｦはへー'
 
-def isJapaneseLocale(locale):
+def isJapaneseLocale(locale=None):
+	if locale is None:
+		return speech.getCurrentLanguage()[:2] == 'ja'
 	return locale[:2] == 'ja'
 
 def isZenkakuHiragana(c):
