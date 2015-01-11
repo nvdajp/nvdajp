@@ -195,8 +195,8 @@ class GlobalCommands(ScriptableObject):
 		if scriptHandler.getLastScriptRepeatCount()==0:
 			text=winKernel.GetTimeFormat(winKernel.LOCALE_USER_DEFAULT, winKernel.TIME_NOSECONDS, None, None)
 			# nvdajp
-			import languageHandler
-			if languageHandler.getLanguage() == 'ja_JP':
+			import nvdajp_dic
+			if nvdajp_dic.isJapaneseLocale():
 				import re
 				mo = re.match('(\d{1,2}):(\d{2})', text)
 				if mo:
