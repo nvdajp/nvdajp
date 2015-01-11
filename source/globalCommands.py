@@ -5,6 +5,7 @@
 #See the file COPYING for more details.
 #Copyright (C) 2006-2012 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Rui Batista
 
+import nvdajp_dic #nvdajp
 import time
 import itertools
 import tones
@@ -195,7 +196,6 @@ class GlobalCommands(ScriptableObject):
 		if scriptHandler.getLastScriptRepeatCount()==0:
 			text=winKernel.GetTimeFormat(winKernel.LOCALE_USER_DEFAULT, winKernel.TIME_NOSECONDS, None, None)
 			# nvdajp
-			import nvdajp_dic
 			if nvdajp_dic.isJapaneseLocale():
 				import re
 				mo = re.match('(\d{1,2}):(\d{2})', text)
@@ -746,18 +746,15 @@ class GlobalCommands(ScriptableObject):
 				speech.spellTextInfo(info,useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
-			import nvdajp_dic
 			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
 			braille.handler.message(s)
 		elif scriptCount==1:
-			import nvdajp_dic
 			import languageHandler
 			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
 			speech.speakMessage(speech.processText(languageHandler.getLanguage(), s, characterProcessing.SYMLVL_ALL))
 			braille.handler.message(s)
 		elif scriptCount==2:
 			try:
-				import nvdajp_dic
 				c = ord(info.text)
 				s = nvdajp_dic.code2kana(c)
 				o = u"%d u+%s" % (c, s)
