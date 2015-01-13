@@ -3,7 +3,8 @@
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
-#Copyright (C) 2011-2012 Takuya Nishimoto, Masataka Shinke
+#Copyright (C) 2011-2015 Takuya Nishimoto
+#Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
 
 import braille
