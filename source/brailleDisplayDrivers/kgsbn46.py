@@ -79,7 +79,7 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 # @WINFUNCTYPE(c_int, POINTER(c_ubyte))
 KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))
 
-def nvdaKgsHandleKeyInfoProc(lpKeys):
+def nvdaKgsBn46HandleKeyInfoProc(lpKeys):
 	keys = (lpKeys[0], lpKeys[1], lpKeys[2])
 	log.io("keyInfo %d %d %d" % keys)
 	log.io("keyInfo hex %x %x %x" % keys)
@@ -211,7 +211,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
 		if not self._directBM:
 			raise RuntimeError("No KGS instance found")
-		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
+		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsBn46HandleKeyInfoProc)
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
 		ret,self._portName = bmConnect(self._directBM, port, self.devName, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
 		if ret:
