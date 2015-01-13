@@ -195,7 +195,9 @@ def _listComPorts():
 	for p in hwPortUtils.listComPorts():
 		if 'bluetoothName' in p and p['bluetoothName'] in (u'BM Series', u'BMsmart-KGS'):
 			p['friendlyName'] = u"%s %s" % (p['port'], p['bluetoothName'])
-			ports.append(p)
+		elif (' (' + p['port'] + ')') in p['friendlyName']:
+			p['friendlyName'] = p['port'] + ' ' + p['friendlyName'].replace((' (' + p['port'] + ')'), '')
+		ports.append(p)
 	log.info(unicode(ports))
 	return ports
 
@@ -398,7 +400,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	name = "kgs"
 	description = _(u"KGS BrailleMemo series")
 	devName = u"BMシリーズ機器".encode('shift-jis')
-	gestureMap = inputCore.GlobalGestureMap(kgsGestureMapData)
 	_portName = None
 	_directBM = None
 
@@ -437,6 +438,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			self.numCells = 0
 			log.info("failed %s" % port)
 			raise RuntimeError("No KGS display found")
+		self.gestureMap = inputCore.GlobalGestureMap(kgsGestureMapData)
 
 	def terminate(self):
 		log.info("KGS driver terminating")
