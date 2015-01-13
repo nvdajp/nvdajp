@@ -10,24 +10,6 @@ import inputCore
 from kgs import BrailleDisplayDriver, InputGesture
 
 
-class BrailleDisplayDriver(BrailleDisplayDriver):
-	name = "kgsbn46"
-	description = _(u"KGS BrailleNote 46C/46D")
-	devName = u"ブレイルノート46C/46D".encode('shift-jis')
-
-	@classmethod
-	def getKeyCallback(cls):
-		return nvdaKgsBn46HandleKeyInfoProc
-
-	def __init__(self, port="auto"):
-		super(BrailleDisplayDriver,self).__init__(port=port)
-		self.gestureMap = inputCore.GlobalGestureMap(kgsBn46GestureMapData)
-
-
-class InputGesture(InputGesture):
-	source = BrailleDisplayDriver.name
-
-
 kgsBn46GestureMapData = {
 	"globalCommands.GlobalCommands": {
 		"showGui": ("br(kgsbn46):func1",),
@@ -44,6 +26,24 @@ kgsBn46GestureMapData = {
 		"kb:rightArrow": ("br(kgsbn46):func4",),
 	}
 }
+
+
+class BrailleDisplayDriver(BrailleDisplayDriver):
+	name = "kgsbn46"
+	description = _(u"KGS BrailleNote 46C/46D")
+	devName = u"ブレイルノート46C/46D".encode('shift-jis')
+
+	@classmethod
+	def getKeyCallback(cls):
+		return nvdaKgsBn46HandleKeyInfoProc
+
+	def __init__(self, port="auto"):
+		super(BrailleDisplayDriver,self).__init__(port=port)
+		self.gestureMap = inputCore.GlobalGestureMap(kgsBn46GestureMapData)
+
+
+class InputGesture(InputGesture):
+	source = BrailleDisplayDriver.name
 
 
 def nvdaKgsBn46HandleKeyInfoProc(lpKeys):
@@ -70,9 +70,9 @@ def nvdaKgsBn46HandleKeyInfoProc(lpKeys):
 		names.add('route')
 		routingIndex = keys[1] - 1
 	if routingIndex is not None:
-		log.info("names %s %d" % ('+'.join(names), routingIndex))
+		log.io("names %s %d" % ('+'.join(names), routingIndex))
 	else:
-		log.info("names %s" % '+'.join(names))
+		log.io("names %s" % '+'.join(names))
 	if len(names):
 		inputCore.manager.executeGesture(InputGesture(names, routingIndex))
 		return True
