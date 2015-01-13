@@ -165,10 +165,9 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 			break
 	return ret, Port
 
-def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection=False):
+def bmConnect(hBrl, port, devName, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
 		bmDisConnect(hBrl, port)
-	devName = u"ブレイルノート46C/46D".encode('shift-jis')
 	if port is None or port=="auto":
 		ret, pName = _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
 	else:
@@ -189,6 +188,7 @@ def bmDisConnect(hBrl, port):
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	name = "kgsbn46"
 	description = _(u"KGS BrailleNote 46C/46D")
+	devName = u"ブレイルノート46C/46D".encode('shift-jis')
 	_portName = None
 	_directBM = None
 
@@ -213,7 +213,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			raise RuntimeError("No KGS instance found")
 		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
-		ret,self._portName = bmConnect(self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
+		ret,self._portName = bmConnect(self._directBM, port, self.devName, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
 		if ret:
 			config.conf["braille"][self.name] = {"port" : self._portName}
 			self.numCells = numCells
