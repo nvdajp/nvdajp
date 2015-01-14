@@ -132,10 +132,10 @@ kgsBmSerialGestureMapData = {
 
 class BrailleDisplayDriver(BrailleDisplayDriver):
 	name = "kgsbm_serial"
-	description = _(u"KGS BrailleMemo series") + u" serial"
+	description = _(u"KGS BrailleMemo series") + " " + _(u"serial port")
 	allowAutomatic = False
 	allowSerial = True
-	allowUnavailablePorts = True
+	allowUnavailablePorts = False
 
 	def __init__(self, port=None):
 		super(BrailleDisplayDriver,self).__init__(port=port)
