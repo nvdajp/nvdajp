@@ -136,8 +136,19 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 		return True
 	return False
 
-def _listComPorts():
+def _listComPorts(allowSerial=True):
 	ports = []
+
+	# BT ports and serial ports (if allowed)
+	# use bluetooth name if KGS devices are found
+	for p in hwPortUtils.listComPorts():
+		if 'bluetoothName' in p and p['bluetoothName'][:2] == u'BM':
+			p['friendlyName'] = u"%s %s" % (p['port'], p['bluetoothName'])
+			ports.append(p)
+		elif allowSerial:
+			if (' (' + p['port'] + ')') in p['friendlyName']:
+				p['friendlyName'] = p['port'] + ' ' + p['friendlyName'].replace((' (' + p['port'] + ')'), '')
+			ports.append(p)
 
 	# BM-SMART USB
 	try:
@@ -190,15 +201,6 @@ def _listComPorts():
 						})
 				except WindowsError:
 					continue
-
-	# available ports
-	# use bluetooth name if KGS devices are found
-	for p in hwPortUtils.listComPorts():
-		if 'bluetoothName' in p and p['bluetoothName'][:2] == u'BM':
-			p['friendlyName'] = u"%s %s" % (p['port'], p['bluetoothName'])
-		elif (' (' + p['port'] + ')') in p['friendlyName']:
-			p['friendlyName'] = p['port'] + ' ' + p['friendlyName'].replace((' (' + p['port'] + ')'), '')
-		ports.append(p)
 	log.info(unicode(ports))
 	return ports
 
@@ -240,10 +242,10 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	log.info("connection:%d port:%d" % (fConnection, _port))
 	return fConnection, port
 
-def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
+def _autoConnection(hBrl, devName, port, allowSerial, keyCallbackInst, statusCallbackInst):
 	Port = _port = None
 	ret = False
-	for portInfo in _listComPorts():
+	for portInfo in _listComPorts(allowSerial=allowSerial):
 		_port = portInfo["port"]
 		hwID = portInfo["hardwareID"]
 		frName = portInfo.get("friendlyName")
@@ -256,11 +258,11 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 			break
 	return ret, Port
 
-def bmConnect(hBrl, port, devName, keyCallbackInst, statusCallbackInst, execEndConnection=False):
+def bmConnect(hBrl, port, devName, allowSerial, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
 		bmDisConnect(hBrl, port)
 	if port is None or port=="auto":
-		ret, pName = _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
+		ret, pName = _autoConnection(hBrl, devName, port, allowSerial, keyCallbackInst, statusCallbackInst)
 	else:
 		ret, pName = _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
 	return ret, pName
@@ -401,6 +403,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	name = "kgs"
 	description = _(u"KGS BrailleMemo series")
 	devName = u"BMシリーズ機器".encode('shift-jis')
+	allowAutomatic = True
+	allowSerial = False
+	allowUnavailablePorts = False
 	_portName = None
 	_directBM = None
 
@@ -429,13 +434,13 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			raise RuntimeError("No KGS instance found")
 		self._keyCallbackInst = KGS_PKEYCALLBACK(self.getKeyCallback())
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
-		ret,self._portName = bmConnect(self._directBM, port, self.devName, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
+		ret,self._portName = bmConnect(self._directBM, port, self.devName, self.allowSerial, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
 		if ret:
-			config.conf["braille"][self.name] = {"port" : self._portName}
+			#config.conf["braille"][self.name] = {"port" : self._portName}
 			self.numCells = numCells
 			log.info("connected %s" % port)
 		else:
-			config.conf["braille"][self.name] = {"port" : "auto"}
+			#config.conf["braille"][self.name] = {"port" : "auto"}
 			self.numCells = 0
 			log.info("failed %s" % port)
 			raise RuntimeError("No KGS display found")
@@ -461,9 +466,11 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	@classmethod
 	def getPossiblePorts(cls):
-		ar = [cls.AUTOMATIC_PORT]
+		ar = []
+		if cls.allowAutomatic:
+			ar.append(cls.AUTOMATIC_PORT)
 		ports = {}
-		for p in _listComPorts():
+		for p in _listComPorts(allowSerial=cls.allowSerial):
 			log.info(p)
 			ports[p["port"]] = p["friendlyName"]
 		log.info(ports)
@@ -471,9 +478,10 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			p = "COM%d" % (i + 1)
 			if p in ports:
 				fname = ports[p]
-			else:
+				ar.append( (p, fname) )
+			elif cls.allowUnavailablePorts:
 				fname = p
-			ar.append( (p, fname) )
+				ar.append( (p, fname) )
 		return OrderedDict(ar)
 
 	def display(self, data):

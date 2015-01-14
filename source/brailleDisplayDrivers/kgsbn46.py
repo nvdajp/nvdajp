@@ -32,12 +32,15 @@ class BrailleDisplayDriver(BrailleDisplayDriver):
 	name = "kgsbn46"
 	description = _(u"KGS BrailleNote 46C/46D")
 	devName = u"ブレイルノート46C/46D".encode('shift-jis')
+	allowAutomatic = False
+	allowSerial = True
+	allowUnavailablePorts = False
 
 	@classmethod
 	def getKeyCallback(cls):
 		return nvdaKgsBn46HandleKeyInfoProc
 
-	def __init__(self, port="auto"):
+	def __init__(self, port=None):
 		super(BrailleDisplayDriver,self).__init__(port=port)
 		self.gestureMap = inputCore.GlobalGestureMap(kgsBn46GestureMapData)
 
