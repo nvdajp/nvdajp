@@ -408,7 +408,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	allowSerial = False
 	allowUnavailablePorts = False
 	_portName = None
-	_directBM = None
 
 	@classmethod
 	def getKeyCallback(cls):
@@ -487,7 +486,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		return OrderedDict(ar)
 
 	def display(self, data):
-		if not data or len(data) == 0: return
+		if not data: return
 		s = ''
 		for c in data:
 			d = 0
