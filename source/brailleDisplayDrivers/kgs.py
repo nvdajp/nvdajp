@@ -23,6 +23,7 @@ from logHandler import log
 import sys
 import _winreg
 import itertools
+import core
 
 kgs_dir = unicode(os.path.dirname(__file__), "mbcs")
 if (not 'addons' in os.path.split(kgs_dir)) and hasattr(sys, 'frozen'):
@@ -217,10 +218,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 		for loop in xrange(10):
 			time.sleep(0.5)
 			tones.beep(450-(loop*20), 20)
-			msg=ctypes.wintypes.MSG()
-			if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
-				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
-				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+			core.requestPump()
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
 	for loop in xrange(30):
 		try:
@@ -229,10 +227,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				break
 			time.sleep(0.5)
 			tones.beep(400+(loop*20), 20)
-			msg=ctypes.wintypes.MSG()
-			if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
-				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
-				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+			core.requestPump()
 		except:
 			raise
 	if not fConnection:
@@ -271,8 +266,14 @@ def bmDisConnect(hBrl, port):
 	global fConnection, numCells, lastReleaseTime
 	ret = hBrl.bmEndDisplayMode()
 	log.info("BmEndDisplayMode %s %d" % (port, ret))
+	for loop in xrange(10):
+		time.sleep(0.1)
+		core.requestPump()
 	ret = hBrl.bmEnd()
 	log.info("BmEnd %s %d" % (port, ret))
+	for loop in xrange(10):
+		time.sleep(0.1)
+		core.requestPump()
 	numCells=0
 	fConnection = False
 	lastReleaseTime = time.time()
@@ -451,6 +452,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		super(BrailleDisplayDriver, self).terminate()
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
+			log.info("bmDisConnect done")
 			ret = windll.kernel32.FreeLibrary(self._directBM._handle)
 			# ret is not zero if success
 			log.info("KGS driver terminated %d" % ret)
