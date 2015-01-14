@@ -7,7 +7,7 @@
 
 from logHandler import log
 import inputCore
-from kgs import BrailleDisplayDriver, InputGesture
+from kgs import BrailleDisplayDriver, InputGesture, kgsHandleKeyInfo
 
 kgsBmSerialGestureMapData = {
 	"globalCommands.GlobalCommands": {
@@ -137,6 +137,22 @@ class BrailleDisplayDriver(BrailleDisplayDriver):
 	allowSerial = True
 	allowUnavailablePorts = False
 
+	@classmethod
+	def getKeyCallback(cls):
+		return nvdaKgsSerialHandleKeyInfoProc
+
 	def __init__(self, port=None):
 		super(BrailleDisplayDriver,self).__init__(port=port)
 		self.gestureMap = inputCore.GlobalGestureMap(kgsBmSerialGestureMapData)
+
+
+class InputGesture(InputGesture):
+	source = BrailleDisplayDriver.name
+
+
+def nvdaKgsSerialHandleKeyInfoProc(lpKeys):
+	names, routingIndex = kgsHandleKeyInfo(lpKeys)
+	if len(names):
+		inputCore.manager.executeGesture(InputGesture(names, routingIndex))
+		return True
+	return False

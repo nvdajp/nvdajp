@@ -42,6 +42,8 @@ class KgsStatus(object):
 		self.directBMCount = 0
 
 	def freeDirectBM(self):
+		if self.directBM is None:
+			return -1
 		ret = windll.kernel32.FreeLibrary(self.directBM._handle)
 		self.directBM = None
 		return ret
@@ -92,11 +94,7 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	else:
 		log.info("status changed to %d" % nStatus)
 
-# BOOL (CALLBACK *pHandleKeyInfo)(BYTE info[4])
-# @WINFUNCTYPE(c_int, POINTER(c_ubyte))
-KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))
-
-def nvdaKgsHandleKeyInfoProc(lpKeys):
+def kgsHandleKeyInfo(lpKeys):
 	keys = (lpKeys[0], lpKeys[1], lpKeys[2], lpKeys[3])
 	log.io("keyInfo %d %d %d %d" % keys)
 	log.io("keyInfo hex %x %x %x %x" % keys)
@@ -145,6 +143,14 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 		log.io("names %s %d" % ('+'.join(names), routingIndex))
 	else:
 		log.io("names %s" % '+'.join(names))
+	return names, routingIndex
+
+# BOOL (CALLBACK *pHandleKeyInfo)(BYTE info[4])
+# @WINFUNCTYPE(c_int, POINTER(c_ubyte))
+KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))
+
+def nvdaKgsHandleKeyInfoProc(lpKeys):
+	names, routingIndex = kgsHandleKeyInfo(lpKeys)
 	if len(names):
 		inputCore.manager.executeGesture(InputGesture(names, routingIndex))
 		return True
@@ -449,18 +455,18 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info("first connection %s" % port)
 			execEndConnection = False
 			self.numCells = 0
-		if kgsStatus.directBMCount:
+		if kgsStatus.directBM:
 			self._directBM = kgsStatus.directBM
 			kgsStatus.directBMCount += 1
-			log.info("directBM %d" % kgsStatus.directBMCount)
+			log.info("directBMCount %d" % kgsStatus.directBMCount)
 		else:
 			kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
 			self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
 			if not self._directBM:
 				raise RuntimeError("loading DirectBM")
 			kgsStatus.directBM = self._directBM
-			kgsStatus.directBMCount = 1
-			log.info("directBM 1 %s" % str(self._directBM))
+			kgsStatus.directBMCount += 1
+			log.info("directBMCount %d %s" % (kgsStatus.directBMCount, str(self._directBM)))
 		self._keyCallbackInst = KGS_PKEYCALLBACK(self.getKeyCallback())
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
 		ret,self._portName = bmConnect(self._directBM, port, self.devName, self.allowSerial, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
@@ -473,10 +479,13 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			#config.conf["braille"][self.name] = {"port" : "auto"}
 			self.numCells = 0
 			kgsStatus.directBMCount -= 1
-			if kgsStatus.directBMCount == 0:
+			log.info("directBMCount %d" % kgsStatus.directBMCount)
+			if kgsStatus.directBMCount <= 0:
 				ret = kgsStatus.freeDirectBM()
 				# ret is not zero if success
 				log.info("%s FreeLibrary done %d" % (self.name, ret))
+				kgsStatus.directBMCount = 0
+				log.info("directBMCount %d" % kgsStatus.directBMCount)
 			raise RuntimeError("%s:%s" % (self.name, port))
 		self.gestureMap = inputCore.GlobalGestureMap(kgsGestureMapData)
 
@@ -488,10 +497,12 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info("bmDisConnect done")
 		kgsStatus.directBMCount -= 1
 		log.info("directBMCount %d" % kgsStatus.directBMCount)
-		if kgsStatus.directBMCount == 0:
+		if kgsStatus.directBMCount <= 0:
 			ret = kgsStatus.freeDirectBM()
 			# ret is not zero if success
 			log.info("%s FreeLibrary done %d" % (self.name, ret))
+			kgsStatus.directBMCount = 0
+			log.info("directBMCount %d" % kgsStatus.directBMCount)
 		self._directBM = None
 		self._portName = None
 		self._keyCallbackInst = None
