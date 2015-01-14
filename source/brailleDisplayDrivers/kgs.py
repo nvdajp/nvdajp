@@ -194,7 +194,7 @@ def _listComPorts():
 	# available ports
 	# use bluetooth name if KGS devices are found
 	for p in hwPortUtils.listComPorts():
-		if 'bluetoothName' in p and p['bluetoothName'] in (u'BM Series', u'BMsmart-KGS'):
+		if 'bluetoothName' in p and p['bluetoothName'][:2] == u'BM':
 			p['friendlyName'] = u"%s %s" % (p['port'], p['bluetoothName'])
 		elif (' (' + p['port'] + ')') in p['friendlyName']:
 			p['friendlyName'] = p['port'] + ' ' + p['friendlyName'].replace((' (' + p['port'] + ')'), '')
