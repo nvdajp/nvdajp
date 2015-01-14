@@ -31,9 +31,23 @@ if (not 'addons' in os.path.split(kgs_dir)) and hasattr(sys, 'frozen'):
 	if os.path.isdir(d):
 		kgs_dir = d
 
-fConnection = False
-numCells = 0
-lastReleaseTime = None
+class KgsStatus(object):
+	def __init__(self):
+		self.fConnection = False
+		self.numCells = 0
+		self.lastReleaseTime = None
+		self.portName = None
+		self.driverName = None
+		self.directBM = None
+		self.directBMCount = 0
+
+	def freeDirectBM(self):
+		ret = windll.kernel32.FreeLibrary(self.directBM._handle)
+		self.directBM = None
+		return ret
+
+
+kgsStatus = KgsStatus()
 
 #BM_DISPMODE_FOREGROUND = 0x01
 #BM_DISPMODE_BACKGROUND = 0x02
@@ -46,27 +60,26 @@ KGS_DISPMODE = 0x02|0x04
 KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)
 
 def nvdaKgsStatusChangedProc(nStatus, nDispSize):
-	global fConnection, numCells
 	if 0==nStatus: #BMDRVS_DISCONNECTED
-		fConnection = False
+		kgsStatus.fConnection = False
 		tones.beep(1000, 300)
 		log.info("disconnect")
 	elif 1==nStatus: #BMDRVS_CONNECTED
-		numCells = nDispSize
-		fConnection = True
+		kgsStatus.numCells = nDispSize
+		kgsStatus.fConnection = True
 		tones.beep(1000, 30)
 		log.info("display size:%d" % nDispSize)
 	elif 2==nStatus: #BMDRVS_DRIVER_CANNOT_OPEN
-		fConnection = False
+		kgsStatus.fConnection = False
 		log.info("driver cannot open")
 	elif 3==nStatus: #BMDRVS_INVALID_DRIVER
-		fConnection = False
+		kgsStatus.fConnection = False
 		log.info("invalid driver")
 	elif 4==nStatus: #BMDRVS_OPEN_PORT_FAILED
-		#fConnection = False
+		#kgsStatus.fConnection = False
 		log.info("open port failed")
 	elif 5==nStatus: #BMDRVS_CREATE_THREAD_FAILED
-		fConnection = False
+		kgsStatus.fConnection = False
 		log.info("create thread failed")
 	elif 6==nStatus: #BMDRVS_CHECKING_EQUIPMENT
 		log.info("checking equipment")
@@ -202,40 +215,47 @@ def _listComPorts(allowSerial=True):
 						})
 				except WindowsError:
 					continue
-	log.info(unicode(ports))
+	log.debug(unicode(ports))
 	return ports
 
 def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
-	global fConnection, lastReleaseTime
 	log.info("scanning port %s" % port)
 	if port[:3] == 'COM':
 		_port = int(port[3:])-1
 	else:
 		return False, None
 	SPEED = 3 # 9600bps
-	fConnection = False
-	if lastReleaseTime is not None and time.time() - lastReleaseTime < 5.0:
+	kgsStatus.fConnection = False
+	if kgsStatus.lastReleaseTime is not None and time.time() - kgsStatus.lastReleaseTime < 5.0:
 		for loop in xrange(10):
 			time.sleep(0.5)
 			tones.beep(450-(loop*20), 20)
 			core.requestPump()
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
+	log.info("bmStart %s returned %d" % (port, ret))
+	if ret != 1:
+		tones.beep(200, 100)
+		return False, None
 	for loop in xrange(30):
 		try:
-			if fConnection:
+			if kgsStatus.fConnection:
+				kgsStatus.portName = port
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
+				log.info("bmStartDisplayMode2 %s returned %d" % (port, ret))
 				break
 			time.sleep(0.5)
 			tones.beep(400+(loop*20), 20)
 			core.requestPump()
 		except:
 			raise
-	if not fConnection:
+	if kgsStatus.fConnection:
+		log.info("connection %s done" % port)
+	else:
+		log.warning("connection %s failed" % port)
 		bmDisConnect(hBrl, _port)
 		port = None
 		tones.beep(200, 100)
-	log.info("connection:%d port:%d" % (fConnection, _port))
-	return fConnection, port
+	return kgsStatus.fConnection, port
 
 def _autoConnection(hBrl, devName, port, allowSerial, keyCallbackInst, statusCallbackInst):
 	Port = _port = None
@@ -255,7 +275,10 @@ def _autoConnection(hBrl, devName, port, allowSerial, keyCallbackInst, statusCal
 
 def bmConnect(hBrl, port, devName, allowSerial, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
-		bmDisConnect(hBrl, port)
+		if kgsStatus.portName:
+			bmDisConnect(hBrl, kgsStatus.portName)
+		else:
+			bmDisConnect(hBrl, port)
 	if port is None or port=="auto":
 		ret, pName = _autoConnection(hBrl, devName, port, allowSerial, keyCallbackInst, statusCallbackInst)
 	else:
@@ -263,7 +286,6 @@ def bmConnect(hBrl, port, devName, allowSerial, keyCallbackInst, statusCallbackI
 	return ret, pName
 
 def bmDisConnect(hBrl, port):
-	global fConnection, numCells, lastReleaseTime
 	ret = hBrl.bmEndDisplayMode()
 	log.info("BmEndDisplayMode %s %d" % (port, ret))
 	for loop in xrange(10):
@@ -274,9 +296,10 @@ def bmDisConnect(hBrl, port):
 	for loop in xrange(10):
 		time.sleep(0.1)
 		core.requestPump()
-	numCells=0
-	fConnection = False
-	lastReleaseTime = time.time()
+	kgsStatus.numCells = 0
+	kgsStatus.fConnection = False
+	kgsStatus.lastReleaseTime = time.time()
+	kgsStatus.portName = None
 	return ret
 
 kgsGestureMapData = {
@@ -407,7 +430,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	allowAutomatic = True
 	allowSerial = False
 	allowUnavailablePorts = False
-	_portName = None
 
 	@classmethod
 	def getKeyCallback(cls):
@@ -415,51 +437,66 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	def __init__(self, port="auto"):
 		super(BrailleDisplayDriver,self).__init__()
-		global fConnection, numCells
-		if port != self._portName and self._portName:
+		if port != kgsStatus.portName and kgsStatus.portName:
 			execEndConnection = True
-			log.info("changing connection %s to %s" % (self._portName, port))
-		elif fConnection:
+			log.info("changing from %s:%s to %s:%s" % (kgsStatus.driverName, kgsStatus.portName, self.name, port))
+		elif kgsStatus.fConnection:
 			log.info("already connection %s" % port)
-			execEndConnection = False
-			self.numCells = numCells
+			kgsStatus.driverName = self.name
+			self.numCells = kgsStatus.numCells
 			return
 		else:
 			log.info("first connection %s" % port)
 			execEndConnection = False
 			self.numCells = 0
-		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
-		self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
-		if not self._directBM:
-			raise RuntimeError("No KGS instance found")
+		if kgsStatus.directBMCount:
+			self._directBM = kgsStatus.directBM
+			kgsStatus.directBMCount += 1
+			log.info("directBM %d" % kgsStatus.directBMCount)
+		else:
+			kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
+			self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
+			if not self._directBM:
+				raise RuntimeError("loading DirectBM")
+			kgsStatus.directBM = self._directBM
+			kgsStatus.directBMCount = 1
+			log.info("directBM 1 %s" % str(self._directBM))
 		self._keyCallbackInst = KGS_PKEYCALLBACK(self.getKeyCallback())
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
 		ret,self._portName = bmConnect(self._directBM, port, self.devName, self.allowSerial, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
 		if ret:
 			#config.conf["braille"][self.name] = {"port" : self._portName}
-			self.numCells = numCells
-			log.info("connected %s" % port)
+			self.numCells = kgsStatus.numCells
+			kgsStatus.driverName = self.name
+			log.info("connected %s:%s" % (self.name, port))
 		else:
 			#config.conf["braille"][self.name] = {"port" : "auto"}
 			self.numCells = 0
-			log.info("failed %s" % port)
-			raise RuntimeError("No KGS display found")
+			kgsStatus.directBMCount -= 1
+			if kgsStatus.directBMCount == 0:
+				ret = kgsStatus.freeDirectBM()
+				# ret is not zero if success
+				log.info("%s FreeLibrary done %d" % (self.name, ret))
+			raise RuntimeError("%s:%s" % (self.name, port))
 		self.gestureMap = inputCore.GlobalGestureMap(kgsGestureMapData)
 
 	def terminate(self):
-		log.info("KGS driver terminating")
+		log.info("%s terminating" % self.name)
 		super(BrailleDisplayDriver, self).terminate()
-		if self._directBM and self._directBM._handle:
+		if hasattr(self, "_directBM") and self._directBM:
 			bmDisConnect(self._directBM, self._portName)
 			log.info("bmDisConnect done")
-			ret = windll.kernel32.FreeLibrary(self._directBM._handle)
+		kgsStatus.directBMCount -= 1
+		log.info("directBMCount %d" % kgsStatus.directBMCount)
+		if kgsStatus.directBMCount == 0:
+			ret = kgsStatus.freeDirectBM()
 			# ret is not zero if success
-			log.info("KGS driver terminated %d" % ret)
+			log.info("%s FreeLibrary done %d" % (self.name, ret))
 		self._directBM = None
 		self._portName = None
 		self._keyCallbackInst = None
 		self._statusCallbackInst = None
-		log.info("KGS driver terminating done")
+		log.info("%s terminating done" % self.name)
 
 	@classmethod
 	def check(cls):
@@ -472,9 +509,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			ar.append(cls.AUTOMATIC_PORT)
 		ports = {}
 		for p in _listComPorts(allowSerial=cls.allowSerial):
-			log.info(p)
+			log.debug(p)
 			ports[p["port"]] = p["friendlyName"]
-		log.info(ports)
+		log.debug(ports)
 		for i in xrange(64):
 			p = "COM%d" % (i + 1)
 			if p in ports:
