@@ -137,6 +137,7 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 
 def _listComPorts():
 	ports = []
+	usbPorts = {}
 
 	# BM-SMART USB
 	try:
@@ -157,10 +158,11 @@ def _listComPorts():
 					with _winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
 						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
 						ports.append({
-							'friendlyName': u'%s KGS BM-SMART USB Serial' % portName,
+							'friendlyName': u'USB: KGS BM-SMART USB Serial (%s)' % portName,
 							'hardwareID': ur'USB\VID_1148&PID_0301',
 							'port': unicode(portName)
 						})
+						usbPorts[portName] = True
 				except WindowsError:
 					continue
 
@@ -183,18 +185,22 @@ def _listComPorts():
 					with _winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
 						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
 						ports.append({
-							'friendlyName': u'%s KGS USB To Serial Com Port' % portName,
+							'friendlyName': u'USB: KGS USB To Serial Com Port (%s)' % portName,
 							'hardwareID': ur'USB\VID_1148&PID_0001',
 							'port': unicode(portName)
 						})
+						usbPorts[portName] = True
 				except WindowsError:
 					continue
 
 	# available ports
 	# use bluetooth name if KGS devices are found
-	for p in hwPortUtils.listComPorts():
-		if 'bluetoothName' in p and p['bluetoothName'] in (u'BM Series', u'BMsmart-KGS'):
-			p['friendlyName'] = u"%s %s" % (p['port'], p['bluetoothName'])
+	for p in hwPortUtils.listComPorts(onlyAvailable=True):
+		if 'bluetoothName' in p and p['bluetoothName'][:2].upper() == u'BM':
+			p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
+			ports.append(p)
+		elif p['port'] not in usbPorts:
+			p["friendlyName"] = _("Serial: {portName}").format(portName=p["friendlyName"])
 			ports.append(p)
 	log.info(unicode(ports))
 	return ports
@@ -217,10 +223,12 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
 				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
+	log.info("bmStart(%s) returns %d" % (port, ret))
 	for loop in xrange(30):
 		try:
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
+				log.info("bmStartDisplayMode2() returns %d" % ret)
 				break
 			time.sleep(0.5)
 			tones.beep(400+(loop*20), 20)
@@ -342,9 +350,10 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			p = "COM%d" % (i + 1)
 			if p in ports:
 				fname = ports[p]
-			else:
-				fname = p
-			ar.append( (p, fname) )
+				ar.append( (p, fname) )
+			#else:
+			#	fname = p
+			#ar.append( (p, fname) )
 		return OrderedDict(ar)
 
 	def display(self, data):
