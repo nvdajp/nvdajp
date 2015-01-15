@@ -261,10 +261,28 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 			break
 	return ret, Port
 
+def getKbdcName(hBrl):
+	DEVNAME_JA = u"BMシリーズ機器".encode('shift-jis')
+	DEVNAME_EN = "BM series"
+	REGKEY_KBDC110_PATH_JA = r"SOFTWARE\KGS\KBDC110"
+	REGKEY_KBDC110_PATH_EN = r"SOFTWARE\KGS\KBDC110-E"
+	ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_JA)
+	if ret:
+		devName = DEVNAME_JA
+	else:
+		ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_EN)
+		if ret:
+			devName = DEVNAME_EN
+		else:
+			log.warning("kbdc not installed")
+			# fallback
+			devName = DEVNAME_EN
+	return devName
+
 def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
 		bmDisConnect(hBrl, port)
-	devName = u"BMシリーズ機器".encode('shift-jis')
+	devName = getKbdcName(hBrl)
 	if port is None or port=="auto":
 		ret, pName = _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
 	else:
