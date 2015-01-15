@@ -417,7 +417,6 @@ class WordDocumentTextInfo(textInfos.TextInfo):
 		if links.count>0:
 			links[1].follow()
 			return
-		super(WordDocumentTextInfo,self).activate()
 
 	def _expandToLineAtCaret(self):
 		lineStart=ctypes.c_int()
@@ -878,9 +877,9 @@ class WordDocumentTreeInterceptor(CursorManager,BrowseModeTreeInterceptorWithMak
 		else:
 			raise NotImplementedError
 
-	def script_tab(self,gesture):
-		self.rootNVDAObject.script_tab(gesture)
-		braille.handler.handleCaretMove(self)
+	def event_gainFocus(self,obj,nextHandler):
+		obj.reportFocus()
+		braille.handler.handleGainFocus(self)
 
 	def script_nextRow(self,gesture):
 		self.rootNVDAObject._moveInTable(row=True,forward=True)
@@ -899,8 +898,8 @@ class WordDocumentTreeInterceptor(CursorManager,BrowseModeTreeInterceptorWithMak
 		braille.handler.handleCaretMove(self)
 
 	__gestures={
-		"kb:tab":"tab",
-		"kb:shift+tab":"tab",
+		"kb:tab":"trapNonCommandGesture",
+		"kb:shift+tab":"trapNonCommandGesture",
 		"kb:control+alt+upArrow": "previousRow",
 		"kb:control+alt+downArrow": "nextRow",
 		"kb:control+alt+leftArrow": "previousColumn",
