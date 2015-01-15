@@ -129,10 +129,12 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
 				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
+	log.info("bmStart(%s) returns %d" % (port, ret))
 	for loop in xrange(40):
 		try:
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
+				log.info("bmStartDisplayMode2() returns %d" % ret)
 				break
 			time.sleep(0.5)
 			tones.beep(400+(loop*20), 20)
@@ -242,8 +244,21 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	@classmethod
 	def getPossiblePorts(cls):
+		ports = {}
+		for p in hwPortUtils.listComPorts(onlyAvailable=True):
+			if 'bluetoothName' in p:
+				p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
+			elif 'hardwareID' in p and p['hardwareID'][:3] == 'USB':
+				p["friendlyName"] = u"USB: {portName}".format(portName=p["friendlyName"])
+			else:
+				p["friendlyName"] = _("Serial: {portName}").format(portName=p["friendlyName"])
+			ports[p["port"]] = p["friendlyName"]
 		ar = [cls.AUTOMATIC_PORT]
-		ar.extend([ (p["port"], p["friendlyName"]) for p in hwPortUtils.listComPorts() ])
+		for i in xrange(64):
+			p = "COM%d" % (i + 1)
+			if p in ports:
+				fname = ports[p]
+				ar.append( (p, fname) )
 		return OrderedDict(ar)
 
 	def display(self, data):
