@@ -1,10 +1,11 @@
 # coding: UTF-8
-#brailleDisplayDrivers/kgs.py
+#brailleDisplayDrivers/kgsbn46.py
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
-#Copyright (C) 2011-2012 Takuya Nishimoto, Masataka Shinke
+#Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
+#Copyright (C) 2011-2015 Takuya Nishimoto
 
 import braille
 import brailleInput
@@ -27,9 +28,11 @@ if (not 'addons' in os.path.split(kgs_dir)) and hasattr(sys, 'frozen'):
 	if os.path.isdir(d):
 		kgs_dir = d
 
+from kgs import kgsListComPorts, waitAfterDisconnect
+
 fConnection = False
 numCells = 0
-lastReleaseTime = None
+isUnknownEquipment = False
 
 #BM_DISPMODE_FOREGROUND = 0x01
 #BM_DISPMODE_BACKGROUND = 0x02
@@ -42,7 +45,7 @@ KGS_DISPMODE = 0x02|0x04
 KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)
 
 def nvdaKgsStatusChangedProc(nStatus, nDispSize):
-	global fConnection, numCells
+	global fConnection, numCells, isUnknownEquipment
 	if 0==nStatus: #BMDRVS_DISCONNECTED
 		fConnection = False
 		tones.beep(1000, 300)
@@ -68,6 +71,7 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 		log.info("checking equipment")
 	elif 7==nStatus: #BMDRVS_UNKNOWN_EQUIPMENT
 		log.info("unknown equipment")
+		isUnknownEquipment = True
 	elif 8==nStatus: #BMDRVS_PORT_RELEASED
 		log.info("port released")
 	elif 9==nStatus: #BMDRVS_MAX
@@ -112,7 +116,7 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	return False
 
 def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
-	global fConnection, lastReleaseTime
+	global fConnection, isUnknownEquipment
 	log.info("scanning port %s" % port)
 	if port[:3] == 'COM':
 		_port = int(port[3:])-1
@@ -120,21 +124,17 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 		return False, None
 	SPEED = 3 # 9600bps
 	fConnection = False
-	if lastReleaseTime is not None and time.time() - lastReleaseTime < 5.0:
-		for loop in xrange(10):
-			time.sleep(0.5)
-			tones.beep(400-(loop*20), 20)
-			msg=ctypes.wintypes.MSG()
-			if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
-				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
-				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+	isUnknownEquipment = False
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
 	log.info("bmStart(%s) returns %d" % (port, ret))
-	for loop in xrange(40):
-		try:
+	if ret:
+		for loop in xrange(30):
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
 				log.info("bmStartDisplayMode2() returns %d" % ret)
+				break
+			elif isUnknownEquipment:
+				log.info("isUnknownEquipment")
 				break
 			time.sleep(0.5)
 			tones.beep(400+(loop*20), 20)
@@ -142,8 +142,6 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 			if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
 				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
 				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
-		except:
-			raise
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
@@ -154,40 +152,29 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	Port = _port = None
 	ret = False
-	for portInfo in hwPortUtils.listComPorts(onlyAvailable=True):
+	for portInfo in kgsListComPorts():
 		_port = portInfo["port"]
 		hwID = portInfo["hardwareID"]
 		frName = portInfo.get("friendlyName")
 		btName = portInfo.get("bluetoothName")
+		# skip non BMsmart device
+		if btName and btName.lower() == 'bm series':
+			continue
 		log.info(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
-		#if hwID[:3] != 'USB':
-		#	continue
 		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
 		if ret:
 			break
 	return ret, Port
 
 def getKbdcName(hBrl):
-	DEVNAME_JA = u"ブレイルノート46C/46D".encode('shift-jis')
-	DEVNAME_EN = "BrailleNote46C/46D"
-	REGKEY_KBDC110_PATH_JA = r"SOFTWARE\KGS\KBDC110"
-	REGKEY_KBDC110_PATH_EN = r"SOFTWARE\KGS\KBDC110-E"
-	ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_JA)
-	if ret:
-		devName = DEVNAME_JA
-	else:
-		ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_EN)
-		if ret:
-			devName = DEVNAME_EN
-		else:
-			log.warning("kbdc not installed")
-			# fallback
-			devName = DEVNAME_EN
-	return devName
+	if not hBrl.IsKbdcInstalled("Active KBDC"):
+		log.warning("active kbdc not found")
+	return "BrailleNote46C/46D"
 
 def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
 		bmDisConnect(hBrl, port)
+		waitAfterDisconnect()
 	devName = getKbdcName(hBrl)
 	if port is None or port=="auto":
 		ret, pName = _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
@@ -196,14 +183,13 @@ def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection
 	return ret, pName
 
 def bmDisConnect(hBrl, port):
-	global fConnection, numCells, lastReleaseTime
+	global fConnection, numCells
 	ret = hBrl.bmEndDisplayMode()
 	log.info("BmEndDisplayMode %s %d" % (port, ret))
 	ret = hBrl.bmEnd()
 	log.info("BmEnd %s %d" % (port, ret))
 	numCells=0
 	fConnection = False
-	lastReleaseTime = time.time()
 	return ret
 
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
@@ -235,11 +221,11 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
 		ret,self._portName = bmConnect(self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
 		if ret:
-			config.conf["braille"][self.name] = {"port" : self._portName}
+			#config.conf["braille"][self.name] = {"port" : self._portName}
 			self.numCells = numCells
 			log.info("connected %s" % port)
 		else:
-			config.conf["braille"][self.name] = {"port" : "auto"}
+			#config.conf["braille"][self.name] = {"port" : "auto"}
 			self.numCells = 0
 			log.info("failed %s" % port)
 			raise RuntimeError("No KGS display found")
@@ -248,6 +234,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		super(BrailleDisplayDriver, self).terminate()
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
+			waitAfterDisconnect()
 			ret = windll.kernel32.FreeLibrary(self._directBM._handle)
 			# ret is not zero if success
 			log.info("KGS driver terminated %d" % ret)
@@ -263,7 +250,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	@classmethod
 	def getPossiblePorts(cls):
 		ports = {}
-		for p in hwPortUtils.listComPorts(onlyAvailable=True):
+		for p in kgsListComPorts():
 			if 'bluetoothName' in p:
 				p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
 			elif 'hardwareID' in p and p['hardwareID'][:3] == 'USB':

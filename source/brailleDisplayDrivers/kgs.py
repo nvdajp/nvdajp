@@ -3,8 +3,9 @@
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
-#Copyright (C) 2011-2012 Takuya Nishimoto, Masataka Shinke
+#Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
+#Copyright (C) 2011-2015 Takuya Nishimoto
 
 import braille
 import brailleInput
@@ -136,7 +137,7 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 		return True
 	return False
 
-def _listComPorts(allowBT=True):
+def kgsListComPorts(allowBT=True):
 	ports = []
 	usbPorts = {}
 
@@ -255,14 +256,15 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	Port = _port = None
 	ret = False
-	for portInfo in _listComPorts(allowBT=False):
+	for portInfo in kgsListComPorts():
 		_port = portInfo["port"]
 		hwID = portInfo["hardwareID"]
 		frName = portInfo.get("friendlyName")
 		btName = portInfo.get("bluetoothName")
+		# skip non BMsmart device
+		if btName and btName.lower() == 'bm series':
+			continue
 		log.info(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
-		#if hwID[:3] != 'USB':
-		#	continue
 		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
 		if ret:
 			break
@@ -364,7 +366,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	def getPossiblePorts(cls):
 		ar = [cls.AUTOMATIC_PORT]
 		ports = {}
-		for p in _listComPorts():
+		for p in kgsListComPorts():
 			log.info(p)
 			ports[p["port"]] = p["friendlyName"]
 		log.info(ports)
