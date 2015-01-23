@@ -269,22 +269,9 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	return ret, Port
 
 def getKbdcName(hBrl):
-	DEVNAME_JA = u"BMシリーズ機器".encode('shift-jis')
-	DEVNAME_EN = "BM series"
-	REGKEY_KBDC110_PATH_JA = r"SOFTWARE\KGS\KBDC110"
-	REGKEY_KBDC110_PATH_EN = r"SOFTWARE\KGS\KBDC110-E"
-	ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_JA)
-	if ret:
-		devName = DEVNAME_JA
-	else:
-		ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_EN)
-		if ret:
-			devName = DEVNAME_EN
-		else:
-			log.warning("kbdc not installed")
-			# fallback
-			devName = DEVNAME_EN
-	return devName
+	if not hBrl.IsKbdcInstalled("Active KBDC"):
+		log.warning("active kbdc not found")
+	return "Active BM"
 
 def waitAfterDisconnect():
 	for loop in xrange(10):
