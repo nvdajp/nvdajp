@@ -169,7 +169,7 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 def getKbdcName(hBrl):
 	if not hBrl.IsKbdcInstalled("Active KBDC"):
 		log.warning("active kbdc not found")
-	return "BrailleNote46C/46D"
+	return u"ブレイルノート46C/46D".encode('shift-jis')
 
 def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
@@ -253,10 +253,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		for p in kgsListComPorts():
 			if 'bluetoothName' in p:
 				p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
-			elif 'hardwareID' in p and p['hardwareID'][:3] == 'USB':
-				p["friendlyName"] = u"USB: {portName}".format(portName=p["friendlyName"])
-			else:
-				p["friendlyName"] = _("Serial: {portName}").format(portName=p["friendlyName"])
 			ports[p["port"]] = p["friendlyName"]
 		ar = [cls.AUTOMATIC_PORT]
 		for i in xrange(64):
