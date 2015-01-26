@@ -137,16 +137,17 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 		return True
 	return False
 
-def kgsListComPorts(allowBT=True):
+def kgsListComPorts(preferSerial=False):
 	ports = []
+	btPorts = {}
 	usbPorts = {}
 
 	# BM bluetooth ports
-	if allowBT:
-		for p in hwPortUtils.listComPorts(onlyAvailable=True):
-			if 'bluetoothName' in p and p['bluetoothName'][:2].upper() == u'BM':
-				p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
-				ports.append(p)
+	for p in hwPortUtils.listComPorts(onlyAvailable=True):
+		if 'bluetoothName' in p and p['bluetoothName'][:2].upper() == u'BM':
+			p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
+			ports.append(p)
+			btPorts[ p['port'] ] = True
 
 	# BM-SMART USB
 	try:
@@ -212,9 +213,12 @@ def kgsListComPorts(allowBT=True):
 				log.info("appending non-kgs device: %s" % p['hardwareID'])
 				p["friendlyName"] = u"Bluetooth: {portName}".format(portName=p["friendlyName"])
 				ports.append(p)
-		elif p['port'] not in usbPorts:
+		elif p['port'] not in btPorts and p['port'] not in usbPorts:
 			p["friendlyName"] = _("Serial: {portName}").format(portName=p["friendlyName"])
-			ports.append(p)
+			if preferSerial:
+				ports.insert(0, p)
+			else:
+				ports.append(p)
 
 	log.info(unicode(ports))
 	return ports
@@ -262,8 +266,8 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 		frName = portInfo.get("friendlyName")
 		btName = portInfo.get("bluetoothName")
 		# skip non BMsmart device
-		if btName and btName.lower() == 'bm series':
-			continue
+		#if btName and btName.lower() == 'bm series':
+		#	continue
 		log.info(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
 		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
 		if ret:
