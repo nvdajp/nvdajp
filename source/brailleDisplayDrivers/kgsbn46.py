@@ -152,7 +152,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	Port = _port = None
 	ret = False
-	for portInfo in kgsListComPorts():
+	for portInfo in kgsListComPorts(preferSerial=True):
 		_port = portInfo["port"]
 		hwID = portInfo["hardwareID"]
 		frName = portInfo.get("friendlyName")
