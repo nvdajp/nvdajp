@@ -1,10 +1,11 @@
-rem usage:
-rem > scons source
-rem > cd jptools
-rem > pack_kgs_addon.cmd
+@rem usage:
+@rem > cd jptools
+@rem > pack_kgs_addon.cmd
+set DIRECTBM=c:\kgs\dev\DirectBM.dll
 cd ..\source
+copy /Y %DIRECTBM% source\brailleDisplayDrivers
 copy ..\jptools\kgs_manifest.ini manifest.ini
-7z a ..\jptools\nvdajp-kgs.zip manifest.ini brailleDisplayDrivers\kgs.py brailleDisplayDrivers\DirectBM.dll
+7z a ..\jptools\_kgs.zip manifest.ini brailleDisplayDrivers\kgs.py brailleDisplayDrivers\kgsbn46.py brailleDisplayDrivers\DirectBM.dll
 del manifest.ini
 cd ..\jptools
-move nvdajp-kgs.zip nvdajp-kgs-130521.nvda-addon
+move _kgs.zip kgsbraille-1.9.0.nvda-addon
