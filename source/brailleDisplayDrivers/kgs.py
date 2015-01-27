@@ -25,10 +25,10 @@ import _winreg
 import itertools
 
 kgs_dir = unicode(os.path.dirname(__file__), "mbcs")
-if (not 'addons' in os.path.split(kgs_dir)) and hasattr(sys, 'frozen'):
-	d = os.path.join(os.getcwdu(), 'brailleDisplayDrivers')
-	if os.path.isdir(d):
-		kgs_dir = d
+#if (not 'addons' in kgs_dir.split(os.sep)) and hasattr(sys, 'frozen'):
+#	d = os.path.join(os.getcwdu(), 'brailleDisplayDrivers')
+#	if os.path.isdir(d):
+#		kgs_dir = d
 
 fConnection = False
 numCells = 0
