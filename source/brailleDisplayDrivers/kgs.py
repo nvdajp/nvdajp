@@ -3,8 +3,9 @@
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
-#Copyright (C) 2011-2012 Takuya Nishimoto, Masataka Shinke
+#Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
+#Copyright (C) 2011-2015 Takuya Nishimoto
 
 import braille
 import brailleInput
@@ -136,16 +137,17 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 		return True
 	return False
 
-def _listComPorts(allowBT=True):
+def kgsListComPorts(preferSerial=False):
 	ports = []
+	btPorts = {}
 	usbPorts = {}
 
 	# BM bluetooth ports
-	if allowBT:
-		for p in hwPortUtils.listComPorts(onlyAvailable=True):
-			if 'bluetoothName' in p and p['bluetoothName'][:2].upper() == u'BM':
-				p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
-				ports.append(p)
+	for p in hwPortUtils.listComPorts(onlyAvailable=True):
+		if 'bluetoothName' in p and p['bluetoothName'][:2].upper() == u'BM':
+			p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
+			ports.append(p)
+			btPorts[ p['port'] ] = True
 
 	# BM-SMART USB
 	try:
@@ -211,9 +213,12 @@ def _listComPorts(allowBT=True):
 				log.info("appending non-kgs device: %s" % p['hardwareID'])
 				p["friendlyName"] = u"Bluetooth: {portName}".format(portName=p["friendlyName"])
 				ports.append(p)
-		elif p['port'] not in usbPorts:
+		elif p['port'] not in btPorts and p['port'] not in usbPorts:
 			p["friendlyName"] = _("Serial: {portName}").format(portName=p["friendlyName"])
-			ports.append(p)
+			if preferSerial:
+				ports.insert(0, p)
+			else:
+				ports.append(p)
 
 	log.info(unicode(ports))
 	return ports
@@ -255,36 +260,24 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	Port = _port = None
 	ret = False
-	for portInfo in _listComPorts(allowBT=False):
+	for portInfo in kgsListComPorts():
 		_port = portInfo["port"]
 		hwID = portInfo["hardwareID"]
 		frName = portInfo.get("friendlyName")
 		btName = portInfo.get("bluetoothName")
-		log.info(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
-		#if hwID[:3] != 'USB':
+		# skip non BMsmart device
+		#if btName and btName.lower() == 'bm series':
 		#	continue
+		log.info(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
 		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
 		if ret:
 			break
 	return ret, Port
 
 def getKbdcName(hBrl):
-	DEVNAME_JA = u"BMシリーズ機器".encode('shift-jis')
-	DEVNAME_EN = "BM series"
-	REGKEY_KBDC110_PATH_JA = r"SOFTWARE\KGS\KBDC110"
-	REGKEY_KBDC110_PATH_EN = r"SOFTWARE\KGS\KBDC110-E"
-	ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_JA)
-	if ret:
-		devName = DEVNAME_JA
-	else:
-		ret = hBrl.IsKbdcInstalled(REGKEY_KBDC110_PATH_EN)
-		if ret:
-			devName = DEVNAME_EN
-		else:
-			log.warning("kbdc not installed")
-			# fallback
-			devName = DEVNAME_EN
-	return devName
+	if not hBrl.IsKbdcInstalled("Active KBDC"):
+		log.warning("active kbdc not found")
+	return "Active BM"
 
 def waitAfterDisconnect():
 	for loop in xrange(10):
@@ -377,7 +370,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	def getPossiblePorts(cls):
 		ar = [cls.AUTOMATIC_PORT]
 		ports = {}
-		for p in _listComPorts():
+		for p in kgsListComPorts():
 			log.info(p)
 			ports[p["port"]] = p["friendlyName"]
 		log.info(ports)
