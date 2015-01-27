@@ -5,8 +5,8 @@ set TIMESERVER=http://timestamp.comodoca.com/authenticode
 set DESC=nvdajp
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
 set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
-set FILE3=source\brailleDisplayDrivers\DirectBM.dll
+@rem set FILE3=source\brailleDisplayDrivers\DirectBM.dll
 
 signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% /d %DESC% %FILE1%
 signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% /d %DESC% %FILE2%
-signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% /d %DESC% %FILE3%
+@rem signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% /d %DESC% %FILE3%
