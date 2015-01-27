@@ -22,13 +22,13 @@ import config
 from logHandler import log
 import sys
 
-kgs_dir = unicode(os.path.dirname(__file__), "mbcs")
-if (not 'addons' in os.path.split(kgs_dir)) and hasattr(sys, 'frozen'):
-	d = os.path.join(os.getcwdu(), 'brailleDisplayDrivers')
-	if os.path.isdir(d):
-		kgs_dir = d
+#kgs_dir = unicode(os.path.dirname(__file__), "mbcs")
+#if (not 'addons' in os.path.split(kgs_dir)) and hasattr(sys, 'frozen'):
+#	d = os.path.join(os.getcwdu(), 'brailleDisplayDrivers')
+#	if os.path.isdir(d):
+#		kgs_dir = d
 
-from kgs import kgsListComPorts, waitAfterDisconnect
+from kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir
 
 fConnection = False
 numCells = 0
