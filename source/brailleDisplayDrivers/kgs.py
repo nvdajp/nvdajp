@@ -25,6 +25,10 @@ import _winreg
 import itertools
 
 kgs_dir = "brailleDisplayDrivers"
+my_dir = unicode(os.path.dirname(__file__), "mbcs")
+if 'addons' in my_dir.split(os.sep):
+       kgs_dir = my_dir
+
 fConnection = False
 numCells = 0
 isUnknownEquipment = False
