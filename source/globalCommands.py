@@ -744,15 +744,12 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			if characterDescriptionMode:
 				speech.spellTextInfo(info,useCharacterDescriptions=True)
+				# display description to braille
+				braille.handler.message(nvdajp_dic.getJapaneseDiscriminantReading(info.text))
 			else:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
-			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
-			braille.handler.message(s)
 		elif scriptCount==1:
-			import languageHandler
-			s = nvdajp_dic.getJapaneseDiscriminantReading(info.text)
-			speech.speakMessage(speech.processText(languageHandler.getLanguage(), s, characterProcessing.SYMLVL_ALL))
-			braille.handler.message(s)
+			speech.spellTextInfo(info,useCharacterDescriptions=True,useDetails=True)
 		elif scriptCount==2:
 			try:
 				c = ord(info.text)
