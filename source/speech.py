@@ -137,21 +137,21 @@ def getCurrentLanguage():
 		language=languageHandler.getLanguage()
 	return language
 
-def spellTextInfo(info,useCharacterDescriptions=False):
+def spellTextInfo(info,useCharacterDescriptions=False,useDetails=False):
 	"""Spells the text from the given TextInfo, honouring any LangChangeCommand objects it finds if autoLanguageSwitching is enabled."""
 	if not config.conf['speech']['autoLanguageSwitching']:
-		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions)
+		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails)
 		return
 	curLanguage=None
 	for field in info.getTextWithFields({}):
 		if isinstance(field,basestring):
-			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions)
+			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails)
 		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
 			curLanguage=field.field.get('language')
 
 _speakSpellingGenerator=None
 
-def speakSpelling(text,locale=None,useCharacterDescriptions=False):
+def speakSpelling(text,locale=None,useCharacterDescriptions=False,useDetails=False):
 	global beenCanceled, _speakSpellingGenerator
 	import speechViewer
 	if speechViewer.isActive:
@@ -174,9 +174,9 @@ def speakSpelling(text,locale=None,useCharacterDescriptions=False):
 	if not text.isspace():
 		text=text.rstrip()
 	if _speakSpellingGenerator and _speakSpellingGenerator.gi_frame:
-		_speakSpellingGenerator.send((text,locale,useCharacterDescriptions))
+		_speakSpellingGenerator.send((text,locale,useCharacterDescriptions,useDetails))
 	else:
-		_speakSpellingGenerator=_speakSpellingGen(text,locale,useCharacterDescriptions)
+		_speakSpellingGenerator=_speakSpellingGen(text,locale,useCharacterDescriptions,useDetails)
 		try:
 			# Speak the first character before this function returns.
 			next(_speakSpellingGenerator)
@@ -184,16 +184,18 @@ def speakSpelling(text,locale=None,useCharacterDescriptions=False):
 			return
 		queueHandler.registerGeneratorObject(_speakSpellingGenerator)
 
-def _speakSpellingGen(text,locale,useCharacterDescriptions):
+def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 	synth=getSynth()
 	synthConfig=config.conf["speech"][synth.name]
-	buf=[(text,locale,useCharacterDescriptions)]
-	for text,locale,useCharacterDescriptions in buf:
+	buf=[(text,locale,useCharacterDescriptions,useDetails)]
+	for text,locale,useCharacterDescriptions,useDetails in buf:
 		textLength=len(text)
 		isJp = nvdajp_dic.isJapaneseLocale(locale) # nvdajp
 		for count,char in enumerate(text): 
 			uppercase=char.isupper()
 			# nvdajp begin
+			orgChar = char
+			capAnnounced = False
 			jpZenkakuHiragana = isJp and nvdajp_dic.isZenkakuHiragana(char)
 			jpZenkakuKatakana = isJp and nvdajp_dic.isZenkakuKatakana(char)
 			jpHankakuKatakana = isJp and nvdajp_dic.isHankakuKatakana(char)
@@ -210,17 +212,19 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions):
 			if useCharacterDescriptions:
 				#nvdajp begin
 				#charDesc=characterProcessing.getCharacterDescription(locale,char.lower())
-				if jpLatinCharacter and not config.conf["language"]["jpPhoneticReadingLatin"]:
+				usePhoneticReadingLatin = useDetails and config.conf["language"]["jpPhoneticReadingLatin"]
+				usePhoneticReadingKana = useDetails and config.conf["language"]["jpPhoneticReadingKana"]
+				if jpLatinCharacter and not usePhoneticReadingLatin:
 					charDesc = (nvdajp_dic.get_short_desc(char.lower()),)
-				elif nonJpLatinCharacter and not config.conf["language"]["jpPhoneticReadingLatin"]:
+				elif nonJpLatinCharacter and not usePhoneticReadingLatin:
 					charDesc = (char.lower(),)
-				elif nonJpFullShapeAlphabet and not config.conf["language"]["jpPhoneticReadingLatin"]:
+				elif nonJpFullShapeAlphabet and not usePhoneticReadingLatin:
 					import unicodedata
 					charDesc = (unicodedata.normalize('NFKC', char.lower()),)
-				elif nonJpFullShapeAlphabet and config.conf["language"]["jpPhoneticReadingLatin"]:
+				elif nonJpFullShapeAlphabet and usePhoneticReadingLatin:
 					import unicodedata
 					charDesc = characterProcessing.getCharacterDescription(locale, unicodedata.normalize('NFKC', char.lower()))
-				elif (jpZenkakuHiragana or jpZenkakuKatakana or jpHankakuKatakana) and not config.conf["language"]["jpPhoneticReadingKana"]:
+				elif (jpZenkakuHiragana or jpZenkakuKatakana or jpHankakuKatakana) and not usePhoneticReadingKana:
 					charDesc = (nvdajp_dic.get_short_desc(char),)
 				else:
 					charDesc=characterProcessing.getCharacterDescription(locale,char.lower())
@@ -233,6 +237,7 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions):
 			if uppercase and synthConfig["sayCapForCapitals"]:
 				# Translators: cap will be spoken before the given letter when it is capitalized.
 				char=_("cap %s")%char
+				capAnnounced = True # nvdajp
 			# nvdajp begin
 			#if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
 			#	oldPitch=synthConfig["pitch"]
@@ -270,6 +275,10 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions):
 			# nvdajp end
 			if index is not None:
 				speechSequence.append(IndexCommand(index))
+			# nvdajp begin
+			if useDetails:
+				speechSequence.append(nvdajp_dic.getJapaneseDiscriminantReading(orgChar, attrOnly=True, capAnnounced=capAnnounced))
+			# nvdajp end
 			speechSequence.append(char)
 			synth.speak(speechSequence)
 			# nvdajp begin

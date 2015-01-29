@@ -154,12 +154,12 @@ def useAttrDesc(a):
 
 #TODO: merge _get_description() and getJapaneseDiscriminantReading().
 #nvdajp must modify locale/ja/characterDescriptions.dic and nvdajp_dic.py.
-def getJapaneseDiscriminantReading(name):
+def getJapaneseDiscriminantReading(name, attrOnly=False, capAnnounced=False):
 	if not name: return ''
 	attrs = []
 	for c in name:
 		ca = CharAttr(
-			isUpper(c),
+			isUpper(c) if not capAnnounced else False,
 			isZenkakuHiragana(c),
 			isZenkakuKatakana(c),
 			isHalfShape(c) or isHankakuKatakana(c),
@@ -167,6 +167,11 @@ def getJapaneseDiscriminantReading(name):
 			isLatinCharacter(c))
 		log.debug(u"(%s) %s" % (c, getAttrDesc(ca)))
 		attrs.append((c, ca))
+	if attrOnly:
+		s = ''
+		for a in attrs:
+			s += getAttrDesc(a[1]) + ' '
+		return s
 	s = ''
 	prevAttr = None
 	prevChar = None
