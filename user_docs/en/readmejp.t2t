@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2014-05-16
+- last update: 2015-01-30
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -64,7 +64,7 @@ Pressing "Report current character in review" (numpad2 or NVDA+period) four-time
 %kc:beginInclude
 || Name | Desktop key | Laptop key | Touch | Description |
 | Move to previous character in review | numpad1 | NVDA+left arrow | flick left (text mode) | Moves the review cursor to the previous character on the current line in the text. If description mode is enabled, the character is described. |
-| Report current character in review | numpad2 | NVDA+period | none | Announces the current character on the line of text where the review cursor is positioned. If description mode is enabled, the character is described. Pressing twice reports the character with its attributes. Pressing three times reports the numeric value of the character in decimal and hexadecimal. Pressing four-times toggles the description mode. |
+| Report current character in review | numpad2 | NVDA+period | none | Announces the current character on the line of text where the review cursor is positioned. If description mode is enabled, the character is described. Pressing twice reports the character with its attributes and description. Pressing three times reports the numeric value of the character in decimal and hexadecimal. Pressing four-times toggles the description mode. |
 | Move to next character in review | numpad3 | NVDA+right arrow | flick right (text mode) | Move the review cursor to the next character on the current line of text. If description mode is enabled, the character is described. |
 %kc:endInclude
 
@@ -103,12 +103,12 @@ Default is off.
 
 +++ Phonetic reading for Kana +++
 
-If checked, Hiragana and Katakana characters are reported using phonetic reading for character review (when description mode is enabled).
+If checked, Hiragana and Katakana characters are reported using phonetic reading when "Report current character in review" is pressed twice.
 Default is off.
 
 +++ Phonetic reading for Latin +++
 
-If checked, Latin characters are reported using phonetic reading for character review (when description mode is enabled).
+If checked, Latin characters are reported using phonetic reading when "Report current character in review" is pressed twice.
 Default is off.
 
 +++ Katakana pitch change percentage +++
