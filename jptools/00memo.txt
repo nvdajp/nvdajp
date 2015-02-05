@@ -48,6 +48,13 @@ C:\Python27\python.exe に PATH が通っていること。
 > git submodule sync
 > git submodule update --init --recursive
 
+備考：
+本家から git fetch, git merge FETCH_HEAD したあとで
+
+        modified:   include/espeak (new commits)
+
+のようになったときにこの操作をすると解決することが多い。
+
 
 2.1 git submodule のエラー対応
 
