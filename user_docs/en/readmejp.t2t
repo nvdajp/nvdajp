@@ -370,17 +370,16 @@ eSpeak of NVDA cannot handle Japanese language.
 
 ++ KGS Braille Memo series ++
 
-The driver for braille display "KGS BrailleMemo series" from [KGS Corporation http://www.kgs-jpn.co.jp/] is added. BM46 is used for development and tests. BM32 is tested by the community members.
+The driver for braille display "KGS BrailleMemo series" from [KGS Corporation http://www.kgs-jpn.co.jp/] is added. BMS40 and BM46 are used for development and tests. BM32 is tested by the community.
 
 Both automatic and manual port setting can be used. It also works with Bluetooth.
 
-The BM Utility must be installed to the computer.
+The BM Utility is used if it is installed to the computer. This driver is tested with BM Utility Version 6.2.2.
 
 For USB connection, virtual serial driver must also be installed.
 The device should be configured to use 9600BPS connection speed for virtual serial driver.
 
-This driver allows you to choose connection port from COM1 to COM64.
-If automatic setting fails, please choose the COM port directly.
+This driver allows you to choose connection port from the available serial ports and the detected BM series devices via USB or Bluetooth connection.
 
 KGS Braille Memo driver supports following commands:
 
@@ -531,7 +530,7 @@ Symbols:
 
 The driver for braille display "KGS BrailleNote 46C/46D" from [KGS Corporation http://www.kgs-jpn.co.jp/] is added.
 
-The BM Utility must be installed to the computer.
+The BM Utility can be used if it is installed to the computer.
 
 BrailleNote 46X is supported by "KGS BrailleMemo series" driver. Please do not use this driver for BrailleNote 46X.
 
