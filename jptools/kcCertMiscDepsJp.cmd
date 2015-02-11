@@ -8,5 +8,7 @@ set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
 @rem set FILE3=source\brailleDisplayDrivers\DirectBM.dll
 
 signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% /d %DESC% %FILE1%
+timeout /T 3 /NOBREAK
 signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% /d %DESC% %FILE2%
+timeout /T 3 /NOBREAK
 @rem signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% /d %DESC% %FILE3%

@@ -84,6 +84,10 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 
 署名つきビルドは、最上位のディレクトリで以下を実行
 
+jptools\kcCertAllBuild.cmd
+
+または
+
 (1) scons -c
 (2) jptools\setup-vc2013.cmd
 (3) jptools\setupMiscDepsJp.cmd
@@ -118,6 +122,8 @@ JTalk または日本語点訳エンジンを更新しない場合は (1) (2) �
 jptools\findBackupFiles.cmd
 
 必要に応じて削除。
+
+内部で gnupack の find.exe を使っている。
 
 
 5.2 レポジトリにプッシュ
