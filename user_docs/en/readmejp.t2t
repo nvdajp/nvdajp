@@ -532,7 +532,8 @@ The driver for braille display "KGS BrailleNote 46C/46D" from [KGS Corporation h
 
 The BM Utility can be used if it is installed to the computer.
 
-BrailleNote 46X is supported by "KGS BrailleMemo series" driver. Please do not use this driver for BrailleNote 46X.
+BrailleNote BN46X can be used with "KGS BrailleMemo series" driver if BM Utility is installed.
+BrailleNote BN46X can be used with "KGS BrailleNote 46C/46D" driver if BM Utility is not installed.
 
 For USB connection, virtual serial driver must also be installed.
 The device should be configured to use 9600BPS connection speed for virtual serial driver.
