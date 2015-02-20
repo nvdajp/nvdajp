@@ -6,7 +6,7 @@ NVDA日本語チーム 西本卓也
 1. ビルド環境
 
 
-NVDA 2014.4jp の場合
+NVDA 2015.1jp の場合
 
 
 (1) Windows 7 SP1 32ビットまたは64ビット
@@ -38,7 +38,7 @@ git push するためには push 先のアカウントのセットアップや�
 miscDepsJp から sources へのコピーで使用している。
 
 
-(6) Python 2.7.8 (Windows 32bit)
+(6) Python 2.7.9 (Windows 32bit)
 
 C:\Python27\python.exe に PATH が通っていること。
 
