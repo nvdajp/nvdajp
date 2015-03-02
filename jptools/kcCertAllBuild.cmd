@@ -1,4 +1,4 @@
-call jptools\findBackupFiles.cmd
+@rem call jptools\findBackupFiles.cmd
 call scons.bat -c
 call jptools\setup-vc2013.cmd
 call jptools\setupMiscDepsJp.cmd
