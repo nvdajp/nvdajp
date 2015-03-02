@@ -270,6 +270,8 @@ def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,is
 
 lastCompAttr = None #nvdajp
 lastCompString = None #nvdajp
+lastSelectionStart = None #nvdajp
+lastSelectionEnd = None #nvdajp
 
 # work around ti34120
 # https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120
@@ -289,18 +291,23 @@ def badCompositionUpdate(compositionString, compAttr):
 @WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
 	global lastCompAttr, lastCompString
+	global lastSelectionStart, lastSelectionEnd
 	from NVDAObjects.inputComposition import InputComposition
 	#nvdajp begin
 	compAttr = ''
 	if '\t' in compositionString:
 		ar = compositionString.split('\t')
 		compositionString, compAttr = ar
-		if (lastCompString == compositionString) and (lastCompAttr == compAttr):
-			log.debug("ignored (%s) (%s)" % (compositionString, compAttr))
+		if (lastCompString == compositionString) and (lastCompAttr == compAttr) \
+		   and (lastSelectionStart == selectionStart) \
+		   and (lastSelectionEnd == selectionEnd):
+			log.debug("ignored (%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
 			return 0
 		_lastCompAttr = lastCompAttr
 		lastCompAttr = compAttr
 		lastCompString = compositionString
+		lastSelectionStart = selectionStart
+		lastSelectionEnd = selectionEnd
 		# TF_ATTR_INPUT                = 0
 		# TF_ATTR_TARGET_CONVERTED     = 1
 		# TF_ATTR_CONVERTED            = 2
@@ -310,7 +317,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
-			log.debug("(%s) (%s)" % (compositionString, compAttr))
+			log.debug("(%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
 			s = ''
 			e = 0
 			if ('3' in compAttr) and ('1' not in compAttr):
@@ -326,6 +333,11 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 				for p in range(len(compAttr)):
 					if compAttr[p] == '0':
 						s += compositionString[p]
+			elif all([c == '0' for c in compAttr]) \
+				and 0 <= selectionStart == selectionEnd < len(compAttr):
+				# reviewing pre-edit character
+				s = compositionString[selectionStart]
+				log.debug("((%s))" % s)
 			if s:
 				focus=api.getFocusObject()
 				if isinstance(focus,InputComposition):
