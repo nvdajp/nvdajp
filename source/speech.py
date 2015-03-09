@@ -203,20 +203,23 @@ JpAttr = collections.namedtuple(
 	)
 )
 
+def isJa(locale):
+	return nvdajp_dic.isJapaneseLocale(locale)
+
 def getCharAttr(locale, char, useDetails):
 	"""
 	"""
-	isJp = nvdajp_dic.isJapaneseLocale(locale)
-	jpZenkakuHiragana = isJp and nvdajp_dic.isZenkakuHiragana(char)
-	jpZenkakuKatakana = isJp and nvdajp_dic.isZenkakuKatakana(char)
-	jpHankakuKatakana = isJp and nvdajp_dic.isHankakuKatakana(char)
-	jpLatinCharacter = isJp and nvdajp_dic.isLatinCharacter(char)
-	nonJpLatinCharacter = (not isJp) and nvdajp_dic.isLatinCharacter(char)
-	jpFullShapeAlphabet = isJp and nvdajp_dic.isFullShapeAlphabet(char)
-	nonJpFullShapeAlphabet = (not isJp) and nvdajp_dic.isFullShapeAlphabet(char)
-	jpFullShapeSymbol = isJp and nvdajp_dic.isFullShapeSymbol(char)
+	_isJa = isJa(locale)
+	jpZenkakuHiragana = _isJa and nvdajp_dic.isZenkakuHiragana(char)
+	jpZenkakuKatakana = _isJa and nvdajp_dic.isZenkakuKatakana(char)
+	jpHankakuKatakana = _isJa and nvdajp_dic.isHankakuKatakana(char)
+	jpLatinCharacter = _isJa and nvdajp_dic.isLatinCharacter(char)
+	nonJpLatinCharacter = (not _isJa) and nvdajp_dic.isLatinCharacter(char)
+	jpFullShapeAlphabet = _isJa and nvdajp_dic.isFullShapeAlphabet(char)
+	nonJpFullShapeAlphabet = (not _isJa) and nvdajp_dic.isFullShapeAlphabet(char)
+	jpFullShapeSymbol = _isJa and nvdajp_dic.isFullShapeSymbol(char)
 	jpFullShape = jpFullShapeAlphabet or jpFullShapeSymbol
-	halfShape = isJp and nvdajp_dic.isHalfShape(char)
+	halfShape = _isJa and nvdajp_dic.isHalfShape(char)
 	usePhoneticReadingLatin = useDetails and config.conf["language"]["jpPhoneticReadingLatin"]
 	usePhoneticReadingKana = useDetails and config.conf["language"]["jpPhoneticReadingKana"]
 	jpAttr = JpAttr(
@@ -259,24 +262,28 @@ def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
 	"""
 	pitchChanged = False
 	oldPitch = None
-	if synth.isSupported("pitch"):
-		if uppercase and synthConfig["capPitchChange"]:
-			oldPitch=synthConfig["pitch"]
-			synth.pitch=max(0,min(oldPitch+synthConfig["capPitchChange"],100))
-			pitchChanged = True
-		elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
-			oldPitch=synthConfig["pitch"]
-			synth.pitch=max(0,min(oldPitch+config.conf['language']['jpKatakanaPitchChange'],100))
-			pitchChanged = True
-		elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
-			oldPitch=synthConfig["pitch"]
-			synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
-			pitchChanged = True
-		elif jpAttr.halfShape and config.conf['language']['halfShapePitchChange']:
-			oldPitch=synthConfig["pitch"]
-			synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
-			pitchChanged = True
+	if not synth.isSupported("pitch"):
+		return pitchChanged, oldPitch
+	if uppercase and synthConfig["capPitchChange"]:
+		oldPitch=synthConfig["pitch"]
+		synth.pitch=max(0,min(oldPitch+synthConfig["capPitchChange"],100))
+		pitchChanged = True
+	elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
+		oldPitch=synthConfig["pitch"]
+		synth.pitch=max(0,min(oldPitch+config.conf['language']['jpKatakanaPitchChange'],100))
+		pitchChanged = True
+	elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
+		oldPitch=synthConfig["pitch"]
+		synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
+		pitchChanged = True
+	elif jpAttr.halfShape and config.conf['language']['halfShapePitchChange']:
+		oldPitch=synthConfig["pitch"]
+		synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
+		pitchChanged = True
 	return pitchChanged, oldPitch
+
+def getJaCharAttrDetails(char, shouldSayCap):
+	return nvdajp_dic.getJapaneseDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap)
 
 def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 	synth=getSynth()
@@ -285,42 +292,37 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 	for text,locale,useCharacterDescriptions,useDetails in buf:
 		textLength=len(text)
 		for count,char in enumerate(text): 
-			uppercase=char.isupper()
-			orgChar = char
-			capAnnounced = False
-			jpAttr = getCharAttr(locale, char, useDetails)
-			charAttrDetails = None
+			#char and charDesc(of conjuncts) should be set here
 			charDesc=None
-			if useCharacterDescriptions:
-				#charDesc=characterProcessing.getCharacterDescription(locale,char.lower())
+			uppercase=char.isupper()
+			shouldSayCap = uppercase and synthConfig["sayCapForCapitals"]
+			jpAttr = getCharAttr(locale, char, useDetails)
+			charAttrDetails = getJaCharAttrDetails(char, shouldSayCap) if useDetails else None
+			if useCharacterDescriptions and not charDesc:
 				charDesc = getCharDesc(locale, char, jpAttr)
 			if charDesc:
+				#log.info("(%s) %s %s" % (unicode(charAttrDetails), unicode(charDesc), unicode(jpAttr)))
+				#charDesc should be: (u'メ',) (u'モ',) [u'チョーメンノ チョー']
 				#Consider changing to multiple synth speech calls
 				char=charDesc[0] if textLength>1 else u"\u3001".join(charDesc)
 			else:
 				char=characterProcessing.processSpeechSymbol(locale,char.lower())
-			if uppercase and synthConfig["sayCapForCapitals"]:
+			if shouldSayCap:
 				# Translators: cap will be spoken before the given letter when it is capitalized.
 				char=_("cap %s")%char
-				capAnnounced = True
-			if useDetails:
-				charAttrDetails = nvdajp_dic.getJapaneseDiscriminantReading(orgChar, attrOnly=True, capAnnounced=capAnnounced)
-			#if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
-			#	oldPitch=synthConfig["pitch"]
-			#	synth.pitch=max(0,min(oldPitch+synthConfig["capPitchChange"],100))
 			pitchChanged, oldPitch = changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig)
 			index=count+1
 			log.io("Speaking character %r"%char)
 			speechSequence=[LangChangeCommand(locale)] if config.conf['speech']['autoLanguageSwitching'] else []
-			if len(char) == 1 and synthConfig["useSpellingFunctionality"] and not nvdajp_dic.isJapaneseLocale(locale):
+			if len(char) == 1 and synthConfig["useSpellingFunctionality"] and not isJa(locale):
 				speechSequence.append(CharacterModeCommand(True))
 			if index is not None:
 				speechSequence.append(IndexCommand(index))
 			if charAttrDetails:
+				#Announce attribute details before character itself
 				speechSequence.append(charAttrDetails)
 			speechSequence.append(char)
 			synth.speak(speechSequence)
-			#if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
 			if pitchChanged:
 				synth.pitch=oldPitch
 			while textLength>1 and (isPaused or getLastSpeechIndex()!=index):
