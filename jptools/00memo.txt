@@ -104,6 +104,10 @@ jptools\kcCertAllBuild.cmd
 
 署名なしビルドは、最上位のディレクトリで以下を実行
 
+jptools\nonCertAllBuild.cmd
+
+または
+
 (1) jptools\setup-vc2013.cmd
 (2) jptools\setupMiscDepsJp.cmd
 (3) jptools\build.cmd
