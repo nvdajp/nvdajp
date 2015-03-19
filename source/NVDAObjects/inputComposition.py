@@ -116,10 +116,12 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 		clsList.append(InputComposition)
 		return clsList
 
-	def reportNewText(self,oldString,newString):
+	def reportNewText(self,oldString,newString,forceNewText=False):
 		global lastCompositionText, lastCompositionTime #nvdajp
 		#nvdajp begin
 		newText=calculateInsertedChars(oldString.strip(u'\u3000'),newString.strip(u'\u3000'))
+		if forceNewText:
+			newText=newString.strip(u'\u3000')
 		isCandidate = False
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
 				config.conf["inputComposition"]["announceSelectedCandidate"] and \
@@ -142,10 +144,10 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 				queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
 		#nvdajp end
 
-	def compositionUpdate(self,compositionString,selectionStart,selectionEnd,isReading,announce=True):
+	def compositionUpdate(self,compositionString,selectionStart,selectionEnd,isReading,announce=True,forceNewText=False):
 		if isReading and not config.conf["inputComposition"]["reportReadingStringChanges"]: return
 		if not isReading and not config.conf["inputComposition"]["reportCompositionStringChanges"]: return
-		if announce: self.reportNewText((self.readingString if isReading else self.compositionString),compositionString)
+		if announce: self.reportNewText((self.readingString if isReading else self.compositionString),compositionString,forceNewText=forceNewText)
 		hasChanged=False
 		if isReading:
 			self.readingString=compositionString

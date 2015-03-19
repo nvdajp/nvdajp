@@ -341,7 +341,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 			if s:
 				focus=api.getFocusObject()
 				if isinstance(focus,InputComposition):
-					focus.compositionUpdate(s, 0, e, 0)
+					focus.compositionUpdate(s, 0, e, 0, forceNewText=True)
 				return 0
 	else:
 		lastCompAttr = None
