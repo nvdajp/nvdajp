@@ -1925,6 +1925,10 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.jpAnnounceNewLineCheckBox.SetValue(config.conf["language"]["jpAnnounceNewLine"])
 		settingsSizer.Add(self.jpAnnounceNewLineCheckBox,border=10,flag=wx.BOTTOM)
 
+		self.openDocFileByMSHTACheckBox=wx.CheckBox(self,wx.NewId(),label=_("Open document file by MSHTA"))
+		self.openDocFileByMSHTACheckBox.SetValue(config.conf["language"]["openDocFileByMSHTA"])
+		settingsSizer.Add(self.openDocFileByMSHTACheckBox,border=10,flag=wx.BOTTOM)
+
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
 
@@ -1939,6 +1943,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["language"]["jpAnsiEditbox"]=self.jpAnsiEditCheckBox.IsChecked()
 		config.conf["braille"]["nvdajpMessageTimeout"]=self.msgTimeoutCheckBox.IsChecked()
 		config.conf["language"]["jpAnnounceNewLine"]=self.jpAnnounceNewLineCheckBox.IsChecked()
+		config.conf["language"]["openDocFileByMSHTA"]=self.openDocFileByMSHTACheckBox.IsChecked()
 
 		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
 		try:

@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2015-01-30
+- last update: 2015-03-22
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -148,6 +148,25 @@ If you use Winbiff e-mail software, please turn this option off.
 +++ Enable Braille message timeout +++
 
 This option allows disabling Braille message timeout. If this option is turned off, Braille massage is displayed almost forever (10000sec).
+
++++ Announce new line in editable text +++
+
+This option allows announcement of new line when Enter key is pressed in editable text.
+If Enter key is used for ending input composition session, it is not announced.
+When 'Speak typed character' is disabled in Keyboard settings, it is not announced as well.
+This is experimental feature, so it may not work correctly in some applications.
+
++++ Open document file by MSHTA +++
+
+In Japanese version, 'Open document file by MSHTA' option is enabled by default.
+
+If it is enabled, some documents in NVDA help menu are opened as an application, rather than using the system's default Web browser.
+
+If it is disabled, the system's default Web browser, such as Internet Explorer or Mozilla Firefox, is used for the documents.
+
+A technology called HTA (mshta.exe) is used for opening the help document as an application.
+If you use the environment where HTA is not allowed, disable the option.
+
 
 ++ Voice settings ++
 
