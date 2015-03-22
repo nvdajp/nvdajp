@@ -73,6 +73,7 @@ confspec = ConfigObj(StringIO(
 	announceCandidateNumber = boolean(default=false)
 	jpAnsiEditbox = boolean(default=true)
 	jpAnnounceNewLine = boolean(default=false)
+	openDocFileByMSHTA = boolean(default=true)
 
 # Speech settings
 [speech]

@@ -62,6 +62,10 @@ msgstr "点字メッセージの表示終了待ち時間の設定を有効化"
 msgid "Announce new line in editable text"
 msgstr "テキスト編集で改行を通知"
 
+#: gui\settingsDialogs.py:1928
+msgid "Open document file by MSHTA"
+msgstr "ヘルプを既定のブラウザではなくHTAで開く"
+
 #: editableText.py:
 msgid "new line"
 msgstr "改行"
