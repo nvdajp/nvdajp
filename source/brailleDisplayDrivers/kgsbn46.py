@@ -22,13 +22,7 @@ import config
 from logHandler import log
 import sys
 
-#kgs_dir = unicode(os.path.dirname(__file__), "mbcs")
-#if (not 'addons' in os.path.split(kgs_dir)) and hasattr(sys, 'frozen'):
-#	d = os.path.join(os.getcwdu(), 'brailleDisplayDrivers')
-#	if os.path.isdir(d):
-#		kgs_dir = d
-
-from kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir
+from kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir, processEvents
 
 fConnection = False
 numCells = 0
@@ -138,10 +132,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				break
 			time.sleep(0.5)
 			tones.beep(400+(loop*20), 20)
-			msg=ctypes.wintypes.MSG()
-			if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
-				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
-				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+			processEvents()
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
@@ -288,11 +279,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	gestureMap = inputCore.GlobalGestureMap({
 		"globalCommands.GlobalCommands": {
 			"showGui": ("br(kgsbn46):func1",),
-			"braille_routeTo": ("br(kgsbn46):route",),
+			"braille_routeTo": ("br(kgsbn46):route","br(kgsbn46):func1+func2+func3+func4+route",),
 			"braille_scrollBack": ("br(kgsbn46):sl",),
 			"braille_scrollForward": ("br(kgsbn46):sr",),
-#			"braille_previousLine": ("br(kgsbn46):bk",),
-#			"braille_nextLine": ("br(kgsbn46):lf",),
 			"review_previousLine": ("br(kgsbn46):func2+bk",),
 			"review_nextLine": ("br(kgsbn46):func2+lf",),
 			"review_previousWord": ("br(kgsbn46):func2+sl",),
@@ -301,14 +290,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			"kb:downArrow": ("br(kgsbn46):lf",),
 			"kb:leftArrow": ("br(kgsbn46):func3",),
 			"kb:rightArrow": ("br(kgsbn46):func4",),
-#			"kb:leftArrow": ("br(kgsbn46):sl",),
-#			"kb:rightArrow": ("br(kgsbn46):sr",),
-#			"kb:shift": ("br(kgsbn46):func2",),
-#			"kb:control": ("br(kgsbn46):ctrl",),nc2+bk",),
-#			"kb:shift+downArrow": ("br(kgsbn46):func2+lf",),
-#			"kb:shift+leftArrow": ("br(kgsbn46):func2+sl",),
-#			"kb:shift+rightArrow": ("br(kgsbn46):func2+sr",),
-#			"kb:shift+upArrow": ("br(kgsbn46):fu
 		}
 	})
 

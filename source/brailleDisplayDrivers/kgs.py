@@ -245,10 +245,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				break
 			time.sleep(0.5)
 			tones.beep(400+(loop*20), 20)
-			msg=ctypes.wintypes.MSG()
-			if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
-				ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
-				ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+			processEvents()
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
@@ -278,14 +275,17 @@ def getKbdcName(hBrl):
 		log.warning("active kbdc not found")
 	return "Active BM"
 
+def processEvents():
+	import api
+	import wx
+	api.processPendingEvents()
+	wx.YieldIfNeeded()
+
 def waitAfterDisconnect():
 	for loop in xrange(10):
 		time.sleep(0.5)
 		tones.beep(450-(loop*20), 20)
-		msg=ctypes.wintypes.MSG()
-		if ctypes.windll.user32.PeekMessageW(ctypes.byref(msg),None,0,0,1):
-			ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
-			ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+		processEvents()
 
 def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
