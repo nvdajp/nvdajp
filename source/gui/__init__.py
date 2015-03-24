@@ -31,19 +31,15 @@ import speechViewer
 import winUser
 import api
 import brailleViewer #nvdajp
+import subprocess #nvdajp
 
-def openDocFileAsHTA(basename):
+def openDocFile(basename):
 	b = unicode(basename, 'mbcs')
 	d = getDocFilePath(b + u".html")
-	if d:
-		# tempfile.tempdir is overrided in nvda.pyw
-		import tempfile
-		hta = os.path.join(unicode(tempfile.mkdtemp(), 'mbcs'), b + u".hta")
-		import shutil
-		shutil.copyfile(d, hta)
-		os.startfile(hta)
+	if config.conf["language"]["openDocFileByMSHTA"]:
+		subprocess.Popen(["mshta.exe", d])
 	else:
-		log.debugWarning("open %s" % basename, exc_info=True)
+		os.startfile(d)
 
 
 try:
@@ -444,17 +440,17 @@ class SysTrayIcon(wx.TaskBarIcon):
 		#nvdajp begin
 		if not globalVars.appArgs.secure:
 			item = menu_help.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
-			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("readmejp"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("readmejp"), item)
 		#nvdajp end
 		if not globalVars.appArgs.secure:
 			item = menu_help.Append(wx.ID_ANY, pgettext("nvdaMenu", "User Guide"))
-			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("userGuide"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("userGuide"), item)
 			# Translators: The label of a menu item to open the Commands Quick Reference document.
 			item = menu_help.Append(wx.ID_ANY, _("Commands &Quick Reference"))
-			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("keyCommands"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("keyCommands"), item)
 			# Translators: The label for the menu item to open What's New document.
 			item = menu_help.Append(wx.ID_ANY, _("What's &new"))
-			self.Bind(wx.EVT_MENU, lambda evt: openDocFileAsHTA("changes"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("changes"), item)
 			item = menu_help.Append(wx.ID_ANY, _("NVDA &web site"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("http://www.nvda-project.org/"), item)
 			# Translators: The label for the menu item to view NVDA License document.
