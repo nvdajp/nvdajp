@@ -22,59 +22,49 @@ import config
 from logHandler import log
 import sys
 
-from kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir, processEvents
+from kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir, processEvents, BMDRVS, KGS_DISPMODE
 
 fConnection = False
 numCells = 0
 isUnknownEquipment = False
 
-#BM_DISPMODE_FOREGROUND = 0x01
-#BM_DISPMODE_BACKGROUND = 0x02
-#BM_DISPMODE_KEYHANDLER = 0x04
-#BM_DISPMODE_SUSPENDED  = 0x08
-KGS_DISPMODE = 0x02|0x04
-
-# void (CALLBACK *pStatusChanged)(int nStatus, int nDispSize)
-#@WINFUNCTYPE(c_void_p, c_int, c_int)
 KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)
 
 def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	global fConnection, numCells, isUnknownEquipment
-	if 0==nStatus: #BMDRVS_DISCONNECTED
+	if nStatus == BMDRVS.DISCONNECTED:
 		fConnection = False
 		tones.beep(1000, 300)
 		log.info("disconnect")
-	elif 1==nStatus: #BMDRVS_CONNECTED
+	elif nStatus == BMDRVS.CONNECTED:
 		numCells = nDispSize
 		fConnection = True
 		tones.beep(1000, 30)
 		log.info("display size:%d" % nDispSize)
-	elif 2==nStatus: #BMDRVS_DRIVER_CANNOT_OPEN
+	elif nStatus == BMDRVS.DRIVER_CANNOT_OPEN:
 		fConnection = False
 		log.info("driver cannot open")
-	elif 3==nStatus: #BMDRVS_INVALID_DRIVER
+	elif nStatus == BMDRVS.INVALID_DRIVER:
 		fConnection = False
 		log.info("invalid driver")
-	elif 4==nStatus: #BMDRVS_OPEN_PORT_FAILED
+	elif nStatus == BMDRVS.OPEN_PORT_FAILED:
 		#fConnection = False
 		log.info("open port failed")
-	elif 5==nStatus: #BMDRVS_CREATE_THREAD_FAILED
+	elif nStatus == BMDRVS.CREATE_THREAD_FAILED:
 		fConnection = False
 		log.info("create thread failed")
-	elif 6==nStatus: #BMDRVS_CHECKING_EQUIPMENT
+	elif nStatus == BMDRVS.CHECKING_EQUIPMENT:
 		log.info("checking equipment")
-	elif 7==nStatus: #BMDRVS_UNKNOWN_EQUIPMENT
+	elif nStatus == BMDRVS.UNKNOWN_EQUIPMENT:
 		log.info("unknown equipment")
 		isUnknownEquipment = True
-	elif 8==nStatus: #BMDRVS_PORT_RELEASED
+	elif nStatus == BMDRVS.PORT_RELEASED:
 		log.info("port released")
-	elif 9==nStatus: #BMDRVS_MAX
+	elif nStatus == BMDRVS.MAX:
 		log.info("max")
 	else:
 		log.info("status changed to %d" % nStatus)
 
-# BOOL (CALLBACK *pHandleKeyInfo)(BYTE info[4])
-# @WINFUNCTYPE(c_int, POINTER(c_ubyte))
 KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))
 
 def nvdaKgsHandleKeyInfoProc(lpKeys):
@@ -122,7 +112,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
 	log.info("bmStart(%s) returns %d" % (port, ret))
 	if ret:
-		for loop in xrange(30):
+		for loop in xrange(15):
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
 				log.info("bmStartDisplayMode2() returns %d" % ret)
@@ -160,7 +150,8 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 def getKbdcName(hBrl):
 	if not hBrl.IsKbdcInstalled("Active KBDC"):
 		log.warning("active kbdc not found")
-	return u"ブレイルノート46C/46D".encode('shift-jis')
+	#return u"ブレイルノート46C/46D".encode('shift-jis')
+	return u'\u30d6\u30ec\u30a4\u30eb\u30ce\u30fc\u30c846C/46D'.encode('shift-jis')
 
 def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
@@ -212,11 +203,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
 		ret,self._portName = bmConnect(self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
 		if ret:
-			#config.conf["braille"][self.name] = {"port" : self._portName}
 			self.numCells = numCells
 			log.info("connected %s" % port)
 		else:
-			#config.conf["braille"][self.name] = {"port" : "auto"}
 			self.numCells = 0
 			log.info("failed %s" % port)
 			raise RuntimeError("No KGS display found")
@@ -254,7 +243,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		return OrderedDict(ar)
 
 	def display(self, data):
-		if not data or len(data) == 0: return
+		if not data: return
 		s = ''
 		for c in data:
 			d = 0
