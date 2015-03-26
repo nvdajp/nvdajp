@@ -38,6 +38,8 @@ beenCanceled=True
 isPaused=False
 curWordChars=[]
 
+#Set containing locale codes for languages supporting conjunct characters
+LANGS_WITH_CONJUNCT_CHARS = {'hi', 'as', 'bn', 'gu', 'kn', 'kok', 'ml', 'mni', 'mr', 'pa', 'te', 'ur'}
 # The REASON_* constants in this module are deprecated and will be removed in a future release.
 # Use controlTypes.REASON_* instead.
 from controlTypes import REASON_FOCUS, REASON_FOCUSENTERED, REASON_MOUSE, REASON_QUERY, REASON_CHANGE, REASON_MESSAGE, REASON_SAYALL, REASON_CARET, REASON_ONLYCACHE
@@ -285,15 +287,44 @@ def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
 def getJaCharAttrDetails(char, shouldSayCap):
 	return nvdajp_dic.getJapaneseDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap)
 
+def getCharDescListFromText(text,locale):
+	"""This method prepares a list, which contains character and its description for all characters the text is made up of, by checking the presence of character descriptions in characterDescriptions.dic of that locale for all possible combination of consecutive characters in the text.
+	This is done to take care of conjunct characters present in several languages such as Hindi, Urdu, etc.
+	"""
+	charDescList = []
+	charDesc=None
+	i = len(text)
+	while i:
+		subText = text[:i]
+		charDesc = characterProcessing.getCharacterDescription(locale,subText)
+		if charDesc or i==1:
+			charDescList.append((subText,charDesc))
+			text = text[i:]
+			i = len(text)
+		else:
+			i = i - 1
+	return charDescList
+
 def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 	synth=getSynth()
 	synthConfig=config.conf["speech"][synth.name]
 	buf=[(text,locale,useCharacterDescriptions,useDetails)]
 	for text,locale,useCharacterDescriptions,useDetails in buf:
 		textLength=len(text)
-		for count,char in enumerate(text): 
-			#char and charDesc(of conjuncts) should be set here
-			charDesc=None
+		count = 0
+		localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
+		charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else text
+		for item in charDescList:
+			if localeHasConjuncts:
+				# item is a tuple containing character and its description
+				char = item[0]
+				charDesc = item[1]
+			else:
+				# item is just a character.
+				char = item
+				#if useCharacterDescriptions:
+				#	charDesc=characterProcessing.getCharacterDescription(locale,char.lower())
+				charDesc=None
 			uppercase=char.isupper()
 			shouldSayCap = uppercase and synthConfig["sayCapForCapitals"]
 			jpAttr = getCharAttr(locale, char, useDetails)
@@ -311,6 +342,7 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 				# Translators: cap will be spoken before the given letter when it is capitalized.
 				char=_("cap %s")%char
 			pitchChanged, oldPitch = changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig)
+			count = len(char)
 			index=count+1
 			log.io("Speaking character %r"%char)
 			speechSequence=[LangChangeCommand(locale)] if config.conf['speech']['autoLanguageSwitching'] else []
