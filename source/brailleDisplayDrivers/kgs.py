@@ -33,6 +33,20 @@ fConnection = False
 numCells = 0
 isUnknownEquipment = False
 
+locked = False
+
+def lock():
+	global locked
+	if locked:
+		log.warning("kgs driver is locked")
+		return False
+	locked = True
+	return True
+
+def unlock():
+	global locked
+	locked = False
+
 BM_DISPMODE_FOREGROUND = 0x01
 BM_DISPMODE_BACKGROUND = 0x02
 BM_DISPMODE_KEYHANDLER = 0x04
@@ -322,6 +336,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	def __init__(self, port="auto"):
 		super(BrailleDisplayDriver,self).__init__()
 		global fConnection, numCells
+		if not lock():
+			return
 		if port != self._portName and self._portName:
 			execEndConnection = True
 			log.info("changing connection %s to %s" % (self._portName, port))
@@ -329,6 +345,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info("already connection %s" % port)
 			execEndConnection = False
 			self.numCells = numCells
+			unlock()
 			return
 		else:
 			log.info("first connection %s" % port)
@@ -337,6 +354,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
 		self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
 		if not self._directBM:
+			unlock()
 			raise RuntimeError("No KGS instance found")
 		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
@@ -347,9 +365,13 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		else:
 			self.numCells = 0
 			log.info("failed %s" % port)
+			unlock()
 			raise RuntimeError("No KGS display found")
+		unlock()
 
 	def terminate(self):
+		if not lock():
+			return
 		log.info("KGS driver terminating")
 		super(BrailleDisplayDriver, self).terminate()
 		if self._directBM and self._directBM._handle:
@@ -362,7 +384,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		self._portName = None
 		self._keyCallbackInst = None
 		self._statusCallbackInst = None
-		log.info("KGS driver terminating done")
+		unlock()
 
 	@classmethod
 	def check(cls):
