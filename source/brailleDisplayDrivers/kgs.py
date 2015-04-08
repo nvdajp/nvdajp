@@ -303,7 +303,10 @@ def processEvents():
 def waitAfterDisconnect():
 	for loop in xrange(10):
 		time.sleep(0.5)
-		tones.beep(450-(loop*20), 20)
+		try:
+			tones.beep(450-(loop*20), 20)
+		except:
+			pass
 		processEvents()
 
 def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection=False):
