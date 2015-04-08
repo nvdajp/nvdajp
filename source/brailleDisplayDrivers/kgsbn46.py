@@ -22,7 +22,7 @@ import config
 from logHandler import log
 import sys
 
-from kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir, processEvents, BMDRVS, KGS_DISPMODE
+from kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir, processEvents, BMDRVS, KGS_DISPMODE, lock, unlock
 
 fConnection = False
 numCells = 0
@@ -183,6 +183,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	def __init__(self, port="auto"):
 		super(BrailleDisplayDriver,self).__init__()
 		global fConnection, numCells
+		if not lock():
+			return
 		if port != self._portName and self._portName:
 			execEndConnection = True
 			log.info("changing connection %s to %s" % (self._portName, port))
@@ -190,6 +192,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info("already connection %s" % port)
 			execEndConnection = False
 			self.numCells = numCells
+			unlock()
 			return
 		else:
 			log.info("first connection %s" % port)
@@ -198,6 +201,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
 		self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
 		if not self._directBM:
+			unlock()
 			raise RuntimeError("No KGS instance found")
 		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
@@ -208,9 +212,13 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		else:
 			self.numCells = 0
 			log.info("failed %s" % port)
+			unlock()
 			raise RuntimeError("No KGS display found")
+		unlock()
 
 	def terminate(self):
+		if not lock():
+			return
 		super(BrailleDisplayDriver, self).terminate()
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
@@ -222,6 +230,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		self._portName = None
 		self._keyCallbackInst = None
 		self._statusCallbackInst = None
+		unlock()
 
 	@classmethod
 	def check(cls):
