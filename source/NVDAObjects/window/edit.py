@@ -262,7 +262,7 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 			formatField["background-color"]=colors.RGB.fromCOLORREF(charFormat.crBackColor) if not charFormat.dwEffects&CFE_AUTOBACKCOLOR else _("default color")
 		if formatConfig["reportLineNumber"]:
 			formatField["line-number"]=self._getLineNumFromOffset(offset)+1
-		if sys.getwindowsversion().major >= 6 and formatConfig["reportLinks"]:
+		if formatConfig["reportLinks"]:
 			if charFormat is None: charFormat=self._getCharFormat(offset)
 			formatField["link"]=bool(charFormat.dwEffects&CFM_LINK)
 		return formatField,(startOffset,endOffset)
