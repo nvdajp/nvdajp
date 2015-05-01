@@ -125,10 +125,7 @@ def callback(wav,numsamples,event):
 			return 1
 		for e in event:
 			if e.type==espeakEVENT_MARK:
-				try:
-					lastIndex=int(e.id.name)
-				except:
-					pass
+				lastIndex=int(e.id.name)
 			elif e.type==espeakEVENT_LIST_TERMINATED:
 				break
 		if not wav:
@@ -176,11 +173,8 @@ def _speak(text):
 	global isSpeaking
 	uniqueID=c_int()
 	isSpeaking = True
-	flags = espeakCHARS_WCHAR | espeakSSML 
-	try:
-		return espeakDLL.espeak_Synth(text,0,0,0,0,flags,byref(uniqueID),0)
-	except:
-		return
+	flags = espeakCHARS_WCHAR | espeakSSML | espeakPHONEMES
+	return espeakDLL.espeak_Synth(text,0,0,0,0,flags,byref(uniqueID),0)
 
 def speak(text):
 	global bgQueue
