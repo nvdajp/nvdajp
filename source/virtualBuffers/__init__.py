@@ -374,7 +374,13 @@ class VirtualBufferTextInfo(textInfos.offsets.OffsetsTextInfo):
 	def activate(self):
 		self.obj._activatePosition(self)
 
-class VirtualBuffer(cursorManager.CursorManager, browseMode.BrowseModeTreeInterceptor):
+	def getMathMl(self, field):
+		docHandle = int(field["controlIdentifier_docHandle"])
+		nodeId = int(field["controlIdentifier_ID"])
+		obj = self.obj.getNVDAObjectFromIdentifier(docHandle, nodeId)
+		return obj.mathMl
+
+class VirtualBuffer(cursorManager.CursorManager, browseMode.BrowseModeTreeInterceptor, treeInterceptorHandler.DocumentTreeInterceptor):
 
 	TextInfo=VirtualBufferTextInfo
 	programmaticScrollMayFireEvent = False
@@ -465,9 +471,6 @@ class VirtualBuffer(cursorManager.CursorManager, browseMode.BrowseModeTreeInterc
 				pass
 			self.VBufHandle=None
 
-	def makeTextInfo(self,position):
-		return self.TextInfo(self,position)
-
 	def isNVDAObjectPartOfLayoutTable(self,obj):
 		docHandle,ID=self.getIdentifierFromNVDAObject(obj)
 		ID=unicode(ID)
@@ -493,9 +496,6 @@ class VirtualBuffer(cursorManager.CursorManager, browseMode.BrowseModeTreeInterc
 				tableLayout=fieldCommand.field.get('table-layout',False)
 				break
 		return tableLayout
-
- 
-
 
 	def getNVDAObjectFromIdentifier(self, docHandle, ID):
 		"""Retrieve an NVDAObject for a given node identifier.
@@ -599,6 +599,13 @@ class VirtualBuffer(cursorManager.CursorManager, browseMode.BrowseModeTreeInterc
 	def _activatePosition(self, info):
 		obj = info.NVDAObjectAtStart
 		if not obj:
+			return
+		if obj.role == controlTypes.ROLE_MATH:
+			import mathPres
+			try:
+				return mathPres.interactWithMathMl(obj.mathMl)
+			except (NotImplementedError, LookupError):
+				pass
 			return
 		if self.shouldPassThrough(obj):
 			obj.setFocus()
@@ -1263,6 +1270,20 @@ class VirtualBuffer(cursorManager.CursorManager, browseMode.BrowseModeTreeInterc
 		"""Handle an update to this buffer.
 		"""
 		braille.handler.handleUpdate(self)
+
+	def getControlFieldForNVDAObject(self, obj):
+		docHandle, objId = self.getIdentifierFromNVDAObject(obj)
+		objId = unicode(objId)
+		info = self.makeTextInfo(obj)
+		info.collapse()
+		info.expand(textInfos.UNIT_CHARACTER)
+		for item in info.getTextWithFields():
+			if not isinstance(item, textInfos.FieldCommand) or not item.field:
+				continue
+			fieldId = item.field.get("controlIdentifier_ID")
+			if fieldId == objId:
+				return item.field
+		raise LookupError
 
 	__gestures = {
 		"kb:NVDA+d": "activateLongDesc",
