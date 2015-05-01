@@ -84,6 +84,7 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 
 署名つきビルドは、最上位のディレクトリで以下を実行
 
+jptools\setup-vc2013.cmd
 jptools\kcCertAllBuild.cmd
 
 または
@@ -104,6 +105,7 @@ jptools\kcCertAllBuild.cmd
 
 署名なしビルドは、最上位のディレクトリで以下を実行
 
+jptools\setup-vc2013.cmd
 jptools\nonCertAllBuild.cmd
 
 または
