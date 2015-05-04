@@ -35,7 +35,7 @@ import winUser
 
 #: The URL to use for update checks.
 #CHECK_URL = "https://www.nvaccess.org/nvdaUpdateCheck"
-CHECK_URL = "http://www.nvda.jp/updateCheck"
+CHECK_URL = "https://www.nvda.jp/updateCheck/"
 #: The time to wait between checks.
 CHECK_INTERVAL = 86400 # 1 day
 #: The time to wait before retrying a failed check.
