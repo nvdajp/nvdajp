@@ -555,7 +555,7 @@ class ITextDocumentTextInfo(textInfos.TextInfo):
 				formatField["text-position"]="super"
 			elif fontObj.subscript:
 				formatField["text-position"]="sub"
-		if sys.getwindowsversion().major >= 6 and formatConfig["reportLinks"]:
+		if formatConfig["reportLinks"]:
 			if charFormat is None: charFormat=self._getCharFormat(range)
 			formatField["link"]=bool(charFormat.dwEffects&CFM_LINK)
 		return formatField
