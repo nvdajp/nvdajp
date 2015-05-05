@@ -88,8 +88,8 @@ confspec = ConfigObj(StringIO(
 
 	[[__many__]]
 		capPitchChange = integer(default=0,min=-100,max=100)
-		sayCapForCapitals = boolean(default=false)
-		beepForCapitals = boolean(default=true)
+		sayCapForCapitals = boolean(default=true)
+		beepForCapitals = boolean(default=false)
 		useSpellingFunctionality = boolean(default=true)
 
 # Braille settings
