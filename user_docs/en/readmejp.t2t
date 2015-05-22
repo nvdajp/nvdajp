@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2015-03-22
+- last update: 2015-05-22
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -24,12 +24,12 @@ NVDA Japanese is provided "as is", without warranty.
 
 ++ Web site ++
 
-[NVDA Japanese www.nvda.jp/en http://www.nvda.jp/en/]
+[NVDA Japanese www.nvda.jp/en https://www.nvda.jp/en/]
 
 
 ++ Contributors ++
 
-[Contributors for NVDA Japanese https://sourceforge.jp/projects/nvdajp/wiki/contributors_ja]
+[Contributors for NVDA Japanese https://osdn.jp/projects/nvdajp/wiki/contributors_ja]
 
 
 ++ Install ++
@@ -681,7 +681,7 @@ field 4 (or later): field 2 or later items of charactersDescriptions.dic
 
 If the line starts with '#', it is ignored. If the line starts with '\#', the character is '#' itself.
 
-Details (in Japanese) [NVDAJP ticket 29872 http://sourceforge.jp/ticket/browse.php?group_id=4221&tid=29872]
+Details (in Japanese) [NVDAJP ticket 29872 https://osdn.jp/ticket/browse.php?group_id=4221&tid=29872]
 
 
 
@@ -714,7 +714,7 @@ Details (in Japanese) [NVDAJP ticket 29872 http://sourceforge.jp/ticket/browse.p
 
 We use git hosting services as follows:
 
-- sourceforge.jp: http://en.sourceforge.jp/projects/nvdajp/
+- sourceforge.jp: http://en.osdn.jp/projects/nvdajp/
 - GitHub: https://github.com/nvdajp
 - Bitbucket: https://bitbucket.org/nvdajp
 
@@ -740,5 +740,5 @@ We use git hosting services as follows:
 
 ++ Controller Client API ++
 
-- [Controller Client enhancement by NVDAJP http://sourceforge.jp/projects/nvdajp/wiki/ControllerClient]
+- [Controller Client enhancement by NVDAJP https://osdn.jp/projects/nvdajp/wiki/ControllerClient]
 - [NvdaDemoApp (bitbucket.org) https://bitbucket.org/nishimotz/nvdademoapp]
