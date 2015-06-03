@@ -1935,6 +1935,10 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.openDocFileByMSHTACheckBox.SetValue(config.conf["language"]["openDocFileByMSHTA"])
 		settingsSizer.Add(self.openDocFileByMSHTACheckBox,border=10,flag=wx.BOTTOM)
 
+		self.alwaysSpeakMathInEnglishCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Always speak math in English"))
+		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
+		settingsSizer.Add(self.alwaysSpeakMathInEnglishCheckBox,border=10,flag=wx.BOTTOM)
+
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
 
@@ -1950,6 +1954,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["braille"]["nvdajpMessageTimeout"]=self.msgTimeoutCheckBox.IsChecked()
 		config.conf["language"]["jpAnnounceNewLine"]=self.jpAnnounceNewLineCheckBox.IsChecked()
 		config.conf["language"]["openDocFileByMSHTA"]=self.openDocFileByMSHTACheckBox.IsChecked()
+		config.conf["language"]["alwaysSpeakMathInEnglish"]=self.alwaysSpeakMathInEnglishCheckBox.IsChecked()
 
 		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
 		try:

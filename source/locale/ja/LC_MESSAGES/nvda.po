@@ -66,6 +66,10 @@ msgstr "テキスト編集で改行を通知"
 msgid "Open document file by MSHTA"
 msgstr "ヘルプを既定のブラウザではなくHTAで開く"
 
+#: gui\settingsDialogs.py:1938
+msgid "Always speak math in English"
+msgstr "数式を英語で読み上げる"
+
 #: editableText.py:
 msgid "new line"
 msgstr "改行"

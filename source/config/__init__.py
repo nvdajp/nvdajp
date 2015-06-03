@@ -74,6 +74,7 @@ confspec = ConfigObj(StringIO(
 	jpAnsiEditbox = boolean(default=true)
 	jpAnnounceNewLine = boolean(default=false)
 	openDocFileByMSHTA = boolean(default=true)
+	alwaysSpeakMathInEnglish = boolean(default=true)
 
 # Speech settings
 [speech]

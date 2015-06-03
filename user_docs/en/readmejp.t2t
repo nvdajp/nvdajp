@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2015-05-22
+- last update: 2015-06-03
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -166,6 +166,15 @@ If it is disabled, the system's default Web browser, such as Internet Explorer o
 
 A technology called HTA (mshta.exe) is used for opening the help document as an application.
 If you use the environment where HTA is not allowed, disable the option.
+
+
++++ Speak math in English +++
+
+'Speak math in English' option is checked by default.
+
+If the option is not checked, NVDA may say "No navigation files for this speech style in this language" during interactive navigation of MathML content in Japanese.
+
+The issue is discussed at [NVDAJP ticket 29872 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35208] and [#5126 http://community.nvda-project.org/ticket/5126].
 
 
 ++ Voice settings ++

@@ -16,6 +16,7 @@ import speech
 from keyboardHandler import KeyboardInputGesture
 import braille
 import mathPres
+import config
 
 RE_MP_SPEECH = re.compile(
 	# Break.
@@ -128,6 +129,8 @@ class MathPlayer(mathPres.MathPresentationProvider):
 		lang = mathPres.getLanguageFromMath(mathMl)
 		if not lang:
 			lang = speech.getCurrentLanguage()
+		if config.conf["language"]["alwaysSpeakMathInEnglish"]:
+			lang = 'en'
 		self._mpSpeechSettings.SetLanguage(lang.replace("_", "-"))
 		self._language = lang
 
