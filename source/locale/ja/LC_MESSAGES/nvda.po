@@ -64,7 +64,7 @@ msgstr "テキスト編集で改行を通知"
 
 #: gui\settingsDialogs.py:1928
 msgid "Open document file by MSHTA"
-msgstr "ヘルプを既定のブラウザではなくHTAで開く"
+msgstr "ヘルプを独自のウィンドウで開く"
 
 #: gui\settingsDialogs.py:1938
 msgid "Always speak math in English"
