@@ -38,7 +38,6 @@ launcher/nvda_logo.wav
 uninstaller/UAC.nsh
 *.pyc
 *.pyo
-
 *.dmp
 _*.cmd
 __*.txt
