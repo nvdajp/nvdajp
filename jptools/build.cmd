@@ -3,9 +3,9 @@ set DIRECTBM=c:\kgs\dev\DirectBM.dll
 copy /Y %DIRECTBM% source\brailleDisplayDrivers
 @rem end newdirectbm
 
-set BUILDTYPE=jpbeta
+set VERSION=2015.3jp
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
-set VERSION=%BUILDTYPE%%NOWDATE%
+set VERSION=%VERSION%-beta-%NOWDATE%
 set PUBLISHER=nvdajp
 set PAUSE=0
 set CLEAN=1
