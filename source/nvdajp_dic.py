@@ -85,13 +85,13 @@ def getAttrDesc(a):
 	if a.kata:
 		d.append(u'カタカナ')
 	if a.half:
-		d.append(u'ハンカク')
+		d.append(u'半角')
 	if a.full:
-		d.append(u'ゼンカク')
+		d.append(u'全角')
 	if a.latin:
-		d.append(u'エイジ')
+		d.append(u'英字')
 	if a.upper:
-		d.append(u'オーモジ')
+		d.append(u'大文字')
 	return ' '.join(d)
 
 def code2kana(code):
