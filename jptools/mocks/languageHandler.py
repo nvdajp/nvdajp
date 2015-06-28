@@ -1,0 +1,2 @@
+def setLanguage(lang):
+	pass
