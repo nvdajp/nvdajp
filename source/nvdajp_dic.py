@@ -23,7 +23,7 @@ def get_long_desc(s):
 def get_short_desc(s):
 	s2 = characterProcessing.processSpeechSymbol('ja', s)
 	if s != s2:
-		log.debug("(%s)-(%s)" % (s, s2))
+		log.debug("get_short_desc (%s)-(%s)" % (s, s2))
 		return s2
 	return characterProcessing.getCharacterReading('ja', s.lower())
 
@@ -58,6 +58,9 @@ def isHalfShapeAlphabet(c):
 
 def isFullShapeNumber(c):
 	return re.search(ur'[０-９]', c) is not None
+
+def isHalfShapeNumber(c):
+	return re.search(ur'[0-9]', c) is not None
 
 def isKanaCharacter(c):
 	return isZenkakuHiragana(c) or isZenkakuKatakana(c) or isHankakuKatakana(c)
@@ -121,9 +124,11 @@ def code2hex(code):
 	src = ("000" + src)[-4:]
 	return 'u+' + src
 
-def getCandidateCharDesc(c, a):
+def getCandidateCharDesc(c, a, forBraille=False):
 	d = ''
-	if a.half or isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c):
+	if forBraille and (isLatinCharacter(c) or isZenkakuHiragana(c) or isZenkakuKatakana(c) or isFullShapeNumber(c) or isHalfShapeNumber(c) or c == u'．'):
+		d = c
+	elif a.half or isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c):
 		d = get_short_desc(c)
 		log.debug(u"shortdesc (%s) %s" % (c, d))
 	elif a.hira or a.kata:
@@ -159,12 +164,12 @@ def getJapaneseDiscriminantReading(name, attrOnly=False, capAnnounced=False, for
 	attrs = []
 	for c in name:
 		ca = CharAttr(
-			isUpper(c) if not capAnnounced else False,
+			isUpper(c) if (not capAnnounced and not forBraille) else False,
 			isZenkakuHiragana(c),
 			isZenkakuKatakana(c),
 			isHalfShape(c) or isHankakuKatakana(c),
 			isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c),
-			isLatinCharacter(c))
+			isLatinCharacter(c) and not forBraille)
 		log.debug(u"(%s) %s" % (c, getAttrDesc(ca)))
 		attrs.append((c, ca))
 	if attrOnly:
@@ -178,14 +183,14 @@ def getJapaneseDiscriminantReading(name, attrOnly=False, capAnnounced=False, for
 	for a in attrs:
 		# attribute unchanged
 		if prevAttr == a[1]:
-			s += getCandidateCharDesc(a[0], a[1])
+			s += getCandidateCharDesc(a[0], a[1], forBraille=forBraille)
 			prevAttr = a[1]
 		else:
 			if s:
 				s += u' '
 			if useAttrDesc(a):
 				s += getAttrDesc(a[1]) + ' '
-			s += getCandidateCharDesc(a[0], a[1])
+			s += getCandidateCharDesc(a[0], a[1], forBraille=forBraille)
 			prevAttr = a[1]
 		prevChar = a[0]
 	s = s.replace('  ', ' ')
