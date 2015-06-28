@@ -154,7 +154,7 @@ def useAttrDesc(a):
 
 #TODO: merge _get_description() and getJapaneseDiscriminantReading().
 #nvdajp must modify locale/ja/characterDescriptions.dic and nvdajp_dic.py.
-def getJapaneseDiscriminantReading(name, attrOnly=False, capAnnounced=False):
+def getJapaneseDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=False):
 	if not name: return ''
 	attrs = []
 	for c in name:

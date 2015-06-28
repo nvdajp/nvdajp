@@ -78,13 +78,14 @@ lastCompositionTime = None
 def reportPartialSelection(sel):
 	global lastCompositionText, lastCompositionTime
 	newText = nvdajp_dic.getJapaneseDiscriminantReading(sel)
+	newTextForBraille = nvdajp_dic.getJapaneseDiscriminantReading(sel, forBraille=True)
 	if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 0.1:
 		newText = None
 	if newText:
 		log.debug(newText)
 		lastCompositionTime = time.time()
 		lastCompositionText = newText
-		queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newText)
+		queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newTextForBraille)
 		queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
 #nvdajp end
 
@@ -119,14 +120,16 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 	def reportNewText(self,oldString,newString,forceNewText=False):
 		global lastCompositionText, lastCompositionTime #nvdajp
 		#nvdajp begin
-		newText=calculateInsertedChars(oldString.strip(u'\u3000'),newString.strip(u'\u3000'))
+		newTextForBraille = newText = calculateInsertedChars(oldString.strip(u'\u3000'),newString.strip(u'\u3000'))
 		if forceNewText:
 			newText=newString.strip(u'\u3000')
 		isCandidate = False
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
 				config.conf["inputComposition"]["announceSelectedCandidate"] and \
 				needDiscriminantReading(lastKeyGesture):
-			newText = nvdajp_dic.getJapaneseDiscriminantReading(newString.strip(u'\u3000'))
+			ns = newString.strip(u'\u3000')
+			newText = nvdajp_dic.getJapaneseDiscriminantReading(ns)
+			newTextForBraille = nvdajp_dic.getJapaneseDiscriminantReading(ns, forBraille=True)
 			isCandidate = True
 		if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 1.0:
 			newText = None
@@ -139,7 +142,7 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 				newText = nvdajp_dic.fixNewText(newText)
 				lastCompositionTime = time.time()
 				lastCompositionText = newText
-				queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newText)
+				queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newTextForBraille)
 			if config.conf["keyboard"]["speakTypedCharacters"] or isCandidate:
 				queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
 		#nvdajp end

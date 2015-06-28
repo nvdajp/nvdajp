@@ -1070,7 +1070,7 @@ class GlobalCommands(ScriptableObject):
 			if characterDescriptionMode:
 				speech.spellTextInfo(info,useCharacterDescriptions=True)
 				# display description to braille
-				braille.handler.message(nvdajp_dic.getJapaneseDiscriminantReading(info.text))
+				braille.handler.message(nvdajp_dic.getJapaneseDiscriminantReading(info.text, forBraille=True))
 			else:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		elif scriptCount==1:
