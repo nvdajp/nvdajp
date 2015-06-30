@@ -49,21 +49,18 @@ def read_symbol_file(sy_file, returnSource=False):
 				if len(a) >= 2 and (len(a[0]) == 1 or a[0][0] == '\\'):
 					if ar.has_key(a[0]):
 						my_print("duplicated %04x %s (line %d and %d)" % (ord(a[0]), a[0], ar[a[0]][0], c))
-					ar[a[0]] = [c, a[1]]
+					key = a[0]
+					if key[0] == '\\':
+						key = key.decode('string_escape')[0]
+					s = "U+%04x" % ord(key)
+					ar[key] = [c, a[1].strip()]
 					# add comment field
-					if a[0][0] == '\\':
-						s = "U+%04x" % ord(a[0].decode('string_escape')[0])
-					else:
-						s = "U+%04x" % ord(a[0][0])
 					if a[-1][0] == '#':
 						# delete existing 'U+xxxx' string
 						a[-1] = re.sub(r" U\+[0-9a-f]{4}", '', a[-1])
 						a[-1] += ' ' + s
 					else:
-						if a[0] == '\\#':
-							a.append('# %s %s' % ('#', s))
-						else:
-							a.append('# %s %s' % (a[0], s))
+						a.append('# %s %s' % (key, s))
 					line = "\t".join(a)
 			src.append(line)
 	if returnSource:
