@@ -21,7 +21,8 @@ convert(
 )
 
 convert(
-	r"..\source\locale\ja\symbols.dic",
+	#r"..\source\locale\ja\symbols.dic",
+	r"..\..\srt\ja\symbols.dic",
 	'_ja.dic'
 )
 
