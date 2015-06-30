@@ -149,11 +149,6 @@ nvaccess   git://git.nvaccess.org/nvda.git (push)
 jptools\clean_miscdep.cmd
 
 
-5.4 copy Japanese character symbols to subversion repo
-
-jptools\copy_symbols_to_srt.cmd
-
-
 5.5 2014.3jp までの署名つきリリースの手順
 
 まず、管理者としてコマンドプロンプトを実行する。
