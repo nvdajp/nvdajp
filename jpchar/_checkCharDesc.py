@@ -4,6 +4,7 @@
 #Copyright (C) 2012 Takuya Nishimoto (NVDA Japanese Team)
 
 from __future__ import print_function
+import re
 
 # CONSOLE_ENCODING = 'utf-8' # mintty
 CONSOLE_ENCODING = 'cp932' # cmd.exe
@@ -18,36 +19,55 @@ import re
 def my_print(s):
 	print(s.encode(CONSOLE_ENCODING, 'ignore'))
 
-def read_symbol_file(sy_file):
+def read_symbol_file(sy_file, returnSource=False):
+	src = []
 	with open(sy_file) as sy:
 		mode = None
 		ar = {}
 		c = 0
 		for line in sy:
 			c += 1
-			line = line.rstrip().decode('utf-8')
+			line = line.rstrip().decode('utf-8-sig')
 			if line == 'complexSymbols:': 
 				mode = 1
 			    # print c, line
+				src.append(line)
 				continue
 			if line == 'symbols:': 
 				mode = 2
 			    # print c, line
+				src.append(line)
 				continue
-			if len(line) == 0: continue
-			if line[0] == '#': continue
-			if line[0:2] == '\\#': 
-				line = '#' + line[2:]
-			if line[0:2] == '\\0': 
-				continue #line = unichr(0) + line[2:]
+			if len(line) == 0:
+				src.append(line)
+				continue
+			if line[0] == '#':
+				src.append(line)
+				continue
 			if mode == 2:
 				a = line.split('\t')
-				if len(a) >= 2:
-					if len(a[0]) != 1: continue
-					#my_print("%d %s %s" % (c, a[0], a[1]))
+				if len(a) >= 2 and (len(a[0]) == 1 or a[0][0] == '\\'):
 					if ar.has_key(a[0]):
 						my_print("duplicated %04x %s (line %d and %d)" % (ord(a[0]), a[0], ar[a[0]][0], c))
 					ar[a[0]] = [c, a[1]]
+					# add comment field
+					if a[0][0] == '\\':
+						s = "U+%04x" % ord(a[0].decode('string_escape')[0])
+					else:
+						s = "U+%04x" % ord(a[0][0])
+					if a[-1][0] == '#':
+						# delete existing 'U+xxxx' string
+						a[-1] = re.sub(r" U\+[0-9a-f]{4}", '', a[-1])
+						a[-1] += ' ' + s
+					else:
+						if a[0] == '\\#':
+							a.append('# %s %s' % ('#', s))
+						else:
+							a.append('# %s %s' % (a[0], s))
+					line = "\t".join(a)
+			src.append(line)
+	if returnSource:
+		return ar, src
 	return ar
 
 def read_chardesc_file(ch_file):
