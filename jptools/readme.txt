@@ -6,7 +6,7 @@ NVDA日本語チーム 西本卓也
 1. ビルド環境
 
 
-NVDA 2015.1jp の場合
+NVDA 2015.3jp の場合
 
 
 (1) Windows 7 SP1 32ビットまたは64ビット
@@ -38,7 +38,7 @@ git push するためには push 先のアカウントのセットアップや�
 miscDepsJp から sources へのコピーで使用している。
 
 
-(6) Python 2.7.9 (Windows 32bit)
+(6) Python 2.7.10 (Windows 32bit)
 
 C:\Python27\python.exe に PATH が通っていること。
 
@@ -138,14 +138,10 @@ jptools\push_remote.cmd
 
 git remote -v の状況：
 
-origin  git@bitbucket.org:nvdajp/nvdajp.git (fetch)
-origin  git@bitbucket.org:nvdajp/nvdajp.git (push)
-gh      git@github.com:nvdajp/nvdajp.git (fetch)
-gh      git@github.com:nvdajp/nvdajp.git (push)
-sfjp    nishimoto@git.sourceforge.jp:/gitroot/nvdajp/nvdajp.git (fetch)
-sfjp    nishimoto@git.sourceforge.jp:/gitroot/nvdajp/nvdajp.git (push)
-nvaccess        git://git.nvaccess.org/nvda.git (fetch)
-nvaccess        git://git.nvaccess.org/nvda.git (push)
+origin     git@github.com:nvdajp/nvdajp.git (fetch)
+origin     git@github.com:nvdajp/nvdajp.git (push)
+nvaccess   git://git.nvaccess.org/nvda.git (fetch)
+nvaccess   git://git.nvaccess.org/nvda.git (push)
 
 
 5.3 clean miscdep
@@ -179,73 +175,3 @@ jptools\copy_symbols_to_srt.cmd
 
 過去の記録
 http://ja.nishimotz.com/nvdajp_certfile
-
-
-6. 過去の 00readme.txt の内容
-
-更新予定
-
-A part of NonVisual Desktop Access (NVDA)
-This file is covered by the GNU General Public License.
-See the file COPYING for more details.
-Copyright (C) 2013 Takuya Nishimoto
-
-checkCharDesc.py
-====================================
-
-character description consistency check
-
-> cd jptools
-> python checkCharDesc.py
-
-
-checkSymbols.py
-====================================
-
-symbols consistency check
-
-> cd jptools
-> python checkSymbols.py
-
-
-updateCharDesc.py
-====================================
-
-convert characters.dic to characterDescriptions.dic
-
-> cd jptools
-> python updateCharDesc.py > newfile.dic
-
-
-jtalkRunner.py
-====================================
-
-JTalk test runner.
-
-> cd jptools
-> python jtalkRunner.py
-
-
-jpBrailleRunner.py
-====================================
-
-Japanese braille test harness (new version)
-
-> cd jptools
-> python jpBrailleRunner.py
-
-Output files:
-
-  * __h1output.txt
-  * __h2output.txt
-  * __h2log.txt
-
-evaluate.py
-====================================
-
-Japanese braille test harness (legacy version)
-
-> cd jptools
-> python evaluate.py
-
-
