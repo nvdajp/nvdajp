@@ -24,6 +24,11 @@ def reportSelectedCandidate(candidateObject,allowDuplicate=False,newList=False):
 		if config.conf["inputComposition"]["autoReportAllCandidates"] and (newList or candidateObject.visibleCandidateItemsText!=oldCandidateItemsText):
 			queueHandler.queueFunction(queueHandler.eventQueue,ui.message,candidateObject.visibleCandidateItemsText)
 		eventHandler.queueEvent("gainFocus",candidateObject)
+		import tones
+		tones.beep(2000,50)
+		from logHandler import log
+		n = candidateObject.name
+		log.info(n)
 
 class BaseCandidateItem(CandidateItemBehavior,IAccessible):
 
@@ -80,7 +85,6 @@ def notifyCandidateComment(item):
 	import windowUtils
 	import NVDAObjects.IAccessible
 	import winUser
-	from logHandler import log
 	import nvdajp_dic
 	parent = api.getDesktopObject().windowHandle
 	try:
