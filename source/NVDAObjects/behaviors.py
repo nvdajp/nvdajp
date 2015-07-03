@@ -357,7 +357,7 @@ class CandidateItem(NVDAObject):
 		#nvdajp begin
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			import nvdajp_dic
-			c = nvdajp_dic.getJapaneseDiscriminantReading(candidate)
+			c = nvdajp_dic.getJapaneseDiscriminantReading(candidate, forBraille=True)
 			log.debug(u"{number} {candidate} {c}".format(number=number,candidate=candidate,c=c))
 			if config.conf["language"]["announceCandidateNumber"]:
 				return _(u"{number} {candidate}").format(number=number,candidate=c)
