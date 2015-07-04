@@ -24,11 +24,6 @@ def reportSelectedCandidate(candidateObject,allowDuplicate=False,newList=False):
 		if config.conf["inputComposition"]["autoReportAllCandidates"] and (newList or candidateObject.visibleCandidateItemsText!=oldCandidateItemsText):
 			queueHandler.queueFunction(queueHandler.eventQueue,ui.message,candidateObject.visibleCandidateItemsText)
 		eventHandler.queueEvent("gainFocus",candidateObject)
-		import tones
-		tones.beep(2000,50)
-		from logHandler import log
-		n = candidateObject.name
-		log.info(n)
 
 class BaseCandidateItem(CandidateItemBehavior,IAccessible):
 

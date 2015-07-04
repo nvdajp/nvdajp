@@ -355,9 +355,10 @@ class CandidateItem(NVDAObject):
 
 	def getFormattedCandidateName(self,number,candidate):
 		#nvdajp begin
-		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-			import nvdajp_dic
-			c = nvdajp_dic.getJapaneseDiscriminantReading(candidate, forBraille=True)
+		import nvdajp_dic
+		if nvdajp_dic.isJapaneseLocale() and config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+			fb = (braille.handler.displaySize > 0)
+			c = nvdajp_dic.getJapaneseDiscriminantReading(candidate, forBraille=fb)
 			log.debug(u"{number} {candidate} {c}".format(number=number,candidate=candidate,c=c))
 			if config.conf["language"]["announceCandidateNumber"]:
 				return _(u"{number} {candidate}").format(number=number,candidate=c)
