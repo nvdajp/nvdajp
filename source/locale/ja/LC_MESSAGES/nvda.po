@@ -60,7 +60,7 @@ msgstr "点字メッセージの表示終了待ち時間の設定を有効化"
 
 #: gui\settingsDialogs.py:1768
 msgid "Announce new line in editable text"
-msgstr "テキスト編集で改行を通知"
+msgstr "テキスト編集で改行を報告"
 
 #: gui\settingsDialogs.py:1928
 msgid "Open document file by MSHTA"
@@ -86,20 +86,7 @@ msgstr "変換をNVDAキーとして使用"
 msgid "&Readme (nvdajp)"
 msgstr "NVDA日本語版の説明"
 
-#: nvdajp_keyEvents.py:50
-#, python-format
-msgid "candidate %d"
-msgstr "候補%d"
-
-#: nvdajp_keyEvents.py:160
-msgid "stop input method"
-msgstr "変換停止"
-
-#: nvdajp_keyEvents.py:168
-msgid "start input method"
-msgstr "日本語変換"
-
-#: nvdajp_keyEvents.py:177
+#: keyLabels.py:177
 msgid "toggle input method"
 msgstr "半角全角"
 
@@ -131,10 +118,6 @@ msgstr "読みかたモード"
 msgid "Character description mode enabled"
 msgstr "説明モード"
 
-#: speech.py:1086
-msgid "paragraph indent"
-msgstr "字下げ"
-
 #: NVDAHelper.py:163
 msgid "full shape space"
 msgstr "全角スペース"
@@ -151,17 +134,13 @@ msgstr "カタカナの声の高さの変化(-100から100)"
 msgid "Half shape pitch change percentage"
 msgstr "半角の声の高さの変化(-100から100)"
 
-#: settingDialogs.py:1438
-msgid "Say full shape"
-msgstr "全角の通知"
-
 #: settingDialogs.py:1442
 msgid "Full shape pitch change percentage"
 msgstr "全角の声の高さの変化(-100から100)"
 
 #: settingDialogs.py:1520
 msgid "Announce candidate number"
-msgstr "変換候補の番号の通知"
+msgstr "変換候補の番号の報告"
 
 #: installer.py:158
 msgid "NVDAJP web site"
