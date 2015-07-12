@@ -1523,7 +1523,7 @@ def getTableInfoSpeech(tableInfo,oldTableInfo,extraDetail=False):
 		textList.append(_("row %s")%rowNumber)
 	return " ".join(textList)
 
-re_last_pause=re.compile(ur"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)",re.DOTALL|re.UNICODE)
+re_last_pause=re.compile(ur"^(.*(?<=[^\s.!?。])[.!?。][\"'”’)]?(?:\s+|$))(.*$)",re.DOTALL|re.UNICODE)
 
 def speakWithoutPauses(speechSequence,detectBreaks=True):
 	"""
@@ -1555,9 +1555,14 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 		for index in xrange(len(speechSequence)-1,-1,-1): 
 			item=speechSequence[index]
 			if isinstance(item,basestring):
+				item = item.strip()
+				log.info("re_last_pause matching(%s)" % item)
 				m=re_last_pause.match(item)
 				if m:
 					before,after=m.groups()
+					#before = before.strip()
+					#after = after.strip()
+					log.info("re_last_pause(%s)(%s)" % (before, after))
 					if after:
 						pendingSpeechSequence.append(after)
 					if before:
