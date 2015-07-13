@@ -248,10 +248,8 @@ def getCharDesc(locale, char, jpAttr):
 	elif jpAttr.nonJpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
 		charDesc = (char.lower(),)
 	elif jpAttr.nonJpFullShapeAlphabet and not jpAttr.usePhoneticReadingLatin:
-		import unicodedata
 		charDesc = (unicodedata.normalize('NFKC', char.lower()),)
 	elif jpAttr.nonJpFullShapeAlphabet and jpAttr.usePhoneticReadingLatin:
-		import unicodedata
 		charDesc = characterProcessing.getCharacterDescription(locale, unicodedata.normalize('NFKC', char.lower()))
 	elif (jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana) and not jpAttr.usePhoneticReadingKana:
 		charDesc = (nvdajp_dic.get_short_desc(char),)
@@ -1590,7 +1588,6 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 			speakWithoutPauses._pendingSpeechSequence.extend(pendingSpeechSequence)
 	# handle east-asian sentence ending
 	log.debug("before %r" % finalSpeechSequence)
-	import unicodedata
 	currSentPos = currSentText = None
 	currSentTextIsAsian = False
 	for pos, item in enumerate(finalSpeechSequence):
