@@ -248,10 +248,8 @@ def getCharDesc(locale, char, jpAttr):
 	elif jpAttr.nonJpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
 		charDesc = (char.lower(),)
 	elif jpAttr.nonJpFullShapeAlphabet and not jpAttr.usePhoneticReadingLatin:
-		import unicodedata
 		charDesc = (unicodedata.normalize('NFKC', char.lower()),)
 	elif jpAttr.nonJpFullShapeAlphabet and jpAttr.usePhoneticReadingLatin:
-		import unicodedata
 		charDesc = characterProcessing.getCharacterDescription(locale, unicodedata.normalize('NFKC', char.lower()))
 	elif (jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana) and not jpAttr.usePhoneticReadingKana:
 		charDesc = (nvdajp_dic.get_short_desc(char),)
@@ -1584,6 +1582,13 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 				m=re_last_pause.match(item)
 				if m:
 					before,after=m.groups()
+				elif u'。' in item:
+					# handle east-asian sentence ending
+					before, after = re.split(u'。', item, maxsplit=1)
+					before += u'。'
+				else:
+					before = after = None
+				if before or after:
 					if after:
 						pendingSpeechSequence.append(after)
 					if before:
@@ -1607,6 +1612,32 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 		if pendingSpeechSequence:
 			pendingSpeechSequence.reverse()
 			speakWithoutPauses._pendingSpeechSequence.extend(pendingSpeechSequence)
+	# handle east-asian sentence ending
+	log.debug("before %r" % finalSpeechSequence)
+	currSentPos = currSentText = None
+	currSentTextIsAsian = False
+	for pos, item in enumerate(finalSpeechSequence):
+		if isinstance(item,basestring):
+			if currSentTextIsAsian:
+				c = item.lstrip()[0]
+				if c and unicodedata.east_asian_width(c) == 'W':
+					currSentText = currSentText.rstrip() + item.lstrip()
+					log.debug("updated currSentText(%d)(%s)" % (currSentPos, currSentText))
+					finalSpeechSequence[currSentPos] = currSentText
+					finalSpeechSequence[pos] = ''
+			if not currSentText:
+				currSentPos = pos
+				currSentText = item
+			if currSentText:
+				currSentTextIsAsian = False
+				c = None
+				if currSentText.rstrip():
+					c = currSentText.rstrip()[-1]
+				if c and unicodedata.east_asian_width(c) == 'W':
+					currSentTextIsAsian = True
+					log.debug("currSentTextIsAsian(%s)" % currSentText)
+	log.debug("finalSpeech %r" % finalSpeechSequence)
+	
 	#Scan the final speech sequence backwards
 	for item in reversed(finalSpeechSequence):
 		if isinstance(item,IndexCommand):
