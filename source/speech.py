@@ -1564,7 +1564,7 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 					before += u'。'
 				else:
 					before = after = None
-				if before and after:
+				if before or after:
 					if after:
 						pendingSpeechSequence.append(after)
 					if before:
