@@ -33,7 +33,7 @@ git push するためには push 先のアカウントのセットアップや�
 権限の取得が必要。
 
 
-(5) 7z (:\Program Files (x86)\7-Zip\7z.exe に PATH が通っていること）
+(5) 7z (C:\Program Files (x86)\7-Zip\7z.exe に PATH が通っていること）
 
 miscDepsJp から sources へのコピーで使用している。
 
@@ -80,44 +80,39 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 > git submodule update --init --recursive
 
 
-3. 2014.4jp 以降の署名つきビルド
+3. 署名つきビルド
 
 署名つきビルドは、最上位のディレクトリで以下を実行
 
-jptools\setup-vc2013.cmd
 jptools\kcCertAllBuild.cmd
 
 または
 
 (1) scons -c
-(2) jptools\setup-vc2013.cmd
-(3) jptools\setupMiscDepsJp.cmd
-(4) jptools\kcCertMiscDepsJp.cmd
-(5) jptools\kcCertBuild.cmd
+(2) jptools\setupMiscDepsJp.cmd
+(3) jptools\kcCertMiscDepsJp.cmd
+(4) jptools\kcCertBuild.cmd
 
 補足:
-(3) は JTalk と日本語点訳エンジンを更新する。
-(4) は libopenjtalk, libmecab, directbm の各DLLを署名する。
-(4) で署名ツールがエラーを出したらやり直す。
+(2) は JTalk と日本語点訳エンジンを更新する。
+(3) は libopenjtalk, libmecab, directbm の各DLLを署名する。
+(3) で署名ツールがエラーを出したらやり直す。
 
 
 4. 署名なしビルド
 
 署名なしビルドは、最上位のディレクトリで以下を実行
 
-jptools\setup-vc2013.cmd
 jptools\nonCertAllBuild.cmd
 
 または
 
-(1) jptools\setup-vc2013.cmd
-(2) jptools\setupMiscDepsJp.cmd
-(3) jptools\build.cmd
-
-JTalk または日本語点訳エンジンを更新しない場合は (1) (2) は不要。
+(1) jptools\setupMiscDepsJp.cmd
+(2) jptools\build.cmd
+JTalk または日本語点訳エンジンを更新しない場合は (1) は不要。
 
 出力は output フォルダに作られる。
-実行した日付のついた nvda_jpbetaYYMMDD.exe というファイル名になる。
+実行した日付のついた nvda_20**.*jp-beta-YYMMDD.exe というファイル名になる。
 
 
 5. その他の作業用スクリプト
