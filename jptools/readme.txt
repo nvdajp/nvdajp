@@ -17,7 +17,7 @@ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34057
 
 (2) Visual Studio 2012 Express for Desktop (Update 4)
 
-(3) Visual Studio 2013 Express for Desktop (Update 4)
+(3) Visual Studio 2013 Express for Desktop (Update 5)
 
 備考：
 VS2012 は NVDA コアのコンパイルに必要、VS2013 は JTalk のコンパイルで使用。
