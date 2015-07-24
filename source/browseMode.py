@@ -11,6 +11,7 @@ import wx
 import queueHandler
 from logHandler import log
 import review
+import scriptHandler
 import eventHandler
 import nvwave
 import queueHandler
@@ -282,6 +283,14 @@ class BrowseModeTreeInterceptor(treeInterceptorHandler.TreeInterceptor):
 		wx.CallAfter(run)
 	# Translators: the description for the Elements List command in browse mode.
 	script_elementsList.__doc__ = _("Lists various types of elements in this document")
+
+	def _activatePosition(self):
+		raise NotImplementedError
+
+	def script_activatePosition(self,gesture):
+		self._activatePosition()
+	# Translators: the description for the activatePosition script on browseMode documents.
+	script_activatePosition.__doc__ = _("activates the current object in the document")
 
 	__gestures={
 		"kb:NVDA+f7": "elementsList",
@@ -864,6 +873,8 @@ class BrowseModeDocumentTreeInterceptor(cursorManager.CursorManager,BrowseModeTr
 		if not hasattr(self.rootNVDAObject.appModule, "_browseModeRememberedCaretPositions"):
 			self.rootNVDAObject.appModule._browseModeRememberedCaretPositions = {}
 		self._lastCaretPosition = None
+		#: True if the last caret move was due to a focus change.
+		self._lastCaretMoveWasFocus = False
 
 	def terminate(self):
 		if self.shouldRememberCaretPositionAcrossLoads and self._lastCaretPosition:
@@ -926,15 +937,6 @@ class BrowseModeDocumentTreeInterceptor(cursorManager.CursorManager,BrowseModeTr
 		reportPassThrough(self)
 		braille.handler.handleGainFocus(self)
 
-	def _activatePosition(self,info):
-		info.activate()
-
-	def script_activatePosition(self,gesture):
-		info=self.makeTextInfo(textInfos.POSITION_CARET)
-		self._activatePosition(info)
-	# Translators: the description for the activatePosition script on browseMode documents.
-	script_activatePosition.__doc__ = _("activates the current object in the document")
-
 	def event_caret(self, obj, nextHandler):
 		if self.passThrough:
 			nextHandler()
@@ -955,7 +957,9 @@ class BrowseModeDocumentTreeInterceptor(cursorManager.CursorManager,BrowseModeTr
 		"""
 		raise NotImplementedError
 
-	def _activatePosition(self, info):
+	def _activatePosition(self, info=None):
+		if not info:
+			info=self.makeTextInfo(textInfos.POSITION_CARET)
 		obj = info.NVDAObjectAtStart
 		if not obj:
 			return
@@ -988,10 +992,12 @@ class BrowseModeDocumentTreeInterceptor(cursorManager.CursorManager,BrowseModeTr
 		self._lastCaretPosition = caret.bookmark
 		review.handleCaretMove(caret)
 		if reason == controlTypes.REASON_FOCUS:
+			self._lastCaretMoveWasFocus = True
 			focusObj = api.getFocusObject()
 			if focusObj==self.rootNVDAObject:
 				return
 		else:
+			self._lastCaretMoveWasFocus = False
 			focusObj=info.focusableNVDAObjectAtStart
 			obj=info.NVDAObjectAtStart
 			if not obj:
@@ -1121,6 +1127,10 @@ class BrowseModeDocumentTreeInterceptor(cursorManager.CursorManager,BrowseModeTr
 		@return: C{True} if the tab order was overridden, C{False} if not.
 		@rtype: bool
 		"""
+		if self._lastCaretMoveWasFocus:
+			# #5227: If the caret was last moved due to a focus change, don't override tab.
+			# This ensures that tabbing behaves as expected after tabbing hits an iframe document.
+			return False
 		focus = api.getFocusObject()
 		try:
 			focusInfo = self.makeTextInfo(focus)
