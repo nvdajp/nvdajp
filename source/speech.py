@@ -1593,7 +1593,9 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 	for pos, item in enumerate(finalSpeechSequence):
 		if isinstance(item,basestring):
 			if currSentTextIsAsian:
-				c = item.lstrip()[0]
+				c = item.lstrip()
+				if c:
+					c = c[0]
 				if c and unicodedata.east_asian_width(c) == 'W':
 					currSentText = currSentText.rstrip() + item.lstrip()
 					log.debug("updated currSentText(%d)(%s)" % (currSentPos, currSentText))
