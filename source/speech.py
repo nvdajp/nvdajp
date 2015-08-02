@@ -1189,7 +1189,7 @@ def getControlFieldSpeech(attrs,ancestorAttrs,fieldType,formatConfig=None,extraD
 	if speakEntry and childControlCount and fieldType=="start_addedToControlFieldStack" and role==controlTypes.ROLE_LIST and controlTypes.STATE_READONLY in states:
 		# List.
 		# Translators: Speaks number of items in a list (example output: list with 5 items).
-		return roleText+" "+_("with %s items")%childControlCount
+		return roleText+" "+_("with %s items")%childControlCount + CHUNK_SEPARATOR
 	elif fieldType=="start_addedToControlFieldStack" and role==controlTypes.ROLE_TABLE and tableID:
 		# Table.
 		return " ".join((roleText, getSpeechTextForProperties(_tableID=tableID, rowCount=attrs.get("table-rowcount"), columnCount=attrs.get("table-columncount")),levelText))
@@ -1492,6 +1492,7 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 	if attrsCache is not None:
 		attrsCache.clear()
 		attrsCache.update(attrs)
+	if textList: textList.append(unicode(CHUNK_SEPARATOR))
 	return CHUNK_SEPARATOR.join(textList)
 
 def getTableInfoSpeech(tableInfo,oldTableInfo,extraDetail=False):
@@ -1591,13 +1592,15 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 	currSentPos = currSentText = None
 	currSentTextIsAsian = False
 	for pos, item in enumerate(finalSpeechSequence):
-		if isinstance(item,basestring):
+		if isinstance(item,basestring) and \
+		   not item.endswith(_("link")) and \
+		   not ((_("out of %s")%_("list")) in item):
 			if currSentTextIsAsian:
-				c = item.lstrip()
+				c = item.lstrip('\n\r')
 				if c:
 					c = c[0]
 				if c and unicodedata.east_asian_width(c) == 'W':
-					currSentText = currSentText.rstrip() + item.lstrip()
+					currSentText = currSentText.rstrip('\n\r') + item.lstrip('\n\r')
 					log.debug("updated currSentText(%d)(%s)" % (currSentPos, currSentText))
 					finalSpeechSequence[currSentPos] = currSentText
 					finalSpeechSequence[pos] = ''
@@ -1607,8 +1610,8 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 			if currSentText:
 				currSentTextIsAsian = False
 				c = None
-				if currSentText.rstrip():
-					c = currSentText.rstrip()[-1]
+				if currSentText.rstrip('\n\r'):
+					c = currSentText.rstrip('\n\r')[-1]
 				if c and unicodedata.east_asian_width(c) == 'W':
 					currSentTextIsAsian = True
 					log.debug("currSentTextIsAsian(%s)" % currSentText)
