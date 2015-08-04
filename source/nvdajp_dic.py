@@ -28,8 +28,10 @@ def get_short_desc(s):
 	return characterProcessing.getCharacterReading('ja', s.lower())
 
 # characters which use dictionary for spelling reading
-SMALL_KANA_CHARACTERS = u'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヵヶｧｨｩｪｫｬｭｮｯ'
+SMALL_ZEN_KATAKANA = u'ァィゥェォッャュョヮヵヶ'
+SMALL_KANA_CHARACTERS = SMALL_ZEN_KATAKANA + u'ぁぃぅぇぉっゃゅょゎｧｨｩｪｫｬｭｮｯ'
 SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + u'をヲｦはへー'
+FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + u'ー'
 
 def isJapaneseLocale(locale=None):
 	if locale is None:
@@ -210,7 +212,6 @@ def fixNewText(newText):
 	if RE_HIRAGANA.match(newText):
 		newText = ''.join([unichr(ord(c) + 0x60) for c in newText])
 		log.debug('convert hiragana to katakana: ' + newText)
-	if newText == u'\u30fc':
-		newText = getJapaneseDiscriminantReading(newText)
-		log.debug('katakana-hiragana prolonged sound mark')
+	for c in FIX_NEW_TEXT_CHARS:
+		newText = newText.replace(c, ' ' + get_short_desc(c) + ' ')
 	return newText
