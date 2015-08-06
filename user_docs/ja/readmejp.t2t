@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2015年7月10日
+- 最終更新日：2015年8月6日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -773,6 +773,26 @@ NVDA 日本語チームに対するアプリケーション開発者様からの
 
 
 + バージョンごとの変更点 +
+
+++ 2015.3jp の変更点 ++
+
+NVDA 日本語チームは以下の変更および改良を行いました。
+
+- [「すべて読み上げ」を実行したときに、行の区切りで日本語が不自然に区切られないような改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=33823]
+- [JTalk におけるアルファベット文字列の読み方がカタカナ発音された英語らしくなるように調整 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35243]
+- [点字ディスプレイを使っている状態でアルファベットと数字の文字説明がより適切になるように調整 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35244]
+- [カナ漢字変換のプリエディット文字列で「ぁ」（小文字の「あ」）「っ」（小文字の「つ」）などが読み上げられない問題への対応 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35244]
+- [使用許諾契約の更新 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35276]
+
+
+以下の変更は NVDA 本家版 2015.3 と日本語版 2015.3jp の両方に反映されました。
+
+- 簡単音声設定でアクセラレーターキーを読み上げないようになりました
+- [色の読み方や Excel のグラフについての翻訳の再調整 https://osdn.jp/ticket/browse.php?group_id=4221&tid=]
+- [report/announce の訳語を「通知」から「報告」に変更 https://osdn.jp/ticket/browse.php?group_id=4221&tid=]
+-- 例えば書式情報「フォント名の通知」から「フォント名の報告」などの変更です。これは「通知」という言葉が Windows の日本語環境で notification の意味に使われているため、将来の混乱を回避するためです。
+
+
 
 ++ 2015.2jp の変更点 ++
 
