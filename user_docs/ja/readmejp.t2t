@@ -787,9 +787,10 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 
 以下の変更は NVDA 本家版 2015.3 と日本語版 2015.3jp の両方に反映されました。
 
+- [色の読み方や Excel のグラフについての翻訳の再調整 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35204]
+- [数学記号に関する記号読み上げ辞書の更新 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35296]
 - [簡単音声設定でアクセラレーターキーを読み上げないように変更 https://osdn.jp/ticket/browse.php?group_id=4221&tid=34184]
 - [invalid entry の日本語を「無効なエントリー」から「正しくない入力内容」に変更 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35288]
-- [色の読み方や Excel のグラフについての翻訳の再調整 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35204]
 - [report/announce の訳語を「通知」から「報告」に変更 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35102]
  - 例えば書式情報「フォント名の通知」から「フォント名の報告」などの変更です。これは「通知」という言葉が Windows の日本語環境で notification の意味に使われているため、将来の混乱を回避するためです。
 
