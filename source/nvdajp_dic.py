@@ -207,11 +207,12 @@ def processHexCode(locale, msg):
 			pass
 	return msg
 
-def fixNewText(newText):
+def fixNewText(newText, isCandidate=False):
 	log.debug(newText)
 	if RE_HIRAGANA.match(newText):
 		newText = ''.join([unichr(ord(c) + 0x60) for c in newText])
 		log.debug('convert hiragana to katakana: ' + newText)
-	for c in FIX_NEW_TEXT_CHARS:
-		newText = newText.replace(c, ' ' + get_short_desc(c) + ' ')
+	if not isCandidate:
+		for c in FIX_NEW_TEXT_CHARS:
+			newText = newText.replace(c, ' ' + get_short_desc(c) + ' ')
 	return newText
