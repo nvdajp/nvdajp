@@ -139,7 +139,7 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 		#	tones.beep(1000,10)
 		if newText:
 			if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-				newText = nvdajp_dic.fixNewText(newText)
+				newText = nvdajp_dic.fixNewText(newText, isCandidate)
 				lastCompositionTime = time.time()
 				lastCompositionText = newText
 				queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newTextForBraille)
