@@ -61,12 +61,21 @@ Character description mode can be changed for caret moves by left arrow or right
 
 Pressing "Report current character in review" (numpad2 or NVDA+period) four-times can enable or disable the description mode.
 
+
+
 %kc:beginInclude
 || Name | Desktop key | Laptop key | Touch | Description |
 | Move to previous character in review | numpad1 | NVDA+left arrow | flick left (text mode) | Moves the review cursor to the previous character on the current line in the text. If description mode is enabled, the character is described. |
 | Report current character in review | numpad2 | NVDA+period | none | Announces the current character on the line of text where the review cursor is positioned. If description mode is enabled, the character is described. Pressing twice reports the character with its attributes and description. Pressing three times reports the numeric value of the character in decimal and hexadecimal. Pressing four-times toggles the description mode. |
 | Move to next character in review | numpad3 | NVDA+right arrow | flick right (text mode) | Move the review cursor to the next character on the current line of text. If description mode is enabled, the character is described. |
 %kc:endInclude
+
+
+
+
+
+
+
 
 
 + Configuration +
