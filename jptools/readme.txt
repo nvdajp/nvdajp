@@ -17,12 +17,10 @@ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34057
 
 (2) Visual Studio 2012 Express for Desktop (Update 4)
 
-(3) Visual Studio 2013 Express for Desktop (Update 5)
+(3) Visual Studio 2015 Express for Desktop
 
 備考：
-VS2012 は NVDA コアのコンパイルに必要、VS2013 は JTalk のコンパイルで使用。
-後述の setup-vc2013 を変更すれば JTalk は VS2012 でコンパイルできると思われるが、
-確認していない。
+VS2012 は NVDA コアのコンパイルに必要、VS2015 は JTalk のコンパイルで使用。
 Express ではなく Pro や Ultimate でもよい。
 
 
@@ -146,22 +144,4 @@ jptools\clean_miscdep.cmd
 
 5.5 2014.3jp までの署名つきリリースの手順
 
-まず、管理者としてコマンドプロンプトを実行する。
-
-上記 3. と同様に日本語エンジン系をビルド。
-
-(1) jptools\setup-vc2013.cmd
-(2) jptools\setupMiscDepsJp.cmd
-
-(3) jptools\selfcert_clean.cmd 初期化
-(4) jptools\selfcert_setup.cmd パスフレーズを空欄で設定
-(5) jptools\selfcert_scons.cmd SET VERSION の値を更新してビルド実行
-(6) jptools\selfcert_pack_dist.cmd: distの中身をアーカイブ nvda-*jp-*-dist-self.zip を送付。
-
-戻ってきたファイルで dist の中身を上書き。
-
-(7) jptools\signed_makensis.cmd: 署名されたdistをmakensisでlauncherに変換。
-(8) jptools\signed_output_pack.cmd: outputフォルダの中のlauncherをアーカイブ nvda-*jp-*-launcher-unsigned.zip して送付。
-
-過去の記録
 http://ja.nishimotz.com/nvdajp_certfile
