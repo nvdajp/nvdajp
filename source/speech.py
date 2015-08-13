@@ -153,8 +153,11 @@ def spellTextInfo(info,useCharacterDescriptions=False,useDetails=False):
 
 _speakSpellingGenerator=None
 
-def speakSpelling(text,locale=None,useCharacterDescriptions=False,useDetails=False):
+def speakSpelling(text,locale=None,useCharacterDescriptions=False,useDetails=False,useCharacterDescriptionMode=False):
 	global beenCanceled, _speakSpellingGenerator
+	from globalCommands import characterDescriptionMode
+	if useCharacterDescriptionMode and characterDescriptionMode:
+		useCharacterDescriptions = useDetails = True
 	import speechViewer
 	if speechViewer.isActive:
 		speechViewer.appendText(text)
