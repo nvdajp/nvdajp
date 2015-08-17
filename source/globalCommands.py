@@ -129,7 +129,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptHandler.getLastScriptRepeatCount()==0:
 			speech.speakTextInfo(info,unit=textInfos.UNIT_LINE,reason=controlTypes.REASON_CARET)
 		else:
-			speech.speakSpelling(info.text)
+			speech.speakSpelling(info.text,useCharacterDescriptionMode=True)
 	# Translators: Input help mode message for report current line command.
 	script_reportCurrentLine.__doc__=_("Reports the current line under the application cursor. Pressing this key twice will spell the current line")
 	script_reportCurrentLine.category=SCRCAT_SYSTEMCARET
@@ -730,7 +730,7 @@ class GlobalCommands(ScriptableObject):
 			text=" ".join(textList)
 			if len(text)>0 and not text.isspace():
 				if scriptHandler.getLastScriptRepeatCount()==1:
-					speech.speakSpelling(text)
+					speech.speakSpelling(text,useCharacterDescriptionMode=True)
 				else:
 					if api.copyToClip(text):
 						# Translators: Indicates something has been copied to clipboard (example output: title text copied to clipboard).
@@ -930,7 +930,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info,unit=textInfos.UNIT_LINE,reason=controlTypes.REASON_CARET)
 		else:
-			speech.spellTextInfo(info,useCharacterDescriptions=scriptCount>1)
+			speech.spellTextInfo(info,useCharacterDescriptions=scriptCount>1,useDetails=(scriptCount>1 and characterDescriptionMode))
 	# Translators: Input help mode message for read current line under review cursor command.
 	script_review_currentLine.__doc__=_("Reports the line of the current navigator object where the review cursor is situated. If this key is pressed twice, the current line will be spelled. Pressing three times will spell the line using character descriptions.")
 	script_review_currentLine.category=SCRCAT_TEXTREVIEW
@@ -984,7 +984,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info,reason=controlTypes.REASON_CARET,unit=textInfos.UNIT_WORD)
 		else:
-			speech.spellTextInfo(info,useCharacterDescriptions=scriptCount>1)
+			speech.spellTextInfo(info,useCharacterDescriptions=scriptCount>1,useDetails=(scriptCount>1 and characterDescriptionMode))
 	# Translators: Input help mode message for report current word under review cursor command.
 	script_review_currentWord.__doc__=_("Speaks the word of the current navigator object where the review cursor is situated. Pressing twice spells the word. Pressing three times spells the word using character descriptions")
 	script_review_currentWord.category=SCRCAT_TEXTREVIEW
@@ -1291,7 +1291,7 @@ class GlobalCommands(ScriptableObject):
 			if scriptHandler.getLastScriptRepeatCount()==0:
 				speech.speakObject(focusObject, reason=controlTypes.REASON_QUERY)
 			else:
-				speech.speakSpelling(focusObject.name)
+				speech.speakSpelling(focusObject.name,useCharacterDescriptionMode=True)
 		else:
 			speech.speakMessage(_("no focus"))
 	# Translators: Input help mode message for report current focus command.
@@ -1322,7 +1322,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptHandler.getLastScriptRepeatCount()==0:
 			ui.message(text)
 		else:
-			speech.speakSpelling(text)
+			speech.speakSpelling(text,useCharacterDescriptionMode=True)
 	# Translators: Input help mode message for report status line text command.
 	script_reportStatusLine.__doc__ = _("reads the current application status bar and moves the navigator to it. If pressed twice, spells the information")
 	script_reportStatusLine.category=SCRCAT_FOCUS
@@ -1353,7 +1353,7 @@ class GlobalCommands(ScriptableObject):
 		if repeatCount==0:
 			ui.message(title)
 		elif repeatCount==1:
-			speech.speakSpelling(title)
+			speech.speakSpelling(title,useCharacterDescriptionMode=True)
 		else:
 			if api.copyToClip(title):
 				ui.message(_("%s copied to clipboard")%title)
