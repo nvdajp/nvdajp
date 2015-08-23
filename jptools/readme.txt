@@ -106,7 +106,7 @@ jptools\nonCertAllBuild.cmd
 または
 
 (1) jptools\setupMiscDepsJp.cmd
-(2) jptools\build.cmd
+(2) jptools\nonCertBuild.cmd
 JTalk または日本語点訳エンジンを更新しない場合は (1) は不要。
 
 出力は output フォルダに作られる。
