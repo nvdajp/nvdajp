@@ -5,7 +5,7 @@ copy /Y %DIRECTBM% source\brailleDisplayDrivers
 
 set VERSION=2015.3jp
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
-@set VERSION=%VERSION%-beta-%NOWDATE%
+@rem set VERSION=%VERSION%-beta-%NOWDATE%
 set PUBLISHER=nvdajp
 set PFX=..\..\kc\pfx\knowlec-key141016.pfx
 set PWFILE=..\..\kc\pfx\knowlec-key-pass.txt
