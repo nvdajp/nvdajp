@@ -236,6 +236,9 @@ def shouldAcceptEvent(eventName, windowHandle=None):
 		return True
 	if eventName == "show":
 		# Only accept 'show' events for specific cases, as otherwise we get flooded.
+		# ATOK2x candidate item comment
+		if winUser.getClassName(windowHandle).startswith('ATOK2'):
+			return True
 		return winUser.getClassName(windowHandle) in (
 			"Frame Notification Bar", # notification bars
 			"tooltips_class32", # tooltips
