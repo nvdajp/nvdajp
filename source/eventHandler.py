@@ -236,7 +236,11 @@ def shouldAcceptEvent(eventName, windowHandle=None):
 		return True
 	if eventName == "show":
 		# Only accept 'show' events for specific cases, as otherwise we get flooded.
-		return winUser.getClassName(windowHandle) in (
+		# ATOKxxUIComment
+		className = winUser.getClassName(windowHandle)
+		if className.startswith("ATOK") and className.endswith("UIComment"):
+			return True
+		return className in (
 			"Frame Notification Bar", # notification bars
 			"tooltips_class32", # tooltips
 			"mscandui21.candidate", "mscandui40.candidate", "MSCandUIWindow_Candidate", # IMM candidates
