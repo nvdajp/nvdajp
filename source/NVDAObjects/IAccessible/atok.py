@@ -11,15 +11,7 @@ import winUser
 import mouseHandler
 import config
 
-class ATOK26Cand(IAccessible):
-	name=_("Candidate")
-	role=controlTypes.ROLE_LIST
-
-	def event_show(self):
-		#tones.beep(880,20)
-		log.debug("candidate show")
-
-class ATOK26UIComment(IAccessible):
+class ATOKxxUIComment(IAccessible):
 	role=controlTypes.ROLE_STATICTEXT
 
 	def _get_name(self):
@@ -41,7 +33,5 @@ class ATOK26UIComment(IAccessible):
 
 def findExtraOverlayClasses(obj,clsList):
 	windowClassName=obj.windowClassName
-	if windowClassName.endswith("Cand"):
-		clsList.append(ATOK26Cand)
-	elif windowClassName.endswith("UIComment"):
-		clsList.append(ATOK26UIComment)
+	if windowClassName.endswith("UIComment"):
+		clsList.append(ATOKxxUIComment)
