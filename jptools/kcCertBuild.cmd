@@ -3,9 +3,9 @@ set DIRECTBM=c:\kgs\dev\DirectBM.dll
 copy /Y %DIRECTBM% source\brailleDisplayDrivers
 @rem end newdirectbm
 
-set VERSION=2015.3jp
+set VERSION=2015.4jp
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
-@rem set VERSION=%VERSION%-beta-%NOWDATE%
+set VERSION=%VERSION%-beta-%NOWDATE%
 set PUBLISHER=nvdajp
 set PFX=..\..\kc\pfx\knowlec-key141016.pfx
 set PWFILE=..\..\kc\pfx\knowlec-key-pass.txt
