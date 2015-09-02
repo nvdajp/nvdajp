@@ -15,16 +15,26 @@ RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 
 def get_long_desc(s):
 	try:
-		s = characterProcessing.getCharacterDescription('ja', s)[0]
+		lang = speech.getCurrentLanguage()[:2]
+		s2 = '  '.join(characterProcessing.getCharacterDescription(lang, s))
+		if s != s2:
+			return s2
+		if lang != 'ja':
+			return '  '.join(characterProcessing.getCharacterDescription('ja', s))
 	except:
 		pass
 	return s
 
 def get_short_desc(s):
-	s2 = characterProcessing.processSpeechSymbol('ja', s)
+	lang = speech.getCurrentLanguage()[:2]
+	s2 = characterProcessing.processSpeechSymbol(lang, s)
 	if s != s2:
 		log.debug("get_short_desc (%s)-(%s)" % (s, s2))
 		return s2
+	if lang != 'ja':
+		s2 = characterProcessing.processSpeechSymbol('ja', s)
+		if s != s2:
+			return s2
 	return characterProcessing.getCharacterReading('ja', s.lower())
 
 # characters which use dictionary for spelling reading
