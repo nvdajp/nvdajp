@@ -97,7 +97,7 @@ def notifyCandidateComment(item):
 		s = o.name
 		d = o.decodedAccDescription
 		if d == 'Headword':
-			if currDiscReading == nvdajp_dic.getJapaneseDiscriminantReading(s):
+			if currDiscReading == nvdajp_dic.getDiscriminantReading(s):
 				isCurrItem = True
 			else:
 				isCurrItem = False

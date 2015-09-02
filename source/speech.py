@@ -208,8 +208,7 @@ JpAttr = collections.namedtuple(
 	)
 )
 
-def isJa(locale):
-	return nvdajp_dic.isJapaneseLocale(locale)
+from nvdajp_dic import isJa
 
 def getCharAttr(locale, char, useDetails):
 	"""
