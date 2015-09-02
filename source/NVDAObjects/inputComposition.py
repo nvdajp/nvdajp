@@ -77,8 +77,8 @@ lastCompositionTime = None
 # from NVDAHelper.nvdaControllerInternal_inputCompositionUpdate
 def reportPartialSelection(sel):
 	global lastCompositionText, lastCompositionTime
-	newText = nvdajp_dic.getJapaneseDiscriminantReading(sel)
-	newTextForBraille = nvdajp_dic.getJapaneseDiscriminantReading(sel, forBraille=True)
+	newText = nvdajp_dic.getDiscriminantReading(sel)
+	newTextForBraille = nvdajp_dic.getDiscriminantReading(sel, forBraille=True)
 	if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 0.1:
 		newText = None
 	if newText:
@@ -128,8 +128,8 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 				config.conf["inputComposition"]["announceSelectedCandidate"] and \
 				needDiscriminantReading(lastKeyGesture):
 			ns = newString.strip(u'\u3000')
-			newText = nvdajp_dic.getJapaneseDiscriminantReading(ns)
-			newTextForBraille = nvdajp_dic.getJapaneseDiscriminantReading(ns, forBraille=True)
+			newText = nvdajp_dic.getDiscriminantReading(ns)
+			newTextForBraille = nvdajp_dic.getDiscriminantReading(ns, forBraille=True)
 			isCandidate = True
 		if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 1.0:
 			newText = None
