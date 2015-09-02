@@ -154,11 +154,28 @@ msgstr "日本語6点情報処理点字"
 msgid "%s:%s"
 msgstr "%s時%s分"
 
+#: nvdajp_dic.py
+msgid "half shaped"
+msgstr "半角"
+
+#: nvdajp_dic.py
+msgid "full shaped"
+msgstr "全角"
+
+#: nvdajp_dic.py
+msgid "latin"
+msgstr "英字"
+
+#: nvdajp_dic.py
+msgid "cap"
+msgstr "大文字"
+
 #. Translators: The label for the Tools submenu in NVDA menu.
 msgctxt "nvdaMenu"
 msgid "Tools"
 msgstr "ツール(&T)"
 
+#. Translators: The label for the Tools submenu in NVDA menu.
 msgctxt "nvdaMenu"
 msgid "User Guide"
 msgstr "ユーザーガイド(&U)"
