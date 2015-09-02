@@ -86,17 +86,17 @@ CharAttr = collections.namedtuple('CharAttr', 'upper hira kata half full latin')
 def getAttrDesc(a):
 	d = []
 	if a.hira:
-		d.append(u'ヒラガナ')
+		d.append(_('hiragana'))
 	if a.kata:
-		d.append(u'カタカナ')
+		d.append(_('katakana'))
 	if a.half:
-		d.append(u'半角')
+		d.append(_('half shaped'))
 	if a.full:
-		d.append(u'全角')
+		d.append(_('full shaped'))
 	if a.latin:
-		d.append(u'英字')
+		d.append(_('latin'))
 	if a.upper:
-		d.append(u'大文字')
+		d.append(_('cap'))
 	return ' '.join(d)
 
 def code2kana(code):
