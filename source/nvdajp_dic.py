@@ -2,6 +2,7 @@
 # nvdajp_dic.py
 # NVDA Japanese Team
 # A part of NonVisual Desktop Access (NVDA)
+# for unittest, see ../jptools/jpDicTest.py
 
 import characterProcessing
 import languageHandler
