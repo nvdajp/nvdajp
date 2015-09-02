@@ -14,6 +14,9 @@ sys.path.append(r'..\source')
 import languageHandler
 languageHandler.setLanguage('ja')
 import nvdajp_dic as dic
+import locale
+import gettext
+gettext.translation('nvda',localedir=r'..\source\locale',languages=['ja']).install(True)
 
 items = [
 	('a', '半角 英字 エー アルファー', '半角 a'),
