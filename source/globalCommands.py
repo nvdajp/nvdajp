@@ -199,13 +199,12 @@ class GlobalCommands(ScriptableObject):
 		if scriptHandler.getLastScriptRepeatCount()==0:
 			text=winKernel.GetTimeFormat(winKernel.LOCALE_USER_DEFAULT, winKernel.TIME_NOSECONDS, None, None)
 			# nvdajp
-			if nvdajp_dic.isJapaneseLocale():
-				import re
-				mo = re.match('(\d{1,2}):(\d{2})', text)
-				if mo:
-					hour, minute = mo.group(1), mo.group(2)
-					if minute[0] == '0': minute = minute[1:]
-					text = _('%s:%s') % (hour, minute)
+			import re
+			mo = re.match('(\d{1,2}):(\d{2})', text)
+			if mo:
+				hour, minute = mo.group(1), mo.group(2)
+				if minute[0] == '0': minute = minute[1:]
+				text = _('%s:%s') % (hour, minute)
 			# nvdajp end
 		else:
 			text=winKernel.GetDateFormat(winKernel.LOCALE_USER_DEFAULT, winKernel.DATE_LONGDATE, None, None)

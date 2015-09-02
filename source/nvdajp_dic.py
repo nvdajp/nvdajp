@@ -10,32 +10,26 @@ import config
 import re
 import collections
 from logHandler import log
-import speech
 
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 
 def get_long_desc(s):
 	try:
-		lang = speech.getCurrentLanguage()[:2]
-		s2 = '  '.join(characterProcessing.getCharacterDescription(lang, s))
-		if s != s2:
-			return s2
-		if lang != 'ja':
-			return '  '.join(characterProcessing.getCharacterDescription('ja', s))
+		lang = languageHandler.getLanguage()[:2]
+		if isHalfShape(s) and lang != 'ja':
+			return '  '.join(characterProcessing.getCharacterDescription(lang, s))
+		return '  '.join(characterProcessing.getCharacterDescription('ja', s))
 	except:
 		pass
 	return s
 
 def get_short_desc(s):
-	lang = speech.getCurrentLanguage()[:2]
-	s2 = characterProcessing.processSpeechSymbol(lang, s)
+	lang = languageHandler.getLanguage()[:2]
+	if isHalfShape(s) and lang != 'ja':
+		return characterProcessing.processSpeechSymbol(lang, s)
+	s2 = characterProcessing.processSpeechSymbol('ja', s)
 	if s != s2:
-		log.debug("get_short_desc (%s)-(%s)" % (s, s2))
 		return s2
-	if lang != 'ja':
-		s2 = characterProcessing.processSpeechSymbol('ja', s)
-		if s != s2:
-			return s2
 	return characterProcessing.getCharacterReading('ja', s.lower())
 
 # characters which use dictionary for spelling reading
@@ -44,9 +38,7 @@ SMALL_KANA_CHARACTERS = SMALL_ZEN_KATAKANA + u'ぁぃぅぇぉっゃゅょゎｧ
 SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + u'をヲｦはへー'
 FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + u'ー'
 
-def isJapaneseLocale(locale=None):
-	if locale is None:
-		return speech.getCurrentLanguage()[:2] == 'ja'
+def isJa(locale):
 	return locale[:2] == 'ja'
 
 def isZenkakuHiragana(c):
@@ -210,7 +202,7 @@ def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=
 	return s.strip(' ')
 
 def processHexCode(locale, msg):
-	if isJapaneseLocale(locale):
+	if isJa(locale):
 		try:
 			msg = re.sub(r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x"+x.group(1),16)), unicode(msg))
 		except Exception, e:
