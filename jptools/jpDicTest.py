@@ -13,7 +13,7 @@ sys.path.append(os.path.normpath(os.path.join(os.getcwdu(), 'mocks')))
 sys.path.append(r'..\source')
 import languageHandler
 languageHandler.setLanguage('ja')
-import nvdajp_dic as dic
+import jpUtils
 import locale
 import gettext
 gettext.translation('nvda',localedir=r'..\source\locale',languages=['ja']).install(True)
@@ -40,10 +40,10 @@ class JpDicTestCase(unittest.TestCase):
 	def test_getDiscriminantReading(self):
 		for i in items:
 			a, b, c = i[0], i[1], i[2]
-			s = dic.getDiscriminantReading(a)
+			s = jpUtils.getDiscriminantReading(a)
 			print("name(%s) correctS(%s) actualS(%s)" % (a, b, s))
 			self.assertEqual(b, s)
-			t = dic.getDiscriminantReading(a, forBraille=True)
+			t = jpUtils.getDiscriminantReading(a, forBraille=True)
 			print("name(%s) correctB(%s) actualB(%s)" % (a, c, t))
 			self.assertEqual(c, t)
 
