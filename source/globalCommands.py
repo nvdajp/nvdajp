@@ -5,7 +5,7 @@
 #See the file COPYING for more details.
 #Copyright (C) 2006-2015 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Rui Batista, Joseph Lee, Leonard de Ruijter
 
-import nvdajp_dic #nvdajp
+import jpUtils #nvdajp
 import time
 import itertools
 import tones
@@ -1069,7 +1069,7 @@ class GlobalCommands(ScriptableObject):
 			if characterDescriptionMode:
 				speech.spellTextInfo(info,useCharacterDescriptions=True)
 				# display description to braille
-				braille.handler.message(nvdajp_dic.getDiscriminantReading(info.text, forBraille=True))
+				braille.handler.message(jpUtils.getDiscriminantReading(info.text, forBraille=True))
 			else:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		elif scriptCount==1:
@@ -1077,11 +1077,11 @@ class GlobalCommands(ScriptableObject):
 		elif scriptCount==2:
 			try:
 				c = ord(info.text)
-				if nvdajp_dic.isJa():
-					s = nvdajp_dic.code2kana(c)
+				if jpUtils.isJa():
+					s = jpUtils.code2kana(c)
 					o = u"%d u+%s" % (c, s)
 					speech.speakMessage(o)
-					braille.handler.message(u"%d %s" % (c, nvdajp_dic.code2hex(c)))
+					braille.handler.message(u"%d %s" % (c, jpUtils.code2hex(c)))
 				else:
 					speech.speakMessage("%d," % c)
 					speech.speakSpelling(hex(c))

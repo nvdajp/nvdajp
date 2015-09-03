@@ -1,5 +1,5 @@
 # coding: UTF-8
-# nvdajp_dic.py
+# jpUtils.py
 # NVDA Japanese Team
 # A part of NonVisual Desktop Access (NVDA)
 # for unittest, see ../jptools/jpDicTest.py
@@ -13,7 +13,7 @@ from logHandler import log
 
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 
-def get_long_desc(s):
+def getLongDesc(s):
 	try:
 		lang = languageHandler.getLanguage()[:2]
 		if ord(s) < 128 and lang != 'ja':
@@ -23,7 +23,7 @@ def get_long_desc(s):
 		pass
 	return s
 
-def get_short_desc(s):
+def getShortDesc(s):
 	lang = languageHandler.getLanguage()[:2]
 	if ord(s) < 128 and lang != 'ja':
 		return characterProcessing.processSpeechSymbol(lang, s)
@@ -83,7 +83,7 @@ def isUpper(c):
 
 def replaceSpecialKanaCharacter(c):
 	if c in SPECIAL_KANA_CHARACTERS:
-		c = get_short_desc(c)
+		c = getShortDesc(c)
 	return c
 
 CharAttr = collections.namedtuple('CharAttr', 'upper hira kata half full latin')
@@ -118,7 +118,7 @@ def code2kana(code):
 		elif c == '5':
 			s += u'ゴー'
 		else:
-			s += get_short_desc(c)
+			s += getShortDesc(c)
 	return s
 
 def code2hex(code):
@@ -136,13 +136,13 @@ def getCandidateCharDesc(c, a, forBraille=False):
 	if forBraille and (isLatinCharacter(c) or isZenkakuHiragana(c) or isZenkakuKatakana(c) or isFullShapeNumber(c) or isHalfShapeNumber(c) or c == u'．'):
 		d = c
 	elif a.half or isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c):
-		d = get_short_desc(c)
+		d = getShortDesc(c)
 		log.debug(u"shortdesc (%s) %s" % (c, d))
 	elif a.hira or a.kata:
 		d = replaceSpecialKanaCharacter(c)
 		log.debug(u"kana (%s) %s" % (c, d))
 	else:
-		d = get_long_desc(c)
+		d = getLongDesc(c)
 		if d != c:
 			log.debug(u"longdesc (%s) %s" % (c, d))
 		else:
@@ -165,7 +165,7 @@ def useAttrDesc(a):
 	return False
 
 #TODO: merge _get_description() and getDiscriminantReading().
-#nvdajp must modify locale/ja/characterDescriptions.dic and nvdajp_dic.py.
+#nvdajp must modify locale/ja/characterDescriptions.dic and jpUtils.py.
 def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=False):
 	if not name: return ''
 	attrs = []
@@ -219,5 +219,5 @@ def fixNewText(newText, isCandidate=False):
 		log.debug('convert hiragana to katakana: ' + newText)
 	if not isCandidate:
 		for c in FIX_NEW_TEXT_CHARS:
-			newText = newText.replace(c, ' ' + get_short_desc(c) + ' ')
+			newText = newText.replace(c, ' ' + getShortDesc(c) + ' ')
 	return newText
