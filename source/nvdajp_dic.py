@@ -16,7 +16,7 @@ RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 def get_long_desc(s):
 	try:
 		lang = languageHandler.getLanguage()[:2]
-		if isHalfShape(s) and lang != 'ja':
+		if ord(s) < 128 and lang != 'ja':
 			return '  '.join(characterProcessing.getCharacterDescription(lang, s))
 		return '  '.join(characterProcessing.getCharacterDescription('ja', s))
 	except:
@@ -25,7 +25,7 @@ def get_long_desc(s):
 
 def get_short_desc(s):
 	lang = languageHandler.getLanguage()[:2]
-	if isHalfShape(s) and lang != 'ja':
+	if ord(s) < 128 and lang != 'ja':
 		return characterProcessing.processSpeechSymbol(lang, s)
 	s2 = characterProcessing.processSpeechSymbol('ja', s)
 	if s != s2:
