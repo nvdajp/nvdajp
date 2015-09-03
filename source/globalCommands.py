@@ -1077,10 +1077,15 @@ class GlobalCommands(ScriptableObject):
 		elif scriptCount==2:
 			try:
 				c = ord(info.text)
-				s = nvdajp_dic.code2kana(c)
-				o = u"%d u+%s" % (c, s)
-				speech.speakMessage(o)
-				braille.handler.message(u"%d %s" % (c, nvdajp_dic.code2hex(c)))
+				if nvdajp_dic.isJa():
+					s = nvdajp_dic.code2kana(c)
+					o = u"%d u+%s" % (c, s)
+					speech.speakMessage(o)
+					braille.handler.message(u"%d %s" % (c, nvdajp_dic.code2hex(c)))
+				else:
+					speech.speakMessage("%d," % c)
+					speech.speakSpelling(hex(c))
+					braille.handler.message(u"%d %s" % (c, hex(c)))
 			except:
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		else:

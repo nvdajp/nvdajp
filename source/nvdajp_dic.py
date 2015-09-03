@@ -38,7 +38,9 @@ SMALL_KANA_CHARACTERS = SMALL_ZEN_KATAKANA + u'ぁぃぅぇぉっゃゅょゎｧ
 SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + u'をヲｦはへー'
 FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + u'ー'
 
-def isJa(locale):
+def isJa(locale=None):
+	if locale is None:
+		return languageHandler.getLanguage()[:2] == 'ja'
 	return locale[:2] == 'ja'
 
 def isZenkakuHiragana(c):
