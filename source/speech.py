@@ -285,7 +285,7 @@ def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
 	return pitchChanged, oldPitch
 
 def getJaCharAttrDetails(char, shouldSayCap):
-	return nvdajp_dic.getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap)
+	return nvdajp_dic.getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
 
 def getCharDescListFromText(text,locale):
 	"""This method prepares a list, which contains character and its description for all characters the text is made up of, by checking the presence of character descriptions in characterDescriptions.dic of that locale for all possible combination of consecutive characters in the text.
@@ -346,13 +346,13 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 			index=count+1
 			log.io("Speaking character %r"%char)
 			speechSequence=[LangChangeCommand(locale)] if config.conf['speech']['autoLanguageSwitching'] else []
-			if len(char) == 1 and synthConfig["useSpellingFunctionality"] and not isJa(locale):
-				speechSequence.append(CharacterModeCommand(True))
 			if index is not None:
 				speechSequence.append(IndexCommand(index))
 			if charAttrDetails:
 				#Announce attribute details before character itself
 				speechSequence.append(charAttrDetails)
+			if len(char) == 1 and synthConfig["useSpellingFunctionality"] and not isJa(locale):
+				speechSequence.append(CharacterModeCommand(True))
 			speechSequence.append(char)
 			synth.speak(speechSequence)
 			if pitchChanged:
