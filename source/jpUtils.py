@@ -95,9 +95,9 @@ def getAttrDesc(a):
 	if a.kata:
 		d.append(_('katakana'))
 	if a.half:
-		d.append(_('half shaped'))
+		d.append(_('half shape'))
 	if a.full:
-		d.append(_('full shaped'))
+		d.append(_('full shape'))
 	if a.latin:
 		d.append(_('latin'))
 	if a.upper:
