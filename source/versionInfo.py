@@ -33,7 +33,7 @@ name="NVDA"
 longName=_("NonVisual Desktop Access")
 version="2015.4dev"
 publisher="unknown"
-updateVersionType="nvdajp"
+updateVersionType=None
 try:
 	from _buildVersion import version, publisher, updateVersionType
 except ImportError:
