@@ -80,7 +80,7 @@ def notifyCandidateComment(item):
 	import windowUtils
 	import NVDAObjects.IAccessible
 	import winUser
-	import nvdajp_dic
+	import jpUtils
 	parent = api.getDesktopObject().windowHandle
 	try:
 		obj = NVDAObjects.IAccessible.getNVDAObjectFromEvent(
@@ -97,7 +97,7 @@ def notifyCandidateComment(item):
 		s = o.name
 		d = o.decodedAccDescription
 		if d == 'Headword':
-			if currDiscReading == nvdajp_dic.getJapaneseDiscriminantReading(s):
+			if currDiscReading == jpUtils.getDiscriminantReading(s):
 				isCurrItem = True
 			else:
 				isCurrItem = False
