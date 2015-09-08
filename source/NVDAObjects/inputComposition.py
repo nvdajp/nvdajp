@@ -9,7 +9,7 @@ from behaviors import EditableTextWithAutoSelectDetection, CandidateItem as Cand
 from textInfos.offsets import OffsetsTextInfo
 #nvdajp begin
 from logHandler import log
-import nvdajp_dic
+import jpUtils
 import win32con
 import time
 import braille
@@ -77,8 +77,8 @@ lastCompositionTime = None
 # from NVDAHelper.nvdaControllerInternal_inputCompositionUpdate
 def reportPartialSelection(sel):
 	global lastCompositionText, lastCompositionTime
-	newText = nvdajp_dic.getJapaneseDiscriminantReading(sel)
-	newTextForBraille = nvdajp_dic.getJapaneseDiscriminantReading(sel, forBraille=True)
+	newText = jpUtils.getDiscriminantReading(sel)
+	newTextForBraille = jpUtils.getDiscriminantReading(sel, forBraille=True)
 	if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 0.1:
 		newText = None
 	if newText:
@@ -128,8 +128,8 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 				config.conf["inputComposition"]["announceSelectedCandidate"] and \
 				needDiscriminantReading(lastKeyGesture):
 			ns = newString.strip(u'\u3000')
-			newText = nvdajp_dic.getJapaneseDiscriminantReading(ns)
-			newTextForBraille = nvdajp_dic.getJapaneseDiscriminantReading(ns, forBraille=True)
+			newText = jpUtils.getDiscriminantReading(ns)
+			newTextForBraille = jpUtils.getDiscriminantReading(ns, forBraille=True)
 			isCandidate = True
 		if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 1.0:
 			newText = None
@@ -139,7 +139,7 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 		#	tones.beep(1000,10)
 		if newText:
 			if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-				newText = nvdajp_dic.fixNewText(newText, isCandidate)
+				newText = jpUtils.fixNewText(newText, isCandidate)
 				lastCompositionTime = time.time()
 				lastCompositionText = newText
 				queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newTextForBraille)

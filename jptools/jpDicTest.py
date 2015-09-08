@@ -13,7 +13,10 @@ sys.path.append(os.path.normpath(os.path.join(os.getcwdu(), 'mocks')))
 sys.path.append(r'..\source')
 import languageHandler
 languageHandler.setLanguage('ja')
-import nvdajp_dic as dic
+import jpUtils
+import locale
+import gettext
+gettext.translation('nvda',localedir=r'..\source\locale',languages=['ja']).install(True)
 
 items = [
 	('a', '半角 英字 エー アルファー', '半角 a'),
@@ -25,8 +28,8 @@ items = [
 	('ヲ', 'カタカナ オワリノ オ', 'カタカナ ヲ'),
 	('123', '半角 イチ ニ サン', '半角 123'),
 	('１２３', '全角 イチ ニ サン', '全角 １２３'),
-	#('1.23', '半角 イチ .ニ サン', '半角 1.23'),
-	#('１．２３', '全角 イチ ピリオド ニ サン', '全角 １．２３'),
+	('1.23', '半角 イチ .ニ サン', '半角 1.23'),
+	('１．２３', '全角 イチ ピリオド ニ サン', '全角 １．２３'),
 	#('1(23)', '半角 イチ カッコ ニ サン カッコトジ', '半角 1(23)'),
 	#('１（２３）', '全角 イチ カッコ ニ サン カッコトジ', '全角 １（２３）'),
 	('川', 'サンボンガワノ カワ', 'サンボンガワノ カワ'),
@@ -34,13 +37,13 @@ items = [
 
 class JpDicTestCase(unittest.TestCase):
 	
-	def test_getJapaneseDiscriminantReading(self):
+	def test_getDiscriminantReading(self):
 		for i in items:
 			a, b, c = i[0], i[1], i[2]
-			s = dic.getJapaneseDiscriminantReading(a)
+			s = jpUtils.getDiscriminantReading(a)
 			print("name(%s) correctS(%s) actualS(%s)" % (a, b, s))
 			self.assertEqual(b, s)
-			t = dic.getJapaneseDiscriminantReading(a, forBraille=True)
+			t = jpUtils.getDiscriminantReading(a, forBraille=True)
 			print("name(%s) correctB(%s) actualB(%s)" % (a, c, t))
 			self.assertEqual(c, t)
 

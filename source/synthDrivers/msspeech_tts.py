@@ -11,7 +11,7 @@ from sapi5 import constants
 from logHandler import log
 import speech
 from jtalk import _nvdajp_spellchar
-import nvdajp_dic
+import jpUtils
 
 class SynthDriver(SynthDriver):
 	COM_CLASS = "speech.SPVoice"
@@ -35,7 +35,7 @@ class SynthDriver(SynthDriver):
 				if spellState:
 					item = _nvdajp_spellchar.convert(item)
 					#log.info("item replaced to '%s'" % item)
-				item = nvdajp_dic.get_short_desc(item)
+				item = jpUtils.getShortDesc(item)
 				textList.append(item.replace("<","&lt;"))
 			elif isinstance(item,speech.IndexCommand):
 				textList.append("<Bookmark Mark=\"%d\" />"%item.index)

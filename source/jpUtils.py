@@ -1,7 +1,8 @@
 # coding: UTF-8
-# nvdajp_dic.py
+# jpUtils.py
 # NVDA Japanese Team
 # A part of NonVisual Desktop Access (NVDA)
+# for unittest, see ../jptools/jpDicTest.py
 
 import characterProcessing
 import languageHandler
@@ -9,21 +10,25 @@ import config
 import re
 import collections
 from logHandler import log
-import speech
 
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 
-def get_long_desc(s):
+def getLongDesc(s):
 	try:
-		s = characterProcessing.getCharacterDescription('ja', s)[0]
+		lang = languageHandler.getLanguage()[:2]
+		if ord(s) < 128 and lang != 'ja':
+			return '  '.join(characterProcessing.getCharacterDescription(lang, s))
+		return '  '.join(characterProcessing.getCharacterDescription('ja', s))
 	except:
 		pass
 	return s
 
-def get_short_desc(s):
+def getShortDesc(s):
+	lang = languageHandler.getLanguage()[:2]
+	if ord(s) < 128 and lang != 'ja':
+		return characterProcessing.processSpeechSymbol(lang, s)
 	s2 = characterProcessing.processSpeechSymbol('ja', s)
 	if s != s2:
-		log.debug("get_short_desc (%s)-(%s)" % (s, s2))
 		return s2
 	return characterProcessing.getCharacterReading('ja', s.lower())
 
@@ -33,9 +38,9 @@ SMALL_KANA_CHARACTERS = SMALL_ZEN_KATAKANA + u'ぁぃぅぇぉっゃゅょゎｧ
 SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + u'をヲｦはへー'
 FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + u'ー'
 
-def isJapaneseLocale(locale=None):
+def isJa(locale=None):
 	if locale is None:
-		return speech.getCurrentLanguage()[:2] == 'ja'
+		return languageHandler.getLanguage()[:2] == 'ja'
 	return locale[:2] == 'ja'
 
 def isZenkakuHiragana(c):
@@ -78,7 +83,7 @@ def isUpper(c):
 
 def replaceSpecialKanaCharacter(c):
 	if c in SPECIAL_KANA_CHARACTERS:
-		c = get_short_desc(c)
+		c = getShortDesc(c)
 	return c
 
 CharAttr = collections.namedtuple('CharAttr', 'upper hira kata half full latin')
@@ -86,17 +91,17 @@ CharAttr = collections.namedtuple('CharAttr', 'upper hira kata half full latin')
 def getAttrDesc(a):
 	d = []
 	if a.hira:
-		d.append(u'ヒラガナ')
+		d.append(_('hiragana'))
 	if a.kata:
-		d.append(u'カタカナ')
+		d.append(_('katakana'))
 	if a.half:
-		d.append(u'半角')
+		d.append(_('half shape'))
 	if a.full:
-		d.append(u'全角')
+		d.append(_('full shape'))
 	if a.latin:
-		d.append(u'英字')
+		d.append(_('latin'))
 	if a.upper:
-		d.append(u'大文字')
+		d.append(_('cap'))
 	return ' '.join(d)
 
 def code2kana(code):
@@ -113,7 +118,7 @@ def code2kana(code):
 		elif c == '5':
 			s += u'ゴー'
 		else:
-			s += get_short_desc(c)
+			s += getShortDesc(c)
 	return s
 
 def code2hex(code):
@@ -131,13 +136,13 @@ def getCandidateCharDesc(c, a, forBraille=False):
 	if forBraille and (isLatinCharacter(c) or isZenkakuHiragana(c) or isZenkakuKatakana(c) or isFullShapeNumber(c) or isHalfShapeNumber(c) or c == u'．'):
 		d = c
 	elif a.half or isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c):
-		d = get_short_desc(c)
+		d = getShortDesc(c)
 		log.debug(u"shortdesc (%s) %s" % (c, d))
 	elif a.hira or a.kata:
 		d = replaceSpecialKanaCharacter(c)
 		log.debug(u"kana (%s) %s" % (c, d))
 	else:
-		d = get_long_desc(c)
+		d = getLongDesc(c)
 		if d != c:
 			log.debug(u"longdesc (%s) %s" % (c, d))
 		else:
@@ -159,9 +164,9 @@ def useAttrDesc(a):
 		return True
 	return False
 
-#TODO: merge _get_description() and getJapaneseDiscriminantReading().
-#nvdajp must modify locale/ja/characterDescriptions.dic and nvdajp_dic.py.
-def getJapaneseDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=False):
+#TODO: merge _get_description() and getDiscriminantReading().
+#nvdajp must modify locale/ja/characterDescriptions.dic and jpUtils.py.
+def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=False):
 	if not name: return ''
 	attrs = []
 	for c in name:
@@ -199,7 +204,7 @@ def getJapaneseDiscriminantReading(name, attrOnly=False, capAnnounced=False, for
 	return s.strip(' ')
 
 def processHexCode(locale, msg):
-	if isJapaneseLocale(locale):
+	if isJa(locale):
 		try:
 			msg = re.sub(r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x"+x.group(1),16)), unicode(msg))
 		except Exception, e:
@@ -214,5 +219,5 @@ def fixNewText(newText, isCandidate=False):
 		log.debug('convert hiragana to katakana: ' + newText)
 	if not isCandidate:
 		for c in FIX_NEW_TEXT_CHARS:
-			newText = newText.replace(c, ' ' + get_short_desc(c) + ' ')
+			newText = newText.replace(c, ' ' + getShortDesc(c) + ' ')
 	return newText

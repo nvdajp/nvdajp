@@ -26,7 +26,7 @@ import queueHandler
 import speechDictHandler
 import characterProcessing
 import languageHandler
-import nvdajp_dic
+import jpUtils
 
 speechMode_off=0
 speechMode_beeps=1
@@ -78,8 +78,7 @@ RE_CONVERT_WHITESPACE = re.compile("[\0\r\n]")
 
 def processText(locale,text,symbolLevel):
 	#nvdajp begin
-	import nvdajp_dic
-	text = nvdajp_dic.processHexCode(locale, text)
+	text = jpUtils.processHexCode(locale, text)
 	#nvdajp end
 	text = speechDictHandler.processText(text)
 	text = characterProcessing.processSpeechSymbols(locale, text, symbolLevel)
@@ -208,23 +207,22 @@ JpAttr = collections.namedtuple(
 	)
 )
 
-def isJa(locale):
-	return nvdajp_dic.isJapaneseLocale(locale)
+from jpUtils import isJa
 
 def getCharAttr(locale, char, useDetails):
 	"""
 	"""
 	_isJa = isJa(locale)
-	jpZenkakuHiragana = _isJa and nvdajp_dic.isZenkakuHiragana(char)
-	jpZenkakuKatakana = _isJa and nvdajp_dic.isZenkakuKatakana(char)
-	jpHankakuKatakana = _isJa and nvdajp_dic.isHankakuKatakana(char)
-	jpLatinCharacter = _isJa and nvdajp_dic.isLatinCharacter(char)
-	nonJpLatinCharacter = (not _isJa) and nvdajp_dic.isLatinCharacter(char)
-	jpFullShapeAlphabet = _isJa and nvdajp_dic.isFullShapeAlphabet(char)
-	nonJpFullShapeAlphabet = (not _isJa) and nvdajp_dic.isFullShapeAlphabet(char)
-	jpFullShapeSymbol = _isJa and nvdajp_dic.isFullShapeSymbol(char)
+	jpZenkakuHiragana = _isJa and jpUtils.isZenkakuHiragana(char)
+	jpZenkakuKatakana = _isJa and jpUtils.isZenkakuKatakana(char)
+	jpHankakuKatakana = _isJa and jpUtils.isHankakuKatakana(char)
+	jpLatinCharacter = _isJa and jpUtils.isLatinCharacter(char)
+	nonJpLatinCharacter = (not _isJa) and jpUtils.isLatinCharacter(char)
+	jpFullShapeAlphabet = _isJa and jpUtils.isFullShapeAlphabet(char)
+	nonJpFullShapeAlphabet = (not _isJa) and jpUtils.isFullShapeAlphabet(char)
+	jpFullShapeSymbol = _isJa and jpUtils.isFullShapeSymbol(char)
 	jpFullShape = jpFullShapeAlphabet or jpFullShapeSymbol
-	halfShape = _isJa and nvdajp_dic.isHalfShape(char)
+	halfShape = _isJa and jpUtils.isHalfShape(char)
 	usePhoneticReadingLatin = useDetails and config.conf["language"]["jpPhoneticReadingLatin"]
 	usePhoneticReadingKana = useDetails and config.conf["language"]["jpPhoneticReadingKana"]
 	jpAttr = JpAttr(
@@ -247,7 +245,7 @@ def getCharDesc(locale, char, jpAttr):
 	"""
 	"""
 	if jpAttr.jpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
-		charDesc = (nvdajp_dic.get_short_desc(char.lower()),)
+		charDesc = (jpUtils.getShortDesc(char.lower()),)
 	elif jpAttr.nonJpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
 		charDesc = (char.lower(),)
 	elif jpAttr.nonJpFullShapeAlphabet and not jpAttr.usePhoneticReadingLatin:
@@ -255,7 +253,7 @@ def getCharDesc(locale, char, jpAttr):
 	elif jpAttr.nonJpFullShapeAlphabet and jpAttr.usePhoneticReadingLatin:
 		charDesc = characterProcessing.getCharacterDescription(locale, unicodedata.normalize('NFKC', char.lower()))
 	elif (jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana) and not jpAttr.usePhoneticReadingKana:
-		charDesc = (nvdajp_dic.get_short_desc(char),)
+		charDesc = (jpUtils.getShortDesc(char),)
 	else:
 		charDesc = characterProcessing.getCharacterDescription(locale,char.lower())
 	return charDesc
@@ -286,7 +284,7 @@ def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
 	return pitchChanged, oldPitch
 
 def getJaCharAttrDetails(char, shouldSayCap):
-	return nvdajp_dic.getJapaneseDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap)
+	return jpUtils.getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
 
 def getCharDescListFromText(text,locale):
 	"""This method prepares a list, which contains character and its description for all characters the text is made up of, by checking the presence of character descriptions in characterDescriptions.dic of that locale for all possible combination of consecutive characters in the text.
@@ -347,13 +345,13 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 			index=count+1
 			log.io("Speaking character %r"%char)
 			speechSequence=[LangChangeCommand(locale)] if config.conf['speech']['autoLanguageSwitching'] else []
-			if len(char) == 1 and synthConfig["useSpellingFunctionality"] and not isJa(locale):
-				speechSequence.append(CharacterModeCommand(True))
 			if index is not None:
 				speechSequence.append(IndexCommand(index))
 			if charAttrDetails:
 				#Announce attribute details before character itself
 				speechSequence.append(charAttrDetails)
+			if len(char) == 1 and synthConfig["useSpellingFunctionality"] and not isJa(locale):
+				speechSequence.append(CharacterModeCommand(True))
 			speechSequence.append(char)
 			synth.speak(speechSequence)
 			if pitchChanged:
