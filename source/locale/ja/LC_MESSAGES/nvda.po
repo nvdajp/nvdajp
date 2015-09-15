@@ -902,7 +902,7 @@ msgstr "ブラウズモード"
 
 #. Translators: Reported when single letter navigation in browse mode is turned off.
 msgid "Single letter navigation off"
-msgstr "矢印キーだけを移動に使用"
+msgstr "英字キーを入力に使用"
 
 #. Translators: Reported when single letter navigation in browse mode is turned on.
 msgid "Single letter navigation on"
