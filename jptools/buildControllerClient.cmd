@@ -14,7 +14,7 @@ copy ..\..\build\x86_64\client\nvdaControllerClient64.dll client
 copy ..\..\build\x86_64\client\nvdaControllerClient64.dll.pdb client
 copy ..\..\build\x86_64\client\nvdaControllerClient64.exp client
 copy ..\..\build\x86_64\client\nvdaControllerClient64.lib client
-SET OUTFILE=..\..\output\nvdajp-client-%VERSION%.zip
+SET OUTFILE=..\..\output\nvdajp_%VERSION%_controllerClient.zip
 del /Q %OUTFILE%
 7z a -xr!*~ -xr!.git* %OUTFILE% client python license.txt readme.html readmejp.txt
 cd ..
