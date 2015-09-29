@@ -166,6 +166,8 @@ localizedKeyLabels = {
 	# Translators: This is the name of a key on the keyboard.
 	'imeconvert': _("IME convert"),
 	# Translators: This is the name of a key on the keyboard.
+	'imechangestatus1': _("toggle input method"),
+	# Translators: This is the name of a key on the keyboard.
 	'imechangestatus2': _("toggle input method"),
 	# Translators: This is the name of a key on the keyboard.
 	'imechangestatus3': _("toggle input method"),
