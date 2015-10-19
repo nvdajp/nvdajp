@@ -11,3 +11,5 @@ set PWFILE=..\..\kc\pfx\knowlec-key-pass.txt
 for /F "delims=" %%s in ('type %PWFILE%') do set PASSWORD=%%s
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
 scons source user_docs launcher certFile=%PFX% certPassword=%PASSWORD% certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% 
+
+copy output\nvda-%VERSION%.exe %HOME%\Dropbox\Public
