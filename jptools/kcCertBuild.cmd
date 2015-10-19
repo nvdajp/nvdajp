@@ -6,7 +6,7 @@ set VERSION=%VERSION%-beta-%NOWDATE%
 set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
 
 set PUBLISHER=nvdajp
-set PFX=..\..\kc\pfx\knowlec-key141016.pfx
+set PFX=..\..\kc\pfx\knowlec-key151019.pfx
 set PWFILE=..\..\kc\pfx\knowlec-key-pass.txt
 for /F "delims=" %%s in ('type %PWFILE%') do set PASSWORD=%%s
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
