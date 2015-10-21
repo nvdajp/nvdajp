@@ -12,4 +12,9 @@ for /F "delims=" %%s in ('type %PWFILE%') do set PASSWORD=%%s
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
 scons source user_docs launcher certFile=%PFX% certPassword=%PASSWORD% certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% 
 
-copy output\nvda-%VERSION%.exe %HOME%\Dropbox\Public
+signtool verify /pa dist\lib\*.dll >> jptools\__verify_log
+signtool verify /pa dist\lib64\*.dll >> jptools\__verify_log
+signtool verify /pa dist\*.exe >> jptools\__verify_log
+signtool verify /pa output\nvda_%VERSION%.exe >> jptools\__verify_log
+
+copy output\nvda_%VERSION%.exe %HOME%\Dropbox\Public
