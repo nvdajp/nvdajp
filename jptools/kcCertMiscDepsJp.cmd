@@ -5,9 +5,9 @@ set TIMESERVER=http://timestamp.comodoca.com/authenticode
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
 set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
 signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
-signtool verify /pa %FILE1%
+signtool verify /pa %FILE1% >> jptools\__verify_log
 timeout /T 5 /NOBREAK
 signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE2%
-signtool verify /pa %FILE2%
+signtool verify /pa %FILE2% >> jptools\__verify_log
 timeout /T 5 /NOBREAK
 
