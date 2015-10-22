@@ -263,8 +263,9 @@ class ExcelSheetQuickNavItem(ExcelQuickNavItem):
 		eventHandler.queueEvent("gainFocus",api.getDesktopObject().objectWithFocus())
 
 	def rename(self,newName):
-		self.sheetObject.Name=newName
-		self.label=newName
+		if newName and newName!=self.label:
+			self.sheetObject.Name=newName
+			self.label=newName
 
 	@property
 	def isRenameAllowed(self):
@@ -1011,6 +1012,22 @@ class ExcelCell(ExcelBase):
 			previous=None
 		if previous:
 			return ExcelCell(windowHandle=self.windowHandle,excelWindowObject=self.excelWindowObject,excelCellObject=previous)
+
+	def _get_description(self):
+		try:
+			inputMessageTitle=self.excelCellObject.validation.inputTitle
+		except (COMError,NameError,AttributeError):
+			inputMessageTitle=None
+		try:
+			inputMessage=self.excelCellObject.validation.inputMessage
+		except (COMError,NameError,AttributeError):
+			inputMessage=None
+		if inputMessage and inputMessageTitle:
+			return _("Input Message is {title}: {message}").format( title = inputMessageTitle , message = inputMessage)
+		elif inputMessage:
+			return _("Input Message is {message}").format( message = inputMessage)
+		else:
+			return None
 
 	def script_reportComment(self,gesture):
 		commentObj=self.excelCellObject.comment
