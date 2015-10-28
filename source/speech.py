@@ -1603,13 +1603,13 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 				m=re_last_pause.match(item)
 				if m:
 					before,after=m.groups()
-				elif u'。' in item:
-					# handle east-asian sentence ending
-					before, after = re.split(u'。', item, maxsplit=1)
-					before += u'。'
-				else:
-					before = after = None
-				if before or after:
+				#elif u'。' in item:
+				#	# handle east-asian sentence ending
+				#	before, after = re.split(u'。', item, maxsplit=1)
+				#	before += u'。'
+				#else:
+				#	before = after = None
+				#if before or after:
 					if after:
 						pendingSpeechSequence.append(after)
 					if before:
@@ -1634,35 +1634,35 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 			pendingSpeechSequence.reverse()
 			speakWithoutPauses._pendingSpeechSequence.extend(pendingSpeechSequence)
 	# handle east-asian sentence ending
-	log.debug("before %r" % finalSpeechSequence)
-	currSentPos = currSentText = None
-	currSentTextIsAsian = False
-	for pos, item in enumerate(finalSpeechSequence):
-		if isinstance(item,basestring) and \
-		   not item.endswith(_("link")) and \
-		   not ((_("out of %s")%_("list")) in item):
-			if currSentTextIsAsian:
-				c = item.lstrip('\n\r')
-				if c:
-					c = c[0]
-				if c and unicodedata.east_asian_width(c) == 'W':
-					currSentText = currSentText.rstrip('\n\r') + item.lstrip('\n\r')
-					log.debug("updated currSentText(%d)(%s)" % (currSentPos, currSentText))
-					finalSpeechSequence[currSentPos] = currSentText
-					finalSpeechSequence[pos] = ''
-			if not currSentText:
-				currSentPos = pos
-				currSentText = item
-			if currSentText:
-				currSentTextIsAsian = False
-				c = None
-				if currSentText.rstrip('\n\r'):
-					c = currSentText.rstrip('\n\r')[-1]
-				if c and unicodedata.east_asian_width(c) == 'W':
-					currSentTextIsAsian = True
-					log.debug("currSentTextIsAsian(%s)" % currSentText)
-	log.debug("finalSpeech %r" % finalSpeechSequence)
-	
+	#log.debug("before %r" % finalSpeechSequence)
+	#currSentPos = currSentText = None
+	#currSentTextIsAsian = False
+	#for pos, item in enumerate(finalSpeechSequence):
+	#	if isinstance(item,basestring) and \
+	#	   not item.endswith(_("link")) and \
+	#	   not ((_("out of %s")%_("list")) in item):
+	#		if currSentTextIsAsian:
+	#			c = item.lstrip('\n\r')
+	#			if c:
+	#				c = c[0]
+	#			if c and unicodedata.east_asian_width(c) == 'W':
+	#				currSentText = currSentText.rstrip('\n\r') + item.lstrip('\n\r')
+	#				log.debug("updated currSentText(%d)(%s)" % (currSentPos, currSentText))
+	#				finalSpeechSequence[currSentPos] = currSentText
+	#				finalSpeechSequence[pos] = ''
+	#		if not currSentText:
+	#			currSentPos = pos
+	#			currSentText = item
+	#		if currSentText:
+	#			currSentTextIsAsian = False
+	#			c = None
+	#			if currSentText.rstrip('\n\r'):
+	#				c = currSentText.rstrip('\n\r')[-1]
+	#			if c and unicodedata.east_asian_width(c) == 'W':
+	#				currSentTextIsAsian = True
+	#				log.debug("currSentTextIsAsian(%s)" % currSentText)
+	#log.debug("finalSpeech %r" % finalSpeechSequence)
+	#
 	#Scan the final speech sequence backwards
 	for item in reversed(finalSpeechSequence):
 		if isinstance(item,IndexCommand):
