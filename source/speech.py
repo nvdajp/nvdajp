@@ -297,6 +297,11 @@ def getCharDescListFromText(text,locale):
 		subText = text[:i]
 		charDesc = characterProcessing.getCharacterDescription(locale,subText)
 		if charDesc or i==1:
+			if not charDesc:
+				# #5375: We're down to a single character (i == 1) and we don't have a description.
+				# Try converting to lower case.
+				# This provides for upper case English characters (which only have lower case descriptions).
+				charDesc = characterProcessing.getCharacterDescription(locale,subText.lower())
 			charDescList.append((subText,charDesc))
 			text = text[i:]
 			i = len(text)
@@ -678,8 +683,8 @@ def speakSelectionChange(oldInfo,newInfo,speakSelected=True,speakUnselected=True
 			for text in selectedTextList:
 				if  len(text)==1:
 					text=characterProcessing.processSpeechSymbol(locale,text)
-				# Translators: This is spoken while the user is in the process of selecting something, For example: "selecting hello"
-				speakSelectionMessage(_("selecting %s"),text)
+				# Translators: This is spoken while the user is in the process of selecting something, For example: "hello selected"
+				speakSelectionMessage(_("%s selected"),text)
 		elif len(selectedTextList)>0:
 			text=newInfo.text
 			if len(text)==1:
@@ -691,17 +696,18 @@ def speakSelectionChange(oldInfo,newInfo,speakSelected=True,speakUnselected=True
 			for text in unselectedTextList:
 				if  len(text)==1:
 					text=characterProcessing.processSpeechSymbol(locale,text)
-				# Translators: This is spoken to indicate what has been unselected. for example 'unselecting hello'
-				speakSelectionMessage(_("unselecting %s"),text)
+				# Translators: This is spoken to indicate what has been unselected. for example 'hello unselected'
+				speakSelectionMessage(_("%s unselected"),text)
 		elif len(unselectedTextList)>0:
-			# Translators: Reported when selection is removed.
-			speakMessage(_("selection removed"))
 			if not newInfo.isCollapsed:
 				text=newInfo.text
 				if len(text)==1:
 					text=characterProcessing.processSpeechSymbol(locale,text)
-				# Translators: This is spoken to indicate what has been selected. for example 'selected hello world'
-				speakSelectionMessage(_("selected %s"),text)
+				# Translators: This is spoken to indicate when the previous selection was removed and a new selection was made. for example 'hello world selected instead'
+				speakSelectionMessage(_("%s selected instead"),text)
+			else:
+				# Translators: Reported when selection is removed.
+				speakMessage(_("selection removed"))
 
 def speakTypedCharacters(ch):
 	global curWordChars;
