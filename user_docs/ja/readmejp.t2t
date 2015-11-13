@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2015年8月13日
+- 最終更新日：2015年11月13日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -312,6 +312,11 @@ NVDA 日本語チームはこの Vocalizer ドライバの翻訳を担当して�
 - [旧バージョンの日本語ページ https://vocalizer-nvda.com/old/jp/index.htm]
 
 
+Code Factory が販売する Eloquence and Vocalizer Expressive Add-on for NVDA でも Vocalizer の日本語音声が利用できます。
+
+- [Eloquence and Vocalizer Expressive Add-on for NVDA http://codefactoryglobal.com/app-store/voices-for-nvda/]
+
+
 ++ KCトーカー ++
 
 ナレッジクリエーションが販売する KCトーカー は NVDA のアドオンで、聞き取りやすい日本語合成音声に加えて、専用のユーザー辞書エディタも提供しています。
@@ -414,7 +419,7 @@ NVDA日本語版は点字ディスプレイドライバ "KGS BrailleMemoシリ�
 
 シリアルポート、USB（仮想Commドライバ）、Bluetoothの接続に対応しています。
 
-[ケージーエス株式会社 http://www.kgs-jpn.co.jp/] が提供する「BMシリーズ機器用ユーティリティ」にも対応しています。バージョン 6.2.2 での動作を確認しています。
+[ケージーエス株式会社 http://www.kgs-jpn.co.jp/] が提供する「BMシリーズ機器用ユーティリティ」にも対応しています。バージョン 6.3.0 での動作を確認しています。
 
 USB 接続で使う場合は「ケージーエスUSB/仮想Commドライバ」をインストールしてください。
 機器の通信速度が変更できる場合は 9600BPS に設定してください。
@@ -626,7 +631,7 @@ Windows XP で点字ビューアーを使うためには点字フォントが必
 
 ++ 寄付 ++
 
-NVDA 日本語版では「寄付」メニューで開くサイトを NVDA 日本語版の[寄付のご案内 http://www.nvda.jp/donate.html]に変更しています。
+NVDA 日本語版では「寄付」メニューで開くサイトを NVDA 日本語版の[寄付のご案内 https://www.nvda.jp/donate.html]に変更しています。
 
 
 + アプリケーション対応 +
@@ -785,6 +790,31 @@ NVDA 日本語チームに対するアプリケーション開発者様からの
 
 
 + バージョンごとの変更点 +
+
+++ 2015.4jp の変更点 ++
+
+NVDA 日本語チームは以下の変更および改良を行いました。
+
+- [「すべて読み上げ」を実行したときに改行で日本語が不自然に区切られない改善のキャンセル https://osdn.jp/ticket/browse.php?group_id=4221&tid=33823]
+ - 実装が不完全だったため提供を取り止めました。将来のバージョンで改良版の提供を予定しています。
+- [2015.3jp で ATOK 候補コメントが報告されない不具合への対応 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35441]
+- [文の途中にあるリンクが不適切な順番で読み上げられる不具合への対応 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35663]
+- [半角カンマを含んだ文字列で点訳エンジンがエラーになる不具合への対応 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35734]
+- [IMEChangeStatus1 キーの読み上げ https://osdn.jp/ticket/browse.php?group_id=4221&tid=35552]
+- [JTalk の読み付与の改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35465]
+- [ベータ版自動更新サービスの運用 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35464]
+- [コンマの点字表示の改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35452]
+- [英語環境で使う場合の文字説明の処理の改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35037]
+- [2015.4jpに向けた Python コーディングスタイルの再検討 https://osdn.jp/ticket/browse.php?group_id=4221&tid=33402]
+
+
+以下の変更は NVDA 本家版 2015.4 と日本語版 2015.4jp の両方に反映されました。
+
+- [過去のバージョンの上書きインストール警告ダイアログの修正 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35434]
+- [2015.4に向けた既存の翻訳の再検討 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35435]
+- [2015.4に向けたユーザーガイドなどの翻訳 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35562]
+- [2015.4に向けた記号読み上げ辞書の更新 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35649]
+
 
 ++ 2015.3jp の変更点 ++
 
