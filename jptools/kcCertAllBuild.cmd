@@ -1,9 +1,9 @@
-set VERSION=2015.4jp
+set VERSION=2016.1jp
 set UPDATEVERSIONTYPE=nvdajp
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
 
-@rem set VERSION=%VERSION%-beta-%NOWDATE%
-@rem set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
+set VERSION=%VERSION%-beta-%NOWDATE%
+set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
 
 set PUBLISHER=nvdajp
 set PFX=..\..\kc\pfx\knowlec-key151019.pfx
