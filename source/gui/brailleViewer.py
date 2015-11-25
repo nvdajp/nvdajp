@@ -9,19 +9,77 @@
 import wx
 import gui
 import config
+import win32api
 
-class brailleViewerFrame(wx.MiniFrame):
+def getScreenWorkingArea():
+	left, top, dw, dh = win32api.GetMonitorInfo(1)['Work']
+	return left, top, dw, dh
+	
+
+class brailleViewerFrame(wx.Frame):
 
 	def __init__(self):
-		super(brailleViewerFrame, self).__init__(gui.mainFrame, wx.ID_ANY, _("NVDA Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER)
+		super(brailleViewerFrame, self).__init__(gui.mainFrame, wx.ID_ANY, _("NVDA Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER | wx.STAY_ON_TOP | wx.SYSTEM_MENU | wx.CLOSE_BOX | wx.MAXIMIZE_BOX)
 		self.Bind(wx.EVT_CLOSE, self.onClose)
 		self.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,"DejaVu Sans"))
+		self.SetTransparent(int(255.0 * 0.90))
 		sizer = wx.BoxSizer(wx.VERTICAL)
-		self.textCtrl = wx.TextCtrl(self, -1,size=(600,200),style=wx.TE_READONLY|wx.TE_MULTILINE)
+		self.textCtrl = wx.TextCtrl(self, -1,style=wx.TE_READONLY|wx.TE_MULTILINE)
 		sizer.Add(self.textCtrl, proportion=1, flag=wx.EXPAND)
 		sizer.Fit(self)
+		menuBar = wx.MenuBar()
+		menu = wx.Menu()
+		item = menu.Append(wx.ID_ANY, _("Top"))
+		self.Bind(wx.EVT_MENU, self.setLeftTop, item)
+		item = menu.Append(wx.ID_ANY, _("Bottom"))
+		self.Bind(wx.EVT_MENU, self.setLeftBottom, item)
+		menuBar.Append(menu, _("Left"))
+		menu = wx.Menu()
+		item = menu.Append(wx.ID_ANY, _("Top"))
+		self.Bind(wx.EVT_MENU, self.setRightTop, item)
+		item = menu.Append(wx.ID_ANY, _("Bottom"))
+		self.Bind(wx.EVT_MENU, self.setRightBottom, item)
+		menuBar.Append(menu, _("Right"))
+		self.SetMenuBar(menuBar)
 		self.SetSizer(sizer)
+		self.setLeftTop()
 		self.Show(True)
+
+	def setRightTop(self, *arg):
+		left, top, dw, dh = getScreenWorkingArea()
+		w = dw / 2
+		h = dh / 2
+		x = left + dw - w
+		y = top
+		self.SetPosition((x, y))
+		self.SetSize((w, h))
+
+	def setRightBottom(self, *arg):
+		left, top, dw, dh = getScreenWorkingArea()
+		w = dw / 2
+		h = dh / 2
+		x = left + dw - w
+		y = top + h
+		self.SetPosition((x, y))
+		self.SetSize((w, h))
+
+	def setLeftTop(self, *arg):
+		left, top, dw, dh = getScreenWorkingArea()
+		w = dw / 2
+		h = dh / 2
+		x = left
+		y = top
+		self.SetPosition((x, y))
+		self.SetSize((w, h))
+
+	def setLeftBottom(self, *arg):
+		left, top, dw, dh = getScreenWorkingArea()
+		w = dw / 2
+		h = dh / 2
+		x = left
+		y = top + h
+		self.SetPosition((x, y))
+		self.SetSize((w, h))
 
 	def onClose(self, evt):
 		deactivate()
@@ -46,9 +104,7 @@ def appendText(text):
 		return
 	translate = __import__("synthDrivers.jtalk.translator2", globals(), locals(), ('getReadingAndBraille',))
 	(sp, tr) = getattr(translate, 'getReadingAndBraille')(text, nabcc=config.conf["braille"]["expandAtCursor"])
-	if tr:
-		_guiFrame.textCtrl.AppendText(sp+"\n")
-		_guiFrame.textCtrl.AppendText(tr+"\n")
+	_guiFrame.textCtrl.SetValue(text.strip()+"\n"+sp.strip()+"\n"+tr+"\n")
 
 def deactivate():
 	global _guiFrame, isActive

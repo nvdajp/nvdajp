@@ -6,6 +6,7 @@
 
 import wx
 import gui
+from gui.brailleViewer import getScreenWorkingArea
 
 class SpeechViewerFrame(wx.Frame):
 
@@ -15,11 +16,21 @@ class SpeechViewerFrame(wx.Frame):
 		self.SetFont(wx.Font(16,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False))
 		self.SetTransparent(int(255.0 * 0.90))
 		sizer = wx.BoxSizer(wx.VERTICAL)
-		self.textCtrl = wx.TextCtrl(self, -1,size=(500,500),style=wx.TE_READONLY|wx.TE_MULTILINE)
+		self.textCtrl = wx.TextCtrl(self, -1,style=wx.TE_READONLY|wx.TE_MULTILINE)
 		sizer.Add(self.textCtrl, proportion=1, flag=wx.EXPAND)
 		sizer.Fit(self)
 		self.SetSizer(sizer)
+		self.setRightTop()
 		self.Show(True)
+
+	def setRightTop(self, *arg):
+		left, top, dw, dh = getScreenWorkingArea()
+		w = dw / 2
+		h = dh / 2
+		x = left + dw - w
+		y = top
+		self.SetPosition((x, y))
+		self.SetSize((w, h))
 
 	def onClose(self, evt):
 		deactivate()
