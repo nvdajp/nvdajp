@@ -104,7 +104,9 @@ confspec = ConfigObj(StringIO(
 	# nvdajp end
 	inputTable = string(default=en-us-comp8.ctb)
 	expandAtCursor = boolean(default=false) #nvdajp
+	showCursor = boolean(default=true)
 	cursorBlinkRate = integer(default=500,min=0,max=2000)
+	cursorShape = integer(default=192,min=1,max=255)
 	messageTimeout = integer(default=4,min=0,max=20)
 	nvdajpMessageTimeout = boolean(default=true)
 	tetherTo = string(default="focus")
