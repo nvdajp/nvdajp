@@ -300,7 +300,8 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		compositionString, compAttr = ar
 		if (lastCompString == compositionString) and (lastCompAttr == compAttr) \
 		   and (lastSelectionStart == selectionStart) \
-		   and (lastSelectionEnd == selectionEnd):
+		   and (lastSelectionEnd == selectionEnd) \
+		   and not (compositionString in (' ', u'\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
 			log.debug("ignored (%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
 			return 0
 		_lastCompAttr = lastCompAttr
