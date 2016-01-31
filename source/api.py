@@ -93,7 +93,17 @@ Before overriding the last object, this function calls event_loseFocus on the ob
 				origAncestors=oldFocusLine[0:index+1]
 				#make sure to cache the last old ancestor as a parent on the first new ancestor so as not to leave a broken parent cache
 				if ancestors and origAncestors:
-					ancestors[0].container=origAncestors[-1]
+					#ancestors[0].container=origAncestors[-1]
+					# nvdajp begin
+					if braille.handler.display.name == "noBraille":
+						# merged nvaccess master
+						ancestors[0].container=origAncestors[-1]
+					else:
+						# nvdajp ti33778 ti35974
+						# work around ATOK and braille display
+						# reverting nvaccess ticket 3873 4145
+						ancestors[0].parent=origAncestors[-1]
+					# nvdajp end
 				origAncestors.extend(ancestors)
 				ancestors=origAncestors
 				focusDifferenceLevel=index+1
