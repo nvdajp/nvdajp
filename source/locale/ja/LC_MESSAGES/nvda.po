@@ -92,11 +92,11 @@ msgstr "半角全角"
 
 #: gui\settingsDialogs.py:302
 msgid "Braille viewer"
-msgstr "点字ビューワー(&B)"
+msgstr "点字ビューアー(&B)"
 
 #: gui\brailleViewer.py:18
 msgid "NVDA Braille Viewer"
-msgstr "NVDA点字ビューワー"
+msgstr "NVDA点字ビューアー"
 
 #: brailleDisplayDrivers\kgs.py
 msgid "KGS BrailleMemo series"
