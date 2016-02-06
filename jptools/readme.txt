@@ -6,7 +6,7 @@ NVDA日本語チーム 西本卓也
 1. ビルド環境
 
 
-NVDA 2015.3jp の場合
+NVDA 2016.1jp の場合
 
 
 (1) Windows 7 SP1 32ビットまたは64ビット
@@ -17,11 +17,12 @@ https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34057
 
 (2) Visual Studio 2012 Express for Desktop (Update 4)
 
-(3) Visual Studio 2015 Express for Desktop
+(3) Visual Studio 2015 Express for Desktop (Update 1)
 
 備考：
 VS2012 は NVDA コアのコンパイルに必要、VS2015 は JTalk のコンパイルで使用。
 Express ではなく Pro や Ultimate でもよい。
+NVDA 2016.2 からは VS 2012 は不要になる見込み。
 
 
 (4) git (msysgit 1.9.2)
@@ -36,7 +37,7 @@ git push するためには push 先のアカウントのセットアップや�
 miscDepsJp から sources へのコピーで使用している。
 
 
-(6) Python 2.7.10 (Windows 32bit)
+(6) Python 2.7.11 (Windows 32bit)
 
 C:\Python27\python.exe に PATH が通っていること。
 
