@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2015-11-13
+- last update: 2016-02-07
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -248,6 +248,7 @@ JTalk driver is the default synthesizer of NVDAJP, which supports Japanese langu
 - Rate boost option is available.
 - 'Automatic Language switching' is supported. If the content has language attributes, it is used for selecting voices. eSpeak voices are used other than Japanese voice. Speech rate or other settings are not applied to voices other than Japanese.
 - 'Automatic Dialect switching' is not supported.
+- It works with audio ducking mode of 'Duck when outputting speech and sounds.'
 
 
 ++ eSpeak ++
