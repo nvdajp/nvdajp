@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2016年2月7日
+- 最終更新日：2016年2月15日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -686,7 +686,7 @@ Microsoft Word における段落インデントの読み上げは、NVDA 日本
 
 ++ 文字説明辞書 ++
 
-NVDA日本語版は文字説明辞書のカスタマイズができます。辞書ファイルを「ユーザー設定ディレクトリ」におくと、NVDA 日本語版の実行時に読み込まれます。
+NVDA日本語版は文字説明辞書のカスタマイズができます。辞書ファイルを「NVDAユーザー設定フォルダー」におくと、NVDA 日本語版の実行時に読み込まれます。
 
 ユーザー設定ディレクトリ (Windows XP):
 ```
@@ -796,8 +796,24 @@ NVDA 日本語チームに対するアプリケーション開発者様からの
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
+- [日本語入力を確定した直後の全角および半角スペースの入力の報告についての不具合修正 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35997]
+- [日本語点訳で特定の記号を含むテキストがIndexErrorになる不具合の修正 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35848]
+- [日本語点訳での数字の前のマスあけ判定の変更 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35836]
+- [日本語点訳での金額の点字表記の改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35777]
+- [日本語点訳での「そうなんです」のマスあけの改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35430]
+- [JTalkが特定のテキストの読み上げでIndexErrorになる不具合の修正 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35898]
+- [JTalkの読み上げ位置の通知を他の音声エンジンに合わせる変更 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36007]
+- [JTalkのダッキング対応 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35940]
+- [JTalkの英単語の読みの改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35899]
+- [JTalkで英文字列にローマ字式読み付与を行う改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35577]
+- [2016.1jpに向けたJTalkおよび日本語点訳のテキスト解析の改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35847]
+
 
 以下の変更は NVDA 本家版 2016.1 と日本語版 2016.1jp の両方に反映されました。
+
+- [2016.1に向けたユーザーガイドなどの翻訳 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35796]
+- [2016.1に向けた既存の翻訳の再検討 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35764]
+- [Wordの校閲機能を読み上げるとエラーが出る問題の修正 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35676]
 
 
 ++ 2015.4jp の変更点 ++
