@@ -715,7 +715,7 @@ STDMETHODIMP TsfSink::OnActivated(REFCLSID rClsID, REFGUID rProfGUID, BOOL activ
 		wchar_t buf[KL_NAMELENGTH];
 		GetKeyboardLayoutName(buf);
 		nvdaControllerInternal_inputLangChangeNotify(GetCurrentThreadId(),
-				(unsigned long)GetKeyboardLayout(0), buf);
+				HandleToUlong(GetKeyboardLayout(0)), buf);
 		handleIMEConversionModeUpdate(GetFocus(),true);
 		return S_OK;
 	}
@@ -730,7 +730,7 @@ STDMETHODIMP TsfSink::OnActivated(REFCLSID rClsID, REFGUID rProfGUID, BOOL activ
 		BSTR desc = NULL;
 		profiles->GetLanguageProfileDescription(rClsID, lang, rProfGUID, &desc);
 		if (desc) {
-			nvdaControllerInternal_inputLangChangeNotify(GetCurrentThreadId(),(unsigned long)GetKeyboardLayout(0), desc);
+			nvdaControllerInternal_inputLangChangeNotify(GetCurrentThreadId(),HandleToUlong(GetKeyboardLayout(0)), desc);
 			SysFreeString(desc);
 		}
 	}
@@ -751,7 +751,7 @@ STDMETHODIMP TsfSink::OnActivated(DWORD dwProfileType, LANGID langId, REFCLSID r
 			//As its activating, report the layout change to NVDA
 			wchar_t buf[KL_NAMELENGTH];
 			GetKeyboardLayoutName(buf);
-			nvdaControllerInternal_inputLangChangeNotify(GetCurrentThreadId(),(unsigned long)GetKeyboardLayout(0), buf);
+			nvdaControllerInternal_inputLangChangeNotify(GetCurrentThreadId(),HandleToUlong(GetKeyboardLayout(0)), buf);
 			handleIMEConversionModeUpdate(GetFocus(),true);
 		}
 		return S_OK;
@@ -774,7 +774,7 @@ STDMETHODIMP TsfSink::OnActivated(DWORD dwProfileType, LANGID langId, REFCLSID r
 	BSTR desc = NULL;
 	profiles->GetLanguageProfileDescription(rclsid, langId, guidProfile, &desc);
 	if (desc) {
-		nvdaControllerInternal_inputLangChangeNotify(GetCurrentThreadId(),(unsigned long)GetKeyboardLayout(0), desc);
+		nvdaControllerInternal_inputLangChangeNotify(GetCurrentThreadId(),HandleToUlong(GetKeyboardLayout(0)), desc);
 		SysFreeString(desc);
 	}
 	profiles->Release();

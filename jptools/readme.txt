@@ -6,38 +6,34 @@ NVDA日本語チーム 西本卓也
 1. ビルド環境
 
 
-NVDA 2016.1jp の場合
+NVDA 2016.2jp の場合
 
 
 (1) Windows 7 SP1 32ビットまたは64ビット
 
 備考：Windows 8.1 でビルドして 7 にインストールするとエラーが出る問題
 https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34057
+最近の環境ではまだ確認していない。
 
 
-(2) Visual Studio 2012 Express for Desktop (Update 4)
+(2) Visual Studio 2015 Express for Desktop (Update 1)
 
-(3) Visual Studio 2015 Express for Desktop (Update 1)
-
-備考：
-VS2012 は NVDA コアのコンパイルに必要、VS2015 は JTalk のコンパイルで使用。
-Express ではなく Pro や Ultimate でもよい。
-NVDA 2016.2 からは VS 2012 は不要になる見込み。
+備考：NVDA 2016.2 から Visual Studio 2015 だけでよい。
 
 
-(4) git (msysgit 1.9.2)
+(3) git (msysgit 1.9.2)
 
 備考：
 git push するためには push 先のアカウントのセットアップや公開鍵の設定、
 権限の取得が必要。
 
 
-(5) 7z (C:\Program Files (x86)\7-Zip\7z.exe に PATH が通っていること）
+(4) 7z (C:\Program Files\7-Zip\7z.exe に PATH が通っていること）
 
 miscDepsJp から sources へのコピーで使用している。
 
 
-(6) Python 2.7.11 (Windows 32bit)
+(5) Python 2.7.11 (Windows 32bit)
 
 C:\Python27\python.exe に PATH が通っていること。
 
