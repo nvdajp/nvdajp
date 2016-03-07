@@ -9,23 +9,30 @@ NVDA日本語チーム 西本卓也
 NVDA 2016.2jp の場合
 
 
-(1) Windows 7 SP1 32ビットまたは64ビット
+(1) Windows 10 32ビットまたは64ビット / Windows 7 SP1 32ビットまたは64ビット
 
-備考：Windows 8.1 でビルドして 7 にインストールするとエラーが出る問題
-https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34057
-最近の環境ではまだ確認していない。
+Windows 8.1 では確認していないが、おそらく使用可能。
 
+(2) Visual Studio 2015 Community または Express for Desktop (Update 1)
 
-(2) Visual Studio 2015 Express for Desktop (Update 1)
+時間とディスクを節約したい場合はできるだけオプションを減らしてインストールする。
+必要なのは Visual C++ と「C++に関するWindows XPサポート」。
+後述の Git for Windows はここで Visual Studio と一緒にインストールできる。
 
 備考：NVDA 2016.2 から Visual Studio 2015 だけでよい。
 
+(3) Git for Windows
 
-(3) git (msysgit 1.9.2)
+Visual Studio 2015 と一緒にインストールする、
+単独で入手してインストールする、
+または GitHub Desktop をインストールする、などの入手方法がある。
+
+コマンドプロンプトから git コマンドと patch コマンドが使えるように、
+PATH の設定が必要。
 
 備考：
-git push するためには push 先のアカウントのセットアップや公開鍵の設定、
-権限の取得が必要。
+リモートリポジトリへのアップロード (git push) するためには
+push 先（GitHubなど）のアカウントのセットアップや公開鍵の設定、権限の取得が必要。
 
 
 (4) 7z (C:\Program Files\7-Zip\7z.exe に PATH が通っていること）
@@ -35,10 +42,17 @@ miscDepsJp から sources へのコピーで使用している。
 
 (5) Python 2.7.11 (Windows 32bit)
 
+msi ファイルでインストール、オプションをすべてチェックする。
 C:\Python27\python.exe に PATH が通っていること。
 
 
-2. サブモジュールの取得
+2. nvdajp 本体とサブモジュールの取得
+
+> git clone https://github.com/nvdajp/nvdajp.git
+> cd nvdajp
+
+これだけで通常は問題なくサブモジュールも取得される。
+何か問題があった場合は下記を実行：
 
 > git submodule sync
 > git submodule update --init --recursive
@@ -77,7 +91,8 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 
 3. 署名つきビルド
 
-署名つきビルドは、最上位のディレクトリで以下を実行
+署名つきビルドは、事前に c:\work\kc\pfx に必要なファイルを置いて、
+最上位のディレクトリで以下を実行
 
 jptools\kcCertAllBuild.cmd
 
