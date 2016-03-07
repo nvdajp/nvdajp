@@ -27,12 +27,14 @@ Visual Studio 2015 と一緒にインストールする、
 単独で入手してインストールする、
 または GitHub Desktop をインストールする、などの入手方法がある。
 
-コマンドプロンプトから git コマンドと patch コマンドが使えるように、
-PATH の設定が必要。
+コマンドプロンプトから git コマンドが使えるように PATH の設定が必要。
+環境に応じて例えば "C:\Program Files\Git\mingw32\bin" を追加しておく。
 
 備考：
 リモートリポジトリへのアップロード (git push) するためには
 push 先（GitHubなど）のアカウントのセットアップや公開鍵の設定、権限の取得が必要。
+git を ssh 経由で使えるために、環境に応じて
+例えば "C:\Program Files\Git\usr\bin\ssh.exe" を PATH に追加しておく。
 
 
 (4) 7z (C:\Program Files\7-Zip\7z.exe に PATH が通っていること）
@@ -89,7 +91,17 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 > git submodule update --init --recursive
 
 
-3. 署名つきビルド
+3. 署名なしビルド
+
+署名なしビルドは、最上位のディレクトリで以下を実行
+
+jptools\nonCertAllBuild.cmd
+
+出力は output フォルダに作られる。
+実行した日付のついた nvda_20**.*jp-noncert-YYMMDD.exe というファイル名になる。
+
+
+4. 署名つきビルド
 
 署名つきビルドは、事前に c:\work\kc\pfx に必要なファイルを置いて、
 最上位のディレクトリで以下を実行
@@ -107,22 +119,6 @@ jptools\kcCertAllBuild.cmd
 (2) は JTalk と日本語点訳エンジンを更新する。
 (3) は libopenjtalk, libmecab, directbm の各DLLを署名する。
 (3) で署名ツールがエラーを出したらやり直す。
-
-
-4. 署名なしビルド
-
-署名なしビルドは、最上位のディレクトリで以下を実行
-
-jptools\nonCertAllBuild.cmd
-
-または
-
-(1) jptools\setupMiscDepsJp.cmd
-(2) jptools\nonCertBuild.cmd
-JTalk または日本語点訳エンジンを更新しない場合は (1) は不要。
-
-出力は output フォルダに作られる。
-実行した日付のついた nvda_20**.*jp-beta-YYMMDD.exe というファイル名になる。
 
 
 5. その他の作業用スクリプト

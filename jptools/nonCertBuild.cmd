@@ -1,10 +1,10 @@
-set VERSION=2015.4jp
+set VERSION=2016.2jp
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
-set VERSION=%VERSION%-beta-%NOWDATE%
+set VERSION=%VERSION%-noncert-%NOWDATE%
 set PUBLISHER=nvdajp
 set PAUSE=0
 set CLEAN=1
-set CLIENT=1
+set CLIENT=0
 set PROCESS=1
 set RELEASE=1
 
