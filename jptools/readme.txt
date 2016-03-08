@@ -139,10 +139,10 @@ jptools\push_remote.cmd
 
 git remote -v の状況：
 
-origin     git@github.com:nvdajp/nvdajp.git (fetch)
-origin     git@github.com:nvdajp/nvdajp.git (push)
-nvaccess   git://git.nvaccess.org/nvda.git (fetch)
-nvaccess   git://git.nvaccess.org/nvda.git (push)
+nvaccess  https://github.com/nvaccess/nvda.git (fetch)
+nvaccess  https://github.com/nvaccess/nvda.git (push)
+origin    git@github.com:nvdajp/nvdajp.git (fetch)
+origin    git@github.com:nvdajp/nvdajp.git (push)
 
 
 5.3 clean miscdep
