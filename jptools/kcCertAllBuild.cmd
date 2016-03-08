@@ -54,7 +54,7 @@ signtool verify /pa dist\*.exe >> %VERIFYLOG%
 signtool verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-copy output\nvda_%VERSION%.exe %HOME%\Dropbox\Public
+copy output\nvda_%VERSION%.exe %USERPROFILE%\Dropbox\Public
 
 cd jptools
 call buildControllerClient.cmd
