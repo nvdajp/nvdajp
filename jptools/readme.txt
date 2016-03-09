@@ -34,7 +34,7 @@ Visual Studio 2015 と一緒にインストールする、
 リモートリポジトリへのアップロード (git push) するためには
 push 先（GitHubなど）のアカウントのセットアップや公開鍵の設定、権限の取得が必要。
 git を ssh 経由で使えるために、環境に応じて
-例えば "C:\Program Files\Git\usr\bin\ssh.exe" を PATH に追加しておく。
+例えば "C:\Program Files\Git\usr\bin" を PATH に追加しておく。
 
 
 (4) 7z (C:\Program Files\7-Zip\7z.exe に PATH が通っていること）
@@ -54,7 +54,11 @@ C:\Python27\python.exe に PATH が通っていること。
 > cd nvdajp
 
 これだけで通常は問題なくサブモジュールも取得される。
-何か問題があった場合は下記を実行：
+
+
+2.1 git submodule sync/update
+
+サブモジュールで問題があった場合は下記を実行：
 
 > git submodule sync
 > git submodule update --init --recursive
@@ -67,7 +71,7 @@ C:\Python27\python.exe に PATH が通っていること。
 のようになったときにこの操作をすると解決することが多い。
 
 
-2.1 git submodule のエラー対応
+2.2 git submodule のエラー対応
 
 > git submodule update --init
 
@@ -108,18 +112,6 @@ jptools\nonCertAllBuild.cmd
 
 jptools\kcCertAllBuild.cmd
 
-または
-
-(1) scons -c
-(2) jptools\setupMiscDepsJp.cmd
-(3) jptools\kcCertMiscDepsJp.cmd
-(4) jptools\kcCertBuild.cmd
-
-補足:
-(2) は JTalk と日本語点訳エンジンを更新する。
-(3) は libopenjtalk, libmecab, directbm の各DLLを署名する。
-(3) で署名ツールがエラーを出したらやり直す。
-
 
 5. その他の作業用スクリプト
 
@@ -150,6 +142,6 @@ origin    git@github.com:nvdajp/nvdajp.git (push)
 jptools\clean_miscdep.cmd
 
 
-5.5 2014.3jp までの署名つきリリースの手順
+5.4 2014.3jp までの署名つきリリースの手順
 
 http://ja.nishimotz.com/nvdajp_certfile
