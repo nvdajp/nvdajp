@@ -9,6 +9,10 @@ environment:
 
 clone_depth: 1
 
+init:
+ - ps: Set-WinSystemLocale ja-JP
+ - ps: Restart-Computer
+
 install:
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
  - git submodule update --init --recursive
