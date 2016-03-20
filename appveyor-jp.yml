@@ -10,7 +10,7 @@ environment:
 clone_depth: 1
 
 install:
- - cinst mingw
+ - PATH %PATH%;C:\msys64\mingw64\bin;C:\msys64\usr\bin
  - git submodule update --init
 
 build_script:
