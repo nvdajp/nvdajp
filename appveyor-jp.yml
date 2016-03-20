@@ -10,7 +10,7 @@ environment:
 clone_depth: 1
 
 install:
- - PATH %PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
+ - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
  - git submodule update --init
 
 build_script:
