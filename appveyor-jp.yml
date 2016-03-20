@@ -10,6 +10,7 @@ environment:
 clone_depth: 1
 
 install:
+ - cinst mingw
  - git submodule update --init
 
 build_script:
