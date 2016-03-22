@@ -6,6 +6,10 @@ branches:
 
 environment:
  PY_PYTHON: 2.7-32
+ my_secret_a:
+  secure: kPfHlAOr4ZcGv/XCSRBeainjAYGaqsTMU6+mMvgXOMg=
+ my_secret_b:
+  secure: neMaHS4sUE44BxKyxNgaTcCnK663C88hNtG75ALxzoE=
 
 clone_depth: 1
 
@@ -16,9 +20,12 @@ init:
 install:
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
  - git submodule update --init --recursive
+ - nuget install secure-file -ExcludeVersion
+ - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key151019.pfx.enc -secret %my_secret_a%
+ - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key-pass.txt.enc  -secret %my_secret_b%
 
 build_script:
- - jptools\nonCertAllBuild.cmd
+ - jptools\kcCertAllBuild.cmd
 
 artifacts:
  - path: output\*
