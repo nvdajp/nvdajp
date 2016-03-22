@@ -7,11 +7,11 @@ set VERSION=%VERSION%-beta-%NOWDATE%
 set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
 
 set PUBLISHER=nvdajp
-set PFX=..\..\kc\pfx\knowlec-key151019.pfx
-set PWFILE=..\..\kc\pfx\knowlec-key-pass.txt
-
-for /F "delims=" %%s in ('type %PWFILE%') do set PASSWORD=%%s
+set PFX=jptools\secret\knowlec-key151019.pfx
+set PWFILE=jptools\secret\knowlec-key-pass.txt
+@for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
+set SCONSOPTIONS=--silent
 
 @rem test nmake and check errorlevel
 cl
@@ -25,20 +25,20 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
 :done
 SET CL=/arch:IA32 /D "_USING_V110_SDK71_"
 
-set VERIFYLOG=jptools\__verify_%VERSION%.log
+set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
 call scons.bat -c
 call jptools\setupMiscDepsJp.cmd
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
-signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
+@signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
 signtool verify /pa %FILE1% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
 set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
-signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE2%
+@signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE2%
 signtool verify /pa %FILE2% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
@@ -54,7 +54,7 @@ signtool verify /pa dist\*.exe >> %VERIFYLOG%
 signtool verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-copy output\nvda_%VERSION%.exe %USERPROFILE%\Dropbox\Public
+@rem copy output\nvda_%VERSION%.exe %USERPROFILE%\Dropbox\Public
 
 cd jptools
 call buildControllerClient.cmd
