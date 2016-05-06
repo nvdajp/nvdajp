@@ -15,6 +15,7 @@ clone_depth: 1
 
 init:
  - ps: Set-WinSystemLocale ja-JP
+ - ps: Start-Sleep -s 5
  - ps: Restart-Computer
  - tzutil /g
  - tzutil /s "Tokyo Standard Time"
