@@ -170,6 +170,7 @@ confspec = ConfigObj(StringIO(
 	speechInterruptForCharacters = boolean(default=true)
 	speechInterruptForEnter = boolean(default=true)
 	allowSkimReadingInSayAll = boolean(default=False)
+	alertForSpellingErrors = boolean(default=True)
 	handleInjectedKeys= boolean(default=true)
 
 [virtualBuffers]
