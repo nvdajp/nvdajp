@@ -843,7 +843,7 @@ class WordDocumentTreeInterceptor(browseMode.BrowseModeDocumentTreeInterceptor):
 			comments=CommentWinWordCollectionQuicknavIterator(nodeType,self,direction,rangeObj,includeCurrent).iterate()
 			revisions=RevisionWinWordCollectionQuicknavIterator(nodeType,self,direction,rangeObj,includeCurrent).iterate()
 			return browseMode.mergeQuickNavItemIterators([comments,revisions],direction)
-		elif nodeType=="table":
+		elif nodeType in ("table","container"):
 			 return TableWinWordCollectionQuicknavIterator(nodeType,self,direction,rangeObj,includeCurrent).iterate()
 		elif nodeType=="graphic":
 			 return GraphicWinWordCollectionQuicknavIterator(nodeType,self,direction,rangeObj,includeCurrent).iterate()
@@ -927,6 +927,7 @@ class WordDocument(EditableTextWithoutAutoSelectDetection, Window):
 
 	def populateHeaderCellTrackerFromHeaderRows(self,headerCellTracker,table):
 		rows=table.rows
+		numHeaderRows=0
 		for rowIndex in xrange(rows.count): 
 			try:
 				row=rows.item(rowIndex+1)
@@ -937,7 +938,11 @@ class WordDocument(EditableTextWithoutAutoSelectDetection, Window):
 			except (COMError,AttributeError,NameError):
 				headingFormat=0
 			if headingFormat==-1: # is a header row
-				headerCellTracker.addHeaderCellInfo(rowNumber=row.index,columnNumber=1,isColumnHeader=True,isRowHeader=False)
+				numHeaderRows+=1
+			else:
+				break
+		if numHeaderRows>0:
+			headerCellTracker.addHeaderCellInfo(rowNumber=1,columnNumber=1,rowSpan=numHeaderRows,isColumnHeader=True,isRowHeader=False)
 
 	def populateHeaderCellTrackerFromBookmarks(self,headerCellTracker,bookmarks):
 		for x in bookmarks: 

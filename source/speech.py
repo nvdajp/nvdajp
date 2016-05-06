@@ -1076,6 +1076,8 @@ def getSpeechTextForProperties(reason=controlTypes.REASON_QUERY,**propertyValues
 		textList.append(propertyValues['description'])
 	if 'keyboardShortcut' in propertyValues:
 		textList.append(propertyValues['keyboardShortcut'])
+	if includeTableCellCoords and cellCoordsText:
+		textList.append(cellCoordsText)
 	if cellCoordsText or rowNumber or columnNumber:
 		tableID = propertyValues.get("_tableID")
 		# Always treat the table as different if there is no tableID.
@@ -1099,8 +1101,6 @@ def getSpeechTextForProperties(reason=controlTypes.REASON_QUERY,**propertyValues
 				# Translators: Speaks current column number (example output: column 3).
 				textList.append(_("column %s")%columnNumber)
 			oldColumnNumber = columnNumber
-	if includeTableCellCoords and cellCoordsText:
-		textList.append(cellCoordsText)
 	rowCount=propertyValues.get('rowCount',0)
 	columnCount=propertyValues.get('columnCount',0)
 	if rowCount and columnCount:
