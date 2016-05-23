@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2016年5月8日
+- 最終更新日：2016年5月23日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -744,9 +744,9 @@ Windows 8 で NVDA のテキスト入力（読み上げ辞書の編集や NVDA+C
 NVDA日本語版のソースコード管理には2013年4月から git を使用しています。レポジトリは以下で公開しています。
 
 - GitHub: https://github.com/nvdajp
-- Bitbucket: https://bitbucket.org/nvdajp
-- OSDN: https://osdn.jp/projects/nvdajp/
 - [NVDA日本語チームの git ブランチ運用 https://osdn.jp/ticket/browse.php?group_id=4221&tid=31635]
+
+
 
 
 ++ アドオンの紹介 ++
@@ -757,7 +757,7 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 
 ++ チケット登録 ++
 
-NVDA日本語チームでは [チケットシステム https://osdn.jp/projects/nvdajp/ticket/] で、確認された不具合および対応を公開しています。
+NVDA日本語チームでは [チケットシステム https://osdn.jp/projects/nvdajp/ticket/] および [GitHub Issues https://github.com/nvdajp/nvdajp/issues] で、確認された不具合および対応を公開しています。
 
 NVDA 日本語版のバグは NVDA 本家コミュニティのチケットシステムではなく NVDA 日本語チームに報告してください。
 
@@ -791,6 +791,25 @@ NVDA 日本語チームに対するアプリケーション開発者様からの
 
 
 + バージョンごとの変更点 +
+
+++ 2016.2jp の変更点 ++
+
+NVDA 日本語チームは以下の変更および改良を行いました。
+
+- [Open JTalk 1.09 への移行 https://osdn.jp/ticket/browse.php?group_id=4221&tid=34740]
+- [JTalk mei 音声の調整 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36166]
+- [日本語点訳における数字と記号の処理の変更 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36052]
+- [日本語点訳の改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=31543]
+- [NVDA+F 2回で表示されるウィンドウの場所の変更 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36310]
+- [日本語版の説明の更新 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36124]
+- [リリースファイルのビルド環境を AppVeyor に移行 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36010]
+
+
+以下の作業は NVDA 本家版 2016.2 と日本語版 2016.2jp の両方に反映されました。
+
+- [2016.2に向けたユーザーガイドなどの翻訳 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36119]
+- [Visual C++ 2015 への移行 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35617]
+
 
 ++ 2016.1jp の変更点 ++
 
