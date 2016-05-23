@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2016-02-07
+- last update: 2016-05-23
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -251,11 +251,11 @@ JTalk driver is the default synthesizer of NVDAJP, which supports Japanese langu
 - It works with audio ducking mode of 'Duck when outputting speech and sounds.'
 
 
-++ eSpeak ++
+++ eSpeak NG ++
 
-eSpeak of NVDAJP supports reading of Japanese characters and Chinese characters. It uses Japanese text processing of Jtalk internally.
+eSpeak NG of NVDAJP supports reading of Japanese characters and Chinese characters. It uses Japanese text processing of Jtalk internally.
 
-eSpeak of NVDA cannot handle Japanese language.
+eSpeak NG of NVDA cannot handle Japanese language.
 
 
 
@@ -692,7 +692,7 @@ User config directory (Windows XP):
 ```
 C:\Documents and Settings\(User Name)\Application Data\nvda
 ```
-(Windows Vista, 7, 8):
+(Windows Vista, 7, 8.1, 10):
 ```
 C:\Users\(User Name)\AppData\Roaming\nvda
 ```
@@ -744,8 +744,6 @@ Details (in Japanese) [NVDAJP ticket 29872 https://osdn.jp/ticket/browse.php?gro
 We use git hosting services as follows:
 
 - GitHub: https://github.com/nvdajp
-- Bitbucket: https://bitbucket.org/nvdajp
-- OSDN: https://osdn.jp/projects/nvdajp/
 
 
 
@@ -757,7 +755,10 @@ We use git hosting services as follows:
 
 
 
+++ Issues ++
 
+- [GitHub Issues https://github.com/nvdajp/nvdajp/issues]
+- [OSDN Tickets https://osdn.jp/projects/nvdajp/ticket/] (Japanese)
 
 
 
