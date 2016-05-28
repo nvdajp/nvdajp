@@ -177,6 +177,7 @@ def speakSpelling(text,locale=None,useCharacterDescriptions=False,useDetails=Fal
 		return getSynth().speak((_("blank"),))
 	if not text.isspace():
 		text=text.rstrip()
+	#log.info(u"(%s)" % text)
 	if _speakSpellingGenerator and _speakSpellingGenerator.gi_frame:
 		_speakSpellingGenerator.send((text,locale,useCharacterDescriptions,useDetails))
 	else:
@@ -256,6 +257,7 @@ def getCharDesc(locale, char, jpAttr):
 		charDesc = (jpUtils.getShortDesc(char),)
 	else:
 		charDesc = characterProcessing.getCharacterDescription(locale,char.lower())
+	log.info(repr([locale, char, jpAttr, charDesc]))
 	return charDesc
 
 def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
@@ -284,7 +286,9 @@ def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
 	return pitchChanged, oldPitch
 
 def getJaCharAttrDetails(char, shouldSayCap):
-	return jpUtils.getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
+	r = jpUtils.getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
+	log.info(repr(r))
+	return r
 
 def getCharDescListFromText(text,locale):
 	"""This method prepares a list, which contains character and its description for all characters the text is made up of, by checking the presence of character descriptions in characterDescriptions.dic of that locale for all possible combination of consecutive characters in the text.
@@ -314,11 +318,14 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 	synthConfig=config.conf["speech"][synth.name]
 	buf=[(text,locale,useCharacterDescriptions,useDetails)]
 	for text,locale,useCharacterDescriptions,useDetails in buf:
+		log.info(repr(text))
 		textLength=len(text)
 		count = 0
 		localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
-		charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else text
+		charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else jpUtils.splitChars(text)
+		#log.info(repr(charDescList))
 		for item in charDescList:
+			log.info(repr(item))
 			if localeHasConjuncts:
 				# item is a tuple containing character and its description
 				char = item[0]
@@ -333,10 +340,11 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 			shouldSayCap = uppercase and synthConfig["sayCapForCapitals"]
 			jpAttr = getCharAttr(locale, char, useDetails)
 			charAttrDetails = getJaCharAttrDetails(char, shouldSayCap) if useDetails else None
+			log.info(repr([char, charAttrDetails]))
 			if useCharacterDescriptions and not charDesc:
 				charDesc = getCharDesc(locale, char, jpAttr)
 			if charDesc:
-				#log.info("(%s) %s %s" % (unicode(charAttrDetails), unicode(charDesc), unicode(jpAttr)))
+				log.info("(%s) %s %s" % (unicode(charAttrDetails), unicode(charDesc), unicode(jpAttr)))
 				#charDesc should be: (u'メ',) (u'モ',) [u'チョーメンノ チョー']
 				#Consider changing to multiple synth speech calls
 				char=charDesc[0] if textLength>1 else u"\u3001".join(charDesc)
@@ -910,6 +918,7 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 			from NVDAHelper import lastCompAttr
 			if lastCompAttr: return
 			useCharacterDescriptions = (characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET)
+			#log.info(u"(%s)" % textWithFields)
 			speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
 			# nvdajp end
 		if useCache:

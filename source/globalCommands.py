@@ -1108,6 +1108,10 @@ class GlobalCommands(ScriptableObject):
 		global characterDescriptionMode #nvdajp
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_CHARACTER)
+		#log.info(repr(info.text))
+		#winfo=api.getReviewPosition().copy()
+		#winfo.expand(textInfos.UNIT_WORD)
+		#log.info(repr(winfo.text))
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
 		#if scriptCount==0:
 		#	speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
@@ -1131,7 +1135,7 @@ class GlobalCommands(ScriptableObject):
 		elif scriptCount==1:
 			speech.spellTextInfo(info,useCharacterDescriptions=True,useDetails=True)
 		elif scriptCount==2:
-			log.info(info.obj.value)
+			#log.info(info.obj.value)
 			log.info(info.text)
 			try:
 				c = ord(info.text)

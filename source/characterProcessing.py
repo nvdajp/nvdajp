@@ -105,9 +105,11 @@ class CharacterDescriptions(object):
 					if rd.startswith('[') and rd.endswith(']'):
 						self._readings[key] = rd[1:-1]
 					self._entries[key] = temp
+					if len(key) == 2:
+						log.info("Loaded %s" % key)
 				else:
 					log.warning("can't parse line '%s'" % line)
-			log.debug("Loaded %d readings." % len(self._readings))
+			log.info("Loaded %d readings." % len(self._readings))
 			f.close()
 		# nvdajp charaters.dic end
 
@@ -163,7 +165,12 @@ class CharacterDescriptions(object):
 		"""
 		Looks up the given character and returns a list containing all the description strings found.
 		"""
-		return self._entries.get(character)
+		r = self._entries.get(character)
+		if len(character) == 2:
+			log.info(repr([character, "%04x %04x" % (ord(character[0]), ord(character[1])), r]))
+		else:
+			log.info(repr([character, ("%04x" % ord(character[0])), r]))
+		return r
 
 _charDescLocaleDataMap=LocaleDataMap(CharacterDescriptions)
 

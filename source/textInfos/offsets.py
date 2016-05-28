@@ -10,6 +10,7 @@ import unicodedata
 import NVDAHelper
 import config
 import textInfos
+from logHandler import log
 
 class Offsets(object):
 	"""Represents two offsets."""
@@ -221,7 +222,23 @@ class OffsetsTextInfo(textInfos.TextInfo):
 		return formatField,(startOffset,endOffset)
 
 	def _getCharacterOffsets(self,offset):
-		return [offset,offset+1]
+		#return [offset,offset+1]
+		lineStart,lineEnd=self._getLineOffsets(offset)
+		lineText=self._getTextRange(lineStart,lineEnd)
+		#lineText=lineText.translate({0:u' ',0xa0:u' '})
+		#log.info(repr([len(lineText), offset]))
+		if len(lineText) <= offset:
+			return [offset,offset+1]
+		uc = ord(lineText[offset])
+		if (0xd800 <= uc <= 0xdbff) and offset+1 < len(lineText):
+			r = [offset,offset+2]
+			uc2 = ord(lineText[offset+1])
+			uc4 = (uc - 0xd800) * 0x800 + (uc2 - 0xdc00)
+			#log.info(repr([lineText, r, ("%04x %04x %05x" % (uc, uc2, uc4))]))
+		else:
+			r = [offset,offset+1]
+			#log.info(repr([lineText, r, ("%04x" % uc)]))
+		return r
 
 	def _getWordOffsets(self,offset):
 		lineStart,lineEnd=self._getLineOffsets(offset)
