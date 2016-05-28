@@ -21,6 +21,7 @@ import eventHandler
 from scriptHandler import isScriptWaiting, willSayAllResume
 import textInfos
 import controlTypes
+from logHandler import log
 
 class EditableText(ScriptableObject):
 	"""Provides scripts to report appropriately when moving the caret in editable text fields.
@@ -100,6 +101,13 @@ class EditableText(ScriptableObject):
 		caretMoved,newInfo=self._hasCaretMoved(bookmark) 
 		if not caretMoved and self.shouldFireCaretMovementFailedEvents:
 			eventHandler.executeEvent("caretMovementFailed", self, gesture=gesture)
+		if newInfo:
+			i = newInfo.copy()
+			i.expand(textInfos.UNIT_CHARACTER)
+			t = i.text
+			if t:
+				o = ord(t[0])
+ 				log.info(repr([unit, t, ("%0x" % o)]))
 		self._caretScriptPostMovedHelper(unit,gesture,newInfo)
 
 	def script_caret_newLine(self,gesture):
