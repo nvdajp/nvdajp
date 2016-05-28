@@ -1131,6 +1131,8 @@ class GlobalCommands(ScriptableObject):
 		elif scriptCount==1:
 			speech.spellTextInfo(info,useCharacterDescriptions=True,useDetails=True)
 		elif scriptCount==2:
+			log.info(info.obj.value)
+			log.info(info.text)
 			try:
 				c = ord(info.text)
 				if jpUtils.isJa():
