@@ -124,11 +124,13 @@ def code2kana(code):
 def code2hex(code):
 	"""
 	input 0x123a
-　	output 'u+123a'
+　	output 'u+0123a'
 	"""
 	s = ''
 	src = hex(code)[2:]
-	src = ("000" + src)[-4:]
+	src = ("0000" + src)[-5:]
+	if src[0] == '0':
+		src = src[1:]
 	return 'u+' + src
 
 def getCandidateCharDesc(c, a, forBraille=False):
@@ -150,9 +152,13 @@ def getCandidateCharDesc(c, a, forBraille=False):
 			if d != d2:
 				log.debug(u"sym (%s) %s" % (c, d2))
 				d = d2
+			elif (0xd800 <= ord(c[0]) <= 0xdbff) and len(c) == 2:
+				uc = (ord(c[0]) - 0xd800) * 0x800 + (ord(c[1]) - 0xdc00)
+				d = code2hex(uc)
+				log.info(u"sp (%s) %s" % (c, d))
 			else:
 				d = code2hex(ord(c[0]))
-				log.debug(u"code (%s) %s" % (c, d))
+				log.info(u"code (%s) %s" % (c, d))
 	if len(d) > 1:
 		return ' ' + d + ' '
 	return d
@@ -164,12 +170,37 @@ def useAttrDesc(a):
 		return True
 	return False
 
+def splitChars(name):
+	# handle surrogate pairs
+	nameChars = []
+	n = len(name)
+	p = 0
+	while p < n:
+		o0 = ord(name[p])
+		if (0xd800 <= o0 <= 0xdbff) and (p + 1 < n):
+			#o1 = ord(name[p+1])
+			# assert 0xdc00 <= o1 <= 0xdfff:
+			#uc = (o0 - 0xd800) * 0x800 + (o1 - 0xdc00)
+			c = name[p] + name[p+1]
+			nameChars.append(c)
+			log.info(u"%d %d %d (%s)" % (n, p, p+1, c))
+			p += 2
+		else:
+			c = name[p]
+			nameChars.append(c)
+			log.info(u"%d %d (%s)" % (n, p, c))
+			p += 1
+	log.info(repr(nameChars))
+	return nameChars
+
 #TODO: merge _get_description() and getDiscriminantReading().
 #nvdajp must modify locale/ja/characterDescriptions.dic and jpUtils.py.
 def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=False):
 	if not name: return ''
+	nameChars = splitChars(name)
 	attrs = []
-	for c in name:
+	for uc in nameChars:
+		c = uc[0]
 		ca = CharAttr(
 			isUpper(c) if (not capAnnounced and not forBraille) else False,
 			isZenkakuHiragana(c),
@@ -177,8 +208,8 @@ def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=
 			isHalfShape(c) or isHankakuKatakana(c),
 			isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c),
 			isLatinCharacter(c) and not forBraille)
-		log.debug(u"(%s) %s" % (c, getAttrDesc(ca)))
-		attrs.append((c, ca))
+		log.info(u"(%s) (%s) %s" % (uc, c, getAttrDesc(ca)))
+		attrs.append((uc, ca))
 	if attrOnly:
 		s = ''
 		for a in attrs:
