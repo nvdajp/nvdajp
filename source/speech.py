@@ -318,7 +318,7 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 	synthConfig=config.conf["speech"][synth.name]
 	buf=[(text,locale,useCharacterDescriptions,useDetails)]
 	for text,locale,useCharacterDescriptions,useDetails in buf:
-		log.info(repr(text))
+		#log.info(repr(text))
 		textLength=len(text)
 		count = 0
 		localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
@@ -340,11 +340,11 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 			shouldSayCap = uppercase and synthConfig["sayCapForCapitals"]
 			jpAttr = getCharAttr(locale, char, useDetails)
 			charAttrDetails = getJaCharAttrDetails(char, shouldSayCap) if useDetails else None
-			log.info(repr([char, charAttrDetails]))
+			#log.info(repr([char, charAttrDetails]))
 			if useCharacterDescriptions and not charDesc:
 				charDesc = getCharDesc(locale, char, jpAttr)
 			if charDesc:
-				log.info("(%s) %s %s" % (unicode(charAttrDetails), unicode(charDesc), unicode(jpAttr)))
+				#log.info("(%s) %s %s" % (unicode(charAttrDetails), unicode(charDesc), unicode(jpAttr)))
 				#charDesc should be: (u'メ',) (u'モ',) [u'チョーメンノ チョー']
 				#Consider changing to multiple synth speech calls
 				char=charDesc[0] if textLength>1 else u"\u3001".join(charDesc)
