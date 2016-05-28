@@ -1083,6 +1083,7 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Left"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
+			log.info(repr([reviewInfo.text, len(reviewInfo.text), 'reviewInfo']))
 			#speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 			#nvdajp
 			if characterDescriptionMode:
@@ -1093,6 +1094,7 @@ class GlobalCommands(ScriptableObject):
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
+			log.info(repr([charInfo.text, len(charInfo.text), 'charInfo']))
 			#speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 			#nvdajp
 			if characterDescriptionMode:
@@ -1174,6 +1176,7 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Right"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
+			log.info(repr([reviewInfo.text, len(reviewInfo.text), 'reviewInfo']))
 			#speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 			#nvdajp
 			if characterDescriptionMode:
@@ -1184,6 +1187,7 @@ class GlobalCommands(ScriptableObject):
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
+			log.info(repr([charInfo.text, len(charInfo.text), 'charInfo']))
 			#speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 			#nvdajp
 			if characterDescriptionMode:
