@@ -1108,10 +1108,7 @@ class GlobalCommands(ScriptableObject):
 		global characterDescriptionMode #nvdajp
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_CHARACTER)
-		#log.info(repr(info.text))
-		#winfo=api.getReviewPosition().copy()
-		#winfo.expand(textInfos.UNIT_WORD)
-		#log.info(repr(winfo.text))
+		log.info(repr([info.text, len(info.text)]))
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
 		#if scriptCount==0:
 		#	speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
@@ -1136,9 +1133,10 @@ class GlobalCommands(ScriptableObject):
 			speech.spellTextInfo(info,useCharacterDescriptions=True,useDetails=True)
 		elif scriptCount==2:
 			#log.info(info.obj.value)
-			log.info(info.text)
+			log.info(repr([info.text, len(info.text)]))
 			try:
-				c = ord(info.text)
+				#c = ord(info.text)
+				c = jpUtils.getOrd(info.text)
 				if jpUtils.isJa():
 					s = jpUtils.code2kana(c)
 					o = u"%d u+%s" % (c, s)
@@ -1148,7 +1146,8 @@ class GlobalCommands(ScriptableObject):
 					speech.speakMessage("%d," % c)
 					speech.speakSpelling(hex(c))
 					braille.handler.message(u"%d %s" % (c, hex(c)))
-			except:
+			except Exception as e:
+				log.warning(e)
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		else:
 			if characterDescriptionMode:

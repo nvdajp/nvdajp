@@ -105,11 +105,9 @@ class CharacterDescriptions(object):
 					if rd.startswith('[') and rd.endswith(']'):
 						self._readings[key] = rd[1:-1]
 					self._entries[key] = temp
-					if len(key) == 2:
-						log.info("Loaded %s" % key)
 				else:
 					log.warning("can't parse line '%s'" % line)
-			log.info("Loaded %d readings." % len(self._readings))
+			log.debug("Loaded %d readings." % len(self._readings))
 			f.close()
 		# nvdajp charaters.dic end
 
