@@ -16,16 +16,25 @@ RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 def getLongDesc(s):
 	try:
 		lang = languageHandler.getLanguage()[:2]
-		if ord(s) < 128 and lang != 'ja':
-			return '  '.join(characterProcessing.getCharacterDescription(lang, s))
-		return '  '.join(characterProcessing.getCharacterDescription('ja', s))
-	except:
-		pass
+		if len(s) == 1 and ord(s) < 128 and lang != 'ja':
+			d = characterProcessing.getCharacterDescription(lang, s)
+			log.info(repr([s, d, 0]))
+			if d:
+				r = '  '.join(d)
+				return r
+		d = characterProcessing.getCharacterDescription('ja', s)
+		log.info(repr([s, d, 1]))
+		if d:
+			r = '  '.join(d)
+			return r
+	except Exception as e:
+		log.info(repr(e))
+	log.info(repr([s, 2]))
 	return s
 
 def getShortDesc(s):
 	lang = languageHandler.getLanguage()[:2]
-	if ord(s) < 128 and lang != 'ja':
+	if len(s) == 1 and ord(s) < 128 and lang != 'ja':
 		return characterProcessing.processSpeechSymbol(lang, s)
 	s2 = characterProcessing.processSpeechSymbol('ja', s)
 	if s != s2:
@@ -55,7 +64,7 @@ def isHankakuKatakana(c):
 	return re.search(ur'[ｦ-ﾝ｢｣､｡ｰ]', c) is not None
 
 def isHalfShape(c):
-	return (32 < ord(c)) and (ord(c) < 128)
+	return len(c) == 1 and (32 < ord(c)) and (ord(c) < 128)
 
 def isFullShapeAlphabet(c):
 	return re.search(ur'[ａ-ｚＡ-Ｚ]', c) is not None
@@ -79,7 +88,7 @@ def isFullShapeSymbol(c):
 	return c in u'　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜'
 
 def isUpper(c):
-	return re.search(ur'[A-ZＡ-Ｚ]', c) is not None
+	return (len(c) == 1) and (re.search(ur'[A-ZＡ-Ｚ]', c) is not None)
 
 def replaceSpecialKanaCharacter(c):
 	if c in SPECIAL_KANA_CHARACTERS:
@@ -146,7 +155,7 @@ def getCandidateCharDesc(c, a, forBraille=False):
 	else:
 		d = getLongDesc(c)
 		if d != c:
-			log.debug(u"longdesc (%s) %s" % (c, d))
+			log.info(u"longdesc (%s) %s" % (c, d))
 		else:
 			d2 = characterProcessing.processSpeechSymbol('ja', c)
 			if d != d2:
@@ -183,14 +192,14 @@ def splitChars(name):
 			#uc = (o0 - 0xd800) * 0x800 + (o1 - 0xdc00)
 			c = name[p] + name[p+1]
 			nameChars.append(c)
-			log.info(u"%d %d %d (%s)" % (n, p, p+1, c))
+			#log.info(u"%d %d %d (%s)" % (n, p, p+1, c))
 			p += 2
 		else:
 			c = name[p]
 			nameChars.append(c)
-			log.info(u"%d %d (%s)" % (n, p, c))
+			#log.info(u"%d %d (%s)" % (n, p, c))
 			p += 1
-	log.info(repr(nameChars))
+	#log.info(repr(nameChars))
 	return nameChars
 
 #TODO: merge _get_description() and getDiscriminantReading().
@@ -208,7 +217,8 @@ def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=
 			isHalfShape(c) or isHankakuKatakana(c),
 			isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c),
 			isLatinCharacter(c) and not forBraille)
-		log.info(u"(%s) (%s) %s" % (uc, c, getAttrDesc(ca)))
+		if not attrOnly:
+			log.info(u"(%s) %d %s" % (uc, len(c), getAttrDesc(ca)))
 		attrs.append((uc, ca))
 	if attrOnly:
 		s = ''
@@ -232,13 +242,15 @@ def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=
 			prevAttr = a[1]
 		prevChar = a[0]
 	s = s.replace('  ', ' ')
-	return s.strip(' ')
+	r = s.strip(' ')
+	log.info(repr(r))
+	return r
 
 def processHexCode(locale, msg):
 	if isJa(locale):
 		try:
 			msg = re.sub(r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x"+x.group(1),16)), unicode(msg))
-		except Exception, e:
+		except Exception as e:
 			log.debug(e)
 			pass
 	return msg
