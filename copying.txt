@@ -2098,6 +2098,7 @@ These components do not require reproduction of their license text:
 
 = Open JTalk (NVDA Japanese) =
 
+```
 /* ----------------------------------------------------------------- */
 /*           The Japanese TTS System "Open JTalk"                    */
 /*           developed by HTS Working Group                          */
@@ -2137,10 +2138,12 @@ These components do not require reproduction of their license text:
 /* OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           */
 /* POSSIBILITY OF SUCH DAMAGE.                                       */
 /* ----------------------------------------------------------------- */
+```
 
 
 = HTS engine API (NVDA Japanese) =
 
+```
 /* ----------------------------------------------------------------- */
 /*           The HMM-Based Speech Synthesis Engine "hts_engine API"  */
 /*           developed by HTS Working Group                          */
@@ -2184,14 +2187,129 @@ These components do not require reproduction of their license text:
 /* OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           */
 /* POSSIBILITY OF SUCH DAMAGE.                                       */
 /* ----------------------------------------------------------------- */
+```
 
 
-= Mei (NVDA Japanese) =
+= Mei happy (NVDA Japanese) =
 
-Copyright (c) 2009-2010 Nagoya Institute of Technology
-Department of Computer Science
-HTS Voice "Mei (Normal)"
-URL：http://www.mmdagent.jp/
+
+```
+===============================================================================
+                          HTS Voice "Mei" version 1.4
+                           release December 25, 2013
+
+
+The work is released as a part of MMDAgent (http://www.mmdagent.jp/).
+
+*******************************************************************************
+                                    Copying
+*******************************************************************************
+
+# ----------------------------------------------------------------- #
+#           HTS Voice "Mei"                                         #
+#           released by MMDAgent Project Team                       #
+#           http://www.mmdagent.jp/                                 #
+# ----------------------------------------------------------------- #
+#                                                                   #
+#  Copyright (c) 2009-2015  Nagoya Institute of Technology          #
+#                           Department of Computer Science          #
+#                                                                   #
+# Some rights reserved.                                             #
+#                                                                   #
+# This work is licensed under the Creative Commons Attribution 3.0  #
+# license.                                                          #
+#                                                                   #
+# You are free:                                                     #
+#  * to Share - to copy, distribute and transmit the work           #
+#  * to Remix - to adapt the work                                   #
+# Under the following conditions:                                   #
+#  * Attribution - You must attribute the work in the manner        #
+#    specified by the author or licensor (but not in any way that   #
+#    suggests that they endorse you or your use of the work).       #
+# With the understanding that:                                      #
+#  * Waiver - Any of the above conditions can be waived if you get  #
+#    permission from the copyright holder.                          #
+#  * Public Domain - Where the work or any of its elements is in    #
+#    the public domain under applicable law, that status is in no   #
+#    way affected by the license.                                   #
+#  * Other Rights - In no way are any of the following rights       #
+#    affected by the license:                                       #
+#     - Your fair dealing or fair use rights, or other applicable   #
+#       copyright exceptions and limitations;                       #
+#     - The author's moral rights;                                  #
+#     - Rights other persons may have either in the work itself or  #
+#       in how the work is used, such as publicity or privacy       #
+#       rights.                                                     #
+#  * Notice - For any reuse or distribution, you must make clear to #
+#    others the license terms of this work. The best way to do this #
+#    is with a link to this web page.                               #
+#                                                                   #
+# See http://creativecommons.org/ for details.                      #
+# ----------------------------------------------------------------- #
+
+See also "COPYRIGHT.txt" file in the current directory for details.
+
+*******************************************************************************
+                               Acknowledgements
+*******************************************************************************
+
+Keiichi Tokuda
+Akinobu Lee
+Keiichiro Oura
+
+*******************************************************************************
+                                  Who we are
+*******************************************************************************
+
+The MMDAgent project team is a voluntary group for developing the Toolkit for
+Building Voice Interaction System. Current members are
+
+ Keiichi Tokuda      http://www.sp.nitech.ac.jp/~tokuda/
+ Akinobu Lee         http://www.sp.nitech.ac.jp/~ri/
+ Keiichiro Oura      http://www.sp.nitech.ac.jp/~uratec/
+ Daisuke Yamamoto    http://yamamoto.web.nitech.ac.jp/member/yamamoto/yamamoto.html
+
+and the members are dynamically changing. The current formal contact address of
+MMDAgent project team and a mailing list for MMDAgent users can be found at
+http://www.mmdagent.jp/
+===============================================================================
+```
+
+
+= HTS voice tohoku-f01 normal (NVDA Japanese) =
+
+```
+----------------------------------------------------------------------------------
+HTS voice tohoku-f01-{angry,happy,neutral,sad}                                   
+Copyright(c) 2015 Intelligent Communication Network (Ito-Nose) Laboratory
+                  Tohoku University.
+
+tohoku-f01 is released by Intelligent Communication Network Laboratory, Tohoku University.
+Some rights reserved.                                                         
+
+This work is licensed under the Creative Commons Attribution 4.0 license (CC-BY 4.0).
+----------------------------------------------------------------------------------
+This is a human-readable summary of (and not a substitute for) the license.
+
+You are free to:
+
+Share — copy and redistribute the material in any medium or format
+Adapt — remix, transform, and build upon the material
+for any purpose, even commercially.
+The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+
+Under the following terms:
+
+Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+
+
+Notices:
+
+You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.
+No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material.
+```
 
 
 = bep-eng.dic (NVDA Japanese) =
@@ -2200,12 +2318,14 @@ bep-eng.dic.txt is under GPL.
 available at:
 http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic
 
+```
 # License GPL
 #
 # - modified hankaku kana to zenkaku kana
 # - added basic japanese letters
 # by M.Ohtsuka(mash)
 # 
+```
 
 
 = MeCab (NVDA Japanese) =
@@ -2219,8 +2339,7 @@ Taku Kudo <taku@chasen.org>
 libmecab.dll is from mecab-0.996.exe
 available at http://taku910.github.io/mecab/
 
-==========
-
+```
 MeCab is copyrighted free software by Taku Kudo <taku@chasen.org> and
 Nippon Telegraph and Telephone Corporation, and is released under
 any of the GPL (see the file GPL), the LGPL (see the file LGPL), or the
@@ -3108,3 +3227,4 @@ necessary.  Here is a sample; alter the names:
   Ty Coon, President of Vice
 
 That's all there is to it!
+```
