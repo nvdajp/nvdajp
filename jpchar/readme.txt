@@ -3,7 +3,7 @@
 A part of NonVisual Desktop Access (NVDA)
 This file is covered by the GNU General Public License.
 See the file COPYING for more details.
-Copyright (C) 2015 Takuya Nishimoto
+Copyright (C) 2015-2016 Takuya Nishimoto
 
 
 copy Japanese character symbols to subversion repo
@@ -38,3 +38,7 @@ convert characters.dic to characterDescriptions.dic
 > python updateCharDesc.py > newfile.dic
 
 
+emoji.txt
+====================================
+https://osdn.jp/ticket/browse.php?group_id=4221&tid=30841
+https://github.com/nvdajp/nvdajp/issues/7
