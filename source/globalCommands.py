@@ -1069,7 +1069,7 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Left"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			log.info(repr([reviewInfo.text, len(reviewInfo.text), 'reviewInfo']))
+			log.debug(repr([reviewInfo.text, len(reviewInfo.text), 'reviewInfo']))
 			#speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 			#nvdajp
 			if characterDescriptionMode:
@@ -1080,7 +1080,7 @@ class GlobalCommands(ScriptableObject):
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			log.info(repr([charInfo.text, len(charInfo.text), 'charInfo']))
+			log.debug(repr([charInfo.text, len(charInfo.text), 'charInfo']))
 			#speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 			#nvdajp
 			if characterDescriptionMode:
@@ -1096,7 +1096,7 @@ class GlobalCommands(ScriptableObject):
 		global characterDescriptionMode #nvdajp
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_CHARACTER)
-		log.info(repr([info.text, len(info.text)]))
+		log.debug(repr([info.text, len(info.text)]))
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
 		#if scriptCount==0:
 		#	speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
@@ -1120,8 +1120,7 @@ class GlobalCommands(ScriptableObject):
 		elif scriptCount==1:
 			speech.spellTextInfo(info,useCharacterDescriptions=True,useDetails=True)
 		elif scriptCount==2:
-			#log.info(info.obj.value)
-			log.info(repr([info.text, len(info.text)]))
+			log.debug(repr([info.text, len(info.text)]))
 			try:
 				#c = ord(info.text)
 				c = jpUtils.getOrd(info.text)
@@ -1162,7 +1161,7 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Right"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			log.info(repr([reviewInfo.text, len(reviewInfo.text), 'reviewInfo']))
+			log.debug(repr([reviewInfo.text, len(reviewInfo.text), 'reviewInfo']))
 			#speech.speakTextInfo(reviewInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 			#nvdajp
 			if characterDescriptionMode:
@@ -1173,7 +1172,7 @@ class GlobalCommands(ScriptableObject):
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			log.info(repr([charInfo.text, len(charInfo.text), 'charInfo']))
+			log.debug(repr([charInfo.text, len(charInfo.text), 'charInfo']))
 			#speech.speakTextInfo(charInfo,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 			#nvdajp
 			if characterDescriptionMode:
@@ -1444,11 +1443,11 @@ class GlobalCommands(ScriptableObject):
 		obj=api.getNavigatorObject()
 		text=obj.displayText
 		speech.speakMessage(text)
-		log.info(text)
+		log.debug(text)
 
 	def script_navigatorObject_devInfo(self,gesture):
 		obj=api.getNavigatorObject()
-		log.info("Developer info for navigator object:\n%s" % "\n".join(obj.devInfo), activateLogViewer=True)
+		log.debug("Developer info for navigator object:\n%s" % "\n".join(obj.devInfo), activateLogViewer=True)
 	# Translators: Input help mode message for developer info for current navigator object command, used by developers to examine technical info on navigator object. This command also serves as a shortcut to open NVDA log viewer.
 	script_navigatorObject_devInfo.__doc__ = _("Logs information about the current navigator object which is useful to developers and activates the log viewer so the information can be examined.")
 	script_navigatorObject_devInfo.category=SCRCAT_TOOLS

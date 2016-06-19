@@ -257,7 +257,7 @@ def getCharDesc(locale, char, jpAttr):
 		charDesc = (jpUtils.getShortDesc(char),)
 	else:
 		charDesc = characterProcessing.getCharacterDescription(locale,char.lower())
-	log.info(repr([locale, char, ("%0x" % jpUtils.getOrd(char)), charDesc]))
+	log.debug(repr([locale, char, ("%0x" % jpUtils.getOrd(char)), charDesc]))
 	return charDesc
 
 def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
@@ -287,7 +287,7 @@ def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
 
 def getJaCharAttrDetails(char, shouldSayCap):
 	r = jpUtils.getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
-	log.info(repr(r))
+	log.debug(repr(r))
 	return r
 
 def getCharDescListFromText(text,locale):
@@ -323,7 +323,7 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 		count = 0
 		localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
 		charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else jpUtils.splitChars(text)
-		log.info(repr(charDescList))
+		log.debug(repr(charDescList))
 		for item in charDescList:
 			#log.info(repr(item))
 			if localeHasConjuncts:

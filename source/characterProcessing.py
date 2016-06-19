@@ -165,9 +165,9 @@ class CharacterDescriptions(object):
 		"""
 		r = self._entries.get(character)
 		if len(character) == 2:
-			log.info(repr([character, "%04x %04x" % (ord(character[0]), ord(character[1])), r]))
+			log.debug(repr([character, "%04x %04x" % (ord(character[0]), ord(character[1])), r]))
 		else:
-			log.info(repr([character, ("%04x" % ord(character[0])), r]))
+			log.debug(repr([character, ("%04x" % ord(character[0])), r]))
 		return r
 
 _charDescLocaleDataMap=LocaleDataMap(CharacterDescriptions)
