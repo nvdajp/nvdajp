@@ -18,18 +18,18 @@ def getLongDesc(s):
 		lang = languageHandler.getLanguage()[:2]
 		if len(s) == 1 and ord(s) < 128 and lang != 'ja':
 			d = characterProcessing.getCharacterDescription(lang, s)
-			log.info(repr([s, d, 0]))
+			log.debug(repr([s, d, 0]))
 			if d:
 				r = '  '.join(d)
 				return r
 		d = characterProcessing.getCharacterDescription('ja', s)
-		log.info(repr([s, d, 1]))
+		log.debug(repr([s, d, 1]))
 		if d:
 			r = '  '.join(d)
 			return r
 	except Exception as e:
-		log.info(repr(e))
-	log.info(repr([s, 2]))
+		log.debug(repr(e))
+	log.debug(repr([s, 2]))
 	return s
 
 def getShortDesc(s):
@@ -157,7 +157,7 @@ def getCandidateCharDesc(c, a, forBraille=False):
 	else:
 		d = getLongDesc(c)
 		if d != c:
-			log.info(u"longdesc (%s) %s" % (c, d))
+			log.debug(u"longdesc (%s) %s" % (c, d))
 		else:
 			d2 = characterProcessing.processSpeechSymbol('ja', c)
 			if d != d2:
@@ -166,10 +166,10 @@ def getCandidateCharDesc(c, a, forBraille=False):
 			elif (0xd800 <= ord(c[0]) <= 0xdbff) and len(c) == 2:
 				uc = (ord(c[0]) - 0xd800) * 0x800 + (ord(c[1]) - 0xdc00)
 				d = code2hex(uc)
-				log.info(u"sp (%s) %s" % (c, d))
+				log.debug(u"sp (%s) %s" % (c, d))
 			else:
 				d = code2hex(ord(c[0]))
-				log.info(u"code (%s) %s" % (c, d))
+				log.debug(u"code (%s) %s" % (c, d))
 	if len(d) > 1:
 		return ' ' + d + ' '
 	return d
@@ -231,7 +231,7 @@ def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=
 			isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c),
 			isLatinCharacter(c) and not forBraille)
 		if not attrOnly:
-			log.info(u"(%s) %d %s" % (uc, len(c), getAttrDesc(ca)))
+			log.debug(u"(%s) %d %s" % (uc, len(c), getAttrDesc(ca)))
 		attrs.append((uc, ca))
 	if attrOnly:
 		s = ''
@@ -256,7 +256,7 @@ def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=
 		prevChar = a[0]
 	s = s.replace('  ', ' ')
 	r = s.strip(' ')
-	log.info(repr(r))
+	log.debug(repr(r))
 	return r
 
 def processHexCode(locale, msg):
