@@ -223,6 +223,8 @@ class OffsetsTextInfo(textInfos.TextInfo):
 
 	def _getCharacterOffsets(self,offset):
 		#return [offset,offset+1]
+		if not hasattr(self,'_getStoryText') or not hasattr(self,'_getStoryLength'):
+			return [offset,offset+1]
 		text = self._getStoryText()
 		textlen = self._getStoryLength() - 1
 		log.debug(repr([len(text), textlen, offset]))
