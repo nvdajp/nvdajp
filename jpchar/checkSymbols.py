@@ -1,9 +1,10 @@
 # coding: UTF-8
 #checkSymbols.py
 #A part of NonVisual Desktop Access (NVDA)
-#Copyright (C) 2012 Takuya Nishimoto (NVDA Japanese Team)
+#Copyright (C) 2012-2016 Takuya Nishimoto (NVDA Japanese Team)
 # usage:
-# > python jptools\checkSymbols.py
+# > cd jpchar
+# > python checkSymbols.py
 
 import sys
 sys.path.append(r'..\source\synthDrivers\jtalk')
