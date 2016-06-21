@@ -226,19 +226,23 @@ class OffsetsTextInfo(textInfos.TextInfo):
 		try:
 			text = self._getStoryText()
 			textlen = self._getStoryLength() - 1
-			log.debug(repr([len(text), textlen, offset]))
-			if textlen <= offset:
-				return [offset,offset+1]
-			uc = ord(text[offset])
-			if (0xd800 <= uc <= 0xdbff) and offset+1 < textlen:
-				r = [offset,offset+2]
-				uc2 = ord(text[offset+1])
-				uc4 = (uc - 0xd800) * 0x800 + (uc2 - 0xdc00)
-				log.debug(repr([text, r, ("%04x %04x %05x" % (uc, uc2, uc4))]))
+			#log.debug(repr([len(text), textlen, offset]))
+			#if textlen <= offset:
+			#	return [offset,offset+1]
+			if offset+1 < textlen and unicodedata.category(text[offset]) == "Cs":
+				return [offset,offset+2]
 			else:
-				r = [offset,offset+1]
-				log.debug(repr([text, r, ("%04x" % uc)]))
-			return r
+				return [offset,offset+1]
+			#uc = ord(text[offset])
+			#if (0xd800 <= uc <= 0xdbff) and offset+1 < textlen:
+			#	r = [offset,offset+2]
+			#	uc2 = ord(text[offset+1])
+			#	uc4 = (uc - 0xd800) * 0x800 + (uc2 - 0xdc00)
+			#	log.debug(repr([text, r, ("%04x %04x %05x" % (uc, uc2, uc4))]))
+			#else:
+			#	r = [offset,offset+1]
+			#	log.debug(repr([text, r, ("%04x" % uc)]))
+			#return r
 		except NotImplementedError:
 			return [offset,offset+1]
 			
