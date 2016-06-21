@@ -231,8 +231,6 @@ class OffsetsTextInfo(textInfos.TextInfo):
 			#	return [offset,offset+1]
 			if offset+1 < textlen and unicodedata.category(text[offset]) == "Cs":
 				return [offset,offset+2]
-			else:
-				return [offset,offset+1]
 			#uc = ord(text[offset])
 			#if (0xd800 <= uc <= 0xdbff) and offset+1 < textlen:
 			#	r = [offset,offset+2]
@@ -244,7 +242,8 @@ class OffsetsTextInfo(textInfos.TextInfo):
 			#	log.debug(repr([text, r, ("%04x" % uc)]))
 			#return r
 		except NotImplementedError:
-			return [offset,offset+1]
+			pass
+		return [offset,offset+1]
 			
 
 	def _getWordOffsets(self,offset):
