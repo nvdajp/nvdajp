@@ -11,6 +11,7 @@ import unittest
 import sys, os
 sys.path.append(os.path.normpath(os.path.join(os.getcwdu(), 'mocks')))
 sys.path.append(r'..\source')
+sys.path.append(r'..\miscdeps\python')
 import languageHandler
 languageHandler.setLanguage('ja')
 import jpUtils
