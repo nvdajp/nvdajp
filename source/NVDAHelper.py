@@ -72,7 +72,7 @@ def nvdaController_speakSpelling(text):
 
 @WINFUNCTYPE(c_long)
 def nvdaController_isSpeaking():
-	from synthDriverHandler import *
+	from synthDriverHandler import getSynth
 	try:
 		return getSynth().isSpeaking()
 	except:
@@ -80,7 +80,7 @@ def nvdaController_isSpeaking():
 
 @WINFUNCTYPE(c_long)
 def nvdaController_getPitch():
-	from synthDriverHandler import *
+	from synthDriverHandler import getSynth
 	try:
 		return getSynth()._get_pitch()
 	except:
@@ -88,7 +88,7 @@ def nvdaController_getPitch():
 
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setPitch(nPitch):
-	from synthDriverHandler import *
+	from synthDriverHandler import getSynth
 	try:
 		getSynth()._set_pitch(nPitch)
 	except:
@@ -97,7 +97,7 @@ def nvdaController_setPitch(nPitch):
 
 @WINFUNCTYPE(c_long)
 def nvdaController_getRate():
-	from synthDriverHandler import *
+	from synthDriverHandler import getSynth
 	try:
 		return getSynth()._get_rate()
 	except:
@@ -105,7 +105,7 @@ def nvdaController_getRate():
 
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setRate(nRate):
-	from synthDriverHandler import *
+	from synthDriverHandler import getSynth
 	try:
 		getSynth()._set_rate(nRate)
 	except:
