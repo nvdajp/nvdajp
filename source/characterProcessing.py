@@ -163,12 +163,7 @@ class CharacterDescriptions(object):
 		"""
 		Looks up the given character and returns a list containing all the description strings found.
 		"""
-		r = self._entries.get(character)
-		if len(character) == 2:
-			log.debug(repr([character, "%04x %04x" % (ord(character[0]), ord(character[1])), r]))
-		else:
-			log.debug(repr([character, ("%04x" % ord(character[0])), r]))
-		return r
+		return self._entries.get(character)
 
 _charDescLocaleDataMap=LocaleDataMap(CharacterDescriptions)
 
