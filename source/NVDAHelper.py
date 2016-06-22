@@ -467,7 +467,6 @@ def handleInputConversionModeUpdate(oldFlags,newFlags,lcid):
 		queueHandler.queueFunction(queueHandler.eventQueue,speech.speakMessage," ".join(textList))
 		queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message," ".join(textList))
 
-
 @WINFUNCTYPE(c_long,c_long,c_long,c_ulong)
 def nvdaControllerInternal_inputConversionModeUpdate(oldFlags,newFlags,lcid):
 	queueHandler.queueFunction(queueHandler.eventQueue,handleInputConversionModeUpdate,oldFlags,newFlags,lcid)
