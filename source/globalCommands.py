@@ -1443,11 +1443,11 @@ class GlobalCommands(ScriptableObject):
 		obj=api.getNavigatorObject()
 		text=obj.displayText
 		speech.speakMessage(text)
-		log.debug(text)
+		log.info(text)
 
 	def script_navigatorObject_devInfo(self,gesture):
 		obj=api.getNavigatorObject()
-		log.debug("Developer info for navigator object:\n%s" % "\n".join(obj.devInfo), activateLogViewer=True)
+		log.info("Developer info for navigator object:\n%s" % "\n".join(obj.devInfo), activateLogViewer=True)
 	# Translators: Input help mode message for developer info for current navigator object command, used by developers to examine technical info on navigator object. This command also serves as a shortcut to open NVDA log viewer.
 	script_navigatorObject_devInfo.__doc__ = _("Logs information about the current navigator object which is useful to developers and activates the log viewer so the information can be examined.")
 	script_navigatorObject_devInfo.category=SCRCAT_TOOLS

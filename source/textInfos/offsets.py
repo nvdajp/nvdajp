@@ -230,7 +230,6 @@ class OffsetsTextInfo(textInfos.TextInfo):
 		except NotImplementedError:
 			pass
 		return [offset,offset+1]
-			
 
 	def _getWordOffsets(self,offset):
 		lineStart,lineEnd=self._getLineOffsets(offset)
