@@ -9,9 +9,13 @@ import languageHandler
 import config
 import re
 import collections
+import unicodedata
 from logHandler import log
 
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
+
+# from speech import re_last_pause
+re_last_pause=re.compile(ur"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)",re.DOTALL|re.UNICODE)
 
 def getLongDesc(s):
 	try:
@@ -277,3 +281,31 @@ def fixNewText(newText, isCandidate=False):
 		for c in FIX_NEW_TEXT_CHARS:
 			newText = newText.replace(c, ' ' + getShortDesc(c) + ' ')
 	return newText
+
+def startsWithAsianChar(s):
+	c = s.lstrip('\n\r')
+	if c:
+		c = c[0]
+	if c and unicodedata.east_asian_width(c) == 'W':
+		return True
+	return False
+	
+def endsWithAsianChar(s):
+	c = s.rstrip('\n\r')
+	if c:
+		c = c[-1]
+	if c and unicodedata.east_asian_width(c) == 'W':
+		return True
+	return False
+
+def getLastPauseBeforeAndAfter(item):
+	m=re_last_pause.match(item)
+	if m:
+		before,after=m.groups()
+	elif u'。' in item:
+		# handle east-asian sentence ending
+		before, after = re.split(u'。', item, maxsplit=1)
+		before += u'。'
+	else:
+		before = after = None
+	return before, after
