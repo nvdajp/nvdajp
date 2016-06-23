@@ -283,18 +283,22 @@ def fixNewText(newText, isCandidate=False):
 	return newText
 
 def startsWithAsianChar(s):
-	c = s.lstrip('\n\r')
+	if s.startswith(' '):
+		return False
+	c = s.lstrip('\n\r ')
 	if c:
 		c = c[0]
-	if c and unicodedata.east_asian_width(c) == 'W':
+	if c and unicodedata.east_asian_width(c) != 'Na':
 		return True
 	return False
 	
 def endsWithAsianChar(s):
-	c = s.rstrip('\n\r')
+	if s.endswith(' '):
+		return False
+	c = s.rstrip('\n\r ')
 	if c:
 		c = c[-1]
-	if c and unicodedata.east_asian_width(c) == 'W':
+	if c and unicodedata.east_asian_width(c) != 'Na':
 		return True
 	return False
 
