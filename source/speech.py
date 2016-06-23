@@ -1664,11 +1664,16 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 	currSentPos = None
 	for pos, item in enumerate(finalSpeechSequence):
 		if isinstance(item,SpeechCommand):
-			#log.info("pos %d %r" % (pos, item))
+			# preserve command
+			if isinstance(item,IndexCommand) or (isinstance(item,LangChangeCommand) and (item.lang is None or item.lang == 'ja')):
+				# allow order change of strings
+				pass
+			else:	     
+				# preserve order of strings and commands
+				currSentPos = None
 			continue
-		elif currSentPos is not None and jpUtils.startsWithAsianChar(item):
-			finalSpeechSequence[currSentPos] \
-				= finalSpeechSequence[currSentPos].rstrip('\n\r') + item.lstrip('\n\r')
+		elif currSentPos is not None and jpUtils.endsWithAsianChar(finalSpeechSequence[currSentPos]) and jpUtils.startsWithAsianChar(item):
+			finalSpeechSequence[currSentPos] = finalSpeechSequence[currSentPos].rstrip('\n\r ') + item.lstrip('\n\r ')
 			#log.info("currSentPos[%d] %r (from %d)" % (currSentPos, finalSpeechSequence[currSentPos], pos))
 			finalSpeechSequence[pos] = ''
 		else:
