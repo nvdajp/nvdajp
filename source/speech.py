@@ -1685,6 +1685,10 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 			currSentPos = pos
 			#log.info("pos %d (update currSentPos) %r" % (pos, item))
 	#log.info("finalSpeech %r" % finalSpeechSequence)
+	# remove \r
+	for pos, item in enumerate(finalSpeechSequence):
+		if isinstance(item,basestring):
+			finalSpeechSequence[pos] = finalSpeechSequence[pos].replace('\r', '')
 	#Scan the final speech sequence backwards
 	for item in reversed(finalSpeechSequence):
 		if isinstance(item,IndexCommand):
