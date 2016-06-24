@@ -288,6 +288,8 @@ def startsWithAsianChar(s):
 	c = s.lstrip('\n\r ')
 	if c:
 		c = c[0]
+	if c == u'行':
+		return False
 	if c and unicodedata.east_asian_width(c) != 'Na':
 		return True
 	return False
@@ -298,6 +300,8 @@ def endsWithAsianChar(s):
 	c = s.rstrip('\n\r ')
 	if c:
 		c = c[-1]
+	if isZenkakuKatakana(c):
+		return False
 	if c and unicodedata.east_asian_width(c) != 'Na':
 		return True
 	return False
