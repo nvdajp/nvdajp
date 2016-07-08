@@ -2,7 +2,7 @@
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
-#Copyright (C) 2009-2015 NV Access Limited
+#Copyright (C) 2009-2016 NV Access Limited, Mohammad Suliman
 
 from ctypes import byref
 from ctypes.wintypes import POINT, RECT
@@ -327,7 +327,7 @@ class UIA(Window):
 		elif ((UIAClassName=="ToastContentHost" and UIAControlType==UIAHandler.UIA_ToolTipControlTypeId) #Windows 8.x
 		or (self.windowClassName=="Windows.UI.Core.CoreWindow" and UIAControlType==UIAHandler.UIA_WindowControlTypeId and self.UIAElement.cachedAutomationId=="NormalToastView")): # Windows 10
 			clsList.append(Toast)
-		elif self.UIAElement.cachedFrameworkID=="InternetExplorer":
+		elif self.UIAElement.cachedFrameworkID in ("InternetExplorer","MicrosoftEdge"):
 			import edge
 			if UIAClassName in ("Internet Explorer_Server","WebView") and self.role==controlTypes.ROLE_PANE:
 				clsList.append(edge.EdgeHTMLRootContainer)
@@ -529,10 +529,19 @@ class UIA(Window):
 			return ""
 
 	def _get_keyboardShortcut(self):
+		ret = ""
 		try:
-			return self.UIAElement.currentAccessKey
+			ret += self.UIAElement.currentAccessKey
 		except COMError:
-			return None
+			pass
+		if ret:
+			#add a double space to the end of the string
+			ret +="  "
+		try:
+			ret += self.UIAElement.currentAcceleratorKey
+		except COMError:
+			pass
+		return ret
 
 	def _get_UIACachedStatesElement(self):
 		statesCacheRequest=UIAHandler.handler.clientObject.createCacheRequest()
