@@ -306,6 +306,20 @@ def endsWithAsianChar(s):
 		return True
 	return False
 
+def startsWithProlongedSoundMark(s):
+	c = s.lstrip('\n\r ')
+	if c.startswith(u'ー'):
+		return True
+	return False
+	
+def endsWithKana(s):
+	c = s.rstrip('\n\r ')
+	if c:
+		c = c[-1]
+	if isZenkakuKatakana(c) or isZenkakuHiragana(c):
+		return True
+	return False
+
 def getLastPauseBeforeAndAfter(item):
 	m=re_last_pause.match(item)
 	if m:
@@ -317,3 +331,10 @@ def getLastPauseBeforeAndAfter(item):
 	else:
 		before = after = None
 	return before, after
+
+def shouldConnectForSayAll(s1, s2):
+	if endsWithAsianChar(s1) and startsWithAsianChar(s2):
+		return True
+	if endsWithKana(s1) and startsWithProlongedSoundMark(s2):
+		return True
+	return False
