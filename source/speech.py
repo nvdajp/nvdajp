@@ -1683,7 +1683,7 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 				# preserve order of strings and commands
 				currSentPos = None
 			continue
-		elif currSentPos is not None and jpUtils.endsWithAsianChar(finalSpeechSequence[currSentPos]) and jpUtils.startsWithAsianChar(item):
+		elif currSentPos is not None and jpUtils.shouldConnectForSayAll(finalSpeechSequence[currSentPos], item):
 			finalSpeechSequence[currSentPos] = finalSpeechSequence[currSentPos].rstrip('\n\r ') + item.lstrip('\n\r ')
 			#log.info("currSentPos[%d] %r (from %d)" % (currSentPos, finalSpeechSequence[currSentPos], pos))
 			finalSpeechSequence[pos] = ''
