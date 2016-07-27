@@ -30,15 +30,15 @@ for k,a in ch.items():
 	#print a[1].encode('utf-8')
 	#print k + ',' + ','.join(a).encode('utf-8') + "\n"
 
-hex2_curr = None
+hex3_curr = None
 print "# Discriminant Reading Dictionary for NVDA Japanese"
 print "# Copyright (C) 2016 NVDA Japanese Team"
 for k in sorted(keys):
-	hex4 = u"%04x" % k
-	hex2 = hex4[0:2]
-	if hex2_curr != hex2:
+	hex5 = u"%05x" % k
+	hex3 = hex5[0:3]
+	if hex3_curr != hex3:
 		print
-		print "# %sxx" % hex2
+		print "# %sxx" % hex3
 	# http://d.hatena.ne.jp/nishiohirokazu/20120127/1327646600
 	c = ("\U" + "%08x" % k).decode("unicode-escape") #unichr(k)
 	if c == '#':
@@ -52,6 +52,6 @@ for k in sorted(keys):
 
 	o = u"%s\t(%s)" % (c, desc)
 	print o.encode('utf-8')
-	hex2_curr = hex2
+	hex3_curr = hex3
 
 print "# end of file"
