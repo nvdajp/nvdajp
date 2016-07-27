@@ -16,7 +16,7 @@ checkCharDesc.py
 
 character description consistency check
 
-> cd jptools
+> cd jpchar
 > python checkCharDesc.py
 
 
@@ -25,7 +25,7 @@ checkSymbols.py
 
 symbols consistency check
 
-> cd jptools
+> cd jpchar
 > python checkSymbols.py
 
 
@@ -34,7 +34,7 @@ updateCharDesc.py
 
 convert characters.dic to characterDescriptions.dic
 
-> cd jptools
+> cd jpchar
 > python updateCharDesc.py > newfile.dic
 
 

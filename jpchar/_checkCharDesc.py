@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 import re
+from getord import getOrd
 
 # CONSOLE_ENCODING = 'utf-8' # mintty
 CONSOLE_ENCODING = 'cp932' # cmd.exe
@@ -142,12 +143,12 @@ def print_different(sy, ch, skip_included=False):
 			ar[sy[k][0]] = output
 	for s in sorted(ar.items(), key=lambda x:int(x[0])):
 		my_print(s[1])
-		
+
 def find_desc_duplicate(ch):
 	for k,v in ch.items():
 		for k2,v2 in ch.items():
 			if v[0] < v2[0] and k != k2 and equals_ignore_spaces(v[1], v2[1]):
-				my_print("ch %d:%s %04x / %d:%s %04x / %s" % (v[0], k, ord(k), v2[0], k2, ord(k2), v2[1]))
+				my_print("ch %d:%s %04x / %d:%s %04x / %s" % (v[0], k, getOrd(k), v2[0], k2, getOrd(k2), v2[1]))
 
 def isZenkakuKatakana(c):
 	return re.search(ur'[ァ-ヾ]', c) is not None
