@@ -1,11 +1,13 @@
 # coding: UTF-8
 #updateCharDesc.py
 #A part of NonVisual Desktop Access (NVDA)
-#Copyright (C) 2012 Takuya Nishimoto (NVDA Japanese Team)
+#Copyright (C) 2016 Takuya Nishimoto (NVDA Japanese Team)
 # usage:
 # > python updateCharDesc.py
 
 from _checkCharDesc import *
+from getord import getOrd
+
 ch = read_characters_file(CS_FILE)
 
 def isZenkakuKatakana(c):
@@ -15,13 +17,13 @@ def isHankakuKatakana(c):
 	return re.search(ur'[ｦ-ﾝ]', c) is not None
 
 def isHalfShape(c):
-	return (32 < ord(c)) and (ord(c) < 128)
+	return (32 < getOrd(c)) and (getOrd(c) < 128)
 
 d = {}
 keys = []
 for k,a in ch.items():
-	d[ord(k)] = a[1]
-	keys.append(ord(k))
+	d[getOrd(k)] = a[1]
+	keys.append(getOrd(k))
 	#print k.encode('utf-8')
 	#print ord(k) # character code
 	#print a[0] # line number
@@ -30,14 +32,15 @@ for k,a in ch.items():
 
 hex2_curr = None
 print "# Discriminant Reading Dictionary for NVDA Japanese"
-print "# Copyright (C) 2012 NVDA Japanese Team"
+print "# Copyright (C) 2016 NVDA Japanese Team"
 for k in sorted(keys):
 	hex4 = u"%04x" % k
 	hex2 = hex4[0:2]
 	if hex2_curr != hex2:
 		print
 		print "# %sxx" % hex2
-	c = unichr(k)
+	# http://d.hatena.ne.jp/nishiohirokazu/20120127/1327646600
+	c = ("\U" + "%08x" % k).decode("unicode-escape") #unichr(k)
 	if c == '#':
 		c = r'\#'
 
