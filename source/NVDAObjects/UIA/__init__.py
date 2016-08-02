@@ -538,7 +538,7 @@ class UIA(Window):
 		ret = ""
 		try:
 			ret += self.UIAElement.currentAccessKey
-		except COMError:
+		except COMError, TypeError:
 			pass
 		if ret:
 			#add a double space to the end of the string
