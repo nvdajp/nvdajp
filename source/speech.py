@@ -379,8 +379,6 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 		if args: buf.append(args)
 
 def speakObjectProperties(obj,reason=controlTypes.REASON_QUERY,index=None,**allowedProperties):
-	if speechMode==speechMode_off:
-		return
 	#Fetch the values for all wanted properties
 	newPropertyValues={}
 	positionInfo=None
