@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2016年8月2日
+- 最終更新日：2016年8月10日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -740,7 +740,7 @@ Windows 8 で NVDA のテキスト入力（読み上げ辞書の編集や NVDA+C
 
 + 関連情報 +
 
-++ ソースコード ++
+++ ソースコードとビルド ++
 
 NVDA日本語版のソースコード管理には2013年4月から git を使用しています。レポジトリは以下で公開しています。
 
@@ -748,6 +748,9 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 - [NVDA日本語チームの git ブランチ運用 https://osdn.jp/ticket/browse.php?group_id=4221&tid=31635]
 
 
+公開ビルドサーバーは下記です：
+
+- [AppVeyor ビルドサーバー https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp]
 
 
 ++ アドオンの紹介 ++
@@ -758,7 +761,12 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 
 ++ チケット登録 ++
 
-NVDA日本語チームでは [チケットシステム https://osdn.jp/projects/nvdajp/ticket/] および [GitHub Issues https://github.com/nvdajp/nvdajp/issues] で、確認された不具合および対応を公開しています。
+NVDA日本語チームは下記で確認された不具合および対応を公開しています。
+
+- [チケットシステム(OSDN) https://osdn.jp/projects/nvdajp/ticket/]
+- [GitHub Issues (nvdajp) https://github.com/nvdajp/nvdajp/issues] 
+- [GitHub Issues (miscDepsJp) https://github.com/nvdajp/nvdajpmiscdep/issues] 
+
 
 NVDA 日本語版のバグは NVDA 本家コミュニティのチケットシステムではなく NVDA 日本語チームに報告してください。
 
@@ -797,12 +805,14 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-- 執筆中
-
-
-以下の作業は NVDA 本家版 2016.3 と日本語版 2016.3jp の両方に反映されました。
-
-- 執筆中
+- [サロゲートペアへの対応 https://osdn.jp/ticket/browse.php?group_id=4221&tid=30841]
+- [「ヘルプを独自のウィンドウで開く」で TypeError の発生を回避 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36509]
+- [文字コード u+00e9 を含む単語の処理 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36480]
+- [JTalk での英文字列のローマ字式読み付与を改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36411]
+- [サロゲートペアの絵文字の辞書整備 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36402]
+- [JTalk 話者 tohoku-f01 の追加 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36346]
+- [「すべて読み上げ」で改行をまたぐ読み上げの改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=33823]
+- [JTalk での一部の単漢字の読みの改善 https://github.com/nvdajp/nvdajpmiscdep/issues/30]
 
 
 ++ 2016.2jp の変更点 ++

@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2016-05-23
+- last update: 2016-08-10
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -739,12 +739,16 @@ Details (in Japanese) [NVDAJP ticket 29872 https://osdn.jp/ticket/browse.php?gro
 
 + Miscellaneous +
 
-++ Source code ++
+++ Source code and build server ++
 
 We use git hosting services as follows:
 
 - GitHub: https://github.com/nvdajp
 
+
+We use AppVeyor as public build server:
+
+- [AppVeyor (public build server) https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp]
 
 
 
@@ -757,8 +761,12 @@ We use git hosting services as follows:
 
 ++ Issues ++
 
+- [OSDN Tickets https://osdn.jp/projects/nvdajp/ticket/]
 - [GitHub Issues https://github.com/nvdajp/nvdajp/issues]
-- [OSDN Tickets https://osdn.jp/projects/nvdajp/ticket/] (Japanese)
+- [GitHub Issues (miscDepsJp) https://github.com/nvdajp/nvdajpmiscdep/issues]
+
+
+
 
 
 
