@@ -1055,133 +1055,133 @@ class DocumentFormattingDialog(SettingsDialog):
 		# document formatting settings dialog.
 		self.detectFormatAfterCursorCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Announce formatting changes after the cursor (can cause a lag)"))
 		self.detectFormatAfterCursorCheckBox.SetValue(config.conf["documentFormatting"]["detectFormatAfterCursor"])
-		settingsSizer.Add(self.detectFormatAfterCursorCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.detectFormatAfterCursorCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.fontNameCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &font name"))
 		self.fontNameCheckBox.SetValue(config.conf["documentFormatting"]["reportFontName"])
-		settingsSizer.Add(self.fontNameCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.fontNameCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.fontSizeCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report font &size"))
 		self.fontSizeCheckBox.SetValue(config.conf["documentFormatting"]["reportFontSize"])
-		settingsSizer.Add(self.fontSizeCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.fontSizeCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.fontAttrsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report font attri&butes"))
 		self.fontAttrsCheckBox.SetValue(config.conf["documentFormatting"]["reportFontAttributes"])
-		settingsSizer.Add(self.fontAttrsCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.fontAttrsCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.alignmentCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &alignment"))
 		self.alignmentCheckBox.SetValue(config.conf["documentFormatting"]["reportAlignment"])
-		settingsSizer.Add(self.alignmentCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.alignmentCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.colorCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &colors"))
 		self.colorCheckBox.SetValue(config.conf["documentFormatting"]["reportColor"])
-		settingsSizer.Add(self.colorCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.colorCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.commentsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report co&mments"))
 		self.commentsCheckBox.SetValue(config.conf["documentFormatting"]["reportComments"])
-		settingsSizer.Add(self.commentsCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.commentsCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.revisionsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &editor revisions"))
 		self.revisionsCheckBox.SetValue(config.conf["documentFormatting"]["reportRevisions"])
-		settingsSizer.Add(self.revisionsCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.revisionsCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.emphasisCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report e&mphasis"))
 		self.emphasisCheckBox.SetValue(config.conf["documentFormatting"]["reportEmphasis"])
-		settingsSizer.Add(self.emphasisCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.emphasisCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.styleCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report st&yle"))
 		self.styleCheckBox.SetValue(config.conf["documentFormatting"]["reportStyle"])
-		settingsSizer.Add(self.styleCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.styleCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.spellingErrorsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report spelling e&rrors"))
 		self.spellingErrorsCheckBox.SetValue(config.conf["documentFormatting"]["reportSpellingErrors"])
-		settingsSizer.Add(self.spellingErrorsCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.spellingErrorsCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.pageCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &pages"))
 		self.pageCheckBox.SetValue(config.conf["documentFormatting"]["reportPage"])
-		settingsSizer.Add(self.pageCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.pageCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.lineNumberCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report line &numbers"))
 		self.lineNumberCheckBox.SetValue(config.conf["documentFormatting"]["reportLineNumber"])
-		settingsSizer.Add(self.lineNumberCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.lineNumberCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This message is presented in the document formatting settings dialogue
 		# If this option is selected, NVDA will cound the leading spaces and tabs of a line and speak it.
 		#
 		self.lineIndentationCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report l&ine indentation"))
 		self.lineIndentationCheckBox.SetValue(config.conf["documentFormatting"]["reportLineIndentation"])
-		settingsSizer.Add(self.lineIndentationCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.lineIndentationCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This message is presented in the document formatting settings dialogue
 		# If this option is selected, NVDA will report paragraph indentation if available. 
 		self.paragraphIndentationCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &paragraph indentation"))
 		self.paragraphIndentationCheckBox.SetValue(config.conf["documentFormatting"]["reportParagraphIndentation"])
-		settingsSizer.Add(self.paragraphIndentationCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.paragraphIndentationCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This message is presented in the document formatting settings dialogue
 		# If this option is selected, NVDA will report line spacing if available. 
 		self.lineSpacingCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &line spacing"))
 		self.lineSpacingCheckBox.SetValue(config.conf["documentFormatting"]["reportLineSpacing"])
-		settingsSizer.Add(self.lineSpacingCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.lineSpacingCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.tablesCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &tables"))
 		self.tablesCheckBox.SetValue(config.conf["documentFormatting"]["reportTables"])
-		settingsSizer.Add(self.tablesCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.tablesCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.tableHeadersCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report table row/column h&eaders"))
 		self.tableHeadersCheckBox.SetValue(config.conf["documentFormatting"]["reportTableHeaders"])
-		settingsSizer.Add(self.tableHeadersCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.tableHeadersCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.tableCellCoordsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report table cell c&oordinates"))
 		self.tableCellCoordsCheckBox.SetValue(config.conf["documentFormatting"]["reportTableCellCoords"])
-		settingsSizer.Add(self.tableCellCoordsCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.tableCellCoordsCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.linksCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report lin&ks"))
 		self.linksCheckBox.SetValue(config.conf["documentFormatting"]["reportLinks"])
-		settingsSizer.Add(self.linksCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.linksCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.headingsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &headings"))
 		self.headingsCheckBox.SetValue(config.conf["documentFormatting"]["reportHeadings"])
-		settingsSizer.Add(self.headingsCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.headingsCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.listsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report &lists"))
 		self.listsCheckBox.SetValue(config.conf["documentFormatting"]["reportLists"])
-		settingsSizer.Add(self.listsCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.listsCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.blockQuotesCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report block &quotes"))
 		self.blockQuotesCheckBox.SetValue(config.conf["documentFormatting"]["reportBlockQuotes"])
-		settingsSizer.Add(self.blockQuotesCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.blockQuotesCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		self.landmarksCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Report lan&dmarks"))
 		self.landmarksCheckBox.SetValue(config.conf["documentFormatting"]["reportLandmarks"])
-		settingsSizer.Add(self.landmarksCheckBox,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(self.landmarksCheckBox,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		item=self.framesCheckBox=wx.CheckBox(self,label=_("Report fra&mes"))
 		item.Value=config.conf["documentFormatting"]["reportFrames"]
-		settingsSizer.Add(item,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(item,border=5,flag=wx.BOTTOM)
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings dialog.
 		item=self.clickableCheckBox=wx.CheckBox(self,label=_("Report if &clickable"))
 		item.Value=config.conf["documentFormatting"]["reportClickable"]
-		settingsSizer.Add(item,border=10,flag=wx.BOTTOM)
+		settingsSizer.Add(item,border=5,flag=wx.BOTTOM)
 
 	def postInit(self):
 		self.detectFormatAfterCursorCheckBox.SetFocus()
@@ -1626,25 +1626,25 @@ class SpeechSymbolsDialog(SettingsDialog):
 		symbols = self.symbols = [copy.copy(symbol) for symbol in self.symbolProcessor.computedSymbols.itervalues()]
 		self.pendingRemovals = {}
 
-		sizer = wx.BoxSizer(wx.HORIZONTAL)
+		sizer = wx.BoxSizer(wx.VERTICAL)
 		# Translators: The label for symbols list in symbol pronunciation dialog.
 		sizer.Add(wx.StaticText(self, wx.ID_ANY, _("&Symbols")))
-		self.symbolsList = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(360, 350))
+		self.symbolsList = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
 		# Translators: The label for a column in symbols list used to identify a symbol.
-		self.symbolsList.InsertColumn(0, _("Symbol"), width=150)
-		self.symbolsList.InsertColumn(1, _("Replacement"), width=150)
+		self.symbolsList.InsertColumn(0, _("Symbol"))
+		self.symbolsList.InsertColumn(1, _("Replacement"))
 		# Translators: The label for a column in symbols list used to identify a symbol's speech level (either none, some, most, all or character).
-		self.symbolsList.InsertColumn(2, _("Level"), width=60)
+		self.symbolsList.InsertColumn(2, _("Level"))
 		# Translators: The label for a column in symbols list which specifies when the actual symbol will be sent to the synthesizer (preserved).
 		# See the "Punctuation/Symbol Pronunciation" section of the User Guide for details.
-		self.symbolsList.InsertColumn(3, _("Preserve"), width=60)
+		self.symbolsList.InsertColumn(3, _("Preserve"))
 		for symbol in symbols:
 			item = self.symbolsList.Append((symbol.displayName,))
 			self.updateListItem(item, symbol)
 		self.symbolsList.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onListItemFocused)
 		self.symbolsList.Bind(wx.EVT_CHAR, self.onListChar)
-		sizer.Add(self.symbolsList)
-		settingsSizer.Add(sizer)
+		sizer.Add(self.symbolsList, flag=wx.EXPAND)
+		settingsSizer.Add(sizer, flag=wx.EXPAND)
 
 		# Translators: The label for the edit field in symbol pronunciation dialog to change the pronunciation of a symbol.
 		changeSizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _("Change symbol")), wx.VERTICAL)
@@ -1800,7 +1800,7 @@ class InputGesturesDialog(SettingsDialog):
 		filter = wx.TextCtrl(self)
 		filter.Bind(wx.EVT_TEXT, self.onFilterChange, filter)
 		settingsSizer.Add(filter)
-		tree = self.tree = wx.TreeCtrl(self, style=wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT | wx.TR_SINGLE)
+		tree = self.tree = wx.TreeCtrl(self, style=wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT | wx.TR_SINGLE, size=(360,350))
 		self.treeRoot = tree.AddRoot("root")
 		tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.onTreeSelect)
 		settingsSizer.Add(tree, proportion=7, flag=wx.EXPAND)
