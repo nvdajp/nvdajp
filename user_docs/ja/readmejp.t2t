@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2016年8月10日
+- 最終更新日：2016年8月11日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -813,6 +813,7 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 - [JTalk 話者 tohoku-f01 の追加 https://osdn.jp/ticket/browse.php?group_id=4221&tid=36346]
 - [「すべて読み上げ」で改行をまたぐ読み上げの改善 https://osdn.jp/ticket/browse.php?group_id=4221&tid=33823]
 - [JTalk での一部の単漢字の読みの改善 https://github.com/nvdajp/nvdajpmiscdep/issues/30]
+- [設定ダイアログの表示の調整 https://github.com/nvdajp/nvdajp/issues/10]
 
 
 ++ 2016.2jp の変更点 ++
