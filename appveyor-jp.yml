@@ -3,7 +3,7 @@ version: "{branch}-{build}"
 branches:
  only:
   - jpbeta
-  - jp2016.2
+  - jp2016.3
 
 environment:
  PY_PYTHON: 2.7-32
