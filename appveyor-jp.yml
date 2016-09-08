@@ -3,7 +3,7 @@ version: "{branch}-{build}"
 branches:
  only:
   - jpbeta
-  - jp2016.3
+  - /jp201.*/
 
 environment:
  PY_PYTHON: 2.7-32
@@ -30,7 +30,11 @@ install:
  - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key-pass.txt.enc  -secret %my_secret_b%
 
 build_script:
- - jptools\kcCertAllBuild.cmd
+ - ps: |
+     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
+     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
+ - 'echo jptools\kcCertAllBuild.cmd %sconsArgs%'
+ - jptools\kcCertAllBuild.cmd %sconsArgs%
 
 artifacts:
  - path: output\*
