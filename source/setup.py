@@ -172,7 +172,7 @@ setup(
 			"dest_base":"nvda_noUIAccess",
 			"uac_info": ("asInvoker", False),
 			"icon_resources":nvdajpIcons,
-			"version":"0.0.0.0",
+			"version":"%s.%s.%s.%s"%(version_year,version_major,version_minor,version_build),
 			"description":"NVDA application",
 			"product_version":version,
 			"copyright":copyright,
@@ -182,7 +182,7 @@ setup(
 		{
 			"script": "nvda_slave.pyw",
 			"icon_resources":nvdajpIcons,
-			"version": "0.0.0.0",
+			"version":"%s.%s.%s.%s"%(version_year,version_major,version_minor,version_build),
 			"description": name,
 			"product_version": version,
 			"copyright": copyright,
@@ -193,7 +193,7 @@ setup(
 			# uiAccess will be enabled at runtime if appropriate.
 			"uac_info": ("asInvoker", False),
 			"icon_resources": [(1,"images/nvda.ico")],
-			"version": "0.0.0.0",
+			"version":"%s.%s.%s.%s"%(version_year,version_major,version_minor,version_build),
 			"description": "NVDA Ease of Access proxy",
 			"product_version": version,
 			"copyright": copyright,
@@ -203,7 +203,7 @@ setup(
 	service=[{
 		"modules": ["nvda_service"],
 		"icon_resources":nvdajpIcons,
-		"version": "0.0.0.0",
+		"version":"%s.%s.%s.%s"%(version_year,version_major,version_minor,version_build),
 		"description": "NVDA service",
 		"product_version": version,
 		"copyright": copyright,

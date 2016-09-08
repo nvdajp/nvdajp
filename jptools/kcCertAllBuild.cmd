@@ -1,3 +1,5 @@
+set SCONSOPTIONS=%* --silent
+
 set VERSION=2016.4jp
 set UPDATEVERSIONTYPE=nvdajp
 
@@ -11,7 +13,6 @@ set PFX=jptools\secret\knowlec-key151019.pfx
 set PWFILE=jptools\secret\knowlec-key-pass.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
-set SCONSOPTIONS=--silent
 
 @rem test nmake and check errorlevel
 cl
