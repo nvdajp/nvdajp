@@ -6,20 +6,20 @@ NVDA日本語チーム 西本卓也
 1. ビルド環境
 
 
-NVDA 2016.2jp の場合
+NVDA 2016.4jp-beta の場合
 
 
 (1) Windows 10 32ビットまたは64ビット / Windows 7 SP1 32ビットまたは64ビット
 
 Windows 8.1 では確認していないが、おそらく使用可能。
 
-(2) Visual Studio 2015 Community または Express for Desktop (Update 1)
+(2) Visual Studio 2015 Community または Express for Desktop (Update 3)
 
 時間とディスクを節約したい場合はできるだけオプションを減らしてインストールする。
 必要なのは Visual C++ と「C++に関するWindows XPサポート」。
 後述の Git for Windows はここで Visual Studio と一緒にインストールできる。
 
-備考：NVDA 2016.2 から Visual Studio 2015 だけでよい。
+備考：NVDA 2016.2jp から Visual Studio 2015 だけでよい。
 
 (3) Git for Windows
 
@@ -42,7 +42,7 @@ git を ssh 経由で使えるために、環境に応じて
 miscDepsJp から sources へのコピーで使用している。
 
 
-(5) Python 2.7.11 (Windows 32bit)
+(5) Python 2.7.12 (Windows 32bit)
 
 msi ファイルでインストール、オプションをすべてチェックする。
 C:\Python27\python.exe に PATH が通っていること。
@@ -145,3 +145,82 @@ jptools\clean_miscdep.cmd
 5.4 2014.3jp までの署名つきリリースの手順
 
 http://ja.nishimotz.com/nvdajp_certfile
+
+
+6. AppVeyor
+
+
+6.1 AppVeyor プロジェクト設定
+
+nvdajp は以下のように設定している
+
+https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp/settings
+
+
+[General]
+
+GitHub repository:
+nvdajp/nvdajp
+
+Default branch:
+jpbeta
+
+Custom configulation .yml file name:
+appveyor-jp.yml
+
+
+[Environment]
+
+Build worker image:
+Visual Studio 2015
+
+
+6.2 appveyor-jp.yml の内容
+
+本家の appveyor.yml をそのまま使わず、
+前述の jptools\kcCertAllBuild.cmd を呼び出している。
+
+
+各種エラー回避の記録：
+
+https://osdn.jp/ticket/browse.php?group_id=4221&tid=36010
+
+
+本家版 NVDA を AppVeyor でビルドするために
+コードサイニング証明書を暗号化している。
+日本語版は独自のコードサイニング証明書を追加している。
+
+この暗号化は AppVeyor アカウントと紐付いており、
+他のユーザーが AppVeyor でビルドすると、
+コードサイニングに失敗するはずである。
+
+AppVeyor の説明：
+
+http://www.appveyor.com/docs/how-to/secure-files
+
+解説記事（チケット）とその引用：
+
+https://osdn.jp/ticket/browse.php?group_id=4221&tid=36180
+
+なぜ暗号化されたファイルと、その暗号化を解くための秘密文字列を
+両方公開して大丈夫なのか、
+理屈がわかりにくいが、こういうことになっている：
+
+  * PFX ファイル(A)（秘密にしたいファイル）
+  * ユーザーが設定した秘密文字列(B)
+  * PFX ファイル(A) を秘密文字列(B) で暗号化したファイル(C)
+  * 秘密文字列(B) を AppVeyor が暗号化した文字列(D) （ユーザーには見えないがここで AppVeyor が秘密文字列 (E) を使用） 
+
+公開される情報
+
+  * (C) 暗号化された PFX ファイル
+  * (D) 暗号化された秘密文字列 
+
+公開されない情報
+
+  * (A), (B) : ユーザーが秘密にしたい情報
+  * (E) : AppVeyor が秘密にしている情報 
+
+(E) がないので (C), (D) から (A), (B) を得ることができない。
+
+（以上）
