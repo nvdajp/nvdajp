@@ -24,6 +24,7 @@
 - When using Microsoft Word, page-number fields in headers can now be read. (#6004)
 - The mouse can now be used to move focus between the symbol list and the edit fields in the symbol pronunciation dialog. (#6312)
 - Fixed an issue that stops the the elements list from appearing when Microsoft Word contains an invalid hyperlink. (#5886)
+- After being closed via the task bar or the alt+F4 shortcut, the speech viewer checkbox status in the NVDA menu will now reflect the actual visibility of the window. (#6340)
 
 
 == Changes for Developers ==
