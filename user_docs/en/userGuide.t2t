@@ -78,7 +78,7 @@ If you plan to  always use NVDA on this computer, you will want to choose to ins
 Installing NVDA will allow for additional functionality such as automatic starting after logon, the ability to read the Windows Logon and Windows security screens (which cannot be done with portable and temporary copies) and creation of Start Menu and desktop shortcuts.
 The installed copy is also able to create a portable copy itself at any time.
 
-If you want to take NVDA with you on a USB thum drive or other writable  media, then you  should choose to create a portable copy.
+If you want to take NVDA with you on a USB thumb drive or other writable  media, then you  should choose to create a portable copy.
 The portable copy also has the ability to install itself on any computer at a later time.
 However, if you wish to copy NVDA onto read-only media such as a CD, you should just copy the download package.
 Running the portable version directly from read-only media is not supported at this time.
@@ -1708,8 +1708,8 @@ Please see the display's documentation for descriptions of where these keys can 
 ++ Baum/Humanware/APH/Orbit Braille Displays ++
 Several [Baum http://www.baum.de/cms/en/], [HumanWare http://www.humanware.com/], [APH http://www.aph.org/] and [Orbit http://www.orbitresearch.com/] displays are supported when connected via USB, bluetooth or serial.
 These include:
-- Baum: SuperVario, PocketVario, VarioUltra, Pronto!
-- HumanWare: Brailliant, BrailleConnect
+- Baum: SuperVario, PocketVario, VarioUltra, Pronto!, SuperVario2, Vario 340
+- HumanWare: Brailliant, BrailleConnect, Brailliant2
 - APH: Refreshabraille
 - Orbit: Orbit Reader 20
 -
