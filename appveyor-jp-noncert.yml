@@ -1,0 +1,28 @@
+version: "{branch}-{build}"
+
+environment:
+ PY_PYTHON: 2.7-32
+
+clone_depth: 1
+
+init:
+ - ps: Set-WinSystemLocale ja-JP
+ - ps: Start-Sleep -s 5
+ - ps: Restart-Computer
+ - tzutil /g
+ - tzutil /s "Tokyo Standard Time"
+ - tzutil /g
+
+install:
+ - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
+ - git submodule update --init --recursive
+
+build_script:
+ - ps: |
+     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
+     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
+ - 'echo jptools\nonCertBuild.cmd %sconsArgs%'
+ - jptools\nonCertBuild.cmd %sconsArgs%
+
+artifacts:
+ - path: output\*
