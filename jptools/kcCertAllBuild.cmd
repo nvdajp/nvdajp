@@ -9,7 +9,7 @@ set VERSION=%VERSION%-beta-%NOWDATE%
 set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
 
 set PUBLISHER=nvdajp
-set PFX=jptools\secret\knowlec-key151019.pfx
+set PFX=jptools\secret\knowlec-key161005.pfx
 set PWFILE=jptools\secret\knowlec-key-pass.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
