@@ -102,7 +102,15 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 jptools\nonCertAllBuild.cmd
 
 出力は output フォルダに作られる。
-実行した日付のついた nvda_20**.*jp-noncert-YYMMDD.exe というファイル名になる。
+実行した日付のついた nvda_20**.*jp-beta-YYMMDD.exe というファイル名になる。
+
+AppVeyor 署名なしビルドのプロジェクト nvdajp-noncert
+https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp-q4r95
+
+Custom configuration .yml file name に appveyor-jp-noncert.yml を指定している。
+
+作業記録:
+https://osdn.net/ticket/browse.php?group_id=4221&tid=36665
 
 
 4. 署名つきビルド
