@@ -18,7 +18,7 @@ set VERSION=jpdev%NOWDATE%
 
 set PUBLISHER=nvdajp
 set PAUSE=0
-set CLEAN=1
+set CLEAN=0
 set CLIENT=1
 set PROCESS=1
 set RELEASE=1
