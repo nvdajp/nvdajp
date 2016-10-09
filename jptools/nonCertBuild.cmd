@@ -1,10 +1,25 @@
-set VERSION=2016.2jp
+set SCONSOPTIONS=%*
+
+@rem test nmake and check errorlevel
+cl
+if "%ERRORLEVEL%" neq "9009" goto :done
+
+if exist "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat" goto x64
+call "C:\Program Files\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
+goto done
+:x64
+call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
+:done
+SET CL=/arch:IA32 /D "_USING_V110_SDK71_"
+call jptools\setupMiscDepsJp.cmd
+
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
-set VERSION=%VERSION%-noncert-%NOWDATE%
+set VERSION=jpdev%NOWDATE%
+
 set PUBLISHER=nvdajp
 set PAUSE=0
 set CLEAN=1
-set CLIENT=0
+set CLIENT=1
 set PROCESS=1
 set RELEASE=1
 
@@ -15,7 +30,7 @@ goto endif_set_debug_option
 set DEBUG=nvdaHelperDebugFlags=RTC,debugCRT
 :endif_set_debug_option
 
-set ARGS=-j%PROCESS% publisher=%PUBLISHER% release=%RELEASE% version=%VERSION% %DEBUG%
+set ARGS=-j%PROCESS% publisher=%PUBLISHER% release=%RELEASE% version=%VERSION% %DEBUG% %SCONSOPTIONS%
 
 @if "%RELEASE%"=="0" goto del_snapshot
 del /Q output\nvda_%VERSION%.exe
