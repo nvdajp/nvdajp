@@ -961,6 +961,8 @@ class ExcelCellTextInfo(NVDAObjectTextInfo):
 			except COMError:
 				pass
 		if formatConfig["reportBorderStyle"]:
+			if self.obj.excelCellObject.mergeCells:
+				cellObj=self.obj.excelCellObject.mergeArea.DisplayFormat
 			try:
 				formatField['border-style']=getCellBorderStyleDescription(cellObj.borders)
 			except COMError:
