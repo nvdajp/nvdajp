@@ -56,12 +56,17 @@ borderStyleLabels={
 }
 
 def getCellBorderStyleDescription(bordersObj):
-	items=[]
+	d={}
 	for pos in bordersIndexLabels.keys():
 		if bordersObj[pos].lineStyle != xlLineStyleNone:
-			items.append(_("{color} {style} {position}").format(
-				position=bordersIndexLabels.get(pos),
+			d[pos]=_("{color} {style}").format(
 				style=borderStyleLabels.get(bordersObj[pos].lineStyle),
 				color=colors.RGB.fromCOLORREF(int(bordersObj[pos].color)).name
-			))
-	return ', '.join(items)
+			)
+	s=[]
+	for pos,desc in d.items():
+		s.append(_("{desc} {position}").format(
+			desc=desc,
+			position=bordersIndexLabels.get(pos)
+		))
+	return ', '.join(s)
