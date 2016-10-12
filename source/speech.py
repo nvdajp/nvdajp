@@ -1299,6 +1299,15 @@ def getFormatFieldSpeech(attrs,attrsCache=None,formatConfig=None,unit=None,extra
 				# A style is a collection of formatting settings and depends on the application.
 				text=_("default style")
 			textList.append(text)
+	if  formatConfig["reportBorderStyle"]:
+		borderStyle=attrs.get("border-style")
+		oldBorderStyle=attrsCache.get("border-style") if attrsCache is not None else None
+		if borderStyle!=oldBorderStyle:
+			if borderStyle:
+				text=borderStyle
+			else:
+				text=_("no border lines")
+			textList.append(text)
 	if  formatConfig["reportFontName"]:
 		fontFamily=attrs.get("font-family")
 		oldFontFamily=attrsCache.get("font-family") if attrsCache is not None else None
