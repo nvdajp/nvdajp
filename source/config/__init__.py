@@ -181,6 +181,7 @@ confspec = ConfigObj(StringIO(
 	reportRevisions = boolean(default=true)
 	reportEmphasis = boolean(default=false)
 	reportColor = boolean(default=False)
+	reportBorderStyle = boolean(default=True)
 	reportAlignment = boolean(default=false)
 	reportLineSpacing = boolean(default=false)
 	reportStyle = boolean(default=false)
