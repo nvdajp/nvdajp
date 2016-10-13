@@ -60,15 +60,22 @@ xlHairline = 1 # thinnest border
 xlThin = 2
 xlMedium = -4138
 xlThick = 4 # widest border
+borderWeightLabels={
+	# Translators: border weight in Microsoft Excel.
+	xlHairline:_("thinnest"),
+	xlThin:_("thin"),
+	xlMedium:_("medium"),
+	xlThick:_("thick"),
+}
 
 def getCellBorderStyleDescription(bordersObj):
 	d={}
 	for pos in bordersIndexLabels.keys():
 		if bordersObj[pos].lineStyle != xlLineStyleNone:
-			log.info("{:d} {:d} {:s}".format(bordersObj[pos].lineStyle, bordersObj[pos].weight, borderStyleLabels.get(bordersObj[pos].lineStyle)))
-			d[pos]=_("{color} {style}").format(
+			d[pos]=_("{color} {style} {weight}").format(
 				style=borderStyleLabels.get(bordersObj[pos].lineStyle),
-				color=colors.RGB.fromCOLORREF(int(bordersObj[pos].color)).name
+				color=colors.RGB.fromCOLORREF(int(bordersObj[pos].color)).name,
+				weight=borderWeightLabels.get(bordersObj[pos].weight)
 			)
 	s=[]
 	if d.get(xlEdgeTop) == d.get(xlEdgeBottom) == d.get(xlEdgeLeft) == d.get(xlEdgeRight) and d.get(xlEdgeTop) is not None:
