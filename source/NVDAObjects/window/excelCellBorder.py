@@ -48,11 +48,11 @@ borderStyleLabels={
 	# Translators: border styles in Microsoft Excel.
 	xlContinuous:_("continuous"),
 	xlDash:_("dashed"),
-	xlDashDot:_("alternating dashes and dots"),
-	xlDashDotDot:_("dash followed by two dots"),
+	xlDashDot:_("dash dot"),
+	xlDashDotDot:_("dash dot dot"),
 	xlDot:_("dotted"),
 	xlDouble:_("double"),
-	xlSlantDashDot:_("slanted dashes"),
+	xlSlantDashDot:_("slanted dash dot"),
 }
 # XlBorderWeight Enumeration
 # see https://msdn.microsoft.com/en-us/library/office/ff197515.aspx
@@ -62,20 +62,44 @@ xlMedium = -4138
 xlThick = 4 # widest border
 borderWeightLabels={
 	# Translators: border weight in Microsoft Excel.
-	xlHairline:_("thinnest"),
+	xlHairline:_("hair"),
 	xlThin:_("thin"),
 	xlMedium:_("medium"),
 	xlThick:_("thick"),
+}
+borderStyleAndWeightLabels={
+	# Translators: combinations of border style and weight in Microsoft Excel.
+	(xlContinuous, xlHairline):_("hair"),
+	(xlDot, xlThin):_("dotted"),
+	(xlDashDotDot, xlThin):_("dash dot dot"),
+	(xlDashDot, xlThin):_("dash dot"),
+	(xlDash, xlThin):pgettext("celll border style", "dashed"),
+	(xlContinuous, xlThin):_("thin"),
+	(xlDashDotDot, xlMedium):_("medium dash dot dot"),
+	(xlSlantDashDot, xlMedium):_("slanted dash dot"),
+	(xlDashDot, xlMedium):_("medium dash dot"),
+	(xlDash, xlMedium):_("medium dashed"),
+	(xlContinuous, xlMedium):_("medium"),
+	(xlContinuous, xlThick):_("thick"),
+	(xlDouble, xlThick):_("double"),
 }
 
 def getCellBorderStyleDescription(bordersObj):
 	d={}
 	for pos in bordersIndexLabels.keys():
-		if bordersObj[pos].lineStyle != xlLineStyleNone:
-			d[pos]=_("{color} {style} {weight}").format(
-				style=borderStyleLabels.get(bordersObj[pos].lineStyle),
-				color=colors.RGB.fromCOLORREF(int(bordersObj[pos].color)).name,
-				weight=borderWeightLabels.get(bordersObj[pos].weight)
+		border=bordersObj[pos]
+		if border.lineStyle != xlLineStyleNone:
+			style=border.lineStyle
+			weight=border.weight
+			desc=borderStyleAndWeightLabels.get((style,weight))
+			if not desc:
+				desc=_("{weight} {style}").format(
+					style=borderStyleLabels.get(style),
+					weight=borderWeightLabels.get(weight)
+				)
+			d[pos]=_("{color} {desc}").format(
+				color=colors.RGB.fromCOLORREF(int(border.color)).name,
+				desc=desc
 			)
 	s=[]
 	if d.get(xlEdgeTop) == d.get(xlEdgeBottom) == d.get(xlEdgeLeft) == d.get(xlEdgeRight) and d.get(xlEdgeTop) is not None:
