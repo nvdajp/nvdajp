@@ -5,6 +5,7 @@
 #See the file COPYING for more details.
 
 import colors
+from logHandler import log
 # XlBordersIndex Enumeration
 # see https://msdn.microsoft.com/en-us/library/office/ff835915.aspx
 xlDiagonalDown = 5
@@ -53,11 +54,18 @@ borderStyleLabels={
 	xlDouble:_("double"),
 	xlSlantDashDot:_("slanted dashes"),
 }
+# XlBorderWeight Enumeration
+# see https://msdn.microsoft.com/en-us/library/office/ff197515.aspx
+xlHairline = 1 # thinnest border
+xlThin = 2
+xlMedium = -4138
+xlThick = 4 # widest border
 
 def getCellBorderStyleDescription(bordersObj):
 	d={}
 	for pos in bordersIndexLabels.keys():
 		if bordersObj[pos].lineStyle != xlLineStyleNone:
+			log.info("{:d} {:d} {:s}".format(bordersObj[pos].lineStyle, bordersObj[pos].weight, borderStyleLabels.get(bordersObj[pos].lineStyle)))
 			d[pos]=_("{color} {style}").format(
 				style=borderStyleLabels.get(bordersObj[pos].lineStyle),
 				color=colors.RGB.fromCOLORREF(int(bordersObj[pos].color)).name
