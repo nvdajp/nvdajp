@@ -73,7 +73,7 @@ borderStyleAndWeightLabels={
 	(xlDot, xlThin):_("dotted"),
 	(xlDashDotDot, xlThin):_("dash dot dot"),
 	(xlDashDot, xlThin):_("dash dot"),
-	(xlDash, xlThin):pgettext("celll border style", "dashed"),
+	(xlDash, xlThin):_("dashed"),
 	(xlContinuous, xlThin):_("thin"),
 	(xlDashDotDot, xlMedium):_("medium dash dot dot"),
 	(xlSlantDashDot, xlMedium):_("slanted dash dot"),
