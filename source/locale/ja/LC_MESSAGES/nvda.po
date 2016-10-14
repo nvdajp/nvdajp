@@ -76,16 +76,61 @@ msgstr "点線"
 
 #: NVDAObjects/window/excelCellBorder.py
 msgid "double"
-msgstr "2本線"
+msgstr "二本線"
 
 #: NVDAObjects/window/excelCellBorder.py
 msgid "slanted dashes"
 msgstr "斜め破線"
 
 #: NVDAObjects/window/excelCellBorder.py
+msgid "hair"
+msgstr "細線"
+
+#: NVDAObjects/window/excelCellBorder.py
+msgid "dash dot dot"
+msgstr "二点鎖線"
+
+#: NVDAObjects/window/excelCellBorder.py
+msgid "dash dot"
+msgstr "一点鎖線"
+
+#: NVDAObjects/window/excelCellBorder.py
+msgid "thin"
+msgstr "実線"
+
+#: NVDAObjects/window/excelCellBorder.py
+msgid "medium dash dot dot"
+msgstr "実線(二点鎖線)"
+
+#: NVDAObjects/window/excelCellBorder.py
+msgid "slanted dash dot"
+msgstr "傾斜(一点鎖線)"
+
+#: NVDAObjects/window/excelCellBorder.py
+msgid "medium dash dot"
+msgstr "実線(一点鎖線)"
+
+#: NVDAObjects/window/excelCellBorder.py
+msgid "medium dashed"
+msgstr "実線(破線)"
+
+#: NVDAObjects/window/excelCellBorder.py
+msgid "medium"
+msgstr "太線"
+
+#: NVDAObjects/window/excelCellBorder.py
+msgid "thick"
+msgstr "極太線"
+
+#: NVDAObjects/window/excelCellBorder.py
 #, python-brace-format
-msgid "{color} {style}"
-msgstr "{color}の{style}"
+msgid "{weight} {style}"
+msgstr "{weight}の{style}"
+
+#: NVDAObjects/window/excelCellBorder.py
+#, python-brace-format
+msgid "{color} {desc}"
+msgstr "{color}の{desc}"
 
 #: NVDAObjects/window/excelCellBorder.py
 #, python-brace-format
