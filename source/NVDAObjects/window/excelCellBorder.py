@@ -6,7 +6,6 @@
 
 from collections import OrderedDict
 import colors
-from logHandler import log
 # XlBordersIndex Enumeration
 # see https://msdn.microsoft.com/en-us/library/office/ff835915.aspx
 xlDiagonalDown = 5
