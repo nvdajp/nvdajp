@@ -196,7 +196,7 @@ backgroundPatternLabels={
 		xlPatternRectangularGradient:_("rectangular gradient"),
 	}
 
-from excelCellBorder import *
+from excelCellBorder import getCellBorderStyleDescription
 
 re_RC=re.compile(r'R(?:\[(\d+)\])?C(?:\[(\d+)\])?')
 re_absRC=re.compile(r'^R(\d+)C(\d+)(?::R(\d+)C(\d+))?$')
@@ -964,7 +964,7 @@ class ExcelCellTextInfo(NVDAObjectTextInfo):
 			if self.obj.excelCellObject.mergeCells:
 				cellObj=self.obj.excelCellObject.mergeArea.DisplayFormat
 			try:
-				formatField['border-style']=getCellBorderStyleDescription(cellObj.borders)
+				formatField['border-style']=getCellBorderStyleDescription(cellObj.borders,reportBorderColor=formatConfig['reportBorderColor'])
 			except COMError:
 				pass
 		return formatField,(self._startOffset,self._endOffset)
