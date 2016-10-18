@@ -2120,6 +2120,20 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.alwaysSpeakMathInEnglishCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Always speak math in English")))
 		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
 
+		borderChoices=[
+			_("Off"),
+			_("Styles"),
+			_("Colors and styles"),
+		]
+		self.borderCombo = settingsSizerHelper.addLabeledControl(_("Cell border"), wx.Choice, choices=borderChoices)
+		curChoice = 0
+		if config.conf["documentFormatting"]["reportBorderStyle"]:
+			if config.conf["documentFormatting"]["reportBorderColor"]:
+				curChoice = 2
+			else:
+				curChoice = 1
+		self.borderCombo.SetSelection(curChoice)
+		
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
 
@@ -2136,6 +2150,9 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["language"]["jpAnnounceNewLine"]=self.jpAnnounceNewLineCheckBox.IsChecked()
 		config.conf["language"]["openDocFileByMSHTA"]=self.openDocFileByMSHTACheckBox.IsChecked()
 		config.conf["language"]["alwaysSpeakMathInEnglish"]=self.alwaysSpeakMathInEnglishCheckBox.IsChecked()
+		choice = self.borderCombo.GetSelection()
+		config.conf["documentFormatting"]["reportBorderStyle"] = choice in (1,2)
+		config.conf["documentFormatting"]["reportBorderColor"] = (choice == 2)
 
 		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
 		try:

@@ -209,6 +209,18 @@ msgstr "ヘルプを独自のウィンドウで開く"
 msgid "Always speak math in English"
 msgstr "数式を英語で読み上げる"
 
+#: gui\settingsDialogs.py
+msgid "Cell border"
+msgstr "セルの罫線の報告"
+
+#: gui\settingsDialogs.py
+msgid "Styles"
+msgstr "スタイル"
+
+#: gui\settingsDialogs.py
+msgid "Colors and styles"
+msgstr "色とスタイル"
+
 #: editableText.py:
 msgid "new line"
 msgstr "改行"
