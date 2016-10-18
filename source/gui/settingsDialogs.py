@@ -72,7 +72,7 @@ class SettingsDialog(wx.Dialog):
 		@param parent: The parent for this dialog; C{None} for no parent.
 		@type parent: wx.Window
 		"""
-		super(SettingsDialog, self).__init__(parent, wx.ID_ANY, self.title, style=wx.RESIZE_BORDER|wx.CAPTION)
+		super(SettingsDialog, self).__init__(parent, wx.ID_ANY, self.title)
 		mainSizer=wx.BoxSizer(wx.VERTICAL)
 		self.settingsSizer=wx.BoxSizer(wx.VERTICAL)
 		self.makeSettings(self.settingsSizer)
@@ -208,9 +208,8 @@ class GeneralSettingsDialog(SettingsDialog):
 				item.Disable()
 			settingsSizerHelper.addItem(item)
 
-		self.uiaEnabledCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable UIA (requires restart)"))
+		self.uiaEnabledCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Enable UIA (requires restart)")))
 		self.uiaEnabledCheckBox.SetValue(config.conf["UIA"]["enabled"])
-		settingsSizer.Add(self.uiaEnabledCheckBox,border=10,flag=wx.TOP|wx.BOTTOM)
 
 	def postInit(self):
 		self.languageList.SetFocus()
@@ -2078,69 +2077,48 @@ class LanguageSettingsDialog(SettingsDialog):
 	title = _("Language Settings")
 
 	def makeSettings(self, settingsSizer):
-		self.nconvAsNVDAModifierCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Use NonConvert as an NVDA modifier key"))
+		settingsSizerHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
+		self.nconvAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use NonConvert as an NVDA modifier key")))
 		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
-		settingsSizer.Add(self.nconvAsNVDAModifierCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.convAsNVDAModifierCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Use Convert as an NVDA modifier key"))
+		self.convAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use Convert as an NVDA modifier key")))
 		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
-		settingsSizer.Add(self.convAsNVDAModifierCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.nvdajpImeBeepCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Beep for IME mode change"))
+		self.nvdajpImeBeepCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Beep for IME mode change")))
 		self.nvdajpImeBeepCheckBox.SetValue(config.conf["keyboard"]["nvdajpImeBeep"])
-		settingsSizer.Add(self.nvdajpImeBeepCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.jpPhoneticReadingKanaCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Phonetic reading for Kana"))
+		self.jpPhoneticReadingKanaCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Phonetic reading for Kana")))
 		self.jpPhoneticReadingKanaCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingKana"])
-		settingsSizer.Add(self.jpPhoneticReadingKanaCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.jpPhoneticReadingLatinCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Phonetic reading for Latin"))
+		self.jpPhoneticReadingLatinCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Phonetic reading for Latin")))
 		self.jpPhoneticReadingLatinCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingLatin"])
-		settingsSizer.Add(self.jpPhoneticReadingLatinCheckBox,border=10,flag=wx.BOTTOM)
 
-		sizer = wx.BoxSizer(wx.HORIZONTAL)
-		jpKatakanaPitchChangeLabel=wx.StaticText(self,-1,label=_("Katakana pitch change percentage"))
-		sizer.Add(jpKatakanaPitchChangeLabel)
-		self.jpKatakanaPitchChangeEdit=wx.TextCtrl(self,wx.NewId())
+		self.jpKatakanaPitchChangeEdit=settingsSizerHelper.addLabeledControl(_("Katakana pitch change percentage"),wx.TextCtrl)
 		self.jpKatakanaPitchChangeEdit.SetValue(str(config.conf["language"]["jpKatakanaPitchChange"]))
-		sizer.Add(self.jpKatakanaPitchChangeEdit)
-		settingsSizer.Add(sizer, border=10, flag=wx.BOTTOM)
 
-		sizer = wx.BoxSizer(wx.HORIZONTAL)
-		halfShapePitchChangeLabel=wx.StaticText(self,-1,label=_("Half shape pitch change percentage"))
-		sizer.Add(halfShapePitchChangeLabel)
-		self.halfShapePitchChangeEdit=wx.TextCtrl(self,wx.NewId())
+		self.halfShapePitchChangeEdit=settingsSizerHelper.addLabeledControl(_("Half shape pitch change percentage"),wx.TextCtrl)
 		self.halfShapePitchChangeEdit.SetValue(str(config.conf["language"]["halfShapePitchChange"]))
-		sizer.Add(self.halfShapePitchChangeEdit)
-		settingsSizer.Add(sizer, border=10, flag=wx.BOTTOM)
 
-		self.announceCandidateNumberCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Announce candidate number"))
+		self.announceCandidateNumberCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Announce candidate number")))
 		self.announceCandidateNumberCheckBox.SetValue(config.conf["language"]["announceCandidateNumber"])
-		settingsSizer.Add(self.announceCandidateNumberCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.nvdajpEnableKeyEventsCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Use IME support of nvdajp"))
+		self.nvdajpEnableKeyEventsCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use IME support of nvdajp")))
 		self.nvdajpEnableKeyEventsCheckBox.SetValue(config.conf["keyboard"]["nvdajpEnableKeyEvents"])
-		settingsSizer.Add(self.nvdajpEnableKeyEventsCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.jpAnsiEditCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Work around ANSI editbox"))
+		self.jpAnsiEditCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Work around ANSI editbox")))
 		self.jpAnsiEditCheckBox.SetValue(config.conf["language"]["jpAnsiEditbox"])
-		settingsSizer.Add(self.jpAnsiEditCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.msgTimeoutCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Enable Braille message timeout"))
+		self.msgTimeoutCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Enable Braille message timeout")))
 		self.msgTimeoutCheckBox.SetValue(config.conf["braille"]["nvdajpMessageTimeout"])
-		settingsSizer.Add(self.msgTimeoutCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.jpAnnounceNewLineCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Announce new line in editable text"))
+		self.jpAnnounceNewLineCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Announce new line in editable text")))
 		self.jpAnnounceNewLineCheckBox.SetValue(config.conf["language"]["jpAnnounceNewLine"])
-		settingsSizer.Add(self.jpAnnounceNewLineCheckBox,border=10,flag=wx.BOTTOM)
 
-		self.openDocFileByMSHTACheckBox=wx.CheckBox(self,wx.NewId(),label=_("Open document file by MSHTA"))
+		self.openDocFileByMSHTACheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Open document file by MSHTA")))
 		self.openDocFileByMSHTACheckBox.SetValue(config.conf["language"]["openDocFileByMSHTA"])
-		settingsSizer.Add(self.openDocFileByMSHTACheckBox,border=10,flag=wx.BOTTOM)
 
-		self.alwaysSpeakMathInEnglishCheckBox=wx.CheckBox(self,wx.NewId(),label=_("Always speak math in English"))
+		self.alwaysSpeakMathInEnglishCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Always speak math in English")))
 		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
-		settingsSizer.Add(self.alwaysSpeakMathInEnglishCheckBox,border=10,flag=wx.BOTTOM)
 
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
