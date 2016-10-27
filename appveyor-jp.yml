@@ -4,6 +4,7 @@ branches:
  only:
   - jpbeta
   - /jp201.*/
+  - i3044v2
 
 environment:
  PY_PYTHON: 2.7-32
