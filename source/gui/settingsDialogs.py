@@ -2070,11 +2070,19 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.jpPhoneticReadingLatinCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Phonetic reading for Latin")))
 		self.jpPhoneticReadingLatinCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingLatin"])
 
-		self.jpKatakanaPitchChangeEdit=settingsSizerHelper.addLabeledControl(_("Katakana pitch change percentage"),wx.TextCtrl)
-		self.jpKatakanaPitchChangeEdit.SetValue(str(config.conf["language"]["jpKatakanaPitchChange"]))
+		self.jpKatakanaPitchChangeEdit=settingsSizerHelper.addLabeledControl(
+			_("Katakana pitch change percentage"),
+			nvdaControls.SelectOnFocusSpinCtrl,
+			min=-100, max=100,
+			initial=config.conf["language"]["jpKatakanaPitchChange"]
+		)
 
-		self.halfShapePitchChangeEdit=settingsSizerHelper.addLabeledControl(_("Half shape pitch change percentage"),wx.TextCtrl)
-		self.halfShapePitchChangeEdit.SetValue(str(config.conf["language"]["halfShapePitchChange"]))
+		self.halfShapePitchChangeEdit=settingsSizerHelper.addLabeledControl(
+			_("Half shape pitch change percentage"),
+			nvdaControls.SelectOnFocusSpinCtrl,
+			min=-100, max=100,
+			initial=config.conf["language"]["halfShapePitchChange"]
+		)
 
 		self.announceCandidateNumberCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Announce candidate number")))
 		self.announceCandidateNumberCheckBox.SetValue(config.conf["language"]["announceCandidateNumber"])
@@ -2131,18 +2139,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["documentFormatting"]["reportBorderStyle"] = choice in (1,2)
 		config.conf["documentFormatting"]["reportBorderColor"] = (choice == 2)
 
-		jpKatakanaPitchChange=self.jpKatakanaPitchChangeEdit.Value
-		try:
-			jpKatakanaPitchChange=int(jpKatakanaPitchChange)
-		except ValueError:
-			jpKatakanaPitchChange=0
-		config.conf["language"]["jpKatakanaPitchChange"]=min(max(jpKatakanaPitchChange,-100),100)
-
-		halfShapePitchChange=self.halfShapePitchChangeEdit.Value
-		try:
-			halfShapePitchChange=int(halfShapePitchChange)
-		except ValueError:
-			halfShapePitchChange=0
-		config.conf["language"]["halfShapePitchChange"]=min(max(halfShapePitchChange,-100),100)
+		config.conf["language"]["jpKatakanaPitchChange"]=self.jpKatakanaPitchChangeEdit.Value
+		config.conf["language"]["halfShapePitchChange"]=self.halfShapePitchChangeEdit.Value
 
 		super(LanguageSettingsDialog, self).onOk(evt)
