@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2016-08-10
+- last update: 2016-10-31
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -24,7 +24,9 @@ NVDA Japanese is provided "as is", without warranty.
 
 ++ Web site ++
 
-[NVDA Japanese www.nvda.jp/en https://www.nvda.jp/en/]
+- [NVDA Japanese www.nvda.jp/en https://www.nvda.jp/en/]
+-
+
 
 
 ++ Contributors ++
@@ -189,6 +191,20 @@ If the option is not checked, NVDA may say "No navigation files for this speech 
 The issue is discussed at [NVDAJP ticket 29872 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35208] and [#5126 http://community.nvda-project.org/ticket/5126].
 
 
++++ Cell border +++
+
+Announcement of Table cell border is supported in Microsoft Excel.
+Following options are available for cell border announcement.
+
+- Off
+- Styles
+- Colors and styles
+-
+
+This enhancement is described in [NVDAJP ticket 36621 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36621] and the pull request [#6492 https://github.com/nvaccess/nvda/pull/6492].
+Braille display is not yet supported.
+
+
 ++ Voice settings ++
 
 +++ Beep for capitals +++
@@ -246,7 +262,7 @@ JTalk driver is the default synthesizer of NVDAJP, which supports Japanese langu
 - M001 and Mei are at sampling rate of 48kHz. Lite is at sampling rate of 16kHz.
 - Speed, Volume, Pitch, Inflection can be changed.
 - Rate boost option is available.
-- 'Automatic Language switching' is supported. If the content has language attributes, it is used for selecting voices. eSpeak voices are used other than Japanese voice. Speech rate or other settings are not applied to voices other than Japanese.
+- 'Automatic Language switching' is supported. If the content has language attributes, it is used for selecting voices. Voices of eSpeak NG are used other than Japanese voice. Speech rate or other settings are not applied to voices other than Japanese.
 - 'Automatic Dialect switching' is not supported.
 - It works with audio ducking mode of 'Duck when outputting speech and sounds.'
 
@@ -749,7 +765,6 @@ We use git hosting services as follows:
 We use AppVeyor as public build server:
 
 - [AppVeyor (public build server) https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp]
-
 
 
 
