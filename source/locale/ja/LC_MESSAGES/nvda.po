@@ -227,11 +227,11 @@ msgstr "改行"
 
 #: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
 msgid "Use NonConvert as an NVDA modifier key"
-msgstr "無変換をNVDAキーとして使用"
+msgstr "無変換をNVDA制御キーとして使用"
 
 #: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
 msgid "Use Convert as an NVDA modifier key"
-msgstr "変換をNVDAキーとして使用"
+msgstr "変換をNVDA制御キーとして使用"
 
 #: source\gui\__init__.py:416
 msgid "&Readme (nvdajp)"
