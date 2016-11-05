@@ -302,6 +302,11 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		watchdog.cancellableSendMessage(self.obj.windowHandle,EM_SCROLLCARET,0,0)
 
 	def _getCaretOffset(self):
+		if self._needsWorkAroundEncoding():
+			s, e = self._getSelectionOffsets()
+			sn, en = self._startEndInBytesToStartEndInUnicodeChars(s, e)
+			log.debug('s:%d e:%d -> sn:%d en:%d' % (s, e, sn, en))
+			return sn
 		return self._getSelectionOffsets()[0]
 
 	def _setCaretOffset(self,offset):
@@ -427,6 +432,23 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 	def _needsWorkAroundEncoding(self):
 		return config.conf["language"]["jpAnsiEditbox"] and (not self.obj.isWindowUnicode)
 
+	def _startEndInBytesToStartEndInUnicodeChars(self, start, end):
+		# start/end in bytes to start/end in unicode chars
+		story_text = self._getStoryText()
+		start_new = end_new = -1
+		bytepos = 0
+		for charpos, ch in enumerate(story_text):
+			cb = len(ch.encode('mbcs', 'replace'))
+			if bytepos == start:
+				start_new = charpos
+			if bytepos == end:
+				end_new = charpos
+				break
+			bytepos += cb
+		if end_new == -1:
+			end_new = len(story_text)
+		return (start_new, end_new)
+	
 	def _getLineOffsets(self,offset):
 		if self._needsWorkAroundEncoding():
 			# offset in unicode chars to offset in bytes
@@ -437,20 +459,7 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		length=watchdog.cancellableSendMessage(self.obj.windowHandle,EM_LINELENGTH,offset,0)
 		end=start+length
 		if self._needsWorkAroundEncoding():
-			# start/end in bytes to start/end in unicode chars
-			story_text = self._getStoryText()
-			start_new = end_new = -1
-			bytepos = 0
-			for charpos, ch in enumerate(story_text):
-				cb = len(ch.encode('mbcs', 'replace'))
-				if bytepos == start:
-					start_new = charpos
-				if bytepos == end:
-					end_new = charpos
-					break
-				bytepos += cb
-			if end_new == -1:
-				end_new = len(story_text)
+			start_new, end_new = self._startEndInBytesToStartEndInUnicodeChars(start, end)
 			log.debug("offset %d lineNum %d start %d length %d end %d start_new %d end_new %d" % (offset, lineNum, start, length, end, start_new, end_new))
 			return (start_new, end_new)
 		#If we just seem to get invalid line info, calculate manually
