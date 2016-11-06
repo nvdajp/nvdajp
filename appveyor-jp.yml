@@ -4,7 +4,6 @@ branches:
  only:
   - jpbeta
   - /jp201.*/
-  - richedit
 
 environment:
  PY_PYTHON: 2.7-32
