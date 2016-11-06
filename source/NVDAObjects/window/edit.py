@@ -277,6 +277,10 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 				winKernel.readProcessMemory(processHandle,internalCharRange,ctypes.byref(charRange),ctypes.sizeof(charRange),None)
 			finally:
 				winKernel.virtualFreeEx(processHandle,internalCharRange,0,winKernel.MEM_RELEASE)
+			#if self._needsWorkAroundEncoding():
+			#	s,n = self._startEndInBytesToStartEndInUnicodeChars(charRange.cpMin,charRange.cpMax)
+			#	log.info('charRange.cpMin:%d charRange.cpMax:%d -> s:%d n:%d' % (charRange.cpMin,charRange.cpMax,s,n))
+			#	return (s,n)
 			return (charRange.cpMin,charRange.cpMax)
 		else:
 			start=ctypes.c_uint()
