@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2016年11月4日
+- 最終更新日：2016年11月24日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -821,6 +821,17 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 NVDA 日本語チームは以下の変更および改良を行いました。
 
 - [Excel セルの罫線の報告 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36621]
+- [ANSI RichEdit キャレット移動の不具合 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36770]
+- [「NVDAキー」を「NVDA制御キー」に揃える https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36768]
+- [NVDAバイナリのバージョン情報 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36604]
+
+
+以下の作業は NVDA 本家版 2016.4 と日本語版 2016.4jp の両方に反映されました。
+
+- [2016.4新規の翻訳 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36647]
+- [ユーザーガイド 8.1.2. Browse Mode in Microsoft Word の修正 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36682]
+- [2016.4に向けた既存の翻訳の改善 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36683]
+- [2016.4に向けた既存の翻訳の改善 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36620]
 
 
 ++ 2016.3jp の変更点 ++
