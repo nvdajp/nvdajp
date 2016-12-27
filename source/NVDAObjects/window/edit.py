@@ -306,11 +306,15 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		watchdog.cancellableSendMessage(self.obj.windowHandle,EM_SCROLLCARET,0,0)
 
 	def _getCaretOffset(self):
-		if self._needsWorkAroundEncoding():
-			s, e = self._getSelectionOffsets()
-			sn, en = self._startEndInBytesToStartEndInUnicodeChars(s, e)
-			log.debug('s:%d e:%d -> sn:%d en:%d' % (s, e, sn, en))
-			return sn
+		#
+		# https://github.com/nvdajp/nvdajp/issues/13
+		# https://osdn.net/ticket/browse.php?group_id=4221&tid=36770
+		#
+		#if self._needsWorkAroundEncoding():
+		#	s, e = self._getSelectionOffsets()
+		#	sn, en = self._startEndInBytesToStartEndInUnicodeChars(s, e)
+		#	log.debug('s:%d e:%d -> sn:%d en:%d' % (s, e, sn, en))
+		#	return sn
 		return self._getSelectionOffsets()[0]
 
 	def _setCaretOffset(self,offset):
