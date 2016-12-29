@@ -2119,6 +2119,9 @@ class LanguageSettingsDialog(SettingsDialog):
 				curChoice = 1
 		self.borderCombo.SetSelection(curChoice)
 		
+		self.playErrorSoundCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Play NVDA error sound")))
+		self.playErrorSoundCheckBox.SetValue(config.conf["general"]["playErrorSound"])
+
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
 
@@ -2142,4 +2145,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["language"]["jpKatakanaPitchChange"]=self.jpKatakanaPitchChangeEdit.Value
 		config.conf["language"]["halfShapePitchChange"]=self.halfShapePitchChangeEdit.Value
 
+		config.conf["general"]["playErrorSound"]=self.playErrorSoundCheckBox.IsChecked()
+                
 		super(LanguageSettingsDialog, self).onOk(evt)

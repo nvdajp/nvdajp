@@ -221,6 +221,10 @@ msgstr "スタイル"
 msgid "Colors and styles"
 msgstr "色とスタイル"
 
+#: gui\settingsDialogs.py
+msgid "Play NVDA error sound"
+msgstr "NVDAのエラーを音で報告"
+
 #: editableText.py:
 msgid "new line"
 msgstr "改行"
