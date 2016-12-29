@@ -25,6 +25,8 @@ EVENT_E_ALL_SUBSCRIBERS_FAILED = -2147220991
 RPC_E_CALL_REJECTED = -2147418111
 RPC_E_DISCONNECTED = -2147417848
 
+shouldPlayErrorSound = False
+
 def getCodePath(f):
 	"""Using a frame object, gets its module path (relative to the current directory).[className.[funcName]]
 	@param f: the frame object to use
@@ -217,7 +219,7 @@ class FileHandler(logging.StreamHandler):
 		# Therefore, don't import versionInfo if it hasn't already been imported.
 		versionInfo = sys.modules.get("versionInfo")
 		# Only play the error sound if this is a test version.
-		shouldPlayErrorSound = versionInfo and versionInfo.isTestVersion
+		#shouldPlayErrorSound = versionInfo and versionInfo.isTestVersion
 		if record.levelno>=logging.CRITICAL:
 			try:
 				winsound.PlaySound("SystemHand",winsound.SND_ALIAS)
@@ -351,3 +353,8 @@ def setLogLevelFromConfig():
 		level = log.INFO
 		config.conf["general"]["loggingLevel"] = levelNames[log.INFO]
 	log.setLevel(level)
+
+def setPlayErrorSoundFromConfig():
+	import config
+	global shouldPlayErrorSound
+	shouldPlayErrorSound=config.conf["general"]["playErrorSound"]
