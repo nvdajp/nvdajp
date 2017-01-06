@@ -2,6 +2,7 @@ version: "{branch}-{build}"
 
 branches:
  only:
+  - ti36889
   - jpbeta
   - /jp201.*/
 
