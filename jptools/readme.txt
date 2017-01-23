@@ -6,7 +6,7 @@ NVDA日本語チーム 西本卓也
 1. ビルド環境
 
 
-NVDA 2016.4jp-beta の場合
+NVDA 2017.1jp-beta の場合
 
 
 (1) Windows 10 32ビットまたは64ビット / Windows 7 SP1 32ビットまたは64ビット
@@ -42,7 +42,7 @@ git を ssh 経由で使えるために、環境に応じて
 miscDepsJp から sources へのコピーで使用している。
 
 
-(5) Python 2.7.12 (Windows 32bit)
+(5) Python 2.7.13 (Windows 32bit)
 
 msi ファイルでインストール、オプションをすべてチェックする。
 C:\Python27\python.exe に PATH が通っていること。
