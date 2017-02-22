@@ -4,7 +4,7 @@ set VERSION=2017.1jp
 set UPDATEVERSIONTYPE=nvdajp
 
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
-set VERSION=%VERSION%-beta
+@rem set VERSION=%VERSION%-beta
 set VERSION=%VERSION%-%NOWDATE%
 set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
 
