@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-30 00:10+1000\n"
-"PO-Revision-Date: 2017-01-08 11:43+0530\n"
+"POT-Creation-Date: 2017-02-10 00:10+1000\n"
+"PO-Revision-Date: 2017-02-11 11:30+0530\n"
 "Last-Translator: DINAKAR T.D. <td.dinkar@gmail.com>\n"
 "Language-Team: DINAKAR T.D. <td.dinkar@gmail.com>\n"
 "Language: ta\n"
@@ -795,6 +795,7 @@ msgstr ""
 "எழுத்து, என்விடிஏ கையாளாமல், பயன்பாட்டிற்கு நேரடியாக அனுப்பி வைக்கும். "
 
 #. Translators: a message when a particular quick nav command is not supported in the current document.
+#. Translators: Reported when a user tries to use a find command when it isn't supported.
 msgid "Not supported in this document"
 msgstr "இவ்வாவணத்தில் ஆதரவில்லை"
 
@@ -1289,6 +1290,7 @@ msgid "%s landmark"
 msgstr "%s நிலக்குறி"
 
 #. Translators: This is spoken to indicate what has been selected. for example 'selected hello world'
+#. Translators: Announces selected text. %s is replaced with the text.
 #, python-format
 msgid "selected %s"
 msgstr "%s தெரிவாகியது"
@@ -1320,6 +1322,33 @@ msgstr "கீழ்"
 #. Translators: Description for the Move past end of container command in browse mode.
 msgid "Moves past the end  of the container element, such as a list or table"
 msgstr "வரிசைப் பட்டியல், அட்டவணை போன்ற கொள்களத்தின் முடிவிற்கு அப்பால் செல்லும்"
+
+#. Translators: The message reported when a user attempts to use a table movement command
+#. when the cursor is not within a table.
+#. Translators: a message when trying to perform an action on a cell when not in one in Microsoft word
+msgid "Not in a table cell"
+msgstr "அட்டவணையின் சிறுகட்டத்தில் இல்லை"
+
+#. Translators: The message reported when a user attempts to use a table movement command
+#. but the cursor can't be moved in that direction because it is at the edge of the table.
+msgid "Edge of table"
+msgstr "அட்டவணையின் விளிம்பு"
+
+#. Translators: the description for the next table row script on browseMode documents.
+msgid "moves to the next table row"
+msgstr "அடுத்த அட்டவணைக் கிடைவரிசைக்கு நகர்கிறது"
+
+#. Translators: the description for the previous table row script on browseMode documents.
+msgid "moves to the previous table row"
+msgstr "முந்தைய அட்டவணைக் கிடைவரிசைக்கு நகர்கிறது"
+
+#. Translators: the description for the next table column script on browseMode documents.
+msgid "moves to the next table column"
+msgstr "அட்டவணையின் அடுத்த நெடுவரிசைக்கு நகர்கிறது"
+
+#. Translators: the description for the previous table column script on browseMode documents.
+msgid "moves to the previous table column"
+msgstr "அட்டவணையின் முந்தைய நெடுவரிசைக்கு நகர்கிறது"
 
 #. Translators: The level at which the given symbol will be spoken.
 msgctxt "symbolLevel"
@@ -4693,12 +4722,12 @@ msgstr "தட்டுதல்"
 #. Translators: a very quick touch and release, then another touch with no release, on a touch screen
 msgctxt "touch action"
 msgid "tap and hold"
-msgstr "தட்டுதலும் பிடித்தலும்"
+msgstr "தட்டி நிறுத்தல்"
 
 #. Translators: a touch with no release, on a touch screen.
 msgctxt "touch action"
 msgid "hold"
-msgstr "பிடித்தல்"
+msgstr "நிறுத்தல்"
 
 #. Translators: a quick swipe of a finger in an up direction, on a touch screen.
 msgctxt "touch action"
@@ -4723,17 +4752,17 @@ msgstr "வலது சுண்டுதல்"
 #. Translators:  a finger has been held on the touch screen long enough to be considered as hovering
 msgctxt "touch action"
 msgid "hover down"
-msgstr "வட்டமிடுதல் நீட்டிப்பு"
+msgstr "நீடித்த மேவுதல்"
 
 #. Translators: A finger is still touching the touch screen and is moving around with out breaking contact.
 msgctxt "touch action"
 msgid "hover"
-msgstr "வட்டமிடுதல்"
+msgstr "மேவுதல்"
 
 #. Translators: a finger that was hovering (touching the touch screen for a long time) has been released
 msgctxt "touch action"
 msgid "hover up"
-msgstr "வட்டமிடுதல் விலக்கம்"
+msgstr "மேவுதல் நீக்கம்"
 
 #. Translators: The title for the dialog used to present general NVDA messages in browse mode.
 msgid "NVDA Message"
@@ -4929,11 +4958,6 @@ msgstr "{description} இருப்பதுபோல் {symbol}"
 msgid "{number} {candidate}"
 msgstr "{number} {candidate}"
 
-#. Translators: The message reported when a user attempts to use a table movement command
-#. but the cursor can't be moved in that direction because it is at the edge of the table.
-msgid "Edge of table"
-msgstr "அட்டவணையின் விளிம்பு"
-
 #. Translators: The description of an NVDA command.
 msgid "Moves the navigator object to the next column"
 msgstr "வழிகாட்டிப் பொருளை அடுத்த நெடுவரிசைக்கு நகர்த்தும்"
@@ -4974,6 +4998,12 @@ msgstr "எத்தடமும் ஓடவில்லை"
 msgid "Reports the remaining time of the currently playing track, if any"
 msgstr "ஓடிக் கொண்டிருக்கும் தடத்தின் நேரத்தில் மீதமிருந்தால், அதை அறிவிக்கும்"
 
+#. Translators: Describes a command.
+msgid "Shows options related to selected text or text at the cursor"
+msgstr ""
+"தெரிவுச் செய்யப்பட்ட, அல்லது சுட்டியின்  இடத்திலிருக்கும் உரைக்குத் தொடர்பான விருப்பத் "
+"தேர்வுகளைக் காட்டுகிறது "
+
 #. Translators: A position in a Kindle book
 #, no-python-format
 msgid "{bookPercentage}%, location {curLocation} of {maxLocation}"
@@ -4982,6 +5012,25 @@ msgstr "{bookPercentage}%, அமைவிடம் {maxLocation}ல் {curLoca
 #. Translators: a page in a Kindle book
 msgid "Page {pageNumber}"
 msgstr "{pageNumber}ம் பக்கம்"
+
+#. Translators: Reported when text is highlighted.
+msgid "highlight"
+msgstr "முனைப்புறுத்தல்"
+
+#. Translators: Reported when text is not highlighted.
+msgid "no highlight"
+msgstr "முனைப்புறுத்தல் ஏதுமில்லை"
+
+#. Translators: Reported in Kindle when text has been identified as a popular highlight;
+#. i.e. it has been highlighted by several people.
+#. %s is replaced with the number of people who have highlighted this text.
+#, python-format
+msgid "%s highlighted"
+msgstr "%s முனைப்புறுத்தப்பட்டது"
+
+#. Translators: Reported when moving out of a popular highlight.
+msgid "out of popular highlight"
+msgstr "பிரபல முனைப்புறுத்தலுக்கு வெளியே"
 
 #. Translators: This is presented to inform the user that no instant message has been received.
 msgid "No message yet"
@@ -5870,6 +5919,10 @@ msgstr "மறுதுவக்குக"
 #. Translators: An option in the combo box to choose exit action.
 msgid "Restart with add-ons disabled"
 msgstr "கூட்டுக்கூறுகள் செயலிழந்த நிலையில் மறுதுவக்குக. "
+
+#. Translators: An option in the combo box to choose exit action.
+msgid "Restart with debug logging enabled"
+msgstr "வழுநீக்கப் பதிவு செயற்படுத்தப்பட்ட நிலையில் மறுதுவக்குக"
 
 #. Translators: Announced periodically to indicate progress for an indeterminate progress bar.
 msgid "Please wait"
@@ -7193,6 +7246,10 @@ msgstr "சுட்டியினிடத்திலிருக்கும
 msgid "&Show cursor"
 msgstr "பிரெயில் சுட்டியைக் காட்டுக (&S)"
 
+#. Translators: The label for a setting in braille settings to enable cursor blinking.
+msgid "Blink cursor"
+msgstr "சுட்டி இமைத்தல்"
+
 #. Translators: The label for a setting in braille settings to change cursor blink rate in milliseconds (1 second is 1000 milliseconds).
 msgid "Cursor blink rate (ms)"
 msgstr "சுட்டி இமைக்கும் விகிதம் (நுண்ணொடிகளில்)"
@@ -7362,28 +7419,6 @@ msgid ""
 msgstr ""
 "ஆவணத்தின் உள்ளடக்கங்களை வழங்கும்பொழுது, திரைத் தளவமைப்புப்  பாதுகாக்கப்பட்டிருந்தால், அதை "
 "இயக்கவோ, நிறுத்தவோ செய்கிறது"
-
-#. Translators: The message reported when a user attempts to use a table movement command
-#. when the cursor is not within a table.
-#. Translators: a message when trying to perform an action on a cell when not in one in Microsoft word
-msgid "Not in a table cell"
-msgstr "அட்டவணையின் சிறுகட்டத்தில் இல்லை"
-
-#. Translators: the description for the next table row script on virtualBuffers.
-msgid "moves to the next table row"
-msgstr "அடுத்த அட்டவணைக் கிடைவரிசைக்கு நகர்கிறது"
-
-#. Translators: the description for the previous table row script on virtualBuffers.
-msgid "moves to the previous table row"
-msgstr "முந்தைய அட்டவணைக் கிடைவரிசைக்கு நகர்கிறது"
-
-#. Translators: the description for the next table column script on virtualBuffers.
-msgid "moves to the next table column"
-msgstr "அட்டவணையின் அடுத்த நெடுவரிசைக்கு நகர்கிறது"
-
-#. Translators: the description for the previous table column script on virtualBuffers.
-msgid "moves to the previous table column"
-msgstr "அட்டவணையின் முந்தைய நெடுவரிசைக்கு நகர்கிறது"
 
 msgid "Taskbar"
 msgstr "பணிப்பட்டை"
