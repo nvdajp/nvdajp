@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2017年1月16日
+- 最終更新日：2017年2月21日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -823,6 +823,13 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 - [設定項目「NVDAのエラーを音で報告」の追加 https://github.com/nvdajp/nvdajp/issues/16]
 - [2016.4jp で行った ANSI RichEdit に関する変更をキャンセル(VoicePopper3 の不具合の回避) https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36770]
 - [Excelで「書式情報の報告」コマンドを実行しても読み上げない不具合への対応 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36889]
+- [Excel2007 で結合されたセルの罫線の読み上げの不具合対策 https://github.com/nishimotz/nvda/pull/1]
+- [NetRadioRecorder 5/6 への対応 https://github.com/nvdajp/nvdajp/issues/17]
+
+
+以下の作業は NVDA 本家版 2017.1 と日本語版 2017.1jp の両方に反映されました。
+
+- [2017.1新規の翻訳 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36902]
 
 
 ++ 2016.4jp の変更点 ++
