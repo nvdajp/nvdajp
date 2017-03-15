@@ -796,7 +796,7 @@ class UIA(Window):
 			# In rare cases, access key itself is None.
 			if accessKey:
 				shortcuts.append(accessKey)
-		except COMError, AttributeError, TypeError:
+		except COMError, AttributeError:
 			pass
 		try:
 			acceleratorKey = self.UIAElement.currentAcceleratorKey
