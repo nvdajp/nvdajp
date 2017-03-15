@@ -798,6 +798,8 @@ class UIA(Window):
 				shortcuts.append(accessKey)
 		except COMError, AttributeError:
 			pass
+		except TypeError:
+			pass
 		try:
 			acceleratorKey = self.UIAElement.currentAcceleratorKey
 			# Same case as access key.
