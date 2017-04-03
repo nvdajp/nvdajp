@@ -5,7 +5,7 @@
 #See the file COPYING for more details.
 #Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
-#Copyright (C) 2011-2015 Takuya Nishimoto
+#Copyright (C) 2011-2017 Takuya Nishimoto
 
 import braille
 import brailleInput
@@ -108,47 +108,47 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	keys = (lpKeys[0], lpKeys[1], lpKeys[2], lpKeys[3])
 	log.io("keyInfo %d %d %d %d" % keys)
 	log.io("keyInfo hex %x %x %x %x" % keys)
-	names = set()
+	names = []
 	routingIndex = None
-	if keys[2] &   1: names.add('func1')
-	if keys[2] &   2: names.add('func4')
-	if keys[2] &   4: names.add('ctrl')
-	if keys[2] &   8: names.add('alt')
-	if keys[2] &  16: names.add('select')
-	if keys[2] &  32: names.add('read')
-	if keys[2] &  64: names.add('func2')
-	if keys[2] & 128: names.add('func3')
+	if keys[2] &   1: names.append('func1')
+	if keys[2] &   2: names.append('func4')
+	if keys[2] &   4: names.append('ctrl')
+	if keys[2] &   8: names.append('alt')
+	if keys[2] &  16: names.append('select')
+	if keys[2] &  32: names.append('read')
+	if keys[2] &  64: names.append('func2')
+	if keys[2] & 128: names.append('func3')
 	if keys[0] == 1:
-		if keys[1] &   1: names.add('space')
-		if keys[1] &   2: names.add('dot6')
-		if keys[1] &   4: names.add('dot5')
-		if keys[1] &   8: names.add('dot4')
-		if keys[1] &  16: names.add('enter')
-		if keys[1] &  32: names.add('dot3')
-		if keys[1] &  64: names.add('dot2')
-		if keys[1] & 128: names.add('dot1')
+		if keys[1] &   1: names.append('space')
+		if keys[1] &   2: names.append('dot6')
+		if keys[1] &   4: names.append('dot5')
+		if keys[1] &   8: names.append('dot4')
+		if keys[1] &  16: names.append('enter')
+		if keys[1] &  32: names.append('dot3')
+		if keys[1] &  64: names.append('dot2')
+		if keys[1] & 128: names.append('dot1')
 	elif keys[0] == 2:
-		if keys[1] &   1: names.add('esc')
-		if keys[1] &   2: names.add('inf')
-		if keys[1] &   4: names.add('bs')
-		if keys[1] &   8: names.add('del')
-		if keys[1] &  16: names.add('ins')
-		if keys[1] &  32: names.add('chng')
-		if keys[1] &  64: names.add('ok')
-		if keys[1] & 128: names.add('set')
+		if keys[1] &   1: names.append('esc')
+		if keys[1] &   2: names.append('inf')
+		if keys[1] &   4: names.append('bs')
+		if keys[1] &   8: names.append('del')
+		if keys[1] &  16: names.append('ins')
+		if keys[1] &  32: names.append('chng')
+		if keys[1] &  64: names.append('ok')
+		if keys[1] & 128: names.append('set')
 	elif keys[0] == 3:
-		if keys[1] & 1: names.add('upArrow')
-		if keys[1] & 2: names.add('downArrow')
-		if keys[1] & 4: names.add('leftArrow')
-		if keys[1] & 8: names.add('rightArrow')
+		if keys[1] & 1: names.append('upArrow')
+		if keys[1] & 2: names.append('downArrow')
+		if keys[1] & 4: names.append('leftArrow')
+		if keys[1] & 8: names.append('rightArrow')
 	elif keys[0] == 4:
-		names.add('route')
+		names.append('route')
 		routingIndex = keys[1] - 1
 	elif keys[0] == 6:
-		if keys[1] & 1: names.add('bw')
-		if keys[1] & 2: names.add('fw')
-		if keys[1] & 4: names.add('ls')
-		if keys[1] & 8: names.add('rs')
+		if keys[1] & 1: names.append('bw')
+		if keys[1] & 2: names.append('fw')
+		if keys[1] & 4: names.append('ls')
+		if keys[1] & 8: names.append('rs')
 	if routingIndex is not None:
 		log.io("names %s %d" % ('+'.join(names), routingIndex))
 	else:
