@@ -5,7 +5,7 @@
 #See the file COPYING for more details.
 #Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
-#Copyright (C) 2011-2015 Takuya Nishimoto
+#Copyright (C) 2011-2017 Takuya Nishimoto
 
 import braille
 import brailleInput
