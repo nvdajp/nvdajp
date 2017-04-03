@@ -71,24 +71,24 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	keys = (lpKeys[0], lpKeys[1], lpKeys[2])
 	log.io("keyInfo %d %d %d" % keys)
 	log.io("keyInfo hex %x %x %x" % keys)
-	names = set()
+	names = []
 	routingIndex = None
 	if keys[0] == 0:
-		if keys[1] &   1: names.add('lf')
-		if keys[1] &   2: names.add('bk')
-		if keys[1] &   4: names.add('sr')
-		if keys[1] &   8: names.add('sl')
-		if keys[1] &  16: names.add('func1')
-		if keys[1] &  32: names.add('func2')
-		if keys[1] &  64: names.add('func3')
-		if keys[1] & 128: names.add('func4')
+		if keys[1] &   1: names.append('lf')
+		if keys[1] &   2: names.append('bk')
+		if keys[1] &   4: names.append('sr')
+		if keys[1] &   8: names.append('sl')
+		if keys[1] &  16: names.append('func1')
+		if keys[1] &  32: names.append('func2')
+		if keys[1] &  64: names.append('func3')
+		if keys[1] & 128: names.append('func4')
 	else:
 		tCode = 240
-		if keys[0] &   1+tCode: names.add('func1')
-		if keys[0] &   2+tCode: names.add('func2')
-		if keys[0] &   4+tCode: names.add('func3')
-		if keys[0] &   8+tCode: names.add('func4')
-		names.add('route')
+		if keys[0] &   1+tCode: names.append('func1')
+		if keys[0] &   2+tCode: names.append('func2')
+		if keys[0] &   4+tCode: names.append('func3')
+		if keys[0] &   8+tCode: names.append('func4')
+		names.append('route')
 		routingIndex = keys[1] - 1
 	if routingIndex is not None:
 		log.io("names %s %d" % ('+'.join(names), routingIndex))
