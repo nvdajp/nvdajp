@@ -1,10 +1,10 @@
 # netradiorecorder4.py
 # A part of NonVisual Desktop Access (NVDA)
-# 2015-05-10 Takuya Nishimoto
+# 2017-04-04 Takuya Nishimoto
 
 import appModuleHandler
 import api
-import speech
+import ui
 import controlTypes
 from NVDAObjects.IAccessible import IAccessible
 
@@ -19,7 +19,7 @@ class EnhancedForm(IAccessible):
 	def script_reportItem(self, gesture):
 		gesture.send()
 		focusObject=api.getFocusObject()
-		speech.speakObject(focusObject, reason=controlTypes.REASON_QUERY)
+		ui.message(focusObject.value)
 
 	__gestures = {
 		"kb:downArrow": "reportItem",
