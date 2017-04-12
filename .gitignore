@@ -39,6 +39,7 @@ uninstaller/UAC.nsh
 *.pyc
 *.pyo
 *.dmp
+tests/unit/nvda.ini
 _*.cmd
 __*.txt
 source/brlapi.pyd
