@@ -32,6 +32,11 @@ SET CL=/arch:IA32 /D "_USING_V110_SDK71_"
 call scons.bat -c
 call jptools\setupMiscDepsJp.cmd
 
+call scons.bat source publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+call scons.bat tests publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+
 @rem set FILE1=source\synthDrivers\jtalk\libmecab.dll
 @rem @signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
 @rem signtool verify /pa %FILE1% >> %VERIFYLOG%
