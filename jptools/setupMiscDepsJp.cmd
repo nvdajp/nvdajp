@@ -7,7 +7,8 @@ call all-install.cmd
 call all-clean.cmd
 del /Q *.pyc
 cd ..\..\jptools
-python mecabRunner.py
+call build-and-test.cmd
+@rem python mecabRunner.py
 del /Q _cprof.prof __*
 cd ..
 cd include\jtalk\libopenjtalk\mecab-naist-jdic
