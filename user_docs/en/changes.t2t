@@ -13,6 +13,10 @@
 - Performing the read current line command three times quickly spells the line with character descriptions. (#6893)
 
 
+== Changes ==
+- When navigating with simple review  in applications using UI Automation, more non-content containers are ignored making navigation easier. (#6948, #6950) 
+
+
 == Bug Fixes ==
 - Web page menu items (menu item checkbox's and radio buttons) can now be activated while in browse mode. (#6735)
 - Excel sheet name reporting is now translated. (#6848)
@@ -41,6 +45,7 @@
  - `i18nName` for synth settings, `displayName` and `displayNameWithAccelerator` should be used instead. (#6846, #5185)
  - `config.validateConfig`. (#6846, #667)
  - `config.save`. (#6846)
+- The list of completions in the autocomplete context menu of the PythonConsole no longer shows  any objec path leading up to the final symbol being completed. (#7023)
 
 
 = 2017.1 =
