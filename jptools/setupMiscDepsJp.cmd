@@ -6,12 +6,7 @@ call all-build.cmd
 call all-install.cmd
 call all-clean.cmd
 del /Q *.pyc
-cd ..\..\jptools
-call build-and-test.cmd
-@rem python mecabRunner.py
-del /Q _cprof.prof __*
-cd ..
-cd include\jtalk\libopenjtalk\mecab-naist-jdic
+cd libopenjtalk\mecab-naist-jdic
 rmdir /S /Q dic
 rmdir /S /Q _temp
 del /Q nvdajp-custom-dic.csv
