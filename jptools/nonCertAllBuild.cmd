@@ -29,6 +29,12 @@ SET CL=/arch:IA32 /D "_USING_V110_SDK71_"
 @rem set VERIFYLOG=output\nvda_%VERSION%_verify.log
 @rem del /Q %VERIFYLOG%
 
+cd miscDepsJp\jptools
+call clean.cmd
+call build-and-test.cmd
+@if not "%ERRORLEVEL%"=="0" goto onerror
+cd ..\..
+
 call scons.bat -c
 call jptools\setupMiscDepsJp.cmd
 
