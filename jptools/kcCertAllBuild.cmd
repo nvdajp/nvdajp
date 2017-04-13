@@ -29,7 +29,7 @@ SET CL=/arch:IA32 /D "_USING_V110_SDK71_"
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
-call scons.bat -c
+@rem call scons.bat -c
 call jptools\setupMiscDepsJp.cmd
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
