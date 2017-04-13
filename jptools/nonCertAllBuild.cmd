@@ -35,7 +35,7 @@ call build-and-test.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
 cd ..\..
 
-call scons.bat -c
+@rem call scons.bat -c
 call jptools\setupMiscDepsJp.cmd
 
 call scons.bat source publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
