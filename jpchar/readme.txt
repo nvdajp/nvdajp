@@ -3,12 +3,12 @@
 A part of NonVisual Desktop Access (NVDA)
 This file is covered by the GNU General Public License.
 See the file COPYING for more details.
-Copyright (C) 2015-2016 Takuya Nishimoto
+Copyright (C) 2015-2017 Takuya Nishimoto
 
 
 copy Japanese character symbols to subversion repo
 
-jptools\copy_symbols_to_srt.cmd
+jpchar\copy_symbols_to_srt.cmd
 
 
 checkCharDesc.py

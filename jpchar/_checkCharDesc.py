@@ -144,9 +144,13 @@ def print_different(sy, ch, skip_included=False):
 	for s in sorted(ar.items(), key=lambda x:int(x[0])):
 		my_print(s[1])
 
-def find_desc_duplicate(ch):
+def find_desc_duplicate(ch, skipKeisen=True, skipEmoji=True):
 	for k,v in ch.items():
 		for k2,v2 in ch.items():
+			if skipKeisen and (u'ケイセン' in v[1] or u'ケイセン' in v2[1]):
+				 continue
+			if skipEmoji and (u'エモジ' in v[1] or u'エモジ' in v2[1]):
+				 continue
 			if v[0] < v2[0] and k != k2 and equals_ignore_spaces(v[1], v2[1]):
 				my_print("ch %d:%s %04x / %d:%s %04x / %s" % (v[0], k, getOrd(k), v2[0], k2, getOrd(k2), v2[1]))
 
