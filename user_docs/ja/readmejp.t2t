@@ -806,7 +806,7 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-- KGS点字ディスプレイドライバの更新 [nvdajp#18 https://github.com/nvdajp/nvdajp/issues/18] [nvdajp/nvdajp#19 https://github.com/nvdajp/nvdajp/issues/19] [nvdajp#21 https://github.com/nvdajp/nvdajp/issues/21]
+- KGS点字ディスプレイドライバの更新 [nvdajp#18 https://github.com/nvdajp/nvdajp/issues/18] [nvdajp#19 https://github.com/nvdajp/nvdajp/issues/19] [nvdajp#21 https://github.com/nvdajp/nvdajp/issues/21]
 - ネットラジオレコーダーでの点字ディスプレイへの対応 [nvdajp#20 https://github.com/nvdajp/nvdajp/pull/20]
 - 本家版の「現在行の報告」変更への対応 [nvdajp#22 https://github.com/nvdajp/nvdajp/issues/22]
 - 本家版の「文字説明辞書への数学記号の追加」への対応 [nvdajp#23 https://github.com/nvdajp/nvdajp/issues/23]
