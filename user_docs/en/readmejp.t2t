@@ -191,20 +191,6 @@ If the option is not checked, NVDA may say "No navigation files for this speech 
 The issue is discussed at [NVDAJP ticket 29872 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35208] and [#5126 http://community.nvda-project.org/ticket/5126].
 
 
-+++ Cell border +++
-
-Announcement of Table cell border is supported in Microsoft Excel.
-Following options are available for cell border announcement.
-
-- Off
-- Styles
-- Colors and styles
--
-
-This enhancement is described in [NVDAJP ticket 36621 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36621] and the pull request [#6492 https://github.com/nvaccess/nvda/pull/6492].
-Braille display is not yet supported.
-
-
 ++ Voice settings ++
 
 +++ Beep for capitals +++
