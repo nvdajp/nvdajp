@@ -806,16 +806,20 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-- Excel のセル罫線の読み上げ機能が本家版に追加され、この設定項目は書式情報「テーブル情報」に追加されました。日本語設定の「セルの罫線の報告」設定は削除されました。
-- 
-- 
-- 
-- 
+- KGS点字ディスプレイドライバの更新 [nvdajp#18 https://github.com/nvdajp/nvdajp/issues/18] [nvdajp/nvdajp#19 https://github.com/nvdajp/nvdajp/issues/19] [nvdajp#21 https://github.com/nvdajp/nvdajp/issues/21]
+- ネットラジオレコーダーでの点字ディスプレイへの対応 [nvdajp#20 https://github.com/nvdajp/nvdajp/pull/20]
+- 本家版の「現在行の報告」変更への対応 [nvdajp#22 https://github.com/nvdajp/nvdajp/issues/22]
+- 本家版の「文字説明辞書への数学記号の追加」への対応 [nvdajp#23 https://github.com/nvdajp/nvdajp/issues/23]
+- Excel のセル罫線の読み上げ機能が本家版に追加され、この設定項目は書式情報「テーブル情報」に追加されました。そこで日本語設定の「セルの罫線の報告」設定を削除しました。 [nvdajp#24 https://github.com/nvdajp/nvdajp/issues/24]
+- 日本語点訳エンジンの不具合修正 [nvdajpmiscdep#36 https://github.com/nvdajp/nvdajpmiscdep/issues/36] [nvdajpmiscdep#37 https://github.com/nvdajp/nvdajpmiscdep/issues/37] [nvdajpmiscdep#38 https://github.com/nvdajp/nvdajpmiscdep/issues/38]
+- JTalk での英単語の読みの改善 [nvdajpmiscdep#39 https://github.com/nvdajp/nvdajpmiscdep/issues/39]
+- 日本語点訳エンジンおよび JTalk の改善 [nvdajpmiscdep#23 https://github.com/nvdajp/nvdajpmiscdep/issues/23]
 
 
 以下の作業は NVDA 本家版 2017.2 と日本語版 2017.2jp の両方に反映されました。
 
-- 
+- [activate の翻訳を「アクティブ化」から「アクションの実行」に変更、その他の修正 https://osdn.net/ticket/browse.php?group_id=4221&tid=36802]
+- [not pressed の翻訳を「押されました なし」から「押されていません」に修正 https://osdn.net/ticket/browse.php?group_id=4221&tid=37124]
 
 
 ++ 2017.1jp の変更点 ++
