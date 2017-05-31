@@ -3,7 +3,7 @@
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
-#Copyright (C) 2006-2016 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Rui Batista, Joseph Lee, Leonard de Ruijter, Derek Riemer
+#Copyright (C) 2006-2016 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Rui Batista, Joseph Lee, Leonard de Ruijter, Derek Riemer, Babbage B.V.
 
 import jpUtils #nvdajp
 import time
@@ -40,6 +40,7 @@ import inputCore
 import virtualBuffers
 import characterProcessing
 from baseObject import ScriptableObject
+import core
 
 #: Script category for text review commands.
 # Translators: The name of a category of NVDA commands.
@@ -1325,6 +1326,11 @@ class GlobalCommands(ScriptableObject):
 		gui.quit()
 	# Translators: Input help mode message for quit NVDA command.
 	script_quit.__doc__=_("Quits NVDA!")
+
+	def script_restart(self,gesture):
+		core.restart()
+	# Translators: Input help mode message for restart NVDA command.
+	script_restart.__doc__=_("Restarts NVDA!")
 
 	def script_showGui(self,gesture):
 		gui.showGui()
