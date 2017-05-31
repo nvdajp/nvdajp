@@ -650,7 +650,6 @@ class WelcomeDialog(wx.Dialog):
 		convAsNVDAModifierText = _("Use Convert as an NVDA modifier key")
 		self.convAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(self, label=convAsNVDAModifierText))
 		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
-		self.nconvAsNVDAModifierCheckBox.SetFocus() # capsAsNVDAModifierCheckBox
 		#nvdajp done
 		# Translators: The label of a checkbox in the Welcome dialog.
 		startAfterLogonText = _("&Automatically start NVDA after I log on to Windows")
