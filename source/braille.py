@@ -669,7 +669,6 @@ def getBrailleTextForProperties(**propertyValues):
 		elif (name or cellCoordsText or rowNumber or columnNumber) and role in controlTypes.silentRolesOnFocus:
 			roleText = None
 		else:
-<<<<<<< HEAD
 			# nvdajp begin
 			# roleText = roleLabels.get(role, controlTypes.roleLabels[role])
 			if config.conf["braille"]["expandAtCursor"]:
@@ -678,7 +677,7 @@ def getBrailleTextForProperties(**propertyValues):
 				roleText = roleLabels.get(role, controlTypes.roleLabels[role])
 			# nvdajp end
 
-	else:
+	elif role is None: 
 		role = propertyValues.get("_role")
 		roleText = None
 	#nvdajp begin
@@ -686,11 +685,6 @@ def getBrailleTextForProperties(**propertyValues):
 			isComposition and role == controlTypes.ROLE_EDITABLETEXT:
 		roleText = None
 	#nvdajp end
-=======
-			roleText = roleLabels.get(role, controlTypes.roleLabels[role])
-	elif role is None: 
-		role = propertyValues.get("_role")
->>>>>>> fetch_head
 	value = propertyValues.get("value")
 	if value and role not in controlTypes.silentValuesForRoles:
 		textList.append(value)
