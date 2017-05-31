@@ -6,7 +6,7 @@ NVDA日本語チーム 西本卓也
 1. ビルド環境
 
 
-NVDA 2017.1jp-beta の場合
+NVDA 2017.3jp-beta の場合
 
 
 (1) Windows 10 32ビットまたは64ビット / Windows 7 SP1 32ビットまたは64ビット
@@ -16,8 +16,20 @@ Windows 8.1 では確認していないが、おそらく使用可能。
 (2) Visual Studio 2015 Community または Express for Desktop (Update 3)
 
 時間とディスクを節約したい場合はできるだけオプションを減らしてインストールする。
-必要なのは Visual C++ と「C++に関するWindows XPサポート」。
-後述の Git for Windows はここで Visual Studio と一緒にインストールできる。
+
+必要なオプション (2017.3以降)
+
+2.1: Visual C++ 「C++に関するWindows XPサポート」
+
+2.2: Windows開発とWeb開発 (Windows and Web Development)
+   -> ユニバーサルWindowsアプリ開発ツール (Universal Windows App Development Tools)
+   -> ツール(1.4.1)およびWindows 10 SDK (10.0.14393) (Tools (1.4.1) and Windows 10 SDK (10.0.14393))
+
+後述の Git for Windows もここで Visual Studio と一緒にインストールできる。
+
+備考：Windows 32bit の場合は下記のような環境変数の設定が必要
+
+ProgramFiles(x86)=C:\Program Files
 
 備考：NVDA 2016.2jp から Visual Studio 2015 だけでよい。
 
