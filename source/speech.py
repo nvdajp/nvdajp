@@ -1824,7 +1824,7 @@ class IndexCommand(SpeechCommand):
 	def __repr__(self):
 		return "IndexCommand(%r)" % self.index
 
-class CharacterModeCommand(object):
+class CharacterModeCommand(SpeechCommand):
 	"""Turns character mode on and off for speech synths."""
 
 	def __init__(self,state):
