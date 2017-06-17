@@ -75,14 +75,10 @@ def isNVDAModifierKey(vkCode,extended):
 		return True
 	elif config.conf["keyboard"]["useConvertAsNVDAModifierKey"] and vkCode==winUser.VK_CONVERT: #nvdajp
 		return True
+	elif config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] and vkCode==winUser.VK_ESCAPE: #nvdajp
+		return True
 	else:
 		return False
-
-def fixKeyCodeJp(vkCode, scanCode, extended):
-	#log.info(repr(['%x' % vkCode, '%x' % scanCode, extended]))
-	if vkCode == 255 and scanCode == 114 and not extended: # macKana
-		return (winUser.VK_CONVERT, extended)
-	return (vkCode, extended)
 
 def internal_keyDownEvent(vkCode,scanCode,extended,injected):
 	"""Event called by winInputHook when it receives a keyDown.
@@ -94,7 +90,6 @@ def internal_keyDownEvent(vkCode,scanCode,extended,injected):
 		if injected and (ignoreInjected or not config.conf['keyboard']['handleInjectedKeys']):
 			return True
 
-		vkCode, extended = fixKeyCodeJp(vkCode, scanCode, extended)
 		keyCode = (vkCode, extended)
 
 		if passKeyThroughCount >= 0:
@@ -211,7 +206,6 @@ def internal_keyUpEvent(vkCode,scanCode,extended,injected):
 		if injected and (ignoreInjected or not config.conf['keyboard']['handleInjectedKeys']):
 			return True
 
-		vkCode, extended = fixKeyCodeJp(vkCode, scanCode, extended)
 		keyCode = (vkCode, extended)
 
 		if passKeyThroughCount >= 1:
