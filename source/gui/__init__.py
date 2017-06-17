@@ -650,6 +650,10 @@ class WelcomeDialog(wx.Dialog):
 		convAsNVDAModifierText = _("Use Convert as an NVDA modifier key")
 		self.convAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(self, label=convAsNVDAModifierText))
 		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
+		# Translators: The label of a checkbox in the Welcome dialog.
+		escAsNVDAModifierText = _("Use Escape as an NVDA modifier key")
+		self.escAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(self, label=escAsNVDAModifierText))
+		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
 		#nvdajp done
 		# Translators: The label of a checkbox in the Welcome dialog.
 		startAfterLogonText = _("&Automatically start NVDA after I log on to Windows")
@@ -676,6 +680,7 @@ class WelcomeDialog(wx.Dialog):
 		config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"] = self.capsAsNVDAModifierCheckBox.IsChecked()
 		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = self.nconvAsNVDAModifierCheckBox.IsChecked() #nvdajp
 		config.conf["keyboard"]["useConvertAsNVDAModifierKey"]=self.convAsNVDAModifierCheckBox.IsChecked()
+		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] = self.escAsNVDAModifierCheckBox.IsChecked()
 		if self.startAfterLogonCheckBox.Enabled:
 			config.setStartAfterLogon(self.startAfterLogonCheckBox.Value)
 		config.conf["general"]["showWelcomeDialogAtStartup"] = self.showWelcomeDialogAtStartupCheckBox.IsChecked()
