@@ -75,6 +75,8 @@ def isNVDAModifierKey(vkCode,extended):
 		return True
 	elif config.conf["keyboard"]["useConvertAsNVDAModifierKey"] and vkCode==winUser.VK_CONVERT: #nvdajp
 		return True
+	elif config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] and vkCode==winUser.VK_ESCAPE: #nvdajp
+		return True
 	else:
 		return False
 

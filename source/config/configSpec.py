@@ -132,6 +132,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	nvdajpImeBeep = boolean(default=false) #nvdajp
 	useNonConvertAsNVDAModifierKey = boolean(default=true) #nvdajp
 	useConvertAsNVDAModifierKey = boolean(default=false) #nvdajp
+	useEscapeAsNVDAModifierKey = boolean(default=false)
 	useCapsLockAsNVDAModifierKey = boolean(default=false)
 	useNumpadInsertAsNVDAModifierKey = boolean(default=true)
 	useExtendedInsertAsNVDAModifierKey = boolean(default=true)
