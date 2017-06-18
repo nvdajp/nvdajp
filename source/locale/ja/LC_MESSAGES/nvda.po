@@ -94,6 +94,10 @@ msgstr "無変換をNVDA制御キーとして使用"
 msgid "Use Convert as an NVDA modifier key"
 msgstr "変換をNVDA制御キーとして使用"
 
+#: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
+msgid "Use Escape as an NVDA modifier key"
+msgstr "EscapeをNVDA制御キーとして使用"
+
 #: source\gui\__init__.py:416
 msgid "&Readme (nvdajp)"
 msgstr "NVDA日本語版の説明"
