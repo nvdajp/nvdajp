@@ -1009,12 +1009,13 @@ class BrowseModeDocumentTextInfo(textInfos.TextInfo):
 				textList.append(field["name"])
 			except KeyError:
 				pass
-			if landmark == "region":
-				# The word landmark is superfluous for regions.
-				textList.append(braille.landmarkLabels[landmark])
-			else:
-				# Translators: This is brailled to indicate a landmark (example output: lmk main).
-				textList.append(_("lmk %s") % braille.landmarkLabels[landmark])
+			#if landmark == "region":
+			#	# The word landmark is superfluous for regions.
+			#	textList.append(braille.landmarkLabels[landmark])
+			#else:
+			#	# Translators: This is brailled to indicate a landmark (example output: lmk main).
+			#	textList.append(_("lmk %s") % braille.landmarkLabels[landmark])
+			textList.append(braille.getLandmarkLabelJp(landmark))
 		text = super(BrowseModeDocumentTextInfo, self).getControlFieldBraille(field, ancestors, reportStart, formatConfig)
 		if text:
 			textList.append(text)
