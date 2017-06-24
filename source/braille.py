@@ -445,7 +445,7 @@ nabccLandmarkLabels = {
 	"region": "rgn",
 }
 
-def getLandmarkLabelJp(s):
+def getLandmarkLabelJp(landmark):
 	if landmark == "region":
 		if config.conf["braille"]["expandAtCursor"]:
 			return nabccLandmarkLabels[landmark]
