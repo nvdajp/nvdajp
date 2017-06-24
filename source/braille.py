@@ -434,6 +434,27 @@ nabccPositiveStateLabels = {
 nabccNegativeStateLabels = {
 	controlTypes.STATE_CHECKED: "( )",
 }
+nabccLandmarkLabels = {
+	"banner": "bnnr",
+	"complementary": "cmpl",
+	"contentinfo": "cinf",
+	"main": "main",
+	"navigation": "navi",
+	"search": "srch",
+	"form": "form",
+	"region": "rgn",
+}
+
+def getLandmarkLabelJp(s):
+	if landmark == "region":
+		if config.conf["braille"]["expandAtCursor"]:
+			return nabccLandmarkLabels[landmark]
+		else:
+			return landmarkLabels[landmark]
+	if config.conf["braille"]["expandAtCursor"]:
+		return "lmk %s" % nabccLandmarkLabels[landmark]
+	return _("lmk %s") % landmarkLabels[landmark]
+
 def _nvdajp(s):
 	if config.conf["braille"]["expandAtCursor"]:
 		return s
