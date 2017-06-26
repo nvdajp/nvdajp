@@ -2158,9 +2158,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.jpAnsiEditCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Work around ANSI editbox")))
 		self.jpAnsiEditCheckBox.SetValue(config.conf["language"]["jpAnsiEditbox"])
 
-		#self.msgTimeoutCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Enable Braille message timeout")))
-		#self.msgTimeoutCheckBox.SetValue(config.conf["braille"]["nvdajpMessageTimeout"])
-
 		self.jpAnnounceNewLineCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Announce new line in editable text")))
 		self.jpAnnounceNewLineCheckBox.SetValue(config.conf["language"]["jpAnnounceNewLine"])
 
@@ -2186,7 +2183,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		config.conf["keyboard"]["nvdajpImeBeep"]=self.nvdajpImeBeepCheckBox.IsChecked()
 		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
 		config.conf["language"]["jpAnsiEditbox"]=self.jpAnsiEditCheckBox.IsChecked()
-		#config.conf["braille"]["nvdajpMessageTimeout"]=self.msgTimeoutCheckBox.IsChecked()
 		config.conf["language"]["jpAnnounceNewLine"]=self.jpAnnounceNewLineCheckBox.IsChecked()
 		config.conf["language"]["openDocFileByMSHTA"]=self.openDocFileByMSHTACheckBox.IsChecked()
 		config.conf["language"]["alwaysSpeakMathInEnglish"]=self.alwaysSpeakMathInEnglishCheckBox.IsChecked()
