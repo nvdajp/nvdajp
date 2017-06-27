@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2017-05-22
+- last update: 2017-06-26
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -159,9 +159,9 @@ NVDA Japanese have made a work around edit control for ANSI applications. Becaus
 If this option is turned off, edit controls are treated as same as the original version of NVDA.
 If you use Winbiff e-mail software, please turn this option off.
 
-+++ Enable Braille message timeout +++
 
-This option allows disabling Braille message timeout. If this option is turned off, Braille massage is displayed almost forever (10000sec).
+
+
 
 +++ Announce new line in editable text +++
 
@@ -216,9 +216,9 @@ Cursor position mapping is implemented for Japanese output table.
 
 'Expand to computer braille for the word at the cursor' is not supported with Japanese braille translator.
 
-+++ Message Timeout +++
 
-If Language setting "Enable Braille message timeout" is tuened off, this setting is ignored and messages will not erased for 10000 sec.
+
+
 
 
 
