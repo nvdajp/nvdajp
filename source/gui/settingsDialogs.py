@@ -1654,7 +1654,7 @@ class BrailleSettingsDialog(SettingsDialog):
 			return 
 		config.conf["braille"]["translationTable"] = self.outTableNames[self.outTableList.GetSelection()]
 		# nvdajp start [added japanese support]
-		if "ja-jp-comp6.utb" == self.outTableNames[self.tableList.GetSelection()]:
+		if "ja-jp-comp6.utb" == self.outTableNames[self.outTableList.GetSelection()]:
 			config.conf["braille"]["japaneseBrailleSupport"] = True
 		else:
 			config.conf["braille"]["japaneseBrailleSupport"] = False
