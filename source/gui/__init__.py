@@ -637,10 +637,6 @@ class WelcomeDialog(wx.Dialog):
 			self.kbdList.SetSelection(index)
 		except:
 			log.error("Could not set Keyboard layout list to current layout",exc_info=True) 
-		# Translators: The label of a checkbox in the Welcome dialog.
-		capsAsNVDAModifierText = _("&Use CapsLock as an NVDA modifier key")
-		self.capsAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(self, label=capsAsNVDAModifierText))
-		self.capsAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"])
 		#nvdajp
 		# Translators: The label of a checkbox in the Welcome dialog.
 		nconvAsNVDAModifierText = _("Use NonConvert as an NVDA modifier key")
@@ -655,6 +651,10 @@ class WelcomeDialog(wx.Dialog):
 		self.escAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(self, label=escAsNVDAModifierText))
 		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
 		#nvdajp done
+		# Translators: The label of a checkbox in the Welcome dialog.
+		capsAsNVDAModifierText = _("&Use CapsLock as an NVDA modifier key")
+		self.capsAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(self, label=capsAsNVDAModifierText))
+		self.capsAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"])
 		# Translators: The label of a checkbox in the Welcome dialog.
 		startAfterLogonText = _("&Automatically start NVDA after I log on to Windows")
 		self.startAfterLogonCheckBox = sHelper.addItem(wx.CheckBox(self, label=startAfterLogonText))
