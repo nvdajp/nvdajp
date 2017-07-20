@@ -95,7 +95,10 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	else:
 		log.io("names %s" % '+'.join(names))
 	if len(names):
-		inputCore.manager.executeGesture(InputGesture(names, routingIndex))
+		try:
+			inputCore.manager.executeGesture(InputGesture(names, routingIndex))
+		except inputCore.NoInputGestureAction:
+			pass
 		return True
 	return False
 
