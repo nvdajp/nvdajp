@@ -63,24 +63,21 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 # Braille settings
 [braille]
 	display = string(default=noBraille)
-	# nvdajp start
-	#translationTable = string(default=en-us-comp8.ctb)
-	translationTable = string(default=ja-jp-comp6.utb)
-	# nvdajp end
-	inputTable = string(default=en-us-comp8.ctb)
-	expandAtCursor = boolean(default=false) #nvdajp
+	translationTable = string(default=ja-jp-comp6.utb) # was en-ueb-g1.ctb (nvdajp)
+	inputTable = string(default=en-ueb-g1.ctb)
+	expandAtCursor = boolean(default=false) # was true (nvdajp)
 	showCursor = boolean(default=true)
 	cursorBlink = boolean(default=true)
 	cursorBlinkRate = integer(default=500,min=200,max=2000)
 	cursorShape = integer(default=192,min=1,max=255)
 	noMessageTimeout = boolean(default=false)
 	messageTimeout = integer(default=4,min=0,max=20)
-	nvdajpMessageTimeout = boolean(default=true)
+	nvdajpMessageTimeout = boolean(default=true) # obsolete (nvdajp)
 	tetherTo = string(default="focus")
 	readByParagraph = boolean(default=false)
 	wordWrap = boolean(default=true)
 	japaneseBrailleSupport = boolean(default=true) #nvdajp
-	nvdajpComPort = integer(default=0) #nvdajp
+	nvdajpComPort = integer(default=0) # obsolete (nvdajp)
 
 	# Braille display driver settings
 	[[__many__]]
