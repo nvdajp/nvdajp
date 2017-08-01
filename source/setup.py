@@ -192,7 +192,7 @@ setup(
 			"script": "nvda_eoaProxy.pyw",
 			# uiAccess will be enabled at runtime if appropriate.
 			"uac_info": ("asInvoker", False),
-			"icon_resources": [(1,"images/nvda.ico")],
+			"icon_resources":nvdajpIcons,
 			"version":"%s.%s.%s.%s"%(version_year,version_major,version_minor,version_build),
 			"description": "NVDA Ease of Access proxy",
 			"product_version": version,
