@@ -9,7 +9,7 @@
 import wx
 import gui
 import config
-import winVersion
+from winVersion import winVersion
 
 _isXpOrVista = (winVersion.major == 5) or (winVersion.major == 6 and winVersion.minor == 0)
 
