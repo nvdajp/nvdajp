@@ -470,7 +470,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	})
 
 
-class InputGesture(braille.BrailleDisplayGesture):
+class InputGesture(braille.BrailleDisplayGesture, brailleInput.BrailleInputGesture):
 
 	source = BrailleDisplayDriver.name
 
