@@ -334,7 +334,7 @@ def bmDisConnect(hBrl, port):
 	return ret
 
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
-	name = "braillememo"
+	name = "brailleMemo"
 	description = _(u"BrailleMemo series")
 	isThreadSafe = True
 	_portName = None
