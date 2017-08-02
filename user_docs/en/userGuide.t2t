@@ -592,38 +592,77 @@ You can configure braille using the [Braille Settings dialog #BrailleSettings].
 In order to fit as much information as possible on a braille display, the following abbreviations have been defined to indicate control type and state as well as landmarks.
 
 || Abbreviation | Control type |
+| app | application |
+| bqt | block quote |
 | btn | button |
+| drbtn | drop down button |
+| spnbtn | spin button |
+| splbtn | split button |
+| tgbtn | toggle button |
 | cbo | combo box |
 | chk | checkbox |
 | dlg | dialog |
+| doc | document |
 | edt | editable text field |
+| pwdedt | password edit |
+| embedded | embedded object |
+| enote | end note |
+| fnote | foot note |
 | gra | graphic |
-| cN | table column number n, e.g. c1, c2. |
-| rN | table row number n, e.g. r1, r2. |
+| grp | grouping |
 | hN | heading at level n, e.g. h1, h2. |
+| hlp | help baloon |
+| lmk | landmark |
 | lnk | link |
 | vlnk | visited link |
 | lst | list |
-| lmk | landmark |
 | mnu | menu |
 | mnubar | menu bar |
+| mnubtn | menu button |
+| mnuitem | menu item |
+| pnl | panel |
+| prgbar | progress bar |
 | rbtn | radio button |
-| tb | table |
-| tv | treeview |
+| scrlbar | scroll bar |
+| sect | section |
+| stbar | status bar |
+| tabctl | tab control |
+| tbl | table |
+| cN | table column number n, e.g. c1, c2. |
+| rN | table row number n, e.g. r1, r2. |
+| term | terminal |
+| tlbar | tool bar |
+| tltip | tool tip |
+| tv | tree view |
+| tvbtn | tree view button |
+| tvitem | tree view item |
 | lv N | a tree view item has a hierarchical level N|
-| ``-----`` | separator |
+| wnd | window |
+| ⠤⠤⠤⠤⠤ | separator |
 
 The following state indicators are also defined:
 || Abbreviation | Control state |
 | ... | displayed when an object supports autocompletion |
-| ( ) | displayed when an object (e.g. a checkbox) is not checked |
-| (x) | displayed when an object (e.g. a checkbox) is checked |
-| (-) | displayed when an object (e.g. a checkbox) is half checked |
+| ⢎⣿⡱ | displayed when an object (e.g. a toggle button) is pressed |
+| ⢎⣀⡱ | displayed when an object (e.g. a toggle button) is not pressed |
+| ⣏⣿⣹ | displayed when an object (e.g. a checkbox) is checked |
+| ⣏⣸⣹ | displayed when an object (e.g. a checkbox) is half checked |
+| ⣏⣀⣹ | displayed when an object (e.g. a checkbox) is not checked |
 | - | displayed when an object (e.g. a tree view item) is collapsible |
 | + | displayed when an object (e.g. a tree view item) is Expandable |
+| *** | displayed when a protected control or document is encountered |
 | clk | displayed when an object is clickable |
+| cmnt | displayed when there is a comment for a spreadsheet cell or piece of text in a document |
+| frml | displayed when there is a formula on a spreadsheet cell |
+| invalid | displayed when an invalid entry has been made |
+| ldesc | displayed when an object (usually a graphic) has a long description |
+| mln | displayed when an edit field allows typing multiple lines of text such as comment fields on websites |
+| req | displayed when a required form field is encountered |
 | ro | displayed when an object (e.g. an editable text field) is read-only |
 | sel | displayed when an object is selected |
+| nsel | displayed when an object is not selected |
+| sorted asc | displayed when an object is sorted ascending |
+| sorted desc | displayed when an object is sorted descending |
 | submnu | displayed when an object has a popup (usually a sub-menu) |
 
 Finally, the following abbreviations for landmarks are defined:
@@ -1098,6 +1137,32 @@ If this is disabled, as much of the word as possible will be displayed, but the 
 When you scroll the display, you will then be able to read the rest of the word.
 
 Enabling this may allow for more fluent reading, but generally requires you to scroll the display more.
+
+==== Focus context presentation ====
+This option allows you to choose what context information NVDA will show on the braille display when an object gets focus.
+Context information refers to the hierarchy of objects containing the focus.
+For example, when you focus a list item, this list item is part of a list.
+This list might be contained by a dialog, etc.
+Please consult the section about [object navigation #ObjectNavigation] for more information about the hierarchy that applies to objects in NVDA.
+
+When set to fill display for context changes, NVDA will try to display as much context information as possible on the braille display, but only for the parts of the context that have changed.
+For the example above, this means that when changing focus to the list, NVDA will show the list item on the braille display.
+Furthermore, if there is enough space left on the braille display, NVDA will try to show that the list item is part of a list.
+If you then start moving through the list with your arrow keys, it is assumed that you are aware that you are still in the list.
+Thus, for the remaining list items you focus, NVDA will only show the focused list item on the display.
+In order for you to read the context again (i.e. that you are in a list and that the list is part of a dialog), you will have to scroll your braille display back.
+
+When this option is set to always fill the display, NVDA will try to show as much context information as possible on the braille display, regardless of whether you have seen the same context information before.
+This has the advantage that NVDA will fit as much information as possible on the display.
+However, the downside is that there is always a difference in the position where the focus starts on the braille display.
+This can make it difficult to skim a long list of items, for example, as you will need to continually move your finger to find the start of the item.
+This was the default behavior for NVDA 2017.2 and before.
+
+When you set the focus context presentation option to only show the context information when scrolling back, NVDA never shows context information on your braille display by default.
+Thus, in the example above, NVDA will display that you focused a list item.
+However, in order for you to read the context (i.e. that you are in a list and that the list is part of a dialog), you will have to scroll your braille display back.
+
+To toggle focus context presentation from anywhere, please assign a custom gesture using the [Input Gestures dialog #InputGestures].
 
 +++ Keyboard Settings (NVDA+control+k) +++
 This dialog box is found in the Preferences menu, under "Keyboard settings...".
