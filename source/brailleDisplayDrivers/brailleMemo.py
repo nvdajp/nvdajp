@@ -119,14 +119,14 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	if keys[2] &  64: names.append('func2')
 	if keys[2] & 128: names.append('func3')
 	if keys[0] == 1:
-		if keys[1] &   1: names.append('d8')
-		if keys[1] &   2: names.append('d6')
-		if keys[1] &   4: names.append('d5')
-		if keys[1] &   8: names.append('d4')
-		if keys[1] &  16: names.append('d7')
-		if keys[1] &  32: names.append('d3')
-		if keys[1] &  64: names.append('d2')
-		if keys[1] & 128: names.append('d1')
+		if keys[1] &   1: names.append('dot8')
+		if keys[1] &   2: names.append('dot6')
+		if keys[1] &   4: names.append('dot5')
+		if keys[1] &   8: names.append('dot4')
+		if keys[1] &  16: names.append('dot7')
+		if keys[1] &  32: names.append('dot3')
+		if keys[1] &  64: names.append('dot2')
+		if keys[1] & 128: names.append('dot1')
 	elif keys[0] == 2:
 		if keys[1] &   1: names.append('esc')
 		if keys[1] &   2: names.append('inf')
@@ -335,7 +335,7 @@ def bmDisConnect(hBrl, port):
 
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	name = "brailleMemo"
-	description = _(u"BrailleMemo series")
+	description = _(u"BrailleMemo experimental")
 	isThreadSafe = True
 	_portName = None
 	_directBM = None
@@ -446,7 +446,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			"kb:alt+tab": ("br(braillememo):alt+inf",),
 			"kb:enter": ("br(braillememo):ok","br(braillememo):set",),
 			"kb:delete": ("br(braillememo):del",),
-			"braille_eraseLastCell": ("br(braillememo):bs",),
 			"kb:tab": ("br(braillememo):inf",),
 			"kb:shift+tab": ("br(braillememo):select+inf",),
 			"kb:upArrow": ("br(braillememo):upArrow",),
@@ -461,6 +460,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			"review_nextLine": ("br(braillememo):fw",),
 			"review_previousWord": ("br(braillememo):ls",),
 			"review_nextWord": ("br(braillememo):rs",),
+			"braille_eraseLastCell": ("br(braillememo):bs",),
 			"braille_routeTo": ("br(braillememo):route",),
 			"braille_scrollBack": ("br(braillememo):func1","br(braillememo):func3+leftArrow",),
 			"braille_scrollForward": ("br(braillememo):func4","br(braillememo):func3+rightArrow",),
@@ -476,5 +476,19 @@ class InputGesture(braille.BrailleDisplayGesture, brailleInput.BrailleInputGestu
 
 	def __init__(self, names, routingIndex):
 		super(InputGesture, self).__init__()
+		if ('dot4' in names) and ('dot8' in names):
+			self.space = True
+			names.remove('dot4')
+			names.remove('dot8')
 		self.id = "+".join(names)
+		dots = 0
+		if 'dot1' in names: dots |= (1 << 0)
+		if 'dot2' in names: dots |= (1 << 1)
+		if 'dot3' in names: dots |= (1 << 2)
+		if 'dot4' in names: dots |= (1 << 3)
+		if 'dot5' in names: dots |= (1 << 4)
+		if 'dot6' in names: dots |= (1 << 5)
+		if 'dot7' in names: dots |= (1 << 6)
+		if 'dot8' in names: dots |= (1 << 7)
+		self.dots = dots
 		self.routingIndex = routingIndex
