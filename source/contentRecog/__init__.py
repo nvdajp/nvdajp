@@ -15,6 +15,16 @@ They are implemented using the L{ContentRecognizer} class.
 
 from collections import namedtuple
 import textInfos.offsets
+from unicodedata import east_asian_width
+
+def isEastAsian(c):
+	return c and (east_asian_width(c) != 'N')
+
+def startsWithEastAsian(s):
+	return s and isEastAsian(s[0])
+
+def endsWithEastAsian(s):
+	return s and isEastAsian(s[-1])
 
 class ContentRecognizer(object):
 	"""Implementation of a content recognizer.
@@ -180,7 +190,7 @@ class LinesWordsResult(RecognitionResult):
 			for word in line:
 				if firstWordOfLine:
 					firstWordOfLine = False
-				else:
+				elif not (self._textList and endsWithEastAsian(self._textList[-1]) and startsWithEastAsian(word["text"])):
 					# Separate with a space.
 					self._textList.append(" ")
 					self.textLen += 1
