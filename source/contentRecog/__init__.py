@@ -17,14 +17,14 @@ from collections import namedtuple
 import textInfos.offsets
 from unicodedata import east_asian_width
 
-def isEastAsian(c):
-	return c and (east_asian_width(c) != 'N')
+def isEastAsianNarrow(c):
+	return c and (east_asian_width(c) == 'Na')
 
-def startsWithEastAsian(s):
-	return s and isEastAsian(s[0])
+def startsWithEastAsianNarrow(s):
+	return s and isEastAsianNarrow(s[0])
 
-def endsWithEastAsian(s):
-	return s and isEastAsian(s[-1])
+def endsWithEastAsianNarrow(s):
+	return s and isEastAsianNarrow(s[-1])
 
 class ContentRecognizer(object):
 	"""Implementation of a content recognizer.
@@ -190,7 +190,7 @@ class LinesWordsResult(RecognitionResult):
 			for word in line:
 				if firstWordOfLine:
 					firstWordOfLine = False
-				elif not (self._textList and endsWithEastAsian(self._textList[-1]) and startsWithEastAsian(word["text"])):
+				elif self._textList and endsWithEastAsianNarrow(self._textList[-1]) and startsWithEastAsianNarrow(word["text"]):
 					# Separate with a space.
 					self._textList.append(" ")
 					self.textLen += 1
