@@ -18,7 +18,7 @@ import textInfos.offsets
 from unicodedata import east_asian_width
 
 def isEastAsianNarrow(c):
-	return c and (east_asian_width(c) == 'Na')
+	return c and (east_asian_width(unicode(c)) == 'Na')
 
 def startsWithEastAsianNarrow(s):
 	return s and isEastAsianNarrow(s[0])
