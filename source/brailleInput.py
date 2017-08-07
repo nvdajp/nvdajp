@@ -50,6 +50,10 @@ def terminate():
 	global handler
 	handler = None
 
+def jpBrailleTablePath(fileName):
+	if fileName == "ja-jp-comp6.utb": return fileName
+	return os.path.join(brailleTables.TABLES_DIR, fileName)
+
 class BrailleInputHandler(object):
 	"""Handles braille input.
 	"""
@@ -117,7 +121,7 @@ class BrailleInputHandler(object):
 		pos = self.untranslatedStart + self.untranslatedCursorPos
 		data = u"".join([unichr(cell | LOUIS_DOTS_IO_START) for cell in self.bufferBraille[:pos]])
 		self.bufferText = louis.backTranslate(
-			[os.path.join(brailleTables.TABLES_DIR, self._table.fileName),
+			[jpBrailleTablePath(self._table.fileName), #os.path.join(brailleTables.TABLES_DIR, self._table.fileName),
 			"braille-patterns.cti"],
 			data, mode=louis.dotsIO | louis.noUndefinedDots)[0]
 		newText = self.bufferText[oldTextLen:]
@@ -157,7 +161,7 @@ class BrailleInputHandler(object):
 		data = u"".join([unichr(cell | LOUIS_DOTS_IO_START) for cell in cells])
 		oldText = self.bufferText
 		text = louis.backTranslate(
-			[os.path.join(brailleTables.TABLES_DIR, self._table.fileName),
+			[jpBrailleTablePath(self._table.fileName), #os.path.join(brailleTables.TABLES_DIR, self._table.fileName),
 			"braille-patterns.cti"],
 			data, mode=louis.dotsIO | louis.noUndefinedDots | louis.partialTrans)[0]
 		self.bufferText = text
