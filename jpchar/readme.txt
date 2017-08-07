@@ -42,3 +42,9 @@ emoji.txt
 ====================================
 https://osdn.jp/ticket/browse.php?group_id=4221&tid=30841
 https://github.com/nvdajp/nvdajp/issues/7
+
+
+japanese_rokuten_kanji_braille.py
+====================================
+> cd jpchar
+> py -3.6-32 japanese_rokuten_kanji_braille.py > ../source/ja-jp-rokutenkanji.tbl
