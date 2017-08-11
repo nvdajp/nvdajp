@@ -166,6 +166,10 @@ msgstr "NVDA日本語版 Webサイト"
 msgid "Japanese 6 dot computer braille"
 msgstr "日本語6点情報処理点字"
 
+#: braille.py:142
+msgid "Japanese 6 dot kanji braille"
+msgstr "日本語6点漢点字"
+
 #: globalCommands.py:150
 msgid "%s:%s"
 msgstr "%s時%s分"
