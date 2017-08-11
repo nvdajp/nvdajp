@@ -1,7 +1,9 @@
 # ja-jp-comp6.utb
 
-sign \x3042  1		# あ
-sign \x3044  12		# い
-sign \x3046  14		# う
-sign \x3048  124	# え
-sign \x304a  24		# お
+sign \x3042  1                          # あ
+sign \x3044  12                         # い
+sign \x3046  14                         # う
+sign \x3048  124                        # え
+sign \x304a  24                         # お
+sign \x304b  16                         # か
+sign \x304c  5-16                       # が
