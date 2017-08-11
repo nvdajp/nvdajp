@@ -1,9 +1,130 @@
 # ja-jp-comp6.utb
 
-sign \x3042  1                          # あ
-sign \x3044  12                         # い
-sign \x3046  14                         # う
-sign \x3048  124                        # え
-sign \x304a  24                         # お
-sign \x304b  16                         # か
-sign \x304c  5-16                       # が
+# punctuations and hiragana
+# https://github.com/brlat/6tenkanji.ctb
+# 6tenkanji_kutouten.cti
+# 6tenkanji_hiragana.cti
+
+punctuation 、 56
+punctuation ・ 5
+punctuation 。 256
+
+letter っ 2
+
+letter ぁ 45-1
+letter ぃ 45-12
+letter ぅ 45-14
+letter ぇ 45-124
+letter ぉ 45-24
+
+letter ゃ 4
+letter ゅ 45
+letter ょ 46
+
+letter あ 1
+letter い 12
+letter う 14
+letter え 124
+letter お 24
+letter か 16
+letter き 126
+letter く 146
+letter け 1246
+letter こ 246
+letter さ 156
+letter し 1256
+letter す 1456
+letter せ 12456
+letter そ 2456
+letter た 135
+letter ち 1235
+letter つ 1345
+letter て 12345
+letter と 2345
+letter な 13
+letter に 123
+letter ぬ 134
+letter ね 1234
+letter の 234
+letter は 136
+letter ひ 1236
+letter ふ 1346
+letter へ 12346
+letter ほ 2346
+letter ま 1356
+letter み 12356
+letter む 13456
+letter め 123456
+letter も 23456
+letter や 34
+letter ゆ 346
+letter よ 345
+letter ら 15
+letter り 125
+letter る 145
+letter れ 1245
+letter ろ 245
+letter わ 3
+letter を 35
+letter ん 356
+letter が 5-16
+letter ぎ 5-126
+letter ぐ 5-146
+letter げ 5-1246
+letter ご 5-246
+letter ざ 5-156
+letter じ 5-1256
+letter ず 5-1456
+letter ぜ 5-12456
+letter ぞ 5-2456
+letter だ 5-135
+letter ぢ 5-1235
+letter づ 5-1345
+letter で 5-12345
+letter ど 5-2345
+letter ば 5-136
+letter び 5-1236
+letter ぶ 5-1346
+letter べ 5-12346
+letter ぼ 5-2346
+letter ぱ 6-136
+letter ぴ 6-1236
+letter ぷ 6-1346
+letter ぺ 6-12346
+letter ぽ 6-2346
+always きゃ 4-16
+always きゅ 4-146
+always きょ 4-246
+always しゃ 4-156
+always しゅ 4-1456
+always しょ 4-2456
+always ちゃ 4-135
+always ちゅ 4-1345
+always ちょ 4-2345
+always にゃ 4-13
+always にゅ 4-134
+always にょ 4-234
+always ひゃ 4-136
+always ひゅ 4-1346
+always ひょ 4-2346
+always みゃ 4-1356
+always みゅ 4-13456
+always みょ 4-23456
+always りゃ 4-15
+always りゅ 4-145
+always りょ 4-245
+always ぎゃ 45-16
+always ぎゅ 45-146
+always ぎょ 45-246
+always じゃ 45-156
+always じゅ 45-1456
+always じょ 45-2456
+always ぢゃ 45-135
+always ぢゅ 45-1345
+always ぢょ 45-2345
+always びゃ 45-136
+always びゅ 45-1346
+always びょ 45-2346
+always ぴゃ 46-136
+always ぴゅ 46-1346
+always ぴょ 46-2346
