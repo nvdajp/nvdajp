@@ -168,7 +168,7 @@ msgstr "日本語6点情報処理点字"
 
 #: braille.py:142
 msgid "Japanese 6 dot kanji braille"
-msgstr "日本語6点漢点字"
+msgstr "日本語六点漢字"
 
 #: globalCommands.py:150
 msgid "%s:%s"
