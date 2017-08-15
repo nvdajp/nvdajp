@@ -112,18 +112,18 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	routingIndex = None
 	if keys[2] &   1: names.append('func1')
 	if keys[2] &   2: names.append('func4')
-	if keys[2] &   4: names.append('dot7')
+	if keys[2] &   4: names.append('ctrl')
 	if keys[2] &   8: names.append('alt')
-	if keys[2] &  16: names.append('dot8')
+	if keys[2] &  16: names.append('select')
 	if keys[2] &  32: names.append('read')
 	if keys[2] &  64: names.append('func2')
 	if keys[2] & 128: names.append('func3')
 	if keys[0] == 1:
-		if keys[1] &   1: names.append('space')
+		if keys[1] &   1: names.append('dot8')
 		if keys[1] &   2: names.append('dot6')
 		if keys[1] &   4: names.append('dot5')
 		if keys[1] &   8: names.append('dot4')
-		if keys[1] &  16: names.append('enter')
+		if keys[1] &  16: names.append('dot7')
 		if keys[1] &  32: names.append('dot3')
 		if keys[1] &  64: names.append('dot2')
 		if keys[1] & 128: names.append('dot1')
@@ -440,23 +440,22 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			"showGui": ("br(braillememo):ins",),
 			"kb:escape": ("br(braillememo):esc",),
 			"kb:windows": ("br(braillememo):read",),
-			#"kb:shift": ("br(braillememo):select",),
-			#"kb:control": ("br(braillememo):ctrl",),
+			"kb:shift": ("br(braillememo):select",),
+			"kb:control": ("br(braillememo):ctrl",),
 			"kb:alt": ("br(braillememo):alt",),
 			"kb:alt+tab": ("br(braillememo):alt+inf",),
-			"kb:enter": ("br(braillememo):ok","br(braillememo):set","br(braillememo):enter",),
-			"kb:space": ("br(braillememo):space",),
+			"kb:enter": ("br(braillememo):ok","br(braillememo):set",),
 			"kb:delete": ("br(braillememo):del",),
 			"kb:tab": ("br(braillememo):inf",),
-			#"kb:shift+tab": ("br(braillememo):select+inf",),
+			"kb:shift+tab": ("br(braillememo):select+inf",),
 			"kb:upArrow": ("br(braillememo):upArrow",),
 			"kb:downArrow": ("br(braillememo):downArrow",),
 			"kb:leftArrow": ("br(braillememo):leftArrow",),
 			"kb:rightArrow": ("br(braillememo):rightArrow",),
-			#"kb:shift+upArrow": ("br(braillememo):select+upArrow",),
-			#"kb:shift+downArrow": ("br(braillememo):select+downArrow",),
-			#"kb:shift+leftArrow": ("br(braillememo):select+leftArrow",),
-			#"kb:shift+rightArrow": ("br(braillememo):select+rightArrow",),
+			"kb:shift+upArrow": ("br(braillememo):select+upArrow",),
+			"kb:shift+downArrow": ("br(braillememo):select+downArrow",),
+			"kb:shift+leftArrow": ("br(braillememo):select+leftArrow",),
+			"kb:shift+rightArrow": ("br(braillememo):select+rightArrow",),
 			"review_previousLine": ("br(braillememo):bw",),
 			"review_nextLine": ("br(braillememo):fw",),
 			"review_previousWord": ("br(braillememo):ls",),
@@ -477,8 +476,10 @@ class InputGesture(braille.BrailleDisplayGesture, brailleInput.BrailleInputGestu
 
 	def __init__(self, names, routingIndex):
 		super(InputGesture, self).__init__()
-		if names == ('space',):
+		if ('dot4' in names) and ('dot8' in names):
 			self.space = True
+			names.remove('dot4')
+			names.remove('dot8')
 		self.id = "+".join(names)
 		dots = 0
 		if 'dot1' in names: dots |= (1 << 0)
