@@ -47,6 +47,8 @@ HorizontalTextAlignment_Right=2
 HorizontalTextAlignment_Justified=3
   
 badUIAWindowClassNames=[
+	"SysLink", # https://osdn.net/ticket/browse.php?group_id=4221&tid=32145
+	"ClockWndMain", # https://osdn.net/ticket/browse.php?group_id=4221&tid=32466
 	"SysTreeView32",
 	"WuDuiListView",
 	"ComboBox",
@@ -62,8 +64,9 @@ badUIAWindowClassNames=[
 	"_WwG",
 	"EXCEL7",
 	"Button",
-	"SysLink",
-	"ClockWndMain",
+	# #7497: Windows 10 Fall Creators Update has an incomplete UIA implementation for console windows, therefore for now we should ignore it.
+	# It does not implement caret/selection, and probably has no new text events.
+	"ConsoleWindowClass",
 ]
 
 NVDAUnitsToUIAUnits={
