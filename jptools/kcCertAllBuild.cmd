@@ -3,7 +3,7 @@ set SCONSOPTIONS=%* --silent
 set VERSION=2017.3jp
 set UPDATEVERSIONTYPE=nvdajp
 
-@rem for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
+for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')"`) do set NOWDATE=%%t
 @rem set VERSION=%VERSION%-beta
 set VERSION=%VERSION%-%NOWDATE%
 set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
