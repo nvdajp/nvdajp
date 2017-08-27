@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-03 12:37+1000\n"
-"PO-Revision-Date: 2017-07-31 20:06+0530\n"
+"POT-Creation-Date: 2017-08-14 08:17+1000\n"
+"PO-Revision-Date: 2017-08-12 09:29+0530\n"
 "Last-Translator: DINAKAR T.D. <td.dinkar@gmail.com>\n"
 "Language-Team: DINAKAR T.D. <td.dinkar@gmail.com>\n"
 "Language: ta\n"
@@ -149,227 +149,211 @@ msgstr "பின்னணி ஒலியை எப்பொழுதும் 
 
 #. Translators: Displayed in braille for an object which is a
 #. window.
-#, fuzzy
 msgid "wnd"
-msgstr "முடிவு"
+msgstr "wnd"
 
 #. Translators: Displayed in braille for an object which is a
 #. dialog.
 msgid "dlg"
-msgstr "உரை"
+msgstr "dlg"
 
 #. Translators: Displayed in braille for an object which is a
 #. check box.
 msgid "chk"
-msgstr "தேர்"
+msgstr "chk"
 
 #. Translators: Displayed in braille for an object which is a
 #. radio button.
 msgid "rbtn"
-msgstr "வாபொ"
+msgstr "rbtn"
 
 #. Translators: Displayed in braille for an object which is an
 #. editable text field.
 msgid "edt"
-msgstr "தொகு"
+msgstr "edt"
 
 #. Translators: Displayed in braille for an object which is a
 #. button.
 msgid "btn"
-msgstr "பொத்"
+msgstr "btn"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu bar.
 msgid "mnubar"
-msgstr "கிபட்"
+msgstr "mnubar"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu item.
-#, fuzzy
 msgid "mnuitem"
-msgstr "பட்டியல் உருப்படி"
+msgstr "mnuitem"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu.
 msgid "mnu"
-msgstr "பட்"
+msgstr "mnu"
 
 #. Translators: Displayed in braille for an object which is a
 #. combo box.
 msgid "cbo"
-msgstr "சேர்"
+msgstr "cbo"
 
 #. Translators: Displayed in braille for an object which is a
 #. list.
 msgid "lst"
-msgstr "வபட்"
+msgstr "lst"
 
 #. Translators: Displayed in braille for an object which is a
 #. graphic.
 msgid "gra"
-msgstr "வரை"
+msgstr "gra"
 
 #. Translators: Displayed in braille for an object which is a
 #. help balloon.
 msgid "hlp"
-msgstr ""
+msgstr "hlp"
 
 #. Translators: Displayed in braille for an object which is a
 #. tool tip.
 msgid "tltip"
-msgstr ""
+msgstr "tltip"
 
 #. Translators: Displayed in braille for an object which is a
 #. link.
 msgid "lnk"
-msgstr "தொடு"
+msgstr "lnk"
 
 #. Translators: Displayed in braille for an object which is a
 #. tree view.
 msgid "tv"
-msgstr "கிளை"
+msgstr "tv"
 
 #. Translators: Displayed in braille for an object which is a
 #. tree view item.
-#, fuzzy
 msgid "tvitem"
-msgstr "உருப்படி"
+msgstr "tvitem"
 
 #. Translators: Displayed in braille for an object which is a
 #. tab control.
 msgid "tabctl"
-msgstr ""
+msgstr "tabctl"
 
 #. Translators: Displayed in braille for an object which is a
 #. progress bar.
 msgid "prgbar"
-msgstr ""
+msgstr "prgbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. scroll bar.
 msgid "scrlbar"
-msgstr ""
+msgstr "scrlbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. status bar.
 msgid "stbar"
-msgstr ""
+msgstr "stbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. table.
-#, fuzzy
 msgid "tbl"
-msgstr "அட்"
+msgstr "tbl"
 
 #. Translators: Displayed in braille for an object which is a
 #. tool bar.
 msgid "tlbar"
-msgstr ""
+msgstr "tlbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. drop down button.
-#, fuzzy
 msgid "drbtn"
-msgstr "வாபொ"
+msgstr "drbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. block quote.
-#, fuzzy
 msgid "bqt"
-msgstr "பொத்"
+msgstr "bqt"
 
 #. Translators: Displayed in braille for an object which is a
 #. document.
-#, fuzzy
 msgid "doc"
-msgstr "புள்ளி"
+msgstr "doc"
 
 #. Translators: Displayed in braille for an object which is a
 #. application.
-#, fuzzy
 msgid "app"
-msgstr "மடிக்கணினி"
+msgstr "app"
 
 #. Translators: Displayed in braille for an object which is a
 #. grouping.
-#, fuzzy
 msgid "grp"
-msgstr "இறுக்கம்"
+msgstr "grp"
 
 #. Translators: Displayed in braille for an object which is a
 #. embedded object.
-#, fuzzy
 msgid "embedded"
-msgstr "பொதிந்துள்ள பொருள்"
+msgstr "embedded"
 
 #. Translators: Displayed in braille for an object which is a
 #. end note.
-#, fuzzy
 msgid "enote"
-msgstr "குறிப்பு"
+msgstr "enote"
 
 #. Translators: Displayed in braille for an object which is a
 #. foot note.
-#, fuzzy
 msgid "fnote"
-msgstr "குறிப்பு"
+msgstr "fnote"
 
 #. Translators: Displayed in braille for an object which is a
 #. terminal.
-#, fuzzy
 msgid "term"
-msgstr "முனையம்"
+msgstr "term"
 
 #. Translators: Displayed in braille for an object which is a
 #. section.
-#, fuzzy
 msgid "sect"
-msgstr "உட்பிரிவு"
+msgstr "sect"
 
 #. Translators: Displayed in braille for an object which is a
 #. toggle button.
 msgid "tgbtn"
-msgstr ""
+msgstr "tgbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. split button.
 msgid "splbtn"
-msgstr ""
+msgstr "splbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu button.
-#, fuzzy
 msgid "mnubtn"
-msgstr "கிபட்"
+msgstr "mnubtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. spin button.
 msgid "spnbtn"
-msgstr ""
+msgstr "spnbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. tree view button.
 msgid "tvbtn"
-msgstr ""
+msgstr "tvbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. panel.
-#, fuzzy
 msgid "pnl"
-msgstr "பொருத்துப் பலகை"
+msgstr "pnl"
 
 #. Translators: Displayed in braille for an object which is a
 #. password edit.
 msgid "pwdedt"
-msgstr ""
+msgstr "pwdedt"
 
 #. Translators: Displayed in braille when an object is selected.
 msgid "sel"
-msgstr "தெரி"
+msgstr "sel"
 
 #. Translators: Displayed in braille when an object (e.g. an editable text field) is read-only.
 msgid "ro"
-msgstr "பம"
+msgstr "ro"
 
 #. Translators: Displayed in braille when an object (e.g. a tree view item) is expanded.
 msgid "-"
@@ -381,100 +365,95 @@ msgstr "+"
 
 #. Translators: Displayed in braille when an object has a popup (usually a sub-menu).
 msgid "submnu"
-msgstr "உபட்"
+msgstr "submnu"
 
 #. Translators: Displayed in braille when a protected control or a document is encountered.
 msgid "***"
-msgstr ""
+msgstr "***"
 
 #. Translators: Displayed in braille when a required form field is encountered.
-#, fuzzy
 msgid "req"
-msgstr "சிவப்பு"
+msgstr "req"
 
 #. Translators: Displayed in braille when an invalid entry has been made.
-#, fuzzy
 msgid "invalid"
-msgstr "ஏற்கமுடியாத உள்ளீடு"
+msgstr "invalid"
 
 #. Translators: Displayed in braille when an object supports autocompletion.
 msgid "..."
 msgstr "..."
 
 #. Translators: Displayed in braille when an edit field allows typing multiple lines of text such as comment fields on websites.
-#, fuzzy
 msgid "mln"
-msgstr "பட்"
+msgstr "mln"
 
 #. Translators: Displayed in braille when an object is clickable.
 msgid "clk"
-msgstr "சொடு"
+msgstr "clk"
 
 #. Translators: Displayed in braille when an object is sorted ascending.
-#, fuzzy
 msgid "sorted asc"
-msgstr "ஏறுமுகமாக வகைப்படுத்தப்பட்டது"
+msgstr "sorted asc"
 
 #. Translators: Displayed in braille when an object is sorted descending.
-#, fuzzy
 msgid "sorted desc"
-msgstr "இறங்குமுகமாக வகைப்படுத்தப்பட்டது"
+msgstr "sorted desc"
 
 #. Translators: Displayed in braille when an object (usually a graphic) has a long description.
 msgid "ldesc"
-msgstr ""
+msgstr "ldesc"
 
 #. Translators: Displayed in braille when there is a formula on a spreadsheet cell.
 msgid "frml"
-msgstr ""
+msgstr "frml"
 
 #. Translators: Displayed in braille when there is a comment for a spreadsheet cell or piece of text in a document.
 msgid "cmnt"
-msgstr ""
+msgstr "cmnt"
 
 #. Translators: Displayed in braille when an object is not selected.
 msgid "nsel"
-msgstr ""
+msgstr "nsel"
 
 #. Translators: Displayed in braille for the banner landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "bnnr"
-msgstr "பதா"
+msgstr "bnnr"
 
 #. Translators: Displayed in braille for the complementary landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "cmpl"
-msgstr "நிறை"
+msgstr "cmpl"
 
 #. Translators: Displayed in braille for the contentinfo landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "cinf"
-msgstr "உத"
+msgstr "cinf"
 
 #. Translators: Displayed in braille for the main landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "main"
-msgstr "முத"
+msgstr "main"
 
 #. Translators: Displayed in braille for the navigation landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "navi"
-msgstr "வழி"
+msgstr "navi"
 
 #. Translators: Displayed in braille for the search landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "srch"
-msgstr "தேட"
+msgstr "srch"
 
 #. Translators: Displayed in braille for the form landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "form"
-msgstr "படி"
+msgstr "form"
 
 #. Translators: Displayed in braille for a significant region, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "rgn"
-msgstr "மண்"
+msgstr "rgn"
 
 #. Translators: The description of a braille cursor shape.
 msgid "Dots 7 and 8"
@@ -491,20 +470,19 @@ msgstr "எல்லாப் புள்ளிகளும்"
 #. Translators: The label for a braille focus context presentation setting that
 #. only shows as much as possible focus context information when the context has changed.
 msgid "Fill display for context changes"
-msgstr ""
+msgstr "உள்ளடக்க மாற்றங்களுக்கு காட்சியமைவை நிரப்புக"
 
 #. Translators: The label for a braille focus context presentation setting that
 #. shows as much as possible focus context information if the focus object doesn't fill up the whole display.
 #. This was the pre NVDA 2017.3 default.
-#, fuzzy
 msgid "Always fill display"
-msgstr "பிரெயில் காட்சியமைவு (&D):"
+msgstr "காட்சியமைவை எப்பொழுதும் நிரப்புக"
 
 #. Translators: The label for a braille focus context presentation setting that
 #. always shows the object with focus at the very left of the braille display
 #. (i.e. you will have to scroll back for focus context information).
 msgid "Only when scrolling back"
-msgstr ""
+msgstr "பின்னுருட்டும்பொழுது மட்டும்"
 
 #. Translators: Displayed in braille for a heading with a level.
 #. %s is replaced with the level.
@@ -627,9 +605,8 @@ msgstr "செக் படிநிலை 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Danish 8 dot computer braille"
-msgstr "ஸ்பானிய 8 புள்ளி கணினி பிரெயில்"
+msgstr "டேனிஷ்  8 புள்ளி கணினி பிரெயில்"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -743,15 +720,13 @@ msgstr "எத்தியோப்பிய படிநிலை 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Persian 8 dot computer braille"
-msgstr "ஜெர்மானிய 8 புள்ளி கணினி பிரெயில்"
+msgstr "பாரசீகம் 8 புள்ளி கணினி பிரெயில்"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Persian grade 1"
-msgstr "செர்பிய படிநிலை 1"
+msgstr "பாரசீகம் படிநிலை 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -881,7 +856,7 @@ msgstr "காஷ்மீரம் படிநிலை 1"
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 msgid "Lithuanian"
-msgstr ""
+msgstr "லித்துவேனியம்"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1010,15 +985,13 @@ msgstr "ஸ்லோவாக்கிய  படிநிலை 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Slovenian 8 dot computer braille"
-msgstr "நார்வே 8 புள்ளி கணினி பிரெயில்"
+msgstr "ஸ்லோவீனிய 8 புள்ளி கணினி பிரெயில்"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Slovenian grade 1"
-msgstr "ஸ்லோவீன் படிநிலை 1"
+msgstr "ஸ்லோவீனியம் படிநிலை 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -3983,13 +3956,13 @@ msgstr ""
 #. Translators: Reports the new state of braille focus context presentation.
 #. %s will be replaced with the context presentation setting.
 #. For example, the full message might be "Braille focus context presentation: fill display for context changes"
-#, fuzzy, python-format
+#, python-format
 msgid "Braille focus context presentation: %s"
-msgstr "பிரெயில் இதனுடன் கட்டப்பட்டுள்ளது: %s"
+msgstr "பிரெயில் குவிமைய சூழலளிக்கை: %s"
 
 #. Translators: Input help mode message for toggle braille focus context presentation command.
 msgid "Toggle the way context information is presented in braille"
-msgstr ""
+msgstr "சூழலுணர்த்தும் தகவல் பிரெயிலில் காட்டப்படும் விதத்தை மாற்றியமைக்கவும்"
 
 #. Translators: The message announced when toggling the braille cursor.
 msgid "Braille cursor off"
@@ -4178,15 +4151,14 @@ msgid "Begins interaction with math content"
 msgstr "கணக்குடனான அளவளாவலைத் துவக்குகிறது"
 
 #. Translators: Reported when Windows 10 OCR is not available.
-#, fuzzy
 msgid "Windows 10 OCR not available"
-msgstr "விண்டோஸ் ஒன் கோர் குரல்கள்"
+msgstr "விண்டோஸ் 10 எழுத்துணரி கிடைப்பிலில்லை"
 
 #. Translators: Describes a command.
-#, fuzzy
 msgid ""
 "Recognizes the content of the current navigator object with Windows 10 OCR"
-msgstr "சொடுக்கியின் குறிமுள்ளை தற்போதைய வழிகாட்டிப் பொருளுக்கு நகர்த்தும்"
+msgstr ""
+"விண்டோஸ் 10 எழுத்துணரியைக் கொண்டு நடப்பு வழிகாட்டிப் பொருளின் உள்ளடக்கத்தை உணருகிறது"
 
 #. Translators: The name of a category of NVDA commands.
 msgid "Emulated system keyboard keys"
@@ -7109,33 +7081,32 @@ msgstr "சூப்பர் பிரெயில் "
 
 #. Translators: The title of the document used to present the result of content recognition.
 msgid "Result"
-msgstr ""
+msgstr "எழுத்துணரி முடிவு"
 
 #. Translators: Describes a command.
 msgid "Activates the text at the cursor if possible"
-msgstr ""
+msgstr "சுட்டியினிடத்தில் இருக்கும் உரையை இயன்றால் இயக்குகிறது"
 
 #. Translators: Describes a command.
 msgid "Dismiss the recognition result"
-msgstr ""
+msgstr "எழுத்துணரு முடிவை நிராகரிக்கவும்"
 
 #. Translators: Reported when content recognition (e.g. OCR) is attempted,
 #. but the user is already reading a content recognition result.
 msgid "Already in a content recognition result"
-msgstr ""
+msgstr "எழுத்துணரி முடிவில் ஏற்கெனவே உள்ளது"
 
 #. Translators: Reported when content recognition (e.g. OCR) is attempted,
 #. but the content is not visible.
 msgid "Content is not visible"
-msgstr ""
+msgstr "உள்ளடக்கம் பார்வையில் இல்லை"
 
 #. Translators: Reporting when content recognition (e.g. OCR) begins.
 msgid "Recognizing"
-msgstr ""
+msgstr "உணருகிறது"
 
-#, fuzzy
 msgid "Recognition failed"
-msgstr "அமைவடிவம் இடப்பட்டது"
+msgstr "உணருதல் தோல்வியடைந்தது"
 
 #. Translators: Reported when last saved configuration has been applied by using revert to saved configuration option in NVDA menu.
 msgid "Configuration applied"
@@ -7266,7 +7237,7 @@ msgstr "ஆவண பண்புகளின் அமைப்புகளை 
 
 #. Translators: The label for the menu item to open the Windows 10 OCR settings dialog.
 msgid "Windows 10 OCR..."
-msgstr ""
+msgstr "விண்டோஸ் 10 எழுத்துணரி..."
 
 #. Translators: The label for the menu item to open Default speech dictionary dialog.
 msgid "&Default dictionary..."
@@ -8758,12 +8729,11 @@ msgstr ""
 
 #. Translators: The title of the Windows 10 OCR dialog.
 msgid "Windows 10 OCR"
-msgstr ""
+msgstr "விண்டோஸ் 10 எழுத்துணரி"
 
 #. Translators: Label for an option in the Windows 10 OCR dialog.
-#, fuzzy
 msgid "Recognition &language:"
-msgstr "தெரியாத மொழி"
+msgstr "எழுத்துணரும் மொழி (&L)"
 
 #. Translators: This is a label for an Entry Type radio button in add dictionary entry dialog.
 msgid "&Anywhere"
@@ -8886,14 +8856,12 @@ msgid "Cursor blink rate (ms)"
 msgstr "சுட்டி இமைக்கும் விகிதம் (நுண்ணொடிகளில்)"
 
 #. Translators: The label for a setting in braille settings to select the cursor shape when tethered to focus.
-#, fuzzy
 msgid "Cursor shape for &focus:"
-msgstr "பிரெயில் சுட்டியின் வடிவம் (&S)"
+msgstr "குவிமையத்திற்கான சுட்டியின் வடிவம் (&F)"
 
 #. Translators: The label for a setting in braille settings to select the cursor shape when tethered to review.
-#, fuzzy
 msgid "Cursor shape for &review:"
-msgstr "பிரெயில் சுட்டியின் வடிவம் (&S)"
+msgstr "சீராய்விற்கான சுட்டியின் வடிவம் (&R)"
 
 #. Translators: The label for a setting in braille settings to change how long a message stays on the braille display (in seconds).
 msgid "Message &timeout (sec)"
@@ -8916,9 +8884,8 @@ msgid "Avoid splitting &words when possible"
 msgstr "இயலும் இடங்களில் சொற்களின் பிளவைத் தவிர்க்கவும் (&W)"
 
 #. Translators: The label for a setting in braille settings to select how the context for the focus object should be presented on a braille display.
-#, fuzzy
 msgid "Focus context presentation:"
-msgstr "அடுத்த விளக்கவுரை ஏதுமில்லை"
+msgstr "குவிமைய சூழலளிக்கை"
 
 #, python-format
 msgid "Could not load the %s display."
@@ -10237,6 +10204,7 @@ msgstr "கருத்துரை: {text}, படைப்பாளர்: {au
 msgid "{revisionType} {description}: {text} by {author} on {date}"
 msgstr "{revisionType} {description}: {text}, படைப்பாளர் {author}, தேதி {date}"
 
+#. Translators: the label for a speling error shown in NVDA's Elements List dialog for Microsoft Word
 #, python-brace-format
 msgid "spelling: {text}"
 msgstr "எழுத்தாக்கம்: {text}"

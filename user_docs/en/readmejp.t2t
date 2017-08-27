@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2017-06-26
+- last update: 2017-08-10
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -31,7 +31,7 @@ NVDA Japanese is provided "as is", without warranty.
 
 ++ Contributors ++
 
-[Contributors for NVDA Japanese https://osdn.jp/projects/nvdajp/wiki/contributors_ja]
+[Contributors for NVDA Japanese https://osdn.net/projects/nvdajp/wiki/contributors_ja]
 
 
 + Install +
@@ -108,6 +108,11 @@ The Welcome dialog also has this option.
 +++ Use Convert as NVDA key +++
 
 If checked, Convert key can be used as NVDA modifier key. Default is off.
+The Welcome dialog also has this option.
+
++++ Use Escape as NVDA key +++
+
+If checked, Escape key can be used as NVDA modifier key. Default is off.
 The Welcome dialog also has this option.
 
 +++ Beep if IME mode is changed +++
@@ -188,7 +193,7 @@ If you use the environment where HTA is not allowed, disable the option.
 
 If the option is not checked, NVDA may say "No navigation files for this speech style in this language" during interactive navigation of MathML content in Japanese.
 
-The issue is discussed at [NVDAJP ticket 29872 https://osdn.jp/ticket/browse.php?group_id=4221&tid=35208] and [#5126 http://community.nvda-project.org/ticket/5126].
+The issue is discussed at [NVDAJP ticket 29872 https://osdn.net/ticket/browse.php?group_id=4221&tid=35208] and [#5126 http://community.nvda-project.org/ticket/5126].
 
 
 ++ Voice settings ++
@@ -244,7 +249,7 @@ Candidates of Japanese input method editor is announced, even if 'Speak typed ch
 
 JTalk driver is the default synthesizer of NVDAJP, which supports Japanese language.
 
-- JTalk (Japanese TTS) has M001, Lite, and Mei voices. M001 and Lite are male voices. Mei is female voice.
+- JTalk (Japanese TTS) has M001, Lite, Mei and Tohoku-f01 voices. M001 and Lite are male voices. Mei and Tohoku-f01 are female voice.
 - M001 and Mei are at sampling rate of 48kHz. Lite is at sampling rate of 16kHz.
 - Speed, Volume, Pitch, Inflection can be changed.
 - Rate boost option is available.
@@ -622,8 +627,8 @@ BrailleNote 46C/46D driver supports following commands:
 
 It translates spoken words to Japanese braille pattens, so it is not exactly same as the output to braille devices.
 
-It uses braille Unicode font. For Windows XP, the braille font is available if LibreOffice or OpenOffice.org is installed.
-
+For Windows XP or Vista, DejaVu Sans font must be installed to display braille patterns. If you install LibreOffice, DejaVu Sans font will be installed as well.
+n
 
 
 
@@ -712,7 +717,7 @@ field 4 (or later): field 2 or later items of charactersDescriptions.dic
 
 If the line starts with '#', it is ignored. If the line starts with '\#', the character is '#' itself.
 
-Details (in Japanese) [NVDAJP ticket 29872 https://osdn.jp/ticket/browse.php?group_id=4221&tid=29872]
+Details (in Japanese) [NVDAJP ticket 29872 https://osdn.net/ticket/browse.php?group_id=4221&tid=29872]
 
 
 
@@ -762,9 +767,9 @@ We use AppVeyor as public build server:
 
 ++ Issues ++
 
-- [OSDN Tickets https://osdn.jp/projects/nvdajp/ticket/]
-- [GitHub Issues https://github.com/nvdajp/nvdajp/issues]
-- [GitHub Issues (miscDepsJp) https://github.com/nvdajp/nvdajpmiscdep/issues]
+- [OSDN Tickets https://osdn.net/projects/nvdajp/ticket/]
+- [GitHub Issues (nvdajp) https://github.com/nvdajp/nvdajp/issues]
+
 
 
 
@@ -779,5 +784,5 @@ We use AppVeyor as public build server:
 
 ++ Controller Client API ++
 
-- [Controller Client enhancement by NVDAJP https://osdn.jp/projects/nvdajp/wiki/ControllerClient]
+- [Controller Client enhancement by NVDAJP https://osdn.net/projects/nvdajp/wiki/ControllerClient]
 - [NvdaDemoApp (bitbucket.org) https://bitbucket.org/nishimotz/nvdademoapp]
