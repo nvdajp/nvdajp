@@ -51,7 +51,7 @@ def terminate():
 	handler = None
 
 def jpBrailleTablePath(fileName):
-	if fileName == "ja-jp-comp6.utb":
+	if fileName in ['ja-jp-comp6.utb', 'ja-jp-rokutenkanji.tbl']:
 		return [fileName, os.path.join(brailleTables.TABLES_DIR, "braille-patterns.cti")]
 	return [os.path.join(brailleTables.TABLES_DIR, fileName), "braille-patterns.cti"]
 
