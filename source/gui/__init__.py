@@ -355,7 +355,13 @@ class SysTrayIcon(wx.TaskBarIcon):
 		item = menu_preferences.Append(wx.ID_ANY,_("&General settings..."),_("General settings"))
 		self.Bind(wx.EVT_MENU, frame.onGeneralSettingsCommand, item)
 		#nvdajp begin
-		item = menu_preferences.Append(wx.ID_ANY,_("Language settings..."),_("Configure language dependent options"))
+		item = menu_preferences.Append(
+			wx.ID_ANY,
+			# Translators: The label for the menu item to open Language Settings dialog.
+			_("Language settings..."),
+			# Translators: The label for the menu item to open Language Settings dialog.
+			_("Configure language dependent options")
+		)
 		self.Bind(wx.EVT_MENU, frame.onLanguageSettingsCommand, item)
 		#nvdajp end
 		# Translators: The label for the menu item to open Synthesizer settings dialog.
@@ -442,6 +448,7 @@ class SysTrayIcon(wx.TaskBarIcon):
 		item = menu_tools.Append(wx.ID_ANY, _("Reload plugins"))
 		self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
 		#nvdajp begin
+		# Translators: The label for the menu item to open braille viewer.
 		item=self.menu_tools_toggleBrailleViewer = menu_tools.AppendCheckItem(wx.ID_ANY, _("Braille viewer"))
 		self.Bind(wx.EVT_MENU, frame.onToggleBrailleViewerCommand, item)
 		#nvdajp end

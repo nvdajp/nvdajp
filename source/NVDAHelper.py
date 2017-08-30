@@ -199,9 +199,11 @@ def handleInputCompositionEnd(result):
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
 			config.conf["keyboard"]["speakTypedCharacters"]:
 		if result == u'\u3000':
+			# Translators: handle input composition end
 			speech.speakText(_('full shape space'))
 			return
 		elif result == u'\u0020':
+			# Translators: handle input composition end
 			speech.speakText(_('space'))
 			return
 	#nvdajp end
@@ -230,12 +232,12 @@ def handleInputCompositionEnd(result):
 			import ui
 			if (gesture.vkCode == winUser.VK_ESCAPE) or \
 					ctrl and gesture.vkCode in (0x5A, 0xDB):
-				#. Translators: a message when the IME cancelation status
+				# Translators: a message when the IME cancelation status
 				speech.speakMessage(_("Clear"))
 			else:
 				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
 				if winUser.getAsyncKeyState(winUser.VK_BACK)&1:
-					#. Translators: a message when the IME cancelation status
+					# Translators: a message when the IME cancelation status
 					result+=" "+_("Clear")
 		else:
 			result=curInputComposition.compositionString.lstrip(u'\u3000 ')

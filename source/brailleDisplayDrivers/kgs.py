@@ -335,6 +335,7 @@ def bmDisConnect(hBrl, port):
 
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	name = "kgs"
+	# Translators: braille display driver description
 	description = _(u"KGS BrailleMemo series")
 	isThreadSafe = True
 	_portName = None

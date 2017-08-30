@@ -315,6 +315,7 @@ def getLandmarkLabelJp(landmark):
 			return landmarkLabels[landmark]
 	if config.conf["braille"]["expandAtCursor"]:
 		return "lmk %s" % nabccLandmarkLabels[landmark]
+	# Translators: braille landmark label
 	return _("lmk %s") % landmarkLabels[landmark]
 
 def _nvdajp(s):

@@ -160,6 +160,7 @@ class EditableText(ScriptableObject):
 		from NVDAHelper import lastCompAttr
 		if caretMoved and (not lastCompAttr) and config.conf["keyboard"]["speakTypedCharacters"] and config.conf["language"]["jpAnnounceNewLine"]:
 			import queueHandler
+			# Translators: new line of editable text
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, _("new line"))
 		# nvdajp end
 		if not caretMoved or not newInfo:
