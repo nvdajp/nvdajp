@@ -16,6 +16,7 @@ _isXpOrVista = (winVersion.major == 5) or (winVersion.major == 6 and winVersion.
 class brailleViewerFrame(wx.MiniFrame):
 
 	def __init__(self):
+		# Translators: braille viewer window title
 		super(brailleViewerFrame, self).__init__(gui.mainFrame, wx.ID_ANY, _("NVDA Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER)
 		self.Bind(wx.EVT_CLOSE, self.onClose)
 		faceName = "DejaVu Sans" if _isXpOrVista else ""

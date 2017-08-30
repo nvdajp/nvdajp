@@ -223,6 +223,7 @@ class GlobalCommands(ScriptableObject):
 			if mo:
 				hour, minute = mo.group(1), mo.group(2)
 				if minute[0] == '0': minute = minute[1:]
+				# Translators: hour and minute
 				text = _('%s:%s') % (hour, minute)
 			# nvdajp end
 		else:
@@ -1182,9 +1183,11 @@ class GlobalCommands(ScriptableObject):
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		else:
 			if characterDescriptionMode:
+				# Translators: character description mode
 				ui.message(_("Character description mode disabled"))
 				characterDescriptionMode = False
 			else:
+				# Translators: character description mode
 				ui.message(_("Character description mode enabled"))
 				characterDescriptionMode = True
 		#nvdajp end

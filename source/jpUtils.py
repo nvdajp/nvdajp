@@ -104,16 +104,22 @@ CharAttr = collections.namedtuple('CharAttr', 'upper hira kata half full latin')
 def getAttrDesc(a):
 	d = []
 	if a.hira:
+		# Translators: character attribute name
 		d.append(_('hiragana'))
 	if a.kata:
+		# Translators: character attribute name
 		d.append(_('katakana'))
 	if a.half:
+		# Translators: character attribute name
 		d.append(_('half shape'))
 	if a.full:
+		# Translators: character attribute name
 		d.append(_('full shape'))
 	if a.latin:
+		# Translators: character attribute name
 		d.append(_('latin'))
 	if a.upper:
+		# Translators: character attribute name
 		d.append(_('cap'))
 	return ' '.join(d)
 
