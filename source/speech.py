@@ -985,23 +985,19 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 		lastLanguage=language
 
 	if onlyInitialFields or (unit in (textInfos.UNIT_CHARACTER,textInfos.UNIT_WORD) and len(textWithFields)>0 and len(textWithFields[0])==1 and all((isinstance(x,textInfos.FieldCommand) and x.command=="controlEnd") for x in itertools.islice(textWithFields,1,None) )): 
-		if onlyInitialFields or any(isinstance(x,basestring) for x in speechSequence):
-			speak(speechSequence)
-		if not onlyInitialFields: 
-			#speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
-			# nvdajp begin
-			from globalCommands import characterDescriptionMode
-			from NVDAHelper import lastCompAttr
-			if lastCompAttr: return
-			useCharacterDescriptions = (characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET)
-			#log.info(u"(%s)" % textWithFields)
-			speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
-			# nvdajp end
 		if not onlyCache:
 			if onlyInitialFields or any(isinstance(x,basestring) for x in speechSequence):
 				speak(speechSequence)
 			if not onlyInitialFields: 
-				speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
+				#speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None)
+				# nvdajp begin
+				from globalCommands import characterDescriptionMode
+				from NVDAHelper import lastCompAttr
+				if lastCompAttr: return
+				useCharacterDescriptions = (characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET)
+				#log.info(u"(%s)" % textWithFields)
+				speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
+				# nvdajp end
 		if useCache:
 			speakTextInfoState.controlFieldStackCache=newControlFieldStack
 			speakTextInfoState.formatFieldAttributesCache=formatFieldAttributesCache
