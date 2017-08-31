@@ -6,14 +6,14 @@ NVDA日本語チーム 西本卓也
 1. ビルド環境
 
 
-NVDA 2017.3jp-beta の場合
+NVDA 2017.4jp-beta の場合
 
 
 (1) Windows 10 32ビットまたは64ビット / Windows 7 SP1 32ビットまたは64ビット
 
 Windows 8.1 では確認していないが、おそらく使用可能。
 
-(2) Visual Studio 2015 Community または Express for Desktop (Update 3)
+(2) Visual Studio 2015 Community
 
 時間とディスクを節約したい場合はできるだけオプションを減らしてインストールする。
 
@@ -30,8 +30,6 @@ Windows 8.1 では確認していないが、おそらく使用可能。
 備考：Windows 32bit の場合は下記のような環境変数の設定が必要
 
 ProgramFiles(x86)=C:\Program Files
-
-備考：NVDA 2016.2jp から Visual Studio 2015 だけでよい。
 
 (3) Git for Windows
 
@@ -62,7 +60,7 @@ C:\Python27\python.exe に PATH が通っていること。
 
 2. nvdajp 本体とサブモジュールの取得
 
-> git clone https://github.com/nvdajp/nvdajp.git
+> git clone --recursive https://github.com/nvdajp/nvdajp.git
 > cd nvdajp
 
 これだけで通常は問題なくサブモジュールも取得される。
