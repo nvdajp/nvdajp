@@ -1,8 +1,8 @@
 @rem SET VERSION=140204
 SET ARGS=publisher=nvdajp release=1 version=%VERSION%
 cd ..
-call scons.bat nvdaHelper\client %ARGS%
-call scons.bat client %ARGS%
+python scons.py nvdaHelper\client %ARGS%
+python scons.py client %ARGS%
 cd jptools
 cd nvdajpClient
 copy ..\..\build\x86\client\nvdaController.h client
