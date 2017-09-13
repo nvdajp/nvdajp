@@ -35,12 +35,12 @@ call build-and-test.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
 cd ..\..
 
-@rem call scons.bat -c
+@rem python scons.py -c
 call jptools\setupMiscDepsJp.cmd
 
-call scons.bat source publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+python scons.py source publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-call scons.bat tests publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+python scons.py tests publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 @rem set FILE1=source\synthDrivers\jtalk\libmecab.dll

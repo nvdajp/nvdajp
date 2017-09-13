@@ -9,9 +9,11 @@ NVDA日本語チーム 西本卓也
 NVDA 2017.4jp-beta の場合
 
 
-(1) Windows 10 32ビットまたは64ビット / Windows 7 SP1 32ビットまたは64ビット
+(1) Windows 10 64ビット
 
-Windows 8.1 では確認していないが、おそらく使用可能。
+2017年9月13日現在 master ブランチは Windows 7 でビルドできません。
+また next ブランチは Windows 10 32ビットでビルドできません。
+推奨環境は Windows 10 64ビットです。
 
 (2) Visual Studio 2015 Community
 
@@ -56,6 +58,23 @@ miscDepsJp から sources へのコピーで使用している。
 
 msi ファイルでインストール、オプションをすべてチェックする。
 C:\Python27\python.exe に PATH が通っていること。
+
+Python 3 もインストールされている環境では
+以下の方法を確認している。
+
+なお py2env というフォルダが作成される。
+
+> py -2 -m pip install virtualenv
+> py -2 -m virtualenv py2env
+> py2env\Scripts\activate
+
+(py2env) > python scons.py
+
+scons.bat は拡張子 .py が Python 3 と関連付けされているとうまく動かない。
+
+なお scons.py は本家版のビルドである。
+
+日本語版のビルドは py2env を activate して後述の jptools\nonCertAllBuild.cmd などを実行すること。
 
 
 2. nvdajp 本体とサブモジュールの取得
