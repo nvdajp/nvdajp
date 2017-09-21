@@ -46,9 +46,9 @@ timeout /T 5 /NOBREAK
 
 call jptools\kcCertBuild.cmd
 
-signtool verify /pa dist\lib\*.dll >> %VERIFYLOG%
+signtool verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-signtool verify /pa dist\lib64\*.dll >> %VERIFYLOG%
+signtool verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 signtool verify /pa dist\*.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
