@@ -823,8 +823,6 @@ class UIA(Window):
 
 		UIACachedWindowHandle=UIAElement.cachedNativeWindowHandle
 		self.UIAIsWindowElement=bool(UIACachedWindowHandle)
-		if UIACachedWindowHandle:
-			windowHandle=UIACachedWindowHandle
 		if not windowHandle:
 			windowHandle=UIAHandler.handler.getNearestWindowHandle(UIAElement)
 		if not windowHandle:
@@ -1142,7 +1140,7 @@ class UIA(Window):
 			return children
 		for index in xrange(cachedChildren.length):
 			e=cachedChildren.getElement(index)
-			windowHandle=e.cachedNativeWindowHandle or self.windowHandle
+			windowHandle=self.windowHandle
 			children.append(self.correctAPIForRelation(UIA(windowHandle=windowHandle,UIAElement=e)))
 		return children
 
