@@ -1,1 +1,1 @@
-call ..\miscDepsJp\include\python-jtalk\vcsetup.cmd
+call miscDepsJp\include\python-jtalk\vcsetup.cmd

@@ -10,7 +10,7 @@ set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
 
 set PUBLISHER=nvdajp
 
-call ..\miscDepsJp\include\python-jtalk\vcsetup.cmd
+call miscDepsJp\include\python-jtalk\vcsetup.cmd
 
 cd miscDepsJp\jptools
 call clean.cmd
