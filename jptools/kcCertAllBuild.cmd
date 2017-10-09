@@ -14,17 +14,7 @@ set PWFILE=jptools\secret\knowlec-key-pass.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
 
-@rem test nmake and check errorlevel
-cl
-if "%ERRORLEVEL%" neq "9009" goto :done
-
-if exist "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat" goto x64
-call "C:\Program Files\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
-goto done
-:x64
-call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
-:done
-SET CL=/arch:IA32 /D "_USING_V110_SDK71_"
+call ..\miscDepsJp\include\python-jtalk\vcsetup.cmd
 
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
