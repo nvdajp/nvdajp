@@ -15,6 +15,8 @@ set PWFILE=jptools\secret\knowlec-key-pass.txt
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
 
 call miscDepsJp\include\python-jtalk\vcsetup.cmd
+cd /d %~dp0
+cd ..
 
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
