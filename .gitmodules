@@ -21,3 +21,6 @@
 	path = include/pyserial
 	url = https://github.com/pyserial/pyserial.git
 	ignore = untracked
+[submodule "include/scons"]
+	path = include/scons
+	url = https://github.com/nvaccess/scons
