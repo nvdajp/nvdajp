@@ -1,10 +1,12 @@
-rmdir /S /Q include\AcrobatAccess
-rmdir /S /Q include\ia2
-rmdir /S /Q include\libMinHook
-del /Q source\brlapi.pyd
-del /Q source\configobj.py
-del /Q source\validate.py
-del /Q txt2tags.py
-del /Q installer\UAC.dll
-del /Q installer\waves\nvda_logo.wav
-rmdir /S /Q tools
+python scons.py -c
+del include\scons\src\engine\SCons\*.pyc
+del include\scons\src\engine\SCons\Node\*.pyc
+del include\scons\src\engine\SCons\Options\*.pyc
+del include\scons\src\engine\SCons\Platform\*.pyc
+del include\scons\src\engine\SCons\Scanner\*.pyc
+del include\scons\src\engine\SCons\Script\*.pyc
+del include\scons\src\engine\SCons\Tool\*.pyc
+del include\scons\src\engine\SCons\Tool\MSCommon\*.pyc
+del include\scons\src\engine\SCons\Variables\*.pyc
+del include\scons\src\engine\SCons\compat\*.pyc
+git checkout -- source
