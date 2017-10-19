@@ -22,7 +22,10 @@ def setup():
 					_readings[key] = rd[1:-1]
 					_entries[key] = temp[0]
 				else:
-					print("%d: can't parse '%s'" % (linenum, line))
+					try:
+						print("%d: can't parse '%s'" % (linenum, line))
+					except UnicodeEncodeError:
+						print("%d: can't parse '%r'" % (linenum, line))
 			linenum += 1
 
 setup()
