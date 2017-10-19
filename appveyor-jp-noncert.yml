@@ -24,6 +24,7 @@ build_script:
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
  - jptools\nonCertAllBuild.cmd %sconsArgs%
+ - jptools\tests.cmd
 
 artifacts:
  - path: output\*

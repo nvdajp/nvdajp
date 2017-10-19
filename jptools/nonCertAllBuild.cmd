@@ -23,11 +23,6 @@ cd ..\..
 @rem python scons.py -c
 call jptools\setupMiscDepsJp.cmd
 
-python scons.py source publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-python scons.py tests publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
 call jptools\nonCertBuild.cmd
 
 cd jptools
