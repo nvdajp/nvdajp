@@ -31,3 +31,4 @@ artifacts:
  - path: miscDepsJp\jptools\__h1output.txt
  - path: miscDepsJp\jptools\__h2output.txt
  - path: miscDepsJp\jptools\__test_log.txt
+ - path: jptools\__jpdictest_log.txt
