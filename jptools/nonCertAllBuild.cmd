@@ -23,17 +23,14 @@ cd ..\..
 @rem python scons.py -c
 call jptools\setupMiscDepsJp.cmd
 
-call jptools\nonCertBuild.cmd
+python scons.py source user_docs launcher publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
 cd jptools
 call buildControllerClient.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
 cd ..
-:skip_client
 
 exit /b 0
 
 :onerror
-echo nvdajp build error %ERRORLEVEL%
-@if "%PAUSE%"=="1" pause
 exit /b -1
