@@ -42,10 +42,16 @@ class JpDicTestCase(unittest.TestCase):
 		for i in items:
 			a, b, c = i[0], i[1], i[2]
 			s = jpUtils.getDiscriminantReading(a)
-			print("name(%s) correctS(%s) actualS(%s)" % (a, b, s))
+			try:
+				print("name(%s) correctS(%s) actualS(%s)" % (a, b, s))
+			except UnicodeEncodeError:
+				print("name(%r) correctS(%r) actualS(%r)" % (a, b, s))
 			self.assertEqual(b, s)
 			t = jpUtils.getDiscriminantReading(a, forBraille=True)
-			print("name(%s) correctB(%s) actualB(%s)" % (a, c, t))
+			try:
+				print("name(%s) correctB(%s) actualB(%s)" % (a, c, t))
+			except UnicodeEncodeError:
+				print("name(%r) correctB(%r) actualB(%r)" % (a, c, t))
 			self.assertEqual(c, t)
 
 if __name__ == '__main__':
