@@ -37,3 +37,7 @@ def processSpeechSymbol(lang, s):
 def getCharacterReading(lang, s):
 	assert lang == 'ja'
 	return _readings.get(s, s)
+
+def getCharacterDescription(lang, s):
+	assert lang == 'ja'
+	return [_entries.get(s, s)]
