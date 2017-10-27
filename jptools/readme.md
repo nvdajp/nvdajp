@@ -25,11 +25,13 @@ https://www.visualstudio.com/ja/downloads/
 #### (2.1) 選択する「ワークロード」の項目
 
 (a) C++によるデスクトップ開発
+
 (b) ユニバーサル Windows プラットフォーム開発
 
 #### (2.2) 「概要」「C++によるデスクトップ開発」「オプション」で選択する項目
 
 (a) VC++ 2017 v141 ツールセット（x86, x64）
+
 (b) Windows 10 SDK (10.0.16299.0) for Desktop C++ x86 and x64
 
 
@@ -159,8 +161,7 @@ modified:   include/espeak (new commits)
 > git submodule update --init
 
 fatal: reference is not a tree: 1e1e7587cfbc263b351644e52fdaf2684103d6c8
-Unable to checkout '1e1e7587cfbc263b351644e52fdaf2684103d6c8' in submodule path
-'include/liblouis'
+Unable to checkout '1e1e7587cfbc263b351644e52fdaf2684103d6c8' in submodule path 'include/liblouis'
 ```
 
 include/liblouis サブモジュールの checkout に失敗している。
@@ -259,7 +260,7 @@ https://osdn.jp/ticket/browse.php?group_id=4221&tid=36010
 コードサイニングに失敗するはずである。
 
 
-### AppVeyor の説明
+### AppVeyor でのファイル暗号化
 
 http://www.appveyor.com/docs/how-to/secure-files
 
