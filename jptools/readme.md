@@ -104,41 +104,73 @@ Windows x86 MSI installer (python-2.7.14.msi)
 コマンドプロンプトで git, patch, 7z がそれぞれ実行できる。
 
 
-### (7) nvdajp 本体とサブモジュールの取得
+### (7) NVDAのソースコード取得
+
+
+以下で本体および Git のサブモジュールが取得される。
+
+日本語版のソースコード
 
 ```
 > git clone --recursive https://github.com/nvdajp/nvdajp.git
-> cd nvdajp
 ```
 
-これだけで通常は問題なくサブモジュールも取得される。
+本家版のソースコード
+
+```
+> git clone --recursive https://github.com/nvaccess/nvda.git
+```
+
+## ビルド
 
 
-## 2. Python 2 環境の準備とビルド
+### Python 2 環境の有効化
 
-以下を行うと py2env というフォルダが作成される。
+以下を行うとカレントに py2env というフォルダが作成される。
+
 
 ```
 > py -2 -m pip install virtualenv
 > py -2 -m virtualenv py2env
 > py2env\Scripts\activate
+```
 
+最後の activate を実行すると、ただ python と入力するだけで Python 2.7 が起動するようになる。
+
+
+### 日本語版のビルド
+
+
+py2env を activate して
+
+
+```
+(py2env) > cd nvdajp
+(py2env) > jptools\nonCertAllBuild.cmd
+```
+
+詳細は後述（署名なしビルド）
+
+
+### 本家版のビルド
+
+
+```
+(py2env) > cd nvdajp
 (py2env) > python scons.py
 ```
 
 scons.bat は拡張子 .py が Python 3 と関連付けされているとうまく動かない。
 
-なお scons.py は本家版のビルドである。
-
-日本語版のビルドは py2env を activate して後述の jptools\nonCertAllBuild.cmd などを実行すること。
-
 
 ## git トラブルシューティング
 
 
-### git submodule sync/update
+### ファイルの不足やバージョンの不一致
 
-サブモジュールで問題があった場合は下記を実行：
+サブモジュールの同期や更新の失敗。
+
+下記を実行：
 
 ```
 > git submodule sync
@@ -154,8 +186,11 @@ modified:   include/espeak (new commits)
 
 のようになったときにこの操作をすると解決することが多い。
 
+不必要な modified を誤ってマージして git push すると、
+サブモジュールのバージョンが本家とずれた状態のまま GitHub に公開されてしまう。
 
-### git submodule のエラー対応
+
+### git submodule update のエラー対応
 
 ```
 > git submodule update --init
@@ -165,6 +200,7 @@ Unable to checkout '1e1e7587cfbc263b351644e52fdaf2684103d6c8' in submodule path 
 ```
 
 include/liblouis サブモジュールの checkout に失敗している。
+
 liblouis に cd して git fetch -t してからやり直してみる：
 
 ```
