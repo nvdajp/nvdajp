@@ -156,7 +156,7 @@ py2env を activate して
 
 
 ```
-(py2env) > cd nvdajp
+(py2env) > cd nvda
 (py2env) > python scons.py
 ```
 
