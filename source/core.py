@@ -165,10 +165,15 @@ This initializes all modules such as audio, IAccessible, keyboard, mouse, and GU
 	log.debug("Core starting")
 
 	try:
-		# Windows >= Vista
-		ctypes.windll.user32.SetProcessDPIAware()
-	except AttributeError:
-		pass
+		# Windows >= 8.1
+		# PROCESS_PER_MONITOR_DPI_AWARE = 2
+		ctypes.windll.shcore.SetProcessDpiAwareness(2)
+	except WindowsError:
+		try:
+			# Windows >= Vista
+			ctypes.windll.user32.SetProcessDPIAware()
+		except AttributeError:
+			pass
 
 	import config
 	if not globalVars.appArgs.configPath:
