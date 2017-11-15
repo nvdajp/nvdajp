@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2017-08-10
+- last update: 2017-11-15
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -215,13 +215,13 @@ This option should be turned off with some Japanese TTS, because of issues with 
 
 +++ Japanese braille table +++
 
-"Japanese 6 dot computer braille" output table is added and changed to the default. It is 'pseudo' table and it does not use LibLouis. It does not support input.
+"Japanese 6 dot computer braille" output table is added and changed to the default. It is 'pseudo' table and it does not use LibLouis.
 
 Cursor position mapping is implemented for Japanese output table.
 
-'Expand to computer braille for the word at the cursor' is not supported with Japanese braille translator.
+'Expand to computer braille for the word at the cursor' is supported with Japanese braille translator. It expands all alphabet, number and symbol characters, which can be translated to NABCC, regardless of cursor position.
 
-
+Experimental braille input tables of "Japanese 6 dot computer braille" and "Japanese 6 dot kanji braille" are available. Their usages are similar to English grade 2 input table. However, they cover very limited charactors so far.
 
 
 
