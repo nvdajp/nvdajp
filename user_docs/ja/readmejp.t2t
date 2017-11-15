@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2017年8月15日
+- 最終更新日：2017年11月15日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -219,9 +219,9 @@ NVDA日本語版の初期設定では音声設定「大文字の前に大文字�
 
 日本語の点訳エンジンはタッチカーソルに対応しています。
 
-日本語の点訳エンジンは文字入力をサポートしていません。また「コンピューター点字(NABCC)を使用」がチェックされていれば、カーソル位置に関わらずアルファベット、数字、記号をNABCCで出力します。
+「コンピューター点字(NABCC)を使用」がチェックされていれば、カーソル位置に関わらずアルファベット、数字、記号をNABCCで出力します。
 
-
+実験的な機能として、点字の文字入力テーブルで「日本語6点情報処理点字」「日本語六点漢字」が選択できます。英語の2級点字と同じような操作で文字を変換できます。ただし、基本的な文字にしか対応しておらず、記号などの入力はできません。
 
 
 
@@ -769,8 +769,8 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 
 NVDA日本語チームは下記で確認された不具合および対応を公開しています。
 
-- [チケットシステム(OSDN) https://osdn.net/projects/nvdajp/ticket/]
-- [GitHub Issues (nvdajp) https://github.com/nvdajp/nvdajp/issues] 
+- [新しいチケットシステム GitHub Issues (nvdajp) https://github.com/nvdajp/nvdajp/issues] 
+- [古いチケットシステム(OSDN) https://osdn.net/projects/nvdajp/ticket/]
 
 
 
@@ -806,6 +806,26 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 + バージョンごとの変更点 +
+
+++ 2017.4jp の変更点 ++
+
+NVDA 日本語チームは以下の変更および改良を行いました。
+
+- [NVDA本家版2017.4の翻訳 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=37480]
+- [NVDA日本語版2017.4jpの説明 https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=37436]
+- [NVDA本体の変更点のリスト https://github.com/nvdajp/nvdajp/issues?q=milestone%3A2017.4jp]
+- [JTalkと日本語点字出力の変更点のリスト https://github.com/nvdajp/nvdajpmiscdep/issues?q=milestone%3A2017.4jp]
+
+
+以下は主な変更点です。
+
+- Microsoft Edge で見出しジャンプをするときの報告の不具合を修正しました。
+- focusHighlight アドオンのプレリリース版が Per-Monitor DPI 環境で適切に動作するように修正しました。
+- ネットラジオレコーダー7への暫定的な対応を行いました。
+- Skype Desktop のチャットでの日本語文字入力の不具合に対する暫定的な対応を行いました。
+- 実験的な機能として、点字ディスプレイからの文字入力で日本語カナと六点漢字の入力テーブルが選べるようになりました。
+- JTalk の読み上げの不具合、日本語点字出力の不具合の修正を行いました。
+
 
 ++ 2017.3jp の変更点 ++
 
