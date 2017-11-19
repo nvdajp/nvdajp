@@ -1,38 +1,39 @@
-### Steps to reproduce:
-> A list of the steps you take to demonstrate the problem. 
+### 問題の再現手順 (Steps to reproduce):
+> 問題を再現する手順の箇条書き (A list of the steps you take to demonstrate the problem.)
 >
-> Example:
+> 例 (Example):
 >
-> 1. Open Chrome
-> 2. Browse to www.google.com
-> 3. Type "Hello"
-> 4. Notice an error sound when enter is pressed.
+> 1. Chrome を開く (Open Chrome)
+> 2. www.google.com を開く (Browse to www.google.com)
+> 3. "Hello" とキー入力する (Type "Hello")
+> 4. Enter キーを押すとエラーの音が聞こえる (Notice an error sound when enter is pressed.)
 
-> Please also remember to attach a zip of any files required to reproduce the issue.
+> 問題の再現に必要なファイルがあれば ZIP 形式のアーカイブで添付 (Please also remember to attach a zip of any files required to reproduce the issue.)
 
-### Expected behavior:
-> Tell us what should happen.
+### 期待されること (Expected behavior):
+> 何がどうなることを期待するか (Tell us what should happen.)
 
-### Actual behavior:
-> Tell us what happens instead.
+### 実際に起きること (Actual behavior):
+> 実際には何が起きるか (Tell us what happens instead.)
 
-### System configuration:
-NVDA version:
-> Example: next-14027,c80e529f
+### システム構成 (System configuration):
+NVDA のバージョン (NVDA version):
+> 例: next-14027,c80e529f (Example: next-14027,c80e529f)
 
-NVDA Installed or portable:
+インストール環境とポータブル版の種別 (NVDA Installed or portable):
 
-Other information:
-> Example: Running in a VM
+その他の情報 (Other information):
+> 例: 仮想マシンで実行 (Example: Running in a VM)
 
-Windows version:
-> Example: Windows 10 Version 1607 Build 14393.1066
+Windows のバージョン (Windows version):
+> 例: Windows 10 バージョン 1607 ビルド 14393.1066 (Example: Windows 10 Version 1607 Build 14393.1066)
 
-Name and version of other software in use when reproducing the issue:
+再現に必要なその他のアプリの名前やバージョン (Name and version of other software in use when reproducing the issue):
 
-### Other questions:
+### その他の質問 (Other questions):
 
-Does the issue still occur after restarting your PC?
+PC を再起動してもこの問題は再発しますか？
+(Does the issue still occur after restarting your PC?)
 
-Have you tried any other versions of NVDA?
-> Please list them and the result
+その他のバージョンの NVDA で状況を比較しましたか？ (Have you tried any other versions of NVDA?)
+> 比較した NVDA のバージョンと結果を箇条書きで (Please list them and the result)
