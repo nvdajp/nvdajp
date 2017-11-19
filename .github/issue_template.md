@@ -32,8 +32,7 @@ Windows のバージョン (Windows version):
 
 ### その他の質問 (Other questions):
 
-PC を再起動してもこの問題は再発しますか？
-(Does the issue still occur after restarting your PC?)
+PC を再起動してもこの問題は再発しますか？ (Does the issue still occur after restarting your PC?)
 
 その他のバージョンの NVDA で状況を比較しましたか？ (Have you tried any other versions of NVDA?)
 > 比較した NVDA のバージョンと結果を箇条書きで (Please list them and the result)
