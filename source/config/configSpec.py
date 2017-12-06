@@ -77,6 +77,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	readByParagraph = boolean(default=false)
 	wordWrap = boolean(default=true)
 	focusContextPresentation = option("changedContext", "fill", "scroll", default="changedContext")
+	outputPass1Only = boolean(default=true)
 	nvdajpMessageTimeout = boolean(default=true) # obsolete (nvdajp)
 	japaneseBrailleSupport = boolean(default=true) #nvdajp
 	nvdajpComPort = integer(default=0) # obsolete (nvdajp)
