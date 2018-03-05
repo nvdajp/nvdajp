@@ -2078,7 +2078,7 @@ class _BgThread:
 #: Maps old braille display driver names to new drivers that supersede old drivers.
 RENAMED_DRIVERS = {
 	"syncBraille":"hims",
-	"alvaBc6":"alva"
+	"alvaBC6":"alva"
 }
 
 def initialize():
