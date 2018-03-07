@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2018年2月26日
+- 最終更新日：2018年3月7日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -269,9 +269,9 @@ NVDA 本家版の eSpeak NG は日本語に対応していません。
 
 SAPI 5 (Speech API バージョン 5) 対応エンジンは NVDA 本家版および NVDA 日本語版で使用できます。
 
-マイクロソフトは障碍のある方、ボランティアの方を対象に、SAPI 5 に対応した日本語音声合成エンジンを無償 (数量限定) で提供しています。
 
-[Microsoft日本語音声合成エンジンのご提供について http://www.microsoft.com/japan/enable/7narrator/default.mspx]
+
+
 
 Windows 8 以降の日本語音声エンジン Haruka Desktop は SAPI5 で利用できます。
 
