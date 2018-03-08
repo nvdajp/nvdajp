@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2018年3月7日
+- 最終更新日：2018年3月8日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -728,6 +728,7 @@ Firefox 57 以降で NVDA との互換性の問題が発生しています。Moz
 
 - [Firefox の延長サポート版 (ESR) https://www.mozilla.jp/business/]
 - [Firefox ESR 日本語版のダウンロード https://www.mozilla.org/ja/firefox/organizations/all/#ja]
+
 
 ++ Windows 8 での日本語入力 ++
 
