@@ -144,12 +144,12 @@ def getCurrentLanguage():
 def spellTextInfo(info,useCharacterDescriptions=False,useDetails=False):
 	"""Spells the text from the given TextInfo, honouring any LangChangeCommand objects it finds if autoLanguageSwitching is enabled."""
 	if not config.conf['speech']['autoLanguageSwitching']:
-		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails)
+		jpUtils.callSpeakSpelling(speakSpelling,info.text,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails)
 		return
 	curLanguage=None
 	for field in info.getTextWithFields({}):
 		if isinstance(field,basestring):
-			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails)
+			jpUtils.callSpeakSpelling(speakSpelling,field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails)
 		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
 			curLanguage=field.field.get('language')
 
@@ -1003,7 +1003,7 @@ def speakTextInfo(info,useCache=True,formatConfig=None,unit=None,reason=controlT
 				if lastCompAttr: return
 				useCharacterDescriptions = (characterDescriptionMode and unit == textInfos.UNIT_CHARACTER and reason == controlTypes.REASON_CARET)
 				#log.info(u"(%s)" % textWithFields)
-				speakSpelling(textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
+				jpUtils.callSpeakSpelling(speakSpelling,textWithFields[0],locale=language if autoLanguageSwitching else None, useCharacterDescriptions=useCharacterDescriptions)
 				# nvdajp end
 		if useCache:
 			speakTextInfoState.controlFieldStackCache=newControlFieldStack
