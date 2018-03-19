@@ -10,6 +10,7 @@ import config
 import re
 import collections
 import unicodedata
+import inspect
 from logHandler import log
 
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
@@ -344,3 +345,10 @@ def shouldConnectForSayAll(s1, s2):
 	if endsWithKana(s1) and startsWithProlongedSoundMark(s2):
 		return True
 	return False
+
+def callSpeakSpelling(speakSpellingFunc, text, **kwargs):
+	argspec = inspect.getargspec(speakSpellingFunc)
+	for k in ('useDetails', 'useCharacterDescriptionMode'):
+		if (k in kwargs) and (k not in argspec.args):
+			del kwargs[k]
+	speakSpellingFunc(text, **kwargs)
