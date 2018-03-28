@@ -3,6 +3,10 @@ NVDA最新情報
 
 %!includeconf: ../changes.t2tconf
 
+= 2018.1.1 =
+このリリースでは Windows 10 Redstone 4 (バージョン1803) における OneCore 音声合成エンジンのドライバーを修正しました。 (#8082)  
+
+
 = 2018.1 =
 このリリースのハイライトは、Microsoft Word と PowerPoint におけるグラフの操作、Eurobraille 点字ディスプレイや Optelec プロトコルコンバーターへの対応、HIMS や Optelec の点字ディスプレイ対応の改善、Mozilla Firefox 58 以降への対応の改善などです。
 
