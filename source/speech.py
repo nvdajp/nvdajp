@@ -147,7 +147,7 @@ def spellTextInfo(info,useCharacterDescriptions=False,useDetails=False):
 	curLanguage=None
 	for field in info.getTextWithFields({}):
 		if isinstance(field,basestring):
-			jpUtils.callSpeakSpelling(speakSpelling,field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails)
+			jpUtils.callSpeakSpelling(speakSpelling,field,locale=curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails)
 		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
 			curLanguage=field.field.get('language')
 
