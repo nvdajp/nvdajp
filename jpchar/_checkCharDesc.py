@@ -20,7 +20,7 @@ import re
 def my_print(s):
 	print(s.encode(CONSOLE_ENCODING, 'ignore'))
 
-def read_symbol_file(sy_file, returnSource=False):
+def read_symbol_file(sy_file, returnSource=False, raiseDuplicated=True):
 	src = []
 	with open(sy_file) as sy:
 		mode = None
@@ -50,6 +50,7 @@ def read_symbol_file(sy_file, returnSource=False):
 				if len(a) >= 2 and (len(a[0]) == 1 or a[0][0] == '\\'):
 					if ar.has_key(a[0]):
 						my_print("duplicated %04x %s (line %d and %d)" % (ord(a[0]), a[0], ar[a[0]][0], c))
+						if raiseDuplicated: raise Exception
 					key = a[0]
 					if key[0] == '\\':
 						key = key.decode('string_escape')[0]
@@ -85,7 +86,7 @@ def read_chardesc_file(ch_file):
 				ar[a[0]] = [c, a[1]]
 	return ar
 
-def read_characters_file(cs_file):
+def read_characters_file(cs_file, use_both=False):
 	count = 0
 	with open(cs_file) as ch:
 		ar = {}
@@ -99,7 +100,11 @@ def read_characters_file(cs_file):
 				line = '#' + line[2:]
 			a = line.split('\t')
 			if len(a) >= 4:
-				ar[a[0]] = [c, a[3]]
+				if use_both:
+					ar[a[0]] = [c, a[2].replace('[', '').replace(']', '') + ' * ' + a[3]]
+				else:
+					ar[a[0]] = [c, a[3]]
+				#my_print("%s %s" % (c, ar[a[0]][1]))
 				count += 1
 	#my_print("total characters: %d" % count)
 	return ar
@@ -117,7 +122,7 @@ def equals_ignore_spaces(s1, s2):
 	if s1 == s2: return True
 	return False
 	
-def print_different(sy, ch, skip_included=False):
+def print_different(sy, ch, skip_included=False, report_included=False):
 	ar = {}
 	for k,v in ch.items():
 		if k in sy:
@@ -126,19 +131,27 @@ def print_different(sy, ch, skip_included=False):
 			if equals_ignore_spaces(s1, s2): continue
 			if skip_included:
 				# 片方がもう一方に含まれる場合はスキップ
-				if (s1 in s2) or (s2 in s1): continue
+				if (s1 in s2) or (s2 in s1):
+					if report_included: my_print("included %04x ch %s / sy %s" % (ord(k), s1, s2))
+					continue
 				# 'セン' を取り除いて、片方がもう一方に含まれる場合はスキップ
 				s1_ = s1.replace(u'セン', '')
 				s2_ = s2.replace(u'セン', '')
-				if (s1_ in s2_) or (s2_ in s1_): continue
+				if (s1_ in s2_) or (s2_ in s1_):
+					if report_included: my_print("included %04x ch %s / sy %s" % (ord(k), s1, s2))
+					continue
 				# 'ノ ナカニ' を取り除いて、片方がもう一方に含まれる場合はスキップ
 				s1_ = s1.replace(u'ノ ナカニ', '')
 				s2_ = s2.replace(u'ノ ナカニ', '')
-				if (s1_ in s2_) or (s2_ in s1_): continue
+				if (s1_ in s2_) or (s2_ in s1_):
+					if report_included: my_print("included %04x ch %s / sy %s" % (ord(k), s1, s2))
+					continue
 				# 'スーガク' を取り除いて、片方がもう一方に含まれる場合はスキップ
 				s1_ = s1.replace(u' ', '')
 				s2_ = s2.replace(u' ', '')
-				if (s1_ in s2_) or (s2_ in s1_): continue
+				if (s1_ in s2_) or (s2_ in s1_):
+					if report_included: my_print("included %04x ch %s / sy %s" % (ord(k), s1, s2))
+					continue
 			output = "%04x sy %d %s / ch %d %s %s" % (ord(k), sy[k][0], sy[k][1], v[0], k, v[1])
 			ar[sy[k][0]] = output
 	for s in sorted(ar.items(), key=lambda x:int(x[0])):

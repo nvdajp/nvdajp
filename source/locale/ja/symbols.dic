@@ -1,7 +1,7 @@
 ﻿#locale/ja/symbols.dic 
 #A part of NonVisual Desktop Access (NVDA)
+#Copyright (c) 2011-2018 NVDA Contributors
 #Copyright (C) 1999-2002 Bilingual Emacspeak Project
-#Copyright (c) 2011-2012 NVDA Contributors
 #Copyright (c) 2012 Takuya Nishimoto(nishimotz), Martin (mahoro-ba.net)
 #This file is covered by the GNU General Public License.
 
@@ -12,7 +12,6 @@ complexSymbols:
 文中の点	(?<=[^\s、])\、(?=[\"'”’)\s]|$)
 文末の感嘆符	(?<=[^\s！])\！(?=[\"'”’)\s]|$)
 文末の疑問符	(?<=[^\s？])\？(?=[\"'”’)\s]|$)
-
 # Others
 decimal point	(?<=\d)\.(?=\d)
 in-word '	(?<=[^\W_])['’]
@@ -45,8 +44,6 @@ negative number	マイナス	none	norep
 数字の間の全角ピリオド		none	always
 数字の間の全角カンマ		none	always
 
-# Other characters
-
 # Whitespace
 \0	ブランク	char
 \t	タブ
@@ -61,21 +58,16 @@ negative number	マイナス	none	norep
 "	コーテーション	some
 \#	シャープ
 $	ドル	none
-＄	ドル	none
-€	ユーロ	none
 £	ポンド	none
-￡	ポンド	none
+€	ユーロ	none
 ¢	セント	none
-￠	セント	none
 ¥	エン	none
-\\	エン	none
-￥	エン	none
 ₹	ルピー	some	norep
 %	パーセント	some
 &	アンド	some
 '	シングル	some
-(	カッコ	-	never
-)	カッコトジ	-	never
+(	カッコ
+)	カッコトジ
 *	アスタリスク	some
 +	プラス
 ,	コンマ	-	never
@@ -91,6 +83,7 @@ $	ドル	none
 @	アット	some
 [	ダイカッコ	most
 ]	ダイカッコトジ	most
+\\	エン	none
 ^	ベキジョー	all
 _	アンダーライン	some
 `	アクサングラーブ	some
@@ -101,30 +94,118 @@ _	アンダーライン	some
 
 # Other characters
 •	ビュレット	most
+…	サンテン リーダ	some
 ...	ドットドットドット
-	ビュレット
-◦	シロビュレット
-▪	ビュレット
-◾	クロシカク
+“	コーテイション	most
+”	コーテイショントジ	most
+‘	シングル	most
+’	シングルトジ	most
 –	エンダッシュ
 —	エムダッシュ
+●	クロマル	some
+¨	ウムラウト	all
 ‎	ヒダリカラミギマーク	char
 ‏	ミギカラヒダリマーク	char
-➔	ミギヤジルシ
+■	クロシカク	some
+▪	ビュレット
+◾	クロシカク
+◦	シロビュレット
+⇒	ミギ ニジュー ヤジルシ	some
+⇨	ミギ シロ ヤジルシ	some
+➢	ミギ クサビガタ ヤジルシ	some
+❖	ヨツビシ	some
+♣	クラブ	most
+♦	ダイヤ	some
+§	セクション	all
+°	ド	all
+«	ヒダリ ダブル ブラケット
+»	ミギ ダブル ブラケット
+µ	マイクロ	some
 ¹	ウワツキイチ	all
 ²	ウワツキニ	all
 ³	ウワツキサン	all
 ®	アール
 ™	ティーエム
 ©	シー
+±	プラスマイナス
+×	カケル
+÷	ワル
+←	ヒダリ ヤジルシ	some
+↑	ウエ ヤジルシ	some
+→	ミギ ヤジルシ	some
+↓	シタ ヤジルシ	some
 ✓	チェック
 ✔	チェック
 
-«	ヒダリ ダブル ブラケット
-»	ミギ ダブル ブラケット
-µ	マイクロ	some
+#Mathematical Operators U+2200 to U+220F
+∀	フツー ゲンテイシ	all
+∁	コンプリメント
+∂	ラウンドディー	all
+∃	ソンザイ ゲンテイシ	all
+∄	ソンザイノ ヒテイ
+∅	クウシュウゴウ
+∆	インクリメント
+∇	ナブラ	all
+∈	ゾクスル	all
+∉	ゾクスルノ ヒテイ
+∊	チイサイ ゾクスル
+∋	フクム	all
+∌	フクムノ ヒテイ
+∍	チイサイ モトトシテ フクム
+∎	ショウメイ シュウリョウ
+∏	エヌコウ プロダクト
 
-# Japanese Double Bytes Symbols
+# Miscellaneous Mathematical Operators
+∑	シグマ	all
+√	コン	all
+∛	3ジョウコン
+∜	4ジョウコン
+∝	ヒレイ	most
+∞	ムゲンダイ	all
+∟	チョッカク	all
+∠	カク	all
+∥	タテヘイコー	most
+∦	タテヘイコーノ ヒテイ
+∧	オヨビ	all
+∨	マタワ	all
+∩	キャップ	all
+∪	カップ	all
+∫	インテグラル	most
+∴	ユエニ	all
+∵	ナゼナラバ	all
+∶	レイショ
+∷	プロポーション
+≤	ショーナリイコール
+≥	ダイナリイコール
+⊂	シンブブン シューゴー	all
+⊃	シンブヲ モトトシテ フクム	all
+⊆	ブブン シューゴー	all
+⊇	ブブンヲ モトトシテ フクム	all
+
+# Vulgur Fractions U+2150 to U+215E
+⅐	ナナブンノイチ
+⅑	キューブンノイチ
+⅒	ジューブンノイチ
+⅓	サンブンノイチ
+⅔	サンブンノニ
+⅕	ゴブンノイチ
+⅖	ゴブンノニ
+⅗	ゴブンノサン
+⅘	ゴブンノヨン
+⅙	ロクブンノイチ
+⅚	ロクブンノゴ
+⅛	ハチブンノイチ
+⅜	ハチブンノサン
+⅝	ハチブンノゴ
+⅞	ハチブンノナナ
+
+# Japanese Fullshape Symbols
+＄	ドル	none
+￠	セント	none
+￡	ポンド	none
+￥	エン	none
+	ビュレット
+➔	ミギヤジルシ
 ｰ	チョーオン	char	always
 ｡	クテン	some
 ｢	カギ	most
@@ -150,7 +231,6 @@ _	アンダーライン	some
 ゜	ハンダクテン	char	always
 ´	アクサンテギュー	most
 ｀	アクサングラーブ	most
-¨	ウムラウト	all
 ＾	ベキジョー	all
 ￣	オーバーライン	most
 ＿	アンダーライン	most
@@ -167,16 +247,10 @@ _	アンダーライン	some
 ／	スラッシュ	some
 ＼	バックスラッシュ	some
 ～	ナミセン	some
-∥	タテヘイコー	most
 ｜	タテボー	some
-…	サンテン リーダ	some
 ‥	ニテン リーダ	some
-‘	シングル	most
-’	シングルトジ	most
-“	コーテイション	most
-”	コーテイショントジ	most
-（	カッコ	most	never
-）	カッコトジ	most	never
+（	カッコ	most
+）	カッコトジ	most
 〔	キッコー カッコ	most
 〕	キッコートジ	most
 ［	ダイ カッコ	most
@@ -195,20 +269,14 @@ _	アンダーライン	some
 】	クロカッコトジ	most
 ＋	プラス
 －	マイナス
-±	プラスマイナス
-×	カケル
-÷	ワル
 ＝	イコール	some
 ≠	ノットイコール	all
 ＜	ショーナリ	some
 ＞	ダイナリ	some
 ≦	ショーナリイコール	all
 ≧	ダイナリイコール	all
-∞	ムゲンダイ	all
-∴	ユエニ	all
 ♂	オス	all
 ♀	メス	all
-°	ド	all
 ′	フン	all
 ″	ビョー	all
 ℃	ドシー	all
@@ -217,80 +285,34 @@ _	アンダーライン	some
 ＆	アンド	some
 ＊	アスタリスク	some
 ＠	アット	some
-§	セクション	all
 ☆	ホシ	some
 ★	クロボシ	some
 ○	マル	some
-●	クロマル	some
 ◎	ニジューマル	some
 ◇	ヒシガタ	some
 ◆	クロヒシガタ	some
 □	シカク	some
-■	クロシカク	some
 △	サンカク	some
 ▲	クロ サンカク	some
 ▽	ギャク サンカク	some
 ▼	クロ ギャク サンカク	some
 ※	コメジルシ	some
 〒	ユービン	some
-→	ミギ ヤジルシ	some
-←	ヒダリ ヤジルシ	some
-↑	ウエ ヤジルシ	some
-↓	シタ ヤジルシ	some
 〓	ゲタ	some
-∄	ソンザイノ ヒテイ
-∌	フクムノ ヒテイ
-∎	ショウメイ シュウリョウ
-≤	ショーナリイコール
-∛	3ジョウコン
-∜	4ジョウコン
-∷	プロポーション
-∆	インクリメント
-∊	チイサイ ゾクスル
-∶	レイショ
-∏	エヌコウ プロダクト
-∦	タテヘイコーノ ヒテイ
-∁	コンプリメント
-∅	クウシュウゴウ
-∉	ゾクスルノ ヒテイ
-∍	チイサイ モトトシテ フクム
-≥	ダイナリイコール
-∈	ゾクスル	all
-∋	フクム	all
-⊆	ブブン シューゴー	all
-⊇	ブブンヲ モトトシテ フクム	all
-⊂	シンブブン シューゴー	all
-⊃	シンブヲ モトトシテ フクム	all
-∧	オヨビ	all
-∨	マタワ	all
 ￢	ヒテイ	all
-⇒	ゴーイ	some
 ⇔	ドーチ	all
-∀	フツー ゲンテイシ	all
-∃	ソンザイ ゲンテイシ	all
 ⌒	コキゴー	all
-∂	ラウンドディー	all
-∇	ナブラ	all
 ≪	ヒジョーニ チイサイ	all
 ≫	ヒジョーニ オーキイ	all
 ∽	ソージ	most
-∝	ヒレイ	most
-∫	インテグラル	most
 ∬	ダブル インテグラル	most
 Å	オングストローム	all
 ‰	パーミル	most
 ≒	ニアリーイコール	all
 ≡	ゴードー	all
 ∮	コンター インテグラル	all
-∑	シグマ	all
-√	コン	all
 ⊥	スイチョク	all
-∠	カク	all
-∟	チョッカク	all
 ⊿	サンカクケイ	all
-∵	ナゼナラバ	all
-∩	キャップ	all
-∪	カップ	all
 ♯	シャープ	some
 ♭	フラット	some
 ♪	オンプ	some
@@ -512,7 +534,6 @@ _	アンダーライン	some
 ♠	スペード	most
 ♡	ハート	most
 ♢	ダイヤ	most
-♣	クラブ	most
 
 ◯	オオキナマル	some
 ☓	ナナメジュージ	some
@@ -587,6 +608,15 @@ _	アンダーライン	some
 髃	グー	none
 髆	ハク	none
 髎	リョー	none
+
+# nvdajp from here
+
+	エン ヌリツブシ
+	シカク ヌリツブシ
+	ヒシガタ キョーチョー
+	ホシノ ギョートーモジ
+	チェックマーク
+	シロヌキ ヤジルシ
 
 ‼	ニジュウカンタンフ	none
 ⁉	ギモンフカンタンフ	none
@@ -668,7 +698,6 @@ _	アンダーライン	some
 
 
 ♥	ハート	none
-♦	ダイヤ	none
 ♨	オンセン	none
 ♻	リサイクル	none
 ♿	クルマイス	none
