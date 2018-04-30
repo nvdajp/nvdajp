@@ -218,7 +218,6 @@ class GlobalCommands(ScriptableObject):
 		if scriptHandler.getLastScriptRepeatCount()==0:
 			text=winKernel.GetTimeFormatEx(winKernel.LOCALE_NAME_USER_DEFAULT, winKernel.TIME_NOSECONDS, None, None)
 			# nvdajp
-			log.info(text) # FIXME
 			import re
 			mo = re.match('(\d{1,2}):(\d{2})', text)
 			if mo:
@@ -226,7 +225,6 @@ class GlobalCommands(ScriptableObject):
 				if minute[0] == '0': minute = minute[1:]
 				# Translators: hour and minute
 				text = _('%s:%s') % (hour, minute)
-				log.info(text) # FIXME
 			# nvdajp end
 		else:
 			text=winKernel.GetDateFormatEx(winKernel.LOCALE_NAME_USER_DEFAULT, winKernel.DATE_LONGDATE, None, None)
