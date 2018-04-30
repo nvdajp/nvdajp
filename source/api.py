@@ -159,6 +159,7 @@ def getFocusDifferenceLevel():
 	return globalVars.focusDifferenceLevel
 
 def getFocusAncestors():
+	"""An array of NVDAObjects that are all parents of the object which currently has focus"""
 	return globalVars.focusAncestors
 
 def getMouseObject():
