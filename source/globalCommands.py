@@ -224,7 +224,7 @@ class GlobalCommands(ScriptableObject):
 				hour, minute = mo.group(1), mo.group(2)
 				if minute[0] == '0': minute = minute[1:]
 				# Translators: hour and minute
-				text = _('%s:%s') % (hour, minute)
+				text = _('{hour}:{minute}').format(hour=hour, minute=minute)
 			# nvdajp end
 		else:
 			text=winKernel.GetDateFormatEx(winKernel.LOCALE_NAME_USER_DEFAULT, winKernel.DATE_LONGDATE, None, None)
