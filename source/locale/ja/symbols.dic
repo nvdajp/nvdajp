@@ -199,126 +199,13 @@ _	アンダーライン	some
 ⅝	ハチブンノゴ
 ⅞	ハチブンノナナ
 
-# Japanese Fullshape Symbols
-＄	ドル	none
-￠	セント	none
-￡	ポンド	none
-￥	エン	none
-	ビュレット
-➔	ミギヤジルシ
-ｰ	チョーオン	char	always
-｡	クテン	some
-｢	カギ	most
-｣	カギトジ	most
-､	トーテン	most
-･	ナカテン	most
-ﾞ	ダクテン	char	always
-ﾟ	ハンダクテン	char	always
-　	ゼンカク スペース	char	always
-ー	チョーオン	char	always
-、	テン	most
-。	マル	some
-，	コンマ	some
-．	ピリオド	some
-・	ナカテン	most
-：	コロン	some
-；	セミコロン	some
-？	ギモンフ	some
-！	カンタンフ	some
-゙	ダクテン	char	always
-゚	ハンダクテン	char	always
-゛	ダクテン	char	always
-゜	ハンダクテン	char	always
-´	アクサンテギュー	most
-｀	アクサングラーブ	most
-＾	ベキジョー	all
-￣	オーバーライン	most
-＿	アンダーライン	most
-ヽ	クリカエシ	char	always
-ヾ	クリカエシ ダクテン	char	always
-ゝ	クリカエシ	char	always
-ゞ	クリカエシ ダクテン	char	always
-〃	オナジク	all
-仝	ドージョー	all
-々	オドリジ	char	always
-〆	シメ	all	always
-―	ダッシュ	some
-‐	ハイフン	some
-／	スラッシュ	some
-＼	バックスラッシュ	some
-～	ナミセン	some
-｜	タテボー	some
-‥	ニテン リーダ	some
-（	カッコ	most
-）	カッコトジ	most
-〔	キッコー カッコ	most
-〕	キッコートジ	most
-［	ダイ カッコ	most
-］	ダイカッコトジ	most
-｛	チューカッコ	most
-｝	チューカッコトジ	most
-〈	ヤマカッコ	most
-〉	ヤマカッコトジ	most
-《	ニジューヤマカッコ	most
-》	ニジューヤマカッコトジ	most
-「	カギ	most
-」	カギトジ	most
-『	ニジューカギ	most
-』	ニジューカギトジ	most
-【	クロカッコ	most
-】	クロカッコトジ	most
-＋	プラス
-－	マイナス
-＝	イコール	some
-≠	ノットイコール	all
-＜	ショーナリ	some
-＞	ダイナリ	some
-≦	ショーナリイコール	all
-≧	ダイナリイコール	all
-♂	オス	all
-♀	メス	all
-′	フン	all
-″	ビョー	all
-℃	ドシー	all
-％	パーセント	some
-＃	シャープ	some
-＆	アンド	some
-＊	アスタリスク	some
-＠	アット	some
-☆	ホシ	some
-★	クロボシ	some
-○	マル	some
-◎	ニジューマル	some
-◇	ヒシガタ	some
-◆	クロヒシガタ	some
-□	シカク	some
-△	サンカク	some
-▲	クロ サンカク	some
-▽	ギャク サンカク	some
-▼	クロ ギャク サンカク	some
-※	コメジルシ	some
-〒	ユービン	some
-〓	ゲタ	some
-￢	ヒテイ	all
-⇔	ドーチ	all
-⌒	コキゴー	all
-≪	ヒジョーニ チイサイ	all
-≫	ヒジョーニ オーキイ	all
-∽	ソージ	most
-∬	ダブル インテグラル	most
-Å	オングストローム	all
-‰	パーミル	most
-≒	ニアリーイコール	all
-≡	ゴードー	all
-∮	コンター インテグラル	all
-⊥	スイチョク	all
-⊿	サンカクケイ	all
-♯	シャープ	some
-♭	フラット	some
-♪	オンプ	some
-†	ダガー	most
-‡	ダブルダガー	most
+# Characters used in Japan
+
+# U+0000 to U+00FF
 ¶	ダンラク	most
+´	アクサンテギュー	most
+
+# U+0300 to U+04FF
 Α	アルファ	none
 Β	ベータ	none
 Γ	ガンマ	none
@@ -433,6 +320,105 @@ _	アンダーライン	some
 э	エー	none
 ю	ユー	none
 я	ヤー	none
+
+# U+2000 to U+20FF
+―	ダッシュ	some
+‐	ハイフン	some
+‥	ニテン リーダ	some
+′	フン	all
+″	ビョー	all
+※	コメジルシ	some
+‰	パーミル	most
+‡	ダブルダガー	most
+‼	ニジュウカンタンフ	none
+⁉	ギモンフカンタンフ	none
+†	ダガー	most
+
+# U+2100 to U+21FF
+℃	ドシー	all
+℠	サービスマーク	none
+⇔	ドーチ	all
+Å	オングストローム	all
+№	ナンバー	none
+Ⅰ	ワン	none
+Ⅱ	ツー	none
+Ⅲ	スリー	none
+Ⅳ	フォー	none
+Ⅴ	ファイブ	none
+Ⅵ	シックス	none
+Ⅶ	セブン	none
+Ⅷ	エイト	none
+Ⅸ	ナイン	none
+Ⅹ	テン	none
+ℹ	ジョウホウゲン	none
+↔	サユウ	none
+↕	ジョウゲ	none
+↖	ヒダリウエ	none
+↗	ミギウエ	none
+↘	ミギシタ	none
+↙	ヒダリシタ	none
+↩	フックツキヒダリムキヤジルシ	none
+↪	フックツキミギムキヤジルシ	none
+
+# U+2200 to U+22FF
+≠	ノットイコール	all
+≦	ショーナリイコール	all
+≧	ダイナリイコール	all
+≒	ニアリーイコール	all
+≡	ゴードー	all
+∮	コンター インテグラル	all
+⊥	スイチョク	all
+⊿	サンカクケイ	all
+≪	ヒジョーニ チイサイ	all
+≫	ヒジョーニ オーキイ	all
+∽	ソージ	most
+∬	ダブル インテグラル	most
+
+# U+2300 to U+23FF
+⌒	コキゴー	all
+⌚	ジカンソクテイ	none
+⌛	ジカンソクテイ	none
+⌨	キーニュウリョク	none
+⏏	イジェクト	none
+⏩	ハヤオクリ	none
+⏪	ハヤモドシ	none
+⏫	セントウイドウ	none
+⏬	マツビイドウ	none
+⏭	キョクオクリ	none
+⏮	キョクモドシ	none
+⏯	スローサイセイ	none
+⏰	アラームセッテイ	none
+⏱	ジカンソクテイ	none
+⏲	ジカンソクテイ	none
+⏳	ジカンソクテイ	none
+⏸	イチジテイシ	none
+⏹	テイシ	none
+⏺	ロクガ	none
+
+# U+2400 to U+24FF
+①	マル 1	none
+②	マル 2	none
+③	マル 3	none
+④	マル 4	none
+⑤	マル 5	none
+⑥	マル 6	none
+⑦	マル 7	none
+⑧	マル 8	none
+⑨	マル 9	none
+⑩	マル 10	none
+⑪	マル 11	none
+⑫	マル 12	none
+⑬	マル 13	none
+⑭	マル 14	none
+⑮	マル 15	none
+⑯	マル 16	none
+⑰	マル 17	none
+⑱	マル 18	none
+⑲	マル 19	none
+⑳	マル 20	none
+Ⓜ	メトロ	none
+
+# U+2500 to U+25FF
 ─	ケイセン	most
 │	ケイセン	most
 ┌	ヒダリウエ	most
@@ -459,36 +445,189 @@ _	アンダーライン	some
 ┥	タテセンヒダリ	most
 ┸	ヨコセンウエ	most
 ╂	タテフト クロス	most
-①	マル 1	none
-②	マル 2	none
-③	マル 3	none
-④	マル 4	none
-⑤	マル 5	none
-⑥	マル 6	none
-⑦	マル 7	none
-⑧	マル 8	none
-⑨	マル 9	none
-⑩	マル 10	none
-⑪	マル 11	none
-⑫	マル 12	none
-⑬	マル 13	none
-⑭	マル 14	none
-⑮	マル 15	none
-⑯	マル 16	none
-⑰	マル 17	none
-⑱	マル 18	none
-⑲	マル 19	none
-⑳	マル 20	none
-Ⅰ	ワン	none
-Ⅱ	ツー	none
-Ⅲ	スリー	none
-Ⅳ	フォー	none
-Ⅴ	ファイブ	none
-Ⅵ	シックス	none
-Ⅶ	セブン	none
-Ⅷ	エイト	none
-Ⅸ	ナイン	none
-Ⅹ	テン	none
+◯	オオキナマル	some
+○	マル	some
+◎	ニジューマル	some
+◇	ヒシガタ	some
+◆	クロヒシガタ	some
+□	シカク	some
+△	サンカク	some
+▲	クロ サンカク	some
+▽	ギャク サンカク	some
+▼	クロ ギャク サンカク	some
+▫	シカクケイ	none
+▶	サンカクケイ	none
+◀	サンカクケイ	none
+◻	シカクケイ	none
+◼	シカクケイ	none
+◽	シカクケイ	none
+
+# U+2600 to U+2FFF
+☀	タイヨウ	none
+☁	クモ	none
+☂	カサ	none
+☃	ユキダルマ	none
+☄	ナガレボシ	none
+☎	クロデンワ	none
+☑	チェックボックス	none
+☔	アメ	none
+☕	ホットドリンク	none
+☘	クローバー	none
+☝	ウエ	none
+☠	ドクロ	none
+☢	ホウシャノウチュウイ	none
+☣	セイブツテキキガイ	none
+☦	ハッタンジュウジカ	none
+☪	ホシトミカヅキ	none
+☮	ピースシンボル	none
+☯	インヨウ	none
+☸	ホウリン	none
+☹	コマリガオ	none
+☺	エガオ	none
+♈	オヒツジザ	none
+♉	オウシザ	none
+♊	フタゴザ	none
+♋	カニザ	none
+♌	シシザ	none
+♍	オトメザ	none
+♎	テンビンザ	none
+♏	サソリザ	none
+♐	イテザ	none
+♑	ヤギザ	none
+♒	ミズガメザ	none
+♓	ウオザ	none
+♂	オス	all
+♀	メス	all
+☆	ホシ	some
+★	クロボシ	some
+☓	ナナメジュージ	some
+♠	スペード	most
+♡	ハート	most
+♢	ダイヤ	most
+♯	シャープ	some
+♭	フラット	some
+♪	オンプ	some
+
+♥	ハート	none
+♨	オンセン	none
+♻	リサイクル	none
+♿	クルマイス	none
+⚒	ハンマー	none
+⚓	イカリ	none
+⚔	ツルギ	none
+⚖	テンビン	none
+⚗	ジョウリュウキ	none
+⚙	ギア	none
+⚛	ゲンシキゴウ	none
+⚜	フルールドリス	none
+⚠	ケイカイ	none
+⚡	コウデンアツ	none
+⚪	シロマル	none
+⚫	クロマル	none
+⚰	ヒツギ	none
+⚱	コツツボ	none
+⚽	サッカー	none
+⚾	ヤキュウ	none
+⛄	ユキダルマ	none
+⛅	ハレトキドキクモリ	none
+⛈	ライウ	none
+⛎	ヘビツカイザ	none
+⛏	ピッケル	none
+⛑	イシャ	none
+⛓	クサリ	none
+⛔	ツウコウドメ	none
+⛩	トリイ	none
+⛪	キョウカイ	none
+⛰	サンミャク	none
+⛱	パラソル	none
+⛲	フンスイ	none
+⛳	グリーン	none
+⛴	フェリー	none
+⛵	ヨット	none
+⛷	スキー	none
+⛸	スケート	none
+⛹	キュウギ	none
+⛺	テント	none
+⛽	ガススタンド	none
+
+✂	キリトリセン	none
+✅	チェック	none
+✈	ヒコウ	none
+✉	レンラク	none
+✊	ニギリコブシ	none
+✋	キョシュ	none
+✌	ブイサイン	none
+✍	キジュツ	none
+✏	キジュツ	none
+✒	キジュツ	none
+
+✖	バツ	none
+✝	ジュウジカ	none
+✡	ロクボウセイ	none
+✨	キラキラ	none
+✳	ホシ	none
+✴	ホシ	none
+❄	ユキノケッショウ	none
+❇	キラキラ	none
+❌	バツ	none
+❎	バツ	none
+❓	ハテナ	none
+❔	ハテナ	none
+❕	ビックリ	none
+❗	ビックリ	none
+❣	ハート	none
+❤	ハート	none
+➔	ミギヤジルシ
+➕	プラス	none
+➖	マイナス	none
+➗	ワル	none
+➡	ミギヤジルシ	none
+➰	ハッピー	none
+➿	フリーダイヤル	none
+
+⤴	ジョウショウカーブ	none
+⤵	カコウカープ	none
+
+⬅	ミギヤジルシ	none
+⬆	ウエヤジルシ	none
+⬇	シタヤジルシ	none
+⬛	シカクケイ	none
+⬜	シカクケイ	none
+⭐	ホシ	none
+⭕	マル	none
+
+# U+3000 to U+3FFF
+　	ゼンカク スペース	char	always
+、	テン	most
+。	マル	some
+〃	オナジク	all
+々	オドリジ	char	always
+〆	シメ	all	always
+゙	ダクテン	char	always
+゚	ハンダクテン	char	always
+゛	ダクテン	char	always
+゜	ハンダクテン	char	always
+・	ナカテン	most
+ー	チョーオン	char	always
+ヽ	クリカエシ	char	always
+ヾ	クリカエシ ダクテン	char	always
+ゝ	クリカエシ	char	always
+ゞ	クリカエシ ダクテン	char	always
+〔	キッコー カッコ	most
+〕	キッコートジ	most
+〈	ヤマカッコ	most
+〉	ヤマカッコトジ	most
+《	ニジューヤマカッコ	most
+》	ニジューヤマカッコトジ	most
+「	カギ	most
+」	カギトジ	most
+『	ニジューカギ	most
+』	ニジューカギトジ	most
+【	クロカッコ	most
+】	クロカッコトジ	most
+〝	ヒゲヒラキ	all
+〟	ヒゲトジ	all
+〓	ゲタ	some
 ㍉	ミリ	none
 ㌔	キロ	none
 ㌢	センチ	none
@@ -512,10 +651,9 @@ _	アンダーライン	some
 ㎏	キログラム	none
 ㏄	シーシー	none
 ㎡	ヘイホーメートル	none
-㍻	ヘイセイ	none
-№	ナンバー	none
 ㏍	ケイケイ	none
 ℡	テレフォン	none
+〒	ユービン	some
 ㊤	マル ウエ	none
 ㊥	マル ナカ	none
 ㊦	マル シタ	none
@@ -527,17 +665,10 @@ _	アンダーライン	some
 ㍾	メイジ	none
 ㍽	タイショー	none
 ㍼	ショーワ	none
-＇	アポストロフィー	all
-＂	コーテーション	all
-〝	ヒゲヒラキ	all
-〟	ヒゲトジ	all
-♠	スペード	most
-♡	ハート	most
-♢	ダイヤ	most
+㍻	ヘイセイ	none
 
-◯	オオキナマル	some
-☓	ナナメジュージ	some
-
+# U+4000 to U+9FFF (Japanese TTS may not handle them)
+仝	ドージョー	all
 䪼	セツ	none
 䯒	コー	none
 俠	キョー	none
@@ -609,178 +740,63 @@ _	アンダーライン	some
 髆	ハク	none
 髎	リョー	none
 
-# nvdajp from here
-
-‼	ニジュウカンタンフ	none
-⁉	ギモンフカンタンフ	none
-
-℠	サービスマーク	none
-
-ℹ	ジョウホウゲン	none
-↔	サユウ	none
-↕	ジョウゲ	none
-↖	ヒダリウエ	none
-↗	ミギウエ	none
-↘	ミギシタ	none
-↙	ヒダリシタ	none
-↩	フックツキヒダリムキヤジルシ	none
-↪	フックツキミギムキヤジルシ	none
-
-⌚	ジカンソクテイ	none
-⌛	ジカンソクテイ	none
-⌨	キーニュウリョク	none
-⏏	イジェクト	none
-⏩	ハヤオクリ	none
-⏪	ハヤモドシ	none
-⏫	セントウイドウ	none
-⏬	マツビイドウ	none
-⏭	キョクオクリ	none
-⏮	キョクモドシ	none
-⏯	スローサイセイ	none
-⏰	アラームセッテイ	none
-⏱	ジカンソクテイ	none
-⏲	ジカンソクテイ	none
-⏳	ジカンソクテイ	none
-⏸	イチジテイシ	none
-⏹	テイシ	none
-⏺	ロクガ	none
-
-Ⓜ	メトロ	none
-
-▫	シカクケイ	none
-▶	サンカクケイ	none
-◀	サンカクケイ	none
-◻	シカクケイ	none
-◼	シカクケイ	none
-◽	シカクケイ	none
-
-☀	タイヨウ	none
-☁	クモ	none
-☂	カサ	none
-☃	ユキダルマ	none
-☄	ナガレボシ	none
-☎	クロデンワ	none
-☑	チェックボックス	none
-☔	アメ	none
-☕	ホットドリンク	none
-☘	クローバー	none
-☝	ウエ	none
-☠	ドクロ	none
-☢	ホウシャノウチュウイ	none
-☣	セイブツテキキガイ	none
-☦	ハッタンジュウジカ	none
-☪	ホシトミカヅキ	none
-☮	ピースシンボル	none
-☯	インヨウ	none
-☸	ホウリン	none
-☹	コマリガオ	none
-☺	エガオ	none
-♈	オヒツジザ	none
-♉	オウシザ	none
-♊	フタゴザ	none
-♋	カニザ	none
-♌	シシザ	none
-♍	オトメザ	none
-♎	テンビンザ	none
-♏	サソリザ	none
-♐	イテザ	none
-♑	ヤギザ	none
-♒	ミズガメザ	none
-♓	ウオザ	none
-
-♥	ハート	none
-♨	オンセン	none
-♻	リサイクル	none
-♿	クルマイス	none
-⚒	ハンマー	none
-⚓	イカリ	none
-⚔	ツルギ	none
-⚖	テンビン	none
-⚗	ジョウリュウキ	none
-⚙	ギア	none
-⚛	ゲンシキゴウ	none
-⚜	フルールドリス	none
-⚠	ケイカイ	none
-⚡	コウデンアツ	none
-⚪	シロマル	none
-⚫	クロマル	none
-⚰	ヒツギ	none
-⚱	コツツボ	none
-⚽	サッカー	none
-⚾	ヤキュウ	none
-⛄	ユキダルマ	none
-⛅	ハレトキドキクモリ	none
-⛈	ライウ	none
-⛎	ヘビツカイザ	none
-⛏	ピッケル	none
-⛑	イシャ	none
-⛓	クサリ	none
-⛔	ツウコウドメ	none
-⛩	トリイ	none
-⛪	キョウカイ	none
-⛰	サンミャク	none
-⛱	パラソル	none
-⛲	フンスイ	none
-⛳	グリーン	none
-⛴	フェリー	none
-⛵	ヨット	none
-⛷	スキー	none
-⛸	スケート	none
-⛹	キュウギ	none
-⛺	テント	none
-⛽	ガススタンド	none
-
-✂	キリトリセン	none
-✅	チェック	none
-✈	ヒコウ	none
-✉	レンラク	none
-✊	ニギリコブシ	none
-✋	キョシュ	none
-✌	ブイサイン	none
-✍	キジュツ	none
-✏	キジュツ	none
-✒	キジュツ	none
-
-✖	バツ	none
-✝	ジュウジカ	none
-✡	ロクボウセイ	none
-✨	キラキラ	none
-✳	ホシ	none
-✴	ホシ	none
-❄	ユキノケッショウ	none
-❇	キラキラ	none
-❌	バツ	none
-❎	バツ	none
-❓	ハテナ	none
-❔	ハテナ	none
-❕	ビックリ	none
-❗	ビックリ	none
-❣	ハート	none
-❤	ハート	none
-➕	プラス	none
-➖	マイナス	none
-➗	ワル	none
-➡	ミギヤジルシ	none
-➰	ハッピー	none
-➿	フリーダイヤル	none
-
-⤴	ジョウショウカーブ	none
-⤵	カコウカープ	none
-
-⬅	ミギヤジルシ	none
-⬆	ウエヤジルシ	none
-⬇	シタヤジルシ	none
-⬛	シカクケイ	none
-⬜	シカクケイ	none
-⭐	ホシ	none
-⭕	マル	none
-
+# U+F000 to U+F0FF
 	エン ヌリツブシ
 	シカク ヌリツブシ
 	ヒシガタ キョーチョー
 	ホシノ ギョートーモジ
-	チェックマーク
+	ビュレット
 	シロヌキ ヤジルシ
+	チェックマーク
+
+# U+FF00 to U+FFFF (Japanese full shapes)
+！	カンタンフ	some
+＂	コーテーション	all
+＃	シャープ	some
+＄	ドル	none
+％	パーセント	some
+＆	アンド	some
+＇	アポストロフィー	all
+（	カッコ	most
+）	カッコトジ	most
+＊	アスタリスク	some
+＋	プラス
+，	コンマ	some
+－	マイナス
+．	ピリオド	some
+／	スラッシュ	some
+：	コロン	some
+；	セミコロン	some
+＜	ショーナリ	some
+＝	イコール	some
+＞	ダイナリ	some
+？	ギモンフ	some
+＠	アット	some
+＾	ベキジョー	all
+￠	セント	none
+￡	ポンド	none
+￥	エン	none
+ｰ	チョーオン	char	always
+｡	クテン	some
+｢	カギ	most
+｣	カギトジ	most
+､	トーテン	most
+･	ナカテン	most
+ﾞ	ダクテン	char	always
+ﾟ	ハンダクテン	char	always
+｀	アクサングラーブ	most
+￣	オーバーライン	most
+＿	アンダーライン	most
+＼	バックスラッシュ	some
+～	ナミセン	some
+｜	タテボー	some
+［	ダイ カッコ	most
+］	ダイカッコトジ	most
+｛	チューカッコ	most
+｝	チューカッコトジ	most
+￢	ヒテイ	all
+
+# U+1F000 to U+1F9FF
 
 🀄	チュン	none
 🃏	ジョーカー	none
@@ -1637,4 +1653,5 @@ _	アンダーライン	some
 🦄	ユニコーン	none
 🧀	チーズ	none
 
+# U+26600 to U+266FF (Japanese TTS may not handle them)
 𦙾	ケイ	none
