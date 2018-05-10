@@ -4441,6 +4441,21 @@ msgstr "指で触っているオブジェクトやコンテンツが変化した
 msgid "Shows the NVDA Configuration Profiles dialog"
 msgstr "NVDAの設定プロファイルダイアログの表示"
 
+#. Translators: The message announced when temporarily disabling all configuration profile triggers.
+msgid "Configuration profile triggers disabled"
+msgstr "設定プロファイルのトリガー無効"
+
+#. Translators: The message announced when re-enabling all configuration profile triggers.
+msgid "Configuration profile triggers enabled"
+msgstr "設定プロファイルのトリガー有効"
+
+#. Translators: Input help mode message for toggle configuration profile triggers command.
+msgid ""
+"Toggles disabling of all configuration profile triggers. Disabling remains "
+"in effect until NVDA is restarted"
+msgstr ""
+"設定プロファイルのすべてのトリガーの有効化または無効化。NVDAの再起動が必要"
+
 #. Translators: Reported when the user attempts math interaction
 #. with something that isn't math.
 msgid "Not math"
@@ -8405,6 +8420,18 @@ msgstr "名前を付けて保存"
 msgid "Error saving log: %s"
 msgstr "ログ%s保存時にエラーが発生しました"
 
+#. Translators: The Ok button on a NVDA dialog. This button will accept any changes and dismiss the dialog.
+msgid "OK"
+msgstr "OK"
+
+#. Translators: The cancel button on a NVDA dialog. This button will discard any changes and dismiss the dialog.
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. Translators: The Apply button on a NVDA dialog. This button will accept any changes but will not dismiss the dialog.
+msgid "Apply"
+msgstr "適用"
+
 #. Translators: The label for the list of categories in a multi category settings dialog.
 msgid "&Categories:"
 msgstr "カテゴリー(&C)"
@@ -9260,7 +9287,7 @@ msgstr "NVDA"
 
 #. Translators: The profile name for normal configuration
 msgid "normal configuration"
-msgstr "(通常の設定)"
+msgstr "通常の設定"
 
 #. Translators: This is the label for the add symbol dialog.
 msgid "Add Symbol"
