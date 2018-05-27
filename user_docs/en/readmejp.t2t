@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2017-11-15
+- last update: 2018-05-27
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -263,6 +263,7 @@ JTalk driver is the default synthesizer of NVDAJP, which supports Japanese langu
 eSpeak NG of NVDAJP supports reading of Japanese characters and Chinese characters. It uses Japanese text processing of Jtalk internally.
 
 eSpeak NG of NVDA cannot handle Japanese language.
+
 
 
 
@@ -606,6 +607,19 @@ BrailleNote 46C/46D driver supports following commands:
 | down arrow | lf |
 | left arrow | f3 |
 | right arrow | f4 |
+
+
+++ BrailleMemo experimental ++
+
+BrailleMemo experimental driver is added for evaluating Grade 2 Braille input tables.
+
+- Compatible with the devices as same as "KGS BrailleMemo series" driver.
+- Left hand thumb key is assigned to dot 7 (delete previous cell or character).
+- Right hand thumb key is assigned to dot 8 (Braille translation and Enter key).
+- Left hand thumb key and Right hand thumb key (dot 7+ dot 8) is for Braille translation.
+- dot 4 + dot 8 is for space key.
+- Latin characters cannot be typed without using Braille input table. It is deprecated for this driver.
+- Not tested very well with devices other than KGS BM46.
 
 
 + NVDA Menu +
