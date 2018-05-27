@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2018年3月28日
+- 最終更新日：2018年5月27日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -85,7 +85,7 @@ NVDA日本語版は、左矢印キーや右矢印キーによる文字単位の�
 
 + 設定 +
 
-++ 一般設定 ++
+++ NVDA設定ダイアログ「一般」カテゴリ ++
 
 +++ UIオートメーションの有効化 +++
 
@@ -196,7 +196,7 @@ HTA が利用できない環境の場合や、既定のブラウザでドキュ�
 この問題についての詳細は [チケット35208 https://osdn.net/ticket/browse.php?group_id=4221&tid=35208] および本家チケット [#5126 http://community.nvda-project.org/ticket/5126] を参照してください。
 
 
-++ 音声設定 ++
+++ NVDA設定ダイアログ「音声」カテゴリ ++
 
 +++ 大文字の前に大文字と読む +++
 
@@ -211,7 +211,7 @@ NVDA日本語版の初期設定では音声設定「大文字の前に大文字�
 日本語では SAPI4 や SAPI5 の音声エンジンの一部で、音声設定「サポートされている場合スペル読み機能を使用」をチェックなしにしないと不具合が起きることがあります。
 
 
-++ 点字設定 ++
+++ NVDA設定ダイアログ「点字」カテゴリ ++
 
 +++ 日本語のテーブル +++
 
@@ -229,7 +229,7 @@ NVDA日本語版の初期設定では音声設定「大文字の前に大文字�
 
 
 
-++ キーボード設定 ++
+++ NVDA設定ダイアログ「キーボード」カテゴリ ++
 
 「Caps LockキーをNVDA制御キーとして使用」は日本語キーボードでは使用できません。
 
@@ -238,7 +238,7 @@ NVDA日本語版の初期設定では音声設定「大文字の前に大文字�
 「入力文字の読み上げ」がチェックなしの場合も、日本語入力の変換候補の読み上げは行います。
 
 
-++ 入力メソッド設定 ++
+++ NVDA設定ダイアログ「入力メソッド」カテゴリ ++
 
 「候補リストを自動的に報告」は、日本語入力を使うときにはチェックなしにしてください。
 
@@ -247,7 +247,7 @@ NVDA日本語版の初期設定では音声設定「大文字の前に大文字�
 
 ++ JTalk ++
 
-NVDA 日本語版の初期設定では音声エンジンは JTalk に設定されています。これは日本語に対応しています。
+NVDA 日本語版の既定の設定では Windows 8.1 または 7 における音声エンジンとして JTalk を使用します。JTalk は日本語に対応しています。
 
 - 男性 m001, lite と女性 mei, tohoku-f01 の4種類の音声を搭載しています。
 - lite は CPU 性能の低いマシンに適しています（lite は 16kHz サンプリング、その他は 48kHz サンプリングの音声です）。
@@ -318,6 +318,7 @@ NVDA 日本語チームはこの Vocalizer ドライバの翻訳を担当して�
 
 - [Vocalizer for NVDA https://vocalizer-nvda.com/]
 - [旧バージョンの日本語ページ https://vocalizer-nvda.com/old/jp/index.htm]
+- [Vocalizer 購入の説明 https://github.com/nvdajp/nvdajp/wiki/ExtraVoices]
 
 
 Code Factory が販売する Eloquence and Vocalizer Expressive Add-on for NVDA でも Vocalizer の日本語音声が利用できます。
@@ -329,7 +330,7 @@ Code Factory が販売する Eloquence and Vocalizer Expressive Add-on for NVDA 
 
 ナレッジクリエーションが販売する KCトーカー は NVDA のアドオンで、聞き取りやすい日本語合成音声に加えて、専用のユーザー辞書エディタも提供しています。
 
-- [KCトーカー販売のお知らせ http://www.knowlec.com/?p=2720]
+- [KCトーカー http://www.knowlec.com/?page_id=2700]
 
 
 + 点字ディスプレイ +
@@ -608,6 +609,19 @@ USB 接続で使う場合は「ケージーエスUSB/仮想Commドライバ」�
 | カーソルを1文字右に移動 | f4 |
 
 
+++ BrailleMemo experimental ++
+
+英語の2級点字の文字入力に対応する実験用の点字ディスプレイドライバ「BrailleMemo experimental」を追加しています。
+
+- 対応機種は従来の「KGS BrailleMemoシリーズ」と同じです。
+- 左手親指は「7の点」（直前の1マス分の点字または1文字を消去）です。
+- 右手親指は「8の点」（点字入力の変換と Enter の入力）です。
+- 左右の親指を同時に（7と8の点を）押すと点字入力の変換を行います。
+- 右手人差し指と右手親指を同時に（4と8の点を）押すとスペースを入力できます。
+- 点字ディスプレイドライバで直接アルファベットなどの文字入力を処理していた従来の機能は一部無効化されています。
+- BM46 以外の機種では十分に検証が行われていません。
+
+
 + NVDAメニュー +
 
 ++ ヘルプ ++
@@ -807,6 +821,21 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 + バージョンごとの変更点 +
+
+++ 2018.2jp の変更点 ++
+
+NVDA 日本語チームは NVDA 本家版 2018.2 に対して以下の作業を行いました。
+
+- [OneCore で音声切替がエラーになる問題の修正 https://github.com/nvdajp/nvdajp/issues/77]
+- [NVDA 本家版 2018.2 の翻訳 https://github.com/nvdajp/nvdajp/issues/75]
+
+
+また NVDA 日本語版 2018.2jp に対して以下の作業を行いました。
+
+- [本家版 2018.2 の symbols.dic 更新に伴う文字説明辞書の修正 https://github.com/nvdajp/nvdajp/pull/81]
+- [Word 箇条書き行頭記号の報告 https://github.com/nvdajp/nvdajp/issues/67]
+- [JTalk および日本語点訳エンジンに関する修正 https://github.com/nvdajp/nvdajpmiscdep/milestone/8?closed=1]
+
 
 ++ 2018.1.1jp の変更点 ++
 
