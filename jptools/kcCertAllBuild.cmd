@@ -4,10 +4,10 @@ set VERSION=2018.2jp
 set UPDATEVERSIONTYPE=nvdajp
 
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')+chr(dt.now().hour+97)"`) do set NOWDATE=%%t
-echo %NOWDATE%
 set VERSION=%VERSION%-beta
 set VERSION=%VERSION%-%NOWDATE%
 set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
+echo %UPDATEVERSIONTYPE% %VERSION%
 
 set PUBLISHER=nvdajp
 set PFX=jptools\secret\knowlec-key171003.pfx
