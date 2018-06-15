@@ -1,6 +1,6 @@
 set SCONSOPTIONS=%* --silent
 
-set VERSION=2018.2jp
+set VERSION=2018.2.1jp
 set UPDATEVERSIONTYPE=nvdajp
 
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')+chr(dt.now().hour+97)"`) do set NOWDATE=%%t
@@ -56,6 +56,7 @@ call buildControllerClient.cmd
 cd ..
 :skip_client
 
+echo %UPDATEVERSIONTYPE% %VERSION%
 exit /b 0
 
 :onerror
