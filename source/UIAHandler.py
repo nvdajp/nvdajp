@@ -14,7 +14,7 @@ isUIAAvailable=False
 
 if config.conf:# and config.conf["UIA"]["enabled"]:
 	winver=winVersion.winVersion.major+(winVersion.winVersion.minor/10.0)
-	if winver>=config.conf["UIA"]["minWindowsVersion"]:
+	if True:#winver>=config.conf["UIA"]["minWindowsVersion"]:
 		try:
 			from _UIAHandler import *
 			isUIAAvailable=True
