@@ -10,17 +10,17 @@ import config
 from logHandler import log
 
 handler=None
-isUIAAvailable=False
+isUIAAvailable=True
 
-if config.conf and config.conf["UIA"]["enabled"]:
-	winver=winVersion.winVersion.major+(winVersion.winVersion.minor/10.0)
-	if winver>=config.conf["UIA"]["minWindowsVersion"]:
-		try:
-			from _UIAHandler import *
-			isUIAAvailable=True
-		except ImportError:
-			log.debugWarning("Unable to import _UIAHandler",exc_info=True)
-			pass
+#if config.conf and config.conf["UIA"]["enabled"]:
+#	winver=winVersion.winVersion.major+(winVersion.winVersion.minor/10.0)
+#	if winver>=config.conf["UIA"]["minWindowsVersion"]:
+#		try:
+#			from _UIAHandler import *
+#			isUIAAvailable=True
+#		except ImportError:
+#			log.debugWarning("Unable to import _UIAHandler",exc_info=True)
+#			pass
 
 def initialize():
 	global handler

@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2018-05-27
+- last update: 2018-06-17
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -87,12 +87,12 @@ Pressing "Report current character in review" (numpad2 or NVDA+period) four-time
 
 ++ General settings ++
 
-+++ Enable UIA +++
 
-NVDA uses UI Automation for Windows 7 and later versions.
-This option allows enabling or disabling UIA, which is unofficial feature in original version of NVDA.
-NVDA should be restarted for your changes can take effect.
-Configuration profiles will not affect this option.
+
+
+
+
+
 
 
 
