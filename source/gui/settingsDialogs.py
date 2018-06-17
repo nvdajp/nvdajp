@@ -696,10 +696,6 @@ class GeneralSettingsPanel(SettingsPanel):
 				item.Disable()
 			settingsSizerHelper.addItem(item)
 
-		# Translators: The label of a checkbox in general settings to Enable UIA (requires restart)
-		self.uiaEnabledCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Enable UIA (requires restart)")))
-		self.uiaEnabledCheckBox.SetValue(config.conf["UIA"]["enabled"])
-
 	def onCopySettings(self,evt):
 		for packageType in ('addons','appModules','globalPlugins','brailleDisplayDrivers','synthDrivers'):
 			if len(os.listdir(os.path.join(globalVars.appArgs.configPath,packageType)))>0:
@@ -776,7 +772,6 @@ class GeneralSettingsPanel(SettingsPanel):
 			)==wx.OK:
 				config.conf.save()
 				queueHandler.queueFunction(queueHandler.eventQueue,core.restart)
-		config.conf["UIA"]["enabled"]=self.uiaEnabledCheckBox.IsChecked()
 
 class LanguageSettingsDialog(SettingsDialog):
 	# Translators: This is the label for the language settings dialog.

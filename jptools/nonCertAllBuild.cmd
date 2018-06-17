@@ -1,6 +1,10 @@
 set SCONSOPTIONS=%* --silent
 
+<<<<<<< HEAD
 set VERSION=2018.3jp
+=======
+set VERSION=2018.2.1jp
+>>>>>>> jp2018.2
 set UPDATEVERSIONTYPE=nvdajp
 
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')+chr(dt.now().hour+97)"`) do set NOWDATE=%%t
