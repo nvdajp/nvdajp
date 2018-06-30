@@ -1006,7 +1006,8 @@ class AskAllowUsageStatsDialog(wx.Dialog):
 			"Data includes Operating System version, NVDA version, language, country of origin, plus certain NVDA configuration such as current synthesizer, braille display and braille table. " 
 			"No spoken or braille content will be ever sent to NV Access.  Please refer to the User Guide for a current list of all data collected.\n\n"
 			"Do you wish to allow NV Access to periodically collect this data in order to improve NVDA?")
-		message = message.replace('NV Access', _('NVDA Japanese Team'))
+		# Translators: 'NV Access' should be replaced with 'NVDA Japanese Team'
+		message = message.replaceAll('NV Access', _('NVDA Japanese Team'))
 		sText=sHelper.addItem(wx.StaticText(self, label=message))
 		# the wx.Window must be constructed before we can get the handle.
 		import windowUtils
