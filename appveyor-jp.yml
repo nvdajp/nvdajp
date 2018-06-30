@@ -3,6 +3,7 @@ version: "{branch}-{build}"
 
 branches:
  only:
+  - jpalpha
   - jpbeta
   - /jp201.*/
 
