@@ -3,7 +3,7 @@ set SCONSOPTIONS=%* --silent
 set UPDATEVERSIONTYPE=nvdajpalpha
 
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')+chr(dt.now().hour+97)"`) do set NOWDATE=%%t
-set VERSION=jpalpha_%NOWDATE%
+set VERSION=jpalpha_%NOWDATE%_noncert
 
 set PUBLISHER=nvdajp
 
