@@ -270,6 +270,13 @@ def unregisterInstallation(keepDesktopShortcut=False):
 		easeOfAccess.setAutoStart(_winreg.HKEY_LOCAL_MACHINE, False)
 	except WindowsError:
 		pass
+	if easeOfAccess.isSupported:
+		try:
+			_winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE, easeOfAccess.APP_KEY_PATH,
+				_winreg.KEY_WOW64_64KEY)
+			easeOfAccess.setAutoStart(_winreg.HKEY_LOCAL_MACHINE, False)
+		except WindowsError:
+			pass
 	wsh=_getWSH()
 	desktopPath=os.path.join(wsh.SpecialFolders("AllUsersDesktop"),"NVDA.lnk")
 	if not keepDesktopShortcut and os.path.isfile(desktopPath):

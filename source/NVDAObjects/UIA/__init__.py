@@ -1600,6 +1600,7 @@ class WpfTextView(UIA):
 class SearchField(EditableTextWithSuggestions, UIA):
 	"""An edit field that presents suggestions based on a search term.
 	"""
+	role=controlTypes.ROLE_WINDOW
 
 	def event_UIA_controllerFor(self):
 		# Only useful if suggestions appear and disappear.

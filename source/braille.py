@@ -706,6 +706,14 @@ class NVDAObjectRegion(Region):
 	def update(self):
 		obj = self.obj
 		presConfig = config.conf["presentation"]
+		try:
+			rowNumber=obj.rowNumber
+		except NotImplementedError:
+			rowNumber=None
+		try:
+			columnNumber=obj.columnNumber
+		except NotImplementedError:
+			columnNumber=None
 		role = obj.role
 		placeholderValue = obj.placeholder
 		if placeholderValue and not obj._isTextEmpty:
@@ -721,9 +729,11 @@ class NVDAObjectRegion(Region):
 			description=obj.description if presConfig["reportObjectDescriptions"] else None,
 			keyboardShortcut=obj.keyboardShortcut if presConfig["reportKeyboardShortcuts"] else None,
 			positionInfo=obj.positionInfo if presConfig["reportObjectPositionInformation"] else None,
-			cellCoordsText=obj.cellCoordsText if config.conf["documentFormatting"]["reportTableCellCoords"] else None,
+			rowNumber=rowNumber,
+			columnNumber=columnNumber,
 			columnHeaderText=obj.columnHeaderText if hasattr(obj, "columnHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"] else None,
 			rowHeaderText=obj.rowHeaderText if hasattr(obj, "rowHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"] else None,
+			cellCoordsText=obj.cellCoordsText if config.conf["documentFormatting"]["reportTableCellCoords"] else None,
 		)
 		if role == controlTypes.ROLE_MATH:
 			import mathPres

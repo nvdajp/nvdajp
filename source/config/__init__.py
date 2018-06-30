@@ -177,6 +177,9 @@ def canStartOnSecureScreens():
 	# This function will be transformed into a flag in a future release.
 	return isInstalledCopy()
 
+def canStartOnSecureScreens():
+	return isInstalledCopy() and (easeOfAccess.isSupported or isServiceInstalled())
+
 def execElevated(path, params=None, wait=False,handleAlreadyElevated=False):
 	import subprocess
 	import shellapi
