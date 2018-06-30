@@ -18,4 +18,3 @@ if __name__ == '__main__':
         with codecs.open(fileName,"w","utf_8_sig",errors="replace") as f:
             f.write(data)
         print('converted to utf8 with bom')
-            
