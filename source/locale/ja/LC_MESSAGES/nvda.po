@@ -18,6 +18,10 @@ msgstr ""
 
 # nvdajp from here
 
+#: source\gui\__init__.py
+msgid "NVDA Japanese Team"
+msgstr "NVDA日本語チーム"
+
 #: keyLabels.py:139
 msgid "IME non convert"
 msgstr "無変換"
