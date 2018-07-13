@@ -6,6 +6,7 @@ set UPDATEVERSIONTYPE=nvdajp
 for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')+chr(dt.now().hour+97)"`) do set NOWDATE=%%t
 set VERSION=%VERSION%-beta
 set VERSION=%VERSION%-%NOWDATE%
+set VERSION=%VERSION%-noncert
 set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
 
 set PUBLISHER=nvdajp
