@@ -618,7 +618,7 @@ def speak(speechSequence,symbolLevel=None):
 	import speechViewer
 	if speechViewer.isActive:
 		for item in speechSequence:
-			if isinstance(item,basestring):
+			if isinstance(item, basestring):
 				speechViewer.appendText(item)
 	# nvdajp (Takuya Nishimoto + Masataka.Shinke)
 	from gui import brailleViewer
