@@ -484,11 +484,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		self.Bind(wx.EVT_MENU, frame.onToggleBrailleViewerCommand, item)
 		#nvdajp end
 		# Translators: The label for the Tools submenu in NVDA menu.
-<<<<<<< HEAD
-		self.menu.AppendMenu(wx.ID_ANY, pgettext("nvdaMenu", "Tools"), menu_tools)
-=======
 		self.menu.Append(wx.ID_ANY, _("Tools"), menu_tools)
->>>>>>> fetch_head
 
 		menu_help = self.helpMenu = wx.Menu()
 		#nvdajp begin
