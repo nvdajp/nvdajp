@@ -14,6 +14,7 @@ import threading
 import time
 import wx
 import louis
+import gui
 import winKernel
 import keyboardHandler
 import baseObject
@@ -1811,7 +1812,7 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		cursorShouldBlink = config.conf["braille"]["cursorBlink"]
 		blinkRate = config.conf["braille"]["cursorBlinkRate"]
 		if cursorShouldBlink and blinkRate:
-			self._cursorBlinkTimer = wx.PyTimer(self._blink)
+			self._cursorBlinkTimer = gui.NonReEntrantTimer(self._blink)
 			# This is called from the background thread when a display is auto detected.
 			# Make sure we start the blink timer from the main thread to avoid wx assertions
 			wx.CallAfter(self._cursorBlinkTimer.Start,blinkRate)
@@ -2576,7 +2577,7 @@ class BrailleDisplayGesture(inputCore.InputGesture):
 			globalMaps = [inputCore.manager.userGestureMap, handler.display.gestureMap]
 			for globalMap in globalMaps:
 				for fakeGestureId in fakeGestureIds:
-					scriptNames.extend(scriptName for cls, scriptName in globalMap.getScriptsForGesture(fakeGestureId.lower()) if scriptName.startswith("kb"))
+					scriptNames.extend(scriptName for cls, scriptName in globalMap.getScriptsForGesture(fakeGestureId.lower()) if scriptName and scriptName.startswith("kb"))
 			if not scriptNames:
 				# Gesture contains modifiers, but no keyboard emulate script exists for the gesture without modifiers
 				return None
