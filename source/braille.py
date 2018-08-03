@@ -280,6 +280,8 @@ nabccRoleLabels = {
 	controlTypes.ROLE_MENU: "mnu",
 	controlTypes.ROLE_PANEL: "pnl",
 	controlTypes.ROLE_PASSWORDEDIT: "pwdedt",
+	controlTypes.ROLE_DELETED_CONTENT: "del",
+	controlTypes.ROLE_INSERTED_CONTENT: "ins",
 }
 nabccPositiveStateLabels = {
 	controlTypes.STATE_SELECTED: "sel",
