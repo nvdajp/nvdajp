@@ -22,6 +22,7 @@ cd ..
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
+python jptools\ensure_utf8_bom.py include\espeak\src\libespeak-ng\tr_languages.c
 @rem call scons.bat -c
 call jptools\setupMiscDepsJp.cmd
 
