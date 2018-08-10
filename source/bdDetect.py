@@ -347,6 +347,14 @@ def driverSupportsAutoDetection(driver):
 	"""
 	return driver in _driverDevices
 
+### Detection data (nvdajp)
+# kgs
+addUsbDevices("kgs", KEY_SERIAL, {
+	"VID_1148&PID_0301", # KGS BM-SMART USB Serial
+	"VID_1148&PID_0001", # KGS USB To Serial Com Port
+})
+addBluetoothDevices("kgs", lambda m: m.id.startswith("BM")) # "BM Series", "BMsmart-KGS"
+
 ### Detection data
 # alva
 addUsbDevices("alva", KEY_HID, {
