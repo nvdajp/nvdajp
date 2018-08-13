@@ -62,7 +62,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 
 # Braille settings
 [braille]
-	display = string(default=noBraille)
+	display = string(default=auto)
 	translationTable = string(default=ja-jp-comp6.utb) # was en-ueb-g1.ctb (nvdajp)
 	inputTable = string(default=en-ueb-g1.ctb)
 	expandAtCursor = boolean(default=false) # was true (nvdajp)
