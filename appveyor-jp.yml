@@ -30,6 +30,7 @@ build_script:
  - set VERSION=%VERSION%-beta
  - set VERSION=%VERSION%-%NOWDATE%
  - set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
+ - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
  - ps: |
      $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
