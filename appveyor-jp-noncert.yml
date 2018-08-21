@@ -8,8 +8,9 @@ clone_depth: 1
 
 init:
  - ps: Set-WinSystemLocale ja-JP
- - ps: Start-Sleep -s 20
+ - ps: Start-Sleep -s 10
  - ps: Restart-Computer
+ - ps: Start-Sleep -s 10
 
 install:
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
