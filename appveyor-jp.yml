@@ -24,6 +24,13 @@ install:
  - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key-pass.txt.enc  -secret %my_secret_b%
 
 build_script:
+ - set VERSION=2018.3jp
+ - set UPDATEVERSIONTYPE=nvdajp
+ - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
+ - set VERSION=%VERSION%-beta
+ - set VERSION=%VERSION%-%NOWDATE%
+ - set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
+ - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
  - ps: |
      $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
