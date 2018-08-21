@@ -3,6 +3,7 @@ set SCONSOPTIONS=%* --silent
 set PFX=jptools\secret\knowlec-key171003.pfx
 set PWFILE=jptools\secret\knowlec-key-pass.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
+del /Q %PWFILE%
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
 
 call miscDepsJp\include\python-jtalk\vcsetup.cmd
