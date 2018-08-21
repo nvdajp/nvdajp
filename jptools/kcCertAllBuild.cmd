@@ -1,15 +1,15 @@
 set SCONSOPTIONS=%* --silent
 
-set VERSION=2018.3jp
-set UPDATEVERSIONTYPE=nvdajp
-
-@for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
-set VERSION=%VERSION%-beta
-set VERSION=%VERSION%-%NOWDATE%
-set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
-echo %UPDATEVERSIONTYPE% %VERSION%
-
-set PUBLISHER=nvdajp
+rem set VERSION=2018.3jp
+rem set UPDATEVERSIONTYPE=nvdajp
+rem 
+rem @for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
+rem set VERSION=%VERSION%-beta
+rem set VERSION=%VERSION%-%NOWDATE%
+rem set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
+rem echo %UPDATEVERSIONTYPE% %VERSION%
+rem 
+rem set PUBLISHER=nvdajp
 set PFX=jptools\secret\knowlec-key171003.pfx
 set PWFILE=jptools\secret\knowlec-key-pass.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s

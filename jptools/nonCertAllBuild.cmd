@@ -1,15 +1,15 @@
 set SCONSOPTIONS=%* --silent
 
-set VERSION=2018.3jp
-set UPDATEVERSIONTYPE=nvdajp
-
-@for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
-set VERSION=%VERSION%-beta
-set VERSION=%VERSION%-%NOWDATE%
-set VERSION=%VERSION%-noncert
-set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
-
-set PUBLISHER=nvdajp
+rem set VERSION=2018.3jp
+rem set UPDATEVERSIONTYPE=nvdajp
+rem 
+rem @for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
+rem set VERSION=%VERSION%-beta
+rem set VERSION=%VERSION%-%NOWDATE%
+rem set VERSION=%VERSION%-noncert
+rem set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
+rem 
+rem set PUBLISHER=nvdajp
 
 call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0

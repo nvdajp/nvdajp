@@ -17,6 +17,15 @@ install:
  - git submodule update --init --recursive
 
 build_script:
+ - set VERSION=2018.3jp
+ - set UPDATEVERSIONTYPE=nvdajp
+ - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
+ - set VERSION=%VERSION%-beta
+ - set VERSION=%VERSION%-%NOWDATE%
+ - set VERSION=%VERSION%-noncert
+ - set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
+ - set PUBLISHER=nvdajp
+ - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
  - ps: |
      $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
