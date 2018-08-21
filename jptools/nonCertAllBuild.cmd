@@ -3,7 +3,7 @@ set SCONSOPTIONS=%* --silent
 set VERSION=2018.3jp
 set UPDATEVERSIONTYPE=nvdajp
 
-@for /F "usebackq" %%t in (`nowdate.cmd`) do set NOWDATE=%%t
+@for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
 set VERSION=%VERSION%-beta
 set VERSION=%VERSION%-%NOWDATE%
 set VERSION=%VERSION%-noncert
