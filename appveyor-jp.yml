@@ -14,9 +14,6 @@ init:
  - ps: Set-WinSystemLocale ja-JP
  - ps: Start-Sleep -s 20
  - ps: Restart-Computer
- - tzutil /g
- - tzutil /s "Tokyo Standard Time"
- - tzutil /g
 
 install:
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
