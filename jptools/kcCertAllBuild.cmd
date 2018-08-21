@@ -13,6 +13,7 @@ cd ..
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
+python jptools\ensure_utf8_bom.py include\espeak\src\libespeak-ng\tr_languages.c
 call jptools\setupMiscDepsJp.cmd
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
@@ -27,7 +28,6 @@ signtool verify /pa %FILE2% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
-python jptools\ensure_utf8_bom.py include\espeak\src\libespeak-ng\tr_languages.c
 @python scons.py source user_docs launcher certFile=%PFX% certPassword=%PASSWORD% certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
 signtool verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
