@@ -1,15 +1,16 @@
 set SCONSOPTIONS=%* --silent
 
-set UPDATEVERSIONTYPE=nvdajpalpha
-
-for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')+chr(dt.now().hour+97)"`) do set NOWDATE=%%t
-set VERSION=jpalpha_%NOWDATE%
-echo %UPDATEVERSIONTYPE% %VERSION%
-
-set PUBLISHER=nvdajp
+@rem set UPDATEVERSIONTYPE=nvdajpalpha
+@rem 
+@rem for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')+chr(dt.now().hour+97)"`) do set NOWDATE=%%t
+@rem set VERSION=jpalpha_%NOWDATE%
+@rem echo %UPDATEVERSIONTYPE% %VERSION%
+@rem 
+@rem set PUBLISHER=nvdajp
 set PFX=jptools\secret\knowlec-key171003.pfx
 set PWFILE=jptools\secret\knowlec-key-pass.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
+del /Q %PWFILE%
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
 
 call miscDepsJp\include\python-jtalk\vcsetup.cmd
@@ -20,7 +21,6 @@ set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
 python jptools\ensure_utf8_bom.py include\espeak\src\libespeak-ng\tr_languages.c
-@rem call scons.bat -c
 call jptools\setupMiscDepsJp.cmd
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
@@ -45,8 +45,6 @@ signtool verify /pa dist\*.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 signtool verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-
-@rem copy output\nvda_%VERSION%.exe %USERPROFILE%\Dropbox\Public
 
 cd jptools
 call buildControllerClient.cmd
