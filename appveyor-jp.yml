@@ -12,11 +12,9 @@ clone_depth: 1
 
 init:
  - ps: Set-WinSystemLocale ja-JP
- - ps: Start-Sleep -s 20
+ - ps: Start-Sleep -s 10
  - ps: Restart-Computer
- - tzutil /g
- - tzutil /s "Tokyo Standard Time"
- - tzutil /g
+ - ps: Start-Sleep -s 10
 
 install:
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
@@ -26,11 +24,71 @@ install:
  - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key-pass.txt.enc  -secret %my_secret_b%
 
 build_script:
+ - set RELEASE=1
+ - set VERSION=jpalpha
+ - set UPDATEVERSIONTYPE=nvdajp
+ - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
+ - set VERSION=%VERSION%_%NOWDATE%
+ - set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%alpha
+ - set PUBLISHER=nvdajp
+ - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
  - ps: |
      $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\kcCertAllBuild.cmd %sconsArgs%'
  - jptools\kcCertAllBuild.cmd %sconsArgs%
 
+before_test:
+ # Manually grab pyscreeze 0.1.13 as latest release is completely broken.
+ - py -m pip install pyscreeze==0.1.13
+ - py -m pip install robotframework robotremoteserver pyautogui nose
+ - mkdir testOutput
+ - mkdir testOutput\unit
+ - mkdir testOutput\system
+ - ps: |
+     $errorCode=0
+     $nvdaLauncherFile=".\output\nvda"
+     if(!$env:release) {
+      $nvdaLauncherFile+="_snapshot"
+     }
+     $nvdaLauncherFile+="_${env:version}.exe"
+     echo NVDALauncherFile: $NVDALauncherFile
+     $outputDir=$(resolve-path .\testOutput)
+     $installerLogFilePath="$outputDir\nvda_install.log"
+     $installerProcess=start-process -FilePath "$nvdaLauncherFile" -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -passthru
+     try {
+      $installerProcess | wait-process -Timeout 180
+      $errorCode=$installerProcess.ExitCode
+     } catch {
+      echo NVDA installer process timed out
+      $errorCode=1
+     }
+     Push-AppveyorArtifact $installerLogFilePath
+     if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+
+test_script:
+ - ps: |
+     $errorCode=0
+     $outDir = (Resolve-Path .\testOutput\unit\)
+     $unitTestsXml = "$outDir\unitTests.xml"
+     py -m nose --with-xunit --xunit-file="$unitTestsXml" ./tests/unit
+     if($LastExitCode -ne 0) { $errorCode=$LastExitCode }
+     Push-AppveyorArtifact $unitTestsXml
+     $wc = New-Object 'System.Net.WebClient'
+     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", $unitTestsXml)
+     if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+ - ps: |
+     $testOutput = (Resolve-Path .\testOutput\)
+     $systemTestOutput = (Resolve-Path "$testOutput\system")
+     $testSource = "./tests/system"
+     py -m robot --loglevel DEBUG -d $systemTestOutput -x systemTests.xml -v whichNVDA:installed -P "$testSource/libraries" "$testSource"
+     Compress-Archive -Path "$systemTestOutput\*" -DestinationPath "$testOutput\systemTestResult.zip"
+     Push-AppveyorArtifact "$testOutput\systemTestResult.zip"
+     if($LastExitCode -ne 0) { $errorCode=$LastExitCode }
+     $wc = New-Object 'System.Net.WebClient'
+     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path "$systemTestOutput\systemTests.xml"))
+     if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+
 artifacts:
  - path: output\*
+ - path: output\*\*
