@@ -38,6 +38,9 @@ build_script:
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\kcCertAllBuild.cmd %sconsArgs%'
  - jptools\kcCertAllBuild.cmd %sconsArgs%
+ - cd jptools
+ - pack_jtalk_addon.cmd
+ - cd ..
 
 before_test:
  # Manually grab pyscreeze 0.1.13 as latest release is completely broken.
@@ -93,3 +96,4 @@ test_script:
 artifacts:
  - path: output\*
  - path: output\*\*
+ - path: jptools\nvdajp-jtalk-*.nvda-addon
