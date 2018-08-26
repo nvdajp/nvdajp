@@ -38,6 +38,7 @@ build_script:
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\kcCertAllBuild.cmd %sconsArgs%'
  - jptools\kcCertAllBuild.cmd %sconsArgs%
+ - jptools\tests.cmd
  - cd jptools
  - pack_jtalk_addon.cmd
  - cd ..
@@ -96,4 +97,8 @@ test_script:
 artifacts:
  - path: output\*
  - path: output\*\*
+ - path: miscDepsJp\jptools\__h1output.txt
+ - path: miscDepsJp\jptools\__h2output.txt
+ - path: miscDepsJp\jptools\__test_log.txt
+ - path: jptools\__jpdictest_log.txt
  - path: jptools\nvdajp-jtalk-*.nvda-addon

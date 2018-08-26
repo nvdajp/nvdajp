@@ -33,6 +33,9 @@ build_script:
  - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
  - jptools\nonCertAllBuild.cmd %sconsArgs%
  - jptools\tests.cmd
+ - cd jptools
+ - pack_jtalk_addon.cmd
+ - cd ..
 
 before_test:
  # Manually grab pyscreeze 0.1.13 as latest release is completely broken.
@@ -92,3 +95,4 @@ artifacts:
  - path: miscDepsJp\jptools\__h2output.txt
  - path: miscDepsJp\jptools\__test_log.txt
  - path: jptools\__jpdictest_log.txt
+ - path: jptools\nvdajp-jtalk-*.nvda-addon
