@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2018-06-17
+- last update: 2018-08-25
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -198,9 +198,14 @@ The issue is discussed at [NVDAJP ticket 29872 https://osdn.net/ticket/browse.ph
 
 ++ Voice settings ++
 
-+++ Beep for capitals +++
++++ Capital pitch change percentage +++
 
-'Beep for capitals beep' is enabled by default.
+The default value of Capital pitch change percentage is 0.
+This is because NVDAJP uses pitch for indicating types of phonetic characters of Japanese language.
+
++++ Say "cap" before capitals +++
+
+'Say "cap" before capitals' is enabled by default.
 This is because NVDAJP uses pitch for indicating types of phonetic characters of Japanese language.
 
 
