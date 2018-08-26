@@ -38,7 +38,6 @@ build_script:
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\kcCertAllBuild.cmd %sconsArgs%'
  - jptools\kcCertAllBuild.cmd %sconsArgs%
- - jptools\tests.cmd
  - cd jptools
  - pack_jtalk_addon.cmd
  - cd ..
@@ -93,6 +92,7 @@ test_script:
      $wc = New-Object 'System.Net.WebClient'
      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path "$systemTestOutput\systemTests.xml"))
      if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+ - jptools\tests.cmd
 
 artifacts:
  - path: output\*
