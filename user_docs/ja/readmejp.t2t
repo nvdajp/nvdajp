@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2018年8月26日
+- 最終更新日：2018年9月10日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -743,10 +743,10 @@ UTF-8 エンコーディングのテキストファイル、以下のフォー�
 
 ++ Firefox ESR ++
 
-Firefox 57 以降で NVDA との互換性の問題が発生しています。Mozilla および NV Access が改善に向けて作業を進めていますが、お困りの場合は Firefox 52 系で2018年8月までサポートされる「延長サポート版」のご利用をご検討ください。
+Firefox 57 以降で NVDA との互換性の問題が発生しました。現在は Firefox ESR バージョン 60 で不具合が残っています。ESR ではない通常版 Firefox のバージョン 61 以降をご利用ください。
 
-- [Firefox の延長サポート版 (ESR) https://www.mozilla.jp/business/]
-- [Firefox ESR 日本語版のダウンロード https://www.mozilla.org/ja/firefox/organizations/all/#ja]
+
+
 
 
 ++ Windows 8 での日本語入力 ++
