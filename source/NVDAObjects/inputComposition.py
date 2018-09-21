@@ -5,7 +5,7 @@ import characterProcessing
 import speech
 import config
 from NVDAObjects.window import Window
-from behaviors import EditableTextWithAutoSelectDetection, CandidateItem as CandidateItemBehavior 
+from .behaviors import EditableTextWithAutoSelectDetection, CandidateItem as CandidateItemBehavior 
 from textInfos.offsets import OffsetsTextInfo
 #nvdajp begin
 from logHandler import log
