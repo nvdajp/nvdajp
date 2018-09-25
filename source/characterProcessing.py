@@ -159,6 +159,22 @@ class CharacterDescriptions(object):
 			f.close()
 		# nvdajp users characters end
 
+		# nvdajp cldr emoji
+		if config.conf['speech']['includeCLDR']:
+			fileName = os.path.join('locale', locale, 'cldr.dic')
+			if os.path.isfile(fileName):
+				f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
+				for line in f:
+					line = line.rstrip('\r\n')
+					temp = line.split("\t")
+					if len(temp) > 1:
+						key = temp.pop(0)
+						rd = temp.pop(0)
+						self._readings[key] = rd
+						self._entries[key] = (rd,)
+				f.close()
+		# nvdajp cldr emoji end
+
 	# nvdajp reading
 	def getCharacterReading(self, character):
 		if character in self._readings:
