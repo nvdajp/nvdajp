@@ -19,7 +19,6 @@ cd ..\..
 
 call jptools\setupMiscDepsJp.cmd
 
-python jptools\ensure_utf8_bom.py include\espeak\src\libespeak-ng\tr_languages.c
 python scons.py source user_docs launcher publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
 cd jptools

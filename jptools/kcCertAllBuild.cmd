@@ -20,7 +20,6 @@ cd ..
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
-python jptools\ensure_utf8_bom.py include\espeak\src\libespeak-ng\tr_languages.c
 call jptools\setupMiscDepsJp.cmd
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
