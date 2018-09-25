@@ -55,3 +55,4 @@ source/synthDrivers/nvdajp_jtalk.py
 *~
 *.nvda-addon
 nvdaHelper/docs
+source/locale/*/cldr.dic
