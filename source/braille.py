@@ -672,10 +672,15 @@ def getBrailleTextForProperties(**propertyValues):
 			# Translators: Displayed in braille when an object (e.g. a tree view item) has a hierarchical level.
 			# %s is replaced with the level.
 			textList.append(_('lv %s')%positionInfo['level'])
+	# nvdajp begin https://github.com/nvdajp/nvdajp/issues/109
+	rowHeaderText = propertyValues.get("rowHeaderText")
+	if rowHeaderText:
+		textList.append(rowHeaderText)
+	columnHeaderText = propertyValues.get("columnHeaderText")
+	if columnHeaderText:
+		textList.append(columnHeaderText)
+	# nvdajp end
 	if rowNumber:
-		rowHeaderText = propertyValues.get("rowHeaderText")
-		if rowHeaderText:
-			textList.append(rowHeaderText)
 		if includeTableCellCoords and not cellCoordsText: 
 			if rowSpan>1:
 				# Translators: Displayed in braille for the table cell row numbers when a cell spans multiple rows.
@@ -687,9 +692,10 @@ def getBrailleTextForProperties(**propertyValues):
 				rowStr = _("r{rowNumber}").format(rowNumber=rowNumber)
 			textList.append(rowStr)
 	if columnNumber:
-		columnHeaderText = propertyValues.get("columnHeaderText")
-		if columnHeaderText:
-			textList.append(columnHeaderText)
+		# nvdajp (moved to above) https://github.com/nvdajp/nvdajp/issues/109
+		#columnHeaderText = propertyValues.get("columnHeaderText")
+		#if columnHeaderText:
+		#	textList.append(columnHeaderText)
 		if includeTableCellCoords and not cellCoordsText:
 			if columnSpan>1:
 				# Translators: Displayed in braille for the table cell column numbers when a cell spans multiple columns.
