@@ -11,6 +11,7 @@ import collections
 import re
 from logHandler import log
 import globalVars
+import config
 
 class LocaleDataMap(object):
 	"""Allows access to locale-specific data objects, dynamically loading them if needed on request"""
