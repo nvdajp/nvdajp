@@ -633,7 +633,6 @@ def getBrailleTextForProperties(**propertyValues):
 
 	elif role is None: 
 		role = propertyValues.get("_role")
-		roleText = None
 	#nvdajp begin
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
 			isComposition and role == controlTypes.ROLE_EDITABLETEXT:
