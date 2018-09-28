@@ -180,7 +180,6 @@ def speakSpelling(text,locale=None,useCharacterDescriptions=False,useDetails=Fal
 		return getSynth().speak((_("blank"),))
 	if not text.isspace():
 		text=text.rstrip()
-	#log.info(u"(%s)" % text)
 	if _speakSpellingGenerator and _speakSpellingGenerator.gi_frame:
 		_speakSpellingGenerator.send((text,locale,useCharacterDescriptions,useDetails))
 	else:
@@ -321,14 +320,12 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 	synthConfig=config.conf["speech"][synth.name]
 	buf=[(text,locale,useCharacterDescriptions,useDetails)]
 	for text,locale,useCharacterDescriptions,useDetails in buf:
-		#log.info(repr(text))
 		textLength=len(text)
 		count = 0
 		localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
 		charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else jpUtils.splitChars(text)
 		log.debug(repr(charDescList))
 		for item in charDescList:
-			#log.info(repr(item))
 			if localeHasConjuncts:
 				# item is a tuple containing character and its description
 				char = item[0]
@@ -361,13 +358,13 @@ def _speakSpellingGen(text,locale,useCharacterDescriptions,useDetails):
 			index=count+1
 			log.io("Speaking character %r"%char)
 			speechSequence=[LangChangeCommand(locale)] if config.conf['speech']['autoLanguageSwitching'] else []
-			if index is not None:
-				speechSequence.append(IndexCommand(index))
 			if charAttrDetails:
 				#Announce attribute details before character itself
 				speechSequence.append(charAttrDetails)
 			if len(char) == 1 and synthConfig["useSpellingFunctionality"] and not isJa(locale):
 				speechSequence.append(CharacterModeCommand(True))
+			if index is not None:
+				speechSequence.append(IndexCommand(index))
 			speechSequence.append(char)
 			synth.speak(speechSequence)
 			if pitchChanged:
