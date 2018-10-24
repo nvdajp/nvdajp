@@ -1,14 +1,7 @@
 set SCONSOPTIONS=%* --silent
 
-@rem set UPDATEVERSIONTYPE=nvdajpalpha
-@rem 
-@rem for /F "usebackq" %%t in (`python -c "from datetime import datetime as dt; print dt.now().strftime('%%y%%m%%d')+chr(dt.now().hour+97)"`) do set NOWDATE=%%t
-@rem set VERSION=jpalpha_%NOWDATE%
-@rem echo %UPDATEVERSIONTYPE% %VERSION%
-@rem 
-@rem set PUBLISHER=nvdajp
-set PFX=jptools\secret\knowlec-key171003.pfx
-set PWFILE=jptools\secret\knowlec-key-pass.txt
+set PFX=jptools\secret\knowlec-key181024c.pfx
+set PWFILE=jptools\secret\knowlec-key-pass-2018.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
 del /Q %PWFILE%
 set TIMESERVER=http://timestamp.comodoca.com/authenticode
@@ -23,13 +16,13 @@ del /Q %VERIFYLOG%
 call jptools\setupMiscDepsJp.cmd
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
-@signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
+@signtool sign /fd sha256 /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
 signtool verify /pa %FILE1% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
 set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
-@signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE2%
+@signtool sign /fd sha256 /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE2%
 signtool verify /pa %FILE2% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
