@@ -1,6 +1,17 @@
+set RELEASE=1
+set VERSION=2018.4jp
+set UPDATEVERSIONTYPE=nvdajp
+for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
+set VERSION=%VERSION%-beta
+set VERSION=%VERSION%-%NOWDATE%
+set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
+set PUBLISHER=nvdajp
+copy c:\work\kc\pfx\knowlec-key-pass-2018.txt jptools\secret
+del source\_buildVersion.py*
+
 set SCONSOPTIONS=%* --silent
 
-set PFX=jptools\secret\knowlec-key181024a.pfx
+set PFX=jptools\secret\knowlec-key181024c.pfx
 set PWFILE=jptools\secret\knowlec-key-pass-2018.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
 del /Q %PWFILE%
@@ -16,13 +27,13 @@ del /Q %VERIFYLOG%
 call jptools\setupMiscDepsJp.cmd
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
-@signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
+@signtool sign /fd sha256 /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
 signtool verify /pa %FILE1% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
 set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
-@signtool sign /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE2%
+@signtool sign /fd sha256 /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE2%
 signtool verify /pa %FILE2% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
