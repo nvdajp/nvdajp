@@ -20,8 +20,8 @@ install:
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
  - git submodule update --init --recursive
  - nuget install secure-file -ExcludeVersion
- - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key171003.pfx.enc -secret %my_secret_a%
- - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key-pass.txt.enc  -secret %my_secret_b%
+ - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key181024a.pfx.enc -secret %my_secret_a%
+ - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key-pass-2018.txt.enc -secret %my_secret_b%
 
 build_script:
  - set RELEASE=1
