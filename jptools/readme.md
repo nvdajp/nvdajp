@@ -6,12 +6,12 @@ NVDA日本語チーム 西本卓也
 ## ビルド環境準備とソースコード取得
 
 
-NVDA 2017.4jp-beta の場合
+NVDA 2018.4jp-beta の場合
 
 
 ### (1) Windows 10 64ビット
 
-確実にビルドできる作業環境は Windows 10 64ビット (1703 / 1709)
+確実にビルドできる作業環境は Windows 10 64ビット
 
 
 ### (2) Visual Studio 2017 Community
@@ -20,7 +20,7 @@ NVDA 2017.4jp-beta の場合
 
 https://www.visualstudio.com/ja/downloads/ 
 
-2017年10月にリリースされた Visual Studio 2017 バージョン 15.4.0 を推奨。
+Visual Studio 2017 バージョン 15.3 以降
 
 #### (2.1) 選択する「ワークロード」の項目
 
@@ -30,18 +30,25 @@ https://www.visualstudio.com/ja/downloads/
 
 #### (2.2) 「概要」「C++によるデスクトップ開発」「オプション」で選択する項目
 
-(a) VC++ 2017 v141 ツールセット（x86, x64）
+(a) VC++ 2017 *** 最新の v141 ツール
 
-(b) Windows 10 SDK (10.0.16299.0) for Desktop C++ x86 and x64
+(b) Windows 10 SDK (10.0.17134.0)
 
+(c) x86 用と x64 用の Visual C++ ATL
 
-### (3) Git for Windows
+#### (2.3) 「個別のコンポーネント」「コードツール」で選択する項目
 
-Git for Windows サイトから Git-2.14.3-64-bit.exe をダウンロードする。
+(a) Git for Windows
+
+#### (2.4) インストールの実行
+
+約4GBのファイルのダウンロードとインストールが行われる。
+
+#### (2.5) Git の確認
+
+Visual Studio と一緒にインストールしない場合は下記からダウンロードしてインストーラーを実行する。
 
 https://git-for-windows.github.io/
-
-インストーラーを実行する。
 
 Git の初心者は下記の設定を推奨。
 
@@ -77,18 +84,18 @@ http://www.7-zip.org/download.html
 C:\Program Files\7-Zip
 ```
 
-### (5) Python 3.6.3 / 2.7.14 (Windows 32bit)
+### (5) Python 3.7.1 / 2.7.15 (Windows 32bit)
 
 それぞれダウンロードして両方実行し、インストールする。
 オプションはデフォルトでよい。
 
-https://www.python.org/downloads/release/python-363/
+https://www.python.org/downloads/release/python-371/
 
-Windows x86 executable installer (python-3.6.3.exe)
+Windows x86 executable installer (python-3.7.1.exe)
 
-https://www.python.org/downloads/release/python-2714/
+https://www.python.org/downloads/release/python-2715/
 
-Windows x86 MSI installer (python-2.7.14.msi)
+Windows x86 MSI installer (python-2.7.15.msi)
 
 
 ### (6) 確認すること
