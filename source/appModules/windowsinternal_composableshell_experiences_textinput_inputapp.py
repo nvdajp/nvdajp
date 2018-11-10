@@ -30,7 +30,13 @@ class AppModule(appModuleHandler.AppModule):
 		# For consistent experience, report the new category first by traversing through controls.
 		# #8189: do not announce candidates list itself (not items), as this is repeated each time candidate items are selected.
 		if obj.UIAElement.cachedAutomationID == "CandidateList": return
-		speech.cancelSpeech()
+		if obj.UIAElement.cachedAutomationID in ("IME_Candidate_Window", "ExpandedCandidateList"):
+			return
+		if not obj.UIAElement.cachedClassName == "ListViewItem":
+			speech.cancelSpeech()
+		elif not obj.name[0] == "[":
+			# if not [tankanji]
+			return
 		# Sometimes clipboard candidates list gets selected, so ask NvDA to descend one more level.
 		if obj.UIAElement.cachedAutomationID == "TEMPLATE_PART_ClipboardItemsList":
 			obj = obj.firstChild
@@ -83,6 +89,15 @@ class AppModule(appModuleHandler.AppModule):
 	_emojiPanelJustOpened = False
 
 	def event_nameChange(self, obj, nextHandler):
+		if obj.UIAElement.cachedClassName == "ListViewItem":
+			return
+		if obj.UIAElement.cachedClassName == "TextBlock" and obj.UIAElement.cachedAutomationID == "KeyboardShortcutText":
+			return
+		if obj.UIAElement.cachedClassName == "pane" and obj.UIAElement.cachedAutomationID == "CandidateWindowControl":
+			return
+		if obj.UIAElement.cachedClassName == "Windows.UI.Core.CoreWindow":
+			# Microsoft Text Input Application
+			return
 		# #49: reported by a user: on some systems, touch keyboard keys keeps firing name change event.
 		# Argh, in build 17704, whenever skin tones are selected, name change is fired by emoji entries (GridViewItem).
 		if ((obj.UIAElement.cachedClassName in ("CRootKey", "GridViewItem"))
@@ -93,7 +108,7 @@ class AppModule(appModuleHandler.AppModule):
 		# The word "blank" is kept announced, so suppress this on build 17666 and later.
 		if winVersion.winVersion.build > 17134:
 			# In build 17672 and later, return immediatley when element selected event on clipboard item was fired just prior to this.
-			if obj.UIAElement.cachedAutomationID == "TEMPLATE_PART_ClipboardItemIndex" or obj.parent.UIAElement.cachedAutomationID == "TEMPLATE_PART_ClipboardItemsList": return
+			if obj.UIAElement.cachedAutomationID == "TEMPLATE_PART_ClipboardItemIndex" or hasattr(obj.parent, "UIAElement") and obj.parent.UIAElement.cachedAutomationID == "TEMPLATE_PART_ClipboardItemsList": return
 			if not self._emojiPanelJustOpened or obj.UIAElement.cachedAutomationID != "TEMPLATE_PART_ExpressionGroupedFullView": speech.cancelSpeech()
 			self._emojiPanelJustOpened = False
 		# Don't forget to add "Microsoft Candidate UI" as something that should be suppressed.
