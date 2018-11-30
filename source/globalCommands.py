@@ -1149,17 +1149,6 @@ class GlobalCommands(ScriptableObject):
 		# Explicitly tether here
 		braille.handler.setTether(braille.handler.TETHER_REVIEW, auto=True)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
-		#if scriptCount==0:
-		#	speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
-		#elif scriptCount==1:
-		#	speech.spellTextInfo(info,useCharacterDescriptions=True)
-		#else:
-		#	try:
-		#		c = ord(info.text)
-		#		speech.speakMessage("%d," % c)
-		#		speech.speakSpelling(hex(c))
-		#	except:
-		#		speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		#nvdajp begin
 		if scriptCount==0:
 			if characterDescriptionMode:
@@ -1173,8 +1162,21 @@ class GlobalCommands(ScriptableObject):
 		elif scriptCount==2:
 			log.debug(repr([info.text, len(info.text)]))
 			try:
-				#c = ord(info.text)
-				c = jpUtils.getOrd(info.text)
+				c = ord(info.text)
+			except TypeError:
+				# This might be a character taking multiple code points.
+				# If it is a 32 bit character, encode it to UTF-32 and calculate the ord manually.
+				# In Python 3, this is no longer necessary.
+				try:
+					encoded = info.text.encode("utf_32_le")
+				except UnicodeEncodeError:
+					c = None
+				else:
+					if len(encoded)==4:
+						c = sum(ord(cp)<<i*8 for i, cp in enumerate(encoded))
+					else:
+						c = None
+			if c is not None:
 				if jpUtils.isJa():
 					s = jpUtils.code2kana(c)
 					o = u"%d u+%s" % (c, s)
@@ -1184,8 +1186,8 @@ class GlobalCommands(ScriptableObject):
 					speech.speakMessage("%d," % c)
 					speech.speakSpelling(hex(c))
 					braille.handler.message(u"%d %s" % (c, hex(c)))
-			except Exception as e:
-				log.warning(e)
+			else:
+				log.debugWarning("Couldn't calculate ordinal for character %r" % info.text)
 				speech.speakTextInfo(info,unit=textInfos.UNIT_CHARACTER,reason=controlTypes.REASON_CARET)
 		else:
 			if characterDescriptionMode:
