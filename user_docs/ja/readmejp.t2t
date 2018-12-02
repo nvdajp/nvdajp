@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2018年9月10日
+- 最終更新日：2018年12月2日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -284,7 +284,7 @@ Windows 8 以降の日本語音声エンジン Haruka Desktop は SAPI5 で利�
 ++ Haruka ++
 
 Microsoft Speech Platform はマイクロソフトが無償で配布している音声合成エンジンです。
-Windows XP, Vista, 7 で利用できますが、標準ではシステムに入っていません。
+Windows 7 で利用できますが、標準ではシステムに入っていません。
 
 NVDA 本家版には Microsoft Speech Platform のための音声ドライバが組み込まれています。
 
@@ -346,7 +346,7 @@ NVDA 日本語版ではメールアドレスやWebサイトのURLなどに日本
 
 その他の日本語点字では記号は以下のように出力されます。
 
-下記の表に含まれる点字シンボルを Windows XP で表示する場合には Unicode 点字に対応したフォントの追加が必要です。
+
 
 
 || 記号 | 出力 | 点字シンボル |
@@ -648,7 +648,7 @@ NVDA 日本語版はツール「スピーチビューアー」を Alt+Tab で切
 
 点字ビューアーは音声出力される情報を点字に変換しているので、点字ディスプレイへの実際の出力と内容が一致しないことがあります。
 
-Windows XP または Vista で点字ビューアーを使うためには DejaVu Sans フォントが必要です。LibreOffice をインストールすると DejaVu Sans フォントもインストールされます。
+
 
 
 ++ ログビューアー ++
@@ -826,6 +826,12 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 + バージョンごとの変更点 +
+
+++ 2018.4jp の変更点 ++
+
+- [本家版 2018.4 の変更点と翻訳 https://github.com/nvdajp/nvdajp/milestone/15?closed=1]
+- [2018.4jp の変更点 https://github.com/nvdajp/nvdajp/milestone/16?closed=1]
+
 
 ++ 2018.3jp の変更点 ++
 
