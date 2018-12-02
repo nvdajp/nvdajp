@@ -36,7 +36,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	announceCandidateNumber = boolean(default=false)
 	jpAnsiEditbox = boolean(default=true)
 	jpAnnounceNewLine = boolean(default=false)
-	openDocFileByMSHTA = boolean(default=true)
+	openDocFileByMSHTA = boolean(default=false)
 	alwaysSpeakMathInEnglish = boolean(default=true)
 
 # Speech settings
