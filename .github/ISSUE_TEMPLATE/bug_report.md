@@ -1,11 +1,14 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: 不具合の報告
+about: NVDA日本語版の改良に役立つ報告を作成
 
 ---
 
 <!--
 ご利用方法：入力済みの例を書き換えてください。不要な行は削除してください。
+入力された情報が不十分な場合は issue をクローズすることがあります。
+下記は報告者のための手引きの本家版（英語）です。
+https://github.com/nvaccess/nvda/wiki/Github-issue-template-explanation-and-examples
 -->
 
 ### 問題の再現手順

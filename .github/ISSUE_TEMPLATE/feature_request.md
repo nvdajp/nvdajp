@@ -1,19 +1,19 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: 機能のリクエスト
+about: このプロジェクトにアイディアを提供
 
 ---
 
 <!--
-Please thoroughly read NVDA's wiki article on how to fill in this template, including how to provide the required files.
-Issues may be closed if the required information is not present.
+入力された情報が不十分な場合は issue をクローズすることがあります。
+下記は報告者のための手引きの本家版（英語）です。
 https://github.com/nvaccess/nvda/wiki/Github-issue-template-explanation-and-examples
 -->
 
-### Is your feature request related to a problem? Please describe.
+### 背景（不満や不便なこと）
 
-### Describe the solution you'd like
+### 提案したい機能や方法
 
-### Describe alternatives you've considered
+### 考慮した代案があればお書きください
 
-### Additional context
+### 関連する情報があればお書きください
