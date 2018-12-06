@@ -56,14 +56,25 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 	* distinguishes between cursor position 0 (cursor at first character) and None (no cursor at all)
 	"""
 	text = unicode(inbuf).replace('\0','')
-	braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
-		tableList,
-		text,
-		# liblouis mutates typeform if it is a list.
-		typeform=tuple(typeform) if isinstance(typeform, list) else typeform,
-		cursorPos=cursorPos or 0,
-		mode=mode
-	)
+	# nvdajp begin
+	if config.conf["braille"]["japaneseBrailleSupport"]:
+		log.debug(text)
+		from synthDrivers.jtalk.translator2 import translate as jpTranslate
+		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
+			text,
+			cursorPos=cursorPos or 0,
+			nabcc=config.conf["braille"]["expandAtCursor"]
+		)
+	else:
+		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
+			tableList,
+			text,
+			# liblouis mutates typeform if it is a list.
+			typeform=tuple(typeform) if isinstance(typeform, list) else typeform,
+			cursorPos=cursorPos or 0,
+			mode=mode
+		)
+	# nvdajp end
 	# liblouis gives us back a character string of cells, so convert it to a list of ints.
 	# For some reason, the highest bit is set, so only grab the lower 8 bits.
 	braille = [ord(cell) & 255 for cell in braille]
