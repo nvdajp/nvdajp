@@ -354,6 +354,14 @@ msgstr "完了"
 msgid "not specified"
 msgstr "情報なし"
 
+#. Translators: The status shown for an addon when its currently running in NVDA.
+msgid "Enabled"
+msgstr "有効"
+
+#. Translators: The status shown for an addon when its currently suspended do to addons being disabled.
+msgid "Disabled"
+msgstr "無効"
+
 # end of 2018.1 items
 
 #. Translators: Message to indicate User Account Control (UAC) or other secure desktop screen is active.
