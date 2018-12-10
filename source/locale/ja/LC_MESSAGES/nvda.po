@@ -277,7 +277,7 @@ msgstr "{summary} {version} は現在のバージョンの NVDA と互換性が�
 "このアドオンのインストールは推奨されません。\n"
 "\n"
 "本当にこのアドオンをインストールしますか？\n"
-"信用できる開発元が配布するアドオンだけをインストールしてください。\n"
+"信頼できる配布元のアドオンだけをインストールしてください。\n"
 
 #. Translators: A message asking the user to confirm that they are aware that this addon has not been tested.
 #: gui\addonGui.py:289
