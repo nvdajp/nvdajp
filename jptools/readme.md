@@ -6,7 +6,7 @@ NVDA日本語チーム 西本卓也
 ## ビルド環境準備とソースコード取得
 
 
-NVDA 2018.4jp-beta の場合
+NVDA jpalpha の場合
 
 
 ### (1) Windows 10 64ビット
@@ -270,7 +270,7 @@ GitHub repository:
 nvdajp/nvdajp
 
 Default branch:
-jpbeta
+alphajp
 
 Custom configulation .yml file name:
 appveyor-jp.yml
