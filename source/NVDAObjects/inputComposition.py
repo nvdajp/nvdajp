@@ -69,6 +69,9 @@ def needDiscriminantReading(gesture):
 			 win32con.VK_NONCONVERT, win32con.VK_ESCAPE,
 			 win32con.VK_TAB):
 		return True
+	# VK_RCONTROL
+	if (win32con.VK_CONTROL, True) in gesture.generalizedModifiers:
+		return True
 	return False
 
 lastCompositionText = None
