@@ -21,10 +21,10 @@ call jptools\setupMiscDepsJp.cmd
 
 python scons.py source user_docs launcher publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
-cd jptools
-call buildControllerClient.cmd
-@if not "%ERRORLEVEL%"=="0" goto onerror
-cd ..
+@rem cd jptools
+@rem call buildControllerClient.cmd
+@rem @if not "%ERRORLEVEL%"=="0" goto onerror
+@rem cd ..
 
 exit /b 0
 
