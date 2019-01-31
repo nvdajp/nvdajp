@@ -33,6 +33,8 @@ signtool verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 signtool verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
+signtool verify /pa dist\libArm64\%VERSION%\*.dll >> %VERIFYLOG%
+@if not "%ERRORLEVEL%"=="0" goto onerror
 signtool verify /pa dist\*.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 signtool verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
