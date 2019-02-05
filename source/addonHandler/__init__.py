@@ -245,6 +245,7 @@ class AddonError(Exception):
 
 import re
 RE_YEAR_MAJOR = re.compile(r'^201\d\.\d$')
+from six import text_type
 
 class AddonBase(object):
 	"""The base class for functionality that is available both for add-on bundles and add-ons on the file system.
@@ -261,14 +262,14 @@ class AddonBase(object):
 
 	@property
 	def minimumNVDAVersion(self):
-		if RE_YEAR_MAJOR.match(self.manifest.get('minimumNVDAVersion')):
-			return self.manifest.get('minimumNVDAVersion') + '.0'
+		if RE_YEAR_MAJOR.match(text_type(self.manifest.get('minimumNVDAVersion'))):
+			return text_type(self.manifest.get('minimumNVDAVersion')) + u'.0'
 		return self.manifest.get('minimumNVDAVersion')
 
 	@property
 	def lastTestedNVDAVersion(self):
-		if RE_YEAR_MAJOR.match(self.manifest.get('lastTestedNVDAVersion')):
-			return self.manifest.get('lastTestedNVDAVersion') + '.0'
+		if RE_YEAR_MAJOR.match(text_type(self.manifest.get('lastTestedNVDAVersion'))):
+			return text_type(self.manifest.get('lastTestedNVDAVersion')) + u'.0'
 		return self.manifest.get('lastTestedNVDAVersion')
 
 class Addon(AddonBase):
