@@ -243,10 +243,6 @@ def installAddonBundle(bundle):
 class AddonError(Exception):
 	""" Represents an exception coming from the addon subsystem. """
 
-import re
-RE_YEAR_MAJOR = re.compile(r'^201\d\.\d$')
-from six import text_type
-
 class AddonBase(object):
 	"""The base class for functionality that is available both for add-on bundles and add-ons on the file system.
 	Subclasses should at least implement L{manifest}.
@@ -262,14 +258,10 @@ class AddonBase(object):
 
 	@property
 	def minimumNVDAVersion(self):
-		if RE_YEAR_MAJOR.match(text_type(self.manifest.get('minimumNVDAVersion'))):
-			return text_type(self.manifest.get('minimumNVDAVersion')) + u'.0'
 		return self.manifest.get('minimumNVDAVersion')
 
 	@property
 	def lastTestedNVDAVersion(self):
-		if RE_YEAR_MAJOR.match(text_type(self.manifest.get('lastTestedNVDAVersion'))):
-			return text_type(self.manifest.get('lastTestedNVDAVersion')) + u'.0'
 		return self.manifest.get('lastTestedNVDAVersion')
 
 class Addon(AddonBase):
@@ -704,8 +696,14 @@ docFileName = string(default=None)
 		minRequiredVersion = self.get("minimumNVDAVersion")
 		return minRequiredVersion <= lastTested
 
+import re
+RE_YEAR_MAJOR = re.compile(r'^201\d\.\d$')
+from six import text_type
+
 def validate_apiVersionString(value):
 	from configobj.validate import ValidateError
+	if RE_YEAR_MAJOR.match(text_type(value)):
+		value = text_type(value) + u'.0'
 	if not isinstance(value, string_types):
 		raise ValidateError('Expected an apiVersion in the form of a string. EG "2019.1.0"')
 	try:
