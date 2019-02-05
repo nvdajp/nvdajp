@@ -256,12 +256,18 @@ class AddonBase(object):
 	def version(self):
 		return self.manifest['version']
 
+	import re
+	RE_YEAR_MAJOR = re.compile(r'^201\d\.\d$')
 	@property
 	def minimumNVDAVersion(self):
+		if RE_YEAR_MAJOR.match(self.manifest.get('minimumNVDAVersion')):
+			return self.manifest.get('minimumNVDAVersion') + '.0'
 		return self.manifest.get('minimumNVDAVersion')
 
 	@property
 	def lastTestedNVDAVersion(self):
+		if RE_YEAR_MAJOR.match(self.manifest.get('lastTestedNVDAVersion')):
+			return self.manifest.get('lastTestedNVDAVersion') + '.0'
 		return self.manifest.get('lastTestedNVDAVersion')
 
 class Addon(AddonBase):
