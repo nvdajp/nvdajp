@@ -243,6 +243,9 @@ def installAddonBundle(bundle):
 class AddonError(Exception):
 	""" Represents an exception coming from the addon subsystem. """
 
+import re
+RE_YEAR_MAJOR = re.compile(r'^201\d\.\d$')
+
 class AddonBase(object):
 	"""The base class for functionality that is available both for add-on bundles and add-ons on the file system.
 	Subclasses should at least implement L{manifest}.
@@ -256,8 +259,6 @@ class AddonBase(object):
 	def version(self):
 		return self.manifest['version']
 
-	import re
-	RE_YEAR_MAJOR = re.compile(r'^201\d\.\d$')
 	@property
 	def minimumNVDAVersion(self):
 		if RE_YEAR_MAJOR.match(self.manifest.get('minimumNVDAVersion')):
