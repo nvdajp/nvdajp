@@ -352,12 +352,11 @@ class ConfigManager(object):
 	#: Sections that only apply to the base configuration;
 	#: i.e. they cannot be overridden in profiles.
 	BASE_ONLY_SECTIONS = {
-		"UIA",
-		"general", 
-		"update", 
-		"upgrade",
-		"development",
-	}
+	"general", 
+	"update", 
+	"upgrade",
+	"development",
+}
 
 	def __init__(self):
 		self.spec = confspec
