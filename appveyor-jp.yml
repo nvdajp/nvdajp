@@ -33,6 +33,11 @@ build_script:
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
  - ps: |
+    $apiVersion = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
+    echo apiversion: $apiVersion
+    $apiCompatTo = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
+    echo apiBackCompatTo: $apiCompatTo
+ - ps: |
      $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\kcCertAllBuild.cmd %sconsArgs%'
