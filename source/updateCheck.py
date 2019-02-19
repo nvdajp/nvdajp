@@ -552,7 +552,7 @@ class UpdateDownloader(object):
 		self.urls = updateInfo["launcherUrl"].split(" ")
 		self.version = updateInfo["version"]
 		self.apiVersion = getAPIVersionTupleFromString(updateInfo.get("apiVersion", "0.0.0"))
-		self.backCompatToAPIVersion = getAPIVersionTupleFromString(updateInfo["apiCompatTo"])
+		self.backCompatToAPIVersion = getAPIVersionTupleFromString(updateInfo.get("apiCompatTo", "0.0.0"))
 		self.versionTuple = None
 		self.fileHash = updateInfo.get("launcherHash")
 		self.destPath = tempfile.mktemp(prefix="nvda_update_", suffix=".exe")
