@@ -21,8 +21,6 @@ import synthDrivers
 _curSynth=None
 _audioOutputDevice=None
 
-DEFAULT_DRIVER='nvdajp_jtalk' # nvdajp changed from 'espeak'
-
 def initialize():
 	config.addConfigDirsToPythonPackagePath(synthDrivers)
 	config.post_configProfileSwitch.register(handlePostConfigProfileSwitch)
@@ -87,6 +85,14 @@ def getSynthInstance(name):
 		newSynth.saveSettings() #save defaults
 	return newSynth
 
+# The synthDrivers that should be used by default.
+# The first that successfully initializes will be used when config is set to auto (I.e. new installs of NVDA).
+# nvdajp changed from ['espeak','silence']
+defaultSynthPriorityList=['nvdajp_jtalk','espeak','silence']
+if winVersion.winVersion.major>=10:
+	# Default to OneCore on Windows 10 and above
+	defaultSynthPriorityList.insert(0,'oneCore')
+
 def setSynth(name,isFallback=False):
 	global _curSynth,_audioOutputDevice
 	if name is None: 
@@ -94,8 +100,7 @@ def setSynth(name,isFallback=False):
 		_curSynth=None
 		return True
 	if name=='auto':
-		# Default to OneCore on Windows 10 and above, and eSpeak on previous Operating Systems
-		name='oneCore' if winVersion.winVersion.major>=10 else DEFAULT_DRIVER
+		name=defaultSynthPriorityList[0]
 	if _curSynth:
 		_curSynth.cancel()
 		_curSynth.terminate()
@@ -112,12 +117,19 @@ def setSynth(name,isFallback=False):
 		return True
 	except:
 		log.error("setSynth", exc_info=True)
+		# As there was an error loading this synth:
 		if prevSynthName:
+			# There was a previous synthesizer, so switch back to that one. 
 			setSynth(prevSynthName,isFallback=True)
-		elif name not in (DEFAULT_DRIVER,'silence'):
-			setSynth(DEFAULT_DRIVER,isFallback=True)
-		elif name==DEFAULT_DRIVER:
-			setSynth('silence',isFallback=True)
+		else:
+			# There was no previous synth, so fallback to the next available default synthesizer that has not been tried yet.
+			try:
+				nextIndex=defaultSynthPriorityList.index(name)+1
+			except ValueError:
+				nextIndex=0
+			if nextIndex<len(defaultSynthPriorityList):
+				newName=defaultSynthPriorityList[nextIndex]
+				setSynth(newName,isFallback=True)
 		return False
 
 def handlePostConfigProfileSwitch():
