@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-21 04:38+1000\n"
-"PO-Revision-Date: 2019-02-21 15:16+0900\n"
+"PO-Revision-Date: 2019-02-22 09:50+0900\n"
 "Last-Translator: Takuya Nishimoto <nishimotz@gmail.com>\n"
 "Language-Team: NVDA Japanese Team <nishimotz@gmail.com>\n"
 "Language: ja\n"
@@ -206,163 +206,6 @@ msgid "User Guide"
 msgstr "ユーザーガイド(&U)"
 
 # end of nvdajp
-
-# 2018.1 items
-
-#. Translators: A message indicating that some add-ons will be disabled unless reviewed before installation.
-#: updateCheck.py:329 gui\installerGui.py:113
-msgid ""
-"\n"
-"\n"
-"However, your NVDA configuration contains add-ons that are not tested with "
-"this version of NVDA. These add-ons will be disabled after installation. If "
-"you rely on these add-ons, please review the list to manually enable them "
-"before installation."
-msgstr ""
-"\n"
-"\n"
-"この NVDA に対応していないアドオンが使われている可能性があります。\n"
-"新しい NVDA に対応していないアドオンは、 NVDA をインストールすると無効になります。\n"
-"使用しているアドオンを無効にしたくない場合は、インストールを実行する前に\n"
-"アドオンの互換性の確認を実行して、可能な場合は手動でアドオンを有効にしてください。"
-
-#: updateCheck.py:450
-msgid ""
-"\n"
-"However, your NVDA configuration contains add-ons that are not tested with "
-"this version of NVDA. These add-ons will be disabled after installation. If "
-"you rely on these add-ons, please review the list to manually enable them "
-"before installation."
-msgstr ""
-"\n"
-"この NVDA に対応していないアドオンが使われている可能性があります。\n"
-"新しい NVDA に対応していないアドオンは、 NVDA をインストールすると無効になります。\n"
-"使用しているアドオンを無効にしたくない場合は、インストールを実行する前に\n"
-"アドオンの互換性の確認を実行して、可能な場合は手動でアドオンを有効にしてください。"
-
-#. Translators: A message to confirm that the user understands that addons that have not been reviewed and made
-#. available, will be disabled after installation.
-#: updateCheck.py:338 updateCheck.py:469 gui\installerGui.py:134
-msgid "I understand that these untested add-ons will be disabled"
-msgstr "新しい NVDA に対応していないアドオンが無効になることを理解しました"
-
-#. Translators: The label of a button to review add-ons prior to NVDA update.
-#. Translators: The label of a button to launch the add-on compatibility review dialog.
-#: updateCheck.py:345 updateCheck.py:475 gui\installerGui.py:175
-msgid "&Review add-ons..."
-msgstr "アドオンの互換性の確認(&R)..."
-
-#. Translators: The label of a button in the Add-ons Manager to open the list of incompatible add-ons.
-#: gui\addonGui.py:214
-msgid "&Manage incompatible add-ons..."
-msgstr "アドオンの互換性の確認(&M)..."
-
-#: gui\addonGui.py:263
-msgid ""
-"Installation of {summary} {version} has been blocked. The minimum NVDA "
-"version required for this add-on is {minimumNVDAVersion}, your current NVDA "
-"version is {NVDAVersion}"
-msgstr "{summary} {version} のインストールを中止しました。\n"
-"このアドオンの最小要件は NVDA {minimumNVDAVersion} ですが、\n"
-"現在は NVDA {NVDAVersion} を使用しています。"
-
-#: gui\addonGui.py:283
-msgid ""
-"{summary} {version} has not been tested with this version of NVDA, "
-"installing this add-on is not recommended.\n"
-"\n"
-"Are you sure you want to install this add-on?\n"
-"Only install add-ons from trusted sources.\n"
-msgstr "{summary} {version} は現在のバージョンの NVDA と互換性がありません。\n"
-"このアドオンのインストールは推奨されません。\n"
-"\n"
-"本当にこのアドオンをインストールしますか？\n"
-"信頼できる配布元のアドオンだけをインストールしてください。\n"
-
-#. Translators: A message asking the user to confirm that they are aware that this addon has not been tested.
-#: gui\addonGui.py:289
-msgid ""
-"I understand that this add-on has not been tested with my version of NVDA"
-msgstr "このアドオンが現在のバージョンの NVDA と互換性がないことを理解しました"
-
-#. Translators: Title for message asking if the user really wishes to install an Addon.
-#: gui\addonGui.py:294
-msgid "Warning: Untested Add-on Installation"
-msgstr "注意: 互換性のないアドオンのインストール"
-
-#. Translators: The status shown for an addon when it's not considered compatible with this version of NVDA.
-#: gui\addonGui.py:436
-msgid "Incompatible"
-msgstr "互換性なし"
-
-#. Translators: The status shown for an addon when it's added to the whitelist.
-#: gui\addonGui.py:439
-msgid "Compatibility set manually"
-msgstr "手動で有効化"
-
-#. Translators: the minimum NVDA version part of the About Add-on information
-#: gui\addonGui.py:530
-msgid "Minimum required NVDA version: {version}"
-msgstr "最小要件の NVDA バージョン {version}"
-
-#. Translators: the last NVDA version tested part of the About Add-on information
-#: gui\addonGui.py:535
-msgid "Last NVDA version tested: {version}"
-msgstr "動作確認済みの NVDA バージョン {version}"
-
-#. Translators: The title of the Incompatible Addons Dialog
-#: gui\addonGui.py:646
-msgid "Incompatible Add-ons"
-msgstr "互換性のないアドオン"
-
-#: gui\addonGui.py:657
-msgid ""
-"The compatibility of the following add-ons is not known, they have not been "
-"tested against NVDA version {}. Please use the checkboxes to indicate add-"
-"ons that should remain available.\n"
-"\n"
-"Warning: Untested add-ons may cause instability while using NVDA. Please "
-"contact the add-on author for further assistance."
-msgstr "これらのアドオンの開発者は NVDA {} との互換性を確認していません。\n"
-"アドオンを無効にしたくない場合はチェックボックスをチェックしてください。\n"
-"注意: 互換性がないアドオンを使用すると NVDA の動作が不安定になる場合があります。\n"
-"アドオンの更新については、アドオンの開発者にご相談ください。"
-
-#. Translators: the label for the addons list in the addon selection dialog.
-#: gui\addonGui.py:666
-msgid "Untested add-ons"
-msgstr "互換性のないアドオン"
-
-#. Translators: The label for a column in add-ons list used to check / uncheck whether the add-on is manually set  compatible
-#: gui\addonGui.py:675
-msgid "Available"
-msgstr "有効にする"
-
-#. Translators: The label for a column in add-ons list used to identify the last version of NVDA
-#. this add-on has been tested with.
-#: gui\addonGui.py:682
-msgid "Last tested NVDA version"
-msgstr "動作確認済みの NVDA バージョン"
-
-#. Translators: The continue button on a NVDA dialog. This button will accept any changes and dismiss the dialog.
-#: gui\addonGui.py:687
-msgid "Continue"
-msgstr "完了"
-
-#. Translators: Displayed for add-ons in the incompatible add-ons dialog
-#. if the last tested NVDA version is not specified.
-msgid "not specified"
-msgstr "情報なし"
-
-#. Translators: The status shown for an addon when its currently running in NVDA.
-msgid "Enabled"
-msgstr "有効"
-
-#. Translators: The status shown for an addon when its currently suspended do to addons being disabled.
-msgid "Disabled"
-msgstr "無効"
-
-# end of 2018.1 items
 
 #. Translators: Message to indicate User Account Control (UAC) or other secure desktop screen is active.
 msgid "Secure Desktop"
@@ -11408,15 +11251,3 @@ msgstr "2行の行間"
 #. Translators: a message when switching to 1.5 line spaceing  in Microsoft word
 msgid "1.5 line spacing"
 msgstr "1.5行の行間"
-
-#~ msgid "remove"
-#~ msgstr "削除"
-
-#~ msgid ""
-#~ "For the new language to take effect, the configuration must be saved and "
-#~ "NVDA must be restarted. Press enter to save and restart NVDA, or cancel "
-#~ "to manually save and exit at a later time."
-#~ msgstr ""
-#~ "新しい言語設定での読み上げを有効にするには、設定情報を保存しNVDAを再起動す"
-#~ "る必要があります。エンターキーを押して設定情報を保存しNVDAを再起動するか、"
-#~ "キャンセルして手動で設定を保存しNVDAを再起動してください。"
