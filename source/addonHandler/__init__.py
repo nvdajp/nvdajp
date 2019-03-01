@@ -657,7 +657,8 @@ docFileName = string(default=None)
 # Eg: 2019.1.0 or 0.0.0
 # Must have 3 integers separated by dots.
 # The first integer must be a Year (4 characters)
-# "0.0.0" is also valid
+# "0.0.0" is also valid.
+# The final integer can be left out, and in that case will default to 0. E.g. 2019.1
 
 """))
 
@@ -696,14 +697,8 @@ docFileName = string(default=None)
 		minRequiredVersion = self.get("minimumNVDAVersion")
 		return minRequiredVersion <= lastTested
 
-import re
-RE_YEAR_MAJOR = re.compile(r'^201\d\.\d$')
-from six import text_type
-
 def validate_apiVersionString(value):
 	from configobj.validate import ValidateError
-	if RE_YEAR_MAJOR.match(text_type(value)):
-		value = text_type(value) + u'.0'
 	if not isinstance(value, string_types):
 		raise ValidateError('Expected an apiVersion in the form of a string. EG "2019.1.0"')
 	try:
