@@ -246,25 +246,10 @@ msgstr ""
 msgid "I understand that these untested add-ons will be disabled"
 msgstr "新しい NVDA に対応していないアドオンが無効になることを理解しました"
 
-#. Translators: The label of a button to review add-ons prior to NVDA update.
-#. Translators: The label of a button to launch the add-on compatibility review dialog.
-#: updateCheck.py:345 updateCheck.py:475 gui\installerGui.py:175
-msgid "&Review add-ons..."
-msgstr "アドオンの互換性の確認(&R)..."
-
 #. Translators: The label of a button in the Add-ons Manager to open the list of incompatible add-ons.
 #: gui\addonGui.py:214
 msgid "&Manage incompatible add-ons..."
 msgstr "アドオンの互換性の確認(&M)..."
-
-#: gui\addonGui.py:263
-msgid ""
-"Installation of {summary} {version} has been blocked. The minimum NVDA "
-"version required for this add-on is {minimumNVDAVersion}, your current NVDA "
-"version is {NVDAVersion}"
-msgstr "{summary} {version} のインストールを中止しました。\n"
-"このアドオンの最小要件は NVDA {minimumNVDAVersion} ですが、\n"
-"現在は NVDA {NVDAVersion} を使用しています。"
 
 #: gui\addonGui.py:283
 msgid ""
@@ -290,11 +275,6 @@ msgstr "このアドオンが現在のバージョンの NVDA と互換性がな
 msgid "Warning: Untested Add-on Installation"
 msgstr "注意: 互換性のないアドオンのインストール"
 
-#. Translators: The status shown for an addon when it's not considered compatible with this version of NVDA.
-#: gui\addonGui.py:436
-msgid "Incompatible"
-msgstr "互換性なし"
-
 #. Translators: The status shown for an addon when it's added to the whitelist.
 #: gui\addonGui.py:439
 msgid "Compatibility set manually"
@@ -309,11 +289,6 @@ msgstr "最小要件の NVDA バージョン {version}"
 #: gui\addonGui.py:535
 msgid "Last NVDA version tested: {version}"
 msgstr "動作確認済みの NVDA バージョン {version}"
-
-#. Translators: The title of the Incompatible Addons Dialog
-#: gui\addonGui.py:646
-msgid "Incompatible Add-ons"
-msgstr "互換性のないアドオン"
 
 #: gui\addonGui.py:657
 msgid ""
@@ -353,14 +328,6 @@ msgstr "完了"
 #. if the last tested NVDA version is not specified.
 msgid "not specified"
 msgstr "情報なし"
-
-#. Translators: The status shown for an addon when its currently running in NVDA.
-msgid "Enabled"
-msgstr "有効"
-
-#. Translators: The status shown for an addon when its currently suspended do to addons being disabled.
-msgid "Disabled"
-msgstr "無効"
 
 # end of 2018.1 items
 
