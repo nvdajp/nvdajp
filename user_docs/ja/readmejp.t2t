@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2019年2月7日
+- 最終更新日：2019年3月15日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -826,6 +826,12 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 + バージョンごとの変更点 +
+
+++ 2019.1jp の変更点 ++
+
+- [本家版 2019.1 の変更点と翻訳 https://github.com/nvdajp/nvdajp/milestone/17?closed=1]
+- [2019.1jp の変更点 https://github.com/nvdajp/nvdajp/milestone/18?closed=1]
+
 
 ++ 2018.4jp の変更点 ++
 
