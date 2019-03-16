@@ -92,7 +92,10 @@ class SynthDriver(SynthDriver):
 			elif isinstance(item,speech.LangChangeCommand):
 				if langChanged:
 					textList.append("</voice>")
-				textList.append("<voice xml:lang=\"%s\">"%(item.lang if item.lang else defaultLanguage).replace('_','-'))
+				l = (item.lang if item.lang else defaultLanguage).replace('_','-')
+				if l[:2] == 'ja':
+					l = 'en-us'
+				textList.append("<voice xml:lang=\"%s\">" % l)
 				langChanged=True
 			elif isinstance(item,speech.BreakCommand):
 				textList.append('<break time="%dms" />' % item.time)
