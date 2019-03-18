@@ -92,7 +92,10 @@ class SynthDriver(SynthDriver):
 			elif isinstance(item,speech.LangChangeCommand):
 				if langChanged:
 					textList.append("</voice>")
-				textList.append("<voice xml:lang=\"%s\">"%(item.lang if item.lang else defaultLanguage).replace('_','-'))
+				l = (item.lang if item.lang else defaultLanguage).replace('_','-')
+				if l[:2] == 'ja':
+					l = 'en-us'
+				textList.append("<voice xml:lang=\"%s\">" % l)
 				langChanged=True
 			elif isinstance(item,speech.BreakCommand):
 				textList.append('<break time="%dms" />' % item.time)
@@ -195,6 +198,9 @@ class SynthDriver(SynthDriver):
 		voices=OrderedDict()
 		for v in _espeak.getVoiceList():
 			l=v.languages[1:]
+			# do not use Japanese voice
+			if l[:2] == 'ja':
+				continue
 			# #7167: Some languages names contain unicode characters EG: Norwegian Bokmål
 			name=v.name.decode("UTF-8")
 			# #5783: For backwards compatibility, voice identifies should always be lowercase
