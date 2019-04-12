@@ -41,3 +41,5 @@ https://github.com/nvaccess/nvda/wiki/Github-issue-template-explanation-and-exam
 例：PC を再起動してもこの問題は再発する
 
 例：NVDA 日本語版 2018.1jp でも再現する
+
+#### 他のバージョンの NVDA と比較している場合はその結果
