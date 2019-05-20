@@ -38,6 +38,7 @@ build_script:
 before_test:
  # Manually grab pyscreeze 0.1.13 as latest release is completely broken.
  - py -m pip install pyscreeze==0.1.13
+ - py -m pip install pygetwindow==0.0.4
  - py -m pip install pyautogui==0.9.41
  - py -m pip install robotframework robotremoteserver nose
  - mkdir testOutput
