@@ -1110,12 +1110,12 @@ the NVDAObject for IAccessible
 		index=self.IA2Attributes.get('rowindex')
 		if index is None and isinstance(self.parent,IAccessible):
 			index=self.parent.IA2Attributes.get('rowindex')
+		if index is None:
+			raise NotImplementedError
 		try:
 			index=int(index)
 		except (ValueError,TypeError):
 			log.debugWarning("value %s is not an int"%index,exc_info=True)
-			index=None
-		if index is None:
 			raise NotImplementedError
 		return index
 
@@ -1159,12 +1159,12 @@ the NVDAObject for IAccessible
 
 	def _get_presentationalColumnNumber(self):
 		index=self.IA2Attributes.get('colindex')
+		if index is None:
+			raise NotImplementedError
 		try:
 			index=int(index)
 		except (ValueError,TypeError):
 			log.debugWarning("value %s is not an int"%index,exc_info=True)
-			index=None
-		if index is None:
 			raise NotImplementedError
 		return index
 
@@ -1188,12 +1188,12 @@ the NVDAObject for IAccessible
 
 	def _get_presentationalRowCount(self):
 		count=self.IA2Attributes.get('rowcount')
+		if count is None:
+			raise NotImplementedError
 		try:
 			count=int(count)
 		except (ValueError,TypeError):
 			log.debugWarning("value %s is not an int"%count,exc_info=True)
-			count=None
-		if count is None:
 			raise NotImplementedError
 		return count
 
@@ -1212,12 +1212,12 @@ the NVDAObject for IAccessible
 
 	def _get_presentationalColumnCount(self):
 		count=self.IA2Attributes.get('colcount')
+		if count is None:
+			raise NotImplementedError
 		try:
 			count=int(count)
 		except (ValueError,TypeError):
 			log.debugWarning("value %s is not an int"%count,exc_info=True)
-			count=None
-		if count is None:
 			raise NotImplementedError
 		return count
 
