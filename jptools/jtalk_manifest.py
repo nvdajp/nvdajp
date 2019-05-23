@@ -12,4 +12,6 @@ version = {nowdate}
 author = "Takuya Nishimoto <nishimotz@gmail.com>"
 description = "Japanese speech engine for NVDA, based on Open JTalk, MeCab and MMDAgent."
 url = http://www.nvda.jp/en/
+minimumNVDAVersion = 2014.1.0
+lastTestedNVDAVersion = 2019.3.0
 """.format(nowdate=args.nowdate))
