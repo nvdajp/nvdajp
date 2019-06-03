@@ -148,15 +148,11 @@ msgstr "クリア"
 
 #: settingDialogs.py:1442
 msgid "Katakana pitch change percentage"
-msgstr "カタカナの声の高さの変化(-100から100)"
+msgstr "カタカナのピッチ変更率(-100から100)"
 
 #: settingDialogs.py:1442
 msgid "Half shape pitch change percentage"
-msgstr "半角の声の高さの変化(-100から100)"
-
-#: settingDialogs.py:1442
-msgid "Full shape pitch change percentage"
-msgstr "全角の声の高さの変化(-100から100)"
+msgstr "半角のピッチ変更率(-100から100)"
 
 #: settingDialogs.py:1520
 msgid "Announce candidate number"
