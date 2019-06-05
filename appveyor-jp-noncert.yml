@@ -36,8 +36,8 @@ build_script:
  - cd ..
 
 before_test:
- - py -m pip install pygetwindow==0.0.4
- - py -m pip install robotframework robotremoteserver nose pyautogui
+ # install required packages
+ - py -m pip install -r tests/system/requirements.txt
  - mkdir testOutput
  - mkdir testOutput\unit
  - mkdir testOutput\system
