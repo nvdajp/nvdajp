@@ -24,7 +24,7 @@ with open(symbols, encoding='utf-8') as fp:
             fields = line.split('\t')
             if fields and fields[0] in cldrDict:
                 if fields[1] == 'ハート':
-                    print("symbols.dic:{} {} => {}".format(cnt, repr(fields), cldrDict[fields[0]]))
+                    print("symbols.dic:{} {} => {}".format(cnt+1, repr(fields), cldrDict[fields[0]]))
 
 
 characters = r"..\source\locale\ja\characters.dic"
@@ -36,7 +36,7 @@ with open(characters, encoding='utf-8') as fp:
             fields = line.split('\t')
             if fields and fields[0] in cldrDict:
                 if fields[2] == '[ハート]':
-                    print("characters.dic:{} {} => {}".format(cnt, repr(fields), cldrDict[fields[0]]))
+                    print("characters.dic:{} {} => {}".format(cnt+1, repr(fields), cldrDict[fields[0]]))
 
 
 characterDescriptions = r"..\source\locale\ja\characterDescriptions.dic"
@@ -47,5 +47,5 @@ with open(characterDescriptions, encoding='utf-8') as fp:
         if line and not line.startswith('#'):
             fields = line.split('\t')
             if fields and fields[0] in cldrDict:
-                print("characterDescriptions.dic:{} {} => {}".format(cnt, repr(fields), cldrDict[fields[0]]))
+                print("characterDescriptions.dic:{} {} => {}".format(cnt+1, repr(fields), cldrDict[fields[0]]))
 
