@@ -602,8 +602,8 @@ _	アンダーライン	some
 ❔	ハテナ	none
 ❕	ビックリ	none
 ❗	ビックリ	none
-❣	ハート	none
-❤	ハート	none
+❣	ハートノ ビックリ	none
+❤	アカイ ハート	none
 
 ❶	クロマル 1	none
 ❷	クロマル 2	none
@@ -1322,19 +1322,19 @@ _	アンダーライン	some
 💐	ハナタバ	none
 💑	カップル	none
 💒	ケッコンシキ	none
-💓	ハート	none
+💓	ドキドキスル ハート	none
 💔	ハートブレイク	none
-💕	ハート	none
-💖	ハート	none
-💗	ハート	none
-💘	ハート	none
-💙	ハート	none
-💚	ハート	none
-💛	ハート	none
-💜	ハート	none
-💝	ハート	none
-💞	ハート	none
-💟	ハート	none
+💕	フタツノ ハート	none
+💖	キラキラ ハート	none
+💗	オオキクナル ハート	none
+💘	ハートニ ヤ	none
+💙	アオイ ハート	none
+💚	ミドリノ ハート	none
+💛	キイロノ ハート	none
+💜	ムラサキノ ハート	none
+💝	ハートニ リボン	none
+💞	カイテンスル ハート	none
+💟	ハートデコ	none
 💠	カワイサ	none
 💡	デンキュウ	none
 💢	イカリ	none
