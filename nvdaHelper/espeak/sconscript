@@ -40,7 +40,7 @@ if 'analyze' in env['nvdaHelperDebugFlags']:
 	env.Append(CCFLAGS='/analyze-')
 
 # Ignore all warnings as the code is not ours
-env.Append(CCFLAGS='/W0')
+env.Replace(CCFLAGS='/W0')
 
 # tr_languages.c should compile on environments such as Japanese Windows
 env.Append(CCFLAGS='/utf-8')
