@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-31 00:10+1000\n"
-"PO-Revision-Date: 2019-06-01 19:36+0530\n"
+"POT-Creation-Date: 2019-06-14 00:10+1000\n"
+"PO-Revision-Date: 2019-06-15 11:35+0530\n"
 "Last-Translator: DINAKAR T.D. <td.dinkar@gmail.com>\n"
 "Language-Team: DINAKAR T.D. <td.dinkar@gmail.com>\n"
 "Language: ta\n"
@@ -3339,15 +3339,15 @@ msgstr "வரி எண்களை அறிவிக்கும் வசத
 
 #. Translators: A message reported when cycling through line indentation settings.
 msgid "Report line indentation with speech"
-msgstr "பேச்சைக் கொண்டு வரியோரச் சீர்மையை அறிவிக்கவும் "
+msgstr "பேச்சைக் கொண்டு வரியோரச் சீர்மையை அறிவித்திடுக "
 
 #. Translators: A message reported when cycling through line indentation settings.
 msgid "Report line indentation with tones"
-msgstr "ஒலிகளைக் கொண்டு வரியோரச் சீர்மையை அறிவிக்கவும்"
+msgstr "ஒலிகளைக் கொண்டு வரியோரச் சீர்மையை அறிவித்திடுக"
 
 #. Translators: A message reported when cycling through line indentation settings.
 msgid "Report line indentation with speech and tones"
-msgstr "பேச்சையும் ஒலிகளையும் கொண்டு வரியோரச் சீர்மையை அறிவிக்கவும்"
+msgstr "பேச்சையும் ஒலிகளையும் கொண்டு வரியோரச் சீர்மையை அறிவித்திடுக"
 
 #. Translators: A message reported when cycling through line indentation settings.
 msgid "Report line indentation off"
@@ -4064,7 +4064,7 @@ msgstr ""
 #. Translators: presented when toggled.
 msgid "Automatically set system focus to focusable elements on"
 msgstr ""
-"குவிமையத்திற்குள் கொண்டுவரக் கூடிய கூறுகளுக்கு கணினிக் குவிமையத்தை தானாக அமைக்கவும்"
+"குவிமையத்திற்குள் கொண்டுவரக் கூடிய கூறுகளுக்கு கணினிக் குவிமையத்தை தானாக அமைத்திடுக"
 
 #. Translators: Input help mode message for toggle auto focus focusable elements command.
 msgid ""
@@ -4258,7 +4258,7 @@ msgstr "பிரெயில் குவிமைய சூழலளிக்�
 
 #. Translators: Input help mode message for toggle braille focus context presentation command.
 msgid "Toggle the way context information is presented in braille"
-msgstr "சூழலுணர்த்தும் தகவல் பிரெயிலில் காட்டப்படும் விதத்தை மாற்றியமைக்கவும்"
+msgstr "சூழலுணர்த்தும் தகவல் பிரெயிலில் காட்டப்படும் விதத்தை மாற்றியமைத்திடுக"
 
 #. Translators: The message announced when toggling the braille cursor.
 msgid "Braille cursor off"
@@ -7517,7 +7517,7 @@ msgstr "எச்.ஐ.டி. விசைப் பலகை ஒப்புச
 
 #. Translators: Description of the script that toggles HID keyboard simulation.
 msgid "Toggle HID keyboard simulation"
-msgstr "எச்.ஐ.டி. விசைப் பலகை ஒப்புச் செயலை மாற்றியமைக்கவும்"
+msgstr "எச்.ஐ.டி. விசைப் பலகை ஒப்புச் செயலை மாற்றியமைத்திடுக"
 
 #. Translators: Names of braille displays.
 msgid "Freedom Scientific Focus/PAC Mate series"
@@ -7546,7 +7546,7 @@ msgstr "பிரெயில் உள்ளீடு முடக்கப்�
 
 #. Translators: description of the script to toggle braille input
 msgid "Toggle braille input"
-msgstr "பிரெயில் உள்ளீட்டினை மாற்றியமைக்கவும்"
+msgstr "பிரெயில் உள்ளீட்டினை மாற்றியமைத்திடுக"
 
 #. Translators: The name of a series of braille displays.
 msgid "HIMS Braille Sense/Braille EDGE/Smart Beetle/Sync Braille series"
@@ -7832,14 +7832,14 @@ msgstr "எல்லா அமைப்புகளையும் சேமி�
 #. Translators: The label for the menu item to reset settings to default settings.
 #. Here, default settings means settings that were there when the user first used NVDA.
 msgid "&Reset configuration to factory defaults"
-msgstr "அமைவடிவத்தைத் தொழிற்சாலை இயல்பிற்கு மாற்றியமைக்கவும் (&R)"
+msgstr "அமைவடிவத்தைத் தொழிற்சாலை இயல்பிற்கு மாற்றியமைத்திடுக (&R)"
 
 msgid "Reset all settings to default state"
-msgstr "எல்லா அமைப்புகளையும் இயல்பிருப்பிற்கு மாற்றியமைக்கவும்"
+msgstr "எல்லா அமைப்புகளையும் இயல்பிருப்பிற்கு மாற்றியமைத்திடுக"
 
 #. Translators: The label for the menu item to save current settings.
 msgid "&Save configuration"
-msgstr "அமைவடிவத்தைச் சேமிக்கவும் (&S)"
+msgstr "அமைவடிவத்தைச் சேமித்திடுக (&S)"
 
 msgid "Write the current configuration to nvda.ini"
 msgstr "தற்போதைய அமைவடிவத்தை nvda.ini கோப்பில் எழுதுக"
@@ -8403,7 +8403,7 @@ msgstr "தற்போதைய பயன்பாடு %s"
 
 #. Translators: Displayed for the configuration profile trigger for say all.
 msgid "Say all"
-msgstr "எல்லாம் படிக்கவும்"
+msgstr "எல்லாம் படித்திடுக"
 
 #. Translators: An error displayed when saving configuration profile triggers fails.
 msgid ""
@@ -8675,7 +8675,7 @@ msgstr "புத்தாக்கம்\tF5 (&R)"
 
 #. Translators: The label for a menu item in NVDA log viewer to save log file.
 msgid "Save &as...\tCtrl+S"
-msgstr "இவ்வாறு சேமிக்கவும்...\tCtrl+S (&A)"
+msgstr "இவ்வாறு சேமித்திடுக...\tCtrl+S (&A)"
 
 #. Translators: The title of a menu in NVDA Log Viewer.
 msgid "Log"
@@ -8683,7 +8683,7 @@ msgstr "செயற்குறிப்பேடு"
 
 #. Translators: Label of a menu item in NVDA Log Viewer.
 msgid "Save As"
-msgstr "இவ்வாறு சேமிக்கவும்"
+msgstr "இவ்வாறு சேமித்திடுக"
 
 #. Translators: Dialog text presented when NVDA cannot save a log file.
 #, python-format
@@ -8733,7 +8733,7 @@ msgstr "மொழி (முழுமையாக செயற்பட, என�
 
 #. Translators: The label for a setting in general settings to save current configuration when NVDA exits (if it is not checked, user needs to save configuration before quitting NVDA).
 msgid "&Save configuration on exit"
-msgstr "வெளியேறும்பொழுது அமைவடிவத்தைச் சேமிக்கவும் (&S)"
+msgstr "வெளியேறும்பொழுது அமைவடிவத்தைச் சேமித்திடுக (&S)"
 
 #. Translators: The label for a setting in general settings to ask before quitting NVDA (if not checked, NVDA will exit without asking the user for action).
 msgid "Sho&w exit options when exiting NVDA"
@@ -8775,7 +8775,7 @@ msgstr "துவக்கப்படும்பொழுது காத்�
 #. Translators: The label of a checkbox in general settings to toggle allowing of usage stats gathering
 msgid "Allow the NVDA project to gather NVDA usage statistics"
 msgstr ""
-"என்விடிஏவின் பயன்பாட்டுப் புள்ளிவிவரங்களை சேகரிக்க என்விடிஏ திட்டப் பணியை அனுமதிக்கவும் "
+"என்விடிஏவின் பயன்பாட்டுப் புள்ளிவிவரங்களை சேகரிக்க என்விடிஏ திட்டப் பணியை அனுமதித்திடுக "
 
 msgid ""
 "Add-ons were detected in your user settings directory. Copying these to the "
@@ -8913,7 +8913,7 @@ msgid ""
 "and symbols"
 msgstr ""
 "வரியுருக்களையும், குறியெழுத்துகளையும் கையாளும்பொழுது முகவடிகள் உட்பட ஒருங்குறிக் "
-"கூட்டமைப்பின் தரவுகளைச் சேர்த்துக்கொள்ளவும்"
+"கூட்டமைப்பின் தரவுகளைச் சேர்த்துக்கொள்க"
 
 #. Translators: This is a label for a setting in voice settings (an edit box to change voice pitch for capital letters; the higher the value, the pitch will be higher).
 msgid "Capital pitch change percentage"
@@ -8966,7 +8966,7 @@ msgstr "உள்ளிடு விசை அழுத்தப்படும�
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
 msgid "Allow skim &reading in Say All"
-msgstr "எல்லாம் படிக்கும்பொழுது மேலோட்டப் படித்தலை அனுமதிக்கவும் (&R)"
+msgstr "எல்லாம் படிக்கும்பொழுது மேலோட்டப் படித்தலை அனுமதித்திடுக (&R)"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
@@ -8996,7 +8996,7 @@ msgstr "குறைந்தபட்சம் ஒரு விசையாவ�
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
 msgid "Report mouse &shape changes"
-msgstr "சொடுக்கியின் உருவ மாற்றங்களை அறிவிக்கவும் (&S)"
+msgstr "சொடுக்கியின் உருவ மாற்றங்களை அறிவித்திடுக (&S)"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
@@ -9011,7 +9011,8 @@ msgstr "உரைத் தொகுதியின் துல்லியம�
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
 msgid "Report &role when mouse enters object"
-msgstr "ஒரு பொருளின் ஊடாக சொடுக்கி நுழையும்பொழுது அப்பொருளின் வகையை அறிவிக்கவும் (&R)"
+msgstr ""
+"ஒரு பொருளின் ஊடாக சொடுக்கி நுழையும்பொழுது அப்பொருளின் வகையை அறிவித்திடுக (&R)"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
@@ -9059,12 +9060,12 @@ msgstr "உள்ளீடு இயற்றல்"
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
 msgid "Automatically report all available &candidates"
-msgstr "இருக்கும் எல்லாத் தேர்வெழுத்துகளையும் தானாக அறிவிக்கவும் (&C)"
+msgstr "இருக்கும் எல்லாத் தேர்வெழுத்துகளையும் தானாக அறிவித்திடுக (&C)"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
 msgid "Announce &selected candidate"
-msgstr "தெரிவாகியுள்ள தேர்வெழுத்தை அறிவிக்கவும் (&S)"
+msgstr "தெரிவாகியுள்ள தேர்வெழுத்தை அறிவித்திடுக (&S)"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
@@ -9076,12 +9077,12 @@ msgstr ""
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
 msgid "Report changes to the &reading string"
-msgstr "படிக்கும் சரத்தில் ஏற்படும் மாற்றங்களை அறிவிக்கவும் (&R)"
+msgstr "படிக்கும் சரத்தில் ஏற்படும் மாற்றங்களை அறிவித்திடுக (&R)"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
 msgid "Report changes to the &composition string"
-msgstr "இயற்றல் சரத்தில் ஏற்படும் மாற்றங்களை அறிவிக்கவும் (&C)"
+msgstr "இயற்றல் சரத்தில் ஏற்படும் மாற்றங்களை அறிவித்திடுக (&C)"
 
 #. Translators: This is the label for the object presentation panel.
 msgid "Object Presentation"
@@ -9108,32 +9109,32 @@ msgstr "பேசுக, சிற்றொலிகளை எழுப்பு
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
 msgid "Report &tooltips"
-msgstr "கருவிக் குறிப்புகளை அறிவிக்கவும் (&T)"
+msgstr "கருவிக் குறிப்புகளை அறிவித்திடுக (&T)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
 msgid "Report &notifications"
-msgstr "அறிவிக்கைகளை அறிவிக்கவும் (&N)"
+msgstr "அறிவிக்கைகளை அறிவித்திடுக (&N)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
 msgid "Report object shortcut &keys"
-msgstr "பொருளின் குறுக்கு விசைகளை அறிவிக்கவும் (&K)"
+msgstr "பொருளின் குறுக்கு விசைகளை அறிவித்திடுக (&K)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
 msgid "Report object &position information"
-msgstr "பொருள் நிலையின் தகவலை அறிவிக்கவும் (&P)"
+msgstr "பொருள் நிலையின் தகவலை அறிவித்திடுக (&P)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
 msgid "Guess object &position information when unavailable"
-msgstr "பொருள் நிலையின் தகவல் இல்லாதபொழுது அதை ஊகிக்கவும் (&P)"
+msgstr "பொருள் நிலையின் தகவல் இல்லாதபொழுது அதை ஊகித்திடுக (&P)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
 msgid "Report object &descriptions"
-msgstr "பொருள் விளக்கங்களை அறிவிக்கவும் (&D)"
+msgstr "பொருள் விளக்கங்களை அறிவித்திடுக (&D)"
 
 #. Translators: This is the label for a combobox in the
 #. object presentation settings panel.
@@ -9143,12 +9144,12 @@ msgstr "முன்னேற்றப் பட்டையின் வெள�
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
 msgid "Report background progress bars"
-msgstr "பின்னணி முன்னேற்றப்பட்டைகளின் இயக்கத்தை அறிவிக்கவும்"
+msgstr "பின்னணி முன்னேற்றப்பட்டைகளின் இயக்கத்தை அறிவித்திடுக"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
 msgid "Report dynamic &content changes"
-msgstr "ியங்குநிலை உள்ளடக்க மாற்றங்களை அறிவிக்கவும் (&C)"
+msgstr "ியங்குநிலை உள்ளடக்க மாற்றங்களை அறிவித்திடுக (&C)"
 
 #. Translators: This is the label for a combobox in the
 #. object presentation settings panel.
@@ -9182,7 +9183,7 @@ msgstr "ஆவணம் ஏற்றப்படும்பொழுது உ�
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
 msgid "Automatic &Say All on page load"
-msgstr "பக்கம் ஏற்றப்படும்பொழுது எல்லாவற்றையும் தானாகப் படிக்கவும் (&S)"
+msgstr "பக்கம் ஏற்றப்படும்பொழுது எல்லாவற்றையும் தானாகப் படித்திடுக (&S)"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
@@ -9207,7 +9208,7 @@ msgstr "குவிமைய நிலை, உலாவும் நிலை �
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
 msgid "&Trap all non-command gestures from reaching the document"
-msgstr "கட்டளைகள் அல்லாத எல்லா சைகைகளையும் ஆவணத்திற்குச் செல்லாமல் தடுக்கவும் (&T)"
+msgstr "கட்டளைகள் அல்லாத எல்லா சைகைகளையும் ஆவணத்திற்குச் செல்லாமல் தடுத்திடுக (&T)"
 
 #. Translators: This is the label for the document formatting panel.
 msgid "Document Formatting"
@@ -9394,7 +9395,7 @@ msgstr "சொடுக்கப்படக் கூடியது (&C)"
 #. document formatting settings panel.
 msgid "Report formatting changes after the cursor (can cause a lag)"
 msgstr ""
-"சுட்டிக்குப் பிறகு ஏற்படும் வடிவூட்ட மாற்றங்களை அறிவிக்கவும் (இது தேக்கத்தை ஏற்படுத்தலாம்)"
+"சுட்டிக்குப் பிறகு ஏற்படும் வடிவூட்ட மாற்றங்களை அறிவித்திடுக (இது தேக்கத்தை ஏற்படுத்தலாம்)"
 
 #. Translators: This is the label for the touch interaction settings panel.
 msgid "Touch Interaction"
@@ -9446,7 +9447,7 @@ msgstr ""
 #. Advanced settings panel.
 msgid "Automatically set system &focus to focusable elements"
 msgstr ""
-"குவிமையத்திற்குள் கொண்டுவரக் கூடிய கூறுகளுக்கு கணினிக் குவிமையத்தை தானாக அமைக்கவும் "
+"குவிமையத்திற்குள் கொண்டுவரக் கூடிய கூறுகளுக்கு கணினிக் குவிமையத்தை தானாக அமைத்திடுக "
 "(&F)"
 
 #. Translators: This is the label for a group of advanced options in the
@@ -9486,7 +9487,7 @@ msgstr ""
 "கீழ் கண்ட அமைப்புகள் மேம்பட்ட பயனர்களுக்காக மட்டுமே. இவ்வமைப்புகளை மாற்றியமைத்தால், என்விடிஏ "
 "சரிவர செயல்படாமலிருக்க வாய்ப்பிருக்கிறது. தாங்கள் என்ன செய்கிறீர்கள் என்பதை தாங்கள் "
 "முழுமையாக அறிந்திருந்தால், அல்லது என்விடிஏ மேம்படுத்துநர்களால் குறிப்பாக "
-"அறிவுருத்தப்பட்டிருந்தால் மட்டுமே இவ்வமைப்புகளை மாற்றியமைக்கவும். "
+"அறிவுருத்தப்பட்டிருந்தால் மட்டுமே இவ்வமைப்புகளை மாற்றியமைத்திடுக. "
 
 msgid ""
 "I understand that changing these settings may cause NVDA to function "
@@ -9495,7 +9496,7 @@ msgstr "இவ்வமைப்புகளை மாற்றியமைத�
 
 #. Translators: This is the label for a button in the Advanced settings panel
 msgid "Restore defaults"
-msgstr "இயல்பிருப்புகளை மீட்டமைக்கவும்"
+msgstr "இயல்பிருப்புகளை மீட்டமைத்திடுக"
 
 #. Translators: This is a label for an Entry Type radio button in add dictionary entry dialog.
 msgid "&Anywhere"
@@ -9650,11 +9651,11 @@ msgstr "பிரெயிலைக் கட்டுக (&R)"
 
 #. Translators: The label for a setting in braille settings to read by paragraph (if it is checked, the commands to move the display by lines moves the display by paragraphs instead).
 msgid "Read by &paragraph"
-msgstr "பத்தியாகப் படிக்கவும் (&P)"
+msgstr "பத்தியாகப் படித்திடுக (&P)"
 
 #. Translators: The label for a setting in braille settings to enable word wrap (try to avoid spliting words at the end of the braille display).
 msgid "Avoid splitting &words when possible"
-msgstr "இயலும் இடங்களில் சொற்களின் பிளவைத் தவிர்க்கவும் (&W)"
+msgstr "இயலும் இடங்களில் சொற்களின் பிளவைத் தவிர்த்திடுக (&W)"
 
 #. Translators: The label for a setting in braille settings to select how the context for the focus object should be presented on a braille display.
 msgid "Focus context presentation:"
@@ -9847,7 +9848,7 @@ msgstr ""
 msgid "Set row {rowNumber} column {columnNumber} as start of column headers"
 msgstr ""
 "{rowNumber} கிடைவரிசையையும் {columnNumber} நெடுவரிசையையும், நெடுவரிசை "
-"தலைப்புரையின் துவக்கமாக அமைக்கவும்"
+"தலைப்புரையின் துவக்கமாக அமைத்திடுக"
 
 #. Translators: a message reported in the SetColumnHeader script for Microsoft Word.
 #, python-brace-format
@@ -9886,7 +9887,7 @@ msgstr ""
 msgid "Set row {rowNumber} column {columnNumber} as start of row headers"
 msgstr ""
 "{rowNumber} கிடைவரிசையையும் {columnNumber} நெடுவரிசையையும், கிடைவரிசை "
-"தலைப்புரையின் துவக்கமாக அமைக்கவும்"
+"தலைப்புரையின் துவக்கமாக அமைத்திடுக"
 
 #. Translators: a message reported in the SetRowHeader script for Microsoft Word.
 #, python-brace-format
@@ -10810,7 +10811,7 @@ msgstr "{start} முதல் {end} வரை"
 #. Translators: a message reported in the SetColumnHeader script for Excel.
 #, python-brace-format
 msgid "Set {address} as start of column headers"
-msgstr "நெடுவரிசைத் தலைப்புரையின் துவக்கமாக {address}-ஐ அமைக்கவும்"
+msgstr "நெடுவரிசைத் தலைப்புரையின் துவக்கமாக {address}-ஐ அமைத்திடுக"
 
 #. Translators: a message reported in the SetColumnHeader script for Excel.
 #, python-brace-format
@@ -10840,7 +10841,7 @@ msgstr ""
 #. Translators: a message reported in the SetRowHeader script for Excel.
 #, python-brace-format
 msgid "Set {address} as start of row headers"
-msgstr "கிடைவரிசைத் தலைப்புரையின் துவக்கமாக {address}-ஐ அமைக்கவும்"
+msgstr "கிடைவரிசைத் தலைப்புரையின் துவக்கமாக {address}-ஐ அமைத்திடுக"
 
 #. Translators: a message reported in the SetRowHeader script for Excel.
 #, python-brace-format
