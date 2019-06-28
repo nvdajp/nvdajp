@@ -3,7 +3,7 @@
 A part of NonVisual Desktop Access (NVDA)
 This file is covered by the GNU General Public License.
 See the file COPYING for more details.
-Copyright (C) 2015-2017 Takuya Nishimoto
+Copyright (C) 2015-2019 Takuya Nishimoto
 
 
 copy Japanese character symbols to subversion repo
@@ -17,7 +17,7 @@ checkCharDesc.py
 character description consistency check
 
 > cd jpchar
-> python checkCharDesc.py
+> py -2 checkCharDesc.py
 
 
 checkSymbols.py
@@ -26,7 +26,7 @@ checkSymbols.py
 symbols consistency check
 
 > cd jpchar
-> python checkSymbols.py
+> py -2 checkSymbols.py
 
 
 updateCharDesc.py
@@ -35,7 +35,7 @@ updateCharDesc.py
 convert characters.dic to characterDescriptions.dic
 
 > cd jpchar
-> python updateCharDesc.py > newfile.dic
+> py -2 updateCharDesc.py > newfile.dic
 
 
 emoji.txt
