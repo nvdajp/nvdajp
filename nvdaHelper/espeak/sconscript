@@ -43,7 +43,7 @@ if 'analyze' in env['nvdaHelperDebugFlags']:
 env.Replace(CCFLAGS='/W0')
 
 # tr_languages.c should compile on environments such as Japanese Windows
-env.Append(CCFLAGS='/utf-8')
+env.Append(CCFLAGS=' /utf-8')
 
 env.Append(CPPPATH=['#nvdaHelper/espeak',espeakIncludeDir,espeakIncludeDir.Dir('compat'),sonicSrcDir,espeakSrcDir.Dir('ucd-tools/src/include')])
 
