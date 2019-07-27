@@ -33,6 +33,7 @@ build_script:
  - jptools\nonCertAllBuild.cmd %sconsArgs%
  - cd jptools
  - pack_jtalk_addon.cmd
+ - pack_kgs_addon.cmd
  - cd ..
 
 before_test:
