@@ -5,7 +5,7 @@
 #See the file COPYING for more details.
 #Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
-#Copyright (C) 2011-2017 Takuya Nishimoto
+#Copyright (C) 2011-2019 Takuya Nishimoto
 
 import braille
 import brailleInput
@@ -15,14 +15,18 @@ import time
 import tones
 import os
 from collections import OrderedDict
-import ctypes
 from ctypes import *
 from ctypes.wintypes import *
 import config
 from logHandler import log
 import sys
+if sys.version_info.major >= 3:
+	xrange = range
+	byte = lambda x: x.to_bytes(1, 'big')
+else:
+	byte = chr
 
-from kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir, processEvents, BMDRVS, KGS_DISPMODE, lock, unlock
+from .kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir, processEvents, BMDRVS, KGS_DISPMODE, lock, unlock
 
 fConnection = False
 numCells = 0
@@ -151,7 +155,7 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	return ret, Port
 
 def getKbdcName(hBrl):
-	if not hBrl.IsKbdcInstalled("Active KBDC"):
+	if not hBrl.IsKbdcInstalled(b"Active KBDC"):
 		log.warning("active kbdc not found")
 	#return u"ブレイルノート46C/46D".encode('shift-jis')
 	return u'\u30d6\u30ec\u30a4\u30eb\u30ce\u30fc\u30c846C/46D'.encode('shift-jis')
@@ -204,7 +208,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			execEndConnection = False
 			self.numCells = 0
 		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
-		self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
+		if sys.version_info.major <= 2:
+			kgs_dll = kgs_dll.encode('mbcs')
+		self._directBM = windll.LoadLibrary(kgs_dll)
 		if not self._directBM:
 			unlock()
 			raise RuntimeError("No KGS instance found")
@@ -258,7 +264,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	def display(self, data):
 		if not data: return
-		s = ''
+		s = b''
 		for c in data:
 			d = 0
 			if c & 0x01: d += 0x80
@@ -269,9 +275,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			if c & 0x20: d += 0x02
 			if c & 0x40: d += 0x10
 			if c & 0x80: d += 0x01
-			s += chr(d)
+			s += byte(d)
 		dataBuf   = create_string_buffer(s, 256)
-		cursorBuf = create_string_buffer('', 256)
+		cursorBuf = create_string_buffer(b'', 256)
 		try:
 			ret = self._directBM.bmDisplayData(dataBuf, cursorBuf, self.numCells)
 			log.debug("bmDisplayData %d" % ret)

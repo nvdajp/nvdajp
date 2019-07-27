@@ -5,7 +5,7 @@
 #See the file COPYING for more details.
 #Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
-#Copyright (C) 2011-2017 Takuya Nishimoto
+#Copyright (C) 2011-2019 Takuya Nishimoto
 
 import braille
 import brailleInput
@@ -15,19 +15,27 @@ import time
 import tones
 import os
 from collections import OrderedDict
-import ctypes
 from ctypes import *
 from ctypes.wintypes import *
 import config
 from logHandler import log
 import sys
-import _winreg
+if sys.version_info.major >= 3:
+	import winreg as _winreg
+	unicode = str
+	xrange = range
+	byte = lambda x: x.to_bytes(1, 'big')
+else:
+	byte = chr
+	import _winreg
 import itertools
 
 kgs_dir = "brailleDisplayDrivers"
-my_dir = unicode(os.path.dirname(__file__), "mbcs")
-if 'addons' in my_dir.split(os.sep):
-       kgs_dir = my_dir
+my_dir = os.path.dirname(__file__)
+if sys.version_info.major <= 2:
+	my_dir = my_dir.decode('mbcs')
+if 'brailleDisplayDrivers' in my_dir.split(os.sep):
+	kgs_dir = my_dir
 
 fConnection = False
 numCells = 0
@@ -193,7 +201,7 @@ def kgsListComPorts(preferSerial=False):
 						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
 						ports.append({
 							'friendlyName': u'USB: KGS BM-SMART USB Serial (%s)' % portName,
-							'hardwareID': ur'USB\VID_1148&PID_0301',
+							'hardwareID': u'USB\\VID_1148&PID_0301',
 							'port': unicode(portName)
 						})
 						usbPorts[portName] = True
@@ -220,7 +228,7 @@ def kgsListComPorts(preferSerial=False):
 						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
 						ports.append({
 							'friendlyName': u'USB: KGS USB To Serial Com Port (%s)' % portName,
-							'hardwareID': ur'USB\VID_1148&PID_0001',
+							'hardwareID': u'USB\\VID_1148&PID_0001',
 							'port': unicode(portName)
 						})
 						usbPorts[portName] = True
@@ -230,7 +238,7 @@ def kgsListComPorts(preferSerial=False):
 	# serial ports
 	for p in hwPortUtils.listComPorts(onlyAvailable=True):
 		if 'hardwareID' in p and p['hardwareID'].upper().startswith(u'BTHENUM'):
-			if p['hardwareID'].upper().startswith(ur'BTHENUM\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG'):
+			if p['hardwareID'].upper().startswith(u'BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG'):
 				log.info("skipping %s" % p['hardwareID'])
 				continue
 			else:
@@ -293,9 +301,9 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	return ret, Port
 
 def getKbdcName(hBrl):
-	if not hBrl.IsKbdcInstalled("Active KBDC"):
+	if not hBrl.IsKbdcInstalled(b"Active KBDC"):
 		log.warning("active kbdc not found")
-	return "Active BM"
+	return b"Active BM"
 
 def processEvents():
 	import api
@@ -360,7 +368,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			execEndConnection = False
 			self.numCells = 0
 		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
-		self._directBM = windll.LoadLibrary(kgs_dll.encode('mbcs'))
+		if sys.version_info.major <= 2:
+			kgs_dll = kgs_dll.encode('mbcs')
+		self._directBM = windll.LoadLibrary(kgs_dll)
 		if not self._directBM:
 			unlock()
 			raise RuntimeError("No KGS instance found")
@@ -415,7 +425,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	def display(self, data):
 		if not data: return
-		s = ''
+		s = b''
 		for c in data:
 			d = 0
 			if c & 0x01: d += 0x80
@@ -426,9 +436,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			if c & 0x20: d += 0x02
 			if c & 0x40: d += 0x10
 			if c & 0x80: d += 0x01
-			s += chr(d)
+			s += byte(d)
 		dataBuf   = create_string_buffer(s, 256)
-		cursorBuf = create_string_buffer('', 256)
+		cursorBuf = create_string_buffer(b'', 256)
 		try:
 			ret = self._directBM.bmDisplayData(dataBuf, cursorBuf, self.numCells)
 			log.debug("bmDisplayData %d" % ret)
