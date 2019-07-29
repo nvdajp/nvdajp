@@ -49,22 +49,22 @@ badUIAWindowClassNames=[
 	"ClockWndMain", # https://osdn.net/ticket/browse.php?group_id=4221&tid=32466
 	# UIA events of candidate window interfere with MSAA events.
 	"Microsoft.IME.CandidateWindow.View",
-	"SysTreeView32",
-	"WuDuiListView",
-	"ComboBox",
-	"msctls_progress32",
-	"Edit",
-	"CommonPlacesWrapperWndClass",
-	"SysMonthCal32",
-	"SUPERGRID", #Outlook 2010 message list
-	"RichEdit",
-	"RichEdit20",
-	"RICHEDIT50W",
-	"SysListView32",
-	"EXCEL7",
-	"Button",
-	# #8944: The Foxit UIA implementation is incomplete and should not be used for now.
-	"FoxitDocWnd",
+"SysTreeView32",
+"WuDuiListView",
+"ComboBox",
+"msctls_progress32",
+"Edit",
+"CommonPlacesWrapperWndClass",
+"SysMonthCal32",
+"SUPERGRID", #Outlook 2010 message list
+"RichEdit",
+"RichEdit20",
+"RICHEDIT50W",
+"SysListView32",
+"EXCEL7",
+"Button",
+# #8944: The Foxit UIA implementation is incomplete and should not be used for now.
+"FoxitDocWnd",
 ]
 
 # #8405: used to detect UIA dialogs prior to Windows 10 RS5.

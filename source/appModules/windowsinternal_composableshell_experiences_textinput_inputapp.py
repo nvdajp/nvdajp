@@ -30,13 +30,6 @@ class AppModule(appModuleHandler.AppModule):
 		# For consistent experience, report the new category first by traversing through controls.
 		# #8189: do not announce candidates list itself (not items), as this is repeated each time candidate items are selected.
 		if obj.UIAElement.cachedAutomationID == "CandidateList": return
-		if obj.UIAElement.cachedAutomationID in ("IME_Candidate_Window", "ExpandedCandidateList"):
-			return
-		if not obj.UIAElement.cachedClassName == "ListViewItem":
-			speech.cancelSpeech()
-		elif not obj.name[0] == "[":
-			# if not [tankanji]
-			return
 		speech.cancelSpeech()
 		# Sometimes, due to bad tree traversal or wrong item getting selected, something other than the selected item sees this event.
 		# Sometimes clipboard candidates list gets selected, so ask NvDA to descend one more level.
@@ -110,15 +103,6 @@ class AppModule(appModuleHandler.AppModule):
 	_emojiPanelJustOpened = False
 
 	def event_nameChange(self, obj, nextHandler):
-		if obj.UIAElement.cachedClassName == "ListViewItem":
-			return
-		if obj.UIAElement.cachedClassName == "TextBlock" and obj.UIAElement.cachedAutomationID == "KeyboardShortcutText":
-			return
-		if obj.UIAElement.cachedClassName == "pane" and obj.UIAElement.cachedAutomationID == "CandidateWindowControl":
-			return
-		if obj.UIAElement.cachedClassName == "Windows.UI.Core.CoreWindow":
-			# Microsoft Text Input Application
-			return
 		# On some systems, touch keyboard keys keeps firing name change event.
 		# In build 17704, whenever skin tones are selected, name change is fired by emoji entries (GridViewItem).
 		if ((obj.UIAElement.cachedClassName in ("CRootKey", "GridViewItem"))
