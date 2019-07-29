@@ -16,7 +16,13 @@ from logHandler import log
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 
 # from speech import re_last_pause
-re_last_pause=re.compile(ur"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)",re.DOTALL|re.UNICODE)
+s = "^(.*(?<=[^\\s.!?])[.!?][\\\"'" + u"\u201d\u2019" + ")]?(?:\\s+|$))(.*$)"
+import sys
+if sys.version_info.major <= 2:
+	s2 = ur"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)"
+	assert s == s2
+re_last_pause = re.compile(s, re.DOTALL | re.UNICODE)
+
 
 def getLongDesc(s):
 	try:
@@ -273,7 +279,7 @@ def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=
 def processHexCode(locale, msg):
 	if isJa(locale):
 		try:
-			msg = re.sub(r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x"+x.group(1),16)), unicode(msg))
+			msg = re.sub(r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x"+x.group(1),16)), text_type(msg))
 		except Exception as e:
 			log.debug(e)
 			pass

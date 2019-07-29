@@ -266,7 +266,6 @@ def handleInputCompositionEnd(result):
 			from NVDAObjects import inputComposition
 			gesture = inputComposition.lastKeyGesture
 			ctrl = (winUser.VK_CONTROL, False) in gesture.generalizedModifiers
-			import ui
 			if (gesture.vkCode == winUser.VK_ESCAPE) or \
 					ctrl and gesture.vkCode in (0x5A, 0xDB):
 				# Translators: a message when the IME cancelation status
@@ -403,7 +402,8 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	return 0
 
 def handleInputCandidateListUpdate(candidatesString,selectionIndex,inputMethod):
-	log.debug(u"(%s) (%s) (%s)" % (unicode(candidatesString).replace('\n','|'),str(selectionIndex),unicode(inputMethod)))
+	from six import text_type
+	log.debug(u"(%s) (%s) (%s)" % (text_type(candidatesString).replace('\n','|'),str(selectionIndex),text_type(inputMethod)))
 	candidateStrings=candidatesString.split('\n')
 	import speech
 	from NVDAObjects.inputComposition import InputComposition, CandidateList, CandidateItem

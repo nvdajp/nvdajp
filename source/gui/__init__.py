@@ -40,8 +40,11 @@ import brailleViewer #nvdajp
 import subprocess #nvdajp
 
 def openDocFile(basename):
-	b = unicode(basename, 'mbcs')
-	d = getDocFilePath(b + u".html")
+	if sys.version_info.major <= 2:
+		b = unicode(basename, 'mbcs')
+		d = getDocFilePath(b + u".html")
+	else:
+		d = getDocFilePath(basename + ".html")
 	if config.conf["language"]["openDocFileByMSHTA"]:
 		subprocess.Popen(["mshta.exe", d])
 	else:
