@@ -2,7 +2,7 @@ os: Visual Studio 2017
 version: "{branch}-{build}"
 
 environment:
- PY_PYTHON: 2.7-32
+ PY_PYTHON: 3.7-32
 
 clone_depth: 1
 
