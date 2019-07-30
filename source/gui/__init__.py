@@ -36,7 +36,7 @@ import winUser
 import api
 from . import guiHelper
 import winVersion
-import brailleViewer #nvdajp
+from . import brailleViewer #nvdajp
 import subprocess #nvdajp
 
 def openDocFile(basename):

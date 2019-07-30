@@ -17,10 +17,10 @@ RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 
 # from speech import re_last_pause
 s = "^(.*(?<=[^\\s.!?])[.!?][\\\"'" + u"\u201d\u2019" + ")]?(?:\\s+|$))(.*$)"
-import sys
-if sys.version_info.major <= 2:
-	s2 = ur"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)"
-	assert s == s2
+# import sys
+# if sys.version_info.major <= 2:
+# 	s2 = ur"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)"
+# 	assert s == s2
 re_last_pause = re.compile(s, re.DOTALL | re.UNICODE)
 
 
@@ -64,30 +64,30 @@ def isJa(locale=None):
 	return locale[:2] == 'ja'
 
 def isZenkakuHiragana(c):
-	return re.search(ur'[ぁ-ゞ]', c) is not None
+	return re.search('[ぁ-ゞ]', c) is not None
 
 def isZenkakuKatakana(c):
 	if c == u'ー':
 		return False
-	return re.search(ur'[ァ-ヾ]', c) is not None
+	return re.search('[ァ-ヾ]', c) is not None
 
 def isHankakuKatakana(c):
-	return re.search(ur'[ｦ-ﾝ｢｣､｡ｰ]', c) is not None
+	return re.search('[ｦ-ﾝ｢｣､｡ｰ]', c) is not None
 
 def isHalfShape(c):
 	return len(c) == 1 and (32 < ord(c)) and (ord(c) < 128)
 
 def isFullShapeAlphabet(c):
-	return re.search(ur'[ａ-ｚＡ-Ｚ]', c) is not None
+	return re.search('[ａ-ｚＡ-Ｚ]', c) is not None
 
 def isHalfShapeAlphabet(c):
-	return re.search(ur'[a-zA-Z]', c) is not None
+	return re.search('[a-zA-Z]', c) is not None
 
 def isFullShapeNumber(c):
-	return re.search(ur'[０-９]', c) is not None
+	return re.search('[０-９]', c) is not None
 
 def isHalfShapeNumber(c):
-	return re.search(ur'[0-9]', c) is not None
+	return re.search('[0-9]', c) is not None
 
 def isKanaCharacter(c):
 	return isZenkakuHiragana(c) or isZenkakuKatakana(c) or isHankakuKatakana(c)
@@ -99,7 +99,7 @@ def isFullShapeSymbol(c):
 	return c in u'　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜'
 
 def isUpper(c):
-	return (len(c) == 1) and (re.search(ur'[A-ZＡ-Ｚ]', c) is not None)
+	return (len(c) == 1) and (re.search('[A-ZＡ-Ｚ]', c) is not None)
 
 def replaceSpecialKanaCharacter(c):
 	if c in SPECIAL_KANA_CHARACTERS:
@@ -288,7 +288,7 @@ def processHexCode(locale, msg):
 def fixNewText(newText, isCandidate=False):
 	log.debug(newText)
 	if RE_HIRAGANA.match(newText):
-		newText = ''.join([unichr(ord(c) + 0x60) for c in newText])
+		newText = ''.join([chr(ord(c) + 0x60) for c in newText])
 		log.debug('convert hiragana to katakana: ' + newText)
 	if not isCandidate:
 		for c in FIX_NEW_TEXT_CHARS:

@@ -167,7 +167,7 @@ class EditableText(TextContainerObject,ScriptableObject):
 			t = i.text
 			if t:
 				o = ord(t[0])
- 				log.debug(repr([unit, t, ("%0x" % o)]))
+				log.debug(repr([unit, t, ("%0x" % o)]))
 		self._caretScriptPostMovedHelper(unit,gesture,newInfo)
 
 	def _get_caretMovementDetectionUsesEvents(self) -> bool:
