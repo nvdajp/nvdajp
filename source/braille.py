@@ -240,96 +240,6 @@ landmarkLabels = {
 	"region": pgettext("braille landmark abbreviation", "rgn"),
 }
 
-# nvdajp begin
-nabccRoleLabels = {
-	controlTypes.ROLE_WINDOW: "wnd",
-	controlTypes.ROLE_DIALOG: "dlg",
-	controlTypes.ROLE_CHECKBOX: "chk",
-	controlTypes.ROLE_RADIOBUTTON: "rbtn",
-	controlTypes.ROLE_EDITABLETEXT: "edt",
-	controlTypes.ROLE_BUTTON: "btn",
-	controlTypes.ROLE_MENUBAR: "mnubar",
-	controlTypes.ROLE_MENUITEM: "mnuitem",
-	controlTypes.ROLE_POPUPMENU: "mnu",
-	controlTypes.ROLE_COMBOBOX: "cbo",
-	controlTypes.ROLE_LIST: "lst",
-	controlTypes.ROLE_GRAPHIC: "gra",
-	controlTypes.ROLE_HELPBALLOON: "hlp",
-	controlTypes.ROLE_TOOLTIP: "tltip",
-	controlTypes.ROLE_LINK: "lnk",
-	controlTypes.ROLE_TREEVIEW: "tv",
-	controlTypes.ROLE_TREEVIEWITEM: "tvitem",
-	controlTypes.ROLE_TABCONTROL: "tabctl",
-	controlTypes.ROLE_PROGRESSBAR: "prgbar",
-	controlTypes.ROLE_SCROLLBAR: "scrlbar",
-	controlTypes.ROLE_STATUSBAR: "stbar",
-	controlTypes.ROLE_TABLE: "tbl",
-	controlTypes.ROLE_TOOLBAR: "tlbar",
-	controlTypes.ROLE_DROPDOWNBUTTON: "drbtn",
-	controlTypes.ROLE_SEPARATOR: u"⠤⠤⠤⠤⠤",
-	controlTypes.ROLE_BLOCKQUOTE: "bqt",
-	controlTypes.ROLE_DOCUMENT: "doc",
-	controlTypes.ROLE_APPLICATION: "app",
-	controlTypes.ROLE_GROUPING: "grp",
-	controlTypes.ROLE_EMBEDDEDOBJECT: "embedded",
-	controlTypes.ROLE_ENDNOTE: "enote",
-	controlTypes.ROLE_FOOTNOTE: "fnote",
-	controlTypes.ROLE_TERMINAL: "term",
-	controlTypes.ROLE_SECTION: "sect",
-	controlTypes.ROLE_TOGGLEBUTTON: "tgbtn",
-	controlTypes.ROLE_SPLITBUTTON: "splbtn",
-	controlTypes.ROLE_MENUBUTTON: "mnubtn",
-	controlTypes.ROLE_SPINBUTTON: "spnbtn",
-	controlTypes.ROLE_TREEVIEWBUTTON: "tvbtn",
-	controlTypes.ROLE_MENU: "mnu",
-	controlTypes.ROLE_PANEL: "pnl",
-	controlTypes.ROLE_PASSWORDEDIT: "pwdedt",
-	controlTypes.ROLE_DELETED_CONTENT: "del",
-	controlTypes.ROLE_INSERTED_CONTENT: "ins",
-}
-nabccPositiveStateLabels = {
-	controlTypes.STATE_SELECTED: "sel",
-	controlTypes.STATE_PRESSED: u"⢎⣿⡱",
-	controlTypes.STATE_CHECKED: u"⣏⣿⣹",
-	controlTypes.STATE_HALFCHECKED: u"⣏⣸⣹",
-	controlTypes.STATE_READONLY: "ro",
-	controlTypes.STATE_EXPANDED: "-",
-	controlTypes.STATE_COLLAPSED: "+",
-	controlTypes.STATE_HASPOPUP: "submnu",
-	controlTypes.STATE_PROTECTED: "***",
-	controlTypes.STATE_REQUIRED: "req",
-	controlTypes.STATE_INVALID_ENTRY: "invalid",
-	controlTypes.STATE_AUTOCOMPLETE: "...",
-	controlTypes.STATE_MULTILINE: "mln",
-	controlTypes.STATE_CLICKABLE: "clk",
-	controlTypes.STATE_SORTED_ASCENDING: "sorted asc",
-	controlTypes.STATE_SORTED_DESCENDING: "sorted desc",
-	controlTypes.STATE_HASLONGDESC: "ldesc",
-	controlTypes.STATE_HASFORMULA: "frml",
-	controlTypes.STATE_HASCOMMENT: "cmnt",
-}
-nabccNegativeStateLabels = {
-	controlTypes.STATE_SELECTED: "nsel",
-	controlTypes.STATE_PRESSED: u"⢎⣀⡱",
-	controlTypes.STATE_CHECKED: u"⣏⣀⣹",
-}
-nabccLandmarkLabels = {
-	"banner": "bnnr",
-	"complementary": "cmpl",
-	"contentinfo": "cinf",
-	"main": "main",
-	"navigation": "navi",
-	"search": "srch",
-	"form": "form",
-	"region": "rgn",
-}
-
-def _nvdajp(s):
-	if config.conf["braille"]["expandAtCursor"]:
-		return s
-	return _(s)
-# nvdajp end
-
 #: Cursor shapes
 CURSOR_SHAPES = (
 	# Translators: The description of a braille cursor shape.
@@ -560,18 +470,8 @@ class TextRegion(Region):
 def getBrailleTextForProperties(**propertyValues):
 	textList = []
 	name = propertyValues.get("name")
-	#nvdajp begin
-	#if name:
-	#	textList.append(name)
-	isComposition = True
-	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-		if name and name != _("Composition"):
-			isComposition = False
-			textList.append(name)
-	else:
-		if name:
-			textList.append(name)
-	#nvdajp end
+	if name:
+		textList.append(name)
 	role = propertyValues.get("role")
 	roleText = propertyValues.get("roleText")
 	states = propertyValues.get("states")
@@ -590,43 +490,25 @@ def getBrailleTextForProperties(**propertyValues):
 		if role == controlTypes.ROLE_HEADING and level:
 			# Translators: Displayed in braille for a heading with a level.
 			# %s is replaced with the level.
-			roleText = _nvdajp("h%s") % level
+			roleText = _("h%s") % level
 			level = None
 		elif role == controlTypes.ROLE_LINK and states and controlTypes.STATE_VISITED in states:
 			states = states.copy()
 			states.discard(controlTypes.STATE_VISITED)
 			# Translators: Displayed in braille for a link which has been visited.
-			roleText = _nvdajp("vlnk")
+			roleText = _("vlnk")
 		elif (name or cellCoordsText or rowNumber or columnNumber) and role in controlTypes.silentRolesOnFocus:
 			roleText = None
 		else:
-			# nvdajp begin
-			# roleText = roleLabels.get(role, controlTypes.roleLabels[role])
-			if config.conf["braille"]["expandAtCursor"]:
-				roleText = nabccRoleLabels.get(role, controlTypes.roleLabels[role])
-			else:
-				roleText = roleLabels.get(role, controlTypes.roleLabels[role])
-			# nvdajp end
-
+			roleText = roleLabels.get(role, controlTypes.roleLabels[role])
 	elif role is None: 
 		role = propertyValues.get("_role")
-	#nvdajp begin
-	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
-			isComposition and role == controlTypes.ROLE_EDITABLETEXT:
-		roleText = None
-	#nvdajp end
 	value = propertyValues.get("value")
 	if value and role not in controlTypes.silentValuesForRoles:
 		textList.append(value)
 	if states:
 		textList.extend(
-			#controlTypes.processAndLabelStates(role, states, controlTypes.REASON_FOCUS, states, None, positiveStateLabels, negativeStateLabels)
-			# nvdajp begin
-			controlTypes.processAndLabelStates(role, states, controlTypes.REASON_FOCUS, states, None,
-				nabccPositiveStateLabels if config.conf["braille"]["expandAtCursor"] else positiveStateLabels,
-				nabccNegativeStateLabels if config.conf["braille"]["expandAtCursor"] else negativeStateLabels
-			)
-			# nvdajp end
+			controlTypes.processAndLabelStates(role, states, controlTypes.REASON_FOCUS, states, None, positiveStateLabels, negativeStateLabels)
 		)
 	if roleText:
 		textList.append(roleText)
@@ -648,14 +530,6 @@ def getBrailleTextForProperties(**propertyValues):
 			# Translators: Displayed in braille when an object (e.g. a tree view item) has a hierarchical level.
 			# %s is replaced with the level.
 			textList.append(_('lv %s')%positionInfo['level'])
-	# nvdajp begin https://github.com/nvdajp/nvdajp/issues/109
-	rowHeaderText = propertyValues.get("rowHeaderText")
-	if rowHeaderText:
-		textList.append(rowHeaderText)
-	columnHeaderText = propertyValues.get("columnHeaderText")
-	if columnHeaderText:
-		textList.append(columnHeaderText)
-	# nvdajp end
 	if rowNumber:
 		if includeTableCellCoords and not cellCoordsText: 
 			if rowSpan>1:
@@ -668,10 +542,9 @@ def getBrailleTextForProperties(**propertyValues):
 				rowStr = _("r{rowNumber}").format(rowNumber=rowNumber)
 			textList.append(rowStr)
 	if columnNumber:
-		# nvdajp (moved to above) https://github.com/nvdajp/nvdajp/issues/109
-		#columnHeaderText = propertyValues.get("columnHeaderText")
-		#if columnHeaderText:
-		#	textList.append(columnHeaderText)
+		columnHeaderText = propertyValues.get("columnHeaderText")
+		if columnHeaderText:
+			textList.append(columnHeaderText)
 		if includeTableCellCoords and not cellCoordsText:
 			if columnSpan>1:
 				# Translators: Displayed in braille for the table cell column numbers when a cell spans multiple columns.
@@ -732,8 +605,6 @@ class NVDAObjectRegion(Region):
 			keyboardShortcut=obj.keyboardShortcut if presConfig["reportKeyboardShortcuts"] else None,
 			positionInfo=obj.positionInfo if presConfig["reportObjectPositionInformation"] else None,
 			cellCoordsText=obj.cellCoordsText if config.conf["documentFormatting"]["reportTableCellCoords"] else None,
-			columnHeaderText=obj.columnHeaderText if hasattr(obj, "columnHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"] else None,
-			rowHeaderText=obj.rowHeaderText if hasattr(obj, "rowHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"] else None,
 		)
 		if role == controlTypes.ROLE_MATH:
 			import mathPres
@@ -795,7 +666,6 @@ def getControlFieldBraille(info, field, ancestors, reportStart, formatConfig):
 		}
 		if reportTableHeaders:
 			props["columnHeaderText"] = field.get("table-columnheadertext")
-			props["rowHeaderText"] = field.get("table-rowheadertext")
 		return getBrailleTextForProperties(**props)
 
 	elif reportStart:
