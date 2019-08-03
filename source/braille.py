@@ -720,6 +720,18 @@ class NVDAObjectRegion(Region):
 		placeholderValue = obj.placeholder
 		if placeholderValue and not obj._isTextEmpty:
 			placeholderValue = None
+		columnHeaderText = None
+		try:
+			if hasattr(obj, "columnHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"]:
+				columnHeaderText = obj.columnHeaderText
+		except NotImplementedError:
+			pass
+		rowHeaderText = None
+		try:
+			if hasattr(obj, "rowHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"]:
+				rowHeaderText = obj.rowHeaderText
+		except NotImplementedError:
+			pass
 		text = getBrailleTextForProperties(
 			name=obj.name,
 			role=role,
@@ -732,8 +744,8 @@ class NVDAObjectRegion(Region):
 			keyboardShortcut=obj.keyboardShortcut if presConfig["reportKeyboardShortcuts"] else None,
 			positionInfo=obj.positionInfo if presConfig["reportObjectPositionInformation"] else None,
 			cellCoordsText=obj.cellCoordsText if config.conf["documentFormatting"]["reportTableCellCoords"] else None,
-			columnHeaderText=obj.columnHeaderText if hasattr(obj, "columnHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"] else None,
-			rowHeaderText=obj.rowHeaderText if hasattr(obj, "rowHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"] else None,
+			columnHeaderText=columnHeaderText,
+			rowHeaderText=rowHeaderText
 		)
 		if role == controlTypes.ROLE_MATH:
 			import mathPres

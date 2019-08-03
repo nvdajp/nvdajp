@@ -74,6 +74,7 @@ appModuleHandler.initialize()
 import braille
 # Disable auto detection of braille displays when unit testing.
 config.conf['braille']['display'] = "noBraille"
+config.conf['braille']['translationTable'] = "en-ueb-g1.ctb"
 braille.initialize()
 # For braille unit tests, we need to construct a fake braille display as well as enable the braille handler
 # Give the display 40 cells

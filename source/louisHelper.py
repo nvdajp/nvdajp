@@ -57,9 +57,12 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 	"""
 	text = inbuf.replace('\0','')
 	# nvdajp begin
-	if config.conf["braille"]["japaneseBrailleSupport"]:
-		log.debug(text)
+	try:
 		from synthDrivers.jtalk.translator2 import translate as jpTranslate
+	except ModuleNotFoundError:
+		jpTranslate = None
+	if jpTranslate and config.conf["braille"]["japaneseBrailleSupport"]:
+		log.debug(text)
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
 			text,
 			cursorPos=cursorPos or 0,
