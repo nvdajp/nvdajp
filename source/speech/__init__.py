@@ -1949,7 +1949,7 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 	for pos, item in enumerate(finalSpeechSequence):
 		if isinstance(item,SpeechCommand):
 			# preserve command
-			if isinstance(item,IndexCommand) or (isinstance(item,LangChangeCommand) and (item.lang is None or item.lang == 'ja')):
+			if isinstance(item,CallbackCommand) or isinstance(item,IndexCommand) or (isinstance(item,LangChangeCommand) and (item.lang is None or item.lang == 'ja')):
 				# allow order change of strings
 				pass
 			else:	     
