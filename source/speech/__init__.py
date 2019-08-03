@@ -30,6 +30,7 @@ import speechDictHandler
 import characterProcessing
 import languageHandler
 from .commands import *
+import jpUtils
 
 speechMode_off=0
 speechMode_beeps=1
@@ -79,6 +80,9 @@ def isBlank(text):
 RE_CONVERT_WHITESPACE = re.compile("[\0\r\n]")
 
 def processText(locale,text,symbolLevel):
+	#nvdajp begin
+	text = jpUtils.processHexCode(locale, text)
+	#nvdajp end
 	text = speechDictHandler.processText(text)
 	text = characterProcessing.processSpeechSymbols(locale, text, symbolLevel)
 	text = RE_CONVERT_WHITESPACE.sub(u" ", text)
@@ -146,6 +150,108 @@ def spellTextInfo(info,useCharacterDescriptions=False,priority=None):
 def speakSpelling(text, locale=None, useCharacterDescriptions=False,priority=None):
 	seq = list(getSpeechForSpelling(text, locale=locale, useCharacterDescriptions=useCharacterDescriptions))
 	speak(seq,priority=priority)
+
+import collections
+JpAttr = collections.namedtuple(
+	'JpAttr',
+	(
+		'jpZenkakuHiragana',
+		'jpZenkakuKatakana',
+		'jpHankakuKatakana',
+		'jpLatinCharacter',
+		'nonJpLatinCharacter',
+		'jpFullShapeAlphabet',
+		'nonJpFullShapeAlphabet',
+		'jpFullShapeSymbol',
+		'jpFullShape',
+		'halfShape',
+		'usePhoneticReadingLatin',
+		'usePhoneticReadingKana',
+	)
+)
+
+from jpUtils import isJa
+
+def getCharAttr(locale, char, useDetails):
+	"""
+	"""
+	_isJa = isJa(locale)
+	jpZenkakuHiragana = _isJa and jpUtils.isZenkakuHiragana(char)
+	jpZenkakuKatakana = _isJa and jpUtils.isZenkakuKatakana(char)
+	jpHankakuKatakana = _isJa and jpUtils.isHankakuKatakana(char)
+	jpLatinCharacter = _isJa and jpUtils.isLatinCharacter(char)
+	nonJpLatinCharacter = (not _isJa) and jpUtils.isLatinCharacter(char)
+	jpFullShapeAlphabet = _isJa and jpUtils.isFullShapeAlphabet(char)
+	nonJpFullShapeAlphabet = (not _isJa) and jpUtils.isFullShapeAlphabet(char)
+	jpFullShapeSymbol = _isJa and jpUtils.isFullShapeSymbol(char)
+	jpFullShape = jpFullShapeAlphabet or jpFullShapeSymbol
+	halfShape = _isJa and jpUtils.isHalfShape(char)
+	usePhoneticReadingLatin = useDetails and config.conf["language"]["jpPhoneticReadingLatin"]
+	usePhoneticReadingKana = useDetails and config.conf["language"]["jpPhoneticReadingKana"]
+	jpAttr = JpAttr(
+		jpZenkakuHiragana,
+		jpZenkakuKatakana,
+		jpHankakuKatakana,
+		jpLatinCharacter,
+		nonJpLatinCharacter,
+		jpFullShapeAlphabet,
+		nonJpFullShapeAlphabet,
+		jpFullShapeSymbol,
+		jpFullShape,
+		halfShape,
+		usePhoneticReadingLatin,
+		usePhoneticReadingKana,
+	)
+	return jpAttr
+
+def getCharDesc(locale, char, jpAttr):
+	"""
+	"""
+	if jpAttr.jpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
+		charDesc = (jpUtils.getShortDesc(char.lower()),)
+	elif jpAttr.nonJpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
+		charDesc = (char.lower(),)
+	elif jpAttr.nonJpFullShapeAlphabet and not jpAttr.usePhoneticReadingLatin:
+		charDesc = (unicodedata.normalize('NFKC', char.lower()),)
+	elif jpAttr.nonJpFullShapeAlphabet and jpAttr.usePhoneticReadingLatin:
+		charDesc = characterProcessing.getCharacterDescription(locale, unicodedata.normalize('NFKC', char.lower()))
+	elif (jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana) and not jpAttr.usePhoneticReadingKana:
+		charDesc = (jpUtils.getShortDesc(char),)
+	else:
+		charDesc = characterProcessing.getCharacterDescription(locale,char.lower())
+	log.debug(repr([locale, char, ("%0x" % jpUtils.getOrd(char)), charDesc]))
+	return charDesc
+
+def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
+	"""
+	"""
+	pitchChanged = False
+	oldPitch = None
+	if not synth.isSupported("pitch"):
+		return pitchChanged, oldPitch
+	if uppercase and synthConfig["capPitchChange"]:
+		oldPitch=synthConfig["pitch"]
+		synth.pitch=max(0,min(oldPitch+synthConfig["capPitchChange"],100))
+		pitchChanged = True
+	elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
+		oldPitch=synthConfig["pitch"]
+		synth.pitch=max(0,min(oldPitch+config.conf['language']['jpKatakanaPitchChange'],100))
+		pitchChanged = True
+	elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
+		oldPitch=synthConfig["pitch"]
+		synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
+		pitchChanged = True
+	elif jpAttr.halfShape and config.conf['language']['halfShapePitchChange']:
+		oldPitch=synthConfig["pitch"]
+		synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
+		pitchChanged = True
+	return pitchChanged, oldPitch
+
+def getJaCharAttrDetails(char, shouldSayCap):
+	r = jpUtils.getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
+	log.debug(repr(r))
+	return r
+
 
 def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False):
 	defaultLanguage=getCurrentLanguage()
@@ -502,6 +608,15 @@ def speak(speechSequence, symbolLevel=None, priority=None):
 		for item in speechSequence:
 			if isinstance(item, str):
 				speechViewer.appendText(item)
+	# nvdajp (Takuya Nishimoto + Masataka.Shinke)
+	from gui import brailleViewer
+	if brailleViewer.isActive:
+		s = ""
+		for item in speechSequence:
+			if isinstance(item, str):
+				s += item
+		if s: brailleViewer.appendText(s)
+	# nvdajp end
 	global beenCanceled
 	if speechMode==speechMode_off:
 		return
@@ -1800,9 +1915,11 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 		for index in range(len(speechSequence)-1,-1,-1): 
 			item=speechSequence[index]
 			if isinstance(item,str):
-				m=re_last_pause.match(item)
-				if m:
-					before,after=m.groups()
+				#m=re_last_pause.match(item)
+				#if m:
+				#	before,after=m.groups()
+				before, after = jpUtils.getLastPauseBeforeAndAfter(item)
+				if before or after:
 					if after:
 						pendingSpeechSequence.append(after)
 					if before:
@@ -1826,6 +1943,36 @@ def speakWithoutPauses(speechSequence,detectBreaks=True):
 		if pendingSpeechSequence:
 			pendingSpeechSequence.reverse()
 			speakWithoutPauses._pendingSpeechSequence.extend(pendingSpeechSequence)
+	# handle east-asian sentence ending
+	#log.info("before %r" % finalSpeechSequence)
+	currSentPos = None
+	for pos, item in enumerate(finalSpeechSequence):
+		if isinstance(item,SpeechCommand):
+			# preserve command
+			if isinstance(item,IndexCommand) or (isinstance(item,LangChangeCommand) and (item.lang is None or item.lang == 'ja')):
+				# allow order change of strings
+				pass
+			else:	     
+				# preserve order of strings and commands
+				currSentPos = None
+			continue
+		elif currSentPos is not None and jpUtils.shouldConnectForSayAll(finalSpeechSequence[currSentPos], item):
+			finalSpeechSequence[currSentPos] = finalSpeechSequence[currSentPos].rstrip('\n\r ') + item.lstrip('\n\r ')
+			#log.info("currSentPos[%d] %r (from %d)" % (currSentPos, finalSpeechSequence[currSentPos], pos))
+			finalSpeechSequence[pos] = ''
+		else:
+			currSentPos = pos
+			#log.info("pos %d (update currSentPos) %r" % (pos, item))
+	#log.info("finalSpeech %r" % finalSpeechSequence)
+	# remove \r
+	for pos, item in enumerate(finalSpeechSequence):
+		if isinstance(item,str):
+			finalSpeechSequence[pos] = finalSpeechSequence[pos].replace('\r', '')
+	#Scan the final speech sequence backwards
+	for item in reversed(finalSpeechSequence):
+		if isinstance(item,IndexCommand):
+			speakWithoutPauses._lastSentIndex=item.index
+			break
 	if finalSpeechSequence:
 		speak(finalSpeechSequence)
 		return True
