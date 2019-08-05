@@ -279,7 +279,7 @@ def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=
 def processHexCode(locale, msg):
 	if isJa(locale):
 		try:
-			msg = re.sub(r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x"+x.group(1),16)), text_type(msg))
+			msg = re.sub(r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x"+x.group(1),16)), str(msg))
 		except Exception as e:
 			log.debug(e)
 			pass
