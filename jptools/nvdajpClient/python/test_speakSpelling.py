@@ -11,6 +11,6 @@ res=clientLib.nvdaController_testIfRunning()
 if res!=0:
 	errorMessage=str(ctypes.WinError(res))
 	ctypes.windll.user32.MessageBoxW(0,u"Error: %s"%errorMessage,u"Error communicating with NVDA",0)
-for count in xrange(4):
+for count in range(4):
 	clientLib.nvdaController_speakSpelling(u"カタカナ ひらがな")
 	time.sleep(5)
