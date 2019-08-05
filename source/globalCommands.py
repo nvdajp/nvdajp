@@ -814,7 +814,10 @@ class GlobalCommands(ScriptableObject):
 			text=" ".join(textList)
 			if len(text)>0 and not text.isspace():
 				if scriptHandler.getLastScriptRepeatCount()==1:
-					speech.speakSpelling(text,useCharacterDescriptionMode=True)
+					if characterDescriptionMode:
+						speech.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
+					else:
+						speech.speakSpelling(text)
 				else:
 					if api.copyToClip(text):
 						# Translators: Indicates something has been copied to clipboard (example output: title text copied to clipboard).
@@ -1472,7 +1475,10 @@ class GlobalCommands(ScriptableObject):
 			if scriptHandler.getLastScriptRepeatCount()==0:
 				speech.speakObject(focusObject, reason=controlTypes.REASON_QUERY)
 			else:
-				speech.speakSpelling(focusObject.name,useCharacterDescriptionMode=True)
+				if characterDescriptionMode:
+					speech.speakSpelling(focusObject.name, useCharacterDescriptions=True, useDetails=True)
+				else:
+					speech.speakSpelling(focusObject.name)
 		else:
 			ui.message(_("No focus"))
 	# Translators: Input help mode message for report current focus command.
@@ -1511,7 +1517,10 @@ class GlobalCommands(ScriptableObject):
 				# Translators: Reported when status line exist, but is empty.
 				ui.message(_("no status bar information"))
 			else:
-				speech.speakSpelling(text,useCharacterDescriptionMode=True)
+				if characterDescriptionMode:
+					speech.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
+				else:
+					speech.speakSpelling(text)
 		else:
 			if not text.strip():
 				# Translators: Reported when user attempts to copy content of the empty status line.
@@ -1569,7 +1578,10 @@ class GlobalCommands(ScriptableObject):
 		if repeatCount==0:
 			ui.message(title)
 		elif repeatCount==1:
-			speech.speakSpelling(title,useCharacterDescriptionMode=True)
+			if characterDescriptionMode:
+				speech.speakSpelling(title, useCharacterDescriptions=True, useDetails=True)
+			else:
+				speech.speakSpelling(title)
 		else:
 			if api.copyToClip(title):
 				ui.message(_("%s copied to clipboard")%title)
