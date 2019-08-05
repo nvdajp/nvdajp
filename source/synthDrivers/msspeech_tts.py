@@ -6,12 +6,14 @@
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
 
-from mssp import SynthDriver
-from sapi5 import constants
-from logHandler import log
-import speech
-from jtalk import _nvdajp_spellchar
 import jpUtils
+import speech
+from logHandler import log
+
+from .jtalk import _nvdajp_spellchar
+from .mssp import SynthDriver
+from .sapi5 import constants
+
 
 class SynthDriver(SynthDriver):
 	COM_CLASS = "speech.SPVoice"
