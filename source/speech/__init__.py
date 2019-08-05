@@ -147,7 +147,10 @@ def spellTextInfo(info,useCharacterDescriptions=False,useDetails=False,priority=
 		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
 			curLanguage=field.field.get('language')
 
-def speakSpelling(text, locale=None, useCharacterDescriptions=False,useDetails=False,priority=None):
+def speakSpelling(text, locale=None, useCharacterDescriptions=False,useDetails=False,useCharacterDescriptionMode=False,priority=None):
+	from globalCommands import characterDescriptionMode
+	if useCharacterDescriptionMode and characterDescriptionMode:
+		useCharacterDescriptions = useDetails = True
 	seq = list(getSpeechForSpelling(text, locale=locale, useCharacterDescriptions=useCharacterDescriptions, useDetails=useDetails))
 	speak(seq,priority=priority)
 
