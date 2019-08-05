@@ -27,7 +27,7 @@ class SynthDriver(SynthDriver):
 		textList=[]
 		spellState = False
 		for item in speechSequence:
-			if isinstance(item,basestring):
+			if isinstance(item, str):
 				item=item.replace(u"NVDA", u'エヌブイディーエー')
 				item=item.replace(u"\u2022", '') # bullet
 				item=item.replace(u"\uf0b7", '') # bullet

@@ -43,7 +43,7 @@ def activate():
 def appendText(text):
 	if not isActive:
 		return
-	if not isinstance(text,basestring):
+	if not isinstance(text, str):
 		return
 	#If the braille viewer text control has the focus, we want to disable updates
 	#Otherwize it would be impossible to select text, or even just read it (as a blind person).
