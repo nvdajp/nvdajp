@@ -13,7 +13,7 @@ import languageHandler
 from synthDriverHandler import SynthDriver, VoiceInfo, synthIndexReached, synthDoneSpeaking
 import speech
 from logHandler import log
-from jtalk._nvdajp_espeak import replaceJapaneseFromSpeechSequence
+from .jtalk._nvdajp_espeak import replaceJapaneseFromSpeechSequence
 from driverHandler import BooleanDriverSetting
 
 class SynthDriver(SynthDriver):
