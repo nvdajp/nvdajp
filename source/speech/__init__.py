@@ -135,20 +135,20 @@ def getCurrentLanguage():
 		language=languageHandler.getLanguage()
 	return language
 
-def spellTextInfo(info,useCharacterDescriptions=False,priority=None):
+def spellTextInfo(info,useCharacterDescriptions=False,useDetails=False,priority=None):
 	"""Spells the text from the given TextInfo, honouring any LangChangeCommand objects it finds if autoLanguageSwitching is enabled."""
 	if not config.conf['speech']['autoLanguageSwitching']:
-		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions)
+		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails)
 		return
 	curLanguage=None
 	for field in info.getTextWithFields({}):
 		if isinstance(field,str):
-			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,priority=priority)
+			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
 		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
 			curLanguage=field.field.get('language')
 
-def speakSpelling(text, locale=None, useCharacterDescriptions=False,priority=None):
-	seq = list(getSpeechForSpelling(text, locale=locale, useCharacterDescriptions=useCharacterDescriptions))
+def speakSpelling(text, locale=None, useCharacterDescriptions=False,useDetails=False,priority=None):
+	seq = list(getSpeechForSpelling(text, locale=locale, useCharacterDescriptions=useCharacterDescriptions, useDetails=useDetails))
 	speak(seq,priority=priority)
 
 import collections
@@ -222,30 +222,22 @@ def getCharDesc(locale, char, jpAttr):
 	log.debug(repr([locale, char, ("%0x" % jpUtils.getOrd(char)), charDesc]))
 	return charDesc
 
-def changePitchForCharAttr(uppercase, jpAttr, synth, synthConfig):
+
+def getPitchChangeForCharAttr(uppercase, jpAttr, synth, synthConfig):
 	"""
 	"""
-	pitchChanged = False
-	oldPitch = None
 	if not synth.isSupported("pitch"):
-		return pitchChanged, oldPitch
+		return 0
 	if uppercase and synthConfig["capPitchChange"]:
-		oldPitch=synthConfig["pitch"]
-		synth.pitch=max(0,min(oldPitch+synthConfig["capPitchChange"],100))
-		pitchChanged = True
+		return synthConfig["capPitchChange"]
 	elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
-		oldPitch=synthConfig["pitch"]
-		synth.pitch=max(0,min(oldPitch+config.conf['language']['jpKatakanaPitchChange'],100))
-		pitchChanged = True
+		return config.conf['language']['jpKatakanaPitchChange']
 	elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
-		oldPitch=synthConfig["pitch"]
-		synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
-		pitchChanged = True
+		return config.conf['language']['halfShapePitchChange']
 	elif jpAttr.halfShape and config.conf['language']['halfShapePitchChange']:
-		oldPitch=synthConfig["pitch"]
-		synth.pitch=max(0,min(oldPitch+config.conf['language']['halfShapePitchChange'],100))
-		pitchChanged = True
-	return pitchChanged, oldPitch
+		return config.conf['language']['halfShapePitchChange']
+	return 0
+
 
 def getJaCharAttrDetails(char, shouldSayCap):
 	r = jpUtils.getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
@@ -253,7 +245,7 @@ def getJaCharAttrDetails(char, shouldSayCap):
 	return r
 
 
-def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False):
+def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False, useDetails=False):
 	defaultLanguage=getCurrentLanguage()
 	if not locale or (not config.conf['speech']['autoDialectSwitching'] and locale.split('_')[0]==defaultLanguage.split('_')[0]):
 		locale=defaultLanguage
@@ -273,6 +265,7 @@ def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False):
 	localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
 	charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else text
 	for item in charDescList:
+		charDesc = None
 		if localeHasConjuncts:
 			# item is a tuple containing character and its description
 			speakCharAs = item[0]
@@ -283,18 +276,32 @@ def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False):
 			if useCharacterDescriptions:
 				charDesc=characterProcessing.getCharacterDescription(locale,speakCharAs.lower())
 		uppercase=speakCharAs.isupper()
+		# use nvdajp pitch control rather than original code
+		shouldSayCap = uppercase and synthConfig["sayCapForCapitals"]
+		jpAttr = getCharAttr(locale, speakCharAs, useDetails)
+		charAttrDetails = getJaCharAttrDetails(speakCharAs, shouldSayCap) if useDetails else None
+		pitchChange = getPitchChangeForCharAttr(uppercase, jpAttr, synth, synthConfig)
+		if isJa(locale) and useCharacterDescriptions:
+			charDesc = getCharDesc(locale, speakCharAs, jpAttr)
 		if useCharacterDescriptions and charDesc:
 			IDEOGRAPHIC_COMMA = u"\u3001"
 			speakCharAs=charDesc[0] if textLength>1 else IDEOGRAPHIC_COMMA.join(charDesc)
 		else:
 			speakCharAs=characterProcessing.processSpeechSymbol(locale,speakCharAs)
-		if uppercase and synthConfig["sayCapForCapitals"]:
+		# if uppercase and synthConfig["sayCapForCapitals"]:
+		if shouldSayCap:
 			# Translators: cap will be spoken before the given letter when it is capitalized.
 			speakCharAs=_("cap %s")%speakCharAs
-		if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
-			yield PitchCommand(offset=synthConfig["capPitchChange"])
+		# if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
+		# 	yield PitchCommand(offset=synthConfig["capPitchChange"])
+		if pitchChange:
+			yield PitchCommand(offset=pitchChange)
 		if config.conf['speech']['autoLanguageSwitching']:
 			yield LangChangeCommand(locale)
+		# Announce attribute details before character itself
+		if charAttrDetails:
+			for attr in charAttrDetails:
+				yield attr
 		if len(speakCharAs) == 1 and synthConfig["useSpellingFunctionality"]:
 			if not charMode:
 				yield CharacterModeCommand(True)
@@ -305,7 +312,8 @@ def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False):
 		if uppercase and  synthConfig["beepForCapitals"]:
 			yield BeepCommand(2000, 50)
 		yield speakCharAs
-		if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
+		# if uppercase and synth.isSupported("pitch") and synthConfig["capPitchChange"]:
+		if pitchChange:
 			yield PitchCommand()
 		yield EndUtteranceCommand()
 
