@@ -263,7 +263,6 @@ def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False, useD
 	count = 0
 	localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
 	charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else text
-	prevCharAttrDetails = None
 	for item in charDescList:
 		charDesc = None
 		if localeHasConjuncts:
@@ -299,7 +298,7 @@ def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False, useD
 		if config.conf['speech']['autoLanguageSwitching']:
 			yield LangChangeCommand(locale)
 		# Announce attribute details before character itself
-		if prevCharAttrDetails is None or (charAttrDetails and prevCharAttrDetails != charAttrDetails):
+		if charAttrDetails:
 			yield charAttrDetails
 		if len(speakCharAs) == 1 and synthConfig["useSpellingFunctionality"]:
 			if not charMode:
@@ -315,7 +314,6 @@ def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False, useD
 		if pitchChange:
 			yield PitchCommand()
 		yield EndUtteranceCommand()
-		prevCharAttrDetails = charAttrDetails
 
 def getCharDescListFromText(text,locale):
 	"""This method prepares a list, which contains character and its description for all characters the text is made up of, by checking the presence of character descriptions in characterDescriptions.dic of that locale for all possible combination of consecutive characters in the text.
