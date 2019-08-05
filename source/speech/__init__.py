@@ -300,8 +300,7 @@ def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False, useD
 			yield LangChangeCommand(locale)
 		# Announce attribute details before character itself
 		if charAttrDetails:
-			for attr in charAttrDetails:
-				yield attr
+			yield charAttrDetails
 		if len(speakCharAs) == 1 and synthConfig["useSpellingFunctionality"]:
 			if not charMode:
 				yield CharacterModeCommand(True)
