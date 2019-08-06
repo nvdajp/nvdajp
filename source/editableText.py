@@ -161,6 +161,7 @@ class EditableText(TextContainerObject,ScriptableObject):
 		caretMoved,newInfo=self._hasCaretMoved(bookmark) 
 		if not caretMoved and self.shouldFireCaretMovementFailedEvents:
 			eventHandler.executeEvent("caretMovementFailed", self, gesture=gesture)
+		self._caretScriptPostMovedHelper(unit,gesture,newInfo)
 		if caretMoved and newInfo and unit == textInfos.UNIT_CHARACTER:
 			i = newInfo.copy()
 			i.expand(textInfos.UNIT_CHARACTER)
@@ -172,7 +173,6 @@ class EditableText(TextContainerObject,ScriptableObject):
 				if characterDescriptionMode:
 					speech.cancelSpeech()
 					speech.speakSpelling(t, useCharacterDescriptions=True)
-		self._caretScriptPostMovedHelper(unit,gesture,newInfo)
 
 	def _get_caretMovementDetectionUsesEvents(self) -> bool:
 		"""Returns whether or not to rely on caret and textChange events when
