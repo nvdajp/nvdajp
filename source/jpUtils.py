@@ -10,6 +10,7 @@ import config
 import re
 import collections
 import unicodedata
+from dataclasses import dataclass
 import inspect
 from logHandler import log
 
@@ -129,6 +130,97 @@ def getAttrDesc(a):
 		# Translators: character attribute name
 		d.append(_('cap'))
 	return ' '.join(d)
+
+
+@dataclass
+class JpAttr:
+	jpZenkakuHiragana: bool
+	jpZenkakuKatakana: bool
+	jpHankakuKatakana: bool
+	jpLatinCharacter: bool
+	nonJpLatinCharacter: bool
+	jpFullShapeAlphabet: bool
+	nonJpFullShapeAlphabet: bool
+	jpFullShapeSymbol: bool
+	jpFullShape: bool
+	halfShape: bool
+	usePhoneticReadingLatin: bool
+	usePhoneticReadingKana: bool
+
+
+def getCharAttr(locale, char, useDetails):
+	"""
+	"""
+	_isJa = isJa(locale)
+	jpZenkakuHiragana = _isJa and isZenkakuHiragana(char)
+	jpZenkakuKatakana = _isJa and isZenkakuKatakana(char)
+	jpHankakuKatakana = _isJa and isHankakuKatakana(char)
+	jpLatinCharacter = _isJa and isLatinCharacter(char)
+	nonJpLatinCharacter = (not _isJa) and isLatinCharacter(char)
+	jpFullShapeAlphabet = _isJa and isFullShapeAlphabet(char)
+	nonJpFullShapeAlphabet = (not _isJa) and isFullShapeAlphabet(char)
+	jpFullShapeSymbol = _isJa and isFullShapeSymbol(char)
+	jpFullShape = jpFullShapeAlphabet or jpFullShapeSymbol
+	halfShape = _isJa and isHalfShape(char)
+	usePhoneticReadingLatin = useDetails and config.conf["language"]["jpPhoneticReadingLatin"]
+	usePhoneticReadingKana = useDetails and config.conf["language"]["jpPhoneticReadingKana"]
+	jpAttr = JpAttr(
+		jpZenkakuHiragana,
+		jpZenkakuKatakana,
+		jpHankakuKatakana,
+		jpLatinCharacter,
+		nonJpLatinCharacter,
+		jpFullShapeAlphabet,
+		nonJpFullShapeAlphabet,
+		jpFullShapeSymbol,
+		jpFullShape,
+		halfShape,
+		usePhoneticReadingLatin,
+		usePhoneticReadingKana,
+	)
+	return jpAttr
+
+
+def getCharDesc(locale, char, jpAttr):
+	"""
+	"""
+	if jpAttr.jpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
+		charDesc = (getShortDesc(char.lower()),)
+	elif jpAttr.nonJpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
+		charDesc = (char.lower(),)
+	elif jpAttr.nonJpFullShapeAlphabet and not jpAttr.usePhoneticReadingLatin:
+		charDesc = (unicodedata.normalize('NFKC', char.lower()),)
+	elif jpAttr.nonJpFullShapeAlphabet and jpAttr.usePhoneticReadingLatin:
+		charDesc = characterProcessing.getCharacterDescription(locale, unicodedata.normalize('NFKC', char.lower()))
+	elif (jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana) and not jpAttr.usePhoneticReadingKana:
+		charDesc = (getShortDesc(char),)
+	else:
+		charDesc = characterProcessing.getCharacterDescription(locale,char.lower())
+	log.debug(repr([locale, char, ("%0x" % getOrd(char)), charDesc]))
+	return charDesc
+
+
+def getPitchChangeForCharAttr(uppercase, jpAttr, synth, synthConfig):
+	"""
+	"""
+	if not synth.isSupported("pitch"):
+		return 0
+	if uppercase and synthConfig["capPitchChange"]:
+		return synthConfig["capPitchChange"]
+	elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
+		return config.conf['language']['jpKatakanaPitchChange']
+	elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
+		return config.conf['language']['halfShapePitchChange']
+	elif jpAttr.halfShape and config.conf['language']['halfShapePitchChange']:
+		return config.conf['language']['halfShapePitchChange']
+	return 0
+
+
+def getJaCharAttrDetails(char, shouldSayCap):
+	r = getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
+	log.debug(repr(r))
+	return r
+
 
 def code2kana(code):
 	"""

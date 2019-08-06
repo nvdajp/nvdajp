@@ -152,98 +152,6 @@ def speakSpelling(text, locale=None, useCharacterDescriptions=False,useDetails=F
 	speak(seq,priority=priority)
 
 
-from dataclasses import dataclass
-@dataclass
-class JpAttr:
-	jpZenkakuHiragana: bool
-	jpZenkakuKatakana: bool
-	jpHankakuKatakana: bool
-	jpLatinCharacter: bool
-	nonJpLatinCharacter: bool
-	jpFullShapeAlphabet: bool
-	nonJpFullShapeAlphabet: bool
-	jpFullShapeSymbol: bool
-	jpFullShape: bool
-	halfShape: bool
-	usePhoneticReadingLatin: bool
-	usePhoneticReadingKana: bool
-
-
-from jpUtils import isJa
-
-def getCharAttr(locale, char, useDetails):
-	"""
-	"""
-	_isJa = isJa(locale)
-	jpZenkakuHiragana = _isJa and jpUtils.isZenkakuHiragana(char)
-	jpZenkakuKatakana = _isJa and jpUtils.isZenkakuKatakana(char)
-	jpHankakuKatakana = _isJa and jpUtils.isHankakuKatakana(char)
-	jpLatinCharacter = _isJa and jpUtils.isLatinCharacter(char)
-	nonJpLatinCharacter = (not _isJa) and jpUtils.isLatinCharacter(char)
-	jpFullShapeAlphabet = _isJa and jpUtils.isFullShapeAlphabet(char)
-	nonJpFullShapeAlphabet = (not _isJa) and jpUtils.isFullShapeAlphabet(char)
-	jpFullShapeSymbol = _isJa and jpUtils.isFullShapeSymbol(char)
-	jpFullShape = jpFullShapeAlphabet or jpFullShapeSymbol
-	halfShape = _isJa and jpUtils.isHalfShape(char)
-	usePhoneticReadingLatin = useDetails and config.conf["language"]["jpPhoneticReadingLatin"]
-	usePhoneticReadingKana = useDetails and config.conf["language"]["jpPhoneticReadingKana"]
-	jpAttr = JpAttr(
-		jpZenkakuHiragana,
-		jpZenkakuKatakana,
-		jpHankakuKatakana,
-		jpLatinCharacter,
-		nonJpLatinCharacter,
-		jpFullShapeAlphabet,
-		nonJpFullShapeAlphabet,
-		jpFullShapeSymbol,
-		jpFullShape,
-		halfShape,
-		usePhoneticReadingLatin,
-		usePhoneticReadingKana,
-	)
-	return jpAttr
-
-def getCharDesc(locale, char, jpAttr):
-	"""
-	"""
-	if jpAttr.jpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
-		charDesc = (jpUtils.getShortDesc(char.lower()),)
-	elif jpAttr.nonJpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
-		charDesc = (char.lower(),)
-	elif jpAttr.nonJpFullShapeAlphabet and not jpAttr.usePhoneticReadingLatin:
-		charDesc = (unicodedata.normalize('NFKC', char.lower()),)
-	elif jpAttr.nonJpFullShapeAlphabet and jpAttr.usePhoneticReadingLatin:
-		charDesc = characterProcessing.getCharacterDescription(locale, unicodedata.normalize('NFKC', char.lower()))
-	elif (jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana) and not jpAttr.usePhoneticReadingKana:
-		charDesc = (jpUtils.getShortDesc(char),)
-	else:
-		charDesc = characterProcessing.getCharacterDescription(locale,char.lower())
-	log.debug(repr([locale, char, ("%0x" % jpUtils.getOrd(char)), charDesc]))
-	return charDesc
-
-
-def getPitchChangeForCharAttr(uppercase, jpAttr, synth, synthConfig):
-	"""
-	"""
-	if not synth.isSupported("pitch"):
-		return 0
-	if uppercase and synthConfig["capPitchChange"]:
-		return synthConfig["capPitchChange"]
-	elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
-		return config.conf['language']['jpKatakanaPitchChange']
-	elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
-		return config.conf['language']['halfShapePitchChange']
-	elif jpAttr.halfShape and config.conf['language']['halfShapePitchChange']:
-		return config.conf['language']['halfShapePitchChange']
-	return 0
-
-
-def getJaCharAttrDetails(char, shouldSayCap):
-	r = jpUtils.getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
-	log.debug(repr(r))
-	return r
-
-
 def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False, useDetails=False):
 	defaultLanguage=getCurrentLanguage()
 	if not locale or (not config.conf['speech']['autoDialectSwitching'] and locale.split('_')[0]==defaultLanguage.split('_')[0]):
@@ -277,11 +185,11 @@ def getSpeechForSpelling(text, locale=None, useCharacterDescriptions=False, useD
 		uppercase=speakCharAs.isupper()
 		# use nvdajp pitch control rather than original code
 		shouldSayCap = uppercase and synthConfig["sayCapForCapitals"]
-		jpAttr = getCharAttr(locale, speakCharAs, useDetails)
-		charAttrDetails = getJaCharAttrDetails(speakCharAs, shouldSayCap) if useDetails else None
-		pitchChange = getPitchChangeForCharAttr(uppercase, jpAttr, synth, synthConfig)
-		if isJa(locale) and useCharacterDescriptions:
-			charDesc = getCharDesc(locale, speakCharAs, jpAttr)
+		jpAttr = jpUtils.getCharAttr(locale, speakCharAs, useDetails)
+		charAttrDetails = jpUtils.getJaCharAttrDetails(speakCharAs, shouldSayCap) if useDetails else None
+		pitchChange = jpUtils.getPitchChangeForCharAttr(uppercase, jpAttr, synth, synthConfig)
+		if jpUtils.isJa(locale) and useCharacterDescriptions:
+			charDesc = jpUtils.getCharDesc(locale, speakCharAs, jpAttr)
 		if useCharacterDescriptions and charDesc:
 			IDEOGRAPHIC_COMMA = u"\u3001"
 			speakCharAs=charDesc[0] if textLength>1 else IDEOGRAPHIC_COMMA.join(charDesc)
