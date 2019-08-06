@@ -161,7 +161,7 @@ class EditableText(TextContainerObject,ScriptableObject):
 		caretMoved,newInfo=self._hasCaretMoved(bookmark) 
 		if not caretMoved and self.shouldFireCaretMovementFailedEvents:
 			eventHandler.executeEvent("caretMovementFailed", self, gesture=gesture)
-		if caretMoved and newInfo:
+		if caretMoved and newInfo and unit == textInfos.UNIT_CHARACTER:
 			i = newInfo.copy()
 			i.expand(textInfos.UNIT_CHARACTER)
 			t = i.text
@@ -170,6 +170,7 @@ class EditableText(TextContainerObject,ScriptableObject):
 				log.debug(repr([unit, t, ("%0x" % o)]))
 				from globalCommands import characterDescriptionMode
 				if characterDescriptionMode:
+					speech.cancelSpeech()
 					speech.speakSpelling(t, useCharacterDescriptions=True)
 		self._caretScriptPostMovedHelper(unit,gesture,newInfo)
 
