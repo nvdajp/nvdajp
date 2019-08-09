@@ -134,7 +134,7 @@ class EditableText(TextContainerObject,ScriptableObject):
 		log.debug("Caret didn't move before timeout. Elapsed: %d ms" % elapsed)
 		return (False,newInfo)
 
-	def _caretScriptPostMovedHelper(self, speakUnit, gesture, info=None):
+	def _caretScriptPostMovedHelper(self, speakUnit, gesture, info=None, useCaracterDescription=False):
 		if isScriptWaiting():
 			return
 		if not info:
@@ -147,7 +147,13 @@ class EditableText(TextContainerObject,ScriptableObject):
 		review.handleCaretMove(info)
 		if speakUnit and not willSayAllResume(gesture):
 			info.expand(speakUnit)
-			speech.speakTextInfo(info, unit=speakUnit, reason=controlTypes.REASON_CARET)
+			t = info.text
+			if useCaracterDescription and t:
+				o = ord(t[0])
+				log.debug(repr([speakUnit, t, ("%0x" % o)]))
+				speech.speakSpelling(t, useCharacterDescriptions=True)
+			else:
+				speech.speakTextInfo(info, unit=speakUnit, reason=controlTypes.REASON_CARET)
 		braille.handler.handleCaretMove(self)
 
 	def _caretMovementScriptHelper(self, gesture, unit):
@@ -161,19 +167,9 @@ class EditableText(TextContainerObject,ScriptableObject):
 		caretMoved,newInfo=self._hasCaretMoved(bookmark) 
 		if not caretMoved and self.shouldFireCaretMovementFailedEvents:
 			eventHandler.executeEvent("caretMovementFailed", self, gesture=gesture)
-		self._caretScriptPostMovedHelper(unit,gesture,newInfo)
-		if newInfo and unit == textInfos.UNIT_CHARACTER:
-			i = newInfo.copy()
-			i.expand(textInfos.UNIT_CHARACTER)
-			t = i.text
-			if t:
-				o = ord(t[0])
-				log.debug(repr([unit, t, ("%0x" % o)]))
-				from globalCommands import characterDescriptionMode
-				import queueHandler
-				if characterDescriptionMode:
-					queueHandler.queueFunction(queueHandler.eventQueue, speech.cancelSpeech)
-					queueHandler.queueFunction(queueHandler.eventQueue, speech.speakSpelling, t, useCharacterDescriptions=True)
+		from globalCommands import characterDescriptionMode
+		useCaracterDescription = (characterDescriptionMode and newInfo and unit == textInfos.UNIT_CHARACTER)
+		self._caretScriptPostMovedHelper(unit,gesture,newInfo,useCaracterDescription=useCaracterDescription)
 
 	def _get_caretMovementDetectionUsesEvents(self) -> bool:
 		"""Returns whether or not to rely on caret and textChange events when
