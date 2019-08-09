@@ -162,7 +162,7 @@ class EditableText(TextContainerObject,ScriptableObject):
 		if not caretMoved and self.shouldFireCaretMovementFailedEvents:
 			eventHandler.executeEvent("caretMovementFailed", self, gesture=gesture)
 		self._caretScriptPostMovedHelper(unit,gesture,newInfo)
-		if caretMoved and newInfo and unit == textInfos.UNIT_CHARACTER:
+		if newInfo and unit == textInfos.UNIT_CHARACTER:
 			i = newInfo.copy()
 			i.expand(textInfos.UNIT_CHARACTER)
 			t = i.text
@@ -170,9 +170,10 @@ class EditableText(TextContainerObject,ScriptableObject):
 				o = ord(t[0])
 				log.debug(repr([unit, t, ("%0x" % o)]))
 				from globalCommands import characterDescriptionMode
+				import queueHandler
 				if characterDescriptionMode:
-					speech.cancelSpeech()
-					speech.speakSpelling(t, useCharacterDescriptions=True)
+					queueHandler.queueFunction(queueHandler.eventQueue, speech.cancelSpeech)
+					queueHandler.queueFunction(queueHandler.eventQueue, speech.speakSpelling, t, useCharacterDescriptions=True)
 
 	def _get_caretMovementDetectionUsesEvents(self) -> bool:
 		"""Returns whether or not to rely on caret and textChange events when
