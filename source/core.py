@@ -146,8 +146,11 @@ def resetConfiguration(factoryDefaults=False):
 	import braille
 	import brailleInput
 	import speech
+	import vision
 	import languageHandler
 	import inputCore
+	log.debug("Terminating vision")
+	vision.terminate()
 	log.debug("Terminating braille")
 	braille.terminate()
 	log.debug("Terminating brailleInput")
@@ -174,6 +177,9 @@ def resetConfiguration(factoryDefaults=False):
 	brailleInput.initialize()
 	log.debug("Initializing braille")
 	braille.initialize()
+	# Vision
+	log.debug("initializing vision")
+	vision.initialize()
 	log.debug("Reloading user and locale input gesture maps")
 	inputCore.manager.loadUserGestureMap()
 	inputCore.manager.loadLocaleGestureMap()
@@ -181,7 +187,6 @@ def resetConfiguration(factoryDefaults=False):
 	if audioDucking.isAudioDuckingSupported():
 		audioDucking.handlePostConfigProfileSwitch()
 	log.info("Reverted to saved configuration")
-	
 
 def _setInitialFocus():
 	"""Sets the initial focus if no focus event was received at startup.
@@ -301,6 +306,9 @@ This initializes all modules such as audio, IAccessible, keyboard, mouse, and GU
 	import braille
 	log.debug("Initializing braille")
 	braille.initialize()
+	import vision
+	log.debug("Initializing vision")
+	vision.initialize()
 	import displayModel
 	log.debug("Initializing displayModel")
 	displayModel.initialize()
@@ -321,7 +329,6 @@ This initializes all modules such as audio, IAccessible, keyboard, mouse, and GU
 		className = u"wxWindowClassNR"
 		# Windows constants for power / display changes
 		WM_POWERBROADCAST = 0x218
-		WM_DISPLAYCHANGE = 0x7e
 		PBT_APMPOWERSTATUSCHANGE = 0xA
 		UNKNOWN_BATTERY_STATUS = 0xFF
 		AC_ONLINE = 0X1
@@ -342,7 +349,7 @@ This initializes all modules such as audio, IAccessible, keyboard, mouse, and GU
 			post_windowMessageReceipt.notify(msg=msg, wParam=wParam, lParam=lParam)
 			if msg == self.WM_POWERBROADCAST and wParam == self.PBT_APMPOWERSTATUSCHANGE:
 				self.handlePowerStatusChange()
-			elif msg == self.WM_DISPLAYCHANGE:
+			elif msg == winUser.WM_DISPLAYCHANGE:
 				self.handleScreenOrientationChange(lParam)
 
 		def handleScreenOrientationChange(self, lParam):
@@ -506,6 +513,7 @@ This initializes all modules such as audio, IAccessible, keyboard, mouse, and GU
 				queueHandler.pumpAll()
 				mouseHandler.pumpAll()
 				braille.pumpAll()
+				vision.pumpAll()
 			except:
 				log.exception("errors in this core pump cycle")
 			baseObject.AutoPropertyObject.invalidateCaches()
@@ -566,6 +574,7 @@ This initializes all modules such as audio, IAccessible, keyboard, mouse, and GU
 	_terminate(keyboardHandler, name="keyboard handler")
 	_terminate(mouseHandler)
 	_terminate(inputCore)
+	_terminate(vision)
 	_terminate(brailleInput)
 	_terminate(braille)
 	_terminate(speech)
