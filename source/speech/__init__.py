@@ -796,6 +796,10 @@ def _speakTextInfo_addMath(speechSequence, info, field):
 		return
 
 def speakTextInfo(info, useCache=True, formatConfig=None, unit=None, reason=controlTypes.REASON_QUERY, _prefixSpeechCommand=None, onlyInitialFields=False, suppressBlanks=False,priority=None):
+	from globalCommands import characterDescriptionMode
+	if characterDescriptionMode and reason == controlTypes.REASON_CARET and unit == textInfos.UNIT_CHARACTER:
+		speakSpelling(info.text, useCharacterDescriptions=True)
+		return
 	onlyCache=reason==controlTypes.REASON_ONLYCACHE
 	if isinstance(useCache,SpeakTextInfoState):
 		speakTextInfoState=useCache
