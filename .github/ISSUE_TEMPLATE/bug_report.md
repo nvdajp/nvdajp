@@ -20,13 +20,13 @@ https://github.com/nvaccess/nvda/wiki/Github-issue-template-explanation-and-exam
 
 問題の再現に必要なファイルは ZIP 形式のアーカイブで添付
 
-### 期待されること
-
-例：「なになに」が「これこれ」になる
-
 ### 実際に起きること
 
 例：「なになに」が「それそれ」になる
+
+### 期待されること
+
+例：「なになに」が「これこれ」になる
 
 ### システム構成
 
