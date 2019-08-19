@@ -36,6 +36,8 @@ if sys.version_info.major <= 2:
 	my_dir = my_dir.decode('mbcs')
 if 'brailleDisplayDrivers' in my_dir.split(os.sep):
 	kgs_dir = my_dir
+if sys.version_info.major >= 3 and hasattr(sys, 'frozen'):
+	kgs_dir = os.path.join(os.getcwd(), 'brailleDisplayDrivers')
 
 fConnection = False
 numCells = 0

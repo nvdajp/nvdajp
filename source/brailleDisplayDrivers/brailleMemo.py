@@ -30,12 +30,7 @@ else:
 	import _winreg
 import itertools
 
-kgs_dir = "brailleDisplayDrivers"
-my_dir = os.path.dirname(__file__)
-if sys.version_info.major <= 2:
-	my_dir = my_dir.decode('mbcs')
-if 'brailleDisplayDrivers' in my_dir.split(os.sep):
-	kgs_dir = my_dir
+from .kgs import kgs_dir
 
 fConnection = False
 numCells = 0
