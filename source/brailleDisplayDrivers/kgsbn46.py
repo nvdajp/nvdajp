@@ -210,6 +210,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
 		if sys.version_info.major <= 2:
 			kgs_dll = kgs_dll.encode('mbcs')
+		log.debug(kgs_dll)
 		self._directBM = windll.LoadLibrary(kgs_dll)
 		if not self._directBM:
 			unlock()
