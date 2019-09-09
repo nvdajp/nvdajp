@@ -33,6 +33,7 @@ import controlTypes
 import keyLabels
 import winUser
 import core
+import winKernel
 
 #: Script category for emulated keyboard keys.
 # Translators: The name of a category of NVDA commands.
@@ -66,6 +67,12 @@ class InputGesture(baseObject.AutoPropertyObject):
 	#: Indicates that this gesture should be reported in Input help mode. This would only be false for floodding Gestures like touch screen hovers.
 	#: @type: bool
 	reportInInputHelp=True
+
+	#: Indicates whether executing this gesture should explicitly prevent the system from being idle.
+	#: For example, the system is unaware of C{BrailleDisplayGesture} execution,
+	#: and might even get into sleep mode when reading a long portion of text in braille.
+	#: In contrast, the system is aware of C{KeyboardInputGesture} execution itself.
+	shouldPreventSystemIdle: bool = False
 
 	_abstract_identifiers = True
 	def _get_identifiers(self):
@@ -437,6 +444,9 @@ class InputManager(baseObject.AutoPropertyObject):
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.cancelSpeech)
 		elif speechEffect in (gesture.SPEECHEFFECT_PAUSE, gesture.SPEECHEFFECT_RESUME):
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.pauseSpeech, speechEffect == gesture.SPEECHEFFECT_PAUSE)
+
+		if gesture.shouldPreventSystemIdle:
+			winKernel.SetThreadExecutionState(winKernel.ES_SYSTEM_REQUIRED | winKernel.ES_DISPLAY_REQUIRED)
 
 		if log.isEnabledFor(log.IO) and not gesture.isModifier:
 			self._lastInputTime = time.time()
