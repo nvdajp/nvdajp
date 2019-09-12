@@ -26,8 +26,8 @@ class ATOKxxUIComment(IAccessible):
 		time.sleep(0.2)
 		speech.speakMessage(self.name)
 		(left,top,width,height)=self.location
-		x=left+(width/2)
-		y=top+(height/2)
+		x=left+(width//2)
+		y=top+(height//2)
 		winUser.setCursorPos(x,y)
 		mouseHandler.executeMouseMoveEvent(x,y)
 
