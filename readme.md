@@ -67,7 +67,7 @@ For reference, the following run time dependencies are included in Git submodule
 * [IAccessible2](http://www.linuxfoundation.org/collaborate/workgroups/accessibility/iaccessible2), commit 21bbb176
 * [ConfigObj](https://github.com/DiffSK/configobj), commit 5b5de48
 * [Six](https://pypi.python.org/pypi/six), version 1.12.0, required by wxPython and ConfigObj
-* [liblouis](http://www.liblouis.org/), version 3.10.0
+* [liblouis](http://www.liblouis.org/), version 3.10.0 commit 146c0757
 * [Unicode Common Locale Data Repository (CLDR)](http://cldr.unicode.org/) Emoji Annotations, version 35.0
 * NVDA images and sounds
 * [Adobe Acrobat accessibility interface, version XI](http://download.macromedia.com/pub/developer/acrobat/AcrobatAccess.zip)
@@ -100,6 +100,10 @@ Although this [must be run manually](#linting-your-changes), developers may wish
 The following dependencies aren't needed by most people, and are not included in Git submodules:
 
 * To generate developer documentation for nvdaHelper: [Doxygen Windows installer](http://www.doxygen.nl/download.html), version 1.8.15:
+* When you are using Visual Studio Code as your integrated development environment of preference, you can make use of our [prepopulated workspace configuration](https://github.com/nvaccess/vscode-nvda/) for [Visual Studio Code](https://code.visualstudio.com/).
+	While this VSCode project is not included as a submodule in the NVDA repository, you can easily check out the workspace configuration in your repository by executing the following from the root of the repository.
+
+	```git clone https://github.com/nvaccess/vscode-nvda.git .vscode```
 
 ## Preparing the Source Tree
 Before you can run the NVDA source code, you must prepare the source tree.
@@ -279,3 +283,7 @@ This filter accepts wildcard characters.
 ```
 scons systemTests filter="Read welcome dialog"
 ```
+
+## Contributing to NVDA
+
+If you would like to contribute code or documentation to NVDA, you can read more information in our [contributing guide](https://github.com/nvaccess/nvda/wiki/Contributing).
