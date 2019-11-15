@@ -242,6 +242,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	louis = boolean(default=false)
 	timeSinceInput = boolean(default=false)
 	vision = boolean(default=false)
+	speech = boolean(default=false)
 
 [uwpOcr]
 	language = string(default="")
