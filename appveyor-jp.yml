@@ -83,11 +83,11 @@ test_script:
      $outDir = (Resolve-Path .\testOutput\unit\)
      $unitTestsXml = "$outDir\unitTests.xml"
      py -m nose -sv --with-xunit --xunit-file="$unitTestsXml" ./tests/unit
-     # if($LastExitCode -ne 0) { $errorCode=$LastExitCode }
+     if($LastExitCode -ne 0) { $errorCode=$LastExitCode }
      Push-AppveyorArtifact $unitTestsXml
      $wc = New-Object 'System.Net.WebClient'
      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", $unitTestsXml)
-     if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+     # if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
  - ps: |
      $testOutput = (Resolve-Path .\testOutput\)
      $systemTestOutput = (Resolve-Path "$testOutput\system")
