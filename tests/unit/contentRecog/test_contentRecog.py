@@ -53,7 +53,6 @@ class TestRecogImageInfo(unittest.TestCase):
 class FakeNVDAObject(object):
 	pass
 
-@unittest.skip("work around nvdajp build")
 class TestLinesWordsResult(unittest.TestCase):
 	"""Tests that contentRecog.LinesWordsResult and contentRecog.LwrTextInfo
 	correctly parse and process the JSON from a recognizer.
