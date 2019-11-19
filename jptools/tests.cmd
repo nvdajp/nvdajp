@@ -1,4 +1,4 @@
-py scons.py tests checkPot publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+py scons.py tests publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd jptools
