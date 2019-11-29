@@ -175,19 +175,20 @@ msgstr "日本語六点漢字"
 msgid "{hour}:{minute}"
 msgstr "{hour}時{minute}分"
 
-#: nvdajp_dic.py
+#: jpUtils.py
 msgid "half shape"
 msgstr "半角"
 
-#: nvdajp_dic.py
+#: jpUtils.py
 msgid "full shape"
 msgstr "全角"
 
-#: nvdajp_dic.py
+#: jpUtils.py
 msgid "latin"
 msgstr "英字"
 
-#: nvdajp_dic.py
+#: jpUtils.py
+msgctxt "character attribute name"
 msgid "cap"
 msgstr "大文字"
 

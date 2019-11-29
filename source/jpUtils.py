@@ -128,7 +128,7 @@ def getAttrDesc(a):
 		d.append(_('latin'))
 	if a.upper:
 		# Translators: character attribute name
-		d.append(_('cap'))
+		d.append(pgettext("character attribute name", 'cap'))
 	return ' '.join(d)
 
 
