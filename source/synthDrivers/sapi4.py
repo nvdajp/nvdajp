@@ -37,7 +37,9 @@ class SynthDriverBufSink(COMObject):
 			synthDoneSpeaking.notify(synth=synth)
 
 	def ITTSBufNotifySink_TextDataDone(self, this, qTimeStamp, dwMarkNum):
-		self.synthRef.setSpeaking(False)
+		synth = self.synthRef()
+		if synth and hasattr(synth, "setSpeaking"):
+			synth.setSpeaking(False)
 
 	def IUnknown_Release(self, this, *args, **kwargs):
 		if not self._allowDelete and self._refcnt.value == 1:
