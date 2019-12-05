@@ -111,12 +111,12 @@ msgid "toggle input method"
 msgstr "半角全角"
 
 #: gui\settingsDialogs.py:302
-msgid "Braille viewer"
-msgstr "点字ビューアー(&B)"
+msgid "Japanese Braille viewer"
+msgstr "日本語点字ビューアー"
 
 #: gui\brailleViewer.py:18
-msgid "NVDA Braille Viewer"
-msgstr "NVDA点字ビューアー"
+msgid "NVDA Japanese Braille Viewer"
+msgstr "NVDA日本語点字ビューアー"
 
 #: brailleDisplayDrivers\kgs.py
 msgid "KGS BrailleMemo series"

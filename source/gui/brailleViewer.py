@@ -17,7 +17,7 @@ class brailleViewerFrame(wx.MiniFrame):
 
 	def __init__(self):
 		# Translators: braille viewer window title
-		super(brailleViewerFrame, self).__init__(gui.mainFrame, wx.ID_ANY, _("NVDA Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER)
+		super(brailleViewerFrame, self).__init__(gui.mainFrame, wx.ID_ANY, _("NVDA Japanese Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER)
 		self.Bind(wx.EVT_CLOSE, self.onClose)
 		faceName = "DejaVu Sans" if _isXpOrVista else ""
 		self.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,faceName=faceName))
@@ -30,7 +30,7 @@ class brailleViewerFrame(wx.MiniFrame):
 
 	def onClose(self, evt):
 		deactivate()
-		gui.mainFrame.sysTrayIcon.menu_tools_toggleBrailleViewer.Check(False)
+		gui.mainFrame.sysTrayIcon.menu_tools_toggleJpBrailleViewer.Check(False)
 
 _guiFrame=None
 isActive=False
