@@ -30,7 +30,7 @@ class brailleViewerFrame(wx.MiniFrame):
 
 	def onClose(self, evt):
 		deactivate()
-		gui.mainFrame.sysTrayIcon.menu_tools_toggleBrailleViewer.Check(False)
+		gui.mainFrame.sysTrayIcon.menu_tools_toggleJpBrailleViewer.Check(False)
 
 _guiFrame=None
 isActive=False
