@@ -3,15 +3,13 @@
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
-#Copyright (C) 2017 Takuya Nishimoto
+#Copyright (C) 2019 Takuya Nishimoto
 #Copyright (C) 2012 Masataka.Shinke
 
 import wx
 import gui
 import config
-from winVersion import winVersion
 
-_isXpOrVista = (winVersion.major == 5) or (winVersion.major == 6 and winVersion.minor == 0)
 
 class brailleViewerFrame(wx.MiniFrame):
 
@@ -19,8 +17,7 @@ class brailleViewerFrame(wx.MiniFrame):
 		# Translators: braille viewer window title
 		super(brailleViewerFrame, self).__init__(gui.mainFrame, wx.ID_ANY, _("NVDA Japanese Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER)
 		self.Bind(wx.EVT_CLOSE, self.onClose)
-		faceName = "DejaVu Sans" if _isXpOrVista else ""
-		self.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,faceName=faceName))
+		self.SetFont(wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		self.textCtrl = wx.TextCtrl(self, -1,size=(600,200),style=wx.TE_READONLY|wx.TE_MULTILINE)
 		sizer.Add(self.textCtrl, proportion=1, flag=wx.EXPAND)
