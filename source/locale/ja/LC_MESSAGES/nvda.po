@@ -115,8 +115,8 @@ msgid "Braille viewer"
 msgstr "点字ビューアー(&B)"
 
 #: gui\brailleViewer.py:18
-msgid "NVDA Braille Viewer"
-msgstr "NVDA点字ビューアー"
+msgid "NVDA Japanese Braille Viewer"
+msgstr "NVDA日本語版の点字ビューアー"
 
 #: brailleDisplayDrivers\kgs.py
 msgid "KGS BrailleMemo series"
