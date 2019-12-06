@@ -24,9 +24,25 @@ build_script:
  - set VERSION=jpalpha
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
- - set VERSION=%VERSION%_%NOWDATE%
- - set VERSION=%VERSION%_noncert
- - set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%alpha
+        if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
+ - ps: |
+    if ($env:APPVEYOR_REPO_BRANCH -eq "alphajp") {
+        $env:VERSION = "jpalpha_" + $env:NOWDATE
+            $env:VERSION += "_noncert"
+        }
+        $env:UPDATEVERSIONTYPE += "alpha"
+    } elseif ($env:APPVEYOR_REPO_BRANCH -eq "betajp") {
+        $env:VERSION += "-beta-" + $env:NOWDATE
+        if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
+            $env:VERSION += "-noncert"
+        }
+        $env:UPDATEVERSIONTYPE += "beta"
+    } elseif ($true) {
+        $env:VERSION += "-" + $env:NOWDATE
+        if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
+            $env:VERSION += "-noncert"
+        }
+    }
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
  - ps: |
