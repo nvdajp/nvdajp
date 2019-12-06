@@ -24,7 +24,6 @@ build_script:
  - set VERSION=jpalpha
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
-        if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
  - ps: |
     if ($env:APPVEYOR_REPO_BRANCH -eq "alphajp") {
         $env:VERSION = "jpalpha_" + $env:NOWDATE
