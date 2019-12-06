@@ -21,13 +21,12 @@ install:
 
 build_script:
  - set RELEASE=1
- - set VERSION=2019.3jp
+ - set VERSION=jpalpha
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
- - set VERSION=%VERSION%-beta
- - set VERSION=%VERSION%-%NOWDATE%
- - set VERSION=%VERSION%-noncert
- - set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%beta
+ - set VERSION=%VERSION%_%NOWDATE%
+ - set VERSION=%VERSION%_noncert
+ - set UPDATEVERSIONTYPE=%UPDATEVERSIONTYPE%alpha
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
  - ps: |
