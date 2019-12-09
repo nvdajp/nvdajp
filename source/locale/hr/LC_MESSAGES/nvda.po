@@ -3114,7 +3114,7 @@ msgstr "Pregled teksta"
 
 #. Translators: The name of a category of NVDA commands.
 msgid "Object navigation"
-msgstr "Navigacija objekta"
+msgstr "Kretanje po objektima"
 
 #. Translators: The name of a category of NVDA commands.
 msgid "System caret"
@@ -4049,8 +4049,8 @@ msgid ""
 msgstr ""
 "Prebacuje između modusa čitanja i modusa fokusa. Kad je uključen modus "
 "fokusa, tipke se proslijeđuju aplikaciji, dopuštajući tako direktno "
-"upravljanje kontrolom. Kad je uključen modus čitanja, omogućena je "
-"navigacija kroz dokument pomoću kursora, tipki za brzu navigaciju i slično."
+"upravljanje kontrolom. Kad je uključen modus čitanja, moguće je kretati se "
+"kroz dokument pomoću kursora, tipki za brzo kretanje itd."
 
 #. Translators: Input help mode message for quit NVDA command.
 msgid "Quits NVDA!"
@@ -4657,16 +4657,16 @@ msgid ""
 "Moves to the next object in a flattened view of the object navigation "
 "hierarchy"
 msgstr ""
-"Premješta se na sljedeći objekt u fiksnom pregledu hijerarhije navigacije "
-"objekta"
+"Premješta se na sljedeći objekt u rasklopljenom prikazu hijerarhije kretanja "
+"po objektima"
 
 #. Translators: Input help mode message for a touchscreen gesture.
 msgid ""
 "Moves to the previous object in a flattened view of the object navigation "
 "hierarchy"
 msgstr ""
-"Premješta se na prethodni objekt u fiksnom pregledu hijerarhije navigacije "
-"objekta"
+"Premješta se na prethodni objekt u rasklopljenom prikazu hijerarhije "
+"kretanja po objektima"
 
 #. Translators: Cycles through available touch modes (a group of related touch gestures; example output: "object mode"; see the user guide for more information on touch modes).
 #, python-format
