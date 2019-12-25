@@ -15,7 +15,7 @@ latestSchemaVersion = 3
 
 #: The configuration specification string
 #: @type: String
-configSpecString = (f"""# NVDA Configuration File
+configSpecString = f"""# NVDA Configuration File
 schemaVersion = integer(min=0, default={latestSchemaVersion})
 [general]
 	language = string(default="Windows")
@@ -89,10 +89,10 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 
 # Vision enhancement provider settings
 [vision]
-	providers = string_list(=default=list())
 
 	# Vision enhancement provider settings
 	[[__many__]]
+		enabled = boolean(default=false)
 
 # Presentation settings
 [presentation]
@@ -129,11 +129,23 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 [speechViewer]
 	showSpeechViewerAtStartup = boolean(default=false)
 	autoPositionWindow = boolean(default=True)
-	# values for positioning the window. Defaults are not used. They should not be read if autoPositionWindow is True
+	# Values for positioning the window.
+	# Defaults are not used.
+	# They should not be read if autoPositionWindow is True
 	x = integer()
 	y = integer()
 	width = integer()
 	height = integer()
+	displays = string_list()
+
+[brailleViewer]
+	showBrailleViewerAtStartup = boolean(default=false)
+	autoPositionWindow = boolean(default=True)
+	# Values for positioning the window.
+	# Defaults are not used.
+	# They should not be read if autoPositionWindow is True
+	x = integer()
+	y = integer()
 	displays = string_list()
 
 #Keyboard settings
@@ -174,7 +186,8 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 
 #Settings for document reading (such as MS Word and wordpad)
 [documentFormatting]
-	#These settings affect what information is reported when you navigate to text where the formatting  or placement has changed
+	# These settings affect what information is reported when you navigate
+	# to text where the formatting  or placement has changed
 	detectFormatAfterCursor = boolean(default=false)
 	reportFontName = boolean(default=false)
 	reportFontSize = boolean(default=false)
@@ -202,6 +215,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	reportLists = boolean(default=true)
 	reportHeadings = boolean(default=true)
 	reportBlockQuotes = boolean(default=true)
+	reportGroupings = boolean(default=true)
 	reportLandmarks = boolean(default=true)
 	reportArticles = boolean(default=false)
 	reportFrames = boolean(default=true)
@@ -237,11 +251,13 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 
 [debugLog]
 	hwIo = boolean(default=false)
+	UIA = boolean(default=false)
 	audioDucking = boolean(default=false)
 	gui = boolean(default=false)
 	louis = boolean(default=false)
 	timeSinceInput = boolean(default=false)
 	vision = boolean(default=false)
+	speech = boolean(default=false)
 
 [uwpOcr]
 	language = string(default="")
@@ -254,7 +270,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 
 [development]
 	enableScratchpadDir = boolean(default=false)
-""")
+"""
 
 #: The configuration specification
 #: @type: ConfigObj

@@ -9,6 +9,7 @@ import collections
 import winsound
 import time
 import weakref
+
 import wx
 import core
 from logHandler import log
@@ -104,8 +105,8 @@ class QuickNavItem(object, metaclass=ABCMeta):
 	def __init__(self,itemType,document):
 		"""
 		@param itemType: the type that was searched for (e.g. link, heading, table etc)
-		@ type itemType: string
-		@ param document: the browse mode document this item is a part of.
+		@type itemType: string
+		@param document: the browse mode document this item is a part of.
 		@type document: L{BrowseModeTreeInterceptor}
 		"""
 		self.itemType=itemType
@@ -384,7 +385,7 @@ class BrowseModeTreeInterceptor(treeInterceptorHandler.TreeInterceptor):
 		@param itemType: the type being searched for (e.g. link, heading, table etc)
 		@type itemType: string
 		@param direction: the direction in which to search (next, previous, up)
-		@ type direction: string
+		@type direction: string
 		@param pos: the position in the document from where to start the search.
 		@type pos: Usually an L{textInfos.TextInfo} 
 		@raise NotImplementedError: This type is not supported by this BrowseMode implementation
@@ -831,7 +832,19 @@ qn(
 	# Translators: Input help message for a quick navigation command in browse mode.
 	prevDoc=_("moves to the previous article"),
 	# Translators: Message presented when the browse mode element is not found.
-	prevError=_("no previous article"))
+	prevError=_("no previous article")
+)
+qn(
+	"grouping", key=None,
+	# Translators: Input help message for a quick navigation command in browse mode.
+	nextDoc=_("moves to the next grouping"),
+	# Translators: Message presented when the browse mode element is not found.
+	nextError=_("no next grouping"),
+	# Translators: Input help message for a quick navigation command in browse mode.
+	prevDoc=_("moves to the previous grouping"),
+	# Translators: Message presented when the browse mode element is not found.
+	prevError=_("no previous grouping")
+)
 del qn
 
 class ElementsListDialog(wx.Dialog):
@@ -1125,11 +1138,15 @@ class ElementsListDialog(wx.Dialog):
 		else:
 			def move():
 				speech.cancelSpeech()
-				item.moveTo()
+				# #8831: Report before moving because moving might change the focus, which
+				# might mutate the document, potentially invalidating info if it is
+				# offset-based.
 				item.report()
+				item.moveTo()
 			# We must use core.callLater rather than wx.CallLater to ensure that the callback runs within NVDA's core pump.
 			# If it didn't, and it directly or indirectly called wx.Yield, it could start executing NVDA's core pump from within the yield, causing recursion.
 			core.callLater(100, move)
+
 
 class BrowseModeDocumentTextInfo(textInfos.TextInfo):
 
@@ -1775,9 +1792,10 @@ class BrowseModeDocumentTreeInterceptor(documentBase.DocumentWithTableNavigation
 	def _iterNotLinkBlock(self, direction="next", pos=None):
 		links = self._iterNodesByType("link", direction=direction, pos=pos)
 		# We want to compare each link against the next link.
-		item1 = next(links)
-		while True:
-			item2 = next(links)
+		item1 = next(links, None)
+		if item1 is None:
+			return
+		for item2 in links:
 			# If the distance between the links is small, this is probably just a piece of non-link text within a block of links; e.g. an inactive link of a nav bar.
 			if direction=="previous":
 				textRange=item1.textInfo.copy()
