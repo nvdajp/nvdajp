@@ -165,10 +165,11 @@ def getCurrentLanguage():
 		language=languageHandler.getLanguage()
 	return language
 
+
 def spellTextInfo(
 		info: textInfos.TextInfo,
 		useCharacterDescriptions: bool = False,
-		useDetails: bool = False,
+        useDetails: bool = False,
 		priority: Optional[Spri] = None
 ) -> None:
 	"""Spells the text from the given TextInfo, honouring any LangChangeCommand objects it finds if autoLanguageSwitching is enabled."""
@@ -182,14 +183,15 @@ def spellTextInfo(
 		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
 			curLanguage=field.field.get('language')
 
+
 def speakSpelling(
 		text: str,
 		locale: Optional[str] = None,
 		useCharacterDescriptions: bool = False,
-		useDetails: bool = False,
+        useDetails: bool = False,
 		priority: Optional[Spri] = None
 ) -> None:
-	seq = list(getSpeechForSpelling(text, locale=locale, useCharacterDescriptions=useCharacterDescriptions))
+	seq = list(getSpeechForSpelling(text, locale=locale, useCharacterDescriptions=useCharacterDescriptions, useDetails=useDetails))
 	speak(seq, priority=priority)
 
 
@@ -200,7 +202,7 @@ def getSpeechForSpelling(  # noqa: C901
 		text: str,
 		locale: Optional[str] = None,
 		useCharacterDescriptions: bool = False,
-		useDetails: bool = False
+        useDetails: bool = False
 ):
 	defaultLanguage=getCurrentLanguage()
 	if not locale or (not config.conf['speech']['autoDialectSwitching'] and locale.split('_')[0]==defaultLanguage.split('_')[0]):
