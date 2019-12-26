@@ -83,6 +83,7 @@ class SpeechViewerFrame(wx.Frame):
 			wx.EVT_CHECKBOX,
 			self.onShouldShowOnStartupChanged
 		)
+		self.SetTransparent(229) # int(255.0 * 0.90)
 
 	def _onDialogActivated(self, evt):
 		# Check for destruction, if the speechviewer window has focus when we exit NVDA it regains focus briefly
