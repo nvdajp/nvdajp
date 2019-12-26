@@ -640,6 +640,15 @@ def speak(  # noqa: C901
 	import speechViewer
 	if speechViewer.isActive:
 		speechViewer.appendSpeechSequence(speechSequence)
+	# nvdajp (Takuya Nishimoto + Masataka.Shinke)
+	from gui import brailleViewer
+	if brailleViewer.isActive:
+		s = ""
+		for item in speechSequence:
+			if isinstance(item, str):
+				s += item
+		if s: brailleViewer.appendText(s)
+	# nvdajp end
 	global beenCanceled
 	if speechMode==speechMode_off:
 		return
@@ -948,6 +957,10 @@ def speakTextInfo(  # noqa: C901
 		suppressBlanks: bool = False,
 		priority: Optional[Spri] = None
 ) -> bool:
+	from globalCommands import characterDescriptionMode
+	if characterDescriptionMode and reason == controlTypes.REASON_CARET and unit == textInfos.UNIT_CHARACTER:
+		speakSpelling(info.text, useCharacterDescriptions=True)
+		return
 	onlyCache=reason==controlTypes.REASON_ONLYCACHE
 	if isinstance(useCache,SpeakTextInfoState):
 		speakTextInfoState=useCache

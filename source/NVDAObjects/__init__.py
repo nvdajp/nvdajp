@@ -436,6 +436,10 @@ class NVDAObject(documentBase.TextContainerObject, baseObject.ScriptableObject, 
 		which will override the standard label for this object's role property as well as the value of roleText.
 		By default, NVDA falls back to using roleText.
 		"""
+		# nvdajp begin
+		if config.conf["braille"]["expandAtCursor"] and self.landmark and self.landmark in braille.nabccLandmarkLabels:
+			return f"{braille.roleLabels[controlTypes.ROLE_LANDMARK]} {braille.nabccLandmarkLabels[self.landmark]}"
+		# nvdajp end
 		if self.landmark and self.landmark in braille.landmarkLabels:
 			return f"{braille.roleLabels[controlTypes.ROLE_LANDMARK]} {braille.landmarkLabels[self.landmark]}"
 		return self.roleText

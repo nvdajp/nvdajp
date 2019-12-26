@@ -110,6 +110,14 @@ msgstr "NVDA日本語版の説明"
 msgid "toggle input method"
 msgstr "半角全角"
 
+#: gui\settingsDialogs.py:302
+msgid "Japanese Braille viewer"
+msgstr "日本語点字ビューアー"
+
+#: gui\brailleViewer.py:18
+msgid "NVDA Japanese Braille Viewer"
+msgstr "NVDA日本語点字ビューアー"
+
 #: brailleDisplayDrivers\kgs.py
 msgid "KGS BrailleMemo series"
 msgstr "KGS BrailleMemo シリーズ"
@@ -167,17 +175,22 @@ msgstr "日本語六点漢字"
 msgid "{hour}:{minute}"
 msgstr "{hour}時{minute}分"
 
-#: nvdajp_dic.py
+#: jpUtils.py
 msgid "half shape"
 msgstr "半角"
 
-#: nvdajp_dic.py
+#: jpUtils.py
 msgid "full shape"
 msgstr "全角"
 
-#: nvdajp_dic.py
+#: jpUtils.py
 msgid "latin"
 msgstr "英字"
+
+#: jpUtils.py
+msgctxt "character attribute name"
+msgid "cap"
+msgstr "大文字"
 
 #. Translators: The label for the Tools submenu in NVDA menu.
 msgctxt "nvdaMenu"

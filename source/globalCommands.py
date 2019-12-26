@@ -233,9 +233,18 @@ class GlobalCommands(ScriptableObject):
 			mo = re.match('(\d{1,2}):(\d{2})', text)
 			if mo:
 				hour, minute = mo.group(1), mo.group(2)
+				if hour[0] == '0': hour = hour[1:]
 				if minute[0] == '0': minute = minute[1:]
 				# Translators: hour and minute
 				text = _('{hour}:{minute}').format(hour=hour, minute=minute)
+			else:
+				mo = re.match('([^\d]+)(\d{1,2}):(\d{2})', text)
+				if mo:
+					am_or_pm, hour, minute = mo.group(1), mo.group(2), mo.group(3)
+					if hour[0] == '0': hour = hour[1:]
+					if minute[0] == '0': minute = minute[1:]
+					# Translators: hour and minute
+					text = am_or_pm + _('{hour}:{minute}').format(hour=hour, minute=minute)
 			# nvdajp end
 		else:
 			text=winKernel.GetDateFormatEx(winKernel.LOCALE_NAME_USER_DEFAULT, winKernel.DATE_LONGDATE, None, None)

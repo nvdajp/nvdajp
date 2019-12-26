@@ -36,7 +36,7 @@ import winUser
 import api
 from . import guiHelper
 import winVersion
-from . import brailleViewer #nvdajp
+from . import brailleViewer as jpBrailleViewer #nvdajp
 import subprocess #nvdajp
 
 def openDocFile(basename):
@@ -366,13 +366,13 @@ class MainFrame(wx.Frame):
 		NVDAObject.clearDynamicClassCache()
 
 	#nvdajp begin
-	def onToggleBrailleViewerCommand(self, evt):
-		if not brailleViewer.isActive:
-			brailleViewer.activate()
-			self.sysTrayIcon.menu_tools_toggleBrailleViewer.Check(True)
+	def onToggleJpBrailleViewerCommand(self, evt):
+		if not jpBrailleViewer.isActive:
+			jpBrailleViewer.activate()
+			self.sysTrayIcon.menu_tools_toggleJpBrailleViewer.Check(True)
 		else:
-			brailleViewer.deactivate()
-			self.sysTrayIcon.menu_tools_toggleBrailleViewer.Check(False)
+			jpBrailleViewer.deactivate()
+			self.sysTrayIcon.menu_tools_toggleJpBrailleViewer.Check(False)
 	#nvdajp end
 	
 	def onCreatePortableCopyCommand(self,evt):
@@ -518,8 +518,8 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
 		#nvdajp begin
 		# Translators: The label for the menu item to open braille viewer.
-		item=self.menu_tools_toggleBrailleViewer = menu_tools.AppendCheckItem(wx.ID_ANY, _("Braille viewer"))
-		self.Bind(wx.EVT_MENU, frame.onToggleBrailleViewerCommand, item)
+		item = self.menu_tools_toggleJpBrailleViewer = menu_tools.AppendCheckItem(wx.ID_ANY, _("Japanese Braille viewer"))
+		self.Bind(wx.EVT_MENU, frame.onToggleJpBrailleViewerCommand, item)
 		#nvdajp end
 		# Translators: The label for the Tools submenu in NVDA menu.
 		self.menu.AppendSubMenu(menu_tools,_("Tools"))

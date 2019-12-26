@@ -52,6 +52,7 @@ class SpeechViewerFrame(wx.Frame):
 
 		self._createControls(sizer=self.panelContentsSizer, parent=self.panel)
 
+		self.SetTransparent(229) # int(255.0 * 0.90)
 		# Don't let speech viewer to steal keyboard focus when opened
 		self.ShowWithoutActivating()
 
