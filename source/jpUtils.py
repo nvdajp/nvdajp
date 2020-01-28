@@ -457,13 +457,23 @@ def shouldConnectForSayAll(s1, s2):
 
 def filterSpeechSequenceForSayAll(oldSpeechSequence):
 	speechSequence = oldSpeechSequence[:]
-	for index in range(len(speechSequence) - 1):
-		itemBefore = speechSequence[index]
-		itemAfter = speechSequence[index + 1]
-		if isinstance(itemBefore, str) and isinstance(itemAfter, str):
-			while shouldConnectForSayAll(itemBefore, itemAfter):
-				itemBefore = itemBefore.rstrip('\n\r ') + itemAfter[0:1]
-				itemAfter = itemAfter[1:]
-			speechSequence[index] = itemBefore
-			speechSequence[index + 1] = itemAfter
+	itemBeforePos = 0
+	itemAfterPos = 1
+	while itemBeforePos < len(speechSequence):
+		while not isinstance(speechSequence[itemBeforePos], str):
+			itemBeforePos += 1
+		if itemBeforePos < len(speechSequence) - 1:
+			itemAfterPos = itemBeforePos + 1
+			while not isinstance(speechSequence[itemAfterPos], str):
+				itemAfterPos += 1
+			if itemAfterPos < len(speechSequence):
+				itemBefore = speechSequence[itemBeforePos]
+				itemAfter = speechSequence[itemAfterPos]
+				if isinstance(itemBefore, str) and isinstance(itemAfter, str):
+					while shouldConnectForSayAll(itemBefore, itemAfter):
+						itemBefore = itemBefore.rstrip('\n\r ') + itemAfter[0:1]
+						itemAfter = itemAfter[1:]
+					speechSequence[itemBeforePos] = itemBefore
+					speechSequence[itemAfterPos] = itemAfter
+		itemBeforePos += 1
 	return speechSequence
