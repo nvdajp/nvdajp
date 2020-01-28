@@ -685,6 +685,10 @@ def speak(  # noqa: C901
 		# After normalisation, the sequence is empty.
 		# There's nothing to speak.
 		return
+	# nvdajp begin
+	log.io("before filterSpeechSequenceForSayAll %r" % speechSequence)
+	speechSequence = jpUtils.filterSpeechSequenceForSayAll(speechSequence)
+	# nvdajp end
 	import inputCore
 	inputCore.logTimeSinceInput()
 	log.io("Speaking %r" % speechSequence)
@@ -2231,8 +2235,8 @@ def getTableInfoSpeech(
 	return textList
 
 
-re_last_pause=re.compile(r"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)",re.DOTALL|re.UNICODE)
-
+# re_last_pause=re.compile(r"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)",re.DOTALL|re.UNICODE)
+re_last_pause = jpUtils.re_last_pause_ja
 
 def speakWithoutPauses(  # noqa: C901
 		speechSequence: SpeechSequence,

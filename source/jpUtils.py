@@ -16,14 +16,7 @@ from logHandler import log
 
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
 
-# from speech import re_last_pause
-s = "^(.*(?<=[^\\s.!?])[.!?][\\\"'" + u"\u201d\u2019" + ")]?(?:\\s+|$))(.*$)"
-# import sys
-# if sys.version_info.major <= 2:
-# 	s2 = ur"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)"
-# 	assert s == s2
-re_last_pause = re.compile(s, re.DOTALL | re.UNICODE)
-
+re_last_pause_ja = re.compile(r"^(.*(?<=[^\s.!?。、])[.!?。、][\"'”’)]?(?:\s+|$)?)(.*$)", re.DOTALL|re.UNICODE)
 
 def getLongDesc(s):
 	try:
@@ -417,6 +410,14 @@ def startsWithProlongedSoundMark(s):
 		return True
 	return False
 	
+def startsWithKana(s):
+	c = s.lstrip('\n\r ')
+	if c:
+		c = c[0]
+	if isZenkakuKatakana(c) or isZenkakuHiragana(c):
+		return True
+	return False
+
 def endsWithKana(s):
 	c = s.rstrip('\n\r ')
 	if c:
@@ -425,21 +426,41 @@ def endsWithKana(s):
 		return True
 	return False
 
-def getLastPauseBeforeAndAfter(item):
-	m=re_last_pause.match(item)
-	if m:
-		before,after=m.groups()
-	elif u'。' in item:
-		# handle east-asian sentence ending
-		before, after = re.split(u'。', item, maxsplit=1)
-		before += u'。'
-	else:
-		before = after = None
-	return before, after
+def startsWithHiragana(s):
+	c = s.lstrip('\n\r ')
+	if c:
+		c = c[0]
+	if isZenkakuHiragana(c):
+		return True
+	return False
+
+def endsWithHiragana(s):
+	c = s.rstrip('\n\r ')
+	if c:
+		c = c[-1]
+	if isZenkakuHiragana(c):
+		return True
+	return False
 
 def shouldConnectForSayAll(s1, s2):
+	if endsWithHiragana(s1) or startsWithHiragana(s2):
+		return False
+	if endsWithKana(s1) or startsWithKana(s2):
+		return True
 	if endsWithAsianChar(s1) and startsWithAsianChar(s2):
 		return True
 	if endsWithKana(s1) and startsWithProlongedSoundMark(s2):
 		return True
 	return False
+
+def filterSpeechSequenceForSayAll(speechSequence):
+	itemAfter = ""
+	for index in range(len(speechSequence) - 1):
+		itemBefore = speechSequence[index]
+		itemAfter = speechSequence[index + 1]
+		while shouldConnectForSayAll(itemBefore, itemAfter):
+			itemBefore += itemAfter[0:1]
+			itemAfter = itemAfter[1:]
+		speechSequence[index] = itemBefore
+		speechSequence[index + 1] = itemAfter
+	return speechSequence
