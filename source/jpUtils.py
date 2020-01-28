@@ -462,7 +462,7 @@ def filterSpeechSequenceForSayAll(oldSpeechSequence):
 		itemAfter = speechSequence[index + 1]
 		if isinstance(itemBefore, str) and isinstance(itemAfter, str):
 			while shouldConnectForSayAll(itemBefore, itemAfter):
-				itemBefore += itemAfter[0:1]
+				itemBefore = itemBefore.rstrip('\n\r ') + itemAfter[0:1]
 				itemAfter = itemAfter[1:]
 			speechSequence[index] = itemBefore
 			speechSequence[index + 1] = itemAfter
