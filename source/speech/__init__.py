@@ -687,7 +687,10 @@ def speak(  # noqa: C901
 		return
 	# nvdajp begin
 	log.io("before filterSpeechSequenceForSayAll %r" % speechSequence)
-	speechSequence = jpUtils.filterSpeechSequenceForSayAll(speechSequence)
+	try:
+		speechSequence = jpUtils.filterSpeechSequenceForSayAll(speechSequence)
+	except Exception as e:
+		log.io("filter failed: %s" % e)
 	# nvdajp end
 	import inputCore
 	inputCore.logTimeSinceInput()
