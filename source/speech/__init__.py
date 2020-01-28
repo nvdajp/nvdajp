@@ -2271,11 +2271,9 @@ def speakWithoutPauses(  # noqa: C901
 		for index in range(len(speechSequence)-1,-1,-1): 
 			item=speechSequence[index]
 			if isinstance(item,str):
-				#m=re_last_pause.match(item)
-				#if m:
-				#	before,after=m.groups()
-				before, after = jpUtils.getLastPauseBeforeAndAfter(item)
-				if before or after:
+				m=re_last_pause.match(item)
+				if m:
+					before,after=m.groups()
 					if after:
 						pendingSpeechSequence.append(after)
 					if before:
@@ -2299,36 +2297,6 @@ def speakWithoutPauses(  # noqa: C901
 		if pendingSpeechSequence:
 			pendingSpeechSequence.reverse()
 			speakWithoutPauses._pendingSpeechSequence.extend(pendingSpeechSequence)
-	# handle east-asian sentence ending
-	#log.info("before %r" % finalSpeechSequence)
-	currSentPos = None
-	for pos, item in enumerate(finalSpeechSequence):
-		if isinstance(item,SpeechCommand):
-			# preserve command
-			if isinstance(item,CallbackCommand) or isinstance(item,IndexCommand) or (isinstance(item,LangChangeCommand) and (item.lang is None or item.lang == 'ja')):
-				# allow order change of strings
-				pass
-			else:	     
-				# preserve order of strings and commands
-				currSentPos = None
-			continue
-		elif currSentPos is not None and jpUtils.shouldConnectForSayAll(finalSpeechSequence[currSentPos], item):
-			finalSpeechSequence[currSentPos] = finalSpeechSequence[currSentPos].rstrip('\n\r ') + item.lstrip('\n\r ')
-			#log.info("currSentPos[%d] %r (from %d)" % (currSentPos, finalSpeechSequence[currSentPos], pos))
-			finalSpeechSequence[pos] = ''
-		else:
-			currSentPos = pos
-			#log.info("pos %d (update currSentPos) %r" % (pos, item))
-	#log.info("finalSpeech %r" % finalSpeechSequence)
-	# remove \r
-	for pos, item in enumerate(finalSpeechSequence):
-		if isinstance(item,str):
-			finalSpeechSequence[pos] = finalSpeechSequence[pos].replace('\r', '')
-	#Scan the final speech sequence backwards
-	for item in reversed(finalSpeechSequence):
-		if isinstance(item,IndexCommand):
-			speakWithoutPauses._lastSentIndex=item.index
-			break
 	if finalSpeechSequence:
 		speak(finalSpeechSequence)
 		return True
