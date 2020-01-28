@@ -443,6 +443,8 @@ def endsWithHiragana(s):
 	return False
 
 def shouldConnectForSayAll(s1, s2):
+	if not s1 or not s2:
+		return False
 	if endsWithHiragana(s1) or startsWithHiragana(s2):
 		return False
 	if endsWithKana(s1) or startsWithKana(s2):
