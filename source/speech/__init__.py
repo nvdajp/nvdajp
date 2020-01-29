@@ -2239,7 +2239,6 @@ def getTableInfoSpeech(
 
 
 re_last_pause=re.compile(r"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)",re.DOTALL|re.UNICODE)
-# re_last_pause = jpUtils.re_last_pause_ja
 
 def speakWithoutPauses(  # noqa: C901
 		speechSequence: SpeechSequence,

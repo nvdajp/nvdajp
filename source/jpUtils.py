@@ -11,12 +11,9 @@ import re
 import collections
 import unicodedata
 from dataclasses import dataclass
-import inspect
 from logHandler import log
 
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
-
-re_last_pause_ja = re.compile(r"^(.*(?<=[^\s.!?。、])[.!?。、][\"'”’)]?(?:\s+|$)?)(.*$)", re.DOTALL|re.UNICODE)
 
 def getLongDesc(s):
 	try:
