@@ -685,6 +685,13 @@ def speak(  # noqa: C901
 		# After normalisation, the sequence is empty.
 		# There's nothing to speak.
 		return
+	# nvdajp begin
+	log.io("before filterSpeechSequenceForSayAll %r" % speechSequence)
+	try:
+		speechSequence = jpUtils.filterSpeechSequenceForSayAll(speechSequence)
+	except Exception as e:
+		log.io("filter failed: %s" % e)
+	# nvdajp end
 	import inputCore
 	inputCore.logTimeSinceInput()
 	log.io("Speaking %r" % speechSequence)

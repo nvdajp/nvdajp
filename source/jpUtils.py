@@ -11,19 +11,9 @@ import re
 import collections
 import unicodedata
 from dataclasses import dataclass
-import inspect
 from logHandler import log
 
 RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
-
-# from speech import re_last_pause
-s = "^(.*(?<=[^\\s.!?])[.!?][\\\"'" + u"\u201d\u2019" + ")]?(?:\\s+|$))(.*$)"
-# import sys
-# if sys.version_info.major <= 2:
-# 	s2 = ur"^(.*(?<=[^\s.!?])[.!?][\"'”’)]?(?:\s+|$))(.*$)"
-# 	assert s == s2
-re_last_pause = re.compile(s, re.DOTALL | re.UNICODE)
-
 
 def getLongDesc(s):
 	try:
@@ -417,6 +407,14 @@ def startsWithProlongedSoundMark(s):
 		return True
 	return False
 	
+def startsWithKana(s):
+	c = s.lstrip('\n\r ')
+	if c:
+		c = c[0]
+	if isZenkakuKatakana(c) or isZenkakuHiragana(c):
+		return True
+	return False
+
 def endsWithKana(s):
 	c = s.rstrip('\n\r ')
 	if c:
@@ -425,21 +423,54 @@ def endsWithKana(s):
 		return True
 	return False
 
-def getLastPauseBeforeAndAfter(item):
-	m=re_last_pause.match(item)
-	if m:
-		before,after=m.groups()
-	elif u'。' in item:
-		# handle east-asian sentence ending
-		before, after = re.split(u'。', item, maxsplit=1)
-		before += u'。'
-	else:
-		before = after = None
-	return before, after
+def startsWithHiragana(s):
+	c = s.lstrip('\n\r ')
+	if c:
+		c = c[0]
+	if isZenkakuHiragana(c):
+		return True
+	return False
+
+def endsWithHiragana(s):
+	c = s.rstrip('\n\r ')
+	if c:
+		c = c[-1]
+	if isZenkakuHiragana(c):
+		return True
+	return False
 
 def shouldConnectForSayAll(s1, s2):
+	if not s1 or not s2:
+		return False
+	if endsWithHiragana(s1) or startsWithHiragana(s2):
+		return False
+	if endsWithKana(s1) or startsWithKana(s2):
+		return True
 	if endsWithAsianChar(s1) and startsWithAsianChar(s2):
 		return True
 	if endsWithKana(s1) and startsWithProlongedSoundMark(s2):
 		return True
 	return False
+
+def filterSpeechSequenceForSayAll(oldSpeechSequence):
+	speechSequence = oldSpeechSequence[:]
+	itemBeforePos = 0
+	itemAfterPos = 1
+	while itemBeforePos < len(speechSequence):
+		while not isinstance(speechSequence[itemBeforePos], str):
+			itemBeforePos += 1
+		if itemBeforePos < len(speechSequence) - 1:
+			itemAfterPos = itemBeforePos + 1
+			while not isinstance(speechSequence[itemAfterPos], str):
+				itemAfterPos += 1
+			if itemAfterPos < len(speechSequence):
+				itemBefore = speechSequence[itemBeforePos]
+				itemAfter = speechSequence[itemAfterPos]
+				if isinstance(itemBefore, str) and isinstance(itemAfter, str):
+					while shouldConnectForSayAll(itemBefore, itemAfter):
+						itemBefore = itemBefore.rstrip('\n\r ') + itemAfter[0:1]
+						itemAfter = itemAfter[1:]
+					speechSequence[itemBeforePos] = itemBefore
+					speechSequence[itemAfterPos] = itemAfter
+		itemBeforePos += 1
+	return speechSequence
