@@ -14,6 +14,7 @@ import time
 import colors
 import api
 import controlTypes
+from controlTypes import OutputReason
 import tones
 import synthDriverHandler
 from synthDriverHandler import getSynth, setSynth
@@ -324,7 +325,7 @@ def getCharDescListFromText(text,locale):
 
 def speakObjectProperties(  # noqa: C901
 		obj,
-		reason: str = controlTypes.REASON_QUERY,
+		reason: OutputReason = controlTypes.REASON_QUERY,
 		_prefixSpeechCommand: Optional[SpeechCommand] = None,
 		priority: Optional[Spri] = None,
 		**allowedProperties
@@ -344,7 +345,7 @@ def speakObjectProperties(  # noqa: C901
 # and move logic out into smaller helper functions.
 def getObjectPropertiesSpeech(  # noqa: C901
 		obj,
-		reason: str = controlTypes.REASON_QUERY,
+		reason: OutputReason = controlTypes.REASON_QUERY,
 		_prefixSpeechCommand: Optional[SpeechCommand] = None,
 		**allowedProperties
 ) -> SpeechSequence:
@@ -445,7 +446,7 @@ def getObjectPropertiesSpeech(  # noqa: C901
 
 def _getPlaceholderSpeechIfTextEmpty(
 		obj,
-		reason: str,
+		reason: OutputReason,
 ) -> Tuple[bool, SpeechSequence]:
 	""" Attempt to get speech for placeholder attribute if text for 'obj' is empty. Don't report the placeholder
 		value unless the text is empty, because it is confusing to hear the current value (presumably typed by the
@@ -461,7 +462,7 @@ def _getPlaceholderSpeechIfTextEmpty(
 
 def speakObject(
 		obj,
-		reason: str = controlTypes.REASON_QUERY,
+		reason: OutputReason = controlTypes.REASON_QUERY,
 		_prefixSpeechCommand: Optional[SpeechCommand] = None,
 		priority: Optional[Spri] = None
 ):
@@ -483,7 +484,7 @@ def _flattenNestedSequences(nestedSequences: Iterator[SpeechSequence]) -> Iterat
 # and move logic out into smaller helper functions.
 def getObjectSpeech(  # noqa: C901
 		obj,
-		reason: str = controlTypes.REASON_QUERY,
+		reason: OutputReason = controlTypes.REASON_QUERY,
 		_prefixSpeechCommand: Optional[SpeechCommand] = None,
 ):
 	from NVDAObjects import NVDAObjectTextInfo
@@ -620,7 +621,7 @@ def _objectSpeech_calculateAllowedProps(reason, shouldReportTextContent):
 
 def speakText(
 		text: str,
-		reason: str = controlTypes.REASON_MESSAGE,
+		reason: OutputReason = controlTypes.REASON_MESSAGE,
 		symbolLevel: Optional[int] = None,
 		priority: Optional[Spri] = None
 ):
@@ -1082,7 +1083,7 @@ def speakTextInfo(
 		useCache: Union[bool, SpeakTextInfoState] = True,
 		formatConfig: Dict[str, bool] = None,
 		unit: Optional[str] = None,
-		reason: str = controlTypes.REASON_QUERY,
+		reason: OutputReason = controlTypes.REASON_QUERY,
 		_prefixSpeechCommand: Optional[SpeechCommand] = None,
 		onlyInitialFields: bool = False,
 		suppressBlanks: bool = False,
@@ -1116,7 +1117,7 @@ def getTextInfoSpeech(  # noqa: C901
 		useCache: Union[bool, SpeakTextInfoState] = True,
 		formatConfig: Dict[str, bool] = None,
 		unit: Optional[str] = None,
-		reason: str = controlTypes.REASON_QUERY,
+		reason: OutputReason = controlTypes.REASON_QUERY,
 		_prefixSpeechCommand: Optional[SpeechCommand] = None,
 		onlyInitialFields: bool = False,
 		suppressBlanks: bool = False
@@ -1486,7 +1487,7 @@ def getTextInfoSpeech(  # noqa: C901
 # Note: when working on getPropertiesSpeech, look for opportunities to simplify
 # and move logic out into smaller helper functions.
 def getPropertiesSpeech(  # noqa: C901
-		reason: str = controlTypes.REASON_QUERY,
+		reason: OutputReason = controlTypes.REASON_QUERY,
 		**propertyValues
 ) -> SpeechSequence:
 	global oldTreeLevel, oldTableID, oldRowNumber, oldRowSpan, oldColumnNumber, oldColumnSpan
@@ -1671,7 +1672,7 @@ def getControlFieldSpeech(  # noqa: C901
 		fieldType: str,
 		formatConfig: Optional[Dict[str, bool]] = None,
 		extraDetail: bool = False,
-		reason: Optional[str] = None
+		reason: Optional[OutputReason] = None
 ) -> SpeechSequence:
 	if attrs.get('isHidden'):
 		return []
@@ -1936,7 +1937,7 @@ def getFormatFieldSpeech(  # noqa: C901
 		attrs: textInfos.Field,
 		attrsCache: Optional[textInfos.Field] = None,
 		formatConfig: Optional[Dict[str, bool]] = None,
-		reason: Optional[str] = None,
+		reason: Optional[OutputReason] = None,
 		unit: Optional[str] = None,
 		extraDetail: bool = False,
 		initialFormat: bool = False,
