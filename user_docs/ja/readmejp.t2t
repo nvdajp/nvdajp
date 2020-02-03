@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2019年12月26日
+- 最終更新日：2020年1月30日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -831,6 +831,8 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 - [本家版 2019.3 の変更点と翻訳 https://github.com/nvdajp/nvdajp/milestone/25?closed=1]
 - [2019.3jp の変更点 https://github.com/nvdajp/nvdajp/milestone/24?closed=1]
+- 日本語に関する「すべて読み上げ」の動作は NVDA 本家版と同じになりました。NVDA 日本語版 2016.3jp で行った改善（「すべて読み上げ」で改行をまたぐ単語を適切に読み上げない）は、2019.3jp では対応を見送ることにしました。この課題は[新しいチケット(249) https://github.com/nvdajp/nvdajp/issues/249]で扱います。ご了承ください。
+- JTalk 音声エンジンの「自動言語切換」対応を無効化しました。理由は特定の環境で NVDA がクラッシュする不具合を回避するためです。この課題は[新しいチケット(250) https://github.com/nvdajp/nvdajp/issues/250]で扱います。ご了承ください。
 
 
 ++ 2019.2.1jp の変更点 ++
