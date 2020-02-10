@@ -44,7 +44,7 @@ build_script:
             $env:VERSION += "-noncert"
         }
         $env:UPDATEVERSIONTYPE += "beta"
-    } elseif ($true) {
+    } elseif ($false) {
         $env:VERSION += "-" + $env:NOWDATE
         if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
             $env:VERSION += "-noncert"
