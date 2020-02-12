@@ -11,6 +11,7 @@ What's New in NVDA
 
 == Changes ==
 - NVDA prevents the system from locking or going to sleep when in say all. (#10643)
+- Support for out-of-process iframes in Mozilla Firefox. (#10707)
 
 
 == Changes for Developers ==
@@ -31,6 +32,8 @@ What's New in NVDA
 
 == Bug Fixes ==
 - Fixed not announcing Unicode minus symbol (U+2212) (#10633)
+- When installing add-on from add-ons manager names of files and folders in the browse window are no longer reported twice. (#10620, #2395)
+- In Firefox, when loading Mastodon with the advanced web interface enabled, all timelines now render correctly in browse mode. (#10776)
 
 
 = 2019.3 =
