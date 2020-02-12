@@ -84,18 +84,14 @@ http://www.7-zip.org/download.html
 C:\Program Files\7-Zip
 ```
 
-### (5) Python 3.7.1 / 2.7.15 (Windows 32bit)
+### (5) Python 3.7.5 (Windows 32bit)
 
-それぞれダウンロードして両方実行し、インストールする。
+ダウンロードして実行し、インストールする。
 オプションはデフォルトでよい。
 
-https://www.python.org/downloads/release/python-371/
+https://www.python.org/downloads/release/python-375/
 
-Windows x86 executable installer (python-3.7.1.exe)
-
-https://www.python.org/downloads/release/python-2715/
-
-Windows x86 MSI installer (python-2.7.15.msi)
+Windows x86 executable installer (python-3.7.5.exe)
 
 
 ### (6) 確認すること
@@ -103,10 +99,10 @@ Windows x86 MSI installer (python-2.7.15.msi)
 コマンドプロンプトで
 
 ```
-> py -2
+> py -3-32
 ```
 
-を実行すると Python 2.7 が起動する。
+を実行すると Python 3.7 (32bit) が起動する。
 
 コマンドプロンプトで git, patch, 7z がそれぞれ実行できる。
 
@@ -131,29 +127,30 @@ Windows x86 MSI installer (python-2.7.15.msi)
 ## ビルド
 
 
-### Python 2 環境の有効化
+### Python 3 仮想環境の作成と有効化
 
-以下を行うとカレントに py2env というフォルダが作成される。
-
+以下を行うとカレントに py3x86env というフォルダが作成される。作成済みであれば次に進む。
 
 ```
-> py -2 -m pip install virtualenv
-> py -2 -m virtualenv py2env
-> py2env\Scripts\activate
+> py -3-32 -m venv py3x86env
 ```
 
-最後の activate を実行すると、ただ python と入力するだけで Python 2.7 が起動するようになる。
+以下の activate を実行すると、仮想環境が有効になる。
+この環境の中では python と入力するだけで32ビットの Python 3.7 が起動する。
 
+```
+> py3x86env\Scripts\activate
+```
 
 ### 日本語版のビルド
 
 
-py2env を activate して
+py3x86env を activate して
 
 
 ```
-(py2env) > cd nvdajp
-(py2env) > jptools\nonCertAllBuild.cmd
+(py3x86env) > cd nvdajp
+(py3x86env) > jptools\nonCertAllBuild.cmd
 ```
 
 詳細は後述（署名なしビルド）
@@ -163,11 +160,9 @@ py2env を activate して
 
 
 ```
-(py2env) > cd nvda
-(py2env) > python scons.py
+(py3x86env) > cd nvda
+(py3x86env) > python scons.py
 ```
-
-scons.bat は拡張子 .py が Python 3 と関連付けされているとうまく動かない。
 
 
 ## git トラブルシューティング
@@ -233,7 +228,6 @@ jptools\nonCertAllBuild.cmd
 ```
 
 出力は output フォルダに作られる。
-実行した日付のついた nvda_20**.*jp-beta-YYMMDDx.exe というファイル名になる。
 
 AppVeyor 署名なしビルドのプロジェクト nvdajp-noncert
 
