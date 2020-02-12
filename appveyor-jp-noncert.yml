@@ -21,7 +21,7 @@ install:
 
 build_script:
  - set RELEASE=1
- - set VERSION=2019.3jp
+ - set VERSION=2020.1jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
