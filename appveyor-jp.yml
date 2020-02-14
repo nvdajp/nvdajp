@@ -28,7 +28,7 @@ install:
 
 build_script:
  - set RELEASE=1
- - set VERSION=2019.3jp
+ - set VERSION=2019.3.1jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
@@ -44,7 +44,7 @@ build_script:
             $env:VERSION += "-noncert"
         }
         $env:UPDATEVERSIONTYPE += "beta"
-    } elseif ($true) {
+    } elseif ($false) {
         $env:VERSION += "-" + $env:NOWDATE
         if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
             $env:VERSION += "-noncert"
