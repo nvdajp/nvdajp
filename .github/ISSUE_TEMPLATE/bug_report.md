@@ -31,6 +31,8 @@ https://github.com/nvaccess/nvda/wiki/Github-issue-template-explanation-and-exam
 ### システム構成
 
 例：NVDA 日本語版 2018.1.1jp インストール環境
+### Other questions
+#### Does the issue still occur after restarting your computer?
 
 例：Windows 10 バージョン 1709 日本語環境
 
@@ -43,3 +45,7 @@ https://github.com/nvaccess/nvda/wiki/Github-issue-template-explanation-and-exam
 例：NVDA 日本語版 2018.1jp でも再現する
 
 #### 他のバージョンの NVDA と比較している場合はその結果
+
+#### If addons are disabled, is your problem still occuring?
+
+#### Did you try to run the COM registry fixing tool in NVDA menu / tools?
