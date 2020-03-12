@@ -43,3 +43,7 @@ https://github.com/nvaccess/nvda/wiki/Github-issue-template-explanation-and-exam
 例：NVDA 日本語版 2018.1jp でも再現する
 
 #### 他のバージョンの NVDA と比較している場合はその結果
+
+#### アドオンを無効化するとこの問題は解決しますか？
+
+#### NVDAメニュー / ツール / COM登録の修復ツールを使うとこの問題は解決しますか？
