@@ -349,11 +349,17 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
 		prependSpecialFolder="AllUsersPrograms"
 	)
 
-	createShortcut(os.path.join(startMenuFolder,_("NVDA web site")+".lnk"),targetPath=versionInfo.url,prependSpecialFolder="AllUsersPrograms")
 	#nvdajp begin
 	# Translators: A label for a shortcut in start menu and a menu entry in NVDA menu (to go to NVDAJP website).	
-	createShortcut(os.path.join(startMenuFolder,_("NVDAJP web site")+".lnk"),targetPath="http://www.nvda.jp/",prependSpecialFolder="AllUsersPrograms")
+	jpWebSiteTranslated = _("NVDAJP web site")
+	_createShortcutWithFallback(
+		path=os.path.join(startMenuFolder, jpWebSiteTranslated + ".lnk"),
+		fallbackPath=os.path.join(startMenuFolder, "NVDAJP web site.lnk"),
+		targetPath="http://www.nvda.jp/",
+		prependSpecialFolder="AllUsersPrograms"
+	)
 	#nvdajp end
+
 	# Translators: A label for a shortcut item in start menu to uninstall NVDA from the computer.
 	uninstallTranslated = _("Uninstall NVDA")
 	_createShortcutWithFallback(
