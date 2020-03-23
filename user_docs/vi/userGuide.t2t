@@ -473,15 +473,15 @@ Còn khi chuột thay đổi vị trí theo chiều ngang (trái hoặc phải) 
 Tính năng này mặc định không được bật.
 Nếu muốn bật tính năng này, bạn có thể cấu hình trong phân loại [Chuột #MouseSettings] của hộp thoại [cấu hình NVDA #NVDASettings], được tìm thấy trong trình đơn tùy chọn của NVDA.
 
-Bên cạnh sử dụng trực tiếp chuột thì NVDA cung cấp cho bạn thêm một số phím tương tác với chuột như sau:
+Bên cạnh sử dụng trực tiếp chuột thì NVDA cũng cung cấp cho bạn một số phím lệnh liên quan đến chuột:
 %kc:beginInclude
-|| chức năng | Phím máy bàn | Phím xách tay | Mô tả |
-| Kích hoạt nút chuột trái | dấu chia bàn phím số | NVDA+[ | Kích hoạt nút chuột trái, bấm nhanh hai lần sẽ tương tự như kích đúp nút chuột trái |
-| Khóa nút chuột trái | shift+dấu chia bàn phím số | NVDA+control+[ |  Khóa nút chuột trái, bấm tiếp để mở lại |
-| Kích hoạt nút chuột phải | dấu nhân bàn phím số | NVDA+] | Kích hoạt nút chuột phải |
-| Khóa nút chuột phải | shift+dấu nhân bàn phím số | NVDA+control+] | Khóa nút chuột phải, bấm tiếp một lần nữa để mở lại |
-| Di chuyển chuột đến vị trí đối tượng điều hướng | NVDA+dấu chia bàn phím số | NVDA+shift+m | Di chuyển chuột đến vị trí đối tượng điều hướng |
-| Chuyển đến đối tượng dưới con trỏ chuột | NVDA+dấu nhân bàn phím số | NVDA+shift+n | Đưa đối tượng điều hướng đến đối tượng tại vị trí chuột |
+|| Chức năng | Phím máy bàn | Phím xách tay | Cảm ứng | Mô tả |
+| Kích hoạt nút chuột trái | dấu chia bàn phím số | NVDA+[ | không có | Kích hoạt nút chuột trái, bấm nhanh hai lần sẽ tương tự như kích đúp nút chuột trái |
+| Khóa nút chuột trái | shift+dấu chia bàn phím số | NVDA+control+[ |  không có | Khóa nút chuột trái, bấm lần nữa để mở lại. Để kéo chuột, bấm lệnh này để khóa nút chuột trái rồi di chuyển bằng chuột  trên máy tính hoặc dùng các phím lệnh di chuyển chuột |
+| Kích hoạt nút chuột phải | dấu nhân bàn phím số | NVDA+] | Nhấn và giữ | Kích hoạt nút chuột phải, thường dùng để mở thực đơn ngữ cảnh tại vị trí chuột. |
+| Khóa nút chuột phải | shift+dấu nhân bàn phím số | NVDA+control+] | không có | Khóa nút chuột phải, bấm một lần nữa để mở lại. Để kéo chuột, bấm lệnh này để khóa nút chuột phải rồi di chuyển bằng chuột  trên máy tính hoặc dùng các phím lệnh di chuyển chuột |
+| Di chuyển chuột đến vị trí đối tượng điều hướng | NVDA+dấu chia bàn phím số | NVDA+shift+m | không có | Di chuyển chuột đến vị trí đối tượng điều hướng hiện tại và con trỏ duyệt |
+| Chuyển đến đối tượng dưới con trỏ chuột | NVDA+dấu nhân bàn phím số | NVDA+shift+n | không có | Đưa đối tượng điều hướng đến đối tượng tại vị trí chuột |
 %kc:endInclude
 
 + Chế độ duyệt tài liệu +[BrowseMode]
@@ -1162,7 +1162,7 @@ Nếu bạn thấy NVDA đọc dấu câu không đúng cho một ngôn ngữ v�
 
 ==== Tích hợp dữ liệu của Unicode Consortium (bao gồm biểu tượng cảm xúc) khi xử lý kí hiệu và kí tự ====[SpeechSettingsCLDR]
 Bật hộp kiểm này, NVDA sẽ bao gồm thêm các  từ điển phát âm kí hiệu khi phát âm kí tự và kí hiệu.
-Những từ điển này có mô tả cho các kí hiệu (đặc biệt là biểu tượng cảm xúc) được cung cấp bởi [Unicode Consortium http://www.unicode.org/consortium/] là một bộ phận của kho dữ liệu tên [Common Locale Data Repository http://cldr.unicode.org/].
+Những từ điển này chứa mô tả cho các kí hiệu (đặc biệt là biểu tượng cảm xúc) được cung cấp bởi [Unicode Consortium https://www.unicode.org/consortium/] là một phần của kho dữ liệu tên [Common Locale Data Repository http://cldr.unicode.org/].
 Nếu muốn NVDA đọc mô tả kí tự của các biểu tượng cảm xúc dựa trên kho dữ liệu đó, bạn phải bật tùy chọn này.
 Tuy nhiên, nếu bạn đang dùng một bộ đọc có hỗ trợ mô tả các biểu tượng cảm xúc một cách tự nhiên, bạn có thể tắt tùy chọn này.
 
@@ -2045,6 +2045,10 @@ Cửa sổ trình xem chữ nổi có một hộp kiểm tên "Hiển thị trì
 Nếu chọn, trình xem chữ nổi sẽ được mở khi khởi động NVDA.
 Cửa sổ trình xem chữ nổi sẽ luôn cố gắng mở lại với kích cỡ và vị trí mà nó đã bị đóng lại trước đó.
 
+++ Python Console ++[PythonConsole]
+Đây là công cụ hỗ trợ cho các lập trình viên trong việc phát hiện, kiểm tra lỗi trong NVDA, kiểm tra cấu trúc các đối tượng và tính tiếp cận của chúng.
+Để biết thêm thông tin chi tiết, xin xem tại phần  [Phát triển NVDA https://www.nvaccess.org/files/nvda/documentation/developerGuide.html].
+
 ++ Quản lý Add-ons ++[AddonsManager]
 Bạn có thể mở cửa sổ này từ trình đơn công cụ của NVDA, nó cho phép bạn cài đặt hay gỡ bỏ các Add on của NVDA.
 Các Add on này thường được phát triển bởi cộng đồng nhằm hỗ trợ và bổ sung các tính năng cho NVDA cũng như hỗ trợ cho các ứng dụng, các thiết bị màn hình nổi hay các bộ tổng hợp tiếng nói.
@@ -2088,9 +2092,9 @@ Khi dùng một phiên bản NVDA cũ, vài add-on mới cũng có thể không 
 Việc cố gắng cài đặt một add-on không tương thích sẽ xuất hiện một thông điểp báo lỗi giải thích tại sao add-on lại được coi là không tương thích.
 Để xem xét các add-on không tương thích, bạn có thể dùng nút "xem các add-on không tương thích" để chạy trình quản lý các add-on không tương thích.
 
-Để mở trình quản lý add-on ở bất cứ đâu, bạn hãy gán phím tắt/thao tác cho nó trong hộp thoại [Quản lý thao tác #InputGestures].
+Để mở trình quản lý add-on ở bất cứ đâu, hãy gán phím tắt/thao tác cho nó trong hộp thoại [Quản lý thao tác #InputGestures].
 
-++ Trình Quản Lý Các Add-on không tương thích ++[incompatibleAddonsManager]
++++ Trình Quản Lý Các Add-on không tương thích +++[incompatibleAddonsManager]
 Trình Quản Lý Các Add-on không tương thích có thể được mở thông qua nút "xem các add-on không tương thích" trong trình quản lý Add-on, cho phép bạn xem xét bất cứ add-on nào không tương thích, và lí do mà chúng được coi là không tương thích.
 Các Add-on được coi là không tương thích khi chúng không được cập nhật để hoạt động với các thay đổi đáng kể của NVDA, hoặc khi chúng dựa vào một tính năng không tồn tại trong phiên bản NVDA bạn đang dùng.
 Trình quản lý các add-on không tương thích có một thông điệp ngắn để giải thích mục đích của nó cũng như phiên bản NVDA.
@@ -2103,11 +2107,32 @@ Các add-on không tương thích được trình bày trong một danh sách v�
 Trình quản lý các add-on không tương thích cũng có nút "Thông tin về Add  - on...".
 Hộp thoại này cho bạn biết đầy đủ các chi tiết của add-on, hữu ích khi liên lạc với tác giả của add-on.
 
+++ Tạo bản chạy trực tiếp ++[CreatePortableCopy]
+Tùy chọn này sẽ mở một hộp thoại cho phép bạn tạo một bản chạy trực tiếp của NVDA.
+Tương tự, khi đang dùng một bản NVDA chạy trực tiếp, mục này sẽ có tên là "cài đặt NVDA vào máy tính này" thay vì "tạo bản chạy trực tiếp".
 
-++ Python Console ++[PythonConsole]
-Đây là công cụ hỗ trợ cho các lập trình viên trong việc phát hiện, kiểm tra lỗi trong NVDA, kiểm tra cấu trúc các đối tượng và tính tiếp cận của chúng.
-Để biết thêm thông tin chi tiết, xin xem tại phần  [Phát triển NVDA https://www.nvaccess.org/files/nvda/documentation/developerGuide.html].
+Hộp thoại tạo bản NVDA chạy trực tiếp hay cài đặt NVDA vào máy sẽ yêu cầu bạn chọn đường dẫn đến thư mục để tạo bản chạy trực tiếp hay cài đặt NVDA.
 
+Trong hộp thoại này, bạn có thể bật hay tắt các tùy chọn sau:
+- Sao chép cấu hình người dùng hiện tại (bao gồm các tập tin trong %appdata%\roaming\NVDA hay trong thư mục cấu hình người dùng của bản chạy trực tiếp và cũng bao gồm addons  và các module khác)
+- Khởi động bản chạy trực tiếp mới sau khi tạo hoặc chạy NVDA sau khi cài đặt (Chạy NVDA sau khi cài đặt hoặc tạo bản chạy trực tiếp)
+-
+
+++ Chạy công cụ sửa đăng ký COM... ++[RunCOMRegistrationFixingTool]
+Việc cài và tháo cài đặt các chương trình trên một máy vi tính trong vài trường hợp có thể làm cho các tập tin COM DLL bị hủy đăng kí.
+Ví dụ, các giao diện COM như IAccessible yêu cầu việc đăng kí đúng các tập tin COM DLL. Lỗi có thể xuất hiện trong trường hợp thiếu các tập tin đăng kí cần thiết.
+
+Điều đó có thể xảy ra sau khi cài và tháo cài đặt Adobe Reader, Math Player và các chương trình khác.
+
+Việc thiếu các tập tin cần đăng kí có thể gây ra lỗi trong các trình duyệt, các ứng dụng desktop, thanh tác vụ và các giao diện khác.
+
+Cụ thể, công cụ này có thể sửa các lỗi sau:
+- NVDA đọc "không xác định" khi điều hướng trong các trình duyệt như Firefox, Thunderbird, v...v...
+- NVDA không chuyển được giữa chế độ focus và chế độ duyệt
+- NVDA rất chậm chạp khi điều hướng trong các trình duyệt với chế độ duyệt
+- Và các lỗi khác nữa.
+-
+ 
 ++ Cập nhật lại plugins ++[ReloadPlugins]
 Chức năng này sẽ cập nhật lại tất cả các mô đun mở rộng trong NVDA mà không cần khởi động lại NVDA, nó rất tiện cho các lập trình viên.
 
@@ -2425,7 +2450,12 @@ Các dòng màn hình Brailliant BI và B của [HumanWare https://www.humanware
 Nếu kết nối qua cổng USB với thiết lập giao thức đến Humanware, bạn cần phải cài driver được cung cấp bởi nhà sản xuất.
 Sẽ không cần cài driver USB nếu thiết lập giao thức đến OpenBraille.
 
-BrailleNote Touch cũng đã được hỗ trợ, và không đòi hỏi  phải cài đặt bất cứ trình điều khiển nào.
+Các thiết bị thêm vào sau đây cũng được hỗ trợ, và không yêu cầu phải cài đặt bất cứ trình điều khiển đặc biệt nào:
+- APH Mantis Q40
+- APH Chameleon 20
+- Humanware BrailleOne
+- NLS eReader
+
 
 Sau đây là danh sách các phím được gán của mẫu màn hình nổi này trong NVDA.
 Vui lòng xem tài liệu hướng dẫn của màn hình nổi để biết các phím tương ứng.

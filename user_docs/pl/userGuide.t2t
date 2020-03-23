@@ -473,15 +473,15 @@ Im dalej z lewej lub prawej strony znajduje się wskaźnik, tym bardziej z lewej
 Wyżej opisane opcje dotyczące nawigacji myszą nie są domyślnie włączone.
 Możesz skonfigurować je, korzystając z kategorii [Ustawienia myszy #MouseSettings] w oknie [Preferencji NVDA #NVDASettings], znajdującym się w podmenu Ustawienia w menu NVDA.
 
-Nawigacja myszą powinna odbywać się przy użyciu fizycznej myszy lub trackpada. NVDA posiada jednak kilka klawiszy związanych z myszą:
+Do właściwego korzystania z funkcji oferowanych przez urządzenia wskazujące powinno się używać fizycznej myszy lub touch pada, pomimo tego NVDA posiada kilka funkcji które ułatwiają korzystanie z myszy.
 %kc:beginInclude
-|| Działanie | Skrót desktopa | Skrót laptopa | Opis |
-| Lewy przycisk myszy | Numeryczny slash | NVDA+lewy nawias kwadratowy ("[") | Wykonuje jedno kliknięcie lewym przyciskiem myszy. Dwukrotne kliknięcie może być wykonywane przez naciśnięcie tego klawisza dwa razy w krótkich odstępach czasu |
-| Blokuj lewy przycisk myszy | Shift+Numeryczny slash | NVDA+Ctrl+lewy nawias kwadratowy ("[") |  Wciśnięcie i zablokowanie lewego przycisku myszy. Naciśnij klawisze ponownie, aby zwolnić przycisk. Aby przeciągnąć mysz, naciśnij klawisze, aby zablokować lewy przycisk, a następnie przesuń mysz ręcznie lub przy użyciu innych poleceń przemieszczania myszy|
-| Prawy przycisk myszy | Numeryczna gwiazdka | NVDA+Prawy nawias kwadratowy ("]") | Wykonuje jedno kliknięcie prawym przyciskiem myszy. |
-| Blokuj prawy przycisk myszy | Shift+Numeryczna gwiazdka | NVDA+Ctrl+prawy nawias kwadratowy ("]") | Blokuje lub zwalnia prawy przycisk myszy (Metoda: przeciągnij i upuść). |
-| Przesuń mysz do aktualnego obiektu | NVDA+Numeryczny slash | NVDA+Shift+M | Przesuwa mysz w miejsce aktualnego obiektu i punktu przeglądu. |
-| Przejdź do obiektu pod myszą | NVDA+Numeryczna gwiazdka | NVDA+Shift+N | Przenosi obiekt nawigatora do obiektu znajdującego się pod wskaźnikiem myszy. |
+|| Nazwa | skrót układu desktop | Skrót układu laptop | Gest dotykowy | Opis |
+| Lewy przycisk myszy | Numeryczny slesz | NVDA+[ | brak | Wykonuje pojedyncze kliknięcie myszą. Popularny "dwuklik" może być wykonany poprzez dwukrotne szybkie naciśnięcie skrótu. |
+| Zablokowanie lewego przycisku myszy | shift+numeryczny slesz | NVDA+kontrol+[ | brak | Blokuje lewy przycisk myszy. Naciśnij ten skrut ponownie, aby go odblokować. W celu przeciągnięcia myszy przesuń fizyczne urządzenie w dane miejsce lub użyj innego przeznaczonego do tego skrutu |
+| Prawy przycisk myszy | Numeryczna gwiazdka | NVDA+] | długie naciśnięcie | Wykonuje kliknięcie prawym przyciskiem myszy. Skrót ten jest używany do otwierania menu kontekstowego w niektórych aplikacjach. |
+| Zablokowanie prawego przycisku myszy | shift+Numeryczna Gwiazdka | NVDA+kontrol+] | brak | Blokuje prawy przycisk myszy. Naciśnij ten skrut ponownie, aby go odblokować. W celu przeciągnięcia myszy przesuń fizyczne urządzenie w dane miejsce lub użyj innego przeznaczonego do tego skrutu |
+| Przeniesienie myszy do aktualnego obiektu nawigatora | NVDA+Numeryczny slesz | NVDA+shift+m | brak | Przenosi kursor myszy do pozycji aktualnego obiektu nawigatora. |
+| Przeniesienie pozycji nawigatora do obiektu pod myszą | NVDA+Numeryczny slesz | NVDA+shift+n | brak | Przenosi obiekt nawigatora do aktualnej pozycji myszy. |
 %kc:endInclude
 
 + Tryb czytania +[BrowseMode]
@@ -1162,7 +1162,7 @@ Jeśli okaże się, że interpunkcja jest odczytywana w nieprawidłowym języku 
 
 ==== Używaj bazy danych Unicode do przetwarzania znaków i symboli (włączając w to emoji) ====[SpeechSettingsCLDR]
 Gdy to pole wyboru jest zaznaczone, NVDA będzie używał dodatkowych słowników wymowy  symboli.
-Te słowniki zawierają opisy symboli (w szczególności emoji) dostarczane przez [Konsorcjum Unicode http://www.unicode.org/consortium/] jako część ich [wspólnego repozytorium danych lokalnych https://cldr.unicode.org/].
+Te słowniki zawierają opisy symboli (w szczególności emoji) dostarczane przez [Konsorcjum Unicode https://www.unicode.org/consortium/] jako część ich [wspólnego repozytorium danych lokalnych http://cldr.unicode.org/].
 Jeśli chcesz, by NVDA wymawiał opisy znaków emoji w oparciu o te dane, powinieneś włączyć tę opcję.
 Jeśli używasz syntezatora, który obsługuje wypowiadanie emoji, możesz chcieć wyłączyć to pole wyboru.
 
@@ -2425,7 +2425,12 @@ Serie monitorów Brailliant BI i B produkcji [HumanWare https://www.humanware.co
 Przy połączeniu przez USB z protokołem ustawionym na HumanWare, trzeba najpierw zainstalować sterowniki USB dostarczone przez producenta.
 Sterowniki USB nie są wymagane, jeśli protokół jest ustawiony na OpenBraille.
 
-BrailleNote Touch jest również obsługiwany i nie wymaga instalacji żadnych sterowników.
+Następujące urządzenia również nie wymagają instalacji dodatkowych sterowników USB:
+- APH Mantis Q40
+- APH Chameleon 20
+- Humanware BrailleOne
+- NLS eReader
+
 
 Poniżej skróty klawiszowe dla Brailliant BI/B i BrailleNote touch, które działają w NVDA.
 Aby odnaleźć opisywane klawisze, zajrzyj do dokumentacji urządzenia.
