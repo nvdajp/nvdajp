@@ -349,6 +349,17 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
 		prependSpecialFolder="AllUsersPrograms"
 	)
 
+	# nvdajp begin
+	# Translators: A label for a shortcut in start menu and a menu entry in NVDA menu (to go to NVDAJP website).	
+	jpWebSiteTranslated = _("NVDAJP web site")
+	_createShortcutWithFallback(
+		path=os.path.join(startMenuFolder, jpWebSiteTranslated + ".lnk"),
+		fallbackPath=os.path.join(startMenuFolder, "NVDAJP web site.lnk"),
+		targetPath="http://www.nvda.jp/",
+		prependSpecialFolder="AllUsersPrograms"
+	)
+	# nvdajp end
+
 	# Translators: A label for a shortcut item in start menu to uninstall NVDA from the computer.
 	uninstallTranslated = _("Uninstall NVDA")
 	_createShortcutWithFallback(
@@ -391,6 +402,16 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
 		prependSpecialFolder="AllUsersPrograms"
 	)
 
+	# nvdajp begin
+	# Translators: A label for a shortcut in start menu to open NVDAJP readme
+	readmeJpTranslated = _("&Readme (nvdajp)")
+	_createShortcutWithFallback(
+		path=os.path.join(docFolder, readmeJpTranslated + ".lnk"),
+		fallbackPath=os.path.join(docFolder, "Readme (nvdajp).lnk"),
+		targetPath=getDocFilePath("readmejp.html", installDir),
+		prependSpecialFolder="AllUsersPrograms"
+	)
+	# nvdajp end
 
 def isDesktopShortcutInstalled():
 	wsh=_getWSH()
