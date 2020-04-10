@@ -20,7 +20,7 @@ from NVDAObjects.UIA import UIA
 import jpUtils
 from logHandler import log
 import queueHandler
-# import tones
+import tones
 
 
 def getClassNameAndAutomationID(obj):
@@ -48,20 +48,19 @@ class AppModule(appModuleHandler.AppModule):
 	def event_UIA_elementSelected(self, obj, nextHandler):
 		# nvdajp begin
 		context = getContext(obj)
-		# log.info(context + "*" + obj.name)
-		# tones.beep(3000, 40)
 		if context == "Windows.UI.Core.CoreWindow:/pane:IME_Candidate_Window/ListView:IME_Candidate_Window/ListViewItem:":
-			speech.cancelSpeech()
-			api.setNavigatorObject(obj)
-			newText = jpUtils.getDiscriminantReading(obj.name)
-			# log.info(newText)
-			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakText, newText)
-			newTextForBraille = jpUtils.getDiscriminantReading(obj.name, forBraille=True)
-			queueHandler.queueFunction(queueHandler.eventQueue, braille.handler.message, newTextForBraille)
+			# newText = jpUtils.getDiscriminantReading(obj.name)
+			# queueHandler.queueFunction(queueHandler.eventQueue, speech.cancelSpeech)
+			# queueHandler.queueFunction(queueHandler.eventQueue, speech.speakText, newText)
+			# newTextForBraille = jpUtils.getDiscriminantReading(obj.name, forBraille=True)
+			# queueHandler.queueFunction(queueHandler.eventQueue, braille.handler.message, newTextForBraille)
+			queueHandler.queueFunction(queueHandler.eventQueue, api.setNavigatorObject, obj)
 			return
 		if context == "Windows.UI.Core.CoreWindow:/pane:IME_Candidate_Window/ListView:ExpandedCandidateList/ListViewItem:":
-			api.setNavigatorObject(obj)
+			queueHandler.queueFunction(queueHandler.eventQueue, api.setNavigatorObject, obj)
 			return
+		# log.info(context + "*" + obj.name)
+		# tones.beep(3000, 40)
 		# nvdajp end
 		# #7273: When this is fired on categories, the first emoji from the new category is selected but not announced.
 		# Therefore, move the navigator object to that item if possible.
@@ -170,6 +169,12 @@ class AppModule(appModuleHandler.AppModule):
 		if context == "pane:IME_Candidate_Window/ListView:Comments/ListViewHeaderItem:/ListViewItem:":
 			return
 		if context == "/ApplicationFrameWindow:/Windows.UI.Core.CoreWindow:/TextBlock:KeyboardShortcutText":
+			return
+		if context == "/ApplicationFrameWindow:/Windows.UI.Core.CoreWindow:/pane:IME_Candidate_Window" and obj.name == "Microsoft 候補 UI":
+			return
+		if context == "ApplicationFrameWindow:/Windows.UI.Core.CoreWindow:/ListView:IME_Candidate_Window/ListViewItem:":
+			return
+		if context == "Windows.UI.Core.CoreWindow:/ListView:Comments/ListViewHeaderItem:/ListViewItem:":
 			return
 		# log.info(context + "*" + obj.name)
 		# tones.beep(3000, 40)
