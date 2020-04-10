@@ -17,6 +17,28 @@ import ui
 import config
 import winVersion
 from NVDAObjects.UIA import UIA
+import jpUtils
+from logHandler import log
+import queueHandler
+# import tones
+
+
+def getClassNameAndAutomationID(obj):
+	if not obj:
+		return ""
+	if not hasattr(obj, 'UIAElement'):
+		return ""
+	return obj.UIAElement.cachedClassName + ":" + obj.UIAElement.cachedAutomationID
+
+
+def getContext(obj):
+	return "/".join([
+		getClassNameAndAutomationID(obj.parent.parent.parent),
+		getClassNameAndAutomationID(obj.parent.parent),
+		getClassNameAndAutomationID(obj.parent),
+		getClassNameAndAutomationID(obj)
+	])
+
 
 class AppModule(appModuleHandler.AppModule):
 
@@ -24,6 +46,23 @@ class AppModule(appModuleHandler.AppModule):
 	_recentlySelected = None
 
 	def event_UIA_elementSelected(self, obj, nextHandler):
+		# nvdajp begin
+		context = getContext(obj)
+		# log.info(context + "*" + obj.name)
+		# tones.beep(3000, 40)
+		if context == "Windows.UI.Core.CoreWindow:/pane:IME_Candidate_Window/ListView:IME_Candidate_Window/ListViewItem:":
+			speech.cancelSpeech()
+			api.setNavigatorObject(obj)
+			newText = jpUtils.getDiscriminantReading(obj.name)
+			# log.info(newText)
+			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakText, newText)
+			newTextForBraille = jpUtils.getDiscriminantReading(obj.name, forBraille=True)
+			queueHandler.queueFunction(queueHandler.eventQueue, braille.handler.message, newTextForBraille)
+			return
+		if context == "Windows.UI.Core.CoreWindow:/pane:IME_Candidate_Window/ListView:ExpandedCandidateList/ListViewItem:":
+			api.setNavigatorObject(obj)
+			return
+		# nvdajp end
 		# #7273: When this is fired on categories, the first emoji from the new category is selected but not announced.
 		# Therefore, move the navigator object to that item if possible.
 		# However, in recent builds, name change event is also fired.
@@ -67,6 +106,15 @@ class AppModule(appModuleHandler.AppModule):
 		nextHandler()
 
 	def event_UIA_window_windowOpen(self, obj, nextHandler):
+		# nvdajp begin
+		context = getContext(obj)
+		if context == "//ApplicationFrameWindow:/Windows.UI.Core.CoreWindow: Microsoft Text Input Application":
+			return
+		if context == "//ApplicationFrameWindow:/Windows.UI.Core.CoreWindow:" and obj.name == "Microsoft Text Input Application":
+			return
+		# log.info(context + "*" + obj.name)
+		# tones.beep(3000, 40)
+		# nvdajp end
 		# Make sure to announce most recently used emoji first in post-1709 builds.
 		# Fake the announcement by locating 'most recently used" category and calling selected event on this.
 		# However, in build 17666 and later, child count is the same for both emoji panel and hardware keyboard candidates list.
@@ -107,6 +155,25 @@ class AppModule(appModuleHandler.AppModule):
 	_emojiPanelJustOpened = False
 
 	def event_nameChange(self, obj, nextHandler):
+		# nvdajp begin
+		context = getContext(obj)
+		if context == "//ApplicationFrameWindow:/Windows.UI.Core.CoreWindow: Microsoft Text Input Application":
+			return
+		if context == "Windows.UI.Core.CoreWindow:/pane:IME_Candidate_Window/ListView:IME_Candidate_Window/ListViewItem:":
+			return
+		if context == "Windows.UI.Core.CoreWindow:/pane:IME_Candidate_Window/ListView:ExpandedCandidateList/ListViewItem:":
+			return
+		if context == "pane:IME_Candidate_Window/ListView:IME_Candidate_Window/ListViewItem:/TextBlock:KeyboardShortcutText":
+			return
+		if context == "//ApplicationFrameWindow:/Windows.UI.Core.CoreWindow:" and obj.name == "Microsoft Text Input Application":
+			return
+		if context == "pane:IME_Candidate_Window/ListView:Comments/ListViewHeaderItem:/ListViewItem:":
+			return
+		if context == "/ApplicationFrameWindow:/Windows.UI.Core.CoreWindow:/TextBlock:KeyboardShortcutText":
+			return
+		# log.info(context + "*" + obj.name)
+		# tones.beep(3000, 40)
+		# nvdajp end
 		# On some systems, touch keyboard keys keeps firing name change event.
 		# In build 17704, whenever skin tones are selected, name change is fired by emoji entries (GridViewItem).
 		if ((obj.UIAElement.cachedClassName in ("CRootKey", "GridViewItem"))
