@@ -11,6 +11,8 @@ What's New in NVDA
 - Added script to open NVDA configuration directory (no default gesture). (#2214)
 - Better support for ESET antivirus GUI. (#10894)
 - Added support for Windows Terminal. (#10305)
+- Added a command to report the active configuration profile. (#9325)
+- Added a command to toggle reporting of subscripts and superscripts. (#10985)
 
 
 == Changes ==
@@ -27,6 +29,7 @@ What's New in NVDA
 == Changes For Developers ==
 - execElevated and hasUiAcces have moved from config module to systemUtils module. Usage via config module is deprecated. (#10493)
 - Updated configobj to 5.1.0dev commit f9a265c4. (#10939)
+- Automated testing of NVDA with Chrome and a HTML sample is now possible. (#10553)
 
 
 = 2020.1 =
