@@ -224,7 +224,12 @@ def speakSpelling(
 		priority: Optional[Spri] = None
 ) -> None:
 	# This could be a very large list. In future we could convert this into chunks.
-	seq = list(getSpeechForSpelling(text, locale=locale, useCharacterDescriptions=useCharacterDescriptions, useDetails=useDetails))
+	seq = list(getSpellingSpeech(
+		text,
+		locale=locale,
+		useCharacterDescriptions=useCharacterDescriptions,
+		useDetails=useDetails
+	))
 	speak(seq, priority=priority)
 
 
@@ -781,13 +786,6 @@ def speak(  # noqa: C901
 		# After normalisation, the sequence is empty.
 		# There's nothing to speak.
 		return
-	# nvdajp begin
-	log.io("before filterSpeechSequenceForSayAll %r" % speechSequence)
-	try:
-		speechSequence = jpUtils.filterSpeechSequenceForSayAll(speechSequence)
-	except Exception as e:
-		log.io("filter failed: %s" % e)
-	# nvdajp end
 	import inputCore
 	inputCore.logTimeSinceInput()
 	log.io("Speaking %r" % speechSequence)
