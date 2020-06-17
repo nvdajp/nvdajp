@@ -1,8 +1,8 @@
-# -*- coding: UTF-8 -*-
-#A part of NonVisual Desktop Access (NVDA)
-#This file is covered by the GNU General Public License.
-#See the file COPYING for more details.
-#Copyright (C) 2006-2019 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Babbage B.V., Bill Dengler
+#  -*- coding: UTF-8 -*-
+# A part of NonVisual Desktop Access (NVDA)
+# This file is covered by the GNU General Public License.
+# See the file COPYING for more details.
+# Copyright (C) 2006-2020 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Babbage B.V., Bill Dengler
 
 """High-level functions to speak information.
 """ 
@@ -24,6 +24,7 @@ import speechDictHandler
 import characterProcessing
 import languageHandler
 import jpUtils
+from . import manager
 from .commands import (
 	# Commands that are used in this file.
 	SpeechCommand,
@@ -38,6 +39,7 @@ from .commands import (  # noqa: F401
 	# The following are imported here because other files that speech.py
 	# previously relied on "import * from .commands"
 	# New commands added to commands.py should be directly imported only where needed.
+	# Usage of these imports is deprecated and will be removed in 2021.1
 	SynthCommand,
 	IndexCommand,
 	SynthParamCommand,
@@ -52,6 +54,7 @@ from .commands import (  # noqa: F401
 	ConfigProfileTriggerCommand,
 )
 
+from . import types
 from .types import (
 	SpeechSequence,
 	SequenceItemT,
@@ -67,6 +70,7 @@ from typing import (
 	Generator,
 	Union,
 	Callable,
+	Iterator,
 	Tuple,
 )
 from logHandler import log
@@ -228,7 +232,7 @@ def speakSpelling(
 		text,
 		locale=locale,
 		useCharacterDescriptions=useCharacterDescriptions,
-		useDetails=useDetails
+        useDetails=useDetails
 	))
 	speak(seq, priority=priority)
 
@@ -458,9 +462,14 @@ def getObjectPropertiesSpeech(  # noqa: C901
 			newPropertyValues['states']=states
 	#Get the speech text for the properties we want to speak, and then speak it
 	speechSequence = getPropertiesSpeech(reason=reason, **newPropertyValues)
+
 	if speechSequence:
 		if _prefixSpeechCommand is not None:
 			speechSequence.insert(0, _prefixSpeechCommand)
+		from eventHandler import _getFocusLossCancellableSpeechCommand
+		cancelCommand = _getFocusLossCancellableSpeechCommand(obj, reason)
+		if cancelCommand is not None:
+			speechSequence.append(cancelCommand)
 	return speechSequence
 
 
@@ -493,6 +502,8 @@ def speakObject(
 	)
 	if sequence:
 		speak(sequence, priority=priority)
+
+
 
 
 # C901 'getObjectSpeech' is too complex
@@ -726,7 +737,7 @@ def getIndentationSpeech(indentation: str, formatConfig: Dict[str, bool]) -> Spe
 def speak(  # noqa: C901
 		speechSequence: SpeechSequence,
 		symbolLevel: Optional[int] = None,
-		priority: Optional[Spri] = None
+		priority: Spri = Spri.NORMAL
 ):
 	"""Speaks a sequence of text and speech commands
 	@param speechSequence: the sequence of text and L{SpeechCommand} objects to speak
@@ -734,9 +745,10 @@ def speak(  # noqa: C901
 	@param priority: The speech priority.
 	"""
 	logBadSequenceTypes(speechSequence)
-	if priority is None:
-		priority = Spri.NORMAL
-	if not speechSequence: #Pointless - nothing to speak 
+	# in case priority was explicitly passed in as None, set to default.
+	priority: Spri = Spri.NORMAL if priority is None else priority
+
+	if not speechSequence:  # Pointless - nothing to speak
 		return
 	import speechViewer
 	if speechViewer.isActive:
@@ -2212,6 +2224,7 @@ def getFormatFieldSpeech(  # noqa: C901
 				else _("not hidden")
 			)
 			textList.append(text)
+	if formatConfig["reportSuperscriptsAndSubscripts"]:
 		textPosition=attrs.get("text-position")
 		oldTextPosition=attrsCache.get("text-position") if attrsCache is not None else None
 		if (textPosition or oldTextPosition is not None) and textPosition!=oldTextPosition:
@@ -2578,10 +2591,9 @@ speakWithoutPauses = _speakWithoutPauses.speakWithoutPauses
 #: Kept for backwards compatibility.
 re_last_pause = _speakWithoutPauses.re_last_pause
 
-from .manager import SpeechManager
 #: The singleton _SpeechManager instance used for speech functions.
-#: @type: L{_SpeechManager}
-_manager = SpeechManager()
+#: @type: L{manager.SpeechManager}
+_manager = manager.SpeechManager()
 
 
 def clearTypedWordBuffer() -> None:
