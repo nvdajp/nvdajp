@@ -8515,7 +8515,7 @@ msgstr ""
 
 #. Translators: The label of a checkbox option in the Install NVDA dialog.
 msgid "Start NVDA during sign-in"
-msgstr "サインイン中に NVDA を起動"
+msgstr "サインイン画面で NVDA を起動"
 
 #. Translators: The label of a checkbox option in the Install NVDA dialog.
 msgid "&Keep existing desktop shortcut"
@@ -8717,7 +8717,7 @@ msgstr "ログ記録レベル(&O)"
 #. needs to enter passwords or if multiple user accounts are present
 #. to allow user to choose the correct account).
 msgid "Start NVDA during sign-in (requires administrator privileges)"
-msgstr "サインイン中に NVDA を起動(管理者権限が必要)"
+msgstr "サインイン画面で NVDA を起動(管理者権限が必要)"
 
 #. Translators: The label for a button in general settings to copy
 #. current user settings to system settings (to allow current
@@ -9441,7 +9441,7 @@ msgstr "Windows コンソールで新しい入力文字サポートを使用(&Y)
 #. Translators: Label for the 'Cancel speech for expired &focus events' combobox
 #. in the Advanced settings panel.
 msgid "Default (No)"
-msgstr "既定の設定(しない)"
+msgstr "しない(既定の設定)"
 
 #. Translators: Label for the 'Cancel speech for expired &focus events' combobox
 #. in the Advanced settings panel.
