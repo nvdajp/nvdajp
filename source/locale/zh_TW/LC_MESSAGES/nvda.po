@@ -11613,3 +11613,4 @@ msgstr "1.5倍行高"
 
 #~ msgid "Use NVDA on the Windows &logon screen"
 #~ msgstr "在登入畫面使用NVDA(&L)"
+�畫面使用NVDA(&L)"
