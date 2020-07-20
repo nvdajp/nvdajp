@@ -15,7 +15,7 @@ del /Q %VERIFYLOG%
 
 call jptools\setupMiscDepsJp.cmd
 
-set PATH="C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64";%PATH%
+set PATH="C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64";%PATH%
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
 @signtool sign /fd sha256 /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
