@@ -89,15 +89,16 @@ def upload():
 			import time
 			time.sleep(15)
 		try:
-			r = requests.post(URL,
+			r = requests.post(
+				URL,
 				files={'symbols.zip': open(ZIP_FILE, 'rb')},
 				headers={'Auth-Token': os.getenv('mozillaSymsAuthToken')},
 				allow_redirects=False
 			)
 			break  # success
-		except requests.ConnectionError as e:
-			print(f"Attempt {i + 1} failed.")
-			errors.append(str(e))
+		except Exception as e:
+			print(f"Attempt {i + 1} failed: {e!r}")
+			errors.append(repr(e))
 	else:  # no break in for loop
 		allErrors = "\n".join(
 			f"Attempt {index + 1} error: \n{e}"
