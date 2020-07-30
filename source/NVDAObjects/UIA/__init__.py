@@ -59,6 +59,7 @@ class UIATextInfo(textInfos.TextInfo):
 		UIAHandler.UIA_NamePropertyId,
 		UIAHandler.UIA_ToggleToggleStatePropertyId,
 		UIAHandler.UIA_HelpTextPropertyId,
+		UIAHandler.UIA.UIA_FullDescriptionPropertyId,
 		UIAHandler.UIA_AccessKeyPropertyId,
 		UIAHandler.UIA_AcceleratorKeyPropertyId,
 		UIAHandler.UIA_HasKeyboardFocusPropertyId,
@@ -1052,6 +1053,14 @@ class UIA(Window):
 		except:
 			return False
 
+	def event_gainFocus(self):
+		UIAHandler.handler.addLocalEventHandlerGroupToElement(self.UIAElement, isFocus=True)
+		super().event_gainFocus()
+
+	def event_loseFocus(self):
+		super().event_loseFocus()
+		UIAHandler.handler.removeLocalEventHandlerGroupFromElement(self.UIAElement)
+
 	def _get_shouldAllowUIAFocusEvent(self):
 		try:
 			return bool(self._getUIACacheablePropertyValue(UIAHandler.UIA_HasKeyboardFocusPropertyId))
@@ -1184,11 +1193,20 @@ class UIA(Window):
 				role=superRole
 		return role
 
-	def _get_description(self):
+	def _get_UIAFullDescription(self):
+		try:
+			return self._getUIACacheablePropertyValue(UIAHandler.UIA_FullDescriptionPropertyId) or ""
+		except COMError:
+			return ""
+
+	def _get_UIAHelpText(self):
 		try:
 			return self._getUIACacheablePropertyValue(UIAHandler.UIA_HelpTextPropertyId) or ""
 		except COMError:
 			return ""
+
+	def _get_description(self):
+		return self.UIAFullDescription or self.UIAHelpText
 
 	def _get_keyboardShortcut(self):
 		# Build the keyboard shortcuts list early for readability.
@@ -1256,12 +1274,10 @@ class UIA(Window):
 			states.add(controlTypes.STATE_INVALID_ENTRY)
 		if self._getUIACacheablePropertyValue(UIAHandler.UIA_IsRequiredForFormPropertyId):
 			states.add(controlTypes.STATE_REQUIRED)
-		try:
-			isReadOnly=self._getUIACacheablePropertyValue(UIAHandler.UIA_ValueIsReadOnlyPropertyId,True)
-		except COMError:
-			isReadOnly=UIAHandler.handler.reservedNotSupportedValue
-		if isReadOnly and isReadOnly!=UIAHandler.handler.reservedNotSupportedValue:
+
+		if self._getReadOnlyState():
 			states.add(controlTypes.STATE_READONLY)
+
 		try:
 			s=self._getUIACacheablePropertyValue(UIAHandler.UIA_ExpandCollapseExpandCollapseStatePropertyId,True)
 		except COMError:
@@ -1286,6 +1302,24 @@ class UIA(Window):
 				if s==UIAHandler.ToggleState_On:
 					states.add(controlTypes.STATE_CHECKED)
 		return states
+
+	def _getReadOnlyState(self) -> bool:
+		try:
+			isReadOnly = self._getUIACacheablePropertyValue(UIAHandler.UIA_ValueIsReadOnlyPropertyId, True)
+		except COMError:
+			isReadOnly = UIAHandler.handler.reservedNotSupportedValue
+		if (
+			isReadOnly == UIAHandler.handler.reservedNotSupportedValue
+			and self.UIATextPattern
+		):
+			# Most UIA text controls don't support the "ValueIsReadOnly" property,
+			# so we need to look at the root document "IsReadOnly" attribute.
+			try:
+				document = self.UIATextPattern.documentRange
+				isReadOnly = document.GetAttributeValue(UIAHandler.UIA_IsReadOnlyAttributeId)
+			except COMError:
+				isReadOnly = UIAHandler.handler.reservedNotSupportedValue
+		return isReadOnly
 
 	def _get_presentationType(self):
 		presentationType=super(UIA,self).presentationType
@@ -1652,7 +1686,7 @@ class MenuItem(UIA):
 class UIColumnHeader(UIA):
 
 	def _get_description(self):
-		description=super(UIColumnHeader,self).description
+		description = self.UIAHelpText
 		try:
 			itemStatus=self._getUIACacheablePropertyValue(UIAHandler.UIA_ItemStatusPropertyId)
 		except COMError:
@@ -1704,7 +1738,7 @@ class SensitiveSlider(UIA):
 class ControlPanelLink(UIA):
 
 	def _get_description(self):
-		desc=super(ControlPanelLink,self).description
+		desc = self.UIAHelpText
 		try:
 			i=desc.find('\n')
 		except:
