@@ -498,6 +498,7 @@ addBluetoothDevices(
 			"APH Mantis Q40",
 			"Humanware BrailleOne",
 			"NLS eReader",
+			"NLS eReader Humanware",
 		)
 	)
 )
