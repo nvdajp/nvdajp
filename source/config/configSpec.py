@@ -265,6 +265,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	vision = boolean(default=false)
 	speech = boolean(default=false)
 	speechManager = boolean(default=false)
+	nvwave = boolean(default=false)
 
 [uwpOcr]
 	language = string(default="")
