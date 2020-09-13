@@ -842,6 +842,7 @@ class UIA(Window):
 	def findOverlayClasses(self,clsList):
 		UIAControlType=self.UIAElement.cachedControlType
 		UIAClassName=self.UIAElement.cachedClassName
+
 		# #11445: to avoid COM errors, do not fetch cached UIA Automation Id from the underlying element.
 		UIAAutomationId = self.UIAAutomationId
 		if UIAClassName=="ModeTile":
