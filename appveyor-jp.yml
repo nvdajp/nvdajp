@@ -23,7 +23,7 @@ install:
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
  - git submodule update --init --recursive
  - nuget install secure-file -ExcludeVersion
- - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key191022.pfx.enc -secret %my_secret_a%
+ - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key201019.pfx.enc -secret %my_secret_a%
  - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key-pass-2019.txt.enc -secret %my_secret_b%
 
 build_script:
@@ -44,7 +44,7 @@ build_script:
             $env:VERSION += "-noncert"
         }
         $env:UPDATEVERSIONTYPE += "beta"
-    } elseif ($false) {
+    } elseif ($true) {
         $env:VERSION += "-" + $env:NOWDATE
         if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
             $env:VERSION += "-noncert"
