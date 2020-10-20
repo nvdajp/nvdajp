@@ -1,6 +1,6 @@
 set SCONSOPTIONS=%* --silent
 
-set PFX=jptools\secret\knowlec-key191022.pfx
+set PFX=jptools\secret\knowlec-key201019.pfx
 set PWFILE=jptools\secret\knowlec-key-pass-2019.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
 del /Q %PWFILE%
