@@ -26,6 +26,7 @@ import speech
 import queueHandler
 import core
 from . import guiHelper
+from .contextHelp import ContextHelpMixin
 from .settingsDialogs import *
 from .inputGestures import InputGesturesDialog
 import speechDictHandler
@@ -57,7 +58,7 @@ except RuntimeError:
 	updateCheck = None
 
 ### Constants
-NVDA_PATH = os.getcwd()
+NVDA_PATH = globalVars.appDir
 ICON_PATH=os.path.join(NVDA_PATH, "images", "nvdajp3.ico")
 DONATE_URL = "http://www.nvda.jp/donate.html"
 
@@ -70,7 +71,7 @@ def getDocFilePath(fileName, localized=True):
 		if hasattr(sys, "frozen"):
 			getDocFilePath.rootPath = os.path.join(NVDA_PATH, "documentation")
 		else:
-			getDocFilePath.rootPath = os.path.abspath(os.path.join("..", "user_docs"))
+			getDocFilePath.rootPath = os.path.join(NVDA_PATH, "..", "user_docs")
 
 	if localized:
 		lang = languageHandler.getLanguage()
@@ -93,7 +94,7 @@ def getDocFilePath(fileName, localized=True):
 				tryPath = os.path.join(tryDir, "%s.%s" % (fileName, tryExt))
 				if os.path.isfile(tryPath):
 					return tryPath
-
+		return None
 	else:
 		# Not localized.
 		if not hasattr(sys, "frozen") and fileName in ("copying.txt", "contributors.txt"):
@@ -716,13 +717,17 @@ def runScriptModalDialog(dialog, callback=None):
 		dialog.Destroy()
 	wx.CallAfter(run)
 
-class WelcomeDialog(wx.Dialog):
+
+class WelcomeDialog(
+		ContextHelpMixin,
+		wx.Dialog   # wxPython does not seem to call base class initializer, put last in MRO
+):
 	"""The NVDA welcome dialog.
 	This provides essential information for new users, such as a description of the NVDA key and instructions on how to activate the NVDA menu.
 	It also provides quick access to some important configuration options.
 	This dialog is displayed the first time NVDA is started with a new configuration.
 	"""
-
+	helpId = "WelcomeDialog"
 	WELCOME_MESSAGE_DETAIL = _(
 		# Translators: The main message for the Welcome dialog when the user starts NVDA for the first time.
 		"Most commands for controlling NVDA require you to hold down"
@@ -736,6 +741,7 @@ class WelcomeDialog(wx.Dialog):
 	def __init__(self, parent):
 		# Translators: The title of the Welcome dialog when user starts NVDA for the first time.
 		super(WelcomeDialog, self).__init__(parent, wx.ID_ANY, _("Welcome to NVDA"))
+
 		mainSizer=wx.BoxSizer(wx.VERTICAL)
 		# Translators: The header for the Welcome dialog when user starts NVDA for the first time. This is in larger,
 		# bold lettering 
@@ -831,13 +837,19 @@ class WelcomeDialog(wx.Dialog):
 		d.Destroy()
 		mainFrame.postPopup()
 
-class LauncherDialog(wx.Dialog):
+
+class LauncherDialog(
+		ContextHelpMixin,
+		wx.Dialog   # wxPython does not seem to call base class initializer, put last in MRO
+):
 	"""The dialog that is displayed when NVDA is started from the launcher.
 	This displays the license and allows the user to install or create a portable copy of NVDA.
 	"""
+	helpId = "InstallingNVDA"
 
 	def __init__(self, parent):
 		super(LauncherDialog, self).__init__(parent, title=versionInfo.name)
+
 		mainSizer = wx.BoxSizer(wx.VERTICAL)
 		sHelper = guiHelper.BoxSizerHelper(self, orientation=wx.VERTICAL)
 
@@ -1119,12 +1131,18 @@ class NonReEntrantTimer(wx.Timer):
 def _isDebug():
 	return config.conf["debugLog"]["gui"]
 
-class AskAllowUsageStatsDialog(wx.Dialog):
+
+class AskAllowUsageStatsDialog(
+		ContextHelpMixin,
+		wx.Dialog   # wxPython does not seem to call base class initializer, put last in MRO
+):
 	"""A dialog asking if the user wishes to allow NVDA usage stats to be collected by NV Access."""
+	
+	helpId = "UsageStatsDialog"
 
 	def __init__(self, parent):
 		# Translators: The title of the dialog asking if usage data can be collected 
-		super(AskAllowUsageStatsDialog, self).__init__(parent, title=_("NVDA  Usage Data Collection"))
+		super().__init__(parent, title=_("NVDA  Usage Data Collection"))
 		mainSizer = wx.BoxSizer(wx.VERTICAL)
 		sHelper = guiHelper.BoxSizerHelper(self, orientation=wx.VERTICAL)
 
