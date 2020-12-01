@@ -9,6 +9,7 @@ about: NVDA日本語版の改良に役立つ報告を作成
 入力された情報が不十分な場合は issue をクローズすることがあります。
 下記は報告者のための手引きの本家版（英語）です。
 https://github.com/nvaccess/nvda/wiki/Github-issue-template-explanation-and-examples
+Please also note that the NVDA project has a Citizen and Contributor Code of Conduct which can be found at https://github.com/nvaccess/nvda/blob/master/CODE_OF_CONDUCT.md. NV Access expects that all contributors and other community members read and abide by the rules set out in this document while participating or contributing to this project. This includes creating or commenting on issues and pull requests. 
 -->
 
 ### 問題の再現手順
