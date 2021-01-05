@@ -77,9 +77,7 @@ class CharacterDescriptions(object):
 		@param locale: The characterDescriptions.dic file will be found by using this locale.
 		@type locale: string
 		"""
-		self._entries = {}
 		# nvdajp cldr emoji
-		self._readings = {}
 		if config.conf['speech']['includeCLDR']:
 			fileName = os.path.join('locale', locale, 'cldr.dic')
 			if os.path.isfile(fileName):
@@ -94,6 +92,8 @@ class CharacterDescriptions(object):
 						self._entries[key] = (rd,)
 				f.close()
 		# nvdajp cldr emoji end
+
+		self._entries = {}
 		fileName = os.path.join(globalVars.appDir, 'locale', locale, 'characterDescriptions.dic')
 		if not os.path.isfile(fileName): 
 			raise LookupError(fileName)
@@ -112,6 +112,7 @@ class CharacterDescriptions(object):
 		f.close()
 
 		# nvdajp charaters.dic
+		self._readings = {}
 		fileName=os.path.join('locale',locale,'characters.dic')
 		if os.path.isfile(fileName): 
 			f = codecs.open(fileName,"r","utf_8_sig",errors="replace")
