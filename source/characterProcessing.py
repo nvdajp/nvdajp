@@ -77,6 +77,22 @@ class CharacterDescriptions(object):
 		@param locale: The characterDescriptions.dic file will be found by using this locale.
 		@type locale: string
 		"""
+		# nvdajp cldr emoji
+		if config.conf['speech']['includeCLDR']:
+			fileName = os.path.join('locale', locale, 'cldr.dic')
+			if os.path.isfile(fileName):
+				f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
+				for line in f:
+					line = line.rstrip('\r\n')
+					temp = line.split("\t")
+					if len(temp) > 1:
+						key = temp.pop(0)
+						rd = temp.pop(0)
+						self._readings[key] = rd
+						self._entries[key] = (rd,)
+				f.close()
+		# nvdajp cldr emoji end
+
 		self._entries = {}
 		fileName = os.path.join(globalVars.appDir, 'locale', locale, 'characterDescriptions.dic')
 		if not os.path.isfile(fileName): 
@@ -117,22 +133,6 @@ class CharacterDescriptions(object):
 			log.debug("Loaded %d readings." % len(self._readings))
 			f.close()
 		# nvdajp charaters.dic end
-
-		# nvdajp cldr emoji
-		if config.conf['speech']['includeCLDR']:
-			fileName = os.path.join('locale', locale, 'cldr.dic')
-			if os.path.isfile(fileName):
-				f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
-				for line in f:
-					line = line.rstrip('\r\n')
-					temp = line.split("\t")
-					if len(temp) > 1:
-						key = temp.pop(0)
-						rd = temp.pop(0)
-						self._readings[key] = rd
-						self._entries[key] = (rd,)
-				f.close()
-		# nvdajp cldr emoji end
 
 		# nvdajp users chardesc
 		fileName=os.path.join(globalVars.appArgs.configPath, "characterDescriptions-%s.dic" % locale)
