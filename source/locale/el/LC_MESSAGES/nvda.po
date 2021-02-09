@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-12 20:07+1000\n"
-"PO-Revision-Date: 2020-10-05 14:59+0200\n"
+"POT-Creation-Date: 2021-01-29 00:01+1000\n"
+"PO-Revision-Date: 2021-02-02 23:01+0200\n"
 "Last-Translator: Irene Nakas <irnakas@gmail.com>\n"
 "Language-Team: Gerasimos Xydas, Irene Nakas, Nikos Demetriou <access@e-"
 "rhetor.com, irnakas@gmail.com, nikosdemetriou@googlemail.com>\n"
@@ -167,243 +167,243 @@ msgstr "Πάντα βύθιση"
 #. Translators: Displayed in braille for an object which is a
 #. window.
 msgid "wnd"
-msgstr "παράθυρο"
+msgstr "wnd"
 
 #. Translators: Displayed in braille for an object which is a
 #. dialog.
 msgid "dlg"
-msgstr "παράθυρο διαλόγου"
+msgstr "dlg"
 
 #. Translators: Displayed in braille for an object which is a
 #. check box.
 msgid "chk"
-msgstr "πλαίσιο επιλογής"
+msgstr "chk"
 
 #. Translators: Displayed in braille for an object which is a
 #. radio button.
 msgid "rbtn"
-msgstr "κουμπί επιλογής"
+msgstr "rbtn"
 
 #. Translators: Displayed in braille for an object which is an
 #. editable text field.
 msgid "edt"
-msgstr "επεξεργασία κειμένου"
+msgstr "edt"
 
 #. Translators: Displayed in braille for an object which is a
 #. button.
 msgid "btn"
-msgstr "κουμπί"
+msgstr "btn"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu bar.
 msgid "mnubar"
-msgstr "γραμμή μενού"
+msgstr "mnubar"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu item.
 msgid "mnuitem"
-msgstr "στοιχείο μενού"
+msgstr "mnuitem"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu.
 msgid "mnu"
-msgstr "μενού"
+msgstr "mnu"
 
 #. Translators: Displayed in braille for an object which is a
 #. combo box.
 msgid "cbo"
-msgstr "αναδυόμενο κουτί"
+msgstr "cbo"
 
 #. Translators: Displayed in braille for an object which is a
 #. list.
 msgid "lst"
-msgstr "λίστα"
+msgstr "lst"
 
 #. Translators: Displayed in braille for an object which is a
 #. graphic.
 msgid "gra"
-msgstr "γραφικό"
+msgstr "gra"
 
 #. Translators: Displayed in braille for toast notifications and for an object which is a
 #. help balloon.
 msgid "hlp"
-msgstr "βοήθεια"
+msgstr "hlp"
 
 #. Translators: Displayed in braille for an object which is a
 #. tool tip.
 msgid "tltip"
-msgstr "επεξήγηση"
+msgstr "tltip"
 
 #. Translators: Displayed in braille for an object which is a
 #. link.
 msgid "lnk"
-msgstr "σύνδεσμος"
+msgstr "lnk"
 
 #. Translators: Displayed in braille for an object which is a
 #. tree view.
 msgid "tv"
-msgstr "προβολή δέντρου"
+msgstr "tv"
 
 #. Translators: Displayed in braille for an object which is a
 #. tree view item.
 msgid "tvitem"
-msgstr "στοιχείο προβολής δέντρου"
+msgstr "tvitem"
 
 #. Translators: Displayed in braille for an object which is a
 #. tab control.
 msgid "tabctl"
-msgstr "καρτέλα"
+msgstr "tabctl"
 
 #. Translators: Displayed in braille for an object which is a
 #. progress bar.
 msgid "prgbar"
-msgstr "γραμμή προόδου"
+msgstr "prgbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. scroll bar.
 msgid "scrlbar"
-msgstr "γραμμή κύλισης"
+msgstr "scrlbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. status bar.
 msgid "stbar"
-msgstr "γραμμή κατάστασης"
+msgstr "stbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. table.
 msgid "tbl"
-msgstr "πίνακας"
+msgstr "tbl"
 
 #. Translators: Displayed in braille for an object which is a
 #. tool bar.
 msgid "tlbar"
-msgstr "γραμμή εργαλείων"
+msgstr "tlbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. drop down button.
 msgid "drbtn"
-msgstr "Αναπτυσσόμενο"
+msgstr "drbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. block quote.
 msgid "bqt"
-msgstr "παράθεση αποσπάσματος"
+msgstr "bqt"
 
 #. Translators: Displayed in braille for an object which is a
 #. document.
 msgid "doc"
-msgstr "έγγραφο"
+msgstr "doc"
 
 #. Translators: Displayed in braille for an object which is a
 #. application.
 msgid "app"
-msgstr "εφαρμογή"
+msgstr "app"
 
 #. Translators: Displayed in braille for an object which is a
 #. grouping.
 msgid "grp"
-msgstr "ομαδοποίηση"
+msgstr "grp"
 
 #. Translators: Displayed in braille for an object which is a
 #. caption.
 msgid "cap"
-msgstr "λεζάντα"
+msgstr "cap"
 
 #. Translators: Displayed in braille for an object which is a
 #. embedded object.
 msgid "embedded"
-msgstr "ενσωματωμένο αντικείμενο"
+msgstr "embedded"
 
 #. Translators: Displayed in braille for an object which is a
 #. end note.
 msgid "enote"
-msgstr "σημείωση τέλους"
+msgstr "enote"
 
 #. Translators: Displayed in braille for an object which is a
 #. foot note.
 msgid "fnote"
-msgstr "Υποσημείωση"
+msgstr "fnote"
 
 #. Translators: Displayed in braille for an object which is a
 #. terminal.
 msgid "term"
-msgstr "τερματικό"
+msgstr "term"
 
 #. Translators: Displayed in braille for an object which is a
 #. section.
 msgid "sect"
-msgstr "τμήμα"
+msgstr "sect"
 
 #. Translators: Displayed in braille for an object which is a
 #. toggle button.
 msgid "tgbtn"
-msgstr "κουμπί εναλλαγής"
+msgstr "tgbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. split button.
 msgid "splbtn"
-msgstr "κουμπί διαχωρισμού"
+msgstr "splbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu button.
 msgid "mnubtn"
-msgstr "κουμπί μενού"
+msgstr "mnubtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. spin button.
 msgid "spnbtn"
-msgstr "ποντενσιόμετρο"
+msgstr "spnbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. tree view button.
 msgid "tvbtn"
-msgstr "κουμπί προβολής δέντρου"
+msgstr "tvbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. panel.
 msgid "pnl"
-msgstr "πάνελ"
+msgstr "pnl"
 
 #. Translators: Displayed in braille for an object which is a
 #. password edit.
 msgid "pwdedt"
-msgstr "επεξεργασία κωδικού"
+msgstr "pwdedt"
 
 #. Translators: Displayed in braille for an object which is deleted.
 msgid "del"
-msgstr "διαγραφή"
+msgstr "del"
 
 #. Translators: Displayed in braille for an object which is inserted.
 msgid "ins"
-msgstr "ενσωματομένο"
+msgstr "ins"
 
 #. Translators: Displayed in braille for a landmark.
 msgid "lmk"
-msgstr "ορόσημο"
+msgstr "lmk"
 
 #. Translators: Displayed in braille for an object which is an article.
 msgid "art"
-msgstr "άρθρο"
+msgstr "art"
 
 #. Translators: Displayed in braille for an object which is a region.
 msgid "rgn"
-msgstr "περιοχή"
+msgstr "rgn"
 
 #. Translators: Displayed in braille for an object which is a figure.
 msgid "fig"
-msgstr "σχ."
+msgstr "fig"
 
 #. Translators: Displayed in braille for an object which represents marked (highlighted) content
 msgid "mrkd"
-msgstr "επισημασμένο"
+msgstr "mrkd"
 
 #. Translators: Displayed in braille when an object is selected.
 msgid "sel"
-msgstr "επιλεγμένο"
+msgstr "sel"
 
 #. Translators: Displayed in braille when an object (e.g. an editable text field) is read-only.
 msgid "ro"
-msgstr "μόνο για ανάγνωση"
+msgstr "ro"
 
 #. Translators: Displayed in braille when an object (e.g. a tree view item) is expanded.
 msgid "-"
@@ -415,7 +415,7 @@ msgstr "+"
 
 #. Translators: Displayed in braille when an object has a popup (usually a sub-menu).
 msgid "submnu"
-msgstr "υπομενού"
+msgstr "submnu"
 
 #. Translators: Displayed in braille when a protected control or a document is encountered.
 msgid "***"
@@ -423,11 +423,11 @@ msgstr "***"
 
 #. Translators: Displayed in braille when a required form field is encountered.
 msgid "req"
-msgstr "υποχρεωτικό"
+msgstr "req"
 
 #. Translators: Displayed in braille when an invalid entry has been made.
 msgid "invalid"
-msgstr "μη έγκυρο"
+msgstr "invalid"
 
 #. Translators: Displayed in braille when an object supports autocompletion.
 msgid "..."
@@ -435,70 +435,70 @@ msgstr "..."
 
 #. Translators: Displayed in braille when an edit field allows typing multiple lines of text such as comment fields on websites.
 msgid "mln"
-msgstr "πολλαπλών γραμμών"
+msgstr "mln"
 
 #. Translators: Displayed in braille when an object is clickable.
 msgid "clk"
-msgstr "με δυνατότητα κλικ"
+msgstr "clk"
 
 #. Translators: Displayed in braille when an object is sorted ascending.
 msgid "sorted asc"
-msgstr "αύξουσα ταξινόμηση"
+msgstr "sorted asc"
 
 #. Translators: Displayed in braille when an object is sorted descending.
 msgid "sorted desc"
-msgstr "φθίνουσα ταξινόμηση"
+msgstr "sorted desc"
 
 #. Translators: Displayed in braille when an object (usually a graphic) has a long description.
 msgid "ldesc"
-msgstr "εκτενής περιγραφή"
+msgstr "ldesc"
 
 #. Translators: Displayed in braille when there is a formula on a spreadsheet cell.
 msgid "frml"
-msgstr "συνάρτηση"
+msgstr "frml"
 
 #. Translators: Displayed in braille when there is a comment for a spreadsheet cell or piece of text in a document.
 msgid "cmnt"
-msgstr "σχόλιο"
+msgstr "cmnt"
 
 #. Translators: Displayed in braille when an object is not selected.
 msgid "nsel"
-msgstr "μη επιλεγμένο"
+msgstr "nsel"
 
 #. Translators: Displayed in braille for the banner landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "bnnr"
-msgstr "διαφημιστικό"
+msgstr "bnnr"
 
 #. Translators: Displayed in braille for the complementary landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "cmpl"
-msgstr "συμπληρωματικό ορόσημο"
+msgstr "cmpl"
 
 #. Translators: Displayed in braille for the contentinfo landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "cinf"
-msgstr "ορόσημο περιεχομένου"
+msgstr "cinf"
 
 #. Translators: Displayed in braille for the main landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "main"
-msgstr "κύριο"
+msgstr "main"
 
 #. Translators: Displayed in braille for the navigation landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "navi"
-msgstr "ορόσημο πλοήγησης"
+msgstr "navi"
 
 #. Translators: Displayed in braille for the search landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "srch"
-msgstr "ορόσημο αναζήτησης"
+msgstr "srch"
 
 #. Translators: Displayed in braille for the form landmark, normally found on web pages.
 msgctxt "braille landmark abbreviation"
 msgid "form"
-msgstr "φόρμα"
+msgstr "form"
 
 #. Translators: The description of a braille cursor shape.
 msgid "Dots 7 and 8"
@@ -686,9 +686,8 @@ msgstr "Αφρικάανς βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Afrikaans grade 2"
-msgstr "Αφρικάανς βαθμού 1"
+msgstr "Αφρικάανς βαθμού 2"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -712,9 +711,8 @@ msgstr "Ασαμίζ βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Bashkir grade 1"
-msgstr "Κασμίρι βαθμού 1"
+msgstr "Μπασκίρ βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -733,9 +731,8 @@ msgstr "Κεντρικά Κουρδικά βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Coptic 8 dot computer braille"
-msgstr "Κροατικό οκτάστιγμο braille"
+msgstr "Κοπτικό οκτάστιγμο braille"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1179,15 +1176,13 @@ msgstr "Ρωσικό braille υπολογιστών"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Russian literary braille"
-msgstr "Ρωσικό braille υπολογιστών"
+msgstr "Ρωσικό braille"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
-#, fuzzy
 msgid "Russian literary braille (detailed)"
-msgstr "Ρωσικό braille υπολογιστών"
+msgstr "Ρωσικό braille (λεπτομερές)"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -2783,11 +2778,11 @@ msgstr "μόνο για ανάγνωση"
 
 #. Translators: This is presented when a tree view or submenu item is expanded.
 msgid "expanded"
-msgstr "αναπτυγμένο"
+msgstr "ανεπτυγμένο"
 
 #. Translators: This is presented when a tree view or submenu is collapsed.
 msgid "collapsed"
-msgstr "συνεπτυγμένο"
+msgstr "συμπτυγμένο"
 
 #. Translators: This is presented when a control or a document becomes invisible.
 msgid "invisible"
@@ -3435,21 +3430,18 @@ msgstr ""
 "αναφοράς έμφασης"
 
 #. Translators: Input help mode message for toggle report marked (highlighted) content command.
-#, fuzzy
 msgid "Toggles on and off the reporting of marked text"
 msgstr ""
 "Πραγματοποιεί εναλλαγή μεταξύ της ενεργοποίησης και της απενεργοποίησης της "
-"αναφοράς άρθρων"
+"αναφοράς επισημασμένου κειμένου"
 
 #. Translators: The message announced when toggling the report marked document formatting setting.
-#, fuzzy
 msgid "report marked on"
-msgstr "ενεργοποίηση αναφοράς σελίδων"
+msgstr "ενεργοποίηση αναφοράς επισήμανσης"
 
 #. Translators: The message announced when toggling the report marked document formatting setting.
-#, fuzzy
 msgid "report marked off"
-msgstr "απενεργοποίηση αναφοράς σελίδων"
+msgstr "απενεργοποίηση αναφοράς επισήμανσης"
 
 #. Translators: The message announced when toggling the report colors document formatting setting.
 msgid "report colors off"
@@ -6755,15 +6747,15 @@ msgstr "%d χαρακτήρες"
 
 #. Translators: Announced when a text has been copied to clipboard.
 #. {text} is replaced by the copied text.
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Copied to clipboard: {text}"
-msgstr "Αντιγράφηκε στο πρόχειρο"
+msgstr "Αντιγράφηκε στο πρόχειρο: {text}"
 
 #. Translators: Displayed in braille when a text has been copied to clipboard.
 #. {text} is replaced by the copied text.
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Copied: {text}"
-msgstr "Ορθογραφικός έλεγχος: {text}"
+msgstr "Αντιγράφηκε: {text}"
 
 #. Translators: The title of the dialog displayed while manually checking for an NVDA update.
 msgid "Checking for Update"
@@ -7121,7 +7113,7 @@ msgstr "Δεν αναπαράγεται κανένα κομμάτι"
 
 #. Translators: Reported if the remaining time can not be calculated in Foobar2000
 msgid "Unable to determine remaining time"
-msgstr ""
+msgstr "Αδυναμία εκτίμησης χρόνου που απομένει"
 
 #. Translators: The description of an NVDA command for reading the remaining time of the currently playing track in Foobar 2000.
 msgid "Reports the remaining time of the currently playing track, if any"
@@ -7132,9 +7124,8 @@ msgid "Reports the elapsed time of the currently playing track, if any"
 msgstr "Αναφέρει το χρόνο που έχει παρέλθει στο τρέχον κομμάτι, αν υπάρχει."
 
 #. Translators: Reported if the total time is not available in Foobar2000
-#, fuzzy
 msgid "Total time not available"
-msgstr "μη διαθέσιμο αρχείο καταγραφής"
+msgstr "Δε διατίθεται συνολικός χρόνος"
 
 #. Translators: The description of an NVDA command for reading the length of the currently playing track in Foobar 2000.
 msgid "Reports the length of the currently playing track, if any"
@@ -7766,7 +7757,7 @@ msgstr "&Εμφάνιση Προβολέα Braille κατά την εκκίνη�
 #. Translators: The label for a setting in the braille viewer that controls
 #. whether hovering mouse routes to the cell.
 msgid "&Hover for cell routing"
-msgstr ""
+msgstr "&Κατάδειξη για δρομολόγηση σε κελί"
 
 #. Translators: The title of the document used to present the result of content recognition.
 msgid "Result"
@@ -8739,15 +8730,13 @@ msgid "Manual Activation"
 msgstr "Χειροκίνητη Ενεργοποίηση"
 
 #. Translators: Message indicating no context sensitive help is available for the control or dialog.
-#, fuzzy
 msgid "No help available here."
-msgstr "Δεν είναι διαθέσιμη νέα έκδοση"
+msgstr "Δε διατίθεται βοήθεια εδώ."
 
 #. Translators: Message shown when trying to display context sensitive help,
 #. indicating that	the user guide could not be found.
-#, fuzzy
 msgid "No user guide found."
-msgstr "Δε βρέθηκε γραμμή κατάστασης"
+msgstr "Δε βρέθηκε εγχειρίδιο χρήσης."
 
 #. Translators: Describes a gesture in the Input Gestures dialog.
 #. {main} is replaced with the main part of the gesture; e.g. alt+tab.
@@ -8994,13 +8983,12 @@ msgstr ""
 
 #. Translators: The message displayed when the user has not specified an absolute destination directory
 #. in the Create Portable NVDA dialog.
-#, fuzzy
 msgid ""
 "Please specify an absolute path (including drive letter)  in which to create "
 "the portable copy."
 msgstr ""
-"Παρακαλώ ορίστε ένα φάκελο μέσα στον οποίο θα δημιουργηθεί το φορητό "
-"αντίγραφο."
+"Παρακαλώ ορίστε απόλυτη διαδρομή (συμπεριλαμβανομένου του γράμματος μονάδας "
+"δίσκου) μέσα στην οποία θα δημιουργηθεί το φορητό αντίγραφο."
 
 #. Translators: The message displayed when the user specifies an invalid destination drive
 #. in the Create Portable NVDA dialog.
@@ -9645,9 +9633,8 @@ msgstr "&Με έμφαση"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#, fuzzy
 msgid "Mar&ked (highlighted text)"
-msgstr "Σήμανση (κειμένου με επισήμανση)"
+msgstr "&Επιλογή (επισημασμένου κειμένου)"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
@@ -10119,21 +10106,18 @@ msgstr "Σχήμα &δρομέα για αναθεώρηση:"
 
 #. Translators: One of the show states of braille messages
 #. (the timeout mode shows messages for the specific time).
-#, fuzzy
 msgid "Use timeout"
-msgstr "Εκπνοή χρονικού ορίου μηνύματος (δευτερόλεπτα)"
+msgstr "Χρήση χρονικού ορίου"
 
 #. Translators: One of the show states of braille messages
 #. (the indefinitely mode prevents braille messages from disappearing automatically).
-#, fuzzy
 msgid "Show indefinitely"
-msgstr "Εμφάνιση μηνύματος επ αόριστον"
+msgstr "Εμφάνιση επ' αόριστον"
 
 #. Translators: The label for a setting in braille settings to combobox enabling user
 #. to decide if braille messages should be shown and automatically disappear from braille display.
-#, fuzzy
 msgid "Show messages"
-msgstr "Δεν υπάρχει μήνυμα μέχρι στιγμής"
+msgstr "Εμφάνιση μηνυμάτων"
 
 #. Translators: The label for a setting in braille settings to change how long a message stays on the braille display (in seconds).
 msgid "Message &timeout (sec)"
@@ -10768,9 +10752,8 @@ msgid "Highlight navigator &object"
 msgstr "Επισήμανση &πλοήγησης αντικειμένου"
 
 #. Translators: Description for NVDA's built-in screen highlighter.
-#, fuzzy
 msgid "Visual Highlight"
-msgstr "Επισήμανση Εστίασης"
+msgstr "Οπτική Επισήμανση"
 
 #. Translators: The label for a checkbox that enables / disables focus highlighting
 #. in the NVDA Highlighter vision settings panel.
@@ -12186,7 +12169,7 @@ msgstr "1.5 γραμμές"
 #, python-brace-format
 msgctxt "line spacing value"
 msgid "exactly {space:.1f} pt"
-msgstr ""
+msgstr "ακριβώς {space:.1f} στιγμή"
 
 #. Translators: line spacing of at least x point
 #, python-format
