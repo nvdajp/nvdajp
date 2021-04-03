@@ -43,7 +43,7 @@ i7562
 ARIA invalid spelling and grammar
 	[Documentation]	Tests ARIA invalid values of "spelling", "grammar" and "spelling, grammar".
 	ARIAInvalid_spellingAndGrammar
-ARIA checkbox
-	[Documentation]	Navigate to an unchecked checkbox in reading mode.
-	[Tags]	aria-at
-	test_ariaCheckbox_browseMode
+#ARIA checkbox
+#	[Documentation]	Navigate to an unchecked checkbox in reading mode.
+#	[Tags]	aria-at
+#	test_ariaCheckbox_browseMode
