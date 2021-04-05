@@ -3,7 +3,7 @@
 from xml.etree import ElementTree
 from collections import OrderedDict
 
-source = r"..\include\cldr-emoji-annotation\annotations\ja.xml"
+source = r"..\include\cldr\annotations\ja.xml"
 
 cldrDict = OrderedDict()
 tree = ElementTree.parse(source)
