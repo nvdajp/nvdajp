@@ -24,7 +24,6 @@ import winUser
 import textInfos.offsets
 from keyboardHandler import KeyboardInputGesture
 from scriptHandler import isScriptWaiting
-import IAccessibleHandler
 import controlTypes
 from . import Window
 from .. import NVDAObjectTextInfo
@@ -265,6 +264,8 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 			formatField["underline"]=bool(charFormat.dwEffects&CFE_UNDERLINE)
 			formatField["strikethrough"]=bool(charFormat.dwEffects&CFE_STRIKEOUT)
 		if formatConfig["reportSuperscriptsAndSubscripts"]:
+			if charFormat is None:
+				charFormat = self._getCharFormat(offset)
 			if charFormat.dwEffects&CFE_SUBSCRIPT:
 				formatField["text-position"]="sub"
 			elif charFormat.dwEffects&CFE_SUPERSCRIPT:

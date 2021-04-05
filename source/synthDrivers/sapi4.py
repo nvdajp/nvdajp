@@ -17,6 +17,7 @@ import config
 import nvwave
 import weakref
 
+from speech.commands import IndexCommand, SpeechCommand, CharacterModeCommand
 
 class SynthDriverBufSink(COMObject):
 	_com_interfaces_ = [ITTSBufNotifySink]
@@ -105,16 +106,16 @@ class SynthDriver(SynthDriver):
 			if isinstance(item,str):
 				item = item.replace(u"\u2022", '').replace(u"\uf0b7", '') # nvdajp (bullet)
 				textList.append(item.replace('\\','\\\\'))
-			elif isinstance(item,speech.IndexCommand):
+			elif isinstance(item, IndexCommand):
 				textList.append("\\mrk=%d\\"%item.index)
-			elif isinstance(item,speech.CharacterModeCommand):
+			elif isinstance(item, CharacterModeCommand):
 				textList.append("\\RmS=1\\" if item.state else "\\RmS=0\\")
 				charMode=item.state
-			elif isinstance(item,speech.SpeechCommand):
+			elif isinstance(item, SpeechCommand):
 				log.debugWarning("Unsupported speech command: %s"%item)
 			else:
 				log.error("Unknown speech: %s"%item)
-		if isinstance(item,speech.IndexCommand):
+		if isinstance(item, IndexCommand):
 			# This is the index denoting the end of the speech sequence.
 			self._finalIndex=item.index
 		if charMode:

@@ -568,6 +568,7 @@ class _GesturesTree(VirtualTree, wx.TreeCtrl):
 class InputGesturesDialog(SettingsDialog):
 	# Translators: The title of the Input Gestures dialog where the user can remap input gestures for scripts.
 	title = _("Input Gestures")
+	helpId = "InputGestures"
 
 	def __init__(self, parent: "InputGesturesDialog"):
 		#: The index in the _GesturesTree of the prompt for entering a new gesture
@@ -607,7 +608,7 @@ class InputGesturesDialog(SettingsDialog):
 		bHelper.sizer.AddStretchSpacer()
 		# Translators: The label of a button to reset all gestures in the Input Gestures dialog.
 		resetButton = wx.Button(self, label=_("Reset to factory &defaults"))
-		bHelper.sizer.Add(resetButton, flag=wx.ALIGN_RIGHT)
+		bHelper.sizer.Add(resetButton)
 		resetButton.Bind(wx.EVT_BUTTON, self.onReset)
 
 		settingsSizer.Add(bHelper.sizer, flag=wx.EXPAND)
