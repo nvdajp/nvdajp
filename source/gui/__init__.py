@@ -6,6 +6,12 @@
 # See the file COPYING for more details.
 # nvdajp modification by Takuya Nishimoto, Masataka.Shinke
 
+from .contextHelp import (
+	# several other submodules depend on ContextHelpMixin
+	# ensure early that it can be imported successfully.
+	ContextHelpMixin as _ContextHelpMixin,  # don't expose from gui, import submodule directly.
+)
+
 import time
 import os
 import sys
@@ -51,8 +57,8 @@ except RuntimeError:
 
 ### Constants
 NVDA_PATH = globalVars.appDir
-ICON_PATH=os.path.join(NVDA_PATH, "images", "nvda.ico")
-DONATE_URL = "http://www.nvaccess.org/donate/"
+ICON_PATH=os.path.join(NVDA_PATH, "images", "nvdajp3.ico")
+DONATE_URL = "http://www.nvda.jp/donate.html"
 
 ### Globals
 mainFrame = None
