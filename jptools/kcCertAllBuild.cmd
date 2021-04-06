@@ -9,14 +9,7 @@ cd ..
 
 call jptools\setupMiscDepsJp.cmd
 
-@if not "%VERSION%"=="" goto versionready
-for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
-set VERSION=jpdev_%NOWDATE%
-set PUBLISHER=nvdajpdev
-set UPDATEVERSIONTYPE=nvdajpdev
-
-:versionready
-scons source user_docs launcher publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+call jptools\kcCertBuild.cmd
 
 exit /b 0
 
