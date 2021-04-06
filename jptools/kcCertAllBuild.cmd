@@ -31,16 +31,16 @@ timeout /T 5 /NOBREAK
 
 call jptools\kcCertBuild.cmd
 
-%SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-%SIGNTOOL% verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-%SIGNTOOL% verify /pa dist\libArm64\%VERSION%\*.dll >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-%SIGNTOOL% verify /pa dist\*.exe >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-%SIGNTOOL% verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
+@rem %SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
+@rem @if not "%ERRORLEVEL%"=="0" goto onerror
+@rem %SIGNTOOL% verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
+@rem @if not "%ERRORLEVEL%"=="0" goto onerror
+@rem %SIGNTOOL% verify /pa dist\libArm64\%VERSION%\*.dll >> %VERIFYLOG%
+@rem @if not "%ERRORLEVEL%"=="0" goto onerror
+@rem %SIGNTOOL% verify /pa dist\*.exe >> %VERIFYLOG%
+@rem @if not "%ERRORLEVEL%"=="0" goto onerror
+@rem %SIGNTOOL% verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
+@rem @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd jptools
 call buildControllerClient.cmd
