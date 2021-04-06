@@ -9,7 +9,7 @@ cd ..
 
 call jptools\setupMiscDepsJp.cmd
 
-set PATH="C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64";%PATH%
+@rem set PATH="C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64";%PATH%
 
 call jptools\kcCertBuild.cmd
 
