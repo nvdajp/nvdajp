@@ -42,10 +42,10 @@ call jptools\kcCertBuild.cmd
 @rem %SIGNTOOL% verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
 @rem @if not "%ERRORLEVEL%"=="0" goto onerror
 
-cd jptools
-call buildControllerClient.cmd
-@if not "%ERRORLEVEL%"=="0" goto onerror
-cd ..
+@rem cd jptools
+@rem call buildControllerClient.cmd
+@rem @if not "%ERRORLEVEL%"=="0" goto onerror
+@rem cd ..
 :skip_client
 
 echo %UPDATEVERSIONTYPE% %VERSION%
