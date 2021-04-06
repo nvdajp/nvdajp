@@ -45,7 +45,7 @@ build_script:
         }
         $env:UPDATEVERSIONTYPE += "beta"
     } else {
-        if ($false) {
+        if ($true) {
             $env:VERSION += "-" + $env:NOWDATE
         }
         if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
