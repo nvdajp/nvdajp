@@ -31,6 +31,8 @@ timeout /T 5 /NOBREAK
 
 call jptools\kcCertBuild.cmd
 
+cd %APPVEYOR_BUILD_FOLDER%
+
 @rem %SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
 @rem @if not "%ERRORLEVEL%"=="0" goto onerror
 @rem %SIGNTOOL% verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
@@ -42,10 +44,10 @@ call jptools\kcCertBuild.cmd
 @rem %SIGNTOOL% verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
 @rem @if not "%ERRORLEVEL%"=="0" goto onerror
 
-@rem cd jptools
-@rem call buildControllerClient.cmd
-@rem @if not "%ERRORLEVEL%"=="0" goto onerror
-@rem cd ..
+cd jptools
+call buildControllerClient.cmd
+@if not "%ERRORLEVEL%"=="0" goto onerror
+cd ..
 :skip_client
 
 echo %UPDATEVERSIONTYPE% %VERSION%
