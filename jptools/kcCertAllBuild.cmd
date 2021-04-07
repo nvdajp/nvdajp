@@ -31,8 +31,6 @@ timeout /T 5 /NOBREAK
 
 call jptools\kcCertBuild.cmd
 
-cd %APPVEYOR_BUILD_FOLDER%
-
 @rem %SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
 @rem @if not "%ERRORLEVEL%"=="0" goto onerror
 @rem %SIGNTOOL% verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%

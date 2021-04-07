@@ -64,6 +64,7 @@ build_script:
      Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\kcCertAllBuild.cmd %sconsArgs%'
  - jptools\kcCertAllBuild.cmd %sconsArgs%
+ - cd %APPVEYOR_BUILD_FOLDER%
  - cd jptools
  - pack_jtalk_addon.cmd
  - pack_kgs_addon.cmd
