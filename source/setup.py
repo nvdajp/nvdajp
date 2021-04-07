@@ -201,7 +201,7 @@ setup(
 		{
 			"script": os.path.join("..", "include", "nvda_dmp", "nvda_dmp.py"),
 			"uiAccess": False,
-			"icon_resources": [(1, "images/nvda.ico")],
+			"icon_resources": [(1, "images/nvdajp3.ico")],
 			"other_resources": [],  # Populated at runtime
 			"version":formatBuildVersionString(),
 			"description": "NVDA Diff-match-patch proxy",
