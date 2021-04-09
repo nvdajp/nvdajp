@@ -2,7 +2,7 @@ os: Visual Studio 2019
 version: "{branch}-{build}"
 
 environment:
- PY_PYTHON: 3.7-32
+ PY_PYTHON: 3.8-32
 
 clone_depth: 1
 
@@ -21,7 +21,7 @@ install:
 
 build_script:
  - set RELEASE=1
- - set VERSION=2020.4jp
+ - set VERSION=2021.1jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
@@ -37,8 +37,10 @@ build_script:
             $env:VERSION += "-noncert"
         }
         $env:UPDATEVERSIONTYPE += "beta"
-    } elseif ($true) {
-        $env:VERSION += "-" + $env:NOWDATE
+    } else {
+        if ($true) {
+            $env:VERSION += "-" + $env:NOWDATE
+        }
         if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
             $env:VERSION += "-noncert"
         }
@@ -61,11 +63,10 @@ build_script:
  - cd ..
 
 before_test:
- # install required packages
- - py -m pip install -r tests/system/requirements.txt
  - mkdir testOutput
  - mkdir testOutput\unit
  - mkdir testOutput\system
+ - mkdir testOutput\lint
  - ps: |
      $errorCode=0
      $nvdaLauncherFile=".\output\nvda"
@@ -73,6 +74,7 @@ before_test:
       $nvdaLauncherFile+="_snapshot"
      }
      $nvdaLauncherFile+="_${env:version}.exe"
+     Set-AppveyorBuildVariable "nvdaLauncherFile" $nvdaLauncherFile
      echo NVDALauncherFile: $NVDALauncherFile
      $outputDir=$(resolve-path .\testOutput)
      $installerLogFilePath="$outputDir\nvda_install.log"
@@ -81,34 +83,76 @@ before_test:
       $installerProcess | wait-process -Timeout 180
       $errorCode=$installerProcess.ExitCode
      } catch {
-      echo NVDA installer process timed out
+      echo "NVDA installer process timed out"
       $errorCode=1
+      Add-AppveyorMessage "Unable to install NVDA prior to tests."
      }
      Push-AppveyorArtifact $installerLogFilePath
+     $crashDump = "$outputDir\nvda_crash.dmp"
+     if (Test-Path -Path $crashDump){
+      Push-AppveyorArtifact $crashDump -FileName "nvda_install_crash.dmp"
+      Add-AppveyorMessage "Install process crashed"
+      $errorCode=1
+     }
      if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
 
 test_script:
+# Unit Tests (Python)
  - ps: |
      $errorCode=0
      $outDir = (Resolve-Path .\testOutput\unit\)
      $unitTestsXml = "$outDir\unitTests.xml"
-     py -m nose -sv --with-xunit --xunit-file="$unitTestsXml" ./tests/unit
-     if($LastExitCode -ne 0) { $errorCode=$LastExitCode }
+     .\rununittests.bat --with-xunit --xunit-file="$unitTestsXml"
+     if($LastExitCode -ne 0) {
+      $errorCode=$LastExitCode
+      Add-AppveyorMessage "Unit test failure"
+     }
      Push-AppveyorArtifact $unitTestsXml
      $wc = New-Object 'System.Net.WebClient'
      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", $unitTestsXml)
      if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+
+# # Flake8 Linting
+#  - ps: |
+#     if($env:APPVEYOR_PULL_REQUEST_NUMBER) {
+#       $lintOutput = (Resolve-Path .\testOutput\lint\)
+#       $lintSource = (Resolve-Path .\tests\lint\)
+#       # When Appveyor runs for a pr,
+#       # the build is made from a new temporary commit,
+#       # resulting from the pr branch being merged into its base branch.
+#       # Therefore to create a diff for linting, we must fetch the head of the base branch.
+#       # In a PR, APPVEYOR_REPO_BRANCH points to the head of the base branch. 
+#      git fetch -q origin $env:APPVEYOR_REPO_BRANCH
+#      $flake8Output = "$lintOutput\PR-Flake8.txt"
+#       .\runlint.bat FETCH_HEAD "$flake8Output" 
+#       if($LastExitCode -ne 0) {
+#        $errorCode=$LastExitCode
+#        Add-AppveyorMessage "PR introduces Flake8 errors"
+#       }
+#       Push-AppveyorArtifact $flake8Output
+#       $junitXML = "$lintOutput\PR-Flake8.xml"
+#       py "$lintSource\createJunitReport.py" "$flake8Output" "$junitXML"
+#       Push-AppveyorArtifact $junitXML
+#       $wc = New-Object 'System.Net.WebClient'
+#       $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", $junitXML)
+#       if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+#     }
+
+# System tests
  - ps: |
      $testOutput = (Resolve-Path .\testOutput\)
      $systemTestOutput = (Resolve-Path "$testOutput\system")
-     $testSource = "./tests/system"
-     py -m robot --loglevel DEBUG -d $systemTestOutput -x systemTests.xml -v whichNVDA:installed -P "$testSource/libraries" "$testSource"
+     .\runsystemtests.bat --variable whichNVDA:installed --variable installDir:"${env:nvdaLauncherFile}" --include installer
+     if($LastExitCode -ne 0) {
+      $errorCode=$LastExitCode
+      Add-AppveyorMessage "System test failure"
+     }
      Compress-Archive -Path "$systemTestOutput\*" -DestinationPath "$testOutput\systemTestResult.zip"
      Push-AppveyorArtifact "$testOutput\systemTestResult.zip"
-     if($LastExitCode -ne 0) { $errorCode=$LastExitCode }
      $wc = New-Object 'System.Net.WebClient'
      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path "$systemTestOutput\systemTests.xml"))
      if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+
  - jptools\tests.cmd
 
 artifacts:

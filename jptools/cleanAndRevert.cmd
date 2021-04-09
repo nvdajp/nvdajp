@@ -1,3 +1,3 @@
-python scons.py -c
+scons -c
 call jptools\cleanScons.cmd
 git checkout -- source
