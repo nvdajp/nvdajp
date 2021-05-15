@@ -161,7 +161,7 @@ py3x86env を activate して
 
 ```
 (py3x86env) > cd nvda
-(py3x86env) > python scons.py
+(py3x86env) > scons
 ```
 
 

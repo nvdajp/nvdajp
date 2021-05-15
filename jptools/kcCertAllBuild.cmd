@@ -15,31 +15,31 @@ del /Q %VERIFYLOG%
 
 call jptools\setupMiscDepsJp.cmd
 
-set PATH="C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64";%PATH%
+set SIGNTOOL="C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
-@signtool sign /fd sha256 /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
-signtool verify /pa %FILE1% >> %VERIFYLOG%
+@%SIGNTOOL% sign /fd sha256 /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE1%
+%SIGNTOOL% verify /pa %FILE1% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
 set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
-@signtool sign /fd sha256 /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE2%
-signtool verify /pa %FILE2% >> %VERIFYLOG%
+@%SIGNTOOL% sign /fd sha256 /f %PFX% /p %PASSWORD% /t %TIMESERVER% %FILE2%
+%SIGNTOOL% verify /pa %FILE2% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
 call jptools\kcCertBuild.cmd
 
-signtool verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
+%SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-signtool verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
+%SIGNTOOL% verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-signtool verify /pa dist\libArm64\%VERSION%\*.dll >> %VERIFYLOG%
+%SIGNTOOL% verify /pa dist\libArm64\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-signtool verify /pa dist\*.exe >> %VERIFYLOG%
+%SIGNTOOL% verify /pa dist\*.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-signtool verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
+%SIGNTOOL% verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd jptools

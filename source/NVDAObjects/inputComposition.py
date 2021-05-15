@@ -10,7 +10,7 @@ from textInfos.offsets import OffsetsTextInfo
 #nvdajp begin
 from logHandler import log
 import jpUtils
-import win32con
+import winUser
 import time
 import braille
 #nvdajp end
@@ -57,21 +57,21 @@ def reportKeyDownEvent(gesture):
 
 def needDiscriminantReading(gesture):
 	if not gesture: return False
-	if (win32con.VK_CONTROL, False) in gesture.generalizedModifiers or \
+	if (winUser.VK_CONTROL, False) in gesture.generalizedModifiers or \
 			gesture.vkCode in \
-			(win32con.VK_SPACE, win32con.VK_CONVERT, 
-			 win32con.VK_LEFT, win32con.VK_RIGHT,
-			 win32con.VK_UP, win32con.VK_DOWN,
-			 win32con.VK_F2, win32con.VK_F3,
-			 win32con.VK_F4, win32con.VK_F5,
-			 win32con.VK_F6, win32con.VK_F7, win32con.VK_F8,
-			 win32con.VK_F9, win32con.VK_F10,
-			 win32con.VK_F11,
-			 win32con.VK_NONCONVERT, win32con.VK_ESCAPE,
-			 win32con.VK_TAB):
+			(winUser.VK_SPACE, winUser.VK_CONVERT, 
+			 winUser.VK_LEFT, winUser.VK_RIGHT,
+			 winUser.VK_UP, winUser.VK_DOWN,
+			 winUser.VK_F2, winUser.VK_F3,
+			 winUser.VK_F4, winUser.VK_F5,
+			 winUser.VK_F6, winUser.VK_F7, winUser.VK_F8,
+			 winUser.VK_F9, winUser.VK_F10,
+			 winUser.VK_F11,
+			 winUser.VK_NONCONVERT, winUser.VK_ESCAPE,
+			 winUser.VK_TAB):
 		return True
 	# VK_RCONTROL
-	if (win32con.VK_CONTROL, True) in gesture.generalizedModifiers:
+	if (winUser.VK_CONTROL, True) in gesture.generalizedModifiers:
 		return True
 	return False
 

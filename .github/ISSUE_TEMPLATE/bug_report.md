@@ -39,9 +39,7 @@ Please also note that the NVDA project has a Citizen and Contributor Code of Con
 
 ### その他の質問
 
-例：PC を再起動してもこの問題は再発する
-
-例：NVDA 日本語版 2018.1jp でも再現する
+#### PC を再起動してもこの問題は再発しますか？
 
 #### 他のバージョンの NVDA と比較している場合はその結果
 
