@@ -2325,7 +2325,7 @@ class GlobalCommands(ScriptableObject):
 		# Translators: Indicates the name of the current program (example output: explorer.exe is currently running).
 		# Note that it does not give friendly name such as Windows Explorer; it presents the file name of the current application.
 		# For example, the complete message for Windows explorer is: "explorer module is loaded. Explorer.exe is currenty running."
-		message +=_(" %s is currently running.") % (appName.decode("mbcs") if isinstance(appName, bytes) else appName)
+		message +=_(" %s is currently running.") % appName
 		ui.message(message)
 
 	@script(

@@ -291,10 +291,6 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 				winKernel.readProcessMemory(processHandle,internalCharRange,ctypes.byref(charRange),ctypes.sizeof(charRange),None)
 			finally:
 				winKernel.virtualFreeEx(processHandle,internalCharRange,0,winKernel.MEM_RELEASE)
-			#if self._needsWorkAroundEncoding():
-			#	s,n = self._startEndInBytesToStartEndInUnicodeChars(charRange.cpMin,charRange.cpMax)
-			#	log.info('charRange.cpMin:%d charRange.cpMax:%d -> s:%d n:%d' % (charRange.cpMin,charRange.cpMax,s,n))
-			#	return (s,n)
 			return (charRange.cpMin,charRange.cpMax)
 		else:
 			start=ctypes.c_uint()
@@ -320,15 +316,6 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		watchdog.cancellableSendMessage(self.obj.windowHandle,winUser.EM_SCROLLCARET,0,0)
 
 	def _getCaretOffset(self):
-		#
-		# https://github.com/nvdajp/nvdajp/issues/13
-		# https://osdn.net/ticket/browse.php?group_id=4221&tid=36770
-		#
-		#if self._needsWorkAroundEncoding():
-		#	s, e = self._getSelectionOffsets()
-		#	sn, en = self._startEndInBytesToStartEndInUnicodeChars(s, e)
-		#	log.debug('s:%d e:%d -> sn:%d en:%d' % (s, e, sn, en))
-		#	return sn
 		return self._getSelectionOffsets()[0]
 
 	def _setCaretOffset(self,offset):
