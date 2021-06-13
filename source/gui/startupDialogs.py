@@ -71,15 +71,15 @@ class WelcomeDialog(
 		#nvdajp
 		# Translators: The label of a checkbox in the Welcome dialog.
 		nconvAsNVDAModifierText = _("Use NonConvert as an NVDA modifier key")
-		self.nconvAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(self, label=nconvAsNVDAModifierText))
+		self.nconvAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=nconvAsNVDAModifierText))
 		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
 		# Translators: The label of a checkbox in the Welcome dialog.
 		convAsNVDAModifierText = _("Use Convert as an NVDA modifier key")
-		self.convAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(self, label=convAsNVDAModifierText))
+		self.convAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=convAsNVDAModifierText))
 		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
 		# Translators: The label of a checkbox in the Welcome dialog.
 		escAsNVDAModifierText = _("Use Escape as an NVDA modifier key")
-		self.escAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(self, label=escAsNVDAModifierText))
+		self.escAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=escAsNVDAModifierText))
 		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
 		#nvdajp done
 		# Translators: The label of a checkbox in the Welcome dialog.
