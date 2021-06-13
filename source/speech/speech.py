@@ -7,6 +7,7 @@
 """High-level functions to speak information.
 """ 
 
+import jpUtils
 import itertools
 import weakref
 import unicodedata
@@ -199,16 +200,16 @@ def getCurrentLanguage():
 def spellTextInfo(
 		info: textInfos.TextInfo,
 		useCharacterDescriptions: bool = False,
+		useDetails: bool = False,
 		priority: Optional[Spri] = None
 ) -> None:
-	"""Spells the text from the given TextInfo, honouring any LangChangeCommand objects it finds if autoLanguageSwitching is enabled."""
 	if not config.conf['speech']['autoLanguageSwitching']:
-		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions)
+		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
 		return
 	curLanguage=None
 	for field in info.getTextWithFields({}):
 		if isinstance(field,str):
-			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,priority=priority)
+			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
 		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
 			curLanguage=field.field.get('language')
 
@@ -217,13 +218,14 @@ def speakSpelling(
 		text: str,
 		locale: Optional[str] = None,
 		useCharacterDescriptions: bool = False,
+		useDetails: bool = False,
 		priority: Optional[Spri] = None
 ) -> None:
-	# This could be a very large list. In future we could convert this into chunks.
 	seq = list(getSpellingSpeech(
 		text,
 		locale=locale,
-		useCharacterDescriptions=useCharacterDescriptions
+		useCharacterDescriptions=useCharacterDescriptions,
+		useDetails=useDetails,
 	))
 	speak(seq, priority=priority)
 
@@ -337,7 +339,8 @@ def _getSpellingSpeechWithoutCharMode(
 def getSpellingSpeech(
 		text: str,
 		locale: Optional[str] = None,
-		useCharacterDescriptions: bool = False
+		useCharacterDescriptions: bool = False,
+		useDetails: bool = False,
 ) -> Generator[SequenceItemT, None, None]:
 	
 	synth = getSynth()
@@ -347,10 +350,11 @@ def getSpellingSpeech(
 		capPitchChange = synthConfig["capPitchChange"]
 	else:
 		capPitchChange = 0
-	seq = _getSpellingSpeechWithoutCharMode(
+	seq = jpUtils.getSpellingSpeechWithoutCharMode(
 		text,
 		locale,
 		useCharacterDescriptions,
+		useDetails,
 		sayCapForCapitals=synthConfig["sayCapForCapitals"],
 		capPitchChange=capPitchChange,
 		beepForCapitals=synthConfig["beepForCapitals"],

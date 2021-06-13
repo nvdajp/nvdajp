@@ -182,7 +182,7 @@ class GlobalCommands(ScriptableObject):
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
 			if scriptCount > 1 and characterDescriptionMode:
-				jpUtils.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
+				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
 			else:
 				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
 
@@ -1042,7 +1042,7 @@ class GlobalCommands(ScriptableObject):
 			if len(text)>0 and not text.isspace():
 				if scriptHandler.getLastScriptRepeatCount()==1:
 					if characterDescriptionMode:
-						jpUtils.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
+						speech.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
 					else:
 						speech.speakSpelling(text)
 				else:
@@ -1300,7 +1300,7 @@ class GlobalCommands(ScriptableObject):
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
 			if scriptCount > 1 and characterDescriptionMode:
-				jpUtils.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
+				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
 			else:
 				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
 
@@ -1375,7 +1375,7 @@ class GlobalCommands(ScriptableObject):
 			speech.speakTextInfo(info, reason=controlTypes.OutputReason.CARET, unit=textInfos.UNIT_WORD)
 		else:
 			if scriptCount > 1 and characterDescriptionMode:
-				jpUtils.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
+				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
 			else:
 				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
 
@@ -1437,14 +1437,14 @@ class GlobalCommands(ScriptableObject):
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
 			if characterDescriptionMode:
-				jpUtils.spellTextInfo(reviewInfo, useCharacterDescriptions=True)
+				speech.spellTextInfo(reviewInfo, useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(reviewInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
 			if characterDescriptionMode:
-				jpUtils.spellTextInfo(charInfo,useCharacterDescriptions=True)
+				speech.spellTextInfo(charInfo,useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(charInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
 
@@ -1467,13 +1467,13 @@ class GlobalCommands(ScriptableObject):
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
 		if scriptCount==0:
 			if characterDescriptionMode:
-				jpUtils.spellTextInfo(info, useCharacterDescriptions=True)
+				speech.spellTextInfo(info, useCharacterDescriptions=True)
 				# display description to braille
 				braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 			else:
 				speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
 		elif scriptCount==1:
-			jpUtils.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
+			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
 		elif scriptCount==2:
 			log.debug(repr([info.text, len(info.text)]))
 			try:
@@ -1525,14 +1525,14 @@ class GlobalCommands(ScriptableObject):
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
 			if characterDescriptionMode:
-				jpUtils.spellTextInfo(reviewInfo, useCharacterDescriptions=True)
+				speech.spellTextInfo(reviewInfo, useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(reviewInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
 			if characterDescriptionMode:
-				jpUtils.spellTextInfo(charInfo, useCharacterDescriptions=True)
+				speech.spellTextInfo(charInfo, useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(charInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
 
@@ -1914,7 +1914,7 @@ class GlobalCommands(ScriptableObject):
 				speech.speakObject(focusObject, reason=controlTypes.OutputReason.QUERY)
 			else:
 				if characterDescriptionMode:
-					jpUtils.speakSpelling(focusObject.name, useCharacterDescriptions=True, useDetails=True)
+					speech.speakSpelling(focusObject.name, useCharacterDescriptions=True, useDetails=True)
 				else:
 					speech.speakSpelling(focusObject.name)
 		else:
@@ -1968,7 +1968,7 @@ class GlobalCommands(ScriptableObject):
 				ui.message(_("no status bar information"))
 			else:
 				if characterDescriptionMode:
-					jpUtils.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
+					speech.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
 				else:
 					speech.speakSpelling(text)
 		else:
@@ -2039,7 +2039,7 @@ class GlobalCommands(ScriptableObject):
 			ui.message(title)
 		elif repeatCount==1:
 			if characterDescriptionMode:
-				jpUtils.speakSpelling(title, useCharacterDescriptions=True, useDetails=True)
+				speech.speakSpelling(title, useCharacterDescriptions=True, useDetails=True)
 			else:
 				speech.speakSpelling(title)
 		else:

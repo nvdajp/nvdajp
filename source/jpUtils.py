@@ -387,24 +387,19 @@ def fixNewText(newText, isCandidate=False):
 	return newText
 
 
-from typing import Optional, Generator
+from typing import Generator
 from speech import (
-	speak,
 	getCurrentLanguage,
 	getCharDescListFromText,
 	LANGS_WITH_CONJUNCT_CHARS,
 )
-from speech.priorities import Spri
 from speech.types import SequenceItemT
 from speech.commands import (
 	LangChangeCommand,
 	EndUtteranceCommand,
 	PitchCommand,
 	BeepCommand,
-	CharacterModeCommand,
 )
-import textInfos
-from synthDriverHandler import getSynth
 
 
 def _getSpellingCharAddCapNotification(
@@ -438,7 +433,7 @@ def _getSpellingCharAddCapNotification(
 		yield PitchCommand()
 
 
-def _getSpellingSpeechWithoutCharMode(
+def getSpellingSpeechWithoutCharMode(
 		text: str,
 		locale: str,
 		useCharacterDescriptions: bool,
@@ -494,88 +489,6 @@ def _getSpellingSpeechWithoutCharMode(
 			uppercase and beepForCapitals,
 		)
 		yield EndUtteranceCommand()
-
-
-def _getSpellingSpeechAddCharMode(
-		seq: Generator[SequenceItemT, None, None],
-) -> Generator[SequenceItemT, None, None]:
-	"""Inserts CharacterMode commands in a speech sequence generator to ensure any single character
-	is spelt by the synthesizer.
-	@param seq: The speech sequence to be spelt.
-	"""
-	charMode = False
-	for item in seq:
-		if isinstance(item, str):
-			if len(item) == 1:
-				if not charMode:
-					yield CharacterModeCommand(True)
-					charMode = True
-			elif charMode:
-				yield CharacterModeCommand(False)
-				charMode = False
-		yield item
-
-
-def getSpellingSpeech(
-		text: str,
-		locale: Optional[str] = None,
-		useCharacterDescriptions: bool = False,
-		useDetails: bool = False,
-) -> Generator[SequenceItemT, None, None]:
-	
-	synth = getSynth()
-	synthConfig = config.conf["speech"][synth.name]
-	
-	if synth.isSupported("pitch"):
-		capPitchChange = synthConfig["capPitchChange"]
-	else:
-		capPitchChange = 0
-	seq = _getSpellingSpeechWithoutCharMode(
-		text,
-		locale,
-		useCharacterDescriptions,
-		useDetails,
-		sayCapForCapitals=synthConfig["sayCapForCapitals"],
-		capPitchChange=capPitchChange,
-		beepForCapitals=synthConfig["beepForCapitals"],
-	)
-	if synthConfig["useSpellingFunctionality"]:
-		seq = _getSpellingSpeechAddCharMode(seq)
-	yield from seq
-
-
-def speakSpelling(
-		text: str,
-		locale: Optional[str] = None,
-		useCharacterDescriptions: bool = False,
-		useDetails: bool = False,
-		priority: Optional[Spri] = None
-) -> None:
-	seq = list(getSpellingSpeech(
-		text,
-		locale=locale,
-		useCharacterDescriptions=useCharacterDescriptions,
-		useDetails=useDetails,
-	))
-	log.info(repr(seq))
-	speak(seq, priority=priority)
-
-
-def spellTextInfo(
-		info: textInfos.TextInfo,
-		useCharacterDescriptions: bool = False,
-		useDetails: bool = False,
-		priority: Optional[Spri] = None
-) -> None:
-	if not config.conf['speech']['autoLanguageSwitching']:
-		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
-		return
-	curLanguage=None
-	for field in info.getTextWithFields({}):
-		if isinstance(field,str):
-			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
-		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
-			curLanguage=field.field.get('language')
 
 
 def modifyTimeText(text):
