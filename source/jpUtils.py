@@ -360,6 +360,13 @@ def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBra
 	log.debug(repr(r))
 	return r
 
+
+def getDiscrptionForBraille(name, attrOnly=False, sayCapForCapitals=False):
+	return getDiscriminantReading(
+		name, attrOnly=attrOnly, sayCapForCapitals=sayCapForCapitals, forBraille=True
+	)
+
+
 def processHexCode(locale, msg):
 	if isJa(locale):
 		try:

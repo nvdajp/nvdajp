@@ -1300,7 +1300,7 @@ class GlobalCommands(ScriptableObject):
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
 			if scriptCount > 1 and characterDescriptionMode:
-				jpUtils.spellTextInfoWithDetails(info, useCharacterDescriptions=scriptCount>1)
+				jpUtils.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
 			else:
 				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
 
@@ -1469,11 +1469,11 @@ class GlobalCommands(ScriptableObject):
 			if characterDescriptionMode:
 				jpUtils.spellTextInfo(info, useCharacterDescriptions=True)
 				# display description to braille
-				braille.handler.message(jpUtils.getDiscriminantReading(info.text, forBraille=True))
+				braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 			else:
 				speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
 		elif scriptCount==1:
-			jpUtils.spellTextInfoWithDetails(info, useCharacterDescriptions=True, useDetails=True)
+			jpUtils.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
 		elif scriptCount==2:
 			log.debug(repr([info.text, len(info.text)]))
 			try:
