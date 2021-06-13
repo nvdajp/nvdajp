@@ -793,6 +793,14 @@ def speak(  # noqa: C901
 	import speechViewer
 	if speechViewer.isActive:
 		speechViewer.appendSpeechSequence(speechSequence)
+	from gui import jpBrailleViewer
+	if jpBrailleViewer.isActive:
+		s = ""
+		for item in speechSequence:
+			if isinstance(item, str):
+				s += item
+		if s:
+			jpBrailleViewer.appendText(s)
 	if _speechState.speechMode == SpeechMode.off:
 		return
 	elif _speechState.speechMode == SpeechMode.beeps:
