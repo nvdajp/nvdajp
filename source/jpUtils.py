@@ -117,8 +117,10 @@ def getAttrDesc(a):
 		# Translators: character attribute name
 		d.append(_('latin'))
 	if a.upper:
-		# Translators: character attribute name
-		d.append(pgettext("character attribute name", 'cap'))
+		# Translators: cap will be spoken before the given letter when it is capitalized.
+		capMsg = _("cap %s")
+		(capMsgBefore, _) = capMsg.split('%s')
+		d.append(capMsgBefore)
 	return ' '.join(d)
 
 
@@ -190,13 +192,13 @@ def getCharDesc(locale, char, jpAttr):
 	return charDesc
 
 
-def getPitchChangeForCharAttr(uppercase, jpAttr, synth, synthConfig):
+def getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange):
 	"""
 	"""
-	if not synth.isSupported("pitch"):
+	if not capPitchChange:
 		return 0
-	if uppercase and synthConfig["capPitchChange"]:
-		return synthConfig["capPitchChange"]
+	if uppercase:
+		return capPitchChange
 	elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
 		return config.conf['language']['jpKatakanaPitchChange']
 	elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
@@ -412,14 +414,8 @@ def _getSpellingCharAddCapNotification(
 	@param beepForCapitals: indicates if a cap notification beep should be produced while spelling the currently
 	spellt character.
 	"""
-	if sayCapForCapitals:
-		# Translators: cap will be spoken before the given letter when it is capitalized.
-		capMsg = _("cap %s")
-		(capMsgBefore, capMsgAfter) = capMsg.split('%s')
-	else:
-		capMsgBefore = ''
-		capMsgAfter = ''
-	
+	capMsgBefore = getJaCharAttrDetails(speakCharAs, sayCapForCapitals)
+	capMsgAfter = None
 	if capPitchChange:
 		yield PitchCommand(offset=capPitchChange)
 	if beepForCapitals:
@@ -468,6 +464,10 @@ def _getSpellingSpeechWithoutCharMode(
 			if useCharacterDescriptions:
 				charDesc=characterProcessing.getCharacterDescription(locale,speakCharAs.lower())
 		uppercase=speakCharAs.isupper()
+		jpAttr = getCharAttr(locale, speakCharAs, True)
+		pitchChange = getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange)
+		if isJa(locale) and useCharacterDescriptions:
+			charDesc = getCharDesc(locale, speakCharAs, jpAttr)
 		if useCharacterDescriptions and charDesc:
 			IDEOGRAPHIC_COMMA = u"\u3001"
 			speakCharAs=charDesc[0] if textLength>1 else IDEOGRAPHIC_COMMA.join(charDesc)
@@ -478,7 +478,7 @@ def _getSpellingSpeechWithoutCharMode(
 		yield from _getSpellingCharAddCapNotification(
 			speakCharAs,
 			uppercase and sayCapForCapitals,
-			capPitchChange if uppercase else 0,
+			pitchChange,
 			uppercase and beepForCapitals,
 		)
 		yield EndUtteranceCommand()
@@ -536,7 +536,6 @@ def speakSpellingWithDetails(
 		useCharacterDescriptions: bool = False,
 		priority: Optional[Spri] = None
 ) -> None:
-	log.info('TODO: speakSpellingWithDetails %r' % [text, locale, useCharacterDescriptions, priority])
 	seq = list(getSpellingSpeechWithDetails(
 		text,
 		locale=locale,
