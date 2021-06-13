@@ -545,6 +545,7 @@ def speakSpellingWithDetails(
 		locale=locale,
 		useCharacterDescriptions=useCharacterDescriptions
 	))
+	log.info(repr(seq))
 	speak(seq, priority=priority)
 
 
