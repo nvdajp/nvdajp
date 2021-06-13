@@ -39,13 +39,11 @@ from . import logViewer
 import speechViewer
 import winUser
 import api
+from . import brailleViewer as jpBrailleViewer #nvdajp
+import subprocess #nvdajp
 
 def openDocFile(basename):
-	if sys.version_info.major <= 2:
-		b = unicode(basename, 'mbcs')
-		d = getDocFilePath(b + u".html")
-	else:
-		d = getDocFilePath(basename + ".html")
+	d = getDocFilePath(basename + ".html")
 	if config.conf["language"]["openDocFileByMSHTA"]:
 		subprocess.Popen(["mshta.exe", d])
 	else:
