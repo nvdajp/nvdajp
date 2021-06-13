@@ -569,3 +569,22 @@ def spellTextInfo(
 			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
 		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
 			curLanguage=field.field.get('language')
+
+
+def modifyTimeText(text):
+	mo = re.match('(\d{1,2}):(\d{2})', text)
+	if mo:
+		hour, minute = mo.group(1), mo.group(2)
+		if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
+		if len(minute) == 2 and minute[0] == '0': minute = minute[1:]
+		# Translators: hour and minute
+		text = _('{hour}:{minute}').format(hour=hour, minute=minute)
+	else:
+		mo = re.match('([^\d]+)(\d{1,2}):(\d{2})', text)
+		if mo:
+			am_or_pm, hour, minute = mo.group(1), mo.group(2), mo.group(3)
+			if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
+			if len(minute) == 2 and minute[0] == '0': minute = minute[1:]
+			# Translators: hour and minute
+			text = am_or_pm + _('{hour}:{minute}').format(hour=hour, minute=minute)
+	return text

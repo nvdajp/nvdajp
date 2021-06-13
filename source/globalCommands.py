@@ -6,8 +6,7 @@
 # Leonard de Ruijter, Derek Riemer, Babbage B.V., Davy Kager, Ethan Holliger, Łukasz Golonka, Accessolutions,
 # Julien Cochuyt
 
-import jpUtils  # nvdajp
-import time
+import jpUtils
 import itertools
 from typing import Optional
 
@@ -93,7 +92,6 @@ SCRCAT_INPUT = _("Input")
 # Translators: The name of a category of NVDA commands.
 SCRCAT_DOCUMENTFORMATTING = _("Document formatting")
 
-# nvdajp
 characterDescriptionMode = True
 
 class GlobalCommands(ScriptableObject):
@@ -276,24 +274,7 @@ class GlobalCommands(ScriptableObject):
 	def script_dateTime(self,gesture):
 		if scriptHandler.getLastScriptRepeatCount()==0:
 			text=winKernel.GetTimeFormatEx(winKernel.LOCALE_NAME_USER_DEFAULT, winKernel.TIME_NOSECONDS, None, None)
-			# nvdajp
-			import re
-			mo = re.match('(\d{1,2}):(\d{2})', text)
-			if mo:
-				hour, minute = mo.group(1), mo.group(2)
-				if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
-				if len(minute) == 2 and minute[0] == '0': minute = minute[1:]
-				# Translators: hour and minute
-				text = _('{hour}:{minute}').format(hour=hour, minute=minute)
-			else:
-				mo = re.match('([^\d]+)(\d{1,2}):(\d{2})', text)
-				if mo:
-					am_or_pm, hour, minute = mo.group(1), mo.group(2), mo.group(3)
-					if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
-					if len(minute) == 2 and minute[0] == '0': minute = minute[1:]
-					# Translators: hour and minute
-					text = am_or_pm + _('{hour}:{minute}').format(hour=hour, minute=minute)
-			# nvdajp end
+			text = jpUtils.modifyTimeText(text)
 		else:
 			text=winKernel.GetDateFormatEx(winKernel.LOCALE_NAME_USER_DEFAULT, winKernel.DATE_LONGDATE, None, None)
 		ui.message(text)
@@ -1443,7 +1424,7 @@ class GlobalCommands(ScriptableObject):
 		gestures=("kb:numpad1", "kb(laptop):NVDA+leftArrow", "ts(text):flickLeft")
 	)
 	def script_review_previousCharacter(self,gesture):
-		global characterDescriptionMode #nvdajp
+		global characterDescriptionMode
 		lineInfo=api.getReviewPosition().copy()
 		lineInfo.expand(textInfos.UNIT_LINE)
 		charInfo=api.getReviewPosition().copy()
@@ -1455,21 +1436,17 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Left"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			# nvdajp
 			if characterDescriptionMode:
 				jpUtils.spellTextInfo(reviewInfo, useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(reviewInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
-			# nvdajp end
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			# nvdajp
 			if characterDescriptionMode:
 				jpUtils.spellTextInfo(charInfo,useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(charInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
-			# nvdajp end
 
 	@script(
 		description=_(
@@ -1482,13 +1459,12 @@ class GlobalCommands(ScriptableObject):
 		gestures=("kb:numpad2", "kb(laptop):NVDA+.")
 	)
 	def script_review_currentCharacter(self,gesture):
-		global characterDescriptionMode #nvdajp
+		global characterDescriptionMode
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_CHARACTER)
 		# Explicitly tether here
 		braille.handler.setTether(braille.handler.TETHER_REVIEW, auto=True)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
-		# nvdajp begin
 		if scriptCount==0:
 			if characterDescriptionMode:
 				jpUtils.spellTextInfo(info, useCharacterDescriptions=True)
@@ -1526,7 +1502,6 @@ class GlobalCommands(ScriptableObject):
 				# Translators: character description mode
 				ui.message(_("Character description mode enabled"))
 				characterDescriptionMode = True
-		# nvdajp end
 
 	@script(
 		description=_(
@@ -1537,7 +1512,7 @@ class GlobalCommands(ScriptableObject):
 		gestures=("kb:numpad3", "kb(laptop):NVDA+rightArrow", "ts(text):flickRight")
 	)
 	def script_review_nextCharacter(self,gesture):
-		global characterDescriptionMode #nvdajp
+		global characterDescriptionMode
 		lineInfo=api.getReviewPosition().copy()
 		lineInfo.expand(textInfos.UNIT_LINE)
 		charInfo=api.getReviewPosition().copy()
@@ -1549,22 +1524,17 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Right"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			# nvdajp
 			if characterDescriptionMode:
 				jpUtils.spellTextInfo(reviewInfo, useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(reviewInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
-			# nvdajp end
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			log.debug(repr([charInfo.text, len(charInfo.text), 'charInfo']))
-			# nvdajp
 			if characterDescriptionMode:
 				jpUtils.spellTextInfo(charInfo, useCharacterDescriptions=True)
 			else:
 				speech.speakTextInfo(charInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
-			# nvdajp end
 
 	@script(
 		description=_(
@@ -1743,8 +1713,8 @@ class GlobalCommands(ScriptableObject):
 	@script(
 		# Translators: Input help mode message for show NVDA menu command.
 		description=_("Shows the NVDA menu"),
-		gestures=("kb:NVDA+n", "ts:2finger_double_tap"),
-        allowInSleepMode=True  # nvdajp
+        allowInSleepMode=True,
+		gestures=("kb:NVDA+n", "ts:2finger_double_tap")
 	)
 	def script_showGui(self,gesture):
 		gui.showGui()
