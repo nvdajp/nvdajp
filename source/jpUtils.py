@@ -472,7 +472,7 @@ def _getSpellingSpeechWithoutCharMode(
 			# item is just a character.
 			speakCharOrg = item
 			if useCharacterDescriptions:
-				charDesc=characterProcessing.getCharacterDescription(locale,speakCharAs.lower())
+				charDesc = characterProcessing.getCharacterDescription(locale, speakCharOrg)
 		uppercase = speakCharOrg.isupper()
 		jpAttr = getJpAttr(locale, speakCharOrg, useDetails)
 		speakCharAs = speakCharOrg
