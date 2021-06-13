@@ -388,11 +388,6 @@ def fixNewText(newText, isCandidate=False):
 
 
 from typing import Generator
-from speech import (
-	getCurrentLanguage,
-	getCharDescListFromText,
-	LANGS_WITH_CONJUNCT_CHARS,
-)
 from speech.types import SequenceItemT
 from speech.commands import (
 	LangChangeCommand,
@@ -443,6 +438,11 @@ def getSpellingSpeechWithoutCharMode(
 		beepForCapitals: bool,
 ) -> Generator[SequenceItemT, None, None]:
 	
+	from speech import (
+		getCurrentLanguage,
+		getCharDescListFromText,
+		LANGS_WITH_CONJUNCT_CHARS,
+	)
 	defaultLanguage=getCurrentLanguage()
 	if not locale or (not config.conf['speech']['autoDialectSwitching'] and locale.split('_')[0]==defaultLanguage.split('_')[0]):
 		locale=defaultLanguage
