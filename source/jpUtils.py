@@ -209,7 +209,7 @@ def getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange):
 
 
 def getJaCharAttrDetails(char, sayCapForCapitals):
-	r = getDiscriminantReading(char, attrOnly=True, capAnnounced=sayCapForCapitals).rstrip()
+	r = getDiscriminantReading(char, attrOnly=True, sayCapForCapitals=sayCapForCapitals).rstrip()
 	log.debug(repr(r))
 	return r
 
