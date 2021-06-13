@@ -140,7 +140,7 @@ class JpAttr:
 	usePhoneticReadingKana: bool
 
 
-def getCharAttr(locale, char, useDetails):
+def getJpAttr(locale, char, useDetails):
 	"""
 	"""
 	_isJa = isJa(locale)
@@ -435,6 +435,7 @@ def _getSpellingSpeechWithoutCharMode(
 		text: str,
 		locale: str,
 		useCharacterDescriptions: bool,
+		useDetails: bool,
 		sayCapForCapitals: bool,
 		capPitchChange: int,
 		beepForCapitals: bool,
@@ -466,7 +467,7 @@ def _getSpellingSpeechWithoutCharMode(
 			if useCharacterDescriptions:
 				charDesc=characterProcessing.getCharacterDescription(locale,speakCharAs.lower())
 		uppercase = speakCharOrg.isupper()
-		jpAttr = getCharAttr(locale, speakCharOrg, True)
+		jpAttr = getJpAttr(locale, speakCharOrg, useDetails)
 		speakCharAs = speakCharOrg
 		pitchChange = getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange)
 		if isJa(locale) and useCharacterDescriptions:
@@ -508,10 +509,11 @@ def _getSpellingSpeechAddCharMode(
 		yield item
 
 
-def getSpellingSpeechWithDetails(
+def getSpellingSpeech(
 		text: str,
 		locale: Optional[str] = None,
-		useCharacterDescriptions: bool = False
+		useCharacterDescriptions: bool = False,
+		useDetails: bool = False,
 ) -> Generator[SequenceItemT, None, None]:
 	
 	synth = getSynth()
@@ -525,6 +527,7 @@ def getSpellingSpeechWithDetails(
 		text,
 		locale,
 		useCharacterDescriptions,
+		useDetails,
 		sayCapForCapitals=synthConfig["sayCapForCapitals"],
 		capPitchChange=capPitchChange,
 		beepForCapitals=synthConfig["beepForCapitals"],
@@ -534,32 +537,35 @@ def getSpellingSpeechWithDetails(
 	yield from seq
 
 
-def speakSpellingWithDetails(
+def speakSpelling(
 		text: str,
 		locale: Optional[str] = None,
 		useCharacterDescriptions: bool = False,
+		useDetails: bool = False,
 		priority: Optional[Spri] = None
 ) -> None:
-	seq = list(getSpellingSpeechWithDetails(
+	seq = list(getSpellingSpeech(
 		text,
 		locale=locale,
-		useCharacterDescriptions=useCharacterDescriptions
+		useCharacterDescriptions=useCharacterDescriptions,
+		useDetails=useDetails,
 	))
 	log.info(repr(seq))
 	speak(seq, priority=priority)
 
 
-def spellTextInfoWithDetails(
+def spellTextInfo(
 		info: textInfos.TextInfo,
 		useCharacterDescriptions: bool = False,
+		useDetails: bool = False,
 		priority: Optional[Spri] = None
 ) -> None:
 	if not config.conf['speech']['autoLanguageSwitching']:
-		speakSpellingWithDetails(info.text,useCharacterDescriptions=useCharacterDescriptions)
+		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
 		return
 	curLanguage=None
 	for field in info.getTextWithFields({}):
 		if isinstance(field,str):
-			speakSpellingWithDetails(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,priority=priority)
+			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
 		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
 			curLanguage=field.field.get('language')
