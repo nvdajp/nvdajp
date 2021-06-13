@@ -208,8 +208,8 @@ def getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange):
 	return 0
 
 
-def getJaCharAttrDetails(char, shouldSayCap):
-	r = getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
+def getJaCharAttrDetails(char, sayCapForCapitals):
+	r = getDiscriminantReading(char, attrOnly=True, capAnnounced=sayCapForCapitals).rstrip()
 	log.debug(repr(r))
 	return r
 
@@ -318,14 +318,14 @@ def splitChars(name):
 
 #TODO: merge _get_description() and getDiscriminantReading().
 #nvdajp must modify locale/ja/characterDescriptions.dic and jpUtils.py.
-def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=False):
+def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBraille=False):
 	if not name: return ''
 	nameChars = splitChars(name)
 	attrs = []
 	for uc in nameChars:
 		c = uc[0]
 		ca = CharAttr(
-			isUpper(c) if (not capAnnounced and not forBraille) else False,
+			isUpper(c) if (not sayCapForCapitals and not forBraille) else False,
 			isZenkakuHiragana(c),
 			isZenkakuKatakana(c),
 			isHalfShape(c) or isHankakuKatakana(c),
@@ -401,6 +401,7 @@ from synthDriverHandler import getSynth
 
 
 def _getSpellingCharAddCapNotification(
+		speakCharOrg: str,
 		speakCharAs: str,
 		sayCapForCapitals: bool,
 		capPitchChange: int,
@@ -408,13 +409,14 @@ def _getSpellingCharAddCapNotification(
 ) -> Generator[SequenceItemT, None, None]:
 	"""This function produces a speech sequence containing a character to be spelt as well as commands
 	to indicate that this character is uppercase if applicable.
+	@param speakCharOrg: The character.
 	@param speakCharAs: The character as it will be spoken by the synthesizer.
 	@param sayCapForCapitals: indicates if 'cap' should be reported along with the currently spelt character.
 	@param capPitchChange: pitch offset to apply while spelling the currently spelt character.
 	@param beepForCapitals: indicates if a cap notification beep should be produced while spelling the currently
 	spellt character.
 	"""
-	capMsgBefore = getJaCharAttrDetails(speakCharAs, sayCapForCapitals)
+	capMsgBefore = getJaCharAttrDetails(speakCharOrg, sayCapForCapitals)
 	capMsgAfter = None
 	if capPitchChange:
 		yield PitchCommand(offset=capPitchChange)
@@ -456,18 +458,19 @@ def _getSpellingSpeechWithoutCharMode(
 	for item in charDescList:
 		if localeHasConjuncts:
 			# item is a tuple containing character and its description
-			speakCharAs = item[0]
+			speakCharOrg = item[0]
 			charDesc = item[1]
 		else:
 			# item is just a character.
-			speakCharAs = item
+			speakCharOrg = item
 			if useCharacterDescriptions:
 				charDesc=characterProcessing.getCharacterDescription(locale,speakCharAs.lower())
-		uppercase=speakCharAs.isupper()
-		jpAttr = getCharAttr(locale, speakCharAs, True)
+		uppercase = speakCharOrg.isupper()
+		jpAttr = getCharAttr(locale, speakCharOrg, True)
+		speakCharAs = speakCharOrg
 		pitchChange = getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange)
 		if isJa(locale) and useCharacterDescriptions:
-			charDesc = getCharDesc(locale, speakCharAs, jpAttr)
+			charDesc = getCharDesc(locale, speakCharOrg, jpAttr)
 		if useCharacterDescriptions and charDesc:
 			IDEOGRAPHIC_COMMA = u"\u3001"
 			speakCharAs=charDesc[0] if textLength>1 else IDEOGRAPHIC_COMMA.join(charDesc)
@@ -476,6 +479,7 @@ def _getSpellingSpeechWithoutCharMode(
 		if config.conf['speech']['autoLanguageSwitching']:
 			yield LangChangeCommand(locale)
 		yield from _getSpellingCharAddCapNotification(
+			speakCharOrg,
 			speakCharAs,
 			uppercase and sayCapForCapitals,
 			pitchChange,
