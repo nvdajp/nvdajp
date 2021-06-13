@@ -183,7 +183,10 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=(scriptCount>1 and characterDescriptionMode))
+			if scriptCount > 1 and characterDescriptionMode:
+				jpUtils.spellTextInfoWithDetails(info, useCharacterDescriptions=scriptCount>1)
+			else:
+				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
 
 	@script(
 		# Translators: Input help mode message for left mouse click command.
@@ -1058,7 +1061,7 @@ class GlobalCommands(ScriptableObject):
 			if len(text)>0 and not text.isspace():
 				if scriptHandler.getLastScriptRepeatCount()==1:
 					if characterDescriptionMode:
-						speech.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
+						jpUtils.speakSpellingWithDetails(text, useCharacterDescriptions=True)
 					else:
 						speech.speakSpelling(text)
 				else:
@@ -1315,7 +1318,10 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=(scriptCount>1 and characterDescriptionMode))
+			if scriptCount > 1 and characterDescriptionMode:
+				jpUtils.spellTextInfoWithDetails(info, useCharacterDescriptions=scriptCount>1)
+			else:
+				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
 
 	@script(
 		# Translators: Input help mode message for move review cursor to next line command.
@@ -1387,7 +1393,10 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info, reason=controlTypes.OutputReason.CARET, unit=textInfos.UNIT_WORD)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=(scriptCount>1 and characterDescriptionMode))
+			if scriptCount > 1 and characterDescriptionMode:
+				jpUtils.spellTextInfoWithDetails(info, useCharacterDescriptions=scriptCount>1)
+			else:
+				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
 
 	@script(
 		# Translators: Input help mode message for move review cursor to next word command.
@@ -1490,7 +1499,7 @@ class GlobalCommands(ScriptableObject):
 			else:
 				speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
 		elif scriptCount==1:
-			speech.spellTextInfo(info,useCharacterDescriptions=True,useDetails=True)
+			jpUtils.spellTextInfoWithDetails(info,useCharacterDescriptions=True)
 		elif scriptCount==2:
 			log.debug(repr([info.text, len(info.text)]))
 			try:
@@ -1937,7 +1946,7 @@ class GlobalCommands(ScriptableObject):
 				speech.speakObject(focusObject, reason=controlTypes.OutputReason.QUERY)
 			else:
 				if characterDescriptionMode:
-					speech.speakSpelling(focusObject.name, useCharacterDescriptions=True, useDetails=True)
+					jpUtils.speakSpellingWithDetails(focusObject.name, useCharacterDescriptions=True)
 				else:
 					speech.speakSpelling(focusObject.name)
 		else:
@@ -1991,7 +2000,7 @@ class GlobalCommands(ScriptableObject):
 				ui.message(_("no status bar information"))
 			else:
 				if characterDescriptionMode:
-					speech.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
+					jpUtils.speakSpellingWithDetails(text, useCharacterDescriptions=True)
 				else:
 					speech.speakSpelling(text)
 		else:
@@ -2062,7 +2071,7 @@ class GlobalCommands(ScriptableObject):
 			ui.message(title)
 		elif repeatCount==1:
 			if characterDescriptionMode:
-				speech.speakSpelling(title, useCharacterDescriptions=True, useDetails=True)
+				jpUtils.speakSpellingWithDetails(title, useCharacterDescriptions=True)
 			else:
 				speech.speakSpelling(title)
 		else:

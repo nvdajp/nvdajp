@@ -376,3 +376,186 @@ def fixNewText(newText, isCandidate=False):
 		for c in FIX_NEW_TEXT_CHARS:
 			newText = newText.replace(c, ' ' + getShortDesc(c) + ' ')
 	return newText
+
+
+from typing import Optional, Generator
+from speech import (
+	speak,
+	getCurrentLanguage,
+	getCharDescListFromText,
+	LANGS_WITH_CONJUNCT_CHARS,
+)
+from speech.priorities import Spri
+from speech.types import SequenceItemT
+from speech.commands import (
+	LangChangeCommand,
+	EndUtteranceCommand,
+	PitchCommand,
+	BeepCommand,
+	CharacterModeCommand,
+)
+import textInfos
+from synthDriverHandler import getSynth
+
+
+def _getSpellingCharAddCapNotification(
+		speakCharAs: str,
+		sayCapForCapitals: bool,
+		capPitchChange: int,
+		beepForCapitals: bool,
+) -> Generator[SequenceItemT, None, None]:
+	"""This function produces a speech sequence containing a character to be spelt as well as commands
+	to indicate that this character is uppercase if applicable.
+	@param speakCharAs: The character as it will be spoken by the synthesizer.
+	@param sayCapForCapitals: indicates if 'cap' should be reported along with the currently spelt character.
+	@param capPitchChange: pitch offset to apply while spelling the currently spelt character.
+	@param beepForCapitals: indicates if a cap notification beep should be produced while spelling the currently
+	spellt character.
+	"""
+	if sayCapForCapitals:
+		# Translators: cap will be spoken before the given letter when it is capitalized.
+		capMsg = _("cap %s")
+		(capMsgBefore, capMsgAfter) = capMsg.split('%s')
+	else:
+		capMsgBefore = ''
+		capMsgAfter = ''
+	
+	if capPitchChange:
+		yield PitchCommand(offset=capPitchChange)
+	if beepForCapitals:
+		yield BeepCommand(2000, 50)
+	if capMsgBefore:
+		yield capMsgBefore
+	yield speakCharAs
+	if capMsgAfter:
+		yield capMsgAfter
+	if capPitchChange:
+		yield PitchCommand()
+
+
+def _getSpellingSpeechWithoutCharMode(
+		text: str,
+		locale: str,
+		useCharacterDescriptions: bool,
+		sayCapForCapitals: bool,
+		capPitchChange: int,
+		beepForCapitals: bool,
+) -> Generator[SequenceItemT, None, None]:
+	
+	defaultLanguage=getCurrentLanguage()
+	if not locale or (not config.conf['speech']['autoDialectSwitching'] and locale.split('_')[0]==defaultLanguage.split('_')[0]):
+		locale=defaultLanguage
+
+	if not text:
+		# Translators: This is spoken when NVDA moves to an empty line.
+		yield _("blank")
+		return
+	if not text.isspace():
+		text=text.rstrip()
+
+	textLength=len(text)
+	count = 0
+	localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
+	charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else text
+	for item in charDescList:
+		if localeHasConjuncts:
+			# item is a tuple containing character and its description
+			speakCharAs = item[0]
+			charDesc = item[1]
+		else:
+			# item is just a character.
+			speakCharAs = item
+			if useCharacterDescriptions:
+				charDesc=characterProcessing.getCharacterDescription(locale,speakCharAs.lower())
+		uppercase=speakCharAs.isupper()
+		if useCharacterDescriptions and charDesc:
+			IDEOGRAPHIC_COMMA = u"\u3001"
+			speakCharAs=charDesc[0] if textLength>1 else IDEOGRAPHIC_COMMA.join(charDesc)
+		else:
+			speakCharAs=characterProcessing.processSpeechSymbol(locale,speakCharAs)
+		if config.conf['speech']['autoLanguageSwitching']:
+			yield LangChangeCommand(locale)
+		yield from _getSpellingCharAddCapNotification(
+			speakCharAs,
+			uppercase and sayCapForCapitals,
+			capPitchChange if uppercase else 0,
+			uppercase and beepForCapitals,
+		)
+		yield EndUtteranceCommand()
+
+
+def _getSpellingSpeechAddCharMode(
+		seq: Generator[SequenceItemT, None, None],
+) -> Generator[SequenceItemT, None, None]:
+	"""Inserts CharacterMode commands in a speech sequence generator to ensure any single character
+	is spelt by the synthesizer.
+	@param seq: The speech sequence to be spelt.
+	"""
+	charMode = False
+	for item in seq:
+		if isinstance(item, str):
+			if len(item) == 1:
+				if not charMode:
+					yield CharacterModeCommand(True)
+					charMode = True
+			elif charMode:
+				yield CharacterModeCommand(False)
+				charMode = False
+		yield item
+
+
+def getSpellingSpeechWithDetails(
+		text: str,
+		locale: Optional[str] = None,
+		useCharacterDescriptions: bool = False
+) -> Generator[SequenceItemT, None, None]:
+	
+	synth = getSynth()
+	synthConfig = config.conf["speech"][synth.name]
+	
+	if synth.isSupported("pitch"):
+		capPitchChange = synthConfig["capPitchChange"]
+	else:
+		capPitchChange = 0
+	seq = _getSpellingSpeechWithoutCharMode(
+		text,
+		locale,
+		useCharacterDescriptions,
+		sayCapForCapitals=synthConfig["sayCapForCapitals"],
+		capPitchChange=capPitchChange,
+		beepForCapitals=synthConfig["beepForCapitals"],
+	)
+	if synthConfig["useSpellingFunctionality"]:
+		seq = _getSpellingSpeechAddCharMode(seq)
+	yield from seq
+
+
+def speakSpellingWithDetails(
+		text: str,
+		locale: Optional[str] = None,
+		useCharacterDescriptions: bool = False,
+		priority: Optional[Spri] = None
+) -> None:
+	log.info('TODO: speakSpellingWithDetails %r' % [text, locale, useCharacterDescriptions, priority])
+	seq = list(getSpellingSpeechWithDetails(
+		text,
+		locale=locale,
+		useCharacterDescriptions=useCharacterDescriptions
+	))
+	speak(seq, priority=priority)
+
+
+def spellTextInfoWithDetails(
+		info: textInfos.TextInfo,
+		useCharacterDescriptions: bool = False,
+		priority: Optional[Spri] = None
+) -> None:
+	if not config.conf['speech']['autoLanguageSwitching']:
+		speakSpellingWithDetails(info.text,useCharacterDescriptions=useCharacterDescriptions)
+		return
+	curLanguage=None
+	for field in info.getTextWithFields({}):
+		if isinstance(field,str):
+			speakSpellingWithDetails(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,priority=priority)
+		elif isinstance(field,textInfos.FieldCommand) and field.command=="formatChange":
+			curLanguage=field.field.get('language')
