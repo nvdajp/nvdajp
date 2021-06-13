@@ -119,7 +119,7 @@ def getAttrDesc(a):
 	if a.upper:
 		# Translators: cap will be spoken before the given letter when it is capitalized.
 		capMsg = _("cap %s")
-		(capMsgBefore, _) = capMsg.split('%s')
+		(capMsgBefore, capMsgAfter) = capMsg.split('%s')
 		d.append(capMsgBefore)
 	return ' '.join(d)
 
