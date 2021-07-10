@@ -117,8 +117,10 @@ def getAttrDesc(a):
 		# Translators: character attribute name
 		d.append(_('latin'))
 	if a.upper:
-		# Translators: character attribute name
-		d.append(pgettext("character attribute name", 'cap'))
+		# Translators: cap will be spoken before the given letter when it is capitalized.
+		capMsg = _("cap %s")
+		(capMsgBefore, capMsgAfter) = capMsg.split('%s')
+		d.append(capMsgBefore)
 	return ' '.join(d)
 
 
@@ -138,7 +140,7 @@ class JpAttr:
 	usePhoneticReadingKana: bool
 
 
-def getCharAttr(locale, char, useDetails):
+def getJpAttr(locale, char, useDetails):
 	"""
 	"""
 	_isJa = isJa(locale)
@@ -190,13 +192,13 @@ def getCharDesc(locale, char, jpAttr):
 	return charDesc
 
 
-def getPitchChangeForCharAttr(uppercase, jpAttr, synth, synthConfig):
+def getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange):
 	"""
 	"""
-	if not synth.isSupported("pitch"):
+	if not capPitchChange:
 		return 0
-	if uppercase and synthConfig["capPitchChange"]:
-		return synthConfig["capPitchChange"]
+	if uppercase:
+		return capPitchChange
 	elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
 		return config.conf['language']['jpKatakanaPitchChange']
 	elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
@@ -206,8 +208,8 @@ def getPitchChangeForCharAttr(uppercase, jpAttr, synth, synthConfig):
 	return 0
 
 
-def getJaCharAttrDetails(char, shouldSayCap):
-	r = getDiscriminantReading(char, attrOnly=True, capAnnounced=shouldSayCap).rstrip()
+def getJaCharAttrDetails(char, sayCapForCapitals):
+	r = getDiscriminantReading(char, attrOnly=True, sayCapForCapitals=sayCapForCapitals).rstrip()
 	log.debug(repr(r))
 	return r
 
@@ -316,14 +318,14 @@ def splitChars(name):
 
 #TODO: merge _get_description() and getDiscriminantReading().
 #nvdajp must modify locale/ja/characterDescriptions.dic and jpUtils.py.
-def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=False):
+def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBraille=False):
 	if not name: return ''
 	nameChars = splitChars(name)
 	attrs = []
 	for uc in nameChars:
 		c = uc[0]
 		ca = CharAttr(
-			isUpper(c) if (not capAnnounced and not forBraille) else False,
+			isUpper(c) if (not sayCapForCapitals and not forBraille) else False,
 			isZenkakuHiragana(c),
 			isZenkakuKatakana(c),
 			isHalfShape(c) or isHankakuKatakana(c),
@@ -358,6 +360,13 @@ def getDiscriminantReading(name, attrOnly=False, capAnnounced=False, forBraille=
 	log.debug(repr(r))
 	return r
 
+
+def getDiscrptionForBraille(name, attrOnly=False, sayCapForCapitals=False):
+	return getDiscriminantReading(
+		name, attrOnly=attrOnly, sayCapForCapitals=sayCapForCapitals, forBraille=True
+	)
+
+
 def processHexCode(locale, msg):
 	if isJa(locale):
 		try:
@@ -376,3 +385,126 @@ def fixNewText(newText, isCandidate=False):
 		for c in FIX_NEW_TEXT_CHARS:
 			newText = newText.replace(c, ' ' + getShortDesc(c) + ' ')
 	return newText
+
+
+from typing import Generator
+from speech.types import SequenceItemT
+from speech.commands import (
+	LangChangeCommand,
+	EndUtteranceCommand,
+	PitchCommand,
+	BeepCommand,
+)
+
+
+def _getSpellingCharAddCapNotification(
+		speakCharOrg: str,
+		speakCharAs: str,
+		sayCapForCapitals: bool,
+		capPitchChange: int,
+		beepForCapitals: bool,
+) -> Generator[SequenceItemT, None, None]:
+	"""This function produces a speech sequence containing a character to be spelt as well as commands
+	to indicate that this character is uppercase if applicable.
+	@param speakCharOrg: The character.
+	@param speakCharAs: The character as it will be spoken by the synthesizer.
+	@param sayCapForCapitals: indicates if 'cap' should be reported along with the currently spelt character.
+	@param capPitchChange: pitch offset to apply while spelling the currently spelt character.
+	@param beepForCapitals: indicates if a cap notification beep should be produced while spelling the currently
+	spellt character.
+	"""
+	capMsgBefore = getJaCharAttrDetails(speakCharOrg, sayCapForCapitals)
+	capMsgAfter = None
+	if capPitchChange:
+		yield PitchCommand(offset=capPitchChange)
+	if beepForCapitals:
+		yield BeepCommand(2000, 50)
+	if capMsgBefore:
+		yield capMsgBefore
+	yield speakCharAs
+	if capMsgAfter:
+		yield capMsgAfter
+	if capPitchChange:
+		yield PitchCommand()
+
+
+def getSpellingSpeechWithoutCharMode(
+		text: str,
+		locale: str,
+		useCharacterDescriptions: bool,
+		useDetails: bool,
+		sayCapForCapitals: bool,
+		capPitchChange: int,
+		beepForCapitals: bool,
+) -> Generator[SequenceItemT, None, None]:
+	
+	from speech import (
+		getCurrentLanguage,
+		getCharDescListFromText,
+		LANGS_WITH_CONJUNCT_CHARS,
+	)
+	defaultLanguage=getCurrentLanguage()
+	if not locale or (not config.conf['speech']['autoDialectSwitching'] and locale.split('_')[0]==defaultLanguage.split('_')[0]):
+		locale=defaultLanguage
+
+	if not text:
+		# Translators: This is spoken when NVDA moves to an empty line.
+		yield _("blank")
+		return
+	if not text.isspace():
+		text=text.rstrip()
+
+	textLength=len(text)
+	count = 0
+	localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
+	charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else text
+	for item in charDescList:
+		if localeHasConjuncts:
+			# item is a tuple containing character and its description
+			speakCharOrg = item[0]
+			charDesc = item[1]
+		else:
+			# item is just a character.
+			speakCharOrg = item
+			if useCharacterDescriptions:
+				charDesc = characterProcessing.getCharacterDescription(locale, speakCharOrg)
+		uppercase = speakCharOrg.isupper()
+		jpAttr = getJpAttr(locale, speakCharOrg, useDetails)
+		speakCharAs = speakCharOrg
+		pitchChange = getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange)
+		if isJa(locale) and useCharacterDescriptions:
+			charDesc = getCharDesc(locale, speakCharOrg, jpAttr)
+		if useCharacterDescriptions and charDesc:
+			IDEOGRAPHIC_COMMA = u"\u3001"
+			speakCharAs=charDesc[0] if textLength>1 else IDEOGRAPHIC_COMMA.join(charDesc)
+		else:
+			speakCharAs=characterProcessing.processSpeechSymbol(locale,speakCharAs)
+		if config.conf['speech']['autoLanguageSwitching']:
+			yield LangChangeCommand(locale)
+		yield from _getSpellingCharAddCapNotification(
+			speakCharOrg,
+			speakCharAs,
+			uppercase and sayCapForCapitals,
+			pitchChange,
+			uppercase and beepForCapitals,
+		)
+		yield EndUtteranceCommand()
+
+
+def modifyTimeText(text):
+	mo = re.match('(\d{1,2}):(\d{2})', text)
+	if mo:
+		hour, minute = mo.group(1), mo.group(2)
+		if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
+		if len(minute) == 2 and minute[0] == '0': minute = minute[1:]
+		# Translators: hour and minute
+		text = _('{hour}:{minute}').format(hour=hour, minute=minute)
+	else:
+		mo = re.match('([^\d]+)(\d{1,2}):(\d{2})', text)
+		if mo:
+			am_or_pm, hour, minute = mo.group(1), mo.group(2), mo.group(3)
+			if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
+			if len(minute) == 2 and minute[0] == '0': minute = minute[1:]
+			# Translators: hour and minute
+			text = am_or_pm + _('{hour}:{minute}').format(hour=hour, minute=minute)
+	return text

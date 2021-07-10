@@ -14,7 +14,6 @@ from synthDriverHandler import SynthDriver, VoiceInfo, synthIndexReached, synthD
 import speech
 from logHandler import log
 from .jtalk._nvdajp_espeak import replaceJapaneseFromSpeechSequence
-from driverHandler import BooleanDriverSetting
 
 from speech.commands import (
 	IndexCommand,

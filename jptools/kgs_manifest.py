@@ -13,5 +13,5 @@ author = "Takuya Nishimoto <nishimotz@gmail.com>"
 description = "KGS Driver, which supports BM Smart series, Braille Memo series, Braille Memo Pocket and Braille Tender."
 url = http://www.nvda.jp/en/
 minimumNVDAVersion = 2014.1.0
-lastTestedNVDAVersion = 2020.1.0
+lastTestedNVDAVersion = 2021.1.0
 """.format(nowdate=args.nowdate))

@@ -68,6 +68,20 @@ class WelcomeDialog(
 			self.kbdList.SetSelection(index)
 		except (ValueError, KeyError):
 			log.error("Could not set Keyboard layout list to current layout", exc_info=True)
+		#nvdajp
+		# Translators: The label of a checkbox in the Welcome dialog.
+		nconvAsNVDAModifierText = _("Use NonConvert as an NVDA modifier key")
+		self.nconvAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=nconvAsNVDAModifierText))
+		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
+		# Translators: The label of a checkbox in the Welcome dialog.
+		convAsNVDAModifierText = _("Use Convert as an NVDA modifier key")
+		self.convAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=convAsNVDAModifierText))
+		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
+		# Translators: The label of a checkbox in the Welcome dialog.
+		escAsNVDAModifierText = _("Use Escape as an NVDA modifier key")
+		self.escAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=escAsNVDAModifierText))
+		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
+		#nvdajp done
 		# Translators: The label of a checkbox in the Welcome dialog.
 		capsAsNVDAModifierText = _("&Use CapsLock as an NVDA modifier key")
 		self.capsAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=capsAsNVDAModifierText))
@@ -100,6 +114,9 @@ class WelcomeDialog(
 		layout = self.kbdNames[self.kbdList.GetSelection()]
 		config.conf["keyboard"]["keyboardLayout"] = layout
 		config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"] = self.capsAsNVDAModifierCheckBox.IsChecked()
+		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = self.nconvAsNVDAModifierCheckBox.IsChecked() #nvdajp
+		config.conf["keyboard"]["useConvertAsNVDAModifierKey"]=self.convAsNVDAModifierCheckBox.IsChecked()
+		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] = self.escAsNVDAModifierCheckBox.IsChecked()
 		if self.startAfterLogonCheckBox.Enabled:
 			config.setStartAfterLogon(self.startAfterLogonCheckBox.Value)
 		config.conf["general"]["showWelcomeDialogAtStartup"] = self.showWelcomeDialogAtStartupCheckBox.IsChecked()
@@ -117,7 +134,7 @@ class WelcomeDialog(
 		gui.mainFrame.prePopup()
 		d = cls(gui.mainFrame)
 		d.ShowModal()
-		d.Destroy()
+		wx.CallAfter(d.Destroy)
 		gui.mainFrame.postPopup()
 
 
@@ -192,8 +209,10 @@ class LauncherDialog(
 		self.Destroy()
 		core.doStartupDialogs()
 
-	def onExit(self, evt):
-		gui.safeAppExit()
+	def onExit(self, evt: wx.CommandEvent):
+		if not core.triggerNVDAExit():
+			log.error("NVDA already in process of exiting, this indicates a logic error.")
+		self.Destroy()  # Without this, the onExit is called multiple times by wx.
 
 	@classmethod
 	def run(cls):
@@ -230,6 +249,8 @@ class AskAllowUsageStatsDialog(
 			"Please refer to the User Guide for a current list of all data collected.\n\n"
 			"Do you wish to allow NV Access to periodically collect this data in order to improve NVDA?"
 		)
+		# Translators: 'NV Access' should be replaced with 'NVDA Japanese Team'
+		message = message.replace('NV Access', _('NVDA Japanese Team'))
 		sText = sHelper.addItem(wx.StaticText(self, label=message))
 		# the wx.Window must be constructed before we can get the handle.
 		import windowUtils
@@ -257,7 +278,7 @@ class AskAllowUsageStatsDialog(
 		mainSizer.Add(sHelper.sizer, border=gui.guiHelper.BORDER_FOR_DIALOGS, flag=wx.ALL)
 		self.Sizer = mainSizer
 		mainSizer.Fit(self)
-		self.Center(wx.BOTH | wx.CENTER_ON_SCREEN)
+		self.CentreOnScreen()
 
 	def onYesButton(self, evt):
 		log.debug("Usage stats gathering has been allowed")
