@@ -1125,6 +1125,10 @@ def speakTextInfo(
 		suppressBlanks: bool = False,
 		priority: Optional[Spri] = None
 ) -> bool:
+	from globalCommands import characterDescriptionMode
+	if characterDescriptionMode and reason == controlTypes.OutputReason.CARET and unit == textInfos.UNIT_CHARACTER:
+		speakSpelling(info.text, useCharacterDescriptions=True)
+		return
 	speechGen = getTextInfoSpeech(
 		info,
 		useCache,
