@@ -37,6 +37,7 @@ Announce list item when moving by word or character
 	announce_list_item_when_moving_by_word_or_character
 i7562
 	[Documentation]	List should not be announced on every line of a ul in a contenteditable
+	[Tags]	excluded_from_build
 	test_i7562
 pr11606
 	[Documentation]	Announce the correct line when placed at the end of a link at the end of a list item in a contenteditable
