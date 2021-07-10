@@ -181,10 +181,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			if scriptCount > 1 and characterDescriptionMode:
-				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
-			else:
-				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
+			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1, useDetails=characterDescriptionMode if scriptCount > 1 else False)
 
 	@script(
 		# Translators: Input help mode message for left mouse click command.
@@ -1041,10 +1038,7 @@ class GlobalCommands(ScriptableObject):
 			text=" ".join(textList)
 			if len(text)>0 and not text.isspace():
 				if scriptHandler.getLastScriptRepeatCount()==1:
-					if characterDescriptionMode:
-						speech.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
-					else:
-						speech.speakSpelling(text)
+					speech.speakSpelling(text, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 				else:
 					api.copyToClip(text, notify=True)
 		else:
@@ -1299,10 +1293,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			if scriptCount > 1 and characterDescriptionMode:
-				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
-			else:
-				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
+			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1, useDetails=characterDescriptionMode if scriptCount > 1 else False)
 
 	@script(
 		# Translators: Input help mode message for move review cursor to next line command.
@@ -1374,10 +1365,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info, reason=controlTypes.OutputReason.CARET, unit=textInfos.UNIT_WORD)
 		else:
-			if scriptCount > 1 and characterDescriptionMode:
-				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1, useDetails=True)
-			else:
-				speech.spellTextInfo(info, useCharacterDescriptions=scriptCount>1)
+			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
 
 	@script(
 		# Translators: Input help mode message for move review cursor to next word command.
@@ -1468,14 +1456,12 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			if characterDescriptionMode:
 				speech.spellTextInfo(info, useCharacterDescriptions=True)
-				# display description to braille
-				braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 			else:
 				speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
+			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 		elif scriptCount==1:
 			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
-		elif scriptCount==2:
-			log.debug(repr([info.text, len(info.text)]))
+		elif scriptCount == 2:
 			try:
 				c = ord(info.text)
 			except TypeError:
@@ -1512,7 +1498,6 @@ class GlobalCommands(ScriptableObject):
 		gestures=("kb:numpad3", "kb(laptop):NVDA+rightArrow", "ts(text):flickRight")
 	)
 	def script_review_nextCharacter(self,gesture):
-		global characterDescriptionMode
 		lineInfo=api.getReviewPosition().copy()
 		lineInfo.expand(textInfos.UNIT_LINE)
 		charInfo=api.getReviewPosition().copy()
@@ -1913,10 +1898,7 @@ class GlobalCommands(ScriptableObject):
 			if scriptHandler.getLastScriptRepeatCount()==0:
 				speech.speakObject(focusObject, reason=controlTypes.OutputReason.QUERY)
 			else:
-				if characterDescriptionMode:
-					speech.speakSpelling(focusObject.name, useCharacterDescriptions=True, useDetails=True)
-				else:
-					speech.speakSpelling(focusObject.name)
+				speech.speakSpelling(focusObject.name, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 		else:
 			ui.message(_("No focus"))
 
@@ -1967,10 +1949,7 @@ class GlobalCommands(ScriptableObject):
 				# Translators: Reported when status line exist, but is empty.
 				ui.message(_("no status bar information"))
 			else:
-				if characterDescriptionMode:
-					speech.speakSpelling(text, useCharacterDescriptions=True, useDetails=True)
-				else:
-					speech.speakSpelling(text)
+				speech.speakSpelling(text, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 		else:
 			if not text.strip():
 				# Translators: Reported when user attempts to copy content of the empty status line.
@@ -2038,10 +2017,7 @@ class GlobalCommands(ScriptableObject):
 		if repeatCount==0:
 			ui.message(title)
 		elif repeatCount==1:
-			if characterDescriptionMode:
-				speech.speakSpelling(title, useCharacterDescriptions=True, useDetails=True)
-			else:
-				speech.speakSpelling(title)
+			speech.speakSpelling(title, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 		else:
 			api.copyToClip(title, notify=True)
 
