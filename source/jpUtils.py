@@ -325,7 +325,7 @@ def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBra
 	for uc in nameChars:
 		c = uc[0]
 		ca = CharAttr(
-			isUpper(c) if (not sayCapForCapitals and not forBraille) else False,
+			isUpper(c) if (sayCapForCapitals and not forBraille) else False,
 			isZenkakuHiragana(c),
 			isZenkakuKatakana(c),
 			isHalfShape(c) or isHankakuKatakana(c),
