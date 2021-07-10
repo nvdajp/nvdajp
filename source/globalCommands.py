@@ -1365,7 +1365,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info, reason=controlTypes.OutputReason.CARET, unit=textInfos.UNIT_WORD)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
+			speech.spellTextInfo(info,useCharacterDescriptions=scriptCount>1)
 
 	@script(
 		# Translators: Input help mode message for move review cursor to next word command.
@@ -1424,17 +1424,11 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Left"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			if characterDescriptionMode:
-				speech.spellTextInfo(reviewInfo, useCharacterDescriptions=True)
-			else:
-				speech.speakTextInfo(reviewInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
+			speech.spellTextInfo(reviewInfo, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			if characterDescriptionMode:
-				speech.spellTextInfo(charInfo,useCharacterDescriptions=True)
-			else:
-				speech.speakTextInfo(charInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
+			speech.spellTextInfo(charInfo, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 
 	@script(
 		description=_(
@@ -1454,10 +1448,7 @@ class GlobalCommands(ScriptableObject):
 		braille.handler.setTether(braille.handler.TETHER_REVIEW, auto=True)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
 		if scriptCount==0:
-			if characterDescriptionMode:
-				speech.spellTextInfo(info, useCharacterDescriptions=True)
-			else:
-				speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
+			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 		elif scriptCount==1:
 			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
@@ -1509,17 +1500,11 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Right"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			if characterDescriptionMode:
-				speech.spellTextInfo(reviewInfo, useCharacterDescriptions=True)
-			else:
-				speech.speakTextInfo(reviewInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
+			speech.spellTextInfo(reviewInfo, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			if characterDescriptionMode:
-				speech.spellTextInfo(charInfo, useCharacterDescriptions=True)
-			else:
-				speech.speakTextInfo(charInfo, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
+			speech.spellTextInfo(charInfo, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 
 	@script(
 		description=_(
