@@ -1448,10 +1448,10 @@ class GlobalCommands(ScriptableObject):
 		braille.handler.setTether(braille.handler.TETHER_REVIEW, auto=True)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
 		if scriptCount==0:
-			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
+			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode)
 			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 		elif scriptCount==1:
-			speech.spellTextInfo(info, useCharacterDescriptions=True)
+			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
 		elif scriptCount == 2:
 			try:
 				c = ord(info.text)
