@@ -203,6 +203,7 @@ def spellTextInfo(
 		useDetails: bool = False,
 		priority: Optional[Spri] = None
 ) -> None:
+	"""Spells the text from the given TextInfo, honouring any LangChangeCommand objects it finds if autoLanguageSwitching is enabled."""
 	if not config.conf['speech']['autoLanguageSwitching']:
 		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
 		return
@@ -221,6 +222,7 @@ def speakSpelling(
 		useDetails: bool = False,
 		priority: Optional[Spri] = None
 ) -> None:
+	# This could be a very large list. In future we could convert this into chunks.
 	seq = list(getSpellingSpeech(
 		text,
 		locale=locale,
@@ -1125,6 +1127,10 @@ def speakTextInfo(
 		suppressBlanks: bool = False,
 		priority: Optional[Spri] = None
 ) -> bool:
+	from globalCommands import characterDescriptionMode
+	if characterDescriptionMode and reason == OutputReason.CARET and unit == textInfos.UNIT_CHARACTER:
+		speakSpelling(info.text, useCharacterDescriptions=True)
+		return True
 	speechGen = getTextInfoSpeech(
 		info,
 		useCache,

@@ -187,7 +187,7 @@ def getCharDesc(locale, char, jpAttr):
 	elif (jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana) and not jpAttr.usePhoneticReadingKana:
 		charDesc = (getShortDesc(char),)
 	else:
-		charDesc = characterProcessing.getCharacterDescription(locale,char.lower())
+		charDesc = characterProcessing.getCharacterDescription(locale, char.lower())
 	log.debug(repr([locale, char, ("%0x" % getOrd(char)), charDesc]))
 	return charDesc
 
@@ -195,21 +195,20 @@ def getCharDesc(locale, char, jpAttr):
 def getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange):
 	"""
 	"""
-	if not capPitchChange:
-		return 0
-	if uppercase:
+	if uppercase and capPitchChange:
 		return capPitchChange
-	elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
-		return config.conf['language']['jpKatakanaPitchChange']
-	elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
-		return config.conf['language']['halfShapePitchChange']
-	elif jpAttr.halfShape and config.conf['language']['halfShapePitchChange']:
-		return config.conf['language']['halfShapePitchChange']
+	conf = config.conf['language']
+	if jpAttr.jpZenkakuKatakana and conf['jpKatakanaPitchChange']:
+		return conf['jpKatakanaPitchChange']
+	elif jpAttr.jpHankakuKatakana and conf['halfShapePitchChange']:
+		return conf['halfShapePitchChange']
+	elif jpAttr.halfShape and conf['halfShapePitchChange']:
+		return conf['halfShapePitchChange']
 	return 0
 
 
-def getJaCharAttrDetails(char, sayCapForCapitals):
-	r = getDiscriminantReading(char, attrOnly=True, sayCapForCapitals=sayCapForCapitals).rstrip()
+def getJaCharAttrDetails(char, sayCapForCapitals, sayCharTypes):
+	r = getDiscriminantReading(char, attrOnly=True, sayCapForCapitals=sayCapForCapitals, sayCharTypes=sayCharTypes).rstrip()
 	log.debug(repr(r))
 	return r
 
@@ -318,19 +317,19 @@ def splitChars(name):
 
 #TODO: merge _get_description() and getDiscriminantReading().
 #nvdajp must modify locale/ja/characterDescriptions.dic and jpUtils.py.
-def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBraille=False):
+def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBraille=False, sayCharTypes=True):
 	if not name: return ''
 	nameChars = splitChars(name)
 	attrs = []
 	for uc in nameChars:
 		c = uc[0]
 		ca = CharAttr(
-			isUpper(c) if (not sayCapForCapitals and not forBraille) else False,
-			isZenkakuHiragana(c),
-			isZenkakuKatakana(c),
-			isHalfShape(c) or isHankakuKatakana(c),
-			isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c),
-			isLatinCharacter(c) and not forBraille)
+			isUpper(c) if (sayCapForCapitals and not forBraille) else False,
+			sayCharTypes and isZenkakuHiragana(c),
+			sayCharTypes and isZenkakuKatakana(c),
+			sayCharTypes and (isHalfShape(c) or isHankakuKatakana(c)),
+			sayCharTypes and (isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c)),
+			sayCharTypes and (isLatinCharacter(c) and not forBraille))
 		if not attrOnly:
 			log.debug(u"(%s) %d %s" % (uc, len(c), getAttrDesc(ca)))
 		attrs.append((uc, ca))
@@ -341,7 +340,7 @@ def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBra
 		return s
 	s = ''
 	prevAttr = None
-	prevChar = None
+	# prevChar = None
 	for a in attrs:
 		# attribute unchanged
 		if prevAttr == a[1]:
@@ -354,7 +353,7 @@ def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBra
 				s += getAttrDesc(a[1]) + ' '
 			s += getCandidateCharDesc(a[0], a[1], forBraille=forBraille)
 			prevAttr = a[1]
-		prevChar = a[0]
+		# prevChar = a[0]
 	s = s.replace('  ', ' ')
 	r = s.strip(' ')
 	log.debug(repr(r))
@@ -403,6 +402,7 @@ def _getSpellingCharAddCapNotification(
 		sayCapForCapitals: bool,
 		capPitchChange: int,
 		beepForCapitals: bool,
+		sayCharTypes: bool,
 ) -> Generator[SequenceItemT, None, None]:
 	"""This function produces a speech sequence containing a character to be spelt as well as commands
 	to indicate that this character is uppercase if applicable.
@@ -412,8 +412,9 @@ def _getSpellingCharAddCapNotification(
 	@param capPitchChange: pitch offset to apply while spelling the currently spelt character.
 	@param beepForCapitals: indicates if a cap notification beep should be produced while spelling the currently
 	spellt character.
+	@param sayCharTypes: indicates if character types should be reported.
 	"""
-	capMsgBefore = getJaCharAttrDetails(speakCharOrg, sayCapForCapitals)
+	capMsgBefore = getJaCharAttrDetails(speakCharOrg, sayCapForCapitals, sayCharTypes)
 	capMsgAfter = None
 	if capPitchChange:
 		yield PitchCommand(offset=capPitchChange)
@@ -487,6 +488,7 @@ def getSpellingSpeechWithoutCharMode(
 			uppercase and sayCapForCapitals,
 			pitchChange,
 			uppercase and beepForCapitals,
+			useDetails,
 		)
 		yield EndUtteranceCommand()
 
