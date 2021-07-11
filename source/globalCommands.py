@@ -1365,7 +1365,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount==0:
 			speech.speakTextInfo(info, reason=controlTypes.OutputReason.CARET, unit=textInfos.UNIT_WORD)
 		else:
-			speech.spellTextInfo(info,useCharacterDescriptions=scriptCount>1)
+			speech.spellTextInfo(info, useCharacterDescriptions=(scriptCount > 1), useDetails=(scriptCount > 1 and characterDescriptionMode))
 
 	@script(
 		# Translators: Input help mode message for move review cursor to next word command.
@@ -1451,7 +1451,7 @@ class GlobalCommands(ScriptableObject):
 			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 		elif scriptCount==1:
-			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
+			speech.spellTextInfo(info, useCharacterDescriptions=True)
 		elif scriptCount == 2:
 			try:
 				c = ord(info.text)
