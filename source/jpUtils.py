@@ -187,7 +187,7 @@ def getCharDesc(locale, char, jpAttr):
 	elif (jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana) and not jpAttr.usePhoneticReadingKana:
 		charDesc = (getShortDesc(char),)
 	else:
-		charDesc = characterProcessing.getCharacterDescription(locale,char.lower())
+		charDesc = characterProcessing.getCharacterDescription(locale, char.lower())
 	log.debug(repr([locale, char, ("%0x" % getOrd(char)), charDesc]))
 	return charDesc
 
@@ -195,16 +195,15 @@ def getCharDesc(locale, char, jpAttr):
 def getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange):
 	"""
 	"""
-	if not capPitchChange:
-		return 0
-	if uppercase:
+	if uppercase and capPitchChange:
 		return capPitchChange
-	elif jpAttr.jpZenkakuKatakana and config.conf['language']['jpKatakanaPitchChange']:
-		return config.conf['language']['jpKatakanaPitchChange']
-	elif jpAttr.jpHankakuKatakana and config.conf['language']['halfShapePitchChange']:
-		return config.conf['language']['halfShapePitchChange']
-	elif jpAttr.halfShape and config.conf['language']['halfShapePitchChange']:
-		return config.conf['language']['halfShapePitchChange']
+	conf = config.conf['language']
+	if jpAttr.jpZenkakuKatakana and conf['jpKatakanaPitchChange']:
+		return conf['jpKatakanaPitchChange']
+	elif jpAttr.jpHankakuKatakana and conf['halfShapePitchChange']:
+		return conf['halfShapePitchChange']
+	elif jpAttr.halfShape and conf['halfShapePitchChange']:
+		return conf['halfShapePitchChange']
 	return 0
 
 
