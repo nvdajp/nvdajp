@@ -1424,11 +1424,11 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Left"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			speech.spellTextInfo(reviewInfo, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
+			speech.spellTextInfo(reviewInfo, useCharacterDescriptions=characterDescriptionMode)
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			speech.spellTextInfo(charInfo, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
+			speech.spellTextInfo(charInfo, useCharacterDescriptions=characterDescriptionMode)
 
 	@script(
 		description=_(
@@ -1500,11 +1500,11 @@ class GlobalCommands(ScriptableObject):
 			ui.reviewMessage(_("Right"))
 			reviewInfo=api.getReviewPosition().copy()
 			reviewInfo.expand(textInfos.UNIT_CHARACTER)
-			speech.spellTextInfo(reviewInfo, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
+			speech.spellTextInfo(reviewInfo, useCharacterDescriptions=characterDescriptionMode)
 		else:
 			api.setReviewPosition(charInfo)
 			charInfo.expand(textInfos.UNIT_CHARACTER)
-			speech.spellTextInfo(charInfo, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
+			speech.spellTextInfo(charInfo, useCharacterDescriptions=characterDescriptionMode)
 
 	@script(
 		description=_(
