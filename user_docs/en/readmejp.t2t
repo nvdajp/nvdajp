@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2018-08-25
+- last update: 2021-07-15
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -647,7 +647,7 @@ BrailleMemo experimental driver is added for evaluating Grade 2 Braille input ta
 It translates spoken words to Japanese braille pattens, so it is not exactly same as the output to braille devices.
 
 For Windows XP or Vista, DejaVu Sans font must be installed to display braille patterns. If you install LibreOffice, DejaVu Sans font will be installed as well.
-n
+
 
 
 
