@@ -58,12 +58,12 @@ build_script:
     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
  - jptools\nonCertAllBuild.cmd %sconsArgs%
- - 'echo jptools\buildControllerClient.cmd %sconsArgs%'
- - jptools\buildControllerClient.cmd %sconsArgs%
+ - cd %APPVEYOR_BUILD_FOLDER%
  - cd jptools
  - pack_jtalk_addon.cmd
  - pack_kgs_addon.cmd
  - cd ..
+ - jptools\buildControllerClient.cmd %sconsArgs%
  - jptools\tests.cmd
 
 before_test:
