@@ -1,7 +1,7 @@
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2009-2020 NV Access Limited, Joseph Lee, Mohammad Suliman,
+# Copyright (C) 2009-2021 NV Access Limited, Joseph Lee, Mohammad Suliman,
 # Babbage B.V., Leonard de Ruijter, Bill Dengler
 
 """Support for UI Automation (UIA) controls."""
@@ -12,7 +12,6 @@ from comtypes import COMError
 from comtypes.automation import VARIANT
 import time
 import weakref
-import sys
 import numbers
 import colors
 import languageHandler
@@ -1034,10 +1033,7 @@ class UIA(Window):
 			VisualStudio.findExtraOverlayClasses(self, clsList)
 
 		# Support Windows Console's UIA interface
-		if (
-			self.windowClassName == "ConsoleWindowClass"
-			and config.conf['UIA']['winConsoleImplementation'] == "UIA"
-		):
+		if self.windowClassName == "ConsoleWindowClass":
 			from . import winConsoleUIA
 			winConsoleUIA.findExtraOverlayClasses(self, clsList)
 		elif UIAClassName == "TermControl":
@@ -2000,7 +1996,7 @@ class Toast_win8(Notification, UIA):
 class Toast_win10(Notification, UIA):
 
 	# #6096: Windows 10 build 14366 and later does not fire tooltip event when toasts appear.
-	if sys.getwindowsversion().build > 10586:
+	if winVersion.getWinVer() > winVersion.WIN10_1511:
 		event_UIA_window_windowOpen=Notification.event_alert
 	else:
 		event_UIA_toolTipOpened=Notification.event_alert
@@ -2010,7 +2006,7 @@ class Toast_win10(Notification, UIA):
 	_lastToastRuntimeID = None
 
 	def event_UIA_window_windowOpen(self):
-		if sys.getwindowsversion().build >= 15063:
+		if winVersion.getWinVer() >= winVersion.WIN10_1703:
 			toastTimestamp = time.time()
 			toastRuntimeID = self.UIAElement.getRuntimeID()
 			if toastRuntimeID == self._lastToastRuntimeID and toastTimestamp-self._lastToastTimestamp < 1.0:

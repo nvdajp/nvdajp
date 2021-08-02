@@ -61,3 +61,4 @@ source/locale/*/cldr.dic
 .vscode
 .vs
 .venv
+nvdaHelper/docs/

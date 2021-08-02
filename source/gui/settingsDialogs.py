@@ -2,7 +2,8 @@
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2006-2020 NV Access Limited, Peter Vágner, Aleksey Sadovoy,
 # Rui Batista, Joseph Lee, Heiko Folkerts, Zahari Yurukov, Leonard de Ruijter,
-# Derek Riemer, Babbage B.V., Davy Kager, Ethan Holliger, Bill Dengler, Thomas Stivers
+# Derek Riemer, Babbage B.V., Davy Kager, Ethan Holliger, Bill Dengler, Thomas Stivers,
+# Julien Cochuyt
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 import logging
@@ -1677,8 +1678,10 @@ class VoiceSettingsPanel(AutoSettingsMixin, SettingsPanel):
 
 		config.conf["speech"]["autoLanguageSwitching"] = self.autoLanguageSwitchingCheckbox.IsChecked()
 		config.conf["speech"]["autoDialectSwitching"] = self.autoDialectSwitchingCheckbox.IsChecked()
-		config.conf["speech"]["symbolLevel"]=characterProcessing.CONFIGURABLE_SPEECH_SYMBOL_LEVELS[self.symbolLevelList.GetSelection()]
-		config.conf["speech"]["trustVoiceLanguage"]=self.trustVoiceLanguageCheckbox.IsChecked()
+		config.conf["speech"]["symbolLevel"] = characterProcessing.CONFIGURABLE_SPEECH_SYMBOL_LEVELS[
+			self.symbolLevelList.GetSelection()
+		].value
+		config.conf["speech"]["trustVoiceLanguage"] = self.trustVoiceLanguageCheckbox.IsChecked()
 		currentIncludeCLDR = config.conf["speech"]["includeCLDR"]
 		config.conf["speech"]["includeCLDR"] = newIncludeCldr = self.includeCLDRCheckbox.IsChecked()
 		if currentIncludeCLDR is not newIncludeCldr:
@@ -2588,8 +2591,8 @@ class TouchInteractionPanel(SettingsPanel):
 
 
 class UwpOcrPanel(SettingsPanel):
-	# Translators: The title of the Windows 10 OCR panel.
-	title = _("Windows 10 OCR")
+	# Translators: The title of the Windows OCR panel.
+	title = _("Windows OCR")
 	helpId = "Win10OcrSettings"
 
 	def makeSettings(self, settingsSizer):
@@ -2600,7 +2603,7 @@ class UwpOcrPanel(SettingsPanel):
 		languageChoices = [
 			languageHandler.getLanguageDescription(languageHandler.normalizeLanguage(lang))
 			for lang in self.languageCodes]
-		# Translators: Label for an option in the Windows 10 OCR dialog.
+		# Translators: Label for an option in the Windows OCR dialog.
 		languageLabel = _("Recognition &language:")
 		self.languageChoice = sHelper.addLabeledControl(languageLabel, wx.Choice, choices=languageChoices)
 		self.bindHelpEvent("Win10OcrSettingsRecognitionLanguage", self.languageChoice)
@@ -2740,6 +2743,22 @@ class AdvancedPanelControls(
 
 		# Translators: This is the label for a group of advanced options in the
 		#  Advanced settings panel
+		label = _("Annotations")
+		AnnotationsSizer = wx.StaticBoxSizer(wx.VERTICAL, self, label=label)
+		AnnotationsBox = AnnotationsSizer.GetStaticBox()
+		AnnotationsGroup = guiHelper.BoxSizerHelper(self, sizer=AnnotationsSizer)
+		self.bindHelpEvent("Annotations", AnnotationsBox)
+		sHelper.addItem(AnnotationsGroup)
+
+		# Translators: This is the label for a checkbox in the
+		#  Advanced settings panel.
+		label = _("Report details in browse mode")
+		self.annotationsDetailsCheckBox = AnnotationsGroup.addItem(wx.CheckBox(AnnotationsBox, label=label))
+		self.annotationsDetailsCheckBox.SetValue(config.conf["annotations"]["reportDetails"])
+		self.annotationsDetailsCheckBox.defaultValue = self._getDefaultValue(["annotations", "reportDetails"])
+
+		# Translators: This is the label for a group of advanced options in the
+		#  Advanced settings panel
 		label = _("Terminal programs")
 		terminalsSizer = wx.StaticBoxSizer(wx.VERTICAL, self, label=label)
 		terminalsBox = terminalsSizer.GetStaticBox()
@@ -2763,7 +2782,7 @@ class AdvancedPanelControls(
 			# Translators: A choice in a combo box in the advanced settings
 			# panel to have NVDA determine the method of detecting changed
 			# content in terminals automatically.
-			_("Automatic (Difflib)"),
+			_("Automatic (Diff Match Patch)"),
 			# Translators: A choice in a combo box in the advanced settings
 			# panel to have NVDA detect changes in terminals
 			# by character when supported, using the diff match patch algorithm.
@@ -2910,6 +2929,7 @@ class AdvancedPanelControls(
 			and self.diffAlgoCombo.GetSelection() == self.diffAlgoCombo.defaultValue
 			and self.caretMoveTimeoutSpinControl.GetValue() == self.caretMoveTimeoutSpinControl.defaultValue
 			and set(self.logCategoriesList.CheckedItems) == set(self.logCategoriesList.defaultCheckedItems)
+			and self.annotationsDetailsCheckBox.IsChecked() == self.annotationsDetailsCheckBox.defaultValue
 			and True  # reduce noise in diff when the list is extended.
 		)
 
@@ -2925,6 +2945,7 @@ class AdvancedPanelControls(
 		self.keyboardSupportInLegacyCheckBox.SetValue(self.keyboardSupportInLegacyCheckBox.defaultValue)
 		self.diffAlgoCombo.SetSelection(self.diffAlgoCombo.defaultValue == 'auto')
 		self.caretMoveTimeoutSpinControl.SetValue(self.caretMoveTimeoutSpinControl.defaultValue)
+		self.annotationsDetailsCheckBox.SetValue(self.annotationsDetailsCheckBox.defaultValue)
 		self.logCategoriesList.CheckedItems = self.logCategoriesList.defaultCheckedItems
 		self._defaultsRestored = True
 
@@ -2947,6 +2968,7 @@ class AdvancedPanelControls(
 			self.diffAlgoVals[diffAlgoChoice]
 		)
 		config.conf["editableText"]["caretMoveTimeoutMs"]=self.caretMoveTimeoutSpinControl.GetValue()
+		config.conf["annotations"]["reportDetails"] = self.annotationsDetailsCheckBox.IsChecked()
 		for index,key in enumerate(self.logCategories):
 			config.conf['debugLog'][key]=self.logCategoriesList.IsChecked(index)
 
