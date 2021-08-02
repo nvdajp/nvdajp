@@ -1,10 +1,6 @@
 os: Visual Studio 2019
 version: "{branch}-{build}"
 
-branches:
- only:
-  - /jp20*/
-
 environment:
  PY_PYTHON: 3.7-32
 
