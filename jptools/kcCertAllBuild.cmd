@@ -42,12 +42,6 @@ timeout /T 5 /NOBREAK
 %SIGNTOOL% verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-cd jptools
-call buildControllerClient.cmd
-@if not "%ERRORLEVEL%"=="0" goto onerror
-cd ..
-:skip_client
-
 echo %UPDATEVERSIONTYPE% %VERSION%
 exit /b 0
 
