@@ -1,5 +1,5 @@
 SET ARGS=publisher=nvdajp release=1 version=%VERSION%
-scons nvdaHelper\client %ARGS%
+call scons nvdaHelper\client %ARGS%
 cd jptools
 cd nvdajpClient
 copy ..\..\build\x86\client\nvdaController.h client
