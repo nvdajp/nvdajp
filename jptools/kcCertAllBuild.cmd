@@ -1,4 +1,4 @@
-set SCONSOPTIONS=%*
+set SCONSOPTIONS=%* --silent
 
 set PFX=jptools\secret\knowlec-key201019.pfx
 set PWFILE=jptools\secret\knowlec-key-pass-2019.txt
@@ -29,7 +29,7 @@ set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
-call jptools\kcCertBuild.cmd
+@call jptools\kcCertBuild.cmd
 
 %SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
