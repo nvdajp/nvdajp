@@ -1,4 +1,4 @@
-set SCONSOPTIONS=%* --silent
+set SCONSOPTIONS=%*
 
 set PFX=jptools\secret\knowlec-key201019.pfx
 set PWFILE=jptools\secret\knowlec-key-pass-2019.txt
