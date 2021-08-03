@@ -19,7 +19,7 @@ set PUBLISHER=nvdajpdev
 set UPDATEVERSIONTYPE=nvdajpdev
 
 :versionready
-scons source user_docs launcher publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+call scons source user_docs launcher publisher=%PUBLISHER% release=1 version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
 exit /b 0
 

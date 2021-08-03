@@ -1,14 +1,10 @@
 os: Visual Studio 2019
 version: "{branch}-{build}"
 
-branches:
- only:
-  - /jp20*/
+clone_depth: 1
 
 environment:
  PY_PYTHON: 3.7-32
-
-clone_depth: 1
 
 init:
  - ps: Set-WinSystemLocale ja-JP
@@ -18,14 +14,11 @@ init:
  - ps: |
     $pythonVersion = (py --version)
     echo $pythonVersion
+ - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
 
 install:
- - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
- - git submodule update --init --recursive
-
-build_script:
  - set RELEASE=1
- - set VERSION=2021.1jp
+ - set VERSION=2021.2jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
@@ -51,113 +44,40 @@ build_script:
     }
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
+ - py -m pip install --upgrade --no-warn-script-location pip
+ - git submodule update --init --recursive
+
+build_script:
  - ps: |
     $apiVersion = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
     echo apiversion: $apiVersion
     $apiCompatTo = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
     echo apiBackCompatTo: $apiCompatTo
  - ps: |
-     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
-     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
+    $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
+    Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
  - jptools\nonCertAllBuild.cmd %sconsArgs%
+ - cd %APPVEYOR_BUILD_FOLDER%
  - cd jptools
  - pack_jtalk_addon.cmd
  - pack_kgs_addon.cmd
  - cd ..
+ - jptools\buildControllerClient.cmd %sconsArgs%
+ - jptools\tests.cmd
 
 before_test:
- - mkdir testOutput
- - mkdir testOutput\unit
- - mkdir testOutput\system
- - mkdir testOutput\lint
- - ps: |
-     $errorCode=0
-     $nvdaLauncherFile=".\output\nvda"
-     if(!$env:release) {
-      $nvdaLauncherFile+="_snapshot"
-     }
-     $nvdaLauncherFile+="_${env:version}.exe"
-     Set-AppveyorBuildVariable "nvdaLauncherFile" $nvdaLauncherFile
-     echo NVDALauncherFile: $NVDALauncherFile
-     $outputDir=$(resolve-path .\testOutput)
-     $installerLogFilePath="$outputDir\nvda_install.log"
-     $installerProcess=start-process -FilePath "$nvdaLauncherFile" -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -passthru
-     try {
-      $installerProcess | wait-process -Timeout 180
-      $errorCode=$installerProcess.ExitCode
-     } catch {
-      echo "NVDA installer process timed out"
-      $errorCode=1
-      Add-AppveyorMessage "Unable to install NVDA prior to tests."
-     }
-     Push-AppveyorArtifact $installerLogFilePath
-     $crashDump = "$outputDir\nvda_crash.dmp"
-     if (Test-Path -Path $crashDump){
-      Push-AppveyorArtifact $crashDump -FileName "nvda_install_crash.dmp"
-      Add-AppveyorMessage "Install process crashed"
-      $errorCode=1
-     }
-     if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+ - ps: appveyor\scripts\tests\beforeTests.ps1
+ - ps: appveyor\scripts\installNVDA.ps1
 
 test_script:
-# Unit Tests (Python)
- - ps: |
-     $errorCode=0
-     $outDir = (Resolve-Path .\testOutput\unit\)
-     $unitTestsXml = "$outDir\unitTests.xml"
-     .\rununittests.bat --with-xunit --xunit-file="$unitTestsXml"
-     if($LastExitCode -ne 0) {
-      $errorCode=$LastExitCode
-      Add-AppveyorMessage "Unit test failure"
-     }
-     Push-AppveyorArtifact $unitTestsXml
-     $wc = New-Object 'System.Net.WebClient'
-     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", $unitTestsXml)
-     if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
+ - ps: appveyor\scripts\tests\translationCheck.ps1
+ - ps: appveyor\scripts\tests\unitTests.ps1
+ - ps: appveyor\scripts\tests\lintCheck.ps1
+ - ps: appveyor\scripts\tests\systemTests.ps1
 
-# # Flake8 Linting
-#  - ps: |
-#     if($env:APPVEYOR_PULL_REQUEST_NUMBER) {
-#       $lintOutput = (Resolve-Path .\testOutput\lint\)
-#       $lintSource = (Resolve-Path .\tests\lint\)
-#       # When Appveyor runs for a pr,
-#       # the build is made from a new temporary commit,
-#       # resulting from the pr branch being merged into its base branch.
-#       # Therefore to create a diff for linting, we must fetch the head of the base branch.
-#       # In a PR, APPVEYOR_REPO_BRANCH points to the head of the base branch. 
-#      git fetch -q origin $env:APPVEYOR_REPO_BRANCH
-#      $flake8Output = "$lintOutput\PR-Flake8.txt"
-#       .\runlint.bat FETCH_HEAD "$flake8Output" 
-#       if($LastExitCode -ne 0) {
-#        $errorCode=$LastExitCode
-#        Add-AppveyorMessage "PR introduces Flake8 errors"
-#       }
-#       Push-AppveyorArtifact $flake8Output
-#       $junitXML = "$lintOutput\PR-Flake8.xml"
-#       py "$lintSource\createJunitReport.py" "$flake8Output" "$junitXML"
-#       Push-AppveyorArtifact $junitXML
-#       $wc = New-Object 'System.Net.WebClient'
-#       $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", $junitXML)
-#       if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
-#     }
-
-# System tests
- - ps: |
-     $testOutput = (Resolve-Path .\testOutput\)
-     $systemTestOutput = (Resolve-Path "$testOutput\system")
-     .\runsystemtests.bat --variable whichNVDA:installed --variable installDir:"${env:nvdaLauncherFile}" --include installer
-     if($LastExitCode -ne 0) {
-      $errorCode=$LastExitCode
-      Add-AppveyorMessage "System test failure"
-     }
-     Compress-Archive -Path "$systemTestOutput\*" -DestinationPath "$testOutput\systemTestResult.zip"
-     Push-AppveyorArtifact "$testOutput\systemTestResult.zip"
-     $wc = New-Object 'System.Net.WebClient'
-     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path "$systemTestOutput\systemTests.xml"))
-     if($errorCode -ne 0) { $host.SetShouldExit($errorCode) }
-
- - jptools\tests.cmd
+after_test:
+ - ps: appveyor\scripts\tests\checkTestFailure.ps1
 
 artifacts:
  - path: output\*

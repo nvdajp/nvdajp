@@ -212,6 +212,7 @@ def getCharacterDescription(locale,character):
 		desc=getCharacterDescription('en',character)
 	return desc
 
+
 # nvdajp
 def getCharacterReading(locale, character):
 	try:
