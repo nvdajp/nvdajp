@@ -164,8 +164,7 @@ class SynthDriver(SynthDriver):
 		textList.append("\\PAU=1\\")
 		text="".join(textList)
 		flags=TTSDATAFLAG_TAGGED
-		global isRunning
-		isRunning = True
+		self.isRunning = True
 		if isPitchCommand:
 			self._ttsCentral.TextData(
 				VOICECHARSET.CHARSET_TEXT,
@@ -186,8 +185,7 @@ class SynthDriver(SynthDriver):
 			)
 
 	def cancel(self):
-		global isRunning
-		isRunning = True
+		self.isRunning = True
 		self._ttsCentral.AudioReset()
 		self.lastIndex=None
 
@@ -201,11 +199,10 @@ class SynthDriver(SynthDriver):
 			self._ttsCentral.AudioResume()
 
 	def setSpeaking(self, switch):
-		global isRunning
-		isRunning = switch
+		self.isRunning = switch
 
 	def isSpeaking(self):
-		return isRunning
+		return self.isRunning
 
 	def removeSetting(self,name):
 		#Putting it here because currently no other synths make use of it. OrderedDict, where you are?
