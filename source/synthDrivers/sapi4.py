@@ -164,6 +164,8 @@ class SynthDriver(SynthDriver):
 		textList.append("\\PAU=1\\")
 		text="".join(textList)
 		flags=TTSDATAFLAG_TAGGED
+		global isRunning
+		isRunning = True
 		if isPitchCommand:
 			self._ttsCentral.TextData(
 				VOICECHARSET.CHARSET_TEXT,
