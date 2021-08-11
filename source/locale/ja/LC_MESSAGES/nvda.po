@@ -1166,7 +1166,7 @@ msgstr "アイルランド語1級点字"
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 msgid "Irish grade 2"
-msgstr "アイルランド語1級点字"
+msgstr "アイルランド語2級点字"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
