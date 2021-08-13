@@ -178,6 +178,7 @@ class SynthDriver(SynthDriver):
 		self._isProcessing = False
 		# Initialize the voice to a sane default
 		self.voice=self._getDefaultVoice()
+		self._isSpeaking = False
 
 	def _maybeInitPlayer(self, wav):
 		"""Initialize audio playback based on the wave header provided by the synthesizer.
@@ -234,6 +235,7 @@ class SynthDriver(SynthDriver):
 		if self._player:
 			self._player.open()
 		self._queueSpeech(text)
+		self._isSpeaking = True
 
 	def _queueSpeech(self, item):
 		self._queuedSpeech.append(item)
@@ -322,6 +324,7 @@ class SynthDriver(SynthDriver):
 				log.debug("Calling idle on audio player")
 			self._player.idle()
 			synthDoneSpeaking.notify(synth=self)
+			self._isSpeaking = False
 		while self._queuedSpeech:
 			item = self._queuedSpeech.pop(0)
 			if isinstance(item, tuple):
@@ -492,3 +495,6 @@ class SynthDriver(SynthDriver):
 	def pause(self, switch):
 		if self._player:
 			self._player.pause(switch)
+
+	def isSpeaking(self):
+		return self._isSpeaking
