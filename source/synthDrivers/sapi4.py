@@ -77,8 +77,6 @@ class SynthDriver(SynthDriver):
 	supportedSettings=[SynthDriver.VoiceSetting()]
 	supportedNotifications={synthIndexReached,synthDoneSpeaking}
 
-	isRunning = False
-
 	@classmethod
 	def check(cls):
 		try:
@@ -116,6 +114,7 @@ class SynthDriver(SynthDriver):
 			raise RuntimeError("No Sapi4 engines available")
 		self.voice=str(self._enginesList[0].gModeID)
 		self._rate = None
+		self._isSpeaking = False
 
 	def terminate(self):
 		self._bufSink._allowDelete = True
@@ -164,7 +163,6 @@ class SynthDriver(SynthDriver):
 		textList.append("\\PAU=1\\")
 		text="".join(textList)
 		flags=TTSDATAFLAG_TAGGED
-		self.isRunning = True
 		if isPitchCommand:
 			self._ttsCentral.TextData(
 				VOICECHARSET.CHARSET_TEXT,
@@ -183,9 +181,10 @@ class SynthDriver(SynthDriver):
 				self._bufSinkPtr,
 				ITTSBufNotifySink._iid_
 			)
+		self._isSpeaking = True
 
 	def cancel(self):
-		self.isRunning = True
+		self._isSpeaking = True
 		self._ttsCentral.AudioReset()
 		self.lastIndex=None
 
@@ -199,10 +198,10 @@ class SynthDriver(SynthDriver):
 			self._ttsCentral.AudioResume()
 
 	def setSpeaking(self, switch):
-		self.isRunning = switch
+		self._isSpeaking = switch
 
 	def isSpeaking(self):
-		return self.isRunning
+		return self._isSpeaking
 
 	def removeSetting(self,name):
 		#Putting it here because currently no other synths make use of it. OrderedDict, where you are?
