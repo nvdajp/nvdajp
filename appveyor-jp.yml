@@ -49,8 +49,8 @@ install:
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
  - nuget install secure-file -ExcludeVersion
- - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key201019.pfx.enc -secret %my_secret_a%
- - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key-pass-2019.txt.enc -secret %my_secret_b%
+ - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key211018.pfx.enc -secret %my_secret_a%
+ - secure-file\tools\secure-file -decrypt jptools\secret\knowlec-key-pass-2021.txt.enc -secret %my_secret_b%
  - py -m pip install --upgrade --no-warn-script-location pip
  - git submodule update --init --recursive
 
