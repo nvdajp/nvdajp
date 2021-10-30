@@ -205,7 +205,6 @@ def resetConfiguration(factoryDefaults=False):
 	log.debug("Reloading config")
 	config.conf.reset(factoryDefaults=factoryDefaults)
 	logHandler.setLogLevelFromConfig()
-	logHandler.setPlayErrorSoundFromConfig()
 	#Language
 	lang = config.conf["general"]["language"]
 	log.debug("setting language to %s"%lang)
@@ -426,7 +425,6 @@ def main():
 		except:
 			pass
 	logHandler.setLogLevelFromConfig()
-	logHandler.setPlayErrorSoundFromConfig()
 	try:
 		lang = config.conf["general"]["language"]
 		import languageHandler

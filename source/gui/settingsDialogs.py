@@ -1001,10 +1001,6 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.alwaysSpeakMathInEnglishCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Always speak math in English")))
 		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
 
-		# Translators: The label of a checkbox in language settings
-		self.playErrorSoundCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Play NVDA error sound")))
-		self.playErrorSoundCheckBox.SetValue(config.conf["general"]["playErrorSound"])
-
 	def postInit(self):
 		self.nconvAsNVDAModifierCheckBox.SetFocus()
 
@@ -1024,8 +1020,6 @@ class LanguageSettingsDialog(SettingsDialog):
 
 		config.conf["language"]["jpKatakanaPitchChange"]=self.jpKatakanaPitchChangeEdit.Value
 		config.conf["language"]["halfShapePitchChange"]=self.halfShapePitchChangeEdit.Value
-
-		config.conf["general"]["playErrorSound"]=self.playErrorSoundCheckBox.IsChecked()
 
 		super(LanguageSettingsDialog, self).onOk(evt)
 
