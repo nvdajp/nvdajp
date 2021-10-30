@@ -148,7 +148,7 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 				lastCompositionText = newText
 				queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newTextForBraille)
 			if config.conf["keyboard"]["speakTypedCharacters"] or isCandidate:
-				queueHandler.queueFunction(queueHandler.eventQueue, speech.speakText, newText, symbolLevel=characterProcessing.symbolLevel.ALL)
+				queueHandler.queueFunction(queueHandler.eventQueue, speech.speakText, newText, symbolLevel=characterProcessing.SymbolLevel.ALL)
 		#nvdajp end
 
 	def compositionUpdate(self,compositionString,selectionStart,selectionEnd,isReading,announce=True,forceNewText=False):
