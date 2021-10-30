@@ -258,77 +258,77 @@ landmarkLabels = {
 
 # nvdajp begin
 nabccRoleLabels = {
-	controlTypes.ROLE_WINDOW: "wnd",
-	controlTypes.ROLE_DIALOG: "dlg",
-	controlTypes.ROLE_CHECKBOX: "chk",
-	controlTypes.ROLE_RADIOBUTTON: "rbtn",
-	controlTypes.ROLE_EDITABLETEXT: "edt",
-	controlTypes.ROLE_BUTTON: "btn",
-	controlTypes.ROLE_MENUBAR: "mnubar",
-	controlTypes.ROLE_MENUITEM: "mnuitem",
-	controlTypes.ROLE_POPUPMENU: "mnu",
-	controlTypes.ROLE_COMBOBOX: "cbo",
-	controlTypes.ROLE_LIST: "lst",
-	controlTypes.ROLE_GRAPHIC: "gra",
-	controlTypes.ROLE_HELPBALLOON: "hlp",
-	controlTypes.ROLE_TOOLTIP: "tltip",
-	controlTypes.ROLE_LINK: "lnk",
-	controlTypes.ROLE_TREEVIEW: "tv",
-	controlTypes.ROLE_TREEVIEWITEM: "tvitem",
-	controlTypes.ROLE_TABCONTROL: "tabctl",
-	controlTypes.ROLE_PROGRESSBAR: "prgbar",
-	controlTypes.ROLE_SCROLLBAR: "scrlbar",
-	controlTypes.ROLE_STATUSBAR: "stbar",
-	controlTypes.ROLE_TABLE: "tbl",
-	controlTypes.ROLE_TOOLBAR: "tlbar",
-	controlTypes.ROLE_DROPDOWNBUTTON: "drbtn",
-	controlTypes.ROLE_SEPARATOR: u"⠤⠤⠤⠤⠤",
-	controlTypes.ROLE_BLOCKQUOTE: "bqt",
-	controlTypes.ROLE_DOCUMENT: "doc",
-	controlTypes.ROLE_APPLICATION: "app",
-	controlTypes.ROLE_GROUPING: "grp",
-	controlTypes.ROLE_EMBEDDEDOBJECT: "embedded",
-	controlTypes.ROLE_ENDNOTE: "enote",
-	controlTypes.ROLE_FOOTNOTE: "fnote",
-	controlTypes.ROLE_TERMINAL: "term",
-	controlTypes.ROLE_SECTION: "sect",
-	controlTypes.ROLE_TOGGLEBUTTON: "tgbtn",
-	controlTypes.ROLE_SPLITBUTTON: "splbtn",
-	controlTypes.ROLE_MENUBUTTON: "mnubtn",
-	controlTypes.ROLE_SPINBUTTON: "spnbtn",
-	controlTypes.ROLE_TREEVIEWBUTTON: "tvbtn",
-	controlTypes.ROLE_MENU: "mnu",
-	controlTypes.ROLE_PANEL: "pnl",
-	controlTypes.ROLE_PASSWORDEDIT: "pwdedt",
-	controlTypes.ROLE_DELETED_CONTENT: "del",
-	controlTypes.ROLE_INSERTED_CONTENT: "ins",
-	controlTypes.ROLE_LANDMARK: "lmk",
+	controlTypes.Role.WINDOW: "wnd",
+	controlTypes.Role.DIALOG: "dlg",
+	controlTypes.Role.CHECKBOX: "chk",
+	controlTypes.Role.RADIOBUTTON: "rbtn",
+	controlTypes.Role.EDITABLETEXT: "edt",
+	controlTypes.Role.BUTTON: "btn",
+	controlTypes.Role.MENUBAR: "mnubar",
+	controlTypes.Role.MENUITEM: "mnuitem",
+	controlTypes.Role.POPUPMENU: "mnu",
+	controlTypes.Role.COMBOBOX: "cbo",
+	controlTypes.Role.LIST: "lst",
+	controlTypes.Role.GRAPHIC: "gra",
+	controlTypes.Role.HELPBALLOON: "hlp",
+	controlTypes.Role.TOOLTIP: "tltip",
+	controlTypes.Role.LINK: "lnk",
+	controlTypes.Role.TREEVIEW: "tv",
+	controlTypes.Role.TREEVIEWITEM: "tvitem",
+	controlTypes.Role.TABCONTROL: "tabctl",
+	controlTypes.Role.PROGRESSBAR: "prgbar",
+	controlTypes.Role.SCROLLBAR: "scrlbar",
+	controlTypes.Role.STATUSBAR: "stbar",
+	controlTypes.Role.TABLE: "tbl",
+	controlTypes.Role.TOOLBAR: "tlbar",
+	controlTypes.Role.DROPDOWNBUTTON: "drbtn",
+	controlTypes.Role.SEPARATOR: u"⠤⠤⠤⠤⠤",
+	controlTypes.Role.BLOCKQUOTE: "bqt",
+	controlTypes.Role.DOCUMENT: "doc",
+	controlTypes.Role.APPLICATION: "app",
+	controlTypes.Role.GROUPING: "grp",
+	controlTypes.Role.EMBEDDEDOBJECT: "embedded",
+	controlTypes.Role.ENDNOTE: "enote",
+	controlTypes.Role.FOOTNOTE: "fnote",
+	controlTypes.Role.TERMINAL: "term",
+	controlTypes.Role.SECTION: "sect",
+	controlTypes.Role.TOGGLEBUTTON: "tgbtn",
+	controlTypes.Role.SPLITBUTTON: "splbtn",
+	controlTypes.Role.MENUBUTTON: "mnubtn",
+	controlTypes.Role.SPINBUTTON: "spnbtn",
+	controlTypes.Role.TREEVIEWBUTTON: "tvbtn",
+	controlTypes.Role.MENU: "mnu",
+	controlTypes.Role.PANEL: "pnl",
+	controlTypes.Role.PASSWORDEDIT: "pwdedt",
+	controlTypes.Role.DELETED_CONTENT: "del",
+	controlTypes.Role.INSERTED_CONTENT: "ins",
+	controlTypes.Role.LANDMARK: "lmk",
 }
 nabccPositiveStateLabels = {
-	controlTypes.STATE_SELECTED: "sel",
-	controlTypes.STATE_PRESSED: u"⢎⣿⡱",
-	controlTypes.STATE_CHECKED: u"⣏⣿⣹",
-	controlTypes.STATE_HALFCHECKED: u"⣏⣸⣹",
-	controlTypes.STATE_READONLY: "ro",
-	controlTypes.STATE_EXPANDED: "-",
-	controlTypes.STATE_COLLAPSED: "+",
-	controlTypes.STATE_HASPOPUP: "submnu",
-	controlTypes.STATE_PROTECTED: "***",
-	controlTypes.STATE_REQUIRED: "req",
-	controlTypes.STATE_INVALID_ENTRY: "invalid",
-	controlTypes.STATE_AUTOCOMPLETE: "...",
-	controlTypes.STATE_MULTILINE: "mln",
-	controlTypes.STATE_CLICKABLE: "clk",
-	controlTypes.STATE_SORTED_ASCENDING: "sorted asc",
-	controlTypes.STATE_SORTED_DESCENDING: "sorted desc",
-	controlTypes.STATE_HASLONGDESC: "ldesc",
-	controlTypes.STATE_HASFORMULA: "frml",
-	controlTypes.STATE_HASCOMMENT: "cmnt",
+	controlTypes.State.SELECTED: "sel",
+	controlTypes.State.PRESSED: u"⢎⣿⡱",
+	controlTypes.State.CHECKED: u"⣏⣿⣹",
+	controlTypes.State.HALFCHECKED: u"⣏⣸⣹",
+	controlTypes.State.READONLY: "ro",
+	controlTypes.State.EXPANDED: "-",
+	controlTypes.State.COLLAPSED: "+",
+	controlTypes.State.HASPOPUP: "submnu",
+	controlTypes.State.PROTECTED: "***",
+	controlTypes.State.REQUIRED: "req",
+	controlTypes.State.INVALID_ENTRY: "invalid",
+	controlTypes.State.AUTOCOMPLETE: "...",
+	controlTypes.State.MULTILINE: "mln",
+	controlTypes.State.CLICKABLE: "clk",
+	controlTypes.State.SORTED_ASCENDING: "sorted asc",
+	controlTypes.State.SORTED_DESCENDING: "sorted desc",
+	controlTypes.State.HASLONGDESC: "ldesc",
+	controlTypes.State.HASFORMULA: "frml",
+	controlTypes.State.HASCOMMENT: "cmnt",
 }
 nabccNegativeStateLabels = {
-	controlTypes.STATE_SELECTED: "nsel",
-	controlTypes.STATE_PRESSED: u"⢎⣀⡱",
-	controlTypes.STATE_CHECKED: u"⣏⣀⣹",
+	controlTypes.State.SELECTED: "nsel",
+	controlTypes.State.PRESSED: u"⢎⣀⡱",
+	controlTypes.State.CHECKED: u"⣏⣀⣹",
 }
 nabccLandmarkLabels = {
 	"banner": "bnnr",
@@ -621,18 +621,18 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 			roleText = None
 		else:
 			# nvdajp begin
-			# roleText = roleLabels.get(role, controlTypes.roleLabels[role])
+			# roleText = roleLabels.get(role, role.displayString)
 			if config.conf["braille"]["expandAtCursor"]:
-				roleText = nabccRoleLabels.get(role, controlTypes.roleLabels[role])
+				roleText = nabccRoleLabels.get(role, role.displayString)
 			else:
-				roleText = roleLabels.get(role, controlTypes.roleLabels[role])
+				roleText = roleLabels.get(role, role.displayString)
 			# nvdajp end
 
 	elif role is None: 
 		role = propertyValues.get("_role")
 	#nvdajp begin
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
-			isComposition and role == controlTypes.ROLE_EDITABLETEXT:
+			isComposition and role == controlTypes.Role.EDITABLETEXT:
 		roleText = None
 	#nvdajp end
 	value = propertyValues.get("value")

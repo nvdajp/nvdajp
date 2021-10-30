@@ -90,7 +90,7 @@ def reportPartialSelection(sel):
 		lastCompositionTime = time.time()
 		lastCompositionText = newText
 		queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newTextForBraille)
-		queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
+		queueHandler.queueFunction(queueHandler.eventQueue, speech.speakText, newText, symbolLevel=characterProcessing.SymbolLevel.ALL)
 #nvdajp end
 
 class InputComposition(EditableTextWithAutoSelectDetection,Window):
@@ -148,7 +148,7 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 				lastCompositionText = newText
 				queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,newTextForBraille)
 			if config.conf["keyboard"]["speakTypedCharacters"] or isCandidate:
-				queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,newText,symbolLevel=characterProcessing.SYMLVL_ALL)
+				queueHandler.queueFunction(queueHandler.eventQueue, speech.speakText, newText, symbolLevel=characterProcessing.symbolLevel.ALL)
 		#nvdajp end
 
 	def compositionUpdate(self,compositionString,selectionStart,selectionEnd,isReading,announce=True,forceNewText=False):
