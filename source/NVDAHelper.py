@@ -317,7 +317,7 @@ def handleInputCompositionEnd(result):
 		#nvdajp end
 	if result:
 		if not config.conf["inputComposition"]["announceSelectedCandidate"]: return #nvdajp
-		speech.speakText(result,symbolLevel=characterProcessing.SYMLVL_ALL)
+		speech.speakText(result, symbolLevel=characterProcessing.SymbolLevel.ALL)
 
 def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,isReading):
 	import speech

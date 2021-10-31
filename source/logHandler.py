@@ -32,15 +32,6 @@ RPC_E_CALL_REJECTED = -2147418111
 RPC_E_DISCONNECTED = -2147417848
 LOAD_WITH_ALTERED_SEARCH_PATH=0x8
 
-shouldPlayErrorSound = False
-
-
-def setPlayErrorSoundFromConfig():
-	import config
-	global shouldPlayErrorSound
-	shouldPlayErrorSound=config.conf["general"]["playErrorSound"]
-
-
 def isPathExternalToNVDA(path):
 	""" Checks if the given path is external to NVDA (I.e. not pointing to built-in code). """
 	if path[0] != "<" and os.path.isabs(path) and not path.startswith(sys.path[0] + "\\"):
@@ -282,8 +273,7 @@ class FileHandler(logging.FileHandler):
 
 	def handle(self,record):
 		# Only play the error sound if this is a test version.
-		#shouldPlayErrorSound =  buildVersion.isTestVersion
-		global shouldPlayErrorSound # https://github.com/nvdajp/nvdajp/issues/16
+		shouldPlayErrorSound =  buildVersion.isTestVersion
 		if record.levelno>=logging.CRITICAL:
 			try:
 				winsound.PlaySound("SystemHand",winsound.SND_ALIAS)

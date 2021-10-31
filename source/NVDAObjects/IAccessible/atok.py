@@ -12,7 +12,7 @@ import mouseHandler
 import config
 
 class ATOKxxUIComment(IAccessible):
-	role=controlTypes.ROLE_STATICTEXT
+	role = controlTypes.Role.STATICTEXT
 
 	def _get_name(self):
 		name = self.displayText
