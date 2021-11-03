@@ -31,10 +31,22 @@ import speech
 import queueHandler
 import core
 from . import guiHelper
-from .settingsDialogs import SettingsDialog
+from buildVersion import version_year
+from .message import (
+	isInMessageBox as _isInMessageBox,
+	# messageBox is accessed through `gui.messageBox` as opposed to `gui.message.messageBox` throughout NVDA,
+	# be cautious when removing
+	messageBox,
+)
+from .settingsDialogs import (
+	SettingsDialog,
+	DefaultDictionaryDialog,
+	VoiceDictionaryDialog,
+	TemporaryDictionaryDialog,
+)
 from .settingsDialogs import *
+from .startupDialogs import WelcomeDialog
 from .inputGestures import InputGesturesDialog
-import speechDictHandler
 from . import logViewer
 import speechViewer
 import winUser
@@ -61,7 +73,16 @@ DONATE_URL = "http://www.nvda.jp/donate.html"
 
 ### Globals
 mainFrame = None
-isInMessageBox = False
+
+if version_year < 2022:
+	def __getattr__(name):
+		if name == "isInMessageBox":
+			log.warning(
+				"gui.isInMessageBox is deprecated and will be removed in 2022.1."
+				"Consult the changes for developers in 2022.1 for advice on alternatives."
+			)
+			return _isInMessageBox()
+		raise AttributeError(f"module {__name__} has no attribute {name}")
 
 
 class MainFrame(wx.Frame):
@@ -156,15 +177,13 @@ class MainFrame(wx.Frame):
 			messageBox(_("Could not save configuration - probably read only file system"),_("Error"),wx.OK | wx.ICON_ERROR)
 
 	def _popupSettingsDialog(self, dialog, *args, **kwargs):
-		if isInMessageBox:
+		if _isInMessageBox():
 			return
 		self.prePopup()
 		try:
 			dialog(self, *args, **kwargs).Show()
-		except SettingsDialog.MultiInstanceError:
-			# Translators: Message shown when attempting to open another NVDA settings dialog when one is already open
-			# (example: when trying to open keyboard settings when general settings dialog is open).
-			messageBox(_("An NVDA settings dialog is already open. Please close it first."),_("Error"),style=wx.OK | wx.ICON_ERROR)
+		except SettingsDialog.MultiInstanceErrorWithDialog as errorWithDialog:
+			errorWithDialog.dialog.SetFocus()
 		except MultiCategorySettingsDialog.CategoryUnavailableError:
 			# Translators: Message shown when trying to open an unavailable category of a multi category settings dialog
 			# (example: when trying to open touch interaction settings on an unsupported system).
@@ -173,16 +192,13 @@ class MainFrame(wx.Frame):
 		self.postPopup()
 
 	def onDefaultDictionaryCommand(self,evt):
-		# Translators: Title for default speech dictionary dialog.
-		self._popupSettingsDialog(DictionaryDialog,_("Default dictionary"),speechDictHandler.dictionaries["default"])
+		self._popupSettingsDialog(DefaultDictionaryDialog)
 
 	def onVoiceDictionaryCommand(self,evt):
-		# Translators: Title for voice dictionary for the current voice such as current eSpeak variant.
-		self._popupSettingsDialog(DictionaryDialog,_("Voice dictionary (%s)")%speechDictHandler.dictionaries["voice"].fileName,speechDictHandler.dictionaries["voice"])
+		self._popupSettingsDialog(VoiceDictionaryDialog)
 
 	def onTemporaryDictionaryCommand(self,evt):
-		# Translators: Title for temporary speech dictionary dialog (the voice dictionary that is active as long as NvDA is running).
-		self._popupSettingsDialog(DictionaryDialog,_("Temporary dictionary"),speechDictHandler.dictionaries["temp"])
+		self._popupSettingsDialog(TemporaryDictionaryDialog)
 
 	def onExecuteUpdateCommand(self, evt):
 		if updateCheck and updateCheck.isPendingUpdate():
@@ -210,6 +226,8 @@ class MainFrame(wx.Frame):
 			self.sysTrayIcon.menu.Insert(self.sysTrayIcon.installPendingUpdateMenuItemPos,self.sysTrayIcon.installPendingUpdateMenuItem)
 
 	def onExitCommand(self, evt):
+		if _isInMessageBox():
+			return
 		if config.conf["general"]["askToExit"]:
 			self.prePopup()
 			d = ExitDialog(self)
@@ -315,7 +333,7 @@ class MainFrame(wx.Frame):
 		pythonConsole.activate()
 
 	def onAddonsManagerCommand(self,evt):
-		if isInMessageBox:
+		if _isInMessageBox():
 			return
 		self.prePopup()
 		from .addonGui import AddonsDialog
@@ -341,7 +359,7 @@ class MainFrame(wx.Frame):
 	#nvdajp end
 	
 	def onCreatePortableCopyCommand(self,evt):
-		if isInMessageBox:
+		if _isInMessageBox():
 			return
 		self.prePopup()
 		import gui.installerGui
@@ -350,15 +368,15 @@ class MainFrame(wx.Frame):
 		self.postPopup()
 
 	def onInstallCommand(self, evt):
-		if isInMessageBox:
+		if _isInMessageBox():
 			return
 		from gui import installerGui
 		installerGui.showInstallGui()
 
 	def onRunCOMRegistrationFixesCommand(self, evt):
-		if isInMessageBox:
+		if _isInMessageBox():
 			return
-		if gui.messageBox(
+		if messageBox(
 			# Translators: A message to warn the user when starting the COM Registration Fixing tool 
 			_("You are about to run the COM Registration Fixing tool. This tool will try to fix common system problems that stop NVDA from being able to access content in many programs including Firefox and Internet Explorer. This tool must make changes to the System registry and therefore requires administrative access. Are you sure you wish to proceed?"),
 			# Translators: The title of the warning dialog displayed when launching the COM Registration Fixing tool 
@@ -390,7 +408,7 @@ class MainFrame(wx.Frame):
 		)
 
 	def onConfigProfilesCommand(self, evt):
-		if isInMessageBox:
+		if _isInMessageBox():
 			return
 		self.prePopup()
 		from .configProfiles import ProfilesDialog
@@ -399,7 +417,7 @@ class MainFrame(wx.Frame):
 
 class SysTrayIcon(wx.adv.TaskBarIcon):
 
-	def __init__(self, frame):
+	def __init__(self, frame: MainFrame):
 		super(SysTrayIcon, self).__init__()
 		icon=wx.Icon(ICON_PATH,wx.BITMAP_TYPE_ICO)
 		self.SetIcon(icon, versionInfo.name)
@@ -624,32 +642,6 @@ def showGui():
 def quit():
 	wx.CallAfter(mainFrame.onExitCommand, None)
 
-def messageBox(message, caption=wx.MessageBoxCaptionStr, style=wx.OK | wx.CENTER, parent=None):
-	"""Display a message dialog.
-	This should be used for all message dialogs
-	rather than using C{wx.MessageDialog} and C{wx.MessageBox} directly.
-	@param message: The message text.
-	@type message: str
-	@param caption: The caption (title) of the dialog.
-	@type caption: str
-	@param style: Same as for wx.MessageBox.
-	@type style: int
-	@param parent: The parent window (optional).
-	@type parent: C{wx.Window}
-	@return: Same as for wx.MessageBox.
-	@rtype: int
-	"""
-	global isInMessageBox
-	wasAlready = isInMessageBox
-	isInMessageBox = True
-	if not parent:
-		mainFrame.prePopup()
-	res = wx.MessageBox(message, caption, style, parent or mainFrame)
-	if not parent:
-		mainFrame.postPopup()
-	if not wasAlready:
-		isInMessageBox = False
-	return res
 
 def runScriptModalDialog(dialog, callback=None):
 	"""Run a modal dialog from a script.
@@ -736,9 +728,13 @@ class ExitDialog(wx.Dialog):
 		if action >= 2 and config.isAppX:
 			action += 1
 		if action == 0:
-			if not core.triggerNVDAExit():
+			WelcomeDialog.closeInstances()
+			if core.triggerNVDAExit():
+				# there's no need to destroy ExitDialog in this instance as triggerNVDAExit will do this
+				return
+			else:
 				log.error("NVDA already in process of exiting, this indicates a logic error.")
-			return  # there's no need to destroy ExitDialog in this instance as triggerNVDAExit will do this
+				return
 		elif action == 1:
 			queueHandler.queueFunction(queueHandler.eventQueue,core.restart)
 		elif action == 2:
