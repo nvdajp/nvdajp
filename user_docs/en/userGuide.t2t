@@ -315,7 +315,7 @@ There are some key commands that are useful when moving with the System focus:
 | Report current focus | NVDA+tab | NVDA+tab | announces the current object or control that has the System focus. Pressing twice will spell the information |
 | Report title | NVDA+t | NVDA+t | Reports the title of the currently active window. Pressing twice will spell the information. Pressing three times will copy it to the clipboard |
 | Read active window | NVDA+b | NVDA+b | reads all the controls in the currently active window (useful for dialogs) |
-| Report Status Bar | NVDA+end | NVDA+shift+end | Reports the Status Bar if NVDA finds one. It also moves the navigator object to this location. Pressing twice will spell the information. Pressing three times will copy it to the clipboard |
+| Report Status Bar | NVDA+end | NVDA+shift+end | Reports the Status Bar if NVDA finds one. Pressing twice will spell the information. Pressing three times will copy it to the clipboard |
 %kc:endInclude
 
 ++ Navigating with the System Caret ++[SystemCaret]
@@ -381,6 +381,7 @@ To navigate by object, use the following commands:
 | Activate current navigator object | NVDA+numpadEnter | NVDA+enter | double-tap | Activates the current navigator object (similar to clicking with the mouse or pressing space when it has the system focus) |
 | Move System focus or caret to current review position | NVDA+shift+numpadMinus | NVDA+shift+backspace | none | pressed once Moves the System focus to the current navigator object, pressed twice moves the system caret to the position of the review cursor |
 | Report review cursor location | NVDA+numpadDelete | NVDA+delete | none | Reports information about the location of the text or object at the review cursor. For example, this might include the percentage through the document, the distance from the edge of the page or the exact screen position. Pressing twice may provide further detail. |
+| Move review cursor to status bar | none | none | none | Reports the Status Bar if NVDA finds one. It also moves the navigator object to this location. |
 %kc:endInclude
 
 Note: numpad keys require the Num Lock to be turned off to work properly.
@@ -1401,6 +1402,10 @@ This option won't be available if your braille display only supports automatic p
 
 You may consult the documentation for your braille display in the section [Supported Braille Displays #SupportedBrailleDisplays] to check for more details on the supported types of communication and available ports.
 
+Please note: If you connect multiple Braille Displays to your machine at the same time which use the same driver (E.g. connecting two Seika displays),
+it is currently impossible to tell NVDA which display to use.
+Therefore it is recommended to only connect one Braille Display of a given type / manufacturer to your machine at a time.
+ 
 +++ Vision +++[VisionSettings]
 The Vision category in the NVDA Settings dialog allows you to enable, disable and configure [visual aids #Vision].
 
@@ -1575,7 +1580,8 @@ To toggle simple review mode from anywhere, please assign a custom gesture using
 
 +++ Object Presentation (NVDA+control+o) +++[ObjectPresentationSettings]
 The Object Presentation category in the NVDA Settings dialog is used to set how much information NVDA will present about controls such as description, position information and so on.
-This category contains the following options:
+These options don't typically apply to browse mode.
+These options typically apply to focus reporting and NVDA object navigation, but not reading text content e.g. browse mode.
 
 ==== Report tooltips ====[ObjectPresentationReportToolTips]
 A checkbox that when checked tells NVDA to report tooltips as they appear.
@@ -1740,7 +1746,7 @@ You can configure reporting of:
  - Font attributes
  - Superscripts and subscripts
  - Emphasis
- - Marked (Highlighted text)
+ - Highlighted (Marked) text
  - Style
  - Colours
 - Document information
@@ -1853,12 +1859,21 @@ The combo box has the following options:
 - No: Don't use UIA, even if NVDA is unable to inject in process. This may be useful for developers debugging issues with IA2 and want to ensure that NVDA does not fall back to UIA.
 -
 
-==== Enable Experimental ARIA annotations support ====[Annotations]
-Used to enable features which add experimental support for ARIA annotations.
+==== Annotations ====[Annotations]
+This group of options is used to enable features which add experimental support for ARIA annotations.
 Some of these features may be incomplete.
 The following options exist: 
 - "Report details in browse mode": enables reporting if an object has details in browse mode.
 Reporting the summary of those details can be done by assigning a gesture using the [Input Gestures dialog #InputGestures].
+- "Report aria-description always":
+  When the source of ``accDescription`` is aria-description, the description is reported.
+  This is useful for annotations on the web.
+  Note:
+  - There are many sources for ``accDescription`` several have mixed or unreliable semantics.
+    Historically AT has not been able to differentiate sources of ``accDescription`` typically it wasn't spoken due to the mixed semantics.
+  - This option is in very early development, it relies on browser features not yet widely available.
+  - Expected to work with Chromium 92.0.4479.0+
+  -
 -
 
 ==== Use UI automation to access Microsoft  Excel spreadsheet controls when available ====[UseUiaForExcel]
@@ -1898,10 +1913,21 @@ This functionality is enabled by default as of NVDA 2021.1.
 This option allows you to configure the number of milliseconds NVDA will wait for the caret (insertion point) to move in editable text controls.
 If you find that NVDA seems to be incorrectly tracking the caret E.g. it seems to be always one character behind or is repeating lines, then you may wish to try increasing this value.
 
+==== Report transparency for colors ====[ReportTransparentColors]
+This option enables reporting when colors are transparent, useful for addon/appModule developers gathering information to improve user experience with a 3rd party application.
+Some GDI applications will highlight text with a background color, NVDA (via display model) attempts to report this color.
+In some situations, the text background may be entirely transparent, with the text layered on some other GUI element.
+With several historically popular GUI APIs, the text may be rendered with a transparent background, but visually the background color is accurate.
+
 ==== Debug logging categories ====[AdvancedSettingsDebugLoggingCategories]
 The checkboxes in this list allow you to enable specific categories of debug messages in NVDA's log.
 Logging these messages can result in decreased performance and large log files.
 Only turn one of these on if specifically instructed to by an NVDA developer e.g. when debugging why a braille display driver is not functioning correctly.
+
+==== Play a sound for logged errors ====[PlayErrorSound]
+This option allows you to specify if NVDA will play an error sound in case an error is logged.
+Choosing Only in test versions (default) makes NVDA play error sounds only if the current NVDA version is a test version (alpha, beta or run from source).
+Choosing Yes allows to enable error sounds whatever your current NVDA version is.
 
 ++ miscellaneous Settings ++[MiscSettings]
 Besides the [NVDA Settings #NVDASettings] dialog, The Preferences sub-menu of the NVDA Menu contains several other items which are outlined below.
@@ -2329,6 +2355,7 @@ The following displays support this automatic detection functionality.
 - HIMS Braille Sense/Braille EDGE/Smart Beetle/Sync Braille Series
 - Eurobraille Esys/Esytime/Iris displays
 - Nattiq nBraille displays
+- Any Display that supports the Standard HID Braille protocol
 -
 
 ++ Freedom Scientific Focus/PAC Mate Series ++[FreedomScientificFocus]
@@ -3153,6 +3180,37 @@ Please see the [BRLTTY key binding lists http://mielke.cc/brltty/doc/KeyBindings
 | Route to braille cell | route (bring cursor to character) |
 %kc:endInclude
 
+++ Standard HID Braille displays ++[HIDBraille]
+This is an experimental driver for the new Standard HID Braille Specification, agreed upon in 2018 by Microsoft, Google, Apple and several assistive technology companies including NV Access. 
+The hope is that all future Braille Display models created by any manufacturer, will use this standard protocol which will remove the need for manufacturer-specific Braille drivers.
+
+NVDA's automatic braille display detection will also recognize any display that supports this protocol.
+ 
+Following are the current key assignments for these displays.
+%kc:beginInclude
+|| Name | Key |
+| Scroll braille display back | pan left or rocker up |
+| Scroll braille display forward | pan right or rocker down |
+| Move braille display to previous line | space + dot1 |
+| Move braille display to next line | space + dot4 |
+| Route to braille cell | routing set 1|
+| Toggle braille tethered to | up+down |
+| upArrow key | joystick up |
+| downArrow key | joystick down |
+| leftArrow key | space+dot3 or joystick left |
+| rightArrow key | space+dot6 or joystick right |
+| shift+tab key | space+dot1+dot3 |
+| tab key | space+dot4+dot6 |
+| alt key | space+dot1+dot3+dot4 (space+m) |
+| escape key | space+dot1+dot5 (space+e) |
+| enter key | dot8 or joystick center |
+| windows key | space+dot3+dot4 |
+| alt+tab key | space+dot2+dot3+dot4+dot5 (space+t) |
+| NVDA Menu | space+dot1+dot3+dot4+dot5 (space+n) |
+| windows+d key (minimize all applications) | space+dot1+dot4+dot5 (space+d) |
+| Say all | space+dot1+dot2+dot3+dot4+dot5+dot6 |
+%kc:endInclude
+ 
 + Advanced Topics +[AdvancedTopics]
 
 ++ Command Line Options ++[CommandLineOptions]
