@@ -175,7 +175,7 @@ Microsoft Office、Visual Studio、およびいくつかの言語に関する多
 - ``winKernel.GetDateFormat`` が削除されました - かわりに ``winKernel.GetDateFormatEx`` を使用します。 (#12139)
 - ``gui.DriverSettingsMixin`` が削除されました - かわりに ``gui.AutoSettingsMixin`` を使用します。 (#12144)
 - ``speech.getSpeechForSpelling`` が削除されました - かわりに ``speech.getSpellingSpeech`` を使用します。 (#12145)
-- speech モジュールから ``import speech; speech.ExampleCommand()`` または ``import speech.manager; speech.manager.ExampleCommand()`` のようにコマンドを直接インポートすることはできません。``import speech; speech.ExampleCommand()`` を使用します。 (#12126)
+- speech モジュールから ``import speech; speech.ExampleCommand()`` または ``import speech.manager; speech.manager.ExampleCommand()`` のようにコマンドを直接インポートすることはできません - かわりに``from speech.commands import ExampleCommand`` を使用します。 (#12126)
 - ``speakTextInfo`` は reason が ``SAYALL`` の場合に ``speakWithoutPauses`` を使って音声を出力しません。かわりに ``SayAllHandler`` を使用します。 (#12150)
 - ``synthDriverHandler`` モジュールから ``globalCommands`` および ``gui.settingsDialogs`` へのスターインポートは行われません - かわりに ``from synthDriverHandler import synthFunctionExample`` を使います。 (#12172)
 - controlTypes から ``ROLE_EQUATION`` が削除されました - かわりに ``ROLE_MATH`` を使います。 (#12164)
