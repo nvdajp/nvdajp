@@ -30,6 +30,7 @@ set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
 timeout /T 5 /NOBREAK
 
 @call jptools\kcCertBuild.cmd
+@if not "%ERRORLEVEL%"=="0" goto onerror
 
 %SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
