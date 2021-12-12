@@ -78,7 +78,7 @@ push 先（GitHubなど）のアカウントのセットアップや公開鍵の
 
 ### (4) 7-Zip (7z)
 
-7-Zip サイトから 16.04 for Windows (7z1604-x64.exe) をダウンロードする。
+7-Zip サイトから 64bit Windows x64 (7z****-x64.exe) をダウンロードする。
 
 http://www.7-zip.org/download.html
 
