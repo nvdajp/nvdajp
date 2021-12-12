@@ -14,13 +14,13 @@ NVDA jpalpha の場合
 確実にビルドできる作業環境は Windows 10 64ビット
 
 
-### (2) Visual Studio 2017 Community
+### (2) Visual Studio Community
 
 以下からダウンロードしてインストーラーを実行
 
 https://www.visualstudio.com/ja/downloads/ 
 
-Visual Studio 2017 バージョン 15.3 以降
+Visual Studio 2019 または 2022
 
 #### (2.1) 選択する「ワークロード」の項目
 
@@ -30,19 +30,25 @@ Visual Studio 2017 バージョン 15.3 以降
 
 #### (2.2) 「概要」「C++によるデスクトップ開発」「オプション」で選択する項目
 
-(a) VC++ 2017 *** 最新の v141 ツール
+(a) VC++ 20xx *** 最新の v142 ツール
 
-(b) Windows 10 SDK (10.0.17134.0)
+(b) Windows 11 SDK (10.0.22000.0)
 
 (c) x86 用と x64 用の Visual C++ ATL
 
+(d) C++ Clang tools for Windows
+
 #### (2.3) 「個別のコンポーネント」「コードツール」で選択する項目
 
-(a) Git for Windows
+(a) MSVC v142 - VS 2019 C++ ARM64 build tools
+
+(b) C++ ATL for v142 build tools (ARM64)
+
+(c) Git for Windows = 後述
 
 #### (2.4) インストールの実行
 
-約4GBのファイルのダウンロードとインストールが行われる。
+数GBのファイルのダウンロードとインストールが行われる。
 
 #### (2.5) Git の確認
 
@@ -84,28 +90,37 @@ http://www.7-zip.org/download.html
 C:\Program Files\7-Zip
 ```
 
-### (5) Python 3.7.5 (Windows 32bit)
+### (5) Python 3.7.9 (Windows 32bit)
 
 ダウンロードして実行し、インストールする。
 オプションはデフォルトでよい。
 
-https://www.python.org/downloads/release/python-375/
+https://www.python.org/downloads/release/python-379/
 
-Windows x86 executable installer (python-3.7.5.exe)
+Windows x86 executable installer (python-3.7.9.exe)
 
 
 ### (6) 確認すること
 
-コマンドプロンプトで
+コマンドプロンプトで Python 3.7 (32bit) が起動する。
 
 ```
-> py -3-32
+> py -3.7-32 -V
+Python 3.7.9
 ```
-
-を実行すると Python 3.7 (32bit) が起動する。
 
 コマンドプロンプトで git, patch, 7z がそれぞれ実行できる。
 
+``
+> where git
+C:\Program Files\Git\cmd\git.exe
+
+> where patch
+C:\Program Files\Git\usr\bin\patch.exe
+
+> where 7z
+C:\Program Files\7-Zip\7z.exe
+``
 
 ### (7) NVDAのソースコード取得
 
@@ -127,30 +142,13 @@ Windows x86 executable installer (python-3.7.5.exe)
 ## ビルド
 
 
-### Python 3 仮想環境の作成と有効化
-
-以下を行うとカレントに py3x86env というフォルダが作成される。作成済みであれば次に進む。
-
-```
-> py -3-32 -m venv py3x86env
-```
-
-以下の activate を実行すると、仮想環境が有効になる。
-この環境の中では python と入力するだけで32ビットの Python 3.7 が起動する。
-
-```
-> py3x86env\Scripts\activate
-```
-
 ### 日本語版のビルド
 
 
-py3x86env を activate して
-
 
 ```
-(py3x86env) > cd nvdajp
-(py3x86env) > jptools\nonCertAllBuild.cmd
+> cd nvdajp
+> jptools\nonCertAllBuild.cmd
 ```
 
 詳細は後述（署名なしビルド）
@@ -160,8 +158,8 @@ py3x86env を activate して
 
 
 ```
-(py3x86env) > cd nvda
-(py3x86env) > scons
+> cd nvda
+> scons
 ```
 
 
