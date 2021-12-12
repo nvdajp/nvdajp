@@ -154,6 +154,14 @@ C:\Program Files\7-Zip\7z.exe
 詳細は後述（署名なしビルド）
 
 
+ビルドをやり直す前に中間ファイルを削除するには
+
+```
+> scons -c
+> git restore source/comInterfaces
+```
+
+
 ### 本家版のビルド
 
 
