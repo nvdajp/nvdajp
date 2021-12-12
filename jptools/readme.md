@@ -9,9 +9,9 @@ NVDA日本語チーム 西本卓也
 NVDA jpalpha の場合
 
 
-### (1) Windows 10 64ビット
+### (1) Windows 10/11 64ビット
 
-確実にビルドできる作業環境は Windows 10 64ビット
+確実にビルドできる作業環境は Windows 10 または 11 64ビット
 
 
 ### (2) Visual Studio Community
