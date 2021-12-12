@@ -111,7 +111,7 @@ Python 3.7.9
 
 コマンドプロンプトで git, patch, 7z がそれぞれ実行できる。
 
-``
+```
 > where git
 C:\Program Files\Git\cmd\git.exe
 
@@ -120,7 +120,7 @@ C:\Program Files\Git\usr\bin\patch.exe
 
 > where 7z
 C:\Program Files\7-Zip\7z.exe
-``
+```
 
 ### (7) NVDAのソースコード取得
 
