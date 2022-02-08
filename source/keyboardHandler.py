@@ -90,9 +90,13 @@ def isNVDAModifierKey(vkCode,extended):
 		return True
 	elif config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"] and vkCode==winUser.VK_CAPITAL:
 		return True
-	elif config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] and vkCode==winUser.VK_NONCONVERT: #nvdajp
+	elif config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] and (
+		vkCode == winUser.VK_NONCONVERT or (vkCode == winUser.VK_IME_OFF and extended)
+	): #nvdajp
 		return True
-	elif config.conf["keyboard"]["useConvertAsNVDAModifierKey"] and vkCode==winUser.VK_CONVERT: #nvdajp
+	elif config.conf["keyboard"]["useConvertAsNVDAModifierKey"] and (
+		vkCode == winUser.VK_CONVERT or (vkCode == winUser.VK_IME_ON and extended)
+	): #nvdajp
 		return True
 	elif config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] and vkCode==winUser.VK_ESCAPE: #nvdajp
 		return True
