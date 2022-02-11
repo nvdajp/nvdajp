@@ -1,8 +1,8 @@
 $errorCode=0
 $nvdaLauncherFile=".\output\nvda"
-if(!$env:release) {
-	$nvdaLauncherFile+="_snapshot"
-}
+# if(!$env:release) {
+# 	$nvdaLauncherFile+="_snapshot"
+# }
 $nvdaLauncherFile+="_${env:version}.exe"
 Set-AppveyorBuildVariable "nvdaLauncherFile" $nvdaLauncherFile
 echo NVDALauncherFile: $NVDALauncherFile
