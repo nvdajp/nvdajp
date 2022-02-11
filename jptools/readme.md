@@ -157,8 +157,7 @@ C:\Program Files\7-Zip\7z.exe
 ビルドをやり直す前に中間ファイルを削除するには
 
 ```
-> scons -c
-> git restore source/comInterfaces
+> jptools\cleanAndRevert.cmd
 ```
 
 
