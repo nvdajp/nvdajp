@@ -14,7 +14,7 @@ call scons user_docs %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 call scons dist %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-call scons launcher %OPTIONS% release=1
+call scons launcher %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 exit /b 0
