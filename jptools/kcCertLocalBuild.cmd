@@ -1,4 +1,3 @@
-set RELEASE=1
 set VERSION=jpalpha
 set UPDATEVERSIONTYPE=nvdajp
 for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t

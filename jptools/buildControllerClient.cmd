@@ -1,4 +1,4 @@
-SET ARGS=publisher=nvdajp release=1 version=%VERSION%
+SET ARGS=publisher=nvdajp version=%VERSION%
 call scons nvdaHelper\client %ARGS%
 cd jptools
 cd nvdajpClient

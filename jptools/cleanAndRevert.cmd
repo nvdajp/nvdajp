@@ -1,3 +1,6 @@
 call scons -c
-call jptools\cleanScons.cmd
-git checkout -- source
+git restore source/comInterfaces
+git restore include/sonic
+cd include/espeak
+git restore .
+cd ../..
