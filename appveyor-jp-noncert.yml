@@ -1,8 +1,6 @@
 os: Visual Studio 2019
 version: "{branch}-{build}"
 
-clone_depth: 1
-
 environment:
  PY_PYTHON: 3.7-32
 
