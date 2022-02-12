@@ -22,7 +22,7 @@ init:
 
 install:
  - set RELEASE=1
- - set VERSION=2021.3.1jp
+ - set VERSION=2022.1jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
@@ -39,7 +39,7 @@ install:
         }
         $env:UPDATEVERSIONTYPE += "beta"
     } else {
-        if ($false) {
+        if ($true) {
             $env:VERSION += "-" + $env:NOWDATE
         }
         if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
