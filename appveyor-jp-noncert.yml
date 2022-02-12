@@ -64,20 +64,20 @@ build_script:
  - pack_kgs_addon.cmd
  - cd ..
  - jptools\buildControllerClient.cmd %sconsArgs%
-#  - jptools\tests.cmd
+ - jptools\tests.cmd
 
-# before_test:
-#  - ps: appveyor\scripts\tests\beforeTests.ps1
-#  - ps: appveyor\scripts\installNVDA.ps1
+before_test:
+ - ps: appveyor\scripts\tests\beforeTests.ps1
+ - ps: appveyor\scripts\installNVDA.ps1
 
-# test_script:
-#  - ps: appveyor\scripts\tests\translationCheck.ps1
-#  - ps: appveyor\scripts\tests\unitTests.ps1
-#  - ps: appveyor\scripts\tests\lintCheck.ps1
-#  - ps: appveyor\scripts\tests\systemTests.ps1
+test_script:
+ - ps: appveyor\scripts\tests\translationCheck.ps1
+ - ps: appveyor\scripts\tests\unitTests.ps1
+ - ps: appveyor\scripts\tests\lintCheck.ps1
+ - ps: appveyor\scripts\tests\systemTests.ps1
 
-# after_test:
-#  - ps: appveyor\scripts\tests\checkTestFailure.ps1
+after_test:
+ - ps: appveyor\scripts\tests\checkTestFailure.ps1
 
 artifacts:
  - path: output\*
