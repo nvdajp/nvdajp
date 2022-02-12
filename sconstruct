@@ -101,7 +101,7 @@ keyCommandsLangBlacklist=set([])
 vars = Variables()
 vars.Add("version", "The version of this build", versionInfo.version)
 vars.Add("version_build", "A unique number for this build.", "0")
-vars.Add(BoolVariable("release", "Whether this is a release version", False))
+vars.Add("release", "Whether this is a release version", "1")
 vars.Add("publisher", "The publisher of this build", versionInfo.publisher)
 vars.Add("updateVersionType", "The version type for which to check for updates", versionInfo.updateVersionType or "")
 vars.Add(PathVariable("certFile", "The certificate file with which to sign executables", "",

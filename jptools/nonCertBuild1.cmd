@@ -1,5 +1,3 @@
-set SCONSOPTIONS=%*
-
 call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0
 cd ..
