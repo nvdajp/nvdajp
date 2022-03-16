@@ -2129,6 +2129,8 @@ class GlobalCommands(ScriptableObject):
 		category=SCRCAT_TOOLS
 	)
 	def script_startWxInspectionTool(self, gesture):
+		if globalVars.appArgs.secure:
+			return
 		import wx.lib.inspection
 		wx.lib.inspection.InspectionTool().Show()
 
