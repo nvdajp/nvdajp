@@ -8,36 +8,58 @@
 
 import unittest
 import controlTypes
-import versionInfo
 from . import PlaceholderNVDAObject
 from controlTypes.processAndLabelStates import _processNegativeStates, _processPositiveStates
 
 
 class TestLabels(unittest.TestCase):
-	@unittest.skipIf(versionInfo.version_year >= 2022, "Deprecated code")
-	def test_legacy_roleLabels(self):
-		"""Test to check whether every role has its own label in controlTypes.roleLabels"""
-		for name, const in vars(controlTypes).items():
-			if name.startswith("ROLE_"):
-				self.assertIsNotNone(controlTypes.roleLabels.get(const),msg="{name} has no label".format(name=name))
+	_noDisplayStringRoles = {
+	}
+	_noDisplayStringStates = {
+		controlTypes.State.INDETERMINATE,
+	}
+	_noNegDisplayStringStates = {
+		controlTypes.State.INDETERMINATE,
+	}
 
 	def test_role_displayString(self):
-		"""Test to check whether every role has its own display string"""
-		for role in controlTypes.Role:
-			role.displayString
+		"""Test to check whether every role has its own display string
+		Roles without display strings should be explicitly listed in _noDisplayStringRoles, these
+		will be checked to ensure a KeyError is raised if displayString is accessed.
+		"""
+		rolesExpectingDisplayString = set(controlTypes.Role).difference(self._noDisplayStringRoles)
+		for role in rolesExpectingDisplayString:
+			self.assertTrue(role.displayString)
 
-	@unittest.skipIf(versionInfo.version_year >= 2022, "Deprecated code")
-	def test_legacy_positiveStateLabels(self):
-		"""Test to check whether every state has its own label in controlTypes.stateLabels"""
-		for name, const in vars(controlTypes).items():
-			if name.startswith("STATE_"):
-				self.assertIsNotNone(controlTypes.stateLabels.get(const),msg="{name} has no label".format(name=name))
+		for role in self._noDisplayStringRoles:
+			with self.assertRaises(KeyError):
+				role.displayString
 
 	def test_state_displayString(self):
-		"""Test to check whether every state has its own display string and negative display string"""
-		for state in controlTypes.State:
-			state.displayString
-			state.negativeDisplayString
+		"""Test to check whether every state has its own display string
+		States without display strings should be explicitly listed in _noDisplayStringStates, these
+		will be checked to ensure a KeyError is raised if displayString is accessed.
+		"""
+		statesExpectingDisplayString = set(controlTypes.State).difference(self._noDisplayStringStates)
+		for state in statesExpectingDisplayString:
+			self.assertTrue(state.displayString)
+
+		for state in self._noDisplayStringStates:
+			with self.assertRaises(KeyError):
+				state.displayString
+
+	def test_state_negativeDisplayString(self):
+		"""Test to check whether every state has its own negative display string
+		States without negative display strings should be explicitly listed in _noNegDisplayStringStates, these
+		will be checked to ensure a KeyError is raised if negativeDisplayString is accessed.
+		"""
+		statesExpectingNegDispString = set(controlTypes.State).difference(self._noNegDisplayStringStates)
+		for state in statesExpectingNegDispString:
+			self.assertTrue(state.negativeDisplayString)
+
+		for state in self._noNegDisplayStringStates:
+			with self.assertRaises(KeyError):
+				state.negativeDisplayString
 
 
 class TestProcessStates(unittest.TestCase):
