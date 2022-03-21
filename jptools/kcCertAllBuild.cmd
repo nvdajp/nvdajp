@@ -33,15 +33,15 @@ timeout /T 5 /NOBREAK
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 %SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
+@REM @if not "%ERRORLEVEL%"=="0" goto onerror
 %SIGNTOOL% verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
+@REM @if not "%ERRORLEVEL%"=="0" goto onerror
 %SIGNTOOL% verify /pa dist\libArm64\%VERSION%\*.dll >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
+@REM @if not "%ERRORLEVEL%"=="0" goto onerror
 %SIGNTOOL% verify /pa dist\*.exe >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
+@REM @if not "%ERRORLEVEL%"=="0" goto onerror
 %SIGNTOOL% verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
+@REM @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo %UPDATEVERSIONTYPE% %VERSION%
 exit /b 0
