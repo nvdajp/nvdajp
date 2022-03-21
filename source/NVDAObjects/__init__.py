@@ -453,7 +453,7 @@ class NVDAObject(documentBase.TextContainerObject, baseObject.ScriptableObject, 
 		"""
 		# nvdajp begin
 		if config.conf["braille"]["expandAtCursor"] and self.landmark and self.landmark in braille.nabccLandmarkLabels:
-			return f"{braille.roleLabels[controlTypes.ROLE_LANDMARK]} {braille.nabccLandmarkLabels[self.landmark]}"
+			return f"{braille.roleLabels[controlTypes.Role.LANDMARK]} {braille.nabccLandmarkLabels[self.landmark]}"
 		# nvdajp end
 		if self.landmark and self.landmark in braille.landmarkLabels:
 			return f"{braille.roleLabels[controlTypes.Role.LANDMARK]} {braille.landmarkLabels[self.landmark]}"
