@@ -40,6 +40,7 @@ moveByLine
 	test_moveByLine
 moveByCharacter
 	[Documentation]	Ensure symbols announced as expected when navigating by character (numpad 3).
+	[Tags]	excluded_from_build
 	test_moveByChar
 
 selectionByWord
@@ -58,4 +59,5 @@ selectionByCharacter
 tableHeaderSymbols
 	[Documentation]	Ensure symbols announced as expected in table headers.
 	[Tags]	table
+	[Tags]	excluded_from_build
 	test_tableHeaders
