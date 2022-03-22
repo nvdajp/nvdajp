@@ -58,6 +58,6 @@ selectionByCharacter
 
 tableHeaderSymbols
 	[Documentation]	Ensure symbols announced as expected in table headers.
-	[Tags]	table
+	# [Tags]	table
 	[Tags]	excluded_from_build
 	test_tableHeaders

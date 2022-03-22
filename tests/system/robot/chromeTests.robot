@@ -66,12 +66,12 @@ Marked Focus mode
 	test_mark_focus
 ARIA details
 	[Documentation]	Ensure a summary of aria-details is read on command from a mark element
-	[Tags]	annotations
+	# [Tags]	annotations
 	[Tags]	excluded_from_build
 	test_mark_aria_details
 ARIA details with free review and nav
 	[Documentation]	Variation on the ARIA details test with the config changed so the review cursor does not follow the caret and the nav object doesn't follow focus.
-	[Tags]	annotations
+	# [Tags]	annotations
 	[Tags]	excluded_from_build
 	test_mark_aria_details_FreeReviewCursor
 ARIA details noVbuf
