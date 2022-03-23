@@ -1977,10 +1977,10 @@ class UIA(Window):
 			ui.message(displayString)
 
 class InputFlyout(UIA):
-	role=controlTypes.ROLE_WINDOW
+	role=controlTypes.Role.WINDOW
 
 class ModeTile(UIA):
-	role=controlTypes.ROLE_BUTTON
+	role=controlTypes.Role.BUTTON
 
 	def _get_description(self):
 		return ""
