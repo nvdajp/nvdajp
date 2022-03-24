@@ -6,12 +6,6 @@
 # See the file COPYING for more details.
 # nvdajp modification by Takuya Nishimoto, Masataka.Shinke
 
-from .contextHelp import (
-	# several other submodules depend on ContextHelpMixin
-	# ensure early that it can be imported successfully.
-	ContextHelpMixin as _ContextHelpMixin,  # don't expose from gui, import submodule directly.
-)
-
 import time
 import os
 import sys
