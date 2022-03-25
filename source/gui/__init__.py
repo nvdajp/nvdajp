@@ -438,7 +438,6 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		)
 		self.Bind(wx.EVT_MENU, frame.onLanguageSettingsCommand, item)
 		#nvdajp end
-		subMenu_speechDicts = wx.Menu()
 		if not globalVars.appArgs.secure:
 			# TODO: This code should be moved out into a createSpeechDictsSubMenu function
 			subMenu_speechDicts = wx.Menu()
