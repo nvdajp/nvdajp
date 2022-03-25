@@ -169,6 +169,34 @@ def _isHidBrailleStandardSupported() -> bool:
 def _isHIDBrailleMatch(match: DeviceMatch) -> bool:
 	return match.type == KEY_HID and match.deviceInfo.get('HIDUsagePage') == HID_USAGE_PAGE_BRAILLE
 
+	if _isHidBrailleStandardSupported():
+		for match in usbHidDeviceMatches:
+			# Check for the Braille HID protocol after any other device matching.
+			# This ensures that a vendor specific driver is preferred over the braille HID protocol.
+			# This preference may change in the future.
+			if _isHIDBrailleMatch(match):
+				yield (
+					_getStandardHidDriverName(),
+					match
+				)
+
+
+def _getStandardHidDriverName() -> str:
+	"""Return the name of the standard HID Braille device driver
+	"""
+	import brailleDisplayDrivers.hidBrailleStandard
+	return brailleDisplayDrivers.hidBrailleStandard.HidBrailleDriver.name
+
+
+def _isHidBrailleStandardSupported() -> bool:
+	"""Check if standard HID braille is supported"""
+	import brailleDisplayDrivers.hidBrailleStandard
+	return brailleDisplayDrivers.hidBrailleStandard.isSupportEnabled()
+
+
+def _isHIDBrailleMatch(match: DeviceMatch) -> bool:
+	return match.type == KEY_HID and match.deviceInfo.get('HIDUsagePage') == HID_USAGE_PAGE_BRAILLE
+
 
 def getDriversForPossibleBluetoothDevices() -> typing.Iterator[typing.Tuple[str, DeviceMatch]]:
 	"""Get any matching drivers for possible Bluetooth devices.

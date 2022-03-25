@@ -68,11 +68,6 @@ def openDocFile(basename):
 	else:
 		os.startfile(d)
 
-try:
-	import updateCheck
-except RuntimeError:
-	updateCheck = None
-
 ### Constants
 NVDA_PATH = globalVars.appDir
 ICON_PATH=os.path.join(NVDA_PATH, "images", "nvdajp3.ico")
@@ -286,6 +281,8 @@ class MainFrame(wx.Frame):
 		self._popupSettingsDialog(NVDASettingsDialog, UwpOcrPanel)
 
 	def onSpeechSymbolsCommand(self, evt):
+		if globalVars.appArgs.secure:
+			return
 		self._popupSettingsDialog(SpeechSymbolsDialog)
 
 	@blockAction.when(blockAction.Context.SECURE_MODE)
@@ -336,6 +333,8 @@ class MainFrame(wx.Frame):
 		blockAction.Context.MODAL_DIALOG_OPEN,
 	)
 	def onAddonsManagerCommand(self,evt):
+		if _isInMessageBox() or globalVars.appArgs.secure:
+			return
 		self.prePopup()
 		from .addonGui import AddonsDialog
 		d=AddonsDialog(gui.mainFrame)

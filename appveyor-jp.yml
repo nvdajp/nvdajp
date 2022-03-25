@@ -38,7 +38,7 @@ install:
         }
         $env:UPDATEVERSIONTYPE += "beta"
     } else {
-        if ($true) {
+        if ($false) {
             $env:VERSION += "-" + $env:NOWDATE
         }
         if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
