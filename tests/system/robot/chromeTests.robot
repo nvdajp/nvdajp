@@ -66,11 +66,13 @@ Marked Focus mode
 	test_mark_focus
 ARIA details
 	[Documentation]	Ensure a summary of aria-details is read on command from a mark element
-	[Tags]	annotations
+	# [Tags]	annotations
+	[Tags]	excluded_from_build
 	test_mark_aria_details
 ARIA details with free review and nav
 	[Documentation]	Variation on the ARIA details test with the config changed so the review cursor does not follow the caret and the nav object doesn't follow focus.
-	[Tags]	annotations
+	# [Tags]	annotations
+	[Tags]	excluded_from_build
 	test_mark_aria_details_FreeReviewCursor
 ARIA details noVbuf
 	[Documentation]	Test for retrieving ARIA details from a button inside a role=application
@@ -126,6 +128,9 @@ Quick Nav reports target first
 Focus reports target first
 	[Documentation]	Focus target should always be reported before ancestors. Ancestors should be reported from inner to outer.
 	test_focusTargetReporting
+Table navigation with merged columns
+	[Documentation]	When navigating through a merged cell, preserve the column/row position from the previous cell.
+	test_tableNavigationWithMergedColumns
 focus mode is turned on on focused read-only list item
 	[Documentation]	Focused list items with a focusable list container should cause focus mode to be turned on automatically.
 	test_focus_mode_on_focusable_read_only_lists
