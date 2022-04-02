@@ -332,7 +332,7 @@ class MainFrame(wx.Frame):
 		blockAction.Context.MODAL_DIALOG_OPEN,
 	)
 	def onAddonsManagerCommand(self,evt):
-		if _isInMessageBox() or globalVars.appArgs.secure:
+		if isModalMessageBoxActive() or globalVars.appArgs.secure:
 			return
 		self.prePopup()
 		from .addonGui import AddonsDialog
