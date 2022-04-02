@@ -9,6 +9,7 @@
 @var runningTable: a dictionary of the currently running appModules, using their application's main window handle as a key.
 """
 
+from __future__ import annotations
 import itertools
 import ctypes
 import ctypes.wintypes
@@ -33,12 +34,12 @@ import config
 import NVDAObjects #Catches errors before loading default appModule
 import api
 import appModules
-import watchdog
+import exceptions
 import extensionPoints
 from fileUtils import getFileVersionInfo
 
 # Dictionary of processID:appModule pairs used to hold the currently running modules
-runningTable: Dict[int, "AppModule"] = {}
+runningTable: Dict[int, AppModule] = {}
 #: The process ID of NVDA itself.
 NVDAProcessID=None
 _importers=None
@@ -106,7 +107,7 @@ def getAppModuleForNVDAObject(obj):
 	return getAppModuleFromProcessID(obj.processID)
 
 
-def getAppModuleFromProcessID(processID: int) -> "AppModule":
+def getAppModuleFromProcessID(processID: int) -> AppModule:
 	"""Finds the appModule that is for the given process ID. The module is also cached for later retreavals.
 	@param processID: The ID of the process for which you wish to find the appModule.
 	@returns: the appModule
@@ -265,7 +266,7 @@ def handleAppSwitch(oldMods, newMods):
 		if not mod.sleepMode and hasattr(mod,'event_appModule_loseFocus'):
 			try:
 				mod.event_appModule_loseFocus()
-			except watchdog.CallCancelled:
+			except exceptions.CallCancelled:
 				pass
 
 	nvdaGuiLostFocus = nextStage and nextStage[-1].appName == "nvda"
@@ -606,6 +607,13 @@ class AppModule(baseObject.ScriptableObject):
 		"""
 		raise NotImplementedError()
 
+	def getStatusBarText(self, obj: NVDAObjects.NVDAObject) -> str:
+		"""Get the text from the given status bar.
+		If C{NotImplementedError} is raised, L{api.getStatusBarText} will resort to
+		retrieve the name of the status bar and the names and values of all of its children.
+		"""
+		raise NotImplementedError()
+
 	def _get_statusBarTextInfo(self):
 		"""Retrieve a L{TextInfo} positioned at the status bar of the application.
 		This is used by L{GlobalCommands.script_reportStatusLine} in cases where
@@ -615,6 +623,7 @@ class AppModule(baseObject.ScriptableObject):
 		@rtype: TextInfo
 		"""
 		raise NotImplementedError()
+
 
 class AppProfileTrigger(config.ProfileTrigger):
 	"""A configuration profile trigger for when a particular application has focus.

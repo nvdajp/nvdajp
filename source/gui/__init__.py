@@ -25,18 +25,19 @@ import speech
 import queueHandler
 import core
 from . import guiHelper
-from buildVersion import version_year
 from .message import (
-	isInMessageBox as _isInMessageBox,
+	isModalMessageBoxActive,
 	# messageBox is accessed through `gui.messageBox` as opposed to `gui.message.messageBox` throughout NVDA,
 	# be cautious when removing
 	messageBox,
 )
-from .settingsDialogs import (
-	SettingsDialog,
+from .speechDict import (
 	DefaultDictionaryDialog,
 	VoiceDictionaryDialog,
 	TemporaryDictionaryDialog,
+)
+from .settingsDialogs import (
+	SettingsDialog,
 )
 from .settingsDialogs import *
 from .startupDialogs import WelcomeDialog
@@ -47,6 +48,7 @@ import winUser
 import api
 from utils.displayString import DisplayStringEnum
 from enum import auto, unique
+import languageHandler
 
 try:
 	import updateCheck
@@ -71,11 +73,6 @@ DONATE_URL = "http://www.nvda.jp/donate.html"
 ### Globals
 mainFrame = None
 
-if version_year < 2022:
-	# Like other top level variables, this must be used as follows (#13011):
-	# import gui; doSomething(gui.isInMessageBox)
-	# NOT the following: from gui import isInMessageBox; doSomething(isInMessageBox)
-	isInMessageBox = False
 
 class MainFrame(wx.Frame):
 
@@ -169,7 +166,7 @@ class MainFrame(wx.Frame):
 			messageBox(_("Could not save configuration - probably read only file system"),_("Error"),wx.OK | wx.ICON_ERROR)
 
 	def _popupSettingsDialog(self, dialog, *args, **kwargs):
-		if _isInMessageBox():
+		if isModalMessageBoxActive():
 			return
 		self.prePopup()
 		try:
@@ -183,15 +180,15 @@ class MainFrame(wx.Frame):
 
 		self.postPopup()
 
-	def onDefaultDictionaryCommand(self,evt):
+	def onDefaultDictionaryCommand(self, evt):
 		if not globalVars.appArgs.secure:
 			self._popupSettingsDialog(DefaultDictionaryDialog)
 
-	def onVoiceDictionaryCommand(self,evt):
+	def onVoiceDictionaryCommand(self, evt):
 		if not globalVars.appArgs.secure:
 			self._popupSettingsDialog(VoiceDictionaryDialog)
 
-	def onTemporaryDictionaryCommand(self,evt):
+	def onTemporaryDictionaryCommand(self, evt):
 		if not globalVars.appArgs.secure:
 			self._popupSettingsDialog(TemporaryDictionaryDialog)
 
@@ -221,7 +218,7 @@ class MainFrame(wx.Frame):
 			self.sysTrayIcon.menu.Insert(self.sysTrayIcon.installPendingUpdateMenuItemPos,self.sysTrayIcon.installPendingUpdateMenuItem)
 
 	def onExitCommand(self, evt):
-		if _isInMessageBox():
+		if isModalMessageBoxActive():
 			return
 		if config.conf["general"]["askToExit"]:
 			self.prePopup()
@@ -331,7 +328,7 @@ class MainFrame(wx.Frame):
 		pythonConsole.activate()
 
 	def onAddonsManagerCommand(self,evt):
-		if _isInMessageBox() or globalVars.appArgs.secure:
+		if isModalMessageBoxActive() or globalVars.appArgs.secure:
 			return
 		self.prePopup()
 		from .addonGui import AddonsDialog
@@ -357,7 +354,7 @@ class MainFrame(wx.Frame):
 	#nvdajp end
 	
 	def onCreatePortableCopyCommand(self,evt):
-		if _isInMessageBox():
+		if isModalMessageBoxActive():
 			return
 		self.prePopup()
 		import gui.installerGui
@@ -366,13 +363,13 @@ class MainFrame(wx.Frame):
 		self.postPopup()
 
 	def onInstallCommand(self, evt):
-		if _isInMessageBox():
+		if isModalMessageBoxActive():
 			return
 		from gui import installerGui
 		installerGui.showInstallGui()
 
 	def onRunCOMRegistrationFixesCommand(self, evt):
-		if _isInMessageBox():
+		if isModalMessageBoxActive():
 			return
 		if messageBox(
 			# Translators: A message to warn the user when starting the COM Registration Fixing tool 
@@ -406,7 +403,7 @@ class MainFrame(wx.Frame):
 		)
 
 	def onConfigProfilesCommand(self, evt):
-		if _isInMessageBox():
+		if isModalMessageBoxActive():
 			return
 		self.prePopup()
 		from .configProfiles import ProfilesDialog
@@ -708,12 +705,23 @@ class ExitDialog(wx.Dialog):
 		dialog = self
 		mainSizer = wx.BoxSizer(wx.VERTICAL)
 
+		warningMessages = []
 		contentSizerHelper = guiHelper.BoxSizerHelper(self, orientation=wx.VERTICAL)
 
 		if globalVars.appArgs.disableAddons:
 			# Translators: A message in the exit Dialog shown when all add-ons are disabled.
 			addonsDisabledText = _("All add-ons are now disabled. They will be re-enabled on the next restart unless you choose to disable them again.")
-			contentSizerHelper.addItem(wx.StaticText(self, wx.ID_ANY, label=addonsDisabledText))
+			warningMessages.append(addonsDisabledText)
+		if languageHandler.isLanguageForced():
+			langForcedMsg = _(
+				# Translators: A message in the exit Dialog shown when NVDA language has been
+				# overwritten from the command line.
+				"NVDA's interface language is now forced from the command line."
+				" On the next restart, the language  saved in NVDA's configuration will be used instead."
+			)
+			warningMessages.append(langForcedMsg)
+		if warningMessages:
+			contentSizerHelper.addItem(wx.StaticText(self, wx.ID_ANY, label="\n".join(warningMessages)))
 
 		# Translators: The label for actions list in the Exit dialog.
 		labelText=_("What would you like to &do?")

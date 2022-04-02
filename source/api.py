@@ -4,7 +4,10 @@
 # This file may be used under the terms of the GNU General Public License, version 2 or later.
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 
-"""General functions for NVDA"""
+"""General functions for NVDA
+Functions should mostly refer to getting an object (NVDAObject) or a position (TextInfo).
+"""
+import typing
 
 import config
 import textInfos
@@ -20,10 +23,46 @@ import eventHandler
 import braille
 import vision
 import watchdog
+import exceptions
 import appModuleHandler
 import cursorManager
 from typing import Any, Optional
 
+if typing.TYPE_CHECKING:
+	import documentBase
+
+
+def _isLockAppAndAlive(appModule: "appModuleHandler.AppModule"):
+	return appModule.appName == "lockapp" and appModule.isAlive
+
+
+def _isSecureObjectWhileLockScreenActivated(obj: NVDAObjects.NVDAObject) -> bool:
+	"""
+	While Windows is locked, Windows 10 and 11 allow for object navigation outside of the lockscreen.
+	@return: C{True} if the Windows 10/11 lockscreen is active and C{obj} is outside of the lockscreen.
+
+	According to MS docs, "There is no function you can call to determine whether the workstation is locked."
+	https://docs.microsoft.com/en-gb/windows/win32/api/winuser/nf-winuser-lockworkstation
+	"""
+	runningAppModules = appModuleHandler.runningTable.values()
+	lockAppModule = next(filter(_isLockAppAndAlive, runningAppModules), None)
+	if lockAppModule is None:
+		return False
+
+	# The LockApp process might be kept alive
+	# So determine if it is active, check the foreground window
+	foregroundHWND = winUser.getForegroundWindow()
+	foregroundProcessId, _threadId = winUser.getWindowThreadProcessID(foregroundHWND)
+
+	isLockAppForeground = foregroundProcessId == lockAppModule.processID
+	isObjectOutsideLockApp = obj.appModule.processID != foregroundProcessId
+
+	if isLockAppForeground and isObjectOutsideLockApp:
+		if log.isEnabledFor(log.DEBUG):
+			devInfo = '\n'.join(obj.devInfo)
+			log.debug(f"Attempt at navigating to a secure object: {devInfo}")
+		return True
+	return False
 
 def _isLockAppAndAlive(appModule: "appModuleHandler.AppModule"):
 	return appModule.appName == "lockapp" and appModule.isAlive
@@ -181,7 +220,7 @@ def setFocusObject(obj: NVDAObjects.NVDAObject) -> bool:  # noqa: C901
 		newAppModules.append(obj.appModule)
 	try:
 		treeInterceptorHandler.cleanup()
-	except watchdog.CallCancelled:
+	except exceptions.CallCancelled:
 		pass
 	treeInterceptorObject=None
 	o=None
@@ -241,8 +280,10 @@ def setDesktopObject(obj: NVDAObjects.NVDAObject) -> None:
 	"""
 	globalVars.desktopObject=obj
 
-def getReviewPosition():
-	"""Retreaves the current TextInfo instance representing the user's review position. If it is not set, it uses the user's set navigator object and creates a TextInfo from that.
+
+def getReviewPosition() -> textInfos.TextInfo:
+	"""Retrieves the current TextInfo instance representing the user's review position.
+	If it is not set, it uses navigator object to create a TextInfo.
 	"""
 	if globalVars.reviewPosition: 
 		return globalVars.reviewPosition
@@ -442,6 +483,10 @@ def getStatusBarText(obj):
 	@return: The status bar text.
 	@rtype: str
 	"""
+	try:
+		return obj.appModule.getStatusBarText(obj)
+	except NotImplementedError:
+		pass
 	text = obj.name or ""
 	if text:
 		text += " "
@@ -454,7 +499,7 @@ def filterFileName(name):
 	@returns: The filtered file name.
 	@rtype: str
 	"""
-	invalidChars=':?*\|<>/"'
+	invalidChars = r':?*\|<>/"'
 	for c in invalidChars:
 		name=name.replace(c,'_')
 	return name
@@ -487,13 +532,24 @@ def isObjectInActiveTreeInterceptor(obj: NVDAObjects.NVDAObject) -> bool:
 	)
 
 
-def getCaretObject():
+def getCaretPosition() -> "textInfos.TextInfo":
+	"""Gets a text info at the position of the caret.
+	"""
+	textContainerObj = getCaretObject()
+	if not textContainerObj:
+		raise RuntimeError("No Caret Object available, this is expected while NVDA is still starting up.")
+	return textContainerObj.makeTextInfo("caret")
+
+
+def getCaretObject() -> "documentBase.TextContainerObject":
 	"""Gets the object which contains the caret.
-	This is normally the focus object.
-	However, if the focus object has a tree interceptor which is not in focus mode,
-	the tree interceptor will be returned.
+	This is normally the NVDAObject with focus, unless it has a browse mode tree interceptor to return instead.
 	@return: The object containing the caret.
-	@rtype: L{baseObject.ScriptableObject}
+	@note: Note: this may not be the NVDA Object closest to the caret, EG an edit text box may have focus,
+	and contain multiple NVDAObjects closer to the caret position, consider instead:
+		ti = getCaretPosition()
+		ti.expand(textInfos.UNIT_CHARACTER)
+		closestObj = ti.NVDAObjectAtStart
 	"""
 	obj = getFocusObject()
 	ti = obj.treeInterceptor
