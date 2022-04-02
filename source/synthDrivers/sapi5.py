@@ -390,8 +390,6 @@ class SynthDriver(SynthDriver):
 			self._audioDucker.disable()
 
 	def pause(self, switch: bool):
-		if switch:
-			self.cancel()
 		# SAPI5's default means of pausing in most cases is either extremely slow
 		# (e.g. takes more than half a second) or does not work at all.
 		# Therefore instruct the underlying audio interface to pause instead.

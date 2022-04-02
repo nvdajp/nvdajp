@@ -88,10 +88,10 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	readByParagraph = boolean(default=false)
 	wordWrap = boolean(default=true)
 	focusContextPresentation = option("changedContext", "fill", "scroll", default="changedContext")
-	enableHidBrailleSupport = integer(0, 2, default=0)  # 0:Use default/recommended value (yes), 1:yes, 2:no
 	nvdajpMessageTimeout = boolean(default=true) # obsolete (nvdajp)
 	japaneseBrailleSupport = boolean(default=true) # (nvdajp)
 	nvdajpComPort = integer(default=0) # obsolete (nvdajp)
+	enableHidBrailleSupport = integer(0, 2, default=0)  # 0:Use default/recommended value (yes), 1:yes, 2:no
 
 	# Braille display driver settings
 	[[__many__]]
