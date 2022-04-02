@@ -508,13 +508,13 @@ def initializeDetectionData():
 	Specify the requirements for a detected device to be considered a
 	match for a specific driver.
 	"""
-    # kgs
-    addUsbDevices("kgs", KEY_SERIAL, {
-        "VID_1148&PID_0301",  # KGS BM-SMART USB Serial
-        "VID_1148&PID_0001",  # KGS USB To Serial Com Port
-    })
+	# kgs
+	addUsbDevices("kgs", KEY_SERIAL, {
+		"VID_1148&PID_0301",  # KGS BM-SMART USB Serial
+		"VID_1148&PID_0001",  # KGS USB To Serial Com Port
+	})
 
-    addBluetoothDevices("kgs", lambda m: m.id.startswith("BM"))  # "BM Series", "BMsmart-KGS"
+	addBluetoothDevices("kgs", lambda m: m.id.startswith("BM"))  # "BM Series", "BMsmart-KGS"
 
 	# alva
 	addUsbDevices("alva", KEY_HID, {
