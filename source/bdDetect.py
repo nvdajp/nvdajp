@@ -510,8 +510,8 @@ def initializeDetectionData():
 	"""
     # kgs
     addUsbDevices("kgs", KEY_SERIAL, {
-	    "VID_1148&PID_0301",  # KGS BM-SMART USB Serial
-	    "VID_1148&PID_0001",  # KGS USB To Serial Com Port
+        "VID_1148&PID_0301",  # KGS BM-SMART USB Serial
+        "VID_1148&PID_0001",  # KGS USB To Serial Com Port
     })
 
     addBluetoothDevices("kgs", lambda m: m.id.startswith("BM"))  # "BM Series", "BMsmart-KGS"
