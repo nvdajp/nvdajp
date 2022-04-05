@@ -56,7 +56,8 @@ ARIA invalid spelling and grammar
 	ARIAInvalid_spellingAndGrammar
 ARIA checkbox
 	[Documentation]	Navigate to an unchecked checkbox in reading mode.
-	[Tags]	aria-at
+	# [Tags]	aria-at
+	[Tags]	excluded_from_build
 	test_ariaCheckbox_browseMode
 Marked Browse mode
 	[Documentation]	Ensure that Marked content is read in browse mode
