@@ -103,6 +103,7 @@ ARIA roleDescription inline content editable
 	test_ariaRoleDescription_inline_contentEditable
 ARIA roleDescription block content editable
 	[Documentation]	Read an block element with a custom role in content editables 
+	[Tags]	excluded_from_build
 	test_ariaRoleDescription_block_contentEditable
 ARIA description Focus Mode
 	[Documentation]	Navigate to a span with aria-description in focus mode
@@ -115,6 +116,7 @@ ARIA description Say All
 	test_ariaDescription_sayAll
 i10840
 	[Documentation]	The name of table header cells should only be conveyed once when navigating directly to them in browse mode (chrome self-references a header cell as its own header, which used to cause the name to be announced twice)
+	[Tags]	excluded_from_build
 	test_i10840
 Prevent Duplicate Speech From Description while in Focus mode
 	preventDuplicateSpeechFromDescription_focus
