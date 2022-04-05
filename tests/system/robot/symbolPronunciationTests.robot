@@ -45,15 +45,18 @@ moveByCharacter
 
 selectionByWord
 	[Documentation]	Ensure symbols announced as expected when selecting by word (shift+control+right arrow).
-	[Tags]	selection
+	# [Tags]	selection
+	[Tags]	excluded_from_build
 	test_selByWord
 selectionByLine
 	[Documentation]	Ensure symbols announced as expected when selecting by line (shift+down arrow).
-	[Tags]	selection
+	# [Tags]	selection
+	[Tags]	excluded_from_build
 	test_selByLine
 selectionByCharacter
 	[Documentation]	Ensure symbols announced as expected when selecting by character (shift+right arrow).
-	[Tags]	selection
+	# [Tags]	selection
+	[Tags]	excluded_from_build
 	test_selByChar
 
 tableHeaderSymbols
