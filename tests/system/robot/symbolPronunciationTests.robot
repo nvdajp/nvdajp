@@ -37,6 +37,7 @@ moveByWord
 	test_moveByWord
 moveByLine
 	[Documentation]	Ensure symbols announced as expected when navigating by line (numpad 9).
+	[Tags]	excluded_from_build
 	test_moveByLine
 moveByCharacter
 	[Documentation]	Ensure symbols announced as expected when navigating by character (numpad 3).
