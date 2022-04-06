@@ -34,6 +34,7 @@ symbolInSpeechUI
 
 moveByWord
 	[Documentation]	Ensure symbols announced as expected when navigating by word (numpad 6).
+	[Tags]	excluded_from_build
 	test_moveByWord
 moveByLine
 	[Documentation]	Ensure symbols announced as expected when navigating by line (numpad 9).
