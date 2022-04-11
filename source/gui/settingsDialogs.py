@@ -2747,7 +2747,7 @@ class AdvancedPanelControls(
 		label = pgettext(
 			"advanced.uiaWithMSWord",
 			# Translators: Label for the Use UIA with MS Word combobox, in the Advanced settings panel.
-			"Use UI Automation to access Microsoft Word document controls"
+			"Use UI Automation to access Microsoft &Word document controls"
 		)
 		wordChoices = (
 			# Translators: Label for the default value of the Use UIA with MS Word combobox,
