@@ -12,6 +12,6 @@ version = {nowdate}
 author = "Takuya Nishimoto <nishimotz@gmail.com>"
 description = "KGS Driver, which supports BM Smart series, Braille Memo series, Braille Memo Pocket and Braille Tender."
 url = http://www.nvda.jp/en/
-minimumNVDAVersion = 2014.1.0
+minimumNVDAVersion = 2019.3.0
 lastTestedNVDAVersion = 2022.1.0
 """.format(nowdate=args.nowdate))

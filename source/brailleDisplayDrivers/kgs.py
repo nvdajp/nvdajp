@@ -19,14 +19,11 @@ from ctypes.wintypes import *
 from logHandler import log
 import sys
 import winreg as _winreg
-unicode = str
-xrange = range
 byte = lambda x: x.to_bytes(1, 'big')
 import itertools
 
-my_dir = os.path.dirname(__file__)
-kgs_dir = my_dir
-if hasattr(sys, 'frozen') and os.path.isfile(os.path.join(os.getcwd(), 'brailleDisplayDrivers', 'DirectBM.dll')):
+kgs_dir = os.path.dirname(__file__)
+if not os.path.isfile(os.path.join(kgs_dir, 'DirectBM.dll')) and hasattr(sys, 'frozen'):
 	kgs_dir = os.path.join(os.getcwd(), 'brailleDisplayDrivers')
 
 fConnection = False
@@ -194,7 +191,7 @@ def kgsListComPorts(preferSerial=False):
 						ports.append({
 							'friendlyName': u'USB: KGS BM-SMART USB Serial (%s)' % portName,
 							'hardwareID': u'USB\\VID_1148&PID_0301',
-							'port': unicode(portName)
+							'port': str(portName)
 						})
 						usbPorts[portName] = True
 				except WindowsError:
@@ -221,7 +218,7 @@ def kgsListComPorts(preferSerial=False):
 						ports.append({
 							'friendlyName': u'USB: KGS USB To Serial Com Port (%s)' % portName,
 							'hardwareID': u'USB\\VID_1148&PID_0001',
-							'port': unicode(portName)
+							'port': str(portName)
 						})
 						usbPorts[portName] = True
 				except WindowsError:
@@ -244,7 +241,7 @@ def kgsListComPorts(preferSerial=False):
 			else:
 				ports.append(p)
 
-	log.info(unicode(ports))
+	log.info(str(ports))
 	return ports
 
 def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
@@ -260,7 +257,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
 	log.info("bmStart(%s) returns %d" % (port, ret))
 	if ret:
-		for loop in xrange(15):
+		for loop in range(15):
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
 				log.info("bmStartDisplayMode2() returns %d" % ret)
@@ -304,7 +301,7 @@ def processEvents():
 	wx.YieldIfNeeded()
 
 def waitAfterDisconnect():
-	for loop in xrange(10):
+	for loop in range(10):
 		time.sleep(0.5)
 		try:
 			tones.beep(450-(loop*20), 20)
@@ -409,7 +406,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info(p)
 			ports[p["port"]] = p["friendlyName"]
 		log.info(ports)
-		for i in xrange(64):
+		for i in range(64):
 			p = "COM%d" % (i + 1)
 			if p in ports:
 				fname = ports[p]
