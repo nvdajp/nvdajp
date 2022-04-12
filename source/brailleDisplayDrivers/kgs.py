@@ -5,10 +5,9 @@
 #See the file COPYING for more details.
 #Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
-#Copyright (C) 2011-2019 Takuya Nishimoto
+#Copyright (C) 2011-2022 Takuya Nishimoto
 
 import braille
-import brailleInput
 import inputCore
 import hwPortUtils
 import time
@@ -17,26 +16,17 @@ import os
 from collections import OrderedDict
 from ctypes import *
 from ctypes.wintypes import *
-import config
 from logHandler import log
 import sys
-if sys.version_info.major >= 3:
-	import winreg as _winreg
-	unicode = str
-	xrange = range
-	byte = lambda x: x.to_bytes(1, 'big')
-else:
-	byte = chr
-	import _winreg
+import winreg as _winreg
+unicode = str
+xrange = range
+byte = lambda x: x.to_bytes(1, 'big')
 import itertools
 
-kgs_dir = "brailleDisplayDrivers"
 my_dir = os.path.dirname(__file__)
-if sys.version_info.major <= 2:
-	my_dir = my_dir.decode('mbcs')
-if 'brailleDisplayDrivers' in my_dir.split(os.sep):
-	kgs_dir = my_dir
-if sys.version_info.major >= 3 and hasattr(sys, 'frozen'):
+kgs_dir = my_dir
+if hasattr(sys, 'frozen') and os.path.isfile(os.path.join(os.getcwd(), 'brailleDisplayDrivers', 'DirectBM.dll')):
 	kgs_dir = os.path.join(os.getcwd(), 'brailleDisplayDrivers')
 
 fConnection = False
