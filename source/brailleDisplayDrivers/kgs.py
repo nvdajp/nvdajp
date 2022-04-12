@@ -18,9 +18,10 @@ from ctypes import *
 from ctypes.wintypes import *
 from logHandler import log
 import sys
-import winreg as _winreg
+import winreg
 byte = lambda x: x.to_bytes(1, 'big')
 import itertools
+import serial
 
 kgs_dir = os.path.dirname(__file__)
 if not os.path.isfile(os.path.join(kgs_dir, 'DirectBM.dll')) and hasattr(sys, 'frozen'):
@@ -172,8 +173,8 @@ def kgsListComPorts(preferSerial=False):
 
 	# BM-SMART USB
 	try:
-		rootKey = _winreg.OpenKey(
-			_winreg.HKEY_LOCAL_MACHINE,
+		rootKey = winreg.OpenKey(
+			winreg.HKEY_LOCAL_MACHINE,
 			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0301"
 		)
 	except WindowsError as e:
@@ -182,12 +183,12 @@ def kgsListComPorts(preferSerial=False):
 		with rootKey:
 			for index in itertools.count():
 				try:
-					keyName = _winreg.EnumKey(rootKey, index)
+					keyName = winreg.EnumKey(rootKey, index)
 				except WindowsError:
 					break
 				try:
-					with _winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
-						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
+					with winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
+						portName = winreg.QueryValueEx(paramsKey, "PortName")[0]
 						ports.append({
 							'friendlyName': u'USB: KGS BM-SMART USB Serial (%s)' % portName,
 							'hardwareID': u'USB\\VID_1148&PID_0301',
@@ -199,8 +200,8 @@ def kgsListComPorts(preferSerial=False):
 
 	# KGS USB for BM46
 	try:
-		rootKey = _winreg.OpenKey(
-			_winreg.HKEY_LOCAL_MACHINE,
+		rootKey = winreg.OpenKey(
+			winreg.HKEY_LOCAL_MACHINE,
 			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0001"
 		)
 	except WindowsError as e:
@@ -209,12 +210,12 @@ def kgsListComPorts(preferSerial=False):
 		with rootKey:
 			for index in itertools.count():
 				try:
-					keyName = _winreg.EnumKey(rootKey, index)
+					keyName = winreg.EnumKey(rootKey, index)
 				except WindowsError:
 					break
 				try:
-					with _winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
-						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
+					with winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
+						portName = winreg.QueryValueEx(paramsKey, "PortName")[0]
 						ports.append({
 							'friendlyName': u'USB: KGS USB To Serial Com Port (%s)' % portName,
 							'hardwareID': u'USB\\VID_1148&PID_0001',
@@ -331,6 +332,7 @@ def bmDisConnect(hBrl, port):
 	return ret
 
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
+	_dev: serial.Serial
 	name = "kgs"
 	# Translators: braille display driver description
 	description = _(u"KGS BrailleMemo series")
