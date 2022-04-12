@@ -21,7 +21,6 @@ import sys
 import winreg
 byte = lambda x: x.to_bytes(1, 'big')
 import itertools
-import serial
 
 kgs_dir = os.path.dirname(__file__)
 if not os.path.isfile(os.path.join(kgs_dir, 'DirectBM.dll')) and hasattr(sys, 'frozen'):
@@ -344,6 +343,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		global fConnection, numCells
 		if not lock():
 			return
+		for portType, portId, port, portInfo in self._getTryPorts(port):
+			break
 		if port != self._portName and self._portName:
 			execEndConnection = True
 			log.info("changing connection %s to %s" % (self._portName, port))
