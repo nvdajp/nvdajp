@@ -332,7 +332,6 @@ def bmDisConnect(hBrl, port):
 	return ret
 
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
-	_dev: serial.Serial
 	name = "kgs"
 	# Translators: braille display driver description
 	description = _(u"KGS BrailleMemo series")
@@ -359,8 +358,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			execEndConnection = False
 			self.numCells = 0
 		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
-		if sys.version_info.major <= 2:
-			kgs_dll = kgs_dll.encode('mbcs')
 		log.debug(kgs_dll)
 		self._directBM = windll.LoadLibrary(kgs_dll)
 		if not self._directBM:
