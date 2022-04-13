@@ -61,6 +61,7 @@ ARIA checkbox
 	test_ariaCheckbox_browseMode
 Marked Browse mode
 	[Documentation]	Ensure that Marked content is read in browse mode
+	[Tags]	excluded_from_build
 	test_mark_browse
 Marked Focus mode
 	[Documentation]	Ensure that Marked content is read in Focus mode
