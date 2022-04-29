@@ -293,11 +293,11 @@ NVDA 本家版には Microsoft Speech Platform のための音声ドライバー
 
 NVDA 日本語版では Haruka (nvdajp) という日本語専用ドライバーを追加しました。
 
-音声エンジン Haruka は下記のツールでインストールできます。
+音声エンジン Haruka はマイクロソフトのWebサイトから入手できます。
 
-[Microsoft Speech Platform 簡単インストーラー http://mahoro-ba.net/e1542.html]
 
-またはマイクロソフトのWebサイトから入手できます。
+
+
 
 [ランタイム(Version 11)の入手 http://www.microsoft.com/download/en/details.aspx?id=27225]
 
