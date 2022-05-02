@@ -816,7 +816,7 @@ def speak(  # noqa: C901
 	import speechViewer
 	if speechViewer.isActive:
 		speechViewer.appendSpeechSequence(speechSequence)
-	from source.gui import jpBrailleViewer
+	from gui import jpBrailleViewer
 	if jpBrailleViewer.isActive:
 		s = ""
 		for item in speechSequence:

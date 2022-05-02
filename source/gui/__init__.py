@@ -315,7 +315,7 @@ class MainFrame(wx.Frame):
 			self.sysTrayIcon.menu_tools_toggleBrailleViewer.Check(created)
 
 	def onToggleBrailleViewerCommand(self, evt):
-		from source.gui import jpBrailleViewer
+		from . import jpBrailleViewer
 		if jpBrailleViewer.isBrailleViewerActive():
 			jpBrailleViewer.destroyBrailleViewer()
 		else:
@@ -495,7 +495,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		)
 		item = self.menu_tools_toggleBrailleViewer
 		self.Bind(wx.EVT_MENU, frame.onToggleBrailleViewerCommand, item)
-		from source.gui import jpBrailleViewer
+		from . import jpBrailleViewer
 		self.menu_tools_toggleBrailleViewer.Check(jpBrailleViewer.isBrailleViewerActive())
 		jpBrailleViewer.postBrailleViewerToolToggledAction.register(frame.onBrailleViewerChangedState)
 
