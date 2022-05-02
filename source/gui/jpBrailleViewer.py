@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-#gui/brailleViewer.py
+#gui/jpBrailleViewer.py
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
-#Copyright (C) 2019 Takuya Nishimoto
+#Copyright (C) 2019,2022 Takuya Nishimoto
 #Copyright (C) 2012 Masataka.Shinke
 
 import wx
