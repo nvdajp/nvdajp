@@ -55,7 +55,7 @@ try:
 except RuntimeError:
 	updateCheck = None
 
-from . import brailleViewer as jpBrailleViewer #nvdajp
+from . import jpBrailleViewer #nvdajp
 import subprocess #nvdajp
 
 def openDocFile(basename):

@@ -111,7 +111,7 @@ msgstr "半角全角"
 msgid "Japanese Braille viewer"
 msgstr "日本語点字ビューアー"
 
-#: gui\brailleViewer.py:18
+#: gui\jpBrailleViewer.py:18
 msgid "NVDA Japanese Braille Viewer"
 msgstr "NVDA日本語点字ビューアー"
 

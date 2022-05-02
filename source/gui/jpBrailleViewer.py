@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#gui/brailleViewer.py
+#gui/jpBrailleViewer.py
 #A part of NonVisual Desktop Access (NVDA)
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
@@ -11,11 +11,11 @@ import gui
 import config
 
 
-class brailleViewerFrame(wx.MiniFrame):
+class JpBrailleViewerFrame(wx.MiniFrame):
 
 	def __init__(self):
 		# Translators: braille viewer window title
-		super(brailleViewerFrame, self).__init__(gui.mainFrame, wx.ID_ANY, _("NVDA Japanese Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER)
+		super(JpBrailleViewerFrame, self).__init__(gui.mainFrame, wx.ID_ANY, _("NVDA Japanese Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER)
 		self.Bind(wx.EVT_CLOSE, self.onClose)
 		self.SetFont(wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
 		sizer = wx.BoxSizer(wx.VERTICAL)
@@ -34,7 +34,7 @@ isActive=False
 
 def activate():
 	global _guiFrame, isActive
-	_guiFrame = brailleViewerFrame()
+	_guiFrame = JpBrailleViewerFrame()
 	isActive=True
 
 def appendText(text):
