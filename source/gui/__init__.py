@@ -55,7 +55,7 @@ try:
 except RuntimeError:
 	updateCheck = None
 
-from . import jpBrailleViewer #nvdajp
+from . import brailleViewer as jpBrailleViewer #nvdajp
 import subprocess #nvdajp
 
 def openDocFile(basename):
@@ -315,11 +315,11 @@ class MainFrame(wx.Frame):
 			self.sysTrayIcon.menu_tools_toggleBrailleViewer.Check(created)
 
 	def onToggleBrailleViewerCommand(self, evt):
-		from source.gui import jpBrailleViewer
-		if jpBrailleViewer.isBrailleViewerActive():
-			jpBrailleViewer.destroyBrailleViewer()
+		import brailleViewer
+		if brailleViewer.isBrailleViewerActive():
+			brailleViewer.destroyBrailleViewer()
 		else:
-			jpBrailleViewer.createBrailleViewerTool()
+			brailleViewer.createBrailleViewerTool()
 
 	def onPythonConsoleCommand(self, evt):
 		import pythonConsole
@@ -495,9 +495,9 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		)
 		item = self.menu_tools_toggleBrailleViewer
 		self.Bind(wx.EVT_MENU, frame.onToggleBrailleViewerCommand, item)
-		from source.gui import jpBrailleViewer
-		self.menu_tools_toggleBrailleViewer.Check(jpBrailleViewer.isBrailleViewerActive())
-		jpBrailleViewer.postBrailleViewerToolToggledAction.register(frame.onBrailleViewerChangedState)
+		import brailleViewer
+		self.menu_tools_toggleBrailleViewer.Check(brailleViewer.isBrailleViewerActive())
+		brailleViewer.postBrailleViewerToolToggledAction.register(frame.onBrailleViewerChangedState)
 
 		if not globalVars.appArgs.secure and not config.isAppX:
 			# Translators: The label for the menu item to open NVDA Python Console.
