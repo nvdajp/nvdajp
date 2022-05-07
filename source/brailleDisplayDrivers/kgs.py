@@ -296,9 +296,7 @@ def getKbdcName(hBrl):
 
 def processEvents():
 	import api
-	import wx
 	api.processPendingEvents()
-	wx.YieldIfNeeded()
 
 def waitAfterDisconnect():
 	for loop in range(10):
@@ -326,7 +324,7 @@ def bmDisConnect(hBrl, port):
 	log.info("BmEndDisplayMode %s %d" % (port, ret))
 	ret = hBrl.bmEnd()
 	log.info("BmEnd %s %d" % (port, ret))
-	numCells=0
+	numCells = 0
 	fConnection = False
 	return ret
 
