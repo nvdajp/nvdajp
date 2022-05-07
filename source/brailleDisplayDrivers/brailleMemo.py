@@ -5,7 +5,7 @@
 #See the file COPYING for more details.
 #Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
-#Copyright (C) 2011-2019 Takuya Nishimoto
+#Copyright (C) 2011-2022 Takuya Nishimoto
 
 import braille
 import brailleInput
@@ -17,20 +17,15 @@ import os
 from collections import OrderedDict
 from ctypes import *
 from ctypes.wintypes import *
-import config
 from logHandler import log
 import sys
-if sys.version_info.major >= 3:
-	import winreg as _winreg
-	unicode = str
-	xrange = range
-	byte = lambda x: x.to_bytes(1, 'big')
-else:
-	byte = chr
-	import _winreg
+import winreg
+byte = lambda x: x.to_bytes(1, 'big')
 import itertools
 
-from .kgs import kgs_dir
+kgs_dir = os.path.dirname(__file__)
+if not os.path.isfile(os.path.join(kgs_dir, 'DirectBM.dll')) and hasattr(sys, 'frozen'):
+	kgs_dir = os.path.join(os.getcwd(), 'brailleDisplayDrivers')
 
 fConnection = False
 numCells = 0
@@ -171,15 +166,15 @@ def kgsListComPorts(preferSerial=False):
 
 	# BM bluetooth ports
 	for p in hwPortUtils.listComPorts(onlyAvailable=True):
-		if 'bluetoothName' in p and p['bluetoothName'][:2].upper() == u'BM':
-			p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
+		if 'bluetoothName' in p and p['bluetoothName'][:2].upper() == 'BM':
+			p['friendlyName'] = "Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
 			ports.append(p)
 			btPorts[ p['port'] ] = True
 
 	# BM-SMART USB
 	try:
-		rootKey = _winreg.OpenKey(
-			_winreg.HKEY_LOCAL_MACHINE,
+		rootKey = winreg.OpenKey(
+			winreg.HKEY_LOCAL_MACHINE,
 			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0301"
 		)
 	except WindowsError as e:
@@ -188,16 +183,16 @@ def kgsListComPorts(preferSerial=False):
 		with rootKey:
 			for index in itertools.count():
 				try:
-					keyName = _winreg.EnumKey(rootKey, index)
+					keyName = winreg.EnumKey(rootKey, index)
 				except WindowsError:
 					break
 				try:
-					with _winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
-						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
+					with winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
+						portName = winreg.QueryValueEx(paramsKey, "PortName")[0]
 						ports.append({
-							'friendlyName': u'USB: KGS BM-SMART USB Serial (%s)' % portName,
-							'hardwareID': u'USB\\VID_1148&PID_0301',
-							'port': unicode(portName)
+							'friendlyName': 'USB: KGS BM-SMART USB Serial (%s)' % portName,
+							'hardwareID': 'USB\\VID_1148&PID_0301',
+							'port': str(portName)
 						})
 						usbPorts[portName] = True
 				except WindowsError:
@@ -205,8 +200,8 @@ def kgsListComPorts(preferSerial=False):
 
 	# KGS USB for BM46
 	try:
-		rootKey = _winreg.OpenKey(
-			_winreg.HKEY_LOCAL_MACHINE,
+		rootKey = winreg.OpenKey(
+			winreg.HKEY_LOCAL_MACHINE,
 			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0001"
 		)
 	except WindowsError as e:
@@ -215,16 +210,16 @@ def kgsListComPorts(preferSerial=False):
 		with rootKey:
 			for index in itertools.count():
 				try:
-					keyName = _winreg.EnumKey(rootKey, index)
+					keyName = winreg.EnumKey(rootKey, index)
 				except WindowsError:
 					break
 				try:
-					with _winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
-						portName = _winreg.QueryValueEx(paramsKey, "PortName")[0]
+					with winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
+						portName = winreg.QueryValueEx(paramsKey, "PortName")[0]
 						ports.append({
-							'friendlyName': u'USB: KGS USB To Serial Com Port (%s)' % portName,
-							'hardwareID': u'USB\\VID_1148&PID_0001',
-							'port': unicode(portName)
+							'friendlyName': 'USB: KGS USB To Serial Com Port (%s)' % portName,
+							'hardwareID': 'USB\\VID_1148&PID_0001',
+							'port': str(portName)
 						})
 						usbPorts[portName] = True
 				except WindowsError:
@@ -232,13 +227,13 @@ def kgsListComPorts(preferSerial=False):
 
 	# serial ports
 	for p in hwPortUtils.listComPorts(onlyAvailable=True):
-		if 'hardwareID' in p and p['hardwareID'].upper().startswith(u'BTHENUM'):
-			if p['hardwareID'].upper().startswith(u'BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG'):
+		if 'hardwareID' in p and p['hardwareID'].upper().startswith('BTHENUM'):
+			if p['hardwareID'].upper().startswith('BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG'):
 				log.info("skipping %s" % p['hardwareID'])
 				continue
 			else:
 				log.info("appending non-kgs device: %s" % p['hardwareID'])
-				p["friendlyName"] = u"Bluetooth: {portName}".format(portName=p["friendlyName"])
+				p["friendlyName"] = "Bluetooth: {portName}".format(portName=p["friendlyName"])
 				ports.append(p)
 		elif p['port'] not in btPorts and p['port'] not in usbPorts:
 			p["friendlyName"] = _("Serial: {portName}").format(portName=p["friendlyName"])
@@ -247,7 +242,7 @@ def kgsListComPorts(preferSerial=False):
 			else:
 				ports.append(p)
 
-	log.info(unicode(ports))
+	log.info(str(ports))
 	return ports
 
 def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
@@ -263,7 +258,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
 	log.info("bmStart(%s) returns %d" % (port, ret))
 	if ret:
-		for loop in xrange(15):
+		for loop in range(15):
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
 				log.info("bmStartDisplayMode2() returns %d" % ret)
@@ -289,7 +284,7 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 		hwID = portInfo["hardwareID"]
 		frName = portInfo.get("friendlyName")
 		btName = portInfo.get("bluetoothName")
-		log.info(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
+		log.info("set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
 		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
 		if ret:
 			break
@@ -307,7 +302,7 @@ def processEvents():
 	wx.YieldIfNeeded()
 
 def waitAfterDisconnect():
-	for loop in xrange(10):
+	for loop in range(10):
 		time.sleep(0.5)
 		try:
 			tones.beep(450-(loop*20), 20)
@@ -339,7 +334,7 @@ def bmDisConnect(hBrl, port):
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	name = "brailleMemo"
 	# Translators: braille display driver description
-	description = _(u"BrailleMemo experimental")
+	description = _("BrailleMemo experimental")
 	isThreadSafe = True
 	_portName = None
 	_directBM = None
@@ -349,6 +344,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		global fConnection, numCells
 		if not lock():
 			return
+		for portType, portId, port, portInfo in self._getTryPorts(port):
+			break
 		if port != self._portName and self._portName:
 			execEndConnection = True
 			log.info("changing connection %s to %s" % (self._portName, port))
@@ -363,8 +360,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			execEndConnection = False
 			self.numCells = 0
 		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
-		if sys.version_info.major <= 2:
-			kgs_dll = kgs_dll.encode('mbcs')
 		log.debug(kgs_dll)
 		self._directBM = windll.LoadLibrary(kgs_dll)
 		if not self._directBM:
@@ -412,7 +407,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info(p)
 			ports[p["port"]] = p["friendlyName"]
 		log.info(ports)
-		for i in xrange(64):
+		for i in range(64):
 			p = "COM%d" % (i + 1)
 			if p in ports:
 				fname = ports[p]
