@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-15 00:02+0000\n"
-"PO-Revision-Date: 2022-04-15 09:08+0900\n"
+"POT-Creation-Date: 2022-04-22 00:03+0000\n"
+"PO-Revision-Date: 2022-04-25 11:15+0900\n"
 "Last-Translator: Takuya Nishimoto <nishimotz@gmail.com>\n"
 "Language-Team: NVDA Japanese Team <nishimotz@gmail.com>\n"
 "Language: ja\n"
@@ -111,7 +111,7 @@ msgstr "半角全角"
 msgid "Japanese Braille viewer"
 msgstr "日本語点字ビューアー"
 
-#: gui\brailleViewer.py:18
+#: gui\jpBrailleViewer.py:18
 msgid "NVDA Japanese Braille Viewer"
 msgstr "NVDA日本語点字ビューアー"
 
