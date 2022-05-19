@@ -1,6 +1,12 @@
 os: Visual Studio 2019
 version: "{branch}-{build}"
 
+branches:
+ only:
+  - /alphajp.*/
+  - /betajp.*/
+  - /jp202.*/
+
 clone_depth: 1
 
 environment:
