@@ -1,6 +1,10 @@
 os: Visual Studio 2019
 version: "{branch}-{build}"
 
+branches:
+ only:
+  - /jp202.*/
+
 clone_depth: 1
 
 environment:
