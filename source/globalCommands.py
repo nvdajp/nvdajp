@@ -1405,7 +1405,7 @@ class GlobalCommands(ScriptableObject):
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_LINE)
 		# Explicitly tether here
-		braille.handler.setTether(braille.handler.TETHER_REVIEW, auto=True)
+		braille.handler.handleReviewMove(shouldAutoTether=True)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
 		if scriptCount==0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
@@ -1482,7 +1482,7 @@ class GlobalCommands(ScriptableObject):
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_WORD)
 		# Explicitly tether here
-		braille.handler.setTether(braille.handler.TETHER_REVIEW, auto=True)
+		braille.handler.handleReviewMove(shouldAutoTether=True)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
 		if scriptCount==0:
 			speech.speakTextInfo(info, reason=controlTypes.OutputReason.CARET, unit=textInfos.UNIT_WORD)
@@ -1572,7 +1572,7 @@ class GlobalCommands(ScriptableObject):
 		info=api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_CHARACTER)
 		# Explicitly tether here
-		braille.handler.setTether(braille.handler.TETHER_REVIEW, auto=True)
+		braille.handler.handleReviewMove(shouldAutoTether=True)
 		scriptCount=scriptHandler.getLastScriptRepeatCount()
 		if scriptCount==0:
 			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode)
