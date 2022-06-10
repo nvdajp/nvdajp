@@ -254,6 +254,9 @@ class SynthDriver(SynthDriver):
 		langWithLocale = command.lang if command.lang else self._language
 		langWithLocale = langWithLocale.lower().replace('_', '-')
 
+		if langWithLocale[:2] == 'ja':
+			langWithLocale = 'en-us'
+
 		langWithoutLocale: Optional[str] = stripLocaleFromLangCode(langWithLocale)
 
 		# Check for any language where the language code matches, regardless of dialect: e.g. ru-ru to ru
@@ -312,6 +315,7 @@ class SynthDriver(SynthDriver):
 	# Note: when working on speak, look for opportunities to simplify
 	# and move logic out into smaller helper functions.
 	def speak(self, speechSequence: SpeechSequence):  # noqa: C901
+		speechSequence = replaceJapaneseFromSpeechSequence(speechSequence)
 		textList=[]
 		langChanged=False
 		prosody={}
