@@ -275,20 +275,6 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	log.info("connection:%d port:%d" % (fConnection, _port))
 	return fConnection, port
 
-def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
-	Port = _port = None
-	ret = False
-	for portInfo in kgsListComPorts():
-		_port = portInfo["port"]
-		hwID = portInfo["hardwareID"]
-		frName = portInfo.get("friendlyName")
-		btName = portInfo.get("bluetoothName")
-		log.info("set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
-		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
-		if ret:
-			break
-	return ret, Port
-
 def getKbdcName(hBrl):
 	if not hBrl.IsKbdcInstalled(b"Active KBDC"):
 		log.warning("active kbdc not found")
@@ -312,10 +298,7 @@ def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection
 		bmDisConnect(hBrl, port)
 		waitAfterDisconnect()
 	devName = getKbdcName(hBrl)
-	if port is None or port=="auto":
-		ret, pName = _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
-	else:
-		ret, pName = _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
+	ret, pName = _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
 	return ret, pName
 
 def bmDisConnect(hBrl, port):
@@ -342,38 +325,38 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		if not lock():
 			return
 		for portType, portId, port, portInfo in self._getTryPorts(port):
-			break
-		if port != self._portName and self._portName:
-			execEndConnection = True
-			log.info("changing connection %s to %s" % (self._portName, port))
-		elif fConnection:
-			log.info("already connection %s" % port)
-			execEndConnection = False
-			self.numCells = numCells
-			unlock()
-			return
-		else:
-			log.info("first connection %s" % port)
-			execEndConnection = False
-			self.numCells = 0
-		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
-		log.debug(kgs_dll)
-		self._directBM = windll.LoadLibrary(kgs_dll)
-		if not self._directBM:
-			unlock()
-			raise RuntimeError("No KGS instance found")
-		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
-		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
-		ret,self._portName = bmConnect(self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
-		if ret:
-			self.numCells = numCells
-			log.info("connected %s" % port)
+			if port != self._portName and self._portName:
+				execEndConnection = True
+				log.info("changing connection %s to %s" % (self._portName, port))
+			elif fConnection:
+				log.info("already connection %s" % port)
+				execEndConnection = False
+				self.numCells = numCells
+				unlock()
+				return
+			else:
+				log.info("first connection %s" % port)
+				execEndConnection = False
+				self.numCells = 0
+			kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
+			log.debug(kgs_dll)
+			if not self._directBM:
+				self._directBM = windll.LoadLibrary(kgs_dll)
+				if not self._directBM:
+					unlock()
+					raise RuntimeError("No KGS instance found")
+				self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
+				self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
+			ret, self._portName = bmConnect(self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
+			if ret:
+				self.numCells = numCells
+				log.info("connected %s" % port)
+				return
 		else:
 			self.numCells = 0
 			log.info("failed %s" % port)
 			unlock()
 			raise RuntimeError("No KGS display found")
-		unlock()
 
 	def terminate(self):
 		if not lock():
