@@ -350,6 +350,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			if ret:
 				self.numCells = numCells
 				log.info("connected %s" % port)
+				unlock()
 				return
 			else:
 				self.numCells = 0
