@@ -325,22 +325,21 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		if not lock():
 			return
 		for portType, portId, port, portInfo in self._getTryPorts(port):
+			execEndConnection = False
 			if port != self._portName and self._portName:
 				execEndConnection = True
 				log.info("changing connection %s to %s" % (self._portName, port))
 			elif fConnection:
 				log.info("already connection %s" % port)
-				execEndConnection = False
 				self.numCells = numCells
 				unlock()
 				return
 			else:
 				log.info("first connection %s" % port)
-				execEndConnection = False
 				self.numCells = 0
-			kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
-			log.debug(kgs_dll)
 			if not self._directBM:
+				kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
+				log.debug(kgs_dll)
 				self._directBM = windll.LoadLibrary(kgs_dll)
 				if not self._directBM:
 					unlock()
@@ -352,9 +351,10 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 				self.numCells = numCells
 				log.info("connected %s" % port)
 				return
+			else:
+				self.numCells = 0
+				log.info("failed %s" % port)
 		else:
-			self.numCells = 0
-			log.info("failed %s" % port)
 			unlock()
 			raise RuntimeError("No KGS display found")
 
