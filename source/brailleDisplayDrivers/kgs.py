@@ -35,7 +35,7 @@ locked = False
 def lock():
 	global locked
 	if locked:
-		log.warning("kgs driver is locked")
+		log.debug("kgs driver is locked")
 		return False
 	locked = True
 	return True
@@ -69,35 +69,35 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	if nStatus == BMDRVS.DISCONNECTED:
 		fConnection = False
 		tones.beep(1000, 300)
-		log.info("disconnect")
+		log.debug("disconnect")
 	elif nStatus == BMDRVS.CONNECTED:
 		numCells = nDispSize
 		fConnection = True
 		tones.beep(1000, 30)
-		log.info("display size:%d" % nDispSize)
+		log.debug("display size:%d" % nDispSize)
 	elif nStatus == BMDRVS.DRIVER_CANNOT_OPEN:
 		fConnection = False
-		log.info("driver cannot open")
+		log.debug("driver cannot open")
 	elif nStatus == BMDRVS.INVALID_DRIVER:
 		fConnection = False
-		log.info("invalid driver")
+		log.debug("invalid driver")
 	elif nStatus == BMDRVS.OPEN_PORT_FAILED:
 		#fConnection = False
-		log.info("open port failed")
+		log.debug("open port failed")
 	elif nStatus == BMDRVS.CREATE_THREAD_FAILED:
 		fConnection = False
-		log.info("create thread failed")
+		log.debug("create thread failed")
 	elif nStatus == BMDRVS.CHECKING_EQUIPMENT:
-		log.info("checking equipment")
+		log.debug("checking equipment")
 	elif nStatus == BMDRVS.UNKNOWN_EQUIPMENT:
-		log.info("unknown equipment")
+		log.debug("unknown equipment")
 		isUnknownEquipment = True
 	elif nStatus == BMDRVS.PORT_RELEASED:
-		log.info("port released")
+		log.debug("port released")
 	elif nStatus == BMDRVS.MAX:
-		log.info("max")
+		log.debug("max")
 	else:
-		log.info("status changed to %d" % nStatus)
+		log.debug("status changed to %d" % nStatus)
 
 KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))
 
@@ -228,10 +228,10 @@ def kgsListComPorts(preferSerial=False):
 	for p in hwPortUtils.listComPorts(onlyAvailable=True):
 		if 'hardwareID' in p and p['hardwareID'].upper().startswith('BTHENUM'):
 			if p['hardwareID'].upper().startswith('BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG'):
-				log.info("skipping %s" % p['hardwareID'])
+				log.debug("skipping %s" % p['hardwareID'])
 				continue
 			else:
-				log.info("appending non-kgs device: %s" % p['hardwareID'])
+				log.debug("appending non-kgs device: %s" % p['hardwareID'])
 				p["friendlyName"] = "Bluetooth: {portName}".format(portName=p["friendlyName"])
 				ports.append(p)
 		elif p['port'] not in btPorts and p['port'] not in usbPorts:
@@ -241,12 +241,12 @@ def kgsListComPorts(preferSerial=False):
 			else:
 				ports.append(p)
 
-	log.info(str(ports))
+	log.debug(str(ports))
 	return ports
 
 def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	global fConnection, isUnknownEquipment
-	log.info("scanning port %s" % port)
+	log.debug("scanning port %s" % port)
 	if port[:3] == 'COM':
 		_port = int(port[3:])-1
 	else:
@@ -255,43 +255,30 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	fConnection = False
 	isUnknownEquipment = False
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
-	log.info("bmStart(%s) returns %d" % (port, ret))
+	log.debug("bmStart(%s) returns %d" % (port, ret))
 	if ret:
 		for loop in range(15):
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
-				log.info("bmStartDisplayMode2() returns %d" % ret)
+				log.debug("bmStartDisplayMode2() returns %d" % ret)
 				break
 			elif isUnknownEquipment:
-				log.info("isUnknownEquipment")
+				log.debug("isUnknownEquipment")
 				break
 			time.sleep(0.5)
 			tones.beep(400+(loop*20), 20)
 			processEvents()
+		else:
+			tones.beep(200, 100)
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
-		tones.beep(200, 100)
-	log.info("connection:%d port:%d" % (fConnection, _port))
+	log.debug("connection:%d port:%d" % (fConnection, _port))
 	return fConnection, port
-
-def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
-	Port = _port = None
-	ret = False
-	for portInfo in kgsListComPorts():
-		_port = portInfo["port"]
-		hwID = portInfo["hardwareID"]
-		frName = portInfo.get("friendlyName")
-		btName = portInfo.get("bluetoothName")
-		log.info("set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
-		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
-		if ret:
-			break
-	return ret, Port
 
 def getKbdcName(hBrl):
 	if not hBrl.IsKbdcInstalled(b"Active KBDC"):
-		log.warning("active kbdc not found")
+		log.debug("active kbdc not found")
 	return b"Active BM"
 
 def processEvents():
@@ -312,18 +299,15 @@ def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection
 		bmDisConnect(hBrl, port)
 		waitAfterDisconnect()
 	devName = getKbdcName(hBrl)
-	if port is None or port=="auto":
-		ret, pName = _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
-	else:
-		ret, pName = _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
+	ret, pName = _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
 	return ret, pName
 
 def bmDisConnect(hBrl, port):
 	global fConnection, numCells
 	ret = hBrl.bmEndDisplayMode()
-	log.info("BmEndDisplayMode %s %d" % (port, ret))
+	log.debug("BmEndDisplayMode %s %d" % (port, ret))
 	ret = hBrl.bmEnd()
-	log.info("BmEnd %s %d" % (port, ret))
+	log.debug("BmEnd %s %d" % (port, ret))
 	numCells = 0
 	fConnection = False
 	return ret
@@ -342,38 +326,39 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		if not lock():
 			return
 		for portType, portId, port, portInfo in self._getTryPorts(port):
-			break
-		if port != self._portName and self._portName:
-			execEndConnection = True
-			log.info("changing connection %s to %s" % (self._portName, port))
-		elif fConnection:
-			log.info("already connection %s" % port)
 			execEndConnection = False
-			self.numCells = numCells
-			unlock()
-			return
+			if port != self._portName and self._portName:
+				execEndConnection = True
+				log.debug("changing connection %s to %s" % (self._portName, port))
+			elif fConnection:
+				log.debug("already connection %s" % port)
+				self.numCells = numCells
+				unlock()
+				return
+			else:
+				log.debug("first connection %s" % port)
+				self.numCells = 0
+			if not self._directBM:
+				kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
+				log.debug(kgs_dll)
+				self._directBM = windll.LoadLibrary(kgs_dll)
+				if not self._directBM:
+					unlock()
+					raise RuntimeError("No KGS instance found")
+				self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
+				self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
+			ret, self._portName = bmConnect(self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
+			if ret:
+				self.numCells = numCells
+				log.info("connected %s" % port)
+				unlock()
+				return
+			else:
+				self.numCells = 0
+				log.info("failed %s" % port)
 		else:
-			log.info("first connection %s" % port)
-			execEndConnection = False
-			self.numCells = 0
-		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
-		log.debug(kgs_dll)
-		self._directBM = windll.LoadLibrary(kgs_dll)
-		if not self._directBM:
-			unlock()
-			raise RuntimeError("No KGS instance found")
-		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
-		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
-		ret,self._portName = bmConnect(self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
-		if ret:
-			self.numCells = numCells
-			log.info("connected %s" % port)
-		else:
-			self.numCells = 0
-			log.info("failed %s" % port)
 			unlock()
 			raise RuntimeError("No KGS display found")
-		unlock()
 
 	def terminate(self):
 		if not lock():
@@ -401,9 +386,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		ar = [cls.AUTOMATIC_PORT]
 		ports = {}
 		for p in kgsListComPorts():
-			log.info(p)
+			log.debug(p)
 			ports[p["port"]] = p["friendlyName"]
-		log.info(ports)
+		log.debug(ports)
 		for i in range(64):
 			p = "COM%d" % (i + 1)
 			if p in ports:
