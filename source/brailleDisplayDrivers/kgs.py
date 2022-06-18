@@ -35,7 +35,7 @@ locked = False
 def lock():
 	global locked
 	if locked:
-		log.warning("kgs driver is locked")
+		log.debug("kgs driver is locked")
 		return False
 	locked = True
 	return True
@@ -278,7 +278,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 
 def getKbdcName(hBrl):
 	if not hBrl.IsKbdcInstalled(b"Active KBDC"):
-		log.warning("active kbdc not found")
+		log.debug("active kbdc not found")
 	return b"Active BM"
 
 def processEvents():
