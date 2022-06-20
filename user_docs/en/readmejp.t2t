@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2021-07-15
+- last update: 2022-06-20
 - updated by: NVDA Japanese Team (nvdajp@nvda.jp Takuya Nishimoto)
 
 
@@ -436,12 +436,16 @@ The driver for braille display "KGS BrailleMemo series" from [KGS Corporation ht
 
 Both automatic and manual port setting can be used. It also works with Bluetooth.
 
-The BM Utility is used if it is installed to the computer. This driver is tested with BM Utility Version 6.2.2.
+The BM Utility is used if it is installed to the computer. This driver is tested with BM Utility Version 6.4.0.
 
 For USB connection, virtual serial driver must also be installed.
 The device should be configured to use 9600BPS connection speed for virtual serial driver.
 
 This driver allows you to choose connection port from the available serial ports and the detected BM series devices via USB or Bluetooth connection.
+
+If NVDA's braille display driver is set to "automatic", NVDA may repeat the automatic detection of the braille display of KGS Corporation.
+This is especially likely in situations where you've plugged in a braille display of KGS Corporation, but it's not currently plugged in, especially with the Bluetooth connections.
+To work around this issue, set NVDA to "No Braille" or disable Bluetooth in the Windows settings.
 
 KGS Braille Memo driver supports following commands:
 
