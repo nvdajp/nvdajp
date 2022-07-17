@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2022年6月20日
+- 最終更新日：2022年7月17日
 - 更新者：NVDA日本語チーム (nvdajp@nvda.jp 西本卓也)
 
 
@@ -25,7 +25,7 @@ NVDA日本語版は無保証です。ご自身の責任でご利用ください�
 ++ Webサイト ++
 
 - [NVDA日本語版のWebサイト www.nvda.jp https://www.nvda.jp]
-- [NVDA日本語版ガイドブック https://nishimotz.github.io/nvdajp-book/]
+- [NVDA日本語版ガイドブック https://nvdajp-book.readthedocs.io/ja/latest/]
 -
 
 
@@ -792,9 +792,9 @@ UTF-8 エンコーディングのテキストファイル、以下のフォー�
 
 + 既知の問題 +
 
-++ Firefox ESR ++
 
-Firefox 57 以降で NVDA との互換性の問題が発生しました。現在は Firefox ESR バージョン 60 で不具合が残っています。ESR ではない通常版 Firefox のバージョン 61 以降をご利用ください。
+
+
 
 
 
@@ -891,6 +891,14 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 + バージョンごとの変更点 +
+
+++ 2022.2jp の変更点 ++
+
+- 点字ディスプレイ自動検出の不具合を修正しました。
+- アクセント付きアルファベット u+00EA の読みを修正しました。
+- [2022.2jp の変更点 https://github.com/nvdajp/nvdajp/milestone/45?closed=1]
+- [本家版 2022.2 の翻訳 https://github.com/nvdajp/nvdajp/issues/333]
+
 
 ++ 2022.1jp の変更点 ++
 
