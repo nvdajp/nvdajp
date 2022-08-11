@@ -80,6 +80,10 @@ build_script:
  - jptools\tests.cmd
 
 before_test:
+ - ps: Set-WinSystemLocale en-US
+ - ps: Start-Sleep -s 10
+ - ps: Restart-Computer
+ - ps: Start-Sleep -s 10
  - ps: appveyor\scripts\tests\beforeTests.ps1
  - ps: appveyor\scripts\installNVDA.ps1
 
