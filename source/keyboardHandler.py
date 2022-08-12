@@ -103,7 +103,7 @@ def isNVDAModifierKey(vkCode,extended):
 	else:
 		return False
 
-SUPPORTED_NVDA_MODIFIER_KEYS = ("capslock", "numpadinsert", "insert")
+SUPPORTED_NVDA_MODIFIER_KEYS = ("capslock", "numpadinsert", "insert", "imeconvert", "imenonconvert", "escape")
 
 def getNVDAModifierKeys():
 	keys=[]

@@ -970,24 +970,12 @@ class LanguageRestartDialog(
 		config.conf.save()
 		queueHandler.queueFunction(queueHandler.eventQueue,core.restart)
 
-class LanguageSettingsDialog(SettingsDialog):
+class LanguageSettingsPanel(SettingsPanel):
 	# Translators: This is the label for the language settings dialog.
 	title = _("Language Settings")
 
 	def makeSettings(self, settingsSizer):
 		settingsSizerHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
-		# Translators: The label of a checkbox in language settings
-		self.nconvAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use NonConvert as an NVDA modifier key")))
-		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
-
-		# Translators: The label of a checkbox in language settings
-		self.convAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use Convert as an NVDA modifier key")))
-		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
-
-		# Translators: The label of a checkbox in language settings
-		self.escAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use Escape as an NVDA modifier key")))
-		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
-
 		# Translators: The label of a checkbox in language settings
 		self.nvdajpImeBeepCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Beep for IME mode change")))
 		self.nvdajpImeBeepCheckBox.SetValue(config.conf["keyboard"]["nvdajpImeBeep"])
@@ -1040,13 +1028,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.alwaysSpeakMathInEnglishCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Always speak math in English")))
 		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
 
-	def postInit(self):
-		self.nconvAsNVDAModifierCheckBox.SetFocus()
-
-	def onOk(self,evt):
-		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"]=self.nconvAsNVDAModifierCheckBox.IsChecked()
-		config.conf["keyboard"]["useConvertAsNVDAModifierKey"]=self.convAsNVDAModifierCheckBox.IsChecked()
-		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"]=self.escAsNVDAModifierCheckBox.IsChecked()
+	def onSave(self):
 		config.conf["language"]["jpPhoneticReadingKana"]=self.jpPhoneticReadingKanaCheckBox.IsChecked()
 		config.conf["language"]["jpPhoneticReadingLatin"]=self.jpPhoneticReadingLatinCheckBox.IsChecked()
 		config.conf["keyboard"]["nvdajpEnableKeyEvents"]=self.nvdajpEnableKeyEventsCheckBox.IsChecked()
@@ -1059,8 +1041,6 @@ class LanguageSettingsDialog(SettingsDialog):
 
 		config.conf["language"]["jpKatakanaPitchChange"]=self.jpKatakanaPitchChangeEdit.Value
 		config.conf["language"]["halfShapePitchChange"]=self.halfShapePitchChangeEdit.Value
-
-		super(LanguageSettingsDialog, self).onOk(evt)
 
 class SpeechSettingsPanel(SettingsPanel):
 	# Translators: This is the label for the speech panel
@@ -1778,6 +1758,16 @@ class KeyboardSettingsPanel(SettingsPanel):
 			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("insert"))
 		if config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"]:
 			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("capslock"))
+
+		#nvdajp begin
+		if config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"]:
+			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("imenonconvert"))
+		if config.conf["keyboard"]["useConvertAsNVDAModifierKey"]:
+			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("imeconvert"))
+		if config.conf["keyboard"]["useEscapeAsNVDAModifierKey"]:
+			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("escape"))
+		#nvdajp end
+
 		self.modifierList.CheckedItems = checkedItems
 		self.modifierList.Select(0)
 
@@ -1869,6 +1859,13 @@ class KeyboardSettingsPanel(SettingsPanel):
 		config.conf["keyboard"]["useNumpadInsertAsNVDAModifierKey"]= self.modifierList.IsChecked(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("numpadinsert"))
 		config.conf["keyboard"]["useExtendedInsertAsNVDAModifierKey"] = self.modifierList.IsChecked(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("insert"))
 		config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"] = self.modifierList.IsChecked(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("capslock"))
+
+		#nvdajp begin
+		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = self.modifierList.IsChecked(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("imenonconvert"))
+		config.conf["keyboard"]["useConvertAsNVDAModifierKey"] = self.modifierList.IsChecked(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("imeconvert"))
+		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] = self.modifierList.IsChecked(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("escape"))
+#nvdajp end
+
 		config.conf["keyboard"]["speakTypedCharacters"]=self.charsCheckBox.IsChecked()
 		config.conf["keyboard"]["speakTypedWords"]=self.wordsCheckBox.IsChecked()
 		config.conf["keyboard"]["speechInterruptForCharacters"]=self.speechInterruptForCharsCheckBox.IsChecked()
@@ -4162,6 +4159,7 @@ class NVDASettingsDialog(MultiCategorySettingsDialog):
 	title = _("NVDA Settings")
 	categoryClasses=[
 		GeneralSettingsPanel,
+		LanguageSettingsPanel,
 		SpeechSettingsPanel,
 		BrailleSettingsPanel,
 		VisionSettingsPanel,
