@@ -21,7 +21,6 @@ default teardown
 	Run Keyword If Test Failed	Take Screenshot	${screenShotName}
 	dump_speech_to_log
 	dump_braille_to_log
-	exit chrome
 	quit NVDA
 
 default setup
@@ -108,6 +107,7 @@ ARIA roleDescription block content editable
 	test_ariaRoleDescription_block_contentEditable
 ARIA description Focus Mode
 	[Documentation]	Navigate to a span with aria-description in focus mode
+	[Tags]	excluded_from_build
 	test_ariaDescription_focusMode
 ARIA description Browse Mode
 	[Documentation]	Navigate (down arrow, in browse mode) aria-description is read, other sources of description are not.
@@ -139,3 +139,7 @@ Table navigation with merged columns
 focus mode is turned on on focused read-only list item
 	[Documentation]	Focused list items with a focusable list container should cause focus mode to be turned on automatically.
 	test_focus_mode_on_focusable_read_only_lists
+ARIA details role
+	[Documentation]	Test aria details roles being announced on discovery
+	[Tags]	excluded_from_build
+	test_mark_aria_details_role

@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2021 NV Access Limited
+# Copyright (C) 2021-2022 NV Access Limited
 # This file may be used under the terms of the GNU General Public License, version 2 or later.
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 *** Settings ***
@@ -44,6 +44,11 @@ moveByCharacter
 	[Documentation]	Ensure symbols announced as expected when navigating by character (numpad 3).
 	[Tags]	excluded_from_build
 	test_moveByChar
+
+delayedCharacterDescriptions
+	[Documentation]	Ensure delayed character descriptions are announced as expected when navigating by character.
+	[Tags]	excluded_from_build
+	test_delayedDescriptions
 
 selectionByWord
 	[Documentation]	Ensure symbols announced as expected when selecting by word (shift+control+right arrow).

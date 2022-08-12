@@ -28,7 +28,7 @@ init:
 
 install:
  - set RELEASE=1
- - set VERSION=2022.2jp
+ - set VERSION=2022.3jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
@@ -80,6 +80,10 @@ build_script:
  - jptools\tests.cmd
 
 before_test:
+ - ps: Set-WinSystemLocale en-US
+ - ps: Start-Sleep -s 10
+ - ps: Restart-Computer
+ - ps: Start-Sleep -s 10
  - ps: appveyor\scripts\tests\beforeTests.ps1
  - ps: appveyor\scripts\installNVDA.ps1
 
