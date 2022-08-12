@@ -47,6 +47,7 @@ moveByCharacter
 
 delayedCharacterDescriptions
 	[Documentation]	Ensure delayed character descriptions are announced as expected when navigating by character.
+	[Tags]	excluded_from_build
 	test_delayedDescriptions
 
 selectionByWord

@@ -141,4 +141,5 @@ focus mode is turned on on focused read-only list item
 	test_focus_mode_on_focusable_read_only_lists
 ARIA details role
 	[Documentation]	Test aria details roles being announced on discovery
+	[Tags]	excluded_from_build
 	test_mark_aria_details_role

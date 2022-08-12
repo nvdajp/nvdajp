@@ -5,7 +5,6 @@
 import appModuleHandler
 import api
 import ui
-import controlTypes
 from NVDAObjects.IAccessible import IAccessible
 
 class AppModule(appModuleHandler.AppModule):
