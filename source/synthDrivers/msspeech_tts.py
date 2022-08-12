@@ -12,7 +12,7 @@ from logHandler import log
 
 from .jtalk import _nvdajp_spellchar
 from .mssp import SynthDriver
-from .sapi5 import constants
+from .sapi5 import SpeechVoiceSpeakFlags
 
 
 class SynthDriver(SynthDriver):
@@ -57,5 +57,5 @@ class SynthDriver(SynthDriver):
 		#Pitch must always be hardcoded
 		pitch=(self._pitch/2)-25
 		text="<pitch absmiddle=\"%s\">%s</pitch>"%(pitch,text)
-		flags=constants.SVSFIsXML|constants.SVSFlagsAsync
+		flags=SpeechVoiceSpeakFlags.IsXML|SpeechVoiceSpeakFlags.Async
 		self.tts.Speak(text,flags)
