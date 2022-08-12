@@ -977,6 +977,18 @@ class LanguageSettingsPanel(SettingsPanel):
 	def makeSettings(self, settingsSizer):
 		settingsSizerHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
 		# Translators: The label of a checkbox in language settings
+		self.nconvAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use NonConvert as an NVDA modifier key")))
+		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
+
+		# Translators: The label of a checkbox in language settings
+		self.convAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use Convert as an NVDA modifier key")))
+		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
+
+		# Translators: The label of a checkbox in language settings
+		self.escAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use Escape as an NVDA modifier key")))
+		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
+
+		# Translators: The label of a checkbox in language settings
 		self.nvdajpImeBeepCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Beep for IME mode change")))
 		self.nvdajpImeBeepCheckBox.SetValue(config.conf["keyboard"]["nvdajpImeBeep"])
 
@@ -1029,6 +1041,9 @@ class LanguageSettingsPanel(SettingsPanel):
 		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
 
 	def onSave(self):
+		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"]=self.nconvAsNVDAModifierCheckBox.IsChecked()
+		config.conf["keyboard"]["useConvertAsNVDAModifierKey"]=self.convAsNVDAModifierCheckBox.IsChecked()
+		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"]=self.escAsNVDAModifierCheckBox.IsChecked()
 		config.conf["language"]["jpPhoneticReadingKana"]=self.jpPhoneticReadingKanaCheckBox.IsChecked()
 		config.conf["language"]["jpPhoneticReadingLatin"]=self.jpPhoneticReadingLatinCheckBox.IsChecked()
 		config.conf["keyboard"]["nvdajpEnableKeyEvents"]=self.nvdajpEnableKeyEventsCheckBox.IsChecked()
