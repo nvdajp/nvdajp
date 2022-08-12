@@ -1758,16 +1758,6 @@ class KeyboardSettingsPanel(SettingsPanel):
 			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("insert"))
 		if config.conf["keyboard"]["useCapsLockAsNVDAModifierKey"]:
 			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("capslock"))
-
-		#nvdajp begin
-		if config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"]:
-			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("imenonconvert"))
-		if config.conf["keyboard"]["useConvertAsNVDAModifierKey"]:
-			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("imeconvert"))
-		if config.conf["keyboard"]["useEscapeAsNVDAModifierKey"]:
-			checkedItems.append(keyboardHandler.SUPPORTED_NVDA_MODIFIER_KEYS.index("escape"))
-		#nvdajp end
-
 		self.modifierList.CheckedItems = checkedItems
 		self.modifierList.Select(0)
 
