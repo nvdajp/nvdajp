@@ -970,7 +970,7 @@ class LanguageRestartDialog(
 		config.conf.save()
 		queueHandler.queueFunction(queueHandler.eventQueue,core.restart)
 
-class LanguageSettingsDialog(SettingsDialog):
+class LanguageSettingsPanel(SettingsPanel):
 	# Translators: This is the label for the language settings dialog.
 	title = _("Language Settings")
 
@@ -1040,10 +1040,7 @@ class LanguageSettingsDialog(SettingsDialog):
 		self.alwaysSpeakMathInEnglishCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Always speak math in English")))
 		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
 
-	def postInit(self):
-		self.nconvAsNVDAModifierCheckBox.SetFocus()
-
-	def onOk(self,evt):
+	def onSave(self):
 		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"]=self.nconvAsNVDAModifierCheckBox.IsChecked()
 		config.conf["keyboard"]["useConvertAsNVDAModifierKey"]=self.convAsNVDAModifierCheckBox.IsChecked()
 		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"]=self.escAsNVDAModifierCheckBox.IsChecked()
@@ -1059,8 +1056,6 @@ class LanguageSettingsDialog(SettingsDialog):
 
 		config.conf["language"]["jpKatakanaPitchChange"]=self.jpKatakanaPitchChangeEdit.Value
 		config.conf["language"]["halfShapePitchChange"]=self.halfShapePitchChangeEdit.Value
-
-		super(LanguageSettingsDialog, self).onOk(evt)
 
 class SpeechSettingsPanel(SettingsPanel):
 	# Translators: This is the label for the speech panel
@@ -4162,6 +4157,7 @@ class NVDASettingsDialog(MultiCategorySettingsDialog):
 	title = _("NVDA Settings")
 	categoryClasses=[
 		GeneralSettingsPanel,
+		LanguageSettingsPanel,
 		SpeechSettingsPanel,
 		BrailleSettingsPanel,
 		VisionSettingsPanel,

@@ -242,7 +242,7 @@ class MainFrame(wx.Frame):
 
 	#nvdajp
 	def onLanguageSettingsCommand(self,evt):
-		self._popupSettingsDialog(LanguageSettingsDialog)
+		self._popupSettingsDialog(NVDASettingsDialog, LanguageSettingsPanel)
 
 	def onSelectSynthesizerCommand(self,evt):
 		self._popupSettingsDialog(SynthesizerSelectionDialog)
@@ -438,16 +438,6 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			# Translators: The description for the menu item to open NVDA Settings dialog.
 			_("NVDA settings"))
 		self.Bind(wx.EVT_MENU, frame.onNVDASettingsCommand, item)
-		#nvdajp begin
-		item = menu_preferences.Append(
-			wx.ID_ANY,
-			# Translators: The label for the menu item to open Language Settings dialog.
-			_("Language settings..."),
-			# Translators: The label for the menu item to open Language Settings dialog.
-			_("Configure language dependent options")
-		)
-		self.Bind(wx.EVT_MENU, frame.onLanguageSettingsCommand, item)
-		#nvdajp end
 		if not globalVars.appArgs.secure:
 			# Translators: The label for a submenu under NvDA Preferences menu to select speech dictionaries.
 			menu_preferences.AppendSubMenu(self._createSpeechDictsSubMenu(frame), _("Speech &dictionaries"))
