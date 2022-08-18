@@ -3020,6 +3020,7 @@ class AdvancedPanelControls(
 			"synthDriver",
 			"nvwave",
 			"annotations",
+			"events",
 		]
 		# Translators: This is the label for a list in the
 		#  Advanced settings panel
