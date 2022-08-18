@@ -7,6 +7,7 @@
 """General functions for NVDA
 Functions should mostly refer to getting an object (NVDAObject) or a position (TextInfo).
 """
+
 import typing
 
 import config
@@ -27,6 +28,7 @@ import exceptions
 import appModuleHandler
 import cursorManager
 from typing import Any, Optional
+from utils.security import _isSecureObjectWhileLockScreenActivated
 
 if typing.TYPE_CHECKING:
 	import documentBase
@@ -127,7 +129,8 @@ def setForegroundObject(obj: NVDAObjects.NVDAObject) -> bool:
 		- setLastForegroundEventObject
 	@param obj: the object that will be stored as the current foreground object
 	"""
-	if not isinstance(obj,NVDAObjects.NVDAObject):
+	if not isinstance(obj, NVDAObjects.NVDAObject):
+		log.error("Object is not a valid NVDAObject")
 		return False
 	if _isSecureObjectWhileLockScreenActivated(obj):
 		return False
@@ -146,7 +149,8 @@ def setFocusObject(obj: NVDAObjects.NVDAObject) -> bool:  # noqa: C901
 	this function calls event_loseFocus on the object to notify it that it is losing focus.
 	@param obj: the object that will be stored as the focus object
 	"""
-	if not isinstance(obj,NVDAObjects.NVDAObject):
+	if not isinstance(obj, NVDAObjects.NVDAObject):
+		log.error("Object is not a valid NVDAObject")
 		return False
 	if _isSecureObjectWhileLockScreenActivated(obj):
 		return False
@@ -261,11 +265,15 @@ def getMouseObject():
 	return globalVars.mouseObject
 
 
-def setMouseObject(obj: NVDAObjects.NVDAObject) -> None:
+def setMouseObject(obj: NVDAObjects.NVDAObject) -> bool:
 	"""Tells NVDA to remember the given object as the object that is directly under the mouse"""
+	if not isinstance(obj, NVDAObjects.NVDAObject):
+		log.error("Object is not a valid NVDAObject")
+		return False
 	if _isSecureObjectWhileLockScreenActivated(obj):
-		return
+		return False
 	globalVars.mouseObject=obj
+	return True
 
 
 def getDesktopObject() -> NVDAObjects.NVDAObject:
@@ -344,7 +352,7 @@ def getNavigatorObject() -> NVDAObjects.NVDAObject:
 	return globalVars.navigatorObject
 
 
-def setNavigatorObject(obj: NVDAObjects.NVDAObject, isFocus: bool = False) -> Optional[bool]:
+def setNavigatorObject(obj: NVDAObjects.NVDAObject, isFocus: bool = False) -> bool:
 	"""Sets an object to be the current navigator object.
 	Navigator objects can be used to navigate around the operating system (with the numpad),
 	without moving the focus.
@@ -355,6 +363,7 @@ def setNavigatorObject(obj: NVDAObjects.NVDAObject, isFocus: bool = False) -> Op
 	"""
 
 	if not isinstance(obj, NVDAObjects.NVDAObject):
+		log.error("Object is not a valid NVDAObject")
 		return False
 	if _isSecureObjectWhileLockScreenActivated(obj):
 		return False
@@ -372,6 +381,7 @@ def setNavigatorObject(obj: NVDAObjects.NVDAObject, isFocus: bool = False) -> Op
 			globalVars.reviewPosition=obj.treeInterceptor.makeTextInfo(textInfos.POSITION_CARET)
 			globalVars.reviewPositionObj=globalVars.reviewPosition
 	eventHandler.executeEvent("becomeNavigatorObject",obj,isFocus=isFocus)
+	return True
 
 def isTypingProtected():
 	"""Checks to see if key echo should be suppressed because the focus is currently on an object that has its protected state set.
