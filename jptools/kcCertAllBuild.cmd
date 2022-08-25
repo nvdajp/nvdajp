@@ -1,7 +1,7 @@
 set SCONSOPTIONS=%*
 
-set PFX=jptools\secret\knowlec-key211018.pfx
-set PWFILE=jptools\secret\knowlec-key-pass-2021.txt
+set PFX=jptools\secret\shuaruta-key220824.pfx
+set PWFILE=jptools\secret\shuaruta-key-pass-2022.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
 del /Q %PWFILE%
 set TIMESERVER=http://timestamp.comodoca.com/rfc3161
