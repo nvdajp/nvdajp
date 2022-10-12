@@ -28,7 +28,7 @@ import exceptions
 import appModuleHandler
 import cursorManager
 from typing import Any, Optional
-from utils.security import _isSecureObjectWhileLockScreenActivated
+from utils.security import objectBelowLockScreenAndWindowsIsLocked
 
 if typing.TYPE_CHECKING:
 	import documentBase
@@ -66,7 +66,7 @@ def setForegroundObject(obj: NVDAObjects.NVDAObject) -> bool:
 	if not isinstance(obj, NVDAObjects.NVDAObject):
 		log.error("Object is not a valid NVDAObject")
 		return False
-	if _isSecureObjectWhileLockScreenActivated(obj):
+	if objectBelowLockScreenAndWindowsIsLocked(obj):
 		return False
 	globalVars.foregroundObject=obj
 	return True
@@ -86,7 +86,7 @@ def setFocusObject(obj: NVDAObjects.NVDAObject) -> bool:  # noqa: C901
 	if not isinstance(obj, NVDAObjects.NVDAObject):
 		log.error("Object is not a valid NVDAObject")
 		return False
-	if _isSecureObjectWhileLockScreenActivated(obj):
+	if objectBelowLockScreenAndWindowsIsLocked(obj):
 		return False
 	if globalVars.focusObject:
 		eventHandler.executeEvent("loseFocus",globalVars.focusObject)
@@ -185,6 +185,9 @@ def setFocusObject(obj: NVDAObjects.NVDAObject) -> bool:  # noqa: C901
 	braille.invalidateCachedFocusAncestors(focusDifferenceLevel)
 	if config.conf["reviewCursor"]["followFocus"]:
 		setNavigatorObject(obj,isFocus=True)
+	# Fire focusExited event for all old focus ancestors not common with the new focus
+	for oldFocusAncestor in reversed(oldFocusLine[focusDifferenceLevel:-1]):
+		eventHandler.executeEvent("focusExited", oldFocusAncestor)
 	return True
 
 def getFocusDifferenceLevel():
@@ -204,7 +207,7 @@ def setMouseObject(obj: NVDAObjects.NVDAObject) -> bool:
 	if not isinstance(obj, NVDAObjects.NVDAObject):
 		log.error("Object is not a valid NVDAObject")
 		return False
-	if _isSecureObjectWhileLockScreenActivated(obj):
+	if objectBelowLockScreenAndWindowsIsLocked(obj):
 		return False
 	globalVars.mouseObject=obj
 	return True
@@ -217,7 +220,7 @@ def getDesktopObject() -> NVDAObjects.NVDAObject:
 
 def setDesktopObject(obj: NVDAObjects.NVDAObject) -> None:
 	"""Tells NVDA to remember the given object as the desktop object.
-	We cannot prevent setting this when _isSecureObjectWhileLockScreenActivated is True,
+	We cannot prevent setting this when objectBelowLockScreenAndWindowsIsLocked is True,
 	as NVDA needs to set the desktopObject on start, and NVDA may start from the lockscreen.
 	"""
 	globalVars.desktopObject=obj
@@ -247,7 +250,7 @@ def setReviewPosition(
 	@param isCaret: Whether the review position is changed due to caret following.
 	@param isMouse: Whether the review position is changed due to mouse following.
 	"""
-	if _isSecureObjectWhileLockScreenActivated(reviewPosition.obj):
+	if objectBelowLockScreenAndWindowsIsLocked(reviewPosition.obj):
 		return False
 	globalVars.reviewPosition=reviewPosition.copy()
 	globalVars.reviewPositionObj=reviewPosition.obj
@@ -283,7 +286,7 @@ def getNavigatorObject() -> NVDAObjects.NVDAObject:
 		except (NotImplementedError, LookupError):
 			obj = globalVars.reviewPosition.obj
 	nextObj = getattr(obj, 'rootNVDAObject', None) or obj
-	if _isSecureObjectWhileLockScreenActivated(nextObj):
+	if objectBelowLockScreenAndWindowsIsLocked(nextObj):
 		return globalVars.navigatorObject
 	globalVars.navigatorObject = nextObj
 	return globalVars.navigatorObject
@@ -302,7 +305,7 @@ def setNavigatorObject(obj: NVDAObjects.NVDAObject, isFocus: bool = False) -> bo
 	if not isinstance(obj, NVDAObjects.NVDAObject):
 		log.error("Object is not a valid NVDAObject")
 		return False
-	if _isSecureObjectWhileLockScreenActivated(obj):
+	if objectBelowLockScreenAndWindowsIsLocked(obj):
 		return False
 	globalVars.navigatorObject=obj
 	globalVars.reviewPosition=None
