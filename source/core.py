@@ -585,35 +585,16 @@ def main():
 			self.handlePowerStatusChange()
 
 			# Call must be paired with a call to sessionTracking.unregister
-			self._isSessionTrackingRegistered = sessionTracking.register(self.handle)
-
-		def warnIfSessionTrackingNotRegistered(self) -> None:
-			if self._isSessionTrackingRegistered:
-				return
-			failedToRegisterMsg = _(
-				# Translators: This is a warning to users, shown if NVDA cannot determine if
-				# Windows is locked.
-				"NVDA failed to register session tracking. "
-				"While this instance of NVDA is running, "
-				"your desktop will not be secure when Windows is locked. "
-				"Restart NVDA? "
-			)
-			if wx.YES == gui.messageBox(
-				failedToRegisterMsg,
-				# Translators: This is a warning to users, shown if NVDA cannot determine if
-				# Windows is locked.
-				caption=_("NVDA could not start securely."),
-				style=wx.ICON_ERROR | wx.YES_NO,
-			):
-				restart()
+			if not sessionTracking.register(self.handle):
+				import utils.security
+				wx.CallAfter(utils.security.warnSessionLockStateUnknown)
 
 		def destroy(self):
 			"""
 			NVDA must unregister session tracking before destroying the message window.
 			"""
-			if self._isSessionTrackingRegistered:
-				# Requires an active message window and a handle to unregister.
-				sessionTracking.unregister(self.handle)
+			# Requires an active message window and a handle to unregister.
+			sessionTracking.unregister(self.handle)
 			super().destroy()
 
 		def windowProc(self, hwnd, msg, wParam, lParam):
@@ -623,7 +604,6 @@ def main():
 			elif msg == winUser.WM_DISPLAYCHANGE:
 				self.handleScreenOrientationChange(lParam)
 			elif msg == WindowMessage.WTS_SESSION_CHANGE:
-				# If we are receiving WTS_SESSION_CHANGE events, _isSessionTrackingRegistered should be True
 				sessionTracking.handleSessionChange(sessionTracking.WindowsTrackedSession(wParam), lParam)
 
 		def handleScreenOrientationChange(self, lParam):
@@ -823,8 +803,6 @@ def main():
 	queueHandler.queueFunction(queueHandler.eventQueue, _doPostNvdaStartupAction)
 
 	log.debug("entering wx application main loop")
-	# Warn here as NVDA must be ready before providing a gui message
-	messageWindow.warnIfSessionTrackingNotRegistered()
 	app.MainLoop()
 
 	log.info("Exiting")
