@@ -409,7 +409,7 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
 	_createShortcutWithFallback(
 		path=os.path.join(startMenuFolder, jpWebSiteTranslated + ".lnk"),
 		fallbackPath=os.path.join(startMenuFolder, "NVDAJP web site.lnk"),
-		targetPath="http://www.nvda.jp/",
+		targetPath="https://www.nvda.jp/",
 		prependSpecialFolder="AllUsersPrograms"
 	)
 	# nvdajp end

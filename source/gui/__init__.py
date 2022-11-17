@@ -76,7 +76,7 @@ def openDocFile(basename):
 ### Constants
 NVDA_PATH = globalVars.appDir
 ICON_PATH=os.path.join(NVDA_PATH, "images", "nvdajp3.ico")
-DONATE_URL = "http://www.nvda.jp/donate.html"
+DONATE_URL = "https://www.nvda.jp/donate.html"
 
 ### Globals
 mainFrame = None
@@ -351,6 +351,7 @@ class MainFrame(wx.Frame):
 		NVDAObject.clearDynamicClassCache()
 
 	#nvdajp begin
+	@blockAction.when(blockAction.Context.SECURE_MODE)
 	def onToggleJpBrailleViewerCommand(self, evt):
 		if not jpBrailleViewer.isActive:
 			jpBrailleViewer.activate()
