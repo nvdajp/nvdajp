@@ -495,9 +495,10 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			item = menu_tools.Append(wx.ID_ANY, _("Reload plugins"))
 			self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
 		#nvdajp begin
-		# Translators: The label for the menu item to open braille viewer.
-		item = self.menu_tools_toggleJpBrailleViewer = menu_tools.AppendCheckItem(wx.ID_ANY, _("Japanese Braille viewer"))
-		self.Bind(wx.EVT_MENU, frame.onToggleJpBrailleViewerCommand, item)
+		if not globalVars.appArgs.secure:
+			# Translators: The label for the menu item to open jp braille viewer.
+			item = self.menu_tools_toggleJpBrailleViewer = menu_tools.AppendCheckItem(wx.ID_ANY, _("Japanese Braille viewer"))
+			self.Bind(wx.EVT_MENU, frame.onToggleJpBrailleViewerCommand, item)
 		#nvdajp end
 		# Translators: The label for the Tools submenu in NVDA menu.
 		self.menu.AppendSubMenu(menu_tools,_("Tools"))
@@ -505,6 +506,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		menu_help = self.helpMenu = wx.Menu()
 		#nvdajp begin
 		if not globalVars.appArgs.secure:
+			# Translators: The label for the menu item to open jp readme.
 			item = menu_help.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("readmejp"), item)
 		#nvdajp end
