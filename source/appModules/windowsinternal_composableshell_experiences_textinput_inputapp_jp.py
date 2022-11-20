@@ -21,6 +21,7 @@ import winVersion
 import controlTypes
 from NVDAObjects.UIA import UIA
 from NVDAObjects.behaviors import CandidateItem as CandidateItemBehavior, EditableTextWithAutoSelectDetection
+# import tones
 
 
 class ImeCandidateUI(UIA):
@@ -30,6 +31,7 @@ class ImeCandidateUI(UIA):
 	"""
 
 	def event_show(self):
+		# tones.beep(880, 20)
 		# The IME candidate UI is shown.
 		# Report the current candidates page and the currently selected item.
 		# Sometimes UIA does not fire an elementSelected event when it is first opened,
@@ -104,7 +106,7 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 				# speak the new page
 				ui.message(newText)
 		# Now just report the currently selected candidate item.
-		self.reportFocus()
+		# self.reportFocus()
 
 
 class AppModule(appModuleHandler.AppModule):
@@ -175,7 +177,7 @@ class AppModule(appModuleHandler.AppModule):
 		firstChild = obj.firstChild
 		# Handle Ime Candidate UI being shown
 		if isinstance(firstChild, ImeCandidateUI):
-			eventHandler.queueEvent("show", firstChild)
+			# eventHandler.queueEvent("show", firstChild)
 			return
 
 		# Make sure to announce most recently used emoji first in post-1709 builds.
@@ -296,28 +298,32 @@ class AppModule(appModuleHandler.AppModule):
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
 		if isinstance(obj, UIA):
-			if obj.role == controlTypes.Role.LISTITEM and (
-				(
-					obj.parent.UIAAutomationId in (
-						"ExpandedCandidateList",
-						"TEMPLATE_PART_AdaptiveSuggestionList",
-					)
-					and obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
-				)
-				or obj.parent.UIAAutomationId in ("IME_Candidate_Window", "IME_Prediction_Window")
+			# if obj.role == controlTypes.Role.LISTITEM and (
+			# 	(
+			# 		obj.parent.UIAAutomationId in (
+			# 			"ExpandedCandidateList",
+			# 			"TEMPLATE_PART_AdaptiveSuggestionList",
+			# 		)
+			# 		and obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
+			# 	)
+			# 	or obj.parent.UIAAutomationId in ("IME_Candidate_Window", "IME_Prediction_Window")
+			# ):
+			# 	clsList.insert(0, ImeCandidateItem)
+			# elif obj.role == controlTypes.Role.PANE and obj.UIAAutomationId in (
+			# 	"IME_Candidate_Window",
+			# 	"IME_Prediction_Window"
+			# ):
+			# 	clsList.insert(0, ImeCandidateUI)
+
+			if (obj.role == controlTypes.Role.LISTITEM and
+				obj.parent.UIAAutomationId == "TEMPLATE_PART_CandidatePanel" and
+				obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
 			):
 				clsList.insert(0, ImeCandidateItem)
-			elif obj.role == controlTypes.Role.PANE and obj.UIAAutomationId in (
-				"IME_Candidate_Window",
-				"IME_Prediction_Window"
-			):
-				clsList.insert(0, ImeCandidateUI)
+			# elif obj.role == controlTypes.Role.LIST and obj.UIAAutomationId == "TEMPLATE_PART_CandidatePanel":
+			# 	clsList.insert(0, ImeCandidateUI)
 			# #13104: newer revisions of Windows 11 build 22000 moves focus to emoji search field.
 			# However this means NVDA's own edit field scripts will override emoji panel commands.
 			# Therefore remove text field movement commands so emoji panel commands can be used directly.
 			elif obj.UIAAutomationId == "Windows.Shell.InputApp.FloatingSuggestionUI.DelegationTextBox":
 				clsList.remove(EditableTextWithAutoSelectDetection)
-
-
-if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-	from .windowsinternal_composableshell_experiences_textinput_inputapp_jp import AppModule
