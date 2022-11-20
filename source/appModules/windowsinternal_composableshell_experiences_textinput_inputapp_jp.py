@@ -21,7 +21,6 @@ import winVersion
 import controlTypes
 from NVDAObjects.UIA import UIA
 from NVDAObjects.behaviors import CandidateItem as CandidateItemBehavior, EditableTextWithAutoSelectDetection
-# import tones
 
 
 class ImeCandidateUI(UIA):
@@ -31,7 +30,6 @@ class ImeCandidateUI(UIA):
 	"""
 
 	def event_show(self):
-		# tones.beep(880, 20)
 		# The IME candidate UI is shown.
 		# Report the current candidates page and the currently selected item.
 		# Sometimes UIA does not fire an elementSelected event when it is first opened,
@@ -68,6 +66,8 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 
 	def _get_parent(self):
 		parent = super(ImeCandidateItem, self).parent
+		if parent.UIAAutomationId == "TEMPLATE_PART_CandidatePanel":
+			return None
 		# Translators: A label for a 'candidate' list
 		# which contains symbols the user can choose from  when typing east-asian characters into a document.
 		parent.name = _("Candidate")
@@ -105,8 +105,6 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 				self.appModule._lastImeCandidateVisibleText = newText
 				# speak the new page
 				ui.message(newText)
-		# Now just report the currently selected candidate item.
-		# self.reportFocus()
 
 
 class AppModule(appModuleHandler.AppModule):
@@ -298,30 +296,11 @@ class AppModule(appModuleHandler.AppModule):
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
 		if isinstance(obj, UIA):
-			# if obj.role == controlTypes.Role.LISTITEM and (
-			# 	(
-			# 		obj.parent.UIAAutomationId in (
-			# 			"ExpandedCandidateList",
-			# 			"TEMPLATE_PART_AdaptiveSuggestionList",
-			# 		)
-			# 		and obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
-			# 	)
-			# 	or obj.parent.UIAAutomationId in ("IME_Candidate_Window", "IME_Prediction_Window")
-			# ):
-			# 	clsList.insert(0, ImeCandidateItem)
-			# elif obj.role == controlTypes.Role.PANE and obj.UIAAutomationId in (
-			# 	"IME_Candidate_Window",
-			# 	"IME_Prediction_Window"
-			# ):
-			# 	clsList.insert(0, ImeCandidateUI)
-
 			if (obj.role == controlTypes.Role.LISTITEM and
 				obj.parent.UIAAutomationId == "TEMPLATE_PART_CandidatePanel" and
 				obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
 			):
 				clsList.insert(0, ImeCandidateItem)
-			# elif obj.role == controlTypes.Role.LIST and obj.UIAAutomationId == "TEMPLATE_PART_CandidatePanel":
-			# 	clsList.insert(0, ImeCandidateUI)
 			# #13104: newer revisions of Windows 11 build 22000 moves focus to emoji search field.
 			# However this means NVDA's own edit field scripts will override emoji panel commands.
 			# Therefore remove text field movement commands so emoji panel commands can be used directly.
