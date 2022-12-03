@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2022年12月2日
+- 最終更新日：2022年12月3日
 - 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 
@@ -25,6 +25,7 @@ NVDA日本語版は無保証です。ご自身の責任でご利用ください�
 ++ Webサイト ++
 
 - [NVDA日本語版のWebサイト www.nvda.jp https://www.nvda.jp]
+- [NVDA日本語チームの連絡先 https://www.nvda.jp/contact]
 - [NVDA日本語版ガイドブック https://nvdajp-book.readthedocs.io/ja/latest/]
 -
 
@@ -339,6 +340,13 @@ Code Factory が販売する Eloquence and Vocalizer Expressive Add-on for NVDA 
 ナレッジクリエーションが販売する KCトーカー は NVDA のアドオンで、聞き取りやすい日本語合成音声に加えて、専用のユーザー辞書エディタも提供しています。
 
 - [KCトーカー http://www.knowlec.com/?page_id=2700]
+
+
+++ High-speed Synthesizer For NVDA ++
+
+AccessibleToolsLaboratory (ACT Laboratory) が販売する High-speed Synthesizer For NVDA (HISS) は超高速読み上げに対応したNVDA用の日本語音声エンジンアドオンです。
+
+- [High-speed Synthesizer For NVDA https://actlab.org/software/HISS]
 
 
 + 点字ディスプレイ +
@@ -891,6 +899,13 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 + バージョンごとの変更点 +
+
+++ 2022.4jp の変更点 ++
+
+- 日本語入力において新しいバージョンの Microsoft IME への対応を改善しました。
+- [2022.4jp の変更点 https://github.com/nvdajp/nvdajp/milestone/49?closed=1]
+- [本家版 2022.4 の翻訳 https://github.com/nvdajp/nvdajp/issues/352]
+
 
 ++ 2022.3jp の変更点 ++
 

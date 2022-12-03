@@ -9,7 +9,7 @@
 + Overview +
 
 
-- last update: 2022-12-02
+- last update: 2022-12-03
 - updated by: NVDA Japanese Team / Takuya Nishimoto (Shuaruta Inc.)
 
 
@@ -26,6 +26,7 @@ NVDA Japanese is provided "as is", without warranty.
 
 - [NVDA Japanese www.nvda.jp/en https://www.nvda.jp/en/]
 -
+
 
 
 
@@ -271,6 +272,13 @@ JTalk driver is the default synthesizer of NVDAJP, which supports Japanese langu
 eSpeak NG of NVDAJP supports reading of Japanese characters and Chinese characters. It uses Japanese text processing of Jtalk internally.
 
 eSpeak NG of NVDA cannot handle Japanese language.
+
+
+
+
+
+
+
 
 
 
