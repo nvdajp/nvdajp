@@ -27,9 +27,8 @@ import queueHandler
 import api
 import globalVars
 from logHandler import log
-from utils.security import isWindowsLocked
 import NVDAState
-
+from utils.security import _isLockScreenModeActive
 
 versionedLibPath = os.path.join(globalVars.appDir, 'lib')
 if os.environ.get('PROCESSOR_ARCHITEW6432') == 'ARM64':
@@ -658,7 +657,7 @@ def nvdaControllerInternal_installAddonPackageFromPath(addonPath):
 	if globalVars.appArgs.secure:
 		log.debugWarning("Unable to install add-on into secure copy of NVDA.")
 		return
-	if isWindowsLocked():
+	if _isLockScreenModeActive():
 		log.debugWarning("Unable to install add-on while Windows is locked.")
 		return
 	import wx
@@ -673,7 +672,7 @@ def nvdaControllerInternal_openConfigDirectory():
 	if globalVars.appArgs.secure:
 		log.debugWarning("Unable to open user config directory for secure copy of NVDA.")
 		return
-	if isWindowsLocked():
+	if _isLockScreenModeActive():
 		log.debugWarning("Unable to open user config directory while Windows is locked.")
 		return
 	import systemUtils
