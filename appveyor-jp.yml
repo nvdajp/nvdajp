@@ -6,6 +6,7 @@ branches:
  only:
   - /alphajp.*/
   - /betajp.*/
+  - /releasejp.*/
   - /jp202.*/
 
 clone_depth: 1

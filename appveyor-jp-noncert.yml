@@ -4,6 +4,7 @@ version: "{branch}-{build}"
 skip_tags: true
 branches:
  only:
+  - /releasejp.*/
   - /jp202.*/
 
 clone_depth: 1
