@@ -21,28 +21,6 @@ Import(
 
 targetCldrDir = sourceDir.Dir('locale')
 cldrDataSource = Dir("include/nvda-cldr/locale")
-def createCLDRAnnotationsDict(sources, dest):
-	import codecs
-	from xml.etree import ElementTree
-	from collections import OrderedDict	
-	cldrDict = OrderedDict()
-	for source in sources:
-		tree = ElementTree.parse(source)
-		for element in tree.iter("annotation"):
-			if element.attrib.get("type") == "tts":
-				cldrDict[element.attrib['cp']] = element.text.replace(":","")
-	assert cldrDict, "cldrDict is empty"
-	import unicodedata
-	with codecs.open(dest, "w", "utf_8_sig", errors="replace") as dictFile:
-		dictFile.write(u"symbols:\r\n")
-		for pattern, description in cldrDict.items():
-			if unicodedata.category(pattern[0]) not in ("So", "Cn"):
-				continue
-			# Punctuations are set to none for CLDR characters to be pronounced even if user set punctuation level to None
-			dictFile.write(u"{pattern}\t{description}\tnone\r\n".format(
-				pattern=pattern,
-				description=description
-			))
 
 env.RecursiveInstall(
 	targetCldrDir,
