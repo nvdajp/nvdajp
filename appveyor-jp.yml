@@ -47,7 +47,7 @@ install:
         }
         $env:UPDATEVERSIONTYPE += "beta"
     } else {
-        if ($false) {
+        if ($true) {
             $env:VERSION += "-" + $env:NOWDATE
         }
         if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
@@ -71,8 +71,8 @@ build_script:
  - ps: |
     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
- - 'echo jptools\kcCertAllBuild.cmd %sconsArgs%'
- - jptools\kcCertAllBuild.cmd %sconsArgs%
+ - 'echo jptools\certAllBuild.cmd %sconsArgs%'
+ - jptools\certAllBuild.cmd %sconsArgs%
  - cd %APPVEYOR_BUILD_FOLDER%
  - cd jptools
  - pack_jtalk_addon.cmd

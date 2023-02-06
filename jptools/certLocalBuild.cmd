@@ -8,4 +8,4 @@ set PUBLISHER=nvdajp
 copy c:\work\kc\pfx\shuaruta-key-pass-2022.txt jptools\secret
 copy c:\work\kc\pfx\shuaruta-key220824.pfx jptools\secret
 del source\_buildVersion.py*
-call jptools\kcCertAllBuild.cmd
+call jptools\certAllBuild.cmd
