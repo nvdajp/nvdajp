@@ -249,7 +249,7 @@ https://osdn.net/ticket/browse.php?group_id=4221&tid=36665
 署名つきビルドは、必要なファイルを追加して、最上位のディレクトリで以下を実行
 
 ```
-jptools\kcCertAllBuild.cmd
+jptools\certAllBuild.cmd
 ```
 
 ## AppVeyor
@@ -285,7 +285,7 @@ Visual Studio 2017
 ### appveyor-jp.yml の内容
 
 本家の appveyor.yml をそのまま使わず、
-前述の jptools\kcCertAllBuild.cmd を呼び出している。
+前述の jptools\certAllBuild.cmd を呼び出している。
 
 
 各種エラー回避の記録：
