@@ -151,21 +151,38 @@ addTable("cs-comp8.utb", _("Czech 8 dot computer braille"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("cs-g1.ctb", _("Czech grade 1"))
+
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("da-dk-g08.ctb", _("Danish 8 dot computer braille"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
+addTable("da-dk-g08_1993.ctb", _("Danish 8 dot computer braille (1993)"))
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
 addTable("da-dk-g16.ctb", _("Danish 6 dot grade 1"))
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("da-dk-g16_1993.ctb", _("Danish 6 dot grade 1 (1993)"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("da-dk-g18.ctb", _("Danish 8 dot grade 1"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
+addTable("da-dk-g18_1993.ctb", _("Danish 8 dot grade 1 (1993)"))
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
 addTable("da-dk-g26.ctb", _("Danish 6 dot grade 2"), contracted=True)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
+addTable("da-dk-g26_1993.ctb", _("Danish 6 dot grade 2 (1993)"), contracted=True)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
 addTable("da-dk-g28.ctb", _("Danish 8 dot grade 2"), contracted=True)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("da-dk-g28_1993.ctb", _("Danish 8 dot grade 2 (1993)"), contracted=True)
+
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("de-comp6.utb", _("German 6 dot computer braille"))
@@ -324,6 +341,9 @@ addTable("ja-jp-rokutenkanji.tbl", _("Japanese 6 dot kanji braille"), contracted
 addTable("ka-in-g1.utb", _("Kannada grade 1"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
+addTable("ka.utb", _("Georgian literary braille"))
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
 addTable("kk.utb", _("Kazakh grade 1"), input=False)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
@@ -414,6 +434,9 @@ addTable("nso-za-g1.utb", _("Sepedi grade 1"))
 addTable("nso-za-g2.ctb", _("Sepedi grade 2"), contracted=True)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
+addTable("ny-mw.utb", _("Chichewa (Malawi) literary braille"))
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
 addTable("or-in-g1.utb", _("Oriya grade 1"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
@@ -488,6 +511,25 @@ addTable("sv-g1.ctb", _("Swedish partially contracted braille"), input=False)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("sv-g2.ctb", _("Swedish contracted braille"), contracted=True, input=False)
+
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("sw-ke-g1.utb", _("Swahili (Kenya) grade 1"))
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("sw-ke-g1-2.ctb", _("Swahili (Kenya) grade 1.2"), contracted=True)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("sw-ke-g1-3.ctb", _("Swahili (Kenya) grade 1.3"), contracted=True)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("sw-ke-g1-4.ctb", _("Swahili (Kenya) grade 1.4"), contracted=True)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("sw-ke-g1-5.ctb", _("Swahili (Kenya) grade 1.5"), contracted=True)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("sw-ke-g2.ctb", _("Swahili (Kenya) Grade 2"), contracted=True)
 
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
