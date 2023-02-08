@@ -653,7 +653,6 @@ def _getAnnotationProperty(
 def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 	textList = []
 	name = propertyValues.get("name")
-	role: Optional[Union[controlTypes.Role, int]] = propertyValues.get("role")
 	#nvdajp begin
 	#if name:
 	#	textList.append(name)
@@ -666,7 +665,7 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 		if name:
 			textList.append(name)
 	#nvdajp end
-	role = propertyValues.get("role")
+	role: Optional[Union[controlTypes.Role, int]] = propertyValues.get("role")
 	roleText = propertyValues.get('roleText')
 	states = propertyValues.get("states")
 	positionInfo = propertyValues.get("positionInfo")
