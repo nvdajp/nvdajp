@@ -119,7 +119,7 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 							 ITfRange *pRange,
 							 TfEditCookie ec,
 							 wchar_t *jpAttrBuf,
-							 long jpAttrLen)
+							 ULONG jpAttrLen)
 {
 	// example: L"222221111000"
 	// TF_ATTR_INPUT                = 0
@@ -660,7 +660,7 @@ STDMETHODIMP TsfSink::OnEndEdit(
 	pRange->GetText(cookie, 0, buf, len, &len);
 	const ULONG strNullCharIndex = std::min(len, BUF_SIZE - 1);
 	buf[strNullCharIndex] = L'\0';
-	long jpAttrLen = std::min(len, 255); // nvdajp
+	ULONG jpAttrLen = std::min(len, 255); // nvdajp
 	long compStart=0;
 	fetchRangeExtent(pRange,&compStart,&len);
 	long selStart=compStart;
