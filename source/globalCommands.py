@@ -2445,7 +2445,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptHandler.getLastScriptRepeatCount() == 0:
 			speech.speakObject(focusObject, reason=controlTypes.OutputReason.QUERY)
 		else:
-			speech.speakSpelling(focusObject.name)
+			speech.speakSpelling(focusObject.name, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode)
 
 	@staticmethod
 	def _getStatusBarText(setReviewCursor: bool = False) -> Optional[str]:
