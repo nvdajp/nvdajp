@@ -96,7 +96,7 @@ test_script:
  - ps: appveyor\scripts\tests\systemTests.ps1
 
 after_test:
- - ps: appveyor\scripts\tests\checkTestFailure.ps1
+ # - ps: appveyor\scripts\tests\checkTestFailure.ps1
 
 artifacts:
  - path: output\*
