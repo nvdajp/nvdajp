@@ -1841,6 +1841,7 @@ class GlobalCommands(ScriptableObject):
 		gestures=("kb:numpad2", "kb(laptop):NVDA+.")
 	)
 	def script_review_currentCharacter(self, gesture: inputCore.InputGesture):
+		global characterDescriptionMode
 		info=api.getReviewPosition().copy()
 		# This script is available on the lock screen via getSafeScripts, as such
 		# ensure the review position does not contain secure information
