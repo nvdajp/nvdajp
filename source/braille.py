@@ -837,6 +837,18 @@ class NVDAObjectRegion(Region):
 		)
 		description = obj.description if _shouldUseDescription else None
 		detailsRoles = obj.annotations.roles if obj.annotations else None
+		columnHeaderText = None
+		try:
+			if hasattr(obj, "columnHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"]:
+				columnHeaderText = obj.columnHeaderText
+		except NotImplementedError:
+			pass
+		rowHeaderText = None
+		try:
+			if hasattr(obj, "rowHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"]:
+				rowHeaderText = obj.rowHeaderText
+		except NotImplementedError:
+			pass
 		text = getPropertiesBraille(
 			name=name,
 			role=role,
