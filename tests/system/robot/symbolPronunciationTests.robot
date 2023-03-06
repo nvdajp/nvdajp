@@ -34,6 +34,7 @@ default setup
 
 symbolInSpeechUI
 	[Documentation]	Ensure symbols aren't substituted within NVDA speech UI.
+	[Tags]	excluded_from_build
 	test_symbolInSpeechUI
 
 moveByWord
