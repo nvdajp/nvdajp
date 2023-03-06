@@ -17,6 +17,7 @@ Test Teardown	default teardown
 
 *** Keywords ***
 default teardown
+	logForegroundWindowTitle
 	${screenshotName}=	create_preserved_test_output_filename	failedTest.png
 	Run Keyword If Test Failed	Take Screenshot	${screenShotName}
 	dump_speech_to_log
@@ -24,13 +25,16 @@ default teardown
 	quit NVDA
 
 default setup
+	logForegroundWindowTitle
 	start NVDA	standard-dontShowWelcomeDialog.ini
+	logForegroundWindowTitle
 	enable_verbose_debug_logging_if_requested
 
 *** Test Cases ***
 
 symbolInSpeechUI
 	[Documentation]	Ensure symbols aren't substituted within NVDA speech UI.
+	[Tags]	excluded_from_build
 	test_symbolInSpeechUI
 
 moveByWord

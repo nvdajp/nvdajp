@@ -20,6 +20,7 @@ from logHandler import log
 import gui
 import speech
 import braille
+from config.configFlags import TetherTo
 import globalVars
 from typing import Optional
 
@@ -87,6 +88,7 @@ def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = 
 	@param title: The title for the message.
 	@param isHtml: Whether the message is html
 	"""
+	splitWith: str = "__NVDA:split-here__"  # Unambiguous regex splitter for javascript in message.html, #14667
 	if _isSecureDesktop():
 		import wx  # Late import to prevent circular dependency.
 		wx.CallAfter(_warnBrowsableMessageNotAvailableOnSecureScreens, title)
@@ -102,7 +104,7 @@ def browseableMessage(message: str, title: Optional[str] = None, isHtml: bool = 
 		title = _("NVDA Message")
 	if not isHtml:
 		message = f"<pre>{escape(message)}</pre>"
-	dialogString = f"{title};{message}"
+	dialogString = f"{title}{splitWith}{message}"
 	dialogArguements = automation.VARIANT( dialogString )
 	gui.mainFrame.prePopup() 
 	windll.mshtml.ShowHTMLDialogEx( 
@@ -138,7 +140,7 @@ def reviewMessage(text: str, speechPriority: Optional[speech.Spri] = None):
 	@param speechPriority: The speech priority.
 	"""
 	speech.speakMessage(text, priority=speechPriority)
-	if braille.handler.shouldAutoTether or braille.handler.getTether() == braille.handler.TETHER_REVIEW:
+	if braille.handler.shouldAutoTether or braille.handler.getTether() == TetherTo.REVIEW:
 		braille.handler.message(text)
 
 
