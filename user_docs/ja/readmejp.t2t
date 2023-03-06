@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2022年12月3日
+- 最終更新日：2023年3月6日
 - 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 
@@ -32,7 +32,7 @@ NVDA日本語版は無保証です。ご自身の責任でご利用ください�
 
 ++ 貢献者 ++
 
-- [NVDA日本語版への貢献者 https://osdn.net/projects/nvdajp/wiki/contributors_ja]
+- [NVDA日本語版への貢献者 https://github.com/nvdajp/nvdajp/wiki/contributors_ja]
 
 
 + システム要件とインストール +
@@ -825,7 +825,7 @@ Windows 8 で NVDA のテキスト入力（読み上げ辞書の編集や NVDA+C
 
 ++ Windows 10/11 での日本語入力 ++
 
-Windows 10 バージョン 2004 以降で導入された新しい Microsoft IME については、下記で対応状況をご報告しています。
+NVDA 2022.4jp で Windows 10 バージョン 2004 以降で導入された新しい Microsoft IME に対応しました。下記は作業の記録です。
 
 - [チケット266 https://github.com/nvdajp/nvdajp/issues/266]
 
@@ -862,8 +862,8 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 
 NVDA日本語チームは下記でバグ報告やご要望を受け付けています。また、確認された不具合および対応を公開しています。
 
-- [新しいチケットシステム GitHub Issues (nvdajp) https://github.com/nvdajp/nvdajp/issues] 
-- [古いチケットシステム(OSDN) https://osdn.net/projects/nvdajp/ticket/]
+- [チケットシステム GitHub Issues (nvdajp) https://github.com/nvdajp/nvdajp/issues] 
+- [お問い合わせ https://www.nvda.jp/contact]
 
 
 
@@ -899,6 +899,13 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 + バージョンごとの変更点 +
+
+++ 2023.1jp の変更点 ++
+
+- [記号の読み方が状況により異なる不具合を修正しました。 https://github.com/nvdajp/nvdajp/issues/360]
+- [2023.1jp の変更点 https://github.com/nvdajp/nvdajp/milestone/51?closed=1]
+- [本家版 2023.1 の翻訳 https://github.com/nvdajp/nvdajp/milestone/50?closed=1]
+
 
 ++ 2022.4jp の変更点 ++
 
