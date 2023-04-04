@@ -21,7 +21,7 @@ http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #include <shlwapi.h>
 #include <sddl.h>
 #include <common/log.h>
-#include <common/apiHook.h>
+#include "apiHook.h"
 #include <remote/nvdaController.h>
 #include <remote/nvdaControllerInternal.h>
 #include <common/lock.h>
@@ -128,6 +128,14 @@ void killRunningWindowsHooks() {
 	}
 }
 
+//A replacement OpenClipboard function to disable the use of the clipboard in a secure mode NVDA process
+//Simply returns false without calling the original OpenClipboard
+typedef BOOL(WINAPI *OpenClipboard_funcType)(HWND);
+OpenClipboard_funcType real_OpenClipboard=NULL;
+BOOL WINAPI fake_OpenClipboard(HWND hwndOwner) {
+	return false;
+}
+
 //A thread function that runs while  NVDA is injected in a process.
 //Note that a mutex is used to make sure that there is never more than one copy of this thread in a given process at any given time.
 //I.e. Another copy of NVDA is started  while the first is still running.
@@ -167,6 +175,10 @@ DWORD WINAPI inprocMgrThreadFunc(LPVOID data) {
 	// Hook SetWindowsHookExA so that we can juggle hooks around a bit.
 	// Fixes #2411
 	apiHook_hookFunction_safe(SetWindowsHookExA, fake_SetWindowsHookExA, &real_SetWindowsHookExA);
+	// For secure mode NVDA process, hook OpenClipboard to disable usage of the clipboard
+	if (isSecureModeNVDAProcess) {
+		apiHook_hookFunction_safe(OpenClipboard, fake_OpenClipboard, &real_OpenClipboard);
+	}
 	// Initialize in-process subsystems
 	inProcess_initialize();
 	// Enable all registered API hooks by committing the transaction
@@ -327,8 +339,10 @@ BOOL outprocInitialized=FALSE;
 
 /**
  * Initializes the out-of-process code for NVDAHelper 
+ * @param secureMode 1 specifies that NVDA is running in seucre mode, 0 says not.
  */ 
-BOOL injection_initialize() {
+BOOL injection_initialize(int secureMode) {
+	if(secureMode) isSecureModeNVDAProcess=true;
 	if(outprocInitialized) {
 		MessageBox(NULL,L"Already initialized",L"nvdaHelperRemote (injection_initialize)",0);
 		return FALSE;
