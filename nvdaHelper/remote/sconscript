@@ -16,7 +16,6 @@ Import([
 	'env',
 	'ia2RPCStubs',
 	'detoursLib',
-	'apiHookObj',
 ])
 
 winIPCUtilsObj=env.Object("./winIPCUtils","../common/winIPCUtils.cpp")
@@ -87,7 +86,7 @@ source = [
 	"injection.cpp",
 	"log.cpp",
 	"inProcess.cpp",
-	apiHookObj,
+	"apiHook.cpp",
 	"inputLangChange.cpp",
 	"typedCharacter.cpp",
 	"ime.cpp",
