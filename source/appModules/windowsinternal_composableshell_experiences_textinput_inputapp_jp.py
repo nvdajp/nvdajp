@@ -1,5 +1,6 @@
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2017-2022 NV Access Limited, Joseph Lee
+# Copyright (C) 2023 Takuya Nishimoto
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -21,6 +22,7 @@ import winVersion
 import controlTypes
 from NVDAObjects.UIA import UIA
 from NVDAObjects.behaviors import CandidateItem as CandidateItemBehavior, EditableTextWithAutoSelectDetection
+from logHandler import log
 
 
 class ImeCandidateUI(UIA):
@@ -291,7 +293,10 @@ class AppModule(appModuleHandler.AppModule):
 				"CandidateWindowControl"
 			)
 		):
-			ui.message(obj.name)
+			try:
+				ui.message(obj.name)
+			except IndexError:
+				log.debug(f"IndexError in UIA event_nameChange: {obj.name}")
 		nextHandler()
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
