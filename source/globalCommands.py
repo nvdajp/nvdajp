@@ -3694,6 +3694,16 @@ class GlobalCommands(ScriptableObject):
 		obj: NVDAObject = ti.NVDAObjectAtStart
 		presses = scriptHandler.getLastScriptRepeatCount()
 		if (
+			obj.role == controlTypes.role.Role.GRAPHIC
+			and (
+				obj.parent
+				and obj.parent.role == controlTypes.role.Role.LINK
+			)
+		):
+			# In Firefox, graphics with a parent link also expose the parents link href value.
+			# In Chromium, the link href value must be fetched from the parent object. (#14779)
+			obj = obj.parent
+		if (
 			obj.role == controlTypes.role.Role.LINK  # If it's a link, or
 			or controlTypes.state.State.LINKED in obj.states  # if it isn't a link but contains one
 		):
@@ -3987,9 +3997,26 @@ class GlobalCommands(ScriptableObject):
 		recog = uwpOcr.UwpOcr()
 		recogUi.recognizeNavigatorObject(recog)
 
-	_tempEnableScreenCurtain = True
-	_waitingOnScreenCurtainWarningDialog: Optional[wx.Dialog] = None
-	_toggleScreenCurtainMessage: Optional[str] = None
+	@script(
+		# Translators: Describes a command.
+		description=_("Cycles through the available languages for Windows OCR"),
+	)
+	def script_cycleOcrLanguage(self, gesture: inputCore.InputGesture) -> None:
+		if not winVersion.isUwpOcrAvailable():
+			# Translators: Reported when Windows OCR is not available.
+			ui.message(_("Windows OCR not available"))
+			return
+		from contentRecog import uwpOcr
+		languageCodes = uwpOcr.getLanguages()
+		try:
+			index = languageCodes.index(config.conf["uwpOcr"]["language"])
+			newIndex = (index + 1) % len(languageCodes)
+		except ValueError:
+			newIndex = 0
+		lang = languageCodes[newIndex]
+		config.conf["uwpOcr"]["language"] = lang
+		ui.message(languageHandler.getLanguageDescription(languageHandler.normalizeLanguage(lang)))
+
 	@script(
 		# Translators: Input help mode message for toggle report CLDR command.
 		description=_("Toggles on and off the reporting of CLDR characters, such as emojis"),
@@ -4007,6 +4034,9 @@ class GlobalCommands(ScriptableObject):
 		characterProcessing.clearSpeechSymbols()
 		ui.message(state)
 
+	_tempEnableScreenCurtain = True
+	_waitingOnScreenCurtainWarningDialog: Optional[wx.Dialog] = None
+	_toggleScreenCurtainMessage: Optional[str] = None
 	@script(
 		description=_(
 			# Translators: Describes a command.
