@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2017-2022 NV Access Limited, Joseph Lee
+# Copyright (C) 2017-2023 NV Access Limited, Joseph Lee
 # Copyright (C) 2023 Takuya Nishimoto
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -92,6 +92,10 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 		return super(ImeCandidateItem, self).name
 
 	def event_UIA_elementSelected(self):
+		# In Windows 11, focus event is fired when a candidate item receives focus,
+		# therefore ignore this event for now.
+		if winVersion.getWinVer() >= winVersion.WIN11:
+			return
 		oldNav = api.getNavigatorObject()
 		if isinstance(oldNav, ImeCandidateItem) and self.name == oldNav.name:
 			# Duplicate selection event fired on the candidate item. Ignore it.
@@ -107,6 +111,8 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 				self.appModule._lastImeCandidateVisibleText = newText
 				# speak the new page
 				ui.message(newText)
+		# Now just report the currently selected candidate item.
+		self.reportFocus()
 
 
 class AppModule(appModuleHandler.AppModule):
@@ -114,7 +120,14 @@ class AppModule(appModuleHandler.AppModule):
 	# Cache the most recently selected item.
 	_recentlySelected = None
 
+	# In Windows 11, clipboard history is seen as a web document.
+	# Turn off browse mode by default so clipboard history entry menu items can be announced when tabbed to.
+	disableBrowseModeByDefault: bool = True
+
 	def event_UIA_elementSelected(self, obj, nextHandler):
+		# In Windows 11, candidate panel houses candidate items, not the prediction window.
+		if obj.UIAAutomationId == "TEMPLATE_PART_CandidatePanel":
+			obj = obj.firstChild
 		# Logic for IME candidate items is handled all within its own object
 		# Therefore pass these events straight on.
 		if isinstance(obj, ImeCandidateItem):
@@ -301,11 +314,30 @@ class AppModule(appModuleHandler.AppModule):
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
 		if isinstance(obj, UIA):
-			if (obj.role == controlTypes.Role.LISTITEM and
-				obj.parent.UIAAutomationId == "TEMPLATE_PART_CandidatePanel" and
-				obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
+			if obj.role == controlTypes.Role.LISTITEM and (
+				(
+					obj.parent.UIAAutomationId in (
+						"ExpandedCandidateList",
+						"TEMPLATE_PART_AdaptiveSuggestionList",
+					)
+					and obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
+				)
+				or obj.parent.UIAAutomationId in (
+					"IME_Candidate_Window",
+					"IME_Prediction_Window",
+					"TEMPLATE_PART_CandidatePanel",
+				)
 			):
 				clsList.insert(0, ImeCandidateItem)
+			elif (
+				obj.role in (controlTypes.Role.PANE, controlTypes.Role.LIST, controlTypes.Role.POPUPMENU)
+				and obj.UIAAutomationId in (
+					"IME_Candidate_Window",
+					"IME_Prediction_Window",
+					"TEMPLATE_PART_CandidatePanel",
+				)
+			):
+				clsList.insert(0, ImeCandidateUI)
 			# #13104: newer revisions of Windows 11 build 22000 moves focus to emoji search field.
 			# However this means NVDA's own edit field scripts will override emoji panel commands.
 			# Therefore remove text field movement commands so emoji panel commands can be used directly.
