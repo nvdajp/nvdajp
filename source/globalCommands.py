@@ -1871,9 +1871,9 @@ class GlobalCommands(ScriptableObject):
 					speech.speakMessage(o)
 					braille.handler.message(u"%d %s" % (c, jpUtils.code2hex(c)))
 				else:
-					speech.speakMessage("%d," % c)
-					speech.speakSpelling(hex(c))
-					braille.handler.message(u"%d %s" % (c, hex(c)))
+				    speech.speakMessage("%d," % c)
+				    speech.speakSpelling(hex(c))
+				    braille.handler.message(f"{c}, {hex(c)}")
 			else:
 				log.debugWarning("Couldn't calculate ordinal for character %r" % info.text)
 				speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
