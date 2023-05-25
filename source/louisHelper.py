@@ -61,7 +61,9 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 		from synthDrivers.jtalk.translator2 import translate as jpTranslate
 	except ModuleNotFoundError:
 		jpTranslate = None
-	if jpTranslate and config.conf["braille"]["japaneseBrailleSupport"]:
+	if jpTranslate and config.conf["braille"]["translationTable"] in [
+			"ja-jp-comp6.utb", "ja-jp-comp6-en-ueb-g2.tbl", "ja-jp-comp6-en-us-g2.tbl"
+		]:
 		log.debug(text)
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
 			text,
