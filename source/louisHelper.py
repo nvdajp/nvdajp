@@ -68,7 +68,8 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
 			text,
 			cursorPos=cursorPos or 0,
-			nabcc=config.conf["braille"]["expandAtCursor"]
+			nabcc=config.conf["braille"]["expandAtCursor"],
+			table=config.conf["braille"]["translationTable"].split(".")[0],
 		)
 	else:
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
