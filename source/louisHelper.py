@@ -61,15 +61,24 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 		from synthDrivers.jtalk.translator2 import translate as jpTranslate
 	except ModuleNotFoundError:
 		jpTranslate = None
-	if jpTranslate and config.conf["braille"]["translationTable"] in [
+	translationTable = config.conf["braille"]["translationTable"]
+	if jpTranslate and translationTable in [
 			"ja-jp-comp6.utb", "ja-jp-comp6-en-ueb-g2.tbl", "ja-jp-comp6-en-us-g2.tbl"
 		]:
 		log.debug(text)
+		louisTable = None
+		if translationTable == "ja-jp-comp6-en-ueb-g2.tbl":
+			louisTable = "en-ueb-g2.ctb"
+		elif translationTable == "ja-jp-comp6-en-us-g2.tbl":
+			louisTable = "en-us-g2.ctb"
+		louisTranslate = None if louisTable is None else louis.translate
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
 			text,
 			cursorPos=cursorPos or 0,
 			nabcc=config.conf["braille"]["expandAtCursor"],
-			table=config.conf["braille"]["translationTable"].split(".")[0],
+			table=translationTable.split(".")[0],
+			louisTable=louisTable,
+			louisTranslate=louisTranslate,
 		)
 	else:
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
