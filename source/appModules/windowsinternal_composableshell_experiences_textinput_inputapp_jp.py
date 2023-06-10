@@ -292,6 +292,10 @@ class AppModule(appModuleHandler.AppModule):
 					return
 			except AttributeError:
 				return
+			if obj.UIAAutomationId == "KeyboardShortcutText":
+				return
+			if obj.windowClassName == "Windows.UI.Core.CoreWindow":
+				return
 			if (
 				not self._emojiPanelJustOpened
 				or obj.UIAAutomationId != "TEMPLATE_PART_ExpressionGroupedFullView"
@@ -306,10 +310,8 @@ class AppModule(appModuleHandler.AppModule):
 				"CandidateWindowControl"
 			)
 		):
-			try:
+			if getattr(obj, "name", ""):
 				ui.message(obj.name)
-			except IndexError:
-				log.debug(f"IndexError in UIA event_nameChange: {obj.name}")
 		nextHandler()
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
