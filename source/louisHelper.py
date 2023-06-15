@@ -57,6 +57,8 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 	"""
 	text = inbuf.replace('\0','')
 	# nvdajp begin
+	import os
+	from brailleTables import TABLES_DIR
 	try:
 		from synthDrivers.jtalk.translator2 import translate as jpTranslate
 	except ModuleNotFoundError:
@@ -66,19 +68,22 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 			"ja-jp-comp6.utb", "ja-jp-comp6-en-ueb-g2.tbl", "ja-jp-comp6-en-us-g2.tbl"
 		]:
 		log.debug(text)
-		louisTable = None
-		if translationTable == "ja-jp-comp6-en-ueb-g2.tbl":
-			louisTable = "en-ueb-g2.ctb"
-		elif translationTable == "ja-jp-comp6-en-us-g2.tbl":
-			louisTable = "en-us-g2.ctb"
-		louisTranslate = None if louisTable is None else louis.translate
+		nabcc = config.conf["braille"]["nabcc"]
+		louisTranslate = None
+		louisTableList = None
+		if not nabcc:
+			if translationTable == "ja-jp-comp6-en-ueb-g2.tbl":
+				louisTranslate = louis.translate
+				louisTableList = [os.path.join(TABLES_DIR, "en-ueb-g2.ctb"), "braille-patterns.cti"]
+			elif translationTable == "ja-jp-comp6-en-us-g2.tbl":
+				louisTranslate = louis.translate
+				louisTableList = [os.path.join(TABLES_DIR, "en-us-g2.ctb"), "braille-patterns.cti"]
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
 			text,
 			cursorPos=cursorPos or 0,
-			nabcc=config.conf["braille"]["expandAtCursor"],
-			table=translationTable.split(".")[0],
-			louisTable=louisTable,
+			nabcc=nabcc,
 			louisTranslate=louisTranslate,
+			louisTableList=louisTableList,
 		)
 	else:
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
