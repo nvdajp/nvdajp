@@ -1673,6 +1673,20 @@ For this reason the option is enabled by default, interrupting speech when scrol
 
 Disabling this option allows speech to be heard while simultaneously reading Braille.
 
+==== Show selection ====[BrailleSettingsShowSelection]
+: Default
+  Enabled
+: Options
+  Default (Enabled), Enabled, Disabled
+:
+
+This setting determines if selection indicator (dots 7 and 8) is shown in braille display.
+The option is enabled by default so selection indicator is shown.
+Selection indicator might be a distraction while reading.
+Disabling this option may improve readability.
+
+To toggle show selection from anywhere, please assign a custom gesture using the [Input Gestures dialog #InputGestures].
+
 +++ Select Braille Display (NVDA+control+a) +++[SelectBrailleDisplay]
 The Select Braille Display dialog, which can be opened by activating the Change... button in the Braille category of the NVDA settings dialog, allows you to select which Braille display NVDA should use for braille output.
 Once you have selected your braille display of choice, you can press Ok and NVDA will load the selected display.
@@ -2310,6 +2324,13 @@ WASAPI is a more modern audio framework which may improve the responsiveness, pe
 This option is enabled by default.
 After changing this option, you will need to restart NVDA for the change to take effect.
 
+==== Volume of NVDA sounds follows voice volume ====[SoundVolumeFollowsVoice]
+When this option is enabled, the volume of NVDA sounds and beeps will follow the volume setting of the voice you are using.
+If you decrease the volume of the voice, the volume of sounds will decrease.
+Similarly, if you increase the volume of the voice, the volume of sounds will increase.
+This option only takes effect when "Use WASAPI for audio output" is enabled.
+This option is disabled by default.
+
 ==== Debug logging categories ====[AdvancedSettingsDebugLoggingCategories]
 The checkboxes in this list allow you to enable specific categories of debug messages in NVDA's log.
 Logging these messages can result in decreased performance and large log files.
@@ -2549,8 +2570,10 @@ Add-ons may do any of the following:
 -
 
 NVDA's Add-on Store allows you to browse and manage add-on packages.
-Add-ons that are available in the Add-on Store are free.
-Other add-ons which require payment do exist, such as those which add support for commercial speech synthesizers; but these must be installed from external sources.
+All add-ons that are available in the Add-on Store can be downloaded for free.
+However, some of them may require users to pay for a license or additional software before they can be used.
+Commercial speech synthesizers are an example of this type of add-on.
+If you install an add-on with paid components and change your mind about using it, the add-on can be easily removed.
 
 The Add-on Store is accessed from the Tools submenu of the NVDA menu.
 To access the Add-on Store from anywhere, assign a custom gesture using the [Input Gestures dialog #InputGestures].
@@ -3826,6 +3849,8 @@ Please see the display's documentation for descriptions of where these keys can 
 | Reads status bar and moves navigator object into it | ``f1+end1``, ``f9+end2`` |
 | Cycle the braille cursor shape | ``f1+eCursor1``, ``f9+eCursor2`` |
 | Toggle the braille cursor | ``f1+cursor1``, ``f9+cursor2`` |
+| Cycle the braille show messages mode | ``f1+f2``, ``f9+f10`` |
+| Cycle the braille show selection state | ``f1+f5``, ``f9+f14`` |
 | Performs the default action on the current navigator object | ``f7+f8`` |
 | Reports date/time | ``f9`` |
 | Reports battery status and time remaining if AC is not plugged in | ``f10`` |
