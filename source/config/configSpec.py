@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2006-2023 NV Access Limited, Babbage B.V., Davy Kager, Bill Dengler, Julien Cochuyt,
-# Joseph Lee, Dawid Pieper, mltony, Bram Duvigneau, Cyrille Bougot, Rob Meredith
+# Joseph Lee, Dawid Pieper, mltony, Bram Duvigneau, Cyrille Bougot, Rob Meredith,
+# Burman's Computer and Education Ltd.
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -68,6 +69,8 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 # Audio settings
 [audio]
 	audioDuckingMode = integer(default=0)
+	wasapi = boolean(default=true)
+	soundVolumeFollowsVoice = boolean(default=false)
 
 # Braille settings
 [braille]
@@ -93,6 +96,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	japaneseBrailleSupport = boolean(default=true) # (nvdajp)
 	nvdajpComPort = integer(default=0) # obsolete (nvdajp)
 	interruptSpeechWhileScrolling = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
+	showSelection = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 	enableHidBrailleSupport = integer(0, 2, default=0)  # 0:Use default/recommended value (yes), 1:yes, 2:no
 
 	# Braille display driver settings
