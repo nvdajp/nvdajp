@@ -1,3 +1,6 @@
+build_cloud: windows-nishimotz-230625
+image: Windows
+
 os: Visual Studio 2019
 version: "{branch}-{build}"
 
