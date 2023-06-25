@@ -22,9 +22,14 @@ environment:
   secure: neMaHS4sUE44BxKyxNgaTcCnK663C88hNtG75ALxzoE=
 
 init:
+ - ps: Set-WinSystemLocale ja-JP
+ - ps: Start-Sleep -s 10
+ - ps: Restart-Computer
+ - ps: Start-Sleep -s 10
  - ps: |
     $pythonVersion = (py --version)
     echo $pythonVersion
+ - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
 
 install:
  - set RELEASE=1
