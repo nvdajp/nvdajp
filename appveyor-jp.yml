@@ -23,7 +23,7 @@ environment:
 
 init:
  - ps: |
-    $pythonVersion = (py --version)
+    $pythonVersion = (py -3.7-32 --version)
     echo $pythonVersion
 
 install:
@@ -57,14 +57,14 @@ install:
  - nuget install secure-file -ExcludeVersion
  - secure-file\tools\secure-file -decrypt jptools\secret\shuaruta-key220824.pfx.enc -secret %my_secret_a%
  - secure-file\tools\secure-file -decrypt jptools\secret\shuaruta-key-pass-2022.txt.enc -secret %my_secret_b%
- - py -m pip install --upgrade --no-warn-script-location pip
+ - py -3.7-32 -m pip install --upgrade --no-warn-script-location pip
  - git submodule update --init --recursive
 
 build_script:
  - ps: |
-    $apiVersion = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
+    $apiVersion = (py -3.7-32 -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
     echo apiversion: $apiVersion
-    $apiCompatTo = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
+    $apiCompatTo = (py -3.7-32 -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
     echo apiBackCompatTo: $apiCompatTo
  - ps: |
     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
@@ -80,10 +80,6 @@ build_script:
  - jptools\tests.cmd
 
 before_test:
- - ps: Set-WinSystemLocale en-US
- - ps: Start-Sleep -s 10
- - ps: Restart-Computer
- - ps: Start-Sleep -s 10
  - ps: appveyor\scripts\tests\beforeTests.ps1
  - ps: appveyor\scripts\installNVDA.ps1
 
