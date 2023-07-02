@@ -7,7 +7,6 @@ branches:
   - /alphajp.*/
   - /betajp.*/
   - /releasejp.*/
-  - /jp202.*/
 
 clone_depth: 1
 
@@ -36,23 +35,15 @@ install:
  - ps: |
     if ($env:APPVEYOR_REPO_BRANCH.StartsWith("alphajp")) {
         $env:VERSION = "jpalpha_" + $env:NOWDATE
-        if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
-            $env:VERSION += "_noncert"
-        }
         $env:UPDATEVERSIONTYPE += "alpha"
     } elseif ($env:APPVEYOR_REPO_BRANCH.StartsWith("betajp")) {
         $env:VERSION += "-beta-" + $env:NOWDATE
-        if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
-            $env:VERSION += "-noncert"
-        }
         $env:UPDATEVERSIONTYPE += "beta"
-    } else {
-        if ($false) {
-            $env:VERSION += "-" + $env:NOWDATE
-        }
-        if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
-            $env:VERSION += "-noncert"
-        }
+    } elseif ($env:APPVEYOR_REPO_BRANCH.StartsWith("releasejp")) {
+        $env:VERSION += "-" + $env:NOWDATE
+    }
+    if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
+        $env:VERSION += "-noncert"
     }
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
