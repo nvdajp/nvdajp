@@ -2769,7 +2769,8 @@ RENAMED_DRIVERS = {
 	"hid": "hidBrailleStandard",
 }
 
-handler: BrailleHandler
+handler: Optional[BrailleHandler] = None
+
 
 def initialize():
 	global handler
