@@ -13,7 +13,7 @@ import config
 from logHandler import log
 from speech import SpeechSequence
 import gui.contextHelp
-from utils.security import _isLockScreenModeActive, post_sessionLockStateChanged
+from utils.security import isLockScreenModeActive, post_sessionLockStateChanged
 
 
 # Inherit from wx.Frame because these windows show in the alt+tab menu (where miniFrame does not)
@@ -103,7 +103,7 @@ class SpeechViewerFrame(
 			wx.EVT_CHECKBOX,
 			self.onShouldShowOnStartupChanged
 		)
-		if _isLockScreenModeActive():
+		if isLockScreenModeActive():
 			self.shouldShowOnStartupCheckBox.Disable()
 		self.SetTransparent(229) # int(255.0 * 0.90)
 
@@ -121,7 +121,7 @@ class SpeechViewerFrame(
 		deactivate()
 
 	def onShouldShowOnStartupChanged(self, evt: wx.CommandEvent):
-		if not _isLockScreenModeActive():
+		if not isLockScreenModeActive():
 			config.conf["speechViewer"]["showSpeechViewerAtStartup"] = self.shouldShowOnStartupCheckBox.IsChecked()
 
 	_isDestroyed: bool
