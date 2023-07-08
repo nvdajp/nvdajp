@@ -7,7 +7,6 @@
 # > cd jptools
 # > python jpDicTest.py
 
-from __future__ import unicode_literals, print_function
 import unittest
 import sys, os
 
@@ -42,20 +41,31 @@ items = [
     # ('１（２３）', '全角 イチ カッコ ニ サン カッコトジ', '全角 １（２３）'),
     ("川", "サンボンガワノ カワ", "サンボンガワノ カワ"),
     ("^", "半角 ベキジョー", "半角 ベキジョー"),
+    ("⭕", "マル", "マル"),  # uses source/locale/ja/characters.dic
+    ("言", "ゲンゴガクノ ゲン", "ゲンゴガクノ ゲン"),  # 8a00
+    ("⾔", "u+2f94", "u+2f94"),  # FIXME: 2f94 康熙部首 Kangxi Radicals
 ]
 
 
-class JpDicTestCase(unittest.TestCase):
+class JpUtilsTestCase(unittest.TestCase):
     def test_getDiscriminantReading(self):
-        for i in items:
-            a, b, c = i[0], i[1], i[2]
-            s = jpUtils.getDiscriminantReading(a, sayCapForCapitals=True)
-            # print("name(%s) correctS(%s) actualS(%s)" % (a, b, s))
-            self.assertEqual(b, s)
-            t = jpUtils.getDiscrptionForBraille(a)
-            # print("name(%s) correctB(%s) actualB(%s)" % (a, c, t))
-            self.assertEqual(c, t)
+        for source, saycap_expected, braille_expected in items:
+            saycap = jpUtils.getDiscriminantReading(source, sayCapForCapitals=True)
+            self.assertEqual(saycap_expected, saycap)
+            braille = jpUtils.getDiscriminantReading(source, forBraille=True)
+            self.assertEqual(braille_expected, braille)
 
+    def test_code2kana(self):
+        self.assertEqual(jpUtils.code2kana(0x0123), "ゼロイチニーサン")
+
+    def test_code2hex(self):
+        self.assertEqual(jpUtils.code2hex(0x123a), "u+123a")
+
+    def test_processKangxiRadicals(self):
+        self.assertEqual(jpUtils.processKangxiRadicals("簡単に⾔えば"), "簡単に言えば")
+        self.assertEqual(jpUtils.processKangxiRadicals("⾃由な発想"), "自由な発想")
+        self.assertEqual(jpUtils.processKangxiRadicals("公益財団法⼈"), "公益財団法人")
+        self.assertEqual(jpUtils.processKangxiRadicals("富⼭⽂化"), "富山文化")
 
 if __name__ == "__main__":
     unittest.main()

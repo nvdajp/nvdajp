@@ -143,6 +143,7 @@ def processText(locale,text,symbolLevel):
 	text = speechDictHandler.processText(text)
 	text = characterProcessing.processSpeechSymbols(locale, text, symbolLevel)
 	text = RE_CONVERT_WHITESPACE.sub(u" ", text)
+	text = jpUtils.processKangxiRadicals(text)
 	return text.strip()
 
 def cancelSpeech():
