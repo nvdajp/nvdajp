@@ -27,7 +27,8 @@ def getLongDesc(s):
 		d = characterProcessing.getCharacterDescription('ja', s)
 		log.debug(repr([s, d, 1]))
 		if d:
-			r = '  '.join(d)
+			d2 = [item[1:-1] if item[0] == "(" and item[-1] == ")" else item for item in d]
+			r = '  '.join(d2)
 			return r
 	except Exception as e:
 		log.debug(repr(e))
@@ -256,6 +257,10 @@ def getCandidateCharDesc(c, a, forBraille=False):
 		log.debug(u"kana (%s) %s" % (c, d))
 	else:
 		d = getLongDesc(c)
+		if d.endswith(" ブシュホジョ") and forBraille:
+			d = d.replace(" ブシュホジョ", " 部首補助")
+		if d.endswith(" コーキブシュ") and forBraille:
+			d = d.replace(" コーキブシュ", " 康熙部首")
 		if d != c:
 			log.debug(u"longdesc (%s) %s" % (c, d))
 		else:

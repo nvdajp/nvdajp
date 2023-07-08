@@ -1,14 +1,26 @@
-from __future__ import unicode_literals, print_function
 import codecs
 
 _entries = {}
 _readings = {}
 
+
 def setup():
 	global _entries, _readings
-	fname = r"..\source\locale\ja\characters.dic"
 	linenum = 0
-	with codecs.open(fname,"r","utf_8_sig",errors="replace") as f:
+	fileName = r"..\source\locale\ja\characterDescriptions.dic"
+	with codecs.open(fileName,"r","utf_8_sig",errors="replace") as f:
+		for line in f:
+			if line.isspace() or line.startswith('#'):
+				continue
+			line=line.rstrip('\r\n')
+			temp=line.split("\t")
+			if len(temp) > 1:
+				key=temp.pop(0)
+				_entries[key] = temp[0]
+			else:
+				print("%s %d: can't parse '%s'" % (fileName, linenum, line))
+	fileName = r"..\source\locale\ja\characters.dic"
+	with codecs.open(fileName,"r","utf_8_sig",errors="replace") as f:
 		for line in f:
 			if line.isspace() or line.startswith('#'):
 				continue
@@ -22,10 +34,7 @@ def setup():
 					_readings[key] = rd[1:-1]
 					_entries[key] = temp[0]
 				else:
-					try:
-						print("%d: can't parse '%s'" % (linenum, line))
-					except UnicodeEncodeError:
-						print("%d: can't parse '%r'" % (linenum, line))
+					print("%s %d: can't parse '%s'" % (fileName, linenum, line))
 			linenum += 1
 
 setup()

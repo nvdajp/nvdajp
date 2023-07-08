@@ -43,7 +43,10 @@ items = [
     ("^", "半角 ベキジョー", "半角 ベキジョー"),
     ("⭕", "マル", "マル"),  # uses source/locale/ja/characters.dic
     ("言", "ゲンゴガクノ ゲン", "ゲンゴガクノ ゲン"),  # 8a00
-    ("⾔", "u+2f94", "u+2f94"),  # FIXME: 2f94 康熙部首 Kangxi Radicals
+    ("⾔", "ゲンゴガクノ ゲン コーキブシュ", "ゲンゴガクノ ゲン 康熙部首"),  # 2f94 Kangxi Radicals
+    ("鬼", "キ オニノ キ", "キ オニノ キ"), # 9b3c
+    ("⿁", "キ オニノ キ コーキブシュ", "キ オニノ キ 康熙部首"), # 2fc1 Kangxi Radicals
+    ("⻤", "キ オニノ キ ブシュホジョ", "キ オニノ キ 部首補助"), # 2ee4 CJK Radicals Supplement
 ]
 
 
