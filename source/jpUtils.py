@@ -518,6 +518,12 @@ def processKangxiRadicals(source):
 	global kangxiRadicalsTable
 	if not kangxiRadicalsTable:
 		items = [
+			# 02exx CJK部首補助 CJK Radicals Supplement
+			"⺐尢",
+			"⺓幺",
+			"⻑長",
+			"⻤鬼",
+			# 02fxx 康熙部首 Kangxi Radicals
 			"⼀一",
 			"⼁丨",
 			"⼂丶",
