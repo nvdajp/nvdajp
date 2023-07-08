@@ -103,6 +103,7 @@ class CharacterDescriptions(object):
 			temp=line.split("\t")
 			if len(temp) > 1:
 				key=temp.pop(0)
+				temp = [item[1:-1] if item[0] == "(" and item[-1] == ")" else item for item in temp]
 				self._entries[key] = temp
 			else:
 				log.warning("can't parse line '%s'" % line)

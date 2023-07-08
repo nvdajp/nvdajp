@@ -16,6 +16,7 @@ def setup():
 			temp=line.split("\t")
 			if len(temp) > 1:
 				key=temp.pop(0)
+				temp = [item[1:-1] if item[0] == "(" and item[-1] == ")" else item for item in temp]
 				_entries[key] = temp[0]
 			else:
 				print("%s %d: can't parse '%s'" % (fileName, linenum, line))

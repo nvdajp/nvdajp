@@ -27,8 +27,7 @@ def getLongDesc(s):
 		d = characterProcessing.getCharacterDescription('ja', s)
 		log.debug(repr([s, d, 1]))
 		if d:
-			d2 = [item[1:-1] if item[0] == "(" and item[-1] == ")" else item for item in d]
-			r = '  '.join(d2)
+			r = '  '.join(d)
 			return r
 	except Exception as e:
 		log.debug(repr(e))
