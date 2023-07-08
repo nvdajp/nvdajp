@@ -51,6 +51,58 @@ items = [
 
 
 class JpUtilsTestCase(unittest.TestCase):
+    def test_getLongDesc(self):
+        self.assertEqual(jpUtils.getLongDesc("a"), "エー アルファー")
+
+    def test_getShortDesc(self):
+        self.assertEqual(jpUtils.getShortDesc("a"), "エー アルファー")
+
+    def test_isJa(self):
+        self.assertTrue(jpUtils.isJa("ja"))
+
+    def test_isZenkakuHiragana(self):
+        self.assertTrue(jpUtils.isZenkakuHiragana("あ"))
+
+    def test_isZenkakuKatakana(self):
+        self.assertTrue(jpUtils.isZenkakuKatakana("ア"))
+
+    def test_isHankakuKatakana(self):
+        self.assertTrue(jpUtils.isHankakuKatakana("ｱ"))
+
+    def test_isHalfShape(self):
+        self.assertTrue(jpUtils.isHalfShape("1"))
+
+    def test_isFullShapeAlphabet(self):
+        self.assertTrue(jpUtils.isFullShapeAlphabet("Ａ"))
+
+    def test_isHalfShapeAlphabet(self):
+        self.assertTrue(jpUtils.isHalfShapeAlphabet("A"))
+
+    def test_isFullShapeNumber(self):
+        self.assertTrue(jpUtils.isFullShapeNumber("１"))
+
+    def test_isHalfShapeNumber(self):
+        self.assertTrue(jpUtils.isHalfShapeNumber("1"))
+
+    def test_isKanaCharacter(self):
+        self.assertTrue(jpUtils.isKanaCharacter("ア"))
+
+    def test_isLatinCharacter(self):
+        self.assertTrue(jpUtils.isLatinCharacter("a"))
+
+    def test_isFullShapeSymbol(self):
+        self.assertTrue(jpUtils.isFullShapeSymbol("＠"))
+
+    def test_isUpper(self):
+        self.assertTrue(jpUtils.isUpper("A"))
+
+    def test_replaceSpecialKanaCharacter(self):
+        self.assertEqual(jpUtils.replaceSpecialKanaCharacter("ー"), "チョーオン")
+
+    def test_getAttrDesc(self):
+        a = jpUtils.CharAttr(True, False, False, False, False, False)
+        self.assertEqual(jpUtils.getAttrDesc(a), "オオモジ ")
+
     def test_getDiscriminantReading(self):
         for source, saycap_expected, braille_expected in items:
             saycap = jpUtils.getDiscriminantReading(source, sayCapForCapitals=True)
