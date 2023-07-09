@@ -103,6 +103,46 @@ class JpUtilsTestCase(unittest.TestCase):
         a = jpUtils.CharAttr(True, False, False, False, False, False)
         self.assertEqual(jpUtils.getAttrDesc(a), "オオモジ ")
 
+    def test_getJpAttr(self):
+        a = jpUtils.getJpAttr("ja", "a", False)
+        self.assertEqual(type(a), jpUtils.JpAttr)
+        self.assertTrue(a.jpLatinCharacter)
+
+    def test_getCharDesc(self):
+        a = jpUtils.getJpAttr("ja", "a", False)
+        desc = jpUtils.getCharDesc("ja", "a", a)
+        self.assertEqual(desc, ("エー アルファー",))
+
+    def test_getPitchChangeForCharAttr(self):
+        a = jpUtils.getJpAttr("ja", "A", False)
+        pitchChange = jpUtils.getPitchChangeForCharAttr("ja", a, True)
+        self.assertEqual(pitchChange, True)
+
+    def test_getJaCharAttrDetails(self):
+        self.assertEqual(jpUtils.getJaCharAttrDetails("A", False, True), "半角 英字")
+
+    def test_code2kana(self):
+        self.assertEqual(jpUtils.code2kana(0x0123), "ゼロイチニーサン")
+
+    def test_code2hex(self):
+        self.assertEqual(jpUtils.code2hex(0x123a), "u+123a")
+
+    def test_getCandidateCharDesc(self):
+        a = jpUtils.CharAttr(True, False, False, False, False, False)
+        self.assertEqual(jpUtils.getCandidateCharDesc("a", a, False), ' エー アルファー ')
+
+    def test_useAttrDesc(self):
+        a = jpUtils.CharAttr(True, False, False, False, False, False)
+        self.assertEqual(jpUtils.useAttrDesc(["ー", a]), False)
+        self.assertEqual(jpUtils.useAttrDesc(["あ", a]), True)
+
+    def test_getOrd(self):
+        self.assertEqual(jpUtils.getOrd("a"), 97)
+        self.assertEqual(jpUtils.getOrd("𞀄"), 0x1e004)
+
+    def test_splitChars(self):
+        self.assertEqual(jpUtils.splitChars("a𞀄"), ['a', '𞀄'])
+
     def test_getDiscriminantReading(self):
         for source, saycap_expected, braille_expected in items:
             saycap = jpUtils.getDiscriminantReading(source, sayCapForCapitals=True)
@@ -110,11 +150,15 @@ class JpUtilsTestCase(unittest.TestCase):
             braille = jpUtils.getDiscriminantReading(source, forBraille=True)
             self.assertEqual(braille_expected, braille)
 
-    def test_code2kana(self):
-        self.assertEqual(jpUtils.code2kana(0x0123), "ゼロイチニーサン")
+    def test_getDiscrptionForBraille(self):
+        self.assertEqual(jpUtils.getDiscrptionForBraille("a"), "半角 a")
 
-    def test_code2hex(self):
-        self.assertEqual(jpUtils.code2hex(0x123a), "u+123a")
+    def test_processHexCode(self):
+        self.assertEqual(jpUtils.processHexCode("ja", "u+0000"), "u+ゼロゼロゼロゼロ")
+
+    def test_fixNewText(self):
+        self.assertEqual(jpUtils.fixNewText("あ"), "ア")
+        self.assertEqual(jpUtils.fixNewText("ー"), " チョーオン ")
 
     def test_processKangxiRadicals(self):
         self.assertEqual(jpUtils.processKangxiRadicals("簡単に⾔えば"), "簡単に言えば")

@@ -13,7 +13,7 @@ import unicodedata
 from dataclasses import dataclass
 from logHandler import log
 
-RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
+RE_HIRAGANA = re.compile('^[\u3041-\u309e]+$')
 
 def getLongDesc(s):
 	try:
@@ -44,10 +44,10 @@ def getShortDesc(s):
 	return characterProcessing.getCharacterReading('ja', s.lower())
 
 # characters which use dictionary for spelling reading
-SMALL_ZEN_KATAKANA = u'ァィゥェォッャュョヮヵヶ'
-SMALL_KANA_CHARACTERS = SMALL_ZEN_KATAKANA + u'ぁぃぅぇぉっゃゅょゎｧｨｩｪｫｬｭｮｯ'
-SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + u'をヲｦはへー'
-FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + u'ー'
+SMALL_ZEN_KATAKANA = 'ァィゥェォッャュョヮヵヶ'
+SMALL_KANA_CHARACTERS = SMALL_ZEN_KATAKANA + 'ぁぃぅぇぉっゃゅょゎｧｨｩｪｫｬｭｮｯ'
+SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + 'をヲｦはへー'
+FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + 'ー'
 
 def isJa(locale=None):
 	if locale is None:
@@ -58,7 +58,7 @@ def isZenkakuHiragana(c):
 	return re.search('[ぁ-ゞ]', c) is not None
 
 def isZenkakuKatakana(c):
-	if c == u'ー':
+	if c == 'ー':
 		return False
 	return re.search('[ァ-ヾ]', c) is not None
 
@@ -87,7 +87,7 @@ def isLatinCharacter(c):
 	return isFullShapeAlphabet(c) or isHalfShapeAlphabet(c)
 
 def isFullShapeSymbol(c):
-	return c in u'　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜'
+	return c in '　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜'
 
 def isUpper(c):
 	return (len(c) == 1) and (re.search('[A-ZＡ-Ｚ]', c) is not None)
@@ -225,9 +225,9 @@ def code2kana(code):
 		src = src[1:]
 	for c in src:
 		if c == '2':
-			s += u'ニー'
+			s += 'ニー'
 		elif c == '5':
-			s += u'ゴー'
+			s += 'ゴー'
 		else:
 			s += getShortDesc(c)
 	return s
@@ -246,7 +246,7 @@ def code2hex(code):
 
 def getCandidateCharDesc(c, a, forBraille=False):
 	d = ''
-	if forBraille and (isLatinCharacter(c) or isZenkakuHiragana(c) or isZenkakuKatakana(c) or isFullShapeNumber(c) or isHalfShapeNumber(c) or c == u'．'):
+	if forBraille and (isLatinCharacter(c) or isZenkakuHiragana(c) or isZenkakuKatakana(c) or isFullShapeNumber(c) or isHalfShapeNumber(c) or c == '．'):
 		d = c
 	elif a.half or isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c):
 		d = getShortDesc(c)
@@ -279,7 +279,7 @@ def getCandidateCharDesc(c, a, forBraille=False):
 	return d
 
 def useAttrDesc(a):
-	if a[0] == u'ー':
+	if a[0] == 'ー':
 		return False
 	if a[1].half or a[1].upper or a[1].hira or a[1].kata or a[1].full:
 		return True
@@ -319,8 +319,6 @@ def splitChars(name):
 	#log.info(repr(nameChars))
 	return nameChars
 
-#TODO: merge _get_description() and getDiscriminantReading().
-#nvdajp must modify locale/ja/characterDescriptions.dic and jpUtils.py.
 def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBraille=False, sayCharTypes=True):
 	if not name: return ''
 	nameChars = splitChars(name)
@@ -352,7 +350,7 @@ def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBra
 			prevAttr = a[1]
 		else:
 			if s:
-				s += u' '
+				s += ' '
 			if useAttrDesc(a):
 				s += getAttrDesc(a[1]) + ' '
 			s += getCandidateCharDesc(a[0], a[1], forBraille=forBraille)
