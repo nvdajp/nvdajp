@@ -250,10 +250,10 @@ def getCandidateCharDesc(c, a, forBraille=False):
 		d = c
 	elif a.half or isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c):
 		d = getShortDesc(c)
-		log.debug(u"shortdesc (%s) %s" % (c, d))
+		log.debug("shortdesc (%s) %s" % (c, d))
 	elif a.hira or a.kata:
 		d = replaceSpecialKanaCharacter(c)
-		log.debug(u"kana (%s) %s" % (c, d))
+		log.debug("kana (%s) %s" % (c, d))
 	else:
 		d = getLongDesc(c)
 		if d.endswith(" ブシュホジョ") and forBraille:
@@ -261,19 +261,19 @@ def getCandidateCharDesc(c, a, forBraille=False):
 		if d.endswith(" コーキブシュ") and forBraille:
 			d = d.replace(" コーキブシュ", " 康熙部首")
 		if d != c:
-			log.debug(u"longdesc (%s) %s" % (c, d))
+			log.debug("longdesc (%s) %s" % (c, d))
 		else:
 			d2 = characterProcessing.processSpeechSymbol('ja', c)
 			if d != d2:
-				log.debug(u"sym (%s) %s" % (c, d2))
+				log.debug("sym (%s) %s" % (c, d2))
 				d = d2
 			elif (0xd800 <= ord(c[0]) <= 0xdbff) and len(c) == 2:
 				uc = (ord(c[0]) - 0xd800) * 0x800 + (ord(c[1]) - 0xdc00)
 				d = code2hex(uc)
-				log.debug(u"sp (%s) %s" % (c, d))
+				log.debug("sp (%s) %s" % (c, d))
 			else:
 				d = code2hex(ord(c[0]))
-				log.debug(u"code (%s) %s" % (c, d))
+				log.debug("code (%s) %s" % (c, d))
 	if len(d) > 1:
 		return ' ' + d + ' '
 	return d
@@ -309,12 +309,12 @@ def splitChars(name):
 			#uc = (o0 - 0xd800) * 0x800 + (o1 - 0xdc00)
 			c = name[p] + name[p+1]
 			nameChars.append(c)
-			#log.info(u"%d %d %d (%s)" % (n, p, p+1, c))
+			#log.info("%d %d %d (%s)" % (n, p, p+1, c))
 			p += 2
 		else:
 			c = name[p]
 			nameChars.append(c)
-			#log.info(u"%d %d (%s)" % (n, p, c))
+			#log.info("%d %d (%s)" % (n, p, c))
 			p += 1
 	#log.info(repr(nameChars))
 	return nameChars
@@ -333,7 +333,7 @@ def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBra
 			sayCharTypes and (isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c)),
 			sayCharTypes and (isLatinCharacter(c) and not forBraille))
 		if not attrOnly:
-			log.debug(u"(%s) %d %s" % (uc, len(c), getAttrDesc(ca)))
+			log.debug("(%s) %d %s" % (uc, len(c), getAttrDesc(ca)))
 		attrs.append((uc, ca))
 	if attrOnly:
 		s = ''
@@ -478,7 +478,7 @@ def getSpellingSpeechWithoutCharMode(
 		if isJa(locale) and useCharacterDescriptions:
 			charDesc = getCharDesc(locale, speakCharOrg, jpAttr)
 		if useCharacterDescriptions and charDesc:
-			IDEOGRAPHIC_COMMA = u"\u3001"
+			IDEOGRAPHIC_COMMA = "\u3001"
 			speakCharAs=charDesc[0] if textLength>1 else IDEOGRAPHIC_COMMA.join(charDesc)
 		else:
 			speakCharAs=characterProcessing.processSpeechSymbol(locale,speakCharAs)
