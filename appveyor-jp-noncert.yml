@@ -71,6 +71,7 @@ build_script:
  - cd ..
  - jptools\buildControllerClient.cmd %sconsArgs%
  - jptools\tests.cmd
+ - jpchar\tests.cmd
 
 artifacts:
  - path: output\*
@@ -81,3 +82,4 @@ artifacts:
  - path: jptools\__jpdictest_log.txt
  - path: jptools\nvdajp-jtalk-*.nvda-addon
  - path: jptools\kgsbraille-*.nvda-addon
+ - path: jpchar\__checkchardesc_log.txt
