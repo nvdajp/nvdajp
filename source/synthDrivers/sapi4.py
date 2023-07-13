@@ -134,11 +134,11 @@ class SynthDriver(SynthDriver):
 
 		for item in speechSequence:
 			if isinstance(item,str):
-				item = item.replace(u"\u2022", '').replace(u"\uf0b7", '') # nvdajp (bullet)
+				item = item.replace("\u2022", '').replace("\uf0b7", '') # nvdajp (bullet)
 				textList.append(item.replace('\\','\\\\'))
 			elif isinstance(item, IndexCommand):
 				textList.append("\\mrk=%d\\"%item.index)
-			elif isinstance(item, CharacterModeCommand):
+			elif False and isinstance(item, CharacterModeCommand): # nvdajp
 				textList.append("\\RmS=1\\" if item.state else "\\RmS=0\\")
 				charMode=item.state
 			elif isinstance(item, BreakCommand):
