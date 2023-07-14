@@ -57,7 +57,7 @@ from .packaging import (
 
 if TYPE_CHECKING:
 	from _addonStore.models.addon import (  # noqa: F401
-		AddonGUIModel,
+		AddonManifestModel,
 		AddonHandlerModelGeneratorT,
 		AddonStoreModel,
 	)
@@ -392,7 +392,7 @@ class AddonBase(SupportsAddonState, SupportsVersionCheck, ABC):
 		return addonDataManager._getCachedInstalledAddonData(self.name)
 
 	@property
-	def _addonGuiModel(self) -> "AddonGUIModel":
+	def _addonGuiModel(self) -> "AddonManifestModel":
 		from _addonStore.models.addon import _createGUIModelFromManifest
 		return _createGUIModelFromManifest(self)
 
@@ -477,22 +477,6 @@ class Addon(AddonBase):
 		state[AddonStateCategory.OVERRIDE_COMPATIBILITY].discard(self.name)
 		state[AddonStateCategory.BLOCKED].discard(self.name)
 		state.save()
-
-		if (
-			# Don't delete add-on store cache if its an upgrade pending,
-			# the add-on manager has already replaced the cache file.
-			not self.isPendingInstall
-			# However, if the add-on store cache is out of date,
-			# and is being replaced by an external install
-			# we should remove the cached add-on.
-			or (
-				self._addonStoreData
-				and self._addonStoreData.addonVersionName != self.version
-			)
-		):
-			from _addonStore.dataManager import addonDataManager
-			assert addonDataManager
-			addonDataManager._deleteCacheInstalledAddon(self.name)
 
 	def addToPackagePath(self, package):
 		""" Adds this L{Addon} extensions to the specific package path if those exist.
