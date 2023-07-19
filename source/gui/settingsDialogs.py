@@ -3830,12 +3830,6 @@ class BrailleSettingsSubPanel(AutoSettingsMixin, SettingsPanel):
 	def onSave(self):
 		AutoSettingsMixin.onSave(self)
 		config.conf["braille"]["translationTable"] = self.outTableNames[self.outTableList.GetSelection()]
-		# nvdajp start [added japanese support]
-		if "ja-jp-comp6.utb" == self.outTableNames[self.outTableList.GetSelection()]:
-			config.conf["braille"]["japaneseBrailleSupport"] = True
-		else:
-			config.conf["braille"]["japaneseBrailleSupport"] = False
-		# nvdajp end [added japanese support]
 		brailleInput.handler.table = self.inTables[self.inTableList.GetSelection()]
 		config.conf["braille"]["expandAtCursor"] = self.expandAtCursorCheckBox.GetValue()
 		config.conf["braille"]["showCursor"] = self.showCursorCheckBox.GetValue()
