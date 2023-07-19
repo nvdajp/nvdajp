@@ -22,7 +22,6 @@ import winVersion
 import controlTypes
 from NVDAObjects.UIA import UIA
 from NVDAObjects.behaviors import CandidateItem as CandidateItemBehavior, EditableTextWithAutoSelectDetection
-from logHandler import log
 
 
 class ImeCandidateUI(UIA):
@@ -141,7 +140,9 @@ class AppModule(appModuleHandler.AppModule):
 		# as this is repeated each time candidate items are selected.
 		if obj.UIAAutomationId == "CandidateList":
 			return
-		speech.cancelSpeech()
+		# Windows 10 Emoji Panel
+		if obj is not None and obj.UIAElement.cachedClassName == "GridViewItem":
+			speech.cancelSpeech()
 		# Sometimes, due to bad tree traversal or wrong item getting selected,
 		# something other than the selected item sees this event.
 		# In build 18262, emoji panel may open to People group and skin tone modifier gets selected.
@@ -165,19 +166,21 @@ class AppModule(appModuleHandler.AppModule):
 				# Emoji categories list.
 				ui.message(candidate.name)
 				obj = candidate.firstChild
-		if obj is not None and api.setNavigatorObject(obj):
-			obj.reportFocus()
-			braille.handler.message(braille.getPropertiesBraille(
-				name=obj.name,
-				role=obj.role,
-				positionInfo=obj.positionInfo
-			))
-			# Cache selected item.
-			self._recentlySelected = obj.name
-		else:
-			# Translators: presented when there is no emoji when searching for one
-			# in Windows 10 Fall Creators Update and later.
-			ui.message(_("No emoji"))
+		# Windows 10 Emoji Panel
+		if obj is not None and obj.UIAElement.cachedClassName == "GridViewItem":
+			if api.setNavigatorObject(obj):
+				obj.reportFocus()
+				braille.handler.message(braille.getPropertiesBraille(
+					name=obj.name,
+					role=obj.role,
+					positionInfo=obj.positionInfo
+				))
+				# Cache selected item.
+				self._recentlySelected = obj.name
+			else:
+				# Translators: presented when there is no emoji when searching for one
+				# in Windows 10 Fall Creators Update and later.
+				ui.message(_("No emoji"))
 		nextHandler()
 
 	# Emoji panel for build 16299 and 17134.
@@ -292,6 +295,10 @@ class AppModule(appModuleHandler.AppModule):
 					return
 			except AttributeError:
 				return
+			if obj.UIAAutomationId == "KeyboardShortcutText":
+				return
+			if obj.windowClassName == "Windows.UI.Core.CoreWindow":
+				return
 			if (
 				not self._emojiPanelJustOpened
 				or obj.UIAAutomationId != "TEMPLATE_PART_ExpressionGroupedFullView"
@@ -306,10 +313,8 @@ class AppModule(appModuleHandler.AppModule):
 				"CandidateWindowControl"
 			)
 		):
-			try:
+			if getattr(obj, "name", ""):
 				ui.message(obj.name)
-			except IndexError:
-				log.debug(f"IndexError in UIA event_nameChange: {obj.name}")
 		nextHandler()
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
