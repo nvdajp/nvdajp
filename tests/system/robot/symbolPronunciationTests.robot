@@ -76,3 +76,7 @@ tableHeaderSymbols
 	# [Tags]	table
 	[Tags]	excluded_from_build
 	test_tableHeaders
+
+ignoreBlankLinesForReportLineIndentation
+	[Documentation]	Ensure indentation announced as expected when ignore blank lines for line indentation reporting is on/off.
+	test_ignoreBlankLinesForReportLineIndentation
