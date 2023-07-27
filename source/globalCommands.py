@@ -3859,7 +3859,7 @@ class GlobalCommands(ScriptableObject):
 		category=SCRCAT_OBJECTNAVIGATION,
 		gestures=(
 			"ts(object):flickright",
-			"kb(desktop):NVDA+numpad3",
+			"kb:NVDA+numpad3",
 			"kb(laptop):shift+NVDA+]",
 		),
 	)
@@ -3897,7 +3897,7 @@ class GlobalCommands(ScriptableObject):
 		category=SCRCAT_OBJECTNAVIGATION,
 		gestures=(
 			"ts(object):flickleft",
-			"kb(desktop):NVDA+numpad9",
+			"kb:NVDA+numpad9",
 			"kb(laptop):shift+NVDA+[",
 		),
 	)
