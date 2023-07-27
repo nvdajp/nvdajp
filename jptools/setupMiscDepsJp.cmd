@@ -1,6 +1,6 @@
 cd miscDepsJp
 del /Q nvdajp-miscdep.7z
-cd include\jtalk
+cd jtalk
 call all-clean.cmd
 call all-build.cmd
 call all-install.cmd

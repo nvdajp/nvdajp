@@ -1,4 +1,4 @@
-cd c:\work\nvda\miscdep\include\jtalk
+cd c:\work\nvda\miscdep\jtalk
 call setenv-x86.cmd
 call all-build.cmd
 call all-install.cmd
