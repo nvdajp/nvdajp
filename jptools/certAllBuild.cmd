@@ -29,6 +29,9 @@ set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
+rem work around "RuntimeError: Can't determine home directory"
+setx HOME %USERPROFILE%
+
 @scons source user_docs launcher release=1 certFile=%PFX% certPassword=%PASSWORD% certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% --silent %SCONSOPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
