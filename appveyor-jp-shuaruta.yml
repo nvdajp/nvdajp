@@ -1,0 +1,78 @@
+os: Visual Studio 2019
+version: "{branch}-{build}"
+
+skip_tags: true
+branches:
+ only:
+  - /alphajp.*/
+  - /betajp.*/
+  - /releasejp.*/
+
+clone_depth: 1
+
+environment:
+ PY_PYTHON: 3.7-32
+
+init:
+ # - ps: Set-WinSystemLocale ja-JP
+ # - ps: Start-Sleep -s 10
+ # - ps: Restart-Computer
+ # - ps: Start-Sleep -s 10
+ - ps: |
+    $pythonVersion = (py --version)
+    echo $pythonVersion
+ - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
+
+install:
+ - set RELEASE=1
+ - set VERSION=2023.2jp
+ - set UPDATEVERSIONTYPE=nvdajp
+ - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
+ - ps: |
+    if ($env:APPVEYOR_REPO_BRANCH.StartsWith("alphajp")) {
+        $env:VERSION = "jpalpha_" + $env:NOWDATE
+        $env:UPDATEVERSIONTYPE += "alpha"
+    } elseif ($env:APPVEYOR_REPO_BRANCH.StartsWith("betajp")) {
+        $env:VERSION += "-beta-" + $env:NOWDATE
+        $env:UPDATEVERSIONTYPE += "beta"
+    } elseif ($env:APPVEYOR_REPO_BRANCH.StartsWith("releasejp")) {
+        $env:VERSION += "-" + $env:NOWDATE
+    }
+    if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
+        $env:VERSION += "-noncert"
+    }
+ - set PUBLISHER=nvdajp
+ - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
+ - py -m pip install --upgrade --no-warn-script-location pip
+ - git submodule update --init --recursive
+
+build_script:
+ - ps: |
+    $apiVersion = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
+    echo apiversion: $apiVersion
+    $apiCompatTo = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
+    echo apiBackCompatTo: $apiCompatTo
+ - ps: |
+    $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
+    Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
+ - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
+ - jptools\nonCertAllBuild.cmd %sconsArgs%
+ - cd %APPVEYOR_BUILD_FOLDER%
+ - cd jptools
+ - pack_jtalk_addon.cmd
+ - pack_kgs_addon.cmd
+ - cd ..
+ - jptools\buildControllerClient.cmd %sconsArgs%
+ - jptools\tests.cmd
+ - jpchar\tests.cmd
+
+artifacts:
+ - path: output\*
+ - path: output\*\*
+ - path: miscDepsJp\jptools\__h1output.txt
+ - path: miscDepsJp\jptools\__h2output.txt
+ - path: miscDepsJp\jptools\__test_log.txt
+ - path: jptools\__jpdictest_log.txt
+ - path: jptools\nvdajp-jtalk-*.nvda-addon
+ - path: jptools\kgsbraille-*.nvda-addon
+ - path: jpchar\__checkchardesc_log.txt
