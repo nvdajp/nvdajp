@@ -19,9 +19,9 @@ init:
  # - ps: Start-Sleep -s 10
  # - ps: Restart-Computer
  # - ps: Start-Sleep -s 10
- - ps: |
-    $pythonVersion = (py --version)
-    echo $pythonVersion
+ # - ps: |
+ #    $pythonVersion = (py --version)
+ #    echo $pythonVersion
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
 
 install:
@@ -44,7 +44,8 @@ install:
     }
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
- - py -m pip install --upgrade --no-warn-script-location pip
+ - c:\work\nvda\py3x86env\scripts\activate
+ # - py -m pip install --upgrade --no-warn-script-location pip
  - git submodule update --init --recursive
 
 build_script:
