@@ -28,7 +28,6 @@ install:
  - set RELEASE=1
  - set VERSION=2023.2jp
  - set UPDATEVERSIONTYPE=nvdajp
- - c:\work\nvda\py3x86env\scripts\activate
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
     if ($env:APPVEYOR_REPO_BRANCH.StartsWith("alphajp")) {
@@ -45,16 +44,15 @@ install:
     }
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
- # - py -m pip install --upgrade --no-warn-script-location pip
  - git submodule update --init --recursive
- - deactivate
 
 build_script:
  - c:\work\nvda\py3x86env\scripts\activate
+ - pip install -r requirements.txt
  - ps: |
-    $apiVersion = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
+    $apiVersion = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
     echo apiversion: $apiVersion
-    $apiCompatTo = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
+    $apiCompatTo = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
     echo apiBackCompatTo: $apiCompatTo
  - ps: |
     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
