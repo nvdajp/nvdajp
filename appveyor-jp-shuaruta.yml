@@ -23,7 +23,8 @@ init:
  #    $pythonVersion = (py --version)
  #    echo $pythonVersion
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
-
+ - c:\work\nvda\py3x86env\scripts\activate
+ 
 install:
  - set RELEASE=1
  - set VERSION=2023.2jp
@@ -44,7 +45,6 @@ install:
     }
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
- - c:\work\nvda\py3x86env\scripts\activate
  # - py -m pip install --upgrade --no-warn-script-location pip
  - git submodule update --init --recursive
 
