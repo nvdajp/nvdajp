@@ -23,12 +23,12 @@ init:
  #    $pythonVersion = (py --version)
  #    echo $pythonVersion
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
- - c:\work\nvda\py3x86env\scripts\activate
  
 install:
  - set RELEASE=1
  - set VERSION=2023.2jp
  - set UPDATEVERSIONTYPE=nvdajp
+ - c:\work\nvda\py3x86env\scripts\activate
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
     if ($env:APPVEYOR_REPO_BRANCH.StartsWith("alphajp")) {
@@ -47,8 +47,10 @@ install:
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
  # - py -m pip install --upgrade --no-warn-script-location pip
  - git submodule update --init --recursive
+ - deactivate
 
 build_script:
+ - c:\work\nvda\py3x86env\scripts\activate
  - ps: |
     $apiVersion = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
     echo apiversion: $apiVersion
@@ -67,6 +69,7 @@ build_script:
  - jptools\buildControllerClient.cmd %sconsArgs%
  - jptools\tests.cmd
  - jpchar\tests.cmd
+ - deactivate
 
 artifacts:
  - path: output\*
