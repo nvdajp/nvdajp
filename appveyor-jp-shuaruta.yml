@@ -49,6 +49,7 @@ install:
 build_script:
  - c:\work\nvda\py3x86env\scripts\activate
  - pip install -r requirements.txt
+ - pip install typing-extensions
  - ps: |
     $apiVersion = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
     echo apiversion: $apiVersion
