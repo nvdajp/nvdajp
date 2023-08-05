@@ -1,5 +1,6 @@
 os: Visual Studio 2019
 version: "{branch}-{build}"
+build_cloud: shuaruta-win-230805
 
 skip_tags: true
 branches:
