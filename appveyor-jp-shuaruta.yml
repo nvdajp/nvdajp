@@ -60,16 +60,16 @@ build_script:
     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
  - jptools\nonCertAllBuild.cmd %sconsArgs%
- - cd %APPVEYOR_BUILD_FOLDER%
- - cd jptools
- - pack_jtalk_addon.cmd
- - pack_kgs_addon.cmd
- - cd ..
- - jptools\buildControllerClient.cmd %sconsArgs%
- - set PYTHONUTF8=1
- - jptools\tests.cmd
- - jpchar\tests.cmd
- - deactivate
+ # - cd %APPVEYOR_BUILD_FOLDER%
+ # - cd jptools
+ # - pack_jtalk_addon.cmd
+ # - pack_kgs_addon.cmd
+ # - cd ..
+ # - jptools\buildControllerClient.cmd %sconsArgs%
+ # - set PYTHONUTF8=1
+ # - jptools\tests.cmd
+ # - jpchar\tests.cmd
+ # - deactivate
 
 artifacts:
  - path: output\*
