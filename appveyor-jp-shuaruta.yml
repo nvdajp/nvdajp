@@ -47,7 +47,7 @@ install:
  - git submodule update --init --recursive
 
 build_script:
- - c:\work\nvda\py3x86env\scripts\activate
+ - call c:\work\nvda\py3x86env\scripts\activate.bat
  - pip install -r requirements.txt
  - pip install typing-extensions
  - ps: |
@@ -69,7 +69,7 @@ build_script:
  # - set PYTHONUTF8=1
  # - jptools\tests.cmd
  # - jpchar\tests.cmd
- - deactivate
+ - c:\work\nvda\py3x86env\scripts\deactivate.bat
 
 artifacts:
  - path: output\*
