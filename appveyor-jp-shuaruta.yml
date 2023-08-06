@@ -57,9 +57,12 @@ build_script:
  #    echo apiBackCompatTo: $apiCompatTo
  - ps: |
     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
-    Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
- # - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
- - call jptools\nonCertAllBuild.cmd %sconsArgs%
+    & ".\jptools\nonCertAllBuild.cmd" $sconsArgs
+    if ($LastExitCode -eq 0) {
+        Write-Output "completed successfully."
+    } else {
+        Write-Output "An error occurred during the execution."
+    }
  # - cd %APPVEYOR_BUILD_FOLDER%
  # - cd jptools
  # - pack_jtalk_addon.cmd
