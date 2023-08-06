@@ -47,19 +47,19 @@ install:
  - git submodule update --init --recursive
 
 build_script:
- - call c:\work\nvda\py3x86env\scripts\activate.bat
- - pip install -r requirements.txt
- - pip install typing-extensions
- - ps: |
-    $apiVersion = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
-    echo apiversion: $apiVersion
-    $apiCompatTo = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
-    echo apiBackCompatTo: $apiCompatTo
+ # - call c:\work\nvda\py3x86env\scripts\activate.bat
+ # - pip install -r requirements.txt
+ # - pip install typing-extensions
+ # - ps: |
+ #    $apiVersion = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
+ #    echo apiversion: $apiVersion
+ #    $apiCompatTo = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
+ #    echo apiBackCompatTo: $apiCompatTo
  - ps: |
     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
- - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
- - jptools\nonCertAllBuild.cmd %sconsArgs%
+ # - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
+ - call jptools\nonCertAllBuild.cmd %sconsArgs%
  # - cd %APPVEYOR_BUILD_FOLDER%
  # - cd jptools
  # - pack_jtalk_addon.cmd
@@ -69,7 +69,6 @@ build_script:
  # - set PYTHONUTF8=1
  # - jptools\tests.cmd
  # - jpchar\tests.cmd
- - c:\work\nvda\py3x86env\scripts\deactivate.bat
 
 artifacts:
  - path: output\*
