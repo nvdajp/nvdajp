@@ -89,3 +89,12 @@ build_script:
 #  - path: jptools\nvdajp-jtalk-*.nvda-addon
 #  - path: jptools\kgsbraille-*.nvda-addon
 #  - path: jpchar\__checkchardesc_log.txt
+
+on_success:
+ - echo global handler on successful build
+
+on_failure:
+ - echo global handler on build failure
+
+on_finish:
+ - echo global handler after build failure or success
