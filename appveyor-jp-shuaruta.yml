@@ -56,12 +56,18 @@ build_script:
  #    $apiCompatTo = (python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))")
  #    echo apiBackCompatTo: $apiCompatTo
  - ps: |
-    $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
-    & ".\jptools\nonCertAllBuild.cmd" $sconsArgs
+    & ".\jptools\nonCertBuild1.cmd"
     if ($LastExitCode -eq 0) {
-        Write-Output "completed successfully."
+        Write-Output "build1 completed."
     } else {
-        Write-Output "An error occurred during the execution."
+        Write-Output "An error occurred during build1."
+    }
+    $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
+    & ".\jptools\nonCertBuild2.cmd" $sconsArgs
+    if ($LastExitCode -eq 0) {
+        Write-Output "build2 completed."
+    } else {
+        Write-Output "An error occurred during build2."
     }
  # - cd %APPVEYOR_BUILD_FOLDER%
  # - cd jptools
