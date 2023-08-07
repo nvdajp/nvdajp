@@ -73,6 +73,8 @@ build_script:
  # - jptools\tests.cmd
  # - jpchar\tests.cmd
 
+test: off
+
 # artifacts:
 #  - path: output\*
 #  - path: output\*\*
