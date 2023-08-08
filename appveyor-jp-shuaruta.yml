@@ -79,8 +79,8 @@ build_script:
  # - jptools\tests.cmd
  # - jpchar\tests.cmd
 
-# artifacts:
-#  - path: output\*
+artifacts:
+ - path: output\*
 #  - path: output\*\*
 #  - path: miscDepsJp\jptools\__h1output.txt
 #  - path: miscDepsJp\jptools\__h2output.txt
