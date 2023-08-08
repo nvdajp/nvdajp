@@ -5,9 +5,7 @@ build_cloud: shuaruta-win-230805
 skip_tags: true
 branches:
  only:
-  - /alphajp.*/
-  - /betajp.*/
-  - /releasejp.*/
+  - /shuaruta*/
 
 clone_depth: 1
 
