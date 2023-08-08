@@ -63,13 +63,13 @@ build_script:
     } else {
         Write-Output "An error occurred during build1."
     }
- #     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
- #     & ".\jptools\nonCertBuild2.cmd" $sconsArgs
- #     if ($LastExitCode -eq 0) {
- #         Write-Output "build2 completed."
- #     } else {
- #         Write-Output "An error occurred during build2."
- #     }
+    $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
+    & ".\jptools\nonCertBuild2a.cmd" $sconsArgs
+    if ($LastExitCode -eq 0) {
+        Write-Output "build2 completed."
+    } else {
+        Write-Output "An error occurred during build2."
+    }
  - cd %APPVEYOR_BUILD_FOLDER%
  - cd jptools
  - pack_jtalk_addon.cmd
@@ -81,7 +81,6 @@ build_script:
  # - jpchar\tests.cmd
 
 artifacts:
- - path: source\synthDrivers\jtalk\libopenjtalk.dll
 #  - path: output\*
 #  - path: output\*\*
 #  - path: miscDepsJp\jptools\__h1output.txt
