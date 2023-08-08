@@ -80,7 +80,8 @@ build_script:
  # - jptools\tests.cmd
  # - jpchar\tests.cmd
 
-# artifacts:
+artifacts:
+ - path: source\synthDrivers\jtalk\libopenjtalk.dll
 #  - path: output\*
 #  - path: output\*\*
 #  - path: miscDepsJp\jptools\__h1output.txt
