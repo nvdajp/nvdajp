@@ -34,6 +34,9 @@ install:
     } elseif ($env:APPVEYOR_REPO_BRANCH.StartsWith("betajp")) {
         $env:VERSION += "-beta-" + $env:NOWDATE
         $env:UPDATEVERSIONTYPE += "beta"
+    } elseif ($env:APPVEYOR_REPO_BRANCH.StartsWith("shuaruta")) {
+        $env:VERSION += "-beta-" + $env:NOWDATE
+        $env:UPDATEVERSIONTYPE += "beta"
     } elseif ($env:APPVEYOR_REPO_BRANCH.StartsWith("releasejp")) {
         $env:VERSION += "-" + $env:NOWDATE
     }
