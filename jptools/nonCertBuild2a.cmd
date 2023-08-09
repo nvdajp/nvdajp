@@ -11,8 +11,8 @@ set OPTIONS=publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVER
 set OPTIONS=%OPTIONS% release=1
 call scons source %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-@REM call scons user_docs %OPTIONS%
-@REM @if not "%ERRORLEVEL%"=="0" goto onerror
+call scons user_docs %OPTIONS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
 @REM call scons dist %OPTIONS%
 @REM @if not "%ERRORLEVEL%"=="0" goto onerror
 @REM call scons launcher %OPTIONS%
