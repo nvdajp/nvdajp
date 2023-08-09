@@ -13,8 +13,8 @@ call scons source %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 call scons user_docs %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-@REM call scons dist %OPTIONS%
-@REM @if not "%ERRORLEVEL%"=="0" goto onerror
+call scons dist %OPTIONS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
 @REM call scons launcher %OPTIONS%
 @REM @if not "%ERRORLEVEL%"=="0" goto onerror
 
