@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-04 00:02+0000\n"
+"POT-Creation-Date: 2023-08-14 03:03+0000\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Burak Yüksek <burakyuksek94@gmail.com>\n"
+"Last-Translator: Umut KORKMAZ <umutkork@gmail.com>\n"
 "Language-Team: \n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
@@ -6767,10 +6767,10 @@ msgstr "%s konumundaki eklenti desteklenmiyor"
 
 #. Translators: The message displayed when an error occurs when installing an add-on package.
 #. The %s will be replaced with the path to the add-on that could not be installed.
-#, fuzzy, python-format
+#, python-format
 msgctxt "addonStore"
 msgid "Failed to install add-on from %s"
-msgstr "%s konumundaki eklenti kurulamadı"
+msgstr "%s konumundaki eklenti kurulamad"
 
 #. Translators: A title for a dialog notifying a user of an add-on download failure.
 msgctxt "addonStore"
@@ -7360,12 +7360,12 @@ msgid "{firstAddress} through {lastAddress}"
 msgstr "{firstAddress} ile {lastAddress} arasında"
 
 #. Translators: a measurement in inches
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{val:.2f} inches"
 msgstr "{val:.2f} inç"
 
 #. Translators: a measurement in centimetres
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{val:.2f} centimetres"
 msgstr "{val:.2f} cm"
 
@@ -7646,7 +7646,6 @@ msgid "Only when tethered automatically"
 msgstr "Sadece otomatik olarak hareket ettirilirken"
 
 #. Translators: Label for setting to move the system caret when routing review cursor with braille.
-#, fuzzy
 msgid "Always"
 msgstr "Her zaman"
 
@@ -8786,7 +8785,7 @@ msgstr "Pluginleri yeniden yükle"
 
 #. Translators: The label for the Tools submenu in NVDA menu.
 msgid "Tools"
-msgstr "Araçlar"
+msgstr "A&raçlar"
 
 #. Translators: The label of a menu item to open NVDA user guide.
 msgid "&User Guide"
@@ -13611,14 +13610,12 @@ msgstr "Dış"
 
 #. Translators: The label of an option to filter the list of add-ons in the add-on store dialog.
 #. Translators: Status for addons shown in the add-on store dialog
-#, fuzzy
 msgctxt "addonStore"
 msgid "Enabled"
 msgstr "Etkin"
 
 #. Translators: The label of an option to filter the list of add-ons in the add-on store dialog.
 #. Translators: Status for addons shown in the add-on store dialog
-#, fuzzy
 msgctxt "addonStore"
 msgid "Disabled"
 msgstr "Devre dışı"
@@ -13644,13 +13641,11 @@ msgid "Migrate to add-on store"
 msgstr "Eklenti mağazasına yüklendi"
 
 #. Translators: Status for addons shown in the add-on store dialog
-#, fuzzy
 msgctxt "addonStore"
 msgid "Incompatible"
 msgstr "Uyumsuz"
 
 #. Translators: Status for addons shown in the add-on store dialog
-#, fuzzy
 msgctxt "addonStore"
 msgid "Downloading"
 msgstr "İndiriliyor"
@@ -13681,7 +13676,6 @@ msgid "Installed, pending restart"
 msgstr "Yeniden başlatıldıktan sonra kurulacak"
 
 #. Translators: Status for addons shown in the add-on store dialog
-#, fuzzy
 msgctxt "addonStore"
 msgid "Disabled, pending restart"
 msgstr "Yeniden başlatıldıktan sonra devre dışı"
@@ -13707,31 +13701,58 @@ msgid "Enabled (incompatible)"
 msgstr "Etkin (uyumsuz)"
 
 #. Translators: Status for addons shown in the add-on store dialog
-#, fuzzy
 msgctxt "addonStore"
 msgid "Enabled, pending restart"
 msgstr "Yeniden başlatıldıktan sonra Etkin"
 
-#. Translators: The label of a tab to display installed add-ons in the add-on store and the label of the
-#. add-ons list in the corresponding panel (preferably use the same accelerator key for the four labels)
+#. Translators: The label of a tab to display installed add-ons in the add-on store.
+#. Ensure the translation matches the label for the add-on list which includes an accelerator key.
+msgctxt "addonStore"
+msgid "Installed add-ons"
+msgstr "Yüklü eklentiler"
+
+#. Translators: The label of a tab to display updatable add-ons in the add-on store.
+#. Ensure the translation matches the label for the add-on list which includes an accelerator key.
+msgctxt "addonStore"
+msgid "Updatable add-ons"
+msgstr "Güncellenebilir eklentiler"
+
+#. Translators: The label of a tab to display available add-ons in the add-on store.
+#. Ensure the translation matches the label for the add-on list which includes an accelerator key.
+msgctxt "addonStore"
+msgid "Available add-ons"
+msgstr "Mevcut eklentiler"
+
+#. Translators: The label of a tab to display incompatible add-ons in the add-on store.
+#. Ensure the translation matches the label for the add-on list which includes an accelerator key.
+msgctxt "addonStore"
+msgid "Installed incompatible add-ons"
+msgstr "Yüklü uyumsuz eklentiler"
+
+#. Translators: The label of the add-ons list in the corresponding panel.
+#. Preferably use the same accelerator key for the four labels.
+#. Ensure the translation matches the label for the add-on tab which has the accelerator key removed.
 msgctxt "addonStore"
 msgid "Installed &add-ons"
 msgstr "&Kurulu Eklentiler"
 
-#. Translators: The label of a tab to display updatable add-ons in the add-on store and the label of the
-#. add-ons list in the corresponding panel (preferably use the same accelerator key for the four labels)
+#. Translators: The label of the add-ons list in the corresponding panel.
+#. Preferably use the same accelerator key for the four labels.
+#. Ensure the translation matches the label for the add-on tab which has the accelerator key removed.
 msgctxt "addonStore"
 msgid "Updatable &add-ons"
 msgstr "&Güncellenebilen eklentiler"
 
-#. Translators: The label of a tab to display available add-ons in the add-on store and the label of the
-#. add-ons list in the corresponding panel (preferably use the same accelerator key for the four labels)
+#. Translators: The label of the add-ons list in the corresponding panel.
+#. Preferably use the same accelerator key for the four labels.
+#. Ensure the translation matches the label for the add-on tab which has the accelerator key removed.
 msgctxt "addonStore"
 msgid "Available &add-ons"
 msgstr "&Mevcut eklentiler"
 
-#. Translators: The label of a tab to display incompatible add-ons in the add-on store and the label of the
-#. add-ons list in the corresponding panel (preferably use the same accelerator key for the four labels)
+#. Translators: The label of the add-ons list in the corresponding panel.
+#. Preferably use the same accelerator key for the four labels.
+#. Ensure the translation matches the label for the add-on tab which has the accelerator key removed.
 msgctxt "addonStore"
 msgid "Installed incompatible &add-ons"
 msgstr "K&urulu uyumsuz eklentiler"
@@ -13818,17 +13839,15 @@ msgid "Loading add-ons..."
 msgstr "Eklentiler yükleniyor..."
 
 #. Translators: Header (usually the add-on name) when no add-on is selected. In the add-on store dialog.
-#, fuzzy
 msgctxt "addonStore"
 msgid "No add-on selected."
-msgstr "seçili değil"
+msgstr "Seçili eklenti yok."
 
 #. Translators: Label for the text control containing a description of the selected add-on.
 #. In the add-on store dialog.
-#, fuzzy
 msgctxt "addonStore"
 msgid "Description:"
-msgstr "Dağıtım:"
+msgstr "Açıklama:"
 
 #. Translators: Label for the text control containing a description of the selected add-on.
 #. In the add-on store dialog.
@@ -13910,19 +13929,16 @@ msgstr "Kaynak web adresi:"
 
 #. Translators: A button in the addon installation warning / blocked dialog which shows
 #. more information about the addon
-#, fuzzy
 msgctxt "addonStore"
 msgid "&About add-on..."
 msgstr "Eklenti &hakkında..."
 
 #. Translators: A button in the addon installation blocked dialog which will confirm the available action.
-#, fuzzy
 msgctxt "addonStore"
 msgid "&Yes"
 msgstr "&Evet"
 
 #. Translators: A button in the addon installation blocked dialog which will dismiss the dialog.
-#, fuzzy
 msgctxt "addonStore"
 msgid "&No"
 msgstr "&Hayır"
@@ -13943,14 +13959,13 @@ msgstr ""
 "Kuruluma devam edilsin mi? "
 
 #. Translators: The title of a dialog presented when an error occurs.
-#, fuzzy
 msgctxt "addonStore"
 msgid "Add-on not compatible"
 msgstr "Eklenti uyumlu değil"
 
 #. Translators: Presented when attempting to remove the selected add-on.
 #. {addon} is replaced with the add-on name.
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgctxt "addonStore"
 msgid ""
 "Are you sure you wish to remove the {addon} add-on from NVDA? This cannot be "
@@ -13959,7 +13974,6 @@ msgstr ""
 "{addon} eklentisini Kaldırmak istediğinizden emin misiniz? Bu geri alınamaz."
 
 #. Translators: Title for message asking if the user really wishes to remove the selected Add-on.
-#, fuzzy
 msgctxt "addonStore"
 msgid "Remove Add-on"
 msgstr "Eklentiyi Kaldır"
@@ -14039,25 +14053,50 @@ msgid "Last NVDA version tested: {}\n"
 msgstr "Test edilen son NVDA sürümü: {}\n"
 
 #. Translators: title for the Addon Information dialog
-#, fuzzy
 msgctxt "addonStore"
 msgid "Add-on Information"
 msgstr "Eklenti Bilgisi"
+
+#. Translators: The warning of a dialog
+msgid "Add-on Store Warning"
+msgstr "Eklenti Mağazası'ndan Uyarı"
+
+#. Translators: Warning that is displayed before using the Add-on Store.
+msgctxt "addonStore"
+msgid ""
+"Add-ons are created by the NVDA community and are not vetted by NV Access. "
+"NV Access cannot be held responsible for add-on behavior. The functionality "
+"of add-ons is unrestricted and can include accessing your personal data or "
+"even the entire system. "
+msgstr ""
+"Eklentiler NVDA topluluğu tarafından oluşturulur ve NV Access tarafından "
+"incelenmez. NV Access eklenti davranışlarından sorumlu tutulamaz. "
+"Eklentilerin işlevselliği sınırsızdır ve kişisel verilerinize ve hatta tüm "
+"sisteme erişimi içerebilir. "
+
+#. Translators: The label of a checkbox in the add-on store warning dialog
+msgctxt "addonStore"
+msgid "&Don't show this message again"
+msgstr "Bu mesajı bir &daha gösterme"
+
+#. Translators: The label of a button in a dialog
+msgid "&OK"
+msgstr "&Tamam"
 
 #. Translators: The title of the addonStore dialog where the user can find and download add-ons
 msgctxt "addonStore"
 msgid "Add-on Store"
 msgstr "Eklenti mağazası"
 
-#. Translators: Banner notice that is displayed in the Add-on Store.
-msgctxt "addonStore"
-msgid "Note: NVDA was started with add-ons disabled"
-msgstr "Uyarı: NVDA eklentiler devredışı bırakılarak başlatıldı"
-
 #. Translators: The label for a button in add-ons Store dialog to install an external add-on.
 msgctxt "addonStore"
 msgid "Install from e&xternal source"
 msgstr "&Dış kaynaktan kur"
+
+#. Translators: Banner notice that is displayed in the Add-on Store.
+msgctxt "addonStore"
+msgid "Note: NVDA was started with add-ons disabled"
+msgstr "Uyarı: NVDA eklentiler devredışı bırakılarak başlatıldı"
 
 #. Translators: The label of a selection field to filter the list of add-ons in the add-on store dialog.
 msgctxt "addonStore"
@@ -14079,7 +14118,6 @@ msgid "&Search:"
 msgstr "&Arama:"
 
 #. Translators: Title for message shown prior to installing add-ons when closing the add-on store dialog.
-#, fuzzy
 msgctxt "addonStore"
 msgid "Add-on installation"
 msgstr "Eklenti Kurulumu"
@@ -14111,7 +14149,6 @@ msgstr "NVDA eklenti paketi (*.{ext})"
 
 #. Translators: The message displayed in the dialog that
 #. allows you to choose an add-on package for installation.
-#, fuzzy
 msgctxt "addonStore"
 msgid "Choose Add-on Package File"
 msgstr "Eklenti Paketi Dosyasını Seçin"
@@ -14142,14 +14179,12 @@ msgid "Publisher"
 msgstr "Yayıncı"
 
 #. Translators: The name of the column that contains the addon's author.
-#, fuzzy
 msgctxt "addonStore"
 msgid "Author"
 msgstr "Yazar"
 
 #. Translators: The name of the column that contains the status of the addon.
 #. e.g. available, downloading installing
-#, fuzzy
 msgctxt "addonStore"
 msgid "Status"
 msgstr "Durum"
@@ -14191,13 +14226,11 @@ msgid "&Enable (override incompatibility)"
 msgstr "&Etkinleştir (uyumsuzluğu yoksay)"
 
 #. Translators: Label for an action that removes the selected addon
-#, fuzzy
 msgctxt "addonStore"
 msgid "&Remove"
 msgstr "Kaldı&r"
 
 #. Translators: Label for an action that opens help for the selected addon
-#, fuzzy
 msgctxt "addonStore"
 msgid "&Help"
 msgstr "Y&ardım"
@@ -14208,7 +14241,6 @@ msgid "Ho&mepage"
 msgstr "&Ana sayfa"
 
 #. Translators: Label for an action that opens the license for the selected addon
-#, fuzzy
 msgctxt "addonStore"
 msgid "&License"
 msgstr "L&isans"
