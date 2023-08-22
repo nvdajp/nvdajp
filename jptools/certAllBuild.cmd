@@ -11,7 +11,7 @@ del /Q %VERIFYLOG%
 
 call jptools\setupMiscDepsJp.cmd
 
-set SIGNTOOL="C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
+set SIGNTOOL="C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64\signtool.exe"
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
 %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 %FILE1%
