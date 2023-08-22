@@ -157,8 +157,8 @@ version = env["version"]
 version_build = env["version_build"]
 release = env["release"]
 publisher = env["publisher"]
-certFile = env["certFile"]
-certPassword = env["certPassword"]
+# certFile = env["certFile"]
+# certPassword = env["certPassword"]
 certTimestampServer = env["certTimestampServer"]
 userDocsDir=Dir('user_docs')
 sourceDir = env.Dir("source")
@@ -181,11 +181,11 @@ Export('outputDir')
 
 # An action to sign an executable with certFile.
 # we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages 
-signExecCmd = ["signtool", "sign", "/a", "/fd", "SHA256"]
-if certPassword:
-	signExecCmd.extend(("/p", certPassword))
+signExecCmd = ["signtool", "sign", "/a", "/fd", "SHA256", "/td", "SHA256"]
+# if certPassword:
+#	signExecCmd.extend(("/p", certPassword))
 if certTimestampServer:
-	signExecCmd.extend(("/tr", certTimestampServer, "/td", "SHA256"))
+	signExecCmd.extend(("/tr", certTimestampServer))
 def signExec(target,source,env):
 	print([str(x) for x in target])
 	#sys.exit(1)
@@ -344,7 +344,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 			if file.name.endswith(".dll") and file.is_file():
 				action.append(Copy(target[0], file.path))
 
-	if certFile:
+	if certTimestampServer:
 		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "nvda_eoaProxy.exe", "nvda_dmp.exe":
 			action.append(lambda target,source,env, progByVal=prog: signExec([target[0].File(progByVal)],source,env))
 
@@ -407,10 +407,10 @@ uninstGen = env.Command(File("uninstaller/uninstGen.exe"), "uninstaller/uninst.n
 	"/DINSTEXE=${TARGET.abspath}",
 	"$SOURCE"]])
 uninstaller=env.Command(uninstFile,uninstGen,[uninstGen])
-if certFile:
+if certTimestampServer:
 	env.AddPostAction(uninstaller, [signExec])
 
-dist = env.NVDADist("dist", [sourceDir,userDocsDir], uiAccess=bool(certFile))
+dist = env.NVDADist("dist", [sourceDir,userDocsDir], uiAccess=bool(certTimestampServer))
 env.Depends(dist,uninstaller)
 # Dir node targets don't get cleaned, so cleaning of the dist nodes has to be explicitly specified.
 env.Clean(dist, dist)
@@ -422,7 +422,7 @@ launcher = env.Command(outputDir.File("%s.exe" % outFilePrefix), ["launcher/nvda
 	"/DVERSION=$version", '/DPUBLISHER="$publisher"','/DCOPYRIGHT="$copyright"','/DVERSION_YEAR="$version_year"','/DVERSION_MAJOR="$version_major"','/DVERSION_MINOR="$version_minor"','/DVERSION_BUILD="$version_build"',
 	"/DNVDADistDir=${SOURCES[1].abspath}", "/DLAUNCHEREXE=${TARGET.abspath}",
 	"$SOURCE"]])
-if certFile:
+if certTimestampServer:
 	env.AddPostAction(launcher, [signExec])
 env.Alias("launcher", launcher)
 
