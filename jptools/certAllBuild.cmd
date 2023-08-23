@@ -1,6 +1,14 @@
 set SCONSOPTIONS=%*
 
-set TIMESERVER=http://timestamp.comodoca.com/
+@if "%APPVEYOR_PROJECT_SLUG%"=="nvdajp" (
+    set PFX=jptools\secret\shuaruta-key220824.pfx
+    set PWFILE=jptools\secret\shuaruta-key-pass-2022.txt
+    @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
+    del /Q %PWFILE%
+    set TIMESERVER=http://timestamp.comodoca.com/rfc3161
+) else (
+    set TIMESERVER=http://timestamp.comodoca.com/
+)
 
 call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0
@@ -14,18 +22,30 @@ call jptools\setupMiscDepsJp.cmd
 set SIGNTOOL="C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64\signtool.exe"
 
 set FILE1=source\synthDrivers\jtalk\libmecab.dll
-%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 %FILE1%
+@if "%APPVEYOR_PROJECT_SLUG%"=="nvdajp" (
+    %SIGNTOOL% sign /f %PFX% /p %PASSWORD% /fd SHA256 /tr %TIMESERVER% /td SHA256 %FILE1%
+) else (
+    %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 %FILE1%
+)
 %SIGNTOOL% verify /pa %FILE1% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
 set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
-%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 %FILE2%
+@if "%APPVEYOR_PROJECT_SLUG%"=="nvdajp" (
+    %SIGNTOOL% sign /f %PFX% /p %PASSWORD% /fd SHA256 /tr %TIMESERVER% /td SHA256 %FILE2%
+) else (
+    %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 %FILE2%
+)
 %SIGNTOOL% verify /pa %FILE2% >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
-@scons source user_docs launcher release=1 certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% --silent %SCONSOPTIONS%
+@if "%APPVEYOR_PROJECT_SLUG%"=="nvdajp" (
+    @scons source user_docs launcher release=1 certFile=%PFX% certPassword=%PASSWORD% certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% --silent %SCONSOPTIONS%
+) else (
+    @scons source user_docs launcher release=1 certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% --silent %SCONSOPTIONS%
+)
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 %SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%

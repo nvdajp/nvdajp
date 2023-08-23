@@ -157,8 +157,8 @@ version = env["version"]
 version_build = env["version_build"]
 release = env["release"]
 publisher = env["publisher"]
-# certFile = env["certFile"]
-# certPassword = env["certPassword"]
+certFile = env["certFile"]
+certPassword = env["certPassword"]
 certTimestampServer = env["certTimestampServer"]
 userDocsDir=Dir('user_docs')
 sourceDir = env.Dir("source")
@@ -181,11 +181,13 @@ Export('outputDir')
 
 # An action to sign an executable with certFile.
 # we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages 
-signExecCmd = ["signtool", "sign", "/a", "/fd", "SHA256", "/td", "SHA256"]
-# if certPassword:
-#	signExecCmd.extend(("/p", certPassword))
+signExecCmd = ["signtool", "sign", "/fd", "SHA256"]
+if certFile and certPassword:
+	signExecCmd.extend(("/f", certFile, "/p", certPassword))
+else:
+	signExecCmd.append("/a")
 if certTimestampServer:
-	signExecCmd.extend(("/tr", certTimestampServer))
+	signExecCmd.extend(("/tr", certTimestampServer, "/td", "SHA256"))
 def signExec(target,source,env):
 	print([str(x) for x in target])
 	#sys.exit(1)
