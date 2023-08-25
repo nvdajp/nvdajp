@@ -31,7 +31,6 @@ Starts from desktop shortcut
 	[Tags]	excluded_from_build
 	[Documentation]	Ensure that NVDA can start from desktop shortcut
 	[Setup]	start NVDA	standard-dontShowWelcomeDialog.ini
-	[Tags]	excluded_from_build
 	Pass Execution If	"${whichNVDA}"!="installed"	Desktop shortcut only exists on installed copies
 	test desktop shortcut
 
