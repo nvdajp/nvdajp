@@ -12,10 +12,6 @@ clone_depth: 1
 
 environment:
  PY_PYTHON: 3.7-32
- my_secret_a:
-  secure: kPfHlAOr4ZcGv/XCSRBeainjAYGaqsTMU6+mMvgXOMg=
- my_secret_b:
-  secure: neMaHS4sUE44BxKyxNgaTcCnK663C88hNtG75ALxzoE=
 
 init:
  - ps: Set-WinSystemLocale ja-JP
@@ -42,14 +38,8 @@ install:
     } elseif ($env:APPVEYOR_REPO_BRANCH.StartsWith("releasejp")) {
         $env:VERSION += "-" + $env:NOWDATE
     }
-    if ($env:APPVEYOR_PROJECT_SLUG -ne "nvdajp") {
-        $env:VERSION += "-noncert"
-    }
  - set PUBLISHER=nvdajp
  - echo %PUBLISHER% %UPDATEVERSIONTYPE% %VERSION%
- - nuget install secure-file -ExcludeVersion
- - secure-file\tools\secure-file -decrypt jptools\secret\shuaruta-key220824.pfx.enc -secret %my_secret_a%
- - secure-file\tools\secure-file -decrypt jptools\secret\shuaruta-key-pass-2022.txt.enc -secret %my_secret_b%
  - py -m pip install --upgrade --no-warn-script-location pip
  - git submodule update --init --recursive
 
@@ -62,8 +52,8 @@ build_script:
  - ps: |
     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
- - 'echo jptools\certAllBuild.cmd %sconsArgs%'
- - jptools\certAllBuild.cmd %sconsArgs%
+ - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
+ - jptools\nonCertAllBuild.cmd %sconsArgs%
  - cd %APPVEYOR_BUILD_FOLDER%
  - cd jptools
  - pack_jtalk_addon.cmd
