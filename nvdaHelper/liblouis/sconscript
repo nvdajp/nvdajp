@@ -31,7 +31,7 @@ env: Environment = typing.cast(Environment, thirdPartyEnv.Clone())
 louisRootDir = env.Dir("#include/liblouis")
 louisSourceDir = louisRootDir.Dir("liblouis")
 outDir = sourceDir.Dir("louis")
-signExec=env['signExec'] if env['certFile'] else None
+signExec=env['signExec'] if env['certTimestampServer'] else None
 
 RE_AC_INIT = re.compile(r"^AC_INIT\(\[(?P<package>.*)\], \[(?P<version>.*)\], \[(?P<bugReport>.*)\], \[(?P<tarName>.*)\], \[(?P<url>.*)\]\)")
 def getLouisVersion():
