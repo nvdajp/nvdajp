@@ -23,29 +23,29 @@ set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
 for "output" %%i in (*.exe) do (
-    signtool verify /pa "%%i" >> %VERIFYLOG%
+    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
     @if not "%ERRORLEVEL%"=="0" goto onerror
 )
 for "dist" %%i in (*.exe) do (
-    signtool verify /pa "%%i" >> %VERIFYLOG%
+    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
     @if not "%ERRORLEVEL%"=="0" goto onerror
 )
 for /r "dist\synthDrivers\jtalk" %%i in (*.dll *.exe) do (
-    signtool verify /pa "%%i" >> %VERIFYLOG%
+    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
     @if not "%ERRORLEVEL%"=="0" goto onerror
 )
 for /r "dist\lib" %%i in (*.dll *.exe) do (
     if "%%~nxi" neq "Microsoft.UI.UIAutomation.dll" (
-        signtool verify /pa "%%i" >> %VERIFYLOG%
+        %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
         @if not "%ERRORLEVEL%"=="0" goto onerror
     )
 )
 for /r "dist\lib64" %%i in (*.dll *.exe) do (
-    signtool verify /pa "%%i" >> %VERIFYLOG%
+    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
     @if not "%ERRORLEVEL%"=="0" goto onerror
 )
 for /r "dist\libArm64" %%i in (*.dll *.exe) do (
-    signtool verify /pa "%%i" >> %VERIFYLOG%
+    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
     @if not "%ERRORLEVEL%"=="0" goto onerror
 )
 
