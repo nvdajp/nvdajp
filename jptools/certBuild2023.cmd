@@ -22,14 +22,12 @@ call scons.bat source user_docs launcher release=1 certTimestampServer=%TIMESERV
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
-for "output" %%i in (*.exe) do (
-    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
-    @if not "%ERRORLEVEL%"=="0" goto onerror
-)
-for "dist" %%i in (*.exe) do (
-    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
-    @if not "%ERRORLEVEL%"=="0" goto onerror
-)
+%SIGNTOOL% verify /pa output\*.exe >> %VERIFYLOG%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+
+%SIGNTOOL% verify /pa dist\*.exe >> %VERIFYLOG%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+
 for /r "dist\synthDrivers\jtalk" %%i in (*.dll *.exe) do (
     %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
     @if not "%ERRORLEVEL%"=="0" goto onerror
