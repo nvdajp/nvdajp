@@ -22,11 +22,11 @@ call scons.bat source user_docs launcher release=1 certTimestampServer=%TIMESERV
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
-for /r "output" %%i in (*.exe) do (
+for "output" %%i in (*.exe) do (
     signtool verify /pa "%%i" >> %VERIFYLOG%
     @if not "%ERRORLEVEL%"=="0" goto onerror
 )
-for /r "dist" %%i in (*.exe) do (
+for "dist" %%i in (*.exe) do (
     signtool verify /pa "%%i" >> %VERIFYLOG%
     @if not "%ERRORLEVEL%"=="0" goto onerror
 )
