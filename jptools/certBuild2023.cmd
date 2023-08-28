@@ -6,6 +6,7 @@ call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0
 cd ..
 
+if not exist output mkdir output
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
@@ -25,7 +26,7 @@ set FILE2=source\synthDrivers\jtalk\libopenjtalk.dll
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
-scons source user_docs launcher release=1 certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% --silent %SCONSOPTIONS%
+call scons.bat source user_docs launcher release=1 certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% --silent %SCONSOPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 %SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
