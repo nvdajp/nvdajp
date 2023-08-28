@@ -29,15 +29,19 @@ timeout /T 5 /NOBREAK
 call scons.bat source user_docs launcher release=1 certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% --silent %SCONSOPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-%SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-%SIGNTOOL% verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-%SIGNTOOL% verify /pa dist\libArm64\%VERSION%\*.dll >> %VERIFYLOG%
+%SIGNTOOL% verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 %SIGNTOOL% verify /pa dist\*.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-%SIGNTOOL% verify /pa output\nvda_%VERSION%.exe >> %VERIFYLOG%
+%SIGNTOOL% verify /pa dist\lib\%VERSION%\*.dll >> %VERIFYLOG%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+%SIGNTOOL% verify /pa dist\lib64\%VERSION%\*.exe >> %VERIFYLOG%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+%SIGNTOOL% verify /pa dist\lib64\%VERSION%\*.dll >> %VERIFYLOG%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+%SIGNTOOL% verify /pa dist\libArm64\%VERSION%\*.exe >> %VERIFYLOG%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+%SIGNTOOL% verify /pa dist\libArm64\%VERSION%\*.dll >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo %UPDATEVERSIONTYPE% %VERSION%
