@@ -30,7 +30,7 @@ import api
 import globalVars
 from logHandler import log
 import NVDAState
-from utils.security import _isLockScreenModeActive
+from utils.security import isLockScreenModeActive
 
 versionedLibPath = os.path.join(globalVars.appDir, 'lib')
 versionedLibARM64Path = os.path.join(globalVars.appDir, 'libArm64')
@@ -83,9 +83,10 @@ def nvdaController_brailleMessage(text):
 	focus=api.getFocusObject()
 	if focus.sleepMode==focus.SLEEP_FULL:
 		return -1
-	import queueHandler
-	import braille
-	queueHandler.queueFunction(queueHandler.eventQueue,braille.handler.message,text)
+	if config.conf["braille"]["reportLiveRegions"]:
+		import queueHandler
+		import braille
+		queueHandler.queueFunction(queueHandler.eventQueue, braille.handler.message, text)
 	return 0
 
 @WINFUNCTYPE(c_long,c_wchar_p)
@@ -202,6 +203,7 @@ def nvdaControllerInternal_reportLiveRegion(text: str, politeness: str):
 		return -1
 	import queueHandler
 	import speech
+	import braille
 	from aria import AriaLivePoliteness
 	from speech.priorities import Spri
 	try:
@@ -220,6 +222,11 @@ def nvdaControllerInternal_reportLiveRegion(text: str, politeness: str):
 			if politenessValue == AriaLivePoliteness.ASSERTIVE
 			else Spri.NORMAL
 		)
+	)
+	queueHandler.queueFunction(
+		queueHandler.eventQueue,
+		braille.handler.message,
+		text
 	)
 	return 0
 
@@ -660,7 +667,7 @@ def nvdaControllerInternal_installAddonPackageFromPath(addonPath):
 	if globalVars.appArgs.secure:
 		log.debugWarning("Unable to install add-on into secure copy of NVDA.")
 		return
-	if _isLockScreenModeActive():
+	if isLockScreenModeActive():
 		log.debugWarning("Unable to install add-on while Windows is locked.")
 		return
 	import wx
@@ -675,7 +682,7 @@ def nvdaControllerInternal_openConfigDirectory():
 	if globalVars.appArgs.secure:
 		log.debugWarning("Unable to open user config directory for secure copy of NVDA.")
 		return
-	if _isLockScreenModeActive():
+	if isLockScreenModeActive():
 		log.debugWarning("Unable to open user config directory while Windows is locked.")
 		return
 	import systemUtils
@@ -770,7 +777,7 @@ def initialize() -> None:
 		except AttributeError as e:
 			log.error("nvdaHelperLocal function pointer for %s could not be found, possibly old nvdaHelperLocal dll"%name,exc_info=True)
 			raise e
-	localLib.nvdaHelperLocal_initialize()
+	localLib.nvdaHelperLocal_initialize(globalVars.appArgs.secure)
 	generateBeep=localLib.generateBeep
 	generateBeep.argtypes=[c_char_p,c_float,c_int,c_int,c_int]
 	generateBeep.restype=c_int
@@ -795,7 +802,7 @@ def initialize() -> None:
 		log.critical("Error loading nvdaHelperRemote.dll: %s" % WinError())
 		return
 	_remoteLib=CDLL("nvdaHelperRemote",handle=h)
-	if _remoteLib.injection_initialize(globalVars.appArgs.secure) == 0:
+	if _remoteLib.injection_initialize() == 0:
 		raise RuntimeError("Error initializing NVDAHelperRemote")
 	if not _remoteLib.installIA2Support():
 		log.error("Error installing IA2 support")

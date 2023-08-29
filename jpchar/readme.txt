@@ -1,9 +1,7 @@
-更新予定
-
 A part of NonVisual Desktop Access (NVDA)
 This file is covered by the GNU General Public License.
 See the file COPYING for more details.
-Copyright (C) 2015-2019 Takuya Nishimoto
+Copyright (C) 2015-2019,2023 Takuya Nishimoto
 
 
 copy Japanese character symbols to subversion repo
@@ -17,7 +15,7 @@ checkCharDesc.py
 character description consistency check
 
 > cd jpchar
-> py -2 checkCharDesc.py
+> py -3 checkCharDesc.py
 
 
 checkSymbols.py

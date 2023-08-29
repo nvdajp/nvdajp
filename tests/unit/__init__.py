@@ -1,4 +1,3 @@
-# tests/unit/__init__.py
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -16,15 +15,6 @@ Methods in test classes should have a C{test_} prefix.
 
 import os
 import sys
-
-import locale
-import gettext
-import builtins
-#Localization settings
-locale.setlocale(locale.LC_ALL,'')
-translations = gettext.NullTranslations()
-translations.install()
-builtins.pgettext = lambda context, message: message
 
 # The path to the unit tests.
 UNIT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -103,6 +93,18 @@ def getFakeCellCount(numCells: int) -> int:
 
 
 braille.filter_displaySize.register(getFakeCellCount)
+
+# Changing braille displays might call braille.handler.disableDetection(),
+# which requires the bdDetect.deviceInfoFetcher to be set.
+import bdDetect  # noqa: E402
+bdDetect.deviceInfoFetcher = bdDetect._DeviceInfoFetcher()
+
+# Braille unit tests also need braille input to be initialized.
+import brailleInput  # noqa: E402
+brailleInput.initialize()
+
+# Make sure there's no blinking cursor as that relies on wx
+config.conf['braille']['cursorBlink'] = False
 
 # The focus and navigator objects need to be initialized to something.
 from .objectProvider import PlaceholderNVDAObject,NVDAObjectWithRole

@@ -13,7 +13,7 @@ import unicodedata
 from dataclasses import dataclass
 from logHandler import log
 
-RE_HIRAGANA = re.compile(u'^[\u3041-\u309e]+$')
+RE_HIRAGANA = re.compile('^[\u3041-\u309e]+$')
 
 def getLongDesc(s):
 	try:
@@ -44,10 +44,10 @@ def getShortDesc(s):
 	return characterProcessing.getCharacterReading('ja', s.lower())
 
 # characters which use dictionary for spelling reading
-SMALL_ZEN_KATAKANA = u'ァィゥェォッャュョヮヵヶ'
-SMALL_KANA_CHARACTERS = SMALL_ZEN_KATAKANA + u'ぁぃぅぇぉっゃゅょゎｧｨｩｪｫｬｭｮｯ'
-SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + u'をヲｦはへー'
-FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + u'ー'
+SMALL_ZEN_KATAKANA = 'ァィゥェォッャュョヮヵヶ'
+SMALL_KANA_CHARACTERS = SMALL_ZEN_KATAKANA + 'ぁぃぅぇぉっゃゅょゎｧｨｩｪｫｬｭｮｯ'
+SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + 'をヲｦはへー'
+FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + 'ー'
 
 def isJa(locale=None):
 	if locale is None:
@@ -58,7 +58,7 @@ def isZenkakuHiragana(c):
 	return re.search('[ぁ-ゞ]', c) is not None
 
 def isZenkakuKatakana(c):
-	if c == u'ー':
+	if c == 'ー':
 		return False
 	return re.search('[ァ-ヾ]', c) is not None
 
@@ -87,7 +87,7 @@ def isLatinCharacter(c):
 	return isFullShapeAlphabet(c) or isHalfShapeAlphabet(c)
 
 def isFullShapeSymbol(c):
-	return c in u'　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜'
+	return c in '　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜'
 
 def isUpper(c):
 	return (len(c) == 1) and (re.search('[A-ZＡ-Ｚ]', c) is not None)
@@ -216,7 +216,7 @@ def getJaCharAttrDetails(char, sayCapForCapitals, sayCharTypes):
 def code2kana(code):
 	"""
 	input 0x123a
-　	output 'イチニーサンエー'
+	output 'イチニーサンエー'
 	"""
 	s = ''
 	src = hex(code)[2:]
@@ -225,9 +225,9 @@ def code2kana(code):
 		src = src[1:]
 	for c in src:
 		if c == '2':
-			s += u'ニー'
+			s += 'ニー'
 		elif c == '5':
-			s += u'ゴー'
+			s += 'ゴー'
 		else:
 			s += getShortDesc(c)
 	return s
@@ -235,7 +235,7 @@ def code2kana(code):
 def code2hex(code):
 	"""
 	input 0x123a
-　	output 'u+0123a'
+	output 'u+0123a'
 	"""
 	s = ''
 	src = hex(code)[2:]
@@ -246,36 +246,40 @@ def code2hex(code):
 
 def getCandidateCharDesc(c, a, forBraille=False):
 	d = ''
-	if forBraille and (isLatinCharacter(c) or isZenkakuHiragana(c) or isZenkakuKatakana(c) or isFullShapeNumber(c) or isHalfShapeNumber(c) or c == u'．'):
+	if forBraille and (isLatinCharacter(c) or isZenkakuHiragana(c) or isZenkakuKatakana(c) or isFullShapeNumber(c) or isHalfShapeNumber(c) or c == '．'):
 		d = c
 	elif a.half or isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c):
 		d = getShortDesc(c)
-		log.debug(u"shortdesc (%s) %s" % (c, d))
+		log.debug("shortdesc (%s) %s" % (c, d))
 	elif a.hira or a.kata:
 		d = replaceSpecialKanaCharacter(c)
-		log.debug(u"kana (%s) %s" % (c, d))
+		log.debug("kana (%s) %s" % (c, d))
 	else:
 		d = getLongDesc(c)
+		if d.endswith(" ブシュホジョ") and forBraille:
+			d = d.replace(" ブシュホジョ", " 部首補助")
+		if d.endswith(" コーキブシュ") and forBraille:
+			d = d.replace(" コーキブシュ", " 康熙部首")
 		if d != c:
-			log.debug(u"longdesc (%s) %s" % (c, d))
+			log.debug("longdesc (%s) %s" % (c, d))
 		else:
 			d2 = characterProcessing.processSpeechSymbol('ja', c)
 			if d != d2:
-				log.debug(u"sym (%s) %s" % (c, d2))
+				log.debug("sym (%s) %s" % (c, d2))
 				d = d2
 			elif (0xd800 <= ord(c[0]) <= 0xdbff) and len(c) == 2:
 				uc = (ord(c[0]) - 0xd800) * 0x800 + (ord(c[1]) - 0xdc00)
 				d = code2hex(uc)
-				log.debug(u"sp (%s) %s" % (c, d))
+				log.debug("sp (%s) %s" % (c, d))
 			else:
 				d = code2hex(ord(c[0]))
-				log.debug(u"code (%s) %s" % (c, d))
+				log.debug("code (%s) %s" % (c, d))
 	if len(d) > 1:
 		return ' ' + d + ' '
 	return d
 
 def useAttrDesc(a):
-	if a[0] == u'ー':
+	if a[0] == 'ー':
 		return False
 	if a[1].half or a[1].upper or a[1].hira or a[1].kata or a[1].full:
 		return True
@@ -305,18 +309,16 @@ def splitChars(name):
 			#uc = (o0 - 0xd800) * 0x800 + (o1 - 0xdc00)
 			c = name[p] + name[p+1]
 			nameChars.append(c)
-			#log.info(u"%d %d %d (%s)" % (n, p, p+1, c))
+			#log.info("%d %d %d (%s)" % (n, p, p+1, c))
 			p += 2
 		else:
 			c = name[p]
 			nameChars.append(c)
-			#log.info(u"%d %d (%s)" % (n, p, c))
+			#log.info("%d %d (%s)" % (n, p, c))
 			p += 1
 	#log.info(repr(nameChars))
 	return nameChars
 
-#TODO: merge _get_description() and getDiscriminantReading().
-#nvdajp must modify locale/ja/characterDescriptions.dic and jpUtils.py.
 def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBraille=False, sayCharTypes=True):
 	if not name: return ''
 	nameChars = splitChars(name)
@@ -331,7 +333,7 @@ def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBra
 			sayCharTypes and (isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c)),
 			sayCharTypes and (isLatinCharacter(c) and not forBraille))
 		if not attrOnly:
-			log.debug(u"(%s) %d %s" % (uc, len(c), getAttrDesc(ca)))
+			log.debug("(%s) %d %s" % (uc, len(c), getAttrDesc(ca)))
 		attrs.append((uc, ca))
 	if attrOnly:
 		s = ''
@@ -348,7 +350,7 @@ def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBra
 			prevAttr = a[1]
 		else:
 			if s:
-				s += u' '
+				s += ' '
 			if useAttrDesc(a):
 				s += getAttrDesc(a[1]) + ' '
 			s += getCandidateCharDesc(a[0], a[1], forBraille=forBraille)
@@ -476,7 +478,7 @@ def getSpellingSpeechWithoutCharMode(
 		if isJa(locale) and useCharacterDescriptions:
 			charDesc = getCharDesc(locale, speakCharOrg, jpAttr)
 		if useCharacterDescriptions and charDesc:
-			IDEOGRAPHIC_COMMA = u"\u3001"
+			IDEOGRAPHIC_COMMA = "\u3001"
 			speakCharAs=charDesc[0] if textLength>1 else IDEOGRAPHIC_COMMA.join(charDesc)
 		else:
 			speakCharAs=characterProcessing.processSpeechSymbol(locale,speakCharAs)
@@ -510,3 +512,235 @@ def modifyTimeText(text):
 			# Translators: hour and minute
 			text = am_or_pm + _('{hour}:{minute}').format(hour=hour, minute=minute)
 	return text
+
+
+kangxiRadicalsTable = None
+
+def processKangxiRadicals(source):
+	global kangxiRadicalsTable
+	if not kangxiRadicalsTable:
+		items = [
+			# 02exx CJK部首補助 CJK Radicals Supplement
+			"⺐尢",
+			"⺓幺",
+			"⻑長",
+			"⻤鬼",
+			# 02fxx 康熙部首 Kangxi Radicals
+			"⼀一",
+			"⼁丨",
+			"⼂丶",
+			"⼃丿",
+			"⼄乙",
+			"⼅亅",
+			"⼆二",
+			"⼇亠",
+			"⼈人",
+			"⼉儿",
+			"⼊入",
+			"⼋八",
+			"⼌冂",
+			"⼍冖",
+			"⼎冫",
+			"⼏几",
+			"⼐凵",
+			"⼑刀",
+			"⼒力",
+			"⼓勹",
+			"⼔匕",
+			"⼕匚",
+			"⼖匸",
+			"⼗十",
+			"⼘卜",
+			"⼙卩",
+			"⼚厂",
+			"⼛厶",
+			"⼜又",
+			"⼝口",
+			"⼞囗",
+			"⼟土",
+			"⼠士",
+			"⼡夂",
+			"⼢夊",
+			"⼣夕",
+			"⼤大",
+			"⼥女",
+			"⼦子",
+			"⼧宀",
+			"⼨寸",
+			"⼩小",
+			"⼪尢",
+			"⼫尸",
+			"⼬屮",
+			"⼭山",
+			"⼮巛",
+			"⼯工",
+			"⼰己",
+			"⼱巾",
+			"⼲干",
+			"⼳幺",
+			"⼴广",
+			"⼵廴",
+			"⼶廾",
+			"⼷弋",
+			"⼸弓",
+			"⼹彐",
+			"⼺彡",
+			"⼻彳",
+			"⼼心",
+			"⼽戈",
+			"⼾戶",
+			"⼿手",
+			"⽀支",
+			"⽁攴",
+			"⽂文",
+			"⽃斗",
+			"⽄斤",
+			"⽅方",
+			"⽆无",
+			"⽇日",
+			"⽈曰",
+			"⽉月",
+			"⽊木",
+			"⽋欠",
+			"⽌止",
+			"⽍歹",
+			"⽎殳",
+			"⽏毋",
+			"⽐比",
+			"⽑毛",
+			"⽒氏",
+			"⽓气",
+			"⽔水",
+			"⽕火",
+			"⽖爪",
+			"⽗父",
+			"⽘爻",
+			"⽙爿",
+			"⽚片",
+			"⽛牙",
+			"⽜牛",
+			"⽝犬",
+			"⽞玄",
+			"⽟玉",
+			"⽠瓜",
+			"⽡瓦",
+			"⽢甘",
+			"⽣生",
+			"⽤用",
+			"⽥田",
+			"⽦疋",
+			"⽧疒",
+			"⽨癶",
+			"⽩白",
+			"⽪皮",
+			"⽫皿",
+			"⽬目",
+			"⽭矛",
+			"⽮矢",
+			"⽯石",
+			"⽰示",
+			"⽱禸",
+			"⽲禾",
+			"⽳穴",
+			"⽴立",
+			"⽵竹",
+			"⽶米",
+			"⽷糸",
+			"⽸缶",
+			"⽹网",
+			"⽺羊",
+			"⽻羽",
+			"⽼老",
+			"⽽而",
+			"⽾耒",
+			"⽿耳",
+			"⾀聿",
+			"⾁肉",
+			"⾂臣",
+			"⾃自",
+			"⾄至",
+			"⾅臼",
+			"⾆舌",
+			"⾇舛",
+			"⾈舟",
+			"⾉艮",
+			"⾊色",
+			"⾋艸",
+			"⾌虍",
+			"⾍虫",
+			"⾎血",
+			"⾏行",
+			"⾐衣",
+			"⾑襾",
+			"⾒見",
+			"⾓角",
+			"⾔言",
+			"⾕谷",
+			"⾖豆",
+			"⾗豕",
+			"⾘豸",
+			"⾙貝",
+			"⾚赤",
+			"⾛走",
+			"⾜足",
+			"⾝身",
+			"⾞車",
+			"⾟辛",
+			"⾠辰",
+			"⾡辵",
+			"⾢邑",
+			"⾣酉",
+			"⾤釆",
+			"⾥里",
+			"⾦金",
+			"⾧長",
+			"⾨門",
+			"⾩阜",
+			"⾪隶",
+			"⾫隹",
+			"⾬雨",
+			"⾭靑",
+			"⾮非",
+			"⾯面",
+			"⾰革",
+			"⾱韋",
+			"⾲韭",
+			"⾳音",
+			"⾴頁",
+			"⾵風",
+			"⾶飛",
+			"⾷食",
+			"⾸首",
+			"⾹香",
+			"⾺馬",
+			"⾻骨",
+			"⾼高",
+			"⾽髟",
+			"⾾鬥",
+			"⾿鬯",
+			"⿀鬲",
+			"⿁鬼",
+			"⿂魚",
+			"⿃鳥",
+			"⿄鹵",
+			"⿅鹿",
+			"⿆麥",
+			"⿇麻",
+			"⿈黃",
+			"⿉黍",
+			"⿊黑",
+			"⿋黹",
+			"⿌黽",
+			"⿍鼎",
+			"⿎鼓",
+			"⿏鼠",
+			"⿐鼻",
+			"⿑齊",
+			"⿒齒",
+			"⿓龍",
+			"⿔龜",
+			"⿕龠",
+		]
+		left, right = zip(*items)
+		kangxiRadicalsTable = str.maketrans(''.join(left), ''.join(right))
+	return source.translate(kangxiRadicalsTable)
