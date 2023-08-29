@@ -26,6 +26,7 @@ call pack_jtalk_addon.cmd
 call pack_kgs_addon.cmd
 cd ..
 call jptools\buildControllerClient.cmd %SCONSARGS%
+set PYTHONUTF8=1
 call jptools\tests.cmd
 call jpchar\tests.cmd
 
