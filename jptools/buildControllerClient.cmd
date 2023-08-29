@@ -13,6 +13,6 @@ copy ..\..\build\x86_64\client\nvdaControllerClient64.exp client
 copy ..\..\build\x86_64\client\nvdaControllerClient64.lib client
 SET OUTFILE=..\..\output\nvda_%VERSION%_controllerClientJp.zip
 del /Q %OUTFILE%
-7z a -xr!*~ -xr!.git* %OUTFILE% client python license.txt readme.html readmejp.txt
+7z a -xr!.gitignore %OUTFILE% client python license.txt readme.html readmejp.txt
 cd ..
 cd ..
