@@ -16,14 +16,16 @@ timeout /T 5 /NOBREAK
 %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 source\synthDrivers\jtalk\libopenjtalk.dll
 timeout /T 5 /NOBREAK
 
-call scons.bat source user_docs launcher release=1 certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% --silent %SCONSOPTIONS%
+set SCONSARGS=certTimestampServer=%TIMESERVER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+
+call scons.bat source user_docs launcher release=1 publisher=%PUBLISHER% %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd jptools
 call pack_jtalk_addon.cmd
 call pack_kgs_addon.cmd
 cd ..
-call jptools\buildControllerClient.cmd %sconsArgs%
+call jptools\buildControllerClient.cmd %SCONSARGS%
 call jptools\tests.cmd
 call jpchar\tests.cmd
 
