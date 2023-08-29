@@ -19,6 +19,14 @@ timeout /T 5 /NOBREAK
 call scons.bat source user_docs launcher release=1 certTimestampServer=%TIMESERVER% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% --silent %SCONSOPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
+cd jptools
+call pack_jtalk_addon.cmd
+call pack_kgs_addon.cmd
+cd ..
+call jptools\buildControllerClient.cmd %sconsArgs%
+call jptools\tests.cmd
+call jpchar\tests.cmd
+
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%
 
