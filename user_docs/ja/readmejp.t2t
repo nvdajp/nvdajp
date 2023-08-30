@@ -9,7 +9,7 @@
 + はじめに +
 
 
-- 最終更新日：2023年3月6日
+- 最終更新日：2023年8月30日
 - 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 
@@ -190,9 +190,9 @@ Winbiff など一部のアプリではチェックなしにしてください。
 
 +++ 数式を英語で読み上げる +++
 
-「数式を英語で読み上げる」オプションの初期値はチェックされています。MathPlayer がインストールされていて、このオプションがチェックされている場合、コンテンツの言語属性や NVDA の設定に関わらず MathML で記述された数式は英語で読み上げます。
+「数式を英語で読み上げる」オプションの初期値はチェックなしです。MathPlayer がインストールされていて、このオプションがチェックされている場合、コンテンツの言語属性や NVDA の設定に関わらず MathML で記述された数式は英語で読み上げます。
 
-このオプションをチェックなしにすると、コンテンツや設定によって MathML の数式が日本語で読み上げられる場合があります。しかしこのとき、数式の対話的ナビゲーションを実行すると "No navigation files for this speech style in this language" と報告されて操作ができない場合があります。
+このオプションがチェックなしのとき、コンテンツや設定によって MathML の数式が日本語で読み上げられる場合があります。しかしこのとき、数式の対話的ナビゲーションを実行すると "No navigation files for this speech style in this language" と報告されて操作ができない場合があります。
 
 この問題についての詳細は [チケット35208 https://osdn.net/ticket/browse.php?group_id=4221&tid=35208] および本家チケット [#5126 https://github.com/nvaccess/nvda/issues/5126] を参照してください。
 
@@ -847,7 +847,7 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 - [NVDA日本語チームの git ブランチ運用 https://osdn.net/ticket/browse.php?group_id=4221&tid=31635]
 
 
-公開ビルドサーバーは下記です：
+公開ビルドサーバーは下記です。コードサイニング証明書を使うビルド環境は公開していません：
 
 - [AppVeyor ビルドサーバー https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp]
 
@@ -899,6 +899,12 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 + バージョンごとの変更点 +
+
+++ 2023.2jp の変更点 ++
+
+- [2023.2jp の変更点 https://github.com/nvdajp/nvdajp/milestone/53?closed=1]
+- [本家版 2023.2 の翻訳 https://github.com/nvdajp/nvdajp/milestone/52?closed=1]
+
 
 ++ 2023.1jp の変更点 ++
 
