@@ -8,6 +8,7 @@ about: NVDA日本語版の改良に役立つ報告を作成
 必要なファイルの提供方法などについて下記の説明をご確認ください。
 必要な情報がない場合はチケット(issue)をクローズすることがあります。
 https://github.com/nvaccess/nvda/blob/master/devDocs/githubIssueTemplateExplanationAndExamples.md
+
 NVDA の行動規範 https://github.com/nvdajp/nvdajp/wiki/CODE_OF_CONDUCT を確認してください。チケットの作成、コメント、プルリクエストの作成などにおいて遵守してください。
 
 以下の各質問とセクションは、複数のハッシュ記号（#）で始まります。「例」を削除してください。空白の行に回答と情報を記入してください。
