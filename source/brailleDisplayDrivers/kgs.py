@@ -5,8 +5,9 @@
 #See the file COPYING for more details.
 #Copyright (C) 2011-2012 Masataka Shinke
 #Copyright (C) 2013 Masamitsu Misono
-#Copyright (C) 2011-2022 Takuya Nishimoto
+#Copyright (C) 2011-2023 Takuya Nishimoto
 
+import bdDetect
 import braille
 import inputCore
 import hwPortUtils
@@ -317,8 +318,18 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	# Translators: braille display driver description
 	description = _("KGS BrailleMemo series")
 	isThreadSafe = True
+	supportsAutomaticDetection = True
 	_portName = None
 	_directBM = None
+
+	@classmethod
+	def registerAutomaticDetection(cls, driverRegistrar: bdDetect.DriverRegistrar):
+		driverRegistrar.addUsbDevices(bdDetect.KEY_SERIAL, {
+			"VID_1148&PID_0301",  # KGS BM-SMART USB Serial
+			"VID_1148&PID_0001",  # KGS USB To Serial Com Port
+		})
+
+		driverRegistrar.addBluetoothDevices(lambda m: m.id.startswith("BM"))  # "BM Series", "BMsmart-KGS"
 
 	def __init__(self, port="auto"):
 		super(BrailleDisplayDriver,self).__init__()
