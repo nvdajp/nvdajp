@@ -9,13 +9,6 @@
 # 䪼	セツ	none	# 䪼 U+4abc
 
 
-from __future__ import print_function, unicode_literals
-
-import csv
-import unicodedata
-
-from _checkCharDesc import read_characters_file
-
 FILENAME = r'medicalChars.dic'
 with open(FILENAME) as file:
 	items = {}

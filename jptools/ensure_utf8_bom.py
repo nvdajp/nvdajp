@@ -2,7 +2,6 @@
 # Usage:
 # > python jptools\ensure_utf8_bom.py include\espeak\src\libespeak-ng\tr_languages.c
 
-from __future__ import unicode_literals, print_function
 import sys
 import codecs
 

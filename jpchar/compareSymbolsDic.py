@@ -3,8 +3,6 @@
 #A part of NonVisual Desktop Access (NVDA)
 #Copyright (C) 2015 Takuya Nishimoto (NVDA Japanese Team)
 
-from __future__ import print_function
-import pprint
 import codecs
 
 import _checkCharDesc as cd

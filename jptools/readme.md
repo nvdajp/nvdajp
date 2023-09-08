@@ -1,6 +1,6 @@
 # NVDA 日本語版 開発者メモ
 
-NVDA日本語チーム 西本卓也
+シュアルタ/NVDA日本語チーム 西本卓也
 
 
 ## ビルド環境準備とソースコード取得
@@ -102,16 +102,29 @@ Windows x86 executable installer (python-3.7.9.exe)
 
 ### (6) 確認すること
 
-コマンドプロンプトで Python 3.7 (32bit) が起動する。
+PowerShell またはコマンドプロンプトで Python 3.7 (32bit) が起動する。
 
-```
+```cmd
 > py -3.7-32 -V
 Python 3.7.9
 ```
 
-コマンドプロンプトで git, patch, 7z がそれぞれ実行できる。
+PowerShell で git, patch, 7z がそれぞれ実行できる。
 
+```powershell
+> gcm git | % Source
+C:\Program Files\Git\cmd\git.exe
+
+> gcm patch | % Source
+C:\Program Files\Git\usr\bin\patch.exe
+
+> gcm 7z | % Source
+C:\Program Files\7-Zip\7z.exe
 ```
+
+またはコマンドプロンプトで git, patch, 7z がそれぞれ実行できる。
+
+```cmd
 > where git
 C:\Program Files\Git\cmd\git.exe
 
@@ -142,22 +155,31 @@ C:\Program Files\7-Zip\7z.exe
 ## ビルド
 
 
-### 日本語版のビルド
+### 署名なしビルド
 
 
 
 ```
 > cd nvdajp
-> jptools\nonCertAllBuild.cmd
+> .\venvUtils\venvCmd jptools\nonCertAllBuild.cmd
 ```
 
-詳細は後述（署名なしビルド）
+出力は output フォルダに作られる。
 
 
 ビルドをやり直す前に中間ファイルを削除するには
 
 ```
-> jptools\cleanAndRevert.cmd
+> .\jptools\cleanAndRevert
+```
+
+
+### 署名つきビルド
+
+
+```
+> cd nvdajp
+> .\venvUtils\venvCmd jptools\certBuild2023.cmd
 ```
 
 
@@ -166,7 +188,7 @@ C:\Program Files\7-Zip\7z.exe
 
 ```
 > cd nvda
-> scons
+> .\scons
 ```
 
 
@@ -223,112 +245,5 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 > cd ..\..
 > git submodule update --init --recursive
 ```
-
-## 署名なしビルド
-
-署名なしビルドは、最上位のディレクトリで以下を実行
-
-```
-jptools\nonCertAllBuild.cmd
-```
-
-出力は output フォルダに作られる。
-
-AppVeyor 署名なしビルドのプロジェクト nvdajp-noncert
-
-https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp-q4r95
-
-Custom configuration .yml file name に appveyor-jp-noncert.yml を指定している。
-
-作業記録:
-https://osdn.net/ticket/browse.php?group_id=4221&tid=36665
-
-
-## 署名つきビルド
-
-署名つきビルドは、必要なファイルを追加して、最上位のディレクトリで以下を実行
-
-```
-jptools\certAllBuild.cmd
-```
-
-## AppVeyor
-
-
-### AppVeyor プロジェクト設定
-
-nvdajp は以下のように設定している
-
-https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp/settings
-
-
-```
-[General]
-
-GitHub repository:
-nvdajp/nvdajp
-
-Default branch:
-alphajp
-
-Custom configulation .yml file name:
-appveyor-jp.yml
-
-
-[Environment]
-
-Build worker image:
-Visual Studio 2017
-```
-
-
-### appveyor-jp.yml の内容
-
-本家の appveyor.yml をそのまま使わず、
-前述の jptools\certAllBuild.cmd を呼び出している。
-
-
-各種エラー回避の記録：
-
-https://osdn.jp/ticket/browse.php?group_id=4221&tid=36010
-
-
-本家版 NVDA を AppVeyor でビルドするために
-コードサイニング証明書を暗号化している。
-日本語版は独自のコードサイニング証明書を追加している。
-
-この暗号化は AppVeyor アカウントと紐付いており、
-他のユーザーが AppVeyor でビルドすると、
-コードサイニングに失敗するはずである。
-
-
-### AppVeyor でのファイル暗号化
-
-http://www.appveyor.com/docs/how-to/secure-files
-
-解説記事（チケット）とその引用：
-
-https://osdn.jp/ticket/browse.php?group_id=4221&tid=36180
-
-なぜ暗号化されたファイルと、その暗号化を解くための秘密文字列を
-両方公開して大丈夫なのか、
-理屈がわかりにくいが、こういうことになっている：
-
-* PFX ファイル(A)（秘密にしたいファイル）
-* ユーザーが設定した秘密文字列(B)
-* PFX ファイル(A) を秘密文字列(B) で暗号化したファイル(C)
-* 秘密文字列(B) を AppVeyor が暗号化した文字列(D) （ユーザーには見えないがここで AppVeyor が秘密文字列 (E) を使用） 
-
-公開される情報
-
-* (C) 暗号化された PFX ファイル
-* (D) 暗号化された秘密文字列 
-
-公開されない情報
-
-* (A), (B) : ユーザーが秘密にしたい情報
-* (E) : AppVeyor が秘密にしている情報 
-
-(E) がないので (C), (D) から (A), (B) を得ることができない。
 
 （以上）
