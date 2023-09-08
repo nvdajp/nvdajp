@@ -1,8 +1,6 @@
 # coding: utf-8
 # boxdrowings.csv を characters.dic 形式に変換して UTF-8 で print する
 
-from __future__ import print_function, unicode_literals
-
 import csv
 import unicodedata
 

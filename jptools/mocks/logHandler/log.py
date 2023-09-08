@@ -1,5 +1,3 @@
-from __future__ import unicode_literals, print_function
-
 def info(s):
 	try:
 		print('INFO %s' % s)

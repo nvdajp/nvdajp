@@ -7,8 +7,6 @@
 # output (stdout)
 # ‼		203c	[ニジュウカンタンフ]	ニジュウカンタンフノ エモジ
 
-from __future__ import print_function
-
 import codecs
 
 with codecs.open('emoji2.txt', 'r', 'utf-8') as file:

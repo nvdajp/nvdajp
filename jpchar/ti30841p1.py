@@ -7,8 +7,6 @@
 # output (stdout)
 # 🐀	1f400	[ネズミ]	ネズミノ エモジ
 
-from __future__ import print_function
-
 import codecs
 
 with codecs.open('emoji.txt', 'r', 'utf-8') as file:

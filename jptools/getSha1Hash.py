@@ -1,7 +1,6 @@
 # @param fileHash: The SHA-1 hash of the file as a hex string.
 # @type fileHash: basestring
 
-from __future__ import unicode_literals, print_function
 import hashlib
 import argparse
 

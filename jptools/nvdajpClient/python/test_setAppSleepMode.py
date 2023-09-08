@@ -1,6 +1,4 @@
 # coding: utf-8
-from __future__ import unicode_literals
-import time
 from ctypes import *
 import wx
 
@@ -43,12 +41,12 @@ class MyFrame(wx.Frame):
 	def OnSleep(self, event):
 		if nvdaRunning():
 			res = clientLib.nvdaController_setAppSleepMode(1)
-			print "setAppSleepMode(1):%d" % res
+			print("setAppSleepMode(1):%d" % res)
 
 	def OnWakeup(self, event):
 		if nvdaRunning():
 			res = clientLib.nvdaController_setAppSleepMode(0)
-			print "setAppSleepMode(0):%d" % res
+			print("setAppSleepMode(0):%d" % res)
 
 	def OnQuit(self, event):
 		self.Close()
