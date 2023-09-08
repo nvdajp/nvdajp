@@ -7,8 +7,6 @@
 # output (stdout)
 # 🌀	グルグル	none
 
-from __future__ import print_function
-
 import codecs
 
 with codecs.open('../source/locale/ja/characters.dic', 'r', 'utf-8') as file:

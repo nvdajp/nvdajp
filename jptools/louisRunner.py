@@ -10,7 +10,6 @@
 #   the position of the cursor in the output.
 # @rtype: (str, list of int, list of int, int)
 
-from __future__ import unicode_literals
 import sys
 sys.path.append(r'..\source')
 from louis import *

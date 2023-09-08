@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function
 import argparse
 ap = argparse.ArgumentParser()
 ap.add_argument('version')

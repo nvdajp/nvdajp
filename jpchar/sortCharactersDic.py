@@ -1,13 +1,6 @@
 # coding: utf-8
 # source/local/ja/characters.dic を Unicode 番号順に並べる
 
-from __future__ import print_function, unicode_literals
-
-import csv
-import unicodedata
-
-from _checkCharDesc import read_characters_file
-
 FILENAME = r'..\source\locale\ja\characters.dic'
 with open(FILENAME) as file:
 	items = {}
