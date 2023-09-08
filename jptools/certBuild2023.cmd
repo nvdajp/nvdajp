@@ -6,6 +6,11 @@ call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0
 cd ..
 
+cd miscDepsJp\jptools
+call build-and-test.cmd
+@if not "%ERRORLEVEL%"=="0" goto onerror
+cd ..\..
+
 call jptools\setupMiscDepsJp.cmd
 
 set SIGNTOOL="C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64\signtool.exe"
