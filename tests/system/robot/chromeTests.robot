@@ -9,7 +9,7 @@ Force Tags	NVDA	smoke test	browser	chrome
 # for start & quit in Test Setup and Test Test Teardown
 Library	NvdaLib.py
 # for test cases
-Library	chromeTests.py
+# Library	chromeTests.py
 Library	ScreenCapLibrary
 
 Test Setup	default setup
