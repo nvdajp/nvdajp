@@ -18,7 +18,6 @@ from locale import strxfrm
 import typing
 import wx
 from NVDAState import WritePaths
-from buildVersion import version_year
 
 from vision.providerBase import VisionEnhancementProviderSettings
 from wx.lib.expando import ExpandoTextCtrl
@@ -1196,8 +1195,6 @@ class SynthesizerSelectionDialog(SettingsDialog):
 		self.synthList = settingsSizerHelper.addLabeledControl(synthListLabelText, wx.Choice, choices=[])
 		self.bindHelpEvent("SelectSynthesizerSynthesizer", self.synthList)
 		self.updateSynthesizerList()
-		if version_year < 2024:
-			AudioPanel._addAudioCombos(self, settingsSizerHelper)
 
 	def postInit(self):
 		# Finally, ensure that focus is on the synthlist
@@ -1219,8 +1216,6 @@ class SynthesizerSelectionDialog(SettingsDialog):
 		if not self.synthNames:
 			# The list of synths has not been populated yet, so we didn't change anything in this panel
 			return
-
-		config.conf["speech"]["outputDevice"] = self.deviceList.GetStringSelection()
 
 		newSynth = self.synthNames[self.synthList.GetSelection()]
 		if not setSynth(newSynth):
@@ -2673,8 +2668,9 @@ class AudioPanel(SettingsPanel):
 	title = _("Audio")
 	helpId = "AudioSettings"
 
-	@staticmethod
-	def _addAudioCombos(panel: SettingsPanel, sHelper: guiHelper.BoxSizerHelper):
+	def makeSettings(self, settingsSizer: wx.BoxSizer) -> None:
+		sHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
+
 		# Translators: This is the label for the select output device combo in NVDA audio settings.
 		# Examples of an output device are default soundcard, usb headphones, etc.
 		deviceListLabelText = _("Audio output &device:")
@@ -2683,31 +2679,26 @@ class AudioPanel(SettingsPanel):
 		if deviceNames[0] in ("", "Microsoft Sound Mapper"):
 			# Translators: name for default (Microsoft Sound Mapper) audio output device.
 			deviceNames[0] = _("Microsoft Sound Mapper")
-		panel.deviceList = sHelper.addLabeledControl(deviceListLabelText, wx.Choice, choices=deviceNames)
-		panel.bindHelpEvent("SelectSynthesizerOutputDevice", panel.deviceList)
+		self.deviceList = sHelper.addLabeledControl(deviceListLabelText, wx.Choice, choices=deviceNames)
+		self.bindHelpEvent("SelectSynthesizerOutputDevice", self.deviceList)
 		try:
 			selection = deviceNames.index(config.conf["speech"]["outputDevice"])
 		except ValueError:
 			selection = 0
-		panel.deviceList.SetSelection(selection)
+		self.deviceList.SetSelection(selection)
 
 		# Translators: This is a label for the audio ducking combo box in the Audio Settings dialog.
 		duckingListLabelText = _("Audio d&ucking mode:")
-		panel.duckingList = sHelper.addLabeledControl(
+		self.duckingList = sHelper.addLabeledControl(
 			duckingListLabelText,
 			wx.Choice,
 			choices=[mode.displayString for mode in audioDucking.AudioDuckingMode]
 		)
-		panel.bindHelpEvent("SelectSynthesizerDuckingMode", panel.duckingList)
+		self.bindHelpEvent("SelectSynthesizerDuckingMode", self.duckingList)
 		index = config.conf["audio"]["audioDuckingMode"]
-		panel.duckingList.SetSelection(index)
+		self.duckingList.SetSelection(index)
 		if not audioDucking.isAudioDuckingSupported():
-			panel.duckingList.Disable()
-
-	def makeSettings(self, settingsSizer: wx.BoxSizer) -> None:
-		sHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
-
-		AudioPanel._addAudioCombos(self, sHelper)
+			self.duckingList.Disable()
 
 		# Translators: This is the label for a checkbox control in the
 		# Audio settings panel.
