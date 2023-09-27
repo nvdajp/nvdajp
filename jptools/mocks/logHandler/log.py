@@ -1,11 +1,11 @@
-def info(s):
-	try:
-		print('INFO %s' % s)
-	except UnicodeEncodeError:
-		print('INFO %r' % s)
+def debug(s, prefix="DEBUG"):
+    try:
+        print(f"{prefix} {s}")
+    except UnicodeEncodeError:
+        try:
+            print(f"{prefix} {s.encode('utf-8')}")
+        except Exception as e:
+            print(f"{prefix} {repr(e)}")
 
-def debug(s):
-	try:
-		print('DEBUG %s' % s)
-	except UnicodeEncodeError:
-		print('DEBUG %r' % s)
+def info(s):
+    debug(s, prefix="INFO")
