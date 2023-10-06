@@ -6,6 +6,12 @@ call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0
 cd ..
 
+nmake /?
+@if not "%ERRORLEVEL%"=="0" goto onerror
+
+patch -v
+@if not "%ERRORLEVEL%"=="0" goto onerror
+
 cd miscDepsJp\jptools
 call build-and-test.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
