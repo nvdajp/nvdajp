@@ -16,9 +16,11 @@ call jptools\setupMiscDepsJp.cmd
 set SIGNTOOL="C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64\signtool.exe"
 
 %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 source\synthDrivers\jtalk\libmecab.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
 %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 source\synthDrivers\jtalk\libopenjtalk.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
 set SCONSARGS=certTimestampServer=%TIMESERVER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
