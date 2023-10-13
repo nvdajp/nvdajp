@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NVDA bzr main:5884\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-22 00:01+0000\n"
-"PO-Revision-Date: 2023-09-27 13:18+0900\n"
+"POT-Creation-Date: 2023-10-08 23:57+0000\n"
+"PO-Revision-Date: 2023-10-09 12:32+0900\n"
 "Last-Translator: Takuya Nishimoto <nishimotz@gmail.com>\n"
 "Language-Team: NVDA Japanese Team <nishimotz@gmail.com>\n"
 "Language: ja\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 3.4\n"
 "X-Poedit-Bookmarks: -1,2672,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 # nvdajp from here
@@ -8994,12 +8994,12 @@ msgid "&Install NVDA..."
 msgstr "NVDAのインストール(&I)..."
 
 #. Translators: The label for the menu item to run the COM registration fix tool
-msgid "&Run COM Registration Fixing tool..."
-msgstr "COM 登録修復ツール(&R)..."
+msgid "Run COM Registration Fixing tool..."
+msgstr "COM 登録修復ツール..."
 
 #. Translators: The label for the menu item to reload plugins.
-msgid "R&eload plugins"
-msgstr "プラグインの再読み込み(&E)"
+msgid "Reload plugins"
+msgstr "プラグインの再読み込み"
 
 #. Translators: The label for the Tools submenu in NVDA menu.
 msgid "&Tools"
