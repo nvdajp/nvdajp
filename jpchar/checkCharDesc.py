@@ -3,16 +3,16 @@
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2012-2017,2023 Takuya Nishimoto, NVDA Japanese Team
 # usage:
-# > python checkCharDesc.py
+# > py -3 checkCharDesc.py
 
 import sys
 import io
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
-from _checkCharDesc import *
+import _checkCharDesc as cc
 
-ch = read_chardesc_file(CH_FILE)
-ch = read_characters_file(CS_FILE)
-ch = add_katakana_prefix_to_characters(ch)
-find_desc_duplicate(ch, skipKeisen=True, skipEmoji=True)
+ch = cc.read_chardesc_file(cc.CH_FILE)
+ch = cc.read_characters_file(cc.CS_FILE)
+ch = cc.add_katakana_prefix_to_characters(ch)
+cc.find_desc_duplicate(ch, skipKeisen=True, skipEmoji=True)
