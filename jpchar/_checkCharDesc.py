@@ -1,7 +1,7 @@
 # coding: UTF-8
 # _checkCharDesc.py
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2012,2023 Takuya Nishimoto, NVDA Japanese Team
+# Copyright (C) 2012,2023 Takuya Nishimoto, NVDA Japanese Team, Shuaruta Inc.
 
 import re, codecs
 
@@ -39,7 +39,7 @@ def read_symbol_file(sy_file, returnSource=False, raiseDuplicated=True):
             if mode == 2:
                 a = line.split("\t")
                 if len(a) >= 2 and (len(a[0]) == 1 or a[0][0] == "\\"):
-                    if ar.has_key(a[0]):
+                    if a[0] in ar:
                         print(
                             "duplicated %04x %s (line %d and %d)"
                             % (ord(a[0]), a[0], ar[a[0]][0], c)
@@ -48,7 +48,7 @@ def read_symbol_file(sy_file, returnSource=False, raiseDuplicated=True):
                             raise Exception
                     key = a[0]
                     if key[0] == "\\":
-                        key = key.decode("string_escape")[0]
+                        key = key.encode('unicode_escape').decode('utf-8')[0]
                     s = "U+%04x" % ord(key)
                     ar[key] = [c, a[1].strip()]
                     # add comment field
@@ -119,7 +119,7 @@ def print_diff(sy, ch):
             print("ch %d %s %s / sy %d %s" % (v[0], k, v[1], sy[k][0], sy[k][1]))
 
 
-C = re.compile("\s+")
+C = re.compile("\\s+")
 
 
 def equals_ignore_spaces(s1, s2):
