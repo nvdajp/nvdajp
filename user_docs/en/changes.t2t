@@ -40,7 +40,7 @@ Add-ons will need to be re-tested and have their manifest updated.
 - Updated Comtypes to version 1.2.0. (#15513)
 - Updated fast_diff_match_patch to version 2.0.1. (#15514)
 - Updated SCons to version 4.5.2. (#15529)
-- Added extension point: ``treeInterceptorHandler.post_browseModeStateChange``. (#14969)
+- Added extension point: ``treeInterceptorHandler.post_browseModeStateChange``. (#14969, @nvdaes)
 -
 
 === API Breaking Changes ===
@@ -57,9 +57,13 @@ That method receives a ``DriverRegistrar`` object on which the ``addUsbDevices``
 - Passing lambda functions to ``hwIo.ioThread.IoThread.queueAsApc`` is no longer possible, as functions should be weakly referenceable. (#14627, @LeonarddeR)
 - ``IoThread.autoDeleteApcReference`` has been removed. (#14924, @LeonarddeR)
 - To support capital pitch changes, synthesizers must now explicitly declare their support for the ``PitchCommand`` in the ``supportedCommands`` attribute on the driver. (#15433, @LeonarddeR)
+- ``speechDictHandler.speechDictVars`` has been removed. Use ``NVDAState.WritePaths.speechDictsDir`` instead of ``speechDictHandler.speechDictVars.speechDictsPath``. (#15614, @lukaszgo1)
 -
 
 === Deprecations ===
+
+- Using ``watchdog.getFormattedStacksForAllThreads`` is deprecated - please use ``logHandler.getFormattedStacksForAllThreads`` instead. (#15616, @lukaszgo1)
+-
 
 
 = 2023.3 =
