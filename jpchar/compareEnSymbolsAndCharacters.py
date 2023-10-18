@@ -33,7 +33,7 @@ def read_symbols_dic(symbols_dic_path):
 
             # symbols: という行が来るまではスキップ
             # この行が見つかったら symbols_started を True にする
-            if line.startswith("symbols:"):
+            if line.endswith("symbols:"):
                 symbols_started = True
                 continue
             if not symbols_started:
@@ -87,6 +87,9 @@ ja_symbols_dict = read_symbols_dic(
     pathlib.Path.cwd().parent / "source" / "locale" / "ja" / "symbols.dic"
 )
 
+ja_cldr_dict = read_symbols_dic(
+    pathlib.Path.cwd().parent / "include" / "nvda-cldr" / "locale" / "ja" / "cldr.dic"
+)
 
 # characterDescriptions.dic を読み込む
 def read_character_descriptions_dic(character_descriptions_dic_path):
@@ -177,6 +180,10 @@ for char in en_symbols_dict.keys():
             .replace("u+", "")
         )
         reading = description = en_symbols_dict[char][2]
+
+        # ja_cldr_dict に含まれている場合は読みと説明を上書きする
+        if char in ja_cldr_dict.keys():
+            reading = description = ja_cldr_dict[char][2]
 
         # ja_symbols_dict に含まれている場合は読みを上書きする
         if char in ja_symbols_dict.keys():
