@@ -8,24 +8,28 @@
 # output (tab separated):
 # 䪼	セツ		# 䪼 U+4abc
 
+import pathlib
+import sys
+import io
+from _jpchar import (
+    read_characters_dic,
+)
 
-FILENAME = '../source/locale/ja/characters.dic'
-with open(FILENAME, encoding='utf-8') as file:
-	items = {}
-	for src in file:
-		src = src.rstrip()
-		if not src:
-			continue
-		elif src[0] == '#':
-			continue
-		elif src[0:2] == '\\#': 
-			line = '#' + src[2:]
-		else:
-			line = src
-		a = line.split('\t')
-		if len(a) >= 4:
-			items[int(a[1], 16)] = "%s\t%s" % (a[0], a[2].replace('[', '').replace(']', ''))
+# リダイレクトされた標準出力を文字コード UTF-8 で扱う
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
-with open('_new_symbols.dic', mode='w', encoding='utf-8') as f:
-    for k in sorted(items.keys()):
-        f.write(items[k] + '\n')
+characters_dict = read_characters_dic(
+    pathlib.Path.cwd().parent / "source" / "locale" / "ja" / "characters.dic"
+)
+
+# characters_dict を Unicode 番号順に並べて出力する
+# 文字コード16進でソートされている
+# u+100 ごとにコメントを出力する
+prev_char = chr(0)
+for char in sorted(characters_dict.keys()):
+	# 下から3桁目よりも上を比較する
+	if hex(ord(prev_char))[:-2] != hex(ord(char))[:-2]:
+		print("")
+		print(f"# {hex(ord(char))[:-2]}00-")
+	print(f"{char}\t{characters_dict[char][1]}")
+	prev_char = char
