@@ -314,7 +314,7 @@ def _nvdajp(rawLabel: str) -> str:
 		return rawLabel
 	return _(rawLabel)
 
-def getRoleLabel(role: controlTypes.Role, displayString: str|None=None) -> str:
+def getRoleLabel(role: controlTypes.Role, displayString: Optional[str] = None) -> str:
 	if useRawLabels():
 		return rawRoleLabels.get(role, displayString)
 	return roleLabels.get(role, displayString)
