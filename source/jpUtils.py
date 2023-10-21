@@ -749,7 +749,7 @@ def processKangxiRadicals(source):
 ## braille labels (not translated)
 
 import typing
-from speech import controlTypes
+import controlTypes
 
 _gettext_org = _
 _ = lambda x: x
