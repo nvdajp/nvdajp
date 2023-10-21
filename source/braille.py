@@ -299,7 +299,7 @@ landmarkLabels = {
 }
 
 # nvdajp begin
-from jpUtils import (
+from jpBrailleUtils import (
 	roleLabels as rawRoleLabels,
 	positiveStateLabels as rawPositiveStateLabels,
 	negativeStateLabels as rawNegativeStateLabels,
