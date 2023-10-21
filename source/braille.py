@@ -299,94 +299,45 @@ landmarkLabels = {
 }
 
 # nvdajp begin
-nabccRoleLabels = {
-	controlTypes.Role.WINDOW: "wnd",
-	controlTypes.Role.DIALOG: "dlg",
-	controlTypes.Role.CHECKBOX: "chk",
-	controlTypes.Role.RADIOBUTTON: "rbtn",
-	controlTypes.Role.EDITABLETEXT: "edt",
-	controlTypes.Role.BUTTON: "btn",
-	controlTypes.Role.MENUBAR: "mnubar",
-	controlTypes.Role.MENUITEM: "mnuitem",
-	controlTypes.Role.POPUPMENU: "mnu",
-	controlTypes.Role.COMBOBOX: "cbo",
-	controlTypes.Role.LIST: "lst",
-	controlTypes.Role.GRAPHIC: "gra",
-	controlTypes.Role.HELPBALLOON: "hlp",
-	controlTypes.Role.TOOLTIP: "tltip",
-	controlTypes.Role.LINK: "lnk",
-	controlTypes.Role.TREEVIEW: "tv",
-	controlTypes.Role.TREEVIEWITEM: "tvitem",
-	controlTypes.Role.TABCONTROL: "tabctl",
-	controlTypes.Role.PROGRESSBAR: "prgbar",
-	controlTypes.Role.SCROLLBAR: "scrlbar",
-	controlTypes.Role.STATUSBAR: "stbar",
-	controlTypes.Role.TABLE: "tbl",
-	controlTypes.Role.TOOLBAR: "tlbar",
-	controlTypes.Role.DROPDOWNBUTTON: "drbtn",
-	controlTypes.Role.SEPARATOR: u"⠤⠤⠤⠤⠤",
-	controlTypes.Role.BLOCKQUOTE: "bqt",
-	controlTypes.Role.DOCUMENT: "doc",
-	controlTypes.Role.APPLICATION: "app",
-	controlTypes.Role.GROUPING: "grp",
-	controlTypes.Role.EMBEDDEDOBJECT: "embedded",
-	controlTypes.Role.ENDNOTE: "enote",
-	controlTypes.Role.FOOTNOTE: "fnote",
-	controlTypes.Role.TERMINAL: "term",
-	controlTypes.Role.SECTION: "sect",
-	controlTypes.Role.TOGGLEBUTTON: "tgbtn",
-	controlTypes.Role.SPLITBUTTON: "splbtn",
-	controlTypes.Role.MENUBUTTON: "mnubtn",
-	controlTypes.Role.SPINBUTTON: "spnbtn",
-	controlTypes.Role.TREEVIEWBUTTON: "tvbtn",
-	controlTypes.Role.MENU: "mnu",
-	controlTypes.Role.PANEL: "pnl",
-	controlTypes.Role.PASSWORDEDIT: "pwdedt",
-	controlTypes.Role.DELETED_CONTENT: "del",
-	controlTypes.Role.INSERTED_CONTENT: "ins",
-	controlTypes.Role.LANDMARK: "lmk",
-}
-nabccPositiveStateLabels = {
-	controlTypes.State.SELECTED: "sel",
-	controlTypes.State.PRESSED: u"⢎⣿⡱",
-	controlTypes.State.CHECKED: u"⣏⣿⣹",
-	controlTypes.State.HALFCHECKED: u"⣏⣸⣹",
-	controlTypes.State.READONLY: "ro",
-	controlTypes.State.EXPANDED: "-",
-	controlTypes.State.COLLAPSED: "+",
-	controlTypes.State.HASPOPUP: "submnu",
-	controlTypes.State.PROTECTED: "***",
-	controlTypes.State.REQUIRED: "req",
-	controlTypes.State.INVALID_ENTRY: "invalid",
-	controlTypes.State.AUTOCOMPLETE: "...",
-	controlTypes.State.MULTILINE: "mln",
-	controlTypes.State.CLICKABLE: "clk",
-	controlTypes.State.SORTED_ASCENDING: "sorted asc",
-	controlTypes.State.SORTED_DESCENDING: "sorted desc",
-	controlTypes.State.HASLONGDESC: "ldesc",
-	controlTypes.State.HASFORMULA: "frml",
-	controlTypes.State.HASCOMMENT: "cmnt",
-}
-nabccNegativeStateLabels = {
-	controlTypes.State.SELECTED: "nsel",
-	controlTypes.State.PRESSED: u"⢎⣀⡱",
-	controlTypes.State.CHECKED: u"⣏⣀⣹",
-}
-nabccLandmarkLabels = {
-	"banner": "bnnr",
-	"complementary": "cmpl",
-	"contentinfo": "cinf",
-	"main": "main",
-	"navigation": "navi",
-	"search": "srch",
-	"form": "form",
-	"region": "rgn",
-}
+from jpUtils import (
+	roleLabels as rawRoleLabels,
+	positiveStateLabels as rawPositiveStateLabels,
+	negativeStateLabels as rawNegativeStateLabels,
+	landmarkLabels as rawLandmarkLabels
+)
 
-def _nvdajp(s):
-	if config.conf["braille"]["expandAtCursor"]:
-		return s
-	return _(s)
+def useRawLabels() -> bool:
+	return config.conf["braille"]["expandAtCursor"]
+
+def _nvdajp(rawLabel: str) -> str:
+	if useRawLabels():
+		return rawLabel
+	return _(rawLabel)
+
+def getRoleLabel(role: controlTypes.Role, displayString: str|None=None) -> str:
+	if useRawLabels():
+		return rawRoleLabels.get(role, displayString)
+	return roleLabels.get(role, displayString)
+
+def getPositiveStateLabel(state: controlTypes.State) -> str:
+	if useRawLabels():
+		return rawPositiveStateLabels.get(state)
+	return positiveStateLabels.get(state)
+
+def getPositiveStateLabels() -> typing.Dict[controlTypes.State, str]:
+	if useRawLabels():
+		return rawPositiveStateLabels
+	return positiveStateLabels
+
+def getNegativeStateLabels() -> typing.Dict[controlTypes.State, str]:
+	if useRawLabels():
+		return rawNegativeStateLabels
+	return negativeStateLabels
+
+def getLandmarkLabel(name: str) -> str:
+	if useRawLabels():
+		return rawLandmarkLabels.get(name)
+	return landmarkLabels.get(name)
 # nvdajp end
 
 #: Cursor shapes
@@ -649,7 +600,7 @@ def _getAnnotationProperty(
 		# %s specifies the type of details (e.g. "has comment suggestion")
 		hasDetailsRoleTemplate = _("has %s")
 		rolesLabels = list((
-			hasDetailsRoleTemplate % roleLabels.get(role, role.displayString)
+			hasDetailsRoleTemplate % getRoleLabel(role, role.displayString)
 			for role in detailsRoles
 			if role  # handle None case without the "has X" grammar.
 		))
@@ -705,14 +656,7 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 		elif (name or cellCoordsText or rowNumber or columnNumber) and role in controlTypes.silentRolesOnFocus:
 			roleText = None
 		else:
-			# nvdajp begin
-			# roleText = roleLabels.get(role, role.displayString)
-			if config.conf["braille"]["expandAtCursor"]:
-				roleText = nabccRoleLabels.get(role, role.displayString)
-			else:
-				roleText = roleLabels.get(role, role.displayString)
-			# nvdajp end
-
+			roleText = getRoleLabel(role, role.displayString)
 	elif role is None: 
 		role = propertyValues.get("_role")
 	#nvdajp begin
@@ -726,15 +670,13 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 	if states is not None:
 		textList.extend(
 			controlTypes.processAndLabelStates(
-                role,
-                states,
-                controlTypes.OutputReason.FOCUS,
-                states,
-                None,
-				# nvdajp begin
-				nabccPositiveStateLabels if config.conf["braille"]["expandAtCursor"] else positiveStateLabels,
-				nabccNegativeStateLabels if config.conf["braille"]["expandAtCursor"] else negativeStateLabels
-				# nvdajp end
+				role,
+				states,
+				controlTypes.OutputReason.FOCUS,
+				states,
+				None,
+				getPositiveStateLabels(),
+				getNegativeStateLabels()
 			)
 		)
 	if roleText:
@@ -961,7 +903,7 @@ def getControlFieldBraille(
 	roleText = field.get('roleTextBraille', field.get('roleText'))
 	landmark = field.get("landmark")
 	if not roleText and role == controlTypes.Role.LANDMARK and landmark:
-		roleText = f"{roleLabels[controlTypes.Role.LANDMARK]} {landmarkLabels[landmark]}"
+		roleText = f"{getRoleLabel(controlTypes.Role.LANDMARK)} {getLandmarkLabel(landmark)}"
 
 	content = field.get("content")
 
@@ -1159,7 +1101,7 @@ def getFormatFieldBraille(field, fieldCache, isAtStart, formatConfig):
 		link=field.get("link")
 		oldLink=fieldCache.get("link")
 		if link and link != oldLink:
-			textList.append(roleLabels[controlTypes.Role.LINK])
+			textList.append(getRoleLabel(controlTypes.Role.LINK))
 	if formatConfig["reportComments"]:
 		comment = field.get("comment")
 		oldComment = fieldCache.get("comment") if fieldCache is not None else None
@@ -1317,7 +1259,7 @@ class TextInfoRegion(Region):
 								# Report it if there is nothing else interesting about the field
 								field._presCat=presCat=field.getPresentationCategory(ctrlFields,formatConfig)
 								if not presCat or presCat is field.PRESCAT_LAYOUT:
-									textList.append(positiveStateLabels[controlTypes.State.CLICKABLE])
+									textList.append(getPositiveStateLabel(controlTypes.State.CLICKABLE))
 								inClickable=True
 						text = info.getControlFieldBraille(field, ctrlFields, True, formatConfig)
 						if text:

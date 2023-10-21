@@ -492,8 +492,8 @@ class NVDAObject(documentBase.TextContainerObject, baseObject.ScriptableObject, 
 		By default, NVDA falls back to using roleText.
 		"""
 		# nvdajp begin
-		if config.conf["braille"]["expandAtCursor"] and self.landmark and self.landmark in braille.nabccLandmarkLabels:
-			return f"{braille.roleLabels[controlTypes.Role.LANDMARK]} {braille.nabccLandmarkLabels[self.landmark]}"
+		if braille.useRawLabels() and self.landmark:
+			return f"{braille.getRoleLabel(controlTypes.Role.LANDMARK)} {braille.getLandmarkLabel(self.landmark)}"
 		# nvdajp end
 		if self.landmark and self.landmark in braille.landmarkLabels:
 			return f"{braille.roleLabels[controlTypes.Role.LANDMARK]} {braille.landmarkLabels[self.landmark]}"
