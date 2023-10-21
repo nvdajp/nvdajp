@@ -338,6 +338,12 @@ def getLandmarkLabel(name: str) -> str:
 	if useRawLabels():
 		return rawLandmarkLabels.get(name)
 	return landmarkLabels.get(name)
+
+def getLandmarkLabels() -> typing.Dict[str, str]:
+	if useRawLabels():
+		return rawLandmarkLabels
+	return landmarkLabels
+
 # nvdajp end
 
 #: Cursor shapes
