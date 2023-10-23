@@ -496,7 +496,7 @@ def getSpellingSpeechWithoutCharMode(
 
 
 def modifyTimeText(text):
-	mo = re.match('(\d{1,2}):(\d{2})', text)
+	mo = re.match('(\\d{1,2}):(\\d{2})', text)
 	if mo:
 		hour, minute = mo.group(1), mo.group(2)
 		if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
@@ -504,7 +504,7 @@ def modifyTimeText(text):
 		# Translators: hour and minute
 		text = _('{hour}:{minute}').format(hour=hour, minute=minute)
 	else:
-		mo = re.match('([^\d]+)(\d{1,2}):(\d{2})', text)
+		mo = re.match('([^\\d]+)(\\d{1,2}):(\\d{2})', text)
 		if mo:
 			am_or_pm, hour, minute = mo.group(1), mo.group(2), mo.group(3)
 			if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
