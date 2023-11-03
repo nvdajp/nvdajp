@@ -97,11 +97,8 @@ def run_hta(hta_file_path: str) -> None:
 	subprocess.Popen([MSHTA_PATH, hta_file_path])
 
 def openDocFile(basename: str) -> None:
-	hta_file_path = getDocFilePath(basename + ".html")
+	hta_file_path = getDocFilePath(basename)
 	if config.conf["language"]["openDocFileByMSHTA"]:
-		if not os.path.exists(hta_file_path):
-			log.debugWarning(f"HTA file does not exist: {hta_file_path}")
-			return
 		run_hta(hta_file_path)
 	else:
 		os.startfile(hta_file_path)
@@ -704,7 +701,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			self.docsMenu = wx.Menu()
 			# Translators: The label for the menu item to open jp readme.
 			item = self.docsMenu.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
-			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("readmejp"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("readmejp.html"), item)
 			# Translators: The label of a menu item to open NVDA user guide.
 			item = self.docsMenu.Append(wx.ID_ANY, _("&User Guide"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("userGuide.html"), item)
