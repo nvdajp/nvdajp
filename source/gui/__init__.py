@@ -732,6 +732,9 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 	def _appendHelpSubMenu(self, frame: MainFrame) -> None:
 		menu_help = self.helpMenu = wx.Menu()
 		if not globalVars.appArgs.secure:
+			# Translators: The label for the menu item to view the NVDA Japanese Team
+			item = menu_help.Append(wx.ID_ANY, _("NVDA Japanese Team"))
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("https://www.nvda.jp/"), item)
 			# Translators: The label for the menu item to view the NVDA website
 			item = menu_help.Append(wx.ID_ANY, _("NV Access &web site"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(versionInfo.url), item)
