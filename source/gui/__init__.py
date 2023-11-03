@@ -98,20 +98,20 @@ def run_hta(hta_file_path: str) -> None:
 
 def openDocFile(basename: str) -> None:
 	hta_file_path = getDocFilePath(basename + ".html")
-	if not os.path.exists(hta_file_path):
-		log.debugWarning(f"HTA file does not exist: {hta_file_path}")
-		return
 	if config.conf["language"]["openDocFileByMSHTA"]:
+		if not os.path.exists(hta_file_path):
+			log.debugWarning(f"HTA file does not exist: {hta_file_path}")
+			return
 		run_hta(hta_file_path)
 	else:
 		os.startfile(hta_file_path)
 
 ### Constants
 NVDA_PATH = globalVars.appDir
+# ICON_PATH=os.path.join(NVDA_PATH, "images", "nvda.ico")
 ICON_PATH=os.path.join(NVDA_PATH, "images", "nvdajp3.ico")
+# DONATE_URL = f"{versionInfo.url}/donate/"
 DONATE_URL = "https://www.nvda.jp/donate.html"
-ICON_PATH=os.path.join(NVDA_PATH, "images", "nvda.ico")
-DONATE_URL = f"{versionInfo.url}/donate/"
 
 ### Globals
 mainFrame: Optional["MainFrame"] = None
