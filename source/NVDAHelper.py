@@ -388,9 +388,9 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		ar = compositionString.split('\t')
 		compositionString, compAttr = ar
 		if (lastCompString == compositionString) and (lastCompAttr == compAttr) \
-		   and (lastSelectionStart == selectionStart) \
-		   and (lastSelectionEnd == selectionEnd) \
-		   and not (compositionString in (' ', '\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
+			and (lastSelectionStart == selectionStart) \
+			and (lastSelectionEnd == selectionEnd) \
+			and not (compositionString in (' ', '\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
 			log.debug("ignored (%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
 			return 0
 		_lastCompAttr = lastCompAttr
@@ -450,7 +450,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	return 0
 
 def handleInputCandidateListUpdate(candidatesString,selectionIndex,inputMethod):
-	log.debug(u"(%s) (%s) (%s)" % (str(candidatesString).replace('\n','|'),str(selectionIndex),str(inputMethod)))
+	log.debug("(%s) (%s) (%s)" % (str(candidatesString).replace('\n','|'),str(selectionIndex),str(inputMethod)))
 	candidateStrings=candidatesString.split('\n')
 	import speech
 	from NVDAObjects.inputComposition import InputComposition, CandidateList, CandidateItem
