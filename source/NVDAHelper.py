@@ -267,11 +267,11 @@ def handleInputCompositionEnd(result):
 	#nvdajp begin
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
 			config.conf["keyboard"]["speakTypedCharacters"]:
-		if result == u'\u3000':
+		if result == '\u3000':
 			# Translators: handle input composition end
 			speech.speakText(_('full shape space'))
 			return
-		elif result == u'\u0020':
+		elif result == '\u0020':
 			# Translators: handle input composition end
 			speech.speakText(_('space'))
 			return
@@ -319,12 +319,12 @@ def handleInputCompositionEnd(result):
 				# Translators: a message when the IME cancelation status
 				speech.speakMessage(_("Clear"))
 			else:
-				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
+				result=curInputComposition.compositionString.lstrip('\u3000 ')
 				if winUser.getAsyncKeyState(winUser.VK_BACK)&1:
 					# Translators: a message when the IME cancelation status
 					result+=" "+_("Clear")
 		else:
-			result=curInputComposition.compositionString.lstrip(u'\u3000 ')
+			result=curInputComposition.compositionString.lstrip('\u3000 ')
 		#nvdajp end
 	if result:
 		if not config.conf["inputComposition"]["announceSelectedCandidate"]: return #nvdajp
@@ -390,7 +390,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		if (lastCompString == compositionString) and (lastCompAttr == compAttr) \
 		   and (lastSelectionStart == selectionStart) \
 		   and (lastSelectionEnd == selectionEnd) \
-		   and not (compositionString in (' ', u'\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
+		   and not (compositionString in (' ', '\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
 			log.debug("ignored (%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
 			return 0
 		_lastCompAttr = lastCompAttr
@@ -450,8 +450,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	return 0
 
 def handleInputCandidateListUpdate(candidatesString,selectionIndex,inputMethod):
-	from six import text_type
-	log.debug(u"(%s) (%s) (%s)" % (text_type(candidatesString).replace('\n','|'),str(selectionIndex),text_type(inputMethod)))
+	log.debug(u"(%s) (%s) (%s)" % (str(candidatesString).replace('\n','|'),str(selectionIndex),str(inputMethod)))
 	candidateStrings=candidatesString.split('\n')
 	import speech
 	from NVDAObjects.inputComposition import InputComposition, CandidateList, CandidateItem

@@ -1904,9 +1904,9 @@ class GlobalCommands(ScriptableObject):
 			if c is not None:
 				if jpUtils.isJa():
 					s = jpUtils.code2kana(c)
-					o = u"%d u+%s" % (c, s)
+					o = "%d u+%s" % (c, s)
 					speech.speakMessage(o)
-					braille.handler.message(u"%d %s" % (c, jpUtils.code2hex(c)))
+					braille.handler.message("%d %s" % (c, jpUtils.code2hex(c)))
 				else:
 					speech.speakMessage("%d," % c)
 					speech.speakSpelling(hex(c))

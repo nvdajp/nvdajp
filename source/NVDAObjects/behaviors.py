@@ -586,9 +586,9 @@ class CandidateItem(NVDAObject):
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			fb = (braille.handler.displaySize > 0)
 			c = jpUtils.getDiscriminantReading(candidate, forBraille=fb)
-			log.debug(u"{number} {candidate} {c}".format(number=number,candidate=candidate,c=c))
+			log.debug("{number} {candidate} {c}".format(number=number,candidate=candidate,c=c))
 			if config.conf["language"]["announceCandidateNumber"]:
-				return _(u"{number} {candidate}").format(number=number,candidate=c)
+				return _("{number} {candidate}").format(number=number,candidate=c)
 			return c
 		#nvdajp end
 		if config.conf["inputComposition"]["alwaysIncludeShortCharacterDescriptionInCandidateName"]:
