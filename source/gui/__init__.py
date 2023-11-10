@@ -715,7 +715,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			self.helpMenu.AppendSeparator()
 
 			# Translators: The label for the menu item to view the NVDA Japanese Team
-			item = menu_help.Append(wx.ID_ANY, _("NVDAJP web site"))
+			item = self.helpMenu.Append(wx.ID_ANY, _("NVDAJP web site"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("https://www.nvda.jp/"), item)
 			# Translators: The label for the menu item to view the NVDA website
 			item = self.helpMenu.Append(wx.ID_ANY, _("NV Access &web site"))
