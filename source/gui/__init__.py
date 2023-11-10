@@ -50,6 +50,7 @@ from .settingsDialogs import (
 	BrowseModePanel,
 	DocumentFormattingPanel,
 	GeneralSettingsPanel,
+	LanguageSettingsPanel,
 	InputCompositionPanel,
 	KeyboardSettingsPanel,
 	MouseSettingsPanel,
