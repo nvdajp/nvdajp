@@ -698,7 +698,6 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		self.helpMenu = wx.Menu()
 
 		if not globalVars.appArgs.secure:
-			self.docsMenu = wx.Menu()
 			# Translators: The label for the menu item to open jp readme.
 			item = self.docsMenu.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("readmejp.html"), item)
@@ -711,6 +710,24 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			# Translators: The label for the menu item to open What's New document.
 			item = self.docsMenu.Append(wx.ID_ANY, _("What's &new"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("changes.html"), item)
+
+			self.helpMenu.AppendSeparator()
+
+			# Translators: The label for the menu item to view the NVDA Japanese Team
+			item = menu_help.Append(wx.ID_ANY, _("NVDAJP web site"))
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("https://www.nvda.jp/"), item)
+			# Translators: The label for the menu item to view the NVDA website
+			item = self.helpMenu.Append(wx.ID_ANY, _("NV Access &web site"))
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(versionInfo.url), item)
+			# Translators: The label for the menu item to view the NVDA website's get help section
+			item = self.helpMenu.Append(wx.ID_ANY, _("&Help, training and support"))
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{versionInfo.url}/get-help/"), item)
+			# Translators: The label for the menu item to view the NVDA website's get help section
+			item = self.helpMenu.Append(wx.ID_ANY, _("NV Access &shop"))
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{versionInfo.url}/shop/"), item)
+
+			self.helpMenu.AppendSeparator()
+
 			# Translators: The label for the menu item to view NVDA License document.
 			item = self.helpMenu.Append(wx.ID_ANY, _("L&icense"))
 			self.Bind(
@@ -727,24 +744,6 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			)
 
 			self.helpMenu.AppendSeparator()
-
-	def _appendHelpSubMenu(self, frame: MainFrame) -> None:
-		menu_help = self.helpMenu = wx.Menu()
-		if not globalVars.appArgs.secure:
-			# Translators: The label for the menu item to view the NVDA Japanese Team
-			item = menu_help.Append(wx.ID_ANY, _("NVDAJP web site"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("https://www.nvda.jp/"), item)
-			# Translators: The label for the menu item to view the NVDA website
-			item = menu_help.Append(wx.ID_ANY, _("NV Access &web site"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(versionInfo.url), item)
-			# Translators: The label for the menu item to view the NVDA website's get help section
-			item = menu_help.Append(wx.ID_ANY, _("&Help, training and support"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{versionInfo.url}/get-help/"), item)
-			# Translators: The label for the menu item to view the NVDA website's get help section
-			item = menu_help.Append(wx.ID_ANY, _("NV Access &shop"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{versionInfo.url}/shop/"), item)
-
-			menu_help.AppendSeparator()
 
 			# Translators: The label for the menu item to open NVDA Welcome Dialog.
 			item = self.helpMenu.Append(wx.ID_ANY, _("We&lcome dialog..."))
