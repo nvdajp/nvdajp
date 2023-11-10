@@ -700,16 +700,16 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 
 		if not globalVars.appArgs.secure:
 			# Translators: The label for the menu item to open jp readme.
-			item = self.docsMenu.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
+			item = self.helpMenu.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("readmejp.html"), item)
 			# Translators: The label of a menu item to open NVDA user guide.
-			item = self.docsMenu.Append(wx.ID_ANY, _("&User Guide"))
+			item = self.helpMenu.Append(wx.ID_ANY, _("&User Guide"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("userGuide.html"), item)
 			# Translators: The label of a menu item to open the Commands Quick Reference document.
-			item = self.docsMenu.Append(wx.ID_ANY, _("Commands &Quick Reference"))
+			item = self.helpMenu.Append(wx.ID_ANY, _("Commands &Quick Reference"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("keyCommands.html"), item)
 			# Translators: The label for the menu item to open What's New document.
-			item = self.docsMenu.Append(wx.ID_ANY, _("What's &new"))
+			item = self.helpMenu.Append(wx.ID_ANY, _("What's &new"))
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("changes.html"), item)
 
 			self.helpMenu.AppendSeparator()
