@@ -85,4 +85,3 @@ EXPORTS
 	wasPlay_resume
 	wasPlay_setChannelVolume
 	wasPlay_startup
-	wasPlay_getDevices
