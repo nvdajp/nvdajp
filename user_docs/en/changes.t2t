@@ -29,8 +29,7 @@ This option now announces additional relevant information about an object when t
 - When requesting formatting information on Excel cells, borders and background will only be reported if there is such formatting. (#15560, @CyrilleB79)
 - The command to toggle the screen curtain now has a default gesture: ``NVDA+control+escape``. (#10560, @CyrilleB79)
 - NVDA will again no longer report unlabelled groupings such as in recent versions of Microsoft Office 365 menus. (#15638)
-- The "Help" submenu of the NVDA menu has been split up into "Documentation" and "Help".
-New items have beeen added to "Help" for the NV Access "Get Help" page and Shop. (#14631)
+- New items have beeen added to the Help menu for the NV Access "Get Help" page and Shop. (#14631)
 - NVDA's support for [Poedit https://poedit.net] is overhauled for Poedit version 3 and above.
 Users of Poedit 1 are encouraged to update to Poedit 3 if they want to rely on enhanced accessibility in Poedit, such as shortcuts to read translator notes and comments. (#15313, #7303, @LeonarddeR)
 - Braille viewer and speech viewer are now disabled in secure mode. (#15680)
@@ -62,6 +61,7 @@ It is also updated with UIA enabled, when typing text and braille is tethered to
 - It is not possible anymore to overwrite NVDA's Python console history. (#15792, @CyrilleB79)
 - In Word, the landing cell will now be correctly reported when using the native Word commands for table navigation ``alt+home``, ``alt+end``, ``alt+pageUp`` and ``alt+pageDown``. (#15805, @CyrilleB79)
 - NVDA now resumes audio if the configuration of the output device changes or another application releases exclusive control of the device. (#15758, #15775, @jcsteh)
+- Contracted braille input works properly again. (#15773, @aaclause)
 -
 
 == Changes for Developers ==
