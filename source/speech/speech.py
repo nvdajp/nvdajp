@@ -141,12 +141,14 @@ def isBlank(text):
 
 RE_CONVERT_WHITESPACE = re.compile("[\0\r\n]")
 
-def processText(locale,text,symbolLevel):
+
+def processText(locale: str, text: str, symbolLevel: characterProcessing.SymbolLevel) -> str:
 	text = speechDictHandler.processText(text)
 	text = characterProcessing.processSpeechSymbols(locale, text, symbolLevel)
-	text = RE_CONVERT_WHITESPACE.sub(u" ", text)
+	text = RE_CONVERT_WHITESPACE.sub(" ", text)
 	text = jpUtils.processKangxiRadicals(text)
 	return text.strip()
+
 
 def cancelSpeech():
 	"""Interupts the synthesizer from currently speaking"""
@@ -223,7 +225,7 @@ def _getSpeakSsmlSpeech(
 def speakSsml(
 		ssml: str,
 		markCallback: "MarkCallbackT | None" = None,
-		symbolLevel: Optional[int] = None,
+		symbolLevel: characterProcessing.SymbolLevel | None = None,
 		_prefixSpeechCommand: SpeechCommand | None = None,
 		priority: Spri | None = None
 ) -> None:
@@ -837,8 +839,8 @@ def _objectSpeech_calculateAllowedProps(reason, shouldReportTextContent):
 def speakText(
 		text: str,
 		reason: OutputReason = OutputReason.MESSAGE,
-		symbolLevel: Optional[int] = None,
-		priority: Optional[Spri] = None
+		symbolLevel: characterProcessing.SymbolLevel | None = None,
+		priority: Spri | None = None
 ):
 	"""Speaks some text.
 	@param text: The text to speak.
@@ -933,7 +935,7 @@ def getIndentationSpeech(indentation: str, formatConfig: Dict[str, bool]) -> Spe
 # and move logic out into smaller helper functions.
 def speak(  # noqa: C901
 		speechSequence: SpeechSequence,
-		symbolLevel: Optional[int] = None,
+		symbolLevel: characterProcessing.SymbolLevel | None = None,
 		priority: Spri = Spri.NORMAL
 ):
 	"""Speaks a sequence of text and speech commands
@@ -996,8 +998,8 @@ def speak(  # noqa: C901
 	import inputCore
 	inputCore.logTimeSinceInput()
 	log.io("Speaking %r" % speechSequence)
-	if symbolLevel is None:
-		symbolLevel=config.conf["speech"]["symbolLevel"]
+	if symbolLevel in (characterProcessing.SymbolLevel.UNCHANGED, None):
+		symbolLevel = characterProcessing.SymbolLevel(config.conf["speech"]["symbolLevel"])
 	curLanguage=defaultLanguage
 	inCharacterMode=False
 	for index in range(len(speechSequence)):

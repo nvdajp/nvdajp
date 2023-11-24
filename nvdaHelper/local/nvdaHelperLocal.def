@@ -57,6 +57,8 @@ EXPORTS
 	_nvdaController_getRate
 	_nvdaController_setRate
 	_nvdaController_setAppSleepMode
+	_nvdaController_speakSsml
+	nvdaController_onSsmlMarkReached
 	_nvdaControllerInternal_vbufChangeNotify
 	displayModel_getWindowTextInRect
 	displayModel_getFocusRect
