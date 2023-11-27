@@ -100,6 +100,8 @@ class CharCellBackgroundColorAnimation:
 			self._originColor.Get(includeAlpha=False),
 			self._destColor.Get(includeAlpha=False)
 		)
+		# Convert the float values to int
+		currentColorTuple = tuple(map(int, currentColorTuple))
 		currentStyle = createBackgroundColorTextAttr(wx.Colour(*currentColorTuple))
 		index = self._textCellIndex
 		length = len(self._textCtrl.GetValue())
