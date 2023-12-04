@@ -536,6 +536,9 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	#nvdajp end
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 	if selectionStart==-1:
+		# If the input has been finalized, cancel the current speech.
+		import speech
+		speech.cancelSpeech()
 		queueHandler.queueFunction(queueHandler.eventQueue,handleInputCompositionEnd,compositionString)
 		return 0
 	focus=api.getFocusObject()
