@@ -570,8 +570,11 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 					focus.compositionUpdate(extractedString, 0, endIndex, 0, forceNewText=True)
 				return 0
 	else:
+		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=}")
+		if lastCompString and not compositionString and selectionStart == -1 and selectionEnd == -1 and isReading == 0:
+			queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString)
+			return 0
 		lastCompAttr = None
-		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=}")
 	#nvdajp end
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 	if selectionStart==-1:
