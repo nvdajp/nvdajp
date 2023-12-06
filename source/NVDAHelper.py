@@ -4,7 +4,7 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
-from typing import Optional
+from typing import Optional, Tuple
 import typing
 import os
 import winreg
@@ -358,7 +358,6 @@ def handleInputCompositionEnd(result):
 	import speech
 	import characterProcessing
 	from NVDAObjects.inputComposition import InputComposition
-	from NVDAObjects.behaviors import CandidateItem
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 	focus=api.getFocusObject()
 	#nvdajp begin
@@ -463,7 +462,25 @@ lastSelectionEnd = None #nvdajp
 
 # work around ti34120
 # https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120
-def badCompositionUpdate(compositionString, compAttr):
+def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
+	"""
+	Validates the given input composition string and its attributes.
+	If the string meets certain conditions, this function returns True.
+
+	This function is designed to ignore certain compositionUpdate events,
+	specifically those where an alphabetic character is inserted
+	in the middle of a string of Kana characters, such as
+	"ほｎあいうえお".
+	This is done to prevent unexpected behavior in the input composition process
+	for languages that use Kana characters.
+
+	Args:
+	compositionString (str): The input composition string to validate.
+	compAttr (str): The attributes of the input composition string.
+
+	Returns:
+	bool: True if the string meets certain conditions, False otherwise.
+	"""
 	if len(compositionString) <= 2:
 		return False
 	if any(c != '0' for c in compAttr):
@@ -476,6 +493,52 @@ def badCompositionUpdate(compositionString, compAttr):
 		return True
 	return False
 
+def extractCompositionString(compAttr: str, compositionString: str, selectionStart: int, selectionEnd: int, lastCompAttr: str) -> Tuple[str, int]:
+	"""
+	This function extracts a part of the composition string based on the attribute values.
+	It checks the attribute values in a specific order and extracts the corresponding characters from the composition string.
+	The function also returns the end index of the extracted string in the original composition string.
+
+	Args:
+		compAttr (str): The attribute values for the composition string.
+			Each character in this string corresponds to a TF_ATTR value ('0', '1', etc.) for the corresponding character in the composition string.
+		compositionString (str): The composition string.
+		selectionStart (int): The start index of the selection in the composition string.
+		selectionEnd (int): The end index of the selection in the composition string.
+		lastCompAttr (str): The last attribute values for the composition string.
+
+	TF_ATTR values represent different states of text in an input composition string:
+	TF_ATTR_INPUT                = 0: The text is in the process of being composed.
+	TF_ATTR_TARGET_CONVERTED     = 1: The text has been converted as a result of the user accepting a conversion candidate.
+	TF_ATTR_CONVERTED            = 2: The text has been converted.
+	TF_ATTR_TARGET_NOTCONVERTED  = 3: The text is a target for conversion, but has not yet been converted.
+	TF_ATTR_INPUT_ERROR          = 4: There was an error in inputting the text.
+	TF_ATTR_FIXEDCONVERTED       = 5: The text has been converted and fixed, and can no longer be modified.
+
+	Returns:
+		Tuple[str, int]: The extracted string and its end index in the original composition string.
+	"""
+	extractedString = ''
+	endIndex = 0
+
+	# This inner function extracts characters from the composition string where the attribute value matches the given condition.
+	def extractString(condition: str) -> str:
+		return ''.join(compositionString[i] for i, attr in enumerate(compAttr) if attr == condition)
+
+	# Check the attribute values in a specific order and extract the corresponding characters.
+	if ('3' in compAttr) and ('1' not in compAttr):
+		endIndex = len(compositionString)
+		extractedString = extractString('3')
+	elif ('1' in compAttr) and (lastCompAttr is None or any([c != '0' for c in lastCompAttr])):
+		extractedString = extractString('1')
+	elif ('0' in compAttr) and ('2' in compAttr):
+		extractedString = extractString('0')
+	elif all([c == '0' for c in compAttr]) and 0 <= selectionStart == selectionEnd < len(compAttr):
+		# reviewing pre-edit character
+		extractedString = compositionString[selectionStart]
+		log.debug("((%s))" % extractedString)
+	return extractedString, endIndex
+
 @WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
 	global lastCompAttr, lastCompString
@@ -484,8 +547,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	#nvdajp begin
 	compAttr = ''
 	if '\t' in compositionString:
-		ar = compositionString.split('\t')
-		compositionString, compAttr = ar
+		compositionString, compAttr = compositionString.split('\t')
 		if (lastCompString == compositionString) and (lastCompAttr == compAttr) \
 			and (lastSelectionStart == selectionStart) \
 			and (lastSelectionEnd == selectionEnd) \
@@ -497,40 +559,15 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		lastCompString = compositionString
 		lastSelectionStart = selectionStart
 		lastSelectionEnd = selectionEnd
-		# TF_ATTR_INPUT                = 0
-		# TF_ATTR_TARGET_CONVERTED     = 1
-		# TF_ATTR_CONVERTED            = 2
-		# TF_ATTR_TARGET_NOTCONVERTED  = 3
-		# TF_ATTR_INPUT_ERROR          = 4
-		# TF_ATTR_FIXEDCONVERTED       = 5
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
 			log.debug("(%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
-			s = ''
-			e = 0
-			if ('3' in compAttr) and ('1' not in compAttr):
-				e = len(compositionString)
-				for p in range(len(compAttr)):
-					if compAttr[p] == '3':
-						s += compositionString[p]
-			elif ('1' in compAttr) and (_lastCompAttr is None or any([c != '0' for c in _lastCompAttr])):
-				for p in range(len(compAttr)):
-					if compAttr[p] == '1':
-						s += compositionString[p]
-			elif ('0' in compAttr) and ('2' in compAttr):
-				for p in range(len(compAttr)):
-					if compAttr[p] == '0':
-						s += compositionString[p]
-			elif all([c == '0' for c in compAttr]) \
-				and 0 <= selectionStart == selectionEnd < len(compAttr):
-				# reviewing pre-edit character
-				s = compositionString[selectionStart]
-				log.debug("((%s))" % s)
-			if s:
+			extractedString, endIndex = extractCompositionString(compAttr, compositionString, selectionStart, selectionEnd, _lastCompAttr)
+			if extractedString:
 				focus=api.getFocusObject()
 				if isinstance(focus,InputComposition):
-					focus.compositionUpdate(s, 0, e, 0, forceNewText=True)
+					focus.compositionUpdate(extractedString, 0, endIndex, 0, forceNewText=True)
 				return 0
 	else:
 		lastCompAttr = None
