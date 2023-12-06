@@ -571,7 +571,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 				return 0
 	else:
 		lastCompAttr = None
-		log.debug(compositionString)
+		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=}")
 	#nvdajp end
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 	if selectionStart==-1:
