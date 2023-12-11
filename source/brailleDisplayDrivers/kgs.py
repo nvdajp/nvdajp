@@ -324,7 +324,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	@classmethod
 	def registerAutomaticDetection(cls, driverRegistrar: bdDetect.DriverRegistrar):
-		driverRegistrar.addUsbDevices(bdDetect.KEY_SERIAL, {
+		driverRegistrar.addUsbDevices(bdDetect.DeviceType.SERIAL, {
 			"VID_1148&PID_0301",  # KGS BM-SMART USB Serial
 			"VID_1148&PID_0001",  # KGS USB To Serial Com Port
 		})

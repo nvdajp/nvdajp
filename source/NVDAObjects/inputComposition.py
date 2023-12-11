@@ -124,14 +124,14 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 	def reportNewText(self,oldString,newString,forceNewText=False):
 		global lastCompositionText, lastCompositionTime #nvdajp
 		#nvdajp begin
-		newTextForBraille = newText = calculateInsertedChars(oldString.strip(u'\u3000'),newString.strip(u'\u3000'))
+		newTextForBraille = newText = calculateInsertedChars(oldString.strip('\u3000'),newString.strip('\u3000'))
 		if forceNewText:
-			newText=newString.strip(u'\u3000')
+			newText=newString.strip('\u3000')
 		isCandidate = False
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
 				config.conf["inputComposition"]["announceSelectedCandidate"] and \
 				needDiscriminantReading(lastKeyGesture):
-			ns = newString.strip(u'\u3000')
+			ns = newString.strip('\u3000')
 			newText = jpUtils.getDiscriminantReading(ns)
 			newTextForBraille = jpUtils.getDiscrptionForBraille(ns)
 			isCandidate = True
