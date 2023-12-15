@@ -197,25 +197,13 @@ class SynthDriver(SynthDriver):
 		textList.append("\\PAU=1\\")
 		text="".join(textList)
 		flags=TTSDATAFLAG_TAGGED
-		if isPitchCommand:
-			self._ttsCentral.TextData(
-				VOICECHARSET.CHARSET_TEXT,
-				flags,
-				TextSDATA(text),
-				self._bufSinkPtr,
-				ITTSBufNotifySink._iid_
-			)
-			self._ttsAttrs.PitchSet(oldPitch)
-			isPitchCommand = False
-		else:
-			self._ttsCentral.TextData(
-				VOICECHARSET.CHARSET_TEXT,
-				flags,
-				TextSDATA(text),
-				self._bufSinkPtr,
-				ITTSBufNotifySink._iid_
-			)
-		self._isSpeaking = True
+		self._ttsCentral.TextData(
+			VOICECHARSET.CHARSET_TEXT,
+			flags,
+			TextSDATA(text),
+			self._bufSinkPtr,
+			ITTSBufNotifySink._iid_
+		)
 
 	def cancel(self):
 		self._isSpeaking = True
