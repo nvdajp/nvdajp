@@ -72,7 +72,7 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 			"ja-jp-comp6.utb", "ja-jp-comp6-en-ueb-g2.tbl", "ja-jp-comp6-en-us-g2.tbl"
 		]:
 		log.debug(text)
-		nabcc = config.conf["braille"]["nabcc"]
+		nabcc = config.conf["braille"]["expandAtCursor"]
 		louisTranslate = None
 		louisTableList = None
 		if not nabcc:
