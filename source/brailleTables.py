@@ -338,6 +338,12 @@ addTable("ja-kantenji.utb", _("Japanese (Kantenji) literary braille"), input=Fal
 addTable("ja-jp-comp6.utb", _("Japanese 6 dot computer braille"), contracted=True)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
+# addTable("ja-jp-comp6-en-ueb-g2.tbl", _("Japanese 6 dot with UEB grade 2"), contracted=True, input=False)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+# addTable("ja-jp-comp6-en-us-g2.tbl", _("Japanese 6 dot with English (U.S.) grade 2"), contracted=True, input=False)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
 addTable("ja-jp-rokutenkanji.tbl", _("Japanese 6 dot kanji braille"), contracted=True, output=False)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.

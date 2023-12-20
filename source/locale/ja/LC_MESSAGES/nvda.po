@@ -167,6 +167,14 @@ msgstr "日本語6点情報処理点字"
 msgid "Japanese 6 dot kanji braille"
 msgstr "日本語6点漢点字(入力用)"
 
+#: brailleTables.py:338
+msgid "Japanese 6 dot with UEB grade 2"
+msgstr "日本語6点・統一英語点字2級"
+
+#: brailleTables.py:341
+msgid "Japanese 6 dot with English (U.S.) grade 2"
+msgstr "日本語6点・アメリカ英語2級点字"
+
 #: globalCommands.py:150
 #, python-brace-format
 msgid "{hour}:{minute}"
