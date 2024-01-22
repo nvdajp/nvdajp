@@ -4,7 +4,7 @@ set PFX=jptools\secret\shuaruta-key220824.pfx
 set PWFILE=jptools\secret\shuaruta-key-pass-2022.txt
 @for /F "delims=" %%s in ('type %PWFILE%') do @set PASSWORD=%%s
 del /Q %PWFILE%
-set TIMESERVER=http://timestamp.comodoca.com/rfc3161
+set TIMESERVER=http://timestamp.digicert.com
 
 call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0

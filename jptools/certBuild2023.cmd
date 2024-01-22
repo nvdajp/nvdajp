@@ -1,6 +1,6 @@
 set SCONSOPTIONS=%*
 
-set TIMESERVER=http://timestamp.comodoca.com/
+set TIMESERVER=http://timestamp.digicert.com/
 
 call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0
