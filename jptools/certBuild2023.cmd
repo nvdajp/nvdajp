@@ -29,6 +29,38 @@ timeout /T 5 /NOBREAK
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 miscDeps\python\brlapi-0.8.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 miscDeps\python\libgcc_s_dw2-1.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 miscDeps\source\brailleDisplayDrivers\lilli.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxbase32u_net_vc140.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxbase32u_vc140.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxmsw32u_core_vc140.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxmsw32u_html_vc140.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxmsw32u_stc_vc140.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
 set SCONSARGS=certTimestampServer=%TIMESERVER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
 call scons.bat source user_docs launcher release=1 publisher=%PUBLISHER% %SCONSARGS%
