@@ -90,10 +90,8 @@ for /r "dist\synthDrivers\jtalk" %%i in (*.dll *.exe) do (
     @if not "%ERRORLEVEL%"=="0" goto onerror
 )
 for /r "dist\lib" %%i in (*.dll *.exe) do (
-    if "%%~nxi" neq "Microsoft.UI.UIAutomation.dll" (
-        %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
-        @if not "%ERRORLEVEL%"=="0" goto onerror
-    )
+    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
+    @if not "%ERRORLEVEL%"=="0" goto onerror
 )
 for /r "dist\lib64" %%i in (*.dll *.exe) do (
     %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
