@@ -19,13 +19,45 @@ cd ..\..
 
 call jptools\setupMiscDepsJp.cmd
 
-set SIGNTOOL="C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64\signtool.exe"
+set SIGNTOOL="C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe"
 
 %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 source\synthDrivers\jtalk\libmecab.dll
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
 %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 source\synthDrivers\jtalk\libopenjtalk.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 miscDeps\python\brlapi-0.8.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 miscDeps\python\libgcc_s_dw2-1.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 miscDeps\source\brailleDisplayDrivers\lilli.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxbase32u_net_vc140.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxbase32u_vc140.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxmsw32u_core_vc140.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxmsw32u_html_vc140.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 .venv\Lib\site-packages\wx\wxmsw32u_stc_vc140.dll
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
@@ -49,18 +81,17 @@ del /Q %VERIFYLOG%
 %SIGNTOOL% verify /pa output\*.exe >> %VERIFYLOG%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-%SIGNTOOL% verify /pa dist\*.exe >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
+for /r "dist" %%i in (*.dll *.exe) do (
+    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
+    @if not "%ERRORLEVEL%"=="0" goto onerror
+)
 for /r "dist\synthDrivers\jtalk" %%i in (*.dll *.exe) do (
     %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
     @if not "%ERRORLEVEL%"=="0" goto onerror
 )
 for /r "dist\lib" %%i in (*.dll *.exe) do (
-    if "%%~nxi" neq "Microsoft.UI.UIAutomation.dll" (
-        %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
-        @if not "%ERRORLEVEL%"=="0" goto onerror
-    )
+    %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%
+    @if not "%ERRORLEVEL%"=="0" goto onerror
 )
 for /r "dist\lib64" %%i in (*.dll *.exe) do (
     %SIGNTOOL% verify /pa "%%i" >> %VERIFYLOG%

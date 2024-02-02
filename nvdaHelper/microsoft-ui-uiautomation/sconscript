@@ -135,4 +135,4 @@ MSUIA_abstraction_headers = env.Install(
 
 env.Depends(MSUIA_abstraction_headers,[MSUIA_wrapper_header,MSUIA_wrapper_impl])
 
-Return(['MSUIA_lib_outDir','MSUIA_include_outDir'])
+Return(['MSUIA_lib_outDir', 'MSUIA_include_outDir', 'MSUIA_wrapper_libs'])
