@@ -29,6 +29,11 @@ timeout /T 5 /NOBREAK
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
+@rem ftd2xx.dll will be removed in 2024.1jp
+%SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 source\ftd2xx.dll
+@if not "%ERRORLEVEL%"=="0" goto onerror
+timeout /T 5 /NOBREAK
+
 %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 miscDeps\python\brlapi-0.8.dll
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
