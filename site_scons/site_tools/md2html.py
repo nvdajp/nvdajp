@@ -151,6 +151,7 @@ def md2html_actionFunc(
 	isUserGuide = target[0].path.endswith("userGuide.html")
 	isDevGuide = target[0].path.endswith("developerGuide.html")
 	isChanges = target[0].path.endswith("changes.html")
+	isReadmejp = target[0].path.endswith("readmejp.html")
 
 	with open(source[0].path, "r", encoding="utf-8") as mdFile:
 		mdStr = mdFile.read()
@@ -163,7 +164,7 @@ def md2html_actionFunc(
 
 	lang = pathlib.Path(source[0].path).parent.name
 
-	if isUserGuide or isDevGuide:
+	if isUserGuide or isDevGuide or isReadmejp:
 		extraStylesheet = '<link rel="stylesheet" href="numberedHeadings.css">'
 	elif isChanges or isKeyCommands:
 		extraStylesheet = ""
