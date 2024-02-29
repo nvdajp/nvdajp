@@ -3,7 +3,7 @@
 
 %!includeconf: ../userGuide.t2tconf
 
-= 目次 =
+= 目次 =[toc]
 %%toc
 
 + はじめに +
