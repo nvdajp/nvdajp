@@ -891,7 +891,7 @@ class GeneralSettingsPanel(SettingsPanel):
 			item = self.allowUsageStatsCheckBox = wx.CheckBox(
 				self,
 				# Translators: The label of a checkbox in general settings to toggle allowing of usage stats gathering
-				label=_("Allow NV Access to gather NVDA usage statistics")
+				label=_("Allow NV Access to gather NVDA usage statistics").replace('NV Access', _('NVDA Japanese Team'))
 			)
 			self.bindHelpEvent("GeneralSettingsGatherUsageStats", self.allowUsageStatsCheckBox)
 			item.Value=config.conf["update"]["allowUsageStats"]
