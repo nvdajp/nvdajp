@@ -14146,7 +14146,7 @@ msgstr "RGB 赤{rgb.red} 緑{rgb.green} 青{rgb.blue}"
 #, python-format
 msgid "%s item"
 msgid_plural "%s items"
-msgstr[0] "%s 項目"
+msgstr[0] "%s項目"
 
 #. Translators: The label of a shortcut of NVDA.
 #: NVDAObjects\IAccessible\winword.py:219
