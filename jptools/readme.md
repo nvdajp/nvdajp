@@ -2,17 +2,15 @@
 
 シュアルタ/NVDA日本語チーム 西本卓也
 
-
 ## ビルド環境準備とソースコード取得
 
+[公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-NVDA jpalpha の場合
-
+以下は NVDA 2024.1jp-beta の場合
 
 ### (1) Windows 10/11 64ビット
 
 確実にビルドできる作業環境は Windows 10 または 11 64ビット
-
 
 ### (2) Visual Studio Community
 
@@ -20,31 +18,32 @@ NVDA jpalpha の場合
 
 https://www.visualstudio.com/ja/downloads/ 
 
-Visual Studio 2019 または 2022
+Visual Studio 2022
 
 #### (2.1) 選択する「ワークロード」の項目
 
-(a) C++によるデスクトップ開発
-
-(b) ユニバーサル Windows プラットフォーム開発
+* C++によるデスクトップ開発
+* ユニバーサル Windows プラットフォーム開発
 
 #### (2.2) 「概要」「C++によるデスクトップ開発」「オプション」で選択する項目
 
-(a) VC++ 20xx *** 最新の v142 ツール
-
-(b) Windows 11 SDK (10.0.22000.0)
-
-(c) x86 用と x64 用の Visual C++ ATL
-
-(d) C++ Clang tools for Windows
+* VC++ 2022 最新の v14x ツール
+* Windows 11 SDK (10.0.22621.0)
+* x86 用と x64 用の Visual C++ ATL
+* C++ Clang tools for Windows
 
 #### (2.3) 「個別のコンポーネント」「コードツール」で選択する項目
 
-(a) MSVC v142 - VS 2019 C++ ARM64 build tools
+個別のコンポーネント
 
-(b) C++ ATL for v142 build tools (ARM64)
+* MSVC v143 - VS 2022 C++ ARM64 build tools
+* MSVC v143 - VS 2022 C++ x64/x86 build tools
+* C++ ATL for v143 build tools (x86 & x64)
+* C++ ATL for v143 build tools (ARM64/ARM64EC)
 
-(c) Git for Windows = 後述
+コードツール
+
+* Git for Windows = 後述
 
 #### (2.4) インストールの実行
 
@@ -90,23 +89,22 @@ http://www.7-zip.org/download.html
 C:\Program Files\7-Zip
 ```
 
-### (5) Python 3.7.9 (Windows 32bit)
+### (5) Python 3.11 (Windows 32bit)
 
 ダウンロードして実行し、インストールする。
 オプションはデフォルトでよい。
 
-https://www.python.org/downloads/release/python-379/
+https://www.python.org/downloads/release/python-3118/
 
-Windows x86 executable installer (python-3.7.9.exe)
-
+Windows x86 executable installer (python-3.11.8.exe)
 
 ### (6) 確認すること
 
-PowerShell またはコマンドプロンプトで Python 3.7 (32bit) が起動する。
+PowerShell またはコマンドプロンプトで Python 3.11 (32bit) が起動する。
 
 ```cmd
-> py -3.7-32 -V
-Python 3.7.9
+> py -3.11-32 -V
+Python 3.11.8
 ```
 
 PowerShell で git, patch, 7z がそれぞれ実行できる。
@@ -154,7 +152,6 @@ C:\Program Files\7-Zip\7z.exe
 
 ## ビルド
 
-
 ### 署名なしビルド
 
 
@@ -173,15 +170,14 @@ C:\Program Files\7-Zip\7z.exe
 > .\jptools\cleanAndRevert
 ```
 
-
 ### 署名つきビルド
 
+現在は `signtool sign /a` を使えることが前提。
 
 ```
 > cd nvdajp
 > .\venvUtils\venvCmd jptools\certBuild2023.cmd
 ```
-
 
 ### 本家版のビルド
 
@@ -191,9 +187,7 @@ C:\Program Files\7-Zip\7z.exe
 > .\scons
 ```
 
-
 ## git トラブルシューティング
-
 
 ### ファイルの不足やバージョンの不一致
 
