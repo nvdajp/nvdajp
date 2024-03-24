@@ -293,7 +293,7 @@ class GlobalCommands(ScriptableObject):
 				return
 
 			elif len(info.text) < speech.speech.MAX_LENGTH_FOR_SELECTION_REPORTING:
-				speech.speakSpelling(info.text, useCharacterDescriptions=scriptCount > 1)
+				speech.speakSpelling(info.text, useCharacterDescriptions=scriptCount > 1, useDetails=scriptCount > 1)
 			else:
 				speech.speakTextSelected(info.text)
 				braille.handler.message(selectMessage)
@@ -3497,7 +3497,7 @@ class GlobalCommands(ScriptableObject):
 			if repeatCount == 0:
 				ui.message(text)
 			else:
-				speech.speakSpelling(text, useCharacterDescriptions=repeatCount > 1)
+				speech.speakSpelling(text, useCharacterDescriptions=repeatCount > 1, useDetails=repeatCount > 1)
 		else:
 			ui.message(ngettext(
 				# Translators: If the number of characters on the clipboard is greater than about 1000, it reports this
