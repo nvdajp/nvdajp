@@ -87,7 +87,7 @@ def isLatinCharacter(c):
 	return isFullShapeAlphabet(c) or isHalfShapeAlphabet(c)
 
 def isFullShapeSymbol(c):
-	return c in '　、。，．・：；？！´｀¨＾￣＿ー―／＼～∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜'
+	return c in '　、。，．・：；？！´｀¨＾￣＿ー―／＼～〜∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜'
 
 def isUpper(c):
 	return (len(c) == 1) and (re.search('[A-ZＡ-Ｚ]', c) is not None)
