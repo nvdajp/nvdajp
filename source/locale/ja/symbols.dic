@@ -131,8 +131,8 @@ _	アンダーライン	some
 ➢	ミギ クサビガタ ヤジルシ	some
 ⮚	ミギ クサビガタ ヤジルシ	some
 ❖	ヨツビシ	some
-♣	クラブ	most
-♦	ダイヤ	some
+♣	クラブ	none
+♦	ダイヤ	none
 §	セクション	all
 °	ド	all
 «	ヒダリ ダブル ブラケット
@@ -754,7 +754,7 @@ _	アンダーライン	some
 ☆	ホシ	some
 ★	クロボシ	some
 ☓	ナナメジュージ	some
-♠	スペード	most
+♠	スペード	none
 ♡	ハート	most
 ♢	ダイヤ	most
 ♯	シャープ	some
