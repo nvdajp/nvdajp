@@ -4,21 +4,26 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
-from typing import Optional
+from typing import Optional, Tuple
+import typing
 import os
 import winreg
 import msvcrt
 import winVersion
-import versionInfo
+import buildVersion
 import winKernel
 import config
 
 from ctypes import *
 from ctypes import (
 	WINFUNCTYPE,
+	c_bool,
+	c_int,
 	c_long,
+	c_ulong,
 	c_wchar_p,
 	c_wchar,
+	create_unicode_buffer,
 	windll,
 )
 from ctypes.wintypes import *
@@ -31,6 +36,11 @@ import globalVars
 from logHandler import log
 import NVDAState
 from utils.security import isLockScreenModeActive
+from winAPI.constants import SystemErrorCodes
+
+if typing.TYPE_CHECKING:
+	from speech.priorities import SpeechPriority
+	from characterProcessing import SymbolLevel
 
 versionedLibPath = os.path.join(globalVars.appDir, 'lib')
 versionedLibARM64Path = os.path.join(globalVars.appDir, 'libArm64')
@@ -39,9 +49,9 @@ versionedLibAMD64Path = os.path.join(globalVars.appDir, 'lib64')
 
 if not NVDAState.isRunningAsSource():
 	# When running as a py2exe build, libraries are in a version-specific directory
-	versionedLibPath=os.path.join(versionedLibPath,versionInfo.version)
-	versionedLibAMD64Path = os.path.join(versionedLibAMD64Path, versionInfo.version)
-	versionedLibARM64Path = os.path.join(versionedLibARM64Path, versionInfo.version)
+	versionedLibPath = os.path.join(versionedLibPath, buildVersion.version)
+	versionedLibAMD64Path = os.path.join(versionedLibAMD64Path, buildVersion.version)
+	versionedLibARM64Path = os.path.join(versionedLibARM64Path, buildVersion.version)
 
 
 _remoteLib=None
@@ -49,6 +59,7 @@ _remoteLoaderAMD64: "Optional[_RemoteLoader]" = None
 _remoteLoaderARM64: "Optional[_RemoteLoader]" = None
 localLib=None
 generateBeep=None
+onSsmlMarkReached = None
 VBuf_getTextInRange=None
 lastLanguageID=None
 lastLayoutString=None
@@ -63,31 +74,118 @@ def nvdaController_speakText(text):
 	focus=api.getFocusObject()
 	if focus.sleepMode==focus.SLEEP_FULL:
 		return -1
-	import queueHandler
 	import speech
 	queueHandler.queueFunction(queueHandler.eventQueue,speech.speakText,text)
-	return 0
+	return SystemErrorCodes.SUCCESS
+
+
+# C901 'nvdaController_speakSsml' is too complex
+# Note: when working on nvdaController_speakSsml, look for opportunities to simplify
+# and move logic out into smaller helper functions.
+@WINFUNCTYPE(c_long, c_wchar_p, c_int, c_int, c_bool)
+def nvdaController_speakSsml(  # noqa: C901
+		ssml: str,
+		symbolLevel: "SymbolLevel",
+		priority: "SpeechPriority",
+		asynchronous: bool,
+) -> SystemErrorCodes:
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
+		return SystemErrorCodes.ACCESS_DENIED
+
+	import speech
+	from characterProcessing import SymbolLevel
+	from speech.priorities import SpeechPriority
+	from speech.speech import _getSpeakSsmlSpeech
+
+	try:
+		symbolLevel = SymbolLevel(symbolLevel)
+	except ValueError:
+		log.exception("Invalid symbolLevel")
+		return SystemErrorCodes.INVALID_PARAMETER
+
+	try:
+		priority = SpeechPriority(priority)
+	except ValueError:
+		log.exception("Invalid SpeechPriority")
+		return SystemErrorCodes.INVALID_PARAMETER
+
+	prefixSpeechCommand = None
+	markCallable = None
+	if not asynchronous:
+		from queue import SimpleQueue
+
+		markQueue = SimpleQueue()
+
+		import synthDriverHandler
+		from speech.commands import CallbackCommand
+
+		def onDoneSpeaking():
+			markQueue.put_nowait(None)
+
+		def onSpeechCanceled():
+			markQueue.put_nowait(False)
+
+		def prefixCallback():
+			synthDriverHandler.synthDoneSpeaking.register(onDoneSpeaking)
+			speech.speechCanceled.register(onSpeechCanceled)
+
+		def markCallable(name: str):
+			markQueue.put_nowait(name)
+
+		prefixSpeechCommand = CallbackCommand(prefixCallback)
+
+	try:
+		sequence = _getSpeakSsmlSpeech(ssml, markCallable, prefixSpeechCommand)
+	except Exception:
+		log.error("Error parsing SSML", exc_info=True)
+		return SystemErrorCodes.INVALID_PARAMETER
+
+	queueHandler.queueFunction(
+		queueHandler.eventQueue,
+		speech.speak,
+		speechSequence=sequence,
+		symbolLevel=symbolLevel,
+		priority=priority
+	)
+	if not asynchronous:
+		try:
+			while True:
+				match markQueue.get():
+					case None:
+						break
+					case False:
+						return SystemErrorCodes.CANCELLED
+					case str() as name:
+						onSsmlMarkReached(name)
+					case _ as unknown:
+						log.error(f"Unknown item in SSML mark queue: {unknown}")
+		finally:
+			speech.speechCanceled.unregister(onSpeechCanceled)
+			synthDriverHandler.synthDoneSpeaking.unregister(onDoneSpeaking)
+	return SystemErrorCodes.SUCCESS
+
 
 @WINFUNCTYPE(c_long)
 def nvdaController_cancelSpeech():
 	focus=api.getFocusObject()
 	if focus.sleepMode==focus.SLEEP_FULL:
 		return -1
-	import queueHandler
 	import speech
 	queueHandler.queueFunction(queueHandler.eventQueue,speech.cancelSpeech)
-	return 0
+	return SystemErrorCodes.SUCCESS
+
 
 @WINFUNCTYPE(c_long,c_wchar_p)
-def nvdaController_brailleMessage(text):
+def nvdaController_brailleMessage(text: str) -> SystemErrorCodes:
 	focus=api.getFocusObject()
 	if focus.sleepMode==focus.SLEEP_FULL:
 		return -1
 	if config.conf["braille"]["reportLiveRegions"]:
-		import queueHandler
 		import braille
 		queueHandler.queueFunction(queueHandler.eventQueue, braille.handler.message, text)
-	return 0
+	return SystemErrorCodes.SUCCESS
+
 
 @WINFUNCTYPE(c_long,c_wchar_p)
 def nvdaController_speakSpelling(text):
@@ -201,7 +299,6 @@ def nvdaControllerInternal_reportLiveRegion(text: str, politeness: str):
 	focus = api.getFocusObject()
 	if focus.sleepMode == focus.SLEEP_FULL:
 		return -1
-	import queueHandler
 	import speech
 	import braille
 	from aria import AriaLivePoliteness
@@ -261,17 +358,16 @@ def handleInputCompositionEnd(result):
 	import speech
 	import characterProcessing
 	from NVDAObjects.inputComposition import InputComposition
-	from NVDAObjects.behaviors import CandidateItem
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 	focus=api.getFocusObject()
 	#nvdajp begin
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
 			config.conf["keyboard"]["speakTypedCharacters"]:
-		if result == u'\u3000':
+		if result == '\u3000':
 			# Translators: handle input composition end
 			speech.speakText(_('full shape space'))
 			return
-		elif result == u'\u0020':
+		elif result == '\u0020':
 			# Translators: handle input composition end
 			speech.speakText(_('space'))
 			return
@@ -319,15 +415,17 @@ def handleInputCompositionEnd(result):
 				# Translators: a message when the IME cancelation status
 				speech.speakMessage(_("Clear"))
 			else:
-				result=curInputComposition.compositionString.lstrip(u'\u3000 ')
+				result=curInputComposition.compositionString.lstrip('\u3000 ')
 				if winUser.getAsyncKeyState(winUser.VK_BACK)&1:
 					# Translators: a message when the IME cancelation status
 					result+=" "+_("Clear")
 		else:
-			result=curInputComposition.compositionString.lstrip(u'\u3000 ')
+			result=curInputComposition.compositionString.lstrip('\u3000 ')
 		#nvdajp end
 	if result:
 		if not config.conf["inputComposition"]["announceSelectedCandidate"]: return #nvdajp
+		# If the input has been finalized, cancel the current speech.
+		speech.cancelSpeech()
 		speech.speakText(result, symbolLevel=characterProcessing.SymbolLevel.ALL)
 
 def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,isReading):
@@ -364,7 +462,25 @@ lastSelectionEnd = None #nvdajp
 
 # work around ti34120
 # https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120
-def badCompositionUpdate(compositionString, compAttr):
+def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
+	"""
+	Validates the given input composition string and its attributes.
+	If the string meets certain conditions, this function returns True.
+
+	This function is designed to ignore certain compositionUpdate events,
+	specifically those where an alphabetic character is inserted
+	in the middle of a string of Kana characters, such as
+	"ほｎあいうえお".
+	This is done to prevent unexpected behavior in the input composition process
+	for languages that use Kana characters.
+
+	Args:
+	compositionString (str): The input composition string to validate.
+	compAttr (str): The attributes of the input composition string.
+
+	Returns:
+	bool: True if the string meets certain conditions, False otherwise.
+	"""
 	if len(compositionString) <= 2:
 		return False
 	if any(c != '0' for c in compAttr):
@@ -377,6 +493,52 @@ def badCompositionUpdate(compositionString, compAttr):
 		return True
 	return False
 
+def extractCompositionString(compAttr: str, compositionString: str, selectionStart: int, selectionEnd: int, lastCompAttr: str) -> Tuple[str, int]:
+	"""
+	This function extracts a part of the composition string based on the attribute values.
+	It checks the attribute values in a specific order and extracts the corresponding characters from the composition string.
+	The function also returns the end index of the extracted string in the original composition string.
+
+	Args:
+		compAttr (str): The attribute values for the composition string.
+			Each character in this string corresponds to a TF_ATTR value ('0', '1', etc.) for the corresponding character in the composition string.
+		compositionString (str): The composition string.
+		selectionStart (int): The start index of the selection in the composition string.
+		selectionEnd (int): The end index of the selection in the composition string.
+		lastCompAttr (str): The last attribute values for the composition string.
+
+	TF_ATTR values represent different states of text in an input composition string:
+	TF_ATTR_INPUT                = 0: The text is in the process of being composed.
+	TF_ATTR_TARGET_CONVERTED     = 1: The text has been converted as a result of the user accepting a conversion candidate.
+	TF_ATTR_CONVERTED            = 2: The text has been converted.
+	TF_ATTR_TARGET_NOTCONVERTED  = 3: The text is a target for conversion, but has not yet been converted.
+	TF_ATTR_INPUT_ERROR          = 4: There was an error in inputting the text.
+	TF_ATTR_FIXEDCONVERTED       = 5: The text has been converted and fixed, and can no longer be modified.
+
+	Returns:
+		Tuple[str, int]: The extracted string and its end index in the original composition string.
+	"""
+	extractedString = ''
+	endIndex = 0
+
+	# This inner function extracts characters from the composition string where the attribute value matches the given condition.
+	def extractString(condition: str) -> str:
+		return ''.join(compositionString[i] for i, attr in enumerate(compAttr) if attr == condition)
+
+	# Check the attribute values in a specific order and extract the corresponding characters.
+	if ('3' in compAttr) and ('1' not in compAttr):
+		endIndex = len(compositionString)
+		extractedString = extractString('3')
+	elif ('1' in compAttr) and (lastCompAttr is None or any([c != '0' for c in lastCompAttr])):
+		extractedString = extractString('1')
+	elif ('0' in compAttr) and ('2' in compAttr):
+		extractedString = extractString('0')
+	elif all([c == '0' for c in compAttr]) and 0 <= selectionStart == selectionEnd < len(compAttr):
+		# reviewing pre-edit character
+		extractedString = compositionString[selectionStart]
+		log.debug("((%s))" % extractedString)
+	return extractedString, endIndex
+
 @WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
 	global lastCompAttr, lastCompString
@@ -385,12 +547,11 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	#nvdajp begin
 	compAttr = ''
 	if '\t' in compositionString:
-		ar = compositionString.split('\t')
-		compositionString, compAttr = ar
+		compositionString, compAttr = compositionString.split('\t')
 		if (lastCompString == compositionString) and (lastCompAttr == compAttr) \
-		   and (lastSelectionStart == selectionStart) \
-		   and (lastSelectionEnd == selectionEnd) \
-		   and not (compositionString in (' ', u'\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
+			and (lastSelectionStart == selectionStart) \
+			and (lastSelectionEnd == selectionEnd) \
+			and not (compositionString in (' ', '\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
 			log.debug("ignored (%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
 			return 0
 		_lastCompAttr = lastCompAttr
@@ -398,44 +559,22 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		lastCompString = compositionString
 		lastSelectionStart = selectionStart
 		lastSelectionEnd = selectionEnd
-		# TF_ATTR_INPUT                = 0
-		# TF_ATTR_TARGET_CONVERTED     = 1
-		# TF_ATTR_CONVERTED            = 2
-		# TF_ATTR_TARGET_NOTCONVERTED  = 3
-		# TF_ATTR_INPUT_ERROR          = 4
-		# TF_ATTR_FIXEDCONVERTED       = 5
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
 			log.debug("(%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
-			s = ''
-			e = 0
-			if ('3' in compAttr) and ('1' not in compAttr):
-				e = len(compositionString)
-				for p in range(len(compAttr)):
-					if compAttr[p] == '3':
-						s += compositionString[p]
-			elif ('1' in compAttr) and (_lastCompAttr is None or any([c != '0' for c in _lastCompAttr])):
-				for p in range(len(compAttr)):
-					if compAttr[p] == '1':
-						s += compositionString[p]
-			elif ('0' in compAttr) and ('2' in compAttr):
-				for p in range(len(compAttr)):
-					if compAttr[p] == '0':
-						s += compositionString[p]
-			elif all([c == '0' for c in compAttr]) \
-				and 0 <= selectionStart == selectionEnd < len(compAttr):
-				# reviewing pre-edit character
-				s = compositionString[selectionStart]
-				log.debug("((%s))" % s)
-			if s:
+			extractedString, endIndex = extractCompositionString(compAttr, compositionString, selectionStart, selectionEnd, _lastCompAttr)
+			if extractedString:
 				focus=api.getFocusObject()
 				if isinstance(focus,InputComposition):
-					focus.compositionUpdate(s, 0, e, 0, forceNewText=True)
+					focus.compositionUpdate(extractedString, 0, endIndex, 0, forceNewText=True)
 				return 0
 	else:
+		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=}")
+		if lastCompString and not compositionString and selectionStart == -1 and selectionEnd == -1 and isReading == 0:
+			queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString)
+			return 0
 		lastCompAttr = None
-		log.debug(compositionString)
 	#nvdajp end
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 	if selectionStart==-1:
@@ -450,8 +589,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	return 0
 
 def handleInputCandidateListUpdate(candidatesString,selectionIndex,inputMethod):
-	from six import text_type
-	log.debug(u"(%s) (%s) (%s)" % (text_type(candidatesString).replace('\n','|'),str(selectionIndex),text_type(inputMethod)))
+	log.debug("(%s) (%s) (%s)" % (str(candidatesString).replace('\n','|'),str(selectionIndex),str(inputMethod)))
 	candidateStrings=candidatesString.split('\n')
 	import speech
 	from NVDAObjects.inputComposition import InputComposition, CandidateList, CandidateItem
@@ -601,7 +739,6 @@ def nvdaControllerInternal_inputLangChangeNotify(threadID,hkl,layoutString):
 	#Never announce changes while in sayAll (#1676)
 	if sayAll.SayAllHandler.isRunning():
 		return 0
-	import queueHandler
 	import ui
 	buf=create_unicode_buffer(1024)
 	res=windll.kernel32.GetLocaleInfoW(languageID,2,buf,1024)
@@ -737,7 +874,8 @@ class _RemoteLoader:
 
 def initialize() -> None:
 	global _remoteLib, _remoteLoaderAMD64, _remoteLoaderARM64
-	global localLib, generateBeep, VBuf_getTextInRange, lastLanguageID, lastLayoutString
+	global localLib, generateBeep, onSsmlMarkReached, VBuf_getTextInRange
+	global lastLanguageID, lastLayoutString
 	hkl=c_ulong(windll.User32.GetKeyboardLayout(0)).value
 	lastLanguageID=winUser.LOWORD(hkl)
 	KL_NAMELENGTH=9
@@ -748,6 +886,7 @@ def initialize() -> None:
 	localLib=cdll.LoadLibrary(os.path.join(versionedLibPath,'nvdaHelperLocal.dll'))
 	for name,func in [
 		("nvdaController_speakText",nvdaController_speakText),
+		("nvdaController_speakSsml", nvdaController_speakSsml),
 		("nvdaController_cancelSpeech",nvdaController_cancelSpeech),
 		("nvdaController_brailleMessage",nvdaController_brailleMessage),
 		("nvdaController_speakSpelling",nvdaController_speakSpelling),
@@ -781,6 +920,9 @@ def initialize() -> None:
 	generateBeep=localLib.generateBeep
 	generateBeep.argtypes=[c_char_p,c_float,c_int,c_int,c_int]
 	generateBeep.restype=c_int
+	onSsmlMarkReached = localLib.nvdaController_onSsmlMarkReached
+	onSsmlMarkReached.argtypes = [c_wchar_p]
+	onSsmlMarkReached.restype = c_ulong
 	# The rest of this function (to do with injection) only applies if NVDA is not running as a Windows store application
 	# Handle VBuf_getTextInRange's BSTR out parameter so that the BSTR will be freed automatically.
 	VBuf_getTextInRange = CFUNCTYPE(c_int, c_int, c_int, c_int, POINTER(BSTR), c_int)(
@@ -808,7 +950,6 @@ def initialize() -> None:
 		log.error("Error installing IA2 support")
 	#Manually start the in-process manager thread for this NVDA main thread now, as a slow system can cause this action to confuse WX
 	_remoteLib.initInprocManagerThreadIfNeeded()
-	versionedLibARM64Path
 	arch = winVersion.getWinVer().processorArchitecture
 	if arch == 'AMD64':
 		_remoteLoaderAMD64 = _RemoteLoader(versionedLibAMD64Path)

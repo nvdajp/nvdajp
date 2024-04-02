@@ -1,7 +1,7 @@
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2006-2023 NV Access Limited, Babbage B.V., Davy Kager, Bill Dengler, Julien Cochuyt,
 # Joseph Lee, Dawid Pieper, mltony, Bram Duvigneau, Cyrille Bougot, Rob Meredith,
-# Burman's Computer and Education Ltd., Leonard de Ruijter
+# Burman's Computer and Education Ltd., Leonard de Ruijter, Łukasz Golonka
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -43,13 +43,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 [speech]
 	# The synthesizer to use
 	synth = string(default=auto)
-	# symbolLevel values:
-	#  NONE = 0
-	#  SOME = 100
-	#  MOST = 200
-	#  ALL = 300
-	#  CHAR = 1000
-	#  UNCHANGED = -1
+	# symbolLevel: One of the characterProcessing.SymbolLevel values.
 	symbolLevel = integer(default=100)
 	trustVoiceLanguage = boolean(default=true)
 	includeCLDR = boolean(default=True)
@@ -58,6 +52,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	autoLanguageSwitching = boolean(default=true)
 	autoDialectSwitching = boolean(default=false)
 	delayedCharacterDescriptions = boolean(default=false)
+	excludedSpeechModes = int_list(default=list())
 
 	[[__many__]]
 		capPitchChange = integer(default=0,min=-100,max=100)
@@ -95,7 +90,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	wordWrap = boolean(default=true)
 	focusContextPresentation = option("changedContext", "fill", "scroll", default="changedContext")
 	nvdajpMessageTimeout = boolean(default=true) # obsolete (nvdajp)
-	japaneseBrailleSupport = boolean(default=true) # (nvdajp)
+	japaneseBrailleSupport = boolean(default=true) # obsolete (nvdajp)
 	nvdajpComPort = integer(default=0) # obsolete (nvdajp)
 	interruptSpeechWhileScrolling = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 	showSelection = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
@@ -275,6 +270,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	allowInChromium = integer(0, 3, default=0)
 	# 0:default (where suitable), 1:Only when necessary, 2: where suitable, 3: always
 	allowInMSWord = integer(0, 3, default=0)
+	enhancedEventProcessing = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 
 [annotations]
 	reportDetails = boolean(default=true)
@@ -314,6 +310,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	nvwave = boolean(default=false)
 	annotations = boolean(default=false)
 	events = boolean(default=false)
+	garbageHandler = boolean(default=false)
 
 [uwpOcr]
 	language = string(default="")

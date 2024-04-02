@@ -21,9 +21,7 @@ import jpUtils
 # import locale
 import gettext
 
-gettext.translation("nvda", localedir=r"..\source\locale", languages=["ja"]).install(
-    True
-)
+gettext.translation("nvda", localedir=r"..\source\locale", languages=["ja"]).install()
 
 items = [
     ("a", "半角 英字 エー アルファー", "半角 a"),

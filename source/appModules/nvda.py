@@ -19,6 +19,7 @@ import speech
 import textInfos
 import config
 from logHandler import log
+import ui
 
 if typing.TYPE_CHECKING:
 	import inputCore
@@ -73,6 +74,8 @@ class NvdaPythonConsoleUIOutputClear(ScriptableObject):
 	def script_clearOutput(self, gesture: "inputCore.InputGesture"):
 		from pythonConsole import consoleUI
 		consoleUI.clear()
+		# Translators: Description of a message spoken when clearing the Python Console output pane
+		ui.message(_("Output pane cleared"))
 
 
 class NvdaPythonConsoleUIOutputCtrl(ScriptableObject):

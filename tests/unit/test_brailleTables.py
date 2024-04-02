@@ -18,7 +18,12 @@ class TestFBrailleTables(unittest.TestCase):
 		"""Tests whether all defined tables exist."""
 		tables = brailleTables.listTables()
 		for table in tables:
-			if table.displayName in ("Japanese 6 dot computer braille", "Japanese 6 dot kanji braille"):
+			if table.displayName in (
+				"Japanese 6 dot computer braille",
+				"Japanese 6 dot with UEB grade 2",
+				"Japanese 6 dot with English (U.S.) grade 2",
+				"Japanese 6 dot kanji braille",
+			):
 				continue
 			self.assertTrue(
 				os.path.isfile(os.path.join(brailleTables.TABLES_DIR, table.fileName)),

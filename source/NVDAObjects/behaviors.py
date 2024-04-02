@@ -586,9 +586,9 @@ class CandidateItem(NVDAObject):
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			fb = (braille.handler.displaySize > 0)
 			c = jpUtils.getDiscriminantReading(candidate, forBraille=fb)
-			log.debug(u"{number} {candidate} {c}".format(number=number,candidate=candidate,c=c))
+			log.debug("{number} {candidate} {c}".format(number=number,candidate=candidate,c=c))
 			if config.conf["language"]["announceCandidateNumber"]:
-				return _(u"{number} {candidate}").format(number=number,candidate=c)
+				return _("{number} {candidate}").format(number=number,candidate=c)
 			return c
 		#nvdajp end
 		if config.conf["inputComposition"]["alwaysIncludeShortCharacterDescriptionInCandidateName"]:
@@ -898,6 +898,12 @@ class _FakeTableCell(NVDAObject):
 		states.discard(controlTypes.State.CHECKED)
 		return states
 
+	def _isEqual(self, other: "_FakeTableCell") -> bool:
+		return (
+			self.parent == other.parent
+			and self.columnNumber == other.columnNumber
+			and self.rowNumber == other.rowNumber
+		)
 
 class FocusableUnfocusableContainer(NVDAObject):
 	"""Makes an unfocusable container focusable using its first focusable descendant.

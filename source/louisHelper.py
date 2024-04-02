@@ -1,14 +1,18 @@
-# louisHelper.py
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2018 NV Access Limited, Babbage B.V.
+# Copyright (C) 2018-2023 NV Access Limited, Babbage B.V.
 
 """Helper module to ease communication to and from liblouis."""
 
-import louis
-from logHandler import log
 import config
+from logHandler import log
+import globalVars
+import os
+
+with os.add_dll_directory(globalVars.appDir):
+	import louis
+
 
 LOUIS_TO_NVDA_LOG_LEVELS = {
 	louis.LOG_ALL: log.DEBUG,
@@ -57,16 +61,33 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 	"""
 	text = inbuf.replace('\0','')
 	# nvdajp begin
+	import os
+	from brailleTables import TABLES_DIR
 	try:
 		from synthDrivers.jtalk.translator2 import translate as jpTranslate
 	except ModuleNotFoundError:
 		jpTranslate = None
-	if jpTranslate and config.conf["braille"]["japaneseBrailleSupport"]:
+	translationTable = config.conf["braille"]["translationTable"]
+	if jpTranslate and translationTable in [
+			"ja-jp-comp6.utb", "ja-jp-comp6-en-ueb-g2.tbl", "ja-jp-comp6-en-us-g2.tbl"
+		]:
 		log.debug(text)
+		nabcc = config.conf["braille"]["expandAtCursor"]
+		louisTranslate = None
+		louisTableList = None
+		if not nabcc:
+			if translationTable == "ja-jp-comp6-en-ueb-g2.tbl":
+				louisTranslate = louis.translate
+				louisTableList = [os.path.join(TABLES_DIR, "en-ueb-g2.ctb"), "braille-patterns.cti"]
+			elif translationTable == "ja-jp-comp6-en-us-g2.tbl":
+				louisTranslate = louis.translate
+				louisTableList = [os.path.join(TABLES_DIR, "en-us-g2.ctb"), "braille-patterns.cti"]
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
 			text,
 			cursorPos=cursorPos or 0,
-			nabcc=config.conf["braille"]["expandAtCursor"]
+			nabcc=nabcc,
+			# louisTranslate=louisTranslate,
+			# louisTableList=louisTableList,
 		)
 	else:
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(

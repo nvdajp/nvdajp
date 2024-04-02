@@ -1,1 +1,1 @@
-see readme.md
+see ../readme-nvdajp.md

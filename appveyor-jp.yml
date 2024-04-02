@@ -1,4 +1,4 @@
-os: Visual Studio 2019
+os: Visual Studio 2022
 version: "{branch}-{build}"
 
 skip_tags: true
@@ -11,13 +11,9 @@ branches:
 clone_depth: 1
 
 environment:
- PY_PYTHON: 3.7-32
+ PY_PYTHON: 3.11-32
 
 init:
- - ps: Set-WinSystemLocale ja-JP
- - ps: Start-Sleep -s 10
- - ps: Restart-Computer
- - ps: Start-Sleep -s 10
  - ps: |
     $pythonVersion = (py --version)
     echo $pythonVersion
@@ -25,7 +21,7 @@ init:
 
 install:
  - set RELEASE=1
- - set VERSION=2023.3.4jp
+ - set VERSION=2024.1jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
@@ -64,10 +60,6 @@ build_script:
  - jpchar\tests.cmd
 
 before_test:
- - ps: Set-WinSystemLocale en-US
- - ps: Start-Sleep -s 10
- - ps: Restart-Computer
- - ps: Start-Sleep -s 10
  - ps: appveyor\scripts\tests\beforeTests.ps1
  - ps: appveyor\scripts\installNVDA.ps1
 

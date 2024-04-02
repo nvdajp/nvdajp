@@ -19,7 +19,7 @@ import ui
 import config
 import winVersion
 import controlTypes
-from NVDAObjects.UIA import UIA
+from NVDAObjects.UIA import UIA, XamlEditableText
 from NVDAObjects.behaviors import CandidateItem as CandidateItemBehavior, EditableTextWithAutoSelectDetection
 
 
@@ -336,6 +336,7 @@ class AppModule(appModuleHandler.AppModule):
 			# Therefore remove text field movement commands so emoji panel commands can be used directly.
 			elif obj.UIAAutomationId == "Windows.Shell.InputApp.FloatingSuggestionUI.DelegationTextBox":
 				clsList.remove(EditableTextWithAutoSelectDetection)
+				clsList.remove(XamlEditableText)
 
 
 if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:

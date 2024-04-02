@@ -1,6 +1,6 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2006-2022 NV Access Limited, Aleksey Sadovoy, Christopher Toth, Joseph Lee, Peter Vágner,
-# Derek Riemer, Babbage B.V., Zahari Yurukov, Łukasz Golonka
+# Copyright (C) 2006-2023 NV Access Limited, Aleksey Sadovoy, Christopher Toth, Joseph Lee, Peter Vágner,
+# Derek Riemer, Babbage B.V., Zahari Yurukov, Łukasz Golonka, Cyrille Bougot
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -67,6 +67,53 @@ class _PumpPending(Enum):
 
 _hasShutdownBeenTriggered = False
 _shuttingDownFlagLock = threading.Lock()
+
+
+def _showAddonsErrors() -> None:
+	addonFailureMessages: list[str] = []
+	failedUpdates = addonHandler._failedPendingInstalls.intersection(addonHandler._failedPendingRemovals)
+	failedInstalls = addonHandler._failedPendingInstalls - failedUpdates
+	failedRemovals = addonHandler._failedPendingRemovals - failedUpdates
+	if failedUpdates:
+		addonFailureMessages.append(
+			ngettext(
+				# Translators: Shown when one or more add-ons failed to update.
+				"The following add-on failed to update: {}.",
+				"The following add-ons failed to update: {}.",
+				len(failedUpdates)
+			).format(", ".join(failedUpdates))
+		)
+	if failedRemovals:
+		addonFailureMessages.append(
+			ngettext(
+				# Translators: Shown when one or more add-ons failed to be uninstalled.
+				"The following add-on failed to uninstall: {}.",
+				"The following add-ons failed to uninstall: {}.",
+				len(failedRemovals)
+			).format(", ".join(failedRemovals))
+		)
+	if failedInstalls:
+		addonFailureMessages.append(
+			ngettext(
+				# Translators: Shown when one or more add-ons failed to be installed.
+				"The following add-on failed to be installed: {}.",
+				"The following add-ons failed to be installed: {}.",
+				len(failedInstalls)
+			).format(", ".join(failedInstalls))
+		)
+
+	if addonFailureMessages:
+		import wx
+		import gui
+		gui.messageBox(
+			_(
+				# Translators: Shown when one or more actions on add-ons failed.
+				"Some operations on add-ons failed. See the log file for more details.\n{}"
+			).format("\n".join(addonFailureMessages)),
+			# Translators: Title of message shown when requested action on add-ons failed.
+			_("Error"),
+			wx.ICON_ERROR | wx.OK
+		)
 
 
 def doStartupDialogs():
@@ -138,6 +185,7 @@ def doStartupDialogs():
 						pass
 			# Ask the user if usage stats can be collected.
 			gui.runScriptModalDialog(gui.startupDialogs.AskAllowUsageStatsDialog(None), onResult)
+	_showAddonsErrors()
 
 
 @dataclass
@@ -241,7 +289,7 @@ def resetConfiguration(factoryDefaults=False):
 	log.debug("terminating addonHandler")
 	addonHandler.terminate()
 	# Addons
-	from _addonStore import dataManager
+	from addonStore import dataManager
 	log.debug("terminating addon dataManager")
 	dataManager.terminate()
 	log.debug("Reloading config")
@@ -451,7 +499,6 @@ def _initializeObjectCaches():
 	Caches the desktop object.
 	This may make information from the desktop window available on the lock screen,
 	however no known exploit is known for this.
-	2023.1 plans to ensure the desktopObject is available only when signed-in.
 
 	The desktop object must be used, as setting the object caches has side effects,
 	such as focus events.
@@ -545,7 +592,7 @@ def main():
 	import socket
 	socket.setdefaulttimeout(10)
 	log.debug("Initializing add-ons system")
-	from _addonStore import dataManager
+	from addonStore import dataManager
 	dataManager.initialize()
 	addonHandler.initialize()
 	if globalVars.appArgs.disableAddons:
@@ -784,7 +831,10 @@ def main():
 				sessionTracking.pumpAll()
 			except Exception:
 				log.exception("errors in this core pump cycle")
-			baseObject.AutoPropertyObject.invalidateCaches()
+			try:
+				baseObject.AutoPropertyObject.invalidateCaches()
+			except Exception:
+				log.exception("AutoPropertyObject.invalidateCaches failed")
 			watchdog.asleep()
 			self.isPumping = False
 			# #3803: If another pump was requested during this pump execution, we need
@@ -869,6 +919,7 @@ def main():
 	_terminate(hwIo)
 	_terminate(addonHandler)
 	_terminate(dataManager, name="addon dataManager")
+	_terminate(nvwave)
 	_terminate(garbageHandler)
 	# DMP is only started if needed.
 	# Terminate manually (and let it write to the log if necessary)

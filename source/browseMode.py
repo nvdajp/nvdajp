@@ -1,6 +1,6 @@
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2007-2023 NV Access Limited, Babbage B.V., James Teh, Leonard de Ruijter,
-# Thomas Stivers, Accessolutions, Julien Cochuyt
+# Thomas Stivers, Accessolutions, Julien Cochuyt, Cyrille Bougot
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -19,9 +19,12 @@ import weakref
 
 import wx
 import core
+import winUser
+import mouseHandler
 from logHandler import log
 import documentBase
 import review
+import inputCore
 import scriptHandler
 import eventHandler
 import nvwave
@@ -523,10 +526,27 @@ class BrowseModeTreeInterceptor(treeInterceptorHandler.TreeInterceptor):
 		@param obj: The object to activate.
 		@type obj: L{NVDAObjects.NVDAObject}
 		"""
-		try:
-			obj.doAction()
-		except NotImplementedError:
-			log.debugWarning("doAction not implemented")
+		while obj and obj != self.rootNVDAObject:
+			try:
+				obj.doAction()
+				break
+			except NotImplementedError:
+				log.debugWarning("doAction failed")
+			if obj.hasIrrelevantLocation:
+				# This check covers invisible, off screen and a None location
+				log.debugWarning("No relevant location for object")
+				obj = obj.parent
+				continue
+			location = obj.location
+			if not location.width or not location.height:
+				obj = obj.parent
+				continue
+			log.debugWarning("Clicking with mouse")
+			oldX, oldY = winUser.getCursorPos()
+			winUser.setCursorPos(*location.center)
+			mouseHandler.doPrimaryClick()
+			winUser.setCursorPos(oldX, oldY)
+			break
 
 	def _activatePosition(self, obj=None):
 		if not obj:
@@ -585,8 +605,6 @@ class BrowseModeTreeInterceptor(treeInterceptorHandler.TreeInterceptor):
 			self._focusLastFocusableObject()
 			api.processPendingEvents(processEventQueue=True)
 		gesture.send()
-	# Translators: the description for the passThrough script on browseMode documents.
-	script_passThrough.__doc__ = _("Passes gesture through to the application")
 
 	def script_disablePassThrough(self, gesture):
 		if not self.passThrough or self.disableAutoPassThrough:
@@ -1485,9 +1503,16 @@ class BrowseModeDocumentTreeInterceptor(documentBase.DocumentWithTableNavigation
 		scriptHandler.queueScript(script, gesture)
 
 	currentExpandedControl=None #: an NVDAObject representing the control that has just been expanded with the collapseOrExpandControl script.
-	def script_collapseOrExpandControl(self, gesture):
+
+	def script_collapseOrExpandControl(self, gesture: inputCore.InputGesture):
 		if not config.conf["virtualBuffers"]["autoFocusFocusableElements"]:
 			self._focusLastFocusableObject()
+			# Give the application time to focus the control.
+			core.callLater(100, self._collapseOrExpandControl_scriptHelper, gesture)
+		else:
+			self._collapseOrExpandControl_scriptHelper(gesture)
+
+	def _collapseOrExpandControl_scriptHelper(self, gesture: inputCore.InputGesture):
 		oldFocus = api.getFocusObject()
 		oldFocusStates = oldFocus.states
 		gesture.send()
@@ -1995,3 +2020,46 @@ class BrowseModeDocumentTreeInterceptor(documentBase.DocumentWithTableNavigation
 	def script_toggleScreenLayout(self, gesture):
 		# Translators: The message reported for not supported toggling of screen layout
 		ui.message(_("Not supported in this document."))
+
+	def updateAppSelection(self):
+		"""Update the native selection in the application to match the browse mode selection in NVDA."""
+		raise NotImplementedError
+
+	def clearAppSelection(self):
+		"""Clear the native selection in the application."""
+		raise NotImplementedError
+
+	@script(
+		gesture="kb:NVDA+shift+f10",
+		# Translators: input help message for toggle native selection command
+		description=_("Toggles native selection mode on and off"),
+	)
+	def script_toggleNativeAppSelectionMode(self, gesture: inputCore.InputGesture):
+		if not self._nativeAppSelectionModeSupported:
+			if not self._nativeAppSelectionMode:
+				# Translators: the message when native selection mode is not available in this browse mode document.
+				ui.message(_("Native selection mode unsupported in this browse mode document"))
+			else:
+				# Translators: the message when native selection mode cannot be turned off in this browse mode document.
+				ui.message(_("Native selection mode cannot be turned off in this browse mode document"))
+			return
+		nativeAppSelectionModeOn = not self._nativeAppSelectionMode
+		if nativeAppSelectionModeOn:
+			try:
+				self.updateAppSelection()
+			except NotImplementedError:
+				log.debugWarning("updateAppSelection failed", exc_info=True)
+				# Translators: the message when native selection mode is not available in this browse mode document.
+				ui.message(_("Native selection mode unsupported in this document"))
+				return
+			self._nativeAppSelectionMode = True
+			# Translators: reported when native selection mode is toggled on.
+			ui.message(_("Native app selection mode enabled"))
+		else:
+			try:
+				self.clearAppSelection()
+			except NotImplementedError:
+				log.debugWarning("clearAppSelection failed", exc_info=True)
+			self._nativeAppSelectionMode = False
+			# Translators: reported when native selection mode is toggled off.
+			ui.message(_("Native app selection mode disabled"))

@@ -803,8 +803,8 @@ void TSF_thread_detached() {
 	sink->Release();
 }
 
-bool isTSFThread(bool checkActiveProfile) {
+bool isTSFThread() {
 	TsfSink* tsf=fetchCurrentTsfSink();
 	if(!tsf) return false; 
-	return checkActiveProfile?tsf->hasActiveProfile:true;
+	return tsf->hasActiveProfile;
 }
