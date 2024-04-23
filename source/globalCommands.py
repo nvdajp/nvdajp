@@ -120,12 +120,12 @@ SCRCAT_DOCUMENTFORMATTING = _("Document formatting")
 # Translators: The name of a category of NVDA commands.
 SCRCAT_AUDIO = _("Audio")
 
-characterDescriptionMode = True
-
 # Translators: Reported when there are no settings to configure in synth settings ring
 # (example: when there is no setting for language).
 NO_SETTINGS_MSG = _("No settings")
 
+
+characterDescriptionMode = True
 
 class GlobalCommands(ScriptableObject):
 	"""Commands that are available at all times, regardless of the current focus.
@@ -2012,8 +2012,14 @@ class GlobalCommands(ScriptableObject):
 			try:
 				cList = [ord(c) for c in info.text]
 			except TypeError:
-				c = None
-			if cList:
+				cList = None
+			if cList and jpUtils.isJa():
+				for c in cList:
+					s = jpUtils.code2kana(c)
+					o = "%d u+%s" % (c, s)
+					speech.speakMessage(o)
+				braille.handler.message("  ".join("%d %s" % (c, jpUtils.code2hex(c)) for c in cList))
+			elif cList:
 				
 				for c in cList:
 					speech.speakMessage("%d," % c)
