@@ -2008,6 +2008,7 @@ class GlobalCommands(ScriptableObject):
 			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 		elif scriptCount==1:
 			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
+			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 		elif scriptCount == 2:
 			try:
 				cList = [ord(c) for c in info.text]
