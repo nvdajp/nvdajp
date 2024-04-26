@@ -28,6 +28,6 @@ DEFAULT_TEXT_PARAGRAPH_REGEX = (
 		# since they don't trigger as many false positives.
 		punc2=r'[?!]',
 		# We also check for CJK full-width punctuation marks without any extra rules.
-		cjk=r'[．！？：；]',
+		cjk=r'[．。！？：；]',
 	)
 )
