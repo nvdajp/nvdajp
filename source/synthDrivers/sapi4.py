@@ -204,6 +204,7 @@ class SynthDriver(SynthDriver):
 			self._bufSinkPtr,
 			ITTSBufNotifySink._iid_
 		)
+		self._isSpeaking = True
 
 	def cancel(self):
 		self._isSpeaking = True
