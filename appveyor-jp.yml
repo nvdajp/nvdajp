@@ -56,6 +56,7 @@ build_script:
  - pack_kgs_addon.cmd
  - cd ..
  - jptools\buildControllerClient.cmd %sconsArgs%
+ - jptools\testMiscDepsJp.cmd
  - jptools\tests.cmd
  - jpchar\tests.cmd
 
@@ -75,9 +76,12 @@ after_test:
 artifacts:
  - path: output\*
  - path: output\*\*
+ - path: miscDepsJp\__mypy.txt
  - path: miscDepsJp\jptools\__h1output.txt
  - path: miscDepsJp\jptools\__h2output.txt
  - path: miscDepsJp\jptools\__test_log.txt
+ - path: miscDepsJp\jptools\__jpBrailleHarness.t2t
+ - path: miscDepsJp\jptools\jpBrailleHarness.xhtml
  - path: jptools\__jpdictest_log.txt
  - path: jptools\nvdajp-jtalk-*.nvda-addon
  - path: jptools\kgsbraille-*.nvda-addon
