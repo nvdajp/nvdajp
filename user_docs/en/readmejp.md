@@ -19,6 +19,9 @@ NVDA Japanese is provided "as is", without warranty.
 
 * [NVDA Japanese www.nvda.jp/en](https://www.nvda.jp/en/)
 
+
+
+
 ### Contributors
 
 [Contributors for NVDA Japanese](https://osdn.net/projects/nvdajp/wiki/contributors_ja)
@@ -39,6 +42,9 @@ It may conflicts to other screen reader which is popular in Japan.
 
 This shortcut can be modified using the property (ALT+Enter) of NVDAJP icon of Windows desktop.
 
+
+
+
 ## Object Navigation
 
 ### Character description mode
@@ -53,9 +59,18 @@ Pressing "Report current character in review" (numpad2 or NVDA+period) four-time
 |Report current character in review |numpad2 |NVDA+period |none |Announces the current character on the line of text where the review cursor is positioned. If description mode is enabled, the character is described. Pressing twice reports the character with its attributes and description. Pressing three times reports the numeric value of the character in decimal and hexadecimal. Pressing four-times toggles the description mode.|
 |Move to next character in review |numpad3 |NVDA+right arrow |flick right (text mode) |Move the review cursor to the next character on the current line of text. If description mode is enabled, the character is described.|
 
-## Configuration
 
-### General settings
+
+
+
+
+
+
+
+
+
+
+## Configuration
 
 ### Language settings
 
@@ -181,6 +196,12 @@ Cursor position mapping is implemented for Japanese output table.
 
 Experimental braille input tables of "Japanese 6 dot computer braille" and "Japanese 6 dot kanji braille" are available. Their usages are similar to English grade 2 input table. However, they cover very limited charactors so far.
 
+
+
+
+
+
+
 ### Keyboard settings
 
 Caps Lock key of Japanese keyboard array cannot be used as NVDA modifier key.
@@ -213,7 +234,151 @@ eSpeak NG of NVDAJP supports reading of Japanese characters and Chinese characte
 
 eSpeak NG of NVDA cannot handle Japanese language.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Braille display
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### KGS Braille Memo series
 
@@ -380,6 +545,53 @@ Symbols:
 |! (exclamation) |235|
 |' (apostrophe) |3|
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### KGS BrailleNote 46C/46D
 
 The driver for braille display "KGS BrailleNote 46C/46D" from [KGS Corporation](http://www.kgs-jpn.co.jp/) is added.
@@ -431,11 +643,61 @@ It translates spoken words to Japanese braille pattens, so it is not exactly sam
 
 For Windows XP or Vista, DejaVu Sans font must be installed to display braille patterns. If you install LibreOffice, DejaVu Sans font will be installed as well.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Applications
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### Microsoft Word support
 
 Paragraph indent of Microsoft Word is now supported by NVDA. ([#4165](http://community.nvda-project.org/ticket/4165))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Configurations
 
@@ -464,6 +726,28 @@ If the line starts with '#', it is ignored. If the line starts with '\#', the ch
 
 Details (in Japanese) [NVDAJP ticket 29872](https://osdn.net/ticket/browse.php?group_id=4221&tid=29872)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Miscellaneous
 
 ### Source code and build server
@@ -476,13 +760,24 @@ We use AppVeyor as public build server:
 
 * [AppVeyor (public build server)](https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp)
 
+
+
+
+
+
+
 ### Issues
 
 * [OSDN Tickets](https://osdn.net/projects/nvdajp/ticket/)
 * [GitHub Issues (nvdajp)](https://github.com/nvdajp/nvdajp/issues)
 
+
+
+
+
+
+
 ### Controller Client API
 
 * [Controller Client enhancement by NVDAJP](https://osdn.net/projects/nvdajp/wiki/ControllerClient)
 * [NvdaDemoApp (bitbucket.org)](https://bitbucket.org/nishimotz/nvdademoapp)
-
