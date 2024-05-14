@@ -1,10 +1,10 @@
-﻿# NVDAJP Release Notes NVDA_VERSION
+# NVDAJP Release Notes NVDA_VERSION
 
 [TOC]
 
 ## Overview
 
-* last update: 2022-12-03
+* last update: 2024-05-14
 * updated by: NVDA Japanese Team / Takuya Nishimoto (Shuaruta Inc.)
 
 Release by [NVDA Japanese Team (nvdajp)](http://www.nvda.jp/en/), based on NVDA from NV Access.
