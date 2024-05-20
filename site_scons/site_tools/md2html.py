@@ -161,6 +161,9 @@ def md2html_actionFunc(
 		title = _getTitle(mdBuffer, isKeyCommands)
 
 	lang = pathlib.Path(source[0].path).parent.name
+	if isDevGuide and lang == "developerGuide":
+		# Parent folder in this case is the developerGuide folder in project docs
+		lang = "en"
 
 	if isUserGuide or isDevGuide or isReadmejp:
 		extraStylesheet = '<link rel="stylesheet" href="numberedHeadings.css">'
