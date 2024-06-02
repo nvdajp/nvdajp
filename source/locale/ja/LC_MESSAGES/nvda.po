@@ -109,7 +109,7 @@ msgstr "半角全角"
 
 #: gui\settingsDialogs.py:302
 msgid "Japanese Braille viewer"
-msgstr "日本語点字ビューアー"
+msgstr "日本語点字ビューアー(&J)"
 
 #: gui\jpBrailleViewer.py:18
 msgid "NVDA Japanese Braille Viewer"
