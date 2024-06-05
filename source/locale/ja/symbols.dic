@@ -14,7 +14,6 @@ complexSymbols:
 文末の疑問符	(?<=[^\s？])\？(?=[\"'”’)\s]|$)
 # Others
 decimal point	(?<=\d)\.(?=\d)
-in-word '	(?<=[^\W_])['’]
 negative number	(?<!\w)[-−]{1}(?=[$＄€£￡¢￠¥\\￥]?\d)
 comma between numbers	(?<=\d)\,(?=\d)
 単語中のピリオド	(?<=[\w])\.+(?=[\w])
