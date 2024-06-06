@@ -1019,6 +1019,8 @@ class ExcelWorksheet(ExcelBase):
 		"kb:control+shift+8",
 		"kb:control+pageUp",
 		"kb:control+pageDown",
+		"kb:shift+control+pageUp",
+		"kb:shift+control+pageDown",
 		"kb:control+a",
 		"kb:control+v",
 		"kb:shift+f11",
