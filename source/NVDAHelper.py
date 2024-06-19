@@ -563,7 +563,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
 			extractedString, endIndex = extractCompositionString(compAttr, compositionString, selectionStart, selectionEnd, _lastCompAttr)
-			log.debug(f"{compositionString=} {compAttr=} {selectionStart=} {selectionEnd=} {extractedString=} {endIndex=}")
+			log.debug(f"{_lastCompAttr=} {lastCompString=} {compAttr=} {compositionString=} {selectionStart=} {selectionEnd=} {extractedString=} {endIndex=}")
 			if extractedString:
 				focus=api.getFocusObject()
 				if isinstance(focus,InputComposition):
