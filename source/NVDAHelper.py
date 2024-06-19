@@ -552,7 +552,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 			and (lastSelectionStart == selectionStart) \
 			and (lastSelectionEnd == selectionEnd) \
 			and not (compositionString in (' ', '\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
-			log.debug("ignored (%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
+			log.debug(f"ignored {compositionString=} {compAttr=} {selectionStart=} {selectionEnd=}")
 			return 0
 		_lastCompAttr = lastCompAttr
 		lastCompAttr = compAttr
@@ -562,8 +562,8 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
-			log.debug("(%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
 			extractedString, endIndex = extractCompositionString(compAttr, compositionString, selectionStart, selectionEnd, _lastCompAttr)
+			log.debug(f"{compositionString=} {compAttr=} {selectionStart=} {selectionEnd=} {extractedString=} {endIndex=}")
 			if extractedString:
 				focus=api.getFocusObject()
 				if isinstance(focus,InputComposition):
