@@ -548,10 +548,18 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	compAttr = ''
 	if '\t' in compositionString:
 		compositionString, compAttr = compositionString.split('\t')
-		if (lastCompString == compositionString) and (lastCompAttr == compAttr) \
-			and (lastSelectionStart == selectionStart) \
-			and (lastSelectionEnd == selectionEnd) \
-			and not (compositionString in (' ', '\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
+		if (
+			lastCompString == compositionString
+			and lastCompAttr == compAttr
+			and lastSelectionStart == selectionStart
+			and lastSelectionEnd == selectionEnd
+			and not (
+				compositionString in (' ', '\u3000')
+				and compAttr == ''
+				and selectionStart == -1
+				and selectionEnd == -1
+			)
+		):
 			log.debug(f"ignored {compositionString=} {compAttr=} {selectionStart=} {selectionEnd=}")
 			return 0
 		_lastCompAttr = lastCompAttr
@@ -570,7 +578,11 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 				if isinstance(focus,InputComposition):
 					focus.compositionUpdate(extractedString, 0, endIndex, 0, forceNewText=True)
 				return 0
-			elif len(_lastCompString) - 1 == len(compositionString) and _lastCompString.startswith(compositionString):
+			elif (
+				len(_lastCompString) - 1 == len(compositionString)
+				and _lastCompString.startswith(compositionString)
+				and config.conf["inputComposition"]["reportCompositionStringChanges"]
+			):
 				import ui
 				queueHandler.queueFunction(queueHandler.eventQueue, ui.message, _lastCompString[-1])
 				return 0
