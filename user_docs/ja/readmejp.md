@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2024年5月13日
+* 最終更新日：2024年6月22日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -266,21 +266,21 @@ Windows 32ビット版および64ビット版のいずれをお使いの場合�
 
 * MSSpeech_TTS_ja-JP_Haruka.msi
 
-### Vocalizer
+### Tiflotecnia Voices for NVDA
 
-Tiflotecnia が販売する Vocalizer for NVDA は NVDA のアドオンになっており、インストール環境とポータブル環境のどちらでも利用できます。
+Tiflotecnia が販売する NVDA のアドオン音声エンジンです。
 
-日本語音声 Kyoko が提供されています。
+日本語音声も提供されています。
 
-NVDA 日本語チームはこの Vocalizer ドライバーの翻訳を担当しています。
 
-* [Vocalizer for NVDA](https://vocalizer-nvda.com/)
-* [旧バージョンの日本語ページ](https://vocalizer-nvda.com/old/jp/index.htm)
-* [Vocalizer 購入の説明](https://github.com/nvdajp/nvdajp/wiki/ExtraVoices)
 
-Code Factory が販売する Eloquence and Vocalizer Expressive Add-on for NVDA でも Vocalizer の日本語音声が利用できます。
+* [Tiflotecnia Voices for NVDA](http://www.tiflotecnia.com/)
 
-* [Eloquence and Vocalizer Expressive Add-on for NVDA](http://codefactoryglobal.com/app-store/voices-for-nvda/)
+
+
+
+
+
 
 ### KCトーカー
 
@@ -798,6 +798,11 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 * [NVDA APIの C#版デモアプリ](https://osdn.net/ticket/browse.php?group_id=4221&tid=33804)
 
 ## バージョンごとの変更点
+
+### 2024.2jp の変更点
+
+* [2024.2jp の変更点](https://github.com/nvdajp/nvdajp/milestone/61?closed=1)
+* [本家版 2024.2 の翻訳](https://github.com/nvdajp/nvdajp/milestone/60?closed=1)
 
 ### 2024.1jp の変更点
 
