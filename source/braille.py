@@ -541,14 +541,21 @@ class Region(object):
 		mode = louis.dotsIO
 		if config.conf["braille"]["expandAtCursor"] and self.cursorPos is not None:
 			mode |= louis.compbrlAtCursor
-		self.brailleCells, self.brailleToRawPos, self.rawToBraillePos, self.brailleCursorPos = louisHelper.translate(
-			[os.path.join(brailleTables.TABLES_DIR, config.conf["braille"]["translationTable"]),
-				"braille-patterns.cti"],
-			self.rawText,
-			typeform=self.rawTextTypeforms,
+
+		textToTranslate = self.rawText
+		textToTranslateTypeforms = self.rawTextTypeforms
+		cursorPos = self.cursorPos
+		fileName = os.path.join(brailleTables.TABLES_DIR, config.conf["braille"]["translationTable"])
+		self.brailleCells, brailleToRawPos, rawToBraillePos, self.brailleCursorPos = louisHelper.translate(
+			[fileName, "braille-patterns.cti"],
+			textToTranslate,
+			typeform=textToTranslateTypeforms,
 			mode=mode,
-			cursorPos=self.cursorPos
+			cursorPos=cursorPos
 		)
+		self.brailleToRawPos = brailleToRawPos
+		self.rawToBraillePos = rawToBraillePos
+
 		if (
 			self.selectionStart is not None
 			and self.selectionEnd is not None
