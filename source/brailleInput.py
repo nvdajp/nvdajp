@@ -43,6 +43,7 @@ UNICODE_BRAILLE_PROTECTED = u"⣿" # All dots down
 
 
 def jpBrailleTablePath(fileName):
+	# return [fileName, "braille-patterns.cti"]
 	if fileName in ['ja-jp-comp6.utb', 'ja-jp-rokutenkanji.tbl']:
 		return [fileName, os.path.join(brailleTables.TABLES_DIR, "braille-patterns.cti")]
 	return [os.path.join(brailleTables.TABLES_DIR, fileName), "braille-patterns.cti"]
@@ -140,8 +141,6 @@ class BrailleInputHandler(AutoPropertyObject):
 		if (not self.currentFocusIsTextObj or self.currentModifiers) and self._table.contracted:
 			mode |= louis.partialTrans
 		self.bufferText = louis.backTranslate(
-			#[os.path.join(brailleTables.TABLES_DIR, self._table.fileName),
-			#"braille-patterns.cti"],
 			jpBrailleTablePath(self._table.fileName),
 			data, mode=mode)[0]
 		newText = self.bufferText[oldTextLen:]
@@ -191,8 +190,6 @@ class BrailleInputHandler(AutoPropertyObject):
 		data = u"".join([chr(cell | LOUIS_DOTS_IO_START) for cell in cells])
 		oldText = self.bufferText
 		text = louis.backTranslate(
-			#[os.path.join(brailleTables.TABLES_DIR, self._table.fileName),
-			#"braille-patterns.cti"],
 			jpBrailleTablePath(self._table.fileName),
 			data, mode=louis.dotsIO | louis.noUndefinedDots | louis.partialTrans)[0]
 		self.bufferText = text
@@ -462,6 +459,7 @@ class BrailleInputHandler(AutoPropertyObject):
 
 #: The singleton BrailleInputHandler instance.
 handler: Optional[BrailleInputHandler] = None
+
 
 def initialize():
 	global handler
