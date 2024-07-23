@@ -555,7 +555,6 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 			log.debug(f"ignored {compositionString=} {compAttr=} {selectionStart=} {selectionEnd=}")
 			return 0
 		_lastCompAttr = lastCompAttr
-		_lastCompString = lastCompString
 		lastCompAttr = compAttr
 		lastCompString = compositionString
 		lastSelectionStart = selectionStart
@@ -564,15 +563,11 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
 			extractedString, endIndex = extractCompositionString(compAttr, compositionString, selectionStart, selectionEnd, _lastCompAttr)
-			log.debug(f"{_lastCompAttr=} {_lastCompString=} {compAttr=} {compositionString=} {selectionStart=} {selectionEnd=} {extractedString=} {endIndex=}")
+			log.debug(f"{_lastCompAttr=} {lastCompString=} {compAttr=} {compositionString=} {selectionStart=} {selectionEnd=} {extractedString=} {endIndex=}")
 			if extractedString:
 				focus=api.getFocusObject()
 				if isinstance(focus,InputComposition):
 					focus.compositionUpdate(extractedString, 0, endIndex, 0, forceNewText=True)
-				return 0
-			elif len(_lastCompString) - 1 == len(compositionString) and _lastCompString.startswith(compositionString):
-				import ui
-				queueHandler.queueFunction(queueHandler.eventQueue, ui.message, _lastCompString[-1])
 				return 0
 	else:
 		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=}")
