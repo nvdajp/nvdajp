@@ -18,6 +18,7 @@ import api
 from annotation import _AnnotationRolesT
 import controlTypes
 from controlTypes import OutputReason, TextPosition
+from controlTypes.state import State
 import tones
 from synthDriverHandler import getSynth
 import re
@@ -25,9 +26,10 @@ import textInfos
 import speechDictHandler
 import characterProcessing
 import languageHandler
+from textUtils import unicodeNormalize
 from . import manager
 from .extensions import speechCanceled, pre_speechCanceled, pre_speech
-from .extensions import filter_speechSequence, speechCanceled
+from .extensions import filter_speechSequence
 from .commands import (
 	# Commands that are used in this file.
 	BreakCommand,
@@ -36,6 +38,7 @@ from .commands import (
 	LangChangeCommand,
 	BeepCommand,
 	EndUtteranceCommand,
+	SuppressUnicodeNormalizationCommand,
 	CharacterModeCommand,
 )
 from .shortcutKeys import getKeyboardShortcutsSpeech
@@ -159,11 +162,29 @@ def isBlank(text):
 RE_CONVERT_WHITESPACE = re.compile("[\0\r\n]")
 
 
-def processText(locale: str, text: str, symbolLevel: characterProcessing.SymbolLevel) -> str:
+def processText(
+		locale: str,
+		text: str,
+		symbolLevel: characterProcessing.SymbolLevel,
+		normalize: bool = False
+) -> str:
+	"""
+	Processes text for symbol pronunciation, speech dictionaries and Unicode normalization.
+	:param locale: The language the given text is in, passed for symbol pronunciation.
+	:param text: The text to process.
+	:param symbolLevel: The verbosity level used for symbol pronunciation.
+	:param normalize: Whether to apply Unicode normalization to the text
+		after it has been processed for symbol pronunciation and speech dictionaries.
+	:returns: The processed text
+	"""
 	text = speechDictHandler.processText(text)
 	text = characterProcessing.processSpeechSymbols(locale, text, symbolLevel)
 	text = RE_CONVERT_WHITESPACE.sub(" ", text)
 	text = jpUtils.processKangxiRadicals(text)
+	if normalize:
+		text = unicodeNormalize(text)
+		# keep leading space for normalization message
+		return text.rstrip()
 	return text.strip()
 
 
@@ -313,7 +334,7 @@ def _getSpellingSpeechAddCharMode(
 		seq: Generator[SequenceItemT, None, None],
 ) -> Generator[SequenceItemT, None, None]:
 	"""Inserts CharacterMode commands in a speech sequence generator to ensure any single character
-	is spelt by the synthesizer.
+	is spelled by the synthesizer.
 	@param seq: The speech sequence to be spelt.
 	"""
 	charMode = False
@@ -334,14 +355,17 @@ def _getSpellingCharAddCapNotification(
 		sayCapForCapitals: bool,
 		capPitchChange: int,
 		beepForCapitals: bool,
+		reportNormalized: bool = False,
 ) -> Generator[SequenceItemT, None, None]:
 	"""This function produces a speech sequence containing a character to be spelt as well as commands
-	to indicate that this character is uppercase if applicable.
-	@param speakCharAs: The character as it will be spoken by the synthesizer.
-	@param sayCapForCapitals: indicates if 'cap' should be reported along with the currently spelt character.
-	@param capPitchChange: pitch offset to apply while spelling the currently spelt character.
-	@param beepForCapitals: indicates if a cap notification beep should be produced while spelling the currently
-	spellt character.
+	to indicate that this character is uppercase and/or normalized, if applicable.
+	:param speakCharAs: The character as it will be spoken by the synthesizer.
+	:param sayCapForCapitals: indicates if 'cap' should be reported along with the currently spelled character.
+	:param capPitchChange: pitch offset to apply while spelling the currently spelled character.
+	:param beepForCapitals: indicates if a cap notification beep should be produced while spelling the currently
+	spelled character.
+	:param reportNormalized: Indicates if 'normalized' should be reported
+	along with the currently spelled character.
 	"""
 	if sayCapForCapitals:
 		# Translators: cap will be spoken before the given letter when it is capitalized.
@@ -350,9 +374,17 @@ def _getSpellingCharAddCapNotification(
 	else:
 		capMsgBefore = ''
 		capMsgAfter = ''
-	
+	if reportNormalized:
+		# Translators: 'Normalized' will be spoken after the given letter when it is normalized.
+		normalizedMsg = _("%s normalized")
+		normalizedMsgBefore, normalizedMsgAfter = normalizedMsg.split('%s')
+	else:
+		normalizedMsgBefore = normalizedMsgAfter = ''
+
 	if capPitchChange:
 		yield PitchCommand(offset=capPitchChange)
+	if normalizedMsgBefore:
+		yield normalizedMsgBefore
 	if beepForCapitals:
 		yield BeepCommand(2000, 50)
 	if capMsgBefore:
@@ -360,6 +392,8 @@ def _getSpellingCharAddCapNotification(
 	yield speakCharAs
 	if capMsgAfter:
 		yield capMsgAfter
+	if normalizedMsgAfter:
+		yield normalizedMsgAfter
 	if capPitchChange:
 		yield PitchCommand()
 
@@ -372,13 +406,30 @@ def _getSpellingSpeechWithoutCharMode(
 		capPitchChange: int,
 		beepForCapitals: bool,
 		fallbackToCharIfNoDescription: bool = True,
+		unicodeNormalization: bool = False,
+		reportNormalizedForCharacterNavigation: bool = False,
 ) -> Generator[SequenceItemT, None, None]:
 	"""
-	@param fallbackToCharIfNoDescription: Only applies if useCharacterDescriptions is True.
-	If fallbackToCharIfNoDescription is True, and no character description is found,
-	the character itself will be announced. Otherwise, nothing will be spoken.
+	Processes text when spoken by character.
+	This doesn't take care of character mode (Option "Use spelling functionality").
+	:param text: The text to speak.
+		This is usually one character or a string containing a decomposite character (or glyph)
+	:param locale: The locale used to generate character descrptions, if applicable.
+	:param useCharacterDescriptions: Whether or not to use character descriptions,
+		e.g. speak "a" as "alpha".
+	:param sayCapForCapitals: Indicates if 'cap' should be reported
+		along with the currently spelled character.
+	:param capPitchChange: Pitch offset to apply while spelling the currently spelled character.
+	:param beepForCapitals: Indicates if a cap notification beep should be produced
+		while spelling the currently spelled character.
+	:param fallbackToCharIfNoDescription: Only applies if useCharacterDescriptions is True.
+		If fallbackToCharIfNoDescription is True, and no character description is found,
+		the character itself will be announced. Otherwise, nothing will be spoken.
+	:param unicodeNormalization: Whether to use Unicode normalization for the given text.
+	:param reportNormalizedForCharacterNavigation: When unicodeNormalization is true, indicates if 'normalized'
+		should be reported along with the currently spelled character.
+	:returns: A speech sequence generator.
 	"""
-	
 	defaultLanguage=getCurrentLanguage()
 	if not locale or (not config.conf['speech']['autoDialectSwitching'] and locale.split('_')[0]==defaultLanguage.split('_')[0]):
 		locale=defaultLanguage
@@ -391,6 +442,13 @@ def _getSpellingSpeechWithoutCharMode(
 		text=text.rstrip()
 
 	textLength=len(text)
+	isNormalized = False
+	if unicodeNormalization and textLength > 1:
+		normalized = unicodeNormalize(text)
+		if len(normalized) == 1:
+			# Normalization of a composition
+			text = normalized
+			isNormalized = True
 	localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
 	charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else text
 	for item in charDescList:
@@ -410,7 +468,14 @@ def _getSpellingSpeechWithoutCharMode(
 		elif useCharacterDescriptions and not charDesc and not fallbackToCharIfNoDescription:
 			return None
 		else:
-			speakCharAs=characterProcessing.processSpeechSymbol(locale,speakCharAs)
+			if (symbol := characterProcessing.processSpeechSymbol(locale, speakCharAs)) != speakCharAs:
+				speakCharAs = symbol
+			elif not isNormalized and unicodeNormalization:
+				if (normalized := unicodeNormalize(speakCharAs)) != speakCharAs:
+					speakCharAs = " ".join(
+						characterProcessing.processSpeechSymbol(locale, normChar) for normChar in normalized
+					)
+					isNormalized = True
 		if config.conf['speech']['autoLanguageSwitching']:
 			yield LangChangeCommand(locale)
 		yield from _getSpellingCharAddCapNotification(
@@ -418,6 +483,7 @@ def _getSpellingSpeechWithoutCharMode(
 			uppercase and sayCapForCapitals,
 			capPitchChange if uppercase else 0,
 			uppercase and beepForCapitals,
+			isNormalized and reportNormalizedForCharacterNavigation
 		)
 		yield EndUtteranceCommand()
 
@@ -484,7 +550,11 @@ def getSpellingSpeech(
 		capPitchChange = synthConfig["capPitchChange"]
 	else:
 		capPitchChange = 0
-	seq = jpUtils.getSpellingSpeechWithoutCharMode(
+	unicodeNormalization = (
+		not useCharacterDescriptions
+		and bool(config.conf["speech"]["unicodeNormalization"])
+	)
+	seq = _getSpellingSpeechWithoutCharMode(
 		text,
 		locale,
 		useCharacterDescriptions,
@@ -492,10 +562,17 @@ def getSpellingSpeech(
 		sayCapForCapitals=synthConfig["sayCapForCapitals"],
 		capPitchChange=capPitchChange,
 		beepForCapitals=synthConfig["beepForCapitals"],
+		unicodeNormalization=unicodeNormalization,
+		reportNormalizedForCharacterNavigation=config.conf["speech"]["reportNormalizedForCharacterNavigation"],
 	)
 	if synthConfig["useSpellingFunctionality"]:
 		seq = _getSpellingSpeechAddCharMode(seq)
+	# This function applies Unicode normalization as appropriate.
+	# Therefore, suppress the global normalization that might still occur
+	# (i.e. when speak calls the processText function).
+	yield SuppressUnicodeNormalizationCommand(True)
 	yield from seq
+	yield SuppressUnicodeNormalizationCommand(False)
 
 
 def getCharDescListFromText(text,locale):
@@ -574,6 +651,9 @@ def getObjectPropertiesSpeech(  # noqa: C901
 		):
 			newPropertyValues['_description-from'] = obj.descriptionFrom
 			newPropertyValues['description'] = obj.description
+		# Error messages should only be spoken when the input is marked invalid.
+		elif name == "errorMessage" and value and State.INVALID_ENTRY not in obj.states:
+			newPropertyValues["errorMessage"] = None
 		elif value:
 			# Certain properties such as row and column numbers have presentational versions, which should be used for speech if they are available.
 			# Therefore redirect to those values first if they are available, falling back to the normal properties if not.
@@ -782,6 +862,7 @@ def _objectSpeech_calculateAllowedProps(
 		'role': True,
 		'roleText': True,
 		'states': True,
+		"errorMessage": True,
 		'value': True,
 		'description': True,
 		'hasDetails': config.conf["annotations"]["reportDetails"],
@@ -801,7 +882,7 @@ def _objectSpeech_calculateAllowedProps(
 		"columnHeaderText": True,
 		"rowSpan": True,
 		"columnSpan": True,
-		"current": True
+		"current": True,
 	}
 	if reason in (OutputReason.FOCUSENTERED, OutputReason.MOUSE):
 		allowProperties["value"] = False
@@ -1015,16 +1096,20 @@ def speak(  # noqa: C901
 	curLanguage=defaultLanguage=getCurrentLanguage()
 	prevLanguage=None
 	defaultLanguageRoot=defaultLanguage.split('_')[0]
+	unicodeNormalization = initialUnicodeNormalization = config.conf["speech"]["unicodeNormalization"]
 	oldSpeechSequence=speechSequence
 	speechSequence=[]
 	for item in oldSpeechSequence:
 		if isinstance(item,LangChangeCommand):
-			if not autoLanguageSwitching: continue
+			if not autoLanguageSwitching: continue  # noqa: E701
 			curLanguage=item.lang
 			if not curLanguage or (not autoDialectSwitching and curLanguage.split('_')[0]==defaultLanguageRoot):
 				curLanguage=defaultLanguage
+		elif isinstance(item, SuppressUnicodeNormalizationCommand):
+			if not unicodeNormalization:
+				continue
 		elif isinstance(item,str):
-			if not item: continue
+			if not item: continue  # noqa: E701
 			if autoLanguageSwitching and curLanguage!=prevLanguage:
 				speechSequence.append(LangChangeCommand(curLanguage))
 				prevLanguage=curLanguage
@@ -1044,12 +1129,19 @@ def speak(  # noqa: C901
 	inCharacterMode=False
 	for index in range(len(speechSequence)):
 		item=speechSequence[index]
-		if isinstance(item,CharacterModeCommand):
+		if isinstance(item, CharacterModeCommand):
 			inCharacterMode=item.state
-		if autoLanguageSwitching and isinstance(item,LangChangeCommand):
+		if autoLanguageSwitching and isinstance(item, LangChangeCommand):
 			curLanguage=item.lang
+		if isinstance(item, SuppressUnicodeNormalizationCommand):
+			unicodeNormalization = initialUnicodeNormalization and not item.state
 		if isinstance(item,str):
-			speechSequence[index]=processText(curLanguage,item,symbolLevel)
+			speechSequence[index] = processText(
+				curLanguage,
+				item,
+				symbolLevel,
+				normalize=unicodeNormalization
+			)
 			if not inCharacterMode:
 				speechSequence[index]+=CHUNK_SEPARATOR
 	_manager.speak(speechSequence, priority)
@@ -1536,21 +1628,23 @@ def getTextInfoSpeech(  # noqa: C901
 		speechSequence.append(LangChangeCommand(language))
 		lastLanguage=language
 	isWordOrCharUnit = unit in (textInfos.UNIT_CHARACTER, textInfos.UNIT_WORD)
+	firstText = ""
+	if len(textWithFields) > 0:
+		firstText = textWithFields[0].strip() if not textWithFields[0].isspace() else textWithFields[0]
 	if onlyInitialFields or (
 		isWordOrCharUnit
-		and len(textWithFields) > 0
-		and len(textWithFields[0].strip() if not textWithFields[0].isspace() else textWithFields[0]) == 1
+		and (len(firstText) == 1 or len(unicodeNormalize(firstText)) == 1)
 		and all(_isControlEndFieldCommand(x) for x in itertools.islice(textWithFields, 1, None))
 	):
 		if reason != OutputReason.ONLYCACHE:
-			yield from list(_getTextInfoSpeech_considerSpelling(
+			yield from _getTextInfoSpeech_considerSpelling(
 				unit,
 				onlyInitialFields,
 				textWithFields,
 				reason,
 				speechSequence,
 				language,
-			))
+			)
 		if useCache:
 			_getTextInfoSpeech_updateCache(
 				useCache,
@@ -1680,7 +1774,7 @@ def getTextInfoSpeech(  # noqa: C901
 			speechSequence.append(langChange)
 		else:
 			speechSequence.extend(indentationSpeech)
-		if speakTextInfoState: speakTextInfoState.indentationCache=allIndentation
+		if speakTextInfoState: speakTextInfoState.indentationCache=allIndentation  # noqa: E701
 	# Don't add this text if it is blank.
 	relativeBlank=True
 	for x in relativeSpeechSequence:
@@ -1789,7 +1883,7 @@ def getPropertiesSpeech(  # noqa: C901
 		reason: OutputReason = OutputReason.QUERY,
 		**propertyValues
 ) -> SpeechSequence:
-	textList: List[str] = []
+	textList: SpeechSequence = []
 	name: Optional[str] = propertyValues.get('name')
 	if name:
 		textList.append(name)
@@ -1978,6 +2072,10 @@ def getPropertiesSpeech(  # noqa: C901
 				_speechState.oldTreeLevel = level
 			else:
 				textList.append(levelTranslation)
+	
+	errorMessage: str | None = propertyValues.get("errorMessage", None)
+	if errorMessage:
+		textList.append(errorMessage)
 	types.logBadSequenceTypes(textList)
 	return textList
 
@@ -2049,7 +2147,7 @@ def _shouldSpeakContentFirst(
 			presCat != attrs.PRESCAT_CONTAINER
 			or role == controlTypes.Role.ARTICLE
 		)
-		and not (role in _neverSpeakContentFirstRoles)
+		and role not in _neverSpeakContentFirstRoles
 		and not tableID
 		and controlTypes.State.EDITABLE not in states
 	)
@@ -2092,6 +2190,9 @@ def getControlFieldSpeech(  # noqa: C901
 	hasDetails = attrs.get('hasDetails', False)
 	detailsRoles: _AnnotationRolesT = attrs.get("detailsRoles", tuple())
 	placeholderValue=attrs.get('placeholder', None)
+	errorMessage = None
+	if State.INVALID_ENTRY in states:
+		errorMessage = attrs.get("errorMessage", None)
 	value=attrs.get('value',"")
 
 	description: Optional[str] = None
@@ -2152,6 +2253,7 @@ def getControlFieldSpeech(  # noqa: C901
 	isCurrentSequence = getPropertiesSpeech(reason=reason, current=isCurrent)
 	hasDetailsSequence = getPropertiesSpeech(reason=reason, hasDetails=hasDetails, detailsRoles=detailsRoles)
 	placeholderSequence = getPropertiesSpeech(reason=reason, placeholder=placeholderValue)
+	errorMessageSequence = getPropertiesSpeech(reason=reason, errorMessage=errorMessage)
 	nameSequence = getPropertiesSpeech(reason=reason, name=name)
 	valueSequence = getPropertiesSpeech(reason=reason, value=value, _role=role)
 	descriptionSequence = []
@@ -2326,6 +2428,7 @@ def getControlFieldSpeech(  # noqa: C901
 		out.extend(keyboardShortcutSequence)
 		if content and not speakContentFirst:
 			out.append(content)
+		out.extend(errorMessageSequence)
 
 		types.logBadSequenceTypes(out)
 		return out
@@ -2430,7 +2533,7 @@ def getFormatFieldSpeech(  # noqa: C901
 		# but not if the columnCount is 1 or less and there is no old columnCount.
 		if (((textColumnNumber and textColumnNumber!=oldTextColumnNumber) or
 			(textColumnCount and textColumnCount!=oldTextColumnCount)) and not
-			(textColumnCount and int(textColumnCount) <=1 and oldTextColumnCount == None)) :
+			(textColumnCount and int(textColumnCount) <=1 and oldTextColumnCount == None)) :  # noqa: E711
 			if textColumnNumber and textColumnCount:
 				# Translators: Indicates the text column number in a document.
 				# {0} will be replaced with the text column number.

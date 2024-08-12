@@ -1,6 +1,6 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2006-2023 NV Access Limited, Aleksey Sadovoy, Christopher Toth, Joseph Lee, Peter Vágner,
-# Derek Riemer, Babbage B.V., Zahari Yurukov, Łukasz Golonka, Cyrille Bougot
+# Copyright (C) 2006-2024 NV Access Limited, Aleksey Sadovoy, Christopher Toth, Joseph Lee, Peter Vágner,
+# Derek Riemer, Babbage B.V., Zahari Yurukov, Łukasz Golonka, Cyrille Bougot, Julien Cochuyt
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -185,7 +185,7 @@ def doStartupDialogs():
 				if ID in (wx.ID_YES,wx.ID_NO):
 					try:
 						config.conf.save()
-					except:
+					except:  # noqa: E722
 						pass
 			# Ask the user if usage stats can be collected.
 			gui.runScriptModalDialog(gui.startupDialogs.AskAllowUsageStatsDialog(None), onResult)
@@ -270,6 +270,7 @@ def resetConfiguration(factoryDefaults=False):
 	import config
 	import braille
 	import brailleInput
+	import brailleTables
 	import speech
 	import vision
 	import inputCore
@@ -283,6 +284,8 @@ def resetConfiguration(factoryDefaults=False):
 	braille.terminate()
 	log.debug("Terminating brailleInput")
 	brailleInput.terminate()
+	log.debug("Terminating brailleTables")
+	brailleTables.terminate()
 	log.debug("terminating speech")
 	speech.terminate()
 	log.debug("terminating tones")
@@ -325,6 +328,8 @@ def resetConfiguration(factoryDefaults=False):
 	log.debug("initializing speech")
 	speech.initialize()
 	#braille
+	log.debug("Initializing brailleTables")
+	brailleTables.initialize()
 	log.debug("Initializing brailleInput")
 	brailleInput.initialize()
 	log.debug("Initializing braille")
@@ -352,7 +357,7 @@ def _setInitialFocus():
 		focus = api.getDesktopObject().objectWithFocus()
 		if focus:
 			eventHandler.queueEvent('gainFocus', focus)
-	except:
+	except:  # noqa: E722
 		log.exception("Error retrieving initial focus")
 
 
@@ -656,6 +661,8 @@ def main():
 	log.info(f"Windows version: {winVersion.getWinVer()}")
 	log.info("Using Python version %s"%sys.version)
 	log.info("Using comtypes version %s"%comtypes.__version__)
+	from utils import schedule
+	schedule.initialize()
 	import configobj
 	log.info("Using configobj version %s with validate version %s"%(configobj.__version__,configobj.validate.__version__))
 	# Set a reasonable timeout for any socket connections NVDA makes.
@@ -665,6 +672,8 @@ def main():
 	from addonStore import dataManager
 	dataManager.initialize()
 	addonHandler.initialize()
+	from gui import addonStoreGui
+	addonStoreGui.initialize()
 	if globalVars.appArgs.disableAddons:
 		log.info("Add-ons are disabled. Restart NVDA to enable them.")
 	import appModuleHandler
@@ -700,6 +709,9 @@ def main():
 	import wx
 	app = _setUpWxApp()
 
+	log.debug("Initializing brailleTables")
+	import brailleTables
+	brailleTables.initialize()
 	log.debug("Initializing braille input")
 	import brailleInput
 	brailleInput.initialize()
@@ -732,7 +744,7 @@ def main():
 	if wxLang:
 		try:
 			wxLocaleObj.Init(wxLang.Language)
-		except:
+		except:  # noqa: E722
 			log.error("Failed to initialize wx locale",exc_info=True)
 		finally:
 			# Revert wx's changes to the python locale
@@ -750,7 +762,7 @@ def main():
 		log.info("Java Access Bridge support initialized")
 	except NotImplementedError:
 		log.warning("Java Access Bridge not available")
-	except:
+	except:  # noqa: E722
 		log.error("Error initializing Java Access Bridge support", exc_info=True)
 	import winConsoleHandler
 	log.debug("Initializing legacy winConsole support")
@@ -761,7 +773,7 @@ def main():
 		UIAHandler.initialize()
 	except RuntimeError:
 		log.warning("UIA disabled in configuration")
-	except:
+	except:  # noqa: E722
 		log.error("Error initializing UIA support", exc_info=True)
 	import IAccessibleHandler
 	log.debug("Initializing IAccessible support")
@@ -794,13 +806,21 @@ def main():
 		)
 	elif globalVars.appArgs.portablePath and (globalVars.appArgs.createPortable or globalVars.appArgs.createPortableSilent):
 		import gui.installerGui
-		wx.CallAfter(gui.installerGui.doCreatePortable,portableDirectory=globalVars.appArgs.portablePath,
-			silent=globalVars.appArgs.createPortableSilent,startAfterCreate=not globalVars.appArgs.createPortableSilent)
+		isUpdate = gui.installerGui._nvdaExistsInDir(globalVars.appArgs.portablePath)
+		# If we are updating, we don't want to warn for non-empty directory.
+		warnForNonEmptyDirectory = not isUpdate and not globalVars.appArgs.createPortableSilent
+		wx.CallAfter(
+			gui.installerGui.doCreatePortable,
+			portableDirectory=globalVars.appArgs.portablePath,
+			silent=globalVars.appArgs.createPortableSilent,
+			startAfterCreate=not globalVars.appArgs.createPortableSilent,
+			warnForNonEmptyDirectory=warnForNonEmptyDirectory,
+		)
 	elif not globalVars.appArgs.minimal:
 		try:
 			# Translators: This is shown on a braille display (if one is connected) when NVDA starts.
 			braille.handler.message(_("NVDA started"))
-		except:
+		except:  # noqa: E722
 			log.error("", exc_info=True)
 		if globalVars.appArgs.launcher:
 			from gui.startupDialogs import LauncherDialog
@@ -890,6 +910,7 @@ def main():
 	else:
 		log.debug("initializing updateCheck")
 		updateCheck.initialize()
+		log.debug(f"NVDA user ID {updateCheck.state['id']}")
 
 	from winAPI import sessionTracking
 	sessionTracking.initialize()
@@ -926,7 +947,7 @@ def main():
 
 	try:
 		speech.cancelSpeech()
-	except:
+	except:  # noqa: E722
 		pass
 
 	import treeInterceptorHandler
@@ -944,12 +965,14 @@ def main():
 	_terminate(vision)
 	_terminate(brailleInput)
 	_terminate(braille)
+	_terminate(brailleTables)
 	_terminate(speech)
 	_terminate(bdDetect)
 	_terminate(hwIo)
 	_terminate(addonHandler)
 	_terminate(dataManager, name="addon dataManager")
 	_terminate(garbageHandler)
+	_terminate(schedule, name="task scheduler")
 	# DMP is only started if needed.
 	# Terminate manually (and let it write to the log if necessary)
 	# as core._terminate always writes an entry.
@@ -965,7 +988,7 @@ def main():
 				os.path.join(globalVars.appDir, "waves", "exit.wav"),
 				asynchronous=False
 			)
-		except:
+		except:  # noqa: E722
 			pass
 	# We cannot terminate nvwave until after we perform nvwave.playWaveFile
 	_terminate(nvwave)
@@ -981,7 +1004,7 @@ def _terminate(module, name=None):
 	log.debug("Terminating %s" % name)
 	try:
 		module.terminate()
-	except:
+	except:  # noqa: E722
 		log.exception("Error terminating %s" % name)
 
 

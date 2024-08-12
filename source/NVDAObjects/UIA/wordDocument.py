@@ -11,7 +11,6 @@ from typing import (
 
 import enum
 from comtypes import COMError
-import winVersion
 import mathPres
 from scriptHandler import isScriptWaiting
 import textInfos
@@ -426,7 +425,7 @@ class WordDocumentTextInfo(UIATextInfo):
 		formatField = super()._getFormatFieldAtRange(textRange, formatConfig, ignoreMixedValues=ignoreMixedValues)
 		if not formatField:
 			return formatField
-		if winVersion.getWinVer() >= winVersion.WIN11:
+		if UIARemote.isSupported():
 			docElement = self.obj.UIAElement
 			if formatConfig['reportLineNumber']:
 				lineNumber = UIARemote.msWord_getCustomAttributeValue(

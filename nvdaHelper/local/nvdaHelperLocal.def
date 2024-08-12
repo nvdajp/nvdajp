@@ -66,6 +66,7 @@ EXPORTS
 	displayModel_requestTextChangeNotificationsForWindow
 	calculateWordOffsets
 	calculateCharacterOffsets
+	calculateCharacterBoundaries
 	findWindowWithClassInThread
 	registerUIAProperty
 	registerUIAAnnotationType

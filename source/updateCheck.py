@@ -6,12 +6,14 @@
 """Update checking functionality.
 @note: This module may raise C{RuntimeError} on import if update checking for this build is not supported.
 """
+from datetime import datetime
 from typing import (
 	Any,
 	Dict,
 	Optional,
 	Tuple,
 )
+from uuid import uuid4
 import garbageHandler
 import globalVars
 import config
@@ -24,10 +26,9 @@ elif config.isAppX:
 import versionInfo
 if not versionInfo.updateVersionType:
 	raise RuntimeError("No update version type, update checking not supported")
-import addonAPIVersion
 # Avoid a E402 'module level import not at top of file' warning, because several checks are performed above.
 import gui.contextHelp  # noqa: E402
-from gui.dpiScalingHelper import DpiScalingHelperMixin, DpiScalingHelperMixinWithoutInit  # noqa: E402
+from gui.dpiScalingHelper import DpiScalingHelperMixinWithoutInit  # noqa: E402
 import sys  # noqa: E402
 import os
 import inspect
@@ -56,10 +57,7 @@ from addonStore.models.version import (  # noqa: E402
 )
 from logHandler import log, isPathExternalToNVDA
 import config
-import shellapi
-import winUser
 import winKernel
-import fileUtils
 from utils.tempFile import _createEmptyTempFileForDeletingFile
 
 #: The URL to use for update checks.
@@ -146,7 +144,8 @@ def checkForUpdate(auto: bool = False) -> Optional[Dict]:
 		brailleDisplayClass = braille.handler.display.__class__ if braille.handler else None
 		# Following are parameters sent purely for stats gathering.
 		#  If new parameters are added here, they must be documented in the userGuide for transparency.
-		extraParams={
+		extraParams = {
+			"id": state["id"],
 			"language": languageHandler.getLanguage(),
 			"installed": config.isInstalledCopy(),
 			"synthDriver":getQualifiedDriverClassNameForStats(synthDriverClass) if synthDriverClass else None,
@@ -267,10 +266,15 @@ class UpdateChecker(garbageHandler.TrackedObject):
 		t.start()
 
 	def _bg(self):
+		assert state is not None
+		lastCheckDate = datetime.fromtimestamp(state["lastCheck"])
+		nowDate = datetime.now()
+		if (lastCheckDate.year, lastCheckDate.month) != (nowDate.year, nowDate.month):
+			# reset unique ID once a month
+			state["id"] = uuid4().hex
 		try:
-			assert state is not None
 			info = checkForUpdate(self.AUTO)
-		except:
+		except:  # noqa: E722
 			log.debugWarning("Error checking for update", exc_info=True)
 			self._error()
 			return
@@ -565,7 +569,7 @@ class UpdateAskInstallDialog(
 			# Therefore use kernel32::MoveFileEx with copy allowed (0x2) flag set.
 			# TODO: consider moving to shutil.move, which supports moves across filesystems.
 			winKernel.moveFileEx(self.destPath, finalDest, winKernel.MOVEFILE_COPY_ALLOWED)
-		except:
+		except:  # noqa: E722
 			log.debugWarning("Unable to rename the file from {} to {}".format(self.destPath, finalDest), exc_info=True)
 			gui.messageBox(
 				# Translators: The message when a downloaded update file could not be preserved.
@@ -644,7 +648,7 @@ class UpdateDownloader(garbageHandler.TrackedObject):
 		for url in self.urls:
 			try:
 				self._download(url)
-			except:
+			except:  # noqa: E722
 				log.error("Error downloading %s" % url, exc_info=True)
 			else: #Successfully downloaded or canceled
 				if not self._shouldCancel:
@@ -795,7 +799,7 @@ def saveState():
 		# #9038: Python 3 requires binary format when working with pickles.
 		with open(WritePaths.updateCheckStateFile, "wb") as f:
 			pickle.dump(state, f, protocol=0)
-	except:
+	except:  # noqa: E722
 		log.debugWarning("Error saving state", exc_info=True)
 
 def initialize():
@@ -804,7 +808,7 @@ def initialize():
 		# #9038: Python 3 requires binary format when working with pickles.
 		with open(WritePaths.updateCheckStateFile, "rb") as f:
 			state = pickle.load(f)
-	except:
+	except:  # noqa: E722
 		log.debugWarning("Couldn't retrieve update state", exc_info=True)
 		state = None
 
@@ -815,6 +819,10 @@ def initialize():
 			"dontRemindVersion": None,
 		}
 		_setStateToNone(state)
+
+	if "id" not in state:
+		# ID was introduced in 2024.3
+		state["id"] = uuid4().hex
 
 	# check the pending version against the current version
 	# and make sure that pendingUpdateFile and pendingUpdateVersion are part of the state dictionary.

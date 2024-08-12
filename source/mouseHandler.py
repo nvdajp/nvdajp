@@ -115,7 +115,7 @@ def internal_mouseEvent(msg,x,y,injected):
 			core.requestPump()
 		elif msg in (WM_LBUTTONDOWN,WM_RBUTTONDOWN):
 			queueHandler.queueFunction(queueHandler.eventQueue,speech.cancelSpeech)
-	except:
+	except:  # noqa: E722
 		log.error("", exc_info=True)
 	return True
 
@@ -165,7 +165,7 @@ def getMouseRestrictedToScreens(x, y, displays):
 			max(min(scrCenterToMouse.y, halfWidth.y), -halfWidth.y))
 		edgeToMouse = mpos - mouseLimitedToScreen
 		distFromRectToMouseSqd = abs(edgeToMouse.x) + abs(edgeToMouse.y)
-		if closestDistValue == None or closestDistValue > distFromRectToMouseSqd:
+		if closestDistValue == None or closestDistValue > distFromRectToMouseSqd:  # noqa: E711
 			closestDistValue = distFromRectToMouseSqd
 			newXY = mouseLimitedToScreen
 
@@ -189,10 +189,10 @@ def getTotalWidthAndHeightAndMinimumPosition(displays):
 	smallestX, smallestY, largestX, largestY = (None, None, None, None)
 	for screenRect in displays:
 		(screenMin, screenMax) = getMinMaxPoints(screenRect)
-		if smallestX == None or screenMin.x < smallestX: smallestX = screenMin.x
-		if smallestY == None or screenMin.y < smallestY: smallestY = screenMin.y
-		if largestX == None or screenMax.x > largestX: largestX = screenMax.x
-		if largestY == None or screenMax.y > largestY: largestY = screenMax.y
+		if smallestX == None or screenMin.x < smallestX: smallestX = screenMin.x  # noqa: E701, E711
+		if smallestY == None or screenMin.y < smallestY: smallestY = screenMin.y  # noqa: E701, E711
+		if largestX == None or screenMax.x > largestX: largestX = screenMax.x  # noqa: E701, E711
+		if largestY == None or screenMax.y > largestY: largestY = screenMax.y  # noqa: E701, E711
 
 	# get full range, including any "blank space" between monitors
 	totalWidth = largestX - smallestX
@@ -225,7 +225,7 @@ def executeMouseMoveEvent(x,y):
 	try:
 		eventHandler.executeEvent("mouseMove",mouseObject,x=x,y=y)
 		oldMouseObject=mouseObject
-	except:
+	except:  # noqa: E722
 		log.error("api.notifyMouseMoved", exc_info=True)
 
 #Register internal mouse event
@@ -237,7 +237,7 @@ def initialize():
 	desktopObject=api.getDesktopObject()
 	try:
 		mouseObject=desktopObject.objectFromPoint(x,y)
-	except:
+	except:  # noqa: E722
 		log.exception("Error retrieving initial mouse object")
 		mouseObject=None
 	if not mouseObject:
@@ -370,12 +370,41 @@ def isRightMouseButtonLocked():
 def lockRightMouseButton():
 	""" Locks the right mouse button """
 	# Translators: This is presented when the right mouse button is locked down (used for drag and drop).
-	ui.message(_("Right mouse button lock"))
+	ui.message(_("Right mouse button locked"))
 	executeMouseEvent(winUser.MOUSEEVENTF_RIGHTDOWN, 0, 0)
 
 
 def unlockRightMouseButton():
 	""" Unlocks the right mouse button """
 	# Translators: This is presented when the right mouse button lock is released (used for drag and drop).
-	ui.message(_("Right mouse button unlock"))
+	ui.message(_("Right mouse button unlocked"))
 	executeMouseEvent(winUser.MOUSEEVENTF_RIGHTUP, 0, 0)
+
+
+def scrollMouseWheel(scrollSteps: int, isVertical: bool = True) -> None:
+	"""
+	Scrolls the mouse wheel either vertically or horizontally, controlling the direction and amount of scrolling.
+	More details on mouse events can be found at:
+	https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mousewheel
+
+	:param scrollSteps: The number of steps to scroll. Each step should correspond to a fraction or multiple
+		of WHEEL_DELTA, which is typically set to 120. This defines the standard increment
+		or decrement in scrolling position.
+	:param isVertical: Determines the direction of the scrolling; vertical if True, horizontal if False.
+	:return: None
+	"""
+	if not isinstance(scrollSteps, int):
+		raise TypeError(f"'scrollSteps' should be an integer. Type received: {type(scrollSteps).__name__}")
+	if scrollSteps == 0:
+		return
+	scrollEvent = winUser.MOUSEEVENTF_WHEEL if isVertical else winUser.MOUSEEVENTF_HWHEEL
+	sign = -1 if scrollSteps < 0 else 1
+	totalSteps = abs(scrollSteps)
+	maxSteps = winUser.WHEEL_DELTA
+	# Decompose the scroll operation into smaller deltas to accommodate applications
+	# that may not process deltas larger than the standard efficiently.
+	for _ in range(0, totalSteps, maxSteps):
+		scrollStep = min(maxSteps, totalSteps)
+		scrollData = sign * scrollStep
+		executeMouseEvent(scrollEvent, 0, 0, scrollData)
+		totalSteps -= scrollStep

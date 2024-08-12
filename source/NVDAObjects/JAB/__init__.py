@@ -173,8 +173,11 @@ class JABTextInfo(textInfos.offsets.OffsetsTextInfo):
 		if end==-1 and offset>0:
 			# #1892: JAB returns -1 for the end insertion position
 			# instead of returning the offsets for the last line.
-			# Try one character back.
-			(start,end)=self.obj.jabContext.getAccessibleTextLineBounds(offset-1)
+			# Try one character back, unless we're on a new line.
+			if self.obj.jabContext.getAccessibleTextRange(offset - 1, offset - 1) != "\n":
+				(start, end) = self.obj.jabContext.getAccessibleTextLineBounds(offset - 1)
+			else:
+				(start, end) = (offset, offset)
 		#Java gives end as the last character, not one past the last character
 		end=end+1
 		return (start,end)
@@ -276,7 +279,7 @@ class JAB(Window):
 	def _isEqual(self,other):
 		try:
 			return self.jabContext==other.jabContext
-		except:
+		except:  # noqa: E722
 			return False
 
 	def _get_keyboardShortcut(self):
@@ -301,7 +304,7 @@ class JAB(Window):
 				modifiers |= JABHandler.AccessibleKeystroke.ALT
 			keyList = [
 				keyLabels.localizedKeyLabels.get(l, l)
-				for l in JABHandler._getKeyLabels(modifiers, binding.character)
+				for l in JABHandler._getKeyLabels(modifiers, binding.character)  # noqa: E741
 			]
 			shortcutsList.append("+".join(keyList))
 		return ", ".join(shortcutsList)
@@ -390,7 +393,7 @@ class JAB(Window):
 					selfDepth=self.jabContext.getObjectDepth()
 					if selfDepth > treeDepth:
 						info['level']=selfDepth-treeDepth
-			except:
+			except:  # noqa: E722
 				pass
 
 		targets=self._getJABRelationTargets('memberOf')
@@ -582,13 +585,13 @@ class JAB(Window):
 		while jabContext:
 			try:
 				tempContext=jabContext.getActiveDescendent()
-			except:
+			except:  # noqa: E722
 				break
 			if not tempContext:
 				break
 			try:
 				depth=tempContext.getObjectDepth()
-			except:
+			except:  # noqa: E722
 				depth=-1
 			if depth<=0 or tempContext==jabContext: 
 				break
@@ -677,13 +680,13 @@ class TableCell(JAB):
 				cellInfo=headerTableInfo.jabTable.getAccessibleTableCellInfo(row,col)
 				if cellInfo and cellInfo.jabContext:
 					obj=JAB(jabContext=cellInfo.jabContext)
-					if obj.name: textList.append(obj.name)
-					if obj.description: textList.append(obj.description)
+					if obj.name: textList.append(obj.name)  # noqa: E701
+					if obj.description: textList.append(obj.description)  # noqa: E701
 			jabContext=self.table._jabTableInfo.jabTable.getAccessibleTableRowDescription(row)
 			if jabContext:
 				obj=JAB(jabContext=jabContext)
-				if obj.name: textList.append(obj.name)
-				if obj.description: textList.append(obj.description)
+				if obj.name: textList.append(obj.name)  # noqa: E701
+				if obj.description: textList.append(obj.description)  # noqa: E701
 			return " ".join(textList)
 
 	def _get_columnHeaderText(self):
@@ -695,11 +698,11 @@ class TableCell(JAB):
 				cellInfo=headerTableInfo.jabTable.getAccessibleTableCellInfo(row,col)
 				if cellInfo and cellInfo.jabContext:
 					obj=JAB(jabContext=cellInfo.jabContext)
-					if obj.name: textList.append(obj.name)
-					if obj.description: textList.append(obj.description)
+					if obj.name: textList.append(obj.name)  # noqa: E701
+					if obj.description: textList.append(obj.description)  # noqa: E701
 			jabContext=self.table._jabTableInfo.jabTable.getAccessibleTableColumnDescription(col)
 			if jabContext:
 				obj=JAB(jabContext=jabContext)
-				if obj.name: textList.append(obj.name)
-				if obj.description: textList.append(obj.description)
+				if obj.name: textList.append(obj.name)  # noqa: E701
+				if obj.description: textList.append(obj.description)  # noqa: E701
 			return " ".join(textList)

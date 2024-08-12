@@ -31,7 +31,7 @@ def _updateVersionFromVCS():
 		version = "source-%s-%s" % (
 			os.path.basename(ref),
 			commit[:7])
-	except:
+	except:  # noqa: E722
 		pass
 
 
@@ -66,14 +66,14 @@ def formatVersionForGUI(year, major, minor):
 # Version information for NVDA
 name = "NVDA"
 version_year = 2024
-version_major = 2
+version_major = 3
 version_minor = 0
 version_build = 0  # Should not be set manually. Set in 'sconscript' provided by 'appVeyor.yml'
 version=_formatDevVersionString()
 publisher="unknown"
 updateVersionType=None
 try:
-	from _buildVersion import version, publisher, updateVersionType, version_build
+	from _buildVersion import version, publisher, updateVersionType, version_build  # noqa: F401
 except ImportError:
 	_updateVersionFromVCS()
 

@@ -1,4 +1,3 @@
-#  -*- coding: UTF-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -16,7 +15,6 @@ from typing import (
 
 import config
 from synthDriverHandler import getSynth
-from logHandler import log
 
 class SpeechCommand(object):
 	"""The base class for objects that can be inserted between strings of text to perform actions,
@@ -103,7 +101,7 @@ class IndexCommand(SynthCommand):
 		@param index: the value of this index
 		@type index: integer
 		"""
-		if not isinstance(index,int): raise ValueError("index must be int, not %s"%type(index))
+		if not isinstance(index,int): raise ValueError("index must be int, not %s"%type(index))  # noqa: E701
 		self.index=index
 
 	def __repr__(self):
@@ -134,7 +132,7 @@ class CharacterModeCommand(SynthParamCommand):
 		@param state: if true character mode is on, if false its turned off.
 		@type state: boolean
 		"""
-		if not isinstance(state,bool): raise ValueError("state must be boolean, not %s"%type(state))
+		if not isinstance(state,bool): raise ValueError("state must be boolean, not %s"%type(state))  # noqa: E701
 		self.state=state
 		self.isDefault = not state
 
@@ -201,6 +199,25 @@ class EndUtteranceCommand(SpeechCommand):
 
 	def __repr__(self):
 		return "EndUtteranceCommand()"
+
+
+class SuppressUnicodeNormalizationCommand(SpeechCommand):
+	"""Suppresses Unicode normalization at a point in a speech sequence.
+	For any text after this, Unicode normalization will be suppressed when state is True.
+	When state is False, original behavior of normalization will be restored.
+	This command is a no-op when normalization is disabled.
+	"""
+	state: bool
+
+	def __init__(self, state: bool = True):
+		"""
+		:param state: Suppress normalization if True, don't suppress when False
+		"""
+		self.state = state
+
+	def __repr__(self):
+		return f"SuppressUnicodeNormalizationCommand({self.state!r})"
+
 
 class BaseProsodyCommand(SynthParamCommand):
 	"""Base class for commands which change voice prosody; i.e. pitch, rate, etc.

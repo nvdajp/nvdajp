@@ -344,7 +344,7 @@ class GlobalGestureMap:
 		for locationName, location in entries.items():
 			try:
 				module, className = locationName.rsplit(".", 1)
-			except:
+			except:  # noqa: E722
 				log.error("Invalid module/class specification: %s" % locationName)
 				self.lastUpdateContainedError = True
 				continue
@@ -358,7 +358,7 @@ class GlobalGestureMap:
 				for gesture in gestures:
 					try:
 						self.add(gesture, module, className, script)
-					except:
+					except:  # noqa: E722
 						log.error("Invalid gesture: %s" % gesture)
 						self.lastUpdateContainedError = True
 						continue
@@ -534,16 +534,23 @@ class InputManager(baseObject.AutoPropertyObject):
 		if speechEffect == gesture.SPEECHEFFECT_CANCEL:
 			# Import late to avoid circular import.
 			import braille
+			if braille.handler:
+				@braille.handler.suppressClearBrailleRegions(script)
+				def suppressCancelSpeech():
+					speech.cancelSpeech()
 
-			@braille.handler.suppressClearBrailleRegions(script)
-			def suppressCancelSpeech():
-				speech.cancelSpeech()
+				queueHandler.queueFunction(
+					queueHandler.eventQueue,
+					suppressCancelSpeech,
+					_immediate=immediate,
+				)
+			else:
+				queueHandler.queueFunction(
+					queueHandler.eventQueue,
+					speech.cancelSpeech,
+					_immediate=immediate,
+				)
 
-			queueHandler.queueFunction(
-				queueHandler.eventQueue,
-				suppressCancelSpeech,
-				_immediate=immediate,
-			)
 		elif speechEffect in (gesture.SPEECHEFFECT_PAUSE, gesture.SPEECHEFFECT_RESUME):
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.pauseSpeech, speechEffect == gesture.SPEECHEFFECT_PAUSE)
 
@@ -558,7 +565,7 @@ class InputManager(baseObject.AutoPropertyObject):
 			try:
 				if self._captureFunc(gesture) is False:
 					return
-			except:
+			except:  # noqa: E722
 				log.error("Error in capture function, disabling", exc_info=True)
 				self._captureFunc = None
 
@@ -582,7 +589,7 @@ class InputManager(baseObject.AutoPropertyObject):
 		# #2953: if an intercepted command Script (script that sends a gesture) is queued
 		# then queue all following gestures (that don't have a script) with a fake script so that they remain in order.
 		if not script and scriptHandler._numIncompleteInterceptedCommandScripts:
-			script=lambda gesture: gesture.send()
+			script=lambda gesture: gesture.send()  # noqa: E731
 
 
 		if script:

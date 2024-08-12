@@ -2,7 +2,7 @@
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2008-2020 NV Access Limited, Leonard de Ruijter, Julien Cochuyt
+# Copyright (C) 2008-2024 NV Access Limited, Leonard de Ruijter, Julien Cochuyt, Cyrille Bougot
 
 import watchdog
 
@@ -10,25 +10,25 @@ import watchdog
 To use, call L{initialize} to create a singleton instance of the console GUI. This can then be accessed externally as L{consoleUI}.
 """
 
-import builtins
-import os
-from typing import Sequence
-import code
-import codeop
-import sys
-import pydoc
-import re
-import itertools
-import rlcompleter
-import wx
-from baseObject import AutoPropertyObject
-import speech
-import queueHandler
-import api
-import gui
-from logHandler import log
-import braille
-import gui.contextHelp
+import builtins  # noqa: E402
+import os  # noqa: E402
+from typing import Sequence  # noqa: E402
+import code  # noqa: E402
+import codeop  # noqa: E402
+import sys  # noqa: E402
+import pydoc  # noqa: E402
+import re  # noqa: E402
+import itertools  # noqa: E402
+import rlcompleter  # noqa: E402
+import wx  # noqa: E402
+from baseObject import AutoPropertyObject  # noqa: E402
+import speech  # noqa: E402
+import queueHandler  # noqa: E402
+import api  # noqa: E402
+import gui  # noqa: E402
+from logHandler import log  # noqa: E402
+import braille  # noqa: E402
+import gui.contextHelp  # noqa: E402
 
 class HelpCommand(object):
 	"""
@@ -298,6 +298,9 @@ class ConsoleUI(
 		self.Bind(wx.EVT_CLOSE, self.onClose)
 		mainSizer = wx.BoxSizer(wx.VERTICAL)
 		self.outputCtrl = wx.TextCtrl(self, wx.ID_ANY, size=(500, 500), style=wx.TE_MULTILINE | wx.TE_READONLY|wx.TE_RICH)
+		font = self.outputCtrl.GetFont()
+		font.SetFaceName('Consolas')
+		self.outputCtrl.SetFont(font)
 		self.outputCtrl.Bind(wx.EVT_KEY_DOWN, self.onOutputKeyDown)
 		self.outputCtrl.Bind(wx.EVT_CHAR, self.onOutputChar)
 		mainSizer.Add(self.outputCtrl, proportion=2, flag=wx.EXPAND)
@@ -305,8 +308,13 @@ class ConsoleUI(
 		self.promptLabel = wx.StaticText(self, wx.ID_ANY)
 		inputSizer.Add(self.promptLabel, flag=wx.EXPAND)
 		self.inputCtrl = wx.TextCtrl(self, wx.ID_ANY, style=wx.TE_DONTWRAP | wx.TE_PROCESS_TAB)
+		font = self.inputCtrl.GetFont()
+		font.SetFaceName('Consolas')
+		self.inputCtrl.SetFont(font)
 		self.inputCtrl.Bind(wx.EVT_CHAR, self.onInputChar)
 		self.inputCtrl.Bind(wx.EVT_TEXT_PASTE, self.onInputPaste)
+		self.inputCtrl.Bind(wx.EVT_TEXT, self.onInputTextChange)
+		self.inputTextModified = False
 		inputSizer.Add(self.inputCtrl, proportion=1, flag=wx.EXPAND)
 		mainSizer.Add(inputSizer, proportion=1, flag=wx.EXPAND)
 		self.SetSizer(mainSizer)
@@ -368,6 +376,9 @@ class ConsoleUI(
 			self.outputPositions.append(self.outputCtrl.GetInsertionPoint())
 
 	def historyMove(self, movement):
+		if self.inputTextModified:
+			self.inputHistoryPos = len(self.inputHistory) - 1
+			self.inputHistory[self.inputHistoryPos] = self.inputCtrl.GetValue()
 		newIndex = self.inputHistoryPos + movement
 		if not (0 <= newIndex < len(self.inputHistory)):
 			# No more lines in this direction.
@@ -375,6 +386,7 @@ class ConsoleUI(
 		self.inputHistoryPos = newIndex
 		self.inputCtrl.ChangeValue(self.inputHistory[newIndex])
 		self.inputCtrl.SetInsertionPointEnd()
+		self.inputTextModified = False
 		return True
 
 	RE_COMPLETE_UNIT = re.compile(r"[\w.]*$")
@@ -509,6 +521,10 @@ class ConsoleUI(
 				# reading of output errors.
 				self.inputCtrl.ChangeValue(suffix)
 				break
+
+	def onInputTextChange(self, evt: wx.CommandEvent):
+		self.inputTextModified = True
+		evt.Skip()
 
 	def onOutputKeyDown(self, evt):
 		key = evt.GetKeyCode()
