@@ -202,7 +202,7 @@ def nvdaController_isSpeaking():
 	from synthDriverHandler import getSynth
 	try:
 		return getSynth().isSpeaking()
-	except:
+	except:  # noqa: E722
 		return False
 
 @WINFUNCTYPE(c_long)
@@ -210,7 +210,7 @@ def nvdaController_getPitch():
 	from synthDriverHandler import getSynth
 	try:
 		return getSynth()._get_pitch()
-	except:
+	except:  # noqa: E722
 		return 50
 
 @WINFUNCTYPE(c_long, c_int)
@@ -218,7 +218,7 @@ def nvdaController_setPitch(nPitch):
 	from synthDriverHandler import getSynth
 	try:
 		getSynth()._set_pitch(nPitch)
-	except:
+	except:  # noqa: E722
 		pass
 	return 0
 
@@ -227,7 +227,7 @@ def nvdaController_getRate():
 	from synthDriverHandler import getSynth
 	try:
 		return getSynth()._get_rate()
-	except:
+	except:  # noqa: E722
 		return 50
 
 @WINFUNCTYPE(c_long, c_int)
@@ -235,7 +235,7 @@ def nvdaController_setRate(nRate):
 	from synthDriverHandler import getSynth
 	try:
 		getSynth()._set_rate(nRate)
-	except:
+	except:  # noqa: E722
 		pass
 	return 0
 
@@ -243,11 +243,11 @@ def nvdaController_setRate(nRate):
 def nvdaController_setAppSleepMode(mode):
 	import appModuleHandler
 	pid=c_long()
-	windll.rpcrt4.I_RpcBindingInqLocalClientPID(None,byref(pid))
+	windll.rpcrt4.I_RpcBindingInqLocalClientPID(None,byref(pid))  # noqa: F405
 	pid=pid.value
 	if not pid:
 		log.error("Could not get process ID for RPC call")
-		return -1;
+		return -1
 	curApp = appModuleHandler.getAppModuleFromProcessID(pid)
 	curApp.sleepMode = True if mode == 1 else False
 	return 0
@@ -423,7 +423,10 @@ def handleInputCompositionEnd(result):
 			result=curInputComposition.compositionString.lstrip('\u3000 ')
 		#nvdajp end
 	if result:
-		if not config.conf["inputComposition"]["announceSelectedCandidate"]: return #nvdajp
+		#nvdajp begin
+		if not config.conf["inputComposition"]["announceSelectedCandidate"]:
+			return
+		#nvdajp end
 		# If the input has been finalized, cancel the current speech.
 		speech.cancelSpeech()
 		speech.speakText(result, symbolLevel=characterProcessing.SymbolLevel.ALL)

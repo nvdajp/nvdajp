@@ -22,7 +22,10 @@ class TestResolvingInternal(unittest.TestCase):
 		for table in tables:
 			self.assertEqual(
 				list(louisHelper._resolveTableInner(tables=[table.fileName])),
-				[os.path.join(brailleTables.TABLES_DIR, table.fileName)],
+				[os.path.join(
+					brailleTables.TABLES_DIR if table.source == brailleTables.TableSource.BUILTIN else brailleTables.TABLES_DIR_JP,
+					table.fileName
+				)],
 			)
 
 	def test_internalTableIncludedInternal(self):

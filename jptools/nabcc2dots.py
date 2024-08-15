@@ -115,7 +115,7 @@ def nabcc2dots(org):
 if __name__ == '__main__':
 	for line in sys.stdin:
 		org = line.strip()
-		print org
-		print nabcc2dots(org)
+		print(org)
+		print(nabcc2dots(org))
 
 

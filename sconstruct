@@ -91,8 +91,9 @@ vars.Add("version_build", "A unique number for this build.", "0")
 vars.Add(BoolVariable("release", "Whether this is a release version", False))
 vars.Add("publisher", "The publisher of this build", versionInfo.publisher)
 vars.Add("updateVersionType", "The version type for which to check for updates", versionInfo.updateVersionType or "")
-vars.Add(PathVariable("certFile", "The certificate file with which to sign executables", "",
-	lambda key, val, env: not val or PathVariable.PathIsFile(key, val, env)))
+# vars.Add(PathVariable("certFile", "The certificate file with which to sign executables", "",
+# 	lambda key, val, env: not val or PathVariable.PathIsFile(key, val, env)))
+vars.Add("certFile", "The certificate file with which to sign executables", "")
 vars.Add("certPassword", "The password for the private key in the signing certificate", "")
 vars.Add("certTimestampServer", "The URL of the timestamping server to use to timestamp authenticode signatures", "")
 vars.Add("apiSigningToken", "The API key for the signing service", "")
@@ -187,7 +188,7 @@ elif certFile:
 	# Local code signing with a certFile
 	def signExecCert(target,source,env):
 		# we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages 
-		signExecCmd = ["signtool", "sign", "/fd", "SHA256", "/f", certFile]
+		signExecCmd = ["signtool", "sign", "/fd", "SHA256", "/a"]
 		if certPassword:
 			signExecCmd.extend(("/p", certPassword))
 		if certTimestampServer:

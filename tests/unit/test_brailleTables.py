@@ -18,15 +18,16 @@ class TestFBrailleTables(unittest.TestCase):
 		"""Tests whether all defined tables exist."""
 		tables = brailleTables.listTables()
 		for table in tables:
+			tables_dir = brailleTables.TABLES_DIR
 			if table.displayName in (
 				"Japanese 6 dot computer braille",
 				"Japanese 6 dot with UEB grade 2",
 				"Japanese 6 dot with English (U.S.) grade 2",
 				"Japanese 6 dot kanji braille",
 			):
-				continue
+				tables_dir = brailleTables.TABLES_DIR_JP
 			self.assertTrue(
-				os.path.isfile(os.path.join(brailleTables.TABLES_DIR, table.fileName)),
+				os.path.isfile(os.path.join(tables_dir, table.fileName)),
 				msg="{table} table not found".format(table=table.displayName)
 			)
 

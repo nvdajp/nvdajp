@@ -10,7 +10,7 @@ import io
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
-import _checkCharDesc as cc
+import _checkCharDesc as cc  # noqa: E402
 
 ch = cc.read_chardesc_file(cc.CH_FILE)
 ch = cc.read_characters_file(cc.CS_FILE)

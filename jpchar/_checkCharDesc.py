@@ -3,7 +3,8 @@
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2012,2023 Takuya Nishimoto, NVDA Japanese Team, Shuaruta Inc.
 
-import re, codecs
+import re
+import codecs
 
 from getord import getOrd
 
@@ -188,7 +189,8 @@ def find_desc_duplicate(ch, skipKeisen=True, skipEmoji=True):
             assert isinstance(v[0], int) or isinstance(v[0], str)
             assert isinstance(v2[0], int) or isinstance(v2[0], str)
             if (
-                type(v[0]) == type(v2[0]) == int
+                isinstance(v[0], int)
+                and isinstance(v2[0], int)
                 and v[0] < v2[0]
                 and k != k2
                 and equals_ignore_spaces(v[1], v2[1])

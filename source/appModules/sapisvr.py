@@ -6,11 +6,7 @@
 #Windows 7 Speech Recognition
 
 import appModuleHandler
-import controlTypes
-import api
 import speech
-from NVDAObjects.window import Window
-from NVDAObjects.IAccessible import IAccessible
 
 class AppModule(appModuleHandler.AppModule):
 

@@ -10,9 +10,9 @@ import controlTypes
 
 
 _gettext_org = _
-_ = lambda x: x
+_ = lambda x: x  # noqa: E731
 _pgettext_org = pgettext
-pgettext = lambda x, y: y
+pgettext = lambda x, y: y  # noqa: E731
 
 roleLabels: typing.Dict[controlTypes.Role, str] = {
 	# Translators: Displayed in braille for an object which is a

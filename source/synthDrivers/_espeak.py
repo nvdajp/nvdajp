@@ -308,8 +308,6 @@ def setVoiceAndVariant(voice=None, variant=None):
 def _setVoiceByLanguage(lang):
 	v=espeak_VOICE()
 	lang=lang.replace('_','-')
-	if lang[:2] == 'ja':
-		lang = 'en-us'
 	v.languages=encodeEspeakString(lang)
 	try:
 		espeakDLL.espeak_SetVoiceByProperties(byref(v))  # noqa: F405

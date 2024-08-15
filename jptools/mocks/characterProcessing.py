@@ -28,7 +28,7 @@ def setup():
 			temp=line.split("\t")
 			if len(temp) > 1:
 				key=temp.pop(0)
-				code=temp.pop(0)
+				code=temp.pop(0)  # noqa: F841
 				rd=temp.pop(0)
 				if rd.startswith('[') and rd.endswith(']'):
 					_readings[key] = rd[1:-1]

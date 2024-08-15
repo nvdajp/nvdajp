@@ -164,7 +164,6 @@ class TestSeikantkDriver_Serial(unittest.TestCase):
 class TestGestureMap(unittest.TestCase):
 	"""Tests the integrity of braille display driver gesture maps."""
 
-	@unittest.skip("regex fails with joystick1left")
 	def test_identifiers(self):
 		"""Checks whether all defined braille display gestures contain valid braille display key identifiers."""
 		for name, description in braille.getDisplayList(excludeNegativeChecks=False):

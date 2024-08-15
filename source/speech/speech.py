@@ -554,7 +554,7 @@ def getSpellingSpeech(
 		not useCharacterDescriptions
 		and bool(config.conf["speech"]["unicodeNormalization"])
 	)
-	seq = _getSpellingSpeechWithoutCharMode(
+	seq = jpUtils.getSpellingSpeechWithoutCharMode(
 		text,
 		locale,
 		useCharacterDescriptions,

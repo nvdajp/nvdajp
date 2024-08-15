@@ -56,7 +56,8 @@ def reportKeyDownEvent(gesture):
 	lastKeyGesture = gesture
 
 def needDiscriminantReading(gesture):
-	if not gesture: return False
+	if not gesture:
+		return False
 	if (winUser.VK_CONTROL, False) in gesture.generalizedModifiers or \
 			gesture.vkCode in \
 			(winUser.VK_SPACE, winUser.VK_CONVERT, winUser.VK_IME_ON,
@@ -151,10 +152,10 @@ class InputComposition(EditableTextWithAutoSelectDetection,Window):
 				queueHandler.queueFunction(queueHandler.eventQueue, speech.speakText, newText, symbolLevel=characterProcessing.SymbolLevel.ALL)
 		#nvdajp end
 
-	def compositionUpdate(self,compositionString,selectionStart,selectionEnd,isReading,announce=True):
+	def compositionUpdate(self,compositionString,selectionStart,selectionEnd,isReading,announce=True,forceNewText=False):
 		if isReading and not config.conf["inputComposition"]["reportReadingStringChanges"]: return  # noqa: E701
 		if not isReading and not config.conf["inputComposition"]["reportCompositionStringChanges"]: return  # noqa: E701
-		if announce: self.reportNewText((self.readingString if isReading else self.compositionString),compositionString)  # noqa: E701
+		if announce: self.reportNewText((self.readingString if isReading else self.compositionString),compositionString,forceNewText=forceNewText)  # noqa: E701
 		hasChanged=False
 		if isReading:
 			self.readingString=compositionString

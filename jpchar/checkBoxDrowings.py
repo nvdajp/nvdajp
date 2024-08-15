@@ -19,7 +19,7 @@ def utf8_decode_fields(fields):
 items = []
 for fields in csv.reader(open(CSV_FILE)):
 	ch, jname, lname, sname, uname, mspt, ucpt = utf8_decode_fields(fields)
-	if ch == '罫線': continue
+	if ch == '罫線': continue  # noqa: E701
 	items.append([ch, ucpt[2:], sname, lname])
 
 for i in sorted(items, key=lambda i: i[1]):

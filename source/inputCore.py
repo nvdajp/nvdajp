@@ -41,9 +41,7 @@ from logHandler import log
 import globalVars
 import languageHandler
 import controlTypes
-import keyLabels
 import winUser
-import core
 import winKernel
 import extensionPoints
 from NVDAState import WritePaths
@@ -581,7 +579,7 @@ class InputManager(baseObject.AutoPropertyObject):
 			)
 		# nvdajp begin
 		if hasattr(gesture, "vkCode") and gesture.vkCode == winUser.VK_RETURN:
-			dummy = winUser.getAsyncKeyState(winUser.VK_BACK)
+			dummy = winUser.getAsyncKeyState(winUser.VK_BACK)  # noqa: F841
 		# nvdajp end
 
 		gesture.reportExtra()

@@ -42,12 +42,6 @@ UNICODE_BRAILLE_START = 0x2800
 UNICODE_BRAILLE_PROTECTED = u"⣿" # All dots down
 
 
-def jpBrailleTablePath(fileName):
-	# return [fileName, "braille-patterns.cti"]
-	if fileName in ['ja-jp-comp6.utb', 'ja-jp-rokutenkanji.tbl']:
-		return [fileName, os.path.join(brailleTables.TABLES_DIR, "braille-patterns.cti")]
-	return [os.path.join(brailleTables.TABLES_DIR, fileName), "braille-patterns.cti"]
-
 class BrailleInputHandler(AutoPropertyObject):
 	"""Handles braille input.
 	"""

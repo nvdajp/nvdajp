@@ -28,7 +28,7 @@ def getCertPublisher(env):
 	If a signing certificate is given, then the publisher is extracted from the certificate.
 	"""
 	certFilePath = env.get('certFile')
-	if not certFilePath:
+	if not certFilePath or certFilePath == "1":
 		return env['publisher']
 	certPassword=env.get('certPassword','')
 	if not os.path.isabs(certFilePath):

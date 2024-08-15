@@ -304,7 +304,7 @@ landmarkLabels = {
 }
 
 # nvdajp begin
-from jpBrailleUtils import (
+from jpBrailleUtils import (  # noqa: E402
 	roleLabels as rawRoleLabels,
 	positiveStateLabels as rawPositiveStateLabels,
 	negativeStateLabels as rawNegativeStateLabels,
@@ -867,7 +867,7 @@ class NVDAObjectRegion(Region):
 			positionInfo=obj.positionInfo if presConfig["reportObjectPositionInformation"] else None,
 			cellCoordsText=obj.cellCoordsText if config.conf["documentFormatting"]["reportTableCellCoords"] else None,
 			columnHeaderText=columnHeaderText,
-			rowHeaderText=rowHeaderText
+			rowHeaderText=rowHeaderText,
 			errorMessage=errorMessage,
 		)
 		if role == controlTypes.Role.MATH:

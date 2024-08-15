@@ -8,7 +8,8 @@
 # > python jpDicTest.py
 
 import unittest
-import sys, os
+import sys
+import os
 
 sys.path.append(os.path.normpath(os.path.join(os.getcwd(), "mocks")))
 sys.path.append(r"..\source")
@@ -16,10 +17,10 @@ sys.path.append(r"..\miscdeps\python")
 import languageHandler
 
 languageHandler.setLanguage("ja")
-import jpUtils
+import jpUtils  # noqa: E402
 
 # import locale
-import gettext
+import gettext  # noqa: E402
 
 gettext.translation("nvda", localedir=r"..\source\locale", languages=["ja"]).install()
 

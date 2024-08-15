@@ -61,7 +61,7 @@ timeout /T 5 /NOBREAK
 @if not "%ERRORLEVEL%"=="0" goto onerror
 timeout /T 5 /NOBREAK
 
-set SCONSARGS=certTimestampServer=%TIMESERVER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+set SCONSARGS=certFile=1 certTimestampServer=%TIMESERVER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
 call scons.bat source user_docs launcher release=1 publisher=%PUBLISHER% %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror

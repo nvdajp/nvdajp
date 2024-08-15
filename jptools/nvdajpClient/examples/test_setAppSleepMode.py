@@ -1,9 +1,9 @@
 # coding: utf-8
-from ctypes import *
+from ctypes import *  # noqa: F403
 import wx
 
 DLLPATH = r'..\client\nvdaControllerClient32.dll'
-clientLib = windll.LoadLibrary(DLLPATH)
+clientLib = windll.LoadLibrary(DLLPATH)  # noqa: F405
 
 def nvdaRunning():
 	if clientLib:
@@ -36,7 +36,7 @@ class MyFrame(wx.Frame):
 
 	def OnSpeak(self, event):
 		if nvdaRunning():
-			res = clientLib.nvdaController_speakText(self.tc.Value)
+			res = clientLib.nvdaController_speakText(self.tc.Value)  # noqa: F841
 
 	def OnSleep(self, event):
 		if nvdaRunning():

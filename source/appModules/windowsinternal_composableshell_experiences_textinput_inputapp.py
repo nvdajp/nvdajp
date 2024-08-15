@@ -428,4 +428,4 @@ class AppModule(appModuleHandler.AppModule):
 
 
 if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-	from .windowsinternal_composableshell_experiences_textinput_inputapp_jp import AppModule
+	from .windowsinternal_composableshell_experiences_textinput_inputapp_jp import AppModule  # noqa: F401

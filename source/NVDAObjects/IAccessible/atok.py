@@ -1,6 +1,5 @@
 # NVDAObjects/IAccessible/atok.py
 
-from logHandler import log
 import tones
 from . import IAccessible
 import controlTypes
@@ -19,7 +18,8 @@ class ATOKxxUIComment(IAccessible):
 		return name
 
 	def event_show(self):
-		if not (config.conf["keyboard"]["nvdajpEnableKeyEvents"] and config.conf["inputComposition"]["announceSelectedCandidate"]): return
+		if not (config.conf["keyboard"]["nvdajpEnableKeyEvents"] and config.conf["inputComposition"]["announceSelectedCandidate"]):
+			return
 		tones.beep(880,20)
 		api.setNavigatorObject(self)
 		speech.cancelSpeech()

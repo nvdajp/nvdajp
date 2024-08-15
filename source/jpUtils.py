@@ -237,7 +237,7 @@ def code2hex(code):
 	input 0x123a
 	output 'u+0123a'
 	"""
-	s = ''
+	# s = ''
 	src = hex(code)[2:]
 	src = ("0000" + src)[-5:]
 	if src[0] == '0':
@@ -320,7 +320,7 @@ def splitChars(name):
 	return nameChars
 
 def getDiscriminantReading(name, attrOnly=False, sayCapForCapitals=False, forBraille=False, sayCharTypes=True):
-	if not name: return ''
+	if not name: return ''  # noqa: E701
 	nameChars = splitChars(name)
 	attrs = []
 	for uc in nameChars:
@@ -388,9 +388,9 @@ def fixNewText(newText, isCandidate=False):
 	return newText
 
 
-from typing import Generator
-from speech.types import SequenceItemT
-from speech.commands import (
+from typing import Generator  # noqa: E402
+from speech.types import SequenceItemT  # noqa: E402
+from speech.commands import (  # noqa: E402
 	LangChangeCommand,
 	EndUtteranceCommand,
 	PitchCommand,
@@ -405,6 +405,7 @@ def _getSpellingCharAddCapNotification(
 		capPitchChange: int,
 		beepForCapitals: bool,
 		sayCharTypes: bool,
+		reportNormalized: bool = False,
 ) -> Generator[SequenceItemT, None, None]:
 	"""This function produces a speech sequence containing a character to be spelt as well as commands
 	to indicate that this character is uppercase if applicable.
@@ -418,8 +419,17 @@ def _getSpellingCharAddCapNotification(
 	"""
 	capMsgBefore = getJaCharAttrDetails(speakCharOrg, sayCapForCapitals, sayCharTypes)
 	capMsgAfter = None
+	if reportNormalized:
+		# Translators: 'Normalized' will be spoken after the given letter when it is normalized.
+		normalizedMsg = _("%s normalized")
+		normalizedMsgBefore, normalizedMsgAfter = normalizedMsg.split('%s')
+	else:
+		normalizedMsgBefore = normalizedMsgAfter = ''
+
 	if capPitchChange:
 		yield PitchCommand(offset=capPitchChange)
+	if normalizedMsgBefore:
+		yield normalizedMsgBefore
 	if beepForCapitals:
 		yield BeepCommand(2000, 50)
 	if capMsgBefore:
@@ -427,6 +437,8 @@ def _getSpellingCharAddCapNotification(
 	yield speakCharAs
 	if capMsgAfter:
 		yield capMsgAfter
+	if normalizedMsgAfter:
+		yield normalizedMsgAfter
 	if capPitchChange:
 		yield PitchCommand()
 
@@ -439,13 +451,17 @@ def getSpellingSpeechWithoutCharMode(
 		sayCapForCapitals: bool,
 		capPitchChange: int,
 		beepForCapitals: bool,
+		fallbackToCharIfNoDescription: bool = True,
+		unicodeNormalization: bool = False,
+		reportNormalizedForCharacterNavigation: bool = False,
 ) -> Generator[SequenceItemT, None, None]:
-	
+
 	from speech import (
 		getCurrentLanguage,
 		getCharDescListFromText,
 		LANGS_WITH_CONJUNCT_CHARS,
 	)
+	from textUtils import unicodeNormalize
 	defaultLanguage=getCurrentLanguage()
 	if not locale or (not config.conf['speech']['autoDialectSwitching'] and locale.split('_')[0]==defaultLanguage.split('_')[0]):
 		locale=defaultLanguage
@@ -458,7 +474,14 @@ def getSpellingSpeechWithoutCharMode(
 		text=text.rstrip()
 
 	textLength=len(text)
-	count = 0
+	isNormalized = False
+	if unicodeNormalization and textLength > 1:
+		normalized = unicodeNormalize(text)
+		if len(normalized) == 1:
+			# Normalization of a composition
+			text = normalized
+			isNormalized = True
+	# count = 0
 	localeHasConjuncts = True if locale.split('_',1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
 	charDescList = getCharDescListFromText(text,locale) if localeHasConjuncts else text
 	for item in charDescList:
@@ -480,8 +503,17 @@ def getSpellingSpeechWithoutCharMode(
 		if useCharacterDescriptions and charDesc:
 			IDEOGRAPHIC_COMMA = "\u3001"
 			speakCharAs=charDesc[0] if textLength>1 else IDEOGRAPHIC_COMMA.join(charDesc)
+		elif useCharacterDescriptions and not charDesc and not fallbackToCharIfNoDescription:
+			return None
 		else:
-			speakCharAs=characterProcessing.processSpeechSymbol(locale,speakCharAs)
+			if (symbol := characterProcessing.processSpeechSymbol(locale, speakCharAs)) != speakCharAs:
+				speakCharAs = symbol
+			elif not isNormalized and unicodeNormalization:
+				if (normalized := unicodeNormalize(speakCharAs)) != speakCharAs:
+					speakCharAs = " ".join(
+						characterProcessing.processSpeechSymbol(locale, normChar) for normChar in normalized
+					)
+					isNormalized = True
 		if config.conf['speech']['autoLanguageSwitching']:
 			yield LangChangeCommand(locale)
 		yield from _getSpellingCharAddCapNotification(
@@ -490,7 +522,8 @@ def getSpellingSpeechWithoutCharMode(
 			uppercase and sayCapForCapitals,
 			pitchChange,
 			uppercase and beepForCapitals,
-			useDetails,
+			sayCharTypes=useDetails,
+			reportNormalized=isNormalized and reportNormalizedForCharacterNavigation,
 		)
 		yield EndUtteranceCommand()
 
@@ -499,16 +532,16 @@ def modifyTimeText(text):
 	mo = re.match('(\\d{1,2}):(\\d{2})', text)
 	if mo:
 		hour, minute = mo.group(1), mo.group(2)
-		if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
-		if len(minute) == 2 and minute[0] == '0': minute = minute[1:]
+		if len(hour) == 2 and hour[0] == '0': hour = hour[1:]  # noqa: E701
+		if len(minute) == 2 and minute[0] == '0': minute = minute[1:]  # noqa: E701
 		# Translators: hour and minute
 		text = _('{hour}:{minute}').format(hour=hour, minute=minute)
 	else:
 		mo = re.match('([^\\d]+)(\\d{1,2}):(\\d{2})', text)
 		if mo:
 			am_or_pm, hour, minute = mo.group(1), mo.group(2), mo.group(3)
-			if len(hour) == 2 and hour[0] == '0': hour = hour[1:]
-			if len(minute) == 2 and minute[0] == '0': minute = minute[1:]
+			if len(hour) == 2 and hour[0] == '0': hour = hour[1:]  # noqa: E701
+			if len(minute) == 2 and minute[0] == '0': minute = minute[1:]  # noqa: E701
 			# Translators: hour and minute
 			text = am_or_pm + _('{hour}:{minute}').format(hour=hour, minute=minute)
 	return text

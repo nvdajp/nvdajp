@@ -8,21 +8,18 @@
 #Copyright (C) 2011-2019 Takuya Nishimoto
 
 import braille
-import brailleInput
 import inputCore
-import hwPortUtils
 import time
 import tones
 import os
 from collections import OrderedDict
-from ctypes import *
-from ctypes.wintypes import *
-import config
+from ctypes import *  # noqa: F403
+from ctypes.wintypes import *  # noqa: F403
 from logHandler import log
 import sys
 if sys.version_info.major >= 3:
 	xrange = range
-	byte = lambda x: x.to_bytes(1, 'big')
+	byte = lambda x: x.to_bytes(1, 'big')  # noqa: E731
 else:
 	byte = chr
 
@@ -32,7 +29,7 @@ fConnection = False
 numCells = 0
 isUnknownEquipment = False
 
-KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)
+KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)  # noqa: F405
 
 def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	global fConnection, numCells, isUnknownEquipment
@@ -69,7 +66,7 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	else:
 		log.info("status changed to %d" % nStatus)
 
-KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))
+KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))  # noqa: F405
 
 def nvdaKgsHandleKeyInfoProc(lpKeys):
 	keys = (lpKeys[0], lpKeys[1], lpKeys[2])
@@ -78,20 +75,20 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	names = []
 	routingIndex = None
 	if keys[0] == 0:
-		if keys[1] &   1: names.append('lf')
-		if keys[1] &   2: names.append('bk')
-		if keys[1] &   4: names.append('sr')
-		if keys[1] &   8: names.append('sl')
-		if keys[1] &  16: names.append('func1')
-		if keys[1] &  32: names.append('func2')
-		if keys[1] &  64: names.append('func3')
-		if keys[1] & 128: names.append('func4')
+		if keys[1] &   1: names.append('lf')  # noqa: E701
+		if keys[1] &   2: names.append('bk')  # noqa: E701
+		if keys[1] &   4: names.append('sr')  # noqa: E701
+		if keys[1] &   8: names.append('sl')  # noqa: E701
+		if keys[1] &  16: names.append('func1')  # noqa: E701
+		if keys[1] &  32: names.append('func2')  # noqa: E701
+		if keys[1] &  64: names.append('func3')  # noqa: E701
+		if keys[1] & 128: names.append('func4')  # noqa: E701
 	else:
 		tCode = 240
-		if keys[0] &   1+tCode: names.append('func1')
-		if keys[0] &   2+tCode: names.append('func2')
-		if keys[0] &   4+tCode: names.append('func3')
-		if keys[0] &   8+tCode: names.append('func4')
+		if keys[0] &   1+tCode: names.append('func1')  # noqa: E701
+		if keys[0] &   2+tCode: names.append('func2')  # noqa: E701
+		if keys[0] &   4+tCode: names.append('func3')  # noqa: E701
+		if keys[0] &   8+tCode: names.append('func4')  # noqa: E701
 		names.append('route')
 		routingIndex = keys[1] - 1
 	if routingIndex is not None:
@@ -211,7 +208,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		if sys.version_info.major <= 2:
 			kgs_dll = kgs_dll.encode('mbcs')
 		log.debug(kgs_dll)
-		self._directBM = windll.LoadLibrary(kgs_dll)
+		self._directBM = windll.LoadLibrary(kgs_dll)  # noqa: F405
 		if not self._directBM:
 			unlock()
 			raise RuntimeError("No KGS instance found")
@@ -235,7 +232,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
 			waitAfterDisconnect()
-			ret = windll.kernel32.FreeLibrary(self._directBM._handle)
+			ret = windll.kernel32.FreeLibrary(self._directBM._handle)  # noqa: F405
 			# ret is not zero if success
 			log.info("KGS driver terminated %d" % ret)
 		self._directBM = None
@@ -264,25 +261,25 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		return OrderedDict(ar)
 
 	def display(self, data):
-		if not data: return
+		if not data: return  # noqa: E701
 		s = b''
 		for c in data:
 			d = 0
-			if c & 0x01: d += 0x80
-			if c & 0x02: d += 0x40
-			if c & 0x04: d += 0x20
-			if c & 0x08: d += 0x08
-			if c & 0x10: d += 0x04
-			if c & 0x20: d += 0x02
-			if c & 0x40: d += 0x10
-			if c & 0x80: d += 0x01
+			if c & 0x01: d += 0x80  # noqa: E701
+			if c & 0x02: d += 0x40  # noqa: E701
+			if c & 0x04: d += 0x20  # noqa: E701
+			if c & 0x08: d += 0x08  # noqa: E701
+			if c & 0x10: d += 0x04  # noqa: E701
+			if c & 0x20: d += 0x02  # noqa: E701
+			if c & 0x40: d += 0x10  # noqa: E701
+			if c & 0x80: d += 0x01  # noqa: E701
 			s += byte(d)
-		dataBuf   = create_string_buffer(s, 256)
-		cursorBuf = create_string_buffer(b'', 256)
+		dataBuf   = create_string_buffer(s, 256)  # noqa: F405
+		cursorBuf = create_string_buffer(b'', 256)  # noqa: F405
 		try:
 			ret = self._directBM.bmDisplayData(dataBuf, cursorBuf, self.numCells)
 			log.debug("bmDisplayData %d" % ret)
-		except:
+		except:  # noqa: E722
 			log.debug("error bmDisplayData")
 
 

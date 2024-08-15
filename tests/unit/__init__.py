@@ -86,7 +86,6 @@ speech.initialize()
 import braille  # noqa: E402
 # Disable auto detection of braille displays when unit testing.
 config.conf['braille']['display'] = "noBraille"
-config.conf['braille']['translationTable'] = "en-ueb-g1.ctb"
 braille.initialize()
 
 

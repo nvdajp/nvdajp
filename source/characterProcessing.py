@@ -181,7 +181,7 @@ class CharacterDescriptions(object):
 				temp=line.split("\t")
 				if len(temp) > 1:
 					key=temp.pop(0)
-					code=temp.pop(0)
+					code=temp.pop(0)  # noqa: F841
 					rd=temp.pop(0)
 					if rd.startswith('[') and rd.endswith(']'):
 						self._readings[key] = rd[1:-1]
@@ -231,12 +231,12 @@ def getCharacterDescription(locale: str, character: str) -> Optional[List[str]]:
 # nvdajp
 def getCharacterReading(locale, character):
 	try:
-		l = _charDescLocaleDataMap.fetchLocaleData(locale)
+		l = _charDescLocaleDataMap.fetchLocaleData(locale)  # noqa: E741
 	except LookupError:
 		return character
 	return l.getCharacterReading(character)
 # nvdajp end
- 
+
 
 # Speech symbol levels
 class SymbolLevel(IntEnum):

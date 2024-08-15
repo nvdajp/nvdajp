@@ -5,16 +5,16 @@
 # usage:
 # > python updateCharDesc.py
 
-from _checkCharDesc import *
+from _checkCharDesc import *  # noqa: F403
 from getord import getOrd
 
-ch = read_characters_file(CS_FILE)
+ch = read_characters_file(CS_FILE)  # noqa: F405
 
 def isZenkakuKatakana(c):
-	return re.search(ur'[ァ-ヾ]', c) is not None
+	return re.search(r'[ァ-ヾ]', c) is not None  # noqa: F405
 
 def isHankakuKatakana(c):
-	return re.search(ur'[ｦ-ﾝ]', c) is not None
+	return re.search(r'[ｦ-ﾝ]', c) is not None  # noqa: F405
 
 def isHalfShape(c):
 	return (32 < getOrd(c)) and (getOrd(c) < 128)
@@ -31,27 +31,26 @@ for k,a in ch.items():
 	#print k + ',' + ','.join(a).encode('utf-8') + "\n"
 
 hex3_curr = None
-print "# Discriminant Reading Dictionary for NVDA Japanese"
-print "# Copyright (C) 2016 NVDA Japanese Team"
+print("# Discriminant Reading Dictionary for NVDA Japanese")
+print("# Copyright (C) 2016 NVDA Japanese Team")
 for k in sorted(keys):
-	hex5 = u"%05x" % k
+	hex5 = "%05x" % k
 	hex3 = hex5[0:3]
 	if hex3_curr != hex3:
-		print
-		print "# %sxx" % hex3
-	# http://d.hatena.ne.jp/nishiohirokazu/20120127/1327646600
-	c = ("\U" + "%08x" % k).decode("unicode-escape") #unichr(k)
+		print()
+		print("# %sxx" % hex3)
+	c = chr(k)
 	if c == '#':
 		c = r'\#'
 
 	desc = d[k].replace(':', ' ')
 	if isZenkakuKatakana(c):
-		desc = u'カタカナ ' + desc
+		desc = 'カタカナ ' + desc
 	elif isHankakuKatakana(c) or isHalfShape(c):
-		desc = u'ハンカク ' + desc
+		desc = 'ハンカク ' + desc
 
-	o = u"%s\t(%s)" % (c, desc)
-	print o.encode('utf-8')
+	o = "%s\t(%s)" % (c, desc)
+	print(o)
 	hex3_curr = hex3
 
-print "# end of file"
+print("# end of file")

@@ -91,8 +91,6 @@ goodUIAWindowClassNames = (
 )
 
 badUIAWindowClassNames = (
-	"SysLink", # https://osdn.net/ticket/browse.php?group_id=4221&tid=32145
-	"ClockWndMain", # https://osdn.net/ticket/browse.php?group_id=4221&tid=32466
 	# UIA events of candidate window interfere with MSAA events.
 	"Microsoft.IME.CandidateWindow.View",
 	"SysTreeView32",

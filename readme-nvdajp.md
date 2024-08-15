@@ -6,7 +6,7 @@
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は NVDA 2024.1jp-beta の場合
+以下は NVDA 2024.3jp-beta の場合
 
 ### (1) Windows 10/11 64ビット
 
@@ -16,7 +16,7 @@
 
 以下からダウンロードしてインストーラーを実行
 
-https://www.visualstudio.com/ja/downloads/ 
+https://www.visualstudio.com/ja/downloads/
 
 Visual Studio 2022
 
@@ -55,7 +55,7 @@ Visual Studio と一緒にインストールしない場合は下記からダウ
 
 https://git-for-windows.github.io/
 
-Git の初心者は下記の設定を推奨。
+Git の設定
 
 * Adjusting your PATH environment : Use Git and optional Unix tools from the Windows Command Prompt
 
@@ -65,7 +65,7 @@ Git の初心者は下記の設定を推奨。
 
 環境変数 PATH を自分で設定しなおす場合は、以下が登録されていること。
 
-```
+```text
 C:\Program Files\Git\cmd
 C:\Program Files\Git\usr\bin
 ```
@@ -85,7 +85,7 @@ http://www.7-zip.org/download.html
 
 環境変数 PATH に以下を登録する。
 
-```
+```text
 C:\Program Files\7-Zip
 ```
 
@@ -94,22 +94,22 @@ C:\Program Files\7-Zip
 ダウンロードして実行し、インストールする。
 オプションはデフォルトでよい。
 
-https://www.python.org/downloads/release/python-3118/
+https://www.python.org/downloads/release/python-3119/
 
-Windows x86 executable installer (python-3.11.8.exe)
+Windows x86 executable installer (python-3.11.9.exe)
 
 ### (6) 確認すること
 
 PowerShell またはコマンドプロンプトで Python 3.11 (32bit) が起動する。
 
-```cmd
+```text
 > py -3.11-32 -V
-Python 3.11.8
+Python 3.11.9
 ```
 
 PowerShell で git, patch, 7z がそれぞれ実行できる。
 
-```powershell
+```text
 > gcm git | % Source
 C:\Program Files\Git\cmd\git.exe
 
@@ -122,7 +122,7 @@ C:\Program Files\7-Zip\7z.exe
 
 またはコマンドプロンプトで git, patch, 7z がそれぞれ実行できる。
 
-```cmd
+```text
 > where git
 C:\Program Files\Git\cmd\git.exe
 
@@ -133,56 +133,50 @@ C:\Program Files\Git\usr\bin\patch.exe
 C:\Program Files\7-Zip\7z.exe
 ```
 
-### (7) NVDAのソースコード取得
-
+### (7) NVDA日本語版のソースコード取得とビルド
 
 以下で本体および Git のサブモジュールが取得される。
 
-日本語版のソースコード
+日本語版のソースコード betajp ブランチを betajp-dev フォルダに取得
 
-```
-> git clone --recursive https://github.com/nvdajp/nvdajp.git
-```
-
-本家版のソースコード
-
-```
-> git clone --recursive https://github.com/nvaccess/nvda.git
+```text
+> git clone --recursive -b betajp https://github.com/nvdajp/nvdajp.git betajp-dev
 ```
 
-## ビルド
-
-### 署名なしビルド
+ソースコードから実行するための準備作業
 
 
-
-```
-> cd nvdajp
-> .\venvUtils\venvCmd jptools\nonCertAllBuild.cmd
+```text
+> cd betajp-dev
+> jptools\devbuild2024.cmd
 ```
 
-出力は output フォルダに作られる。
+ユニットテストの出力が `OK (skipped=5)` であれば依存モジュールは準備できている。
 
+NVDA 本体を実行するには
 
-ビルドをやり直す前に中間ファイルを削除するには
-
+```text
+> runnvda.bat
 ```
-> .\jptools\cleanAndRevert
-```
 
-### 署名つきビルド
+### (8) NVDA日本語版のリリースビルド
 
 現在は `signtool sign /a` を使えることが前提。
 
-```
-> cd nvdajp
-> .\venvUtils\venvCmd jptools\certBuild2023.cmd
+```text
+> cd betajp-dev
+> set VERSION=2024.3jp
+> venvUtils\venvCmd jptools\certBuild2023.cmd version_build=99999
+> rununittests.bat
 ```
 
-### 本家版のビルド
+### (9) NVDA本家版のソースコード取得とビルド
 
-
+```text
+> git clone --recursive https://github.com/nvaccess/nvda.git
 ```
+
+```text
 > cd nvda
 > .\scons
 ```
@@ -195,7 +189,7 @@ C:\Program Files\7-Zip\7z.exe
 
 下記を実行：
 
-```
+```text
 > git submodule sync
 > git submodule update --init --recursive
 ```
@@ -203,7 +197,7 @@ C:\Program Files\7-Zip\7z.exe
 備考：
 本家から git fetch, git merge FETCH_HEAD したあとで
 
-```
+```text
 modified:   include/espeak (new commits)
 ```
 
@@ -215,7 +209,7 @@ modified:   include/espeak (new commits)
 
 ### git submodule update のエラー対応
 
-```
+```text
 > git submodule update --init
 
 fatal: reference is not a tree: 1e1e7587cfbc263b351644e52fdaf2684103d6c8
@@ -226,7 +220,7 @@ include/liblouis サブモジュールの checkout に失敗している。
 
 liblouis に cd して git fetch -t してからやり直してみる：
 
-```
+```text
 > cd include\liblouis
 > git fetch -t
 
