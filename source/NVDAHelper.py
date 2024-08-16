@@ -551,12 +551,23 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 	compAttr = ''
 	if '\t' in compositionString:
 		compositionString, compAttr = compositionString.split('\t')
-		if (lastCompString == compositionString) and (lastCompAttr == compAttr) \
-			and (lastSelectionStart == selectionStart) \
-			and (lastSelectionEnd == selectionEnd) \
-			and not (compositionString in (' ', '\u3000') and compAttr == '' and selectionStart == -1 and selectionEnd == -1):
-			log.debug("ignored (%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
+		if (lastCompString == compositionString
+			and lastCompAttr == compAttr
+			and lastSelectionStart == selectionStart
+			and lastSelectionEnd == selectionEnd
+			and not (
+				compositionString in (' ', '\u3000')
+				and compAttr == ''
+				and selectionStart == -1
+				and selectionEnd == -1
+			)
+		):
+			log.debug(f"ignored ({compositionString=}) ({compAttr=}) ({selectionStart=}) ({selectionEnd=}) ({lastCompString=}) ({lastCompAttr=}) ({lastSelectionStart=}) ({lastSelectionEnd=})")
 			return 0
+		log.debug(f"({lastCompString=}) ({compositionString=})")
+		deletedString = ''
+		if lastCompString and compositionString and len(lastCompString) > len(compositionString):
+			deletedString = lastCompString[len(compositionString):]
 		_lastCompAttr = lastCompAttr
 		lastCompAttr = compAttr
 		lastCompString = compositionString
@@ -565,13 +576,20 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
-			log.debug("(%s) (%s) (%d) (%d)" % (compositionString, compAttr, selectionStart, selectionEnd))
+			log.debug(f"({compositionString=}) ({compAttr=}) ({selectionStart=}) ({selectionEnd=})")
 			extractedString, endIndex = extractCompositionString(compAttr, compositionString, selectionStart, selectionEnd, _lastCompAttr)
+			log.debug(f"({extractedString=}) ({endIndex=}) ({deletedString=})")
 			if extractedString:
 				focus=api.getFocusObject()
 				if isinstance(focus,InputComposition):
 					focus.compositionUpdate(extractedString, 0, endIndex, 0, forceNewText=True)
 				return 0
+			elif deletedString:
+				focus = api.getFocusObject()
+				if focus and hasattr(focus, "windowClassName") and focus.windowClassName == "Scintilla":
+					import ui
+					ui.message(deletedString)
+					return 0
 	else:
 		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=}")
 		if lastCompString and not compositionString and selectionStart == -1 and selectionEnd == -1 and isReading == 0:
