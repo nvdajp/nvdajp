@@ -24,8 +24,10 @@ def getChromeArgs() -> str:
 		" --disable-notifications"  # prevent notifications that may interfere with automated tests.
 		" --no-experiments"  # Stable behavior is preferred.
 		" --no-default-browser-check"  # Don't bother to check if Chrome is the default browser.
-		" --lang=en-US"  # Set GUI lang to English to ensure tests pass on non-English systems. Must be supplied
+		# " --lang=en-US"  # Set GUI lang to English to ensure tests pass on non-English systems. Must be supplied
 		# to the first Chrome process started.
+		" --lang=ja-JP"  # Set GUI lang to Japanese.
+		" --guest"  # Run as guest. Skip profile chooser.
 		" --disable-session-crashed-bubble"
 		# --disable-session-crashed-bubble: If chrome crashes, don't cause subsequent tests to fail.
 		# However, the config can be checked to determine if a crash occurred.
