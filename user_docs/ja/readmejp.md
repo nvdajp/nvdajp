@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2024年6月22日
+* 最終更新日：2024年8月19日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -230,9 +230,9 @@ NVDA 日本語版の既定の設定では Windows 8.1 または 7 における�
 
 ### eSpeak NG
 
-NVDA 日本語版では音声エンジン eSpeak NG に簡易的な日本語の読み上げ処理を追加しています。
 
-NVDA 本家版の eSpeak NG は日本語に対応していません。
+
+NVDA 2024.3jp において eSpeak NG の日本語対応を終了しました。
 
 ### SAPI 5
 
@@ -755,7 +755,7 @@ NVDA 2022.4jp で Windows 10 バージョン 2004 以降で導入された新し
 NVDA日本語版のソースコード管理には2013年4月から git を使用しています。レポジトリは以下で公開しています。
 
 * GitHub: https://github.com/nvdajp
-* [NVDA日本語チームの git ブランチ運用](https://osdn.net/ticket/browse.php?group_id=4221&tid=31635)
+* [NVDA 日本語版 開発者メモ](https://github.com/nvdajp/nvdajp/blob/betajp/readme-nvdajp.md)
 
 公開ビルドサーバーは下記です。コードサイニング証明書を使うビルド環境は公開していません：
 
@@ -798,6 +798,12 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 * [NVDA APIの C#版デモアプリ](https://osdn.net/ticket/browse.php?group_id=4221&tid=33804)
 
 ## バージョンごとの変更点
+
+### 2024.3jp の変更点
+
+* [2024.3jp の変更点](https://github.com/nvdajp/nvdajp/milestone/63?closed=1)
+* eSpeak NG の日本語対応を終了しました。
+* [本家版 2024.3 の翻訳](https://github.com/nvdajp/nvdajp/milestone/62?closed=1)
 
 ### 2024.2jp の変更点
 

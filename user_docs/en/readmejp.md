@@ -4,7 +4,7 @@
 
 ## Overview
 
-* last update: 2024-05-14
+* last update: 2024-08-19
 * updated by: NVDA Japanese Team / Takuya Nishimoto (Shuaruta Inc.)
 
 Release by [NVDA Japanese Team (nvdajp)](http://www.nvda.jp/en/), based on NVDA from NV Access.
@@ -24,7 +24,7 @@ NVDA Japanese is provided "as is", without warranty.
 
 ### Contributors
 
-[Contributors for NVDA Japanese](https://osdn.net/projects/nvdajp/wiki/contributors_ja)
+[Contributors for NVDA Japanese](https://github.com/nvdajp/nvdajp/wiki/contributors_ja)
 
 ## Install
 
@@ -216,7 +216,7 @@ Candidates of Japanese input method editor is announced, even if 'Speak typed ch
 
 ## Synthesizer
 
-### Jtalk
+### JTalk
 
 JTalk driver is the default synthesizer of NVDAJP, which supports Japanese language.
 
@@ -230,7 +230,7 @@ JTalk driver is the default synthesizer of NVDAJP, which supports Japanese langu
 
 ### eSpeak NG
 
-eSpeak NG of NVDAJP supports reading of Japanese characters and Chinese characters. It uses Japanese text processing of Jtalk internally.
+
 
 eSpeak NG of NVDA cannot handle Japanese language.
 
@@ -768,7 +768,7 @@ We use AppVeyor as public build server:
 
 ### Issues
 
-* [OSDN Tickets](https://osdn.net/projects/nvdajp/ticket/)
+
 * [GitHub Issues (nvdajp)](https://github.com/nvdajp/nvdajp/issues)
 
 
