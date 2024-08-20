@@ -98,7 +98,7 @@ def setFocusObject(obj: NVDAObjects.NVDAObject) -> bool:  # noqa: C901
 	#add the old focus to the old focus ancestors, but only if its not None (is none at NVDA initialization)
 	if globalVars.focusObject: 
 		oldFocusLine.append(globalVars.focusObject)
-	oldAppModules=[o.appModule for o in oldFocusLine if o and o.appModule]
+	oldAppModules=[o.appModule for o in oldFocusLine if o and getattr(o, 'appModule', None)]
 	appModuleHandler.cleanup()
 	ancestors=[]
 	tempObj=obj
@@ -151,14 +151,18 @@ def setFocusObject(obj: NVDAObjects.NVDAObject) -> bool:  # noqa: C901
 			break
 		# We're moving backwards along the ancestor chain, so add this to the start of the list.
 		ancestors.insert(0,tempObj)
-		container=tempObj.container
-		tempObj.container=container # Cache the parent.
-		tempObj=container
+		# container=tempObj.container
+		# tempObj.container=container # Cache the parent.
+		# tempObj=container
+		if hasattr(tempObj, 'container'):
+			container=tempObj.container
+			tempObj.container=container  # Cache the parent.
+		tempObj=container if hasattr(tempObj, 'container') else None
 	#Remove the final new ancestor as this will be the new focus object
 	del ancestors[-1]
 	# #5467: Ensure that the appModule of the real focus is included in the newAppModule list for profile switching
 	# Rather than an original focus ancestor which happened to match the new focus.
-	newAppModules=[o.appModule for o in ancestors if o and o.appModule]
+	newAppModules=[o.appModule for o in ancestors if o and getattr(o, 'appModule', None)]
 	if obj.appModule:
 		newAppModules.append(obj.appModule)
 	try:
