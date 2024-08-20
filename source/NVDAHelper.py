@@ -458,10 +458,14 @@ def handleInputCompositionStart(compositionString,selectionStart,selectionEnd,is
 		speech.setSpeechMode(oldSpeechMode)
 	focus.compositionUpdate(compositionString,selectionStart,selectionEnd,isReading)
 
-lastCompAttr = None #nvdajp
-lastCompString = None #nvdajp
-lastSelectionStart = None #nvdajp
-lastSelectionEnd = None #nvdajp
+def resetInputCompositionVariables():
+	global lastCompAttr, lastCompString, lastSelectionStart, lastSelectionEnd
+	lastCompAttr = None
+	lastCompString = None
+	lastSelectionStart = None
+	lastSelectionEnd = None
+
+resetInputCompositionVariables()
 
 # work around ti34120
 # https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120
@@ -595,11 +599,12 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		if lastCompString and not compositionString and selectionStart == -1 and selectionEnd == -1 and isReading == 0:
 			queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString)
 			return 0
-		lastCompAttr = None
+		resetInputCompositionVariables()
 	#nvdajp end
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 	if selectionStart==-1:
 		queueHandler.queueFunction(queueHandler.eventQueue,handleInputCompositionEnd,compositionString)
+		resetInputCompositionVariables()
 		return 0
 	focus=api.getFocusObject()
 	if isinstance(focus,InputComposition):
