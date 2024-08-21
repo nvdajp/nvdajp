@@ -570,7 +570,12 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 			return 0
 		log.debug(f"({lastCompString=}) ({compositionString=})")
 		deletedString = ''
-		if lastCompString and compositionString and len(lastCompString) > len(compositionString):
+		if (
+			lastCompString
+			and compositionString
+			and len(lastCompString) > len(compositionString)
+			and lastCompString.startswith(compositionString)
+		):
 			deletedString = lastCompString[len(compositionString):]
 		_lastCompAttr = lastCompAttr
 		lastCompAttr = compAttr
