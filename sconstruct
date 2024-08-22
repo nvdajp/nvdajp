@@ -333,7 +333,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 				action.append(Copy(target[0], file.path))
 
 	if certFile or apiSigningToken:
-		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe":
+		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "nvda_dmp.exe":
 			action.append(lambda target, source, env, progByVal=prog: env['signExec']([target[0].File(progByVal)], source, env))
 
 	action.extend((
