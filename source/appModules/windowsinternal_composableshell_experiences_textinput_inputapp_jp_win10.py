@@ -1,5 +1,6 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2017-2024 NV Access Limited, Joseph Lee
+# Copyright (C) 2017-2023 NV Access Limited, Joseph Lee
+# Copyright (C) 2023 Takuya Nishimoto
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -10,7 +11,6 @@ Other features include reporting candidates for misspellings if suggestions for 
 and managing cloud clipboard paste.
 This is applicable on Windows 10 Fall Creators Update and later."""
 
-from typing import Callable
 import appModuleHandler
 import api
 import eventHandler
@@ -20,9 +20,8 @@ import ui
 import config
 import winVersion
 import controlTypes
-from NVDAObjects.UIA import UIA, XamlEditableText, ListItem
+from NVDAObjects.UIA import UIA, XamlEditableText
 from NVDAObjects.behaviors import CandidateItem as CandidateItemBehavior, EditableTextWithAutoSelectDetection
-from NVDAObjects import NVDAObject
 
 
 class ImeCandidateUI(UIA):
@@ -38,9 +37,6 @@ class ImeCandidateUI(UIA):
 		# Therefore we must fake it here.
 		if (self.UIAAutomationId == "IME_Prediction_Window"):
 			candidateItem = self.firstChild
-			# #16283: descend one more level in Windows 11 so hardware input suggestions can be anounced.
-			if isinstance(candidateItem, ImeCandidateUI):
-				candidateItem = candidateItem.firstChild
 			eventHandler.queueEvent("UIA_elementSelected", candidateItem)
 		elif (
 			self.firstChild
@@ -49,14 +45,6 @@ class ImeCandidateUI(UIA):
 		):
 			candidateItem = self.firstChild.firstChild
 			eventHandler.queueEvent("UIA_elementSelected", candidateItem)
-
-	def event_focusEntered(self):
-		# #14023: announce visible IME candidates.
-		if (
-			self.parent.UIAAutomationId == "IME_Candidate_Window"
-			and config.conf["inputComposition"]["autoReportAllCandidates"]
-		):
-			ui.message(self.firstChild.visibleCandidateItemsText)
 
 
 class ImeCandidateItem(CandidateItemBehavior, UIA):
@@ -79,6 +67,8 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 
 	def _get_parent(self):
 		parent = super(ImeCandidateItem, self).parent
+		if parent.UIAAutomationId == "TEMPLATE_PART_CandidatePanel":
+			return None
 		# Translators: A label for a 'candidate' list
 		# which contains symbols the user can choose from  when typing east-asian characters into a document.
 		parent.name = _("Candidate")
@@ -101,6 +91,10 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 		return super(ImeCandidateItem, self).name
 
 	def event_UIA_elementSelected(self):
+		# In Windows 11, focus event is fired when a candidate item receives focus,
+		# therefore ignore this event for now.
+		if winVersion.getWinVer() >= winVersion.WIN11:
+			return
 		oldNav = api.getNavigatorObject()
 		if isinstance(oldNav, ImeCandidateItem) and self.name == oldNav.name:
 			# Duplicate selection event fired on the candidate item. Ignore it.
@@ -116,50 +110,8 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 				self.appModule._lastImeCandidateVisibleText = newText
 				# speak the new page
 				ui.message(newText)
-		# In Windows 11, focus event is fired when a candidate item receives focus,
-		# therefore ignore this event for now.
-		# #16283: do handle hardware keyboard input suggestions.
-		if (
-			winVersion.getWinVer() >= winVersion.WIN11
-			and isinstance(api.getFocusObject().parent, ImeCandidateUI)
-		):
-			return
 		# Now just report the currently selected candidate item.
 		self.reportFocus()
-
-
-class NavigationMenuItem(ListItem):
-	"""
-	A Windows 11 emoji panel navigation menu item.
-	In Windows 10 Version 1903 and later, emoji panel can be used to insert emojis, kaomojis, and symbols.
-	System focus cannot move to these choices in Windows 10 but can do so in Windows 11.
-	In addition to the choices above, Windows 11 adds GIF and clipboard history to navigation menu.
-	"""
-
-	def event_UIA_elementSelected(self) -> None:
-		# Workarounds for Windows 11 emoji panel category items.
-		# Ignore the event altogether.
-		if (
-			# #16346: system focus restored.
-			(focus := api.getFocusObject()).appModule != self.appModule
-			# #16532: repeat announcement due to pending gain focus event on category entries.
-			or eventHandler.isPendingEvents("gainFocus")
-			# #16533: system focus is located in GIF/kaomoji/symbol entry.
-			or focus.UIAAutomationId.startswith("item-")
-		):
-			return
-		# Manipulate NVDA's focus object.
-		if (
-			# #16346: NVDA is stuck in a nonexistent edit field (location is None).
-			not any(focus.location)
-			# #16347: focus is once again stuck in top-level modern keyboard window
-			# after switching to clipboard history from other emoji panel screens.
-			or focus.firstChild and focus.firstChild.UIAAutomationId == "Windows.Shell.InputApp.FloatingSuggestionUI"
-		):
-			eventHandler.queueEvent("gainFocus", self.objectWithFocus())
-			return
-		# Report the selected navigation menu item.
-		super().event_UIA_elementSelected()
 
 
 class AppModule(appModuleHandler.AppModule):
@@ -172,14 +124,12 @@ class AppModule(appModuleHandler.AppModule):
 	disableBrowseModeByDefault: bool = True
 
 	def event_UIA_elementSelected(self, obj, nextHandler):
-		# Logic for the following items is handled by overlay classes
+		# In Windows 11, candidate panel houses candidate items, not the prediction window.
+		if obj.UIAAutomationId == "TEMPLATE_PART_CandidatePanel":
+			obj = obj.firstChild
+		# Logic for IME candidate items is handled all within its own object
 		# Therefore pass these events straight on.
-		if isinstance(
-			obj, (
-				ImeCandidateItem,  # IME candidate items
-				NavigationMenuItem  # Windows 11 emoji panel navigation menu items
-			)
-		):
+		if isinstance(obj, ImeCandidateItem):
 			return nextHandler()
 		# #7273: When this is fired on categories,
 		# the first emoji from the new category is selected but not announced.
@@ -190,7 +140,9 @@ class AppModule(appModuleHandler.AppModule):
 		# as this is repeated each time candidate items are selected.
 		if obj.UIAAutomationId == "CandidateList":
 			return
-		speech.cancelSpeech()
+		# Windows 10 Emoji Panel
+		if obj is not None and obj.UIAElement.cachedClassName == "GridViewItem":
+			speech.cancelSpeech()
 		# Sometimes, due to bad tree traversal or wrong item getting selected,
 		# something other than the selected item sees this event.
 		# In build 18262, emoji panel may open to People group and skin tone modifier gets selected.
@@ -214,19 +166,21 @@ class AppModule(appModuleHandler.AppModule):
 				# Emoji categories list.
 				ui.message(candidate.name)
 				obj = candidate.firstChild
-		if obj is not None and api.setNavigatorObject(obj):
-			obj.reportFocus()
-			braille.handler.message(braille.getPropertiesBraille(
-				name=obj.name,
-				role=obj.role,
-				positionInfo=obj.positionInfo
-			))
-			# Cache selected item.
-			self._recentlySelected = obj.name
-		else:
-			# Translators: presented when there is no emoji when searching for one
-			# in Windows 10 Fall Creators Update and later.
-			ui.message(_("No emoji"))
+		# Windows 10 Emoji Panel
+		if obj is not None and obj.UIAElement.cachedClassName == "GridViewItem":
+			if api.setNavigatorObject(obj):
+				obj.reportFocus()
+				braille.handler.message(braille.getPropertiesBraille(
+					name=obj.name,
+					role=obj.role,
+					positionInfo=obj.positionInfo
+				))
+				# Cache selected item.
+				self._recentlySelected = obj.name
+			else:
+				# Translators: presented when there is no emoji when searching for one
+				# in Windows 10 Fall Creators Update and later.
+				ui.message(_("No emoji"))
 		nextHandler()
 
 	# Emoji panel for build 16299 and 17134.
@@ -239,7 +193,6 @@ class AppModule(appModuleHandler.AppModule):
 		firstChild = obj.firstChild
 		# Handle Ime Candidate UI being shown
 		if isinstance(firstChild, ImeCandidateUI):
-			eventHandler.queueEvent("show", firstChild)
 			return
 
 		# Make sure to announce most recently used emoji first in post-1709 builds.
@@ -341,6 +294,10 @@ class AppModule(appModuleHandler.AppModule):
 					return
 			except AttributeError:
 				return
+			if obj.UIAAutomationId == "KeyboardShortcutText":
+				return
+			if obj.windowClassName == "Windows.UI.Core.CoreWindow":
+				return
 			if (
 				not self._emojiPanelJustOpened
 				or obj.UIAAutomationId != "TEMPLATE_PART_ExpressionGroupedFullView"
@@ -355,61 +312,27 @@ class AppModule(appModuleHandler.AppModule):
 				"CandidateWindowControl"
 			)
 		):
-			ui.message(obj.name)
-		nextHandler()
-
-	def event_UIA_notification(
-			self,
-			obj: NVDAObject,
-			nextHandler: Callable[[], None],
-			displayString: str | None = None,
-			activityId: str | None = None,
-			**kwargs
-	):
-		# #16009: Windows 11 modern keyboard uses UIA notification event to announce things.
-		# These include voice typing availability message and appearance of Suggested Actions
-		# when data such as phone number is copied to the clipboard (Windows 11 22H2).
-		# Apart from emoji panel and clipboard history, modern keyboard elements are not focusable,
-		# therefore notifications must be announced here and no more.
-		# For suggested actions, report the first suggestion because keyboard interaction is impossible.
-		# Also, suggested action is the element name, not the display string.
-		if activityId == "Windows.Shell.InputApp.SmartActions.Popup":
-			displayString = obj.name
-		ui.message(displayString)
-
-	def event_gainFocus(self, obj: NVDAObject, nextHandler: Callable[[], None]):
-		# #16347: focus gets stuck in Modern keyboard when clipboard history closes in Windows 11.
-		if (
-			winVersion.getWinVer() >= winVersion.WIN11
-			and obj.firstChild
-			and obj.firstChild.UIAAutomationId == "Windows.Shell.InputApp.FloatingSuggestionUI"
-		):
-			# Do not queue events if events are pending, otherwise move to system focus.
-			if not eventHandler.isPendingEvents():
-				eventHandler.queueEvent("gainFocus", obj.objectWithFocus())
-			return
+			if getattr(obj, "name", ""):
+				ui.message(obj.name)
 		nextHandler()
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
 		if isinstance(obj, UIA):
-			if obj.role == controlTypes.Role.LISTITEM:
-				if (
-					(
-						obj.parent.UIAAutomationId in (
-							"ExpandedCandidateList",
-							"TEMPLATE_PART_AdaptiveSuggestionList",
-						)
-						and obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
+			if obj.role == controlTypes.Role.LISTITEM and (
+				(
+					obj.parent.UIAAutomationId in (
+						"ExpandedCandidateList",
+						"TEMPLATE_PART_AdaptiveSuggestionList",
 					)
-					or obj.parent.UIAAutomationId in (
-						"IME_Candidate_Window",
-						"IME_Prediction_Window",
-						"TEMPLATE_PART_CandidatePanel",
-					)
-				):
-					clsList.insert(0, ImeCandidateItem)
-				elif obj.UIAAutomationId.startswith("navigation-menu-item"):
-					clsList.insert(0, NavigationMenuItem)
+					and obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
+				)
+				or obj.parent.UIAAutomationId in (
+					"IME_Candidate_Window",
+					"IME_Prediction_Window",
+					"TEMPLATE_PART_CandidatePanel",
+				)
+			):
+				clsList.insert(0, ImeCandidateItem)
 			elif (
 				obj.role in (controlTypes.Role.PANE, controlTypes.Role.LIST, controlTypes.Role.POPUPMENU)
 				and obj.UIAAutomationId in (
@@ -425,10 +348,3 @@ class AppModule(appModuleHandler.AppModule):
 			elif obj.UIAAutomationId == "Windows.Shell.InputApp.FloatingSuggestionUI.DelegationTextBox":
 				clsList.remove(EditableTextWithAutoSelectDetection)
 				clsList.remove(XamlEditableText)
-
-
-if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-	if winVersion.getWinVer() >= winVersion.WIN11:
-		from .windowsinternal_composableshell_experiences_textinput_inputapp_jp import AppModule  # noqa: F401
-	else:
-		from .windowsinternal_composableshell_experiences_textinput_inputapp_jp_win10 import AppModule  # noqa: F401
