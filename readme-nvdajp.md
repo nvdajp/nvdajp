@@ -59,9 +59,13 @@ Git の設定
 
 * Adjusting your PATH environment : Use Git and optional Unix tools from the Windows Command Prompt
 
-* Configuring the line ending conversions : Checkout as-is, commit as-is
+* Configuring the line ending conversions : Chechout Windows-style, commit Unix-style line ending
 
-その他はデフォルトで。
+設定し直す場合は
+
+```text
+> git config --global core.autocrlf true
+```
 
 環境変数 PATH を自分で設定しなおす場合は、以下が登録されていること。
 
