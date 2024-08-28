@@ -18,7 +18,7 @@
 
 https://www.visualstudio.com/ja/downloads/
 
-Visual Studio 2022
+Visual Studio 2022 v17.10.6
 
 #### (2.1) 選択する「ワークロード」の項目
 
@@ -140,7 +140,7 @@ C:\Program Files\7-Zip\7z.exe
 日本語版のソースコード betajp ブランチを betajp-dev フォルダに取得
 
 ```text
-> git clone --recursive -b betajp https://github.com/nvdajp/nvdajp.git betajp-dev
+> git clone --recurse-submodules --shallow-submodules -b betajp https://github.com/nvdajp/nvdajp.git betajp-dev
 ```
 
 ソースコードから実行するための準備作業
@@ -173,7 +173,7 @@ NVDA 本体を実行するには
 ### (9) NVDA本家版のソースコード取得とビルド
 
 ```text
-> git clone --recursive https://github.com/nvaccess/nvda.git
+> git clone --recurse-submodules --shallow-submodules https://github.com/nvaccess/nvda.git
 ```
 
 ```text
