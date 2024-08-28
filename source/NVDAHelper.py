@@ -400,7 +400,7 @@ def handleInputCompositionEnd(result):
 		eventHandler.executeEvent("gainFocus",newFocus)
 		speech.setSpeechMode(oldSpeechMode)
 
-	if curInputComposition and not result:
+	if curInputComposition:
 		#nvdajp begin
 		# when composition is finished,
 		# (1) say 'clear' if following keys are pressed:
@@ -414,6 +414,7 @@ def handleInputCompositionEnd(result):
 					ctrl and gesture.vkCode in (0x5A, 0xDB):
 				# Translators: a message when the IME cancelation status
 				speech.speakMessage(_("Clear"))
+				return
 			else:
 				result=curInputComposition.compositionString.lstrip('\u3000 ')
 				if winUser.getAsyncKeyState(winUser.VK_BACK)&1:
