@@ -92,7 +92,7 @@ roleLabels: typing.Dict[controlTypes.Role, str] = {
 	controlTypes.Role.DROPDOWNBUTTON: _("drbtn"),
 	# Displayed in braille for an object which is a
 	# separator.
-	controlTypes.Role.SEPARATOR: u"⠤⠤⠤⠤⠤",
+	controlTypes.Role.SEPARATOR: "⠤⠤⠤⠤⠤",
 	# Translators: Displayed in braille for an object which is a
 	# block quote.
 	controlTypes.Role.BLOCKQUOTE: _("bqt"),
@@ -175,13 +175,13 @@ positiveStateLabels = {
 	# Translators: Displayed in braille when an object is selected.
 	controlTypes.State.SELECTED: _("sel"),
 	# Displayed in braille when an object (e.g. a toggle button) is pressed.
-	controlTypes.State.PRESSED: u"⢎⣿⡱",
+	controlTypes.State.PRESSED: "⢎⣿⡱",
 	# Displayed in braille when an object (e.g. a toggle button) is half pressed.
-	controlTypes.State.HALF_PRESSED: u"⢎⣸⡱",
+	controlTypes.State.HALF_PRESSED: "⢎⣸⡱",
 	# Displayed in braille when an object (e.g. a check box) is checked.
-	controlTypes.State.CHECKED: u"⣏⣿⣹",
+	controlTypes.State.CHECKED: "⣏⣿⣹",
 	# Displayed in braille when an object (e.g. a check box) is half checked.
-	controlTypes.State.HALFCHECKED: u"⣏⣸⣹",
+	controlTypes.State.HALFCHECKED: "⣏⣸⣹",
 	# Translators: Displayed in braille when an object (e.g. an editable text field) is read-only.
 	controlTypes.State.READONLY: _("ro"),
 	# Translators: Displayed in braille when an object (e.g. a tree view item) is expanded.
@@ -219,9 +219,9 @@ negativeStateLabels = {
 	# Translators: Displayed in braille when an object is not selected.
 	controlTypes.State.SELECTED: _("nsel"),
 	# Displayed in braille when an object (e.g. a toggle button) is not pressed.
-	controlTypes.State.PRESSED: u"⢎⣀⡱",
+	controlTypes.State.PRESSED: "⢎⣀⡱",
 	# Displayed in braille when an object (e.g. a check box) is not checked.
-	controlTypes.State.CHECKED: u"⣏⣀⣹",
+	controlTypes.State.CHECKED: "⣏⣀⣹",
 	# Displayed in braille when an object (e.g. a switch control) is switched off.
 	controlTypes.State.ON: "⣏⣀⣹",
 }

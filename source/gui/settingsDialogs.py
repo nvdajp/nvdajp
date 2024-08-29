@@ -944,7 +944,9 @@ class GeneralSettingsPanel(SettingsPanel):
 			item = self.allowUsageStatsCheckBox = wx.CheckBox(
 				self,
 				# Translators: The label of a checkbox in general settings to toggle allowing of usage stats gathering
-				label=_("Allow NV Access to gather NVDA usage statistics").replace('NV Access', _('NVDA Japanese Team'))
+				label=_("Allow NV Access to gather NVDA usage statistics").replace(
+					"NV Access", _("NVDA Japanese Team")
+				),
 			)
 			self.bindHelpEvent("GeneralSettingsGatherUsageStats", self.allowUsageStatsCheckBox)
 			item.Value = config.conf["update"]["allowUsageStats"]
@@ -1088,6 +1090,7 @@ class LanguageRestartDialog(
 		config.conf.save()
 		queueHandler.queueFunction(queueHandler.eventQueue, core.restart)
 
+
 class LanguageSettingsPanel(SettingsPanel):
 	# Translators: This is the label for the language settings dialog.
 	title = _("Language Settings")
@@ -1095,85 +1098,116 @@ class LanguageSettingsPanel(SettingsPanel):
 	def makeSettings(self, settingsSizer):
 		settingsSizerHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
 		# Translators: The label of a checkbox in language settings
-		self.nconvAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use NonConvert as an NVDA modifier key")))
+		self.nconvAsNVDAModifierCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Use NonConvert as an NVDA modifier key"))
+		)
 		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
 
 		# Translators: The label of a checkbox in language settings
-		self.convAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use Convert as an NVDA modifier key")))
+		self.convAsNVDAModifierCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Use Convert as an NVDA modifier key"))
+		)
 		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
 
 		# Translators: The label of a checkbox in language settings
-		self.escAsNVDAModifierCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use Escape as an NVDA modifier key")))
+		self.escAsNVDAModifierCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Use Escape as an NVDA modifier key"))
+		)
 		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
 
 		# Translators: The label of a checkbox in language settings
-		self.nvdajpImeBeepCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Beep for IME mode change")))
+		self.nvdajpImeBeepCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Beep for IME mode change"))
+		)
 		self.nvdajpImeBeepCheckBox.SetValue(config.conf["keyboard"]["nvdajpImeBeep"])
 
 		# Translators: The label of a checkbox in language settings
-		self.jpPhoneticReadingKanaCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Phonetic reading for Kana")))
+		self.jpPhoneticReadingKanaCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Phonetic reading for Kana"))
+		)
 		self.jpPhoneticReadingKanaCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingKana"])
 
 		# Translators: The label of a checkbox in language settings
-		self.jpPhoneticReadingLatinCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Phonetic reading for Latin")))
+		self.jpPhoneticReadingLatinCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Phonetic reading for Latin"))
+		)
 		self.jpPhoneticReadingLatinCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingLatin"])
 
-		self.jpKatakanaPitchChangeEdit=settingsSizerHelper.addLabeledControl(
+		self.jpKatakanaPitchChangeEdit = settingsSizerHelper.addLabeledControl(
 			# Translators: The label of a editbox in language settings
 			_("Katakana pitch change percentage"),
 			nvdaControls.SelectOnFocusSpinCtrl,
-			min=-100, max=100,
-			initial=config.conf["language"]["jpKatakanaPitchChange"]
+			min=-100,
+			max=100,
+			initial=config.conf["language"]["jpKatakanaPitchChange"],
 		)
 
-		self.halfShapePitchChangeEdit=settingsSizerHelper.addLabeledControl(
+		self.halfShapePitchChangeEdit = settingsSizerHelper.addLabeledControl(
 			# Translators: The label of a editbox in language settings
 			_("Half shape pitch change percentage"),
 			nvdaControls.SelectOnFocusSpinCtrl,
-			min=-100, max=100,
-			initial=config.conf["language"]["halfShapePitchChange"]
+			min=-100,
+			max=100,
+			initial=config.conf["language"]["halfShapePitchChange"],
 		)
 
 		# Translators: The label of a checkbox in language settings
-		self.announceCandidateNumberCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Announce candidate number")))
+		self.announceCandidateNumberCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Announce candidate number"))
+		)
 		self.announceCandidateNumberCheckBox.SetValue(config.conf["language"]["announceCandidateNumber"])
 
 		# Translators: The label of a checkbox in language settings
-		self.nvdajpEnableKeyEventsCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Use IME support of nvdajp")))
+		self.nvdajpEnableKeyEventsCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Use IME support of nvdajp"))
+		)
 		self.nvdajpEnableKeyEventsCheckBox.SetValue(config.conf["keyboard"]["nvdajpEnableKeyEvents"])
 
 		# Translators: The label of a checkbox in language settings
-		self.jpAnsiEditCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Work around ANSI editbox")))
+		self.jpAnsiEditCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Work around ANSI editbox"))
+		)
 		self.jpAnsiEditCheckBox.SetValue(config.conf["language"]["jpAnsiEditbox"])
 
 		# Translators: The label of a checkbox in language settings
-		self.jpAnnounceNewLineCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Announce new line in editable text")))
+		self.jpAnnounceNewLineCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Announce new line in editable text"))
+		)
 		self.jpAnnounceNewLineCheckBox.SetValue(config.conf["language"]["jpAnnounceNewLine"])
 
 		# Translators: The label of a checkbox in language settings
-		self.openDocFileByMSHTACheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Open document file by MSHTA")))
+		self.openDocFileByMSHTACheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Open document file by MSHTA"))
+		)
 		self.openDocFileByMSHTACheckBox.SetValue(config.conf["language"]["openDocFileByMSHTA"])
 
 		# Translators: The label of a checkbox in language settings
-		self.alwaysSpeakMathInEnglishCheckBox=settingsSizerHelper.addItem(wx.CheckBox(self,label=_("Always speak math in English")))
+		self.alwaysSpeakMathInEnglishCheckBox = settingsSizerHelper.addItem(
+			wx.CheckBox(self, label=_("Always speak math in English"))
+		)
 		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
 
 	def onSave(self):
-		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"]=self.nconvAsNVDAModifierCheckBox.IsChecked()
-		config.conf["keyboard"]["useConvertAsNVDAModifierKey"]=self.convAsNVDAModifierCheckBox.IsChecked()
-		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"]=self.escAsNVDAModifierCheckBox.IsChecked()
-		config.conf["language"]["jpPhoneticReadingKana"]=self.jpPhoneticReadingKanaCheckBox.IsChecked()
-		config.conf["language"]["jpPhoneticReadingLatin"]=self.jpPhoneticReadingLatinCheckBox.IsChecked()
-		config.conf["keyboard"]["nvdajpEnableKeyEvents"]=self.nvdajpEnableKeyEventsCheckBox.IsChecked()
-		config.conf["keyboard"]["nvdajpImeBeep"]=self.nvdajpImeBeepCheckBox.IsChecked()
-		config.conf["language"]["announceCandidateNumber"]=self.announceCandidateNumberCheckBox.IsChecked()
-		config.conf["language"]["jpAnsiEditbox"]=self.jpAnsiEditCheckBox.IsChecked()
-		config.conf["language"]["jpAnnounceNewLine"]=self.jpAnnounceNewLineCheckBox.IsChecked()
-		config.conf["language"]["openDocFileByMSHTA"]=self.openDocFileByMSHTACheckBox.IsChecked()
-		config.conf["language"]["alwaysSpeakMathInEnglish"]=self.alwaysSpeakMathInEnglishCheckBox.IsChecked()
+		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = (
+			self.nconvAsNVDAModifierCheckBox.IsChecked()
+		)
+		config.conf["keyboard"]["useConvertAsNVDAModifierKey"] = self.convAsNVDAModifierCheckBox.IsChecked()
+		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] = self.escAsNVDAModifierCheckBox.IsChecked()
+		config.conf["language"]["jpPhoneticReadingKana"] = self.jpPhoneticReadingKanaCheckBox.IsChecked()
+		config.conf["language"]["jpPhoneticReadingLatin"] = self.jpPhoneticReadingLatinCheckBox.IsChecked()
+		config.conf["keyboard"]["nvdajpEnableKeyEvents"] = self.nvdajpEnableKeyEventsCheckBox.IsChecked()
+		config.conf["keyboard"]["nvdajpImeBeep"] = self.nvdajpImeBeepCheckBox.IsChecked()
+		config.conf["language"]["announceCandidateNumber"] = self.announceCandidateNumberCheckBox.IsChecked()
+		config.conf["language"]["jpAnsiEditbox"] = self.jpAnsiEditCheckBox.IsChecked()
+		config.conf["language"]["jpAnnounceNewLine"] = self.jpAnnounceNewLineCheckBox.IsChecked()
+		config.conf["language"]["openDocFileByMSHTA"] = self.openDocFileByMSHTACheckBox.IsChecked()
+		config.conf["language"]["alwaysSpeakMathInEnglish"] = (
+			self.alwaysSpeakMathInEnglishCheckBox.IsChecked()
+		)
 
-		config.conf["language"]["jpKatakanaPitchChange"]=self.jpKatakanaPitchChangeEdit.Value
-		config.conf["language"]["halfShapePitchChange"]=self.halfShapePitchChangeEdit.Value
+		config.conf["language"]["jpKatakanaPitchChange"] = self.jpKatakanaPitchChangeEdit.Value
+		config.conf["language"]["halfShapePitchChange"] = self.halfShapePitchChangeEdit.Value
+
 
 class SpeechSettingsPanel(SettingsPanel):
 	# Translators: This is the label for the speech panel

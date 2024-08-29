@@ -129,7 +129,7 @@ class SynthDriver(SynthDriver):
 		self._enginesList = self._fetchEnginesList()
 		if len(self._enginesList) == 0:
 			raise RuntimeError("No Sapi4 engines available")
-		self.voice=str(self._enginesList[0].gModeID)
+		self.voice = str(self._enginesList[0].gModeID)
 		self._rate = None
 		self._isSpeaking = False
 
@@ -156,13 +156,13 @@ class SynthDriver(SynthDriver):
 		speechSequence.extend(prosodyToAdd)
 		lastHandledIndexInSequence = 0
 		for item in speechSequence:
-			if isinstance(item,str):
-				item = item.replace("\u2022", '').replace("\uf0b7", '') # nvdajp (bullet)
-				textList.append(item.replace('\\','\\\\'))
+			if isinstance(item, str):
+				item = item.replace("\u2022", "").replace("\uf0b7", "")  # nvdajp (bullet)
+				textList.append(item.replace("\\", "\\\\"))
 			elif isinstance(item, IndexCommand):
 				textList.append("\\mrk=%d\\" % item.index)
 				lastHandledIndexInSequence = item.index
-			elif False and isinstance(item, CharacterModeCommand): # nvdajp
+			elif False and isinstance(item, CharacterModeCommand):  # nvdajp
 				textList.append("\\RmS=1\\" if item.state else "\\RmS=0\\")
 				charMode = item.state
 			elif isinstance(item, BreakCommand):
@@ -213,7 +213,7 @@ class SynthDriver(SynthDriver):
 			log.error("Error cancelling speech", exc_info=True)
 		finally:
 			self._finalIndex = None
-		self.lastIndex=None
+		self.lastIndex = None
 
 	def pause(self, switch: bool):
 		if switch:
@@ -230,10 +230,10 @@ class SynthDriver(SynthDriver):
 	def isSpeaking(self):
 		return self._isSpeaking
 
-	def removeSetting(self,name):
-		#Putting it here because currently no other synths make use of it. OrderedDict, where you are?
-		for i,s in enumerate(self.supportedSettings):
-			if s.name==name:
+	def removeSetting(self, name):
+		# Putting it here because currently no other synths make use of it. OrderedDict, where you are?
+		for i, s in enumerate(self.supportedSettings):
+			if s.name == name:
 				del self.supportedSettings[i]
 				return
 

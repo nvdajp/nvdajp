@@ -122,7 +122,7 @@ _py2ExeWindows = [
 	{
 		"script": "nvda.pyw",
 		"dest_base": "nvda_noUIAccess",
-		"icon_resources":[(1,"images/nvdajp3.ico")],
+		"icon_resources": [(1, "images/nvdajp3.ico")],
 		"other_resources": [_genManifestTemplate(shouldHaveUIAccess=False)],
 		"version_info": {
 			"version": formatBuildVersionString(),
@@ -136,7 +136,7 @@ _py2ExeWindows = [
 	# The nvda_uiAccess target will be added at runtime if required.
 	{
 		"script": "nvda_slave.pyw",
-		"icon_resources": [(1,"images/nvdajp3.ico")],
+		"icon_resources": [(1, "images/nvdajp3.ico")],
 		"other_resources": [_genManifestTemplate(shouldHaveUIAccess=False)],
 		"version_info": {
 			"version": formatBuildVersionString(),
@@ -149,20 +149,23 @@ _py2ExeWindows = [
 	},
 ]
 if _partialArgs.uiAccess:
-	_py2ExeWindows.insert(1, {
-		"script": "nvda.pyw",
-		"dest_base": "nvda_uiAccess",
-		"icon_resources": [(1,"images/nvdajp3.ico")],
-		"other_resources": [_genManifestTemplate(shouldHaveUIAccess=True)],
-		"version_info": {
-			"version": formatBuildVersionString(),
-			"description": "NVDA application (has UIAccess)",
-			"product_name": name,
-			"product_version": version,
-			"copyright": NVDAcopyright,
-			"company_name": publisher,
-		}
-	})
+	_py2ExeWindows.insert(
+		1,
+		{
+			"script": "nvda.pyw",
+			"dest_base": "nvda_uiAccess",
+			"icon_resources": [(1, "images/nvdajp3.ico")],
+			"other_resources": [_genManifestTemplate(shouldHaveUIAccess=True)],
+			"version_info": {
+				"version": formatBuildVersionString(),
+				"description": "NVDA application (has UIAccess)",
+				"product_name": name,
+				"product_version": version,
+				"copyright": NVDAcopyright,
+				"company_name": publisher,
+			},
+		},
+	)
 
 
 freeze(
@@ -245,9 +248,9 @@ freeze(
 		],
 	},
 	data_files=[
-		(".", ['ja-jp-comp6.utb', 'ja-jp-rokutenkanji.tbl']),
-		(".",glob("*.dll")+glob("*.manifest")+["builtin.dic"]),
-		("documentation", ['../copying.txt', '../contributors.txt']),
+		(".", ["ja-jp-comp6.utb", "ja-jp-rokutenkanji.tbl"]),
+		(".", glob("*.dll") + glob("*.manifest") + ["builtin.dic"]),
+		("documentation", ["../copying.txt", "../contributors.txt"]),
 		("lib/%s" % version, glob("lib/*.dll") + glob("lib/*.manifest")),
 		("lib64/%s" % version, glob("lib64/*.dll") + glob("lib64/*.exe")),
 		("libArm64/%s" % version, glob("libArm64/*.dll") + glob("libArm64/*.exe")),

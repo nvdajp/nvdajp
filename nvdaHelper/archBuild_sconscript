@@ -237,8 +237,8 @@ if TARGET_ARCH in ("x86_64", "arm64"):
 		env.AddPostAction(remoteLoaderProgram, [signExec])
 	env.Install(libInstallDir, remoteLoaderProgram)
 
-if TARGET_ARCH=='x86':
-	espeakLib = thirdPartyEnv.SConscript('espeak/sconscript')
+if TARGET_ARCH == "x86":
+	espeakLib = thirdPartyEnv.SConscript("espeak/sconscript")
 	if signExec:
 		thirdPartyEnv.AddPostAction(espeakLib, signExec)
-	thirdPartyEnv.SConscript('liblouis/sconscript')
+	thirdPartyEnv.SConscript("liblouis/sconscript")

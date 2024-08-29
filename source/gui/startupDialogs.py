@@ -75,20 +75,24 @@ class WelcomeDialog(
 			self.kbdList.SetSelection(index)
 		except (ValueError, KeyError):
 			log.error("Could not set Keyboard layout list to current layout", exc_info=True)
-		#nvdajp
+		# nvdajp
 		# Translators: The label of a checkbox in the Welcome dialog.
 		nconvAsNVDAModifierText = _("Use NonConvert as an NVDA modifier key")
-		self.nconvAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=nconvAsNVDAModifierText))
+		self.nconvAsNVDAModifierCheckBox = sHelper.addItem(
+			wx.CheckBox(optionsBox, label=nconvAsNVDAModifierText)
+		)
 		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
 		# Translators: The label of a checkbox in the Welcome dialog.
 		convAsNVDAModifierText = _("Use Convert as an NVDA modifier key")
-		self.convAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=convAsNVDAModifierText))
+		self.convAsNVDAModifierCheckBox = sHelper.addItem(
+			wx.CheckBox(optionsBox, label=convAsNVDAModifierText)
+		)
 		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
 		# Translators: The label of a checkbox in the Welcome dialog.
 		escAsNVDAModifierText = _("Use Escape as an NVDA modifier key")
 		self.escAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=escAsNVDAModifierText))
 		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
-		#nvdajp done
+		# nvdajp done
 		# Translators: The label of a checkbox in the Welcome dialog.
 		capsAsNVDAModifierText = _("&Use CapsLock as an NVDA modifier key")
 		self.capsAsNVDAModifierCheckBox = sHelper.addItem(
@@ -144,7 +148,9 @@ class WelcomeDialog(
 			)
 		else:
 			config.conf["keyboard"]["NVDAModifierKeys"] = NVDAKeysVal
-		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = self.nconvAsNVDAModifierCheckBox.IsChecked() #nvdajp
+		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = (
+			self.nconvAsNVDAModifierCheckBox.IsChecked()
+		)  # nvdajp
 		config.conf["keyboard"]["useConvertAsNVDAModifierKey"] = self.convAsNVDAModifierCheckBox.IsChecked()
 		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] = self.escAsNVDAModifierCheckBox.IsChecked()
 		if self.startAfterLogonCheckBox.Enabled:
@@ -315,7 +321,7 @@ class AskAllowUsageStatsDialog(
 			"Do you wish to allow NV Access to periodically collect this data in order to improve NVDA?",
 		)
 		# Translators: 'NV Access' should be replaced with 'NVDA Japanese Team'
-		message = message.replace('NV Access', _('NVDA Japanese Team'))
+		message = message.replace("NV Access", _("NVDA Japanese Team"))
 		sText = sHelper.addItem(wx.StaticText(self, label=message))
 		# the wx.Window must be constructed before we can get the handle.
 		import windowUtils

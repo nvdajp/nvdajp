@@ -7,5 +7,5 @@ def getOrd(s):
 		raise Exception
 	o0 = ord(s[0])
 	o1 = ord(s[1])
-	uc = (o0 - 0xd800) * 0x800 + (o1 - 0xdc00)
+	uc = (o0 - 0xD800) * 0x800 + (o1 - 0xDC00)
 	return uc

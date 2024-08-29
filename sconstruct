@@ -97,7 +97,11 @@ vars.Add("version", "The version of this build", versionInfo.version)
 vars.Add("version_build", "A unique number for this build.", "0")
 vars.Add(BoolVariable("release", "Whether this is a release version", False))
 vars.Add("publisher", "The publisher of this build", versionInfo.publisher)
-vars.Add("updateVersionType", "The version type for which to check for updates", versionInfo.updateVersionType or "")
+vars.Add(
+	"updateVersionType",
+	"The version type for which to check for updates",
+	versionInfo.updateVersionType or "",
+)
 # vars.Add(PathVariable("certFile", "The certificate file with which to sign executables", "",
 # 	lambda key, val, env: not val or PathVariable.PathIsFile(key, val, env)))
 vars.Add("certFile", "The certificate file with which to sign executables", "")
@@ -238,8 +242,8 @@ if apiSigningToken:
 	env["signExec"] = signExecApi
 elif certFile:
 	# Local code signing with a certFile
-	def signExecCert(target,source,env):
-		# we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages 
+	def signExecCert(target, source, env):
+		# we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages
 		signExecCmd = ["signtool", "sign", "/fd", "SHA256", "/a"]
 		if certPassword:
 			signExecCmd.extend(("/p", certPassword))
@@ -417,7 +421,11 @@ def NVDADistGenerator(target, source, env, for_signature):
 
 	if certFile or apiSigningToken:
 		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "nvda_dmp.exe":
-			action.append(lambda target, source, env, progByVal=prog: env['signExec']([target[0].File(progByVal)], source, env))
+			action.append(
+				lambda target, source, env, progByVal=prog: env["signExec"](
+					[target[0].File(progByVal)], source, env
+				)
+			)
 
 	action.extend((Delete(buildVersionFn), Delete(importlib.util.cache_from_source(buildVersionFn))))
 

@@ -179,7 +179,7 @@ class ChromeLib:
 		spy = _NvdaLib.getSpyLib()
 		spy.wait_for_speech_to_finish()
 		expectedAddressBarSpeech = "アドレス検索バー"
-		moveToAddressBarSpeech = _NvdaLib.getSpeechAfterKey('nvda+tab')  # report current focus.
+		moveToAddressBarSpeech = _NvdaLib.getSpeechAfterKey("nvda+tab")  # report current focus.
 		if expectedAddressBarSpeech not in moveToAddressBarSpeech:
 			moveToAddressBarSpeech = _NvdaLib.getSpeechAfterKey(
 				"alt+d",

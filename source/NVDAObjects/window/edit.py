@@ -633,7 +633,7 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		start_new = end_new = -1
 		bytepos = 0
 		for charpos, ch in enumerate(story_text):
-			cb = len(ch.encode('mbcs', 'replace'))
+			cb = len(ch.encode("mbcs", "replace"))
 			if bytepos == start:
 				start_new = charpos
 			if bytepos == end:
@@ -643,31 +643,40 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		if end_new == -1:
 			end_new = len(story_text)
 		return (start_new, end_new)
-	
-	def _getLineOffsets(self,offset):
+
+	def _getLineOffsets(self, offset):
 		if self._needsWorkAroundEncoding():
 			# offset in unicode chars to offset in bytes
 			s = self._getStoryText()[0:offset]
-			offset = len(s.encode('mbcs', 'replace'))
-		lineNum=self._getLineNumFromOffset(offset)
-		start=watchdog.cancellableSendMessage(self.obj.windowHandle,winUser.EM_LINEINDEX,lineNum,0)
-		length=watchdog.cancellableSendMessage(self.obj.windowHandle,winUser.EM_LINELENGTH,offset,0)
-		end=start+length
+			offset = len(s.encode("mbcs", "replace"))
+		lineNum = self._getLineNumFromOffset(offset)
+		start = watchdog.cancellableSendMessage(self.obj.windowHandle, winUser.EM_LINEINDEX, lineNum, 0)
+		length = watchdog.cancellableSendMessage(self.obj.windowHandle, winUser.EM_LINELENGTH, offset, 0)
+		end = start + length
 		if self._needsWorkAroundEncoding():
 			start_new, end_new = self._startEndInBytesToStartEndInUnicodeChars(start, end)
-			log.debug("offset %d lineNum %d start %d length %d end %d start_new %d end_new %d" % (offset, lineNum, start, length, end, start_new, end_new))
+			log.debug(
+				"offset %d lineNum %d start %d length %d end %d start_new %d end_new %d"
+				% (offset, lineNum, start, length, end, start_new, end_new)
+			)
 			return (start_new, end_new)
-		#If we just seem to get invalid line info, calculate manually
-		if start<=0 and end<=0 and lineNum<=0 and self._getLineCount()<=0 and self._getStoryLength()>0:
-			return super(EditTextInfo,self)._getLineOffsets(offset)
-		#Some edit controls that show both line feed and carage return can give a length not including the line feed
-		if end<=offset:
-			end=offset+1
-		#edit controls lye about their line length
-		limit=self._getStoryLength()
-		while self._getLineNumFromOffset(end)==lineNum and end<limit:
-			end+=1
-		return (start,end)
+		# If we just seem to get invalid line info, calculate manually
+		if (
+			start <= 0
+			and end <= 0
+			and lineNum <= 0
+			and self._getLineCount() <= 0
+			and self._getStoryLength() > 0
+		):
+			return super(EditTextInfo, self)._getLineOffsets(offset)
+		# Some edit controls that show both line feed and carage return can give a length not including the line feed
+		if end <= offset:
+			end = offset + 1
+		# edit controls lye about their line length
+		limit = self._getStoryLength()
+		while self._getLineNumFromOffset(end) == lineNum and end < limit:
+			end += 1
+		return (start, end)
 
 	def _getParagraphOffsets(self, offset):
 		return self._getLineOffsets(offset)

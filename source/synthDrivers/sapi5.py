@@ -422,9 +422,9 @@ class SynthDriver(SynthDriver):
 				self.ttsAudioStream.setState(SPAudioState.RUN, 0)
 
 	def isSpeaking(self):
-		running=None
-		if self.tts.Status.RunningState == 2: # SRSEIsSpeaking
-			running=True
-		elif self.tts.Status.RunningState == 1: # SRSEDone
-			running=False
+		running = None
+		if self.tts.Status.RunningState == 2:  # SRSEIsSpeaking
+			running = True
+		elif self.tts.Status.RunningState == 1:  # SRSEDone
+			running = False
 		return running

@@ -63,7 +63,7 @@ class SpeechViewerFrame(
 
 		self._createControls(sizer=self.panelContentsSizer, parent=self.panel)
 
-		self.SetTransparent(229) # int(255.0 * 0.90)
+		self.SetTransparent(229)  # int(255.0 * 0.90)
 		# Don't let speech viewer to steal keyboard focus when opened
 		self.ShowWithoutActivating()
 
@@ -106,7 +106,7 @@ class SpeechViewerFrame(
 		)
 		if isLockScreenModeActive():
 			self.shouldShowOnStartupCheckBox.Disable()
-		self.SetTransparent(229) # int(255.0 * 0.90)
+		self.SetTransparent(229)  # int(255.0 * 0.90)
 
 	def _onDialogActivated(self, evt):
 		# Check for destruction, if the speechviewer window has focus when we exit NVDA it regains focus briefly

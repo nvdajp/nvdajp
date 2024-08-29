@@ -26,12 +26,16 @@ from NVDAObjects import NVDAObject
 
 onRecognizeResultCallbackT = Callable[[Union["RecognitionResult", Exception]], None]
 
+
 def isEastAsianNarrow(c):
 	from six import text_type
-	return c and (east_asian_width(text_type(c)) == 'Na')
+
+	return c and (east_asian_width(text_type(c)) == "Na")
+
 
 def startsWithEastAsianNarrow(s):
 	return s and isEastAsianNarrow(s[0])
+
 
 def endsWithEastAsianNarrow(s):
 	return s and isEastAsianNarrow(s[-1])
@@ -247,7 +251,11 @@ class LinesWordsResult(RecognitionResult):
 			for word in line:
 				if firstWordOfLine:
 					firstWordOfLine = False
-				elif self._textList and endsWithEastAsianNarrow(self._textList[-1]) and startsWithEastAsianNarrow(word["text"]):
+				elif (
+					self._textList
+					and endsWithEastAsianNarrow(self._textList[-1])
+					and startsWithEastAsianNarrow(word["text"])
+				):
 					# Separate with a space.
 					self._textList.append(" ")
 					self.textLen += 1

@@ -180,7 +180,7 @@ class MathPlayer(mathPres.MathPresentationProvider):
 		if not lang:
 			lang = speech.getCurrentLanguage()
 		if config.conf["language"]["alwaysSpeakMathInEnglish"]:
-			lang = 'en'
+			lang = "en"
 		self._mpSpeechSettings.SetLanguage(lang.replace("_", "-"))
 		self._language = lang
 

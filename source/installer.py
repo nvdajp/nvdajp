@@ -471,13 +471,13 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
 	)
 
 	# nvdajp begin
-	# Translators: A label for a shortcut in start menu and a menu entry in NVDA menu (to go to NVDAJP website).	
+	# Translators: A label for a shortcut in start menu and a menu entry in NVDA menu (to go to NVDAJP website).
 	jpWebSiteTranslated = _("NVDAJP web site")
 	_createShortcutWithFallback(
 		path=os.path.join(startMenuFolder, jpWebSiteTranslated + ".lnk"),
 		fallbackPath=os.path.join(startMenuFolder, "NVDAJP web site.lnk"),
 		targetPath="https://www.nvda.jp/",
-		prependSpecialFolder="AllUsersPrograms"
+		prependSpecialFolder="AllUsersPrograms",
 	)
 	# nvdajp end
 
@@ -538,7 +538,7 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
 		path=os.path.join(docFolder, readmeJpTranslated + ".lnk"),
 		fallbackPath=os.path.join(docFolder, "Readme (nvdajp).lnk"),
 		targetPath=getDocFilePath("readmejp.html", installDir),
-		prependSpecialFolder="AllUsersPrograms"
+		prependSpecialFolder="AllUsersPrograms",
 	)
 	# nvdajp end
 

@@ -126,7 +126,8 @@ env.Append(
 )
 
 # tr_languages.c should compile on environments such as Japanese Windows
-env.Append(CCFLAGS=' /utf-8')
+env.Append(CCFLAGS=" /utf-8")
+
 
 def espeak_compilePhonemeData_buildEmitter(target, source, env):
 	phSourceIgnores = ["error_log", "error_intonation", "compile_prog_log", "compile_report", "envelopes.png"]
@@ -1164,4 +1165,4 @@ env.RecursiveInstall(
 	targetEspeakDataDir.Dir("voices").Dir("!v"), espeakDataSource.Dir("voices").Dir("!v").abspath
 )
 
-Return('espeakLib')
+Return("espeakLib")

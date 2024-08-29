@@ -192,70 +192,84 @@ def nvdaController_brailleMessage(text: str) -> SystemErrorCodes:
 	return SystemErrorCodes.SUCCESS
 
 
-@WINFUNCTYPE(c_long,c_wchar_p)
+@WINFUNCTYPE(c_long, c_wchar_p)
 def nvdaController_speakSpelling(text):
-	focus=api.getFocusObject()
-	if focus.sleepMode==focus.SLEEP_FULL:
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
 		return -1
 	import queueHandler
 	import speech
-	queueHandler.queueFunction(queueHandler.eventQueue,speech.speakSpelling,text,None,True)
+
+	queueHandler.queueFunction(queueHandler.eventQueue, speech.speakSpelling, text, None, True)
 	return 0
+
 
 @WINFUNCTYPE(c_long)
 def nvdaController_isSpeaking():
 	from synthDriverHandler import getSynth
+
 	try:
 		return getSynth().isSpeaking()
 	except:  # noqa: E722
 		return False
 
+
 @WINFUNCTYPE(c_long)
 def nvdaController_getPitch():
 	from synthDriverHandler import getSynth
+
 	try:
 		return getSynth()._get_pitch()
 	except:  # noqa: E722
 		return 50
 
+
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setPitch(nPitch):
 	from synthDriverHandler import getSynth
+
 	try:
 		getSynth()._set_pitch(nPitch)
 	except:  # noqa: E722
 		pass
 	return 0
 
+
 @WINFUNCTYPE(c_long)
 def nvdaController_getRate():
 	from synthDriverHandler import getSynth
+
 	try:
 		return getSynth()._get_rate()
 	except:  # noqa: E722
 		return 50
 
+
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setRate(nRate):
 	from synthDriverHandler import getSynth
+
 	try:
 		getSynth()._set_rate(nRate)
 	except:  # noqa: E722
 		pass
 	return 0
 
+
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setAppSleepMode(mode):
 	import appModuleHandler
-	pid=c_long()
-	windll.rpcrt4.I_RpcBindingInqLocalClientPID(None,byref(pid))  # noqa: F405
-	pid=pid.value
+
+	pid = c_long()
+	windll.rpcrt4.I_RpcBindingInqLocalClientPID(None, byref(pid))  # noqa: F405
+	pid = pid.value
 	if not pid:
 		log.error("Could not get process ID for RPC call")
 		return -1
 	curApp = appModuleHandler.getAppModuleFromProcessID(pid)
 	curApp.sleepMode = True if mode == 1 else False
 	return 0
+
 
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf = create_unicode_buffer(1024)
@@ -396,18 +410,17 @@ def handleInputCompositionEnd(result):
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 
 	focus = api.getFocusObject()
-	#nvdajp begin
-	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
-			config.conf["keyboard"]["speakTypedCharacters"]:
-		if result == '\u3000':
+	# nvdajp begin
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and config.conf["keyboard"]["speakTypedCharacters"]:
+		if result == "\u3000":
 			# Translators: handle input composition end
-			speech.speakText(_('full shape space'))
+			speech.speakText(_("full shape space"))
 			return
-		elif result == '\u0020':
+		elif result == "\u0020":
 			# Translators: handle input composition end
-			speech.speakText(_('space'))
+			speech.speakText(_("space"))
 			return
-	#nvdajp end
+	# nvdajp end
 	result = result.lstrip("\u3000 ")
 	curInputComposition = None
 	if isinstance(focus, InputComposition):
@@ -437,33 +450,33 @@ def handleInputCompositionEnd(result):
 		speech.setSpeechMode(oldSpeechMode)
 
 	if curInputComposition:
-		#nvdajp begin
+		# nvdajp begin
 		# when composition is finished,
 		# (1) say 'clear' if following keys are pressed:
 		# Escape, Shift+Escape, Ctrl+Z, Ctrl+[
 		# (2) say the result, followed by 'clear' if Backspace is pressed.
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			from NVDAObjects import inputComposition
+
 			gesture = inputComposition.lastKeyGesture
 			ctrl = (winUser.VK_CONTROL, False) in gesture.generalizedModifiers
-			if (gesture.vkCode == winUser.VK_ESCAPE) or \
-					ctrl and gesture.vkCode in (0x5A, 0xDB):
+			if (gesture.vkCode == winUser.VK_ESCAPE) or ctrl and gesture.vkCode in (0x5A, 0xDB):
 				# Translators: a message when the IME cancelation status
 				speech.speakMessage(_("Clear"))
 				return
 			else:
-				result=curInputComposition.compositionString.lstrip('\u3000 ')
-				if winUser.getAsyncKeyState(winUser.VK_BACK)&1:
+				result = curInputComposition.compositionString.lstrip("\u3000 ")
+				if winUser.getAsyncKeyState(winUser.VK_BACK) & 1:
 					# Translators: a message when the IME cancelation status
-					result+=" "+_("Clear")
+					result += " " + _("Clear")
 		else:
-			result=curInputComposition.compositionString.lstrip('\u3000 ')
-		#nvdajp end
+			result = curInputComposition.compositionString.lstrip("\u3000 ")
+		# nvdajp end
 	if result:
-		#nvdajp begin
+		# nvdajp begin
 		if not config.conf["inputComposition"]["announceSelectedCandidate"]:
 			return
-		#nvdajp end
+		# nvdajp end
 		# If the input has been finalized, cancel the current speech.
 		speech.cancelSpeech()
 		speech.speakText(result, symbolLevel=characterProcessing.SymbolLevel.ALL)
@@ -503,6 +516,7 @@ def handleInputCompositionStart(compositionString, selectionStart, selectionEnd,
 		speech.setSpeechMode(oldSpeechMode)
 	focus.compositionUpdate(compositionString, selectionStart, selectionEnd, isReading)
 
+
 def resetInputCompositionVariables():
 	global lastCompAttr, lastCompString, lastSelectionStart, lastSelectionEnd
 	lastCompAttr = None
@@ -510,7 +524,9 @@ def resetInputCompositionVariables():
 	lastSelectionStart = None
 	lastSelectionEnd = None
 
+
 resetInputCompositionVariables()
+
 
 # work around ti34120
 # https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120
@@ -535,17 +551,23 @@ def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
 	"""
 	if len(compositionString) <= 2:
 		return False
-	if any(c != '0' for c in compAttr):
+	if any(c != "0" for c in compAttr):
 		return False
 	from unicodedata import category
-	if any(category(c) == 'Ll' for c in compositionString[1:-1]) and \
-			category(compositionString[0]) == 'Lo' and \
-			category(compositionString[-1]) == 'Lo':
+
+	if (
+		any(category(c) == "Ll" for c in compositionString[1:-1])
+		and category(compositionString[0]) == "Lo"
+		and category(compositionString[-1]) == "Lo"
+	):
 		log.debug("(%s) (%s) should be ignored" % (compositionString, compAttr))
 		return True
 	return False
 
-def extractCompositionString(compAttr: str, compositionString: str, selectionStart: int, selectionEnd: int, lastCompAttr: str) -> Tuple[str, int]:
+
+def extractCompositionString(
+	compAttr: str, compositionString: str, selectionStart: int, selectionEnd: int, lastCompAttr: str
+) -> Tuple[str, int]:
 	"""
 	This function extracts a part of the composition string based on the attribute values.
 	It checks the attribute values in a specific order and extracts the corresponding characters from the composition string.
@@ -570,58 +592,63 @@ def extractCompositionString(compAttr: str, compositionString: str, selectionSta
 	Returns:
 		Tuple[str, int]: The extracted string and its end index in the original composition string.
 	"""
-	extractedString = ''
+	extractedString = ""
 	endIndex = 0
 
 	# This inner function extracts characters from the composition string where the attribute value matches the given condition.
 	def extractString(condition: str) -> str:
-		return ''.join(compositionString[i] for i, attr in enumerate(compAttr) if attr == condition)
+		return "".join(compositionString[i] for i, attr in enumerate(compAttr) if attr == condition)
 
 	# Check the attribute values in a specific order and extract the corresponding characters.
-	if ('3' in compAttr) and ('1' not in compAttr):
+	if ("3" in compAttr) and ("1" not in compAttr):
 		endIndex = len(compositionString)
-		extractedString = extractString('3')
-	elif ('1' in compAttr) and (lastCompAttr is None or any([c != '0' for c in lastCompAttr])):
-		extractedString = extractString('1')
-	elif ('0' in compAttr) and ('2' in compAttr):
-		extractedString = extractString('0')
-	elif all([c == '0' for c in compAttr]) and 0 <= selectionStart == selectionEnd < len(compAttr):
+		extractedString = extractString("3")
+	elif ("1" in compAttr) and (lastCompAttr is None or any([c != "0" for c in lastCompAttr])):
+		extractedString = extractString("1")
+	elif ("0" in compAttr) and ("2" in compAttr):
+		extractedString = extractString("0")
+	elif all([c == "0" for c in compAttr]) and 0 <= selectionStart == selectionEnd < len(compAttr):
 		# reviewing pre-edit character
 		extractedString = compositionString[selectionStart]
 		log.debug("((%s))" % extractedString)
 	return extractedString, endIndex
 
-@WINFUNCTYPE(c_long,c_wchar_p,c_int,c_int,c_int)
-def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionStart,selectionEnd,isReading):
+
+@WINFUNCTYPE(c_long, c_wchar_p, c_int, c_int, c_int)
+def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionStart, selectionEnd, isReading):
 	global lastCompAttr, lastCompString
 	global lastSelectionStart, lastSelectionEnd
 	from NVDAObjects.inputComposition import InputComposition
-	#nvdajp begin
-	compAttr = ''
-	if '\t' in compositionString:
-		compositionString, compAttr = compositionString.split('\t')
-		if (lastCompString == compositionString
+
+	# nvdajp begin
+	compAttr = ""
+	if "\t" in compositionString:
+		compositionString, compAttr = compositionString.split("\t")
+		if (
+			lastCompString == compositionString
 			and lastCompAttr == compAttr
 			and lastSelectionStart == selectionStart
 			and lastSelectionEnd == selectionEnd
 			and not (
-				compositionString in (' ', '\u3000')
-				and compAttr == ''
+				compositionString in (" ", "\u3000")
+				and compAttr == ""
 				and selectionStart == -1
 				and selectionEnd == -1
 			)
 		):
-			log.debug(f"ignored ({compositionString=}) ({compAttr=}) ({selectionStart=}) ({selectionEnd=}) ({lastCompString=}) ({lastCompAttr=}) ({lastSelectionStart=}) ({lastSelectionEnd=})")
+			log.debug(
+				f"ignored ({compositionString=}) ({compAttr=}) ({selectionStart=}) ({selectionEnd=}) ({lastCompString=}) ({lastCompAttr=}) ({lastSelectionStart=}) ({lastSelectionEnd=})"
+			)
 			return 0
 		log.debug(f"({lastCompString=}) ({compositionString=})")
-		deletedString = ''
+		deletedString = ""
 		if (
 			lastCompString
 			and compositionString
 			and len(lastCompString) > len(compositionString)
 			and lastCompString.startswith(compositionString)
 		):
-			deletedString = lastCompString[len(compositionString):]
+			deletedString = lastCompString[len(compositionString) :]
 		_lastCompAttr = lastCompAttr
 		lastCompAttr = compAttr
 		lastCompString = compositionString
@@ -631,29 +658,39 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
 			log.debug(f"({compositionString=}) ({compAttr=}) ({selectionStart=}) ({selectionEnd=})")
-			extractedString, endIndex = extractCompositionString(compAttr, compositionString, selectionStart, selectionEnd, _lastCompAttr)
+			extractedString, endIndex = extractCompositionString(
+				compAttr, compositionString, selectionStart, selectionEnd, _lastCompAttr
+			)
 			log.debug(f"({extractedString=}) ({endIndex=}) ({deletedString=})")
 			if extractedString:
-				focus=api.getFocusObject()
-				if isinstance(focus,InputComposition):
+				focus = api.getFocusObject()
+				if isinstance(focus, InputComposition):
 					focus.compositionUpdate(extractedString, 0, endIndex, 0, forceNewText=True)
 				return 0
 			elif deletedString:
 				focus = api.getFocusObject()
 				if focus and hasattr(focus, "windowClassName") and focus.windowClassName == "Scintilla":
 					import ui
+
 					ui.message(deletedString)
 					return 0
 	else:
 		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=}")
-		if lastCompString and not compositionString and selectionStart == -1 and selectionEnd == -1 and isReading == 0:
+		if (
+			lastCompString
+			and not compositionString
+			and selectionStart == -1
+			and selectionEnd == -1
+			and isReading == 0
+		):
 			queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString)
 			return 0
 		resetInputCompositionVariables()
-	#nvdajp end
+	# nvdajp end
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
-	if selectionStart==-1:
-		queueHandler.queueFunction(queueHandler.eventQueue,handleInputCompositionEnd,compositionString)
+
+	if selectionStart == -1:
+		queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, compositionString)
 		return 0
 	focus = api.getFocusObject()
 	if isinstance(focus, InputComposition):
@@ -670,26 +707,30 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString,selectionSta
 		)
 	return 0
 
-def handleInputCandidateListUpdate(candidatesString,selectionIndex,inputMethod):
-	log.debug("(%s) (%s) (%s)" % (str(candidatesString).replace('\n','|'),str(selectionIndex),str(inputMethod)))
-	candidateStrings=candidatesString.split('\n')
+
+def handleInputCandidateListUpdate(candidatesString, selectionIndex, inputMethod):
+	log.debug(
+		"(%s) (%s) (%s)" % (str(candidatesString).replace("\n", "|"), str(selectionIndex), str(inputMethod))
+	)
+	candidateStrings = candidatesString.split("\n")
 	import speech
 	from NVDAObjects.inputComposition import CandidateItem
 
 	focus = api.getFocusObject()
-	#nvdajp begin
+	# nvdajp begin
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 		from NVDAObjects import inputComposition
+
 		if inputComposition.lastKeyGesture:
 			log.debug("lastKeyCode %x" % inputComposition.lastKeyGesture.vkCode)
 		if not inputComposition.needDiscriminantReading(inputComposition.lastKeyGesture):
-			if isinstance(focus,CandidateItem):
-				oldSpeechMode=speech.speechMode
-				speech.speechMode=speech.speechMode_off
-				eventHandler.executeEvent("gainFocus",focus.parent)
-				speech.speechMode=oldSpeechMode
+			if isinstance(focus, CandidateItem):
+				oldSpeechMode = speech.speechMode
+				speech.speechMode = speech.speechMode_off
+				eventHandler.executeEvent("gainFocus", focus.parent)
+				speech.speechMode = oldSpeechMode
 			return
-	#nvdajp end
+	# nvdajp end
 	if not (0 <= selectionIndex < len(candidateStrings)):
 		if isinstance(focus, CandidateItem):
 			oldSpeechMode = speech.getState().speechMode
@@ -815,15 +856,16 @@ def nvdaControllerInternal_inputConversionModeUpdate(oldFlags, newFlags, lcid):
 
 @WINFUNCTYPE(c_long, c_long)
 def nvdaControllerInternal_IMEOpenStatusUpdate(opened):
-	#nvdajp begin
+	# nvdajp begin
 	if config.conf["keyboard"]["nvdajpImeBeep"]:
 		import tones
+
 		if opened:
-			tones.beep(880,20) 
+			tones.beep(880, 20)
 		else:
-			tones.beep(440,20)
+			tones.beep(440, 20)
 		return 0
-	#nvdajp end
+	# nvdajp end
 	if opened:
 		# Translators: a message when the IME open status changes to opened
 		message = _("IME opened")
@@ -1020,16 +1062,16 @@ def initialize() -> None:
 	for name, func in [
 		("nvdaController_speakText", nvdaController_speakText),
 		("nvdaController_speakSsml", nvdaController_speakSsml),
-		("nvdaController_cancelSpeech",nvdaController_cancelSpeech),
-		("nvdaController_brailleMessage",nvdaController_brailleMessage),
-		("nvdaController_speakSpelling",nvdaController_speakSpelling),
-		("nvdaController_isSpeaking",nvdaController_isSpeaking),
-		("nvdaController_getPitch",nvdaController_getPitch),
-		("nvdaController_setPitch",nvdaController_setPitch),
-		("nvdaController_getRate",nvdaController_getRate),
-		("nvdaController_setRate",nvdaController_setRate),
-		("nvdaController_setAppSleepMode",nvdaController_setAppSleepMode),
-		("nvdaControllerInternal_requestRegistration",nvdaControllerInternal_requestRegistration),
+		("nvdaController_cancelSpeech", nvdaController_cancelSpeech),
+		("nvdaController_brailleMessage", nvdaController_brailleMessage),
+		("nvdaController_speakSpelling", nvdaController_speakSpelling),
+		("nvdaController_isSpeaking", nvdaController_isSpeaking),
+		("nvdaController_getPitch", nvdaController_getPitch),
+		("nvdaController_setPitch", nvdaController_setPitch),
+		("nvdaController_getRate", nvdaController_getRate),
+		("nvdaController_setRate", nvdaController_setRate),
+		("nvdaController_setAppSleepMode", nvdaController_setAppSleepMode),
+		("nvdaControllerInternal_requestRegistration", nvdaControllerInternal_requestRegistration),
 		("nvdaControllerInternal_reportLiveRegion", nvdaControllerInternal_reportLiveRegion),
 		("nvdaControllerInternal_inputLangChangeNotify", nvdaControllerInternal_inputLangChangeNotify),
 		("nvdaControllerInternal_typedCharacterNotify", nvdaControllerInternal_typedCharacterNotify),

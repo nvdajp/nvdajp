@@ -88,14 +88,16 @@ try:
 except RuntimeError:
 	updateCheck = None
 
-from . import jpBrailleViewer #nvdajp
-import subprocess #nvdajp
+from . import jpBrailleViewer  # nvdajp
+import subprocess  # nvdajp
+
 
 def run_hta(hta_file_path: str) -> None:
 	SYSTEM_ROOT = os.path.expandvars("%SYSTEMROOT%")
 	SYSTEM32 = os.path.join(SYSTEM_ROOT, "System32")
 	MSHTA_PATH = os.path.join(SYSTEM32, "mshta.exe")
 	subprocess.Popen([MSHTA_PATH, hta_file_path])
+
 
 def openDocFile(basename: str) -> None:
 	hta_file_path = getDocFilePath(basename)
@@ -104,10 +106,11 @@ def openDocFile(basename: str) -> None:
 	else:
 		os.startfile(hta_file_path)
 
+
 ### Constants
 NVDA_PATH = globalVars.appDir
 # ICON_PATH=os.path.join(NVDA_PATH, "images", "nvda.ico")
-ICON_PATH=os.path.join(NVDA_PATH, "images", "nvdajp3.ico")
+ICON_PATH = os.path.join(NVDA_PATH, "images", "nvdajp3.ico")
 # DONATE_URL = f"{versionInfo.url}/donate/"
 DONATE_URL = "https://www.nvda.jp/donate.html"
 
@@ -334,11 +337,11 @@ class MainFrame(wx.Frame):
 	def onGeneralSettingsCommand(self, evt):
 		self.popupSettingsDialog(NVDASettingsDialog, GeneralSettingsPanel)
 
-	#nvdajp
-	def onLanguageSettingsCommand(self,evt):
+	# nvdajp
+	def onLanguageSettingsCommand(self, evt):
 		self._popupSettingsDialog(NVDASettingsDialog, LanguageSettingsPanel)
 
-	def onSelectSynthesizerCommand(self,evt):
+	def onSelectSynthesizerCommand(self, evt):
 		self.popupSettingsDialog(SynthesizerSelectionDialog)
 
 	def onSpeechSettingsCommand(self, evt):
@@ -482,7 +485,7 @@ class MainFrame(wx.Frame):
 		globalPluginHandler.reloadGlobalPlugins()
 		NVDAObject.clearDynamicClassCache()
 
-	#nvdajp begin
+	# nvdajp begin
 	@blockAction.when(blockAction.Context.SECURE_MODE)
 	def onToggleJpBrailleViewerCommand(self, evt):
 		if not jpBrailleViewer.isActive:
@@ -491,8 +494,9 @@ class MainFrame(wx.Frame):
 		else:
 			jpBrailleViewer.deactivate()
 			self.sysTrayIcon.menu_tools_toggleJpBrailleViewer.Check(False)
-	#nvdajp end
-	
+
+	# nvdajp end
+
 	@blockAction.when(
 		blockAction.Context.SECURE_MODE,
 		blockAction.Context.MODAL_DIALOG_OPEN,
@@ -650,12 +654,14 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			# Translators: The label for the menu item to reload plugins.
 			item = menu_tools.Append(wx.ID_ANY, _("Reload plugins"))
 			self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
-		#nvdajp begin
+		# nvdajp begin
 		if not globalVars.appArgs.secure:
 			# Translators: The label for the menu item to open jp braille viewer.
-			item = self.menu_tools_toggleJpBrailleViewer = menu_tools.AppendCheckItem(wx.ID_ANY, _("Japanese Braille viewer"))
+			item = self.menu_tools_toggleJpBrailleViewer = menu_tools.AppendCheckItem(
+				wx.ID_ANY, _("Japanese Braille viewer")
+			)
 			self.Bind(wx.EVT_MENU, frame.onToggleJpBrailleViewerCommand, item)
-		#nvdajp end
+		# nvdajp end
 		# Translators: The label for the Tools submenu in NVDA menu.
 		self.menu.AppendSubMenu(menu_tools, _("&Tools"))
 

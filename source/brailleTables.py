@@ -24,6 +24,7 @@ TABLES_DIR = os.path.join(globalVars.appDir, "louis", "tables")
 TABLES_DIR_JP = os.path.join(globalVars.appDir)
 """The directory in which Japanese braille tables are located."""
 
+
 class TableSource(StrEnum):
 	BUILTIN = "builtin"
 	"""The name of the builtin table source"""
@@ -33,10 +34,7 @@ class TableSource(StrEnum):
 	"""The name of the scratchpad table source"""
 
 
-_tablesDirs = collections.ChainMap({
-	TableSource.BUILTIN: TABLES_DIR,
-	TableSource.BUILTIN_JP: TABLES_DIR_JP
-})
+_tablesDirs = collections.ChainMap({TableSource.BUILTIN: TABLES_DIR, TableSource.BUILTIN_JP: TABLES_DIR_JP})
 """Chainmap of directories for braille tables lookup, including custom tables."""
 
 
@@ -110,7 +108,10 @@ def listTables() -> list[BrailleTable]:
 	"""
 	return sorted(
 		_tables.values(),
-		key=lambda table: (table.source not in (TableSource.BUILTIN, TableSource.BUILTIN_JP), strxfrm(table.displayName))
+		key=lambda table: (
+			table.source not in (TableSource.BUILTIN, TableSource.BUILTIN_JP),
+			strxfrm(table.displayName),
+		),
 	)
 
 
@@ -410,7 +411,9 @@ addTable("it-it-comp8.utb", _("Italian 8 dot computer braille"))
 addTable("ja-kantenji.utb", _("Japanese (Kantenji) literary braille"), input=False)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
-addTable("ja-jp-comp6.utb", _("Japanese 6 dot computer braille"), contracted=True, source=TableSource.BUILTIN_JP)
+addTable(
+	"ja-jp-comp6.utb", _("Japanese 6 dot computer braille"), contracted=True, source=TableSource.BUILTIN_JP
+)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 # addTable("ja-jp-comp6-en-ueb-g2.tbl", _("Japanese 6 dot with UEB grade 2"), contracted=True, input=False)
@@ -419,7 +422,13 @@ addTable("ja-jp-comp6.utb", _("Japanese 6 dot computer braille"), contracted=Tru
 # addTable("ja-jp-comp6-en-us-g2.tbl", _("Japanese 6 dot with English (U.S.) grade 2"), contracted=True, input=False)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
-addTable("ja-jp-rokutenkanji.tbl", _("Japanese 6 dot kanji braille"), contracted=True, output=False, source=TableSource.BUILTIN_JP)
+addTable(
+	"ja-jp-rokutenkanji.tbl",
+	_("Japanese 6 dot kanji braille"),
+	contracted=True,
+	output=False,
+	source=TableSource.BUILTIN_JP,
+)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("ka-in-g1.utb", _("Kannada grade 1"))

@@ -311,46 +311,55 @@ from jpBrailleUtils import (  # noqa: E402
 	roleLabels as rawRoleLabels,
 	positiveStateLabels as rawPositiveStateLabels,
 	negativeStateLabels as rawNegativeStateLabels,
-	landmarkLabels as rawLandmarkLabels
+	landmarkLabels as rawLandmarkLabels,
 )
+
 
 def useRawLabels() -> bool:
 	return config.conf["braille"]["expandAtCursor"]
+
 
 def _nvdajp(rawLabel: str) -> str:
 	if useRawLabels():
 		return rawLabel
 	return _(rawLabel)
 
+
 def getRoleLabel(role: controlTypes.Role, displayString: Optional[str] = None) -> str:
 	if useRawLabels():
 		return rawRoleLabels.get(role, displayString)
 	return roleLabels.get(role, displayString)
+
 
 def getPositiveStateLabel(state: controlTypes.State) -> str:
 	if useRawLabels():
 		return rawPositiveStateLabels.get(state)
 	return positiveStateLabels.get(state)
 
+
 def getPositiveStateLabels() -> typing.Dict[controlTypes.State, str]:
 	if useRawLabels():
 		return rawPositiveStateLabels
 	return positiveStateLabels
+
 
 def getNegativeStateLabels() -> typing.Dict[controlTypes.State, str]:
 	if useRawLabels():
 		return rawNegativeStateLabels
 	return negativeStateLabels
 
+
 def getLandmarkLabel(name: str) -> str:
 	if useRawLabels():
 		return rawLandmarkLabels.get(name)
 	return landmarkLabels.get(name)
 
+
 def getLandmarkLabels() -> typing.Dict[str, str]:
 	if useRawLabels():
 		return rawLandmarkLabels
 	return landmarkLabels
+
 
 # nvdajp end
 
@@ -706,11 +715,13 @@ def _getAnnotationProperty(
 		# Translators: Braille when there are further details/annotations that can be fetched manually.
 		# %s specifies the type of details (e.g. "has comment suggestion")
 		hasDetailsRoleTemplate = _("has %s")
-		rolesLabels = list((
-			hasDetailsRoleTemplate % getRoleLabel(role, role.displayString)
-			for role in detailsRoles
-			if role  # handle None case without the "has X" grammar.
-		))
+		rolesLabels = list(
+			(
+				hasDetailsRoleTemplate % getRoleLabel(role, role.displayString)
+				for role in detailsRoles
+				if role  # handle None case without the "has X" grammar.
+			)
+		)
 		if None in detailsRoles:
 			rolesLabels.insert(0, genericDetailsRole)
 		return " ".join(rolesLabels)  # no comma to save cells on braille display
@@ -722,9 +733,9 @@ def _getAnnotationProperty(
 def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 	textList = []
 	name = propertyValues.get("name")
-	#nvdajp begin
-	#if name:
-	#	textList.append(name)
+	# nvdajp begin
+	# if name:
+	# textList.append(name)
 	isComposition = True
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 		if name and name != _("Composition"):
@@ -733,7 +744,7 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 	else:
 		if name:
 			textList.append(name)
-	#nvdajp end
+	# nvdajp end
 	role: Optional[Union[controlTypes.Role, int]] = propertyValues.get("role")
 	roleText = propertyValues.get("roleText")
 	states = propertyValues.get("states")
@@ -760,17 +771,22 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 			states.discard(controlTypes.State.VISITED)
 			# Translators: Displayed in braille for a link which has been visited.
 			roleText = _nvdajp("vlnk")
-		elif (name or cellCoordsText or rowNumber or columnNumber) and role in controlTypes.silentRolesOnFocus:
+		elif (
+			name or cellCoordsText or rowNumber or columnNumber
+		) and role in controlTypes.silentRolesOnFocus:
 			roleText = None
 		else:
 			roleText = getRoleLabel(role, role.displayString)
-	elif role is None: 
+	elif role is None:
 		role = propertyValues.get("_role")
-	#nvdajp begin
-	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and \
-			isComposition and role == controlTypes.Role.EDITABLETEXT:
+	# nvdajp begin
+	if (
+		config.conf["keyboard"]["nvdajpEnableKeyEvents"]
+		and isComposition
+		and role == controlTypes.Role.EDITABLETEXT
+	):
 		roleText = None
-	#nvdajp end
+	# nvdajp end
 	value = propertyValues.get("value")
 	if value and role not in controlTypes.silentValuesForRoles:
 		textList.append(value)
@@ -783,7 +799,7 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 				states,
 				None,
 				getPositiveStateLabels(),
-				getNegativeStateLabels()
+				getNegativeStateLabels(),
 			)
 		)
 	if roleText:
@@ -813,7 +829,7 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 		if level is not None:
 			# Translators: Displayed in braille when an object (e.g. a tree view item) has a hierarchical level.
 			# %s is replaced with the level.
-			textList.append(_('lv %s')%positionInfo['level'])
+			textList.append(_("lv %s") % positionInfo["level"])
 	# nvdajp begin https://github.com/nvdajp/nvdajp/issues/109
 	rowHeaderText = propertyValues.get("rowHeaderText")
 	if rowHeaderText:
@@ -838,9 +854,9 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 			textList.append(rowStr)
 	if columnNumber:
 		# nvdajp (moved to above) https://github.com/nvdajp/nvdajp/issues/109
-		#columnHeaderText = propertyValues.get("columnHeaderText")
-		#if columnHeaderText:
-		#	textList.append(columnHeaderText)
+		# columnHeaderText = propertyValues.get("columnHeaderText")
+		# if columnHeaderText:
+		# textList.append(columnHeaderText)
 		if includeTableCellCoords and not cellCoordsText:
 			if columnSpan > 1:
 				# Translators: Displayed in braille for the table cell column numbers when a cell spans multiple columns.
@@ -937,7 +953,9 @@ class NVDAObjectRegion(Region):
 			description=description,
 			keyboardShortcut=obj.keyboardShortcut if presConfig["reportKeyboardShortcuts"] else None,
 			positionInfo=obj.positionInfo if presConfig["reportObjectPositionInformation"] else None,
-			cellCoordsText=obj.cellCoordsText if config.conf["documentFormatting"]["reportTableCellCoords"] else None,
+			cellCoordsText=obj.cellCoordsText
+			if config.conf["documentFormatting"]["reportTableCellCoords"]
+			else None,
 			columnHeaderText=columnHeaderText,
 			rowHeaderText=rowHeaderText,
 			errorMessage=errorMessage,
@@ -1488,7 +1506,7 @@ class TextInfoRegion(Region):
 								)
 								if not presCat or presCat is field.PRESCAT_LAYOUT:
 									textList.append(getPositiveStateLabel(controlTypes.State.CLICKABLE))
-								inClickable=True
+								inClickable = True
 						text = info.getControlFieldBraille(field, ctrlFields, True, formatConfig)
 						if text:
 							textList.append(text)

@@ -602,9 +602,10 @@ class IAccessible(Window):
 			from . import mscandui
 
 			mscandui.findExtraOverlayClasses(self, clsList)
-		elif windowClassName[:5] in ('ATOK2', 'ATOK3'):
+		elif windowClassName[:5] in ("ATOK2", "ATOK3"):
 			from . import atok
-			atok.findExtraOverlayClasses(self,clsList)
+
+			atok.findExtraOverlayClasses(self, clsList)
 		elif (
 			windowClassName == "GeckoPluginWindow"
 			and self.event_objectID == 0

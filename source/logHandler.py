@@ -183,7 +183,7 @@ def shouldPlayErrorSound() -> bool:
 		# buildVersion.isTestVersion
 		# Play error sound: 1 = Yes
 		# or
-		(config.conf is not None and config.conf["featureFlag"]["playErrorSound"] == 1)
+		config.conf is not None and config.conf["featureFlag"]["playErrorSound"] == 1
 	)
 
 
@@ -262,8 +262,9 @@ class Logger(logging.Logger):
 
 		from six import unichr, text_type
 		import re
+
 		try:
-			msg = re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x"+x.group(1),16)), text_type(msg))
+			msg = re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x" + x.group(1), 16)), text_type(msg))
 		except:  # noqa: E722
 			pass
 		res = super()._log(level, msg, args, exc_info, extra)

@@ -112,13 +112,13 @@ def isNVDAModifierKey(vkCode: int, extended: bool) -> bool:
 		return True
 	elif config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] and (
 		vkCode == winUser.VK_NONCONVERT or (vkCode == winUser.VK_IME_OFF and extended)
-	): #nvdajp
+	):  # nvdajp
 		return True
 	elif config.conf["keyboard"]["useConvertAsNVDAModifierKey"] and (
 		vkCode == winUser.VK_CONVERT or (vkCode == winUser.VK_IME_ON and extended)
-	): #nvdajp
+	):  # nvdajp
 		return True
-	elif config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] and vkCode==winUser.VK_ESCAPE: #nvdajp
+	elif config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] and vkCode == winUser.VK_ESCAPE:  # nvdajp
 		return True
 	else:
 		return False
@@ -312,11 +312,12 @@ def internal_keyDownEvent(vkCode, scanCode, extended, injected):
 			if res > 0:
 				for ch in charBuf[:res]:
 					eventHandler.queueEvent("typedCharacter", focus, ch=ch)
-	#nvdajp begin
+	# nvdajp begin
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 		from NVDAObjects import inputComposition
+
 		inputComposition.reportKeyDownEvent(gesture)
-	#nvdajp end
+	# nvdajp end
 	return True
 
 

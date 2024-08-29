@@ -302,37 +302,50 @@ def getCurrentLanguage() -> str:
 
 
 def spellTextInfo(
-		info: textInfos.TextInfo,
-		useCharacterDescriptions: bool = False,
-		useDetails: bool = False,
-		priority: Optional[Spri] = None
+	info: textInfos.TextInfo,
+	useCharacterDescriptions: bool = False,
+	useDetails: bool = False,
+	priority: Optional[Spri] = None,
 ) -> None:
 	"""Spells the text from the given TextInfo, honouring any LangChangeCommand objects it finds if autoLanguageSwitching is enabled."""
 	if not config.conf["speech"]["autoLanguageSwitching"]:
-		speakSpelling(info.text,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
+		speakSpelling(
+			info.text,
+			useCharacterDescriptions=useCharacterDescriptions,
+			useDetails=useDetails,
+			priority=priority,
+		)
 		return
 	curLanguage = None
 	for field in info.getTextWithFields({}):
 		if isinstance(field, str):
-			speakSpelling(field,curLanguage,useCharacterDescriptions=useCharacterDescriptions,useDetails=useDetails,priority=priority)
+			speakSpelling(
+				field,
+				curLanguage,
+				useCharacterDescriptions=useCharacterDescriptions,
+				useDetails=useDetails,
+				priority=priority,
+			)
 		elif isinstance(field, textInfos.FieldCommand) and field.command == "formatChange":
 			curLanguage = field.field.get("language")
 
 
 def speakSpelling(
-		text: str,
-		locale: Optional[str] = None,
-		useCharacterDescriptions: bool = False,
-		useDetails: bool = False,
-		priority: Optional[Spri] = None
+	text: str,
+	locale: Optional[str] = None,
+	useCharacterDescriptions: bool = False,
+	useDetails: bool = False,
+	priority: Optional[Spri] = None,
 ) -> None:
 	# This could be a very large list. In future we could convert this into chunks.
-	seq = list(getSpellingSpeech(
-		text,
-		locale=locale,
-		useCharacterDescriptions=useCharacterDescriptions,
-		useDetails=useDetails,
-	))
+	seq = list(
+		getSpellingSpeech(
+			text,
+			locale=locale,
+			useCharacterDescriptions=useCharacterDescriptions,
+			useDetails=useDetails,
+		)
+	)
 	speak(seq, priority=priority)
 
 
@@ -546,10 +559,10 @@ def getSingleCharDescription(
 
 
 def getSpellingSpeech(
-		text: str,
-		locale: Optional[str] = None,
-		useCharacterDescriptions: bool = False,
-		useDetails: bool = False,
+	text: str,
+	locale: Optional[str] = None,
+	useCharacterDescriptions: bool = False,
+	useDetails: bool = False,
 ) -> Generator[SequenceItemT, None, None]:
 	synth = getSynth()
 	synthConfig = config.conf["speech"][synth.name]
@@ -1078,6 +1091,7 @@ def speak(  # noqa: C901
 		speechViewer.appendSpeechSequence(speechSequence)
 	pre_speech.notify(speechSequence=speechSequence, symbolLevel=symbolLevel, priority=priority)
 	from gui import jpBrailleViewer
+
 	if jpBrailleViewer.isActive:
 		s = ""
 		for item in speechSequence:
@@ -1447,6 +1461,7 @@ def speakTextInfo(
 	priority: Optional[Spri] = None,
 ) -> bool:
 	from globalCommands import characterDescriptionMode
+
 	if characterDescriptionMode and reason == OutputReason.CARET and unit == textInfos.UNIT_CHARACTER:
 		speakSpelling(info.text, useCharacterDescriptions=True)
 		return True

@@ -67,7 +67,7 @@ import winKernel
 from utils.tempFile import _createEmptyTempFileForDeletingFile
 
 #: The URL to use for update checks.
-#CHECK_URL = "https://www.nvaccess.org/nvdaUpdateCheck"
+# CHECK_URL = "https://www.nvaccess.org/nvdaUpdateCheck"
 CHECK_URL = "https://www.nvda.jp/updateCheck/"
 #: The time to wait between checks.
 CHECK_INTERVAL = 86400  # 1 day

@@ -124,19 +124,19 @@ class CharacterDescriptions(object):
 
 		# nvdajp charaters.dic
 		self._readings = {}
-		fileName=os.path.join('locale',locale,'characters.dic')
-		if os.path.isfile(fileName): 
-			f = codecs.open(fileName,"r","utf_8_sig",errors="replace")
+		fileName = os.path.join("locale", locale, "characters.dic")
+		if os.path.isfile(fileName):
+			f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
 			for line in f:
-				if line.isspace() or line.startswith('#'):
+				if line.isspace() or line.startswith("#"):
 					continue
-				line=line.rstrip('\r\n')
-				temp=line.split("\t")
+				line = line.rstrip("\r\n")
+				temp = line.split("\t")
 				if len(temp) > 1:
-					key=temp.pop(0)
-					code=temp.pop(0)
-					rd=temp.pop(0)
-					if rd.startswith('[') and rd.endswith(']'):
+					key = temp.pop(0)
+					code = temp.pop(0)
+					rd = temp.pop(0)
+					if rd.startswith("[") and rd.endswith("]"):
 						self._readings[key] = rd[1:-1]
 					self._entries[key] = temp
 				else:
@@ -146,13 +146,14 @@ class CharacterDescriptions(object):
 		# nvdajp charaters.dic end
 
 		# nvdajp cldr emoji
-		if config.conf['speech']['includeCLDR']:
-			fileName = os.path.join('locale', locale, 'cldr.dic')
+		if config.conf["speech"]["includeCLDR"]:
+			fileName = os.path.join("locale", locale, "cldr.dic")
 			if os.path.isfile(fileName):
 				import unicodedata
+
 				f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
 				for line in f:
-					line = line.rstrip('\r\n')
+					line = line.rstrip("\r\n")
 					temp = line.split("\t")
 					if len(temp) > 1:
 						key = temp.pop(0)
@@ -165,17 +166,17 @@ class CharacterDescriptions(object):
 		# nvdajp cldr emoji end
 
 		# nvdajp users chardesc
-		fileName=os.path.join(globalVars.appArgs.configPath, "characterDescriptions-%s.dic" % locale)
-		if os.path.isfile(fileName): 
+		fileName = os.path.join(globalVars.appArgs.configPath, "characterDescriptions-%s.dic" % locale)
+		if os.path.isfile(fileName):
 			log.debug("Loading users characterDescriptions-%s.dic" % locale)
-			f = codecs.open(fileName,"r","utf_8_sig",errors="replace")
+			f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
 			for line in f:
-				if line.isspace() or line.startswith('#'):
+				if line.isspace() or line.startswith("#"):
 					continue
-				line=line.rstrip('\r\n')
-				temp=line.split("\t")
+				line = line.rstrip("\r\n")
+				temp = line.split("\t")
 				if len(temp) > 1:
-					key=temp.pop(0)
+					key = temp.pop(0)
 					self._entries[key] = temp
 				else:
 					log.warning("can't parse line '%s'" % line)
@@ -184,19 +185,19 @@ class CharacterDescriptions(object):
 		# nvdajp users chardesc end
 
 		# nvdajp users characters
-		fileName=os.path.join(globalVars.appArgs.configPath, "characters-%s.dic" % locale)
-		if os.path.isfile(fileName): 
-			f = codecs.open(fileName,"r","utf_8_sig",errors="replace")
+		fileName = os.path.join(globalVars.appArgs.configPath, "characters-%s.dic" % locale)
+		if os.path.isfile(fileName):
+			f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
 			for line in f:
-				if line.isspace() or line.startswith('#'):
+				if line.isspace() or line.startswith("#"):
 					continue
-				line=line.rstrip('\r\n')
-				temp=line.split("\t")
+				line = line.rstrip("\r\n")
+				temp = line.split("\t")
 				if len(temp) > 1:
-					key=temp.pop(0)
-					code=temp.pop(0)  # noqa: F841
-					rd=temp.pop(0)
-					if rd.startswith('[') and rd.endswith(']'):
+					key = temp.pop(0)
+					code = temp.pop(0)  # noqa: F841
+					rd = temp.pop(0)
+					if rd.startswith("[") and rd.endswith("]"):
 						self._readings[key] = rd[1:-1]
 					self._entries[key] = temp
 				else:
@@ -210,6 +211,7 @@ class CharacterDescriptions(object):
 		if character in self._readings:
 			return self._readings.get(character)
 		return character
+
 	# nvdajp reading end
 
 	def getCharacterDescription(self, character: str) -> Optional[List[str]]:
@@ -248,6 +250,8 @@ def getCharacterReading(locale, character):
 	except LookupError:
 		return character
 	return l.getCharacterReading(character)
+
+
 # nvdajp end
 
 

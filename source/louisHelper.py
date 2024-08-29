@@ -173,7 +173,7 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 			# liblouis mutates typeform if it is a list.
 			typeform=tuple(typeform) if isinstance(typeform, list) else typeform,
 			cursorPos=cursorPos or 0,
-			mode=mode
+			mode=mode,
 		)
 	# nvdajp end
 	# liblouis gives us back a character string of cells, so convert it to a list of ints.
