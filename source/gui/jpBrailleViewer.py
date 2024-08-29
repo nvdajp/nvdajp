@@ -15,7 +15,10 @@ class JpBrailleViewerFrame(wx.MiniFrame):
 	def __init__(self):
 		super(JpBrailleViewerFrame, self).__init__(
 			# Translators: braille viewer window title
-			gui.mainFrame, wx.ID_ANY, _("NVDA Japanese Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER
+			gui.mainFrame,
+			wx.ID_ANY,
+			_("NVDA Japanese Braille Viewer"),
+			style=wx.CAPTION | wx.RESIZE_BORDER,
 		)
 		self.Bind(wx.EVT_CLOSE, self.onClose)
 		self.SetFont(wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
