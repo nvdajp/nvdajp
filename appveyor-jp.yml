@@ -12,12 +12,9 @@ clone_depth: 1
 
 environment:
  PY_PYTHON: 3.11-32
- GIT_AUTOCRLF: true
-
-before_build:
- - git config --global core.autocrlf true
 
 init:
+ - git config --global core.autocrlf true
  - ps: |
     $pythonVersion = (py --version)
     echo $pythonVersion
