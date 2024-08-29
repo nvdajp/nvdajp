@@ -21,8 +21,8 @@ import versionInfo
 
 
 class WelcomeDialog(
-		gui.contextHelp.ContextHelpMixin,
-		wx.Dialog   # wxPython does not seem to call base class initializer, put last in MRO
+	gui.contextHelp.ContextHelpMixin,
+	wx.Dialog,  # wxPython does not seem to call base class initializer, put last in MRO
 ):
 	"""The NVDA welcome dialog.
 	This provides essential information for new users,
@@ -30,6 +30,7 @@ class WelcomeDialog(
 	It also provides quick access to some important configuration options.
 	This dialog is displayed the first time NVDA is started with a new configuration.
 	"""
+
 	helpId = "WelcomeDialog"
 	WELCOME_MESSAGE_DETAIL = _(
 		# Translators: The main message for the Welcome dialog when the user starts NVDA for the first time.
@@ -38,7 +39,7 @@ class WelcomeDialog(
 		"By default, the Insert and numpad Insert keys may both be used as the NVDA key.\n"
 		"You can also configure NVDA to use the CapsLock as the NVDA key.\n"
 		"Press NVDA+n at any time to activate the NVDA menu.\n"
-		"From this menu, you can configure NVDA, get help, and access other NVDA functions."
+		"From this menu, you can configure NVDA, get help, and access other NVDA functions.",
 	)
 	_instances: Set["WelcomeDialog"] = weakref.WeakSet()
 
@@ -90,8 +91,12 @@ class WelcomeDialog(
 		#nvdajp done
 		# Translators: The label of a checkbox in the Welcome dialog.
 		capsAsNVDAModifierText = _("&Use CapsLock as an NVDA modifier key")
-		self.capsAsNVDAModifierCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=capsAsNVDAModifierText))
-		self.capsAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["NVDAModifierKeys"] & NVDAKey.CAPS_LOCK)
+		self.capsAsNVDAModifierCheckBox = sHelper.addItem(
+			wx.CheckBox(optionsBox, label=capsAsNVDAModifierText),
+		)
+		self.capsAsNVDAModifierCheckBox.SetValue(
+			config.conf["keyboard"]["NVDAModifierKeys"] & NVDAKey.CAPS_LOCK,
+		)
 		# Translators: The label of a checkbox in the Welcome dialog.
 		startAfterLogonText = _("St&art NVDA after I sign in")
 		self.startAfterLogonCheckBox = sHelper.addItem(wx.CheckBox(optionsBox, label=startAfterLogonText))
@@ -107,7 +112,7 @@ class WelcomeDialog(
 		mainSizer.Add(
 			self.CreateButtonSizer(wx.OK),
 			border=gui.guiHelper.BORDER_FOR_DIALOGS,
-			flag=wx.ALL | wx.ALIGN_RIGHT
+			flag=wx.ALL | wx.ALIGN_RIGHT,
 		)
 		self.Bind(wx.EVT_BUTTON, self.onOk, id=wx.ID_OK)
 
@@ -130,7 +135,7 @@ class WelcomeDialog(
 				_(
 					# Translators: The title of an error message box displayed when validating the startup dialog
 					"At least one NVDA modifier key must be set. "
-					"Caps lock will remain as an NVDA modifier key. "
+					"Caps lock will remain as an NVDA modifier key. ",
 				),
 				# Translators: The title of an error message box displayed when validating the startup dialog
 				_("Error"),
@@ -144,7 +149,9 @@ class WelcomeDialog(
 		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] = self.escAsNVDAModifierCheckBox.IsChecked()
 		if self.startAfterLogonCheckBox.Enabled:
 			config.setStartAfterLogon(self.startAfterLogonCheckBox.Value)
-		config.conf["general"]["showWelcomeDialogAtStartup"] = self.showWelcomeDialogAtStartupCheckBox.IsChecked()
+		config.conf["general"]["showWelcomeDialogAtStartup"] = (
+			self.showWelcomeDialogAtStartupCheckBox.IsChecked()
+		)
 		try:
 			config.conf.save()
 		except Exception:
@@ -173,13 +180,14 @@ class WelcomeDialog(
 
 
 class LauncherDialog(
-		DpiScalingHelperMixinWithoutInit,
-		gui.contextHelp.ContextHelpMixin,
-		wx.Dialog  # wxPython does not seem to call base class initializer, put last in MRO
+	DpiScalingHelperMixinWithoutInit,
+	gui.contextHelp.ContextHelpMixin,
+	wx.Dialog,  # wxPython does not seem to call base class initializer, put last in MRO
 ):
 	"""The dialog that is displayed when NVDA is started from the launcher.
 	This displays the license and allows the user to install or create a portable copy of NVDA.
 	"""
+
 	helpId = "InstallingNVDA"
 
 	def __init__(self, parent):
@@ -217,6 +225,7 @@ class LauncherDialog(
 		sizer.Add(ctrl)
 		ctrl.Bind(wx.EVT_BUTTON, self.onContinueRunning)
 		self.actionButtons.append(ctrl)
+		# Translators: The label for a button to exit the NVDA launcher.
 		sizer.Add(wx.Button(self, label=_("E&xit"), id=wx.ID_CANCEL))
 		# If we bind this on the button, it fails to trigger when the dialog is closed.
 		self.Bind(wx.EVT_BUTTON, self.onExit, id=wx.ID_CANCEL)
@@ -282,11 +291,11 @@ class LauncherDialog(
 
 
 class AskAllowUsageStatsDialog(
-		gui.contextHelp.ContextHelpMixin,
-		wx.Dialog   # wxPython does not seem to call base class initializer, put last in MRO
+	gui.contextHelp.ContextHelpMixin,
+	wx.Dialog,  # wxPython does not seem to call base class initializer, put last in MRO
 ):
 	"""A dialog asking if the user wishes to allow NVDA usage stats to be collected by NV Access."""
-	
+
 	helpId = "UsageStatsDialog"
 
 	def __init__(self, parent):
@@ -303,17 +312,18 @@ class AskAllowUsageStatsDialog(
 			"certain NVDA configuration such as current synthesizer, braille display and braille table. "
 			"No spoken or braille content will be ever sent to NV Access. "
 			"Please refer to the User Guide for a current list of all data collected.\n\n"
-			"Do you wish to allow NV Access to periodically collect this data in order to improve NVDA?"
+			"Do you wish to allow NV Access to periodically collect this data in order to improve NVDA?",
 		)
 		# Translators: 'NV Access' should be replaced with 'NVDA Japanese Team'
 		message = message.replace('NV Access', _('NVDA Japanese Team'))
 		sText = sHelper.addItem(wx.StaticText(self, label=message))
 		# the wx.Window must be constructed before we can get the handle.
 		import windowUtils
+
 		self.scaleFactor = windowUtils.getWindowScalingFactor(self.GetHandle())
 		sText.Wrap(
 			# 600 was fairly arbitrarily chosen by a visual user to look acceptable on their machine.
-			self.scaleFactor * 600
+			self.scaleFactor * 600,
 		)
 
 		bHelper = sHelper.addDialogDismissButtons(gui.guiHelper.ButtonHelper(wx.HORIZONTAL))
@@ -338,14 +348,14 @@ class AskAllowUsageStatsDialog(
 
 	def onYesButton(self, evt):
 		log.debug("Usage stats gathering has been allowed")
-		config.conf['update']['askedAllowUsageStats'] = True
-		config.conf['update']['allowUsageStats'] = True
+		config.conf["update"]["askedAllowUsageStats"] = True
+		config.conf["update"]["allowUsageStats"] = True
 		self.EndModal(wx.ID_YES)
 
 	def onNoButton(self, evt):
 		log.debug("Usage stats gathering has been disallowed")
-		config.conf['update']['askedAllowUsageStats'] = True
-		config.conf['update']['allowUsageStats'] = False
+		config.conf["update"]["askedAllowUsageStats"] = True
+		config.conf["update"]["allowUsageStats"] = False
 		self.EndModal(wx.ID_NO)
 
 	def onLaterButton(self, evt):
