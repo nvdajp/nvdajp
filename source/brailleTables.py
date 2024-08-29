@@ -409,9 +409,9 @@ addTable("it-it-comp8.utb", _("Italian 8 dot computer braille"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("ja-kantenji.utb", _("Japanese (Kantenji) literary braille"), input=False)
-# Translators: The name of a braille table displayed in the
-# braille settings dialog.
 addTable(
+	# Translators: The name of a braille table displayed in the
+	# braille settings dialog.
 	"ja-jp-comp6.utb", _("Japanese 6 dot computer braille"), contracted=True, source=TableSource.BUILTIN_JP
 )
 # Translators: The name of a braille table displayed in the
@@ -420,10 +420,10 @@ addTable(
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 # addTable("ja-jp-comp6-en-us-g2.tbl", _("Japanese 6 dot with English (U.S.) grade 2"), contracted=True, input=False)
-# Translators: The name of a braille table displayed in the
-# braille settings dialog.
 addTable(
 	"ja-jp-rokutenkanji.tbl",
+	# Translators: The name of a braille table displayed in the
+	# braille settings dialog.
 	_("Japanese 6 dot kanji braille"),
 	contracted=True,
 	output=False,

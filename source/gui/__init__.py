@@ -656,8 +656,8 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
 		# nvdajp begin
 		if not globalVars.appArgs.secure:
-			# Translators: The label for the menu item to open jp braille viewer.
 			item = self.menu_tools_toggleJpBrailleViewer = menu_tools.AppendCheckItem(
+				# Translators: The label for the menu item to open jp braille viewer.
 				wx.ID_ANY, _("Japanese Braille viewer")
 			)
 			self.Bind(wx.EVT_MENU, frame.onToggleJpBrailleViewerCommand, item)

@@ -13,8 +13,8 @@ import config
 
 class JpBrailleViewerFrame(wx.MiniFrame):
 	def __init__(self):
-		# Translators: braille viewer window title
 		super(JpBrailleViewerFrame, self).__init__(
+			# Translators: braille viewer window title
 			gui.mainFrame, wx.ID_ANY, _("NVDA Japanese Braille Viewer"), style=wx.CAPTION | wx.RESIZE_BORDER
 		)
 		self.Bind(wx.EVT_CLOSE, self.onClose)
