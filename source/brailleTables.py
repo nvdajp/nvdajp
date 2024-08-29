@@ -410,9 +410,9 @@ addTable("it-it-comp8.utb", _("Italian 8 dot computer braille"))
 # braille settings dialog.
 addTable("ja-kantenji.utb", _("Japanese (Kantenji) literary braille"), input=False)
 addTable(
+	"ja-jp-comp6.utb",
 	# Translators: The name of a braille table displayed in the
 	# braille settings dialog.
-	"ja-jp-comp6.utb",
 	_("Japanese 6 dot computer braille"),
 	contracted=True,
 	source=TableSource.BUILTIN_JP,
