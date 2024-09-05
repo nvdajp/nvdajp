@@ -32,6 +32,11 @@ re_translationID = re.compile(r"^(.*)\$\(ID:([0-9a-f-]+)\)(.*)$")
 
 
 def prettyPathString(path: str) -> str:
+	current_drive = os.path.splitdrive(os.getcwd())[0]
+	target_drive = os.path.splitdrive(path)[0]
+
+	if current_drive != target_drive:
+		return os.path.abspath(path)
 	return os.path.relpath(path, os.getcwd())
 
 
