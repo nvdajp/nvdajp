@@ -6,7 +6,7 @@ This is a patch release to fix a bug with the automatic add-on update notificati
 
 ### Bug Fixes
 
-When automatically checking for add-on updates, NVDA no longer freezes on poor connections. (#17036)
+* When automatically checking for add-on updates, NVDA no longer freezes on poor connections. (#17036)
 
 ## 2024.3
 
