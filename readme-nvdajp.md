@@ -6,7 +6,7 @@
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は NVDA 2024.3jp-beta の場合
+以下は NVDA 2024.3.1jp の場合
 
 ### (1) Windows 10/11 64ビット
 
@@ -18,7 +18,7 @@
 
 https://www.visualstudio.com/ja/downloads/
 
-Visual Studio 2022 v17.10.6
+Visual Studio 2022 v17.11.3
 
 #### (2.1) 選択する「ワークロード」の項目
 
