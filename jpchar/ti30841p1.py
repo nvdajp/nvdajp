@@ -9,22 +9,22 @@
 
 import codecs
 
-with codecs.open('emoji.txt', 'r', 'utf-8') as file:
+with codecs.open("emoji.txt", "r", "utf-8") as file:
 	lines = file.readlines()
 
 dic = {}
 
 for line in lines:
 	line = line.rstrip()
-	fields = line.split(',')
+	fields = line.split(",")
 	if len(fields) == 4:
 		if fields[0] in dic:
 			continue
-		s = u"%s\t%s\t[%s]\t%s" % (
+		s = "%s\t%s\t[%s]\t%s" % (
 			fields[0],
-			fields[1].replace(r"u'\U000", '').replace("'", ''),
+			fields[1].replace(r"u'\U000", "").replace("'", ""),
 			fields[3],
-			fields[3] + u'ノ エモジ',
+			fields[3] + "ノ エモジ",
 		)
-		print(s.encode('utf-8'))
-		dic[ fields[0] ] = True
+		print(s.encode("utf-8"))
+		dic[fields[0]] = True

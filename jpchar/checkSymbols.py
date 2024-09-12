@@ -1,7 +1,7 @@
 # coding: UTF-8
-#checkSymbols.py
-#A part of NonVisual Desktop Access (NVDA)
-#Copyright (C) 2012-2016,2023 Takuya Nishimoto, NVDA Japanese Team, Shuaruta Inc.
+# checkSymbols.py
+# A part of NonVisual Desktop Access (NVDA)
+# Copyright (C) 2012-2016,2023 Takuya Nishimoto, NVDA Japanese Team, Shuaruta Inc.
 # usage:
 # > cd jpchar
 # > py -3 checkSymbols.py

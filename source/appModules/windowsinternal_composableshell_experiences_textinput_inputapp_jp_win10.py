@@ -35,7 +35,7 @@ class ImeCandidateUI(UIA):
 		# Report the current candidates page and the currently selected item.
 		# Sometimes UIA does not fire an elementSelected event when it is first opened,
 		# Therefore we must fake it here.
-		if (self.UIAAutomationId == "IME_Prediction_Window"):
+		if self.UIAAutomationId == "IME_Prediction_Window":
 			candidateItem = self.firstChild
 			eventHandler.queueEvent("UIA_elementSelected", candidateItem)
 		elif (
@@ -104,7 +104,7 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 		speech.cancelSpeech()
 		# Report the entire current page of candidate items if it is newly shown  or it has changed.
 		if config.conf["inputComposition"]["autoReportAllCandidates"]:
-			oldText = getattr(self.appModule, '_lastImeCandidateVisibleText', '')
+			oldText = getattr(self.appModule, "_lastImeCandidateVisibleText", "")
 			newText = self.visibleCandidateItemsText
 			if not isinstance(oldNav, ImeCandidateItem) or newText != oldText:
 				self.appModule._lastImeCandidateVisibleText = newText
@@ -115,7 +115,6 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 
 
 class AppModule(appModuleHandler.AppModule):
-
 	# Cache the most recently selected item.
 	_recentlySelected = None
 
@@ -154,8 +153,10 @@ class AppModule(appModuleHandler.AppModule):
 				obj = obj.parent.parent.firstChild
 		candidate = obj
 		if (
-			obj and obj.UIAElement.cachedClassName == "ListViewItem"
-			and obj.parent and isinstance(obj.parent, UIA)
+			obj
+			and obj.UIAElement.cachedClassName == "ListViewItem"
+			and obj.parent
+			and isinstance(obj.parent, UIA)
 			and obj.parent.UIAAutomationId != "TEMPLATE_PART_ClipboardItemsList"
 		):
 			# The difference between emoji panel and suggestions list is absence of categories/emoji separation.
@@ -170,11 +171,9 @@ class AppModule(appModuleHandler.AppModule):
 		if obj is not None and obj.UIAElement.cachedClassName == "GridViewItem":
 			if api.setNavigatorObject(obj):
 				obj.reportFocus()
-				braille.handler.message(braille.getPropertiesBraille(
-					name=obj.name,
-					role=obj.role,
-					positionInfo=obj.positionInfo
-				))
+				braille.handler.message(
+					braille.getPropertiesBraille(name=obj.name, role=obj.role, positionInfo=obj.positionInfo)
+				)
 				# Cache selected item.
 				self._recentlySelected = obj.name
 			else:
@@ -186,7 +185,7 @@ class AppModule(appModuleHandler.AppModule):
 	# Emoji panel for build 16299 and 17134.
 	_classicEmojiPanelAutomationIds = (
 		"TEMPLATE_PART_ExpressiveInputFullViewFuntionBarItemControl",
-		"TEMPLATE_PART_ExpressiveInputFullViewFuntionBarCloseButton"
+		"TEMPLATE_PART_ExpressiveInputFullViewFuntionBarCloseButton",
 	)
 
 	def event_UIA_window_windowOpen(self, obj, nextHandler):
@@ -273,10 +272,7 @@ class AppModule(appModuleHandler.AppModule):
 			(obj.UIAElement.cachedClassName in ("CRootKey", "GridViewItem"))
 			# Just ignore useless clipboard status.
 			# Also top emoji search result must be announced for better user experience.
-			or (obj.UIAAutomationId in (
-				"TEMPLATE_PART_ClipboardItemsList",
-				"TEMPLATE_PART_Search_TextBlock"
-			))
+			or (obj.UIAAutomationId in ("TEMPLATE_PART_ClipboardItemsList", "TEMPLATE_PART_Search_TextBlock"))
 			# And no, emoji entries should not be announced here.
 			or (self._recentlySelected is not None and self._recentlySelected in obj.name)
 		):
@@ -305,12 +301,10 @@ class AppModule(appModuleHandler.AppModule):
 				speech.cancelSpeech()
 			self._emojiPanelJustOpened = False
 		# Don't forget to add "Microsoft Candidate UI" as something that should be suppressed.
-		if (
-			obj.UIAAutomationId not in (
-				"TEMPLATE_PART_ExpressionFullViewItemsGrid",
-				"TEMPLATE_PART_ClipboardItemIndex",
-				"CandidateWindowControl"
-			)
+		if obj.UIAAutomationId not in (
+			"TEMPLATE_PART_ExpressionFullViewItemsGrid",
+			"TEMPLATE_PART_ClipboardItemIndex",
+			"CandidateWindowControl",
 		):
 			if getattr(obj, "name", ""):
 				ui.message(obj.name)
@@ -320,26 +314,29 @@ class AppModule(appModuleHandler.AppModule):
 		if isinstance(obj, UIA):
 			if obj.role == controlTypes.Role.LISTITEM and (
 				(
-					obj.parent.UIAAutomationId in (
+					obj.parent.UIAAutomationId
+					in (
 						"ExpandedCandidateList",
 						"TEMPLATE_PART_AdaptiveSuggestionList",
 					)
 					and obj.parent.parent.UIAAutomationId == "IME_Candidate_Window"
 				)
-				or obj.parent.UIAAutomationId in (
+				or obj.parent.UIAAutomationId
+				in (
 					"IME_Candidate_Window",
 					"IME_Prediction_Window",
 					"TEMPLATE_PART_CandidatePanel",
 				)
 			):
 				clsList.insert(0, ImeCandidateItem)
-			elif (
-				obj.role in (controlTypes.Role.PANE, controlTypes.Role.LIST, controlTypes.Role.POPUPMENU)
-				and obj.UIAAutomationId in (
-					"IME_Candidate_Window",
-					"IME_Prediction_Window",
-					"TEMPLATE_PART_CandidatePanel",
-				)
+			elif obj.role in (
+				controlTypes.Role.PANE,
+				controlTypes.Role.LIST,
+				controlTypes.Role.POPUPMENU,
+			) and obj.UIAAutomationId in (
+				"IME_Candidate_Window",
+				"IME_Prediction_Window",
+				"TEMPLATE_PART_CandidatePanel",
 			):
 				clsList.insert(0, ImeCandidateUI)
 			# #13104: newer revisions of Windows 11 build 22000 moves focus to emoji search field.

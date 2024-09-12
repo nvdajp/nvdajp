@@ -9,15 +9,15 @@
 
 import codecs
 
-with codecs.open('emoji2.dic', 'r', 'utf-8') as file:
+with codecs.open("emoji2.dic", "r", "utf-8") as file:
 	lines = file.readlines()
 
 for line in lines:
 	line = line.rstrip()
-	if len(line) == 0 or line[0] == '#':
-		print('')
+	if len(line) == 0 or line[0] == "#":
+		print("")
 		continue
-	fields = line.split('\t')
+	fields = line.split("\t")
 	if len(fields[1]) == 4:
-		s = u"%s\t%s\tnone" % (fields[0], fields[2].replace('[', '').replace(']', ''))
-		print(s.encode('utf-8'))
+		s = "%s\t%s\tnone" % (fields[0], fields[2].replace("[", "").replace("]", ""))
+		print(s.encode("utf-8"))

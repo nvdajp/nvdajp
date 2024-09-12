@@ -3,8 +3,7 @@
 # See the file COPYING for more details.
 # Copyright (C) 2008-2024 NV Access Limited, Joseph Lee, Babbage B.V., Julien Cochuyt, Leonard de Ruijter
 
-"""Manages information about available braille translation tables.
-"""
+"""Manages information about available braille translation tables."""
 
 import collections
 from enum import StrEnum
@@ -25,6 +24,7 @@ TABLES_DIR = os.path.join(globalVars.appDir, "louis", "tables")
 TABLES_DIR_JP = os.path.join(globalVars.appDir)
 """The directory in which Japanese braille tables are located."""
 
+
 class TableSource(StrEnum):
 	BUILTIN = "builtin"
 	"""The name of the builtin table source"""
@@ -34,16 +34,13 @@ class TableSource(StrEnum):
 	"""The name of the scratchpad table source"""
 
 
-_tablesDirs = collections.ChainMap({
-	TableSource.BUILTIN: TABLES_DIR,
-	TableSource.BUILTIN_JP: TABLES_DIR_JP
-})
+_tablesDirs = collections.ChainMap({TableSource.BUILTIN: TABLES_DIR, TableSource.BUILTIN_JP: TABLES_DIR_JP})
 """Chainmap of directories for braille tables lookup, including custom tables."""
 
 
 class BrailleTable(NamedTuple):
-	"""Information about a braille table.
-	"""
+	"""Information about a braille table."""
+
 	fileName: str
 	"""The file name of the table."""
 
@@ -75,12 +72,12 @@ and cleared when calling L{terminate}.
 
 
 def addTable(
-		fileName: str,
-		displayName: str,
-		contracted: bool = False,
-		output: bool = True,
-		input: bool = True,
-		source: str = TableSource.BUILTIN
+	fileName: str,
+	displayName: str,
+	contracted: bool = False,
+	output: bool = True,
+	input: bool = True,
+	source: str = TableSource.BUILTIN,
 ):
 	"""Register a braille translation table.
 	At least one of C{input} or C{output} must be C{True}.
@@ -111,7 +108,10 @@ def listTables() -> list[BrailleTable]:
 	"""
 	return sorted(
 		_tables.values(),
-		key=lambda table: (table.source not in (TableSource.BUILTIN, TableSource.BUILTIN_JP), strxfrm(table.displayName))
+		key=lambda table: (
+			table.source not in (TableSource.BUILTIN, TableSource.BUILTIN_JP),
+			strxfrm(table.displayName),
+		),
 	)
 
 
@@ -363,7 +363,10 @@ addTable("ga-g2.ctb", _("Irish grade 2"), contracted=True)
 addTable("gu-in-g1.utb", _("Gujarati grade 1"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
-addTable("grc-international-en.utb", _("Greek international braille"))
+addTable("grc-international-en.utb", _("Greek international braille (2-cell accented letters)"))
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("grc-international-en-composed.utb", _("Greek international braille (single-cell accented letters)"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("grc-international-es.utb", _("Spanish for Greek text"))
@@ -409,18 +412,29 @@ addTable("it-it-comp8.utb", _("Italian 8 dot computer braille"))
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("ja-kantenji.utb", _("Japanese (Kantenji) literary braille"), input=False)
-# Translators: The name of a braille table displayed in the
-# braille settings dialog.
-addTable("ja-jp-comp6.utb", _("Japanese 6 dot computer braille"), contracted=True, source=TableSource.BUILTIN_JP)
+addTable(
+	"ja-jp-comp6.utb",
+	# Translators: The name of a braille table displayed in the
+	# braille settings dialog.
+	_("Japanese 6 dot computer braille"),
+	contracted=True,
+	source=TableSource.BUILTIN_JP,
+)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 # addTable("ja-jp-comp6-en-ueb-g2.tbl", _("Japanese 6 dot with UEB grade 2"), contracted=True, input=False)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 # addTable("ja-jp-comp6-en-us-g2.tbl", _("Japanese 6 dot with English (U.S.) grade 2"), contracted=True, input=False)
-# Translators: The name of a braille table displayed in the
-# braille settings dialog.
-addTable("ja-jp-rokutenkanji.tbl", _("Japanese 6 dot kanji braille"), contracted=True, output=False, source=TableSource.BUILTIN_JP)
+addTable(
+	"ja-jp-rokutenkanji.tbl",
+	# Translators: The name of a braille table displayed in the
+	# braille settings dialog.
+	_("Japanese 6 dot kanji braille"),
+	contracted=True,
+	output=False,
+	source=TableSource.BUILTIN_JP,
+)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("ka-in-g1.utb", _("Kannada grade 1"))
@@ -642,7 +656,10 @@ addTable("te-in-g1.utb", _("Telugu grade 1"))
 addTable("th-comp8-backward.utb", _("Thai 8 dot computer braille"), output=False)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
-addTable("th-g0.utb", _("Thai 6 dot"), input=False)
+addTable("th-g0.utb", _("Thai grade 0"), input=False)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
+addTable("th-g1.utb", _("Thai grade 1"), input=False, contracted=True)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("tr.ctb", _("Turkish grade 1"))
@@ -759,6 +776,7 @@ def initialize():
 	# The builtin tables were added at import time to the parent map.
 	# Now, add the custom tables to the first map.
 	import addonHandler
+
 	for addon in addonHandler.getRunningAddons():
 		try:
 			tablesDict = addon.manifest.get("brailleTables")
@@ -773,10 +791,7 @@ def initialize():
 			log.exception(f"Error while applying custom braille tables config from addon {addon.name!r}")
 
 	# Load the custom tables from the scratchpad last so it takes precedence over add-ons
-	if (
-		not globalVars.appArgs.secure
-		and config.conf["development"]["enableScratchpadDir"]
-	):
+	if not globalVars.appArgs.secure and config.conf["development"]["enableScratchpadDir"]:
 		scratchpad = config.getScratchpadDir()
 		directory = os.path.join(scratchpad, "brailleTables")
 		if os.path.isdir(directory):
@@ -798,7 +813,7 @@ def initialize():
 			except Exception:
 				log.exception(
 					"Error while applying custom braille tables config from scratchpad manifest: "
-					f"{manifestPath}"
+					f"{manifestPath}",
 				)
 
 
