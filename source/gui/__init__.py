@@ -99,14 +99,6 @@ def run_hta(hta_file_path: str) -> None:
 	subprocess.Popen([MSHTA_PATH, hta_file_path])
 
 
-def openDocFile(basename: str) -> None:
-	hta_file_path = getDocFilePath(basename)
-	if config.conf["language"]["openDocFileByMSHTA"]:
-		run_hta(hta_file_path)
-	else:
-		os.startfile(hta_file_path)
-
-
 ### Constants
 NVDA_PATH = globalVars.appDir
 # ICON_PATH=os.path.join(NVDA_PATH, "images", "nvda.ico")
@@ -785,7 +777,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		if not globalVars.appArgs.secure:
 			# Translators: The label for the menu item to open jp readme.
 			item = self.helpMenu.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
-			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("readmejp.html"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("readmejp.html"), item)
 			# Translators: The label of a menu item to open NVDA user guide.
 			item = self.helpMenu.Append(wx.ID_ANY, _("&User Guide"))
 			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("userGuide.html"), item)
@@ -850,6 +842,9 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		helpFile = getDocFilePath(fileName)
 		if helpFile is None:
 			reportNoDocumentation(fileName, useMsgBox=True)
+			return
+		if config.conf["language"]["openDocFileByMSHTA"]:
+			run_hta(helpFile)
 			return
 		os.startfile(helpFile)
 
