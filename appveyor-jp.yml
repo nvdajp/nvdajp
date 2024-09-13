@@ -22,7 +22,7 @@ init:
 
 install:
  - set RELEASE=1
- - set VERSION=2024.4jp
+ - set VERSION=2025.1jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
