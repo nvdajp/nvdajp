@@ -14,7 +14,7 @@ import wx.adv
 import globalVars
 import tones
 import ui
-from documentationUtils import getDocFilePath
+from documentationUtils import getDocFilePath, reportNoDocumentation
 from logHandler import log
 import config
 import versionInfo
@@ -788,13 +788,13 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("readmejp.html"), item)
 			# Translators: The label of a menu item to open NVDA user guide.
 			item = self.helpMenu.Append(wx.ID_ANY, _("&User Guide"))
-			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("userGuide.html"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("userGuide.html"), item)
 			# Translators: The label of a menu item to open the Commands Quick Reference document.
 			item = self.helpMenu.Append(wx.ID_ANY, _("Commands &Quick Reference"))
-			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("keyCommands.html"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("keyCommands.html"), item)
 			# Translators: The label for the menu item to open What's New document.
 			item = self.helpMenu.Append(wx.ID_ANY, _("What's &new"))
-			self.Bind(wx.EVT_MENU, lambda evt: openDocFile("changes.html"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("changes.html"), item)
 
 			self.helpMenu.AppendSeparator()
 
@@ -845,6 +845,13 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 
 		# Translators: The label for the Help submenu in NVDA menu.
 		self.menu.AppendSubMenu(self.helpMenu, _("&Help"))
+
+	def _openDocumentationFile(self, fileName: str) -> None:
+		helpFile = getDocFilePath(fileName)
+		if helpFile is None:
+			reportNoDocumentation(fileName, useMsgBox=True)
+			return
+		os.startfile(helpFile)
 
 	def _appendPendingUpdateSection(self, frame: MainFrame) -> None:
 		if not globalVars.appArgs.secure and updateCheck:
