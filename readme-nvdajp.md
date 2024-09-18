@@ -6,7 +6,7 @@
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は NVDA 2024.3.1jp の場合
+以下は NVDA 2024.4jp の場合
 
 ### (1) Windows 10/11 64ビット
 
@@ -78,7 +78,6 @@ C:\Program Files\Git\usr\bin
 リモートリポジトリへのアップロード (git push) するためには
 push 先（GitHubなど）のアカウントのセットアップや公開鍵の設定、権限の取得が必要。
 
-
 ### (4) 7-Zip (7z)
 
 7-Zip サイトから 64bit Windows x64 (7z****-x64.exe) をダウンロードする。
@@ -149,7 +148,6 @@ C:\Program Files\7-Zip\7z.exe
 
 ソースコードから実行するための準備作業
 
-
 ```text
 > cd betajp-dev
 > jptools\devbuild2024.cmd
@@ -185,7 +183,21 @@ NVDA 本体を実行するには
 > .\scons
 ```
 
-## git トラブルシューティング
+## git 運用方針とトラブルシューティング
+
+### ブランチ運用
+
+* 本家 nvda のデフォルトブランチは master である。
+* nvdajp のデフォルトブランチは betajp である。
+* nvdajp の alphajp ブランチには本家 master からの git pull を定期的に行う。
+* nvdajp の betajp ブランチは alphajp からの pull request によって次のリリースに向けた更新を行う。
+
+### ファイル改行コードと editorconfig
+
+* Windows で git clone した場合、改行コードが CRLF になり、git に commit すると LF になる。
+* 本家の .editorconfig は end_of_line = lf になっており、Windows の Visual Studio Code で editorconfig を有効にすると、新規作成したファイルは保存するときに改行コードが LF になる。
+* この挙動は Windows で作業する場合には不便なので、.editorconfig の end_of_line = crlf に変更している。
+* macOS や Linux で作業する場合は、.editorconfig の end_of_line = lf に戻すとよい。
 
 ### ファイルの不足やバージョンの不一致
 
@@ -209,7 +221,6 @@ modified:   include/espeak (new commits)
 
 不必要な modified を誤ってマージして git push すると、
 サブモジュールのバージョンが本家とずれた状態のまま GitHub に公開されてしまう。
-
 
 ### git submodule update のエラー対応
 
