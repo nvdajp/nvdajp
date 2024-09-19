@@ -255,4 +255,14 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 > git submodule update --init --recursive
 ```
 
+### comInterfaces の再生成
+
+ビルド(devbuild2024)を繰り返すと comInterfaces が壊れて一部のユニットテストが失敗したり runnvda できなくなったりする。
+comInterfaces ファイルは git で管理されていないため、下記のようにして再生成する。
+
+```text
+> venvUtils\venvCmd.bat scons source\comInterfaces -c
+> venvUtils\venvCmd.bat scons source\comInterfaces
+```
+
 （以上）
