@@ -1,3 +1,4 @@
-set VERSION=2024.3jp
-venvUtils\venvCmd jptools\devbuild.cmd source version_build=99999 -j12
+set VERSION=2024.4jp
+del source\_buildVersion.py
+venvUtils\venvCmd jptools\devbuild.cmd source version_build=99999 --all-cores
 rununittests.bat

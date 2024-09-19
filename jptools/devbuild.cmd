@@ -1,8 +1,8 @@
 @rem usage:
+@rem set VERSION=2024.4jp
 @rem del source\_buildVersion.py
 @rem jptools\devbuild.cmd
-@rem example: jptools\devbuild.cmd source dist launcher user_docs pot symbolsArchive -j12
-
+@rem example: jptools\devbuild.cmd source dist launcher user_docs pot symbolsArchive --all-cores
 set SCONSARGS=%*
 
 call miscDepsJp\include\python-jtalk\vcsetup.cmd
