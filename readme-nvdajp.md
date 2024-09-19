@@ -161,6 +161,12 @@ NVDA 本体を実行するには
 > runnvda.bat
 ```
 
+Chrome のシステムテストを実行するには
+
+```text
+> runsystemtests.bat --include chrome --exclude excluded_from_build
+```
+
 ### (8) NVDA日本語版のリリースビルド
 
 現在は `signtool sign /a` を使えることが前提。
