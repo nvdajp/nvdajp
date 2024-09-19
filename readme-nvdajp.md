@@ -164,7 +164,7 @@ NVDA 本体を実行するには
 Chrome のシステムテストを実行するには
 
 ```text
-> runsystemtests.bat --include chrome --exclude excluded_from_build
+> runsystemtests.bat --include chrome
 ```
 
 ### (8) NVDA日本語版のリリースビルド
