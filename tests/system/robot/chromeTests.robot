@@ -110,7 +110,6 @@ ARIA roleDescription block content editable
 	test_ariaRoleDescription_block_contentEditable
 ARIA description Focus Mode
 	[Documentation]	Navigate to a span with aria-description in focus mode
-	[Tags]	excluded_from_build
 	test_ariaDescription_focusMode
 ARIA description Browse Mode
 	[Documentation]	Navigate (down arrow, in browse mode) aria-description is read, other sources of description are not.
