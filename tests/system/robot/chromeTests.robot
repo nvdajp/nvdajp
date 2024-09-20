@@ -39,7 +39,6 @@ checkbox labelled by inner element
 	checkbox_labelled_by_inner_element
 Announce list item when moving by word or character
 	[Documentation]	Entering a list item when moving by word or character should be announced, but not by line.
-	[Tags]	excluded_from_build
 	announce_list_item_when_moving_by_word_or_character
 i7562
 	[Documentation]	List should not be announced on every line of a ul in a contenteditable
