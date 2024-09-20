@@ -66,13 +66,11 @@ Marked Focus mode
 	test_mark_focus
 ARIA details
 	[Documentation]	Ensure a summary of aria-details is read on command from a mark element
-	# [Tags]	annotations
-	[Tags]	excluded_from_build
+	[Tags]	annotations
 	test_mark_aria_details
 ARIA details with free review and nav
 	[Documentation]	Variation on the ARIA details test with the config changed so the review cursor does not follow the caret and the nav object doesn't follow focus.
-	# [Tags]	annotations
-	[Tags]	excluded_from_build
+	[Tags]	annotations
 	test_mark_aria_details_FreeReviewCursor
 ARIA details noVbuf
 	[Documentation]	Test for retrieving ARIA details from a button inside a role=application
@@ -149,7 +147,6 @@ focus mode is turned on on focused read-only list item
 	test_focus_mode_on_focusable_read_only_lists
 ARIA details role
 	[Documentation]	Test aria details roles being announced on discovery
-	[Tags]	excluded_from_build
 	test_mark_aria_details_role
 multiple ARIA details targets
 	[Documentation]	Test multiple aria details targets being announced
