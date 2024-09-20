@@ -341,10 +341,10 @@ def _testDelayedDescription(expectDescription: bool = True) -> None:
 	spoken = _NvdaLib.getSpeechAfterKey(Move.CARET_CHAR.value).split("\n")
 	if not spoken:
 		raise AssertionError("Nothing spoken after character press")
-	# if spoken[0] not in _CHARACTER_DESCRIPTIONS:
-	# 	raise AssertionError(
-	# 		f"First piece of speech not an expected character; got: '{spoken[0]}'",
-	# 	)
+	if expectDescription and spoken[0] not in _CHARACTER_DESCRIPTIONS:
+		raise AssertionError(
+			f"First piece of speech not an expected character; got: '{spoken[0]}'",
+		)
 	if expectDescription:
 		if len(spoken) != 2:
 			raise AssertionError(
@@ -352,15 +352,13 @@ def _testDelayedDescription(expectDescription: bool = True) -> None:
 			)
 		_asserts.strings_match(spoken[1], _CHARACTER_DESCRIPTIONS[spoken[0]])
 	else:
-		_asserts.strings_match(spoken[0], "Bravo")
-		# if len(spoken) != 1:
-		# 	raise AssertionError(
-		# 		f"Expected single character; got: '{spoken}'",
-		# 	)
+		if len(spoken) != 1:
+			raise AssertionError(
+				f"Expected single character; got: '{spoken}'",
+			)
 
 
 def test_delayedDescriptions():
-	press_numpad2_4_times()
 	_notepad.prepareNotepad(_getDelayedDescriptionsTestSample())
 	# Ensure this feature is disabled by default.
 	_testDelayedDescription(expectDescription=False)
@@ -369,6 +367,7 @@ def test_delayedDescriptions():
 	spy = _NvdaLib.getSpyLib()
 	spy.set_configValue(["speech", "delayedCharacterDescriptions"], True)
 
+	press_numpad2_4_times()
 	_testDelayedDescription()
 
 
