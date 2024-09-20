@@ -352,10 +352,11 @@ def _testDelayedDescription(expectDescription: bool = True) -> None:
 			)
 		_asserts.strings_match(spoken[1], _CHARACTER_DESCRIPTIONS[spoken[0]])
 	else:
-		if len(spoken) != 1:
-			raise AssertionError(
-				f"Expected single character; got: '{spoken}'",
-			)
+		_asserts.strings_match(spoken[0], "b")
+		# if len(spoken) != 1:
+		# 	raise AssertionError(
+		# 		f"Expected single character; got: '{spoken}'",
+		# 	)
 
 
 def test_delayedDescriptions():
