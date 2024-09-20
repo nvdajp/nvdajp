@@ -106,7 +106,6 @@ ARIA roleDescription inline content editable
 	[Tags]	excluded_from_build
 ARIA roleDescription block content editable
 	[Documentation]	Read an block element with a custom role in content editables 
-	[Tags]	excluded_from_build
 	test_ariaRoleDescription_block_contentEditable
 ARIA description Focus Mode
 	[Documentation]	Navigate to a span with aria-description in focus mode
