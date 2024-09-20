@@ -113,7 +113,6 @@ ARIA description Focus Mode
 	test_ariaDescription_focusMode
 ARIA description Browse Mode
 	[Documentation]	Navigate (down arrow, in browse mode) aria-description is read, other sources of description are not.
-	[Tags]	excluded_from_build
 	test_ariaDescription_browseMode
 ARIA description Say All
 	[Documentation]	Say all, contents includes aria-description
