@@ -19,6 +19,15 @@ from ChromeLib import ChromeLib as _ChromeLib
 from AssertsLib import AssertsLib as _AssertsLib
 import NvdaLib as _NvdaLib
 
+
+def press_numpad2_4_times():
+	spy = _NvdaLib.getSpyLib()
+	for _ in range(4):
+		spy.emulateKeyPress("numpad2")
+	# TODO: wait for NVDA to finish speaking
+	# "Character description mode disabled"
+
+
 _builtIn: BuiltIn = BuiltIn()
 _chrome: _ChromeLib = _getLib("ChromeLib")
 _asserts: _AssertsLib = _getLib("AssertsLib")
@@ -759,11 +768,7 @@ def announce_list_item_when_moving_by_word_or_character():
 			</div>
 		""",
 	)
-	# press numpad2 4 times
-	# TODO: expect "Character description mode disabled"
-	spy = _NvdaLib.getSpyLib()
-	for _ in range(4):
-		spy.emulateKeyPress("numpad2")
+	press_numpad2_4_times()
 	# Force focus mode
 	actualSpeech = _chrome.getSpeechAfterKey("NVDA+space")
 	_asserts.strings_match(
@@ -899,6 +904,7 @@ def test_pr11606():
 			</div>
 		""",
 	)
+	press_numpad2_4_times()
 	# Force focus mode
 	actualSpeech = _chrome.getSpeechAfterKey("NVDA+space")
 	_asserts.strings_match(

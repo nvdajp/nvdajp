@@ -45,7 +45,6 @@ i7562
 	test_i7562
 pr11606
 	[Documentation]	Announce the correct line when placed at the end of a link at the end of a list item in a contenteditable
-	[Tags]	excluded_from_build
 	test_pr11606
 ARIA treegrid
 	[Documentation]	Ensure that ARIA treegrids are accessible as a standard table in browse mode.
