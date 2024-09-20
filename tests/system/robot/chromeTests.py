@@ -18,15 +18,7 @@ from SystemTestSpy import (
 from ChromeLib import ChromeLib as _ChromeLib
 from AssertsLib import AssertsLib as _AssertsLib
 import NvdaLib as _NvdaLib
-
-
-def press_numpad2_4_times():
-	spy = _NvdaLib.getSpyLib()
-	for _ in range(4):
-		spy.emulateKeyPress("numpad2")
-	# TODO: wait for NVDA to finish speaking
-	# "Character description mode disabled"
-
+from jpRobotUtil import press_numpad2_4_times
 
 _builtIn: BuiltIn = BuiltIn()
 _chrome: _ChromeLib = _getLib("ChromeLib")

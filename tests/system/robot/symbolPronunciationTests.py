@@ -42,6 +42,7 @@ from ChromeLib import ChromeLib as _ChromeLib
 from AssertsLib import AssertsLib as _AssertsLib
 import NvdaLib as _NvdaLib
 from robot.libraries.BuiltIn import BuiltIn
+from jpRobotUtil import press_numpad2_4_times
 
 _builtIn: BuiltIn = BuiltIn()
 _notepad: _NotepadLib = _getLib("NotepadLib")
@@ -272,6 +273,7 @@ def test_moveByChar():
 	"""Move by character with symbol level 'none', then with symbol level 'all'."""
 	_notepad.prepareNotepad(_getMoveByCharTestSample())
 
+	press_numpad2_4_times()
 	# todo: Symbol level should not affect the output. Use same expected speech for both.
 	_doTest(
 		navKey=Move.REVIEW_CHAR,
@@ -357,6 +359,7 @@ def _testDelayedDescription(expectDescription: bool = True) -> None:
 
 
 def test_delayedDescriptions():
+	press_numpad2_4_times()
 	_notepad.prepareNotepad(_getDelayedDescriptionsTestSample())
 	# Ensure this feature is disabled by default.
 	_testDelayedDescription(expectDescription=False)
