@@ -311,6 +311,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	startupNotification = boolean(default=true)
 	allowUsageStats = boolean(default=false)
 	askedAllowUsageStats = boolean(default=false)
+	serverURL = string(default="")
 
 [inputComposition]
 	autoReportAllCandidates = boolean(default=False) # nvdajp
