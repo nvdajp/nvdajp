@@ -31,6 +31,7 @@ In order to use this feature, the application volume adjuster needs to be enable
   * It now starts with a more user friendly explanation of its purpose, instead of a warning. (#12351)
   * The initial window can now be exited with `escape` or `alt+f4`. (#10799)
   * It will now show a message to the user, including the error, in the rare event of a Windows error while attempting COM re-registrations.
+* In Word and Outlook the result of more font formatting shortcuts is now reported. (#10271, @CyrilleB79)
 
 ### Bug Fixes
 
@@ -44,6 +45,8 @@ In order to use this feature, the application volume adjuster needs to be enable
   * Fixed an issue where certain settings were explicitly saved to the active configuration profile even when the value of that setting was equal to the value in the base configuration. (#17157, @leonarddeR)
 * NVDA is able to read the popup submenu items on Thunderbird search results page. (#4708, @thgcode)
 * The COM Registration Fixing Tool no longer reports success on failure. (#12355, @XLTechie)
+* When using the Microsoft Pinyin Input Method for Chinese and enabling the Pinyin compatibility option to use the previous version, typing in LibreOffice Writer (and potentially other applications) while an IME popup is showing no longer triggers an error. (#17198, @michaelweghorn)
+* In LibreOffice, the current checkbox state (checked/unchecked) is now also reported in braille, not just speech. (#17218, @michaelweghorn)
 
 ### Changes for Developers
 
@@ -66,6 +69,7 @@ Add-ons will need to be re-tested and have their manifest updated.
   * A `toggleBooleanValue` helper function has been added to `globalCommands`.
   It can be used in scripts to report the result when a boolean is toggled in `config.conf`
 * Removed the requirement to indent function parameter lists by two tabs from NVDA's Coding Standards, to be compatible with modern automatic linting. (#17126, @XLTechie)
+* Added the [VS Code workspace configuration for NVDA](https://nvaccess.org/nvaccess/vscode-nvda) as a git submodule. (#17003)
 
 #### API Breaking Changes
 
