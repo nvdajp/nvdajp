@@ -6,7 +6,7 @@
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は NVDA 2024.3jp-beta の場合
+以下は NVDA 2024.4jp の場合
 
 ### (1) Windows 10/11 64ビット
 
@@ -18,7 +18,7 @@
 
 https://www.visualstudio.com/ja/downloads/
 
-Visual Studio 2022 v17.10.6
+Visual Studio 2022 v17.11.3
 
 #### (2.1) 選択する「ワークロード」の項目
 
@@ -77,7 +77,6 @@ C:\Program Files\Git\usr\bin
 備考：
 リモートリポジトリへのアップロード (git push) するためには
 push 先（GitHubなど）のアカウントのセットアップや公開鍵の設定、権限の取得が必要。
-
 
 ### (4) 7-Zip (7z)
 
@@ -149,7 +148,6 @@ C:\Program Files\7-Zip\7z.exe
 
 ソースコードから実行するための準備作業
 
-
 ```text
 > cd betajp-dev
 > jptools\devbuild2024.cmd
@@ -161,6 +159,13 @@ NVDA 本体を実行するには
 
 ```text
 > runnvda.bat
+```
+
+システムテストを実行するには
+
+```text
+> runsystemtests.bat -i symbols --test "moveByCharacter"
+> runsystemtests.bat -i chrome
 ```
 
 ### (8) NVDA日本語版のリリースビルド
@@ -185,7 +190,21 @@ NVDA 本体を実行するには
 > .\scons
 ```
 
-## git トラブルシューティング
+## git 運用方針とトラブルシューティング
+
+### ブランチ運用
+
+* 本家 nvda のデフォルトブランチは master である。
+* nvdajp のデフォルトブランチは betajp である。
+* nvdajp の alphajp ブランチには本家 master からの git pull を定期的に行う。
+* nvdajp の betajp ブランチは alphajp からの pull request によって次のリリースに向けた更新を行う。
+
+### ファイル改行コードと editorconfig
+
+* Windows で git clone した場合、改行コードが CRLF になり、git に commit すると LF になる。
+* 本家の .editorconfig は end_of_line = lf になっており、Windows の Visual Studio Code で editorconfig を有効にすると、新規作成したファイルは保存するときに改行コードが LF になる。
+* この挙動は Windows で作業する場合には不便なので、.editorconfig の end_of_line = crlf に変更している。
+* macOS や Linux で作業する場合は、.editorconfig の end_of_line = lf に戻すとよい。
 
 ### ファイルの不足やバージョンの不一致
 
@@ -209,7 +228,6 @@ modified:   include/espeak (new commits)
 
 不必要な modified を誤ってマージして git push すると、
 サブモジュールのバージョンが本家とずれた状態のまま GitHub に公開されてしまう。
-
 
 ### git submodule update のエラー対応
 
@@ -237,5 +255,38 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 > cd ..\..
 > git submodule update --init --recursive
 ```
+
+### comInterfaces の再生成
+
+ビルド(devbuild2024)を繰り返すと comInterfaces が壊れて一部のユニットテストが失敗したり runnvda できなくなったりする。
+comInterfaces ファイルは git で管理されていないため、下記のようにして再生成する。
+
+```text
+> venvUtils\venvCmd.bat scons source\comInterfaces -c
+> venvUtils\venvCmd.bat scons source\comInterfaces
+```
+
+## システムテスト
+
+### 方針
+
+* 本ドキュメントの手順で日本語 Windows 環境（ローカル環境）でシステムテストが通ること
+* 同時に AppVeyor でシステムテストが通ること
+
+### 本家版の課題
+
+* Chrome 起動オプションで UI 言語を英語にしているが、起動済みの Chrome インスタンスがあると、起動オプションにかかわらず、Chrome の UI 言語が既存インスタンスの言語になる。アドレス検索バーの読み上げに依存した処理があるため、Chrome の UI 言語が日本語であることがテストに通らない原因になる。
+* Chrome プロファイル選択画面が出てしまうと、テストに進めない。
+* NVDA 日本語版の文字説明モードの仕様変更により、左右矢印キーを押したときの読み上げが異なる場合がある。
+
+### 対応
+
+* appveyor-jp.yml : 実際に使用している AppVeyor 設定ファイル。本家版の appveyor.yml はそのまま残している。
+* _chromeArgs.py : ローカル環境と AppVeyor を共通のコードで動かすため Chrome の UI 言語を ja-JP に変更している。また、ゲストモードで起動するために必要なオプションを追加している。
+* ChromeLib.py : アドレス検索バーの読み上げとして期待するテキストを "Address and search bar" から "アドレス検索バー" に変更している。
+* jpRobotUtil.py : press_numpad2_4_times を実装しており、文字説明の読み上げを本家版にそろえるためにテストコードに追加している。
+* NVDA そのものの言語（NVDA に由来するテキスト）は英語のままテストをしている。テストのさらなる日本語化は今後の課題である。
+* chromeTests : 一部のテストについて speech のみを有効化し braille を無効化している。
+* symbolPronunciationTests : 本家版では無効化されているがあえて有効化し、日本語版で動かす改変をしている。今後、日本語版に固有の仕様のテストを整備する。
 
 （以上）

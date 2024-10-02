@@ -253,6 +253,8 @@ class ChromeLib:
 		patternSafeTitleString = applicationTitle.replace("(", ".").replace(")", ".")
 		chromeTitleSpeechPattern = re.compile(patternSafeTitleString)
 
+		spy.emulateKeyPress("alt+f")
+		spy.emulateKeyPress("escape")
 		if (
 			_alwaysDoToggleFocus  # may work around focus/foreground event missed issues for tests.
 			or not _chromeLib.canChromeTitleBeReported(chromeTitleSpeechPattern)
