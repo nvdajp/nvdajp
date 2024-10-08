@@ -189,7 +189,7 @@ if __name__ == "__main__":
 		"--docType",
 		help="Type of document",
 		action="store",
-		choices=["userGuide", "developerGuide", "changes", "keyCommands"],
+		choices=["userGuide", "developerGuide", "changes", "keyCommands", "readmejp"],
 	)
 	args.add_argument("source", help="Path to the markdown file")
 	args.add_argument("dest", help="Path to the resulting html file")
