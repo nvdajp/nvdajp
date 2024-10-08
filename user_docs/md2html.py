@@ -137,8 +137,8 @@ def main(source: str, dest: str, lang: str = "en", docType: str | None = None):
 	isDevGuide = docType == "developerGuide"
 	isChanges = docType == "changes"
 	isKeyCommands = docType == "keyCommands"
-    isReadmejp = docType == "readmejp"
-	if docType and not any([isUserGuide, isDevGuide, isChanges, isKeyCommands, isReamejp]):
+	isReadmejp = docType == "readmejp"
+	if docType and not any([isUserGuide, isDevGuide, isChanges, isKeyCommands, isReadmejp]):
 		raise ValueError(f"Unknown docType {docType}")
 	with open(source, "r", encoding="utf-8") as mdFile:
 		mdStr = mdFile.read()
