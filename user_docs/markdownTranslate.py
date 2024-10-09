@@ -36,6 +36,7 @@ def prettyPathString(path: str) -> str:
 		return path
 	return os.path.relpath(path, os.getcwd())
 
+
 @contextlib.contextmanager
 def createAndDeleteTempFilePath_contextManager(
 	dir: str | None = None,
