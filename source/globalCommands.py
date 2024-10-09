@@ -2107,15 +2107,23 @@ class GlobalCommands(ScriptableObject):
 		braille.handler.handleReviewMove(shouldAutoTether=True)
 		scriptCount = scriptHandler.getLastScriptRepeatCount()
 		if scriptCount == 0:
-			speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
+			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode)
+			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 		elif scriptCount == 1:
-			speech.spellTextInfo(info, useCharacterDescriptions=True)
+			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
+			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
 		elif scriptCount == 2:
 			try:
 				cList = [ord(c) for c in info.text]
 			except TypeError:
 				cList = None
 			if cList and jpUtils.isJa():
+				for c in cList:
+					s = jpUtils.code2kana(c)
+					o = "%d u+%s" % (c, s)
+					speech.speakMessage(o)
+				braille.handler.message("  ".join("%d %s" % (c, jpUtils.code2hex(c)) for c in cList))
+			elif cList:
 				for c in cList:
 					speech.speakMessage("%d," % c)
 					# Report hex along with decimal only when there is one character; else, it's confusing.
