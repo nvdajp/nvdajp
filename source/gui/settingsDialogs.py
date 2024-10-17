@@ -62,6 +62,7 @@ from typing import (
 	Set,
 	cast,
 )
+from url_normalize import url_normalize
 import core
 import keyboardHandler
 import characterProcessing
@@ -917,6 +918,7 @@ class GeneralSettingsPanel(SettingsPanel):
 		if globalVars.appArgs.secure or not config.isInstalledCopy():
 			self.copySettingsButton.Disable()
 		settingsSizerHelper.addItem(self.copySettingsButton)
+
 		if updateCheck:
 			item = self.autoCheckForUpdatesCheckBox = wx.CheckBox(
 				self,
@@ -953,6 +955,66 @@ class GeneralSettingsPanel(SettingsPanel):
 			if globalVars.appArgs.secure:
 				item.Disable()
 			settingsSizerHelper.addItem(item)
+
+			# Translators: The label for the update mirror on the General Settings panel.
+			mirrorBoxSizer = wx.StaticBoxSizer(wx.HORIZONTAL, self, label=_("Update mirror"))
+			mirrorBox = mirrorBoxSizer.GetStaticBox()
+			mirrorBoxSizerHelper = guiHelper.BoxSizerHelper(self, sizer=mirrorBoxSizer)
+			settingsSizerHelper.addItem(mirrorBoxSizerHelper)
+
+			# Use an ExpandoTextCtrl because even when read-only it accepts focus from keyboard, which
+			# standard read-only TextCtrl does not. ExpandoTextCtrl is a TE_MULTILINE control, however
+			# by default it renders as a single line. Standard TextCtrl with TE_MULTILINE has two lines,
+			# and a vertical scroll bar. This is not neccessary for the single line of text we wish to
+			# display here.
+			# Note: To avoid code duplication, the value of this text box will be set in `onPanelActivated`.
+			self.mirrorURLTextBox = ExpandoTextCtrl(
+				mirrorBox,
+				size=(self.scaleSize(250), -1),
+				style=wx.TE_READONLY,
+			)
+			# Translators: This is the label for the button used to change the NVDA update mirror URL,
+			# it appears in the context of the update mirror group on the General page of NVDA's settings.
+			changeMirrorBtn = wx.Button(mirrorBox, label=_("Change..."))
+			mirrorBoxSizerHelper.addItem(
+				guiHelper.associateElements(
+					self.mirrorURLTextBox,
+					changeMirrorBtn,
+				),
+			)
+			self.bindHelpEvent("UpdateMirror", mirrorBox)
+			self.mirrorURLTextBox.Bind(wx.EVT_CHAR_HOOK, self._enterTriggersOnChangeMirrorURL)
+			changeMirrorBtn.Bind(wx.EVT_BUTTON, self.onChangeMirrorURL)
+			if globalVars.appArgs.secure:
+				mirrorBox.Disable()
+
+	def onChangeMirrorURL(self, evt: wx.CommandEvent | wx.KeyEvent):
+		"""Show the dialog to change the update mirror URL, and refresh the dialog in response to the URL being changed."""
+		# Import late to avoid circular dependency.
+		from gui._SetURLDialog import _SetURLDialog
+
+		changeMirror = _SetURLDialog(
+			self,
+			# Translators: Title of the dialog used to change NVDA's update server mirror URL.
+			title=_("Set NVDA Update Mirror"),
+			configPath=("update", "serverURL"),
+			helpId="SetUpdateMirror",
+			urlTransformer=lambda url: f"{url}?versionType=stable",
+		)
+		ret = changeMirror.ShowModal()
+		if ret == wx.ID_OK:
+			self.Freeze()
+			# trigger a refresh of the settings
+			self.onPanelActivated()
+			self._sendLayoutUpdatedEvent()
+			self.Thaw()
+
+	def _enterTriggersOnChangeMirrorURL(self, evt: wx.KeyEvent):
+		"""Open the change update mirror URL dialog in response to the enter key in the mirror URL read-only text box."""
+		if evt.KeyCode == wx.WXK_RETURN:
+			self.onChangeMirrorURL(evt)
+		else:
+			evt.Skip()
 
 	def onCopySettings(self, evt):
 		if os.path.isdir(WritePaths.addonsDir) and 0 < len(os.listdir(WritePaths.addonsDir)):
@@ -1046,6 +1108,21 @@ class GeneralSettingsPanel(SettingsPanel):
 			config.conf["update"]["startupNotification"] = self.notifyForPendingUpdateCheckBox.IsChecked()
 			updateCheck.terminate()
 			updateCheck.initialize()
+
+	def onPanelActivated(self):
+		if updateCheck:
+			self._updateCurrentMirrorURL()
+		super().onPanelActivated()
+
+	def _updateCurrentMirrorURL(self):
+		self.mirrorURLTextBox.SetValue(
+			(
+				url
+				if (url := config.conf["update"]["serverURL"])
+				# Translators: A value that appears in NVDA's Settings to indicate that no mirror is in use.
+				else _("No mirror")
+			),
+		)
 
 	def postSave(self):
 		if self.oldLanguage != config.conf["general"]["language"]:
@@ -2919,7 +2996,14 @@ class DocumentFormattingPanel(SettingsPanel):
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings panel.
 		self.linksCheckBox = elementsGroup.addItem(wx.CheckBox(elementsGroupBox, label=_("Lin&ks")))
+		self.linksCheckBox.Bind(wx.EVT_CHECKBOX, self._onLinksChange)
 		self.linksCheckBox.SetValue(config.conf["documentFormatting"]["reportLinks"])
+
+		# Translators: This is the label for a checkbox in the
+		# document formatting settings panel.
+		self.linkTypeCheckBox = elementsGroup.addItem(wx.CheckBox(elementsGroupBox, label=_("Link type")))
+		self.linkTypeCheckBox.SetValue(config.conf["documentFormatting"]["reportLinkType"])
+		self.linkTypeCheckBox.Enable(self.linksCheckBox.IsChecked())
 
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings panel.
@@ -2987,6 +3071,9 @@ class DocumentFormattingPanel(SettingsPanel):
 	def _onLineIndentationChange(self, evt: wx.CommandEvent) -> None:
 		self.ignoreBlankLinesRLICheckbox.Enable(evt.GetSelection() != 0)
 
+	def _onLinksChange(self, evt: wx.CommandEvent):
+		self.linkTypeCheckBox.Enable(evt.IsChecked())
+
 	def onSave(self):
 		config.conf["documentFormatting"]["detectFormatAfterCursor"] = (
 			self.detectFormatAfterCursorCheckBox.IsChecked()
@@ -3021,6 +3108,7 @@ class DocumentFormattingPanel(SettingsPanel):
 		config.conf["documentFormatting"]["reportTableCellCoords"] = self.tableCellCoordsCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportCellBorders"] = self.borderComboBox.GetSelection()
 		config.conf["documentFormatting"]["reportLinks"] = self.linksCheckBox.IsChecked()
+		config.conf["documentFormatting"]["reportLinkType"] = self.linkTypeCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportGraphics"] = self.graphicsCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportHeadings"] = self.headingsCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportLists"] = self.listsCheckBox.IsChecked()
@@ -3136,6 +3224,42 @@ class AudioPanel(SettingsPanel):
 
 		self._appendSoundSplitModesList(sHelper)
 
+		# Translators: This is a label for the applications volume adjuster combo box in settings.
+		label = _("&Application volume adjuster status")
+		self.appVolAdjusterCombo: nvdaControls.FeatureFlagCombo = sHelper.addLabeledControl(
+			labelText=label,
+			wxCtrlClass=nvdaControls.FeatureFlagCombo,
+			keyPath=["audio", "applicationsVolumeMode"],
+			conf=config.conf,
+		)
+		self.appVolAdjusterCombo.Bind(wx.EVT_CHOICE, self._onSoundVolChange)
+		self.bindHelpEvent("AppsVolumeAdjusterStatus", self.appVolAdjusterCombo)
+
+		# Translators: This is the label for a slider control in the
+		# Audio settings panel.
+		label = _("Volume of other applications")
+		self.appSoundVolSlider: nvdaControls.EnhancedInputSlider = sHelper.addLabeledControl(
+			label,
+			nvdaControls.EnhancedInputSlider,
+			minValue=0,
+			maxValue=100,
+		)
+		self.bindHelpEvent("OtherAppVolume", self.appSoundVolSlider)
+		volume = config.conf["audio"]["applicationsSoundVolume"]
+		if 0 <= volume <= 100:
+			self.appSoundVolSlider.SetValue(volume)
+		else:
+			log.error("Invalid volume level: {}", volume)
+			defaultVolume = config.conf.getConfigValidation(["audio", "applicationsSoundVolume"]).default
+			self.appSoundVolSlider.SetValue(defaultVolume)
+
+		self.muteOtherAppsCheckBox: wx.CheckBox = sHelper.addItem(
+			# Translators: Mute other apps checkbox in settings
+			wx.CheckBox(self, label=_("Mute other apps")),
+		)
+		self.muteOtherAppsCheckBox.SetValue(config.conf["audio"]["applicationsSoundMuted"])
+		self.bindHelpEvent("OtherAppMute", self.muteOtherAppsCheckBox)
+
 		self._onSoundVolChange(None)
 
 		audioAwakeTimeLabelText = _(
@@ -3196,6 +3320,15 @@ class AudioPanel(SettingsPanel):
 			for mIndex in range(len(self._allSoundSplitModes))
 			if mIndex in self.soundSplitModesList.CheckedItems
 		]
+		config.conf["audio"]["applicationsSoundVolume"] = self.appSoundVolSlider.GetValue()
+		config.conf["audio"]["applicationsSoundMuted"] = self.muteOtherAppsCheckBox.GetValue()
+		self.appVolAdjusterCombo.saveCurrentValueToConf()
+		audio.appsVolume._updateAppsVolumeImpl(
+			volume=self.appSoundVolSlider.GetValue() / 100.0,
+			muted=self.muteOtherAppsCheckBox.GetValue(),
+			state=self.appVolAdjusterCombo._getControlCurrentValue(),
+		)
+
 		if audioDucking.isAudioDuckingSupported():
 			index = self.duckingList.GetSelection()
 			config.conf["audio"]["audioDuckingMode"] = index
@@ -3216,6 +3349,15 @@ class AudioPanel(SettingsPanel):
 		)
 		self.soundSplitComboBox.Enable(wasapi)
 		self.soundSplitModesList.Enable(wasapi)
+
+		avEnabled = config.featureFlagEnums.AppsVolumeAdjusterFlag.ENABLED
+		self.appSoundVolSlider.Enable(
+			wasapi and self.appVolAdjusterCombo._getControlCurrentValue() == avEnabled,
+		)
+		self.muteOtherAppsCheckBox.Enable(
+			wasapi and self.appVolAdjusterCombo._getControlCurrentValue() == avEnabled,
+		)
+		self.appVolAdjusterCombo.Enable(wasapi)
 
 	def isValid(self) -> bool:
 		enabledSoundSplitModes = self.soundSplitModesList.CheckedItems
@@ -3252,9 +3394,26 @@ class AddonStorePanel(SettingsPanel):
 		index = [x.value for x in AddonsAutomaticUpdate].index(config.conf["addonStore"]["automaticUpdates"])
 		self.automaticUpdatesComboBox.SetSelection(index)
 
+		# Translators: This is the label for a text box in the add-on store settings dialog.
+		self.addonMetadataMirrorLabelText = _("Server &mirror URL")
+		self.addonMetadataMirrorTextbox = sHelper.addLabeledControl(
+			self.addonMetadataMirrorLabelText,
+			wx.TextCtrl,
+		)
+		self.addonMetadataMirrorTextbox.SetValue(config.conf["addonStore"]["baseServerURL"])
+		self.bindHelpEvent("AddonStoreMetadataMirror", self.addonMetadataMirrorTextbox)
+
+	def isValid(self) -> bool:
+		self.addonMetadataMirrorTextbox.SetValue(
+			url_normalize(self.addonMetadataMirrorTextbox.GetValue().strip()).rstrip("/"),
+		)
+		return True
+
 	def onSave(self):
 		index = self.automaticUpdatesComboBox.GetSelection()
 		config.conf["addonStore"]["automaticUpdates"] = [x.value for x in AddonsAutomaticUpdate][index]
+
+		config.conf["addonStore"]["baseServerURL"] = self.addonMetadataMirrorTextbox.Value.strip().rstrip("/")
 
 
 class TouchInteractionPanel(SettingsPanel):
@@ -3740,7 +3899,6 @@ class AdvancedPanelControls(
 		# Advanced settings panel
 		label = _("Audio")
 		audio = wx.StaticBoxSizer(wx.VERTICAL, self, label=label)
-		audioBox = audio.GetStaticBox()  # noqa: F841
 		audioGroup = guiHelper.BoxSizerHelper(self, sizer=audio)
 		sHelper.addItem(audioGroup)
 

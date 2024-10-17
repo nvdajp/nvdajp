@@ -22,7 +22,7 @@ init:
 
 install:
  - set RELEASE=1
- - set VERSION=2024.4jp
+ - set VERSION=2025.1jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
@@ -48,6 +48,7 @@ build_script:
     echo apiBackCompatTo: $apiCompatTo
  - ps: |
     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
+    $sconsArgs += " --all-cores"
     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
  - jptools\nonCertAllBuild.cmd %sconsArgs%

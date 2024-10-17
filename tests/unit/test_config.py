@@ -1,7 +1,7 @@
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2022-2023 NV Access Limited, Cyrille Bougot
+# Copyright (C) 2022-2024 NV Access Limited, Cyrille Bougot, Leonard de Ruijter
 import enum
 import typing
 import unittest
@@ -835,47 +835,6 @@ class Config_upgradeProfileSteps_upgradeProfileFrom_11_to_12(unittest.TestCase):
 			profile["documentFormatting"]["fontAttributeReporting"]
 
 
-class Config_getitem_alias(unittest.TestCase):
-	def setUp(self):
-		self.config = ConfigManager()["documentFormatting"]
-
-	def test_set_reportFontAttributes_false(self):
-		config = self.config
-		config["reportFontAttributes"] = False
-		self.assertEqual(config["reportFontAttributes"], False)
-		self.assertEqual(config["fontAttributeReporting"], OutputMode.OFF)
-
-	def test_set_reportFontAttributes_true(self):
-		config = self.config
-		config["reportFontAttributes"] = True
-		self.assertEqual(config["reportFontAttributes"], True)
-		self.assertEqual(config["fontAttributeReporting"], OutputMode.SPEECH_AND_BRAILLE)
-
-	def test_set_fontAttributeReporting_off(self):
-		config = self.config
-		config["fontAttributeReporting"] = OutputMode.OFF
-		self.assertEqual(config["fontAttributeReporting"], OutputMode.OFF)
-		self.assertEqual(config["reportFontAttributes"], False)
-
-	def test_set_fontAttributeReporting_speech(self):
-		config = self.config
-		config["fontAttributeReporting"] = OutputMode.SPEECH
-		self.assertEqual(config["fontAttributeReporting"], OutputMode.SPEECH)
-		self.assertEqual(config["reportFontAttributes"], True)
-
-	def test_set_fontAttributeReporting_braille(self):
-		config = self.config
-		config["fontAttributeReporting"] = OutputMode.BRAILLE
-		self.assertEqual(config["fontAttributeReporting"], OutputMode.BRAILLE)
-		self.assertEqual(config["reportFontAttributes"], True)
-
-	def test_set_fontAttributeReporting_speechAndBraille(self):
-		config = self.config
-		config["fontAttributeReporting"] = OutputMode.SPEECH_AND_BRAILLE
-		self.assertEqual(config["fontAttributeReporting"], OutputMode.SPEECH_AND_BRAILLE)
-		self.assertEqual(config["reportFontAttributes"], True)
-
-
 class Config_AggregatedSection_getitem(unittest.TestCase):
 	def setUp(self):
 		manager = MagicMock(ConfigManager())
@@ -925,3 +884,29 @@ class Config_AggregatedSection_setitem(unittest.TestCase):
 		self.assertIs(self.testSection["foo"], defaultFlag)
 		self.testSection["foo"] = valueOfDefaultFlag
 		self.assertIs(self.testSection["foo"], valueOfDefaultFlag)
+
+
+class Config_AggregatedSection_pollution(unittest.TestCase):
+	"""Ënsure that config profiles don't get polluted with overridden values equal to the base config"""
+
+	def setUp(self):
+		manager = ConfigManager()
+		spec = configobj.ConfigObj({"someBool": "boolean(default=True)"})
+		self.baseConfig = configobj.ConfigObj({"someBool": True})
+		self.profile = configobj.ConfigObj()
+		self.testSection = AggregatedSection(
+			manager=manager,
+			path=(),
+			spec=spec,
+			profiles=[self.baseConfig, self.profile],
+		)
+
+	def test_updateToSameValue(self):
+		self.testSection["someBool"] = True
+		# Since we set someBool to its existing value, don't touch the profile.
+		self.assertEqual(self.profile, {})
+
+	def test_updateToDifferentValue(self):
+		self.testSection["someBool"] = False
+		# Since we set someBool to a different value, update the profile.
+		self.assertEqual(self.profile, {"someBool": False})
