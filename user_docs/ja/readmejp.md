@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2024年8月19日
+* 最終更新日：2024年10月19日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -798,6 +798,16 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 * [NVDA APIの C#版デモアプリ](https://osdn.net/ticket/browse.php?group_id=4221&tid=33804)
 
 ## バージョンごとの変更点
+
+### 2024.4jp の変更点
+
+* [2024.4jp の変更点](https://github.com/nvdajp/nvdajp/milestone/65?closed=1)
+* [本家版 2024.4 の翻訳](https://github.com/nvdajp/nvdajp/milestone/64?closed=1)
+* 段落の開始を点字で表示する機能について、日本語では段落記号 (¶) を ⣏⣹ (123478-145678)に変更しました。
+
+### 2024.3.1jp の変更点
+
+* [日本語入力で Escape を押すと「クリア」と言わない問題を修正しました](https://github.com/nvdajp/nvdajp/issues/471)
 
 ### 2024.3jp の変更点
 
