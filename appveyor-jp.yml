@@ -14,6 +14,7 @@ environment:
  PY_PYTHON: 3.11-32
 
 init:
+ - git config --global core.autocrlf true
  - ps: |
     $pythonVersion = (py --version)
     echo $pythonVersion
@@ -21,7 +22,7 @@ init:
 
 install:
  - set RELEASE=1
- - set VERSION=2024.3jp
+ - set VERSION=2024.4jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |

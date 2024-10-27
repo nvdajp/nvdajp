@@ -5,10 +5,10 @@ import hashlib
 import argparse
 
 ap = argparse.ArgumentParser()
-ap.add_argument('fileName')
+ap.add_argument("fileName")
 args = ap.parse_args()
 
-fd = open(args.fileName, 'rb')
+fd = open(args.fileName, "rb")
 data = fd.read()
 fd.close()
 

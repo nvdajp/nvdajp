@@ -1,11 +1,11 @@
 # coding: UTF-8
-#brailleDisplayDrivers/kgsbn46.py
-#A part of NonVisual Desktop Access (NVDA)
-#This file is covered by the GNU General Public License.
-#See the file COPYING for more details.
-#Copyright (C) 2011-2012 Masataka Shinke
-#Copyright (C) 2013 Masamitsu Misono
-#Copyright (C) 2011-2019 Takuya Nishimoto
+# brailleDisplayDrivers/kgsbn46.py
+# A part of NonVisual Desktop Access (NVDA)
+# This file is covered by the GNU General Public License.
+# See the file COPYING for more details.
+# Copyright (C) 2011-2012 Masataka Shinke
+# Copyright (C) 2013 Masamitsu Misono
+# Copyright (C) 2011-2019 Takuya Nishimoto
 
 import braille
 import inputCore
@@ -17,19 +17,30 @@ from ctypes import *  # noqa: F403
 from ctypes.wintypes import *  # noqa: F403
 from logHandler import log
 import sys
+
 if sys.version_info.major >= 3:
 	xrange = range
-	byte = lambda x: x.to_bytes(1, 'big')  # noqa: E731
+	byte = lambda x: x.to_bytes(1, "big")  # noqa: E731
 else:
 	byte = chr
 
-from .kgs import kgsListComPorts, waitAfterDisconnect, kgs_dir, processEvents, BMDRVS, KGS_DISPMODE, lock, unlock
+from .kgs import (
+	kgsListComPorts,
+	waitAfterDisconnect,
+	kgs_dir,
+	processEvents,
+	BMDRVS,
+	KGS_DISPMODE,
+	lock,
+	unlock,
+)
 
 fConnection = False
 numCells = 0
 isUnknownEquipment = False
 
 KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)  # noqa: F405
+
 
 def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	global fConnection, numCells, isUnknownEquipment
@@ -49,7 +60,7 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 		fConnection = False
 		log.info("invalid driver")
 	elif nStatus == BMDRVS.OPEN_PORT_FAILED:
-		#fConnection = False
+		# fConnection = False
 		log.info("open port failed")
 	elif nStatus == BMDRVS.CREATE_THREAD_FAILED:
 		fConnection = False
@@ -66,7 +77,9 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	else:
 		log.info("status changed to %d" % nStatus)
 
+
 KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))  # noqa: F405
+
 
 def nvdaKgsHandleKeyInfoProc(lpKeys):
 	keys = (lpKeys[0], lpKeys[1], lpKeys[2])
@@ -75,26 +88,38 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	names = []
 	routingIndex = None
 	if keys[0] == 0:
-		if keys[1] &   1: names.append('lf')  # noqa: E701
-		if keys[1] &   2: names.append('bk')  # noqa: E701
-		if keys[1] &   4: names.append('sr')  # noqa: E701
-		if keys[1] &   8: names.append('sl')  # noqa: E701
-		if keys[1] &  16: names.append('func1')  # noqa: E701
-		if keys[1] &  32: names.append('func2')  # noqa: E701
-		if keys[1] &  64: names.append('func3')  # noqa: E701
-		if keys[1] & 128: names.append('func4')  # noqa: E701
+		if keys[1] & 1:
+			names.append("lf")  # noqa: E701
+		if keys[1] & 2:
+			names.append("bk")  # noqa: E701
+		if keys[1] & 4:
+			names.append("sr")  # noqa: E701
+		if keys[1] & 8:
+			names.append("sl")  # noqa: E701
+		if keys[1] & 16:
+			names.append("func1")  # noqa: E701
+		if keys[1] & 32:
+			names.append("func2")  # noqa: E701
+		if keys[1] & 64:
+			names.append("func3")  # noqa: E701
+		if keys[1] & 128:
+			names.append("func4")  # noqa: E701
 	else:
 		tCode = 240
-		if keys[0] &   1+tCode: names.append('func1')  # noqa: E701
-		if keys[0] &   2+tCode: names.append('func2')  # noqa: E701
-		if keys[0] &   4+tCode: names.append('func3')  # noqa: E701
-		if keys[0] &   8+tCode: names.append('func4')  # noqa: E701
-		names.append('route')
+		if keys[0] & 1 + tCode:
+			names.append("func1")  # noqa: E701
+		if keys[0] & 2 + tCode:
+			names.append("func2")  # noqa: E701
+		if keys[0] & 4 + tCode:
+			names.append("func3")  # noqa: E701
+		if keys[0] & 8 + tCode:
+			names.append("func4")  # noqa: E701
+		names.append("route")
 		routingIndex = keys[1] - 1
 	if routingIndex is not None:
-		log.io("names %s %d" % ('+'.join(names), routingIndex))
+		log.io("names %s %d" % ("+".join(names), routingIndex))
 	else:
-		log.io("names %s" % '+'.join(names))
+		log.io("names %s" % "+".join(names))
 	if len(names):
 		try:
 			inputCore.manager.executeGesture(InputGesture(names, routingIndex))
@@ -103,14 +128,15 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 		return True
 	return False
 
+
 def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	global fConnection, isUnknownEquipment
 	log.info("scanning port %s" % port)
-	if port[:3] == 'COM':
-		_port = int(port[3:])-1
+	if port[:3] == "COM":
+		_port = int(port[3:]) - 1
 	else:
 		return False, None
-	SPEED = 3 # 9600bps
+	SPEED = 3  # 9600bps
 	fConnection = False
 	isUnknownEquipment = False
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
@@ -125,7 +151,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				log.info("isUnknownEquipment")
 				break
 			time.sleep(0.5)
-			tones.beep(400+(loop*20), 20)
+			tones.beep(400 + (loop * 20), 20)
 			processEvents()
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
@@ -133,6 +159,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 		tones.beep(200, 100)
 	log.info("connection:%d port:%d" % (fConnection, _port))
 	return fConnection, port
+
 
 def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	Port = _port = None
@@ -143,30 +170,37 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 		frName = portInfo.get("friendlyName")
 		btName = portInfo.get("bluetoothName")
 		# skip non BMsmart device
-		if btName and btName.lower() == 'bm series':
+		if btName and btName.lower() == "bm series":
 			continue
-		log.info(u"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(_port=_port, hwID=hwID, btName=btName, frName=frName))
+		log.info(
+			"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(
+				_port=_port, hwID=hwID, btName=btName, frName=frName
+			)
+		)
 		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
 		if ret:
 			break
 	return ret, Port
 
+
 def getKbdcName(hBrl):
 	if not hBrl.IsKbdcInstalled(b"Active KBDC"):
 		log.warning("active kbdc not found")
-	#return u"ブレイルノート46C/46D".encode('shift-jis')
-	return u'\u30d6\u30ec\u30a4\u30eb\u30ce\u30fc\u30c846C/46D'.encode('shift-jis')
+	# return u"ブレイルノート46C/46D".encode('shift-jis')
+	return "\u30d6\u30ec\u30a4\u30eb\u30ce\u30fc\u30c846C/46D".encode("shift-jis")
+
 
 def bmConnect(hBrl, port, keyCallbackInst, statusCallbackInst, execEndConnection=False):
 	if execEndConnection:
 		bmDisConnect(hBrl, port)
 		waitAfterDisconnect()
 	devName = getKbdcName(hBrl)
-	if port is None or port=="auto":
+	if port is None or port == "auto":
 		ret, pName = _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
 	else:
 		ret, pName = _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst)
 	return ret, pName
+
 
 def bmDisConnect(hBrl, port):
 	global fConnection, numCells
@@ -174,20 +208,21 @@ def bmDisConnect(hBrl, port):
 	log.info("BmEndDisplayMode %s %d" % (port, ret))
 	ret = hBrl.bmEnd()
 	log.info("BmEnd %s %d" % (port, ret))
-	numCells=0
+	numCells = 0
 	fConnection = False
 	return ret
+
 
 class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	name = "kgsbn46"
 	# Translators: braille display driver description
-	description = _(u"KGS BrailleNote 46C/46D")
+	description = _("KGS BrailleNote 46C/46D")
 	isThreadSafe = True
 	_portName = None
 	_directBM = None
 
 	def __init__(self, port="auto"):
-		super(BrailleDisplayDriver,self).__init__()
+		super(BrailleDisplayDriver, self).__init__()
 		global fConnection, numCells
 		if not lock():
 			return
@@ -204,9 +239,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			log.info("first connection %s" % port)
 			execEndConnection = False
 			self.numCells = 0
-		kgs_dll = os.path.join(kgs_dir, 'DirectBM.dll')
+		kgs_dll = os.path.join(kgs_dir, "DirectBM.dll")
 		if sys.version_info.major <= 2:
-			kgs_dll = kgs_dll.encode('mbcs')
+			kgs_dll = kgs_dll.encode("mbcs")
 		log.debug(kgs_dll)
 		self._directBM = windll.LoadLibrary(kgs_dll)  # noqa: F405
 		if not self._directBM:
@@ -214,7 +249,9 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 			raise RuntimeError("No KGS instance found")
 		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
-		ret,self._portName = bmConnect(self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection)
+		ret, self._portName = bmConnect(
+			self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection
+		)
 		if ret:
 			self.numCells = numCells
 			log.info("connected %s" % port)
@@ -249,60 +286,72 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	def getPossiblePorts(cls):
 		ports = {}
 		for p in kgsListComPorts():
-			if 'bluetoothName' in p:
-				p['friendlyName'] = u"Bluetooth: %s (%s)" % (p['bluetoothName'], p['port'])
+			if "bluetoothName" in p:
+				p["friendlyName"] = "Bluetooth: %s (%s)" % (p["bluetoothName"], p["port"])
 			ports[p["port"]] = p["friendlyName"]
 		ar = [cls.AUTOMATIC_PORT]
 		for i in xrange(64):
 			p = "COM%d" % (i + 1)
 			if p in ports:
 				fname = ports[p]
-				ar.append( (p, fname) )
+				ar.append((p, fname))
 		return OrderedDict(ar)
 
 	def display(self, data):
-		if not data: return  # noqa: E701
-		s = b''
+		if not data:
+			return  # noqa: E701
+		s = b""
 		for c in data:
 			d = 0
-			if c & 0x01: d += 0x80  # noqa: E701
-			if c & 0x02: d += 0x40  # noqa: E701
-			if c & 0x04: d += 0x20  # noqa: E701
-			if c & 0x08: d += 0x08  # noqa: E701
-			if c & 0x10: d += 0x04  # noqa: E701
-			if c & 0x20: d += 0x02  # noqa: E701
-			if c & 0x40: d += 0x10  # noqa: E701
-			if c & 0x80: d += 0x01  # noqa: E701
+			if c & 0x01:
+				d += 0x80  # noqa: E701
+			if c & 0x02:
+				d += 0x40  # noqa: E701
+			if c & 0x04:
+				d += 0x20  # noqa: E701
+			if c & 0x08:
+				d += 0x08  # noqa: E701
+			if c & 0x10:
+				d += 0x04  # noqa: E701
+			if c & 0x20:
+				d += 0x02  # noqa: E701
+			if c & 0x40:
+				d += 0x10  # noqa: E701
+			if c & 0x80:
+				d += 0x01  # noqa: E701
 			s += byte(d)
-		dataBuf   = create_string_buffer(s, 256)  # noqa: F405
-		cursorBuf = create_string_buffer(b'', 256)  # noqa: F405
+		dataBuf = create_string_buffer(s, 256)  # noqa: F405
+		cursorBuf = create_string_buffer(b"", 256)  # noqa: F405
 		try:
 			ret = self._directBM.bmDisplayData(dataBuf, cursorBuf, self.numCells)
 			log.debug("bmDisplayData %d" % ret)
 		except:  # noqa: E722
 			log.debug("error bmDisplayData")
 
-
-	gestureMap = inputCore.GlobalGestureMap({
-		"globalCommands.GlobalCommands": {
-			"showGui": ("br(kgsbn46):func1",),
-			"braille_routeTo": ("br(kgsbn46):route","br(kgsbn46):func1+func2+func3+func4+route",),
-			"braille_scrollBack": ("br(kgsbn46):sl",),
-			"braille_scrollForward": ("br(kgsbn46):sr",),
-			"review_previousLine": ("br(kgsbn46):func2+bk",),
-			"review_nextLine": ("br(kgsbn46):func2+lf",),
-			"review_previousWord": ("br(kgsbn46):func2+sl",),
-			"review_nextWord": ("br(kgsbn46):func2+sr",),
-			"kb:upArrow": ("br(kgsbn46):bk",),
-			"kb:downArrow": ("br(kgsbn46):lf",),
-			"kb:leftArrow": ("br(kgsbn46):func3",),
-			"kb:rightArrow": ("br(kgsbn46):func4",),
+	gestureMap = inputCore.GlobalGestureMap(
+		{
+			"globalCommands.GlobalCommands": {
+				"showGui": ("br(kgsbn46):func1",),
+				"braille_routeTo": (
+					"br(kgsbn46):route",
+					"br(kgsbn46):func1+func2+func3+func4+route",
+				),
+				"braille_scrollBack": ("br(kgsbn46):sl",),
+				"braille_scrollForward": ("br(kgsbn46):sr",),
+				"review_previousLine": ("br(kgsbn46):func2+bk",),
+				"review_nextLine": ("br(kgsbn46):func2+lf",),
+				"review_previousWord": ("br(kgsbn46):func2+sl",),
+				"review_nextWord": ("br(kgsbn46):func2+sr",),
+				"kb:upArrow": ("br(kgsbn46):bk",),
+				"kb:downArrow": ("br(kgsbn46):lf",),
+				"kb:leftArrow": ("br(kgsbn46):func3",),
+				"kb:rightArrow": ("br(kgsbn46):func4",),
+			}
 		}
-	})
+	)
 
 
 class InputGesture(braille.BrailleDisplayGesture):
-
 	source = BrailleDisplayDriver.name
 
 	def __init__(self, names, routingIndex):

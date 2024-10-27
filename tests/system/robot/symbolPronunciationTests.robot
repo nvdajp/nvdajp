@@ -4,7 +4,7 @@
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 *** Settings ***
 Documentation	Symbol pronunciation tests
-Force Tags	NVDA	smoke test	symbols	excluded_from_build
+Force Tags	NVDA	smoke test	symbols
 
 # for start & quit in Test Setup and Test Test Teardown
 Library	NvdaLib.py
@@ -34,41 +34,33 @@ default setup
 
 symbolInSpeechUI
 	[Documentation]	Ensure symbols aren't substituted within NVDA speech UI.
-	[Tags]	excluded_from_build
 	test_symbolInSpeechUI
 
 moveByWord
 	[Documentation]	Ensure symbols announced as expected when navigating by word (numpad 6).
-	[Tags]	excluded_from_build
 	test_moveByWord
 moveByLine
 	[Documentation]	Ensure symbols announced as expected when navigating by line (numpad 9).
-	[Tags]	excluded_from_build
 	test_moveByLine
 moveByCharacter
 	[Documentation]	Ensure symbols announced as expected when navigating by character (numpad 3).
-	[Tags]	excluded_from_build
 	test_moveByChar
 
 delayedCharacterDescriptions
 	[Documentation]	Ensure delayed character descriptions are announced as expected when navigating by character.
-	[Tags]	excluded_from_build
 	test_delayedDescriptions
 
 selectionByWord
 	[Documentation]	Ensure symbols announced as expected when selecting by word (shift+control+right arrow).
-	# [Tags]	selection
-	[Tags]	excluded_from_build
+	[Tags]	selection
 	test_selByWord
 selectionByLine
 	[Documentation]	Ensure symbols announced as expected when selecting by line (shift+down arrow).
-	# [Tags]	selection
-	[Tags]	excluded_from_build
+	[Tags]	selection
 	test_selByLine
 selectionByCharacter
 	[Documentation]	Ensure symbols announced as expected when selecting by character (shift+right arrow).
-	# [Tags]	selection
-	[Tags]	excluded_from_build
+	[Tags]	selection
 	test_selByChar
 
 tableHeaderSymbols
@@ -78,5 +70,4 @@ tableHeaderSymbols
 
 ignoreBlankLinesForReportLineIndentation
 	[Documentation]	Ensure indentation announced as expected when ignore blank lines for line indentation reporting is on/off.
-	[Tags]	excluded_from_build
 	test_ignoreBlankLinesForReportLineIndentation

@@ -7,17 +7,17 @@ import api
 import ui
 from NVDAObjects.IAccessible import IAccessible
 
-class AppModule(appModuleHandler.AppModule):
 
+class AppModule(appModuleHandler.AppModule):
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
 		if obj.windowClassName == "FMTMainForm":
 			clsList.insert(0, EnhancedForm)
 
-class EnhancedForm(IAccessible):
 
+class EnhancedForm(IAccessible):
 	def script_reportItem(self, gesture):
 		gesture.send()
-		focusObject=api.getFocusObject()
+		focusObject = api.getFocusObject()
 		ui.message(focusObject.value)
 
 	__gestures = {

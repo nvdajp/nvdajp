@@ -3,8 +3,7 @@
 # This file may be used under the terms of the GNU General Public License, version 2 or later.
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 
-""" This module provides a central location for arguments used to start Google Chrome.
-"""
+"""This module provides a central location for arguments used to start Google Chrome."""
 
 
 def getChromeArgs() -> str:
@@ -24,10 +23,9 @@ def getChromeArgs() -> str:
 		" --disable-notifications"  # prevent notifications that may interfere with automated tests.
 		" --no-experiments"  # Stable behavior is preferred.
 		" --no-default-browser-check"  # Don't bother to check if Chrome is the default browser.
-		# " --lang=en-US"  # Set GUI lang to English to ensure tests pass on non-English systems. Must be supplied
-		# to the first Chrome process started.
 		" --lang=ja-JP"  # Set GUI lang to Japanese.
 		" --guest"  # Run as guest. Skip profile chooser.
+		# to the first Chrome process started.
 		" --disable-session-crashed-bubble"
 		# --disable-session-crashed-bubble: If chrome crashes, don't cause subsequent tests to fail.
 		# However, the config can be checked to determine if a crash occurred.
@@ -40,6 +38,6 @@ def getChromeArgs() -> str:
 	)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	# See usage in appveyor/scripts/tests/beforeTests.ps1
 	print(getChromeArgs())

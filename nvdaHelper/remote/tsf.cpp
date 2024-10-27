@@ -732,7 +732,7 @@ STDMETHODIMP TsfSink::OnActivated(DWORD dwProfileType, LANGID langId, REFCLSID r
 	return S_OK;
 }
 
-static void CALLBACK TSF_winEventHook(HWINEVENTHOOK hookID, DWORD eventID, HWND hwnd, long objectID, long childID, DWORD threadID, DWORD time) { 
+static void CALLBACK TSF_winEventHook(HWINEVENTHOOK hookID, DWORD eventID, HWND hwnd, long objectID, long childID, DWORD threadID, DWORD time) {
 	switch (eventID)
 	{
 		case EVENT_SYSTEM_FOREGROUND:
@@ -805,6 +805,6 @@ void TSF_thread_detached() {
 
 bool isTSFThread() {
 	TsfSink* tsf=fetchCurrentTsfSink();
-	if(!tsf) return false; 
+	if(!tsf) return false;
 	return tsf->hasActiveProfile;
 }

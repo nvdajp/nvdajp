@@ -39,14 +39,12 @@ checkbox labelled by inner element
 	checkbox_labelled_by_inner_element
 Announce list item when moving by word or character
 	[Documentation]	Entering a list item when moving by word or character should be announced, but not by line.
-	[Tags]	excluded_from_build
 	announce_list_item_when_moving_by_word_or_character
 i7562
 	[Documentation]	List should not be announced on every line of a ul in a contenteditable
 	test_i7562
 pr11606
 	[Documentation]	Announce the correct line when placed at the end of a link at the end of a list item in a contenteditable
-	[Tags]	excluded_from_build
 	test_pr11606
 ARIA treegrid
 	[Documentation]	Ensure that ARIA treegrids are accessible as a standard table in browse mode.
@@ -67,13 +65,11 @@ Marked Focus mode
 	test_mark_focus
 ARIA details
 	[Documentation]	Ensure a summary of aria-details is read on command from a mark element
-	# [Tags]	annotations
-	[Tags]	excluded_from_build
+	[Tags]	annotations
 	test_mark_aria_details
 ARIA details with free review and nav
 	[Documentation]	Variation on the ARIA details test with the config changed so the review cursor does not follow the caret and the nav object doesn't follow focus.
-	# [Tags]	annotations
-	[Tags]	excluded_from_build
+	[Tags]	annotations
 	test_mark_aria_details_FreeReviewCursor
 ARIA details noVbuf
 	[Documentation]	Test for retrieving ARIA details from a button inside a role=application
@@ -107,22 +103,18 @@ ARIA roleDescription inline content editable
 	[Tags]	excluded_from_build
 ARIA roleDescription block content editable
 	[Documentation]	Read an block element with a custom role in content editables 
-	[Tags]	excluded_from_build
 	test_ariaRoleDescription_block_contentEditable
 ARIA description Focus Mode
 	[Documentation]	Navigate to a span with aria-description in focus mode
-	[Tags]	excluded_from_build
 	test_ariaDescription_focusMode
 ARIA description Browse Mode
 	[Documentation]	Navigate (down arrow, in browse mode) aria-description is read, other sources of description are not.
-	[Tags]	excluded_from_build
 	test_ariaDescription_browseMode
 ARIA description Say All
 	[Documentation]	Say all, contents includes aria-description
 	test_ariaDescription_sayAll
 i10840
 	[Documentation]	The name of table header cells should only be conveyed once when navigating directly to them in browse mode (chrome self-references a header cell as its own header, which used to cause the name to be announced twice)
-	[Tags]	excluded_from_build
 	test_i10840
 Prevent Duplicate Speech From Description while in Focus mode
 	preventDuplicateSpeechFromDescription_focus
@@ -154,7 +146,6 @@ focus mode is turned on on focused read-only list item
 	test_focus_mode_on_focusable_read_only_lists
 ARIA details role
 	[Documentation]	Test aria details roles being announced on discovery
-	[Tags]	excluded_from_build
 	test_mark_aria_details_role
 multiple ARIA details targets
 	[Documentation]	Test multiple aria details targets being announced
