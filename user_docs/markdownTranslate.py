@@ -34,7 +34,7 @@ def prettyPathString(path: str) -> str:
 	cwd = os.getcwd()
 	if os.path.normcase(os.path.splitdrive(path)[0]) != os.path.normcase(os.path.splitdrive(cwd)[0]):
 		return path
-	return os.path.relpath(path, os.getcwd())
+	return os.path.relpath(path, cwd)
 
 
 @contextlib.contextmanager

@@ -106,13 +106,6 @@ ignore_packages = [
 	"robotremoteserver",
 
 	# Compatible licenses:
-	"fast-diff-match-patch",  # Apache 2
-	"importlib-metadata",  # Apache 2
-	"opencv-python",  # Apache 2
-	"requests",  # Apache 2
-	"robotframework",  # Apache 2
-	"robotframework-screencaplibrary",  # Apache 2
-	"robotremoteserver",  # Apache 2
 	"certifi",  # Mozilla Public License 2.0
 	"markdown-link-attr-modifier",  # GPLV3 license, but not in PyPI correctly
 	"pycaw",  # MIT license, but not in PyPI
