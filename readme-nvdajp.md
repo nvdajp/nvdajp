@@ -168,6 +168,13 @@ NVDA 本体を実行するには
 > runsystemtests.bat -i chrome
 ```
 
+AppVeyor でテストが通るためのチェック
+
+```text
+> runlint.bat
+> scons checkPot
+```
+
 ### (8) NVDA日本語版のリリースビルド
 
 現在は `signtool sign /a` を使えることが前提。

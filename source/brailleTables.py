@@ -521,6 +521,8 @@ addTable(
 	contracted=True,
 	source=TableSource.BUILTIN_JP,
 )
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
 addTable("ka-in-g1.utb", _("Kannada grade 1"), inputForLangs={"kn"}, outputForLangs={"kn"})
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
