@@ -25,6 +25,7 @@ To use this feature, "allow NVDA to control the volume of other applications" mu
 * When applying the "Body Text" or a heading paragraph style using the corresponding keyboard shortcut in LibreOffice Writer 25.2 or newer, NVDA announces the new paragraph style. (#6915, @michaelweghorn)
 * When toggling double underline in LibreOffice Writer using the corresponding keyboard shortcut, NVDA announces the new state ("double underline on"/"double underline off"). (#6915, @michaelweghorn)
 * Automatic language switching is now supported when using Microsoft Speech API version 5 (SAPI5) and Microsoft Speech Platform voices. (#17146, @gexgd0419)
+* NVDA can now be configured to speak the current line or paragraph when navigating with braille navigation keys. (#17053, @nvdaes)
 
 ### Changes
 
@@ -37,10 +38,14 @@ To use this feature, "allow NVDA to control the volume of other applications" mu
   * The initial window can now be exited with `escape` or `alt+f4`. (#10799)
   * It will now show a message to the user, including the error, in the rare event of a Windows error while attempting COM re-registrations.
 * In Word and Outlook the result of more font formatting shortcuts is now reported. (#10271, @CyrilleB79)
-* Default input and output braille tables will now be determined based on the NVDA language. (#16390, #290, @nvdaes)
+* Default input and output braille tables can now be determined based on the NVDA language. (#17306, #16390, #290, @nvdaes)
+* In Microsoft Word, when using the "report focus" command, the document layout will be announced if this information is available and reporting object descriptions is enabled. (#15088, @nvdaes)
+* NVDA will now only warn about add-on incompatibility when updating to a version which has an incompatible add-on API to the currently installed copy. (#17071)
 
 ### Bug Fixes
 
+* Math reading has been fixed for some web elements.
+Specifically, MathML inside of span and other elements that have the attribute `role="math"`. (#15058)
 * Native support for the Dot Pad tactile graphics device from Dot Inc as a multiline braille display. (#17007)
 * Improvements when editing in Microsoft PowerPoint:
   * Caret reporting no longer breaks when text contains wide characters, such as emoji. (#17006 , @LeonarddeR)
@@ -57,6 +62,11 @@ To use this feature, "allow NVDA to control the volume of other applications" mu
 * When spelling, unicode normalization now works more appropriately:
   * After reporting a normalized character, NVDA no longer incorrectly reports subsequent characters as normalized. (#17286, @LeonarddeR)
   * Composite characters (such as é) are now reported correctly. (#17295, @LeonarddeR)
+* The command to Report the destination URL of a link now works as expected when using the legacy object model in Microsoft Word, Outlook and Excel. (#17292, #17362, @CyrilleB79)
+* NVDA will no longer announce Windows 11 clipboard history entries when closing the window while items are present. (#17308, @josephsl)
+* If the plugins are reloaded while a browseable message is opened, NVDA will no longer fail to report subsequent focus moves. (#17323, @CyrilleB79)
+* When using applications such as Skype, Discord, Signal and Phone Link for audio communication, NVDA speech and sounds no longer decrease in volume. (#17349, @jcsteh)
+* Opening the NVDA Python Console will no longer fail in case an error occurs while retrieving snapshot variables. (#17391, @CyrilleB79)
 
 ### Changes for Developers
 
@@ -65,11 +75,14 @@ Please refer to [the developer guide](https://www.nvaccess.org/files/nvda/docume
 * Note: this is an Add-on API compatibility breaking release.
 Add-ons will need to be re-tested and have their manifest updated.
 * Component updates:
-  * Updated Ruff to 0.6.3. (#17102)
+  * Updated Ruff to 0.7.2. (#17102, #17260)
   * Updated Comtypes to 1.4.6. (#17061, @LeonarddeR)
   * Updated wxPython to 4.2.2. (#17181, @dpy013)
   * Updated SCons to 4.8.1. (#17254)
   * Updated sphinx to 8.1.2 and sphinx-rtd-theme to 3.0.1. (#17284, @josephsl)
+  * Updated Robot Framework to 7.1.1. (#17329, @josephsl)
+  * Updated configobj to 5.1.0 commit `8be5462`. (#17328)
+  * Updated pre-commit to 4.0.1. (#17260)
 * `ui.browseableMessage` may now be called with options to present a button for copying to clipboard, and/or a button for closing the window. (#17018, @XLTechie)
 * Several additions to identify link types (#16994, @LeonarddeR, @nvdaes)
   * A new `utils.urlUtils` module with different functions to determine link types

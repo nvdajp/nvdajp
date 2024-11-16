@@ -5,7 +5,7 @@ SCons==4.8.1
 comtypes==1.4.6
 pyserial==3.5
 wxPython==4.2.2
-configobj @ git+https://github.com/DiffSK/configobj@e2ba4457c4651fa54f8d59d8dcdd3da950e956b8#egg=configobj
+configobj @ git+https://github.com/DiffSK/configobj@8be54629ee7c26acb5c865b74c76284e80f3aa31#egg=configobj
 requests==2.32.0
 url-normalize==1.4.3
 schedule==1.2.1
@@ -41,13 +41,13 @@ sphinx==8.1.2
 sphinx_rtd_theme==3.0.1
 
 # Requirements for automated linting
-ruff==0.6.3
-pre-commit==3.7.1
+ruff==0.7.2
+pre-commit==4.0.1
 
 # Runing automated license checks
 licensecheck==2024.2
 
 # Requirements for system tests
-robotframework==6.1.1
+robotframework==7.1.1
 robotremoteserver==1.1.1
 robotframework-screencaplibrary==1.6.0

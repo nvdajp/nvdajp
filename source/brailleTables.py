@@ -916,8 +916,6 @@ def initialize():
 					"Error while applying custom braille tables config from scratchpad manifest: "
 					f"{manifestPath}",
 				)
-	if config.conf["braille"]["translationTable"] == "auto":
-		config.conf["braille"]["translationTable"] = getDefaultTableForCurLang(TableType.OUTPUT)
 
 
 def terminate():
