@@ -6,7 +6,7 @@
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は NVDA 2024.4jp の場合
+以下は NVDA 2024.4.1jp (2024年11月24日時点での betajp ブランチ) の状況
 
 ### (1) Windows 10/11 64ビット
 
@@ -18,28 +18,25 @@
 
 https://www.visualstudio.com/ja/downloads/
 
-Visual Studio 2022 v17.11.3
+* Visual Studio 2022 v17.12.1 でビルドできることを確認した
 
 #### (2.1) 選択する「ワークロード」の項目
 
 * C++によるデスクトップ開発
-* ユニバーサル Windows プラットフォーム開発
 
 #### (2.2) 「概要」「C++によるデスクトップ開発」「オプション」で選択する項目
 
-* VC++ 2022 最新の v14x ツール
-* Windows 11 SDK (10.0.22621.0)
-* x86 用と x64 用の Visual C++ ATL
-* C++ Clang tools for Windows
+* Windows 用 C++ Clang ツール
 
 #### (2.3) 「個別のコンポーネント」「コードツール」で選択する項目
 
 個別のコンポーネント
 
-* MSVC v143 - VS 2022 C++ ARM64 build tools
-* MSVC v143 - VS 2022 C++ x64/x86 build tools
-* C++ ATL for v143 build tools (x86 & x64)
-* C++ ATL for v143 build tools (ARM64/ARM64EC)
+* Windows 11 SDK (10.0.22621.0)
+* MSVC v143 - VS 2022 C++ ARM64/ARM64EC ビルドツール(最新)
+* MSVC v143 - VS 2022 C++ x64/x86 ビルドツール(最新)
+* 最新の v143 ビルドツール用 C++ ATL (x86 および x64)
+* 最新の v143 ビルドツール用 C++ ATL (ARM64/ARM64EC)
 
 コードツール
 
@@ -77,6 +74,17 @@ C:\Program Files\Git\usr\bin
 備考：
 リモートリポジトリへのアップロード (git push) するためには
 push 先（GitHubなど）のアカウントのセットアップや公開鍵の設定、権限の取得が必要。
+
+#### (2.6) 補足
+
+createDevEnvironment.md の内容だが、この手順書では使っていない。
+
+* VSインストーラーのインポート機能で .vsconfig を読み込むことができる
+* Visual Studio Code を使用する場合は、NVDA用事前設定済みワークスペース構成を利用できる。リポジトリのルートで以下のコマンドを実行することで、ワークスペース構成をチェックアウトできる。
+
+```text
+> git clone https://github.com/nvaccess/vscode-nvda.git .vscode
+```
 
 ### (4) 7-Zip (7z)
 
@@ -159,13 +167,6 @@ NVDA 本体を実行するには
 
 ```text
 > runnvda.bat
-```
-
-システムテストを実行するには
-
-```text
-> runsystemtests.bat -i symbols --test "moveByCharacter"
-> runsystemtests.bat -i chrome
 ```
 
 ### (8) NVDA日本語版のリリースビルド
@@ -288,5 +289,32 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 * NVDA そのものの言語（NVDA に由来するテキスト）は英語のままテストをしている。テストのさらなる日本語化は今後の課題である。
 * chromeTests : 一部のテストについて speech のみを有効化し braille を無効化している。
 * symbolPronunciationTests : 本家版では無効化されているがあえて有効化し、日本語版で動かす改変をしている。今後、日本語版に固有の仕様のテストを整備する。
+
+### システムテストの実行
+
+システムテストを実行するには
+
+```text
+> runsystemtests.bat --include --test "moveByCharacter"
+```
+
+NVDA日本語版のビルドで行っているシステムテスト
+
+```text
+> runsystemtests.bat --include NVDA --exclude restarts_on_crash
+> runsystemtests.bat --variable whichNVDA:installed --variable installDir:"output\nvda_%VERSION%.exe" --include installer
+> runsystemtests.bat --include chrome
+```
+
+* restarts_on_crash タグを追加している。これらは AppVeyor では通るが、ローカル環境では通らないため、除外する
+* installer はビルドした NVDA の exe ファイルを指定する
+* AppVeyor ビルドに時間がかかるため appveyor-jp.yml では chrome テストを NVDA タグから除外している
+* システムテスト中にNVDAの起動と終了で音を出力する
+
+システムテストが失敗する場合
+
+* マルチディスプレイ環境
+* 実行中に画面操作
+* 事前に Chrome を起動している
 
 （以上）
