@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2024年10月19日
+* 最終更新日：2024年11月18日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -15,9 +15,9 @@ NVDA のユーザーガイドとあわせてお読みください。
 
 NVDA日本語版は無保証です。ご自身の責任でご利用ください。
 
-### Webサイト
+### ウェブサイト
 
-* [NVDA日本語版のWebサイト www.nvda.jp](https://www.nvda.jp)
+* [NVDA日本語版のウェブサイト www.nvda.jp](https://www.nvda.jp)
 * [NVDA日本語チームの連絡先](https://www.nvda.jp/contact)
 * [NVDA日本語版ガイドブック](https://nvdajp-book.readthedocs.io/ja/latest/)
 * [開発者のためのNVDA教材リンク](https://github.com/nvdajp/nvdajp/wiki/ForDeveloper)
@@ -249,7 +249,7 @@ NVDA 本家版には Microsoft Speech Platform のための音声ドライバー
 
 NVDA 日本語版では Haruka (nvdajp) という日本語専用ドライバーを追加しました。
 
-音声エンジン Haruka はマイクロソフトのWebサイトから入手できます。
+音声エンジン Haruka はマイクロソフトのウェブサイトから入手できます。
 
 [ランタイム(Version 11)の入手](http://www.microsoft.com/download/en/details.aspx?id=27225)
 
@@ -298,7 +298,7 @@ AccessibleToolsLaboratory (ACT Laboratory) が販売する High-speed Synthesize
 
 ### 記号の出力
 
-NVDA 日本語版では点字出力テーブル「日本語6点情報処理点字」が利用できます。このテーブルでは、メールアドレスやWebサイトのURLなどに日本の情報処理用点字が使われます。
+NVDA 日本語版では点字出力テーブル「日本語6点情報処理点字」が利用できます。このテーブルでは、メールアドレスやウェブサイトのURLなどに日本の情報処理用点字が使われます。
 
 その他の日本語点字では記号は以下のように出力されます。
 
@@ -639,7 +639,7 @@ USB 接続で使う場合は「ケージーエスUSB/仮想Commドライバー�
 
 NVDAメニューに「NVDA日本語版の説明」が追加されています。
 
-「NVDA Webサイト(nvdajp)」「貢献者(nvdajp)」は「NVDA日本語版の説明」からリンクされています。
+「NVDA ウェブサイト(nvdajp)」「貢献者(nvdajp)」は「NVDA日本語版の説明」からリンクされています。
 
 NVDA 日本語版では日本語設定「ヘルプを独自のウィンドウで開く」がチェックの場合、独自のウィンドウでヘルプを開きます。この独自ウィンドウではブラウズモードの操作ができます。Alt+F4 でウィンドウを閉じることができます。
 

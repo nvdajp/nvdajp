@@ -157,7 +157,7 @@ msgstr "変換候補の番号の報告"
 
 #: installer.py:158
 msgid "NVDAJP web site"
-msgstr "NVDA日本語版 Webサイト"
+msgstr "NVDA日本語版 ウェブサイト"
 
 #: braille.py:142
 msgid "Japanese 6 dot computer braille"
@@ -6092,7 +6092,7 @@ msgstr "CTRL+ALT+N"
 #. Translators: A label for a shortcut in start menu and a menu entry in NVDA menu (to go to NVDA website).
 #: installer.py:418
 msgid "NVDA web site"
-msgstr "NVDA Webサイト"
+msgstr "NVDA ウェブサイト"
 
 #. Translators: A label for a shortcut item in start menu to uninstall NVDA from the computer.
 #: installer.py:427

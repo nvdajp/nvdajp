@@ -4,7 +4,7 @@
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 *** Settings ***
 Documentation	HTML test cases in Chrome
-Force Tags	NVDA	smoke test	browser	chrome
+Force Tags	smoke test	browser	chrome
 
 # for start & quit in Test Setup and Test Test Teardown
 Library	NvdaLib.py
@@ -169,3 +169,6 @@ styleNav
 aria-errormessage
 	[Documentation]	Test that aria-errormessage is reported correctly in focus and browse mode
 	test_ariaErrorMessage
+test_waic_as_0029_01
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-label属性と併用)
+	test waic as 0029 01
