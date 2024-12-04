@@ -2879,3 +2879,19 @@ def test_waic_as_0029_01():
 		actualSpeech,
 		"閉じる  button  このウィンドウを閉じると、入力された情報は破棄され、メインページに戻ります ideographic period",
 	)
+
+
+def test_waic_as_0029_02():
+	_chrome.prepareChrome("""
+	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-02.html"></iframe>
+	""")
+	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+	_asserts.strings_match(
+		actualSpeech,
+		"frame  link  メインページへ戻る",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"名前  edit  aria-describedbyでリンクされたこの分野のちょっとした指示です ideographic period  blank\nFocus mode",
+	)

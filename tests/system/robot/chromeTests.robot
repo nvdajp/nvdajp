@@ -172,3 +172,6 @@ aria-errormessage
 test_waic_as_0029_01
 	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-label属性と併用)
 	test waic as 0029 01
+test_waic_as_0029_02
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (input要素)
+	test waic as 0029 02
