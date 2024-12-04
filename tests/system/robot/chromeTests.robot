@@ -178,3 +178,18 @@ test_waic_as_0029_02
 test_waic_as_0029_03
 	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素)
 	test waic as 0029 03
+test_waic_as_0029_04
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (input要素 : 隠された要素と関連付け)
+	test waic as 0029 04
+test_waic_as_0029_05
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (input要素 : XHTML文書)
+	test waic as 0029 05
+test_waic_as_0029_06
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-label属性と併用 : aria-describedby属性を script で生成)
+	test waic as 0029 06
+test_waic_as_0029_07
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-labelledby属性と併用)
+	test waic as 0029 07
+test_waic_as_0029_08
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : 複数のaria-describedby属性値)
+	test waic as 0029 08
