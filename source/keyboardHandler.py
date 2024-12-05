@@ -175,6 +175,13 @@ def shouldUseToUnicodeEx(focus: Optional["NVDAObject"] = None):
 
 def internal_keyDownEvent(vkCode, scanCode, extended, injected):
 	"""Event called by winInputHook when it receives a keyDown."""
+	if not inputCore.decide_handleRawKey.decide(
+		vkCode=vkCode,
+		scanCode=scanCode,
+		extended=extended,
+		pressed=True,
+	):
+		return False
 	gestureExecuted = False
 	try:
 		global \
@@ -329,6 +336,13 @@ def internal_keyDownEvent(vkCode, scanCode, extended, injected):
 
 def internal_keyUpEvent(vkCode, scanCode, extended, injected):
 	"""Event called by winInputHook when it receives a keyUp."""
+	if not inputCore.decide_handleRawKey.decide(
+		vkCode=vkCode,
+		scanCode=scanCode,
+		extended=extended,
+		pressed=False,
+	):
+		return False
 	try:
 		global \
 			lastNVDAModifier, \
