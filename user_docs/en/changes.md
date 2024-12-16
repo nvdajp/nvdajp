@@ -41,11 +41,15 @@ To use this feature, "allow NVDA to control the volume of other applications" mu
 * In Word and Outlook the result of more font formatting shortcuts is now reported. (#10271, @CyrilleB79)
 * Default input and output braille tables can now be determined based on the NVDA language. (#17306, #16390, #290, @nvdaes)
 * In Microsoft Word, when using the "report focus" command, the document layout will be announced if this information is available and reporting object descriptions is enabled. (#15088, @nvdaes)
-* NVDA will now only warn about add-on incompatibility when updating to a version which has an incompatible add-on API to the currently installed copy. (#17071)
+* NVDA will now only warn about add-on incompatibility when updating to a version which has an incompatible add-on API to the currently installed copy. (#17071, #17506)
 * Added commands to move the review cursor to the first and last character of the selected text, assigned to `NVDA+alt+home` and `NVDA+alt+end`, respectively. (#17299, @nvdaes)
+* The ability to opt out of using WASAPI for audio output has been removed. (#16080)
+* The NVDA installer no longer plays a sound when launched. (#14068)
 * Component updates:
   * Updated LibLouis Braille translator to [3.32.0](https://github.com/liblouis/liblouis/releases/tag/v3.32.0). (#17469, @LeonarddeR)
   * Updated CLDR to version 46.0. (#17484, @OzancanKaratas)
+* Short versions of the most commonly used command line options have been added: `-d` for `--disable-addons` and `-n` for `--lang`.
+Prefix matching on command line flags, e.g. using `--di` for `--disable-addons` is no longer supported. (#11644, @CyrilleB79)
 
 ### Bug Fixes
 
@@ -76,6 +80,7 @@ Specifically, MathML inside of span and other elements that have the attribute `
 * In Notepad and other UIA documents, and Notepad++ documents on Windows 11, if the last line is empty, the "braille next line command" will move the cursor to the last line.
 In any document, if the cursor is on the last line, it will be moved to the end when using this command.
 (#17251, #17430, @nvdaes)
+* In web browsers, changes to text selection no longer sometimes fail to be reported in editable text controls. (#17501, @jcsteh)
 
 ### Changes for Developers
 
@@ -136,12 +141,22 @@ As the NVDA update check URL is now configurable directly within NVDA, no replac
   * `SymphonyDocument.script_toggleTextAttribute` to `SymphonyDocument.script_changeTextFormatting`
 * The `space` keyword argument for `brailleDisplayDrivers.seikantk.InputGesture` now expects an `int` rather than a `bool`. (#17047, @school510587)
 * The `[upgrade]` configuration section including `[upgrade][newLaptopKeyboardLayout]` has been removed. (#17191)
+* Due to the retirement of NVDA's winmm support:
+  * The following symbols have been removed from `nvwave`: `HWAVEOUT`, `LPHWAVEOUT`, `LPWAVEHDR`, `MAXPNAMELEN`, `MMSYSERR_NOERROR`, `usingWasapiWavePlayer`, `WAVEHDR`, `WAVEOUTCAPS`, `WHDR_DONE`, `WinmmWavePlayer`, and `winmm`.
+  * `gui.settingsDialogs.AdvancedPanelControls.wasapiComboBox` has been removed.
+  * The `WASAPI` key has been removed from the `audio` section of the config spec.
+  * The output from `nvwave.outputDeviceNameToID`, and input to `nvwave.outputDeviceIDToName` are now string identifiers.
 * In `NVDAObjects.window.scintilla.ScintillaTextInfo`, if no text is selected, the `collapse` method is overriden to expand to line if the `end` parameter is set to `True` (#17431, @nvdaes)
+* The following symbols have been removed with no replacement: `languageHandler.getLanguageCliArgs`, `__main__.quitGroup` and `__main__.installGroup` . (#17486, @CyrilleB79)
+* Prefix matching on command line flags, e.g. using `--di` for `--disable-addons` is no longer supported. (#11644, @CyrilleB79)
 
 #### Deprecations
 
 * The `braille.filter_displaySize` extension point is deprecated.
 Please use `braille.filter_displayDimensions` instead. (#17011)
+* The following symbols are deprecated (#17486, @CyrilleB79):
+  * `NoConsoleOptionParser`, `stringToBool`, `stringToLang` in `__main__`; use the same symbols in `argsParsing` instead.
+  * `__main__.parser`; use `argsParsing.getParser()` instead.
 
 ## 2024.4.1
 
