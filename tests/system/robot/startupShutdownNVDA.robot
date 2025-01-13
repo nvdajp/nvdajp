@@ -67,12 +67,15 @@ Restarts
 
 Restarts on crash
 	[Documentation]	Ensure NVDA restarts on crash.
+	[Tags]	restarts_on_crash
 	NVDA restarts on crash
 
 Restarts on io thread crash
 	[Documentation]	Ensure NVDA restarts on a crash on the hwIo background thread.
+	[Tags]	restarts_on_crash
 	NVDA restarts on io thread crash
 
 Restarts on UIAHandler crash
 	[Documentation]	Ensure NVDA restarts on crash on the UIAHandler thread.
+	[Tags]	restarts_on_crash
 	NVDA restarts on UIAHandler crash
