@@ -2879,3 +2879,155 @@ def test_waic_as_0029_01():
 		actualSpeech,
 		"閉じる  button  このウィンドウを閉じると、入力された情報は破棄され、メインページに戻ります ideographic period",
 	)
+
+
+def test_waic_as_0029_02():
+	_chrome.prepareChrome("""
+	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-02.html"></iframe>
+	""")
+	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+	_asserts.strings_match(
+		actualSpeech,
+		"frame  link  メインページへ戻る",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"名前  edit  aria-describedbyでリンクされたこの分野のちょっとした指示です ideographic period  blank\nFocus mode",
+	)
+
+
+def test_waic_as_0029_03():
+	_chrome.prepareChrome("""
+	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-03.html"></iframe>
+	""")
+	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+	_asserts.strings_match(
+		actualSpeech,
+		"frame  このページで使用するフォントフェイスとサイズの選択  button  フォント",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"フォント  button  このページで使用するフォントフェイスとサイズの選択",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"色  button  このページで使用する色を選択",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"カスタマイズ  button  このページで使われているレイアウトやスタイルをカスタマイズ",
+	)
+
+
+def test_waic_as_0029_04():
+	_chrome.prepareChrome("""
+	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-04.html"></iframe>
+	""")
+	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+	_asserts.strings_match(
+		actualSpeech,
+		"frame  heading  level 1  ツールチップ 例 1",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"名前:  edit  名前は任意です ideographic period  blank\nFocus mode",
+	)
+
+
+def test_waic_as_0029_05():
+	_chrome.prepareChrome("""
+	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-05.html"></iframe>
+	""")
+	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+	_asserts.strings_match(
+		actualSpeech,
+		"frame  このページのボタンでは、Accessible Rich Internet",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"フォント  button  このページで使用するフォントフェイスとサイズの選択",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"色  button  このページで使用する色を選択",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"カスタマイズ  button  このページで使われているレイアウトやスタイルをカスタマイズ",
+	)
+
+
+def test_waic_as_0029_06():
+	_chrome.prepareChrome("""
+	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-06.html"></iframe>
+	""")
+	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+	_asserts.strings_match(
+		actualSpeech,
+		"frame  link  メインページへ戻る",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"閉じる  button  このウィンドウを閉じると、入力された情報は破棄され、メインページに戻ります ideographic period",
+	)
+
+
+def test_waic_as_0029_07():
+	_chrome.prepareChrome("""
+	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-07.html"></iframe>
+	""")
+	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+	_asserts.strings_match(
+		actualSpeech,
+		"frame  フォントの選択    このページで使用するフォントフェイスとサイズの選択  button  フォントの選択",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"フォントの選択  button  このページで使用するフォントフェイスとサイズの選択",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"色の選択  button  このページで使用する色を選択",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"その他のカスタマイズの選択  button  このページで使われているレイアウトやスタイルをカスタマイズ",
+	)
+
+
+def test_waic_as_0029_08():
+	_chrome.prepareChrome("""
+	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-08.html"></iframe>
+	""")
+	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+	_asserts.strings_match(
+		actualSpeech,
+		"frame  このページで使用するフォントフェイスとサイズの選択    ボタンを押下しフォントを選択してください  button  フォント",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"フォント  button  このページで使用するフォントフェイスとサイズの選択 ボタンを押下しフォントを選択してください",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"色  button  このページで使用する色を選択 ボタンを押下し色を選択してください",
+	)
+	actualSpeech = _chrome.getSpeechAfterTab()
+	_asserts.strings_match(
+		actualSpeech,
+		"カスタマイズ  button  このページで使われているレイアウトやスタイルをカスタマイズ ボタンを押下しレイアウトやスタイルを選択してください",
+	)

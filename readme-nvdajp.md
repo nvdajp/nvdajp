@@ -295,7 +295,7 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 システムテストを実行するには
 
 ```text
-> runsystemtests.bat --include --test "moveByCharacter"
+> runsystemtests.bat --include symbols --test "moveByCharacter"
 ```
 
 NVDA日本語版のビルドで行っているシステムテスト
