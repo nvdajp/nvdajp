@@ -189,7 +189,11 @@ class InputComposition(EditableTextWithAutoSelectDetection, Window):
 				queueHandler.queueFunction(
 					queueHandler.eventQueue, braille.handler.message, newTextForBraille
 				)
-			if config.conf["keyboard"]["speakTypedCharacters"] != TypingEcho.OFF.value or config.conf["keyboard"]["speakTypedWords"] != TypingEcho.OFF.value or isCandidate:
+			if (
+				config.conf["keyboard"]["speakTypedCharacters"] != TypingEcho.OFF.value
+				or config.conf["keyboard"]["speakTypedWords"] != TypingEcho.OFF.value
+				or isCandidate
+			):
 				queueHandler.queueFunction(
 					queueHandler.eventQueue,
 					speech.speakText,
