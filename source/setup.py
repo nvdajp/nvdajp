@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2006-2024 NV Access Limited, Peter Vágner, Joseph Lee
+# Copyright (C) 2006-2025 NV Access Limited, Peter Vágner, Joseph Lee
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -239,6 +239,8 @@ freeze(
 			"brailleDisplayDrivers.dotPad",
 			"synthDrivers",
 			"visionEnhancementProviders",
+			# Required for markdown, markdown implicitly imports this so it isn't picked up
+			"html.parser",
 		],
 		"includes": [
 			"nvdaBuiltin",
@@ -251,7 +253,7 @@ freeze(
 	data_files=[
 		(".", ["ja-jp-comp6.utb", "ja-jp-rokutenkanji.tbl"]),
 		(".", glob("*.dll") + glob("*.manifest") + ["builtin.dic"]),
-		("documentation", ["../copying.txt", "../contributors.txt"]),
+		("documentation", ["../copying.txt"]),
 		("lib/%s" % version, glob("lib/*.dll") + glob("lib/*.manifest")),
 		("lib64/%s" % version, glob("lib64/*.dll") + glob("lib64/*.exe")),
 		("libArm64/%s" % version, glob("libArm64/*.dll") + glob("libArm64/*.exe")),
