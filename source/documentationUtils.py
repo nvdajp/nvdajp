@@ -85,7 +85,7 @@ def reportNoDocumentation(fileName: str, useMsgBox: bool = False) -> None:
 def _getSanitizedHtmlLicense() -> str:
 	licenseFilename: str = getDocFilePath("copying.txt", False)
 	with open(licenseFilename, "r", encoding="utf-8") as licenseFile:
-		htmlLicense = markdown.markdown(licenseFile.read())
+		htmlLicense = markdown.markdown(licenseFile.read(), extensions=['fenced_code'])
 	return nh3.clean(htmlLicense)
 
 
