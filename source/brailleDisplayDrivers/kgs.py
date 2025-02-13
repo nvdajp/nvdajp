@@ -5,7 +5,7 @@
 # See the file COPYING for more details.
 # Copyright (C) 2011-2012 Masataka Shinke
 # Copyright (C) 2013 Masamitsu Misono
-# Copyright (C) 2011-2023 Takuya Nishimoto
+# Copyright (C) 2011-2025 Takuya Nishimoto
 
 import bdDetect
 import braille
@@ -20,6 +20,11 @@ from ctypes.wintypes import *  # noqa: F403
 from logHandler import log
 import sys
 import winreg
+
+try:
+	from bdDetect import ProtocolType
+except ImportError:
+	from bdDetect import DeviceType as ProtocolType
 
 byte = lambda x: x.to_bytes(1, "big")  # noqa: E731
 import itertools  # noqa: E402
@@ -377,7 +382,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	@classmethod
 	def registerAutomaticDetection(cls, driverRegistrar: bdDetect.DriverRegistrar):
 		driverRegistrar.addUsbDevices(
-			bdDetect.DeviceType.SERIAL,
+			ProtocolType.SERIAL,
 			{
 				"VID_1148&PID_0301",  # KGS BM-SMART USB Serial
 				"VID_1148&PID_0001",  # KGS USB To Serial Com Port
