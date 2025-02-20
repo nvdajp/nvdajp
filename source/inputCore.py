@@ -602,8 +602,10 @@ class InputManager(baseObject.AutoPropertyObject):
 				_immediate=True,
 			)
 		# nvdajp begin
+		import winUser
+
 		if hasattr(gesture, "vkCode") and gesture.vkCode == winUser.VK_RETURN:
-			dummy = winUser.getAsyncKeyState(winUser.VK_BACK)  # noqa: F841
+			_ = winUser.getAsyncKeyState(winUser.VK_BACK)  # noqa: F841
 		# nvdajp end
 
 		gesture.reportExtra()
