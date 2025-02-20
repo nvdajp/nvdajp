@@ -190,6 +190,9 @@ class SynthDriver(SynthDriver):
 		self._enginesList = self._fetchEnginesList()
 		if len(self._enginesList) == 0:
 			raise RuntimeError("No Sapi4 engines available")
+		self._rateDelta = 0
+		self._pitchDelta = 0
+		self._volume = 100
 		self.voice = str(self._enginesList[0].gModeID)
 		self._rate = None
 		self._isSpeaking = False
@@ -330,6 +333,7 @@ class SynthDriver(SynthDriver):
 			try:
 				oldVal = DWORD()
 				self._ttsAttrs.SpeedGet(byref(oldVal))
+				self._defaultRate = oldVal.value
 				self._ttsAttrs.SpeedSet(TTSATTR_MINSPEED)
 				newVal = DWORD()
 				self._ttsAttrs.SpeedGet(byref(newVal))
@@ -338,7 +342,8 @@ class SynthDriver(SynthDriver):
 				self._ttsAttrs.SpeedGet(byref(newVal))
 				# ViaVoice (and perhaps other synths) doesn't seem to like the speed being set to maximum.
 				self._maxRate = newVal.value - 1
-				self._ttsAttrs.SpeedSet(oldVal.value)
+				val = max(self._minRate, min(self._maxRate, self._defaultRate + self._rateDelta))
+				self._ttsAttrs.SpeedSet(val)
 				if self._maxRate <= self._minRate:
 					hasRate = False
 			except COMError:
@@ -358,6 +363,7 @@ class SynthDriver(SynthDriver):
 			try:
 				oldVal = WORD()
 				self._ttsAttrs.PitchGet(byref(oldVal))
+				self._defaultPitch = oldVal.value
 				self._ttsAttrs.PitchSet(TTSATTR_MINPITCH)
 				newVal = WORD()
 				self._ttsAttrs.PitchGet(byref(newVal))
@@ -365,7 +371,8 @@ class SynthDriver(SynthDriver):
 				self._ttsAttrs.PitchSet(TTSATTR_MAXPITCH)
 				self._ttsAttrs.PitchGet(byref(newVal))
 				self._maxPitch = newVal.value
-				self._ttsAttrs.PitchSet(oldVal.value)
+				val = max(self._minPitch, min(self._maxPitch, self._defaultPitch + self._pitchDelta))
+				self._ttsAttrs.PitchSet(val)
 				if self._maxPitch <= self._minPitch:
 					hasPitch = False
 			except COMError:
@@ -392,7 +399,7 @@ class SynthDriver(SynthDriver):
 				self._ttsAttrs.VolumeSet(TTSATTR_MAXVOLUME)
 				self._ttsAttrs.VolumeGet(byref(newVal))
 				self._maxVolume = newVal.value & 0xFFFF
-				self._ttsAttrs.VolumeSet(oldVal.value)
+				self._set_volume(self._volume)
 				if self._maxVolume <= self._minVolume:
 					hasVolume = False
 			except COMError:
@@ -435,6 +442,7 @@ class SynthDriver(SynthDriver):
 		val = self._percentToParam(val, self._minRate, self._maxRate)
 		val = min(self._maxRate, val)
 		self._ttsAttrs.SpeedSet(val)
+		self._rateDelta = val - self._defaultRate
 
 	def _get_pitch(self) -> int:
 		val = WORD()
@@ -444,6 +452,7 @@ class SynthDriver(SynthDriver):
 	def _set_pitch(self, val: int):
 		val = self._percentToParam(val, self._minPitch, self._maxPitch)
 		self._ttsAttrs.PitchSet(val)
+		self._pitchDelta = val - self._defaultPitch
 
 	def _get_volume(self) -> int:
 		val = DWORD()
@@ -451,6 +460,7 @@ class SynthDriver(SynthDriver):
 		return self._paramToPercent(val.value & 0xFFFF, self._minVolume, self._maxVolume)
 
 	def _set_volume(self, val: int):
+		self._volume = val
 		val = self._percentToParam(val, self._minVolume, self._maxVolume)
 		# If you specify a value greater than 65535, the engine assumes that you want to set the
 		# left and right channels separately and converts the value to a double word,

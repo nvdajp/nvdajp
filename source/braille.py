@@ -65,7 +65,7 @@ import bdDetect
 import queueHandler
 import brailleViewer
 from autoSettingsUtils.driverSetting import BooleanDriverSetting, NumericDriverSetting
-from utils.security import objectBelowLockScreenAndWindowsIsLocked
+from utils.security import objectBelowLockScreenAndWindowsIsLocked, post_sessionLockStateChanged
 from textUtils import isUnicodeNormalized, UnicodeNormalizationOffsetConverter
 import hwIo
 from editableText import EditableText
@@ -2510,6 +2510,7 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		self.queuedWriteLock = threading.Lock()
 		self.ackTimerHandle = winKernel.createWaitableTimer()
 
+		post_sessionLockStateChanged.register(self._onSessionLockStateChanged)
 		brailleViewer.postBrailleViewerToolToggledAction.register(self._onBrailleViewerChangedState)
 		# noqa: F401 avoid module level import to prevent cyclical dependency
 		# between speech and braille
@@ -2533,6 +2534,7 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 			self._cursorBlinkTimer.Stop()
 			self._cursorBlinkTimer = None
 		config.post_configProfileSwitch.unregister(self.handlePostConfigProfileSwitch)
+		post_sessionLockStateChanged.unregister(self._onSessionLockStateChanged)
 		if self.display:
 			self.display.terminate()
 			self.display = None
@@ -2542,6 +2544,21 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 			winKernel.closeHandle(self.ackTimerHandle)
 			self.ackTimerHandle = None
 		louisHelper.terminate()
+
+	def _clearAll(self) -> None:
+		"""Clear the braille buffers and update the braille display."""
+		self.mainBuffer.clear()
+		if self.buffer is self.messageBuffer:
+			self._dismissMessage(False)
+		self.update()
+
+	def _onSessionLockStateChanged(self, isNowLocked: bool):
+		"""Clear the braille buffers and update the braille display to prevent leaking potentially sensitive information from a locked session.
+
+		:param isNowLocked: True if the session is now locked; false if it is now unlocked.
+		"""
+		if isNowLocked:
+			self._clearAll()
 
 	table: brailleTables.BrailleTable
 	"""Type definition for auto prop '_get_table/_set_table'"""
