@@ -1430,6 +1430,7 @@ However, you may wish to use object navigation directly to, for example, recogni
 Once recognition is complete, the result will be presented in a document similar to browse mode, allowing you to read the information with cursor keys, etc.
 Pressing enter or space will activate (normally click) the text at the cursor if possible.
 Pressing escape dismisses the recognition result.
+Pressing `NVDA+f5` refreshes the recognition result.
 
 ### Windows OCR {#Win10Ocr}
 
@@ -1846,17 +1847,12 @@ If you wish to change the update mirror, press the "Change..." button to open th
 Please note that when using an update mirror, the operator of the mirror has access to all [information sent with update checks](#GeneralSettingsCheckForUpdates).
 Contact the operator of the update mirror for details of their data handling policies to ensure you are comfortable with the way your information will be handled before setting an update mirror.
 
-##### Prevent display from turning off during say all or reading with braille {#PreventDisplayTurnOff}
+##### Prevent display from turning off during say all or reading with braille {#PreventDisplayTurningOff}
 
-This option ensures that the display stays on when reading with say all or with braille (e.g. when pressing scroll buttons).
+This check box, when enabled, ensures that the display stays on when reading with say all or with braille (e.g. when pressing scroll buttons).
 This avoids the situation where the screen unexpectedly locks during a say all.
 This option is enabled by default.
 Consider disabling this option if you are suffering from a shorter battery life.
-
-| . {.hideHeaderRow} |.|
-|---|---|
-|Options |Default (Enabled), Disabled, Enabled|
-|Default |Enabled|
 
 #### Speech Settings {#SpeechSettings}
 
@@ -3083,14 +3079,18 @@ This check is performed every 24 hours.
 By default, notifications will only occur for add-ons with updates available within the same [channel](#AddonStoreFilterChannel) (e.g. stable, beta or dev).
 You can configure add-on update channels [individually for each add-on](#AddonStoreUpdateChannel) or for [all add-ons](#DefaultAddonUpdateChannel).
 
+When set to "Update Automatically", add-ons will automatically update in the background.
+You will be prompted to restart NVDA when the updates are finished.
+
 | . {.hideHeaderRow} |.|
 |---|---|
-|Options |Notify (Default), Disabled |
+|Options |Notify (Default), Update Automatically, Disabled |
 |Default |Notify |
 
 |Option |Behaviour |
 |---|---|
-|Notify |Notify when updates are available to add-ons within the same channel |
+|Notify |Notify when updates are available to add-ons |
+|Update Automatically |Automatically update add-ons in the background |
 |Disabled |Do not automatically check for updates to add-ons |
 
 ##### Default Update Channel {#DefaultAddonUpdateChannel}
@@ -3114,6 +3114,14 @@ You can also change the update channel for a [specific add-on individually from 
 | Beta or dev | Add-ons will automatically update to beta or dev versions |
 | Beta | Add-ons will automatically update to beta versions |
 | Dev | Add-ons will automatically update to dev versions |
+
+##### Allow automatic updates to install incompatible add-ons {#AllowIncompatibleAddonUpdates}
+
+This setting enables automatic updates to add-ons that may not be fully compatible with the current version of NVDA.
+By default, this is disabled, meaning automatic updates will only upgrade to add-on versions marked as compatible with the current version of NVDA.
+Automatic updates will still update an incompatible add-on version to a compatible version when it is released.
+Enabling this may be useful for switching over to using add-on breaking releases (the first release of the year).
+This is particularly useful for alpha and beta testers, who are testing compatibility of add-ons during the early stages of an add-on breaking release.
 
 ##### Mirror server {#AddonStoreMetadataMirror}
 
@@ -3930,7 +3938,6 @@ There are also many variants which can be chosen to alter the sound of the voice
 SAPI 4 is an older Microsoft standard for software speech synthesizers.
 NVDA still supports this for users who already have SAPI 4 synthesizers installed.
 However, Microsoft no longer support this and needed components are no longer available from Microsoft.
-Support for SAPI4 will be removed in NVDA 2026.1.
 
 When using this synthesizer with NVDA, the available voices (accessed from the [Speech category](#SpeechSettings) of the [NVDA Settings](#NVDASettings) dialog or by the [Synth Settings Ring](#SynthSettingsRing)) will contain all the voices from all the installed SAPI 4 engines found on your system.
 

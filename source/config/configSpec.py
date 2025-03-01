@@ -27,7 +27,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	#possible log levels are DEBUG, IO, DEBUGWARNING, INFO
 	loggingLevel = string(default="INFO")
 	showWelcomeDialogAtStartup = boolean(default=true)
-	preventDisplayTurnOff = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
+	preventDisplayTurningOff = boolean(default=true)
 
 # nvdajp
 [language]
@@ -358,7 +358,8 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	playErrorSound = integer(0, 1, default=0)
 
 [addonStore]
-	automaticUpdates = option("notify", "disabled", default="notify")
+	automaticUpdates = option("notify", "update", "disabled", default="notify")
+	allowIncompatibleUpdates = boolean(default=false)
 	baseServerURL = string(default="")
 	# UpdateChannel values:
 	# same channel (default), any channel, do not update, stable, beta & dev, beta, dev

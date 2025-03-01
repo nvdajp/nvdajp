@@ -985,18 +985,14 @@ class GeneralSettingsPanel(SettingsPanel):
 			if globalVars.appArgs.secure:
 				mirrorBox.Disable()
 
-		self.preventDisplayTurnOffCombo: nvdaControls.FeatureFlagCombo = (
-			settingsSizerHelper.addLabeledControl(
-				labelText=_(
-					# Translators: This is a label for a combo-box in the general settings panel.
-					"Prevent &display from turning off during say all or reading with braille",
-				),
-				wxCtrlClass=nvdaControls.FeatureFlagCombo,
-				keyPath=["general", "preventDisplayTurnOff"],
-				conf=config.conf,
-			)
+		item = self.preventDisplayTurningOffCheckBox = wx.CheckBox(
+			self,
+			# Translators: The label of a checkbox in general settings.
+			label=_("Prevent &display from turning off during say all or reading with braille"),
 		)
-		self.bindHelpEvent("PreventDisplayTurnOff", self.preventDisplayTurnOffCombo)
+		self.bindHelpEvent("PreventDisplayTurningOff", self.preventDisplayTurningOffCheckBox)
+		item.Value = config.conf["general"]["preventDisplayTurningOff"]
+		settingsSizerHelper.addItem(item)
 
 	def onChangeMirrorURL(self, evt: wx.CommandEvent | wx.KeyEvent):
 		"""Show the dialog to change the update mirror URL, and refresh the dialog in response to the URL being changed."""
@@ -1119,7 +1115,7 @@ class GeneralSettingsPanel(SettingsPanel):
 			updateCheck.terminate()
 			updateCheck.initialize()
 
-		self.preventDisplayTurnOffCombo.saveCurrentValueToConf()
+		config.conf["general"]["preventDisplayTurningOff"] = self.preventDisplayTurningOffCheckBox.IsChecked()
 
 	def onPanelActivated(self):
 		if updateCheck:
@@ -3379,9 +3375,7 @@ class AddonStorePanel(SettingsPanel):
 	def makeSettings(self, settingsSizer: wx.BoxSizer) -> None:
 		sHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
 		# Translators: This is a label for the automatic updates combo box in the Add-on Store Settings dialog.
-		automaticUpdatesLabelText = _("&Update notifications:")
-		# TODO: change label to the following when the feature is implemented
-		# automaticUpdatesLabelText = _("Automatic &updates:")
+		automaticUpdatesLabelText = _("Automatic &updates:")
 		self.automaticUpdatesComboBox = sHelper.addLabeledControl(
 			automaticUpdatesLabelText,
 			wx.Choice,
@@ -3404,6 +3398,13 @@ class AddonStorePanel(SettingsPanel):
 		self.bindHelpEvent("DefaultAddonUpdateChannel", self.defaultUpdateChannelComboBox)
 		index = config.conf["addonStore"]["defaultUpdateChannel"]
 		self.defaultUpdateChannelComboBox.SetSelection(index)
+
+		self.allowIncompatibleUpdates = sHelper.addItem(
+			# Translators: Mute other apps checkbox in settings
+			wx.CheckBox(self, label=_("Allow automatic updates to install incompatible add-ons")),
+		)
+		self.bindHelpEvent("AllowIncompatibleAddonUpdates", self.allowIncompatibleUpdates)
+		self.allowIncompatibleUpdates.SetValue(config.conf["addonStore"]["allowIncompatibleUpdates"])
 
 		# Translators: The label for the mirror server on the Add-on Store Settings panel.
 		mirrorBoxSizer = wx.StaticBoxSizer(wx.HORIZONTAL, self, label=_("Mirror server"))
@@ -3481,6 +3482,7 @@ class AddonStorePanel(SettingsPanel):
 	def onSave(self):
 		index = self.automaticUpdatesComboBox.GetSelection()
 		config.conf["addonStore"]["automaticUpdates"] = [x.value for x in AddonsAutomaticUpdate][index]
+		config.conf["addonStore"]["allowIncompatibleUpdates"] = self.allowIncompatibleUpdates.IsChecked()
 		config.conf["addonStore"]["defaultUpdateChannel"] = self.defaultUpdateChannelComboBox.GetSelection()
 
 
