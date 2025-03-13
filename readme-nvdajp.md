@@ -317,4 +317,45 @@ NVDA日本語版のビルドで行っているシステムテスト
 * 実行中に画面操作
 * 事前に Chrome を起動している
 
+## miscDepsJpのサブモジュール管理
+
+### 現状の問題点
+
+miscDepsJpディレクトリには以下のような複雑なディレクトリ構造があります：
+
+1. **複数のサブモジュールが存在**:
+   - include/libopenjtalk (サブモジュール)
+   - include/htsengineapi (サブモジュール)
+   - include/python-jtalk (サブモジュール)
+   - include/libkuraji (サブモジュール)
+
+2. **サブモジュール内に同じリポジトリの内容がコピーされている**:
+   - include/python-jtalk/libopenjtalk (コピー)
+   - include/python-jtalk/htsengineapi (コピー)
+
+3. **ビルドプロセスでのファイルコピー**:
+   - jptools/jtalk から include/jtalk へのコピー
+   - include/htsengineapi から include/python-jtalk/htsengineapi へのコピー
+   - include/libopenjtalk から include/python-jtalk/libopenjtalk へのコピー
+
+この構造は、ビルドプロセス中にファイルをコピーすることで作成されています。これにより、同じファイルが複数の場所に存在し、管理が難しくなっています。
+
+### 解決方針案
+
+1. **サブモジュール構造の見直し**:
+   - 共通のライブラリ（libopenjtalk, htsengineapi）は一箇所だけにサブモジュールとして配置し、他の場所からは参照する
+
+2. **シンボリックリンクの使用**:
+   - ファイルをコピーする代わりに、シンボリックリンクを使用して同じファイルを複数の場所から参照する
+   - 例: `mklink /D ..\include\python-jtalk\libopenjtalk ..\include\libopenjtalk`
+
+3. **ビルドプロセスの改善**:
+   - copy_jtalk_core_files.cmdを修正して、ファイルのコピーではなくシンボリックリンクを作成する
+   - または、パスを環境変数として設定し、実際のファイルの場所を参照する
+
+4. **モジュール間の依存関係の明確化**:
+   - 各モジュールがどのように他のモジュールに依存しているかを文書化し、依存関係を単純化する
+
+これらの変更により、サブモジュールの管理が容易になり、更新やメンテナンスの手間が減少します。
+
 （以上）
