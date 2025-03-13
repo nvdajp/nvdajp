@@ -340,21 +340,200 @@ miscDepsJpディレクトリには以下のような複雑なディレクトリ�
 
 この構造は、ビルドプロセス中にファイルをコピーすることで作成されています。これにより、同じファイルが複数の場所に存在し、管理が難しくなっています。
 
+### 背景
+
+現在の構造は、以前は3重ネストだったサブモジュール構造を2重に減らした名残があります。しかし、2重のネストでもまだ管理が難しい状況です。また、miscDepsJp/includeディレクトリ内にサブモジュールが配置されていること自体も管理上の課題となっています。
+
 ### 解決方針案
 
-1. **サブモジュール構造の見直し**:
-   - 共通のライブラリ（libopenjtalk, htsengineapi）は一箇所だけにサブモジュールとして配置し、他の場所からは参照する
+#### 方針1: サブモジュール構造の根本的見直し
 
-2. **シンボリックリンクの使用**:
-   - ファイルをコピーする代わりに、シンボリックリンクを使用して同じファイルを複数の場所から参照する
-   - 例: `mklink /D ..\include\python-jtalk\libopenjtalk ..\include\libopenjtalk`
+1. **サブモジュール階層の削減**:
+   - サブモジュールをNVDAプロジェクト全体の構造の中で適切な場所に再配置
+   - 例: 音声合成関連のライブラリは専用のリポジトリに集約し、NVDAプロジェクトからは単一の参照点を持つ
+
+2. **依存関係の明確化と直接参照**:
+   - 各モジュールの責務と依存関係を明確に文書化
+   - 依存関係グラフを作成し、循環参照や不要な依存を排除
+   - 必要なファイルだけを参照する仕組みを導入
 
 3. **ビルドプロセスの改善**:
-   - copy_jtalk_core_files.cmdを修正して、ファイルのコピーではなくシンボリックリンクを作成する
-   - または、パスを環境変数として設定し、実際のファイルの場所を参照する
+   - ファイルコピーを行わないビルドプロセスに変更
+   - 実行時パス解決を導入し、正しいファイルを直接参照
+   - ビルド設定ファイルで依存関係を明示的に管理
 
-4. **モジュール間の依存関係の明確化**:
-   - 各モジュールがどのように他のモジュールに依存しているかを文書化し、依存関係を単純化する
+4. **モジュール構造の再設計**:
+   - 現在のモジュール間の関係を分析し、論理的な構造に再設計
+   - 各コンポーネントの責務を明確にし、適切な粒度でモジュール化
+   - 将来的な拡張性とメンテナンス性を考慮した設計
+
+#### 方針2: miscDepsJPの統合とincludeのサブモジュール化
+
+##### 概要
+
+miscDepsJPリポジトリそのものをサブモジュールとして扱わず、nvdajpリポジトリに直接統合し、miscDepsJP/include内の各ライブラリは引き続きサブモジュールとして管理する方針です。
+
+##### 具体的な作業手順
+
+1. **準備作業**:
+   ```
+   # 作業用ディレクトリの作成
+   mkdir nvdajp-refactor
+   cd nvdajp-refactor
+   
+   # nvdajpリポジトリのクローン
+   git clone --recurse-submodules --shallow-submodules -b alphajp https://github.com/nvdajp/nvdajp.git
+   cd nvdajp
+   
+   # 現在のmiscDepsJpの状態を確認
+   git submodule status miscDepsJp
+   ```
+
+2. **リファクタリング用ブランチの作成**:
+   ```
+   # リファクタリング用のブランチを作成
+   git checkout -b alphajp_refactor
+   ```
+
+3. **miscDepsJPの内容をnvdajpに統合**:
+   ```
+   # miscDepsJpの内容を一時ディレクトリにコピー
+   md ..\temp-miscdepsjp
+   xcopy /E /I /H miscDepsJp\* ..\temp-miscdepsjp\
+   
+   # miscDepsJpサブモジュールを削除
+   git submodule deinit -f miscDepsJp
+   git rm -f miscDepsJp
+   rd /s /q .git\modules\miscDepsJp
+   
+   # miscDepsJpディレクトリを作成し、内容をコピー
+   md miscDepsJp
+   xcopy /E /I /H ..\temp-miscdepsjp\* miscDepsJp\
+   
+   # .gitmodulesファイルを更新
+   # まず現在の.gitmodulesファイルの内容を確認
+   type .gitmodules
+   
+   # .gitmodulesファイルをバックアップ
+   copy .gitmodules .gitmodules.bak
+   
+   # miscDepsJpのエントリを削除
+   # 例えば、以下のようなエントリを削除:
+   # [submodule "miscDepsJp"]
+   #     path = miscDepsJp
+   #     url = https://github.com/nvdajp/nvdajpmiscdeps.git
+   
+   # Visual Studio Codeでテキストエディタで.gitmodulesファイルを開いて編集
+   code .gitmodules
+   
+   # includeディレクトリ内の各サブモジュールを直接参照するように新しいエントリを追加
+   # 例えば、以下のようなエントリを追加:
+   
+   # .gitmodulesファイルに以下を追加:
+   # [submodule "miscDepsJp/include/libopenjtalk"]
+   #     path = miscDepsJp/include/libopenjtalk
+   #     url = https://github.com/nishimotz/libopenjtalk.git
+   # [submodule "miscDepsJp/include/htsengineapi"]
+   #     path = miscDepsJp/include/htsengineapi
+   #     url = https://github.com/nishimotz/htsengineapi.git
+   # [submodule "miscDepsJp/include/python-jtalk"]
+   #     path = miscDepsJp/include/python-jtalk
+   #     url = https://github.com/nvdajp/python-jtalk.git
+   # [submodule "miscDepsJp/include/libkuraji"]
+   #     path = miscDepsJp/include/libkuraji
+   #     url = https://github.com/nishimotz/libkuraji.git
+   
+   # または、git configコマンドを使用して追加:
+   ```
+
+4. **includeディレクトリ内のサブモジュールを再設定**:
+   ```
+   # miscDepsJp/includeディレクトリ内の各サブモジュールを確認
+   dir /a miscDepsJp\include
+   
+   # 各サブモジュールを直接nvdajpから参照するように.gitmodulesを編集
+   # 例: miscDepsJp/include/libopenjtalkを直接参照
+   git config -f .gitmodules submodule.miscDepsJp/include/libopenjtalk.path miscDepsJp\include\libopenjtalk
+   git config -f .gitmodules submodule.miscDepsJp/include/libopenjtalk.url https://github.com/nishimotz/libopenjtalk.git
+   
+   # 同様に他のサブモジュールも設定
+   # ...
+   
+   # サブモジュールを初期化
+   git submodule init
+   git submodule update
+   ```
+
+5. **ビルドスクリプトの修正**:
+   ```
+   # copy_jtalk_core_files.cmdを修正して、ファイルコピーを最小限に抑える
+   # 例: miscDepsJp/jptools/copy_jtalk_core_files.cmdを編集
+   
+   # 修正前:
+   # xcopy /E /Y ..\include\htsengineapi ..\include\python-jtalk\htsengineapi
+   # xcopy /E /Y ..\include\libopenjtalk ..\include\python-jtalk\libopenjtalk
+   
+   # 修正後:
+   # 直接参照するためのパス設定を追加
+   # set HTSENGINE_PATH=..\include\htsengineapi
+   # set LIBOPENJTALK_PATH=..\include\libopenjtalk
+   ```
+
+6. **Python側のコード修正**:
+   ```
+   # Python側のコードを修正して、直接パスを参照するように変更
+   # 例: miscDepsJp/include/python-jtalk/jtalkCore.pyを編集
+   
+   # 修正前:
+   # import os
+   # from . import libopenjtalk
+   
+   # 修正後:
+   # import os
+   # import sys
+   # sys.path.append(os.environ.get('LIBOPENJTALK_PATH', './libopenjtalk'))
+   # import libopenjtalk
+   ```
+
+7. **変更のコミット**:
+   ```
+   # 変更をコミット
+   git add .
+   git commit -m "Refactor: Integrate miscDepsJp directly into nvdajp and maintain include subdirectories as submodules"
+   ```
+
+8. **テストと検証**:
+   ```
+   # ビルドテスト
+   jptools\devbuild2024.cmd
+   
+   # ユニットテスト
+   rununittests.bat
+   
+   # NVDA本体の実行テスト
+   runnvda.bat
+   ```
+
+9. **問題が発生した場合の対応**:
+   ```
+   # 問題が発生した場合は、ログを確認し、必要に応じてコードを修正
+   # 特に、パス解決やビルドプロセスに関する問題に注意
+   ```
+
+10. **変更の公開**:
+    ```
+    # 問題がなければ、変更をリモートリポジトリにプッシュ
+    git push origin alphajp_refactor
+    
+    # Pull Requestを作成して、レビューを依頼
+    ```
+
+##### 注意点
+
+- この作業はリポジトリ構造を大きく変更するため、事前にバックアップを取ることを推奨します
+- サブモジュールの参照パスが変更されるため、他の開発者にも影響があります
+- ビルドスクリプトの修正は慎重に行い、すべてのケースでテストする必要があります
+- 移行後も一定期間は旧構造との互換性を維持することを検討してください
 
 これらの変更により、サブモジュールの管理が容易になり、更新やメンテナンスの手間が減少します。
 
