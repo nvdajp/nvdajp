@@ -372,6 +372,8 @@ miscDepsJPリポジトリそのものをサブモジュールとして扱わず�
        url = https://github.com/nishimotz/libkuraji.git
    ```
 
+   **重要**: 各サブモジュールは、移行前と同じリビジョン（コミットハッシュ）を指すように設定する必要があります。これにより、移行前後でビルド結果が変わらないようにします。
+
 2. **ディレクトリ構造**:
    ```
    nvdajp/
@@ -397,31 +399,12 @@ miscDepsJPリポジトリそのものをサブモジュールとして扱わず�
 
 ##### 具体的な作業手順
 
-1. **準備作業**:
+1. **miscDepsJPの内容をnvdajpに統合**:
    ```
-   # 作業用ディレクトリの作成
-   mkdir nvdajp-refactor
-   cd nvdajp-refactor
-   
-   # nvdajpリポジトリのクローン
-   git clone --recurse-submodules --shallow-submodules -b alphajp https://github.com/nvdajp/nvdajp.git
-   cd nvdajp
-   
-   # 現在のmiscDepsJpの状態を確認
-   git submodule status miscDepsJp
-   ```
-
-2. **リファクタリング用ブランチの作成**:
-   ```
-   # リファクタリング用のブランチを作成
-   git checkout -b alphajp_refactor
-   ```
-
-3. **miscDepsJPの内容をnvdajpに統合**:
-   ```
-   # miscDepsJpの内容を一時ディレクトリにコピー
-   md ..\temp-miscdepsjp
-   xcopy /E /I /H miscDepsJp\* ..\temp-miscdepsjp\
+   # miscDepsJpサブモジュールの内容を一時ディレクトリにコピー
+   # 各サブモジュールの.gitディレクトリも含めてコピーされる
+   mkdir temp-miscdepsjp
+   xcopy /E /I /H miscDepsJp\* temp-miscdepsjp\
    
    # miscDepsJpサブモジュールを削除
    git submodule deinit -f miscDepsJp
@@ -429,95 +412,106 @@ miscDepsJPリポジトリそのものをサブモジュールとして扱わず�
    rd /s /q .git\modules\miscDepsJp
    
    # miscDepsJpディレクトリを作成し、内容をコピー
-   md miscDepsJp
-   xcopy /E /I /H ..\temp-miscdepsjp\* miscDepsJp\
+   # 各サブモジュールの.gitディレクトリも含めてコピーされる
+   mkdir miscDepsJp
+   xcopy /E /I /H temp-miscdepsjp\* miscDepsJp\
    
-   # .gitmodulesファイルを更新
-   # まず現在の.gitmodulesファイルの内容を確認
-   type .gitmodules
+   # 一時ディレクトリを削除
+   rd /s /q temp-miscdepsjp
    
+   # 注: この時点で、miscDepsJp/include内の各サブモジュールディレクトリには
+   # .gitディレクトリが存在し、元のサブモジュールのリポジトリ情報が保持されている
+   ```
+
+2. **.gitmodulesファイルの更新**:
+   ```
    # .gitmodulesファイルをバックアップ
    copy .gitmodules .gitmodules.bak
    
-   # miscDepsJpのエントリを削除
-   # 例えば、以下のようなエントリを削除:
-   # [submodule "miscDepsJp"]
-   #     path = miscDepsJp
-   #     url = https://github.com/nvdajp/nvdajpmiscdeps.git
+   # .gitmodulesファイルを編集し、miscDepsJpのエントリを削除
+   # 代わりに、以下のようなエントリを追加:
    
-   # Visual Studio Codeでテキストエディタで.gitmodulesファイルを開いて編集
-   code .gitmodules
-   
-   # includeディレクトリ内の各サブモジュールを直接参照するように新しいエントリを追加
-   # 例えば、以下のようなエントリを追加:
-   
-   # .gitmodulesファイルに以下を追加:
-   # [submodule "miscDepsJp/include/libopenjtalk"]
-   #     path = miscDepsJp/include/libopenjtalk
-   #     url = https://github.com/nishimotz/libopenjtalk.git
-   # [submodule "miscDepsJp/include/htsengineapi"]
-   #     path = miscDepsJp/include/htsengineapi
-   #     url = https://github.com/nishimotz/htsengineapi.git
-   # [submodule "miscDepsJp/include/python-jtalk"]
-   #     path = miscDepsJp/include/python-jtalk
-   #     url = https://github.com/nvdajp/python-jtalk.git
-   # [submodule "miscDepsJp/include/libkuraji"]
-   #     path = miscDepsJp/include/libkuraji
-   #     url = https://github.com/nishimotz/libkuraji.git
-   
-   # または、git configコマンドを使用して追加:
+   [submodule "miscDepsJp/include/libopenjtalk"]
+       path = miscDepsJp/include/libopenjtalk
+       url = https://github.com/nishimotz/libopenjtalk.git
+   [submodule "miscDepsJp/include/htsengineapi"]
+       path = miscDepsJp/include/htsengineapi
+       url = https://github.com/nishimotz/htsengineapi.git
+   [submodule "miscDepsJp/include/python-jtalk"]
+       path = miscDepsJp/include/python-jtalk
+       url = https://github.com/nvdajp/python-jtalk.git
+   [submodule "miscDepsJp/include/libkuraji"]
+       path = miscDepsJp/include/libkuraji
+       url = https://github.com/nishimotz/libkuraji.git
    ```
 
-4. **includeディレクトリ内のサブモジュールを再設定**:
+3. **サブモジュールのリビジョン確認と初期化**:
    ```
-   # miscDepsJp/includeディレクトリ内の各サブモジュールを確認
-   dir /a miscDepsJp\include
+   # 移行前の各サブモジュールのリビジョン（コミットハッシュ）を確認
+   cd miscDepsJp\include\libopenjtalk
+   git rev-parse HEAD > ..\..\..\libopenjtalk.rev
+   cd ..\..\..\
    
-   # 各サブモジュールを直接nvdajpから参照するように.gitmodulesを編集
-   # 例: miscDepsJp/include/libopenjtalkを直接参照
-   git config -f .gitmodules submodule.miscDepsJp/include/libopenjtalk.path miscDepsJp\include\libopenjtalk
-   git config -f .gitmodules submodule.miscDepsJp/include/libopenjtalk.url https://github.com/nishimotz/libopenjtalk.git
+   cd miscDepsJp\include\htsengineapi
+   git rev-parse HEAD > ..\..\..\htsengineapi.rev
+   cd ..\..\..\
    
-   # 同様に他のサブモジュールも設定
-   # ...
+   cd miscDepsJp\include\python-jtalk
+   git rev-parse HEAD > ..\..\..\python-jtalk.rev
+   cd ..\..\..\
+   
+   cd miscDepsJp\include\libkuraji
+   git rev-parse HEAD > ..\..\..\libkuraji.rev
+   cd ..\..\..\
    
    # サブモジュールを初期化
+   # 注: この操作により、.gitmodulesファイルの設定に基づいて
+   # 各サブモジュールが親リポジトリに登録される
    git submodule init
-   git submodule update
+   
+   # 各サブモジュールを特定のリビジョンでチェックアウト
+   # 注: git submodule update を実行すると、各サブモジュールの.gitディレクトリは
+   # 親リポジトリの管理下に置かれ、元の.gitディレクトリの情報は上書きされる
+   # そのため、事前に保存したリビジョン情報を使って明示的にチェックアウトする
+   git submodule update --init miscDepsJp/include/libopenjtalk
+   cd miscDepsJp\include\libopenjtalk
+   for /f "delims=" %%i in ('type ..\..\..\libopenjtalk.rev') do git checkout %%i
+   cd ..\..\..\
+   
+   git submodule update --init miscDepsJp/include/htsengineapi
+   cd miscDepsJp\include\htsengineapi
+   for /f "delims=" %%i in ('type ..\..\..\htsengineapi.rev') do git checkout %%i
+   cd ..\..\..\
+   
+   git submodule update --init miscDepsJp/include/python-jtalk
+   cd miscDepsJp\include\python-jtalk
+   for /f "delims=" %%i in ('type ..\..\..\python-jtalk.rev') do git checkout %%i
+   cd ..\..\..\
+   
+   git submodule update --init miscDepsJp/include/libkuraji
+   cd miscDepsJp\include\libkuraji
+   for /f "delims=" %%i in ('type ..\..\..\libkuraji.rev') do git checkout %%i
+   cd ..\..\..\
+   
+   # 一時ファイルの削除
+   del libopenjtalk.rev htsengineapi.rev python-jtalk.rev libkuraji.rev
    ```
 
-7. **変更のコミット**:
+4. **変更のコミットとテスト**:
    ```
+   # バックアップファイルの削除
+   del .gitmodules.bak
+   
    # 変更をコミット
    git add .
    git commit -m "Refactor: Integrate miscDepsJp directly into nvdajp and maintain include subdirectories as submodules"
-   ```
-
-8. **テストと検証**:
-   ```
+   
    # ビルドテスト
    jptools\devbuild2024.cmd
-   
-   # ユニットテスト
-   rununittests.bat
    
    # NVDA本体の実行テスト
    runnvda.bat
    ```
-
-9. **問題が発生した場合の対応**:
-   ```
-   # 問題が発生した場合は、ログを確認し、必要に応じてコードを修正
-   # 特に、パス解決やビルドプロセスに関する問題に注意
-   ```
-
-10. **変更の公開**:
-    ```
-    # 問題がなければ、変更をリモートリポジトリにプッシュ
-    git push origin alphajp_refactor
-    
-    # Pull Requestを作成して、レビューを依頼
-    ```
 
 ##### 注意点
 
