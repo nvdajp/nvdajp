@@ -319,25 +319,122 @@ NVDA日本語版のビルドで行っているシステムテスト
 
 ## 今後の課題
 
-### ビルドスクリプトの最適化
+### ビルドスクリプトの処理構造と実行フロー
 
-`jptools/certBuild2023.cmd`およびその関連スクリプトには、無駄なファイルコピーや重複処理が存在します。以下の最適化が必要です：
+`jptools/certBuild2023.cmd`を中心としたビルドスクリプトは複数のスクリプトが相互に呼び出し合う複雑な構造になっています。以下にその処理の流れを詳細に説明します：
 
-1. **重複するコピー操作の排除**
-   - `copy_jtalk_core_files.cmd`が`certBuild2023.cmd`と`build-and-test.cmd`の両方から呼び出され、同じファイルが2回コピーされている
-   - コピー操作を一元化し、必要な場所で1回だけ実行するよう修正する
+1. **certBuild2023.cmdの主な処理フロー**
+   - 環境変数の設定（SCONSOPTIONS, TIMESERVER）
+   - Visual C++環境の設定（vcsetup.cmd）
+   - nmakeとpatchコマンドの確認
+   - jtalkコアファイルのコピー処理
+     ```
+     cd miscDepsJp\jptools
+     call copy_jtalk_core_files.cmd
+     ```
+   - jtalkのビルドとテスト
+     ```
+     call build-and-test.cmd
+     ```
+   - 依存ライブラリのセットアップ
+     ```
+     call jptools\setupMiscDepsJp.cmd
+     ```
+   - 各種DLLファイルへの電子署名
+     ```
+     %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 [ファイル名]
+     ```
+   - sconsによるNVDAのビルド
+     ```
+     call scons.bat source user_docs launcher release=1 publisher=%PUBLISHER% %SCONSARGS%
+     ```
+   - jtalkとkgsアドオンのパッケージング
+   - コントローラークライアントのビルド
+   - テストの実行
+   - 署名の検証
 
-2. **不必要なビルド/クリーン操作の統合**
-   - `build-and-test.cmd`と`setupMiscDepsJp.cmd`で同じjtalkのビルドとインストール操作が重複している
-   - `setupMiscDepsJp.cmd`内でall-clean.cmdが2回実行されている
-   - ビルドプロセスを見直し、必要な操作のみを1回だけ実行するよう整理する
+2. **build-and-test.cmdの処理**
+   - jtalkコアファイルのコピー（copy_jtalk_core_files.cmd）
+   - Visual C++環境の設定
+   - jtalkのビルド処理
+     ```
+     call all-clean.cmd
+     call all-build.cmd
+     call all-install.cmd
+     ```
+   - python-jtalkのクリーン処理
+   - テストの実行
 
-3. **アーカイブと展開プロセスの見直し**
-   - `setupMiscDepsJp.cmd`でsourceディレクトリをアーカイブし、すぐに展開して元のアーカイブを削除している処理は非効率
-   - 必要なファイルのみを直接コピーする方式に変更することで処理を効率化できる
+3. **setupMiscDepsJp.cmdの処理**
+   - jtalkのビルド処理
+     ```
+     call all-clean.cmd
+     call all-build.cmd
+     call all-install.cmd
+     call all-clean.cmd
+     ```
+   - 一時ファイルの削除
+   - sourceディレクトリのアーカイブと展開
+     ```
+     7z a ..\nvdajp-miscdep.7z source
+     cd ..
+     7z x -y nvdajp-miscdep.7z
+     del /Q nvdajp-miscdep.7z
+     ```
+   - 各種クリーンアップ処理
 
-4. **クリーンアップ処理の統合**
-   - 複数のスクリプトで類似したクリーンアップ処理が散在している
-   - クリーンアップ処理を一元化し、必要な時点で一度だけ実行するよう改善する
+4. **スクリプト間の呼び出し関係と重複ファイル**
+   - certBuild2023.cmd → copy_jtalk_core_files.cmd
+   - certBuild2023.cmd → build-and-test.cmd → copy_jtalk_core_files.cmd
+   - certBuild2023.cmd → setupMiscDepsJp.cmd
+   - devbuild.cmd → copy_jtalk_core_files.cmd
+   - devbuild.cmd → setupMiscDepsJp.cmd
+   
+   ビルドスクリプトには同名のファイルが複数の場所に存在しており、それぞれ異なる処理を行っています：
+   
+   1. **build-and-test.cmd**
+      - `miscDepsJp/jptools/build-and-test.cmd`：主にjtalkのビルドとテストを行う
+        ```
+        call copy_jtalk_core_files.cmd
+        call ..\include\python-jtalk\vcsetup.cmd
+        cd /d %~dp0
+        cd ..\include\jtalk
+        call all-clean.cmd
+        call all-build.cmd
+        call all-install.cmd
+        cd ..\python-jtalk
+        call clean.cmd
+        cd ..\..\jptools
+        call test.cmd
+        ```
+      - `miscDepsJp/jptools/jtalk/build-and-test.cmd`：より限定的な処理を行う
+        ```
+        call all-build.cmd
+        call all-install.cmd
+        cd ..\..\jptools
+        call test-mecab.cmd
+        cd ..\include\jtalk
+        ```
+   
+   2. **all-build.cmd / all-clean.cmd / all-install.cmd**
+      - `miscDepsJp/jptools/jtalk/`ディレクトリに存在
+      - `miscDepsJp/include/jtalk/`ディレクトリには存在しないが、上記からコピーされ、スクリプト内で呼び出されている
+   
+   3. **vcsetup.cmd**
+      - `jptools/vcsetup.cmd`（メインリポジトリ）
+      - `miscDepsJp/include/python-jtalk/vcsetup.cmd`（サブモジュール）
+   
+   4. **clean.cmd**
+      - `miscDepsJp/jptools/clean.cmd`（メインリポジトリ）
+      - `miscDepsJp/include/python-jtalk/clean.cmd`（サブモジュール）
+   
+   これらの同名スクリプトは、それぞれ異なる処理を行うために作成されたものですが、呼び出し関係が複雑になっています。
 
-これらの最適化により、ビルド時間の短縮とプロセスの信頼性向上が期待できます。
+5. **処理の特徴**
+   - 同じファイルのコピーが複数回実行される場合がある
+   - jtalkのビルド処理（clean→build→install）が複数回実行される
+   - クリーンアップ処理が複数のスクリプトに分散している
+   - エラーチェックは一部の処理でのみ実装されている
+   - アーカイブと展開を使ったファイルコピー処理がある
+
+これらの複雑な処理構造は、長年の開発過程で段階的に追加・修正されてきたもので、改善が必要です。
