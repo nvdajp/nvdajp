@@ -451,24 +451,26 @@ miscDepsJPリポジトリそのものをサブモジュールとして扱わず�
    #     url = https://github.com/nishimotz/libkuraji.git
    ```
 
-3. **サブモジュールのリビジョン確認と初期化** (PowerShell):
+3. **サブモジュールのコミットハッシュ取得と初期化** (PowerShell):
    ```powershell
-   # 移行前の各サブモジュールのリビジョン（コミットハッシュ）を確認
-   Push-Location miscDepsJp/include/libopenjtalk
-   git rev-parse HEAD | Out-File -FilePath ../../../libopenjtalk.rev
-   Pop-Location
+   # サブモジュールの構造に問題がある場合、直接コミットハッシュを取得できないことがあります
+   # その場合は、別の場所にある同じブランチの作業ディレクトリからハッシュを取得します
    
-   Push-Location miscDepsJp/include/htsengineapi
-   git rev-parse HEAD | Out-File -FilePath ../../../htsengineapi.rev
-   Pop-Location
+   # 例: 別の場所に同じブランチの作業ディレクトリがある場合
+   cd f:\nvda\gh\alphajp\miscDepsJp\include\libopenjtalk
+   git rev-parse HEAD | Out-File -FilePath f:\nvda\gh\nvdajp-refactor\alphajp_refactor\libopenjtalk.rev
    
-   Push-Location miscDepsJp/include/python-jtalk
-   git rev-parse HEAD | Out-File -FilePath ../../../python-jtalk.rev
-   Pop-Location
+   cd f:\nvda\gh\alphajp\miscDepsJp\include\htsengineapi
+   git rev-parse HEAD | Out-File -FilePath f:\nvda\gh\nvdajp-refactor\alphajp_refactor\htsengineapi.rev
    
-   Push-Location miscDepsJp/include/libkuraji
-   git rev-parse HEAD | Out-File -FilePath ../../../libkuraji.rev
-   Pop-Location
+   cd f:\nvda\gh\alphajp\miscDepsJp\include\python-jtalk
+   git rev-parse HEAD | Out-File -FilePath f:\nvda\gh\nvdajp-refactor\alphajp_refactor\python-jtalk.rev
+   
+   cd f:\nvda\gh\alphajp\miscDepsJp\include\libkuraji
+   git rev-parse HEAD | Out-File -FilePath f:\nvda\gh\nvdajp-refactor\alphajp_refactor\libkuraji.rev
+   
+   # 作業ディレクトリに戻る
+   cd f:\nvda\gh\nvdajp-refactor\alphajp_refactor
    
    # サブモジュールを初期化
    # 注: この操作により、.gitmodulesファイルの設定に基づいて
