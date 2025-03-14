@@ -399,70 +399,76 @@ miscDepsJPリポジトリそのものをサブモジュールとして扱わず�
 
 ##### 具体的な作業手順
 
-1. **miscDepsJPの内容をnvdajpに統合**:
-   ```
+1. **miscDepsJPの内容をnvdajpに統合** (PowerShell):
+   ```powershell
    # miscDepsJpサブモジュールの内容を一時ディレクトリにコピー
    # 各サブモジュールの.gitディレクトリも含めてコピーされる
-   mkdir temp-miscdepsjp
-   xcopy /E /I /H miscDepsJp\* temp-miscdepsjp\
+   New-Item -ItemType Directory -Path temp-miscdepsjp
+   Copy-Item -Path miscDepsJp/* -Destination temp-miscdepsjp -Recurse -Force
    
    # miscDepsJpサブモジュールを削除
    git submodule deinit -f miscDepsJp
    git rm -f miscDepsJp
-   rd /s /q .git\modules\miscDepsJp
+   Remove-Item -Path .git/modules/miscDepsJp -Recurse -Force
    
    # miscDepsJpディレクトリを作成し、内容をコピー
    # 各サブモジュールの.gitディレクトリも含めてコピーされる
-   mkdir miscDepsJp
-   xcopy /E /I /H temp-miscdepsjp\* miscDepsJp\
+   New-Item -ItemType Directory -Path miscDepsJp
+   Copy-Item -Path temp-miscdepsjp/* -Destination miscDepsJp -Recurse -Force
    
    # 一時ディレクトリを削除
-   rd /s /q temp-miscdepsjp
+   Remove-Item -Path temp-miscdepsjp -Recurse -Force
    
    # 注: この時点で、miscDepsJp/include内の各サブモジュールディレクトリには
    # .gitディレクトリが存在し、元のサブモジュールのリポジトリ情報が保持されている
    ```
 
-2. **.gitmodulesファイルの更新**:
-   ```
+2. **.gitmodulesファイルの更新** (PowerShell):
+   ```powershell
    # .gitmodulesファイルをバックアップ
-   copy .gitmodules .gitmodules.bak
+   Copy-Item -Path .gitmodules -Destination .gitmodules.bak
    
    # .gitmodulesファイルを編集し、miscDepsJpのエントリを削除
    # 代わりに、以下のようなエントリを追加:
+   # (PowerShellでテキストファイルを編集するには、Set-Contentなどを使用するか、
+   # エディタで直接編集することをお勧めします)
    
-   [submodule "miscDepsJp/include/libopenjtalk"]
-       path = miscDepsJp/include/libopenjtalk
-       url = https://github.com/nishimotz/libopenjtalk.git
-   [submodule "miscDepsJp/include/htsengineapi"]
-       path = miscDepsJp/include/htsengineapi
-       url = https://github.com/nishimotz/htsengineapi.git
-   [submodule "miscDepsJp/include/python-jtalk"]
-       path = miscDepsJp/include/python-jtalk
-       url = https://github.com/nvdajp/python-jtalk.git
-   [submodule "miscDepsJp/include/libkuraji"]
-       path = miscDepsJp/include/libkuraji
-       url = https://github.com/nishimotz/libkuraji.git
+   # 例: Visual Studio Codeで編集
+   code .gitmodules
+   
+   # 以下のようなエントリを追加:
+   # [submodule "miscDepsJp/include/libopenjtalk"]
+   #     path = miscDepsJp/include/libopenjtalk
+   #     url = https://github.com/nishimotz/libopenjtalk.git
+   # [submodule "miscDepsJp/include/htsengineapi"]
+   #     path = miscDepsJp/include/htsengineapi
+   #     url = https://github.com/nishimotz/htsengineapi.git
+   # [submodule "miscDepsJp/include/python-jtalk"]
+   #     path = miscDepsJp/include/python-jtalk
+   #     url = https://github.com/nvdajp/python-jtalk.git
+   # [submodule "miscDepsJp/include/libkuraji"]
+   #     path = miscDepsJp/include/libkuraji
+   #     url = https://github.com/nishimotz/libkuraji.git
    ```
 
-3. **サブモジュールのリビジョン確認と初期化**:
-   ```
+3. **サブモジュールのリビジョン確認と初期化** (PowerShell):
+   ```powershell
    # 移行前の各サブモジュールのリビジョン（コミットハッシュ）を確認
-   cd miscDepsJp\include\libopenjtalk
-   git rev-parse HEAD > ..\..\..\libopenjtalk.rev
-   cd ..\..\..\
+   Push-Location miscDepsJp/include/libopenjtalk
+   git rev-parse HEAD | Out-File -FilePath ../../../libopenjtalk.rev
+   Pop-Location
    
-   cd miscDepsJp\include\htsengineapi
-   git rev-parse HEAD > ..\..\..\htsengineapi.rev
-   cd ..\..\..\
+   Push-Location miscDepsJp/include/htsengineapi
+   git rev-parse HEAD | Out-File -FilePath ../../../htsengineapi.rev
+   Pop-Location
    
-   cd miscDepsJp\include\python-jtalk
-   git rev-parse HEAD > ..\..\..\python-jtalk.rev
-   cd ..\..\..\
+   Push-Location miscDepsJp/include/python-jtalk
+   git rev-parse HEAD | Out-File -FilePath ../../../python-jtalk.rev
+   Pop-Location
    
-   cd miscDepsJp\include\libkuraji
-   git rev-parse HEAD > ..\..\..\libkuraji.rev
-   cd ..\..\..\
+   Push-Location miscDepsJp/include/libkuraji
+   git rev-parse HEAD | Out-File -FilePath ../../../libkuraji.rev
+   Pop-Location
    
    # サブモジュールを初期化
    # 注: この操作により、.gitmodulesファイルの設定に基づいて
@@ -474,43 +480,47 @@ miscDepsJPリポジトリそのものをサブモジュールとして扱わず�
    # 親リポジトリの管理下に置かれ、元の.gitディレクトリの情報は上書きされる
    # そのため、事前に保存したリビジョン情報を使って明示的にチェックアウトする
    git submodule update --init miscDepsJp/include/libopenjtalk
-   cd miscDepsJp\include\libopenjtalk
-   for /f "delims=" %%i in ('type ..\..\..\libopenjtalk.rev') do git checkout %%i
-   cd ..\..\..\
+   Push-Location miscDepsJp/include/libopenjtalk
+   $revision = Get-Content -Path ../../../libopenjtalk.rev
+   git checkout $revision
+   Pop-Location
    
    git submodule update --init miscDepsJp/include/htsengineapi
-   cd miscDepsJp\include\htsengineapi
-   for /f "delims=" %%i in ('type ..\..\..\htsengineapi.rev') do git checkout %%i
-   cd ..\..\..\
+   Push-Location miscDepsJp/include/htsengineapi
+   $revision = Get-Content -Path ../../../htsengineapi.rev
+   git checkout $revision
+   Pop-Location
    
    git submodule update --init miscDepsJp/include/python-jtalk
-   cd miscDepsJp\include\python-jtalk
-   for /f "delims=" %%i in ('type ..\..\..\python-jtalk.rev') do git checkout %%i
-   cd ..\..\..\
+   Push-Location miscDepsJp/include/python-jtalk
+   $revision = Get-Content -Path ../../../python-jtalk.rev
+   git checkout $revision
+   Pop-Location
    
    git submodule update --init miscDepsJp/include/libkuraji
-   cd miscDepsJp\include\libkuraji
-   for /f "delims=" %%i in ('type ..\..\..\libkuraji.rev') do git checkout %%i
-   cd ..\..\..\
+   Push-Location miscDepsJp/include/libkuraji
+   $revision = Get-Content -Path ../../../libkuraji.rev
+   git checkout $revision
+   Pop-Location
    
    # 一時ファイルの削除
-   del libopenjtalk.rev htsengineapi.rev python-jtalk.rev libkuraji.rev
+   Remove-Item -Path libopenjtalk.rev, htsengineapi.rev, python-jtalk.rev, libkuraji.rev
    ```
 
-4. **変更のコミットとテスト**:
-   ```
+4. **変更のコミットとテスト** (PowerShell):
+   ```powershell
    # バックアップファイルの削除
-   del .gitmodules.bak
+   Remove-Item -Path .gitmodules.bak
    
    # 変更をコミット
    git add .
    git commit -m "Refactor: Integrate miscDepsJp directly into nvdajp and maintain include subdirectories as submodules"
    
    # ビルドテスト
-   jptools\devbuild2024.cmd
+   & jptools\devbuild2024.cmd
    
    # NVDA本体の実行テスト
-   runnvda.bat
+   & runnvda.bat
    ```
 
 ##### 注意点
