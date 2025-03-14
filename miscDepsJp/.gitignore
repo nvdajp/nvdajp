@@ -3,7 +3,6 @@
 jptools/__*.txt
 jptools/jtusr.dic
 jptools/jtalkRunner.py
-include/jtalk
 source/synthDrivers/jtalk/dic/DIC_VERSION
 source/synthDrivers/jtalk/dic/sys.dic
 source/synthDrivers/jtalk/dic/unk.dic
