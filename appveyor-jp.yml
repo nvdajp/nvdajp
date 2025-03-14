@@ -41,7 +41,6 @@ install:
  - git submodule update --init --recursive
 
 build_script:
- - cd .\miscDepsJp\jptools && .\copy_jtalk_core_files.cmd && cd ..\..
  - ps: |
     $apiVersion = (py -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))")
     echo apiversion: $apiVersion

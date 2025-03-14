@@ -4,6 +4,7 @@ cd ..
 
 cd miscDepsJp\jptools
 call clean.cmd
+call copy_jtalk_core_files.cmd
 call build-and-test.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
 cd ..\..
