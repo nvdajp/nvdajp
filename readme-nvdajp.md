@@ -509,7 +509,21 @@ miscDepsJPリポジトリそのものをサブモジュールとして扱わず�
    Remove-Item -Path libopenjtalk.rev, htsengineapi.rev, python-jtalk.rev, libkuraji.rev
    ```
 
-4. **変更のコミットとテスト** (PowerShell):
+4. **不要なファイルの削除** (PowerShell):
+   ```powershell
+   # miscDepsJpが独立したリポジトリでなくなったため、不要なファイルを削除
+   # CI/CD関連のファイル
+   Remove-Item -Path miscDepsJp/appveyor.yml -Force
+   
+   # 独立したリポジトリとして必要だったファイル
+   # .gitignoreは残しておくと便利なことがあるので、必要に応じて削除
+   # Remove-Item -Path miscDepsJp/.gitignore -Force
+   
+   # .gitmodulesファイルは不要（親リポジトリの.gitmodulesに統合されたため）
+   Remove-Item -Path miscDepsJp/.gitmodules -Force
+   ```
+
+5. **変更のコミットとテスト** (PowerShell):
    ```powershell
    # バックアップファイルの削除
    Remove-Item -Path .gitmodules.bak
