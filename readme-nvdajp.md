@@ -346,32 +346,54 @@ miscDepsJpディレクトリには以下のような複雑なディレクトリ�
 
 ### 解決方針案
 
-#### 方針1: サブモジュール構造の根本的見直し
-
-1. **サブモジュール階層の削減**:
-   - サブモジュールをNVDAプロジェクト全体の構造の中で適切な場所に再配置
-   - 例: 音声合成関連のライブラリは専用のリポジトリに集約し、NVDAプロジェクトからは単一の参照点を持つ
-
-2. **依存関係の明確化と直接参照**:
-   - 各モジュールの責務と依存関係を明確に文書化
-   - 依存関係グラフを作成し、循環参照や不要な依存を排除
-   - 必要なファイルだけを参照する仕組みを導入
-
-3. **ビルドプロセスの改善**:
-   - ファイルコピーを行わないビルドプロセスに変更
-   - 実行時パス解決を導入し、正しいファイルを直接参照
-   - ビルド設定ファイルで依存関係を明示的に管理
-
-4. **モジュール構造の再設計**:
-   - 現在のモジュール間の関係を分析し、論理的な構造に再設計
-   - 各コンポーネントの責務を明確にし、適切な粒度でモジュール化
-   - 将来的な拡張性とメンテナンス性を考慮した設計
-
-#### 方針2: miscDepsJPの統合とincludeのサブモジュール化
+#### 方針: miscDepsJPの統合とincludeのサブモジュール化
 
 ##### 概要
 
 miscDepsJPリポジトリそのものをサブモジュールとして扱わず、nvdajpリポジトリに直接統合し、miscDepsJP/include内の各ライブラリは引き続きサブモジュールとして管理する方針です。
+
+##### 目標とするgit submodule状態
+
+1. **nvdajpリポジトリの.gitmodulesファイル**:
+   ```
+   # miscDepsJpはサブモジュールではなくなる（エントリが削除される）
+   # 代わりに、miscDepsJp/include内の各ライブラリが直接サブモジュールとして参照される
+   [submodule "miscDepsJp/include/libopenjtalk"]
+       path = miscDepsJp/include/libopenjtalk
+       url = https://github.com/nishimotz/libopenjtalk.git
+   [submodule "miscDepsJp/include/htsengineapi"]
+       path = miscDepsJp/include/htsengineapi
+       url = https://github.com/nishimotz/htsengineapi.git
+   [submodule "miscDepsJp/include/python-jtalk"]
+       path = miscDepsJp/include/python-jtalk
+       url = https://github.com/nvdajp/python-jtalk.git
+   [submodule "miscDepsJp/include/libkuraji"]
+       path = miscDepsJp/include/libkuraji
+       url = https://github.com/nishimotz/libkuraji.git
+   ```
+
+2. **ディレクトリ構造**:
+   ```
+   nvdajp/
+   ├── .git/
+   ├── .gitmodules        # 上記の内容
+   ├── miscDepsJp/        # 通常のディレクトリ（サブモジュールではない）
+   │   ├── include/
+   │   │   ├── htsengineapi/  # サブモジュール
+   │   │   ├── jtalk/         # 通常のディレクトリ
+   │   │   ├── libkuraji/     # サブモジュール
+   │   │   ├── libopenjtalk/  # サブモジュール
+   │   │   └── python-jtalk/  # サブモジュール
+   │   ├── jptools/
+   │   └── source/
+   ```
+
+3. **python-jtalk内部の依存関係**:
+   - python-jtalkビルドプロセスを修正し、同じレベルのlibopenjtalkとhtsengineapiサブモジュールを直接参照
+   - python-jtalk内にlibopenjtalkとhtsengineapiのコピーを持たない
+   - 必要なファイルのみをビルド時に参照またはコピー
+
+注: ビルドプロセス（setupMiscDepsJp.cmd、all-build.cmd、all-install.cmdなど）の修正は将来の課題とします。当面は現在のビルドプロセスを維持しながら、サブモジュール構造のみを変更します。
 
 ##### 具体的な作業手順
 
@@ -462,37 +484,6 @@ miscDepsJPリポジトリそのものをサブモジュールとして扱わず�
    # サブモジュールを初期化
    git submodule init
    git submodule update
-   ```
-
-5. **ビルドスクリプトの修正**:
-   ```
-   # copy_jtalk_core_files.cmdを修正して、ファイルコピーを最小限に抑える
-   # 例: miscDepsJp/jptools/copy_jtalk_core_files.cmdを編集
-   
-   # 修正前:
-   # xcopy /E /Y ..\include\htsengineapi ..\include\python-jtalk\htsengineapi
-   # xcopy /E /Y ..\include\libopenjtalk ..\include\python-jtalk\libopenjtalk
-   
-   # 修正後:
-   # 直接参照するためのパス設定を追加
-   # set HTSENGINE_PATH=..\include\htsengineapi
-   # set LIBOPENJTALK_PATH=..\include\libopenjtalk
-   ```
-
-6. **Python側のコード修正**:
-   ```
-   # Python側のコードを修正して、直接パスを参照するように変更
-   # 例: miscDepsJp/include/python-jtalk/jtalkCore.pyを編集
-   
-   # 修正前:
-   # import os
-   # from . import libopenjtalk
-   
-   # 修正後:
-   # import os
-   # import sys
-   # sys.path.append(os.environ.get('LIBOPENJTALK_PATH', './libopenjtalk'))
-   # import libopenjtalk
    ```
 
 7. **変更のコミット**:
