@@ -1,0 +1,38 @@
+image: Visual Studio 2022
+version: "{branch}-{build}"
+
+environment:
+ PY_PYTHON: 3.11-32
+
+clone_depth: 1
+
+init:
+ - tzutil /g
+ - tzutil /s "Tokyo Standard Time"
+ - tzutil /g
+
+install:
+ - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
+ - set PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+ - py --version
+ - git submodule update --init --recursive
+
+build_script:
+ - py -m venv .venv
+ - .venv\scripts\activate
+ - c:\projects\nvdajpmiscdep\.venv\scripts\python.exe -m pip install --upgrade pip
+ - pip install -r requirements-dev.txt
+ - run_mypy.cmd > __mypy.txt
+ - cd jptools
+ - build-and-test.cmd
+ - make_html.cmd
+ - cd ..
+ - deactivate
+ 
+artifacts:
+ - path: __mypy.txt
+ - path: jptools\__h1output.txt
+ - path: jptools\__h2output.txt
+ - path: jptools\__test_log.txt
+ - path: jptools\__jpBrailleHarness.t2t
+ - path: jptools\jpBrailleHarness.xhtml

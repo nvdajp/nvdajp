@@ -1,0 +1,44 @@
+[submodule "include/liblouis"]
+	path = include/liblouis
+	url = https://github.com/liblouis/liblouis.git
+[submodule "miscDeps"]
+	path = miscDeps
+	url = https://github.com/nvaccess/nvda-misc-deps
+[submodule "include/espeak"]
+	path = include/espeak
+	url=https://github.com/espeak-ng/espeak-ng
+	ignore = dirty
+[submodule "include/sonic"]
+	path = include/sonic
+	url = https://github.com/waywardgeek/sonic.git
+	ignore = untracked
+[submodule "include/ia2"]
+	path = include/ia2
+	url = https://github.com/LinuxA11y/IAccessible2.git
+[submodule "include/javaAccessBridge32"]
+	path = include/javaAccessBridge32
+	url = https://github.com/nvaccess/javaAccessBridge32-bin.git
+[submodule "include/nvda_dmp"]
+	path = include/nvda_dmp
+	url = https://github.com/codeofdusk/nvda_dmp
+[submodule "include/w3c-aria-practices"]
+	path = include/w3c-aria-practices
+	url = https://github.com/w3c/aria-practices
+[submodule "include/Detours"]
+	path = include/detours
+	url = https://github.com/microsoft/Detours/
+[submodule "include/nsis"]
+	path = include/nsis
+	url = https://github.com/nvaccess/nsis-build
+[submodule "include/wil"]
+	path = include/wil
+	url = https://github.com/microsoft/wil
+[submodule "nvda-cldr"]
+	path = include/nvda-cldr
+	url = https://github.com/nvaccess/nvda-cldr.git
+	branch = main-out
+	shallow = true
+[submodule "vscode-nvda"]
+	path = .vscode
+	url = https://github.com/nvaccess/vscode-nvda.git
+	ignore = dirty
