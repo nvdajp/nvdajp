@@ -205,34 +205,38 @@ def pass2(verboseMode=False):
 
 
 def make_doc():
-    outfile = "__jpBrailleHarness.t2t"
+    outfile = "__jpBrailleHarness.md"
     timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     with open_file(outfile, "w") as f:
         __writeln(
             f,
             """
-NVDA 日本語版 点訳テストケース """
-            + timestamp
-            + """
-
-%!Target: xhtml
-%!Encoding: UTF-8
-
-目次
-%%toc
-
-""",
+# NVDA 日本語版 点訳テストケース """
+            + timestamp,
         )
         count = 0
         for t in tests:
             # 'note' はテストケースではなく説明の記述
             if "note" in t:
+                note = t["note"]
+                # "==== 見出し ====" => "##### 見出し"
+                # "=== 見出し ===" => "#### 見出し"
+                # "== 見出し ==" => "### 見出し"
+                # "+ 見出し +" => "## 見出し"
+                if note.startswith("====") and note.endswith("===="):
+                    note = "##### " + note[4:-4]
+                elif note.startswith("===") and note.endswith("==="):
+                    note = "#### " + note[3:-3]
+                elif note.startswith("==") and note.endswith("=="):
+                    note = "### " + note[2:-2]
+                elif note.startswith("+") and note.endswith("+"):
+                    note = "## " + note[1:-1]
                 __writeln(f)
-                __writeln(f, t["note"])
+                __writeln(f, note)
                 __writeln(f)
                 continue
             count += 1
-            __writeln(f, "番号: %d" % count)
+            __writeln(f, "###### 番号: %d" % count)
 
             if "text" in t:
                 __writeln(f, "- 日本語: " + t["text"].replace("　", "□").replace(" ", "□"))
@@ -252,7 +256,7 @@ NVDA 日本語版 点訳テストケース """
                     for c in t["comment"]:
                         __writeln(f, "  - " + c)
                     __writeln(f, "  -")
-            __writeln(f, "-")
+            __writeln(f, "")
 
 
 if __name__ == "__main__":

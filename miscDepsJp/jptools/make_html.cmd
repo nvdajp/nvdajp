@@ -1,11 +1,4 @@
 python jpBrailleRunner.py -m
 
-
-
-
-
-
-
-
-python py3/txt2tags.py -t xhtml --toc __jpBrailleHarness.t2t
-move __jpBrailleHarness.xhtml jpBrailleHarness.xhtml
+rem Markdownファイルを処理
+python md2html.py __jpBrailleHarness.md jpBrailleHarness.html
