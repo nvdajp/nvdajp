@@ -45,6 +45,7 @@ If you suspect this option is negatively impacting your battery life, you're adv
 * Rate boost is now supported when using Microsoft Speech API version 5 (SAPI5) and Microsoft Speech Platform voices, which supports up to 6X speed. (#17606, @gexgd0419)
 * In a recognition result, `NVDA+f5` manually refreshes the recognized content. (#17715, @CyrilleB79)
 * Added an unassigned gesture to toggle periodical refresh of the Windows OCR result.
+* NVDA browse mode's native selection mode (`NVDA+shift+f10`) is now supported in Google Chrome and other applications based on Chromium 134 or newer. (#17838)
 
 ### Changes
 
@@ -79,7 +80,8 @@ Prefix matching on command line flags, e.g. using `--di` for `--disable-addons` 
 * The keyboard settings for "Speak typed characters" and "Speak typed words" now have three options: Off, Only in edit controls, and Always. (#17505, @Cary-rowen)
   * By default, "Speak typed characters" is now set to "Only in edit controls".
 * The silence at the beginning of speech will now be trimmed when using OneCore voices, SAPI5 voices, and some third-party voice add-ons to improve their responsiveness. (#17614, @gexgd0419)
-* Microsoft Speech API version 4 voices now use WASAPI for audio output, so that they can work with features such as audio ducking, leading silence trimming, and keeping audio device awake. (#17718, @gexgd0419)
+* Microsoft Speech API version 4 voices now use WASAPI for audio output, so that they can work with features such as audio ducking, leading silence trimming, and keeping audio device awake.
+If this does not work with your SAPI 4 voice, you can disable WASAPI for SAPI 4 in Advanced settings. (#17718, #17801, @gexgd0419)
 
 ### Security Fixes
 
