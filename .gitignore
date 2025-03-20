@@ -9,6 +9,8 @@ build
 build_debug
 dist
 *.dll
+!source/brailleDisplayDrivers/DirectBM.dll
+!miscDepsJp/source/brailleDisplayDrivers/DirectBM.dll
 *.exe
 *.manifest
 source/synthDrivers/espeak-ng-data
