@@ -1,6 +1,7 @@
 ---
 name: 不具合の報告
 about: NVDA日本語版の改良に役立つ報告を作成
+type: Bug
 
 ---
 

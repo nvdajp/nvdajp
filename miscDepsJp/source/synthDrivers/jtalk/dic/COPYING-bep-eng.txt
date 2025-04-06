@@ -1,0 +1,9 @@
+portion of jtalk/dic is based on bep-eng.dic
+http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic 
+see also https://github.com/nishimotz/libopenjtalk
+
+# License GPL
+#
+# - modified hankaku kana to zenkaku kana
+# - added basic japanese letters
+# by M.Ohtsuka(mash)

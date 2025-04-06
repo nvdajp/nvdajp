@@ -22,7 +22,7 @@ init:
 
 install:
  - set RELEASE=1
- - set VERSION=2024.4jp
+ - set VERSION=2025.1jp
  - set UPDATEVERSIONTYPE=nvdajp
  - for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
  - ps: |
@@ -48,6 +48,7 @@ build_script:
     echo apiBackCompatTo: $apiCompatTo
  - ps: |
     $sconsArgs = "version_build=$env:APPVEYOR_BUILD_NUMBER"
+    $sconsArgs += " --all-cores"
     Set-AppveyorBuildVariable "sconsArgs" $sconsArgs
  - 'echo jptools\nonCertAllBuild.cmd %sconsArgs%'
  - jptools\nonCertAllBuild.cmd %sconsArgs%
@@ -67,8 +68,8 @@ before_test:
 
 test_script:
  - ps: appveyor\scripts\tests\translationCheck.ps1
+ - ps: appveyor\scripts\tests\licenseCheck.ps1
  - ps: appveyor\scripts\tests\unitTests.ps1
- - ps: appveyor\scripts\tests\lintCheck.ps1
  - ps: appveyor\scripts\tests\systemTests.ps1
 
 after_test:
@@ -81,8 +82,8 @@ artifacts:
  - path: miscDepsJp\jptools\__h1output.txt
  - path: miscDepsJp\jptools\__h2output.txt
  - path: miscDepsJp\jptools\__test_log.txt
- - path: miscDepsJp\jptools\__jpBrailleHarness.t2t
- - path: miscDepsJp\jptools\jpBrailleHarness.xhtml
+ - path: miscDepsJp\jptools\__jpBrailleHarness.md
+ - path: miscDepsJp\jptools\jpBrailleHarness.html
  - path: jptools\__jpdictest_log.txt
  - path: jptools\nvdajp-jtalk-*.nvda-addon
  - path: jptools\kgsbraille-*.nvda-addon

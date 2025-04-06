@@ -13,6 +13,7 @@ patch -v
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd miscDepsJp\jptools
+call copy_jtalk_core_files.cmd
 call build-and-test.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
 cd ..\..
