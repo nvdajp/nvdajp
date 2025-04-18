@@ -233,7 +233,9 @@ class _ComThread(threading.Thread):
 					except BaseException as e:
 						task.exception = e
 					finally:
-						task.completed.set()
+						completed = task.completed
+						del task
+						completed.set()
 			except queue.Empty:
 				pass
 
@@ -260,7 +262,10 @@ class _ComThread(threading.Thread):
 		task = self.submit(func, *args, **kwargs)
 		task.completed.wait()
 		if task.exception is not None:
-			raise task.exception
+			try:
+				raise task.exception
+			finally:
+				del task
 		return task.result
 
 
@@ -1057,7 +1062,7 @@ class SynthDriver(SynthDriver):
 			self._ttsAttrs = None
 			self._ttsCentral = None
 		if config.conf["speech"]["useWASAPIForSAPI4"]:
-			ttsAudio = SynthDriverAudio(self._comThread)
+			ttsAudio = self._comThread.invoke(SynthDriverAudio, self._comThread)
 		else:
 			ttsAudio = self._comThread.invoke(SynthDriverMMAudio)
 		self._ttsCentral = POINTER(ITTSCentralW)()
