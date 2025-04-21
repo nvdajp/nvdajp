@@ -84,6 +84,7 @@ Please responsibly disclose security issues following NVDA's [security policy](h
 * Added commands to move the review cursor to the first and last character of the selected text, assigned to `NVDA+alt+home` and `NVDA+alt+end`, respectively. (#17299, @nvdaes)
 * Added a general setting to prevent the display turning off during say all or reading with braille.
 This option is enabled by default, but may result in increased battery depletion. (#17649, @LeonarddeR)
+* NVDA is now translated into Bosnian. (#17953)
 
 ### Changes
 
@@ -221,6 +222,7 @@ Add-ons will need to be re-tested and have their manifest updated.
 * Added a new function, `utils.mmdevice.getOutputDevices`, to enumerate audio output devices. (#17678)
 * Added a new extension point `pre_synthSpeak` in `synthDriverHandler`, which will be called before the speech manager calls `speak` of the current synthesizer. (#17648)
 * NVDA supports the `text-indent` IAccessible2 object attribute. (#13052, @michaelweghorn)
+* When a script using `gesture.send` is triggered with a gesture that includes `numLock` as a modifier, Num Lock is no longer turned off. (#10827, @CyrilleB79)
 
 #### API Breaking Changes
 
@@ -278,6 +280,7 @@ Instead, a `callback` property has been added, which returns a function that per
   * Added `TypingEcho` enum in `config.configFlags` to represent these modes, 0=Off, 1=Only in edit controls, 2=Always.
   * `gui.settingsDialogs.KeyboardSettingsPanel.wordsCheckBox` and `gui.settingsDialogs.KeyboardSettingsPanel.charsCheckBox` has been removed.
 * The `winUser.paint` has been renamed from `painStruct` to `paintStruct`, fixing a bug where passing in a `PAINTSTRUCT` would raise an exception. (#17744)
+* `documentationUtils.getDocFilePath` and `installer.getDocFilePath` no longer look for `.txt` files in locale documentation folders. (#17911, @CyrilleB79)
 
 #### Deprecations
 
