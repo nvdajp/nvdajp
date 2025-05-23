@@ -118,6 +118,9 @@ ignore_packages = [
 	"urllib3",  # MIT license, but not in PyPI
 	"wxPython",  # wxWindows Library License
 	"pillow",  # PIL Software License
+	
+	# Project license:
+	"nvda",  # Project itself uses GPL v2, ignore for license check
 ]
 
 
