@@ -4723,7 +4723,9 @@ class GlobalCommands(ScriptableObject):
 		category=SCRCAT_SPEECH,
 	)
 	def script_toggleReportCLDR(self, gesture):
-		dictionaries: list[str] = config.conf["speech"]["symbolDictionaries"]
+		# We need to save a copy of the symbolDictionaries list
+		# so we can set it back afterwards so configobj knows it's changed.
+		dictionaries: list[str] = config.conf["speech"]["symbolDictionaries"].copy()
 		if "cldr" in dictionaries:
 			# Translators: presented when the report CLDR is toggled.
 			state = _("report CLDR characters off")
@@ -4732,6 +4734,7 @@ class GlobalCommands(ScriptableObject):
 			# Translators: presented when the report CLDR is toggled.
 			state = _("report CLDR characters on")
 			dictionaries.append("cldr")
+		config.conf["speech"]["symbolDictionaries"] = dictionaries
 		characterProcessing.clearSpeechSymbols()
 		ui.message(state)
 
