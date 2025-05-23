@@ -307,7 +307,7 @@ class Test_getSpellingSpeechWithoutCharMode(unittest.TestCase):
 	def test_characterMode(self):
 		expected = repr(
 			[
-				"Alfa",
+				"a",
 				EndUtteranceCommand(),
 			],
 		)

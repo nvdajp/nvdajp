@@ -236,7 +236,7 @@ def getCharacterDescription(locale: str, character: str) -> Optional[List[str]]:
 	except LookupError:
 		if not locale.startswith("en"):
 			return getCharacterDescription("en", character)
-		raise LookupError("en")
+		return None
 	desc = l.getCharacterDescription(character)
 	if not desc and not locale.startswith("en"):
 		desc = getCharacterDescription("en", character)
