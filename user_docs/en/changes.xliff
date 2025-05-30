@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en">
-<file id="changes.md" original="https://raw.githubusercontent.com/nvaccess/nvda/b3232697697b4e356545df5d8a809475a79532b7/user_docs/en/changes.md">
+<file id="changes.md" original="https://raw.githubusercontent.com/nvaccess/nvda/b82f75fd116e1f53815f89e9fd9afac28319d8bb/user_docs/en/changes.md">
 <skeleton>
 # $(ID:4bf3ec03-2d43-474a-aef0-92b334e594ed)
 
@@ -14,7 +14,7 @@ $(ID:698c241c-1ade-46a5-bb6b-ee23f6e49e04)
 
 $(ID:1b210c3b-0fbe-42c5-b1fb-a2b63456f3b9)
 
-$(ID:5d8815bb-0213-4c6b-a487-ff8a868da89b)
+$(ID:17977634-b3c7-4ff8-baa0-7b6c304f2e10)
 
 $(ID:20963f36-9dbc-442d-94cc-1034306850a5)
 
@@ -137,6 +137,7 @@ $(ID:f5726c36-3f52-4a94-b521-5ca8d0407364)
   * $(ID:07dd6ed5-8344-42b8-af00-2a1027e50612)
   * $(ID:3008412e-f390-4f10-92d4-f797d021deb4)
   * $(ID:45d16bcf-9b36-46d8-b50d-817e000d2404)
+  * $(ID:12b3866e-0966-40f5-ba71-50b1e10428e7)
 * $(ID:366e7f76-c067-4311-a3b2-6abc79869852)
   * $(ID:f3088b40-bc9a-46da-ba8b-bf601f979ba2)
   * $(ID:51a15094-f57b-43cb-8df2-c01d8e94f3a9)
@@ -172,7 +173,6 @@ $(ID:549554ad-d4f3-4135-a0b2-427b8822b192)
 * $(ID:0d955676-53ce-4caf-831f-379ed9a196ef)
 * $(ID:685f34bb-4a6a-4ec4-9341-673da9b930ed)
 * $(ID:897ce6c2-4516-45a8-91c2-04956630bd5d)
-* $(ID:5427f764-2f8e-4ec7-a596-04338bb3d63f)
 
 ### $(ID:70c8f98f-d5b5-4ec6-8e26-7de32f2da4e7)
 
@@ -253,13 +253,13 @@ $(ID:7d996341-4b3b-4866-8dbc-d25db96c8ea5)
   * $(ID:577f916f-e5ff-4f67-bf13-1037f6c060c2)
 $(ID:39543c90-9b62-4b2b-9cd5-9d2147534302)
   * $(ID:662ad44f-58f9-4174-947f-bd3bfc29e426)
+$(ID:d6569b4b-453e-4611-8ff0-03207d5f5419)
+    * $(ID:8ddc3742-3862-46c8-ab55-edceda0c301f)
+    * $(ID:52f69654-6bf0-4424-8854-6d692a3906cb)
   * $(ID:b7ec61e8-747a-4f68-b201-96c0a4c30770)
   * $(ID:47799452-2417-46fc-90e0-5607790777ea)
-  * $(ID:d33c0dae-24f1-4657-92fd-5edcf0319190)
   * $(ID:084a8e31-cab7-4df0-acdd-3ff8a39a8222)
 $(ID:8490fab4-0b9d-4216-b6d8-b267def08f96)
-  * $(ID:b569e7d4-0eb4-485f-93e0-d69356a9a939)
-  * $(ID:71b599e4-724e-4b6a-90e1-3f7f39b7c60d)
 * $(ID:14f25227-0c94-49fc-9975-82ba830e61f9)
 * $(ID:93869b50-ae5b-4e7e-8c6f-c9aa18b631a5)
 * $(ID:a7ae2825-da24-40b3-9bbc-5fc0ee33bdf4)
@@ -5446,12 +5446,12 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 <source>The Add-on Store's automatic update system has been improved, allowing you to select channels for automatic updates, and run automatic updates in the background.</source>
 </segment>
 </unit>
-<unit id="5d8815bb-0213-4c6b-a487-ff8a868da89b">
+<unit id="17977634-b3c7-4ff8-baa0-7b6c304f2e10">
 <notes>
 <note appliesTo="source">line: 14</note>
 </notes>
 <segment>
-<source>It's now easier to manually refresh OCR and toggle automatic refresh, with new commands.</source>
+<source>New commands have been added to manually refresh an OCR result, and to toggle periodically refreshing OCR results.</source>
 </segment>
 </unit>
 <unit id="20963f36-9dbc-442d-94cc-1034306850a5">
@@ -6404,9 +6404,18 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 <source>Custom braille tables in the developer scratchpad are now properly ignored when running with add-ons disabled. (#17565, @LeonarddeR)</source>
 </segment>
 </unit>
-<unit id="366e7f76-c067-4311-a3b2-6abc79869852">
+<unit id="12b3866e-0966-40f5-ba71-50b1e10428e7">
 <notes>
 <note appliesTo="source">line: 137</note>
+<note appliesTo="source">prefix:   * </note>
+</notes>
+<segment>
+<source>Fixed an issue where some USB braille displays were not properly detected by NVDA. (#18114, @christiancomaschi)</source>
+</segment>
+</unit>
+<unit id="366e7f76-c067-4311-a3b2-6abc79869852">
+<notes>
+<note appliesTo="source">line: 138</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6415,7 +6424,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="f3088b40-bc9a-46da-ba8b-bf601f979ba2">
 <notes>
-<note appliesTo="source">line: 138</note>
+<note appliesTo="source">line: 139</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6424,7 +6433,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="51a15094-f57b-43cb-8df2-c01d8e94f3a9">
 <notes>
-<note appliesTo="source">line: 139</note>
+<note appliesTo="source">line: 140</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6433,7 +6442,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="33dfb2c2-0b62-49b8-abf2-26861fbc0020">
 <notes>
-<note appliesTo="source">line: 140</note>
+<note appliesTo="source">line: 141</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6442,7 +6451,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="d9fea4e8-ccc7-4eb0-b871-5339f0fcb200">
 <notes>
-<note appliesTo="source">line: 141</note>
+<note appliesTo="source">line: 142</note>
 <note appliesTo="source">prefix:     * </note>
 </notes>
 <segment>
@@ -6451,7 +6460,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="849f0377-dcce-4823-9592-38272a968f44">
 <notes>
-<note appliesTo="source">line: 142</note>
+<note appliesTo="source">line: 143</note>
 <note appliesTo="source">prefix:     * </note>
 </notes>
 <segment>
@@ -6460,7 +6469,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="2279fcb9-057a-4be9-b521-e9917c23912f">
 <notes>
-<note appliesTo="source">line: 143</note>
+<note appliesTo="source">line: 144</note>
 <note appliesTo="source">prefix:     * </note>
 </notes>
 <segment>
@@ -6469,7 +6478,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="a560a9c9-0e34-4632-9c63-3226aefe9592">
 <notes>
-<note appliesTo="source">line: 144</note>
+<note appliesTo="source">line: 145</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6478,7 +6487,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="0bb0de0b-3f90-4269-8076-28c4894447df">
 <notes>
-<note appliesTo="source">line: 145</note>
+<note appliesTo="source">line: 146</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6487,7 +6496,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="90ddb7ac-2700-4dd3-aaeb-5af7fc53434a">
 <notes>
-<note appliesTo="source">line: 146</note>
+<note appliesTo="source">line: 147</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6496,7 +6505,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="b8a32bec-e46a-4c3c-ab61-634011b8edd6">
 <notes>
-<note appliesTo="source">line: 147</note>
+<note appliesTo="source">line: 148</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6505,7 +6514,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="ee47cb14-fb05-4708-8a62-80a86b6f5067">
 <notes>
-<note appliesTo="source">line: 148</note>
+<note appliesTo="source">line: 149</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6514,7 +6523,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="8d7f64d9-aaed-4500-bdd5-8fcd75c69e31">
 <notes>
-<note appliesTo="source">line: 149</note>
+<note appliesTo="source">line: 150</note>
 </notes>
 <segment>
 <source>  Specifically, MathML inside of span and other elements that have the attribute `role="math"`. (#15058)</source>
@@ -6522,7 +6531,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="d767cb17-7cd0-4feb-afc6-e10941e88991">
 <notes>
-<note appliesTo="source">line: 150</note>
+<note appliesTo="source">line: 151</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6531,7 +6540,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="30c4ad44-c3a3-4fbb-a72d-f8659ce3cf77">
 <notes>
-<note appliesTo="source">line: 151</note>
+<note appliesTo="source">line: 152</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6540,7 +6549,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="db91d511-8f43-41ce-83dd-2fd6ddf9ddf5">
 <notes>
-<note appliesTo="source">line: 152</note>
+<note appliesTo="source">line: 153</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6549,7 +6558,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="eb17f3bc-c113-4386-8cf2-317b51284e9f">
 <notes>
-<note appliesTo="source">line: 153</note>
+<note appliesTo="source">line: 154</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6558,7 +6567,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="7f91cc45-3074-45a9-9912-7872c8e23660">
 <notes>
-<note appliesTo="source">line: 154</note>
+<note appliesTo="source">line: 155</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6567,7 +6576,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="d3d716d5-967e-4d21-9def-0aebbe12c4d6">
 <notes>
-<note appliesTo="source">line: 155</note>
+<note appliesTo="source">line: 156</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6576,7 +6585,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="549554ad-d4f3-4135-a0b2-427b8822b192">
 <notes>
-<note appliesTo="source">line: 156</note>
+<note appliesTo="source">line: 157</note>
 </notes>
 <segment>
 <source>  In any document, if the cursor is on the last line, it will be moved to the end when using this command. (#17251, #17430, @nvdaes)</source>
@@ -6584,7 +6593,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="21d58f6d-40d8-40b6-8384-4acb0f33e4b7">
 <notes>
-<note appliesTo="source">line: 157</note>
+<note appliesTo="source">line: 158</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6593,7 +6602,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="696d05fd-78a6-4860-baa0-8258efd30a76">
 <notes>
-<note appliesTo="source">line: 158</note>
+<note appliesTo="source">line: 159</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6602,7 +6611,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="206b4558-a280-4327-96fe-3d0ccce52470">
 <notes>
-<note appliesTo="source">line: 159</note>
+<note appliesTo="source">line: 160</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6611,7 +6620,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="78681f8b-9948-4996-ac58-b50c72263be9">
 <notes>
-<note appliesTo="source">line: 160</note>
+<note appliesTo="source">line: 161</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6620,7 +6629,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="abbcdfb0-e0c8-4565-bbb7-38679c5a640a">
 <notes>
-<note appliesTo="source">line: 161</note>
+<note appliesTo="source">line: 162</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6629,7 +6638,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="f8929018-afd9-4cfe-a3f4-aba2a441a8f8">
 <notes>
-<note appliesTo="source">line: 162</note>
+<note appliesTo="source">line: 163</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -6638,7 +6647,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="0f36ac88-bcb5-4559-9448-33a8e9342f24">
 <notes>
-<note appliesTo="source">line: 163</note>
+<note appliesTo="source">line: 164</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6647,7 +6656,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="d0e0c2ad-fb1e-49ab-96d7-2cd62acd0258">
 <notes>
-<note appliesTo="source">line: 164</note>
+<note appliesTo="source">line: 165</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6656,7 +6665,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="b1f8e653-4c2d-4e56-a882-7a4074e0fd9f">
 <notes>
-<note appliesTo="source">line: 165</note>
+<note appliesTo="source">line: 166</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6665,7 +6674,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="ef453176-3122-41c8-8fcb-6d4086323641">
 <notes>
-<note appliesTo="source">line: 166</note>
+<note appliesTo="source">line: 167</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6674,7 +6683,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="9b6f55a2-fd8d-4330-885b-86ca19a9121c">
 <notes>
-<note appliesTo="source">line: 167</note>
+<note appliesTo="source">line: 168</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6683,7 +6692,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="6e37f292-b621-4a33-a0e3-5ec8cabd8933">
 <notes>
-<note appliesTo="source">line: 168</note>
+<note appliesTo="source">line: 169</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6692,7 +6701,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="0d955676-53ce-4caf-831f-379ed9a196ef">
 <notes>
-<note appliesTo="source">line: 169</note>
+<note appliesTo="source">line: 170</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6701,7 +6710,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="685f34bb-4a6a-4ec4-9341-673da9b930ed">
 <notes>
-<note appliesTo="source">line: 170</note>
+<note appliesTo="source">line: 171</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
@@ -6710,20 +6719,11 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="897ce6c2-4516-45a8-91c2-04956630bd5d">
 <notes>
-<note appliesTo="source">line: 171</note>
-<note appliesTo="source">prefix: * </note>
-</notes>
-<segment>
-<source>The NVDA Highlighter Window icon is no longer fixed in the taskbar after restarting Explorer. (#17696, @hwf1324)</source>
-</segment>
-</unit>
-<unit id="5427f764-2f8e-4ec7-a596-04338bb3d63f">
-<notes>
 <note appliesTo="source">line: 172</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
-<source>Closing the COM registration fixing tool while on its intro screen with alt+f4 now correctly cancels the tool rather than letting it try to run. (#18090)</source>
+<source>The NVDA Highlighter Window icon is no longer fixed in the taskbar after restarting Explorer. (#17696, @hwf1324)</source>
 </segment>
 </unit>
 <unit id="70c8f98f-d5b5-4ec6-8e26-7de32f2da4e7">
@@ -7383,9 +7383,35 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 <source>`nvwave.WasapiWavePlayer` has been renamed to `WavePlayer`.</source>
 </segment>
 </unit>
-<unit id="b7ec61e8-747a-4f68-b201-96c0a4c30770">
+<unit id="d6569b4b-453e-4611-8ff0-03207d5f5419">
 <notes>
 <note appliesTo="source">line: 253</note>
+</notes>
+<segment>
+<source>  Additionally, the method signature of its `__init__` has changed as follows:</source>
+</segment>
+</unit>
+<unit id="8ddc3742-3862-46c8-ab55-edceda0c301f">
+<notes>
+<note appliesTo="source">line: 254</note>
+<note appliesTo="source">prefix:     * </note>
+</notes>
+<segment>
+<source>The `outputDevice` parameter should now only be passed string arguments.</source>
+</segment>
+</unit>
+<unit id="52f69654-6bf0-4424-8854-6d692a3906cb">
+<notes>
+<note appliesTo="source">line: 255</note>
+<note appliesTo="source">prefix:     * </note>
+</notes>
+<segment>
+<source>The deprecated `closeWhenIdle` and `buffered` parameters have been removed.</source>
+</segment>
+</unit>
+<unit id="b7ec61e8-747a-4f68-b201-96c0a4c30770">
+<notes>
+<note appliesTo="source">line: 256</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -7394,25 +7420,16 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="47799452-2417-46fc-90e0-5607790777ea">
 <notes>
-<note appliesTo="source">line: 254</note>
+<note appliesTo="source">line: 257</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
 <source>The `WASAPI` key has been removed from the `audio` section of the config spec.</source>
 </segment>
 </unit>
-<unit id="d33c0dae-24f1-4657-92fd-5edcf0319190">
-<notes>
-<note appliesTo="source">line: 255</note>
-<note appliesTo="source">prefix:   * </note>
-</notes>
-<segment>
-<source>The output from `nvwave.outputDeviceNameToID`, and input to `nvwave.outputDeviceIDToName` are now string identifiers.</source>
-</segment>
-</unit>
 <unit id="084a8e31-cab7-4df0-acdd-3ff8a39a8222">
 <notes>
-<note appliesTo="source">line: 256</note>
+<note appliesTo="source">line: 258</note>
 <note appliesTo="source">prefix:   * </note>
 </notes>
 <segment>
@@ -7421,28 +7438,10 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 </unit>
 <unit id="8490fab4-0b9d-4216-b6d8-b267def08f96">
 <notes>
-<note appliesTo="source">line: 257</note>
+<note appliesTo="source">line: 259</note>
 </notes>
 <segment>
 <source>    It has been replaced by `config.conf["audio"]["outputDevice"]`, which stores a Windows core audio endpoint device ID. (#17547)</source>
-</segment>
-</unit>
-<unit id="b569e7d4-0eb4-485f-93e0-d69356a9a939">
-<notes>
-<note appliesTo="source">line: 258</note>
-<note appliesTo="source">prefix:   * </note>
-</notes>
-<segment>
-<source>The `outputDevice` parameter to `WasapiWavePlayer.__init__` should now only be passed string arguments.</source>
-</segment>
-</unit>
-<unit id="71b599e4-724e-4b6a-90e1-3f7f39b7c60d">
-<notes>
-<note appliesTo="source">line: 259</note>
-<note appliesTo="source">prefix:   * </note>
-</notes>
-<segment>
-<source>The deprecated `closeWhenIdle` and `buffered` parameters to `WasapiWavePlayer.__init__` have been removed.</source>
 </segment>
 </unit>
 <unit id="14f25227-0c94-49fc-9975-82ba830e61f9">
