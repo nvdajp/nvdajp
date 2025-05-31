@@ -56,16 +56,7 @@ from ._sapi4 import (
 	ITTSEnumW,
 	ITTSNotifySinkW,
 	TextSDATA,
-	TTSATTR_MAXPITCH,
-	TTSATTR_MAXSPEED,
-	TTSATTR_MAXVOLUME,
-	TTSATTR_MINPITCH,
-	TTSATTR_MINSPEED,
-	TTSATTR_MINVOLUME,
 	TTSDATAFLAG_TAGGED,
-	TTSFEATURE_PITCH,
-	TTSFEATURE_SPEED,
-	TTSFEATURE_VOLUME,
 	TTSMODEINFO,
 	VOICECHARSET,
 )
@@ -91,7 +82,10 @@ class SynthDriverBufSink(COMObject):
 	def __init__(self, synthRef: weakref.ReferenceType):
 		self.synthRef = synthRef
 		self._allowDelete = True
+		self._releaseCount = 0
+		self._lastRefCount = 0
 		super().__init__()
+		log.debug("SynthDriverBufSink initialized")
 
 	def ITTSBufNotifySink_BookMark(self, this: int, qTimeStamp: int, dwMarkNum: int):
 		synth = self.synthRef()
@@ -115,10 +109,31 @@ class SynthDriverBufSink(COMObject):
 			synth.setSpeaking(False)
 
 	def IUnknown_Release(self, this: int, *args, **kwargs):
-		if not self._allowDelete and self._refcnt.value == 1:
-			log.debugWarning("ITTSBufNotifySink::Release called too many times by engine")
+		self._releaseCount += 1
+		current_ref_count = self._refcnt.value
+
+		if not self._allowDelete and current_ref_count == 1:
+			log.debugWarning(
+				f"ITTSBufNotifySink::Release called {self._releaseCount} times by engine "
+				f"(ref count: {current_ref_count}, last ref count: {self._lastRefCount})"
+			)
+			self._lastRefCount = current_ref_count
 			return 1
+
+		self._lastRefCount = current_ref_count
 		return super().IUnknown_Release(this, *args, **kwargs)
+
+	def _final_release_(self):
+		"""Called when the COM object is being destroyed.
+		This method is called after all references to the object have been released.
+		Logs a warning if the object was released multiple times before final release.
+		"""
+		if self._releaseCount > 1:
+			log.debugWarning(
+				f"SynthDriverBufSink was released {self._releaseCount} times "
+				f"before final release (final ref count: {self._refcnt.value})"
+			)
+		super()._final_release_()
 
 
 if TYPE_CHECKING:
@@ -865,26 +880,47 @@ class SynthDriver(SynthDriver):
 	def _fetchEnginesList(self):
 		enginesList = []
 		self._ttsEngines.Reset()
+		log.debug("Starting SAPI4 engine enumeration")
+
 		while True:
 			mode = TTSMODEINFO()
 			fetched = c_ulong()
 			try:
 				self._ttsEngines.Next(1, byref(mode), byref(fetched))
-			except:  # noqa: E722
-				log.error("can't get next engine", exc_info=True)
+				if fetched.value == 1:
+					log.debug(
+						"Found engine: %s - %s (GUID: %s, Language: %s)",
+						mode.szModeName,
+						mode.szProductName,
+						mode.gModeID,
+						mode.language.LanguageID,
+					)
+					enginesList.append(mode)
+			except Exception as e:
+				log.error("Error during engine enumeration: %s", str(e), exc_info=True)
 				break
-			if fetched.value == 0:
-				break
-			enginesList.append(mode)
+
+		if not enginesList:
+			log.warning("No SAPI4 engines found")
+		else:
+			log.debug(
+				"Engine enumeration complete. Found %d engines: %s",
+				len(enginesList),
+				[f"{mode.szModeName} ({mode.gModeID})" for mode in enginesList],
+			)
+
 		return enginesList
 
 	def __init__(self):
+		log.debug("Initializing SAPI4 driver")
 		self._comThread = _ComThread()
 		self._finalIndex: Optional[int] = None
 		self._ttsCentral = None
 		self._sinkRegKey = DWORD()
 		self._bookmarks = None
 		self._bookmarkLists = deque()
+
+		log.debug("Creating sink objects")
 		self._sink = SynthDriverSink(weakref.ref(self))
 		self._sinkPtr = self._sink.QueryInterface(ITTSNotifySinkW)
 		self._bufSink = SynthDriverBufSink(weakref.ref(self))
@@ -892,13 +928,24 @@ class SynthDriver(SynthDriver):
 		# HACK: Some buggy engines call Release() too many times on our buf sink.
 		# Therefore, don't let the buf sink be deleted before we release it ourselves.
 		self._bufSink._allowDelete = False
-		# Create COM objects on the dedicated COM thread,
-		# and wrap them with _ComProxy so that method calls will happen on the same thread.
+
+		log.debug("Creating COM objects")
 		self._ttsEngines = self._comThread.invoke(CoCreateInstance, CLSID_TTSEnumerator, ITTSEnumW)
 		self._ttsEngines = _ComProxy(self._ttsEngines, self._comThread)
+
+		log.debug("Fetching engine list")
 		self._enginesList = self._fetchEnginesList()
 		if len(self._enginesList) == 0:
-			raise RuntimeError("No Sapi4 engines available")
+			log.error("No SAPI4 engines available")
+			raise RuntimeError("No SAPI4 engines available")
+
+		log.debug(
+			"Initialized with %d engines. Default engine: %s - %s",
+			len(self._enginesList),
+			self._enginesList[0].szModeName,
+			self._enginesList[0].gModeID,
+		)
+
 		self._rateDelta = 0
 		self._pitchDelta = 0
 		self._volume = 100
@@ -1040,8 +1087,35 @@ class SynthDriver(SynthDriver):
 	def _set_voice(self, val):
 		try:
 			val = GUID(val)
-		except:  # noqa: E722
+			log.debug("Attempting to set voice with GUID: %s", val)
+
+			# Check if engine exists
+			found = False
+			for mode in self._enginesList:
+				if mode.gModeID == val:
+					found = True
+					log.debug(
+						"Found matching engine: %s - %s (Language: %s)",
+						mode.szModeName,
+						mode.szProductName,
+						mode.language.LanguageID,
+					)
+					break
+
+			if not found:
+				log.warning(
+					"Specified voice engine not found: %s. Available engines: %s",
+					val,
+					[str(mode.gModeID) for mode in self._enginesList],
+				)
+				val = self._enginesList[0].gModeID
+				log.debug("Falling back to default engine: %s", val)
+
+		except Exception as e:
+			log.warning("Invalid voice engine GUID: %s. Error: %s", val, str(e))
 			val = self._enginesList[0].gModeID
+			log.debug("Falling back to default engine: %s", val)
+
 		mode = None
 		for mode in self._enginesList:
 			if mode.gModeID == val:
@@ -1049,113 +1123,39 @@ class SynthDriver(SynthDriver):
 		if mode is None:
 			raise ValueError("no such mode: %s" % val)
 		self._currentMode = mode
-		if self._ttsCentral:
-			try:
-				# Some SAPI4 synthesizers may fail this call.
-				self._ttsCentral.UnRegister(self._sinkRegKey)
-			except COMError:
-				log.debugWarning("Error unregistering ITTSCentral sink", exc_info=True)
-			# Some SAPI4 synthesizers assume that only one instance of ITTSCentral
-			# will be created by the client, and will stop working if more are created.
-			# Here we make sure that the previous _ttsCentral is released
-			# before the next _ttsCentral is created.
-			self._ttsAttrs = None
-			self._ttsCentral = None
-		if config.conf["speech"]["useWASAPIForSAPI4"]:
-			ttsAudio = self._comThread.invoke(SynthDriverAudio, self._comThread)
-		else:
-			ttsAudio = self._comThread.invoke(SynthDriverMMAudio)
-		self._ttsCentral = POINTER(ITTSCentralW)()
-		self._ttsEngines.Select(self._currentMode.gModeID, byref(self._ttsCentral), ttsAudio)
-		self._ttsCentral = _ComProxy(self._ttsCentral, self._comThread)
-		self._ttsCentral.Register(self._sinkPtr, ITTSNotifySinkW._iid_, byref(self._sinkRegKey))
-		self._ttsAttrs = _ComProxy(self._ttsCentral.QueryInterface(ITTSAttributes), self._comThread)
-		# Find out rate limits
-		hasRate = bool(mode.dwFeatures & TTSFEATURE_SPEED)
-		if hasRate:
-			try:
-				oldVal = DWORD()
-				self._ttsAttrs.SpeedGet(byref(oldVal))
-				self._defaultRate = oldVal.value
-				self._ttsAttrs.SpeedSet(TTSATTR_MINSPEED)
-				newVal = DWORD()
-				self._ttsAttrs.SpeedGet(byref(newVal))
-				self._minRate = newVal.value
-				self._ttsAttrs.SpeedSet(TTSATTR_MAXSPEED)
-				self._ttsAttrs.SpeedGet(byref(newVal))
-				# ViaVoice (and perhaps other synths) doesn't seem to like the speed being set to maximum.
-				self._maxRate = newVal.value - 1
-				val = max(self._minRate, min(self._maxRate, self._defaultRate + self._rateDelta))
-				self._ttsAttrs.SpeedSet(val)
-				if self._maxRate <= self._minRate:
-					hasRate = False
-			except COMError:
-				hasRate = False
-		if hasRate:
-			if not self.isSupported("rate"):
-				self.supportedSettings.insert(1, SynthDriver.RateSetting())
-			self.supportedCommands.add(RateCommand)
-		else:
-			if self.isSupported("rate"):
-				self.removeSetting("rate")
-			if RateCommand in self.supportedCommands:
-				self.supportedCommands.remove(RateCommand)
-		# Find out pitch limits
-		hasPitch = bool(mode.dwFeatures & TTSFEATURE_PITCH)
-		if hasPitch:
-			try:
-				oldVal = WORD()
-				self._ttsAttrs.PitchGet(byref(oldVal))
-				self._defaultPitch = oldVal.value
-				self._ttsAttrs.PitchSet(TTSATTR_MINPITCH)
-				newVal = WORD()
-				self._ttsAttrs.PitchGet(byref(newVal))
-				self._minPitch = newVal.value
-				self._ttsAttrs.PitchSet(TTSATTR_MAXPITCH)
-				self._ttsAttrs.PitchGet(byref(newVal))
-				self._maxPitch = newVal.value
-				val = max(self._minPitch, min(self._maxPitch, self._defaultPitch + self._pitchDelta))
-				self._ttsAttrs.PitchSet(val)
-				if self._maxPitch <= self._minPitch:
-					hasPitch = False
-			except COMError:
-				hasPitch = False
-		if hasPitch:
-			if not self.isSupported("pitch"):
-				self.supportedSettings.insert(2, SynthDriver.PitchSetting())
-			self.supportedCommands.add(PitchCommand)
-		else:
-			if self.isSupported("pitch"):
-				self.removeSetting("pitch")
-			if PitchCommand in self.supportedCommands:
-				self.supportedCommands.remove(PitchCommand)
-		# Find volume limits
-		hasVolume = bool(mode.dwFeatures & TTSFEATURE_VOLUME)
-		if hasVolume:
-			try:
-				oldVal = DWORD()
-				self._ttsAttrs.VolumeGet(byref(oldVal))
-				self._ttsAttrs.VolumeSet(TTSATTR_MINVOLUME)
-				newVal = DWORD()
-				self._ttsAttrs.VolumeGet(byref(newVal))
-				self._minVolume = newVal.value & 0xFFFF
-				self._ttsAttrs.VolumeSet(TTSATTR_MAXVOLUME)
-				self._ttsAttrs.VolumeGet(byref(newVal))
-				self._maxVolume = newVal.value & 0xFFFF
-				self._set_volume(self._volume)
-				if self._maxVolume <= self._minVolume:
-					hasVolume = False
-			except COMError:
-				hasVolume = False
-		if hasVolume:
-			if not self.isSupported("volume"):
-				self.supportedSettings.insert(3, SynthDriver.VolumeSetting())
-			self.supportedCommands.add(VolumeCommand)
-		else:
-			if self.isSupported("volume"):
-				self.removeSetting("volume")
-			if VolumeCommand in self.supportedCommands:
-				self.supportedCommands.remove(VolumeCommand)
+
+		# Initialize engine
+		try:
+			if self._ttsCentral:
+				log.debug("Unregistering previous engine")
+				try:
+					self._ttsCentral.UnRegister(self._sinkRegKey)
+				except COMError as e:
+					log.debugWarning("Error unregistering ITTSCentral sink: %s", str(e))
+				self._ttsAttrs = None
+				self._ttsCentral = None
+
+			log.debug("Creating new engine instance")
+			if config.conf["speech"]["useWASAPIForSAPI4"]:
+				ttsAudio = self._comThread.invoke(SynthDriverAudio, self._comThread)
+				log.debug("Using WASAPI audio implementation")
+			else:
+				ttsAudio = self._comThread.invoke(SynthDriverMMAudio)
+				log.debug("Using WinMM audio implementation")
+
+			self._ttsCentral = POINTER(ITTSCentralW)()
+			log.debug("Selecting engine: %s", val)
+			self._ttsEngines.Select(self._currentMode.gModeID, byref(self._ttsCentral), ttsAudio)
+
+			log.debug("Registering sink")
+			self._ttsCentral.Register(self._sinkPtr, ITTSNotifySinkW._iid_, byref(self._sinkRegKey))
+
+			log.debug("Querying attributes interface")
+			self._ttsAttrs = _ComProxy(self._ttsCentral.QueryInterface(ITTSAttributes), self._comThread)
+
+		except Exception as e:
+			log.error("Error initializing engine: %s", str(e), exc_info=True)
+			raise
 
 	def _get_voice(self):
 		return str(self._currentMode.gModeID)
