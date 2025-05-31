@@ -887,7 +887,10 @@ class SynthDriver(SynthDriver):
 			fetched = c_ulong()
 			try:
 				self._ttsEngines.Next(1, byref(mode), byref(fetched))
-				if fetched.value == 1:
+				if fetched.value == 0:
+					# Enumeration complete
+					break
+				elif fetched.value == 1:
 					log.debug(
 						"Found engine: %s - %s (GUID: %s, Language: %s)",
 						mode.szModeName,
@@ -896,6 +899,13 @@ class SynthDriver(SynthDriver):
 						mode.language.LanguageID,
 					)
 					enginesList.append(mode)
+				else:
+					# Unexpected value
+					log.warning(
+						"Unexpected fetched value during engine enumeration: %d",
+						fetched.value
+					)
+					break
 			except Exception as e:
 				log.error("Error during engine enumeration: %s", str(e), exc_info=True)
 				break
