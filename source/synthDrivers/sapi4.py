@@ -901,10 +901,7 @@ class SynthDriver(SynthDriver):
 					enginesList.append(mode)
 				else:
 					# Unexpected value
-					log.warning(
-						"Unexpected fetched value during engine enumeration: %d",
-						fetched.value
-					)
+					log.warning("Unexpected fetched value during engine enumeration: %d", fetched.value)
 					break
 			except Exception as e:
 				log.error("Error during engine enumeration: %s", str(e), exc_info=True)
