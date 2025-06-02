@@ -85,7 +85,7 @@ class SynthDriverBufSink(COMObject):
 
 class SynthDriverLegacy(SynthDriver):
 	name = "sapi4legacy"
-	description = "Microsoft Speech API version 4"
+	description = "Microsoft Speech API version 4 (Legacy)"
 	supportedSettings = [SynthDriver.VoiceSetting()]
 	supportedCommands = {
 		IndexCommand,
