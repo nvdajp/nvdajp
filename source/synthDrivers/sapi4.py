@@ -871,11 +871,12 @@ class SynthDriver(SynthDriver):
 
 	@classmethod
 	def check(cls):
-		try:
-			winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, r"CLSID\%s" % CLSID_TTSEnumerator).Close()
-			return True
-		except WindowsError:
-			return False
+		# try:
+		# 	winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, r"CLSID\%s" % CLSID_TTSEnumerator).Close()
+		# 	return True
+		# except WindowsError:
+		# 	return False
+		return False
 
 	def _fetchEnginesList(self):
 		enginesList = []
