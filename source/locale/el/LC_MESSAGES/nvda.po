@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nvda\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 07:34+0000\n"
-"PO-Revision-Date: 2025-05-19 00:08\n"
+"POT-Creation-Date: 2025-06-02 01:47+0000\n"
+"PO-Revision-Date: 2025-06-05 05:47\n"
 "Last-Translator: \n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -176,300 +176,300 @@ msgstr "Πάντα βύθιση"
 #. window.
 #: braille.py:83
 msgid "wnd"
-msgstr ""
+msgstr "wnd"
 
 #. Translators: Displayed in braille for an object which is a
 #. dialog.
 #: braille.py:86
 msgid "dlg"
-msgstr ""
+msgstr "dlg"
 
 #. Translators: Displayed in braille for an object which is a
 #. check box.
 #: braille.py:89
 msgid "chk"
-msgstr ""
+msgstr "chk"
 
 #. Translators: Displayed in braille for an object which is a
 #. radio button.
 #: braille.py:92
 msgid "rbtn"
-msgstr ""
+msgstr "rbtn"
 
 #. Translators: Displayed in braille for an object which is an
 #. editable text field.
 #: braille.py:95
 msgid "edt"
-msgstr ""
+msgstr "edt"
 
 #. Translators: Displayed in braille for an object which is a
 #. button.
 #: braille.py:98
 msgid "btn"
-msgstr ""
+msgstr "btn"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu bar.
 #: braille.py:101
 msgid "mnubar"
-msgstr ""
+msgstr "mnubar"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu item.
 #: braille.py:104
 msgid "mnuitem"
-msgstr ""
+msgstr "mnuitem"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu.
 #: braille.py:107 braille.py:206
 msgid "mnu"
-msgstr ""
+msgstr "mnu"
 
 #. Translators: Displayed in braille for an object which is a
 #. combo box.
 #: braille.py:110
 msgid "cbo"
-msgstr ""
+msgstr "cbo"
 
 #. Translators: Displayed in braille for an object which is a
 #. list.
 #: braille.py:113
 msgid "lst"
-msgstr ""
+msgstr "lst"
 
 #. Translators: Displayed in braille for an object which is a
 #. graphic.
 #: braille.py:116
 msgid "gra"
-msgstr ""
+msgstr "gra"
 
 #. Translators: Displayed in braille for toast notifications and for an object which is a
 #. help balloon.
 #: braille.py:119
 msgid "hlp"
-msgstr ""
+msgstr "hlp"
 
 #. Translators: Displayed in braille for an object which is a
 #. tool tip.
 #: braille.py:122
 msgid "tltip"
-msgstr ""
+msgstr "tltip"
 
 #. Translators: Displayed in braille for an object which is a
 #. link.
 #: braille.py:125
 msgid "lnk"
-msgstr ""
+msgstr "lnk"
 
 #. Translators: Displayed in braille for an object which is a
 #. tree view.
 #: braille.py:128
 msgid "tv"
-msgstr ""
+msgstr "tv"
 
 #. Translators: Displayed in braille for an object which is a
 #. tree view item.
 #: braille.py:131
 msgid "tvitem"
-msgstr ""
+msgstr "tvitem"
 
 #. Translators: Displayed in braille for an object which is a
 #. tab control.
 #: braille.py:134
 msgid "tabctl"
-msgstr ""
+msgstr "tabctl"
 
 #. Translators: Displayed in braille for an object which is a
 #. progress bar.
 #: braille.py:137
 msgid "prgbar"
-msgstr ""
+msgstr "prgbar"
 
 #. Translators: Displayed in braille for an object which is an
 #. indeterminate progress bar, aka busy indicator.
 #: braille.py:140
 msgid "bsyind"
-msgstr ""
+msgstr "bsyind"
 
 #. Translators: Displayed in braille for an object which is a
 #. scroll bar.
 #: braille.py:143
 msgid "scrlbar"
-msgstr ""
+msgstr "scrlbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. status bar.
 #: braille.py:146
 msgid "stbar"
-msgstr ""
+msgstr "stbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. table.
 #: braille.py:149
 msgid "tbl"
-msgstr ""
+msgstr "tbl"
 
 #. Translators: Displayed in braille for an object which is a
 #. tool bar.
 #: braille.py:152
 msgid "tlbar"
-msgstr ""
+msgstr "tlbar"
 
 #. Translators: Displayed in braille for an object which is a
 #. drop down button.
 #: braille.py:155
 msgid "drbtn"
-msgstr ""
+msgstr "drbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. block quote.
 #: braille.py:161
 msgid "bqt"
-msgstr ""
+msgstr "bqt"
 
 #. Translators: Displayed in braille for an object which is a
 #. document.
 #: braille.py:164
 msgid "doc"
-msgstr ""
+msgstr "doc"
 
 #. Translators: Displayed in braille for an object which is a
 #. application.
 #: braille.py:167
 msgid "app"
-msgstr ""
+msgstr "app"
 
 #. Translators: Displayed in braille for an object which is a
 #. grouping.
 #: braille.py:170
 msgid "grp"
-msgstr ""
+msgstr "grp"
 
 #. Translators: Displayed in braille for an object which is a
 #. caption.
 #: braille.py:173
 msgid "cap"
-msgstr ""
+msgstr "cap"
 
 #. Translators: Displayed in braille for an object which is a
 #. embedded object.
 #: braille.py:176
 msgid "embedded"
-msgstr ""
+msgstr "embedded"
 
 #. Translators: Displayed in braille for an object which is a
 #. end note.
 #: braille.py:179
 msgid "enote"
-msgstr ""
+msgstr "enote"
 
 #. Translators: Displayed in braille for an object which is a
 #. foot note.
 #: braille.py:182
 msgid "fnote"
-msgstr ""
+msgstr "fnote"
 
 #. Translators: Displayed in braille for an object which is a
 #. terminal.
 #: braille.py:185
 msgid "term"
-msgstr ""
+msgstr "term"
 
 #. Translators: Displayed in braille for an object which is a
 #. section.
 #: braille.py:188
 msgid "sect"
-msgstr ""
+msgstr "sect"
 
 #. Translators: Displayed in braille for an object which is a
 #. toggle button.
 #: braille.py:191
 msgid "tgbtn"
-msgstr ""
+msgstr "tgbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. split button.
 #: braille.py:194
 msgid "splbtn"
-msgstr ""
+msgstr "splbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. menu button.
 #: braille.py:197
 msgid "mnubtn"
-msgstr ""
+msgstr "mnubtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. spin button.
 #: braille.py:200
 msgid "spnbtn"
-msgstr ""
+msgstr "spnbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. tree view button.
 #: braille.py:203
 msgid "tvbtn"
-msgstr ""
+msgstr "tvbtn"
 
 #. Translators: Displayed in braille for an object which is a
 #. panel.
 #: braille.py:209
 msgid "pnl"
-msgstr ""
+msgstr "pnl"
 
 #. Translators: Displayed in braille for an object which is a
 #. password edit.
 #: braille.py:212
 msgid "pwdedt"
-msgstr ""
+msgstr "pwdedt"
 
 #. Translators: Displayed in braille for an object which is deleted.
 #: braille.py:214
 msgid "del"
-msgstr ""
+msgstr "del"
 
 #. Translators: Displayed in braille for an object which is inserted.
 #: braille.py:216
 msgid "ins"
-msgstr ""
+msgstr "ins"
 
 #. Translators: Displayed in braille for a landmark.
 #: braille.py:218
 msgid "lmk"
-msgstr ""
+msgstr "lmk"
 
 #. Translators: Displayed in braille for an object which is an article.
 #: braille.py:220
 msgid "art"
-msgstr ""
+msgstr "art"
 
 #. Translators: Displayed in braille for an object which is a region.
 #: braille.py:222
 msgid "rgn"
-msgstr ""
+msgstr "rgn"
 
 #. Translators: Displayed in braille for an object which is a figure.
 #: braille.py:224
 msgid "fig"
-msgstr ""
+msgstr "fig"
 
 #. Translators: Displayed in braille for an object which represents marked (highlighted) content
 #: braille.py:226
 msgid "hlght"
-msgstr ""
+msgstr "hlght"
 
 #. Translators: Displayed in braille when an object is a comment.
 #. Translators: Displayed in braille when there is a comment for a spreadsheet cell or piece of text in a document.
 #. Translators: Brailled when text contains a generic comment.
 #: braille.py:228 braille.py:277 braille.py:1184
 msgid "cmnt"
-msgstr ""
+msgstr "cmnt"
 
 #. Translators: Displayed in braille when an object is a suggestion.
 #: braille.py:230
 msgid "sggstn"
-msgstr ""
+msgstr "sggstn"
 
 #. Translators: Displayed in braille when an object is a definition.
 #. Translators: Identifies a definition.
@@ -480,134 +480,134 @@ msgstr "ορισμός"
 #. Translators: Displayed in braille when an object is a switch control
 #: braille.py:234
 msgid "swtch"
-msgstr ""
+msgstr "swtch"
 
 #. Translators: Displayed in braille when an object is selected.
 #: braille.py:239
 msgid "sel"
-msgstr ""
+msgstr "sel"
 
 #. Translators: Displayed in braille when an object (e.g. an editable text field) is read-only.
 #: braille.py:249
 msgid "ro"
-msgstr ""
+msgstr "ro"
 
 #. Translators: Displayed in braille when an object (e.g. a tree view item) is expanded.
 #: braille.py:251
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #. Translators: Displayed in braille when an object (e.g. a tree view item) is collapsed.
 #: braille.py:253
 msgid "+"
-msgstr ""
+msgstr "+"
 
 #. Translators: Displayed in braille when an object has a popup (usually a sub-menu).
 #: braille.py:255
 msgid "submnu"
-msgstr ""
+msgstr "submnu"
 
 #. Translators: Displayed in braille when a protected control or a document is encountered.
 #: braille.py:257
 msgid "***"
-msgstr ""
+msgstr "***"
 
 #. Translators: Displayed in braille when a required form field is encountered.
 #: braille.py:259
 msgid "req"
-msgstr ""
+msgstr "req"
 
 #. Translators: Displayed in braille when an invalid entry has been made.
 #: braille.py:261
 msgid "invalid"
-msgstr ""
+msgstr "invalid"
 
 #. Translators: Displayed in braille when an object supports autocompletion.
 #: braille.py:263
 msgid "..."
-msgstr ""
+msgstr "..."
 
 #. Translators: Displayed in braille when an edit field allows typing multiple lines of text such as comment fields on websites.
 #: braille.py:265
 msgid "mln"
-msgstr ""
+msgstr "mln"
 
 #. Translators: Displayed in braille when an object is clickable.
 #: braille.py:267
 msgid "clk"
-msgstr ""
+msgstr "clk"
 
 #. Translators: Displayed in braille when an object is sorted ascending.
 #: braille.py:269
 msgid "sorted asc"
-msgstr ""
+msgstr "sorted asc"
 
 #. Translators: Displayed in braille when an object is sorted descending.
 #: braille.py:271
 msgid "sorted desc"
-msgstr ""
+msgstr "sorted desc"
 
 #. Translators: Displayed in braille when an object (usually a graphic) has a long description.
 #: braille.py:273
 msgid "ldesc"
-msgstr ""
+msgstr "ldesc"
 
 #. Translators: Displayed in braille when there is a formula on a spreadsheet cell.
 #: braille.py:275
 msgid "frml"
-msgstr ""
+msgstr "frml"
 
 #. Translators: Displayed in braille when a link destination points to the same page
 #: braille.py:281
 msgid "smp"
-msgstr ""
+msgstr "smp"
 
 #. Translators: Displayed in braille when an object is not selected.
 #: braille.py:285
 msgid "nsel"
-msgstr ""
+msgstr "nsel"
 
 #. Translators: Displayed in braille for the banner landmark, normally found on web pages.
 #: braille.py:296
 msgctxt "braille landmark abbreviation"
 msgid "bnnr"
-msgstr ""
+msgstr "bnnr"
 
 #. Translators: Displayed in braille for the complementary landmark, normally found on web pages.
 #: braille.py:298
 msgctxt "braille landmark abbreviation"
 msgid "cmpl"
-msgstr ""
+msgstr "cmpl"
 
 #. Translators: Displayed in braille for the contentinfo landmark, normally found on web pages.
 #: braille.py:300
 msgctxt "braille landmark abbreviation"
 msgid "cinf"
-msgstr ""
+msgstr "cinf"
 
 #. Translators: Displayed in braille for the main landmark, normally found on web pages.
 #: braille.py:302
 msgctxt "braille landmark abbreviation"
 msgid "main"
-msgstr ""
+msgstr "main"
 
 #. Translators: Displayed in braille for the navigation landmark, normally found on web pages.
 #: braille.py:304
 msgctxt "braille landmark abbreviation"
 msgid "navi"
-msgstr ""
+msgstr "navi"
 
 #. Translators: Displayed in braille for the search landmark, normally found on web pages.
 #: braille.py:306
 msgctxt "braille landmark abbreviation"
 msgid "srch"
-msgstr ""
+msgstr "srch"
 
 #. Translators: Displayed in braille for the form landmark, normally found on web pages.
 #: braille.py:308
 msgctxt "braille landmark abbreviation"
 msgid "form"
-msgstr ""
+msgstr "form"
 
 #. Translators: The description of a braille cursor shape.
 #: braille.py:314
@@ -652,68 +652,68 @@ msgstr "Αυτόματο"
 #. Translators: String representing the USB port selection for braille displays.
 #: braille.py:391
 msgid "USB"
-msgstr ""
+msgstr "USB"
 
 #. Translators: String representing the Bluetooth port selection for braille displays.
 #: braille.py:395
 msgid "Bluetooth"
-msgstr ""
+msgstr "Bluetooth"
 
 #. Translators: Brailled at the start of bold text.
 #. This is the English letter "b" in braille.
 #: braille.py:412
 msgctxt "braille formatting symbol"
 msgid "⠃"
-msgstr ""
+msgstr "⠃"
 
 #. Translators: Brailled at the end of bold text.
 #. This is the English letter "b" plus dot 7 in braille.
 #: braille.py:415
 msgctxt "braille formatting symbol"
 msgid "⡃"
-msgstr ""
+msgstr "⡃"
 
 #. Translators: Brailled at the start of italic text.
 #. This is the English letter "i" in braille.
 #: braille.py:420
 msgctxt "braille formatting symbol"
 msgid "⠊"
-msgstr ""
+msgstr "⠊"
 
 #. Translators: Brailled at the end of italic text.
 #. This is the English letter "i" plus dot 7 in braille.
 #: braille.py:423
 msgctxt "braille formatting symbol"
 msgid "⡊"
-msgstr ""
+msgstr "⠊"
 
 #. Translators: Brailled at the start of underlined text.
 #. This is the English letter "u" in braille.
 #: braille.py:428
 msgctxt "braille formatting symbol"
 msgid "⠥"
-msgstr ""
+msgstr "⠥"
 
 #. Translators: Brailled at the end of underlined text.
 #. This is the English letter "u" plus dot 7 in braille.
 #: braille.py:431
 msgctxt "braille formatting symbol"
 msgid "⡥"
-msgstr ""
+msgstr "⡥"
 
 #. Translators: Brailled at the start of strikethrough text.
 #. This is the English letter "s" in braille.
 #: braille.py:436
 msgctxt "braille formatting symbol"
 msgid "⠎"
-msgstr ""
+msgstr "⠎"
 
 #. Translators: Brailled at the end of strikethrough text.
 #. This is the English letter "s" plus dot 7 in braille.
 #: braille.py:439
 msgctxt "braille formatting symbol"
 msgid "⡎"
-msgstr ""
+msgstr "⡎"
 
 #. Translators: Braille when there are further details/annotations that can be fetched manually.
 #: braille.py:652 speech\speech.py:2087
@@ -734,7 +734,7 @@ msgstr "έχει %s"
 #: braille.py:702 braille.py:1162
 #, python-format
 msgid "h%s"
-msgstr ""
+msgstr "h%s"
 
 #. Translators: Displayed in braille for a link which has been visited.
 #: braille.py:708
@@ -797,17 +797,17 @@ msgstr "τέλος %s"
 #. Translators: Brailled when text contains a draft comment.
 #: braille.py:1178
 msgid "drft cmnt"
-msgstr ""
+msgstr "drft cmnt"
 
 #. Translators: Brailled when text contains a resolved comment.
 #: braille.py:1181
 msgid "rslvd cmnt"
-msgstr ""
+msgstr "rslvd cmnt"
 
 #. Translators: brailled when text contains a bookmark
 #: braille.py:1192
 msgid "bkmk"
-msgstr ""
+msgstr "bkmk"
 
 #. Translators: This is a paragraph start marker used in braille.
 #. The default symbol is the pilcrow,
@@ -820,7 +820,7 @@ msgstr ""
 #: braille.py:1219
 msgctxt "paragraphMarker"
 msgid "¶"
-msgstr ""
+msgstr "¶"
 
 #. Translators: Label for a setting in braille settings dialog.
 #: braille.py:3614
@@ -917,13 +917,13 @@ msgstr "Αφρικάανς βαθμού 2"
 #. braille settings dialog.
 #: brailleTables.py:214
 msgid "Akkadian (US) grade 1"
-msgstr ""
+msgstr "Ακκαδικά (ΗΠΑ) βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 #: brailleTables.py:217
 msgid "Akkadian (Borger) grade 1"
-msgstr ""
+msgstr "Ακκαδικά (Borger) βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -977,7 +977,7 @@ msgstr "Λευκορωσικό braille"
 #. braille settings dialog.
 #: brailleTables.py:244
 msgid "Belarusian literary braille (detailed)"
-msgstr ""
+msgstr "Λευκορωσικό φιλολογικό braille (λεπτομερές)"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1013,19 +1013,19 @@ msgstr "Κοπτικό οκτάστιγμο braille"
 #. braille settings dialog.
 #: brailleTables.py:262
 msgid "Coptic grade 1"
-msgstr ""
+msgstr "Κοπτικά βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 #: brailleTables.py:265
 msgid "Cuneiform (transliterated) grade 1"
-msgstr ""
+msgstr "Σφηνοειδής γραφή (μεταγραμμένη) βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 #: brailleTables.py:268
 msgid "Cuneiform (transliterated, compact diacritics) grade 1"
-msgstr ""
+msgstr "Σφηνοειδής γραφή (μεταγραμμένη, με συμπαγή διακριτικά) βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1289,7 +1289,7 @@ msgstr "Φινλανδικό οκτάστιγμο braille"
 #. braille settings dialog.
 #: brailleTables.py:415
 msgid "Filipino grade 2"
-msgstr ""
+msgstr "Φιλιππινέζικα βαθμού 2"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1331,25 +1331,25 @@ msgstr "Γκουτζεράτι βαθμού 1"
 #. braille settings dialog.
 #: brailleTables.py:441
 msgid "Greek international braille (2-cell accented letters)"
-msgstr ""
+msgstr "Ελληνικό διεθνές κλασικό braille (2 κελιά)"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 #: brailleTables.py:444
 msgid "Greek international braille (single-cell accented letters)"
-msgstr ""
+msgstr "Ελληνικό διεθνές κλασικό braille (1 κελί)"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 #: brailleTables.py:447
 msgid "Spanish for Greek text"
-msgstr ""
+msgstr "Ισπανικά για Ελληνικό κείμενο"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 #: brailleTables.py:450
 msgid "Hebrew (Biblical) grade 1"
-msgstr ""
+msgstr "Εβραϊκά (Βιβλικά) βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1409,7 +1409,7 @@ msgstr "Ισλανδικό οκτάστιγμο braille"
 #. braille settings dialog.
 #: brailleTables.py:490
 msgid "International Phonetic Alphabet"
-msgstr ""
+msgstr "Διεθνές Φωνητικό Αλφάβητο"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1493,7 +1493,7 @@ msgstr "Κασμίρι βαθμού 1"
 #. braille settings dialog.
 #: brailleTables.py:543
 msgid "Lao Grade 1"
-msgstr ""
+msgstr "Λάος Βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1655,7 +1655,7 @@ msgstr "Πολωνικό φιλολογικό braille"
 #. braille settings dialog.
 #: brailleTables.py:629
 msgid "Portuguese 6 dot computer braille"
-msgstr ""
+msgstr "Πορτογαλικό braille υπολογιστών 6 στιγμών"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1685,7 +1685,7 @@ msgstr "Πουντζάμπι βαθμού 1"
 #. braille settings dialog.
 #: brailleTables.py:644
 msgid "Romanian 6 dot"
-msgstr ""
+msgstr "Ρουμανικά 6 στιγμών"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1781,7 +1781,7 @@ msgstr "Σερβικά βαθμού 1"
 #. braille settings dialog.
 #: brailleTables.py:692
 msgid "Serbian Cyrillic grade 1"
-msgstr ""
+msgstr "Σερβικά Κυριλλικά Βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1841,7 +1841,7 @@ msgstr "Σουαχίλι (Κένυα) βαθμού 2"
 #. braille settings dialog.
 #: brailleTables.py:724
 msgid "Syriac grade 1"
-msgstr ""
+msgstr "Syriac βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1865,19 +1865,19 @@ msgstr "Τέλουγκου βαθμού 1"
 #. braille settings dialog.
 #: brailleTables.py:737
 msgid "Thai 8 dot computer braille"
-msgstr ""
+msgstr "Ταϊλανδικό braille υπολογιστών 8 στιγμών"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 #: brailleTables.py:740
 msgid "Thai grade 0"
-msgstr ""
+msgstr "Ταϊλανδικά βαθμού 0"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
 #: brailleTables.py:743
 msgid "Thai grade 1"
-msgstr ""
+msgstr "Ταϊλανδικά βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1889,7 +1889,7 @@ msgstr "Τουρκικά βαθμού 1"
 #. braille settings dialog.
 #: brailleTables.py:749
 msgid "Turkish grade 2"
-msgstr ""
+msgstr "Τουρκικά βαθμού 2"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1907,7 +1907,7 @@ msgstr "Σετσουάνα βαθμού 2"
 #. braille settings dialog.
 #: brailleTables.py:758
 msgid "Ugaritic grade 1"
-msgstr ""
+msgstr "Ουγαριτικά βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1919,7 +1919,7 @@ msgstr "Ουκρανικά βαθμού 1"
 #. braille settings dialog.
 #: brailleTables.py:764
 msgid "Ukrainian literary braille (detailed)"
-msgstr ""
+msgstr "Ουκρανικό φιλολογικό braille (λεπτομερές)"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -1949,7 +1949,7 @@ msgstr "Ουζμπεκικά βαθμού 1"
 #. braille settings dialog.
 #: brailleTables.py:779
 msgid "Unicode braille"
-msgstr ""
+msgstr "Unicode braille"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -2003,7 +2003,7 @@ msgstr "Ξόσα βαθμού 2"
 #. braille settings dialog.
 #: brailleTables.py:806
 msgid "Yiddish grade 1"
-msgstr ""
+msgstr "Γίντις βαθμού 1"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -2710,208 +2710,208 @@ msgstr "δεν υπάρχει προηγούμενη ομάδα"
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1149
 msgid "moves to the next tab"
-msgstr ""
+msgstr "μεταβαίνει στην επόμενη καρτέλα"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1151
 msgid "no next tab"
-msgstr ""
+msgstr "καμία επόμενη καρτέλα"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1153
 msgid "moves to the previous tab"
-msgstr ""
+msgstr "μεταβαίνει στην προηγούμενη καρτέλα"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1155
 msgid "no previous tab"
-msgstr ""
+msgstr "καμία προηγούμενη καρτέλα"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1161
 msgid "moves to the next figure"
-msgstr ""
+msgstr "μεταβαίνει στην επόμενη εικόνα"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1163
 msgid "no next figure"
-msgstr ""
+msgstr "καμία επόμενη εικόνα"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1165
 msgid "moves to the previous figure"
-msgstr ""
+msgstr "μεταβαίνει στην προηγούμενη εικόνα"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1167
 msgid "no previous figure"
-msgstr ""
+msgstr "καμία προηγούμενη εικόνα"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1173
 msgid "moves to the next menu item"
-msgstr ""
+msgstr "μεταβαίνει στο επόμενο στοιχείο μενού"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1175
 msgid "no next menu item"
-msgstr ""
+msgstr "κανένα επόμενο στοιχείο μενού"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1177
 msgid "moves to the previous menu item"
-msgstr ""
+msgstr "μεταβαίνει στο προηγούμενο στοιχείο μενού"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1179
 msgid "no previous menu item"
-msgstr ""
+msgstr "κανένα προηγούμενο στοιχείο μενού"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1185
 msgid "moves to the next toggle button"
-msgstr ""
+msgstr "μεταβαίνει στο επόμενο κουμπί εναλλαγής"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1187
 msgid "no next toggle button"
-msgstr ""
+msgstr "κανένα επόμενο κουμπί εναλλαγής"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1189
 msgid "moves to the previous toggle button"
-msgstr ""
+msgstr "μεταβαίνει στο προηγούμενο κουμπί εναλλαγής"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1191
 msgid "no previous toggle button"
-msgstr ""
+msgstr "κανένα προηγούμενο κουμπί εναλλαγής"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1197
 msgid "moves to the next progress bar"
-msgstr ""
+msgstr "μεταβαίνει στην επόμενη γραμμή προόδου"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1199
 msgid "no next progress bar"
-msgstr ""
+msgstr "καμία επόμενη γραμμή προόδου"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1201
 msgid "moves to the previous progress bar"
-msgstr ""
+msgstr "μεταβαίνει στην προηγούμενη γραμμή προόδου"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1203
 msgid "no previous progress bar"
-msgstr ""
+msgstr "καμία προηγούμενη γραμμή προόδου"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1209
 msgid "moves to the next math formula"
-msgstr ""
+msgstr "μεταβαίνει στον επόμενο μαθηματικό τύπο"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1211
 msgid "no next math formula"
-msgstr ""
+msgstr "κανένας επόμενος μαθηματικός τύπος"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1213
 msgid "moves to the previous math formula"
-msgstr ""
+msgstr "μεταβαίνει στον προηγούμενο μαθηματικό τύπο"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1215
 msgid "no previous math formula"
-msgstr ""
+msgstr "κανένας προηγούμενος μαθηματικός τύπος"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1221
 msgid "moves to the next text paragraph"
-msgstr ""
+msgstr "μεταβαίνει στην επόμενη παράγραφο κειμένου"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1223
 msgid "no next text paragraph"
-msgstr ""
+msgstr "καμία επόμενη παράγραφος κειμένου"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1225
 msgid "moves to the previous text paragraph"
-msgstr ""
+msgstr "μεταβαίνει στην προηγούμενη παράγραφο κειμένου"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1227
 msgid "no previous text paragraph"
-msgstr ""
+msgstr "καμία προηγούμενη παράγραφος κειμένου"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1234
 msgid "moves to the next vertically aligned paragraph"
-msgstr ""
+msgstr "μεταβαίνει στην επόμενη κάθετα στοιχισμένη παράγραφο"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1236
 msgid "no next vertically aligned paragraph"
-msgstr ""
+msgstr "καμία επόμενη κάθετα στοιχισμένη παράγραφος"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1238
 msgid "moves to the previous vertically aligned paragraph"
-msgstr ""
+msgstr "μεταβαίνει στην προηγούμενη κάθετα στοιχισμένη παράγραφο"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1240
 msgid "no previous vertically aligned paragraph"
-msgstr ""
+msgstr "καμία προηγούμενη κάθετα στοιχισμένη παράγραφος"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1247
 msgid "moves to the next same style text"
-msgstr ""
+msgstr "μεταβαίνει στο επόμενο κείμενο με ίδιο στυλ"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1249
 msgid "No next same style text"
-msgstr ""
+msgstr "Δεν υπάρχει επόμενο κείμενο με ίδιο στυλ"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1251
 msgid "moves to the previous same style text"
-msgstr ""
+msgstr "μεταβαίνει στο προηγούμενο κείμενο με ίδιο στυλ"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1253
 msgid "No previous same style text"
-msgstr ""
+msgstr "Δεν υπάρχει προηγούμενο κείμενο με ίδιο στυλ"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1259
 msgid "moves to the next different style text"
-msgstr ""
+msgstr "μεταβαίνει στο επόμενο κείμενο με διαφορετικό στυλ"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1261
 msgid "No next different style text"
-msgstr ""
+msgstr "Δεν υπάρχει επόμενο κείμενο με διαφορετικό στυλ"
 
 #. Translators: Input help message for a quick navigation command in browse mode.
 #: browseMode.py:1263
 msgid "moves to the previous different style text"
-msgstr ""
+msgstr "μεταβαίνει στο προηγούμενο κείμενο με διαφορετικό στυλ"
 
 #. Translators: Message presented when the browse mode element is not found.
 #: browseMode.py:1265
 msgid "No previous different style text"
-msgstr ""
+msgstr "Δεν υπάρχει προηγούμενο κείμενο με διαφορετικό στυλ"
 
 #. Translators: The label of a radio button to select the type of element
 #. in the browse mode Elements List dialog.
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: browseMode.py:1279 gui\settingsDialogs.py:2882
+#: browseMode.py:1279 gui\settingsDialogs.py:2883
 msgid "Lin&ks"
 msgstr "&Σύνδεσμοι"
 
@@ -2919,7 +2919,7 @@ msgstr "&Σύνδεσμοι"
 #. in the browse mode Elements List dialog.
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: browseMode.py:1282 gui\settingsDialogs.py:2877
+#: browseMode.py:1282 gui\settingsDialogs.py:2878
 msgid "&Headings"
 msgstr "&Επικεφαλίδες"
 
@@ -3007,7 +3007,7 @@ msgstr "Κάτω μέρος"
 #. Translators: Description for the Move past end of container command in browse mode.
 #: browseMode.py:2326
 msgid "Moves past the end of the container element, such as a list or table"
-msgstr ""
+msgstr "Μετακινείται μετά το τελευταίο στοιχείο του περιέκτη, όπως μια λίστα ή ένας πίνακας"
 
 #. Translators: the description for the toggleScreenLayout script.
 #. Translators: the description for the toggleScreenLayout script on virtualBuffers.
@@ -3023,32 +3023,32 @@ msgstr "Δεν υποστηρίζεται σε αυτό το έγγραφο."
 #. Translators: input help message for toggle native selection command
 #: browseMode.py:2674
 msgid "Toggles native selection mode on and off"
-msgstr ""
+msgstr "Πραγματοποιεί εναλλαγή μεταξύ της ενεργοποίησης και της απενεργοποίησης της εγγενούς λειτουργίας επιλογής"
 
 #. Translators: the message when native selection mode is not available in this browse mode document.
 #: browseMode.py:2680
 msgid "Native selection mode unsupported in this browse mode document"
-msgstr ""
+msgstr "Η εγγενής λειτουργία επιλογής δεν υποστηρίζεται σε αυτό το έγγραφο λειτουργίας περιήγησης"
 
 #. Translators: the message when native selection mode cannot be turned off in this browse mode document.
 #: browseMode.py:2683
 msgid "Native selection mode cannot be turned off in this browse mode document"
-msgstr ""
+msgstr "Η εγγενής λειτουργία επιλογής δεν μπορεί να απενεργοποιηθεί σε αυτό το έγγραφο λειτουργίας περιήγησης"
 
 #. Translators: the message when native selection mode is not available in this browse mode document.
 #: browseMode.py:2695
 msgid "Native selection mode unsupported in this document"
-msgstr ""
+msgstr "Η εγγενής λειτουργία επιλογής δεν υποστηρίζεται σε αυτό το έγγραφο"
 
 #. Translators: reported when native selection mode is toggled on.
 #: browseMode.py:2699
 msgid "Native app selection mode enabled"
-msgstr ""
+msgstr "Η εγγενής λειτουργία επιλογής είναι ενεργοποιημένη"
 
 #. Translators: reported when native selection mode is toggled off.
 #: browseMode.py:2707
 msgid "Native app selection mode disabled"
-msgstr ""
+msgstr "Η εγγενής λειτουργία επιλογής είναι απενεργοποιημένη"
 
 #. Translators: The level at which the given symbol will be spoken.
 #: characterProcessing.py:171
@@ -3104,7 +3104,7 @@ msgstr "μόνο κάτω από το επίπεδο των συμβόλων "
 #. Translators: The name of a symbols dictionary with data from the unicode CLDR.
 #: characterProcessing.py:897
 msgid "Unicode Consortium data (including emoji)"
-msgstr ""
+msgstr "Δεδομένα του Unicode Consortium ( συμπεριλαμβανομένων emoji)"
 
 #. Translators: a transparent color, {colorDescription} replaced with the full description of the color e.g.
 #. "transparent bright orange-yellow"
@@ -3264,7 +3264,7 @@ msgstr "φωτεινό {color}"
 #, python-brace-format
 msgctxt "color variation"
 msgid "{color}"
-msgstr ""
+msgstr "{color}"
 
 #. Translators: a dark color (HSV saturation 100% and value 44%)
 #: colors.py:231
@@ -3358,28 +3358,29 @@ msgstr "καφέ-κίτρινο"
 #: core.py:85
 msgid "The following add-on failed to update: {}."
 msgid_plural "The following add-ons failed to update: {}."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Το ακόλουθο πρόσθετο δεν μπόρεσε να ενημερωθεί: {}."
+msgstr[1] "Το ακόλουθο πρόσθετο δεν μπόρεσε να ενημερωθεί: {}."
 
 #. Translators: Shown when one or more add-ons failed to be uninstalled.
 #: core.py:94
 msgid "The following add-on failed to uninstall: {}."
 msgid_plural "The following add-ons failed to uninstall: {}."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Το ακόλουθο πρόσθετο δεν μπόρεσε να απεγκατασταθεί: {}."
+msgstr[1] "Το ακόλουθο πρόσθετο δεν μπόρεσε να απεγκατασταθεί: {}."
 
 #. Translators: Shown when one or more add-ons failed to be installed.
 #: core.py:103
 msgid "The following add-on failed to be installed: {}."
 msgid_plural "The following add-ons failed to be installed: {}."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Το ακόλουθο πρόσθετο δεν μπόρεσε να εγκατασταθεί: {}."
+msgstr[1] "Το ακόλουθο πρόσθετο δεν μπόρεσε να εγκατασταθεί: {}."
 
 #. Translators: Shown when one or more actions on add-ons failed.
 #: core.py:116
 msgid "Some operations on add-ons failed. See the log file for more details.\n"
 "{}"
-msgstr ""
+msgstr "Κάποιες λειτουργίες στα πρόσθετα απέτυχαν. Δείτε το αρχείο καταγραφής για περισσότερες λεπτομέρειες.\n"
+"{}"
 
 #. Translators: Title of message shown when requested action on add-ons failed.
 #. Translators: the title of an error message dialog
@@ -3418,8 +3419,8 @@ msgstr ""
 #: gui\configProfiles.py:539 gui\inputGestures.py:808 gui\inputGestures.py:822
 #: gui\installerGui.py:112 gui\installerGui.py:520 gui\installerGui.py:535
 #: gui\installerGui.py:607 gui\logViewer.py:112 gui\logViewer.py:143
-#: gui\message.py:161 gui\settingsDialogs.py:1075 gui\settingsDialogs.py:5420
-#: gui\settingsDialogs.py:5777 gui\startupDialogs.py:128
+#: gui\message.py:161 gui\settingsDialogs.py:1076 gui\settingsDialogs.py:5419
+#: gui\settingsDialogs.py:5779 gui\startupDialogs.py:128
 #: _remoteClient\dialogs.py:62 _remoteClient\dialogs.py:300
 #: _remoteClient\dialogs.py:384
 msgid "Error"
@@ -3628,12 +3629,12 @@ msgstr "Πραγματοποιεί εναλλαγή μεταξύ της ενερ
 #. Translators: Message reported upon action (e.g. context sensitive help, open documentation from NVDA menu)
 #: documentationUtils.py:63
 msgid "No documentation found."
-msgstr ""
+msgstr "Δε βρέθηκε τεκμηρίωση."
 
 #. Translators: The title of the dialog to show the NVDA License.
 #: documentationUtils.py:98
 msgid "NVDA License"
-msgstr ""
+msgstr "Άδεια NVDA"
 
 #. Translators: The name of a category of NVDA commands.
 #: globalCommands.py:77
@@ -3652,7 +3653,7 @@ msgstr "Κέρσορας συστήματος"
 
 #. Translators: The name of a category of NVDA commands.
 #. Translators: This is the label for the mouse settings panel.
-#: globalCommands.py:86 gui\settingsDialogs.py:2135
+#: globalCommands.py:86 gui\settingsDialogs.py:2136
 msgid "Mouse"
 msgstr "Ποντίκι"
 
@@ -3661,8 +3662,8 @@ msgstr "Ποντίκι"
 #. Translators: This is the label for the speech panel
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: globalCommands.py:89 config\configFlags.py:277 gui\settingsDialogs.py:1184
-#: gui\settingsDialogs.py:3961
+#: globalCommands.py:89 config\configFlags.py:277 gui\settingsDialogs.py:1185
+#: gui\settingsDialogs.py:3960
 msgid "Speech"
 msgstr "Εκφώνηση"
 
@@ -3681,14 +3682,14 @@ msgstr "Προφίλ Διαμόρφωσης"
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
 #. Translators: This is the label for the braille panel
-#: globalCommands.py:98 config\configFlags.py:279 gui\settingsDialogs.py:3867
-#: gui\settingsDialogs.py:4375
+#: globalCommands.py:98 config\configFlags.py:279 gui\settingsDialogs.py:3866
+#: gui\settingsDialogs.py:4374
 msgid "Braille"
-msgstr ""
+msgstr "Braille"
 
 #. Translators: The name of a category of NVDA commands.
 #. Translators: This is the label for the vision panel
-#: globalCommands.py:101 gui\settingsDialogs.py:5188
+#: globalCommands.py:101 gui\settingsDialogs.py:5187
 msgid "Vision"
 msgstr "Όραση"
 
@@ -3726,16 +3727,16 @@ msgstr "Μορφοποίηση εγγράφου"
 
 #. Translators: The name of a category of NVDA commands.
 #. Translators: This is the label for the audio settings panel.
-#: globalCommands.py:122 gui\settingsDialogs.py:3043
+#: globalCommands.py:122 gui\settingsDialogs.py:3044
 msgid "Audio"
 msgstr "Ήχος"
 
 #. Translators: The name of a category of NVDA commands.
 #. Translators: This is the label for the Remote Access settings category in NVDA's Settings screen.
-#: globalCommands.py:125 gui\settingsDialogs.py:3321
+#: globalCommands.py:125 gui\settingsDialogs.py:3322
 msgctxt "remote"
 msgid "Remote Access"
-msgstr ""
+msgstr "Απομακρυσμένη Πρόσβαση"
 
 #. Translators: Reported when there are no settings to configure in synth settings ring
 #. (example: when there is no setting for language).
@@ -3762,7 +3763,7 @@ msgstr "Πραγματοποιεί εναλλαγή μεταξύ της ενερ
 #: globalCommands.py:220
 #, python-brace-format
 msgid "input help on. Press {gestureKeys} again to turn it off."
-msgstr ""
+msgstr "Βοήθεια εισόδου ενεργοποιημένη. Πάτησε ξανά { gestureKeys} για να την απενεργοποιήσεις."
 
 #. Translators: This will be presented when the input help is toggled.
 #: globalCommands.py:224
@@ -3822,27 +3823,27 @@ msgstr "Κλειδώνει ή ξεκλειδώνει το δεξί πλήκτρ�
 #. Translators: Input help mode message for scroll up at the mouse position command.
 #: globalCommands.py:329
 msgid "Scroll up at the mouse position"
-msgstr ""
+msgstr "Κύλιση προς τα πάνω στη θέση του ποντικιού"
 
 #. Translators: Input help mode message for scroll down at the mouse position command.
 #: globalCommands.py:339
 msgid "Scroll down at the mouse position"
-msgstr ""
+msgstr "Κύλιση προς τα κάτω στη θέση του ποντικιού"
 
 #. Translators: Input help mode message for scroll left at the mouse position command.
 #: globalCommands.py:349
 msgid "Scroll left at the mouse position"
-msgstr ""
+msgstr "Κύλιση προς τα αριστερά στη θέση του ποντικιού"
 
 #. Translators: Input help mode message for scroll right at the mouse position command.
 #: globalCommands.py:359
 msgid "Scroll right at the mouse position"
-msgstr ""
+msgstr "Κύλιση προς τα δεξιά στη θέση του ποντικιού"
 
 #. Translators: Input help mode message for report current selection command.
 #: globalCommands.py:369
 msgid "Announces the current selection in edit controls and documents. Pressing twice spells this information. Pressing three times spells it using character descriptions. Pressing four times shows it in a browsable message. "
-msgstr ""
+msgstr "Ανακοινώνει την τρέχουσα επιλογή σε πεδία επεξεργασίας και έγγραφα. Πατώντας δύο φορές συλλαβίζει αυτή την πληροφορία. Πατώντας τρεις φορές συλλαβίζει χρησιμοποιώντας περιγραφές χαρακτήρων. Πατώντας τέσσερις φορές την εμφανίζει σε περιηγήσιμο μήνυμα. "
 
 #. Translators: The message reported after selected text
 #. Translators: This is spoken to indicate what has just been selected.
@@ -3861,12 +3862,12 @@ msgstr "Αν πατηθεί μία φορά, αναφέρει την τρέχο�
 #. Translators: Input help mode message for set the first value in the synth ring setting.
 #: globalCommands.py:459
 msgid "Set the first value of the current setting in the synth settings ring"
-msgstr ""
+msgstr "Ορίστε την πρώτη τιμή της τρέχουσας ρύθμισης στον ρότορα ρυθμίσεων συνθέτη"
 
 #. Translators: Input help mode message for set the last value in the synth ring settings.
 #: globalCommands.py:472
 msgid "Set the last value of the current setting in the synth settings ring"
-msgstr ""
+msgstr "Ορίστε την τελευταία τιμή της τρέχουσας ρύθμισης στον ρότορα ρυθμίσεων συνθέτη"
 
 #. Translators: Input help mode message for increase synth setting value command.
 #: globalCommands.py:485
@@ -3876,7 +3877,7 @@ msgstr "Αυξάνει την τρέχουσα ενεργή ρύθμιση στ�
 #. Translators: Input help mode message for increasing synth setting value command in larger steps.
 #: globalCommands.py:499
 msgid "Increases the currently active setting in the synth settings ring in a larger step"
-msgstr ""
+msgstr "Αυξάνει την τρέχουσα ενεργή ρύθμιση στον ρότορα ρυθμίσεων συνθέτη πιο γρήγορα"
 
 #. Translators: Input help mode message for decrease synth setting value command.
 #: globalCommands.py:513
@@ -3886,7 +3887,7 @@ msgstr "Μειώνει την τρέχουσα ενεργή ρύθμιση στ�
 #. Translators: Input help mode message for decreasing synth setting value command in larger steps.
 #: globalCommands.py:527
 msgid "Decreases the currently active setting in the synth settings ring in a larger step"
-msgstr ""
+msgstr "Μειώνει την τρέχουσα ενεργή ρύθμιση στον ρότορα ρυθμίσεων συνθέτη πιο γρήγορα"
 
 #. Translators: Input help mode message for next synth setting command.
 #: globalCommands.py:541
@@ -3901,31 +3902,31 @@ msgstr "Μετακινείται στην προηγούμενη διαθέσι�
 #. Translators: Input help mode message for cycling the reporting of typed characters.
 #: globalCommands.py:569
 msgid "Cycles through options for when to speak typed characters."
-msgstr ""
+msgstr "Πραγματοποιεί κυκλική εναλλαγή μεταξύ των επιλογών για το πότε να εκφωνούνται οι πληκτρολογημένοι χαρακτήρες."
 
 #. Translators: Reported when the user cycles through speak typed characters modes.
 #. {mode} will be replaced with the mode; e.g. Off, On, Only in edit controls.
 #: globalCommands.py:580
 #, python-brace-format
 msgid "Speak typed characters {mode}"
-msgstr ""
+msgstr "Εκφωνεί τους πληκτρολογημένους χαρακτήρες {mode}"
 
 #. Translators: Input help mode message for cycling the reporting of typed words.
 #: globalCommands.py:585
 msgid "Cycles through options for when to speak typed words."
-msgstr ""
+msgstr "Πραγματοποιεί κυκλική εναλλαγή μεταξύ των επιλογών για το πότε να εκφωνούνται οι πληκτρολογημένες λέξεις."
 
 #. Translators: Reported when the user cycles through speak typed words modes.
 #. {mode} will be replaced with the mode; e.g. Off, On, Only in edit controls.
 #: globalCommands.py:596
 #, python-brace-format
 msgid "Speak typed words {mode}"
-msgstr ""
+msgstr "Εκφωνεί τις πληκτρολογημένες λέξεις {mode}"
 
 #. Translators: Input help mode message for toggle speak command keys command.
 #: globalCommands.py:601
 msgid "Toggles on and off the speaking of command keys"
-msgstr ""
+msgstr "Πραγματοποιεί εναλλαγή μεταξύ της ενεργοποίησης και της απενεργοποίησης της εκφώνησης των πλήκτρων εντολών"
 
 #. Translators: The message announced when toggling the speak typed command keyboard setting.
 #: globalCommands.py:608
@@ -3970,27 +3971,27 @@ msgstr "ενεργοποίηση Αναφοράς μεγέθους γραμμα�
 #. Translators: Input help mode message for toggle report font attributes command.
 #: globalCommands.py:651
 msgid "Cycles font attribute reporting between speech, braille, speech and braille, and off."
-msgstr ""
+msgstr "Πραγματοποιεί κυκλική εναλλαγή αναφοράς χαρακτηριστικών γραμματοσειράς μεταξύ εκφώνησης, Braille, εκφώνησης και Braille και απενεργοποίησης."
 
 #. Translators: A state in which font attributes are not reported.
 #: globalCommands.py:661
 msgid "Do not report font attributes"
-msgstr ""
+msgstr "Να μην αναφέρονται τα χαρακτηριστικά της γραμματοσειράς"
 
 #. Translators: A state in which font attributes are only spoken.
 #: globalCommands.py:664
 msgid "Speak font attributes"
-msgstr ""
+msgstr "Να αναφέρονται τα χαρακτηριστικά της γραμματοσειράς"
 
 #. Translators: A state in which font attributes are only brailled.
 #: globalCommands.py:667
 msgid "Braille font attributes"
-msgstr ""
+msgstr "Χαρακτηριστικά γραμματοσειράς Braille"
 
 #. Translators: A state in which font attributes are both spoken and brailled.
 #: globalCommands.py:670
 msgid "Speak and braille font attributes"
-msgstr ""
+msgstr "Εκφωνούνται και αναφέρονται στο Braille τα χαρακτηριστικά της γραμματοσειράς"
 
 #. Translators: Input help mode message for toggle superscripts and subscripts command.
 #: globalCommands.py:676
@@ -4159,19 +4160,19 @@ msgstr "Αναφορά εσοχής γραμμής {mode}"
 #. Translators: Input help mode message for toggle ignore blank lines for line indentation reporting command.
 #: globalCommands.py:854
 msgid "Toggles on and off the ignoring of blank lines for line indentation reporting"
-msgstr ""
+msgstr "Πραγματοποιεί εναλλαγή μεταξύ της ενεργοποίησης και της απενεργοποίησης της αγνόησης κενών γραμμών για την αναφορά εσοχών γραμμής"
 
 #. Translators: The message announced when toggling off the ignore blank lines for line indentation
 #. reporting document formatting setting.
 #: globalCommands.py:863
 msgid "Ignore blank lines for line indentation reporting off"
-msgstr ""
+msgstr "Αγνόηση κενών γραμμών για την αναφορά εσοχών γραμμής απενεργοποιημένη"
 
 #. Translators: The message announced when toggling on the ignore blank lines for line indentation
 #. reporting document formatting setting.
 #: globalCommands.py:867
 msgid "Ignore blank lines for line indentation reporting on"
-msgstr ""
+msgstr "Αγνόηση κενών γραμμών για την αναφορά εσοχών γραμμής ενεργοποιημένη"
 
 #. Translators: Input help mode message for toggle report paragraph indentation command.
 #: globalCommands.py:871
@@ -4275,23 +4276,23 @@ msgstr "ενεργοποίηση αναφοράς συνδέσμων"
 #. Translators: Input help mode message for toggle report link type command.
 #: globalCommands.py:979
 msgid "Toggles on and off the reporting of link type"
-msgstr ""
+msgstr "Πραγματοποιεί εναλλαγή μεταξύ της ενεργοποίησης και της απενεργοποίησης της αναφοράς τύπου συνδέσμου"
 
 #. Translators: The message announced when toggling the report link type document formatting setting.
 #: globalCommands.py:988
 msgid "Report link type on"
-msgstr ""
+msgstr "Η αναφορά τύπου συνδέσμου είναι ενεργοποιημένη"
 
 #. Translators: The message announced when toggling the report link type document formatting setting.
 #: globalCommands.py:990
 msgid "Report link type off"
-msgstr ""
+msgstr "Η αναφορά τύπου συνδέσμου είναι απενεργοποιημένη"
 
 #. Translators: The message announced when reporting links is disabled,
 #. and the user tries to toggle the report link type document formatting setting.
 #: globalCommands.py:995
 msgid "The report links setting must be enabled to toggle report link type"
-msgstr ""
+msgstr "Η ρύθμιση αναφοράς συνδέσμων πρέπει να είναι ενεργοποιημένη για να μπορεί να γίνει εναλλαγή της αναφοράς τύπου συνδέσμου"
 
 #. Translators: Input help mode message for toggle report graphics command.
 #: globalCommands.py:999
@@ -4446,24 +4447,24 @@ msgstr "ενεργοποίηση αναφοράς της δυνατότητας 
 #. Translators: Input help mode message for toggle report figures and captions command.
 #: globalCommands.py:1159
 msgid "Toggles on and off the reporting of figures and captions"
-msgstr ""
+msgstr "Πραγματοποιεί εναλλαγή μεταξύ της ενεργοποίησης και της απενεργοποίησης της αναφοράς εικόνων και λεζαντών"
 
 #. Translators: The message announced when toggling the report figures and captions document formatting
 #. setting.
 #: globalCommands.py:1166
 msgid "report figures and captions off"
-msgstr ""
+msgstr "Η αναφορά εικόνων και λεζαντών είναι απενεργοποιημένη"
 
 #. Translators: The message announced when toggling the report figures and captions document formatting
 #. setting.
 #: globalCommands.py:1171
 msgid "report figures and captions on"
-msgstr ""
+msgstr "Η αναφορά εικόνων και λεζαντών είναι ενεργοποιημένη"
 
 #. Translators: Input help mode message for cycle through automatic language switching mode command.
 #: globalCommands.py:1178
 msgid "Cycles through the possible choices for automatic language switching: off, language only and language and dialect."
-msgstr ""
+msgstr "Πραγματοποιεί εναλλαγή μεταξύ των επιλογών για αυτόματη αλλαγή γλώσσας: απενεργοποιημένη, μόνο γλώσσα και γλώσσα με διάλεκτο."
 
 #. Translators: A message reported when executing the cycle automatic language switching mode command.
 #: globalCommands.py:1187
@@ -4801,12 +4802,12 @@ msgstr "Μετακινεί το δρομέα επισκόπησης στον τ�
 #. Translators: Input help mode message for move review cursor to start of selection command.
 #: globalCommands.py:2270
 msgid "Moves the review cursor to the first character of the selection, and speaks it"
-msgstr ""
+msgstr "Μετακινεί το δρομέα επισκόπησης στον πρώτο χαρακτήρα της επιλογής και τον εκφωνεί"
 
 #. Translators: Input help mode message for move review cursor to end of selection command.
 #: globalCommands.py:2298
 msgid "Moves the review cursor to the last character of the selection, and speaks it"
-msgstr ""
+msgstr "Μετακινεί τον δρομέα επισκόπησης στον τελευταίο χαρακτήρα της επιλογής και τον εκφωνεί"
 
 #. Translators: Input help mode message for Review Current Symbol command.
 #: globalCommands.py:2337
@@ -4833,14 +4834,14 @@ msgstr "Αναπτυγμένο σύμβολο ({})"
 #. Translators: Input help mode message for cycle speech mode command.
 #: globalCommands.py:2367
 msgid "Cycles between speech modes."
-msgstr ""
+msgstr "Πραγματοποιεί κυκλική εναλλαγή μεταξύ λειτουργιών εκφώνησης."
 
 #. Translators: Announced when user switches to another speech mode.
 #. 'mode' is replaced with the translated name of the new mode.
 #: globalCommands.py:2390
 #, python-brace-format
 msgid "Speech mode {mode}"
-msgstr ""
+msgstr "Λειτουργία εκφώνησης {mode}"
 
 #. Translators: Input help mode message for move to next document with focus command,
 #. mostly used in web browsing to move from embedded object to the webpage document.
@@ -4932,7 +4933,7 @@ msgstr "Δεν υπάρχουν επιπλέον πληροφορίες"
 #. Translators: Input help mode message for report current focus command.
 #: globalCommands.py:2804
 msgid "Reports the object with focus. If pressed twice, spells the information. Pressing three times spells it using character descriptions."
-msgstr ""
+msgstr "Αναφέρει το αντικείμενο με εστίαση. Πατώντας δύο φορές συλλαβίζει την πληροφορία. Πατώντας τρεις φορές συλλαβίζει χρησιμοποιώντας περιγραφές χαρακτήρων."
 
 #. Translators: Reported when there is no status line for the current program or window.
 #: globalCommands.py:2880
@@ -5215,7 +5216,7 @@ msgstr "Εμφανίζει το παράθυρο διαλόγου των ρυθ�
 #. Translators: Input help mode message for go to audio settings command.
 #: globalCommands.py:3353
 msgid "Shows NVDA's audio settings"
-msgstr ""
+msgstr "Εμφανίζει τις ρυθμίσεις ήχου του NVDA"
 
 #. Translators: Input help mode message for go to keyboard settings command.
 #: globalCommands.py:3363
@@ -5256,7 +5257,7 @@ msgstr "Εμφανίζει το παράθυρο διαλόγου της μορ�
 #: globalCommands.py:3431
 msgctxt "remote"
 msgid "Shows the Remote Access settings"
-msgstr ""
+msgstr "Εμφανίζει τις ρυθμίσεις Απομακρυσμένης Πρόσβασης"
 
 #. Translators: Input help mode message for opening default dictionary dialog.
 #: globalCommands.py:3440
@@ -5367,13 +5368,13 @@ msgstr "Η οθόνη braille προσδέθηκε σε %s"
 #. Translators: Input help mode message for toggle braille mode command
 #: globalCommands.py:3630
 msgid "Toggles braille mode"
-msgstr ""
+msgstr "Πραγματοποιεί εναλλαγή της λειτουργίας Braille"
 
 #. Translators: The message reported when switching braille modes
 #: globalCommands.py:3645
 #, python-brace-format
 msgid "Braille mode {brailleMode}"
-msgstr ""
+msgstr "Λειτουργία Braille {brailleMode}"
 
 #. Translators: Input help mode message for cycle through
 #. braille move system caret when routing review cursor command.
@@ -5430,32 +5431,32 @@ msgstr "Ενεργοποίηση δρομέα braille"
 #. Translators: Input help mode message for speak on routing command.
 #: globalCommands.py:3739
 msgid "Toggles speaking the character under the cursor when routing cursor in text"
-msgstr ""
+msgstr "Πραγματοποιεί εναλλαγή της εκφώνησης του χαρακτήρα κάτω από τον κέρσορα κατά τη δρομολόγηση του κέρσορα στο κείμενο"
 
 #. Translators: The message announced when toggling on speaking character when routing.
 #: globalCommands.py:3747
 msgid "Enabled speak character when routing cursor in text"
-msgstr ""
+msgstr "Η εκφώνηση χαρακτήρα κατά τη δρομολόγηση του κέρσορα στο κείμενο είναι ενεργοποιημένη"
 
 #. Translators: The message announced when toggling off speaking character when routing.
 #: globalCommands.py:3750
 msgid "Disabled speak character when routing cursor in text"
-msgstr ""
+msgstr "Η εκφώνηση χαρακτήρα κατά τη δρομολόγηση του κέρσορα στο κείμενο είναι απενεργοποιημένη"
 
 #. Translators: Input help mode message for toggle speaking when navigating by lines or paragraphs with braille.
 #: globalCommands.py:3755
 msgid "Toggles on and off speaking when navigating by lines or paragraph with braille"
-msgstr ""
+msgstr "Πραγματοποιεί εναλλαγή μεταξύ της ενεργοποίησης και της απενεργοποίησης της εκφώνησης κατά την πλοήγηση με Braille ανά γραμμή ή παράγραφο"
 
 #. Translators: The message announced when toggling the speaking on navigating by unit braille setting.
 #: globalCommands.py:3764
 msgid "Speak whenn navigating by line or paragraph with braille on"
-msgstr ""
+msgstr "Εκφώνηση κατά την πλοήγηση ανά γραμμή ή παράγραφο με Braille ενεργοποιημένη"
 
 #. Translators: The message announced when toggling the speaking on navigating by unit braille setting.
 #: globalCommands.py:3766
 msgid "Speak when navigating by line or paragraph with braille off"
-msgstr ""
+msgstr "Εκφώνηση κατά την πλοήγηση ανά γραμμή ή παράγραφο με Braille απενεργοποιημένη"
 
 #. Translators: Input help mode message for cycle braille cursor shape command.
 #: globalCommands.py:3771
@@ -5507,26 +5508,26 @@ msgstr "Εμφάνιση επιλογής Braille %s"
 #. Translators: Input help mode message for Braille Unicode normalization command.
 #: globalCommands.py:3844
 msgid "Cycle through the braille Unicode normalization states"
-msgstr ""
+msgstr "Πραγματοποιεί κυκλική εναλλαγή μεταξύ των καταστάσεων κανονικοποίησης Unicode για το Braille"
 
 #. Translators: Used when reporting braille Unicode normalization state
 #. (default behavior).
 #: globalCommands.py:3859
 #, python-brace-format
 msgid "Braille Unicode normalization default ({default})"
-msgstr ""
+msgstr "Προεπιλογή κανονικοποίησης Unicode Braille ({default})"
 
 #. Translators: Used when reporting braille Unicode normalization state
 #. (disabled or enabled).
 #: globalCommands.py:3865
 #, python-brace-format
 msgid "Braille Unicode normalization {state}"
-msgstr ""
+msgstr "Κανονικοποίηση Unicode Braille {state}"
 
 #. Translators: Input help mode message for report clipboard text command.
 #: globalCommands.py:3873
 msgid "Reports the text on the Windows clipboard. Pressing twice spells this information. Pressing three times spells it using character descriptions."
-msgstr ""
+msgstr "Αναφέρει το κείμενο στο πρόχειρο των Windows. Πατώντας δύο φορές συλλαβίζει αυτή την πληροφορία. Πατώντας τρεις φορές συλλαβίζει χρησιμοποιώντας περιγραφές χαρακτήρων."
 
 #. Translators: Presented when there is no text on the clipboard.
 #: globalCommands.py:3888
@@ -5540,7 +5541,7 @@ msgstr "Δεν υπάρχει κείμενο στο πρόχειρο"
 #, python-format
 msgid "The clipboard contains a large amount of text. It is %s character long"
 msgid_plural "The clipboard contains a large amount of text. It is %s characters long"
-msgstr[0] ""
+msgstr[0] "Το πρόχειρο περιέχει μεγάλο όγκο κειμένου. Έχει %s χαρακτήρες"
 msgstr[1] ""
 
 #. Translators: Input help mode message for mark review cursor position for a select or copy command
@@ -5878,104 +5879,104 @@ msgid "Toggles on and off the reporting of CLDR characters, such as emojis"
 msgstr "Πραγματοποιεί εναλλαγή μεταξύ της ενεργοποίησης και της απενεργοποίησης της αναφοράς των χαρακτήρων CLDR, όπως τα emojis."
 
 #. Translators: presented when the report CLDR is toggled.
-#: globalCommands.py:4676
+#: globalCommands.py:4679
 msgid "report CLDR characters off"
 msgstr "απενεργοποίηση αναφοράς χαρακτήρων CLDR"
 
 #. Translators: presented when the report CLDR is toggled.
-#: globalCommands.py:4680
+#: globalCommands.py:4683
 msgid "report CLDR characters on"
 msgstr "ενεργοποίηση αναφοράς χαρακτήρων CLDR"
 
 #. Translators: Input help mode message for speech Unicode normalization command.
-#: globalCommands.py:4687
+#: globalCommands.py:4691
 msgid "Cycle through the speech Unicode normalization states"
 msgstr ""
 
 #. Translators: Used when reporting speech Unicode normalization state
 #. (default behavior).
-#: globalCommands.py:4702
+#: globalCommands.py:4706
 #, python-brace-format
 msgid "Speech Unicode normalization default ({default})"
 msgstr ""
 
 #. Translators: Used when reporting speech Unicode normalization state
 #. (disabled or enabled).
-#: globalCommands.py:4708
+#: globalCommands.py:4712
 #, python-brace-format
 msgid "Speech Unicode normalization {state}"
 msgstr ""
 
 #. Translators: Describes a command.
-#: globalCommands.py:4720
+#: globalCommands.py:4724
 msgid "Toggles the state of the screen curtain, enable to make the screen black or disable to show the contents of the screen. Pressed once, screen curtain is enabled until you restart NVDA. Pressed twice, screen curtain is enabled until you disable it"
 msgstr "Πραγματοποιεί εναλλαγή μεταξύ ενεργοποίησης και απενεργοποίησης της κουρτίνας οθόνης. Ενεργοποιήστε για μαύρισμα της οθόνης ή απενεργοποιήστε για εμφάνιση των περιεχομένων της οθόνης. Αν πατηθεί μία φορά, η κουρτίνα οθόνης είναι ενεργή μέχρι να επανεκκινήσετε το NVDA. Αν πατηθεί δύο φορές, η κουρτίνα οθόνης είναι ενεργή μέχρι να την απενεργοποιήσετε."
 
 #. Translators: Reported when the screen curtain is disabled.
-#: globalCommands.py:4779
+#: globalCommands.py:4783
 msgid "Screen curtain disabled"
 msgstr "Κουρτίνα οθόνης απενεργοποιημένη"
 
 #. Translators: Reported when the screen curtain could not be enabled.
-#: globalCommands.py:4786
+#: globalCommands.py:4790
 msgid "Could not disable screen curtain"
 msgstr "Δεν ήταν δυνατή η απενεργοποίηση της κουρτίνας οθόνης"
 
 #. Translators: Reported when the screen curtain is not available.
-#: globalCommands.py:4797
+#: globalCommands.py:4801
 msgid "Screen curtain not available"
 msgstr "Κουρτίνα οθόνης μη διαθέσιμη"
 
 #. Translators: Reported when the screen curtain is enabled.
-#: globalCommands.py:4809
+#: globalCommands.py:4813
 msgid "Screen curtain enabled"
 msgstr "Κουρτίνα οθόνης ενεργοποιημένη"
 
 #. Translators: Reported when the screen curtain is temporarily enabled.
-#: globalCommands.py:4812
+#: globalCommands.py:4816
 msgid "Temporary Screen curtain, enabled until next restart"
 msgstr "Προσωρινή Κουρτίνα οθόνης, ενεργή έως την επόμενη επανεκκίνηση"
 
 #. Translators: Reported when the screen curtain could not be enabled.
-#: globalCommands.py:4825
+#: globalCommands.py:4829
 msgid "Could not enable screen curtain"
 msgstr "Δεν ήταν δυνατή η ενεργοποίηση της κουρτίνας οθόνης"
 
 #. Translators: Warning message when trying to enable the screen curtain when OCR is active.
-#: globalCommands.py:4858 visionEnhancementProviders\screenCurtain.py:281
+#: globalCommands.py:4862 visionEnhancementProviders\screenCurtain.py:281
 msgid "Could not enable screen curtain when performing content recognition"
 msgstr ""
 
 #. Translators: Describes a command.
-#: globalCommands.py:4866
+#: globalCommands.py:4870
 msgid "Cycles through paragraph navigation styles"
 msgstr "Πραγματοποιεί κυκλική εναλλαγή μεταξύ στυλ πλοήγησης παραγράφων "
 
 #. Translators: Describes a command.
-#: globalCommands.py:4880
+#: globalCommands.py:4884
 msgid "Cycles through sound split modes"
 msgstr ""
 
 #. Translators: Documentation string for the script that toggles whether the output from the remote computer is muted.
-#: globalCommands.py:4890
+#: globalCommands.py:4894
 msgctxt "remote"
 msgid "Mutes or unmutes the speech coming from the remote computer"
 msgstr ""
 
 #. Translators: Documentation string for the script that sends the contents of the clipboard to the remote computer.
-#: globalCommands.py:4900
+#: globalCommands.py:4904
 msgctxt "remote"
 msgid "Sends the contents of the clipboard to the remote computer"
 msgstr ""
 
 #. Translators: Documentation string for the script that copies a link to the Remote Access session to the clipboard.
-#: globalCommands.py:4908
+#: globalCommands.py:4912
 msgctxt "remote"
 msgid "Copies a link to the current Remote Access session to the clipboard"
 msgstr ""
 
 #. Translators: Documentation string for the script that disconnects a Remote Access session.
-#: globalCommands.py:4918
+#: globalCommands.py:4922
 msgctxt "remote"
 msgid "Disconnects from the current Remote Access session"
 msgstr ""
@@ -5986,52 +5987,52 @@ msgstr ""
 #. Translators: Message shown when trying to copy the link to connect to the remote computer while not connected.
 #. Translators: Message shown when attempting to send control+alt+delete when no session is connected.
 #. Translators: A message indicating that the remote client is not connected.
-#: globalCommands.py:4924 _remoteClient\client.py:125
+#: globalCommands.py:4928 _remoteClient\client.py:125
 #: _remoteClient\client.py:149 _remoteClient\client.py:171
-#: _remoteClient\client.py:187 _remoteClient\client.py:519
+#: _remoteClient\client.py:187 _remoteClient\client.py:522
 msgctxt "remote"
 msgid "Not connected"
 msgstr ""
 
 #. Translators: Documentation string for the script that starts a new Remote Access session.
-#: globalCommands.py:4930
+#: globalCommands.py:4934
 msgctxt "remote"
 msgid "Connects to a remote computer"
 msgstr ""
 
 #. Translators: A message indicating that the remote client is already connected.
-#: globalCommands.py:4941
+#: globalCommands.py:4945
 msgid "Already connected"
 msgstr ""
 
 #. Translators: Describes the script that creates a new Remote Access session, or disconnects it if one already exists.
-#: globalCommands.py:4947
+#: globalCommands.py:4951
 msgctxt "remote"
 msgid "Toggles whether Remote Access is connected"
 msgstr ""
 
 #. Translators: Documentation string for the script that toggles the control between guest and host computers.
-#: globalCommands.py:4962
+#: globalCommands.py:4966
 msgctxt "remote"
 msgid "Switches whether the keyboard controls the local or remote computer"
 msgstr ""
 
 #. Translators: a message indicating that configuration profiles can't be activated using gestures,
 #. due to profile activation being suspended.
-#: globalCommands.py:5004
+#: globalCommands.py:5008
 msgid "Can't change the active profile while an NVDA dialog is open"
 msgstr "Δεν είναι δυνατή η αλλαγή του ενεργού προφίλ όσο είναι ανοιχτό ένα παράθυρο διαλόγου του NVDA"
 
 #. Translators: a message when a configuration profile is manually deactivated.
 #. {profile} is replaced with the profile's name.
-#: globalCommands.py:5009
+#: globalCommands.py:5013
 #, python-brace-format
 msgid "{profile} profile deactivated"
 msgstr "{profile} προφίλ απενεργοποιήθηκε"
 
 #. Translators: a message when a configuration profile is manually activated.
 #. {profile} is replaced with the profile's name.
-#: globalCommands.py:5014
+#: globalCommands.py:5018
 #, python-brace-format
 msgid "{profile} profile activated"
 msgstr "{profile} προφίλ ενεργοποιήθηκε"
@@ -6039,7 +6040,7 @@ msgstr "{profile} προφίλ ενεργοποιήθηκε"
 #. Translators: The description shown in input help for a script that
 #. activates or deactivates a config profile.
 #. {profile} is replaced with the profile's name.
-#: globalCommands.py:5030
+#: globalCommands.py:5034
 #, python-brace-format
 msgid "Activates or deactivates the {profile} configuration profile"
 msgstr "Ενεργοποιεί ή απενεργοποιεί το {profile} προφίλ διαμόρφωσης"
@@ -6518,7 +6519,7 @@ msgstr "ενεργοποιημένο"
 #. which disables reporting of progress bars.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
 #: keyboardHandler.py:631 synthSettingsRing.py:117 controlTypes\state.py:227
-#: gui\settingsDialogs.py:2370 gui\speechDict.py:198
+#: gui\settingsDialogs.py:2371 gui\speechDict.py:198
 msgid "off"
 msgstr "Απενεργοποιημένο"
 
@@ -11520,7 +11521,7 @@ msgstr ""
 #. Translators: Title of the warning message.
 #. Translators: Title of warning dialog
 #: gui\_SetURLDialog.py:113 gui\configProfiles.py:498 gui\installerGui.py:334
-#: gui\settingsDialogs.py:1037 gui\settingsDialogs.py:1928
+#: gui\settingsDialogs.py:1038 gui\settingsDialogs.py:1929
 #: visionEnhancementProviders\screenCurtain.py:146 _remoteClient\dialogs.py:285
 msgid "Warning"
 msgstr "Προειδοποίηση"
@@ -11541,7 +11542,7 @@ msgstr ""
 #. Translators: The message title displayed when copying configuration to system settings was successful.
 #. Translators: Title of success dialog
 #: gui\_SetURLDialog.py:177 gui\installerGui.py:129 gui\installerGui.py:618
-#: gui\settingsDialogs.py:1081 _remoteClient\dialogs.py:274
+#: gui\settingsDialogs.py:1082 _remoteClient\dialogs.py:274
 msgid "Success"
 msgstr "Επιτυχία"
 
@@ -12349,7 +12350,7 @@ msgstr "&Φιλτράρισμα κατά:"
 #. Translators: The label of a button to add a gesture in the Input Gestures dialog.
 #. Translators: The label for a button in the Symbol Pronunciation dialog to add a new symbol.
 #. Translators: The label for a button in speech dictionaries dialog to add new entries.
-#: gui\inputGestures.py:615 gui\settingsDialogs.py:5665 gui\speechDict.py:215
+#: gui\inputGestures.py:615 gui\settingsDialogs.py:5667 gui\speechDict.py:215
 msgid "&Add"
 msgstr "&Προσθήκη"
 
@@ -12687,7 +12688,7 @@ msgid "Default ({})"
 msgstr "Προεπιλογή ({})"
 
 #. Translators: Content of the message displayed when a validation error occurs in the settings dialog
-#: gui\settingsDialogs.py:442
+#: gui\settingsDialogs.py:443
 #, python-brace-format
 msgid "{message}\n\n"
 "Category: \"{category}\"\n"
@@ -12695,48 +12696,48 @@ msgid "{message}\n\n"
 msgstr ""
 
 #. Translators: The title of the message box when a setting's configuration is not valid.
-#: gui\settingsDialogs.py:449
+#: gui\settingsDialogs.py:450
 msgid "Invalid configuration"
 msgstr ""
 
 #. Translators: The label for the list of categories in a multi category settings dialog.
-#: gui\settingsDialogs.py:558
+#: gui\settingsDialogs.py:559
 msgid "&Categories:"
 msgstr "&Κατηγορίες:"
 
 #. Translators: This is the label for the general settings panel.
-#: gui\settingsDialogs.py:788
+#: gui\settingsDialogs.py:789
 msgid "General"
 msgstr "Γενικά"
 
 #. Translators: One of the log levels of NVDA (the disabled mode turns off logging completely).
-#: gui\settingsDialogs.py:792
+#: gui\settingsDialogs.py:793
 msgid "disabled"
 msgstr "απενεργοποιημένο"
 
 #. Translators: One of the log levels of NVDA (the info mode shows info as NVDA runs).
-#: gui\settingsDialogs.py:794
+#: gui\settingsDialogs.py:795
 msgid "info"
 msgstr "πληροφορίες"
 
 #. Translators: One of the log levels of NVDA (the debug warning shows debugging messages and warnings as NVDA runs).
-#: gui\settingsDialogs.py:796
+#: gui\settingsDialogs.py:797
 msgid "debug warning"
 msgstr "προειδοποίηση αποσφαλμάτωσης"
 
 #. Translators: One of the log levels of NVDA (the input/output shows keyboard commands and/or braille commands as well as speech and/or braille output of NVDA).
-#: gui\settingsDialogs.py:798
+#: gui\settingsDialogs.py:799
 msgid "input/output"
 msgstr "είσοδος/έξοδος"
 
 #. Translators: One of the log levels of NVDA (the debug mode shows debug messages as NVDA runs).
-#: gui\settingsDialogs.py:800
+#: gui\settingsDialogs.py:801
 msgid "debug"
 msgstr "αποσφαλμάτωση"
 
 #. Translators: Shown for a language which has been provided from the command line
 #. 'langDesc' would be replaced with description of the given locale.
-#: gui\settingsDialogs.py:814
+#: gui\settingsDialogs.py:815
 #, python-brace-format
 msgid "Command line option: {langDesc}"
 msgstr "Επιλογή γραμμής εντολών: {langDesc}"
@@ -12744,30 +12745,30 @@ msgstr "Επιλογή γραμμής εντολών: {langDesc}"
 #. Translators: The label for a setting in general settings to select NVDA's interface language
 #. (once selected, NVDA must be restarted; the option user default means the user's Windows language
 #. will be used).
-#: gui\settingsDialogs.py:820
+#: gui\settingsDialogs.py:821
 msgid "NVDA &Language (requires restart):"
 msgstr "&Γλώσσα NVDA (απαιτείται επανεκκίνηση):"
 
 #. Translators: The label for a setting in general settings to save current configuration when NVDA
 #. exits (if it is not checked, user needs to save configuration before quitting NVDA).
-#: gui\settingsDialogs.py:838
+#: gui\settingsDialogs.py:839
 msgid "&Save configuration when exiting NVDA"
 msgstr "&Αποθήκευση διαμόρφωσης κατά την έξοδο από το NVDA"
 
 #. Translators: The label for a setting in general settings to ask before quitting NVDA (if not checked, NVDA will exit without asking the user for action).
-#: gui\settingsDialogs.py:846
+#: gui\settingsDialogs.py:847
 msgid "Sho&w exit options when exiting NVDA"
 msgstr "Εμφάνιση επιλογών ε&ξόδου κατά την έξοδο από το NVDA"
 
 #. Translators: The label for a setting in general settings to play sounds when NVDA starts or exits.
-#: gui\settingsDialogs.py:854
+#: gui\settingsDialogs.py:855
 msgid "&Play sounds when starting or exiting NVDA"
 msgstr "&Αναπαραγωγή ήχων κατα την εκκίνηση ή την έξοδο από το nvda"
 
 #. Translators: The label for a setting in general settings to select logging level of NVDA as it runs
 #. (available options and what they are logging are found under comments for the logging level messages
 #. themselves).
-#: gui\settingsDialogs.py:863
+#: gui\settingsDialogs.py:864
 msgid "L&ogging level:"
 msgstr "Επίπεδο &καταγραφής συμβάντων:"
 
@@ -12775,7 +12776,7 @@ msgstr "Επίπεδο &καταγραφής συμβάντων:"
 #. Windows (if checked, NVDA will start automatically after logging into Windows; if not, user must
 #. start NVDA by pressing the shortcut key (CTRL+Alt+N by default).
 #. Translators: The label of a checkbox in the Welcome dialog.
-#: gui\settingsDialogs.py:884 gui\startupDialogs.py:88
+#: gui\settingsDialogs.py:885 gui\startupDialogs.py:88
 msgid "St&art NVDA after I sign in"
 msgstr "&Εκκίνηση του NVDA όταν συνδεθώ"
 
@@ -12783,7 +12784,7 @@ msgstr "&Εκκίνηση του NVDA όταν συνδεθώ"
 #. allow NVDA to come up in Windows login screen (useful if user
 #. needs to enter passwords or if multiple user accounts are present
 #. to allow user to choose the correct account).
-#: gui\settingsDialogs.py:896
+#: gui\settingsDialogs.py:897
 msgid "Use NVDA during sign-in (requires administrator privileges)"
 msgstr "Χρήση του NVDA κατά τη σύνδεσης (απαιτούνται δικαιώματα διαχειριστή)"
 
@@ -12791,29 +12792,29 @@ msgstr "Χρήση του NVDA κατά τη σύνδεσης (απαιτούν�
 #. current user settings to system settings (to allow current
 #. settings to be used in secure screens such as User Account
 #. Control (UAC) dialog).
-#: gui\settingsDialogs.py:911
+#: gui\settingsDialogs.py:912
 msgid "Use currently saved settings during sign-in and on secure screens (requires administrator privileges)"
 msgstr "Χρήση των πρόσφατα αποθηκευμένων ρυθμίσεων κατά τη σύνδεση και σε ασφαλείς οθόνες (απαιτούνται δικαιώματα διαχειριστή)"
 
 #. Translators: The label of a checkbox in general settings to toggle automatic checking for updated versions of NVDA.
 #. If not checked, user must check for updates manually.
-#: gui\settingsDialogs.py:926
+#: gui\settingsDialogs.py:927
 msgid "Automatically check for &updates to NVDA"
 msgstr "Αυτόματος έλεγχος για &ενημερωμένες εκδόσεις του NVDA"
 
 #. Translators: The label of a checkbox in general settings to toggle startup notifications
 #. for a pending NVDA update.
-#: gui\settingsDialogs.py:938
+#: gui\settingsDialogs.py:939
 msgid "Notify for &pending update on startup"
 msgstr "Ειδοποίηση για &εκκρεμή ενημέρωση κατά την εκκίνηση"
 
 #. Translators: The label of a checkbox in general settings to toggle allowing of usage stats gathering
-#: gui\settingsDialogs.py:948
+#: gui\settingsDialogs.py:949
 msgid "Allow NV Access to gather NVDA usage statistics"
 msgstr ""
 
 #. Translators: The label for the update mirror on the General Settings panel.
-#: gui\settingsDialogs.py:957
+#: gui\settingsDialogs.py:958
 msgid "Update mirror"
 msgstr ""
 
@@ -12821,92 +12822,92 @@ msgstr ""
 #. it appears in the context of the update mirror group on the General page of NVDA's settings.
 #. Translators: This is the label for the button used to change the Add-on Store mirror URL,
 #. it appears in the context of the mirror server group on the Add-on Store page of NVDA's settings.
-#: gui\settingsDialogs.py:975 gui\settingsDialogs.py:3258
+#: gui\settingsDialogs.py:976 gui\settingsDialogs.py:3259
 msgid "Change..."
 msgstr ""
 
 #. Translators: The label of a checkbox in general settings.
-#: gui\settingsDialogs.py:991
+#: gui\settingsDialogs.py:992
 msgid "Prevent &display from turning off during say all or reading with braille"
 msgstr ""
 
 #. Translators: Title of the dialog used to change NVDA's update server mirror URL.
-#: gui\settingsDialogs.py:1005
+#: gui\settingsDialogs.py:1006
 msgid "Set NVDA Update Mirror"
 msgstr ""
 
 #. Translators: A message to warn the user when attempting to copy current
 #. settings to system settings.
-#: gui\settingsDialogs.py:1031
+#: gui\settingsDialogs.py:1032
 msgid "Add-ons were detected in your user settings directory. Copying these to the system profile could be a security risk. Do you still wish to copy your settings?"
 msgstr "Εντοπίστηκαν πρόσθετα στο δικό σας φάκελο ρυθμίσεων χρήστη. Η αντιγραφή τους στο προφίλ συστήματος μπορεί να είναι επικίνδυνη. Εξακολουθείτε να θέλετε να αντιγράψετε τις ρυθμίσεις σας;"
 
 #. Translators: The title of the dialog presented while settings are being copied
-#: gui\settingsDialogs.py:1044
+#: gui\settingsDialogs.py:1045
 msgid "Copying Settings"
 msgstr "Αντιγραφή Ρυθμίσεων Σε Εξέλιξη"
 
 #. Translators: The message displayed while settings are being copied
 #. to the system configuration (for use on Windows logon etc)
-#: gui\settingsDialogs.py:1047
+#: gui\settingsDialogs.py:1048
 msgid "Please wait while settings are copied to the system configuration."
 msgstr "Παρακαλώ περιμένετε όσο οι ρυθμίσεις αντιγράφονται στη διαμόρφωση του συστήματος"
 
 #. Translators: a message dialog asking to retry or cancel when copying settings  fails
-#: gui\settingsDialogs.py:1058
+#: gui\settingsDialogs.py:1059
 msgid "Unable to copy a file. Perhaps it is currently being used by another process or you have run out of disc space on the drive you are copying to."
 msgstr "Αδυναμία αντιγραφής ενός αρχείου. Πιθανώς να χρησιμοποιείται αυτή τη στιγμή από κάποια άλλη διεργασία ή να σας έχει τελειώσει ο χώρος στο δίσκο στον οποίο προσπαθείτε να αντιγράψετε."
 
 #. Translators: the title of a retry cancel dialog when copying settings  fails
-#: gui\settingsDialogs.py:1062
+#: gui\settingsDialogs.py:1063
 msgid "Error Copying"
 msgstr "Σφάλμα Κατά Την Αντιγραφή"
 
 #. Translators: The message displayed when errors were found while trying to copy current configuration to system settings.
-#: gui\settingsDialogs.py:1075
+#: gui\settingsDialogs.py:1076
 msgid "Error copying NVDA user settings"
 msgstr "Σφάλμα κατά την αντιγραφή των ρυθμίσεων χρήστη του NVDA"
 
 #. Translators: The message displayed when copying configuration to system settings was successful.
-#: gui\settingsDialogs.py:1079
+#: gui\settingsDialogs.py:1080
 msgid "Successfully copied NVDA user settings"
 msgstr "Οι ρυθμίσεις χρήστη του NVDA αντιγράφηκαν επιτυχώς"
 
-#: gui\settingsDialogs.py:1107
+#: gui\settingsDialogs.py:1108
 msgid "This change requires administrator privileges."
 msgstr "Για την αλλαγή αυτή απαιτούνται δικαιώματα διαχειριστή."
 
-#: gui\settingsDialogs.py:1108
+#: gui\settingsDialogs.py:1109
 msgid "Insufficient Privileges"
 msgstr "Μη επαρκή Δικαιώματα"
 
 #. Translators: A value that appears in NVDA's Settings to indicate that no mirror is in use.
-#: gui\settingsDialogs.py:1132 gui\settingsDialogs.py:3304
+#: gui\settingsDialogs.py:1133 gui\settingsDialogs.py:3305
 msgid "No mirror"
 msgstr ""
 
 #. Translators: The title of the dialog which appears when the user changed NVDA's interface language.
-#: gui\settingsDialogs.py:1151
+#: gui\settingsDialogs.py:1152
 msgid "Language Configuration Change"
 msgstr "Αλλαγή Διαμόρφωσης Γλώσσας"
 
 #. Translators: The message displayed after NVDA interface language has been changed.
-#: gui\settingsDialogs.py:1156
+#: gui\settingsDialogs.py:1157
 msgid "NVDA must be restarted for the new language to take effect."
 msgstr "Πρέπει να γίνει επανεκκίνηση του NVDA, για να τεθεί σε ισχύ η νέα γλώσσα."
 
 #. Translators: The label for a button  in the dialog which appears when the user changed NVDA's interface language.
-#: gui\settingsDialogs.py:1161
+#: gui\settingsDialogs.py:1162
 msgid "Restart &now"
 msgstr "Επανεκκίνηση &τώρα"
 
 #. Translators: The label for a button  in the dialog which appears when the user changed NVDA's interface language.
-#: gui\settingsDialogs.py:1166
+#: gui\settingsDialogs.py:1167
 msgid "Restart &later"
 msgstr "Επανεκκίνηση &αργότερα"
 
 #. Translators: A label for the synthesizer on the speech panel.
-#: gui\settingsDialogs.py:1190
+#: gui\settingsDialogs.py:1191
 msgid "Synthesizer"
 msgstr ""
 
@@ -12914,835 +12915,835 @@ msgstr ""
 #. it appears in the context of a synthesizer group on the speech settings panel.
 #. Translators: This is the label for the button used to change braille display,
 #. it appears in the context of a braille display group on the braille settings panel.
-#: gui\settingsDialogs.py:1212 gui\settingsDialogs.py:4396
+#: gui\settingsDialogs.py:1213 gui\settingsDialogs.py:4395
 msgid "C&hange..."
 msgstr "&Αλλαγή..."
 
 #. Translators: This is the label for the synthesizer selection dialog
-#: gui\settingsDialogs.py:1267
+#: gui\settingsDialogs.py:1268
 msgid "Select Synthesizer"
 msgstr "Επιλογή Συνθέτη Φωνής"
 
 #. Translators: This is a label for the select
 #. synthesizer combobox in the synthesizer dialog.
-#: gui\settingsDialogs.py:1275
+#: gui\settingsDialogs.py:1276
 msgid "&Synthesizer:"
 msgstr "&Συνθέτης φωνής:"
 
 #. Translators: This is the label for the voice settings panel.
-#: gui\settingsDialogs.py:1659
+#: gui\settingsDialogs.py:1660
 msgid "Voice"
 msgstr "Φωνή"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel (if checked, text will be read using the voice for the language of the text).
-#: gui\settingsDialogs.py:1685
+#: gui\settingsDialogs.py:1686
 msgid "Automatic language switching (when supported)"
 msgstr "Αυτόματη εναλλαγή γλώσσας (όταν υποστηρίζεται)"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel (if checked, different voices for dialects will be used to
 #. read text in that dialect).
-#: gui\settingsDialogs.py:1700
+#: gui\settingsDialogs.py:1701
 msgid "Automatic dialect switching (when supported)"
 msgstr "Αυτόματη εναλλαγή διαλέκτου (όταν υποστηρίζεται)"
 
 #. Translators: This is the label for a combobox in the
 #. voice settings panel (possible choices are none, some, most and all).
-#: gui\settingsDialogs.py:1711
+#: gui\settingsDialogs.py:1712
 msgid "Punctuation/symbol &level:"
 msgstr "&Επίπεδο στίξης/συμβόλων:"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel (if checked, text will be read using the voice for the language of the text).
-#: gui\settingsDialogs.py:1729
+#: gui\settingsDialogs.py:1730
 msgid "Trust voice's language when processing characters and symbols"
 msgstr "Αποδοχή της γλώσσας της φωνής κατά την επεξεργασία χαρακτήρων και συμβόλων"
 
 #. Translators: This is a label for a combo-box in the Speech settings panel.
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:1739 gui\settingsDialogs.py:4949
+#: gui\settingsDialogs.py:1740 gui\settingsDialogs.py:4948
 msgid "Unicode normali&zation"
 msgstr ""
 
 #. Translators: This is the label for a checkbox in the
 #. speech settings panel.
-#: gui\settingsDialogs.py:1750
+#: gui\settingsDialogs.py:1751
 msgid "Report '&Normalized' when navigating by character"
 msgstr ""
 
 #. Translators: This is a label for a setting in voice settings (an edit box to change
 #. voice pitch for capital letters; the higher the value, the pitch will be higher).
-#: gui\settingsDialogs.py:1783
+#: gui\settingsDialogs.py:1784
 msgid "Capital pitch change percentage"
 msgstr "Ποσοστό μεταβολής τόνου στα κεφαλαία"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel.
-#: gui\settingsDialogs.py:1798
+#: gui\settingsDialogs.py:1799
 msgid "Say &cap before capitals"
 msgstr "Αναγγελία &κεφαλαίων"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel.
-#: gui\settingsDialogs.py:1809
+#: gui\settingsDialogs.py:1810
 msgid "&Beep for capitals"
 msgstr "&Ήχος μπιπ για τα κεφαλαία"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel.
-#: gui\settingsDialogs.py:1823
+#: gui\settingsDialogs.py:1824
 msgid "Use &spelling functionality if supported"
 msgstr "Χρήση λειτουργίας &εκφώνησης ανά χαρακτήρα αν υποστηρίζεται"
 
 #. Translators: Label of the list where user can enable or disable symbol dictionaires.
-#: gui\settingsDialogs.py:1839
+#: gui\settingsDialogs.py:1840
 msgid "E&xtra dictionaries for character and symbol processing:"
 msgstr ""
 
 #. Translators: Label of the list where user can select speech modes that will be available.
-#: gui\settingsDialogs.py:1853
+#: gui\settingsDialogs.py:1854
 msgid "&Modes available in the Cycle speech mode command:"
 msgstr ""
 
 #. Translators: This is the label for a checkbox in the voice settings panel.
-#: gui\settingsDialogs.py:1867
+#: gui\settingsDialogs.py:1868
 msgid "&Delayed descriptions for characters on cursor movement"
 msgstr "&Καθυστερημένη περιγραφή χαρακτήρων κατά την κίνηση του δρομέα"
 
 #. Translators: Warning shown when 'talk' speech mode is disabled in settings.
-#: gui\settingsDialogs.py:1923
+#: gui\settingsDialogs.py:1924
 msgid "You did not choose Talk as one of your speech mode options. Please note that this may result in no speech output at all. Are you sure you want to continue?"
 msgstr ""
 
 #. Translators: Message shown when not enough speech modes are enabled.
-#: gui\settingsDialogs.py:1951
+#: gui\settingsDialogs.py:1952
 msgid "At least two speech modes have to be checked."
 msgstr ""
 
 #. Translators: Same as the label for the list of checkboxes where user can select speech modes that will
 #. be available in Speech Settings, but without keyboard accelerator (& character) nor final colon.
-#: gui\settingsDialogs.py:1954
+#: gui\settingsDialogs.py:1955
 msgid "Modes available in the Cycle speech mode command"
 msgstr ""
 
 #. Translators: This is the label for the keyboard settings panel.
-#: gui\settingsDialogs.py:1963
+#: gui\settingsDialogs.py:1964
 msgid "Keyboard"
 msgstr "Πληκτρολόγιο"
 
 #. Translators: This is the label for a combobox in the
 #. keyboard settings panel.
 #. Translators: The label of a combobox in the Welcome dialog.
-#: gui\settingsDialogs.py:1970 gui\startupDialogs.py:69
+#: gui\settingsDialogs.py:1971 gui\startupDialogs.py:69
 msgid "&Keyboard layout:"
 msgstr "&Διάταξη πληκτρολογίου:"
 
 #. Translators: This is the label for a list of checkboxes
 #. controlling which keys are NVDA modifier keys.
-#: gui\settingsDialogs.py:1984
+#: gui\settingsDialogs.py:1985
 msgid "&Select NVDA Modifier Keys"
 msgstr "&Επιλέξτε πλήκτρα τροποποίησης NVDA"
 
 #. Translators: This is the label for a combobox in the keyboard settings panel.
-#: gui\settingsDialogs.py:2000
+#: gui\settingsDialogs.py:2001
 msgid "Speak typed &characters:"
 msgstr ""
 
 #. Translators: This is the label for a combobox in the keyboard settings panel.
-#: gui\settingsDialogs.py:2011
+#: gui\settingsDialogs.py:2012
 msgid "Speak typed &words:"
 msgstr ""
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2023
+#: gui\settingsDialogs.py:2024
 msgid "Speech &interrupt for typed characters"
 msgstr "&Διακοπή εκφώνησης κατά την πληκτρολόγηση χαρακτήρων"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2035
+#: gui\settingsDialogs.py:2036
 msgid "Speech i&nterrupt for Enter key"
 msgstr "Διακοπή &εκφώνησης για το πλήκτρο Enter"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2044
+#: gui\settingsDialogs.py:2045
 msgid "Allow skim &reading in Say All"
 msgstr "Να επιτρέπεται η γρήγορη ανάγνωση στην ανάγνωση όλων"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2054
+#: gui\settingsDialogs.py:2055
 msgid "&Beep if typing lowercase letters when caps lock is on"
 msgstr "Ήχος &μπιπ κατά την πληκτρολόγηση πεζών χαρακτήρων όταν το πλήκτρο κλείδωμα κεφαλαίων είναι ενεργοποιημένο"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2063
+#: gui\settingsDialogs.py:2064
 msgid "Speak c&ommand keys"
 msgstr "Εκφώνηση &πλήκτρων εντολών"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2070
+#: gui\settingsDialogs.py:2071
 msgid "Play sound for &spelling errors while typing"
 msgstr "Αναπαραγωγή ήχου για ορθογραφικά &σφάλματα κατά την πληκτρολόγηση"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2081
+#: gui\settingsDialogs.py:2082
 msgid "Handle keys from other &applications"
 msgstr "Διαχείριση εντολών από άλλες εφαρμογές"
 
 #. Translators: The label for a control in keyboard settings to modify the timeout for a multiple keypress.
-#: gui\settingsDialogs.py:2089
+#: gui\settingsDialogs.py:2090
 msgid "&Multiple key press timeout (ms):"
 msgstr ""
 
 #. Translators: Message to report wrong configuration of the NVDA key
-#: gui\settingsDialogs.py:2105
+#: gui\settingsDialogs.py:2106
 msgid "At least one key must be used as the NVDA key."
 msgstr "Τουλάχιστον ένα πλήκτρο πρέπει να χρησιμοποιείται ως πλήκτρο NVDA."
 
 #. Translators: Same as the label for the list of checkboxes controlling which keys are NVDA modifier
 #. keys in Keyboard Settings, but without keyboard accelerator (& character).
-#: gui\settingsDialogs.py:2108
+#: gui\settingsDialogs.py:2109
 msgid "Select NVDA Modifier Keys"
 msgstr ""
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2143
+#: gui\settingsDialogs.py:2144
 msgid "Report mouse &shape changes"
 msgstr "Αναφορά αλλαγών &σχήματος ποντικιού"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2150
+#: gui\settingsDialogs.py:2151
 msgid "Enable mouse &tracking"
 msgstr "Ενεργοποίηση &παρακολούθησης ποντικιού"
 
 #. Translators: This is the label for a combobox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2157
+#: gui\settingsDialogs.py:2158
 msgid "Text &unit resolution:"
 msgstr "Ανάλυση &μονάδας κειμένου:"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2176
+#: gui\settingsDialogs.py:2177
 msgid "Report &object when mouse enters it"
 msgstr ""
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2185
+#: gui\settingsDialogs.py:2186
 msgid "&Play audio coordinates when mouse moves"
 msgstr "&Αναπαραγωγή ηχητικών συντεταγμένων κατά την κίνηση του ποντικιού"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2192
+#: gui\settingsDialogs.py:2193
 msgid "&Brightness controls audio coordinates volume"
 msgstr "Έλεγχος της έντασης των ηχητικών συντεταγμένων με τη φωτεινότητα"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2201
+#: gui\settingsDialogs.py:2202
 msgid "Ignore mouse input from other &applications"
 msgstr "Αγνόηση εντολών ποντικιού από άλλες &εφαρμογές"
 
 #. Translators: This is the label for the review cursor settings panel.
-#: gui\settingsDialogs.py:2222
+#: gui\settingsDialogs.py:2223
 msgid "Review Cursor"
 msgstr "Δρομέας Επισκόπησης"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2228
+#: gui\settingsDialogs.py:2229
 msgid "Follow system &focus"
 msgstr "Παρακολούθηση &εστίασης συστήματος"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2234
+#: gui\settingsDialogs.py:2235
 msgid "Follow System &Caret"
 msgstr "Παρακολούθηση &Κέρσορα"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2240
+#: gui\settingsDialogs.py:2241
 msgid "Follow &mouse cursor"
 msgstr "Παρακολούθηση &ποντικιού"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2246
+#: gui\settingsDialogs.py:2247
 msgid "&Simple review mode"
 msgstr "Λειτουργία &απλής επισκόπησης"
 
 #. Translators: This is the label for the Input Composition settings panel.
-#: gui\settingsDialogs.py:2260
+#: gui\settingsDialogs.py:2261
 msgid "Input Composition"
 msgstr "Είσοδος Κειμένου"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2269
+#: gui\settingsDialogs.py:2270
 msgid "Automatically report all available &candidates"
 msgstr "Αυτόματη αναφορά όλων των διαθέσιμων &προτεινόμενων χαρακτήρων"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2281
+#: gui\settingsDialogs.py:2282
 msgid "Announce &selected candidate"
 msgstr "Αναγγελία &επιλεγμένου προτεινόμενου χαρακτήρρα"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2296
+#: gui\settingsDialogs.py:2297
 msgid "Always include short character &description when announcing candidates"
 msgstr "Να συμπεριλαμβάνεται πάντα η σύντομη &περιγραφή τους, όταν αναγγέλονται οι προτεινόμενοι χαρακτήρες"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2311
+#: gui\settingsDialogs.py:2312
 msgid "Report changes to the &reading string"
 msgstr "Αναφορά αλλαγών στο &εκφωνούμενο κείμενο"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2326
+#: gui\settingsDialogs.py:2327
 msgid "Report changes to the &composition string"
 msgstr "Αναφορά αλλαγών στο &συντιθέμενο κείμενο"
 
 #. Translators: This is a label appearing on the Object Presentation settings panel.
-#: gui\settingsDialogs.py:2358
+#: gui\settingsDialogs.py:2359
 msgid "Configure how much information NVDA will present about controls. These options apply to focus reporting and NVDA object navigation, but not when reading text content e.g. web content with browse mode."
 msgstr "Προσδιορίστε πόσες πληροφορίες θα παρουσιάσει το NVDA αναφορικά με τα κουμπιά ελέγχου. Οι επιλογές αυτές αφορούν στην αναφορά εστίασης και την πλοήγηση αντικειμένου του NVDA, αλλά όχι κατά την ανάγνωση κειμένου, π.χ. περιεχόμενο ιστού με τη λειτουργία περιήγησης."
 
 #. Translators: This is the label for the object presentation panel.
-#: gui\settingsDialogs.py:2364
+#: gui\settingsDialogs.py:2365
 msgid "Object Presentation"
 msgstr "Παρουσίαση Αντικειμένου"
 
 #. Translators: An option for progress bar output in the Object Presentation dialog
 #. which reports progress bar updates by speaking.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
-#: gui\settingsDialogs.py:2374
+#: gui\settingsDialogs.py:2375
 msgid "Speak"
 msgstr "Εκφώνηση"
 
 #. Translators: An option for progress bar output in the Object Presentation dialog
 #. which reports progress bar updates by beeping.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
-#: gui\settingsDialogs.py:2378
+#: gui\settingsDialogs.py:2379
 msgid "Beep"
 msgstr "Ήχος μπιπ"
 
 #. Translators: An option for progress bar output in the Object Presentation dialog
 #. which reports progress bar updates by both speaking and beeping.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
-#: gui\settingsDialogs.py:2382
+#: gui\settingsDialogs.py:2383
 msgid "Speak and beep"
 msgstr "Εκφώνηση και ήχος μπιπ"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2395
+#: gui\settingsDialogs.py:2396
 msgid "Report &tooltips"
 msgstr "Αναφορά &επεξηγήσεων"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2402
+#: gui\settingsDialogs.py:2403
 msgid "Report &notifications"
 msgstr "Αναφορά &γνωστοποιήσεις"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2409
+#: gui\settingsDialogs.py:2410
 msgid "Report object shortcut &keys"
 msgstr "Αναφορά &πλήκτρων συντόμευσης αντικειμένου"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2416
+#: gui\settingsDialogs.py:2417
 msgid "Report object &position information"
 msgstr "Αναφορά πληροφορίας &θέσης αντικειμένου"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2423
+#: gui\settingsDialogs.py:2424
 msgid "&Guess object position information when unavailable"
 msgstr "&Εικασία της πληροφορίας θέσεως αντικειμένου όταν δε διατίθεται"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2432
+#: gui\settingsDialogs.py:2433
 msgid "Report object &descriptions"
 msgstr "Αναφορά &περιγραφών αντικειμένου"
 
 #. Translators: This is the label for a combobox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2439
+#: gui\settingsDialogs.py:2440
 msgid "Progress &bar output:"
 msgstr "Αναπαράσταση &γραμμής προόδου"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2452
+#: gui\settingsDialogs.py:2453
 msgid "Report backg&round progress bars"
 msgstr "Αναφορά γραμμής προόδου στο &υπόβαθρο"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2466
+#: gui\settingsDialogs.py:2467
 msgid "Report dynamic &content changes"
 msgstr "Αναφορά αλλαγών δυναμικού &περιεχομένου"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2476
+#: gui\settingsDialogs.py:2477
 msgid "Play a sound when &auto-suggestions appear"
 msgstr "Αναπαραγωγή ήχου όταν εμφανίζονται αυτοματοποιημένες υποδείξεις"
 
 #. Translators: This is the label for the browse mode settings panel.
-#: gui\settingsDialogs.py:2509
+#: gui\settingsDialogs.py:2510
 msgid "Browse Mode"
 msgstr "Λειτουργία Περιήγησης"
 
 #. Translators: This is the label for a textfield in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2516
+#: gui\settingsDialogs.py:2517
 msgid "&Maximum number of characters on one line"
 msgstr "&Μέγιστος αριθμός χαρακτήρων σε μία γραμμή"
 
 #. Translators: This is the label for a textfield in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2529
+#: gui\settingsDialogs.py:2530
 msgid "&Number of lines per page"
 msgstr "&Αριθμός γραμμών ανά σελίδα"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2542
+#: gui\settingsDialogs.py:2543
 msgid "Use &screen layout (when supported)"
 msgstr "Χρήση &διάταξης οθόνης (όταν υποστηρίζεται)"
 
 #. Translators: The label for a checkbox in browse mode settings to
 #. enable browse mode on page load.
-#: gui\settingsDialogs.py:2549
+#: gui\settingsDialogs.py:2550
 msgid "&Enable browse mode on page load"
 msgstr "&Ενεργοποίηση λειτουργίας περιήγησης κατά τη φόρτωση της σελίδας"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2556
+#: gui\settingsDialogs.py:2557
 msgid "Automatic &Say All on page load"
 msgstr "Αυτόματη &Ανάγνωση Όλων κατά τη φόρτωση της σελίδας"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2563
+#: gui\settingsDialogs.py:2564
 msgid "Include l&ayout tables"
 msgstr "Να συμπεριληφθούν πίνακες &διάταξης"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2570
+#: gui\settingsDialogs.py:2571
 msgid "Automatic focus mode for focus changes"
 msgstr "Αυτόματη λειτουργία εστίασης κατά τις αλλαγές εστίασης"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2584
+#: gui\settingsDialogs.py:2585
 msgid "Automatic focus mode for caret movement"
 msgstr "Λειτουργία αυτόματης εστίασης κατά την κίνηση ττου κέρσορα"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2598
+#: gui\settingsDialogs.py:2599
 msgid "Audio indication of focus and browse modes"
 msgstr "Ηχητική ένδειξη των λειτουργιών εστίασης και περιήγησης"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2612
+#: gui\settingsDialogs.py:2613
 msgid "&Trap all non-command gestures from reaching the document"
 msgstr "&Περιορισμός των χειρονομιών που δεν αφορούν σε εντολές ώστε να μην επηρεάζεται το έγγραφο"
 
 #. Translators: This is the label for the document formatting panel.
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:2645 gui\settingsDialogs.py:4054
+#: gui\settingsDialogs.py:2646 gui\settingsDialogs.py:4053
 msgid "Document Formatting"
 msgstr "Μορφοποίηση Εγγράφου"
 
 #. Translators: This is a label appearing on the document formatting settings panel.
-#: gui\settingsDialogs.py:2649
+#: gui\settingsDialogs.py:2650
 msgid "The following options control the types of document formatting reported by NVDA."
 msgstr "Οι ακόλουθες επιλογές ελέγχουν τους τύπους της μορφοποίησης εγγράφου που αναφέρει το NVDA."
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2658
+#: gui\settingsDialogs.py:2659
 msgid "Font"
 msgstr "Γραμματοσειρά"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2666
+#: gui\settingsDialogs.py:2667
 msgid "&Font name"
 msgstr "&Όνομα γραμματοσειράς"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2672
+#: gui\settingsDialogs.py:2673
 msgid "Font &size"
 msgstr "&Μέγεθος γραμματοσειράς"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2678
+#: gui\settingsDialogs.py:2679
 msgid "Font attrib&utes"
 msgstr "&Χαρακτηριστικά γραμματοσειράς"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2690
+#: gui\settingsDialogs.py:2691
 msgid "Su&perscripts and subscripts"
 msgstr "&Εκθέτες και δείκτες"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2700
+#: gui\settingsDialogs.py:2701
 msgid "E&mphasis"
 msgstr "&Με έμφαση"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2706
+#: gui\settingsDialogs.py:2707
 msgid "Highlighted (mar&ked) text"
 msgstr "Επισημασμένο (επι&λεγμένο) κείμενο"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2716
+#: gui\settingsDialogs.py:2717
 msgid "St&yle"
 msgstr "&Στυλ"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2722
+#: gui\settingsDialogs.py:2723
 msgid "&Colors"
 msgstr "&Χρώματα"
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2728
+#: gui\settingsDialogs.py:2729
 msgid "Document information"
 msgstr "Πληροφορίες εγγράφου"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2736
+#: gui\settingsDialogs.py:2737
 msgid "No&tes and comments"
 msgstr "&Σημειώσεις και σχόλια"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2742
+#: gui\settingsDialogs.py:2743
 msgid "&Bookmarks"
 msgstr "&Σελιδοδείκτες"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2748
+#: gui\settingsDialogs.py:2749
 msgid "&Editor revisions"
 msgstr "&Αναθεωρήσεις συντάκτη"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2754
+#: gui\settingsDialogs.py:2755
 msgid "Spelling e&rrors"
 msgstr "&Ορθογραφικά λάθη"
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2760
+#: gui\settingsDialogs.py:2761
 msgid "Pages and spacing"
 msgstr "Σελίδες και διάστιχο"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2768
+#: gui\settingsDialogs.py:2769
 msgid "&Pages"
 msgstr "&Σελίδες"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2774
+#: gui\settingsDialogs.py:2775
 msgid "Line &numbers"
 msgstr "&Αρίθμηση γραμμών"
 
 #. Translators: This is the label for a combobox controlling the reporting of line indentation in the
 #. Document  Formatting  dialog (possible choices are Off, Speech, Tones, or Both.
-#: gui\settingsDialogs.py:2782
+#: gui\settingsDialogs.py:2783
 msgid "Line &indentation reporting:"
 msgstr "Αναφορά &εσοχής γραμμής: με:"
 
 #. Translators: This is the label of a checkbox in the document formatting settings panel
 #. If this option is selected, NVDA will ignore blank lines for line indentation reporting
-#: gui\settingsDialogs.py:2796
+#: gui\settingsDialogs.py:2797
 msgid "Ignore &blank lines for line indentation reporting"
 msgstr ""
 
 #. Translators: This message is presented in the document formatting settings panel
 #. If this option is selected, NVDA will report paragraph indentation if available.
-#: gui\settingsDialogs.py:2808
+#: gui\settingsDialogs.py:2809
 msgid "&Paragraph indentation"
 msgstr "Εσοχή &παραγράφου"
 
 #. Translators: This message is presented in the document formatting settings panel
 #. If this option is selected, NVDA will report line spacing if available.
-#: gui\settingsDialogs.py:2817
+#: gui\settingsDialogs.py:2818
 msgid "&Line spacing"
 msgstr "&Διάστιχο γραμμής"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2824
+#: gui\settingsDialogs.py:2825
 msgid "&Alignment"
 msgstr "&Στοίχιση"
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2830
+#: gui\settingsDialogs.py:2831
 msgid "Table information"
 msgstr "Πληροφορίες πίνακα"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2838
+#: gui\settingsDialogs.py:2839
 msgid "&Tables"
 msgstr "&Πίνακες"
 
 #. Translators: This is the label for a combobox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2845
+#: gui\settingsDialogs.py:2846
 msgid "H&eaders"
 msgstr "&Κεφαλίδες"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2853
+#: gui\settingsDialogs.py:2854
 msgid "Cell c&oordinates"
 msgstr "&Συντεταγμένες κελιού"
 
 #. Translators: This is the label for a combobox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2861
+#: gui\settingsDialogs.py:2862
 msgid "Cell &borders:"
 msgstr "&Περιγράμματα κελιού"
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2869
+#: gui\settingsDialogs.py:2870
 msgid "Elements"
 msgstr "Στοιχεία"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2888
+#: gui\settingsDialogs.py:2889
 msgid "Link type"
 msgstr ""
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2894
+#: gui\settingsDialogs.py:2895
 msgid "&Graphics"
 msgstr "&Γραφικά"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2899
+#: gui\settingsDialogs.py:2900
 msgid "&Lists"
 msgstr "&Λίστες"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2904
+#: gui\settingsDialogs.py:2905
 msgid "Block &quotes"
 msgstr "&Παράθεση αποσπασμάτων"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2910
+#: gui\settingsDialogs.py:2911
 msgid "&Groupings"
 msgstr "&Ομαδοποιήσεις"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2916
+#: gui\settingsDialogs.py:2917
 msgid "Lan&dmarks and regions"
 msgstr "&Ορόσημα και περιοχές"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2922
+#: gui\settingsDialogs.py:2923
 msgid "Arti&cles"
 msgstr "Άρθ&ρα"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2927
+#: gui\settingsDialogs.py:2928
 msgid "Fra&mes"
 msgstr "&Πλαίσια"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2933
+#: gui\settingsDialogs.py:2934
 msgid "&Figures and captions"
 msgstr ""
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2939
+#: gui\settingsDialogs.py:2940
 msgid "&Clickable"
 msgstr "&Με δυνατότητα κλικ"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2944
+#: gui\settingsDialogs.py:2945
 msgid "Report formatting chan&ges after the cursor (can cause a lag)"
 msgstr "Αναφορά &αλλαγών στη μορφοποίηση μετά το δρομέα (μπορεί να προκαλέσει καθυστέρηση)"
 
 #. Translators: This is the label for the document navigation settings panel.
-#: gui\settingsDialogs.py:3010
+#: gui\settingsDialogs.py:3011
 msgid "Document Navigation"
 msgstr "Πλοήγηση Εγγράφου"
 
 #. Translators: This is a label for the paragraph navigation style in the document navigation dialog
-#: gui\settingsDialogs.py:3016
+#: gui\settingsDialogs.py:3017
 msgid "&Paragraph style:"
 msgstr "&στυλ Παραγράφου:"
 
 #. Translators: This message is presented when
 #. NVDA is unable to load the selected synthesizer.
-#: gui\settingsDialogs.py:3033
+#: gui\settingsDialogs.py:3034
 #, python-format
 msgid "Could not load the %s synthesizer."
 msgstr "Δεν ήταν δυνατή η φόρτωση του συνθέτη φωνής %s."
 
 #. Translators: Dialog title presented when
 #. NVDA is unable to load the selected synthesizer.
-#: gui\settingsDialogs.py:3036
+#: gui\settingsDialogs.py:3037
 msgid "Synthesizer Error"
 msgstr "Σφάλμα Συνθέτη Φωνής"
 
 #. Translators: This is the label for the select output device combo in NVDA audio settings.
 #. Examples of an output device are default soundcard, usb headphones, etc.
-#: gui\settingsDialogs.py:3051
+#: gui\settingsDialogs.py:3052
 msgid "Audio output &device:"
 msgstr ""
 
 #. Translators: This is a label for the audio ducking combo box in the Audio Settings dialog.
-#: gui\settingsDialogs.py:3066
+#: gui\settingsDialogs.py:3067
 msgid "Audio d&ucking mode:"
 msgstr "Λειτουργία &βύθισης ήχου:"
 
 #. Translators: This is the label for a checkbox control in the
 #. Audio settings panel.
-#: gui\settingsDialogs.py:3080
+#: gui\settingsDialogs.py:3081
 msgid "Volume of NVDA sounds follows voice volume"
 msgstr ""
 
 #. Translators: This is the label for a slider control in the
 #. Audio settings panel.
-#: gui\settingsDialogs.py:3088
+#: gui\settingsDialogs.py:3089
 msgid "Volume of NVDA sounds"
 msgstr ""
 
 #. Translators: This is a label for the sound split combo box in the Audio Settings dialog.
-#: gui\settingsDialogs.py:3099
+#: gui\settingsDialogs.py:3100
 msgid "&Sound split mode:"
 msgstr ""
 
 #. Translators: The label for a setting in Audio settings panel
 #. to change how long the audio device is kept awake after speech
-#: gui\settingsDialogs.py:3116
+#: gui\settingsDialogs.py:3117
 msgid "Time to &keep audio device awake after speech (seconds)"
 msgstr ""
 
 #. Translators: Label of the list where user can select sound split modes that will be available.
-#: gui\settingsDialogs.py:3133
+#: gui\settingsDialogs.py:3134
 msgid "&Modes available in the 'Cycle sound split mode' command:"
 msgstr ""
 
 #. Translators: Message shown when no sound split modes are enabled.
-#: gui\settingsDialogs.py:3191
+#: gui\settingsDialogs.py:3192
 msgid "At least one sound split mode has to be checked."
 msgstr ""
 
 #. Translators: Same as the label for the list of checkboxes controlling which sound split modes will be
 #. available. in Audio Settings, but without keyboard accelerator (& character) nor final colon.
-#: gui\settingsDialogs.py:3194
+#: gui\settingsDialogs.py:3195
 msgid "Modes available in the 'Cycle sound split mode' command"
 msgstr ""
 
 #. Translators: This is the label for the addon navigation settings panel.
-#: gui\settingsDialogs.py:3202
+#: gui\settingsDialogs.py:3203
 msgid "Add-on Store"
 msgstr "Κατάστημα Πρόσθετων"
 
 #. Translators: This is a label for the automatic updates combo box in the Add-on Store Settings dialog.
-#: gui\settingsDialogs.py:3208
+#: gui\settingsDialogs.py:3209
 msgid "Automatic &updates:"
 msgstr ""
 
 #. Translators: This is the label for the default update channel combo box in the Add-on Store Settings dialog.
-#: gui\settingsDialogs.py:3220
+#: gui\settingsDialogs.py:3221
 msgid "Default update &channel:"
 msgstr ""
 
 #. Translators: Mute other apps checkbox in settings
-#: gui\settingsDialogs.py:3234
+#: gui\settingsDialogs.py:3235
 msgid "Allow automatic updates to install incompatible add-ons"
 msgstr ""
 
 #. Translators: The label for the mirror server on the Add-on Store Settings panel.
-#: gui\settingsDialogs.py:3240
+#: gui\settingsDialogs.py:3241
 msgid "Mirror server"
 msgstr ""
 
 #. Translators: Title of the dialog used to change the Add-on Store mirror URL.
-#: gui\settingsDialogs.py:3277
+#: gui\settingsDialogs.py:3278
 msgid "Set Add-on Store Mirror Server"
 msgstr ""
 
 #. Translators: Label of a checkbox in Remote Access settings
-#: gui\settingsDialogs.py:3339
+#: gui\settingsDialogs.py:3332
 msgctxt "remote"
 msgid "Enable Remote Access"
 msgstr ""
 
 #. Translators: A checkbox in Remote Access settings to set whether to confirm when disconnecting as a follower.
-#: gui\settingsDialogs.py:3356
+#: gui\settingsDialogs.py:3349
 msgctxt "remote"
 msgid "Confirm before disconnecting when controlled"
 msgstr ""
 
 #. Translators: A checkbox in Remote Access settings to set whether NVDA should automatically connect to a control server on startup.
-#: gui\settingsDialogs.py:3365
+#: gui\settingsDialogs.py:3359
 msgctxt "remote"
 msgid "Automatically &connect after NVDA starts"
 msgstr ""
 
 #. Translators: A group of settings configuring how to connect if NVDA is set to automatically establish a Remote Access connection at startup.
-#: gui\settingsDialogs.py:3375
+#: gui\settingsDialogs.py:3369
 msgctxt "remote"
 msgid "Automatic connection"
 msgstr ""
@@ -13750,7 +13751,7 @@ msgstr ""
 #. Translators: Label for a control in Remote Access settings,
 #. allowing the user to select whether their computer is controlling or controlled.
 #. Translators: Label of the control allowing users to set whether they are the controlling or controlled computer in the Remote Access connection dialog.
-#: gui\settingsDialogs.py:3384 _remoteClient\dialogs.py:318
+#: gui\settingsDialogs.py:3378 _remoteClient\dialogs.py:318
 msgctxt "remote"
 msgid "&Mode:"
 msgstr ""
@@ -13758,7 +13759,7 @@ msgstr ""
 #. Translators: Label for a control in Remote Access settings,
 #. allowing users to choose whether they want to use an existing server, or host their own.
 #. Translators: Label of the control allowing users to select whether to use a pre-existing Remote Access server, or to run their own.
-#: gui\settingsDialogs.py:3393 _remoteClient\dialogs.py:325
+#: gui\settingsDialogs.py:3387 _remoteClient\dialogs.py:325
 msgctxt "remote"
 msgid "&Server:"
 msgstr ""
@@ -13766,7 +13767,7 @@ msgstr ""
 #. Translators: Label for the host field in Remote Access settings.
 #. This is where users should enter the URL of the Remote Access server they want to use if they are not hosting their own.
 #. Translators: The label of an edit field in connect dialog to enter name or address of the remote computer.
-#: gui\settingsDialogs.py:3403 _remoteClient\dialogs.py:41
+#: gui\settingsDialogs.py:3397 _remoteClient\dialogs.py:41
 msgid "&Host:"
 msgstr ""
 
@@ -13774,7 +13775,7 @@ msgstr ""
 #. This is the port on which the local control server will be accessible,
 #. if the user has chosen to host their own.
 #. Translators: The label for a setting in braille settings to choose the connection port (if the selected braille display supports port selection).
-#: gui\settingsDialogs.py:3412 gui\settingsDialogs.py:4474
+#: gui\settingsDialogs.py:3406 gui\settingsDialogs.py:4473
 #: _remoteClient\dialogs.py:202
 msgid "&Port:"
 msgstr "&Θύρα:"
@@ -13782,208 +13783,196 @@ msgstr "&Θύρα:"
 #. Translators: Label for a control in Remote Access settings,
 #. Where users set the key for their connection.
 #. Translators: Label of the edit field to enter key (password) to secure the Remote Access connection.
-#: gui\settingsDialogs.py:3433 _remoteClient\dialogs.py:46
+#: gui\settingsDialogs.py:3427 _remoteClient\dialogs.py:46
 msgid "&Key:"
 msgstr ""
 
 #. Translators: A button in Remote Access settings to delete all fingerprints of unauthorized certificates.
-#: gui\settingsDialogs.py:3440
+#: gui\settingsDialogs.py:3434
 msgid "Delete all trusted fingerprints"
 msgstr ""
 
-#. Translators: Title of a message presented to users when viewing Remote Access settings in secure mode.
-#: gui\settingsDialogs.py:3451
-msgctxt "remote"
-msgid "Read only"
-msgstr ""
-
-#. Translators: Message presented to users when viewing Remote Access settings in secure mode.
-#: gui\settingsDialogs.py:3453
-msgctxt "remote"
-msgid "Remote Access settings are read only as NVDA is running in secure mode."
-msgstr ""
-
 #. Translators: This message is presented when the user tries to delete all stored trusted fingerprints.
-#: gui\settingsDialogs.py:3513
+#: gui\settingsDialogs.py:3512
 msgctxt "remote"
 msgid "This will cause NVDA to forget all previously trusted Remote Access servers. When connecting to a previously trusted unrecognised server, you will again be asked whether to trust its certificate.\n\n"
 "Are you sure you want to continue?"
 msgstr ""
 
 #. Translators: This is the title of the dialog presented when the user tries to delete all stored trusted fingerprints.
-#: gui\settingsDialogs.py:3518
+#: gui\settingsDialogs.py:3517
 msgctxt "remote"
 msgid "Delete All Trusted Fingerprints"
 msgstr ""
 
 #. Translators: This message is presented when the user tries to save the settings with the host or key field empty.
-#: gui\settingsDialogs.py:3535
+#: gui\settingsDialogs.py:3534
 msgctxt "remote"
 msgid "Both host and key must be set in the Remote Access section in order to automatically connect using an existing server after NVDA starts."
 msgstr ""
 
 #. Translators: This message is presented when the user tries to save the settings with the port or key field empty.
-#: gui\settingsDialogs.py:3541
+#: gui\settingsDialogs.py:3540
 msgctxt "remote"
 msgid "Both port and key must be set in the Remote Access category in order to automatically connect using a locally hosted server after NVDA starts."
 msgstr ""
 
 #. Translators: Title of a dialog.
-#: gui\settingsDialogs.py:3547
+#: gui\settingsDialogs.py:3546
 msgctxt "remote"
 msgid "Remote Access Error"
 msgstr ""
 
 #. Translators: This is the label for the touch interaction settings panel.
-#: gui\settingsDialogs.py:3580
+#: gui\settingsDialogs.py:3579
 msgid "Touch Interaction"
 msgstr "Αλληλεπίδραση Αφής"
 
 #. Translators: This is the label for a checkbox in the
 #. touch interaction settings panel.
-#: gui\settingsDialogs.py:3587
+#: gui\settingsDialogs.py:3586
 msgid "Enable touch interaction support"
 msgstr "Ενεργοποίηση της αλληλεπίδρασης αφής"
 
 #. Translators: This is the label for a checkbox in the
 #. touch interaction settings panel.
-#: gui\settingsDialogs.py:3593
+#: gui\settingsDialogs.py:3592
 msgid "&Touch typing mode"
 msgstr "Λειτουργία πληκτρολόγησης &αφής"
 
 #. Translators: The title of the Windows OCR panel.
-#: gui\settingsDialogs.py:3605
+#: gui\settingsDialogs.py:3604
 msgid "Windows OCR"
 msgstr "Οπτική Αναγνώριση Χαρακτήρων Windows"
 
 #. Translators: Label for an option in the Windows OCR dialog.
-#: gui\settingsDialogs.py:3624
+#: gui\settingsDialogs.py:3623
 msgid "Recognition &language:"
 msgstr "Γλώσσα &αναγνώρισης"
 
 #. Translators: Label for an option in the Windows OCR settings panel.
-#: gui\settingsDialogs.py:3634
+#: gui\settingsDialogs.py:3633
 msgid "Periodically &refresh recognized content"
 msgstr ""
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:3665
+#: gui\settingsDialogs.py:3664
 msgid "NVDA Development"
 msgstr "Ανάπτυξη του NVDA"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3673
+#: gui\settingsDialogs.py:3672
 msgid "Enable loading custom code from Developer Scratchpad directory"
 msgstr "Ενεργοποίηση φόρτωσης προσαρμοσμένου κώδικα από φάκελο Scratchpad προγραμματιστή "
 
 #. Translators: the label for a button in the Advanced settings category
-#: gui\settingsDialogs.py:3686
+#: gui\settingsDialogs.py:3685
 msgid "Open developer scratchpad directory"
 msgstr "Άνοιγα φακέλου scratchpad προγραμματιστή "
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:3696
+#: gui\settingsDialogs.py:3695
 msgid "Microsoft UI Automation"
 msgstr "Αυτοματοποίηση διεπαφής χρήστη Microsoft"
 
 #. Translators: This is the label for a combo box for selecting the
 #. means of registering for UI Automation events in the advanced settings panel.
 #. Choices are automatic, selective, and global.
-#: gui\settingsDialogs.py:3706
+#: gui\settingsDialogs.py:3705
 msgid "Regi&stration for UI Automation events and property changes:"
 msgstr "&Καταγραφή γεγονότων και μεταβολών ιδιοτήτων αυτοματοποίησης διεπαφής χρήστη:"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA decide whether to register
 #. selectively or globally for UI Automation events.
-#: gui\settingsDialogs.py:3712
+#: gui\settingsDialogs.py:3711
 msgid "Automatic (prefer selective)"
 msgstr "Αυτόματο (προτίμηση επιλεγμένων)"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA register selectively for UI Automation events
 #. (i.e. not to request events for objects outside immediate focus).
-#: gui\settingsDialogs.py:3716
+#: gui\settingsDialogs.py:3715
 msgid "Selective"
 msgstr "Επιλεγμένο"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA register for all UI Automation events
 #. in all cases.
-#: gui\settingsDialogs.py:3720
+#: gui\settingsDialogs.py:3719
 msgid "Global"
 msgstr "Καθολικό"
 
 #. Translators: Label for the Use UIA with MS Word combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3749
+#: gui\settingsDialogs.py:3748
 msgctxt "advanced.uiaWithMSWord"
 msgid "Use UI Automation to access Microsoft &Word document controls"
 msgstr "Χρήση Αυτοματισμού Περιβάλλοντος Εργασίας Χρήστη για πρόσβαση στα στοιχεία ελέγχου εγγράφου Microsoft &Word"
 
 #. Translators: Label for the default value of the Use UIA with MS Word combobox,
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3754
+#: gui\settingsDialogs.py:3753
 msgctxt "advanced.uiaWithMSWord"
 msgid "Default (Where suitable)"
 msgstr "Προεπιλογή (Όπου είναι κατάλληλο)"
 
 #. Translators: Label for a value in the Use UIA with MS Word combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3756
+#: gui\settingsDialogs.py:3755
 msgctxt "advanced.uiaWithMSWord"
 msgid "Only when necessary"
 msgstr "Μόνο όταν είναι απαραίτητο"
 
 #. Translators: Label for a value in the Use UIA with MS Word combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3758
+#: gui\settingsDialogs.py:3757
 msgctxt "advanced.uiaWithMSWord"
 msgid "Where suitable"
 msgstr "Όπου είναι κατάλληλο"
 
 #. Translators: Label for a value in the Use UIA with MS Word combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3760
+#: gui\settingsDialogs.py:3759
 msgctxt "advanced.uiaWithMSWord"
 msgid "Always"
 msgstr "Πάντα"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3769
+#: gui\settingsDialogs.py:3768
 msgid "Use UI Automation to access Microsoft &Excel spreadsheet controls when available"
 msgstr "Χρήση της αυτοματοποίησης διεπαφής χρήστη για να αποκτήσετε πρόσβαση στα κουμπιά ελέγχου των λογιστικών φύλλων στο Microsoft &Excel όταν διατίθενται"
 
 #. Translators: This is the label for a combo box for selecting the
 #. active console implementation in the advanced settings panel.
 #. Choices are automatic, UIA when available, and legacy.
-#: gui\settingsDialogs.py:3777
+#: gui\settingsDialogs.py:3776
 msgid "Windows C&onsole support:"
 msgstr "Υποστήριξη Windows Console:"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA determine its Windows Console implementation
 #. automatically.
-#: gui\settingsDialogs.py:3782
+#: gui\settingsDialogs.py:3781
 msgid "Automatic (prefer UIA)"
 msgstr "Αυτόματο (προτιμώμενο UIA)"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA use UIA in the Windows Console when available.
-#: gui\settingsDialogs.py:3785
+#: gui\settingsDialogs.py:3784
 msgid "UIA when available"
 msgstr "UIA όταν διατίθεται"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA use its legacy Windows Console support
 #. in all cases.
-#: gui\settingsDialogs.py:3789
+#: gui\settingsDialogs.py:3788
 msgid "Legacy"
 msgstr "Παλαιές εκδόσεις"
 
 #. Translators: Label for the Use UIA with Chromium combobox, in the Advanced settings panel.
 #. Note the '\n' is used to split this long label approximately in half.
-#: gui\settingsDialogs.py:3812
+#: gui\settingsDialogs.py:3811
 msgctxt "advanced.uiaWithChromium"
 msgid "Use UIA with Microsoft Edge and other \n"
 "&Chromium based browsers when available:"
@@ -13992,72 +13981,72 @@ msgstr "Χρήση αυτοματοποιημένης διεπαφής χρήσ�
 
 #. Translators: Label for the default value of the Use UIA with Chromium combobox,
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3817
+#: gui\settingsDialogs.py:3816
 msgctxt "advanced.uiaWithChromium"
 msgid "Default (Only when necessary)"
 msgstr "Προεπιλογή (μόνο όταν χρειαστεί)"
 
 #. Translators: Label for a value in the Use UIA with Chromium combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3819
+#: gui\settingsDialogs.py:3818
 msgctxt "advanced.uiaWithChromium"
 msgid "Only when necessary"
 msgstr "Μόνο όταν χρειαστεί"
 
 #. Translators: Label for a value in the Use UIA with Chromium combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3821
+#: gui\settingsDialogs.py:3820
 msgctxt "advanced.uiaWithChromium"
 msgid "Yes"
 msgstr "Ναι"
 
 #. Translators: Label for a value in the Use UIA with Chromium combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3823
+#: gui\settingsDialogs.py:3822
 msgctxt "advanced.uiaWithChromium"
 msgid "No"
 msgstr "Όχι"
 
 #. Translators: This is the label for a COMBOBOX in the Advanced settings panel.
-#: gui\settingsDialogs.py:3831
+#: gui\settingsDialogs.py:3830
 msgid "Use en&hanced event processing (requires restart)"
 msgstr ""
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:3842
+#: gui\settingsDialogs.py:3841
 msgid "Annotations"
 msgstr "Σχόλια"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3851
+#: gui\settingsDialogs.py:3850
 msgid "Report 'has details' for structured annotations"
 msgstr "Αναφέρει ότι 'έχει πληροφορίες' για δομημένα σχόλια"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3858
+#: gui\settingsDialogs.py:3857
 msgid "Report aria-description always"
 msgstr "Πάντα αναφορά περιγραφών aria"
 
 #. Translators: This is the label for a combo-box in the Advanced settings panel.
-#: gui\settingsDialogs.py:3874
+#: gui\settingsDialogs.py:3873
 msgid "Report live regions:"
 msgstr "Αναφορά ζωντανών περιοχών:"
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:3883
+#: gui\settingsDialogs.py:3882
 msgid "Terminal programs"
 msgstr "Προγράμματα τερματικού"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3890
+#: gui\settingsDialogs.py:3889
 msgid "Speak &passwords in all enhanced terminals (may improve performance)"
 msgstr "Εκφώνηση &Κωδικών πρόσβασης σε όλα τα enhanced terminals (ίσως βελτιωθεί η απόδοση)"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3899
+#: gui\settingsDialogs.py:3898
 msgid "Use enhanced t&yped character support in legacy Windows Console when available"
 msgstr "Χρήση &βελτιωμένων χαρακτήρων σε παλαιού τύπου Windows Console όταν διατίθενται"
 
@@ -14065,328 +14054,328 @@ msgstr "Χρήση &βελτιωμένων χαρακτήρων σε παλαι�
 #. method of detecting changed content in terminals in the advanced
 #. settings panel.
 #. Choices are automatic, Diff Match Patch, and Difflib.
-#: gui\settingsDialogs.py:3912
+#: gui\settingsDialogs.py:3911
 msgid "&Diff algorithm:"
 msgstr "Αλγόριθμος &Diff:"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA determine the method of detecting changed
 #. content in terminals automatically.
-#: gui\settingsDialogs.py:3917
+#: gui\settingsDialogs.py:3916
 msgid "Automatic (prefer Diff Match Patch)"
 msgstr "Αυτόματο (προτιμώμενο Diff Match Patch)"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA detect changes in terminals
 #. by character, using the diff match patch algorithm.
-#: gui\settingsDialogs.py:3921
+#: gui\settingsDialogs.py:3920
 msgid "Diff Match Patch"
 msgstr ""
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA detect changes in terminals
 #. by line, using the difflib algorithm.
-#: gui\settingsDialogs.py:3925
+#: gui\settingsDialogs.py:3924
 msgid "Difflib"
 msgstr ""
 
 #. Translators: This is the label for a combo-box in the Advanced settings panel.
-#: gui\settingsDialogs.py:3951
+#: gui\settingsDialogs.py:3950
 msgid "Speak new text in Windows Terminal via:"
 msgstr "Εκφώνηση νέου κειμένου στο Windows Terminal μέσω:"
 
 #. Translators: Label for the 'Cancel speech for expired &focus events' combobox
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3970
+#: gui\settingsDialogs.py:3969
 msgid "Default (Yes)"
 msgstr "Προεπιλογή (Ναι)"
 
 #. Translators: Label for the 'Cancel speech for expired &focus events' combobox
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3973
+#: gui\settingsDialogs.py:3972
 msgid "Yes"
 msgstr "Ναι"
 
 #. Translators: Label for the 'Cancel speech for expired &focus events' combobox
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3976
+#: gui\settingsDialogs.py:3975
 msgid "No"
 msgstr "Όχι"
 
 #. Translators: This is the label for combobox in the Advanced settings panel.
-#: gui\settingsDialogs.py:3980
+#: gui\settingsDialogs.py:3979
 msgid "Attempt to cancel speech for expired focus events:"
 msgstr "Προσπάθεια απενεργοποίησης της εκφώνησης για γεγονότα με εστίαση που έχουν λήξει:"
 
 #. Translators: This is the label for a checkbox control in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3996
+#: gui\settingsDialogs.py:3995
 msgid "Trim leading silence in speech audio"
 msgstr ""
 
 #. Translators: This is the label for a combo-box control in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:4004
+#: gui\settingsDialogs.py:4003
 msgid "Use WASAPI for SAPI 4 audio output:"
 msgstr ""
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4015
+#: gui\settingsDialogs.py:4014
 msgid "Virtual Buffers"
 msgstr "Εικονική Προσωρινή Αποθήκευση"
 
 #. Translators: This is the label for a combo-box in the Advanced settings panel.
-#: gui\settingsDialogs.py:4023
+#: gui\settingsDialogs.py:4022
 msgid "Load Chromium virtual buffer when document busy."
 msgstr "Φόρτωση σε εικονική προσωρινή αποθήκευση Chromium όταν το έγγραφο είναι απασχολημένο."
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4032
+#: gui\settingsDialogs.py:4031
 msgid "Editable Text"
 msgstr "Επεξεργάσιμο Κείμενο"
 
 #. Translators: This is the label for a numeric control in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:4039
+#: gui\settingsDialogs.py:4038
 msgid "Caret movement timeout (in ms)"
 msgstr "Χρονοδιακόπτης κίνησης κέρσορα (σε ms)"
 
 #. Translators: This is the label for a checkbox control in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:4062
+#: gui\settingsDialogs.py:4061
 msgid "Report transparent color values"
 msgstr "Αναφορά τιμών διαφανών χρωμάτων"
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4076
+#: gui\settingsDialogs.py:4075
 msgid "Debug logging"
 msgstr "Καταγραφή εντοπισμού σφαλμάτων"
 
 #. Translators: This is the label for a list in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4101
+#: gui\settingsDialogs.py:4100
 msgid "Enabled logging categories"
 msgstr "Ενεργοποίηση κατηγοριών αρχείων καταγραφής"
 
 #. Translators: Label for the Play a sound for logged errors combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:4121
+#: gui\settingsDialogs.py:4120
 msgid "Play a sound for logged e&rrors:"
 msgstr "Αναπαραγωγή ήχου για τα σφάλματα αρχείου &καταγραφής:"
 
 #. Translators: Label for a value in the Play a sound for logged errors combobox, in the Advanced settings.
-#: gui\settingsDialogs.py:4124
+#: gui\settingsDialogs.py:4123
 msgctxt "advanced.playErrorSound"
 msgid "Only in NVDA test versions"
 msgstr "Μόνο για τις δοκιμαστικές εκδόσεις του NVDA"
 
 #. Translators: Label for a value in the Play a sound for logged errors combobox, in the Advanced settings.
-#: gui\settingsDialogs.py:4126
+#: gui\settingsDialogs.py:4125
 msgctxt "advanced.playErrorSound"
 msgid "Yes"
 msgstr "Ναι"
 
 #. Translators: This is the label for a textfield in the
 #. advanced settings panel.
-#: gui\settingsDialogs.py:4139
+#: gui\settingsDialogs.py:4138
 msgid "Regular expression for text paragraph navigation"
 msgstr ""
 
 #. Translators: Message shown when invalid text paragraph regex entered
-#: gui\settingsDialogs.py:4161
+#: gui\settingsDialogs.py:4160
 #, python-format
 msgid "Failed to compile text paragraph regular expression: %s"
 msgstr ""
 
 #. Translators: This is the label for the Advanced settings panel.
-#: gui\settingsDialogs.py:4291
+#: gui\settingsDialogs.py:4290
 msgid "Advanced"
 msgstr "Για προχωρημένους"
 
 #. Translators: This is the label to warn users about the Advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4296
+#: gui\settingsDialogs.py:4295
 msgid "Warning!"
 msgstr "Προσοχή!"
 
 #. Translators: This is a label appearing on the Advanced settings panel.
-#: gui\settingsDialogs.py:4300
+#: gui\settingsDialogs.py:4299
 msgid "The following settings are for advanced users. Changing them may cause NVDA to function incorrectly. Please only change these if you know what you are doing or have been specifically instructed by NVDA developers."
 msgstr "Οι ακόλουθες ρυθμίσεις αφορούν στους προχωρημένους χρήστες. Η αλλαγή τους μπορεί να επιφέρει τη μη σωστή λειτουργία του NVDA. Παρακαλώ αλλάξτε τις ρυθμίσεις μόνο εάν γνωρίζετε τι κάνετε ή αν σας έχουν δοθεί συγκεκριμένες οδηγίες από τους προγραμματιστές του NVDA."
 
 #. Translators: This is the label for a checkbox in the Advanced settings panel.
-#: gui\settingsDialogs.py:4327
+#: gui\settingsDialogs.py:4326
 msgid "I understand that changing these settings may cause NVDA to function incorrectly."
 msgstr "Κατανοώ ότι η αλλαγή των ρυθμίσεων αυτών ίσως επιφέρει τη μη σωστή λειτουργία του NVDA."
 
 #. Translators: This is the label for a button in the Advanced settings panel
-#: gui\settingsDialogs.py:4338
+#: gui\settingsDialogs.py:4337
 msgid "Restore defaults"
 msgstr "Επαναφορά προεπιλογών"
 
 #. Translators: A label for the braille display on the braille panel.
-#: gui\settingsDialogs.py:4381
+#: gui\settingsDialogs.py:4380
 msgid "Braille display"
 msgstr ""
 
 #. Translators: This is the label for the braille display selection dialog.
-#: gui\settingsDialogs.py:4450
+#: gui\settingsDialogs.py:4449
 msgid "Select Braille Display"
 msgstr "Επιλογή Οθόνης Braille"
 
 #. Translators: The label for a setting in braille settings to choose a braille display.
-#: gui\settingsDialogs.py:4459
+#: gui\settingsDialogs.py:4458
 msgid "Braille &display:"
 msgstr "&Οθόνη Braille:"
 
 #. Translators: The label for a setting in braille settings to enable displays for automatic detection.
-#: gui\settingsDialogs.py:4465
+#: gui\settingsDialogs.py:4464
 msgid "&Displays to detect automatically:"
 msgstr ""
 
 #. Translators: The message in a dialog presented when NVDA is unable to load the selected
 #. braille display.
-#: gui\settingsDialogs.py:4581
+#: gui\settingsDialogs.py:4580
 #, python-brace-format
 msgid "Could not load the {display} display."
 msgstr "Δεν ήταν δυνατή η φόρτωση της οθόνης {display}."
 
 #. Translators: The title in a dialog presented when NVDA is unable to load the selected
 #. braille display.
-#: gui\settingsDialogs.py:4584
+#: gui\settingsDialogs.py:4583
 msgid "Braille Display Error"
 msgstr "Σφάλμα Οθόνης Braille"
 
 #. Translators: The label for a setting in braille settings to select the output table (the braille table used to read braille text on the braille display).
-#: gui\settingsDialogs.py:4617
+#: gui\settingsDialogs.py:4616
 msgid "&Output table:"
 msgstr "Πίνακας &εξόδου:"
 
 #. Translators: An option in Braille settings to select a braille table automatically, according to the current language.
-#: gui\settingsDialogs.py:4625 gui\settingsDialogs.py:4652
+#: gui\settingsDialogs.py:4624 gui\settingsDialogs.py:4651
 #, python-brace-format
 msgid "Automatic ({name})"
 msgstr ""
 
 #. Translators: The label for a setting in braille settings to select the input table (the braille table used to type braille characters on a braille keyboard).
-#: gui\settingsDialogs.py:4644
+#: gui\settingsDialogs.py:4643
 msgid "&Input table:"
 msgstr "&Πίνακας εισόδου:"
 
 #. Translators: The label for a setting in braille settings to select which braille mode to use
-#: gui\settingsDialogs.py:4670
+#: gui\settingsDialogs.py:4669
 msgid "Braille mode:"
 msgstr ""
 
 #. Translators: The label for a setting in braille settings to expand the current word under cursor to computer braille.
-#: gui\settingsDialogs.py:4685
+#: gui\settingsDialogs.py:4684
 msgid "E&xpand to computer braille for the word at the cursor"
 msgstr "&Επέκταση σε κώδικα υπολογιστών για τη λέξη στην οποία βρίσκεται ο δρομέας"
 
 #. Translators: The label for a setting in braille settings to show the cursor.
-#: gui\settingsDialogs.py:4693
+#: gui\settingsDialogs.py:4692
 msgid "&Show cursor"
 msgstr "&Εμφάνιση δρομέα"
 
 #. Translators: The label for a setting in braille settings to enable cursor blinking.
-#: gui\settingsDialogs.py:4702
+#: gui\settingsDialogs.py:4701
 msgid "Blink cursor"
 msgstr "Εναλλαγή δρομέα"
 
 #. Translators: The label for a setting in braille settings to change cursor blink rate in milliseconds (1 second is 1000 milliseconds).
-#: gui\settingsDialogs.py:4713
+#: gui\settingsDialogs.py:4712
 msgid "Cursor blink rate (ms)"
 msgstr "Ρυθμός εναλλαγής φωτεινότητας δρομέα (ms)"
 
 #. Translators: The label for a setting in braille settings to select the cursor shape when tethered to focus.
-#: gui\settingsDialogs.py:4735
+#: gui\settingsDialogs.py:4734
 msgid "Cursor shape for &focus:"
 msgstr "Σχήμα δρομέα για &εστίαση:"
 
 #. Translators: The label for a setting in braille settings to select the cursor shape when tethered to review.
-#: gui\settingsDialogs.py:4751
+#: gui\settingsDialogs.py:4750
 msgid "Cursor shape for &review:"
 msgstr "Σχήμα &δρομέα για αναθεώρηση:"
 
 #. Translators: The label for a setting in braille settings to combobox enabling user
 #. to decide if braille messages should be shown and automatically disappear from braille display.
-#: gui\settingsDialogs.py:4773
+#: gui\settingsDialogs.py:4772
 msgid "Show messages"
 msgstr "Εμφάνιση μηνυμάτων"
 
 #. Translators: The label for a setting in braille settings to change how long a message stays on the braille display (in seconds).
-#: gui\settingsDialogs.py:4795
+#: gui\settingsDialogs.py:4794
 msgid "Message &timeout (sec)"
 msgstr "Εκπνοή χρονικού ορίου μηνύματος (δευτερόλεπτα)"
 
 #. Translators: The label for a setting in braille settings to set whether braille should be tethered to focus or review cursor.
-#: gui\settingsDialogs.py:4814
+#: gui\settingsDialogs.py:4813
 msgid "Tether B&raille:"
 msgstr "Πρόσδεση οθόνης &Braile"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:4838
+#: gui\settingsDialogs.py:4837
 msgid "Move system caret when ro&uting review cursor"
 msgstr "Μετακίνηση κέρσορα συστήματος κατά τη &δρομολόγηση του δρομέα επισκόπησης"
 
 #. Translators: The label for a setting in braille settings to read by paragraph (if it is checked, the commands to move the display by lines moves the display by paragraphs instead).
-#: gui\settingsDialogs.py:4854
+#: gui\settingsDialogs.py:4853
 msgid "Read by &paragraph"
 msgstr "Ανάγνωση κατά &παράγραφο"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel to select paragraph start markers.
-#: gui\settingsDialogs.py:4863
+#: gui\settingsDialogs.py:4862
 msgid "Paragraph start marker:"
 msgstr ""
 
 #. Translators: The label for a setting in braille settings to select how the context for the focus object should be presented on a braille display.
-#: gui\settingsDialogs.py:4878
+#: gui\settingsDialogs.py:4877
 msgid "Focus context presentation:"
 msgstr "Εστίαση σε περιεχόμενο παρουσίασης"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:4899
+#: gui\settingsDialogs.py:4898
 msgid "Show se&lection"
 msgstr "&Εμφάνιση επιλογής"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:4911
+#: gui\settingsDialogs.py:4910
 msgid "Formatting &display"
 msgstr ""
 
 #. Translators: The label for a setting in braille settings to speak the character under the cursor when cursor routing in text.
-#: gui\settingsDialogs.py:4920
+#: gui\settingsDialogs.py:4919
 msgid "Spea&k character when routing cursor in text"
 msgstr ""
 
 #. Translators: The label for a setting in braille settings to speak the current line or paragraph when navigating by them with braille.
-#: gui\settingsDialogs.py:4928
+#: gui\settingsDialogs.py:4927
 msgid "Speak when navigating by &line or paragraph"
 msgstr ""
 
 #. Translators: The label for a setting in braille settings to enable word wrap
 #. (try to avoid splitting words at the end of the braille display).
-#: gui\settingsDialogs.py:4941
+#: gui\settingsDialogs.py:4940
 msgid "Avoid splitting &words when possible"
 msgstr "Αποφυγή διαμοιρασμού &λέξεων όταν είναι δυνατό"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:4960
+#: gui\settingsDialogs.py:4959
 msgid "I&nterrupt speech while scrolling"
 msgstr "&Διακοπή εκφώνησης κατά την κύλιση"
 
 #. Translators: This message is presented when
 #. NVDA is unable to load a single vision enhancement provider.
-#: gui\settingsDialogs.py:5054
+#: gui\settingsDialogs.py:5053
 #, python-brace-format
 msgid "Could not load the {providerName} vision enhancement provider"
 msgstr "Δεν ήταν δυνατή η φόρτωση του παρόχου βελτίωσης όρασης {providerName}"
 
 #. Translators: This message is presented when NVDA is unable to
 #. load multiple vision enhancement providers.
-#: gui\settingsDialogs.py:5061
+#: gui\settingsDialogs.py:5060
 #, python-brace-format
 msgid "Could not load the following vision enhancement providers:\n"
 "{providerNames}"
@@ -14394,20 +14383,20 @@ msgstr "Δεν ήταν δυνατή η φόρτωση των επόμενων �
 "{providerNames}"
 
 #. Translators: The title of the vision enhancement provider error message box.
-#: gui\settingsDialogs.py:5067 gui\settingsDialogs.py:5097
+#: gui\settingsDialogs.py:5066 gui\settingsDialogs.py:5096
 msgid "Vision Enhancement Provider Error"
 msgstr "Σφάλμα Παρόχου Βελτίωσης Όρασης"
 
 #. Translators: This message is presented when
 #. NVDA is unable to gracefully terminate a single vision enhancement provider.
-#: gui\settingsDialogs.py:5084
+#: gui\settingsDialogs.py:5083
 #, python-brace-format
 msgid "Could not gracefully terminate the {providerName} vision enhancement provider"
 msgstr "Δεν ήταν δυνατός ο φυσιολογικός τερματισμός του παρόχου βελτίωσης όρασης {providerName} "
 
 #. Translators: This message is presented when
 #. NVDA is unable to terminate multiple vision enhancement providers.
-#: gui\settingsDialogs.py:5092
+#: gui\settingsDialogs.py:5091
 #, python-brace-format
 msgid "Could not gracefully terminate the following vision enhancement providers:\n"
 "{providerNames}"
@@ -14415,119 +14404,119 @@ msgstr "Δεν ήταν δυνατός ο φυσιολογικός τερματ�
 "{providerNames}"
 
 #. Translators: This is a label appearing on the vision settings panel.
-#: gui\settingsDialogs.py:5192
+#: gui\settingsDialogs.py:5191
 msgid "Configure visual aids."
 msgstr "Διαμόρφωση οπτικών βοηθημάτων."
 
 #. Translators: Enable checkbox on a vision enhancement provider on the vision settings category panel
-#: gui\settingsDialogs.py:5364
+#: gui\settingsDialogs.py:5363
 msgid "Enable"
 msgstr "Ενεργοποίηση"
 
 #. Translators: Options label on a vision enhancement provider on the vision settings category panel
 #. Translators: The label for a group box containing the NVDA highlighter options.
-#: gui\settingsDialogs.py:5371
+#: gui\settingsDialogs.py:5370
 #: visionEnhancementProviders\NVDAHighlighter.py:307
 #: visionEnhancementProviders\screenCurtain.py:245
 msgid "Options:"
 msgstr "Επιλογές:"
 
 #. Translators: Shown when there is an error showing the GUI for a vision enhancement provider
-#: gui\settingsDialogs.py:5417
+#: gui\settingsDialogs.py:5416
 msgid "Unable to configure user interface for Vision Enhancement Provider, it can not be enabled."
 msgstr "Αδυναμία διαμόρφωσης της διεπαφής χρήστη για τον πάροχο βελτίωσης όρασης, δε μπορεί να ενεργοποιηθεί."
 
 #. Translators: This is the label for the NVDA settings dialog.
-#: gui\settingsDialogs.py:5462
+#: gui\settingsDialogs.py:5461
 msgid "NVDA Settings"
 msgstr "Ρυθμίσεις NVDA"
 
 #. Translators: The profile name for normal configuration
-#: gui\settingsDialogs.py:5505
+#: gui\settingsDialogs.py:5507
 msgid "normal configuration"
 msgstr "κανονική διαμόρφωση"
 
 #. Translators: This is the label for the add symbol dialog.
-#: gui\settingsDialogs.py:5540
+#: gui\settingsDialogs.py:5542
 msgid "Add Symbol"
 msgstr "Προσθήκη Συμβόλου"
 
 #. Translators: This is the label for the edit field in the add symbol dialog.
-#: gui\settingsDialogs.py:5545
+#: gui\settingsDialogs.py:5547
 msgid "&Symbol:"
 msgstr "&Σύμβολο:"
 
 #. Translators: This is the label for the symbol pronunciation dialog.
 #. %s is replaced by the language for which symbol pronunciation is being edited.
-#: gui\settingsDialogs.py:5575
+#: gui\settingsDialogs.py:5577
 #, python-format
 msgid "Symbol Pronunciation (%s)"
 msgstr "Προφορά Συμβόλων (%s)"
 
 #. Translators: The label of a text field to search for symbols in the speech symbols dialog.
-#: gui\settingsDialogs.py:5589
+#: gui\settingsDialogs.py:5591
 msgctxt "speechSymbols"
 msgid "&Filter by:"
 msgstr "&Φιλτράρισμα κατά:"
 
 #. Translators: The label for symbols list in symbol pronunciation dialog.
-#: gui\settingsDialogs.py:5598
+#: gui\settingsDialogs.py:5600
 msgid "&Symbols"
 msgstr "&Σύμβολα"
 
 #. Translators: The label for a column in symbols list used to identify a symbol.
-#: gui\settingsDialogs.py:5608
+#: gui\settingsDialogs.py:5610
 msgid "Symbol"
 msgstr "Σύμβολο"
 
 #. Translators: The label for a column in symbols list used to identify a replacement.
 #. Translators: The label for a column in dictionary entries list and in a list of symbols
 #. from symbol pronunciation dialog used to identify replacement for a pattern or a symbol
-#: gui\settingsDialogs.py:5610 gui\speechDict.py:191
+#: gui\settingsDialogs.py:5612 gui\speechDict.py:191
 msgid "Replacement"
 msgstr "Αντικατάσταση"
 
 #. Translators: The label for a column in symbols list used to identify a symbol's speech level (either none, some, most, all or character).
-#: gui\settingsDialogs.py:5612
+#: gui\settingsDialogs.py:5614
 msgid "Level"
 msgstr "Επίπεδο"
 
 #. Translators: The label for a column in symbols list which specifies when the actual symbol will be sent to the synthesizer (preserved).
 #. See the "Punctuation/Symbol Pronunciation" section of the User Guide for details.
-#: gui\settingsDialogs.py:5615
+#: gui\settingsDialogs.py:5617
 msgid "Preserve"
 msgstr "διατήρηση"
 
 #. Translators: The label for the group of controls in symbol pronunciation dialog to change the pronunciation of a symbol.
-#: gui\settingsDialogs.py:5619
+#: gui\settingsDialogs.py:5621
 msgid "Change selected symbol"
 msgstr "Αλλαγή επιλεγμένου συμβόλου"
 
 #. Translators: The label for the edit field in symbol pronunciation dialog to change the replacement text of a symbol.
 #. Translators: This is a label for an edit field in add dictionary entry dialog
 #. and in punctuation/symbol pronunciation dialog.
-#: gui\settingsDialogs.py:5637 gui\speechDict.py:55
+#: gui\settingsDialogs.py:5639 gui\speechDict.py:55
 msgid "&Replacement"
 msgstr "&Αντικατάσταση"
 
 #. Translators: The label for the combo box in symbol pronunciation dialog to change the speech level of a symbol.
-#: gui\settingsDialogs.py:5646
+#: gui\settingsDialogs.py:5648
 msgid "&Level"
 msgstr "&Επίπεδο"
 
 #. Translators: The label for the combo box in symbol pronunciation dialog to change when a symbol is sent to the synthesizer.
-#: gui\settingsDialogs.py:5653
+#: gui\settingsDialogs.py:5655
 msgid "&Send actual symbol to synthesizer"
 msgstr "&Αποστολή πραγματικού συμβόλου στο συνθέτη"
 
 #. Translators: The label for a button in the Symbol Pronunciation dialog to remove a symbol.
-#: gui\settingsDialogs.py:5668
+#: gui\settingsDialogs.py:5670
 msgid "Re&move"
 msgstr "Αφ&αίρεση"
 
 #. Translators: An error reported in the Symbol Pronunciation dialog
 #. when adding a symbol that is already present.
-#: gui\settingsDialogs.py:5775
+#: gui\settingsDialogs.py:5777
 #, python-format
 msgid "Symbol \"%s\" is already present."
 msgstr "Το σύμβολο \"%s\" υπάρχει ήδη."
@@ -18508,7 +18497,7 @@ msgstr "Ασφαλής Επιφάνεια Εργασίας"
 #. Translators: Presented when attempting to send control+alt+delete when connected as the controlled computer.
 #. Translators: Presented when attempting to switch to controling a remote computer when connected as the controlled computer.
 #: _remoteClient\client.py:129 _remoteClient\client.py:190
-#: _remoteClient\client.py:523
+#: _remoteClient\client.py:526
 msgctxt "remote"
 msgid "Not the controlling computer"
 msgstr ""
@@ -18541,90 +18530,90 @@ msgid "Copied link"
 msgstr ""
 
 #. Translators: Title of the Remote Access disconnection confirmation dialog.
-#: _remoteClient\client.py:233
+#: _remoteClient\client.py:226
 msgctxt "remote"
 msgid "Confirm Disconnection"
 msgstr ""
 
 #. Translators: Message shown when disconnecting from the remote computer.
-#: _remoteClient\client.py:237
+#: _remoteClient\client.py:230
 msgctxt "remote"
 msgid "Are you sure you want to disconnect from the Remote Access session?"
 msgstr ""
 
 #. Translators: Title of the connection error dialog.
-#: _remoteClient\client.py:279
+#: _remoteClient\client.py:282
 msgid "Error Connecting"
 msgstr ""
 
 #. Translators: Message shown when unable to connect to the remote computer.
-#: _remoteClient\client.py:281
+#: _remoteClient\client.py:284
 msgid "Unable to connect to the remote computer"
 msgstr ""
 
 #. Translators: Title of the Remote Access connection dialog.
-#: _remoteClient\client.py:305
+#: _remoteClient\client.py:308
 msgctxt "remote"
 msgid "Connect to Another Computer"
 msgstr ""
 
 #. Translators: Presented when connected to the remote computer.
-#: _remoteClient\client.py:348
+#: _remoteClient\client.py:351
 msgid "Connected"
 msgstr ""
 
 #. Translators: Presented when connection to a remote computer was interupted.
 #. Translators: Message shown when the connection to the remote computer is lost.
-#: _remoteClient\client.py:366 _remoteClient\cues.py:27
+#: _remoteClient\client.py:369 _remoteClient\cues.py:27
 msgid "Disconnected"
 msgstr ""
 
 #. Translators: Presented when attempting to switch to controling a remote computer when there are no controllable computers in the channel.
-#: _remoteClient\client.py:527
+#: _remoteClient\client.py:530
 msgctxt "remote"
 msgid "No controlled computers are connected"
 msgstr ""
 
 #. Translators: Presented when keyboard control is back to the controlling computer.
-#: _remoteClient\client.py:541
+#: _remoteClient\client.py:544
 msgctxt "remote"
 msgid "Controlling local computer"
 msgstr ""
 
 #. Translators: Presented when sending keyboard keys from the controlling computer to the controlled computer.
-#: _remoteClient\client.py:550
+#: _remoteClient\client.py:553
 msgctxt "remote"
 msgid "Controlling remote computer"
 msgstr ""
 
 #. Translators: Message shown when trying to connect while already connected.
-#: _remoteClient\client.py:614
+#: _remoteClient\client.py:617
 msgctxt "remote"
 msgid "A Remote Access session is already in progress. Disconnect before starting a new session."
 msgstr ""
 
 #. Translators: Title of the connection error dialog.
-#: _remoteClient\client.py:617
+#: _remoteClient\client.py:620
 msgctxt "remote"
 msgid "Already Connected"
 msgstr ""
 
 #. Translators: Ask the user if they want to control the remote computer.
-#: _remoteClient\client.py:632
+#: _remoteClient\client.py:635
 #, python-brace-format
 msgctxt "remote"
 msgid "Do you wish to control the computer on server {server} with key {key}?"
 msgstr ""
 
 #. Translators: Ask the user if they want to allow the remote computer to control this computer.
-#: _remoteClient\client.py:638
+#: _remoteClient\client.py:641
 #, python-brace-format
 msgctxt "remote"
 msgid "Do you wish to allow this computer to be controlled on server {server} with key {key}?"
 msgstr ""
 
 #. Translators: Title of the connection request dialog.
-#: _remoteClient\client.py:644
+#: _remoteClient\client.py:647
 msgctxt "remote"
 msgid "Remote Access Connection Request"
 msgstr ""

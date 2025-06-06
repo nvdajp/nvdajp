@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nvda\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 07:34+0000\n"
-"PO-Revision-Date: 2025-05-19 00:08\n"
+"POT-Creation-Date: 2025-06-02 01:47+0000\n"
+"PO-Revision-Date: 2025-06-05 05:47\n"
 "Last-Translator: \n"
 "Language-Team: Irish\n"
 "Language: ga_IE\n"
@@ -2911,7 +2911,7 @@ msgstr "Níl téacs roimhe seo   ann a bhfuil stíl éagsúil aige"
 #. in the browse mode Elements List dialog.
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: browseMode.py:1279 gui\settingsDialogs.py:2882
+#: browseMode.py:1279 gui\settingsDialogs.py:2883
 msgid "Lin&ks"
 msgstr "Nas&canna"
 
@@ -2919,7 +2919,7 @@ msgstr "Nas&canna"
 #. in the browse mode Elements List dialog.
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: browseMode.py:1282 gui\settingsDialogs.py:2877
+#: browseMode.py:1282 gui\settingsDialogs.py:2878
 msgid "&Headings"
 msgstr "&Ceannteidil"
 
@@ -3427,8 +3427,8 @@ msgstr "Theip ar roinnt oibríochtaí ar bhreiseáin. Féach ar na sonraí  sa l
 #: gui\configProfiles.py:539 gui\inputGestures.py:808 gui\inputGestures.py:822
 #: gui\installerGui.py:112 gui\installerGui.py:520 gui\installerGui.py:535
 #: gui\installerGui.py:607 gui\logViewer.py:112 gui\logViewer.py:143
-#: gui\message.py:161 gui\settingsDialogs.py:1075 gui\settingsDialogs.py:5420
-#: gui\settingsDialogs.py:5777 gui\startupDialogs.py:128
+#: gui\message.py:161 gui\settingsDialogs.py:1076 gui\settingsDialogs.py:5419
+#: gui\settingsDialogs.py:5779 gui\startupDialogs.py:128
 #: _remoteClient\dialogs.py:62 _remoteClient\dialogs.py:300
 #: _remoteClient\dialogs.py:384
 msgid "Error"
@@ -3661,7 +3661,7 @@ msgstr "Carait an Chórais"
 
 #. Translators: The name of a category of NVDA commands.
 #. Translators: This is the label for the mouse settings panel.
-#: globalCommands.py:86 gui\settingsDialogs.py:2135
+#: globalCommands.py:86 gui\settingsDialogs.py:2136
 msgid "Mouse"
 msgstr "Luch"
 
@@ -3670,8 +3670,8 @@ msgstr "Luch"
 #. Translators: This is the label for the speech panel
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: globalCommands.py:89 config\configFlags.py:277 gui\settingsDialogs.py:1184
-#: gui\settingsDialogs.py:3961
+#: globalCommands.py:89 config\configFlags.py:277 gui\settingsDialogs.py:1185
+#: gui\settingsDialogs.py:3960
 msgid "Speech"
 msgstr "Urlabhra"
 
@@ -3690,14 +3690,14 @@ msgstr "Próifílí Cumriachta"
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
 #. Translators: This is the label for the braille panel
-#: globalCommands.py:98 config\configFlags.py:279 gui\settingsDialogs.py:3867
-#: gui\settingsDialogs.py:4375
+#: globalCommands.py:98 config\configFlags.py:279 gui\settingsDialogs.py:3866
+#: gui\settingsDialogs.py:4374
 msgid "Braille"
 msgstr "Brl"
 
 #. Translators: The name of a category of NVDA commands.
 #. Translators: This is the label for the vision panel
-#: globalCommands.py:101 gui\settingsDialogs.py:5188
+#: globalCommands.py:101 gui\settingsDialogs.py:5187
 msgid "Vision"
 msgstr "Fís"
 
@@ -3735,13 +3735,13 @@ msgstr "Formáidiú doiciméid"
 
 #. Translators: The name of a category of NVDA commands.
 #. Translators: This is the label for the audio settings panel.
-#: globalCommands.py:122 gui\settingsDialogs.py:3043
+#: globalCommands.py:122 gui\settingsDialogs.py:3044
 msgid "Audio"
 msgstr "fuaim"
 
 #. Translators: The name of a category of NVDA commands.
 #. Translators: This is the label for the Remote Access settings category in NVDA's Settings screen.
-#: globalCommands.py:125 gui\settingsDialogs.py:3321
+#: globalCommands.py:125 gui\settingsDialogs.py:3322
 msgctxt "remote"
 msgid "Remote Access"
 msgstr "Rochtain Chianda"
@@ -5898,104 +5898,104 @@ msgid "Toggles on and off the reporting of CLDR characters, such as emojis"
 msgstr "Scorántar tuairisciú carachtair CLDR leithéidí emoji."
 
 #. Translators: presented when the report CLDR is toggled.
-#: globalCommands.py:4676
+#: globalCommands.py:4679
 msgid "report CLDR characters off"
 msgstr "Ná tabhair tuairisc ar charachtair CLDR."
 
 #. Translators: presented when the report CLDR is toggled.
-#: globalCommands.py:4680
+#: globalCommands.py:4683
 msgid "report CLDR characters on"
 msgstr "Tabhair tuairisc ar charachtair CLDR."
 
 #. Translators: Input help mode message for speech Unicode normalization command.
-#: globalCommands.py:4687
+#: globalCommands.py:4691
 msgid "Cycle through the speech Unicode normalization states"
 msgstr "Scrolláil tríd  staideanna normalaithe  na cainte Unicode "
 
 #. Translators: Used when reporting speech Unicode normalization state
 #. (default behavior).
-#: globalCommands.py:4702
+#: globalCommands.py:4706
 #, python-brace-format
 msgid "Speech Unicode normalization default ({default})"
 msgstr "Réamhshonrú na cainte normalaithe Unicode ({default})"
 
 #. Translators: Used when reporting speech Unicode normalization state
 #. (disabled or enabled).
-#: globalCommands.py:4708
+#: globalCommands.py:4712
 #, python-brace-format
 msgid "Speech Unicode normalization {state}"
 msgstr "Stáid normalaithe cainte Unicode {state}  "
 
 #. Translators: Describes a command.
-#: globalCommands.py:4720
+#: globalCommands.py:4724
 msgid "Toggles the state of the screen curtain, enable to make the screen black or disable to show the contents of the screen. Pressed once, screen curtain is enabled until you restart NVDA. Pressed twice, screen curtain is enabled until you disable it"
 msgstr "Scorántar staid chuirtín an scáileáin. Cumasaigh an cuirtín chun an scáileán a cur faoi cheilt nó díchumasaigh an cuirtín chun an scáileán a fheiceáil. Brúigh uair amháin agus cuirfear an cuirtín ar siúl go dtí go ndéanfaidh tú atosú ar NVDA. Brúigh faoi dhó agus cuirfear an cuirtín ar siúl go dtí go ndíchumasóidh "
 
 #. Translators: Reported when the screen curtain is disabled.
-#: globalCommands.py:4779
+#: globalCommands.py:4783
 msgid "Screen curtain disabled"
 msgstr "Tá an cuirtín scáileáin dichumasaithe "
 
 #. Translators: Reported when the screen curtain could not be enabled.
-#: globalCommands.py:4786
+#: globalCommands.py:4790
 msgid "Could not disable screen curtain"
 msgstr "Níorbh fhéidir cuirtín an scáileáin a dhíchumasú"
 
 #. Translators: Reported when the screen curtain is not available.
-#: globalCommands.py:4797
+#: globalCommands.py:4801
 msgid "Screen curtain not available"
 msgstr "Níl cuirtín an scáileáin ar fáil"
 
 #. Translators: Reported when the screen curtain is enabled.
-#: globalCommands.py:4809
+#: globalCommands.py:4813
 msgid "Screen curtain enabled"
 msgstr "Tá an cuirtín scáileáin cumasaithe"
 
 #. Translators: Reported when the screen curtain is temporarily enabled.
-#: globalCommands.py:4812
+#: globalCommands.py:4816
 msgid "Temporary Screen curtain, enabled until next restart"
 msgstr "Tá cuirtín scáileáin sealadach ar siúl. Beidh sé ar siúl go dtí an chéad atosú eile."
 
 #. Translators: Reported when the screen curtain could not be enabled.
-#: globalCommands.py:4825
+#: globalCommands.py:4829
 msgid "Could not enable screen curtain"
 msgstr "Níorbh fhéidir cuirtín scáileáin a chumasú"
 
 #. Translators: Warning message when trying to enable the screen curtain when OCR is active.
-#: globalCommands.py:4858 visionEnhancementProviders\screenCurtain.py:281
+#: globalCommands.py:4862 visionEnhancementProviders\screenCurtain.py:281
 msgid "Could not enable screen curtain when performing content recognition"
 msgstr "Níorbh fhéidir an cuirtín scáileáin a chumasú agus aithint ar ábhar ar siúl"
 
 #. Translators: Describes a command.
-#: globalCommands.py:4866
+#: globalCommands.py:4870
 msgid "Cycles through paragraph navigation styles"
 msgstr "Scrolláiltear trí stíleanna nascleanúna  paragraf  "
 
 #. Translators: Describes a command.
-#: globalCommands.py:4880
+#: globalCommands.py:4884
 msgid "Cycles through sound split modes"
 msgstr "Scrolláil tríd na móid scoilte fuaime"
 
 #. Translators: Documentation string for the script that toggles whether the output from the remote computer is muted.
-#: globalCommands.py:4890
+#: globalCommands.py:4894
 msgctxt "remote"
 msgid "Mutes or unmutes the speech coming from the remote computer"
 msgstr "Múchtar nó ní mhúchtar an chaint ón ríomhaire cianda "
 
 #. Translators: Documentation string for the script that sends the contents of the clipboard to the remote computer.
-#: globalCommands.py:4900
+#: globalCommands.py:4904
 msgctxt "remote"
 msgid "Sends the contents of the clipboard to the remote computer"
 msgstr "Seoltar inneachar an ghearrthaisce go dtí an ríomhaire cianda"
 
 #. Translators: Documentation string for the script that copies a link to the Remote Access session to the clipboard.
-#: globalCommands.py:4908
+#: globalCommands.py:4912
 msgctxt "remote"
 msgid "Copies a link to the current Remote Access session to the clipboard"
 msgstr "Cóipeáiltear nasc leis an seisiún rochtana cianda go dtí an ghearrthaisce"
 
 #. Translators: Documentation string for the script that disconnects a Remote Access session.
-#: globalCommands.py:4918
+#: globalCommands.py:4922
 msgctxt "remote"
 msgid "Disconnects from the current Remote Access session"
 msgstr "Dícheanglaítear ón seisiún cianda reatha "
@@ -6006,52 +6006,52 @@ msgstr "Dícheanglaítear ón seisiún cianda reatha "
 #. Translators: Message shown when trying to copy the link to connect to the remote computer while not connected.
 #. Translators: Message shown when attempting to send control+alt+delete when no session is connected.
 #. Translators: A message indicating that the remote client is not connected.
-#: globalCommands.py:4924 _remoteClient\client.py:125
+#: globalCommands.py:4928 _remoteClient\client.py:125
 #: _remoteClient\client.py:149 _remoteClient\client.py:171
-#: _remoteClient\client.py:187 _remoteClient\client.py:519
+#: _remoteClient\client.py:187 _remoteClient\client.py:522
 msgctxt "remote"
 msgid "Not connected"
 msgstr "Níl sé ceangailte"
 
 #. Translators: Documentation string for the script that starts a new Remote Access session.
-#: globalCommands.py:4930
+#: globalCommands.py:4934
 msgctxt "remote"
 msgid "Connects to a remote computer"
 msgstr "Ceanglaítear le ríomhaire cianda"
 
 #. Translators: A message indicating that the remote client is already connected.
-#: globalCommands.py:4941
+#: globalCommands.py:4945
 msgid "Already connected"
 msgstr "Tá sé ceangailte cheana"
 
 #. Translators: Describes the script that creates a new Remote Access session, or disconnects it if one already exists.
-#: globalCommands.py:4947
+#: globalCommands.py:4951
 msgctxt "remote"
 msgid "Toggles whether Remote Access is connected"
 msgstr "Scorántar an rochtain cianda"
 
 #. Translators: Documentation string for the script that toggles the control between guest and host computers.
-#: globalCommands.py:4962
+#: globalCommands.py:4966
 msgctxt "remote"
 msgid "Switches whether the keyboard controls the local or remote computer"
 msgstr "Athraítear rialú idir an ríomhaire logánta agus an ríomhaire cianda"
 
 #. Translators: a message indicating that configuration profiles can't be activated using gestures,
 #. due to profile activation being suspended.
-#: globalCommands.py:5004
+#: globalCommands.py:5008
 msgid "Can't change the active profile while an NVDA dialog is open"
 msgstr "Ní féidir an phróifíl ghníomhach a athrú nuair atá dialóg ar oscailt."
 
 #. Translators: a message when a configuration profile is manually deactivated.
 #. {profile} is replaced with the profile's name.
-#: globalCommands.py:5009
+#: globalCommands.py:5013
 #, python-brace-format
 msgid "{profile} profile deactivated"
 msgstr "Próifíl {profile}  díghníomhaithe"
 
 #. Translators: a message when a configuration profile is manually activated.
 #. {profile} is replaced with the profile's name.
-#: globalCommands.py:5014
+#: globalCommands.py:5018
 #, python-brace-format
 msgid "{profile} profile activated"
 msgstr "próifíl {profile} ar siúl profile "
@@ -6059,7 +6059,7 @@ msgstr "próifíl {profile} ar siúl profile "
 #. Translators: The description shown in input help for a script that
 #. activates or deactivates a config profile.
 #. {profile} is replaced with the profile's name.
-#: globalCommands.py:5030
+#: globalCommands.py:5034
 #, python-brace-format
 msgid "Activates or deactivates the {profile} configuration profile"
 msgstr "Gníomhaítear nó ní ghníomhaítear an phróifíl cumriachta {profile}."
@@ -6538,7 +6538,7 @@ msgstr "ann"
 #. which disables reporting of progress bars.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
 #: keyboardHandler.py:631 synthSettingsRing.py:117 controlTypes\state.py:227
-#: gui\settingsDialogs.py:2370 gui\speechDict.py:198
+#: gui\settingsDialogs.py:2371 gui\speechDict.py:198
 msgid "off"
 msgstr "as"
 
@@ -8031,11 +8031,11 @@ msgstr " {action} ceithre huaire"
 #, python-brace-format
 msgid "{numFingers} finger {action}"
 msgid_plural "{numFingers} finger {action}"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{numFingers} mhéar {action}"
+msgstr[1] "{numFingers} mhéar {action}"
+msgstr[2] "{numFingers} mhéar {action}"
+msgstr[3] "{numFingers} méar {action}"
+msgstr[4] "{numFingers} mhéar {action}"
 
 #. Translators: a very quick touch and release of a finger on a touch screen
 #: touchTracker.py:32
@@ -9387,88 +9387,88 @@ msgstr "mír eile"
 #, python-brace-format
 msgid "covers left of {otherShape} by {distance:.3g} point"
 msgid_plural "covers left of {otherShape} by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Clúdaítear an lámh chlé de {otherShape} ar feadh {distance:.3g} phointe"
+msgstr[1] "Clúdaítear an lámh chlé de {otherShape} ar feadh {distance:.3g} phointe"
+msgstr[2] "Clúdaítear an lámh chlé de {otherShape} ar feadh {distance:.3g} phointe"
+msgstr[3] "Clúdaítear an lámh chlé de {otherShape} ar feadh {distance:.3g} bpointe"
+msgstr[4] "Clúdaítear an lámh chlé de {otherShape} ar feadh {distance:.3g} phointe"
 
 #. Translators: A message when a shape is behind another shape on a PowerPoint slide
 #: appModules\powerpnt.py:672
 #, python-brace-format
 msgid "behind left of {otherShape} by {distance:.3g} point"
 msgid_plural "behind left of {otherShape} by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Ar chúl an lámh chlé de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[1] "Ar chúl an lámh chlé de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[2] "Ar chúl an lámh chlé de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[3] "Ar chúl an lámh chlé de {otherShape} ar fad {distance:.3g} bpointe"
+msgstr[4] "Ar chúl an lámh chlé de {otherShape} ar fad {distance:.3g} phointe"
 
 #. Translators: A message when a shape is in front of another shape on a PowerPoint slide
 #: appModules\powerpnt.py:684
 #, python-brace-format
 msgid "covers top of {otherShape} by {distance:.3g} point"
 msgid_plural "covers top of {otherShape} by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Clúdaítear barr {otherShape} ar fad {distance:.3g} phointe"
+msgstr[1] "Clúdaítear barr {otherShape} ar fad {distance:.3g} phointe"
+msgstr[2] "Clúdaítear barr {otherShape} ar fad {distance:.3g} phointe"
+msgstr[3] "Clúdaítear barr {otherShape} ar fad {distance:.3g} bpointe"
+msgstr[4] "Clúdaítear barr {otherShape} ar fad {distance:.3g} phointe"
 
 #. Translators: A message when a shape is behind another shape on a PowerPoint slide
 #: appModules\powerpnt.py:693
 #, python-brace-format
 msgid "behind top of {otherShape} by {distance:.3g} point"
 msgid_plural "behind top of {otherShape} by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Ar chúl bharr {otherShape} ar fad {distance:.3g} phointe"
+msgstr[1] "Ar chúl bharr {otherShape} ar fad {distance:.3g} phointe"
+msgstr[2] "Ar chúl bharr {otherShape} ar fad {distance:.3g} phointe"
+msgstr[3] "Ar chúl bharr {otherShape} ar fad {distance:.3g} bpointe"
+msgstr[4] "Ar chúl bharr {otherShape} ar fad {distance:.3g} phointe"
 
 #. Translators: A message when a shape is in front of another shape on a PowerPoint slide
 #: appModules\powerpnt.py:705
 #, python-brace-format
 msgid "covers right of {otherShape} by {distance:.3g} point"
 msgid_plural "covers right of {otherShape} by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Clúdaítear an lámh dheas de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[1] "Clúdaítear an lámh dheas de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[2] "Clúdaítear an lámh dheas de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[3] "Clúdaítear an lámh dheas de {otherShape} ar fad {distance:.3g} bpointe"
+msgstr[4] "Clúdaítear an lámh dheas de {otherShape} ar fad {distance:.3g} phointe"
 
 #. Translators: A message when a shape is behind another shape on a PowerPoint slide
 #: appModules\powerpnt.py:714
 #, python-brace-format
 msgid "behind right of {otherShape} by {distance:.3g} point"
 msgid_plural "behind right of {otherShape} by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Ar chúl na láimhe deise de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[1] "Ar chúl na láimhe deise de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[2] "Ar chúl na láimhe deise de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[3] "Ar chúl na láimhe deise de {otherShape} ar fad {distance:.3g} phointe"
+msgstr[4] "Ar chúl na láimhe deise de {otherShape} ar fad {distance:.3g} phointe"
 
 #. Translators: A message when a shape is in front of another shape on a PowerPoint slide
 #: appModules\powerpnt.py:726
 #, python-brace-format
 msgid "covers bottom of {otherShape} by {distance:.3g} point"
 msgid_plural "covers bottom of {otherShape} by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Clúdaítear bun {otherShape} ar fad {distance:.3g} phointe"
+msgstr[1] "Clúdaítear bun {otherShape} ar fad {distance:.3g} phointe"
+msgstr[2] "Clúdaítear bun {otherShape} ar fad {distance:.3g} phointe"
+msgstr[3] "Clúdaítear bun {otherShape} ar fad {distance:.3g} bpointe"
+msgstr[4] "Clúdaítear bun {otherShape} ar fad {distance:.3g} phointe"
 
 #. Translators: A message when a shape is behind another shape on a PowerPoint slide
 #: appModules\powerpnt.py:735
 #, python-brace-format
 msgid "behind bottom of {otherShape} by {distance:.3g} point"
 msgid_plural "behind bottom of {otherShape} by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Ar chúl bhun {otherShape} ar fad {distance:.3g} phointe"
+msgstr[1] "Ar chúl bhun {otherShape} ar fad {distance:.3g} phointe"
+msgstr[2] "Ar chúl bhun {otherShape} ar fad {distance:.3g} phointe"
+msgstr[3] "Ar chúl bhun {otherShape} ar fad {distance:.3g} bpointe"
+msgstr[4] "Ar chúl bhun {otherShape} ar fad {distance:.3g} phointe"
 
 #. Translators: A message when a shape is in front of another shape on a PowerPoint slide
 #: appModules\powerpnt.py:743
@@ -9488,11 +9488,11 @@ msgstr "taobh thiar {otherShape} "
 #, python-brace-format
 msgid "{distance:.3g} point from left slide edge"
 msgid_plural "{distance:.3g} points from left slide edge"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{distance:.3g} phointe ó thaobh chlé an sleamhnáin"
+msgstr[1] "{distance:.3g} phointe ó thaobh chlé an sleamhnáin"
+msgstr[2] "{distance:.3g} phointe ó thaobh chlé an sleamhnáin"
+msgstr[3] "{distance:.3g} bpointe ó thaobh chlé an sleamhnáin"
+msgstr[4] "{distance:.3g} phointe ó thaobh chlé an sleamhnáin"
 
 #. Translators: For a shape too far off the left edge of a PowerPoint Slide, this is the distance in
 #. points from the shape's left edge (off the slide) to the slide's left edge (where the slide starts)
@@ -9500,11 +9500,11 @@ msgstr[4] ""
 #, python-brace-format
 msgid "Off left slide edge by {distance:.3g} point"
 msgid_plural "Off left slide edge by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Ass imeall chlé an sleamhnáin ar fad {distance:.3g} phointe"
+msgstr[1] "Ass imeall chlé an sleamhnáin ar fad {distance:.3g} phointe"
+msgstr[2] "Ass imeall chlé an sleamhnáin ar fad {distance:.3g} phointe"
+msgstr[3] "Ass imeall chlé an sleamhnáin ar fad {distance:.3g} bpointe"
+msgstr[4] "Ass imeall chlé an sleamhnáin ar fad {distance:.3g} phointe"
 
 #. Translators: For a shape within a PowerPoint Slide, this is the distance in points from the shape's
 #. top edge to the slide's top edge
@@ -9512,11 +9512,11 @@ msgstr[4] ""
 #, python-brace-format
 msgid "{distance:.3g} point from top slide edge"
 msgid_plural "{distance:.3g} points from top slide edge"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{distance:.3g} phointe ó imeall barr an sleamhnáin "
+msgstr[1] "{distance:.3g} phointe ó imeall barr an sleamhnáin "
+msgstr[2] "{distance:.3g} phointe ó imeall barr an sleamhnáin "
+msgstr[3] "{distance:.3g} bpointe ó imeall barr an sleamhnáin "
+msgstr[4] "{distance:.3g} phointe ó imeall barr an sleamhnáin "
 
 #. Translators: For a shape too far off the top edge of a PowerPoint Slide, this is the distance in
 #. points from the shape's top edge (off the slide) to the slide's top edge (where the slide starts)
@@ -9524,11 +9524,11 @@ msgstr[4] ""
 #, python-brace-format
 msgid "Off top slide edge by {distance:.3g} point"
 msgid_plural "Off top slide edge by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "As imeall bharr an sleamhnáin ar fad {distance:.3g} phointe"
+msgstr[1] "As imeall bharr an sleamhnáin ar fad {distance:.3g} phointe"
+msgstr[2] "As imeall bharr an sleamhnáin ar fad {distance:.3g} phointe"
+msgstr[3] "As imeall bharr an sleamhnáin ar fad {distance:.3g} phointe"
+msgstr[4] "As imeall bharr an sleamhnáin ar fad {distance:.3g} phointe"
 
 #. Translators: For a shape within a PowerPoint Slide, this is the distance in points from the shape's
 #. right edge to the slide's right edge
@@ -9536,11 +9536,11 @@ msgstr[4] ""
 #, python-brace-format
 msgid "{distance:.3g} point from right slide edge"
 msgid_plural "{distance:.3g} points from right slide edge"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{distance:.3g} phointe  ó imeall dheas an tsleamhnáin"
+msgstr[1] "{distance:.3g} phointe  ó imeall dheas an tsleamhnáin"
+msgstr[2] "{distance:.3g} phointe  ó imeall dheas an tsleamhnáin"
+msgstr[3] "{distance:.3g} bpointe  ó imeall dheas an tsleamhnáin"
+msgstr[4] "{distance:.3g} phointe  ó imeall dheas an tsleamhnáin"
 
 #. Translators: For a shape too far off the right edge of a PowerPoint Slide, this is the distance in
 #. points from the shape's right edge (off the slide) to the slide's right edge (where the slide starts)
@@ -9548,11 +9548,11 @@ msgstr[4] ""
 #, python-brace-format
 msgid "Off right slide edge by {distance:.3g} point"
 msgid_plural "Off right slide edge by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "As imeall dheas an tsleamhnáin ar fad {distance:.3g} phointe"
+msgstr[1] "As imeall dheas an tsleamhnáin ar fad {distance:.3g} phointe"
+msgstr[2] "As imeall dheas an tsleamhnáin ar fad {distance:.3g} phointe"
+msgstr[3] "As imeall dheas an tsleamhnáin ar fad {distance:.3g} bpointe"
+msgstr[4] "As imeall dheas an tsleamhnáin ar fad {distance:.3g} phointe"
 
 #. Translators: For a shape within a PowerPoint Slide, this is the distance in points from the shape's
 #. bottom edge to the slide's bottom edge
@@ -9560,11 +9560,11 @@ msgstr[4] ""
 #, python-brace-format
 msgid "{distance:.3g} point from bottom slide edge"
 msgid_plural "{distance:.3g} points from bottom slide edge"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{distance:.3g} phointe ón imeall ag bun an tsleamhnáin"
+msgstr[1] "{distance:.3g} phointe ón imeall ag bun an tsleamhnáin"
+msgstr[2] "{distance:.3g} phointe ón imeall ag bun an tsleamhnáin"
+msgstr[3] "{distance:.3g} bpointe ón imeall ag bun an tsleamhnáin"
+msgstr[4] "{distance:.3g} phointe ón imeall ag bun an tsleamhnáin"
 
 #. Translators: For a shape too far off the bottom edge of a PowerPoint Slide, this is the distance in
 #. points from the shape's bottom edge (off the slide) to the slide's bottom edge (where the slide starts)
@@ -9572,11 +9572,11 @@ msgstr[4] ""
 #, python-brace-format
 msgid "Off bottom slide edge by {distance:.3g} point"
 msgid_plural "Off bottom slide edge by {distance:.3g} points"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{distance:.3g} phointe as an imeall ag bun an tsleamhnáin "
+msgstr[1] "{distance:.3g} phointe as an imeall ag bun an tsleamhnáin "
+msgstr[2] "{distance:.3g} phointe as an imeall ag bun an tsleamhnáin "
+msgstr[3] "{distance:.3g} bpointe as an imeall ag bun an tsleamhnáin "
+msgstr[4] "{distance:.3g} phointe as an imeall ag bun an tsleamhnáin "
 
 #. Translators: The description for a script
 #: appModules\powerpnt.py:1462
@@ -9644,22 +9644,22 @@ msgstr "{textAttribute} múchta"
 #, python-brace-format
 msgid "{val:.2f} inch"
 msgid_plural "{val:.2f} inches"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{val:.2f} órlach "
+msgstr[1] "{val:.2f} órlach "
+msgstr[2] "{val:.2f} órlach "
+msgstr[3] "{val:.2f} n-órlach "
+msgstr[4] "{val:.2f} órlach "
 
 #. Translators: a measurement in centimetres
 #: appModules\soffice.py:430 NVDAObjects\IAccessible\__init__.py:126
 #, python-brace-format
 msgid "{val:.2f} centimetre"
 msgid_plural "{val:.2f} centimetres"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{val:.2f} cheintiméadar"
+msgstr[1] "{val:.2f} cheintiméadar"
+msgstr[2] "{val:.2f} cheintiméadar"
+msgstr[3] "{val:.2f} gceintiméadar"
+msgstr[4] "{val:.2f} cheintiméadar"
 
 #. Translators: LibreOffice, report cursor position in the current page
 #: appModules\soffice.py:448
@@ -9962,7 +9962,7 @@ msgstr "Caiku Albatross 46/80"
 #: brailleDisplayDrivers\albatross\driver.py:480
 #, python-brace-format
 msgid "To use an Albatross with NVDA, change the number of status cells in the Albatross's internal menu to at most {maxCells}, and restart the Albatross and NVDA if needed."
-msgstr ""
+msgstr "Chun Albatross a úsáid le NVDA, déan athrú ar an roghchlár laistigh de Albatross agus leasaigh líon na gcealla stádais go dtí {maxCells} ar a mhéad."
 
 #. Translators: Description of the DotPad Braille / Tactile Graphic display.
 #: brailleDisplayDrivers\dotPad\driver.py:81
@@ -11605,7 +11605,7 @@ msgstr "Níl an t-aimsitheoir aonfhoirmeach acmhainne tástáilte agat. An bhfui
 #. Translators: Title of the warning message.
 #. Translators: Title of warning dialog
 #: gui\_SetURLDialog.py:113 gui\configProfiles.py:498 gui\installerGui.py:334
-#: gui\settingsDialogs.py:1037 gui\settingsDialogs.py:1928
+#: gui\settingsDialogs.py:1038 gui\settingsDialogs.py:1929
 #: visionEnhancementProviders\screenCurtain.py:146 _remoteClient\dialogs.py:285
 msgid "Warning"
 msgstr "Rabhadh"
@@ -11626,7 +11626,7 @@ msgstr "Ceangailte i gceart leis an aimsitheoir aonfhoirmeach acmhainne"
 #. Translators: The message title displayed when copying configuration to system settings was successful.
 #. Translators: Title of success dialog
 #: gui\_SetURLDialog.py:177 gui\installerGui.py:129 gui\installerGui.py:618
-#: gui\settingsDialogs.py:1081 _remoteClient\dialogs.py:274
+#: gui\settingsDialogs.py:1082 _remoteClient\dialogs.py:274
 msgid "Success"
 msgstr "D'éirigh leis"
 
@@ -12417,11 +12417,11 @@ msgstr "Cuir isteach an gotha ar a bhfuil aithris le déanamh:"
 #, python-brace-format
 msgid "{category} ({nbResults} result)"
 msgid_plural "{category} ({nbResults} results)"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{category} ({nbResults} thoradh)"
+msgstr[1] "{category} ({nbResults} thoradh)"
+msgstr[2] "{category} ({nbResults} thoradh)"
+msgstr[3] "{category} ({nbResults} toradh)"
+msgstr[4] "{category} ({nbResults} thoradh)"
 
 #. Translators: The title of the Input Gestures dialog where the user can remap input gestures for scripts.
 #: gui\inputGestures.py:586
@@ -12437,7 +12437,7 @@ msgstr "&Scag de réir:"
 #. Translators: The label of a button to add a gesture in the Input Gestures dialog.
 #. Translators: The label for a button in the Symbol Pronunciation dialog to add a new symbol.
 #. Translators: The label for a button in speech dictionaries dialog to add new entries.
-#: gui\inputGestures.py:615 gui\settingsDialogs.py:5665 gui\speechDict.py:215
+#: gui\inputGestures.py:615 gui\settingsDialogs.py:5667 gui\speechDict.py:215
 msgid "&Add"
 msgstr "&Cuir Leis"
 
@@ -12776,7 +12776,7 @@ msgid "Default ({})"
 msgstr "réamhshocrú ({})"
 
 #. Translators: Content of the message displayed when a validation error occurs in the settings dialog
-#: gui\settingsDialogs.py:442
+#: gui\settingsDialogs.py:443
 #, python-brace-format
 msgid "{message}\n\n"
 "Category: \"{category}\"\n"
@@ -12786,48 +12786,48 @@ msgstr "{message}\n\n"
 "Option: \"{option}\""
 
 #. Translators: The title of the message box when a setting's configuration is not valid.
-#: gui\settingsDialogs.py:449
+#: gui\settingsDialogs.py:450
 msgid "Invalid configuration"
 msgstr "Cumriacht neamhbhailí"
 
 #. Translators: The label for the list of categories in a multi category settings dialog.
-#: gui\settingsDialogs.py:558
+#: gui\settingsDialogs.py:559
 msgid "&Categories:"
 msgstr "&catagóirí"
 
 #. Translators: This is the label for the general settings panel.
-#: gui\settingsDialogs.py:788
+#: gui\settingsDialogs.py:789
 msgid "General"
 msgstr "ginearálta"
 
 #. Translators: One of the log levels of NVDA (the disabled mode turns off logging completely).
-#: gui\settingsDialogs.py:792
+#: gui\settingsDialogs.py:793
 msgid "disabled"
 msgstr "Díchumasaithe"
 
 #. Translators: One of the log levels of NVDA (the info mode shows info as NVDA runs).
-#: gui\settingsDialogs.py:794
+#: gui\settingsDialogs.py:795
 msgid "info"
 msgstr "eolas"
 
 #. Translators: One of the log levels of NVDA (the debug warning shows debugging messages and warnings as NVDA runs).
-#: gui\settingsDialogs.py:796
+#: gui\settingsDialogs.py:797
 msgid "debug warning"
 msgstr "rabhadh"
 
 #. Translators: One of the log levels of NVDA (the input/output shows keyboard commands and/or braille commands as well as speech and/or braille output of NVDA).
-#: gui\settingsDialogs.py:798
+#: gui\settingsDialogs.py:799
 msgid "input/output"
 msgstr "ionchur/aschur"
 
 #. Translators: One of the log levels of NVDA (the debug mode shows debug messages as NVDA runs).
-#: gui\settingsDialogs.py:800
+#: gui\settingsDialogs.py:801
 msgid "debug"
 msgstr "dífhabhtú"
 
 #. Translators: Shown for a language which has been provided from the command line
 #. 'langDesc' would be replaced with description of the given locale.
-#: gui\settingsDialogs.py:814
+#: gui\settingsDialogs.py:815
 #, python-brace-format
 msgid "Command line option: {langDesc}"
 msgstr "Rogha líne na n-orduithe: {langDesc}"
@@ -12835,30 +12835,30 @@ msgstr "Rogha líne na n-orduithe: {langDesc}"
 #. Translators: The label for a setting in general settings to select NVDA's interface language
 #. (once selected, NVDA must be restarted; the option user default means the user's Windows language
 #. will be used).
-#: gui\settingsDialogs.py:820
+#: gui\settingsDialogs.py:821
 msgid "NVDA &Language (requires restart):"
 msgstr "Teanga NVDA (is gá atosú chun an t-athrú seo a chur i bhfeidhm):"
 
 #. Translators: The label for a setting in general settings to save current configuration when NVDA
 #. exits (if it is not checked, user needs to save configuration before quitting NVDA).
-#: gui\settingsDialogs.py:838
+#: gui\settingsDialogs.py:839
 msgid "&Save configuration when exiting NVDA"
 msgstr "&Sábháil an chumraíocht ag am scortha."
 
 #. Translators: The label for a setting in general settings to ask before quitting NVDA (if not checked, NVDA will exit without asking the user for action).
-#: gui\settingsDialogs.py:846
+#: gui\settingsDialogs.py:847
 msgid "Sho&w exit options when exiting NVDA"
 msgstr "Taispeántar roghanna scoir agus NVDA á fhágáil agat."
 
 #. Translators: The label for a setting in general settings to play sounds when NVDA starts or exits.
-#: gui\settingsDialogs.py:854
+#: gui\settingsDialogs.py:855
 msgid "&Play sounds when starting or exiting NVDA"
 msgstr "&Sein fuaimeanna agus NVDA ag tosú nó ag stopadh."
 
 #. Translators: The label for a setting in general settings to select logging level of NVDA as it runs
 #. (available options and what they are logging are found under comments for the logging level messages
 #. themselves).
-#: gui\settingsDialogs.py:863
+#: gui\settingsDialogs.py:864
 msgid "L&ogging level:"
 msgstr "Leibhéal l&ogála:"
 
@@ -12866,7 +12866,7 @@ msgstr "Leibhéal l&ogála:"
 #. Windows (if checked, NVDA will start automatically after logging into Windows; if not, user must
 #. start NVDA by pressing the shortcut key (CTRL+Alt+N by default).
 #. Translators: The label of a checkbox in the Welcome dialog.
-#: gui\settingsDialogs.py:884 gui\startupDialogs.py:88
+#: gui\settingsDialogs.py:885 gui\startupDialogs.py:88
 msgid "St&art NVDA after I sign in"
 msgstr "Cuir tús le NVDA t&ar éis dom síniú isteach."
 
@@ -12874,7 +12874,7 @@ msgstr "Cuir tús le NVDA t&ar éis dom síniú isteach."
 #. allow NVDA to come up in Windows login screen (useful if user
 #. needs to enter passwords or if multiple user accounts are present
 #. to allow user to choose the correct account).
-#: gui\settingsDialogs.py:896
+#: gui\settingsDialogs.py:897
 msgid "Use NVDA during sign-in (requires administrator privileges)"
 msgstr "Úsáid NVDA ar an scáileán logála isteach Windows (riarthóir an chórais amháin)."
 
@@ -12882,29 +12882,29 @@ msgstr "Úsáid NVDA ar an scáileán logála isteach Windows (riarthóir an ch�
 #. current user settings to system settings (to allow current
 #. settings to be used in secure screens such as User Account
 #. Control (UAC) dialog).
-#: gui\settingsDialogs.py:911
+#: gui\settingsDialogs.py:912
 msgid "Use currently saved settings during sign-in and on secure screens (requires administrator privileges)"
 msgstr "Bain úsáid as socruithe sábháilte reatha agus tú ar an scáileán logála isteach"
 
 #. Translators: The label of a checkbox in general settings to toggle automatic checking for updated versions of NVDA.
 #. If not checked, user must check for updates manually.
-#: gui\settingsDialogs.py:926
+#: gui\settingsDialogs.py:927
 msgid "Automatically check for &updates to NVDA"
 msgstr "Lorg n&uashonruithe NVDA go huathoibríoch"
 
 #. Translators: The label of a checkbox in general settings to toggle startup notifications
 #. for a pending NVDA update.
-#: gui\settingsDialogs.py:938
+#: gui\settingsDialogs.py:939
 msgid "Notify for &pending update on startup"
 msgstr "Cuir in iúl go bhfuil nuashonrú ag feitheamh agus NVDA ag tosú"
 
 #. Translators: The label of a checkbox in general settings to toggle allowing of usage stats gathering
-#: gui\settingsDialogs.py:948
+#: gui\settingsDialogs.py:949
 msgid "Allow NV Access to gather NVDA usage statistics"
 msgstr "Lig do NVAccess staitisticí úsáide a bhailiú"
 
 #. Translators: The label for the update mirror on the General Settings panel.
-#: gui\settingsDialogs.py:957
+#: gui\settingsDialogs.py:958
 msgid "Update mirror"
 msgstr "Scáthán nuashonraithe"
 
@@ -12912,92 +12912,92 @@ msgstr "Scáthán nuashonraithe"
 #. it appears in the context of the update mirror group on the General page of NVDA's settings.
 #. Translators: This is the label for the button used to change the Add-on Store mirror URL,
 #. it appears in the context of the mirror server group on the Add-on Store page of NVDA's settings.
-#: gui\settingsDialogs.py:975 gui\settingsDialogs.py:3258
+#: gui\settingsDialogs.py:976 gui\settingsDialogs.py:3259
 msgid "Change..."
 msgstr "Athraigh..."
 
 #. Translators: The label of a checkbox in general settings.
-#: gui\settingsDialogs.py:991
+#: gui\settingsDialogs.py:992
 msgid "Prevent &display from turning off during say all or reading with braille"
 msgstr "Ná lig don taispeántas a bheith múchta nuair atá léamh braille ar siúl."
 
 #. Translators: Title of the dialog used to change NVDA's update server mirror URL.
-#: gui\settingsDialogs.py:1005
+#: gui\settingsDialogs.py:1006
 msgid "Set NVDA Update Mirror"
 msgstr "Socraigh scáthán nuashonraithe NVDA"
 
 #. Translators: A message to warn the user when attempting to copy current
 #. settings to system settings.
-#: gui\settingsDialogs.py:1031
+#: gui\settingsDialogs.py:1032
 msgid "Add-ons were detected in your user settings directory. Copying these to the system profile could be a security risk. Do you still wish to copy your settings?"
 msgstr "Braithíodh breiseáin ón iasacht i gcomhadlann do shocruithe úsáideora.  B’fhéidir gur baol slándála í a gcóipeáil siúd chuig próifíl an chórais.  Ar mhaith leat fós  do shocruithe a chóipeáil?"
 
 #. Translators: The title of the dialog presented while settings are being copied
-#: gui\settingsDialogs.py:1044
+#: gui\settingsDialogs.py:1045
 msgid "Copying Settings"
 msgstr "Socruithe á gCóipeáil"
 
 #. Translators: The message displayed while settings are being copied
 #. to the system configuration (for use on Windows logon etc)
-#: gui\settingsDialogs.py:1047
+#: gui\settingsDialogs.py:1048
 msgid "Please wait while settings are copied to the system configuration."
 msgstr "Fan nóiméad agus socruithe á gcóipeáil go cumraíocht an chórais."
 
 #. Translators: a message dialog asking to retry or cancel when copying settings  fails
-#: gui\settingsDialogs.py:1058
+#: gui\settingsDialogs.py:1059
 msgid "Unable to copy a file. Perhaps it is currently being used by another process or you have run out of disc space on the drive you are copying to."
 msgstr "Ní féidir comhad a chóipeáil.  B’fhéidir go bhfuil sé in úsáid faoi láthair ag próiseas eile nó nach bhfuil spás diosca fágtha ar dtiomántán chinn scríbe na cóipeála."
 
 #. Translators: the title of a retry cancel dialog when copying settings  fails
-#: gui\settingsDialogs.py:1062
+#: gui\settingsDialogs.py:1063
 msgid "Error Copying"
 msgstr "Earráid le linn Cóipeála"
 
 #. Translators: The message displayed when errors were found while trying to copy current configuration to system settings.
-#: gui\settingsDialogs.py:1075
+#: gui\settingsDialogs.py:1076
 msgid "Error copying NVDA user settings"
 msgstr "Earráid agus socruithe úsáideora NVDA á gcóipeáil"
 
 #. Translators: The message displayed when copying configuration to system settings was successful.
-#: gui\settingsDialogs.py:1079
+#: gui\settingsDialogs.py:1080
 msgid "Successfully copied NVDA user settings"
 msgstr "Cóipeáladh socruithe úsáideora NVDA"
 
-#: gui\settingsDialogs.py:1107
+#: gui\settingsDialogs.py:1108
 msgid "This change requires administrator privileges."
 msgstr "Is é riarthóir an chórais amháin atá ábalta é seo a dhéanamh."
 
-#: gui\settingsDialogs.py:1108
+#: gui\settingsDialogs.py:1109
 msgid "Insufficient Privileges"
 msgstr "Níl cead agat é seo a dhéanamh"
 
 #. Translators: A value that appears in NVDA's Settings to indicate that no mirror is in use.
-#: gui\settingsDialogs.py:1132 gui\settingsDialogs.py:3304
+#: gui\settingsDialogs.py:1133 gui\settingsDialogs.py:3305
 msgid "No mirror"
 msgstr "Níl scáthán ann"
 
 #. Translators: The title of the dialog which appears when the user changed NVDA's interface language.
-#: gui\settingsDialogs.py:1151
+#: gui\settingsDialogs.py:1152
 msgid "Language Configuration Change"
 msgstr "Cumraíocht Teanga Athraithe"
 
 #. Translators: The message displayed after NVDA interface language has been changed.
-#: gui\settingsDialogs.py:1156
+#: gui\settingsDialogs.py:1157
 msgid "NVDA must be restarted for the new language to take effect."
 msgstr "Is gá atosú NVDA a dhéanamh chun an teanga nua a chur ar siúl."
 
 #. Translators: The label for a button  in the dialog which appears when the user changed NVDA's interface language.
-#: gui\settingsDialogs.py:1161
+#: gui\settingsDialogs.py:1162
 msgid "Restart &now"
 msgstr "Atosaigh a&nois"
 
 #. Translators: The label for a button  in the dialog which appears when the user changed NVDA's interface language.
-#: gui\settingsDialogs.py:1166
+#: gui\settingsDialogs.py:1167
 msgid "Restart &later"
 msgstr "Atosaigh níos déanaí.\\vatosaigh níos déanaí"
 
 #. Translators: A label for the synthesizer on the speech panel.
-#: gui\settingsDialogs.py:1190
+#: gui\settingsDialogs.py:1191
 msgid "Synthesizer"
 msgstr "Sintéiseoir"
 
@@ -13005,836 +13005,836 @@ msgstr "Sintéiseoir"
 #. it appears in the context of a synthesizer group on the speech settings panel.
 #. Translators: This is the label for the button used to change braille display,
 #. it appears in the context of a braille display group on the braille settings panel.
-#: gui\settingsDialogs.py:1212 gui\settingsDialogs.py:4396
+#: gui\settingsDialogs.py:1213 gui\settingsDialogs.py:4395
 msgid "C&hange..."
 msgstr "at&hraigh"
 
 #. Translators: This is the label for the synthesizer selection dialog
-#: gui\settingsDialogs.py:1267
+#: gui\settingsDialogs.py:1268
 msgid "Select Synthesizer"
 msgstr "Romhnaigh an Sintéiseoir"
 
 #. Translators: This is a label for the select
 #. synthesizer combobox in the synthesizer dialog.
-#: gui\settingsDialogs.py:1275
+#: gui\settingsDialogs.py:1276
 msgid "&Synthesizer:"
 msgstr "&Sintéiseoir:"
 
 #. Translators: This is the label for the voice settings panel.
-#: gui\settingsDialogs.py:1659
+#: gui\settingsDialogs.py:1660
 msgid "Voice"
 msgstr "Guth"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel (if checked, text will be read using the voice for the language of the text).
-#: gui\settingsDialogs.py:1685
+#: gui\settingsDialogs.py:1686
 msgid "Automatic language switching (when supported)"
 msgstr "Athrú uathoibríoch teanga (más féidir)"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel (if checked, different voices for dialects will be used to
 #. read text in that dialect).
-#: gui\settingsDialogs.py:1700
+#: gui\settingsDialogs.py:1701
 msgid "Automatic dialect switching (when supported)"
 msgstr "Athrú uathoibríoch canúna (más féidir)"
 
 #. Translators: This is the label for a combobox in the
 #. voice settings panel (possible choices are none, some, most and all).
-#: gui\settingsDialogs.py:1711
+#: gui\settingsDialogs.py:1712
 msgid "Punctuation/symbol &level:"
 msgstr "&Leibhéal poncaíochta/siombailí:"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel (if checked, text will be read using the voice for the language of the text).
-#: gui\settingsDialogs.py:1729
+#: gui\settingsDialogs.py:1730
 msgid "Trust voice's language when processing characters and symbols"
 msgstr "Bain úsáid as teanga an urlabhra nuair atá carachtair agus siombailí á bpróiseáil."
 
 #. Translators: This is a label for a combo-box in the Speech settings panel.
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:1739 gui\settingsDialogs.py:4949
+#: gui\settingsDialogs.py:1740 gui\settingsDialogs.py:4948
 msgid "Unicode normali&zation"
 msgstr "Normalú Unicode"
 
 #. Translators: This is the label for a checkbox in the
 #. speech settings panel.
-#: gui\settingsDialogs.py:1750
+#: gui\settingsDialogs.py:1751
 msgid "Report '&Normalized' when navigating by character"
-msgstr ""
+msgstr "Tuairiscigh  '&Normalaithe' agus tú ag nascleanúint le carachtar"
 
 #. Translators: This is a label for a setting in voice settings (an edit box to change
 #. voice pitch for capital letters; the higher the value, the pitch will be higher).
-#: gui\settingsDialogs.py:1783
+#: gui\settingsDialogs.py:1784
 msgid "Capital pitch change percentage"
 msgstr "athrú tiúnairde ceannlitreach, faoin gcéad."
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel.
-#: gui\settingsDialogs.py:1798
+#: gui\settingsDialogs.py:1799
 msgid "Say &cap before capitals"
 msgstr "Abair \"&cap\" roimh cheannlitreacha"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel.
-#: gui\settingsDialogs.py:1809
+#: gui\settingsDialogs.py:1810
 msgid "&Beep for capitals"
 msgstr "Déan &bíp ar cheannlitreacha"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel.
-#: gui\settingsDialogs.py:1823
+#: gui\settingsDialogs.py:1824
 msgid "Use &spelling functionality if supported"
 msgstr "Bain úsáid asfeidhm an &litriúithe má tá sé tacaithe.H1."
 
 #. Translators: Label of the list where user can enable or disable symbol dictionaires.
-#: gui\settingsDialogs.py:1839
+#: gui\settingsDialogs.py:1840
 msgid "E&xtra dictionaries for character and symbol processing:"
-msgstr ""
+msgstr "Foclóirí breise le haghaigh phróiseáil siombail agus carachtar"
 
 #. Translators: Label of the list where user can select speech modes that will be available.
-#: gui\settingsDialogs.py:1853
+#: gui\settingsDialogs.py:1854
 msgid "&Modes available in the Cycle speech mode command:"
-msgstr ""
+msgstr "Na móid atá ar fáil faoin ordú “Scrolláil móid chainte”:"
 
 #. Translators: This is the label for a checkbox in the voice settings panel.
-#: gui\settingsDialogs.py:1867
+#: gui\settingsDialogs.py:1868
 msgid "&Delayed descriptions for characters on cursor movement"
 msgstr "Tá moill ar siúl  ar chur síos na gcarachtar."
 
 #. Translators: Warning shown when 'talk' speech mode is disabled in settings.
-#: gui\settingsDialogs.py:1923
+#: gui\settingsDialogs.py:1924
 msgid "You did not choose Talk as one of your speech mode options. Please note that this may result in no speech output at all. Are you sure you want to continue?"
 msgstr "Níor roghnaigh tú caint mar cheann de na roghanna móid cainte. Tabhair faoi deara gur féidir nach mbeidh aschur cainte ar bith ann.\n"
 " "
 
 #. Translators: Message shown when not enough speech modes are enabled.
-#: gui\settingsDialogs.py:1951
+#: gui\settingsDialogs.py:1952
 msgid "At least two speech modes have to be checked."
 msgstr "Is gá dhá mhód labhartha a sheiceáil ar a laghad."
 
 #. Translators: Same as the label for the list of checkboxes where user can select speech modes that will
 #. be available in Speech Settings, but without keyboard accelerator (& character) nor final colon.
-#: gui\settingsDialogs.py:1954
+#: gui\settingsDialogs.py:1955
 msgid "Modes available in the Cycle speech mode command"
 msgstr "Na móid atá ar fáil faoin ordú \"scrolláil trí mhód labhartha\" "
 
 #. Translators: This is the label for the keyboard settings panel.
-#: gui\settingsDialogs.py:1963
+#: gui\settingsDialogs.py:1964
 msgid "Keyboard"
 msgstr "méarchlár"
 
 #. Translators: This is the label for a combobox in the
 #. keyboard settings panel.
 #. Translators: The label of a combobox in the Welcome dialog.
-#: gui\settingsDialogs.py:1970 gui\startupDialogs.py:69
+#: gui\settingsDialogs.py:1971 gui\startupDialogs.py:69
 msgid "&Keyboard layout:"
 msgstr "&Leagan amach an mhéarchláir:"
 
 #. Translators: This is the label for a list of checkboxes
 #. controlling which keys are NVDA modifier keys.
-#: gui\settingsDialogs.py:1984
+#: gui\settingsDialogs.py:1985
 msgid "&Select NVDA Modifier Keys"
 msgstr "Roghnaigh eochracha mionathraithe NVDA"
 
 #. Translators: This is the label for a combobox in the keyboard settings panel.
-#: gui\settingsDialogs.py:2000
+#: gui\settingsDialogs.py:2001
 msgid "Speak typed &characters:"
 msgstr "Labhair na carachtair a clóscríobhtar"
 
 #. Translators: This is the label for a combobox in the keyboard settings panel.
-#: gui\settingsDialogs.py:2011
+#: gui\settingsDialogs.py:2012
 msgid "Speak typed &words:"
 msgstr "Labhair na focail a chlóscríobhtar"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2023
+#: gui\settingsDialogs.py:2024
 msgid "Speech &interrupt for typed characters"
 msgstr "Déan briseadh isteach ar an urlabhra agus tú ag clóscríobh."
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2035
+#: gui\settingsDialogs.py:2036
 msgid "Speech i&nterrupt for Enter key"
 msgstr "Déan briseadh isteach ar an urlabhra nuair a bhrúitear iontráil."
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2044
+#: gui\settingsDialogs.py:2045
 msgid "Allow skim &reading in Say All"
 msgstr "Ceadaigh léamh scimeála sa mhód ‘Abair Uile’"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2054
+#: gui\settingsDialogs.py:2055
 msgid "&Beep if typing lowercase letters when caps lock is on"
 msgstr "Déan bíp nuair a chlóscríobhtar litreacha beaga agus glas ceannlitreacha ann."
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2063
+#: gui\settingsDialogs.py:2064
 msgid "Speak c&ommand keys"
 msgstr "Léigh na heochracha ordaithe\\v\\v\\v\\vLéigh na heochracha ordaithe\\v\\v&eochracha ordaithe"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2070
+#: gui\settingsDialogs.py:2071
 msgid "Play sound for &spelling errors while typing"
 msgstr "Sein fuaim do bhutúin litrithe agus clóscríobh á dhéanamh agat."
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2081
+#: gui\settingsDialogs.py:2082
 msgid "Handle keys from other &applications"
 msgstr "Láimsigh eochr&acha ó fheidhmchláir eile"
 
 #. Translators: The label for a control in keyboard settings to modify the timeout for a multiple keypress.
-#: gui\settingsDialogs.py:2089
+#: gui\settingsDialogs.py:2090
 msgid "&Multiple key press timeout (ms):"
-msgstr ""
+msgstr "Am istigh maidir le heochairbhrú iolraigh (ms)"
 
 #. Translators: Message to report wrong configuration of the NVDA key
-#: gui\settingsDialogs.py:2105
+#: gui\settingsDialogs.py:2106
 msgid "At least one key must be used as the NVDA key."
 msgstr "Ní foláir duit eochar a úsáid mar eochar NVDA."
 
 #. Translators: Same as the label for the list of checkboxes controlling which keys are NVDA modifier
 #. keys in Keyboard Settings, but without keyboard accelerator (& character).
-#: gui\settingsDialogs.py:2108
+#: gui\settingsDialogs.py:2109
 msgid "Select NVDA Modifier Keys"
 msgstr "Roghnaigh eochracha mionathraithe NVDA"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2143
+#: gui\settingsDialogs.py:2144
 msgid "Report mouse &shape changes"
 msgstr "Tabhair tuairi&sc nuair a athraíonn cruth na luiche"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2150
+#: gui\settingsDialogs.py:2151
 msgid "Enable mouse &tracking"
 msgstr "Cumasaigh &rianú na luiche"
 
 #. Translators: This is the label for a combobox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2157
+#: gui\settingsDialogs.py:2158
 msgid "Text &unit resolution:"
 msgstr "Taifeach téacs agus aonaid:"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2176
+#: gui\settingsDialogs.py:2177
 msgid "Report &object when mouse enters it"
 msgstr "Tabhair tuairisc ar an oibiacht nuair a bhogtar an luch isteach inti"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2185
+#: gui\settingsDialogs.py:2186
 msgid "&Play audio coordinates when mouse moves"
 msgstr "Seinn comhordanáidí fhuaime nuair a bhogann an luch."
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2192
+#: gui\settingsDialogs.py:2193
 msgid "&Brightness controls audio coordinates volume"
 msgstr "Rialann an ghile láine na comhordanáidí fhuaime"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2201
+#: gui\settingsDialogs.py:2202
 msgid "Ignore mouse input from other &applications"
 msgstr "Ná bac le ionchur luiche ó fheidhmchláir eile"
 
 #. Translators: This is the label for the review cursor settings panel.
-#: gui\settingsDialogs.py:2222
+#: gui\settingsDialogs.py:2223
 msgid "Review Cursor"
 msgstr "Cúrsóir athbhreithnithe"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2228
+#: gui\settingsDialogs.py:2229
 msgid "Follow system &focus"
 msgstr "Lean &fócas an chórais"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2234
+#: gui\settingsDialogs.py:2235
 msgid "Follow System &Caret"
 msgstr "Lean &Carait an Chórais"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2240
+#: gui\settingsDialogs.py:2241
 msgid "Follow &mouse cursor"
 msgstr "Lean an cú&rsóir luiche"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2246
+#: gui\settingsDialogs.py:2247
 msgid "&Simple review mode"
 msgstr "Mód &simplí athbhreithnithe"
 
 #. Translators: This is the label for the Input Composition settings panel.
-#: gui\settingsDialogs.py:2260
+#: gui\settingsDialogs.py:2261
 msgid "Input Composition"
 msgstr "ionchur"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2269
+#: gui\settingsDialogs.py:2270
 msgid "Automatically report all available &candidates"
 msgstr "Tuairiscigh go huathoibreach gach iarrthóir ar fáil"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2281
+#: gui\settingsDialogs.py:2282
 msgid "Announce &selected candidate"
 msgstr "Fógair an t-iarrthóir &roghnaithe"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2296
+#: gui\settingsDialogs.py:2297
 msgid "Always include short character &description when announcing candidates"
 msgstr "Iniaigh i gcónaí &cur síos gearr ar charactar nuair a fhógraítear na hiarrthóirí"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2311
+#: gui\settingsDialogs.py:2312
 msgid "Report changes to the &reading string"
 msgstr "Tuairiscigh athraithe ar an dteaghrán &léitheoireachta."
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2326
+#: gui\settingsDialogs.py:2327
 msgid "Report changes to the &composition string"
 msgstr "Tuairiscigh athraithe ar an dteaghrán &chomhshuímh"
 
 #. Translators: This is a label appearing on the Object Presentation settings panel.
-#: gui\settingsDialogs.py:2358
+#: gui\settingsDialogs.py:2359
 msgid "Configure how much information NVDA will present about controls. These options apply to focus reporting and NVDA object navigation, but not when reading text content e.g. web content with browse mode."
 msgstr "Cumraigh an méid eolais faoi rialtáin  a chuirfidh NVDA ar fáil. Baineann na roghanna seo le tuairisciú fócais agus le nascleanúint oibiachta NVDA, ach ní bhaineann siad le brabhsáil téacs."
 
 #. Translators: This is the label for the object presentation panel.
-#: gui\settingsDialogs.py:2364
+#: gui\settingsDialogs.py:2365
 msgid "Object Presentation"
 msgstr "Léiriú na h-oibiachta"
 
 #. Translators: An option for progress bar output in the Object Presentation dialog
 #. which reports progress bar updates by speaking.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
-#: gui\settingsDialogs.py:2374
+#: gui\settingsDialogs.py:2375
 msgid "Speak"
 msgstr "Léigh"
 
 #. Translators: An option for progress bar output in the Object Presentation dialog
 #. which reports progress bar updates by beeping.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
-#: gui\settingsDialogs.py:2378
+#: gui\settingsDialogs.py:2379
 msgid "Beep"
 msgstr "Bíp"
 
 #. Translators: An option for progress bar output in the Object Presentation dialog
 #. which reports progress bar updates by both speaking and beeping.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
-#: gui\settingsDialogs.py:2382
+#: gui\settingsDialogs.py:2383
 msgid "Speak and beep"
 msgstr "Léigh agus bíp"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2395
+#: gui\settingsDialogs.py:2396
 msgid "Report &tooltips"
 msgstr "Leid uirlise"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2402
+#: gui\settingsDialogs.py:2403
 msgid "Report &notifications"
 msgstr "Tabhair tuairisc ar fhógraí"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2409
+#: gui\settingsDialogs.py:2410
 msgid "Report object shortcut &keys"
 msgstr "Tuairiscigh &eochracha aicearra na h-oibiachta"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2416
+#: gui\settingsDialogs.py:2417
 msgid "Report object &position information"
 msgstr "Tuairiscigh eolas ar &shuíomh oibiachta"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2423
+#: gui\settingsDialogs.py:2424
 msgid "&Guess object position information when unavailable"
 msgstr "Déan buille faoi thuairim ar shuíomh na hoibiachta nuair nach bhfuil an suíomh le fáil."
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2432
+#: gui\settingsDialogs.py:2433
 msgid "Report object &descriptions"
 msgstr "Tuairiscigh cur síos ar oibiachtaí"
 
 #. Translators: This is the label for a combobox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2439
+#: gui\settingsDialogs.py:2440
 msgid "Progress &bar output:"
 msgstr "Aschur &barra dul chun cinn"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2452
+#: gui\settingsDialogs.py:2453
 msgid "Report backg&round progress bars"
 msgstr "Tabhair tuairisc ar bharraí dul chun cinn atá sa chúlra"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2466
+#: gui\settingsDialogs.py:2467
 msgid "Report dynamic &content changes"
 msgstr "Tuairiscigh athraithe ar& inneachar diniciúil"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2476
+#: gui\settingsDialogs.py:2477
 msgid "Play a sound when &auto-suggestions appear"
 msgstr "Sein fuaim nuair a thagann uathmoltai aníos"
 
 #. Translators: This is the label for the browse mode settings panel.
-#: gui\settingsDialogs.py:2509
+#: gui\settingsDialogs.py:2510
 msgid "Browse Mode"
 msgstr "Mód Brabhsála"
 
 #. Translators: This is the label for a textfield in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2516
+#: gui\settingsDialogs.py:2517
 msgid "&Maximum number of characters on one line"
 msgstr "&uasuimhir na charachtar ar líne amháin"
 
 #. Translators: This is the label for a textfield in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2529
+#: gui\settingsDialogs.py:2530
 msgid "&Number of lines per page"
 msgstr "Lío&n na línte sa leathanach"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2542
+#: gui\settingsDialogs.py:2543
 msgid "Use &screen layout (when supported)"
 msgstr "Úsáid leagan amach an &scáileáin (más féidir)"
 
 #. Translators: The label for a checkbox in browse mode settings to
 #. enable browse mode on page load.
-#: gui\settingsDialogs.py:2549
+#: gui\settingsDialogs.py:2550
 msgid "&Enable browse mode on page load"
 msgstr "Cumasaigh an mód brabhsála agus an leathanach á luchtú"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2556
+#: gui\settingsDialogs.py:2557
 msgid "Automatic &Say All on page load"
 msgstr "&Léigh Gach Rud go huathoibríoch ag am luchtú an leathanaigh"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2563
+#: gui\settingsDialogs.py:2564
 msgid "Include l&ayout tables"
 msgstr "&Cuir táblaí leagan amach san áireamh."
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2570
+#: gui\settingsDialogs.py:2571
 msgid "Automatic focus mode for focus changes"
 msgstr "Mód fócais uathoibreach i gcomhair athraithe fócais"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2584
+#: gui\settingsDialogs.py:2585
 msgid "Automatic focus mode for caret movement"
 msgstr "Mód fócais uathoibreach i gcomhair gluaiseachta an charait"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2598
+#: gui\settingsDialogs.py:2599
 msgid "Audio indication of focus and browse modes"
 msgstr "Tásc fuaimiúil i gcomhair mód fócais agus brabhsála"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2612
+#: gui\settingsDialogs.py:2613
 msgid "&Trap all non-command gestures from reaching the document"
 msgstr "&Ná lig aon ghotha neamhordaithe tríd go dtí an doiciméad."
 
 #. Translators: This is the label for the document formatting panel.
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:2645 gui\settingsDialogs.py:4054
+#: gui\settingsDialogs.py:2646 gui\settingsDialogs.py:4053
 msgid "Document Formatting"
 msgstr "Formáidiú cáipéise"
 
 #. Translators: This is a label appearing on the document formatting settings panel.
-#: gui\settingsDialogs.py:2649
+#: gui\settingsDialogs.py:2650
 msgid "The following options control the types of document formatting reported by NVDA."
 msgstr "Sainroghanna chun formáidiú doiciméid a bhainistiú"
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2658
+#: gui\settingsDialogs.py:2659
 msgid "Font"
 msgstr "clófhoireann"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2666
+#: gui\settingsDialogs.py:2667
 msgid "&Font name"
 msgstr "ainm cló&fhoirne"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2672
+#: gui\settingsDialogs.py:2673
 msgid "Font &size"
 msgstr "Méid clófhoirne"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2678
+#: gui\settingsDialogs.py:2679
 msgid "Font attrib&utes"
 msgstr "Aitreabúidí na clófhoirne"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2690
+#: gui\settingsDialogs.py:2691
 msgid "Su&perscripts and subscripts"
 msgstr "Forscripteanna agus foscripteanna"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2700
+#: gui\settingsDialogs.py:2701
 msgid "E&mphasis"
 msgstr "le béim"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2706
+#: gui\settingsDialogs.py:2707
 msgid "Highlighted (mar&ked) text"
 msgstr "téacs aibhsithe (marcáilte)"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2716
+#: gui\settingsDialogs.py:2717
 msgid "St&yle"
 msgstr "stíl"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2722
+#: gui\settingsDialogs.py:2723
 msgid "&Colors"
 msgstr "dathanna"
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2728
+#: gui\settingsDialogs.py:2729
 msgid "Document information"
 msgstr "Eolas faoin doiciméad"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2736
+#: gui\settingsDialogs.py:2737
 msgid "No&tes and comments"
 msgstr "Nó&taí agus Nótaí Tráchta"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2742
+#: gui\settingsDialogs.py:2743
 msgid "&Bookmarks"
 msgstr "leabharmharcanna"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2748
+#: gui\settingsDialogs.py:2749
 msgid "&Editor revisions"
 msgstr "Tabhair tuairisc maidir le hathbhreithnithe an &eagarthóra."
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2754
+#: gui\settingsDialogs.py:2755
 msgid "Spelling e&rrors"
 msgstr "botúin lit&rithe"
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2760
+#: gui\settingsDialogs.py:2761
 msgid "Pages and spacing"
 msgstr "leathanaigh agus spásáil"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2768
+#: gui\settingsDialogs.py:2769
 msgid "&Pages"
 msgstr "leathanaigh"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2774
+#: gui\settingsDialogs.py:2775
 msgid "Line &numbers"
 msgstr "uimhreacha lí&ne"
 
 #. Translators: This is the label for a combobox controlling the reporting of line indentation in the
 #. Document  Formatting  dialog (possible choices are Off, Speech, Tones, or Both.
-#: gui\settingsDialogs.py:2782
+#: gui\settingsDialogs.py:2783
 msgid "Line &indentation reporting:"
 msgstr "Tuairisceáil ar eangú"
 
 #. Translators: This is the label of a checkbox in the document formatting settings panel
 #. If this option is selected, NVDA will ignore blank lines for line indentation reporting
-#: gui\settingsDialogs.py:2796
+#: gui\settingsDialogs.py:2797
 msgid "Ignore &blank lines for line indentation reporting"
 msgstr "Tuairisceáil ar eangú"
 
 #. Translators: This message is presented in the document formatting settings panel
 #. If this option is selected, NVDA will report paragraph indentation if available.
-#: gui\settingsDialogs.py:2808
+#: gui\settingsDialogs.py:2809
 msgid "&Paragraph indentation"
 msgstr "eangú paragraif"
 
 #. Translators: This message is presented in the document formatting settings panel
 #. If this option is selected, NVDA will report line spacing if available.
-#: gui\settingsDialogs.py:2817
+#: gui\settingsDialogs.py:2818
 msgid "&Line spacing"
 msgstr "spásáil &líne"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2824
+#: gui\settingsDialogs.py:2825
 msgid "&Alignment"
 msgstr "&ailíniú"
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2830
+#: gui\settingsDialogs.py:2831
 msgid "Table information"
 msgstr "Eolas faoin tábla"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2838
+#: gui\settingsDialogs.py:2839
 msgid "&Tables"
 msgstr "&táblaí"
 
 #. Translators: This is the label for a combobox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2845
+#: gui\settingsDialogs.py:2846
 msgid "H&eaders"
 msgstr "ceanntásca"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2853
+#: gui\settingsDialogs.py:2854
 msgid "Cell c&oordinates"
 msgstr "Comhordanáidí cille"
 
 #. Translators: This is the label for a combobox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2861
+#: gui\settingsDialogs.py:2862
 msgid "Cell &borders:"
 msgstr "imlínte cille"
 
 #. Translators: This is the label for a group of document formatting options in the
 #. document formatting settings panel
-#: gui\settingsDialogs.py:2869
+#: gui\settingsDialogs.py:2870
 msgid "Elements"
 msgstr "Eilimintí"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2888
+#: gui\settingsDialogs.py:2889
 msgid "Link type"
 msgstr "An cineál naisc"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2894
+#: gui\settingsDialogs.py:2895
 msgid "&Graphics"
 msgstr "&grafaicí"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2899
+#: gui\settingsDialogs.py:2900
 msgid "&Lists"
 msgstr "&liostaí"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2904
+#: gui\settingsDialogs.py:2905
 msgid "Block &quotes"
 msgstr "athfhriotail bloic"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2910
+#: gui\settingsDialogs.py:2911
 msgid "&Groupings"
 msgstr "&Grúpálacha"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2916
+#: gui\settingsDialogs.py:2917
 msgid "Lan&dmarks and regions"
 msgstr "Sainchomharthaí agus réigiúin"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2922
+#: gui\settingsDialogs.py:2923
 msgid "Arti&cles"
 msgstr "Airteagail"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2927
+#: gui\settingsDialogs.py:2928
 msgid "Fra&mes"
 msgstr "Frá&maí"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2933
+#: gui\settingsDialogs.py:2934
 msgid "&Figures and captions"
 msgstr "Léaráidí agus foscríbhinní"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2939
+#: gui\settingsDialogs.py:2940
 msgid "&Clickable"
 msgstr "in&chliceáilte"
 
 #. Translators: This is the label for a checkbox in the
 #. document formatting settings panel.
-#: gui\settingsDialogs.py:2944
+#: gui\settingsDialogs.py:2945
 msgid "Report formatting chan&ges after the cursor (can cause a lag)"
 msgstr "Tabhair tuairisc ar athraithe formáidithe i ndiaidh an chúrsóra (d’fhéadfadh moill a bheith ann)"
 
 #. Translators: This is the label for the document navigation settings panel.
-#: gui\settingsDialogs.py:3010
+#: gui\settingsDialogs.py:3011
 msgid "Document Navigation"
 msgstr "nascleanúint doiciméid"
 
 #. Translators: This is a label for the paragraph navigation style in the document navigation dialog
-#: gui\settingsDialogs.py:3016
+#: gui\settingsDialogs.py:3017
 msgid "&Paragraph style:"
 msgstr "stíl &pharagraif"
 
 #. Translators: This message is presented when
 #. NVDA is unable to load the selected synthesizer.
-#: gui\settingsDialogs.py:3033
+#: gui\settingsDialogs.py:3034
 #, python-format
 msgid "Could not load the %s synthesizer."
 msgstr "Níorbh fhéidir an sintéiseoir %s a luchtú."
 
 #. Translators: Dialog title presented when
 #. NVDA is unable to load the selected synthesizer.
-#: gui\settingsDialogs.py:3036
+#: gui\settingsDialogs.py:3037
 msgid "Synthesizer Error"
 msgstr "Earráid sa Sintéiseoir"
 
 #. Translators: This is the label for the select output device combo in NVDA audio settings.
 #. Examples of an output device are default soundcard, usb headphones, etc.
-#: gui\settingsDialogs.py:3051
+#: gui\settingsDialogs.py:3052
 msgid "Audio output &device:"
 msgstr "Gléas aschurtha fuaime:"
 
 #. Translators: This is a label for the audio ducking combo box in the Audio Settings dialog.
-#: gui\settingsDialogs.py:3066
+#: gui\settingsDialogs.py:3067
 msgid "Audio d&ucking mode:"
 msgstr "Mód ísliú audio  "
 
 #. Translators: This is the label for a checkbox control in the
 #. Audio settings panel.
-#: gui\settingsDialogs.py:3080
+#: gui\settingsDialogs.py:3081
 msgid "Volume of NVDA sounds follows voice volume"
 msgstr "Bíonn airde fuaimeanna NVDA ag leanúint airde an ghutha. "
 
 #. Translators: This is the label for a slider control in the
 #. Audio settings panel.
-#: gui\settingsDialogs.py:3088
+#: gui\settingsDialogs.py:3089
 msgid "Volume of NVDA sounds"
 msgstr "Airde fuaimeanna NVDA "
 
 #. Translators: This is a label for the sound split combo box in the Audio Settings dialog.
-#: gui\settingsDialogs.py:3099
+#: gui\settingsDialogs.py:3100
 msgid "&Sound split mode:"
 msgstr "Mód &Scoilte Fuaime"
 
 #. Translators: The label for a setting in Audio settings panel
 #. to change how long the audio device is kept awake after speech
-#: gui\settingsDialogs.py:3116
+#: gui\settingsDialogs.py:3117
 msgid "Time to &keep audio device awake after speech (seconds)"
-msgstr ""
+msgstr "Am is gá Gléas fuaime a choimeád  ina dhúiseacht tar éis na cainte"
 
 #. Translators: Label of the list where user can select sound split modes that will be available.
-#: gui\settingsDialogs.py:3133
+#: gui\settingsDialogs.py:3134
 msgid "&Modes available in the 'Cycle sound split mode' command:"
 msgstr "Na móid atá ar fáil  san ordú chun fuaim a scoilt:"
 
 #. Translators: Message shown when no sound split modes are enabled.
-#: gui\settingsDialogs.py:3191
+#: gui\settingsDialogs.py:3192
 msgid "At least one sound split mode has to be checked."
 msgstr "Is gá aon mhód scoilte fuaime ar a laghad a sheiceáil "
 
 #. Translators: Same as the label for the list of checkboxes controlling which sound split modes will be
 #. available. in Audio Settings, but without keyboard accelerator (& character) nor final colon.
-#: gui\settingsDialogs.py:3194
+#: gui\settingsDialogs.py:3195
 msgid "Modes available in the 'Cycle sound split mode' command"
 msgstr "Na móid atá ar fáil  san ordú chun fuaim a scoilt:"
 
 #. Translators: This is the label for the addon navigation settings panel.
-#: gui\settingsDialogs.py:3202
+#: gui\settingsDialogs.py:3203
 msgid "Add-on Store"
 msgstr "Stór na mBreiseán"
 
 #. Translators: This is a label for the automatic updates combo box in the Add-on Store Settings dialog.
-#: gui\settingsDialogs.py:3208
+#: gui\settingsDialogs.py:3209
 msgid "Automatic &updates:"
 msgstr "Nuashonraithe uathoibríocha"
 
 #. Translators: This is the label for the default update channel combo box in the Add-on Store Settings dialog.
-#: gui\settingsDialogs.py:3220
+#: gui\settingsDialogs.py:3221
 msgid "Default update &channel:"
 msgstr "An cainéal réamhshocraithe nuashonraithe"
 
 #. Translators: Mute other apps checkbox in settings
-#: gui\settingsDialogs.py:3234
+#: gui\settingsDialogs.py:3235
 msgid "Allow automatic updates to install incompatible add-ons"
 msgstr "Lig do nuashonraithe uathoibríocha nuashonruithe neamh-chomhoiriúnacha a shuiteáil"
 
 #. Translators: The label for the mirror server on the Add-on Store Settings panel.
-#: gui\settingsDialogs.py:3240
+#: gui\settingsDialogs.py:3241
 msgid "Mirror server"
 msgstr "Friothálaí Scatháin"
 
 #. Translators: Title of the dialog used to change the Add-on Store mirror URL.
-#: gui\settingsDialogs.py:3277
+#: gui\settingsDialogs.py:3278
 msgid "Set Add-on Store Mirror Server"
 msgstr "Socraigh friothálaí scátháin Stór na mBreiseán"
 
 #. Translators: Label of a checkbox in Remote Access settings
-#: gui\settingsDialogs.py:3339
+#: gui\settingsDialogs.py:3332
 msgctxt "remote"
 msgid "Enable Remote Access"
 msgstr "Cumasaigh rochtain cianda"
 
 #. Translators: A checkbox in Remote Access settings to set whether to confirm when disconnecting as a follower.
-#: gui\settingsDialogs.py:3356
+#: gui\settingsDialogs.py:3349
 msgctxt "remote"
 msgid "Confirm before disconnecting when controlled"
-msgstr ""
+msgstr "Déan dearbhú agus tú ag dícheangail nuair atá an ríomhaire rialaithe"
 
 #. Translators: A checkbox in Remote Access settings to set whether NVDA should automatically connect to a control server on startup.
-#: gui\settingsDialogs.py:3365
+#: gui\settingsDialogs.py:3359
 msgctxt "remote"
 msgid "Automatically &connect after NVDA starts"
 msgstr "Ceangail go huathoibríoch tar éis tosaithe NVDA "
 
 #. Translators: A group of settings configuring how to connect if NVDA is set to automatically establish a Remote Access connection at startup.
-#: gui\settingsDialogs.py:3375
+#: gui\settingsDialogs.py:3369
 msgctxt "remote"
 msgid "Automatic connection"
 msgstr "Ceangail uathoibríoch"
@@ -13842,7 +13842,7 @@ msgstr "Ceangail uathoibríoch"
 #. Translators: Label for a control in Remote Access settings,
 #. allowing the user to select whether their computer is controlling or controlled.
 #. Translators: Label of the control allowing users to set whether they are the controlling or controlled computer in the Remote Access connection dialog.
-#: gui\settingsDialogs.py:3384 _remoteClient\dialogs.py:318
+#: gui\settingsDialogs.py:3378 _remoteClient\dialogs.py:318
 msgctxt "remote"
 msgid "&Mode:"
 msgstr "Mód"
@@ -13850,7 +13850,7 @@ msgstr "Mód"
 #. Translators: Label for a control in Remote Access settings,
 #. allowing users to choose whether they want to use an existing server, or host their own.
 #. Translators: Label of the control allowing users to select whether to use a pre-existing Remote Access server, or to run their own.
-#: gui\settingsDialogs.py:3393 _remoteClient\dialogs.py:325
+#: gui\settingsDialogs.py:3387 _remoteClient\dialogs.py:325
 msgctxt "remote"
 msgid "&Server:"
 msgstr "Friothálaí"
@@ -13858,7 +13858,7 @@ msgstr "Friothálaí"
 #. Translators: Label for the host field in Remote Access settings.
 #. This is where users should enter the URL of the Remote Access server they want to use if they are not hosting their own.
 #. Translators: The label of an edit field in connect dialog to enter name or address of the remote computer.
-#: gui\settingsDialogs.py:3403 _remoteClient\dialogs.py:41
+#: gui\settingsDialogs.py:3397 _remoteClient\dialogs.py:41
 msgid "&Host:"
 msgstr "Óstach"
 
@@ -13866,7 +13866,7 @@ msgstr "Óstach"
 #. This is the port on which the local control server will be accessible,
 #. if the user has chosen to host their own.
 #. Translators: The label for a setting in braille settings to choose the connection port (if the selected braille display supports port selection).
-#: gui\settingsDialogs.py:3412 gui\settingsDialogs.py:4474
+#: gui\settingsDialogs.py:3406 gui\settingsDialogs.py:4473
 #: _remoteClient\dialogs.py:202
 msgid "&Port:"
 msgstr "port"
@@ -13874,208 +13874,196 @@ msgstr "port"
 #. Translators: Label for a control in Remote Access settings,
 #. Where users set the key for their connection.
 #. Translators: Label of the edit field to enter key (password) to secure the Remote Access connection.
-#: gui\settingsDialogs.py:3433 _remoteClient\dialogs.py:46
+#: gui\settingsDialogs.py:3427 _remoteClient\dialogs.py:46
 msgid "&Key:"
 msgstr "Eochair"
 
 #. Translators: A button in Remote Access settings to delete all fingerprints of unauthorized certificates.
-#: gui\settingsDialogs.py:3440
+#: gui\settingsDialogs.py:3434
 msgid "Delete all trusted fingerprints"
-msgstr ""
-
-#. Translators: Title of a message presented to users when viewing Remote Access settings in secure mode.
-#: gui\settingsDialogs.py:3451
-msgctxt "remote"
-msgid "Read only"
-msgstr ""
-
-#. Translators: Message presented to users when viewing Remote Access settings in secure mode.
-#: gui\settingsDialogs.py:3453
-msgctxt "remote"
-msgid "Remote Access settings are read only as NVDA is running in secure mode."
-msgstr ""
+msgstr "Scrios gach méarlorgaireacht iontaofa"
 
 #. Translators: This message is presented when the user tries to delete all stored trusted fingerprints.
-#: gui\settingsDialogs.py:3513
+#: gui\settingsDialogs.py:3512
 msgctxt "remote"
 msgid "This will cause NVDA to forget all previously trusted Remote Access servers. When connecting to a previously trusted unrecognised server, you will again be asked whether to trust its certificate.\n\n"
 "Are you sure you want to continue?"
-msgstr ""
+msgstr "Cothóidh sé seo do NVDA dearmad a dhéanamh ar gach friothálaí cianda a bhí iontaofa roimhe seo. Má tá tú ag iarraidh ceangail le friothálaí cianda nach aithnítear,  a bhí iontaofa roimhe seo, iarrfar ort arís iontaoibh a chur ina chuid teastas.\\n"
 
 #. Translators: This is the title of the dialog presented when the user tries to delete all stored trusted fingerprints.
-#: gui\settingsDialogs.py:3518
+#: gui\settingsDialogs.py:3517
 msgctxt "remote"
 msgid "Delete All Trusted Fingerprints"
-msgstr ""
+msgstr "Scrios gach méarlorgaireacht iontaofa. "
 
 #. Translators: This message is presented when the user tries to save the settings with the host or key field empty.
-#: gui\settingsDialogs.py:3535
+#: gui\settingsDialogs.py:3534
 msgctxt "remote"
 msgid "Both host and key must be set in the Remote Access section in order to automatically connect using an existing server after NVDA starts."
-msgstr ""
+msgstr "Is gá an t-óstach agus an eochair a shocrú sa mhír maidir le rochtain cianda, chun ceangail uathoibríoch a dhéanamh tar éis  NVDA a atosú"
 
 #. Translators: This message is presented when the user tries to save the settings with the port or key field empty.
-#: gui\settingsDialogs.py:3541
+#: gui\settingsDialogs.py:3540
 msgctxt "remote"
 msgid "Both port and key must be set in the Remote Access category in order to automatically connect using a locally hosted server after NVDA starts."
-msgstr ""
+msgstr "Is gá an port agus an eochair a shocrú sa mhír maidir le rochtain cianda, chun ceangail uathoibríoch a dhéanamh trí friothálaí logánta, tar éis  NVDA a atosú"
 
 #. Translators: Title of a dialog.
-#: gui\settingsDialogs.py:3547
+#: gui\settingsDialogs.py:3546
 msgctxt "remote"
 msgid "Remote Access Error"
 msgstr "Earáid rochtana cinda"
 
 #. Translators: This is the label for the touch interaction settings panel.
-#: gui\settingsDialogs.py:3580
+#: gui\settingsDialogs.py:3579
 msgid "Touch Interaction"
 msgstr "Idirghníomhú tadhaill"
 
 #. Translators: This is the label for a checkbox in the
 #. touch interaction settings panel.
-#: gui\settingsDialogs.py:3587
+#: gui\settingsDialogs.py:3586
 msgid "Enable touch interaction support"
 msgstr "Cumasaigh tacaíocht le hidirghníomhú tadhaill"
 
 #. Translators: This is the label for a checkbox in the
 #. touch interaction settings panel.
-#: gui\settingsDialogs.py:3593
+#: gui\settingsDialogs.py:3592
 msgid "&Touch typing mode"
 msgstr "mód clóscríofa &tadhaill"
 
 #. Translators: The title of the Windows OCR panel.
-#: gui\settingsDialogs.py:3605
+#: gui\settingsDialogs.py:3604
 msgid "Windows OCR"
 msgstr "OCR Windows"
 
 #. Translators: Label for an option in the Windows OCR dialog.
-#: gui\settingsDialogs.py:3624
+#: gui\settingsDialogs.py:3623
 msgid "Recognition &language:"
 msgstr "teanga aithinte "
 
 #. Translators: Label for an option in the Windows OCR settings panel.
-#: gui\settingsDialogs.py:3634
+#: gui\settingsDialogs.py:3633
 msgid "Periodically &refresh recognized content"
 msgstr "Athnuaigh an t-ábhar aithinte ó am go chéile"
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:3665
+#: gui\settingsDialogs.py:3664
 msgid "NVDA Development"
 msgstr "Forbairt NVDA"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3673
+#: gui\settingsDialogs.py:3672
 msgid "Enable loading custom code from Developer Scratchpad directory"
 msgstr "Cumasaigh lódáil an chóid saincheaptha ón bhfillteán um chuimhne oibre "
 
 #. Translators: the label for a button in the Advanced settings category
-#: gui\settingsDialogs.py:3686
+#: gui\settingsDialogs.py:3685
 msgid "Open developer scratchpad directory"
 msgstr "Oscail an fillteán ina bhfuil cuimhne oibre an forbróra"
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:3696
+#: gui\settingsDialogs.py:3695
 msgid "Microsoft UI Automation"
 msgstr "Uathoibriú UI Microsoft"
 
 #. Translators: This is the label for a combo box for selecting the
 #. means of registering for UI Automation events in the advanced settings panel.
 #. Choices are automatic, selective, and global.
-#: gui\settingsDialogs.py:3706
+#: gui\settingsDialogs.py:3705
 msgid "Regi&stration for UI Automation events and property changes:"
 msgstr "Clárúchán le haghaidh teagmhais UI uathoibrithe agus le haghaidh athruithe airíonna"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA decide whether to register
 #. selectively or globally for UI Automation events.
-#: gui\settingsDialogs.py:3712
+#: gui\settingsDialogs.py:3711
 msgid "Automatic (prefer selective)"
 msgstr "Uathoibríoch – (roghnaigh roghnaitheach)"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA register selectively for UI Automation events
 #. (i.e. not to request events for objects outside immediate focus).
-#: gui\settingsDialogs.py:3716
+#: gui\settingsDialogs.py:3715
 msgid "Selective"
 msgstr "roghnaithe"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA register for all UI Automation events
 #. in all cases.
-#: gui\settingsDialogs.py:3720
+#: gui\settingsDialogs.py:3719
 msgid "Global"
 msgstr "Uilíoch"
 
 #. Translators: Label for the Use UIA with MS Word combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3749
+#: gui\settingsDialogs.py:3748
 msgctxt "advanced.uiaWithMSWord"
 msgid "Use UI Automation to access Microsoft &Word document controls"
 msgstr "Bain úsáid as uathoibriú UI  chun rochtain a fháil ar na rialtáin i  ndoiciméid Microsoft Word\\v\\v\\v\\v\\v\\v\\v\\v\\v\\v\\v\\v\\v\\v\\v\\v\\v\\vBain úsáid as uathoibriú UI  chun rochtain a fháil ar na rialtáin i  ndoiciméid Microsoft Word.\\vI Microsoft nuair atá sé- ar fáil, chun rochtain a fháil ar rialtáin Microsoft agus ar rialtáin Microsoft Word."
 
 #. Translators: Label for the default value of the Use UIA with MS Word combobox,
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3754
+#: gui\settingsDialogs.py:3753
 msgctxt "advanced.uiaWithMSWord"
 msgid "Default (Where suitable)"
 msgstr "Déan réamhshocrú (más oiriúnach)"
 
 #. Translators: Label for a value in the Use UIA with MS Word combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3756
+#: gui\settingsDialogs.py:3755
 msgctxt "advanced.uiaWithMSWord"
 msgid "Only when necessary"
 msgstr "Ach amháin nuair is gá."
 
 #. Translators: Label for a value in the Use UIA with MS Word combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3758
+#: gui\settingsDialogs.py:3757
 msgctxt "advanced.uiaWithMSWord"
 msgid "Where suitable"
 msgstr "más oiriúnach"
 
 #. Translators: Label for a value in the Use UIA with MS Word combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3760
+#: gui\settingsDialogs.py:3759
 msgctxt "advanced.uiaWithMSWord"
 msgid "Always"
 msgstr "I gcónaí"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3769
+#: gui\settingsDialogs.py:3768
 msgid "Use UI Automation to access Microsoft &Excel spreadsheet controls when available"
 msgstr "Bain úsáid as uathoibriú UI Microsoft nuair atá sí ar fáil, chun rochtain a fháil ar rialtáin Microsoft agus ar rialtáin Microsoft Excel."
 
 #. Translators: This is the label for a combo box for selecting the
 #. active console implementation in the advanced settings panel.
 #. Choices are automatic, UIA when available, and legacy.
-#: gui\settingsDialogs.py:3777
+#: gui\settingsDialogs.py:3776
 msgid "Windows C&onsole support:"
 msgstr "Tacaíocht do chonsól Windows"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA determine its Windows Console implementation
 #. automatically.
-#: gui\settingsDialogs.py:3782
+#: gui\settingsDialogs.py:3781
 msgid "Automatic (prefer UIA)"
 msgstr "fUathoibríoch – (roghnaigh UI)"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA use UIA in the Windows Console when available.
-#: gui\settingsDialogs.py:3785
+#: gui\settingsDialogs.py:3784
 msgid "UIA when available"
 msgstr "UIA nuair atá sé ar fáil"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA use its legacy Windows Console support
 #. in all cases.
-#: gui\settingsDialogs.py:3789
+#: gui\settingsDialogs.py:3788
 msgid "Legacy"
 msgstr "Oidhreacht"
 
 #. Translators: Label for the Use UIA with Chromium combobox, in the Advanced settings panel.
 #. Note the '\n' is used to split this long label approximately in half.
-#: gui\settingsDialogs.py:3812
+#: gui\settingsDialogs.py:3811
 msgctxt "advanced.uiaWithChromium"
 msgid "Use UIA with Microsoft Edge and other \n"
 "&Chromium based browsers when available:"
@@ -14085,72 +14073,72 @@ msgstr "Bain úsáid as an gcomhéadan úsáideora ar Microsoft Edge agus ar bhr
 
 #. Translators: Label for the default value of the Use UIA with Chromium combobox,
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3817
+#: gui\settingsDialogs.py:3816
 msgctxt "advanced.uiaWithChromium"
 msgid "Default (Only when necessary)"
 msgstr "Rogha réamhsocraithe (nuair is gá amháin)"
 
 #. Translators: Label for a value in the Use UIA with Chromium combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3819
+#: gui\settingsDialogs.py:3818
 msgctxt "advanced.uiaWithChromium"
 msgid "Only when necessary"
 msgstr "Ach amháin nuair is gá."
 
 #. Translators: Label for a value in the Use UIA with Chromium combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3821
+#: gui\settingsDialogs.py:3820
 msgctxt "advanced.uiaWithChromium"
 msgid "Yes"
 msgstr "Cealaigh"
 
 #. Translators: Label for a value in the Use UIA with Chromium combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:3823
+#: gui\settingsDialogs.py:3822
 msgctxt "advanced.uiaWithChromium"
 msgid "No"
 msgstr "Ná húsáid"
 
 #. Translators: This is the label for a COMBOBOX in the Advanced settings panel.
-#: gui\settingsDialogs.py:3831
+#: gui\settingsDialogs.py:3830
 msgid "Use en&hanced event processing (requires restart)"
-msgstr ""
+msgstr "Bain úsáid as phróiseáil teagmhais feabhsaithe. Is gá atosú."
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:3842
+#: gui\settingsDialogs.py:3841
 msgid "Annotations"
 msgstr "&Anótáil"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3851
+#: gui\settingsDialogs.py:3850
 msgid "Report 'has details' for structured annotations"
 msgstr "Tuairiscigh ‘le sonraí” le haghaidh fógraí struchtúrtha"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3858
+#: gui\settingsDialogs.py:3857
 msgid "Report aria-description always"
 msgstr "Tabhair cursíos ar ARIA i gcónaí"
 
 #. Translators: This is the label for a combo-box in the Advanced settings panel.
-#: gui\settingsDialogs.py:3874
+#: gui\settingsDialogs.py:3873
 msgid "Report live regions:"
 msgstr "Tabhair tuairisc ar na réigiúin bheo"
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:3883
+#: gui\settingsDialogs.py:3882
 msgid "Terminal programs"
 msgstr "feidhmchláir teirminéil"
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3890
+#: gui\settingsDialogs.py:3889
 msgid "Speak &passwords in all enhanced terminals (may improve performance)"
 msgstr "Fógair na pasfhocail i ngach teirminéal feabhsaithe. D’fhéadfaí an fheidhmíocht a fheabhsú."
 
 #. Translators: This is the label for a checkbox in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3899
+#: gui\settingsDialogs.py:3898
 msgid "Use enhanced t&yped character support in legacy Windows Console when available"
 msgstr "Bain úsáid as tacaíocht feabhsaithe do charachtair chlóscríofa i gconsól oidhreachta  Windows, nuair atá sí ar fáil."
 
@@ -14158,329 +14146,329 @@ msgstr "Bain úsáid as tacaíocht feabhsaithe do charachtair chlóscríofa i gc
 #. method of detecting changed content in terminals in the advanced
 #. settings panel.
 #. Choices are automatic, Diff Match Patch, and Difflib.
-#: gui\settingsDialogs.py:3912
+#: gui\settingsDialogs.py:3911
 msgid "&Diff algorithm:"
 msgstr "algartam diff"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA determine the method of detecting changed
 #. content in terminals automatically.
-#: gui\settingsDialogs.py:3917
+#: gui\settingsDialogs.py:3916
 msgid "Automatic (prefer Diff Match Patch)"
 msgstr "Uathoibríoch – (roghnaigh paiste  diff)"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA detect changes in terminals
 #. by character, using the diff match patch algorithm.
-#: gui\settingsDialogs.py:3921
+#: gui\settingsDialogs.py:3920
 msgid "Diff Match Patch"
 msgstr "Diff Match Patch"
 
 #. Translators: A choice in a combo box in the advanced settings
 #. panel to have NVDA detect changes in terminals
 #. by line, using the difflib algorithm.
-#: gui\settingsDialogs.py:3925
+#: gui\settingsDialogs.py:3924
 msgid "Difflib"
 msgstr "Bain úsáid as DIFFLIB"
 
 #. Translators: This is the label for a combo-box in the Advanced settings panel.
-#: gui\settingsDialogs.py:3951
+#: gui\settingsDialogs.py:3950
 msgid "Speak new text in Windows Terminal via:"
 msgstr "Léigh téacs nua i Teirminéal Windows trí:"
 
 #. Translators: Label for the 'Cancel speech for expired &focus events' combobox
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3970
+#: gui\settingsDialogs.py:3969
 msgid "Default (Yes)"
 msgstr "(No) réamhshocraithe"
 
 #. Translators: Label for the 'Cancel speech for expired &focus events' combobox
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3973
+#: gui\settingsDialogs.py:3972
 msgid "Yes"
 msgstr "Cealaigh"
 
 #. Translators: Label for the 'Cancel speech for expired &focus events' combobox
 #. in the Advanced settings panel.
-#: gui\settingsDialogs.py:3976
+#: gui\settingsDialogs.py:3975
 msgid "No"
 msgstr "Ná cealaigh"
 
 #. Translators: This is the label for combobox in the Advanced settings panel.
-#: gui\settingsDialogs.py:3980
+#: gui\settingsDialogs.py:3979
 msgid "Attempt to cancel speech for expired focus events:"
 msgstr "Déan iarracht urlabhra maidir le teagmhais fócais éagtha, a chealú \n"
 "Cumasaigh clárúchán roghnaitheach le haghaidh teagmhais UI uathoibrithe agus le haghaidh athruithe airíonna "
 
 #. Translators: This is the label for a checkbox control in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:3996
+#: gui\settingsDialogs.py:3995
 msgid "Trim leading silence in speech audio"
-msgstr ""
+msgstr "Bain an ciúnas ag tús na cainte"
 
 #. Translators: This is the label for a combo-box control in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:4004
+#: gui\settingsDialogs.py:4003
 msgid "Use WASAPI for SAPI 4 audio output:"
 msgstr "Bain úsáid as WASAPI le haghaidh aschur fuaime SAPI 4  "
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4015
+#: gui\settingsDialogs.py:4014
 msgid "Virtual Buffers"
 msgstr "maoláin fhíorúla"
 
 #. Translators: This is the label for a combo-box in the Advanced settings panel.
-#: gui\settingsDialogs.py:4023
+#: gui\settingsDialogs.py:4022
 msgid "Load Chromium virtual buffer when document busy."
 msgstr "Lódáil maolán fíorúil Chromium nuair atá an doiciméad gnóthach "
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4032
+#: gui\settingsDialogs.py:4031
 msgid "Editable Text"
 msgstr "téacs ineagarthóireachta"
 
 #. Translators: This is the label for a numeric control in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:4039
+#: gui\settingsDialogs.py:4038
 msgid "Caret movement timeout (in ms)"
 msgstr "Am istigh do ghluaiseacht na caraite in milleasoicindí"
 
 #. Translators: This is the label for a checkbox control in the
 #. Advanced settings panel.
-#: gui\settingsDialogs.py:4062
+#: gui\settingsDialogs.py:4061
 msgid "Report transparent color values"
 msgstr "Tabhair tuairisc ar luachanna na ndathanna trédhearcacha "
 
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4076
+#: gui\settingsDialogs.py:4075
 msgid "Debug logging"
 msgstr "Logáil dífhabhtaithe "
 
 #. Translators: This is the label for a list in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4101
+#: gui\settingsDialogs.py:4100
 msgid "Enabled logging categories"
 msgstr "Na catagóirí logála atácumasaithe"
 
 #. Translators: Label for the Play a sound for logged errors combobox, in the Advanced settings panel.
-#: gui\settingsDialogs.py:4121
+#: gui\settingsDialogs.py:4120
 msgid "Play a sound for logged e&rrors:"
 msgstr "Déan fuaim le haghaidh earráidí."
 
 #. Translators: Label for a value in the Play a sound for logged errors combobox, in the Advanced settings.
-#: gui\settingsDialogs.py:4124
+#: gui\settingsDialogs.py:4123
 msgctxt "advanced.playErrorSound"
 msgid "Only in NVDA test versions"
 msgstr "ar fáil i leagan tástála NVDA."
 
 #. Translators: Label for a value in the Play a sound for logged errors combobox, in the Advanced settings.
-#: gui\settingsDialogs.py:4126
+#: gui\settingsDialogs.py:4125
 msgctxt "advanced.playErrorSound"
 msgid "Yes"
 msgstr "Lean ar aghaidh"
 
 #. Translators: This is the label for a textfield in the
 #. advanced settings panel.
-#: gui\settingsDialogs.py:4139
+#: gui\settingsDialogs.py:4138
 msgid "Regular expression for text paragraph navigation"
-msgstr ""
+msgstr "Slonn rialta le haghaidh nascleanúna paragraif téacs"
 
 #. Translators: Message shown when invalid text paragraph regex entered
-#: gui\settingsDialogs.py:4161
+#: gui\settingsDialogs.py:4160
 #, python-format
 msgid "Failed to compile text paragraph regular expression: %s"
-msgstr ""
+msgstr "Theip ar slonn rialta le haghaidh nascleanúna paragraif téacs   %s  a thiomsú"
 
 #. Translators: This is the label for the Advanced settings panel.
-#: gui\settingsDialogs.py:4291
+#: gui\settingsDialogs.py:4290
 msgid "Advanced"
 msgstr "ardshocruithe"
 
 #. Translators: This is the label to warn users about the Advanced options in the
 #. Advanced settings panel
-#: gui\settingsDialogs.py:4296
+#: gui\settingsDialogs.py:4295
 msgid "Warning!"
 msgstr "Rabhadh!"
 
 #. Translators: This is a label appearing on the Advanced settings panel.
-#: gui\settingsDialogs.py:4300
+#: gui\settingsDialogs.py:4299
 msgid "The following settings are for advanced users. Changing them may cause NVDA to function incorrectly. Please only change these if you know what you are doing or have been specifically instructed by NVDA developers."
 msgstr "Baineann na socruithe seo a leanas le sainúsáideoirí. Má athraítear iad, d’fhéadfadh NVDA a fheidhmiú go mícheart. Ná athraigh na socruithe seo ach amháin má tá a fhios agat cad atá á dhéanamh agat nó má ordaigh na forbreoirí NVDA duit é a dhéanamh."
 
 #. Translators: This is the label for a checkbox in the Advanced settings panel.
-#: gui\settingsDialogs.py:4327
+#: gui\settingsDialogs.py:4326
 msgid "I understand that changing these settings may cause NVDA to function incorrectly."
 msgstr "Tuigim go bhféadfadh NVDA a fheidhmiú go mícheart má athraítear na socruithe seo."
 
 #. Translators: This is the label for a button in the Advanced settings panel
-#: gui\settingsDialogs.py:4338
+#: gui\settingsDialogs.py:4337
 msgid "Restore defaults"
 msgstr "Cuir na réamhshocruithe ar ais"
 
 #. Translators: A label for the braille display on the braille panel.
-#: gui\settingsDialogs.py:4381
+#: gui\settingsDialogs.py:4380
 msgid "Braille display"
 msgstr "Taispeántas Braille"
 
 #. Translators: This is the label for the braille display selection dialog.
-#: gui\settingsDialogs.py:4450
+#: gui\settingsDialogs.py:4449
 msgid "Select Braille Display"
 msgstr "Taispeántas Braille"
 
 #. Translators: The label for a setting in braille settings to choose a braille display.
-#: gui\settingsDialogs.py:4459
+#: gui\settingsDialogs.py:4458
 msgid "Braille &display:"
 msgstr "&Taispeántas Braille:"
 
 #. Translators: The label for a setting in braille settings to enable displays for automatic detection.
-#: gui\settingsDialogs.py:4465
+#: gui\settingsDialogs.py:4464
 msgid "&Displays to detect automatically:"
 msgstr "Taispeántais le brath go huathoibríoch"
 
 #. Translators: The message in a dialog presented when NVDA is unable to load the selected
 #. braille display.
-#: gui\settingsDialogs.py:4581
+#: gui\settingsDialogs.py:4580
 #, python-brace-format
 msgid "Could not load the {display} display."
 msgstr "Níorbh fhéidir an {display}  a luchtú."
 
 #. Translators: The title in a dialog presented when NVDA is unable to load the selected
 #. braille display.
-#: gui\settingsDialogs.py:4584
+#: gui\settingsDialogs.py:4583
 msgid "Braille Display Error"
 msgstr "Earráid le Taispeántas Braille"
 
 #. Translators: The label for a setting in braille settings to select the output table (the braille table used to read braille text on the braille display).
-#: gui\settingsDialogs.py:4617
+#: gui\settingsDialogs.py:4616
 msgid "&Output table:"
 msgstr "Tábla &aschurtha:"
 
 #. Translators: An option in Braille settings to select a braille table automatically, according to the current language.
-#: gui\settingsDialogs.py:4625 gui\settingsDialogs.py:4652
+#: gui\settingsDialogs.py:4624 gui\settingsDialogs.py:4651
 #, python-brace-format
 msgid "Automatic ({name})"
 msgstr "({name}) go huathoibríoch"
 
 #. Translators: The label for a setting in braille settings to select the input table (the braille table used to type braille characters on a braille keyboard).
-#: gui\settingsDialogs.py:4644
+#: gui\settingsDialogs.py:4643
 msgid "&Input table:"
 msgstr "Tábla &ionchurtha:"
 
 #. Translators: The label for a setting in braille settings to select which braille mode to use
-#: gui\settingsDialogs.py:4670
+#: gui\settingsDialogs.py:4669
 msgid "Braille mode:"
 msgstr "Móde Braille:"
 
 #. Translators: The label for a setting in braille settings to expand the current word under cursor to computer braille.
-#: gui\settingsDialogs.py:4685
+#: gui\settingsDialogs.py:4684
 msgid "E&xpand to computer braille for the word at the cursor"
 msgstr "&Leathnaigh chun ríomhbhraille i gcomhair an fhocail ag an gcúrsóir"
 
 #. Translators: The label for a setting in braille settings to show the cursor.
-#: gui\settingsDialogs.py:4693
+#: gui\settingsDialogs.py:4692
 msgid "&Show cursor"
 msgstr "taispeáin an cúrsóir"
 
 #. Translators: The label for a setting in braille settings to enable cursor blinking.
-#: gui\settingsDialogs.py:4702
+#: gui\settingsDialogs.py:4701
 msgid "Blink cursor"
 msgstr "Cuir an Cursóir ag caochadh"
 
 #. Translators: The label for a setting in braille settings to change cursor blink rate in milliseconds (1 second is 1000 milliseconds).
-#: gui\settingsDialogs.py:4713
+#: gui\settingsDialogs.py:4712
 msgid "Cursor blink rate (ms)"
 msgstr "Ráta caochta an chursóra (ms)"
 
 #. Translators: The label for a setting in braille settings to select the cursor shape when tethered to focus.
-#: gui\settingsDialogs.py:4735
+#: gui\settingsDialogs.py:4734
 msgid "Cursor shape for &focus:"
 msgstr "Cruth an chúrsóra le haghaidh fócais"
 
 #. Translators: The label for a setting in braille settings to select the cursor shape when tethered to review.
-#: gui\settingsDialogs.py:4751
+#: gui\settingsDialogs.py:4750
 msgid "Cursor shape for &review:"
 msgstr "Cruth an chúrsóra le haghaidh athbhreithnithe"
 
 #. Translators: The label for a setting in braille settings to combobox enabling user
 #. to decide if braille messages should be shown and automatically disappear from braille display.
-#: gui\settingsDialogs.py:4773
+#: gui\settingsDialogs.py:4772
 msgid "Show messages"
 msgstr "Taispeáin na teachtaireachtaí"
 
 #. Translators: The label for a setting in braille settings to change how long a message stays on the braille display (in seconds).
-#: gui\settingsDialogs.py:4795
+#: gui\settingsDialogs.py:4794
 msgid "Message &timeout (sec)"
 msgstr "&Teachtaireacht thar am (soicindí)"
 
 #. Translators: The label for a setting in braille settings to set whether braille should be tethered to focus or review cursor.
-#: gui\settingsDialogs.py:4814
+#: gui\settingsDialogs.py:4813
 msgid "Tether B&raille:"
 msgstr "Ceangail an Braille"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:4838
+#: gui\settingsDialogs.py:4837
 msgid "Move system caret when ro&uting review cursor"
 msgstr "Bog an carat córais nuair atá an cúrsóir athbhreithnithe á ródú"
 
 #. Translators: The label for a setting in braille settings to read by paragraph (if it is checked, the commands to move the display by lines moves the display by paragraphs instead).
-#: gui\settingsDialogs.py:4854
+#: gui\settingsDialogs.py:4853
 msgid "Read by &paragraph"
 msgstr "Léigh de &réir altanna"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel to select paragraph start markers.
-#: gui\settingsDialogs.py:4863
+#: gui\settingsDialogs.py:4862
 msgid "Paragraph start marker:"
 msgstr "Marcóir tosaithe an pharagraif"
 
 #. Translators: The label for a setting in braille settings to select how the context for the focus object should be presented on a braille display.
-#: gui\settingsDialogs.py:4878
+#: gui\settingsDialogs.py:4877
 msgid "Focus context presentation:"
 msgstr "comhthéacs an fhócais"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:4899
+#: gui\settingsDialogs.py:4898
 msgid "Show se&lection"
 msgstr "Taispeáin an roghnúchán"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:4911
+#: gui\settingsDialogs.py:4910
 msgid "Formatting &display"
 msgstr "Formáidiú agus Taispeáint"
 
 #. Translators: The label for a setting in braille settings to speak the character under the cursor when cursor routing in text.
-#: gui\settingsDialogs.py:4920
+#: gui\settingsDialogs.py:4919
 msgid "Spea&k character when routing cursor in text"
 msgstr "Abair an carachtar agus an cúrsóir á ródú sa téacs"
 
 #. Translators: The label for a setting in braille settings to speak the current line or paragraph when navigating by them with braille.
-#: gui\settingsDialogs.py:4928
+#: gui\settingsDialogs.py:4927
 msgid "Speak when navigating by &line or paragraph"
 msgstr "Labhair agus nascleanúint á déanamh le líne nó le paragraf"
 
 #. Translators: The label for a setting in braille settings to enable word wrap
 #. (try to avoid splitting words at the end of the braille display).
-#: gui\settingsDialogs.py:4941
+#: gui\settingsDialogs.py:4940
 msgid "Avoid splitting &words when possible"
 msgstr "Ná scoilt &focail más féidir"
 
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:4960
+#: gui\settingsDialogs.py:4959
 msgid "I&nterrupt speech while scrolling"
 msgstr "Briseadh isteach ar urlabhra nuair atá scrolláil ar siúl."
 
 #. Translators: This message is presented when
 #. NVDA is unable to load a single vision enhancement provider.
-#: gui\settingsDialogs.py:5054
+#: gui\settingsDialogs.py:5053
 #, python-brace-format
 msgid "Could not load the {providerName} vision enhancement provider"
 msgstr "Níorbh fhéidir an soláthraí radharcbhreisiúchán {providerName} a luchtú. "
 
 #. Translators: This message is presented when NVDA is unable to
 #. load multiple vision enhancement providers.
-#: gui\settingsDialogs.py:5061
+#: gui\settingsDialogs.py:5060
 #, python-brace-format
 msgid "Could not load the following vision enhancement providers:\n"
 "{providerNames}"
@@ -14488,20 +14476,20 @@ msgstr "Níorbh fhéidir na soláthraithe radharcbhreisiúchán seo a leanas a l
 "{providerNames}"
 
 #. Translators: The title of the vision enhancement provider error message box.
-#: gui\settingsDialogs.py:5067 gui\settingsDialogs.py:5097
+#: gui\settingsDialogs.py:5066 gui\settingsDialogs.py:5096
 msgid "Vision Enhancement Provider Error"
 msgstr "Earráid le soláthraí radharcbhreisiúchán"
 
 #. Translators: This message is presented when
 #. NVDA is unable to gracefully terminate a single vision enhancement provider.
-#: gui\settingsDialogs.py:5084
+#: gui\settingsDialogs.py:5083
 #, python-brace-format
 msgid "Could not gracefully terminate the {providerName} vision enhancement provider"
 msgstr "Níorbh fhéidir stop a chur leis an soláthraí radharcbhreisiúchán  {providerName} go slachtmhara."
 
 #. Translators: This message is presented when
 #. NVDA is unable to terminate multiple vision enhancement providers.
-#: gui\settingsDialogs.py:5092
+#: gui\settingsDialogs.py:5091
 #, python-brace-format
 msgid "Could not gracefully terminate the following vision enhancement providers:\n"
 "{providerNames}"
@@ -14509,119 +14497,119 @@ msgstr "Níorbh fhéidir stop a chur leis na soláthraithe radharcbhreisiúchán
 "{providerNames}"
 
 #. Translators: This is a label appearing on the vision settings panel.
-#: gui\settingsDialogs.py:5192
+#: gui\settingsDialogs.py:5191
 msgid "Configure visual aids."
 msgstr "Cumraigh áiseanna amhairc."
 
 #. Translators: Enable checkbox on a vision enhancement provider on the vision settings category panel
-#: gui\settingsDialogs.py:5364
+#: gui\settingsDialogs.py:5363
 msgid "Enable"
 msgstr "Cumasaigh"
 
 #. Translators: Options label on a vision enhancement provider on the vision settings category panel
 #. Translators: The label for a group box containing the NVDA highlighter options.
-#: gui\settingsDialogs.py:5371
+#: gui\settingsDialogs.py:5370
 #: visionEnhancementProviders\NVDAHighlighter.py:307
 #: visionEnhancementProviders\screenCurtain.py:245
 msgid "Options:"
 msgstr "Roghanna:"
 
 #. Translators: Shown when there is an error showing the GUI for a vision enhancement provider
-#: gui\settingsDialogs.py:5417
+#: gui\settingsDialogs.py:5416
 msgid "Unable to configure user interface for Vision Enhancement Provider, it can not be enabled."
 msgstr "Níor féidir an comhéadan úsáideora don soláthraí radharcbhreisiúchán a chumasú."
 
 #. Translators: This is the label for the NVDA settings dialog.
-#: gui\settingsDialogs.py:5462
+#: gui\settingsDialogs.py:5461
 msgid "NVDA Settings"
 msgstr "Socruithe NVDA"
 
 #. Translators: The profile name for normal configuration
-#: gui\settingsDialogs.py:5505
+#: gui\settingsDialogs.py:5507
 msgid "normal configuration"
 msgstr "gnáthchumraíocht"
 
 #. Translators: This is the label for the add symbol dialog.
-#: gui\settingsDialogs.py:5540
+#: gui\settingsDialogs.py:5542
 msgid "Add Symbol"
 msgstr "Cuir siombail leis"
 
 #. Translators: This is the label for the edit field in the add symbol dialog.
-#: gui\settingsDialogs.py:5545
+#: gui\settingsDialogs.py:5547
 msgid "&Symbol:"
 msgstr "&Siombail"
 
 #. Translators: This is the label for the symbol pronunciation dialog.
 #. %s is replaced by the language for which symbol pronunciation is being edited.
-#: gui\settingsDialogs.py:5575
+#: gui\settingsDialogs.py:5577
 #, python-format
 msgid "Symbol Pronunciation (%s)"
 msgstr "Fuaimniú Poncaíochta (%s)"
 
 #. Translators: The label of a text field to search for symbols in the speech symbols dialog.
-#: gui\settingsDialogs.py:5589
+#: gui\settingsDialogs.py:5591
 msgctxt "speechSymbols"
 msgid "&Filter by:"
 msgstr "Scag de réir:"
 
 #. Translators: The label for symbols list in symbol pronunciation dialog.
-#: gui\settingsDialogs.py:5598
+#: gui\settingsDialogs.py:5600
 msgid "&Symbols"
 msgstr "&Siombailí"
 
 #. Translators: The label for a column in symbols list used to identify a symbol.
-#: gui\settingsDialogs.py:5608
+#: gui\settingsDialogs.py:5610
 msgid "Symbol"
 msgstr "Siombail"
 
 #. Translators: The label for a column in symbols list used to identify a replacement.
 #. Translators: The label for a column in dictionary entries list and in a list of symbols
 #. from symbol pronunciation dialog used to identify replacement for a pattern or a symbol
-#: gui\settingsDialogs.py:5610 gui\speechDict.py:191
+#: gui\settingsDialogs.py:5612 gui\speechDict.py:191
 msgid "Replacement"
 msgstr "Ionadaí"
 
 #. Translators: The label for a column in symbols list used to identify a symbol's speech level (either none, some, most, all or character).
-#: gui\settingsDialogs.py:5612
+#: gui\settingsDialogs.py:5614
 msgid "Level"
 msgstr "Leibhéal"
 
 #. Translators: The label for a column in symbols list which specifies when the actual symbol will be sent to the synthesizer (preserved).
 #. See the "Punctuation/Symbol Pronunciation" section of the User Guide for details.
-#: gui\settingsDialogs.py:5615
+#: gui\settingsDialogs.py:5617
 msgid "Preserve"
 msgstr "caomhnaigh"
 
 #. Translators: The label for the group of controls in symbol pronunciation dialog to change the pronunciation of a symbol.
-#: gui\settingsDialogs.py:5619
+#: gui\settingsDialogs.py:5621
 msgid "Change selected symbol"
 msgstr "Athraigh an siombail roghnaithe"
 
 #. Translators: The label for the edit field in symbol pronunciation dialog to change the replacement text of a symbol.
 #. Translators: This is a label for an edit field in add dictionary entry dialog
 #. and in punctuation/symbol pronunciation dialog.
-#: gui\settingsDialogs.py:5637 gui\speechDict.py:55
+#: gui\settingsDialogs.py:5639 gui\speechDict.py:55
 msgid "&Replacement"
 msgstr "&Ionadaí"
 
 #. Translators: The label for the combo box in symbol pronunciation dialog to change the speech level of a symbol.
-#: gui\settingsDialogs.py:5646
+#: gui\settingsDialogs.py:5648
 msgid "&Level"
 msgstr "&Leibhéal"
 
 #. Translators: The label for the combo box in symbol pronunciation dialog to change when a symbol is sent to the synthesizer.
-#: gui\settingsDialogs.py:5653
+#: gui\settingsDialogs.py:5655
 msgid "&Send actual symbol to synthesizer"
 msgstr "Seol an siombail go dtí an sintéiseoir."
 
 #. Translators: The label for a button in the Symbol Pronunciation dialog to remove a symbol.
-#: gui\settingsDialogs.py:5668
+#: gui\settingsDialogs.py:5670
 msgid "Re&move"
 msgstr "&Bain"
 
 #. Translators: An error reported in the Symbol Pronunciation dialog
 #. when adding a symbol that is already present.
-#: gui\settingsDialogs.py:5775
+#: gui\settingsDialogs.py:5777
 #, python-format
 msgid "Symbol \"%s\" is already present."
 msgstr "Tá an tsiombail \"%s\" faoi láthair cheana."
@@ -14934,11 +14922,11 @@ msgstr "Sonraí eile:"
 msgctxt "addonStore"
 msgid "{num} add-on selected."
 msgid_plural "{num} add-ons selected."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{num} bhreiseán roghnaithe"
+msgstr[1] "{num} bhreiseán roghnaithe"
+msgstr[2] "{num} bhreiseán roghnaithe"
+msgstr[3] "{num} mbreiseán roghnaithe"
+msgstr[4] "{num} bhreiseán roghnaithe"
 
 #. Translators: Label for an extra detail field for the selected add-on. In the add-on store dialog.
 #: gui\addonStoreGui\controls\details.py:250
@@ -15106,7 +15094,10 @@ msgstr "Bain an breiseán"
 msgctxt "addonStore"
 msgid "Warning: add-on is incompatible: {name} {version}. Check for an updated version of this add-on if possible. This add-on was last tested with NVDA {lastTestedNVDAVersion}. NVDA requires this add-on to be tested with NVDA {nvdaVersion} or higher. Installation may cause unstable behavior in NVDA.\n"
 "Proceed with installation anyway? "
-msgstr ""
+msgstr "Rabhadh: Tá an breiseán {name} {version}   neamh-chomhoiriúnach. Más féidir, aimsigh leagan uasdátaithe.  Bhí an tseiceáil is déanaí  déanta ar NVDA le leagan {lastTestedNVDAVersion}\n"
+" . Is gá leagan {nvdaVersion} . Má leanann tú ar aghaidh leis an suiteáil,  d’fhéadfadh fadhbanna a bheith ann. \n"
+" \n"
+"Lean ar aghaidh pé scéal é?"
 
 #. Translators: The message displayed when enabling an add-on package that is incompatible
 #. because the add-on is too old for the running version of NVDA.
@@ -15115,7 +15106,8 @@ msgstr ""
 msgctxt "addonStore"
 msgid "Warning: add-on is incompatible: {name} {version}. Check for an updated version of this add-on if possible. This add-on was last tested with NVDA {lastTestedNVDAVersion}. NVDA requires this add-on to be tested with NVDA {nvdaVersion} or higher. Enabling may cause unstable behavior in NVDA.\n"
 "Proceed with enabling anyway? "
-msgstr ""
+msgstr "Rabhadh: Tá an breiseán seo neamh-chomhoiriúnach: {name} {version}. Más féidir, faigh leagan uasdátaithe den bhreiseán seo. Bhí an tástáil is déanaí déanta ar  {lastTestedNVDAVersion}. Is gá tástáil ar  NVDA {nvdaVersion} nó ar leagan níos déanaí. Má chumasaítear é d’fhéadfadh iompair mhíshocair a bheith ann.\n"
+"Cumasaigh pé scéal é?"
 
 #. Translators: The title of a dialog presented when an error occurs.
 #: gui\addonStoreGui\controls\messageDialogs.py:222
@@ -15319,11 +15311,11 @@ msgstr "Breiseáin á nuashonrú..."
 msgctxt "addonStore"
 msgid "Download of {} add-on in progress, cancel downloading?"
 msgid_plural "Download of {} add-ons in progress, cancel downloading?"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{} íoslódáil ar siúl. Cealaigh an íoslódáil?"
+msgstr[1] "{} íoslódáil ar siúl. Cealaigh an íoslódáil?"
+msgstr[2] "{} íoslódáil ar siúl. Cealaigh an íoslódáil?"
+msgstr[3] "{} n-íoslódáil ar siúl. Cealaigh an íoslódáil?"
+msgstr[4] "{} íoslódáil ar siúl. Cealaigh an íoslódáil?"
 
 #. Translators: Message shown while installing add-ons after closing the add-on store dialog
 #. The placeholder {} will be replaced with the number of add-ons to be installed
@@ -15332,11 +15324,11 @@ msgstr[4] ""
 msgctxt "addonStore"
 msgid "Installing {} add-on, please wait."
 msgid_plural "Installing {} add-ons, please wait."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{} bhreiseán á shuiteáil. Fan nóiméad le do thoil."
+msgstr[1] "{} bhreiseán á suiteáil. Fan nóiméad le do thoil."
+msgstr[2] "{} bhreiseán á suiteáil. Fan nóiméad le do thoil."
+msgstr[3] "{} mbreiseán á suiteáil. Fan nóiméad le do thoil."
+msgstr[4] "{} bhreiseán á suiteáil. Fan nóiméad le do thoil."
 
 #. Translators: Message shown when updating add-ons automatically
 #: gui\addonStoreGui\controls\messageDialogs.py:646
@@ -15476,7 +15468,7 @@ msgstr "Nuashonraigh"
 #: gui\addonStoreGui\viewModels\store.py:138
 msgctxt "addonStore"
 msgid "&Update (override incompatibility)"
-msgstr ""
+msgstr "Uasdátaigh. Sáraigh an neamh-chomhoiriúnacht."
 
 #. Translators: Label for an action that retries the selected addon
 #: gui\addonStoreGui\viewModels\store.py:145
@@ -15586,7 +15578,7 @@ msgstr "Ní féidir idirghníomhú le matamaitic"
 #: NVDAObjects\__init__.py:666
 #, python-brace-format
 msgid "Object edges positioned {left:.1f} percent from left edge of screen, {top:.1f} percent from top edge of screen, width is {width:.1f} percent of screen, height is {height:.1f} percent of screen"
-msgstr ""
+msgstr "Tá imeall na hoibiachta suite ag  {left:.1f} faoin gcéad ó imeall clé  an scáileáin, {top:.1f} faoin gcéad ón imeall ag barr an scáileáin, is é an leithead ná {width:.1f} faoin gcéad den scáileán, is í an aired ná {height:.1f} faoin gcéad den scáileán"
 
 #. Translators: This is presented to inform the user of a progress bar percentage.
 #. Translators: This is presented to inform the user of the current battery percentage.
@@ -15673,16 +15665,16 @@ msgstr "RGB dearg {rgb.red}, uaine {rgb.green}, gorm {rgb.blue}"
 #, python-format
 msgid "%s item"
 msgid_plural "%s items"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "%s mhír"
+msgstr[1] "%s mhír"
+msgstr[2] "%s mhír"
+msgstr[3] "%s mír"
+msgstr[4] "%s mhír"
 
 #. Translators: The label of a shortcut of NVDA.
 #: NVDAObjects\IAccessible\winword.py:242
 msgid "Set column header. Pressing once will set this cell as the first column header for any cell lower and to the right of it within this table. Pressing twice will forget the current column header for this cell."
-msgstr ""
+msgstr "Socraigh ceanntásc an cholúin. Má bhrúitear uair amháin, socrófar an chill seo mar cheanntásc ar aon chill fúithi sa tábla seo. Má bhrúitear faoi dhó, beidh dearmad déanta ar an gceanntásc seo."
 
 #. Translators: a message reported in the SetColumnHeader script for Microsoft Word.
 #: NVDAObjects\IAccessible\winword.py:260
@@ -15700,18 +15692,18 @@ msgstr "Tá  ró {rowNumber} colún {columnNumber} socraithe cheana mar thús c
 #: NVDAObjects\IAccessible\winword.py:277
 #, python-brace-format
 msgid "Removed row {rowNumber} column {columnNumber} from column headers"
-msgstr ""
+msgstr "Tá ró {rowNumber} colún {columnNumber} bainte ó cheanntáisc cholún"
 
 #. Translators: a message reported in the SetColumnHeader script for Microsoft Word.
 #: NVDAObjects\IAccessible\winword.py:285
 #, python-brace-format
 msgid "Cannot find row {rowNumber} column {columnNumber} in column headers"
-msgstr ""
+msgstr "Ní féidir ró {rowNumber} colún {columnNumber} a aimsiú sna ceanntáisc cholúin"
 
 #. Translators: The label of a shortcut of NVDA.
 #: NVDAObjects\IAccessible\winword.py:295
 msgid "Set row header. Pressing once will set this cell as the first row header for any cell lower and to the right of it within this table. Pressing twice will forget the current row header for this cell."
-msgstr ""
+msgstr "Socraigh ceanntásc an ró. Má bhrúitear uair amháin, socrófar an chill seo mar cheanntásc ar aon chill ar a lámh dheas sa tábla seo. Má bhrúitear faoi dhó, beidh dearmad déanta ar an gceanntásc ró seo."
 
 #. Translators: a message reported in the SetRowHeader script for Microsoft Word.
 #: NVDAObjects\IAccessible\winword.py:312
@@ -15729,18 +15721,18 @@ msgstr "Tá  ró {rowNumber} colún {columnNumber} socraithe cheana mar thús c
 #: NVDAObjects\IAccessible\winword.py:329
 #, python-brace-format
 msgid "Removed row {rowNumber} column {columnNumber} from row headers"
-msgstr ""
+msgstr "Tá ró {rowNumber} colún {columnNumber} bainte ó na ceanntáisc ró."
 
 #. Translators: a message reported in the SetRowHeader script for Microsoft Word.
 #: NVDAObjects\IAccessible\winword.py:337
 #, python-brace-format
 msgid "Cannot find row {rowNumber} column {columnNumber} in row headers"
-msgstr ""
+msgstr "Ní féidir ró {rowNumber} colún {columnNumber}  a aimsiú  sna ceanntáisc ró."
 
 #. Translators: a description for a script
 #: NVDAObjects\IAccessible\winword.py:346
 msgid "Reports the text of the comment where the system caret is located.If pressed twice, presents the information in browse mode."
-msgstr ""
+msgstr "Tuairiscítear an téacs sa nóta tráchta ar a bhfuil carat an chórais suite. Má bhrúitear faoi dhó, taispeántar an t-eolas i mód brabhsála. "
 
 #. Translators: a message when there is no comment to report in Microsoft Word
 #: NVDAObjects\IAccessible\winword.py:379 NVDAObjects\UIA\wordDocument.py:711
@@ -15774,11 +15766,11 @@ msgstr "gair"
 #: NVDAObjects\UIA\__init__.py:2710
 msgid "{} suggestion"
 msgid_plural "{} suggestions"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{} mholadh"
+msgstr[1] "{} mholadh"
+msgstr[2] "{} mholadh"
+msgstr[3] "{} moladh"
+msgstr[4] "{} mholadh"
 
 #. Translators: the description of a script
 #: NVDAObjects\UIA\excel.py:195
@@ -15806,11 +15798,11 @@ msgstr "Airde na cille: {0.y:.1f} pt"
 msgctxt "excel-UIA"
 msgid "Rotation: {0} degree"
 msgid_plural "Rotation: {0} degrees"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Rothlú: {0} chéim"
+msgstr[1] "Rothlú: {0} chéim"
+msgstr[2] "Rothlú: {0} chéim"
+msgstr[3] "Rothlú: {0} gcéim"
+msgstr[4] "Rothlú: {0} chéim"
 
 #. Translators: The outline (border) colors of an Excel cell.
 #: NVDAObjects\UIA\excel.py:231
@@ -15908,7 +15900,7 @@ msgstr "Léitear an nóta tráchta ar an gcill reatha."
 #: NVDAObjects\UIA\excel.py:516
 #, python-brace-format
 msgid "{name}: {desc}"
-msgstr ""
+msgstr "{name}: {desc}"
 
 #. Translators: message when a cell in Excel contains no note
 #: NVDAObjects\UIA\excel.py:520
@@ -15926,11 +15918,11 @@ msgstr "Snáithe nóta: {comment}  le {author}"
 #, python-brace-format
 msgid "Comment thread: {comment}  by {author} with {numReplies} reply"
 msgid_plural "Comment thread: {comment}  by {author} with {numReplies} replies"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Snaithe nóta tráchta: {comment}  le {author} agus {numReplies} fhreagra ann"
+msgstr[1] "Snaithe nóta tráchta: {comment}  le {author} agus {numReplies} fhreagra ann"
+msgstr[2] "Snaithe nóta tráchta: {comment}  le {author} agus {numReplies} fhreagra ann"
+msgstr[3] "Snaithe nóta tráchta: {comment}  le {author} agus {numReplies} bhfreagra ann"
+msgstr[4] "Snaithe nóta tráchta: {comment}  le {author} agus {numReplies} fhreagra ann"
 
 #. Translators: A message in Excel when there is no comment thread
 #: NVDAObjects\UIA\excel.py:544
@@ -15992,19 +15984,19 @@ msgstr "Ní féidir nascleanúint de réir abairte   a dhéanamh sa doiciméad s
 #. Translators: a description for a script that reports the comment at the caret.
 #: NVDAObjects\UIA\wordDocument.py:689
 msgid "Reports the text of the comment where the system caret is located. If pressed twice, presents the information in a browsable message"
-msgstr ""
+msgstr "Tuairiscítear an téacs sa nóta tráchta ar a bhfuil carat an chórais suite. Má bhrúitear faoi dhó, taispeántar an t-eolas i teachtaireacht inbhrabhsáilte."
 
 #. Translators: The message reported in Microsoft Word for document types not supporting setting custom
 #. headers.
 #: NVDAObjects\UIA\wordDocument.py:720
 msgid "Command not supported in this type of document. The tables have their first row cells automatically set as column headers."
-msgstr ""
+msgstr "Níl tacaíocht ar fáil don ordú seo sa chineál doiciméid seo. Tá an chéad ró sna táblaí  socraithe mar cheanntáscanna colúin."
 
 #. Translators: The message reported in Microsoft Word for document types not supporting setting custom
 #. headers.
 #: NVDAObjects\UIA\wordDocument.py:731
 msgid "Command not supported in this type of document. The tables have their first column cells automatically set as row headers."
-msgstr ""
+msgstr "Níl tacaíocht ar fáil don ordú sin sa chineál doiciméid seo. Tá na chéad chealla sa tábl=a seo socraithe mar ceanntásc. "
 
 #: NVDAObjects\window\__init__.py:410
 msgid "Desktop"
@@ -16459,7 +16451,7 @@ msgstr "mír"
 #: NVDAObjects\window\_msOfficeChart.py:805
 #, python-brace-format
 msgid "Series color: {colorName}"
-msgstr ""
+msgstr "Dath na sraithe {colorName}"
 
 #. Translators: A type of element in a Microsoft Office chart.
 #: NVDAObjects\window\_msOfficeChart.py:446
@@ -16579,11 +16571,11 @@ msgstr "Teideal an chárta  {chartTitle} saghas {chartType}"
 #, python-format
 msgid "There is %d series in this chart"
 msgid_plural "There are %d series in this chart"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Tá %d sraithe sa chairt seo."
+msgstr[1] "Tá %d sraithe  sa chairt seo"
+msgstr[2] "Tá %d sraithe  sa chairt seo"
+msgstr[3] "Tá %d sraithe  sa chairt seo"
+msgstr[4] "Tá %d sraithe  sa chairt seo"
 
 #. Translators: Specifies the number and name of a series when listing series in a chart.
 #: NVDAObjects\window\_msOfficeChart.py:620
@@ -16655,7 +16647,7 @@ msgstr "catagóir {categoryAxisData}: "
 #: NVDAObjects\window\_msOfficeChart.py:902
 #, python-brace-format
 msgid "{valueAxisTitle} {valueAxisData}"
-msgstr ""
+msgstr "{valueAxisTitle} {valueAxisData}"
 
 #. Translators: Specifies the value of a data point.
 #. {valueAxisData} will be replaced with the value itself; e.g. "1000".
@@ -16809,7 +16801,7 @@ msgstr "Iontráil eochrach don tSraith {seriesName} {seriesIndex} as {seriesCoun
 #: NVDAObjects\window\_msOfficeChart.py:1224
 #, python-brace-format
 msgid "Legend entry {legendEntryIndex} of {legendEntryCount}"
-msgstr ""
+msgstr "Iontráil Eochrach {legendEntryIndex} de {legendEntryCount}"
 
 #. Translators: Details about a legend key for a series in a Microsoft office chart.
 #. For example, this might report "Legend key for series Temperature 1 of 2"
@@ -17053,7 +17045,7 @@ msgstr "Cuir líne tríd"
 #. Translators: the description for a script for Excel
 #: NVDAObjects\window\excel.py:1633
 msgid "Sets the current cell as start of column header. Pressing once will set this cell as the first column header for any cell lower and to the right of it within this region. Pressing twice will forget the current column header for this cell."
-msgstr ""
+msgstr "Socraítear an chill reatha mar cheanntásc an cholúin. Má bhrúitear uair amháin, socrófar an chill seo mar cheanntásc ar aon chill fúithi sa réigiún seo. Má bhrúitear faoi dhó, beidh dearmad déanta ar an gceanntásc colúin seo."
 
 #. Translators: a message reported in the SetColumnHeader script for Excel.
 #: NVDAObjects\window\excel.py:1645
@@ -17071,18 +17063,18 @@ msgstr "Tá {address} socraithe cheana mar thús ceanntásc cholúin."
 #: NVDAObjects\window\excel.py:1654
 #, python-brace-format
 msgid "Removed {address} from column headers"
-msgstr ""
+msgstr "Tá {address} bainte ó na ceanntáisc colúin."
 
 #. Translators: a message reported in the SetColumnHeader script for Excel.
 #: NVDAObjects\window\excel.py:1658
 #, python-brace-format
 msgid "Cannot find {address} in column headers"
-msgstr ""
+msgstr "Ní féidir {address} a aimsiú sna ceanntáisc cholúin."
 
 #. Translators: the description for a script for Excel
 #: NVDAObjects\window\excel.py:1664
 msgid "Sets the current cell as start of row headers. Pressing once will set this cell as the first row header for any cell lower and to the right of it within this region. Pressing twice will forget the current row header for this cell."
-msgstr ""
+msgstr "Socraítear an chill reatha mar cheanntásc an ró. Má bhrúitear uair amháin, socrófar an chill seo mar cheanntásc ar aon chill ar a lámh dheas sa réigiún seo. Má bhrúitear faoi dhó, beidh dearmad déanta ar an gceanntásc ró seo."
 
 #. Translators: a message reported in the SetRowHeader script for Excel.
 #: NVDAObjects\window\excel.py:1676
@@ -17127,7 +17119,7 @@ msgstr "Is í {message} an teachtaireacht ionchuir. "
 #. Translators: the description for a script for Excel
 #: NVDAObjects\window\excel.py:1887
 msgid "Reports the note on the current cell. If pressed twice, presents the information in browse mode"
-msgstr ""
+msgstr "Tuairiscítear an nóta ar an gcill reatha. Má bhrúitear faoi dhó, taispeántar an t-eolas i mód brabhsála."
 
 #. Translators: title for note on the current Excel cell dialog.
 #. Translators: Title for the note editing  dialog
@@ -17770,44 +17762,44 @@ msgstr "Cuir na carachtair nach priontáiltear faoi cheilt."
 #, python-brace-format
 msgid "{offset:.3g} character"
 msgid_plural "{offset:.3g} characters"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{offset:.3g} charachtar"
+msgstr[1] "{offset:.3g} charachtar"
+msgstr[2] "{offset:.3g} charachtar"
+msgstr[3] "{offset:.3g} gcarachtar"
+msgstr[4] "{offset:.3g} charachtar"
 
 #. Translators: a measurement in Microsoft Word
 #: NVDAObjects\window\winword.py:2003
 #, python-brace-format
 msgid "{offset:.3g} inch"
 msgid_plural "{offset:.3g} inches"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{offset:.3g} órlach"
+msgstr[1] "{offset:.3g} órlach"
+msgstr[2] "{offset:.3g} órlach"
+msgstr[3] "{offset:.3g} n-órlach"
+msgstr[4] "{offset:.3g} órlach"
 
 #. Translators: a measurement in Microsoft Word
 #: NVDAObjects\window\winword.py:2011
 #, python-brace-format
 msgid "{offset:.3g} centimeter"
 msgid_plural "{offset:.3g} centimeters"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{offset:.3g} cheintiméadar"
+msgstr[1] "{offset:.3g} cheintiméadar"
+msgstr[2] "{offset:.3g} cheintiméadar"
+msgstr[3] "{offset:.3g} gceintiméadar"
+msgstr[4] "{offset:.3g} cheintiméadar"
 
 #. Translators: a measurement in Microsoft Word
 #: NVDAObjects\window\winword.py:2019
 #, python-brace-format
 msgid "{offset:.3g} millimeter"
 msgid_plural "{offset:.3g} millimeters"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{offset:.3g} milliméadar "
+msgstr[1] "{offset:.3g} milliméadar "
+msgstr[2] "{offset:.3g} milliméadar "
+msgstr[3] "{offset:.3g} milliméadar "
+msgstr[4] "{offset:.3g} milliméadar "
 
 #. Translators: a measurement in Microsoft Word (points)
 #: NVDAObjects\window\winword.py:2025
@@ -17821,11 +17813,11 @@ msgstr "{offset:.3g} phointe"
 #, python-brace-format
 msgid "{offset:.3g} pica"
 msgid_plural "{offset:.3g} picas"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{offset:.3g} phíoca"
+msgstr[1] "{offset:.3g} phíoca"
+msgstr[2] "{offset:.3g} phíoca"
+msgstr[3] "{offset:.3g} bpíoca"
+msgstr[4] "{offset:.3g} phíoca"
 
 #. Translators: a message when switching to single line spacing  in Microsoft word
 #: NVDAObjects\window\winword.py:2049
@@ -17846,7 +17838,7 @@ msgstr "spásáil línte 1.5"
 #: NVDAObjects\window\winword.py:2070
 #, python-brace-format
 msgid "{val:g} pt space before paragraph"
-msgstr ""
+msgstr "{val:g} pt spás roimh an paragraf"
 
 #. Translators: Name of the speech mode which disables speech output.
 #: speech\speech.py:98
@@ -17871,7 +17863,7 @@ msgstr "Caint"
 #: speech\speech.py:105
 msgctxt "speechModes"
 msgid "on-demand"
-msgstr ""
+msgstr "ar éileamh "
 
 #. Translators: cap will be spoken before the given letter when it is capitalized.
 #: speech\speech.py:383
@@ -17883,7 +17875,7 @@ msgstr "%s \" mór\""
 #: speech\speech.py:390
 #, python-format
 msgid "%s normalized"
-msgstr ""
+msgstr "%s normalaithe"
 
 #. Translators: This is spoken when the given line has no indentation.
 #: speech\speech.py:1030
@@ -17963,29 +17955,29 @@ msgstr "leibhéal %s"
 #: speech\speech.py:2143
 #, python-brace-format
 msgid "with {rowCountTranslation} and {colCountTranslation}"
-msgstr ""
+msgstr "Le {rowCountTranslation} agus {colCountTranslation}"
 
 #. Translators: Speaks number of columns (example output: with 4 columns).
 #: speech\speech.py:2149
 #, python-format
 msgid "with %s column"
 msgid_plural "with %s columns"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "le %s cholún"
+msgstr[1] "le %s cholún"
+msgstr[2] "le %s cholún"
+msgstr[3] "le %s gcolún"
+msgstr[4] "le %s cholún"
 
 #. Translators: Speaks number of rows (example output: with 2 rows).
 #: speech\speech.py:2152
 #, python-format
 msgid "with %s row"
 msgid_plural "with %s rows"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "Le %s ró"
+msgstr[1] "Le %s ró"
+msgstr[2] "Le %s ró"
+msgstr[3] "Le %s ró"
+msgstr[4] "Le %s ró"
 
 #. Translators: Sub-part of the compound string to speak number of rows and columns in a table.
 #. Example: If the full compound string is "table with 3 rwos and 2 columns", this substring is "3 rows".
@@ -17993,11 +17985,11 @@ msgstr[4] ""
 #, python-brace-format
 msgid "{rowCount} row"
 msgid_plural "{rowCount} rows"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{rowCount} ró "
+msgstr[1] "{rowCount} ró "
+msgstr[2] "{rowCount} ró "
+msgstr[3] "{rowCount} ró "
+msgstr[4] "{rowCount} ró "
 
 #. Translators: Sub-part of the compound string to speak number of rows and columns in a table.
 #. Example: If the full compound string is "table with 3 rwos and 2 columns", this substring is "2 columns".
@@ -18005,11 +17997,11 @@ msgstr[4] ""
 #, python-brace-format
 msgid "{columnCount} column"
 msgid_plural "{columnCount} columns"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{columnCount} cholún"
+msgstr[1] "{columnCount} cholún"
+msgstr[2] "{columnCount} cholún"
+msgstr[3] "{columnCount} gcolún"
+msgstr[4] "{columnCount} cholún"
 
 #. Translators: Number of items in a list (example output: list with 5 items).
 #: speech\speech.py:2359
@@ -18056,11 +18048,11 @@ msgstr "colún {0} as {1}"
 #, python-format
 msgid "%s column"
 msgid_plural "%s columns"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "%s cholún"
+msgstr[1] "%s cholún"
+msgstr[2] "%s cholún"
+msgstr[3] "%s gcolún"
+msgstr[4] "%s cholún"
 
 #. Translators: Indicates the text column number in a document.
 #: speech\speech.py:2607
@@ -18139,7 +18131,7 @@ msgstr "dath {color} ar dhath {backgroundColor}"
 #: speech\speech.py:2724
 #, python-brace-format
 msgid "{color}"
-msgstr ""
+msgstr "{color}"
 
 #. Translators: Reported when the background color changes (but not the text color).
 #. {backgroundColor} will be replaced with the background color.
@@ -18373,7 +18365,7 @@ msgstr "deireadh an tábla"
 #: speech\speech.py:3067
 #, python-brace-format
 msgid "table with {columnCountText} and {rowCountText}"
-msgstr ""
+msgstr "Tábla ina bhfuil {columnCountText} agus {rowCountText}"
 
 #. Translators: name of the default espeak varient.
 #: synthDrivers\_espeak.py:416
@@ -18405,7 +18397,7 @@ msgstr "lonnaithe ag {x}, {y}"
 #: textInfos\offsets.py:184
 #, python-brace-format
 msgid "{curPercent:.0f}%"
-msgstr ""
+msgstr "{curPercent:.0f}%"
 
 #. Translators: the current position's screen coordinates in pixels
 #: textInfos\offsets.py:191
@@ -18463,7 +18455,7 @@ msgstr "Patrún"
 #, python-brace-format
 msgctxt "time format"
 msgid "{S}"
-msgstr ""
+msgstr "{S}"
 
 #. Translators: used to format time locally.
 #. substitution rules: {S} seconds, {M} minutes
@@ -18471,7 +18463,7 @@ msgstr ""
 #, python-brace-format
 msgctxt "time format"
 msgid "{M}:{S}"
-msgstr ""
+msgstr "{M}:{S}"
 
 #. Translators: used to format time locally.
 #. substitution rules: {S} seconds, {M} minutes, {H} hours
@@ -18479,7 +18471,7 @@ msgstr ""
 #, python-brace-format
 msgctxt "time format"
 msgid "{H}:{M}:{S}"
-msgstr ""
+msgstr "{H}:{M}:{S}"
 
 #. Translators: used to format time locally.
 #. substitution rules: {S} seconds, {M} minutes, {H} hours, {D} day
@@ -18500,7 +18492,7 @@ msgstr "{D} lá {H}:{M}:{S}"
 #. Translators: Value to show when choosing to use the default audio output device.
 #: utils\mmdevice.py:44
 msgid "Default output device"
-msgstr ""
+msgstr "An gléas aschuir réamhshocraithe"
 
 #. Translators: This is the message for a warning shown if NVDA cannot determine if
 #. Windows is locked.
@@ -18634,11 +18626,11 @@ msgstr "plugáilte amach"
 #, python-brace-format
 msgid "{hours:d} hour"
 msgid_plural "{hours:d} hours"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{hours:d} uair an chloig"
+msgstr[1] "{hours:d} uair an chloig"
+msgstr[2] "{hours:d} uair an chloig"
+msgstr[3] "{hours:d} n-uair an chloig"
+msgstr[4] "{hours:d} uair an chloig"
 
 #. Translators: This is the minute string part of the estimated remaining runtime of the laptop battery.
 #. E.g. if the full string is "1 hour and 34 minutes remaining", this string is "34 minutes".
@@ -18646,18 +18638,18 @@ msgstr[4] ""
 #, python-brace-format
 msgid "{minutes:d} minute"
 msgid_plural "{minutes:d} minutes"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
+msgstr[0] "{minutes:d} nóiméad"
+msgstr[1] "{minutes:d} nóiméad"
+msgstr[2] "{minutes:d} nóiméad"
+msgstr[3] "{minutes:d} nóiméad"
+msgstr[4] "{minutes:d} nóiméad"
 
 #. Translators: This is the main string for the estimated remaining runtime of the laptop battery.
 #. E.g. hourText is replaced by "1 hour" and minuteText by "34 minutes".
 #: winAPI\_powerTracking.py:248
 #, python-brace-format
 msgid "{hourText} and {minuteText} remaining"
-msgstr ""
+msgstr "{hourText} and {minuteText} fágtha"
 
 #. Translators: Message to indicate User Account Control (UAC) or other secure desktop screen is active.
 #: winAPI\secureDesktop.py:53
@@ -18668,7 +18660,7 @@ msgstr "Deasc Shlán"
 #. Translators: Presented when attempting to send control+alt+delete when connected as the controlled computer.
 #. Translators: Presented when attempting to switch to controling a remote computer when connected as the controlled computer.
 #: _remoteClient\client.py:129 _remoteClient\client.py:190
-#: _remoteClient\client.py:523
+#: _remoteClient\client.py:526
 msgctxt "remote"
 msgid "Not the controlling computer"
 msgstr "Ní hé seo an ríomhaire rialaithe"
@@ -18676,12 +18668,12 @@ msgstr "Ní hé seo an ríomhaire rialaithe"
 #. Translators: Displayed when muting speech and sounds from the remote computer
 #: _remoteClient\client.py:134
 msgid "Muted remote"
-msgstr ""
+msgstr "Caint cianda múchta"
 
 #. Translators: Displayed when unmuting speech and sounds from the remote computer
 #: _remoteClient\client.py:136
 msgid "Unmuted remote"
-msgstr ""
+msgstr "Ríomhaire cianda gan mhúchadh"
 
 #. Translators: Reported when performing a Remote Access action, but there are no other computers in the channel.
 #: _remoteClient\client.py:153
@@ -18701,90 +18693,90 @@ msgid "Copied link"
 msgstr "Cóipeáilte"
 
 #. Translators: Title of the Remote Access disconnection confirmation dialog.
-#: _remoteClient\client.py:233
+#: _remoteClient\client.py:226
 msgctxt "remote"
 msgid "Confirm Disconnection"
-msgstr ""
+msgstr "Dearbhaigh an dícheangail "
 
 #. Translators: Message shown when disconnecting from the remote computer.
-#: _remoteClient\client.py:237
+#: _remoteClient\client.py:230
 msgctxt "remote"
 msgid "Are you sure you want to disconnect from the Remote Access session?"
-msgstr ""
+msgstr "An bhfuil tú cinnte gur mhian leat dícheangail ón seisiún cianda?"
 
 #. Translators: Title of the connection error dialog.
-#: _remoteClient\client.py:279
+#: _remoteClient\client.py:282
 msgid "Error Connecting"
 msgstr "Earráid agus é á cheangail"
 
 #. Translators: Message shown when unable to connect to the remote computer.
-#: _remoteClient\client.py:281
+#: _remoteClient\client.py:284
 msgid "Unable to connect to the remote computer"
 msgstr "Ní féidir ceangail leis an ríomhaire cianda."
 
 #. Translators: Title of the Remote Access connection dialog.
-#: _remoteClient\client.py:305
+#: _remoteClient\client.py:308
 msgctxt "remote"
 msgid "Connect to Another Computer"
 msgstr "Ceangail le ríomhaire eile"
 
 #. Translators: Presented when connected to the remote computer.
-#: _remoteClient\client.py:348
+#: _remoteClient\client.py:351
 msgid "Connected"
 msgstr "Ceangailte"
 
 #. Translators: Presented when connection to a remote computer was interupted.
 #. Translators: Message shown when the connection to the remote computer is lost.
-#: _remoteClient\client.py:366 _remoteClient\cues.py:27
+#: _remoteClient\client.py:369 _remoteClient\cues.py:27
 msgid "Disconnected"
 msgstr "Dícheangailte"
 
 #. Translators: Presented when attempting to switch to controling a remote computer when there are no controllable computers in the channel.
-#: _remoteClient\client.py:527
+#: _remoteClient\client.py:530
 msgctxt "remote"
 msgid "No controlled computers are connected"
 msgstr "Níl aon ríomhaire faoi rialú ceangailte leis seo"
 
 #. Translators: Presented when keyboard control is back to the controlling computer.
-#: _remoteClient\client.py:541
+#: _remoteClient\client.py:544
 msgctxt "remote"
 msgid "Controlling local computer"
 msgstr "An ríomhaire logánta á rialú"
 
 #. Translators: Presented when sending keyboard keys from the controlling computer to the controlled computer.
-#: _remoteClient\client.py:550
+#: _remoteClient\client.py:553
 msgctxt "remote"
 msgid "Controlling remote computer"
 msgstr "An ríomhaire cianda á rialú"
 
 #. Translators: Message shown when trying to connect while already connected.
-#: _remoteClient\client.py:614
+#: _remoteClient\client.py:617
 msgctxt "remote"
 msgid "A Remote Access session is already in progress. Disconnect before starting a new session."
 msgstr "Tá seisiún cianda ar siúl cheana. Dícheangail é sula tosaíonn tú seisiún nua."
 
 #. Translators: Title of the connection error dialog.
-#: _remoteClient\client.py:617
+#: _remoteClient\client.py:620
 msgctxt "remote"
 msgid "Already Connected"
 msgstr "Ceangailte cheana féin"
 
 #. Translators: Ask the user if they want to control the remote computer.
-#: _remoteClient\client.py:632
+#: _remoteClient\client.py:635
 #, python-brace-format
 msgctxt "remote"
 msgid "Do you wish to control the computer on server {server} with key {key}?"
 msgstr "Ar mhian leat an ríomhaire ar an bhfriothálaí {server}   a rialú leis an eochair {key}?"
 
 #. Translators: Ask the user if they want to allow the remote computer to control this computer.
-#: _remoteClient\client.py:638
+#: _remoteClient\client.py:641
 #, python-brace-format
 msgctxt "remote"
 msgid "Do you wish to allow this computer to be controlled on server {server} with key {key}?"
 msgstr "Ar mhian leat an ríomhaire seo a bheith rialaithe ag an ríomhaire   ar an bhfriothálaí {server}   leis an eochair {key}?"
 
 #. Translators: Title of the connection request dialog.
-#: _remoteClient\client.py:644
+#: _remoteClient\client.py:647
 msgctxt "remote"
 msgid "Remote Access Connection Request"
 msgstr "Iarraidh ar rochtain chianda"
@@ -18874,19 +18866,19 @@ msgstr "An IP seachtrach á fháil..."
 #: _remoteClient\dialogs.py:272
 #, python-brace-format
 msgid "Successfully retrieved IP address. Port {port} is open."
-msgstr ""
+msgstr "Tá an seoladh IP faighte go rathúil. Tá port {port} ar oscailt. "
 
 #. Translators: Message shown when IP was retrieved but the specified port is not forwarded
 #. {port} will be replaced with the actual port number
 #: _remoteClient\dialogs.py:283
 #, python-brace-format
 msgid "Retrieved external IP, but port {port} is most likely not currently forwarded."
-msgstr ""
+msgstr "Tá an IP seachtrach faighte ach gach seans nach raibh  port {port}  seolta. "
 
 #. Translators: Error message when unable to get IP address from portcheck server
 #: _remoteClient\dialogs.py:298
 msgid "Unable to contact portcheck server, please manually retrieve your IP address"
-msgstr ""
+msgstr "Níorbh fhéidir teagmháil leis an bhfriothálaí seiceála poirt. Faigh do chuid seoladh IP de láimh le do thoil   "
 
 #. Translators: Message displayed when the host or key field is empty and the user tries to connect.
 #: _remoteClient\dialogs.py:368
@@ -18913,7 +18905,11 @@ msgid "The certificate of this server could not be verified. Using the wrong fin
 "Before continuing, please make sure that the following server certificate fingerprint is correct.\n"
 "Server SHA256 fingerprint: {fingerprint}\n\n"
 "Continue connecting anyway?"
-msgstr ""
+msgstr "Níorbh fhéidir teastas an friothálaithe seo a fhíorú. Má úsáidtear an mhéarlorgaireacht mhícheart, d’fhéadfadh tríú páirtí rochtain a fháil ar an seisiún cianda.\n"
+"  \n"
+"Sula leanann tú ar aghaidh, déann cinnte le do thoil go bhfuil méarlorgaireacht an teastais friothálaithe thíos ceart \n"
+"Friothálaí SHA256 méarlorgaireacht: {fingerprint}\n\n"
+"Lean ar aghaidh leis an gceangail pé scéal é?"
 
 #. Translators: A button to connect and remember the server with unauthorized certificate.
 #: _remoteClient\dialogs.py:449
@@ -18929,7 +18925,7 @@ msgstr "Ceangail"
 #: _remoteClient\localMachine.py:289
 msgctxt "remote"
 msgid "Unable to trigger control+alt+delete"
-msgstr ""
+msgstr "Níorbh fhéidir Control+alt+delete a thruicear"
 
 #. Translators: Menu item in Remote Access submenu to mute speech and sounds from the remote computer.
 #: _remoteClient\menu.py:32
@@ -18940,7 +18936,7 @@ msgstr "Múch fuaimeanna ón  ríomhaire cianda"
 #: _remoteClient\menu.py:34
 msgctxt "remote"
 msgid "Mute speech and sounds from the remote computer."
-msgstr ""
+msgstr "Múch an chaint agus na fuaimeanna ón ríomhaire cianda. "
 
 #. Translators: Menu item in the Remote Access submenu to send the contents of the clipboard to the remote computer.
 #: _remoteClient\menu.py:42
@@ -18963,19 +18959,19 @@ msgstr "Cóipeáil an nasc"
 #: _remoteClient\menu.py:57
 msgctxt "remote"
 msgid "Copy a link to the current Remote Access session to the clipboard."
-msgstr ""
+msgstr "Cóipeáil nasc leis an seisiún cianda reatha  go dtí an ghearrthaisce."
 
 #. Translators: Menu item in the Remote Access submenu to send Control+Alt+Delete to the remote computer.
 #: _remoteClient\menu.py:68
 msgctxt "remote"
 msgid "S&end control+alt+delete"
-msgstr ""
+msgstr "S&eol control+alt+delete "
 
 #. Translators: Tooltip for the Send Control+Alt+Delete menu item in the Remote Access submenu.
 #: _remoteClient\menu.py:70
 msgctxt "remote"
 msgid "Send control+alt+delete to the controlled computer."
-msgstr ""
+msgstr "Seol control+alt+delete  go dtí an ríomhaire rialaithe."
 
 #. Translators: Label of the Remote Access submenu in the NVDA tools menu.
 #: _remoteClient\menu.py:81
@@ -18987,7 +18983,7 @@ msgstr "Rochtain Chianda"
 #: _remoteClient\menu.py:85
 msgctxt "remote"
 msgid "Allow someone to control this computer from elsewhere, or control another computer running NVDA with this one."
-msgstr ""
+msgstr "Lig do dhuine éigin an ríomhaire seo a rialú ó áit éigin eile, nó, rialaigh ríomhaire eile, ar a bhfuil NVDA ar siúl, ón ríomhaire seo ."
 
 #. Translators: Item in the Remote Access submenu to connect to another computer.
 #: _remoteClient\menu.py:156
@@ -19015,7 +19011,7 @@ msgstr "Dícheangail ón seisiún cianda reatha"
 #: _remoteClient\session.py:168
 msgctxt "remote"
 msgid "The Remote Access server you have connected to is not compatible with this version of NVDA. Please use a different server."
-msgstr ""
+msgstr "Níl an friothálaí cianda atá ceangailte agat  comhoiriúnach leis an leagan seo de NVDA. Déan ceangail le friothálaí eile le do thoil."
 
 #. Translators: Title of a dialog showing a message sent by a Remote Access server.
 #: _remoteClient\session.py:188

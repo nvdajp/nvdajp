@@ -5706,9 +5706,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 31</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Ability to [connect to and control another computer running NVDA](#RemoteAccess) for remote assistance or collaboration</source>
-        <target>Ability to [connect to and control another computer running NVDA](#RemoteAccess) for remote assistance or collaboration</target>
+        <target>Capacità di [Collegarsi ad un altro computer che esegue NVDA e controllarlo](#RemoteAccess) per assistenza o collaborazione</target>
       </segment>
     </unit>
     <unit id="3621dc26-377b-4133-8c66-67736611187a">
@@ -5756,9 +5756,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 36</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Ability to run during Windows sign-in and [other secure screens](#SecureScreens)</source>
-        <target>Ability to run during Windows sign-in and [other secure screens](#SecureScreens)</target>
+        <target>Capacità di funzionare durante l'accesso a Windows e [altre schermate protette](#SecureScreens)</target>
       </segment>
     </unit>
     <unit id="f764b6db-1280-473f-a474-283d20038a1b">
@@ -5948,9 +5948,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 62</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Besides English, NVDA has been translated into 55 languages including: Afrikaans, Albanian, Amharic, Arabic, Aragonese, Bosnian, Bulgarian, Burmese, Catalan, Chinese (simplified and traditional), Croatian, Czech, Danish, Dutch, Farsi, Finnish, French, Galician, Georgian, German (Germany and Switzerland), Greek, Hebrew, Hindi, Hungarian, Icelandic, Irish, Italian, Japanese, Kannada, Korean, Kyrgyz, Lithuanian, Macedonian, Mongolian, Nepali, Norwegian, Polish, Portuguese (Brazil and Portugal), Punjabi, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish (Colombia and Spain), Swedish, Tamil, Thai, Turkish, Ukrainian and Vietnamese.</source>
-        <target>Besides English, NVDA has been translated into 55 languages including: Afrikaans, Albanian, Amharic, Arabic, Aragonese, Bosnian, Bulgarian, Burmese, Catalan, Chinese (simplified and traditional), Croatian, Czech, Danish, Dutch, Farsi, Finnish, French, Galician, Georgian, German (Germany and Switzerland), Greek, Hebrew, Hindi, Hungarian, Icelandic, Irish, Italian, Japanese, Kannada, Korean, Kyrgyz, Lithuanian, Macedonian, Mongolian, Nepali, Norwegian, Polish, Portuguese (Brazil and Portugal), Punjabi, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish (Colombia and Spain), Swedish, Tamil, Thai, Turkish, Ukrainian and Vietnamese.</target>
+        <target>Oltre all’inglese, NVDA è stato tradotto in 55 lingue, tra cui: afrikaans, albanese, amarico, arabo, aragonese, bosniaco, bulgaro, birmano, catalano, cinese (semplificato e tradizionale), croato, ceco, danese, olandese, farsi, finlandese, francese, galiziano, georgiano, tedesco (Germania e Svizzera), greco, ebraico, hindi, ungherese, islandese, irlandese, italiano, giapponese, kannada, coreano, kirghiso, lituano, macedone, mongolo, nepalese, norvegese, polacco, portoghese (Brasile e Portogallo), punjabi, rumeno, russo, serbo, slovacco, sloveno, spagnolo (Colombia e Spagna), svedese, tamil, thai, turco, ucraino e vietnamita.</target>
       </segment>
     </unit>
     <unit id="6dbfeab6-d167-4f5e-9706-f501d729511e">
@@ -15871,7 +15871,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>Set row headers |`NVDA+shift+r` |Pressing this once tells NVDA this is the first header cell in the column that contains row headers, which should be automatically announced when moving between rows after this column. Pressing twice will clear the setting.</source>
-        <target>Imposta intestazioni di riga |`NVDA+Shift+C` | Premendo questo comando una volta, si indica a NVDA che la cella corrente è la prima della colonna con le intestazioni di riga. Le intestazioni verranno così annunciate automaticamente mentre ci si sposta tra le righe sottostanti. Premendolo due volte, l’impostazione verrà annullata.</target>
+        <target>Imposta intestazioni di riga |`NVDA+Shift+R` | Premendo questo comando una volta, si indica a NVDA che la cella corrente è la prima della colonna con le intestazioni di riga. Le intestazioni verranno così annunciate automaticamente mentre ci si sposta tra le righe sottostanti. Premendolo due volte, l’impostazione verrà annullata.</target>
       </segment>
     </unit>
     <unit id="9bc41658-168a-4b6c-8cb3-31e69e010c73">
@@ -24875,9 +24875,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 3053</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>When set to "Update Automatically", add-ons will automatically update in the background.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Quando impostato su "Aggiorna automaticamente",gli add-on si aggiorneranno automaticamente in background.</target>
       </segment>
     </unit>
     <unit id="6b079c41-7718-4724-84ee-ca4bc531bc88">
@@ -24970,36 +24970,36 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 3069</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>When [Automatic add-on updates](#AutomaticAddonUpdates) are enabled, by default, add-ons only update to the same [channel](#AddonStoreFilterChannel).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Quando [Gli aggiornamenti automatici degli add-on](#AutomaticAddonUpdates) sono abilitati, per impostazione predefinita, i componenti aggiuntivi si aggiornano solo per lo stesso [canale](#AddonStoreFilterChannel).</target>
       </segment>
     </unit>
     <unit id="2fd47649-6beb-4ca7-9fad-3bde5576629f">
       <notes>
         <note appliesTo="source">line: 3070</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>For example, an installed beta version will only update to a newer beta version.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Ad esempio, una versione beta installata si aggiornerà solo ad una versione beta più recente.</target>
       </segment>
     </unit>
     <unit id="77bb92c7-2c71-4f6f-8b68-5ebe2a34ff0f">
       <notes>
         <note appliesTo="source">line: 3071</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option sets the default update channel for all add-ons.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione imposta il canale di aggiornamento predefinito per tutti i componenti aggiuntivi.</target>
       </segment>
     </unit>
     <unit id="84b10d60-1fcf-43ed-9090-3bc8700d05f5">
       <notes>
         <note appliesTo="source">line: 3072</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>You can also change the update channel for a [specific add-on individually from the Add-on Store](#AddonStoreUpdateChannel).</source>
-        <target>&lt;target/&gt;</target>
+        <target>è anche possibile modificare il canale di aggiornamento per uno [specifico componente aggiuntivo individualmente dall'Add-on Store](#AddonStoreUpdateChannel).</target>
       </segment>
     </unit>
     <unit id="cd20a83a-5ddc-4238-be1d-ce0aa7802205">
@@ -25008,9 +25008,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Options | Same (Default), Any, Do not update, Stable, Beta or dev, Beta, Dev </source>
-        <target>&lt;target/&gt;</target>
+        <target> Opzioni | Lo stesso (Predefinito), Qualsiasi, Non aggiornare, Stabile, Beta o dev, Beta, Dev </target>
       </segment>
     </unit>
     <unit id="5101407f-f7e1-4c59-9787-56bbf1380634">
@@ -25019,9 +25019,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Default | Same </source>
-        <target>&lt;target/&gt;</target>
+        <target> Predefinito | Lo stesso </target>
       </segment>
     </unit>
     <unit id="824d4ae9-0463-40f8-a473-498bd8b04056">
@@ -25030,9 +25030,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Option | Behaviour </source>
-        <target>&lt;target/&gt;</target>
+        <target> Opzione | Comportamento </target>
       </segment>
     </unit>
     <unit id="5cb8f85e-77d3-430f-9f0a-811376724f56">
@@ -25041,9 +25041,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Same | Add-ons will remain on their channel </source>
-        <target>&lt;target/&gt;</target>
+        <target> Lo stesso | Gli add-on rimarranno nel loro canale </target>
       </segment>
     </unit>
     <unit id="fe84c0ba-0cb3-48d8-bd5c-426ad813a896">
@@ -25052,9 +25052,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Any | Add-ons will automatically update to the latest version, regardless of channel </source>
-        <target>&lt;target/&gt;</target>
+        <target> Qualsiasi | I componenti aggiuntivi si aggiorneranno automaticamente all'ultima versione, indipendentemente dal canale </target>
       </segment>
     </unit>
     <unit id="0e7bb3c4-6a44-4dc0-96c6-e3bad0925f90">
@@ -25063,9 +25063,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Do not update | Add-ons will not automatically update by default, you must enable them individually </source>
-        <target>&lt;target/&gt;</target>
+        <target> Non aggiornare | I componenti aggiuntivi non si aggiorneranno automaticamente per impostazione predefinita, è necessario abilitarli individualmente </target>
       </segment>
     </unit>
     <unit id="6dd0d5a7-5741-4e63-bf0b-2b7903717aaa">
@@ -25074,9 +25074,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Stable | Add-ons will automatically update to stable versions </source>
-        <target>&lt;target/&gt;</target>
+        <target> Stabile | I componenti aggiuntivi si aggiorneranno automaticamente alle versioni stabili </target>
       </segment>
     </unit>
     <unit id="755043a8-0834-4685-b287-945079bf214b">
@@ -25085,9 +25085,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Beta or dev | Add-ons will automatically update to beta or dev versions </source>
-        <target>&lt;target/&gt;</target>
+        <target> Beta o dev | I componenti aggiuntivi si aggiorneranno automaticamente alle versioni beta o dev </target>
       </segment>
     </unit>
     <unit id="074fd46a-91aa-4415-a795-05b1e7560b49">
@@ -25096,9 +25096,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Beta | Add-ons will automatically update to beta versions </source>
-        <target>&lt;target/&gt;</target>
+        <target> Beta | I componenti aggiuntivi si aggiorneranno automaticamente alle versioni beta </target>
       </segment>
     </unit>
     <unit id="a961c9bd-0d8d-490b-b76b-14d7115dcb44">
@@ -25107,9 +25107,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Dev | Add-ons will automatically update to dev versions </source>
-        <target>&lt;target/&gt;</target>
+        <target> Dev | I componenti aggiuntivi si aggiorneranno automaticamente alle versioni Dev </target>
       </segment>
     </unit>
     <unit id="f2c9de04-525d-4257-b675-bc95090423de">
@@ -25118,54 +25118,54 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#AllowIncompatibleAddonUpdates}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Allow automatic updates to install incompatible add-ons</source>
-        <target>&lt;target/&gt;</target>
+        <target>Consenti agli aggiornamenti automatici di installare add-on incompatibili</target>
       </segment>
     </unit>
     <unit id="9a6c7f72-bed4-4786-be93-ae684ab723b2">
       <notes>
         <note appliesTo="source">line: 3091</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This setting enables automatic updates to add-ons that may not be fully compatible with the current version of NVDA.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa impostazione consente aggiornamenti automatici a componenti aggiuntivi che potrebbero non essere completamente compatibili con la versione corrente di NVDA.</target>
       </segment>
     </unit>
     <unit id="3a417004-d82a-4cb2-aa2e-af8740bfe4ce">
       <notes>
         <note appliesTo="source">line: 3092</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>By default, this is disabled, meaning automatic updates will only upgrade to add-on versions marked as compatible with the current version of NVDA.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Per impostazione predefinita, la funzione è disabilitata, il che significa che gli aggiornamenti automatici opereranno solo sulle versioni contrassegnate come compatibili con la versione corrente di NVDA.</target>
       </segment>
     </unit>
     <unit id="bca925ec-287d-400d-958b-0dcecb269433">
       <notes>
         <note appliesTo="source">line: 3093</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Automatic updates will still update an incompatible add-on version to a compatible version when it is released.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Gli aggiornamenti automatici aggiorneranno comunque una versione incompatibile di un componente aggiuntivo a una versione compatibile non appena sarà disponibile.</target>
       </segment>
     </unit>
     <unit id="955b207c-1a8b-40d9-8128-5562ba762e23">
       <notes>
         <note appliesTo="source">line: 3094</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Enabling this may be useful for switching over to using add-on breaking releases (the first release of the year).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Abilitare questa opzione può essere utile per passare alle versioni che interrompono la compatibilità con i componenti aggiuntivi (la prima versione dell’anno).</target>
       </segment>
     </unit>
     <unit id="ad61f6ad-b9fe-4117-a3b6-445c3a07d07b">
       <notes>
         <note appliesTo="source">line: 3095</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This is particularly useful for alpha and beta testers, who are testing compatibility of add-ons during the early stages of an add-on breaking release.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questo è particolarmente utile per i tester delle versioni alpha e beta, che verificano la compatibilità dei componenti aggiuntivi nelle fasi iniziali di una versione che interrompe la compatibilità.</target>
       </segment>
     </unit>
     <unit id="ae02468e-ba87-4868-bd19-77304b444ae2">
@@ -25174,54 +25174,54 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#AddonStoreMetadataMirror}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Mirror server</source>
-        <target>&lt;target/&gt;</target>
+        <target>Server mirror</target>
       </segment>
     </unit>
     <unit id="4b93a787-3809-4a37-b50b-9b37d36c5a85">
       <notes>
         <note appliesTo="source">line: 3099</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>These controls allow you to specify an alternative URL to download Add-on Store data from.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questi controlli consentono di specificare un URL alternativo per scaricare i dati dei componenti aggiuntivi</target>
       </segment>
     </unit>
     <unit id="e00a9820-461e-48c0-9768-79381ca3e9e1">
       <notes>
         <note appliesTo="source">line: 3100</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This may be of use in locations where access to the NV Access Add-on Store server is slow or unavailable.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questo può essere utile in luoghi in cui l’accesso al server dello Store dei componenti aggiuntivi di NV Access è lento o non disponibile.</target>
       </segment>
     </unit>
     <unit id="6db5bc5d-4352-440c-86f3-5e434a2e1dfd">
       <notes>
         <note appliesTo="source">line: 3102</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>The read-only text box shows the current mirror URL.</source>
-        <target>&lt;target/&gt;</target>
+        <target>La casella di testo di sola lettura mostra l'URL del mirror corrente.</target>
       </segment>
     </unit>
     <unit id="c31aa45c-52d3-432d-9da6-63de4ecabbd1">
       <notes>
         <note appliesTo="source">line: 3103</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>If no mirror is in use (i.e. the NV Access Add-on Store server is being used), "No mirror" is displayed.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se non risulta in uso alcun mirrror (ad esempio si sta utilizzando il server di NVAccess per gli add-on, verrà mostrata la dicitura "Nessun mirror".</target>
       </segment>
     </unit>
     <unit id="5c1cbc23-5376-40c3-9f92-320c61ce131a">
       <notes>
         <note appliesTo="source">line: 3105</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>If you wish to change the Add-on Store mirror, press the "Change..." button to open the [Set Add-on Store Mirror dialog](#SetURLDialog).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se si desidera modificare il mirrrror per l'add-on store, premere il pulsante "Cambia..." per aprire la [Finestra Imposta il server mirror per gli add-on](#SetURLDialog).</target>
       </segment>
     </unit>
     <unit id="2657d7be-4212-4e5b-b97d-a85dfe7476b6">
@@ -25230,18 +25230,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: #### </note>
         <note appliesTo="source">suffix:  {#RemoteSettings}</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Remote Access Settings</source>
-        <target>Remote Access Settings</target>
+        <target>Impostazioni accesso remoto</target>
       </segment>
     </unit>
     <unit id="34d45e86-1a4c-470a-9fb6-4812a2ce7c7e">
       <notes>
         <note appliesTo="source">line: 3109</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This category allows you to configure the behaviour of [Remote Access](#RemoteAccess).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa categoria consente di configurare il comportamento dell'[Accesso Remoto](#RemoteAccess).</target>
       </segment>
     </unit>
     <unit id="e4703b50-8f75-4f41-bd21-2659efb04c3c">
@@ -25250,63 +25250,63 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#RemoteEnable}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Enable Remote Access</source>
-        <target>&lt;target/&gt;</target>
+        <target>Abilita l'Accesso Remoto</target>
       </segment>
     </unit>
     <unit id="5ed75b2e-5083-4afc-8df2-a1ef193fdba2">
       <notes>
         <note appliesTo="source">line: 3113</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Use this checkbox to enable or disable NVDA's Remote Access feature.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Utilizzare questa casella di controllo per attivare o disattivare la funzionalità di Accesso Remoto di NVDA.</target>
       </segment>
     </unit>
     <unit id="9fada5ff-5a84-4a80-977e-ec584832d240">
       <notes>
         <note appliesTo="source">line: 3115</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>When this is unchecked, the Remote Access feature is entirely unavailable.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se la casella è non selezionata, la funzionalità non sarà disponibile.</target>
       </segment>
     </unit>
     <unit id="dda10917-5d77-41cd-8a44-b08932cadedb">
       <notes>
         <note appliesTo="source">line: 3117</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Please note that in order to continue a Remote Access session on secure screens such as User Account Control prompts, you must enable this setting, save the changes, and then [copy your settings to NVDA's system configuration directory](#GeneralSettingsCopySettings).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Nota: per poter continuare una sessione di Accesso Remoto nelle schermate protette, come i prompt del Controllo dell’Account Utente, è necessario abilitare questa opzione, salvare le modifiche e poi [copiare le impostazioni nella directory di configurazione di sistema di NVDA](#GeneralSettingsCopySettings).</target>
       </segment>
     </unit>
     <unit id="75044417-01a7-42a4-b008-a49b11a8d746">
       <notes>
         <note appliesTo="source">line: 3118</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Remote Access will only continue sessions started by the installed copy of NVDA on secure desktops.</source>
-        <target>Remote Access will only continue sessions started by the installed copy of NVDA on secure desktops.</target>
+        <target>L’Accesso Remoto continuerà solo le sessioni avviate dalla copia installata di NVDA nelle schermate protette.</target>
       </segment>
     </unit>
     <unit id="584a22fd-b482-4c2b-8b83-7028e6ceb2fd">
       <notes>
         <note appliesTo="source">line: 3119</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>This means that you cannot, for instance, start a Remote Access session with a portable copy of NVDA and have the session continue on secure screens.</source>
-        <target>This means that you cannot, for instance, start a Remote Access session with a portable copy of NVDA and have the session continue on secure screens.</target>
+        <target>Questo significa, ad esempio, che non è possibile avviare una sessione di Accesso Remoto con una copia portable di NVDA e farla proseguire nelle schermate protette.</target>
       </segment>
     </unit>
     <unit id="59c923d6-7942-4e2d-bd70-4916b46ad34a">
       <notes>
         <note appliesTo="source">line: 3121</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>The following options are only available if Remote Access is enabled.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Le seguenti opzioni sono disponibili solo se l'accesso remoto è abilitato.</target>
       </segment>
     </unit>
     <unit id="f7926c47-0767-4ec0-aff1-fd42b391c4cc">
@@ -25315,36 +25315,36 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#RemoteConfirmDisconnect}</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Confirm before disconnecting when controlled</source>
-        <target>Confirm before disconnecting when controlled</target>
+        <target>Chiedi conferma prima di disconnetterti se il pc è controllato</target>
       </segment>
     </unit>
     <unit id="36fe7e4c-6119-4f13-9138-8ad9781efc57">
       <notes>
         <note appliesTo="source">line: 3125</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>This option controls whether confirmation is required before disconnecting from a Remote Access session when connected as the controlled computer.</source>
-        <target>This option controls whether confirmation is required before disconnecting from a Remote Access session when connected as the controlled computer.</target>
+        <target>Questa opzione determina se è necessaria una conferma prima di disconnettersi da una sessione di Accesso Remoto quando si è collegati come computer controllato.</target>
       </segment>
     </unit>
     <unit id="da0acbbd-feb5-4a61-a595-c0c4479636c6">
       <notes>
         <note appliesTo="source">line: 3127</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>When checked, NVDA will ask for confirmation before disconnecting.</source>
-        <target>When checked, NVDA will ask for confirmation before disconnecting.</target>
+        <target>Se controllato, NVDA chiederà conferma prima di disconnettersi.</target>
       </segment>
     </unit>
     <unit id="c64ad95a-8244-483b-a4d2-298aaa04d808">
       <notes>
         <note appliesTo="source">line: 3128</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>When unchecked, NVDA will disconnect immediately without confirmation.</source>
-        <target>When unchecked, NVDA will disconnect immediately without confirmation.</target>
+        <target>Altrimenti, NVDA si disconnetterà immediatamente senza richiedere alcuna conferma.</target>
       </segment>
     </unit>
     <unit id="4b142507-9401-4d1f-b8da-cb443c3cb501">
@@ -25353,45 +25353,45 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#RemoteAutoconnect}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Automatically connect after NVDA starts</source>
-        <target>&lt;target/&gt;</target>
+        <target>Connetti automaticamente dopo l'avvio di NVDA</target>
       </segment>
     </unit>
     <unit id="a3c0240c-e753-44ff-9a12-10d41cd30396">
       <notes>
         <note appliesTo="source">line: 3132</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option allows you to automatically establish a Remote Access session when NVDA starts.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione consente di stabilire automaticamente una sessione di accesso remoto all'avvio di NVDA.</target>
       </segment>
     </unit>
     <unit id="620f9532-0216-4f60-bb66-8c743593e654">
       <notes>
         <note appliesTo="source">line: 3133</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This could be useful, for example, to control your home computer when away from home.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Ciò potrebbe essere utile, ad esempio, per controllare il computer di casa quando ci si trova lontano.</target>
       </segment>
     </unit>
     <unit id="a10b52e9-c203-4785-becd-4eae781c7d34">
       <notes>
         <note appliesTo="source">line: 3135</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Use caution when enabling this option, as it may increase the risk of unauthorized access to your computer.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Usare cautela quando si abilita questa opzione, in quanto può aumentare il rischio di accesso non autorizzato al proprio computer.</target>
       </segment>
     </unit>
     <unit id="8d685a96-562f-4854-b21c-0cd126cb21d5">
       <notes>
         <note appliesTo="source">line: 3137</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>For further details on the following options, please refer to the [Setting Up a Remote Access Session section](#RemoteAccessSetup)</source>
-        <target>For further details on the following options, please refer to the [Setting Up a Remote Access Session section](#RemoteAccessSetup)</target>
+        <target>Per ulteriori dettagli sulle seguenti opzioni, consultare la [sezione impostare una connessione di accesso remoto](#RemoteAccessSetup)</target>
       </segment>
     </unit>
     <unit id="5015a520-5bed-409d-9f4f-743e2fa0cb6d">
@@ -25400,27 +25400,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#RemoteAutoconnectMode}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Mode</source>
-        <target>&lt;target/&gt;</target>
+        <target>Modalità</target>
       </segment>
     </unit>
     <unit id="ae432baf-3488-4305-8381-8aae0c4e2310">
       <notes>
         <note appliesTo="source">line: 3141</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Select the connection mode for automatic connections.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Selezionare la modalità di connessione per connessioni automatiche.</target>
       </segment>
     </unit>
     <unit id="f92b4b86-c3b5-4ce6-b4e4-2bf81ec20d86">
       <notes>
         <note appliesTo="source">line: 3143</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option is only available when [Automatically connect after NVDA starts](#RemoteAutoconnect) is checked.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione è disponibile soltanto quando [Connetti automaticamente dopo l'avvio di NVDA](#RemoteAutoconnect) è attivata.</target>
       </segment>
     </unit>
     <unit id="cd41a94e-2ad8-4085-8167-bba3b861b438">
@@ -25429,9 +25429,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Option |Behaviour </source>
-        <target>&lt;target/&gt;</target>
+        <target>Opzione |Comportamento </target>
       </segment>
     </unit>
     <unit id="fc75148d-f685-4daf-a643-aa0e7ded2ee0">
@@ -25440,9 +25440,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Allow this computer to be controlled |Use this computer as the "controlled" computer. This allows the operator of the "controlling" computer to use this computer as if they were sitting in front of it. </source>
-        <target>Allow this computer to be controlled |Use this computer as the "controlled" computer. This allows the operator of the "controlling" computer to use this computer as if they were sitting in front of it. </target>
+        <target>Consenti il controllo di questo computer |Utilizza questo computer come “controllato”. In questo modo, l’operatore del computer “controllante” potrà utilizzarlo a distanza come se fosse fisicamente davanti allo schermo. </target>
       </segment>
     </unit>
     <unit id="b9e02315-fd92-42e4-941a-68e452bb789f">
@@ -25451,9 +25451,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Control another computer |Use this computer as the "controlling" computer. This allows you to execute commands on the remote computer. </source>
-        <target>Control another computer |Use this computer as the "controlling" computer. This allows you to execute commands on the remote computer. </target>
+        <target>Controlla un altro computer |Usa questo pc come "computer controllato". Ciò consente di eseguire comandi sul pc remoto. </target>
       </segment>
     </unit>
     <unit id="af02981e-74c9-4832-be1a-9596b2b1ad2a">
@@ -25462,27 +25462,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#RemoteAutoconnectServer}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Server</source>
-        <target>&lt;target/&gt;</target>
+        <target>Server</target>
       </segment>
     </unit>
     <unit id="6c98f242-7c5f-434e-acb7-8ce15b4b003b">
       <notes>
         <note appliesTo="source">line: 3152</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Select the server type for automatic connections.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Selezionare il tipo di server per connessioni automatiche.</target>
       </segment>
     </unit>
     <unit id="f5886c51-a6c9-4ca7-850f-ed42eca20fea">
       <notes>
         <note appliesTo="source">line: 3154</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option is only available when [Automatically connect after NVDA starts](#RemoteAutoconnect) is checked.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione è disponibile soltanto quando [Connetti automaticamente dopo l'avvio di NVDA](#RemoteAutoconnect) è attivata.</target>
       </segment>
     </unit>
     <unit id="35ae2c00-7dad-4f5a-8886-e3d3f723c788">
@@ -25491,9 +25491,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Option |Behaviour </source>
-        <target>&lt;target/&gt;</target>
+        <target>Opzione |Comportamento </target>
       </segment>
     </unit>
     <unit id="ed2c76eb-ca00-46bf-a198-2a1edfe7e652">
@@ -25502,9 +25502,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Use existing |Use an existing Remote Access server to mediate the connection (recommended). </source>
-        <target>&lt;target/&gt;</target>
+        <target>Usa esistente |Utilizza un server di Accesso Remoto esistente per gestire la connessione (consigliato). </target>
       </segment>
     </unit>
     <unit id="c4229ecd-8563-4a67-8ed6-823b2f8f890b">
@@ -25513,9 +25513,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Host locally |Use this instance of NVDA as the Remote Access server (advanced). This option may require network configuration that is out of scope for this manual. </source>
-        <target>&lt;target/&gt;</target>
+        <target>Ospita in locale |Usare questa istanza di NVDA come server di Accesso Remoto (avanzato). Questa opzione potrebbe richiedere una configurazione di rete non trattata in questo manuale. </target>
       </segment>
     </unit>
     <unit id="e508195a-301a-4839-a056-a306d6f799a2">
@@ -25524,36 +25524,36 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#RemoteAutoconnectHost}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Host</source>
-        <target>&lt;target/&gt;</target>
+        <target>Host</target>
       </segment>
     </unit>
     <unit id="2b42f111-d711-46d4-93e9-f4baa41e1ea1">
       <notes>
         <note appliesTo="source">line: 3163</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Use this field to set the URL of the Remote Access server you would like to use for automatic connections.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Usare questo campo per impostare l’URL del server di Accesso Remoto che si desidera utilizzare per le connessioni automatiche.Use this field to set the URL of the Remote Access server you would like to use for automatic connections.</target>
       </segment>
     </unit>
     <unit id="a2314d0b-fed3-4a5d-a629-782ecb20a197">
       <notes>
         <note appliesTo="source">line: 3164</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>If the server uses a port other than 6837, include it after a colon (eg. `example.com:1234`).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se il server utilizza una porta diversa da 6837, inserirla dopo i due punti (esempio `example.com:1234`).</target>
       </segment>
     </unit>
     <unit id="1c48db19-a2bd-4c29-810c-6a7b38a6269a">
       <notes>
         <note appliesTo="source">line: 3166</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option is only available when [Automatically connect after NVDA starts](#RemoteAutoconnect) is checked, and [Server](#RemoteAutoconnectServer) is set to "Use existing".</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione è disponibile soltanto quando [Connetti automaticamente dopo l'avvio di NVDA](#RemoteAutoconnect) è attivata, e l'opzione [Server](#RemoteAutoconnectServer) è impostata su "Usa esistente".</target>
       </segment>
     </unit>
     <unit id="3922ec7e-84f7-4733-b639-2617ff92e68a">
@@ -25562,27 +25562,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#RemoteAutoconnectPort}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Port</source>
-        <target>&lt;target/&gt;</target>
+        <target>Porta</target>
       </segment>
     </unit>
     <unit id="f49141eb-1eed-4825-9e4c-f2a0fc51c141">
       <notes>
         <note appliesTo="source">line: 3170</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Use this field to set the TCP port you would like to use for automatic connections.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Usare questo campo per impostare la porta TCP che si desidera utilizzare per connessioni automatiche.</target>
       </segment>
     </unit>
     <unit id="37ce416a-0855-444d-a6cd-828aaba73600">
       <notes>
         <note appliesTo="source">line: 3172</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option is only available when [Automatically connect after NVDA starts](#RemoteAutoconnect) is checked, and [Server](#RemoteAutoconnectServer) is set to "Host locally".</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione è disponibile soltanto quando [Connetti automaticamente dopo l'avvio di NVDA](#RemoteAutoconnect) è attivata, e l'opzione [Server](#RemoteAutoconnectServer) è impostata su "Usa esistente".</target>
       </segment>
     </unit>
     <unit id="951b1ca5-229b-4118-b4dd-f6056d1befe8">
@@ -25591,27 +25591,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#RemoteAutoconnectKey}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Key</source>
-        <target>&lt;target/&gt;</target>
+        <target>Chiave</target>
       </segment>
     </unit>
     <unit id="b9bde79d-75c9-4096-b11b-84f41c61fb6f">
       <notes>
         <note appliesTo="source">line: 3176</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Use this field to set the key (password) you would like to use for automatic connections.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Usare questo campo per impostare la chiave (password) che si desidera utilizzare per connessioni automatiche.</target>
       </segment>
     </unit>
     <unit id="cc411c22-798f-4e84-8d71-0d917fe47cd4">
       <notes>
         <note appliesTo="source">line: 3178</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option is only available when [Automatically connect after NVDA starts](#RemoteAutoconnect) is checked.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione è disponibile soltanto quando [Connetti automaticamente dopo l'avvio di NVDA](#RemoteAutoconnect) è attivata, e l'opzione [Server](#RemoteAutoconnectServer) è impostata su "Usa esistente".</target>
       </segment>
     </unit>
     <unit id="4214e903-3572-4c71-acef-65b3419d8335">
@@ -25620,45 +25620,45 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#RemoteDeleteFingerprints}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Delete all trusted fingerprints</source>
-        <target>&lt;target/&gt;</target>
+        <target>Elimina tutte le impronte digitali attendibili.</target>
       </segment>
     </unit>
     <unit id="91483535-71a7-4971-83d5-162e7c743e8d">
       <notes>
         <note appliesTo="source">line: 3182</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This button allows you to forget the fingerprints of all previously trusted Remote Access servers.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questo pulsante consente di dimenticare le impronte digitali di tutti i server di Accesso Remoto.</target>
       </segment>
     </unit>
     <unit id="cb352821-53f2-4c81-8da5-d04a2190e726">
       <notes>
         <note appliesTo="source">line: 3183</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>This means that you will again be asked whether to connect to all unrecognised Remote Access servers, even ones that you have previously connected to.</source>
-        <target>This means that you will again be asked whether to connect to all unrecognised Remote Access servers, even ones that you have previously connected to.</target>
+        <target>Questo significa che verrà nuovamente chiesto se si desidera connettersi a tutti i server di Accesso Remoto non riconosciuti, anche a quelli a cui ci si è già connesso in passato.</target>
       </segment>
     </unit>
     <unit id="869c3bb3-208a-45f7-8a08-e3b9c2e82afd">
       <notes>
         <note appliesTo="source">line: 3184</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>You will be asked to confirm before all trusted fingerprints are deleted.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Verrà richiesta conferma prima che tutte le impronte digitali attendibili vengano eliminate.</target>
       </segment>
     </unit>
     <unit id="5a6e6ae6-9b3f-40a3-989d-8dd76024335a">
       <notes>
         <note appliesTo="source">line: 3186</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option is only available if there are trusted fingerprints stored in your configuration.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione è disponibile solo se nella configurazione sono memorizzate impronte digitali attendibili.</target>
       </segment>
     </unit>
     <unit id="41cbd374-e298-42ab-badc-9dd6efb312c8">
@@ -25772,27 +25772,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: #### </note>
         <note appliesTo="source">suffix:  {#SetURLDialog}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Set Mirror Dialog</source>
-        <target>&lt;target/&gt;</target>
+        <target>Finestra impostazione mirror</target>
       </segment>
     </unit>
     <unit id="b8b24625-92be-49a9-b30e-5079a4c3bc96">
       <notes>
         <note appliesTo="source">line: 3207</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This dialog allows you to specify the URL of a mirror to use when [updating NVDA](#GeneralSettingsCheckForUpdates) or [using the Add-on Store](#AddonsManager).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa finestra consente di specificare l'URL del mirror da utilizzare quando [si aggiorna NVDA](#GeneralSettingsCheckForUpdates) o [si utilizza l'Add-on Store](#AddonsManager).</target>
       </segment>
     </unit>
     <unit id="e6fbcabf-879b-44a0-aacc-2a0f7878f147">
       <notes>
         <note appliesTo="source">line: 3208</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This may be of use in locations where access to the NV Access servers for these functions is slow or unavailable.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Ciò può essere utile in luoghi in cui l'accesso ai server di NVAccess per queste funzioni risulta lento o non disponibile.</target>
       </segment>
     </unit>
     <unit id="f73dfe76-9328-4ad1-8a98-4aae4490d98f">
@@ -25800,9 +25800,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3210</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>When setting the [NVDA update mirror](#UpdateMirror), the title of this dialog will be "Set NVDA Update Mirror".</source>
-        <target>&lt;target/&gt;</target>
+        <target>Quando si imposta il [Mirror di aggiornamento per NVDA](#UpdateMirror), il titolo di questa finestra diventerà "Imposta mirror per gli aggiornamenti di NVDA".</target>
       </segment>
     </unit>
     <unit id="19a0ca46-0cf7-4f44-a012-76fb71b7bd3b">
@@ -25810,9 +25810,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3211</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>When setting the [Add-on Store mirror](#AddonStoreMetadataMirror), the title of this dialog will be "Set Add-on Store Mirror Server".</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se invece si imposta il [mirror per l'Add-on Store](#AddonStoreMetadataMirror), il titolo della finestra sarà "Imposta il server mirrror per l'Add-on Store".</target>
       </segment>
     </unit>
     <unit id="8a9fda8d-8feb-4a2e-9bb2-54857a6b1d3a">
@@ -25821,45 +25821,45 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#SetURLTextbox}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>URL</source>
-        <target>&lt;target/&gt;</target>
+        <target>URL</target>
       </segment>
     </unit>
     <unit id="4ed6a6c5-896a-4644-8b99-03e1c75afcd5">
       <notes>
         <note appliesTo="source">line: 3215</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Enter the URL (web address) of the mirror you wish to use here.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Inserire l'URL (indirizzo web) del mirror che si desidera utilizzare.</target>
       </segment>
     </unit>
     <unit id="af23ed2c-1ebe-4e3c-954e-114c91ebc45e">
       <notes>
         <note appliesTo="source">line: 3216</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Only HTTP and HTTPS URLs are supported.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Sono supportati solo indirizzi di tipo HTTP e HTTPS.</target>
       </segment>
     </unit>
     <unit id="eb8ca7c0-5d29-4578-8d2f-d82a2b5054f3">
       <notes>
         <note appliesTo="source">line: 3217</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>For your privacy, NV Access recommends using HTTPS URLs whenever possible.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Per la tua privacy, NV Access consiglia di utilizzare gli URL HTTPS quando possibile.</target>
       </segment>
     </unit>
     <unit id="1baea992-7155-41e4-9d86-1a2732c418c3">
       <notes>
         <note appliesTo="source">line: 3219</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Leave this blank to use the default NV Access server.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Lasciare il campo vuoto per utilizzare il server NV Access predefinito.</target>
       </segment>
     </unit>
     <unit id="cc6cb82c-2a45-463f-ba63-094caf917760">
@@ -25868,36 +25868,36 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#SetURLTest}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Test...</source>
-        <target>&lt;target/&gt;</target>
+        <target>Test...</target>
       </segment>
     </unit>
     <unit id="2d408ecc-d3a0-49ce-8e87-7fb1110b95e9">
       <notes>
         <note appliesTo="source">line: 3223</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Press this button to test the mirror URL you have entered.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Premere questo pulsante per testare l'indirizzo del mirror inserito.</target>
       </segment>
     </unit>
     <unit id="c4cdecb9-2f3e-488a-9dbe-aba87da6fe2b">
       <notes>
         <note appliesTo="source">line: 3224</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>You must be connected to the internet for the test to succeed.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Bisogna essere connessi a Internet affinché il test abbia successo.</target>
       </segment>
     </unit>
     <unit id="e4d23412-941b-43bc-a8a8-461f3d8250fe">
       <notes>
         <note appliesTo="source">line: 3225</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>It is recommended that you always test the URL before saving it.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Si consiglia di testare sempre l'URL prima di salvarlo.</target>
       </segment>
     </unit>
     <unit id="e3d0c2c5-1a59-4caf-9b4f-67e824c90639">
@@ -26233,9 +26233,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3279</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Only where necessary: where the Microsoft Word object model is not available at all</source>
-        <target>&lt;target/&gt;</target>
+        <target>Solo quando necessario: laddove il modello a oggetti Microsoft Word non risulta disponibile in alcun modo</target>
       </segment>
     </unit>
     <unit id="d38474d6-8394-449b-baed-21d03501240a">
@@ -27148,36 +27148,36 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#TrimLeadingSilenceSpeech}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Trim leading silence in speech audio</source>
-        <target>&lt;target/&gt;</target>
+        <target>Rimuovi silenzi iniziali della sintesi</target>
       </segment>
     </unit>
     <unit id="a0439eac-a01a-4596-b651-b95700fd4bc7">
       <notes>
         <note appliesTo="source">line: 3420</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>When enabled, NVDA will remove silence from the start of speech audio, which may improve the responsiveness of some speech synthesizers.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se attivato, NVDA rimuoverà eventuali silenzi da quando la sintesi vocale inizia a parlare, il che può portare ad un aumento delle prestazioni per alcuni sintetizzatori.</target>
       </segment>
     </unit>
     <unit id="6dc82e04-38d5-4e56-8922-c8174017cbad">
       <notes>
         <note appliesTo="source">line: 3421</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option is enabled by default, and should only affect the silence at the beginning of speech.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione è abilitata per impostazione predefinita, dovrebbe influenzare il silenzio presente solo all'inizio del parlato.</target>
       </segment>
     </unit>
     <unit id="df3db20e-89e8-438f-9608-977d65dbe68f">
       <notes>
         <note appliesTo="source">line: 3422</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>If you find that some necessary silence periods are also missing (e.g. pause between two sentences) when using a speech synthesizer add-on, you may turn this feature off entirely to resolve the issue.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se si nota che mancano anche alcune pause necessarie (ad esempio tra due frasi) quando si usa un sintetizzatore vocale proveniente da un add-on, si può disattivare completamente questa funzione per risolvere il problema.</target>
       </segment>
     </unit>
     <unit id="c220247b-10ff-495a-ba07-7ca83b57a89a">
@@ -27186,45 +27186,45 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ##### </note>
         <note appliesTo="source">suffix:  {#UseWASAPIForSAPI4}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Use WASAPI for SAPI 4 audio output</source>
-        <target>&lt;target/&gt;</target>
+        <target>Utilizza WASAPI per l'uscita audio Sapi4</target>
       </segment>
     </unit>
     <unit id="6a99c36f-33d2-4a02-9572-9b6df4e1f31b">
       <notes>
         <note appliesTo="source">line: 3426</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This option enables Microsoft Speech API version 4 (SAPI 4) voices to output audio via the Windows Audio Session API (WASAPI).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questa opzione consente alle voci Microsoft Speech API versione 4 (SAPI 4) di riprodurre l’audio tramite l’API Windows Audio Session (WASAPI).</target>
       </segment>
     </unit>
     <unit id="73d79f19-633b-4ab0-9975-abd1bd212926">
       <notes>
         <note appliesTo="source">line: 3427</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This can allow SAPI 4 voices to work with more features, such as audio ducking, leading silence trimming, and keeping audio device awake.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questo consente alle voci SAPI 4 di sfruttare funzionalità aggiuntive come la riduzione automatica del volume degli altri suoni (audio ducking), l’eliminazione del silenzio iniziale e il mantenimento attivo del dispositivo audio.</target>
       </segment>
     </unit>
     <unit id="79c46af5-44a3-49d7-86b7-e737d5440a24">
       <notes>
         <note appliesTo="source">line: 3428</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>However, some SAPI 4 voices might not work with the current WASAPI implementation.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Tuttavia, alcune voci SAPI 4 potrebbero non funzionare con l'attuale implementazione WASAPI.</target>
       </segment>
     </unit>
     <unit id="cddb15b9-7651-4c05-9478-b17653c2c94c">
       <notes>
         <note appliesTo="source">line: 3429</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>If you find that the SAPI 4 voice you are using stops working, you may disable this option.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se ci si rende conto che la voce SAPI 4 in utilizzo smette di funzionare, è possibile disabilitare questa opzione.</target>
       </segment>
     </unit>
     <unit id="e21a8ba0-863c-413d-bdb2-fef30cfb7f17">
@@ -27233,9 +27233,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Options |Default (Enabled), Disabled, Enabled</source>
-        <target>&lt;target/&gt;</target>
+        <target>Ozioni |Predefinito (Attivato), Disattivato, Attivato</target>
       </segment>
     </unit>
     <unit id="38c5b121-abdc-4cab-aea7-297a9bb40e74">
@@ -27244,9 +27244,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Default |Enabled</source>
-        <target>&lt;target/&gt;</target>
+        <target>Predefinito |Attivato</target>
       </segment>
     </unit>
     <unit id="9818ec02-721e-4b97-aa0e-668e024c4ab0">
@@ -27937,9 +27937,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 3539</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Normal backslashes in the Replacement field should thus be doubled, e.g. "a\\\\b" should be typed in order to get the "a\\b" replacement.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Nel campo di sostituzione, i normali backslash devono quindi essere raddoppiati; ad esempio, per ottenere la sostituzione "a\\b", è necessario digitare "a\\\\b".</target>
       </segment>
     </unit>
     <unit id="f049f307-8c00-4fc7-91ce-8b2d0a9e87d1">
@@ -28235,9 +28235,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Save configuration |`NVDA+control+c` |`NVDA+control+c` |Saves your current configuration so that it is not lost when you exit NVDA</source>
-        <target>&lt;target/&gt;</target>
+        <target>Salva configurazione |`NVDA+control+c` |`NVDA+control+c` |Salva la configurazione attuale in modo che non vada persa all'uscita di NVDA</target>
       </segment>
     </unit>
     <unit id="c2f0e356-e676-4641-bad3-db94e1e7f07b">
@@ -28246,9 +28246,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Revert configuration |`NVDA+control+r` |`NVDA+control+r` |Pressing once resets your configuration to when you last saved it. Pressing three times will reset it back to factory defaults.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Ripristina configurazione |`NVDA+control+r` |`NVDA+control+r` |Con una pressione, la configurazione verrà ripristinata all’ultimo salvataggio. Con la tripla pressione, verranno ripristinate le impostazioni predefinite di fabbrica.</target>
       </segment>
     </unit>
     <unit id="399befd7-919a-441c-8d48-a1800124f0df">
@@ -28890,45 +28890,45 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ## </note>
         <note appliesTo="source">suffix:  {#RemoteAccess}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Remote Access</source>
-        <target>&lt;target/&gt;</target>
+        <target>Accesso Remoto</target>
       </segment>
     </unit>
     <unit id="901c6fe7-6d7d-4c92-8afd-8f19dfcf1110">
       <notes>
         <note appliesTo="source">line: 3700</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>With NVDA's built-in remote access feature, you can control another computer running NVDA or allow someone to control your computer.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Con la funzione integrata di Accesso Remoto di NVDA, è possibile controllare un altro computer su cui è in esecuzione lo screen reader oppure permettere a qualcuno di controllare il proprio.</target>
       </segment>
     </unit>
     <unit id="292f195a-fc6a-4365-b2ff-29879fd8ac81">
       <notes>
         <note appliesTo="source">line: 3701</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This makes it easy to provide or receive assistance, collaborate, or access your own computer remotely.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questo rende semplice offrire o ricevere assistenza, collaborare o accedere da remoto al proprio computer.</target>
       </segment>
     </unit>
     <unit id="419acf1f-0ffb-417b-8e90-3df4bcdf18a2">
       <notes>
         <note appliesTo="source">line: 3703</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Remote access is disabled by default for your security.</source>
-        <target>&lt;target/&gt;</target>
+        <target>L'accesso remoto è disabilitato da impostazioni predefinite per la propria sicurezza.</target>
       </segment>
     </unit>
     <unit id="ead81db6-306f-43cc-a1f8-40c7328a9c9d">
       <notes>
         <note appliesTo="source">line: 3704</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>You can enable Remote Access [in Remote Access settings](#RemoteSettings).</source>
-        <target>You can enable Remote Access [in Remote Access settings](#RemoteSettings).</target>
+        <target>È possibile attivare l'Accesso Remoto [nelle impostazioni di Accesso Remoto](#RemoteSettings).</target>
       </segment>
     </unit>
     <unit id="b0890d69-c731-4ac7-ac2b-700a3bcbce31">
@@ -28937,63 +28937,63 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ### </note>
         <note appliesTo="source">suffix:  {#RemoteAccessGettingStarted}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Getting Started</source>
-        <target>&lt;target/&gt;</target>
+        <target>Per cominciare</target>
       </segment>
     </unit>
     <unit id="2f9674a8-2834-44ef-b9db-cda4bb1227d3">
       <notes>
         <note appliesTo="source">line: 3708</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Before you begin, ensure NVDA is installed and running on both computers.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Prima di iniziare, assicurarsi che NVDA sia installato ed in esecuzione su entrambi i computer.</target>
       </segment>
     </unit>
     <unit id="88fcd8b4-add6-4ecf-9f4d-1e223ed9d021">
       <notes>
         <note appliesTo="source">line: 3709</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Also ensure that the Enable Remote Access checkbox [in Remote Access settings](#RemoteSettings) is checked on both computers.</source>
-        <target>Also ensure that the Enable Remote Access checkbox [in Remote Access settings](#RemoteSettings) is checked on both computers.</target>
+        <target>Inoltre accertarsi che la casella di controllo Attiva Accesso Remoto [nelle impostazioni di Accesso Remoto](#RemoteSettings) sia selezionata in entrambi i computer.</target>
       </segment>
     </unit>
     <unit id="09ac6e0e-f092-4b9e-b319-5abcadb9abb8">
       <notes>
         <note appliesTo="source">line: 3710</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>The remote access feature will then be available from the Tools menu in NVDA; there's no need for additional downloads or installations.</source>
-        <target>The remote access feature will then be available from the Tools menu in NVDA; there's no need for additional downloads or installations.</target>
+        <target>La funzione di accesso remoto sarà quindi disponibile dal menu Strumenti in NVDA; Non sono necessari download o installazioni aggiuntive.</target>
       </segment>
     </unit>
     <unit id="eafcf2e7-dfce-4bad-b792-268912a360ca">
       <notes>
         <note appliesTo="source">line: 3712</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If NVDA is running in [secure mode](#SecureMode), you cannot manually initiate a new Remote Access session.</source>
-        <target>If NVDA is running in [secure mode](#SecureMode), you cannot manually initiate a new Remote Access session.</target>
+        <target>Se NVDA è in esecuzione in [Modalità Protetta](#SecureMode), Non è possibile avviare manualmente una nuova sessione di accesso remoto.</target>
       </segment>
     </unit>
     <unit id="b98ba472-736b-4064-a635-a06206770515">
       <notes>
         <note appliesTo="source">line: 3713</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>However, NVDA will still automatically start a new Remote Access session if configured to do so with the [Automatically connect after NVDA starts](#RemoteAutoconnect) setting.</source>
-        <target>However, NVDA will still automatically start a new Remote Access session if configured to do so with the [Automatically connect after NVDA starts](#RemoteAutoconnect) setting.</target>
+        <target>Tuttavia, NVDA avvierà comunque automaticamente una nuova sessione di Accesso Remoto se è configurato per farlo tramite [l’impostazione Connetti automaticamente all’avvio di NVDA.](#RemoteAutoconnect)</target>
       </segment>
     </unit>
     <unit id="60077139-084d-4afd-b7ad-fb845737bd70">
       <notes>
         <note appliesTo="source">line: 3714</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>You can still manually disconnect in secure mode.</source>
-        <target>You can still manually disconnect in secure mode.</target>
+        <target>È comunque possibile disconnettersi manualmente in modalità protetta.</target>
       </segment>
     </unit>
     <unit id="0d4b737e-ca74-4357-88ff-453f773adacc">
@@ -29002,36 +29002,36 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ### </note>
         <note appliesTo="source">suffix:  {#RemoteAccessSetup}</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Setting Up a Remote Access Session</source>
-        <target>Setting Up a Remote Access Session</target>
+        <target>Impostazione di una sessione di accesso remoto</target>
       </segment>
     </unit>
     <unit id="f32eba5f-9e5e-44ae-b4ff-535144c504da">
       <notes>
         <note appliesTo="source">line: 3718</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Remote access sessions are configured via the Remote Access connection dialog.</source>
-        <target>Remote access sessions are configured via the Remote Access connection dialog.</target>
+        <target>Le sessioni di accesso remoto sono configurate tramite la finestra di dialogo Connessione di accesso remoto.</target>
       </segment>
     </unit>
     <unit id="c30ddb9a-50c5-416c-a25d-46508dfc7432">
       <notes>
         <note appliesTo="source">line: 3719</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Open the NVDA menu and select Tools, then "Remote Access", then "Connect...".</source>
-        <target>Open the NVDA menu and select Tools, then "Remote Access", then "Connect...".</target>
+        <target>Aprire il menu NVDA e selezionare strumenti, quindi "Accesso remoto", poi "Connetti ...".</target>
       </segment>
     </unit>
     <unit id="a85bf4ba-f2a5-4d8d-a16a-3489c727d330">
       <notes>
         <note appliesTo="source">line: 3720</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Or from anywhere press `NVDA+alt+r`.</source>
-        <target>Or from anywhere press `NVDA+alt+r`.</target>
+        <target>O da qualsiasi punto Premere `nvda+alt+r`.</target>
       </segment>
     </unit>
     <unit id="26584c3b-625c-4312-8d12-f46fee6648c4">
@@ -29040,27 +29040,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: #### </note>
         <note appliesTo="source">suffix:  {#RemoteAccessMode}</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Mode Selection (Controlling or Controlled)</source>
-        <target>Mode Selection (Controlling or Controlled)</target>
+        <target>Selezione della modalità (controllare o essere controllati)</target>
       </segment>
     </unit>
     <unit id="41731c56-a34f-4506-bb60-144bfae68ac9">
       <notes>
         <note appliesTo="source">line: 3724</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>You'll need to decide which computer will be controlled (the controlled computer) and which will be controlling (the controlling computer).</source>
-        <target>You'll need to decide which computer will be controlled (the controlled computer) and which will be controlling (the controlling computer).</target>
+        <target>È necessario stabilire quale computer sarà controllato (cioè quello accessibile da remoto) e quale fungerà da postazione di controllo (cioè quello che gestirà la sessione).</target>
       </segment>
     </unit>
     <unit id="f64f101a-b693-4442-a9cb-64d2c0e5ee00">
       <notes>
         <note appliesTo="source">line: 3726</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>the mode combo box allows you to choose whether this computer will be controlled (Another person will interact with your computer) or controlling (you will interact with someone else's computer).</source>
-        <target>the mode combo box allows you to choose whether this computer will be controlled (Another person will interact with your computer) or controlling (you will interact with someone else's computer).</target>
+        <target>La casella combinata "Modalità" consente di scegliere se questo computer sarà controllato (un’altra persona interagirà con il tuo computer) oppure funga da postazione di controllo (interagirai tu con il computer di un’altra persona).</target>
       </segment>
     </unit>
     <unit id="e1c1a5cb-7290-4da4-aea3-9702dd592d7b">
@@ -29068,9 +29068,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3728</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If you require another person to help you with your computer, choose "Allow this computer to be controlled".</source>
-        <target>If you require another person to help you with your computer, choose "Allow this computer to be controlled".</target>
+        <target>Se si necessita che un'altra persona possa aiutarci con il nostro computer, scegliere "Consenti il controllo di questo computer".</target>
       </segment>
     </unit>
     <unit id="b7f7a308-38b8-4a39-8178-ef41f7dfcf7e">
@@ -29078,9 +29078,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3729</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If you are going to help someone with their computer, choose "Control another computer".</source>
-        <target>If you are going to help someone with their computer, choose "Control another computer".</target>
+        <target>Se invece si ha intenzione di aiutare qualcuno con il proprio computer, scegliere "Controlla un altro computer".</target>
       </segment>
     </unit>
     <unit id="010cb88b-782e-4e10-b0b4-24515adf6228">
@@ -29089,18 +29089,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: #### </note>
         <note appliesTo="source">suffix:  {#RemoteAccessJoin}</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Connecting to an existing server (Host and Key Provided)</source>
-        <target>Connecting to an existing server (Host and Key Provided)</target>
+        <target>Connessione ad un server esistente (Host e chiave forniti)</target>
       </segment>
     </unit>
     <unit id="e6e421ec-9b16-49ef-8159-ec0d465d01ff">
       <notes>
         <note appliesTo="source">line: 3733</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>In this case, the other person has either started the connection via a relay server, or is hosting the connection locally.</source>
-        <target>In this case, the other person has either started the connection via a relay server, or is hosting the connection locally.</target>
+        <target>In questo caso, l’altra persona ha avviato la connessione tramite un server di intermediazione oppure la sta ospitando localmente.</target>
       </segment>
     </unit>
     <unit id="ae69842b-b04f-4f70-bcbd-aeb074c53172">
@@ -29108,9 +29108,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3735</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>For Server, choose "Use existing".</source>
-        <target>For Server, choose "Use existing".</target>
+        <target>Per la voce Server, selezionare "Usa esistente".</target>
       </segment>
     </unit>
     <unit id="5d8fcfa9-7ab8-4b8d-b126-94dedeed10b3">
@@ -29118,9 +29118,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3736</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>In the Host field, Enter the host address (and port if also given).</source>
-        <target>In the Host field, Enter the host address (and port if also given).</target>
+        <target>Nel campo Host, Inserire l'indirizzo (e la porta se è stata fornita).</target>
       </segment>
     </unit>
     <unit id="578430bb-9fd4-44c0-8a9c-eb0dd029fd52">
@@ -29128,18 +29128,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3737</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>You may include the port to connect on by appending a colon (":") and the port number to the host address.</source>
-        <target>You may include the port to connect on by appending a colon (":") and the port number to the host address.</target>
+        <target>È possibile includere la porta su cui connettersi aggiungendo il simbolo dei duepunti (":") e il numero di porta per l'indirizzo host.</target>
       </segment>
     </unit>
     <unit id="38d8e6b4-a697-4e93-81e9-ec8f19c3e0d4">
       <notes>
         <note appliesTo="source">line: 3738</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>For example, `example.com:1234`.</source>
-        <target>For example, `example.com:1234`.</target>
+        <target>Ad esempio, `esempio.com:1234`.</target>
       </segment>
     </unit>
     <unit id="c0c4cd99-9bc9-46e6-8fb9-1b39fcfc2acc">
@@ -29147,18 +29147,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3739</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>In the Key field, enter the key provided.</source>
-        <target>In the Key field, enter the key provided.</target>
+        <target>Nel campo chiave, immettere la chiave fornita.</target>
       </segment>
     </unit>
     <unit id="878edd88-1664-4aaa-ba54-dbf1e2e36799">
       <notes>
         <note appliesTo="source">line: 3740</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Be careful to type the key exactly as given.</source>
-        <target>Be careful to type the key exactly as given.</target>
+        <target>Fare attenzione a digitare la chiave esattamente come indicato.</target>
       </segment>
     </unit>
     <unit id="49d587fc-7af4-4cce-a2f7-9cfeaf1600f1">
@@ -29166,9 +29166,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3741</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Press OK.</source>
-        <target>Press OK.</target>
+        <target>Premere OK.</target>
       </segment>
     </unit>
     <unit id="98fd4d64-bcff-4df7-8bed-2842656ac8ed">
@@ -29177,18 +29177,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: #### </note>
         <note appliesTo="source">suffix:  {#RemoteAccessConnectRelay}</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Starting a Connection Via a Relay Server</source>
-        <target>Starting a Connection Via a Relay Server</target>
+        <target>Avviare una Connessione tramite un Server di Intermediazione</target>
       </segment>
     </unit>
     <unit id="c51463f3-0557-44a0-9bd4-0916072b661a">
       <notes>
         <note appliesTo="source">line: 3745</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If allowing another person to connect to you over the internet, the easiest option is to use a relay server. To do this:</source>
-        <target>If allowing another person to connect to you over the internet, the easiest option is to use a relay server. To do this:</target>
+        <target>Se si desidera consentire a un’altra persona di connettersi tramite Internet, l’opzione più semplice è l’uso di un server di intermediazione. Per procedere:</target>
       </segment>
     </unit>
     <unit id="b05aa089-8777-487e-a0b1-4c7c0d9a2dd0">
@@ -29196,9 +29196,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3747</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>For Server, choose "Use existing".</source>
-        <target>For Server, choose "Use existing".</target>
+        <target>Per la voce Server, Selezionare "Usa esistente".</target>
       </segment>
     </unit>
     <unit id="f03852ad-57dc-483f-902d-ef5bae198153">
@@ -29206,18 +29206,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3748</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>For host, provide the host name of a relay server, such as `nvdaremote.com`.</source>
-        <target>For host, provide the host name of a relay server, such as `nvdaremote.com`.</target>
+        <target>Per il campo host, fornire il nome di un server di intermediazione, come `nvdaremote.com`.</target>
       </segment>
     </unit>
     <unit id="c53b8b77-6350-4f5f-87fe-a4c25fb228d0">
       <notes>
         <note appliesTo="source">line: 3749</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>You will need to provide this address to the other person.</source>
-        <target>You will need to provide this address to the other person.</target>
+        <target>Si dovrà fornire questo indirizzo all'altra persona.</target>
       </segment>
     </unit>
     <unit id="67d0c8e1-21f7-4e1a-9075-ea48966a7c5c">
@@ -29225,18 +29225,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3750</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>You may include the port to connect on by appending a colon (":") and the port number to the host.</source>
-        <target>You may include the port to connect on by appending a colon (":") and the port number to the host.</target>
+        <target>È possibile includere la porta su cui connettersi aggiungendo il simbolo dei duepunti (":") e il numero di porta per l'host.</target>
       </segment>
     </unit>
     <unit id="4d6dd8e9-fe5a-440e-ad54-60c0faec6a44">
       <notes>
         <note appliesTo="source">line: 3751</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>For example, `example.com:1234`.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Ad esempio, `esempio.com:1234`.</target>
       </segment>
     </unit>
     <unit id="dada18fb-997b-4047-9346-4f9d438e04a6">
@@ -29244,18 +29244,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3752</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>For key: come up with a long, hard to guess key, or press the "Generate Key" button to have one automatically generated.</source>
-        <target>For key: come up with a long, hard to guess key, or press the "Generate Key" button to have one automatically generated.</target>
+        <target>Per la chiave: inventarne una che sia lunga e difficile da indovinare, o premere il pulsante "Genera Chiave" in modo da crearne una automaticamente.</target>
       </segment>
     </unit>
     <unit id="c6562b30-a5a0-42e4-9cca-38e9c7880eb4">
       <notes>
         <note appliesTo="source">line: 3753</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>You will need to provide this to the other person.</source>
-        <target>You will need to provide this to the other person.</target>
+        <target>Si dovrà fornire la password all'altra persona.</target>
       </segment>
     </unit>
     <unit id="8aa95463-145b-4050-a99e-06740a395370">
@@ -29263,9 +29263,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3754</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Note that the key acts as both the identifier for the session and the password, so it is very important it is hard to guess.</source>
-        <target>Note that the key acts as both the identifier for the session and the password, so it is very important it is hard to guess.</target>
+        <target>Si noti che la chiave funge sia da identificatore della sessione sia da password, quindi è molto importante che sia difficile da indovinare.</target>
       </segment>
     </unit>
     <unit id="4e76d0e7-ce86-4e4e-8189-2ccfcb7da8f8">
@@ -29273,9 +29273,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3755</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Press OK.</source>
-        <target>Press OK.</target>
+        <target>Premere OK.</target>
       </segment>
     </unit>
     <unit id="883a9a99-5b7a-42ab-a817-f3df77ebda00">
@@ -29283,9 +29283,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3756</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Provide the connection details (such as host and key) to the other person so they can connect.</source>
-        <target>Provide the connection details (such as host and key) to the other person so they can connect.</target>
+        <target>Fornire all’altra persona i dettagli della connessione (come host e chiave) affinché possa connettersi.</target>
       </segment>
     </unit>
     <unit id="3f5e8a31-df5a-4fde-8994-ab58a2862b44">
@@ -29294,18 +29294,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: #### </note>
         <note appliesTo="source">suffix:  {#RemoteAccessConnectSelfHosted}</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Using NVDA as the server</source>
-        <target>Using NVDA as the server</target>
+        <target>Utilizzare NVDA come server</target>
       </segment>
     </unit>
     <unit id="109cfb8f-4e5d-4a86-ba85-018e75baa407">
       <notes>
         <note appliesTo="source">line: 3760</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If you do not wish to use a relay server or you are connecting over a local network:</source>
-        <target>If you do not wish to use a relay server or you are connecting over a local network:</target>
+        <target>Se non si desidera utilizzare un server di intermediazione oppure ci si sta connettendo ad una rete locale:</target>
       </segment>
     </unit>
     <unit id="fb335f2e-d0b8-4c17-989d-c5d6770e58f3">
@@ -29313,9 +29313,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3762</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>For Server, choose "Host locally".</source>
-        <target>For Server, choose "Host locally".</target>
+        <target>Per la voce Server, selezionare "Ospita in locale".</target>
       </segment>
     </unit>
     <unit id="846fc439-9a66-497d-886e-8bc39821671e">
@@ -29323,18 +29323,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3763</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If connecting over the internet, you can press the "Get External IP" button to show your external IP (internet visible) address.</source>
-        <target>If connecting over the internet, you can press the "Get External IP" button to show your external IP (internet visible) address.</target>
+        <target>Se ci si connette tramite Internet, è possibile premere il pulsante “Ottieni IP esterno” per visualizzare il proprio indirizzo IP visibile su Internet.</target>
       </segment>
     </unit>
     <unit id="aa2e3179-151a-4738-9b56-e062a5333319">
       <notes>
         <note appliesTo="source">line: 3764</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>You will need to provide this external IP to the other person.</source>
-        <target>You will need to provide this external IP to the other person.</target>
+        <target>Si dovrà fornire l'indirizzo IP esterno all'altra persona.</target>
       </segment>
     </unit>
     <unit id="3c02f05b-716a-44ea-a43b-a1ed03f5264b">
@@ -29342,18 +29342,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3765</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If connecting over a local network, you will need to provide the other person with your local IP.</source>
-        <target>If connecting over a local network, you will need to provide the other person with your local IP.</target>
+        <target>Se ci si connette tramite una rete locale, sarà necessario fornire all’altra persona il proprio indirizzo IP locale.</target>
       </segment>
     </unit>
     <unit id="f3375fe8-814b-4575-9b27-c0b18bd41afa">
       <notes>
         <note appliesTo="source">line: 3766</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Locating this is not covered in this documentation.</source>
-        <target>Locating this is not covered in this documentation.</target>
+        <target>L'individuazione di questo parametro non è trattato in questa documentazione.</target>
       </segment>
     </unit>
     <unit id="65edbd6b-3f1e-4adb-a555-4fb4cbb42e81">
@@ -29361,18 +29361,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3767</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>For Port, enter the port you want to use for incoming Remote connections.</source>
-        <target>For Port, enter the port you want to use for incoming Remote connections.</target>
+        <target>Per la porta, immettere la porta che si desidera utilizzare per le connessioni remote in arrivo.</target>
       </segment>
     </unit>
     <unit id="04dd0e4f-c6d9-4dcc-ba47-9c571106c73a">
       <notes>
         <note appliesTo="source">line: 3768</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>The other person will also need this.</source>
-        <target>The other person will also need this.</target>
+        <target>Anche l'altra persona ne avrà bisogno.</target>
       </segment>
     </unit>
     <unit id="7f112026-41f8-425e-83b3-1aa35e99d106">
@@ -29380,9 +29380,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3769</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>This should be a port that is not used by any other services.</source>
-        <target>This should be a port that is not used by any other services.</target>
+        <target>Questa dovrebbe essere una porta che non viene utilizzata da altri servizi.</target>
       </segment>
     </unit>
     <unit id="be83df76-ec79-4c78-846d-bdfeb43094dc">
@@ -29390,9 +29390,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3770</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>By default, Remote Access uses port 6837.</source>
-        <target>By default, Remote Access uses port 6837.</target>
+        <target>Per impostazione predefinita, l'accesso remoto utilizza la porta 6837.</target>
       </segment>
     </unit>
     <unit id="c01ef72c-1bed-4db3-8cc0-80fc6e1a30e8">
@@ -29400,27 +29400,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3771</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If connecting over the internet, the port may need to be forwarded.</source>
-        <target>If connecting over the internet, the port may need to be forwarded.</target>
+        <target>Se ci si connette tramite Internet, potrebbe essere necessario inoltrare la porta.</target>
       </segment>
     </unit>
     <unit id="7c7e46ab-fd29-4691-ab41-452a2ef3eb15">
       <notes>
         <note appliesTo="source">line: 3772</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>  This documentation does not cover how to forward ports.</source>
-        <target>  This documentation does not cover how to forward ports.</target>
+        <target>  L'inoltro/forwarding delle porte va oltre lo scopo di questa documentazione.</target>
       </segment>
     </unit>
     <unit id="59c85e24-7c80-4162-901c-02379194a393">
       <notes>
         <note appliesTo="source">line: 3773</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>  You may need to contact your network administrator to do this.</source>
-        <target>  You may need to contact your network administrator to do this.</target>
+        <target>  Potrebbe essere necessario contattare l'amministratore di rete per farlo.</target>
       </segment>
     </unit>
     <unit id="d995902d-8e11-47a8-9306-aab1445ce6b9">
@@ -29428,18 +29428,19 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3774</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>For key: come up with a long, hard to guess key, or press the "Generate Key" button to have one automatically generated.</source>
-        <target>For key: come up with a long, hard to guess key, or press the "Generate Key" button to have one automatically generated.</target>
+        <target>Per la chiave: inventarne una che sia lunga e difficile da indovinare, o premere il pulsante "Genera Chiave" in modo da crearne una automaticamente.</target>
       </segment>
     </unit>
     <unit id="2cc72874-8ac8-405d-a2db-10b6eb8c491f">
       <notes>
         <note appliesTo="source">line: 3775</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>You will need to provide this to the other person.</source>
-        <target>You will need to provide this to the other person.</target>
+        <target>Si dovrà fornire la password all'altra persona.
+You will need to provide this to the other person.</target>
       </segment>
     </unit>
     <unit id="498f6517-451b-4d30-a1d3-e7797c624c4e">
@@ -29447,9 +29448,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3776</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Note that the key acts as both the identifier for the session and the password, so it is very important it is hard to guess.</source>
-        <target>Note that the key acts as both the identifier for the session and the password, so it is very important it is hard to guess.</target>
+        <target>Si noti che la chiave funge sia da identificatore della sessione sia da password, quindi è molto importante che sia difficile da indovinare.</target>
       </segment>
     </unit>
     <unit id="6be70a23-825b-4949-a94c-5788cb14f373">
@@ -29457,9 +29458,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3777</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Press OK.</source>
-        <target>Press OK.</target>
+        <target>Premere OK.</target>
       </segment>
     </unit>
     <unit id="67b5c476-ed76-40eb-9652-0f263a8d0a11">
@@ -29467,9 +29468,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3778</note>
         <note appliesTo="source">prefix: 1. </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Provide the connection details (such as host and key) to the other person so they can connect.</source>
-        <target>Provide the connection details (such as host and key) to the other person so they can connect.</target>
+        <target>Fornire all’altra persona i dettagli della connessione (come host e chiave) affinché possa connettersi.</target>
       </segment>
     </unit>
     <unit id="d11dbdb9-e13b-4316-accc-bff9461aaaf5">
@@ -29478,18 +29479,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ### </note>
         <note appliesTo="source">suffix:  {#RemoteAccessUsage}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Using Remote Access</source>
-        <target>&lt;target/&gt;</target>
+        <target>Utilizzare l'Accesso Remoto</target>
       </segment>
     </unit>
     <unit id="47a9ec53-119b-432d-8bbd-c957f7844e6c">
       <notes>
         <note appliesTo="source">line: 3782</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Once a Remote Access session is active, you can switch between controlling the remote computer and your own, share your clipboard, and mute the remote session:</source>
-        <target>Once a Remote Access session is active, you can switch between controlling the remote computer and your own, share your clipboard, and mute the remote session:</target>
+        <target>Una volta attivata una sessione di Accesso Remoto, è possibile passare dal controllo del computer remoto al proprio, condividere gli appunti e disattivare l’audio della sessione remota.</target>
       </segment>
     </unit>
     <unit id="3825cc2f-df6e-40ea-b0d9-8235c199d8e1">
@@ -29497,9 +29498,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3784</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Press `NVDA+alt+tab` to toggle between controlling and returning to your own computer.</source>
-        <target>Press `NVDA+alt+tab` to toggle between controlling and returning to your own computer.</target>
+        <target>Premere NVDA+Alt+Tab per passare dal controllo del computer remoto al proprio e viceversa.</target>
       </segment>
     </unit>
     <unit id="3f2f0038-670c-4757-be7d-6ac1e31b15dd">
@@ -29507,9 +29508,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3785</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>Send text from your clipboard to the other computer by opening the NVDA menu, then selecting Tools, then "Remote Access", then "Send clipboard".</source>
-        <target>Send text from your clipboard to the other computer by opening the NVDA menu, then selecting Tools, then "Remote Access", then "Send clipboard".</target>
+        <target>Invia il testo dagli appunti all'altro computer aprendo il menu NVDA, quindi selezionando strumenti, poi "accesso remoto", quindi "invia gli appunti".</target>
       </segment>
     </unit>
     <unit id="f32a5919-3e28-4cc3-8854-7e52b3335500">
@@ -29517,9 +29518,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3786</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If connected as the controlling computer, mute the remote computer's speech output on your local computer by opening the NVDA menu, then selecting Tools, then "Remote Access", then "Mute remote".</source>
-        <target>If connected as the controlling computer, mute the remote computer's speech output on your local computer by opening the NVDA menu, then selecting Tools, then "Remote Access", then "Mute remote".</target>
+        <target>Se si è connessi come postazione di controllo, è possibile disattivare l’audio del sintetizzatore vocale del computer remoto sul proprio computer aprendo il menu di NVDA, selezionando Strumenti, poi “Accesso Remoto” e infine “Silenzia dispositivo remoto”.</target>
       </segment>
     </unit>
     <unit id="277e28c8-561a-46b5-85d5-752e8abf5766">
@@ -29527,27 +29528,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 3787</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>If connected as the controlling computer, send `control+alt+delete` to the controlled computer by opening the NVDA menu, then selecting Tools, then "Remote Access", then "Send control+alt+delete".</source>
-        <target>If connected as the controlling computer, send `control+alt+delete` to the controlled computer by opening the NVDA menu, then selecting Tools, then "Remote Access", then "Send control+alt+delete".</target>
+        <target>Se si è connessi come postazione di controllo, è possibile inviare Control+Alt+Canc al computer controllato aprendo il menu di NVDA, selezionando Strumenti, poi “Accesso Remoto” e infine “Invia Control+Alt+Canc”.</target>
       </segment>
     </unit>
     <unit id="c5ef1a06-f5d5-43bc-b521-628adccd7cb6">
       <notes>
         <note appliesTo="source">line: 3788</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>  In order for this to work, the controlled computer must be running an installed copy of NVDA.</source>
-        <target>  In order for this to work, the controlled computer must be running an installed copy of NVDA.</target>
+        <target>  Affinché ciò funzioni, il computer controllato deve eseguire una copia installata di NVDA.</target>
       </segment>
     </unit>
     <unit id="7525d1db-a591-4b34-a85e-37aa74e2e3b6">
       <notes>
         <note appliesTo="source">line: 3789</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>  Additionally, depending on the settings of the controlled computer, this function may not always work.</source>
-        <target>  Additionally, depending on the settings of the controlled computer, this function may not always work.</target>
+        <target>  Inoltre, a seconda delle impostazioni del computer controllato, questa funzione potrebbe non funzionare sempre.</target>
       </segment>
     </unit>
     <unit id="2907e809-9f1b-4de0-8e83-c9f868d89301">
@@ -29556,9 +29557,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ### </note>
         <note appliesTo="source">suffix:  {#RemoteAccessGestures}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Remote Access Key Commands Summary</source>
-        <target>&lt;target/&gt;</target>
+        <target>Riepilogo dei comandi da tastiera per l’Accesso Remoto</target>
       </segment>
     </unit>
     <unit id="6fbc5a66-5c0d-45e3-8fe9-0b9263cbe0f2">
@@ -29567,9 +29568,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Name |Key |Description</source>
-        <target>&lt;target/&gt;</target>
+        <target> Nome |Tasto |Descrizione</target>
       </segment>
     </unit>
     <unit id="02964c3d-96de-4b70-8168-e68bb245f38e">
@@ -29578,9 +29579,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source> Toggle Remote connection | `NVDA+alt+r` | Starts a new Remote Access session or, if a session is already in progress, disconnects from it. </source>
-        <target> Toggle Remote connection | `NVDA+alt+r` | Starts a new Remote Access session or, if a session is already in progress, disconnects from it. </target>
+        <target> Attiva/disattiva connessione remota | `NVDA+alt+r` | Inizia una nuova Sessione di Accesso Remoto o, Se una sessione è già in corso, si disconnette. </target>
       </segment>
     </unit>
     <unit id="0b908760-a0ed-4689-800e-a09c29e5d649">
@@ -29589,9 +29590,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Toggle Control | `NVDA+alt+tab` | Switches between controlling the remote and local computer. </source>
-        <target>&lt;target/&gt;</target>
+        <target> Passa tra remoto e locale | NVDA+Alt+Tab | Alterna il controllo tra il computer remoto e quello locale. </target>
       </segment>
     </unit>
     <unit id="2a6aa6a1-5c2e-4b73-9b05-8dd3a92e040d">
@@ -29600,9 +29601,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source> Connect | None | Starts a new Remote Access session. Unavailable in [secure mode](#SecureMode). </source>
-        <target> Connect | None | Starts a new Remote Access session. Unavailable in [secure mode](#SecureMode). </target>
+        <target> Connetti | Nessuno | Avvia una nuova sessione di accesso remoto. Non disponibile in [modalità protetta](#SecureMode). </target>
       </segment>
     </unit>
     <unit id="771cf83f-a8b9-4d9d-83b9-565428414f6a">
@@ -29611,9 +29612,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Copy link | None | Copies a link to the remote session to the clipboard. </source>
-        <target>&lt;target/&gt;</target>
+        <target> Copia link | Nessuno | Copia un collegamento alla sessione remota negli appunti. </target>
       </segment>
     </unit>
     <unit id="fc4bfc1d-4cb3-42ad-ad29-3d2021915725">
@@ -29622,9 +29623,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Disconnect | None | Ends an existing Remote Access session. </source>
-        <target>&lt;target/&gt;</target>
+        <target> Disconnetti | Nessuno | Termina la sessione di Accesso Remoto esistente. </target>
       </segment>
     </unit>
     <unit id="056bf4aa-ba4a-4e38-8c79-02459497fcb4">
@@ -29633,9 +29634,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Mute remote | None | Mutes or unmutes the speech coming from the remote computer. </source>
-        <target>&lt;target/&gt;</target>
+        <target> Silenzia Dispositivo Remoto | Nessuno | Attiva o disattiva l’audio del sintetizzatore vocale del computer remoto. </target>
       </segment>
     </unit>
     <unit id="bcb6fbca-2e51-48a4-a7a3-aa850b7ebfe1">
@@ -29644,9 +29645,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source> Send clipboard | None | Sends the contents of the clipboard to the remote computer. </source>
-        <target> Send clipboard | None | Sends the contents of the clipboard to the remote computer. </target>
+        <target> Invia appunti | Nessuno | Invia il contenuto degli appunti al computer remoto. </target>
       </segment>
     </unit>
     <unit id="94267446-c550-43a5-80a9-d9596e6f85fd">
@@ -30126,45 +30127,45 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: #### </note>
         <note appliesTo="source">suffix:  {#AddonStoreSortByColumn}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Sorting the add-ons list by column</source>
-        <target>&lt;target/&gt;</target>
+        <target>Ordinare l'elenco degli add-on per colonna</target>
       </segment>
     </unit>
     <unit id="1bb2e9ff-fc4d-49f6-aa5f-70a21b94599c">
       <notes>
         <note appliesTo="source">line: 3878</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>By default, the add-ons list is sorted by the add-ons' display name.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Per impostazione predefinita, l'elenco dei componenti aggiuntivi viene ordinato per nome.</target>
       </segment>
     </unit>
     <unit id="f03b01ec-a7e3-41a1-b1ea-55979bffe91b">
       <notes>
         <note appliesTo="source">line: 3879</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>The "Sort by column" combo box can be used to sort the list by the available columns for each tab.</source>
-        <target>&lt;target/&gt;</target>
+        <target>La casella combinata “Ordina per colonna” consente di ordinare l’elenco in base alle colonne disponibili per ciascuna scheda.</target>
       </segment>
     </unit>
     <unit id="a00e9891-da57-405e-8a8d-a429cc17e185">
       <notes>
         <note appliesTo="source">line: 3880</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>For example, you may wish to sort add-ons by publisher, available version, etc.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Ad esempio, si potrebbe voler ordinare i componenti aggiuntivi per editore, versione disponibile, ecc.</target>
       </segment>
     </unit>
     <unit id="3c9d510e-9a68-4cc0-84c6-3297414ef299">
       <notes>
         <note appliesTo="source">line: 3881</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Add-ons can be sortered in ascending or descending order.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Gli add-on possono essere elencati in ordine crescente o discendente.</target>
       </segment>
     </unit>
     <unit id="10117f60-a5e0-435d-b6a0-273c46a23c9c">
@@ -30283,18 +30284,18 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 3899</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>If the download or installation fails you can retry the installation.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se il download o l’installazione falliscono, è possibile riprovare l’installazione.</target>
       </segment>
     </unit>
     <unit id="47c4b72a-5a2e-494a-9446-f052dc36d863">
       <notes>
         <note appliesTo="source">line: 3900</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>It is also possible to cancel the install before exiting the Add-on Store.</source>
-        <target>&lt;target/&gt;</target>
+        <target>È anche possibile annullare l'installazione prima di uscire dall'add-on store.</target>
       </segment>
     </unit>
     <unit id="388e0839-ad45-4801-bc4d-59e6c6baeaae">
@@ -30476,9 +30477,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 3929</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>You can disable an add-on if the add-on status indicates it is "enabled", or enable it if the add-on is "disabled".</source>
-        <target>&lt;target/&gt;</target>
+        <target>È possibile disattivare un add-on se risulta “attivo”, oppure attivarlo se risulta “disattivato”.</target>
       </segment>
     </unit>
     <unit id="ef663cad-62aa-4910-be3c-bb85f3a5ca15">
@@ -30606,27 +30607,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 3947</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>You can manage the automatic update channels for add-ons from the [installed and updatable add-ons tabs](#AddonStoreFilterStatus).</source>
-        <target>&lt;target/&gt;</target>
+        <target>È possibile gestire i canali di aggiornamento automatici per i componenti aggiuntivi dalle [schede add-on installabili e aggiornabili](#AddonStoreFilterStatus).</target>
       </segment>
     </unit>
     <unit id="780ce0f9-5857-4cf1-834a-9312d9e6650c">
       <notes>
         <note appliesTo="source">line: 3948</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>When [Automatic add-on updates](#AutomaticAddonUpdates) are enabled, add-ons will update to the same [channel](#AddonStoreFilterChannel) they were installed from by [default](#DefaultAddonUpdateChannel).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Quando [gli aggiornamenti automatici per gli add-on](#AutomaticAddonUpdates) sono attivi, i componenti aggiuntivi si aggiorneranno allo stesso [canale](#AddonStoreFilterChannel) dal quale erano stati installati per [impostazioni predefinite](#DefaultAddonUpdateChannel).</target>
       </segment>
     </unit>
     <unit id="0969abde-bf5b-4f56-a8d4-70d3a1c4699f">
       <notes>
         <note appliesTo="source">line: 3949</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>From an add-on's actions menu, using the submenu "Update channel", you can modify the channels an add-on will automatically update to.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Dal menu Azioni di un componente aggiuntivo, tramite il sottomenu “Canale di aggiornamento”, è possibile modificare i canali dai cui il componente aggiuntivo si aggiornerà automaticamente.</target>
       </segment>
     </unit>
     <unit id="a4138c24-a9cf-4483-b461-465aa34dff3d">
@@ -30635,9 +30636,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Option | Behaviour </source>
-        <target>&lt;target/&gt;</target>
+        <target> Opzione | Comportamento </target>
       </segment>
     </unit>
     <unit id="d9ad535d-9ab9-4e31-ade2-3a1bd6db73f9">
@@ -30646,9 +30647,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Default | Add-on will follow the [default update channel](#DefaultAddonUpdateChannel) </source>
-        <target>&lt;target/&gt;</target>
+        <target> Predefinito | L'add-on seguirà le impostazioni del [canale di aggiornamento di default](#DefaultAddonUpdateChannel) </target>
       </segment>
     </unit>
     <unit id="51ed96cd-7c4f-4838-a405-edc4e62a55fc">
@@ -30657,9 +30658,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Same | Add-on will remain on the same channel </source>
-        <target>&lt;target/&gt;</target>
+        <target> Lo Stesso | Il componente aggiuntivo rimarrà sullo stesso canale </target>
       </segment>
     </unit>
     <unit id="ea73e2f1-8a12-4681-853a-ba80c8512130">
@@ -30668,9 +30669,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Any | Add-on will automatically update to the latest version, regardless of channel </source>
-        <target>&lt;target/&gt;</target>
+        <target> Qualsiasi | Il componente aggiuntivo si aggiornerà automaticamente all'ultima versione, indipendentemente dal canale </target>
       </segment>
     </unit>
     <unit id="a09ffb72-24b7-49db-b7a7-71a49278e6a2">
@@ -30679,9 +30680,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Do not update | Add-on will not automatically update </source>
-        <target>&lt;target/&gt;</target>
+        <target> Non aggiornare | Il componente aggiuntivo non si aggiornerà automaticamente </target>
       </segment>
     </unit>
     <unit id="7695251e-c87f-4695-adcb-48ccacd9fdd9">
@@ -30690,9 +30691,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Stable | Add-on will automatically update to stable versions </source>
-        <target>&lt;target/&gt;</target>
+        <target> Stabile | Il componente aggiuntivo si aggiornerà automaticamente alle versioni stabili </target>
       </segment>
     </unit>
     <unit id="d90d5b13-1f79-4ace-bd21-2ab194f902db">
@@ -30701,9 +30702,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Beta or dev | Add-on will automatically update to beta or dev versions </source>
-        <target>&lt;target/&gt;</target>
+        <target> Beta o dev | Il componente aggiuntivo si aggiornerà automaticamente alle versioni beta o dev </target>
       </segment>
     </unit>
     <unit id="9b6c04ef-201b-46f9-8b7d-b0d957510302">
@@ -30712,9 +30713,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Beta | Add-on will automatically update to beta versions </source>
-        <target>&lt;target/&gt;</target>
+        <target> Beta | Il componente aggiuntivo si aggiornerà automaticamente alle versioni beta </target>
       </segment>
     </unit>
     <unit id="f24d40fa-d680-4e5e-8d1d-099b53422afa">
@@ -30723,9 +30724,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Dev | Add-on will automatically update to dev versions </source>
-        <target>&lt;target/&gt;</target>
+        <target> Dev | Il componente aggiuntivo si aggiornerà automaticamente alle versioni Dev </target>
       </segment>
     </unit>
     <unit id="258db609-7d25-4412-a50d-9353188df5e7">
@@ -31323,36 +31324,36 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 4061</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Sometimes, problems can develop with the Windows Registry, that result in NVDA behaving abnormally.</source>
-        <target>&lt;target/&gt;</target>
+        <target>A volte possono verificarsi problemi con il Registro di sistema di Windows, che comportano un comportamento anomalo di NVDA.</target>
       </segment>
     </unit>
     <unit id="2e307b98-1b5e-40a6-8807-734575ef3bfd">
       <notes>
         <note appliesTo="source">line: 4062</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This can be caused by, for example, installing or uninstalling certain programs (such as Adobe Reader or Math Player), as well as Windows updates and other events.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Ciò può essere causato, ad esempio, dall’installazione o disinstallazione di alcuni programmi (come Adobe Reader o MathPlayer), da aggiornamenti di Windows o da altri eventi.</target>
       </segment>
     </unit>
     <unit id="d08d8ff7-e367-4398-b40e-ec73324b638c">
       <notes>
         <note appliesTo="source">line: 4063</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>THE COM Registration Fixing Tool attempts to fix these issues by repairing accessibility entries in the registry.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Lo strumento di risoluzione registrazioni COM tenta di risolvere questi problemi riparando le voci relative all’accessibilità nel Registro di sistema.</target>
       </segment>
     </unit>
     <unit id="bd84720e-3e8e-4bc3-97c3-7a22976b0d64">
       <notes>
         <note appliesTo="source">line: 4065</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>The types of problem this tool can fix include:</source>
-        <target>&lt;target/&gt;</target>
+        <target>I tipi di problema che questo strumento può risolvere includono:</target>
       </segment>
     </unit>
     <unit id="d61dede5-d2a6-422e-8cfb-bc321eff4d3b">
@@ -31360,9 +31361,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 4067</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>NVDA reporting "unknown" or "pane", when navigating in browsers such as Firefox or Edge, mail programs such as Thunderbird, Windows Explorer, the task bar, and other programs.</source>
-        <target>&lt;target/&gt;</target>
+        <target>NVDA inizia ad annunciare “sconosciuto” o “pannello” durante la navigazione in browser come Firefox o Edge, programmi di posta come Thunderbird, Esplora file di Windows, la barra delle applicazioni e altri programmi.</target>
       </segment>
     </unit>
     <unit id="42435e85-a7a8-4c9a-8ba8-394f532511e6">
@@ -31370,9 +31371,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 4068</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>NVDA failing to switch between focus mode and browse mode when you expect it to.</source>
-        <target>&lt;target/&gt;</target>
+        <target>NVDA non riesce più a passare tra le modalità focus e navigazione.</target>
       </segment>
     </unit>
     <unit id="801e9750-9243-450f-bfb7-8275a053b4c0">
@@ -31380,9 +31381,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 4069</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Buttons which previously had their names spoken, suddenly being reported only as "button".</source>
-        <target>&lt;target/&gt;</target>
+        <target>Pulsanti che in precedenza venivano identificati correttamente con il loro nome, improvvisamente sono letti solo come "pulsante".</target>
       </segment>
     </unit>
     <unit id="6557f316-806f-44da-8c8e-f12e7583d179">
@@ -31390,27 +31391,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 4070</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>NVDA being very slow when navigating in browsers while using browse mode.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Una lentezza innaturale di NVDA quando si utilizza la modalità navigazione nei browser.</target>
       </segment>
     </unit>
     <unit id="d85e0e75-4d01-4a10-bab6-fbdf96911ba4">
       <notes>
         <note appliesTo="source">line: 4072</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Because this tool corrects entries in the Windows registry, it requires administrative access to work, just like when installing a program.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Poiché questo strumento corregge le voci nel registro di Windows, richiede i diritti amministrativi per funzionare, proprio come quando si installa un programma.</target>
       </segment>
     </unit>
     <unit id="b38f3bfe-f4cc-448f-b7d5-f190327a70cd">
       <notes>
         <note appliesTo="source">line: 4073</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>If you have UAC (User Access Control) enabled, as most users do, you will need to follow whatever prompts are presented by UAC, to run the tool successfully.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Se il Controllo dell’Account Utente (UAC) è attivato, come avviene nella maggior parte dei casi, sarà necessario seguire i prompt visualizzati da UAC per eseguire correttamente lo strumento.</target>
       </segment>
     </unit>
     <unit id="790f37d0-f3cb-4dcd-8f4b-4a12e9d9944f">
@@ -31517,9 +31518,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 4094</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>For an even more extensive list of free and commercial synthesizers that you can purchase and download for use with NVDA, please see the [extra voices page](https://github.com/nvaccess/nvda/wiki/ExtraVoices).</source>
-        <target>&lt;target/&gt;</target>
+        <target>Per un elenco ancora più ampio di sintesi vocali gratuite e commerciali che è possibile acquistare e scaricare per l’uso con NVDA, consultare la [pagina delle voci aggiuntive](https://github.com/nvaccess/nvda/wiki/ExtraVoices).</target>
       </segment>
     </unit>
     <unit id="861cd6f6-afa0-4c1f-8a26-fa79e1125024">
@@ -34404,9 +34405,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 4477</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>The Brailliant BI and B series of displays from [HumanWare](https://www.humanware.com/), including the BI 14, BI 32, BI 20X, BI 40, BI 40X and B 80, are supported when connected via USB or bluetooth.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Le serie Brailliant BI e B della [HumanWare](https://www.humanware.com/), compresi BI 14, BI 32, BI 20X, BI 40, BI 40X e B 80, sono supportate se connessi tramite USB o Bluetooth.</target>
       </segment>
     </unit>
     <unit id="9434d525-52da-43e2-a715-7fa95cbf7eeb">
@@ -34490,9 +34491,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 4489</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Following are the key assignments for the Brailliant BI/B and BrailleNote touch displays with NVDA.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Seguono i tasti che sono stati assegnati con NVDA per i display Brailliant BI/B e BrailleNote touch.</target>
       </segment>
     </unit>
     <unit id="27b0263e-9e91-45ee-8b5b-9cc4ff9679ec">
@@ -37860,9 +37861,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 4906</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>For BrailleNote Touch, please refer to the [Brailliant BI Series / BrailleNote Touch](#HumanWareBrailliant) section.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Per ciò che concerne il BrailleNote Touch, fare riferimento alla sezione [Serie Brailliant BI / BrailleNote Touch](#HumanWareBrailliant).</target>
       </segment>
     </unit>
     <unit id="6d556bc3-5777-4a38-bff1-18bde7cbb8e2">
@@ -41641,9 +41642,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>leftArrow key |space+dot3, joystick left or dpad left</source>
-        <target>&lt;target/&gt;</target>
+        <target>Tasto FrecciaSinistra |spazio+punto3, joystick sinistro o dpad left</target>
       </segment>
     </unit>
     <unit id="938b38fa-689b-47ee-af82-d2f783abe3f7">
@@ -41773,90 +41774,90 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: ### </note>
         <note appliesTo="source">suffix:  {#dotPad}</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Dot Pad</source>
-        <target>&lt;target/&gt;</target>
+        <target>Dot Pad</target>
       </segment>
     </unit>
     <unit id="33eb7641-81a3-4e65-abee-d585a154ddc5">
       <notes>
         <note appliesTo="source">line: 5385</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>The Dot Pad from Dot Inc is a device that can display refreshable tactile graphics and braille.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Il Dot Pad di Dot Inc è un dispositivo in grado di mostrare sia braille standard che immagini.</target>
       </segment>
     </unit>
     <unit id="4d400114-f9cf-4da1-b230-c3624bf96e5d">
       <notes>
         <note appliesTo="source">line: 5386</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>NVDA can display either a single line of braille on the devices dedicated braille display line, or multiple lines of braille on its tactile graphics area.</source>
-        <target>&lt;target/&gt;</target>
+        <target>NVDA può mostrare il braille in due modalità: su una singola linea, utilizzando la riga braille dedicata del dispositivo, oppure su più righe, sfruttando l’area della grafica tattile.</target>
       </segment>
     </unit>
     <unit id="b9977f13-8322-4ae7-ba5f-1264edb1beb6">
       <notes>
         <note appliesTo="source">line: 5387</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>The A300 model has a tactile graphics area of 120 by 80 dots, which can fit 8 lines of 20 cells each.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Il modello A300 dispone di un’area grafica tattile composta da 120 per 80 punti, in grado di visualizzare fino a 8 righe da 20 celle ciascuna.</target>
       </segment>
     </unit>
     <unit id="929fb3e0-8466-4669-a510-15f99638e268">
       <notes>
         <note appliesTo="source">line: 5389</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>You can configure whether NVDA displays braille on the dedicated braille display line or on the tactile graphics area via the Braille Destination option in NVDA's Braille settings for this driver.</source>
-        <target>&lt;target/&gt;</target>
+        <target>È possibile stabilire se NVDA debba visualizzare il braille sulla riga braille dedicata o sull’area grafica tattile tramite l’opzione “Destinazione del braille” nelle impostazioni Braille di NVDA per questo driver.</target>
       </segment>
     </unit>
     <unit id="85e13159-cf4c-4954-91fe-a790dcc0b42c">
       <notes>
         <note appliesTo="source">line: 5391</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Panning keys are supported, but due to limited buttons on the device, other commands and routing capabilities are currently not available.</source>
-        <target>&lt;target/&gt;</target>
+        <target>I tasti di scorrimento sono supportati, ma, a causa del numero limitato di pulsanti sul dispositivo, al momento non sono disponibili altri comandi né la funzione di curosr routing.</target>
       </segment>
     </unit>
     <unit id="1be86e5b-910e-45f8-8c63-13391f218c2e">
       <notes>
         <note appliesTo="source">line: 5393</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>When selecting the Dot Pad driver in NVDA, you must manually select the USB / Bluetooth virtual serial port the Dot Pad is connected to.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Quando si seleziona il driver del dot pad in NVDA, è necessario configurare manualmente la porta seriale virtuale USB / Bluetooth a cui è collegato il dispositivo.</target>
       </segment>
     </unit>
     <unit id="3fc71799-81b7-48de-8ae5-29a4d7a2c92b">
       <notes>
         <note appliesTo="source">line: 5394</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>This driver does not support auto detection.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Questo driver non supporta il rilevamento automatico.</target>
       </segment>
     </unit>
     <unit id="61fc30b0-e187-44ee-8ef0-10096e52680f">
       <notes>
         <note appliesTo="source">line: 5396</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Please note that due to hardware limitations, the Dot Pad will not refresh all dots correctly while your hand is on the device.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Si segnala che, a causa di limitazioni hardware, il Dot Pad potrebbe non aggiornare correttamente tutti i punti mentre la mano è posata sul dispositivo.</target>
       </segment>
     </unit>
     <unit id="7561f3b4-5400-447c-84ea-e78144c615b4">
       <notes>
         <note appliesTo="source">line: 5397</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Make sure to lift your hand entirely off the device when navigating with NVDA, and only start reading again once it has fully updated.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Assicurati di sollevare la mano completamente dal dispositivo durante la navigazione con NVDA e ricominciare a leggere solo quando l'aggiornamento è stato completato.</target>
       </segment>
     </unit>
     <unit id="b36e16e2-0cbd-4fc6-85eb-2d20bffe4934">
@@ -41865,9 +41866,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Name |Key</source>
-        <target>&lt;target/&gt;</target>
+        <target> Nome |Tasto</target>
       </segment>
     </unit>
     <unit id="33db1f39-1697-468d-8fbb-23c6d7222011">
@@ -41876,9 +41877,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Scroll braille display back | `pan_left` </source>
-        <target>&lt;target/&gt;</target>
+        <target>Scorre braille indietro | `pan_left` </target>
       </segment>
     </unit>
     <unit id="19b6b359-980e-4c5e-b7b1-c2896dba6c21">
@@ -41887,9 +41888,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Scroll braille display forward | `pan_right` </source>
-        <target>&lt;target/&gt;</target>
+        <target>Scorre braille avanti | `pan_right` </target>
       </segment>
     </unit>
     <unit id="b4d61299-abab-4dd4-94f4-2b490bad7b6b">
@@ -42081,9 +42082,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 5431</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Opening external documents from the NVDA menu, such as the user guide file.</source>
-        <target>&lt;target/&gt;</target>
+        <target>L'apertura di documenti esterni dal menu NVDA, come la Guida dell'utente.</target>
       </segment>
     </unit>
     <unit id="66707e65-701c-45c6-b665-372858e71fd9">
@@ -42556,7 +42557,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>None |`--debug-logging` |Enable debug level logging just for this run. This setting will override any other log level ( `--loglevel`, `-l`) argument given, including no logging option.</source>
-        <target>None |`--debug-logging` |Abilita il debug nei log solo per la presente istanza. Questa impostazione ha la precedenza su qualsiasi altro livello di log ( `--loglevel`, `-l`), compresa la funzione no logging</target>
+        <target>Nessuno |`--debug-logging` |Abilita il debug nei log solo per la presente istanza. Questa impostazione ha la precedenza su qualsiasi altro livello di log ( `--loglevel`, `-l`), compresa la funzione no logging</target>
       </segment>
     </unit>
     <unit id="db00661b-bc39-4184-8eaa-4184387ecddd">
@@ -42567,7 +42568,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>None |`--no-logging` |Disable logging altogether while using NVDA. This setting can be overridden if a log level (`--loglevel`, `-l`) is specified from command line or if debug logging is turned on.</source>
-        <target>None |`--no-logging` |Disabilita completamente le funzioni di log durante l'uso di NVDA. Questa impostazione può essere sovrascritta se viene specificato un livello di log ( `--loglevel`, `-l`) dalla riga di comando o se la funzione debug logging è attiva.</target>
+        <target>Nessuno |`--no-logging` |Disabilita completamente le funzioni di log durante l'uso di NVDA. Questa impostazione può essere sovrascritta se viene specificato un livello di log ( `--loglevel`, `-l`) dalla riga di comando o se la funzione debug logging è attiva.</target>
       </segment>
     </unit>
     <unit id="d7cd7445-af1b-4bc0-b413-651d84ad1396">
@@ -42578,7 +42579,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>None |`--no-sr-flag` |Don't change the global system screen reader flag</source>
-        <target>None |`--no-sr-flag` |Non modifica il flag Screen Reader per il sistema</target>
+        <target>Nessuno |`--no-sr-flag` |Non modifica il flag Screen Reader per il sistema</target>
       </segment>
     </unit>
     <unit id="bea70d39-8192-4ce1-b4cc-16f53ebdf6a7">
@@ -42589,7 +42590,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>None |`--install` |Installs NVDA (starting the newly installed copy)</source>
-        <target>None |`--install` |Installa NVDA (avviando la copia appena installata)</target>
+        <target>Nessuno |`--install` |Installa NVDA (avviando la copia appena installata)</target>
       </segment>
     </unit>
     <unit id="3c1b5da6-8d27-4b52-9674-0663cbf771b3">
@@ -42600,7 +42601,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>None |`--install-silent` |Silently installs NVDA (does not start the newly installed copy)</source>
-        <target>None |`--install-silent` | Installa NVDA (non avviando la copia appena installata)</target>
+        <target>Nessuno |`--install-silent` | Installa NVDA (non avviando la copia appena installata)</target>
       </segment>
     </unit>
     <unit id="f56ba2db-19d7-47b6-bba9-62c08b23bc7d">
@@ -42611,7 +42612,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>None |`--enable-start-on-logon=True|False` |When installing, enable NVDA's [Use NVDA during Windows sign-in](#StartAtWindowsLogon)</source>
-        <target>None |`--enable-start-on-logon=True|False` |Durante l'installazione, abilita [l'avvio di NVDA alla schermata di logon](#StartAtWindowsLogon)</target>
+        <target>Nessuno |`--enable-start-on-logon=True|False` |Durante l'installazione, abilita [l'avvio di NVDA alla schermata di logon](#StartAtWindowsLogon)</target>
       </segment>
     </unit>
     <unit id="c55692e2-bb7f-40e7-84ea-b070001d3590">
@@ -42622,7 +42623,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>None |`--copy-portable-config` |When installing, copy the portable configuration from the provided path (`--config-path`, `-c`) to the current user account</source>
-        <target>None |`--copy-portable-config` |Durante l'installazione, copia la configurazione portable dal percorso specificato (`--config-path`, `-c`) all'account utente corrente</target>
+        <target>Nessuno |`--copy-portable-config` |Durante l'installazione, copia la configurazione portable dal percorso specificato (`--config-path`, `-c`) all'account utente corrente</target>
       </segment>
     </unit>
     <unit id="175551f5-2a78-40a6-9464-43f3fa70e95b">
@@ -42633,7 +42634,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>None |`--create-portable` |Creates a portable copy of NVDA (and starts the new copy). Requires `--portable-path` to be specified</source>
-        <target>None |`--create-portable` |Crea una copia portable di NVDA (avviando la copia appena creata). Richiede `--portable-path` da specificare</target>
+        <target>Nessuno |`--create-portable` |Crea una copia portable di NVDA (avviando la copia appena creata). Richiede `--portable-path` da specificare</target>
       </segment>
     </unit>
     <unit id="d6dc4878-b294-496f-a3d8-ec8585a1fa12">
@@ -42642,9 +42643,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>None |`--create-portable-silent` |Creates a portable copy of NVDA (without starting the new copy). Requires `--portable-path` to be specified. This option suppresses warnings when writing to non-empty directories and may overwrite files without warning.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Nessuno |`--create-portable-silent` |Crea una copia portable di NVDA (senza avviare la nuova copia). Richiede che venga specificato `--portable-path`. Questa opzione sopprime gli avvisi durante la scrittura in directory non vuote e può sovrascrivere file senza preavviso.</target>
       </segment>
     </unit>
     <unit id="fce95a72-ddf4-486a-ba2e-df6635fc9198">
@@ -42662,27 +42663,27 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <notes>
         <note appliesTo="source">line: 5513</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>Just as you can silently install NVDA by passing the `--install-silent` command line option to NVDA, it can be silently uninstalled by passing the `/S` command to the uninstaller.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Allo stesso modo in cui è possibile installare silenziosamente NVDA passando il parametro `--install-silent`, può essere disinstallato senza ricevere output tramite l'opzione a riga di comando `/S` al disinstallatore.</target>
       </segment>
     </unit>
     <unit id="c675632d-0479-418d-a36e-ea9d8058b22b">
       <notes>
         <note appliesTo="source">line: 5515</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>NVDA's uninstaller is called `uninstall.exe` and resides under the NVDA installation directory, `%ProgramFiles(x86)%\nvda` on 64-bit Windows, or `%ProgramFiles%\nvda` on 32-bit Windows.</source>
-        <target>&lt;target/&gt;</target>
+        <target>Il disinstallatore di NVDA si chiama `uninstall.exe` e risiede nella directory di installazione di NVDA, `%ProgramFiles(x86)%\nvda` in Windows a 64-bit, o `%ProgramFiles%\nvda` nei sistemi a 32 bit.</target>
       </segment>
     </unit>
     <unit id="8b3a8a3d-3f66-49c6-8793-3ffed70368ff">
       <notes>
         <note appliesTo="source">line: 5517</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>The following are the command line options for NVDA's uninstaller:</source>
-        <target>&lt;target/&gt;</target>
+        <target>Seguono le opzioni a riga di comando valide per il software di disinstallazione:</target>
       </segment>
     </unit>
     <unit id="e9d76e04-7ac4-4e50-893e-fe3e656bc9ad">
@@ -42691,9 +42692,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source> Short |Long |Description</source>
-        <target>&lt;target/&gt;</target>
+        <target> Breve |Lungo |Descrizione</target>
       </segment>
     </unit>
     <unit id="8f5be772-52a3-4594-82cc-a21476f421b2">
@@ -42702,9 +42703,9 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="translated">
+      <segment state="final">
         <source>`/S` |None |Silently uninstall NVDA. </source>
-        <target>&lt;target/&gt;</target>
+        <target>`/S` |Nessuno |Disinstalla silenziosamente NVDA. </target>
       </segment>
     </unit>
     <unit id="56e9eb75-58e9-489c-8556-1270dca7bfb2">
