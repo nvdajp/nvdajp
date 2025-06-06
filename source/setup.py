@@ -313,6 +313,7 @@ freeze(
 				"*.xliff",
 				"*/user_docs/styles.css",
 				"*/user_docs/numberedHeadings.css",
+				"*/user_docs/favicon.ico",
 				"*/developerGuide.*",
 			),
 		)
