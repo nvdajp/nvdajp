@@ -146,7 +146,7 @@ class CharacterDescriptions(object):
 		# nvdajp charaters.dic end
 
 		# nvdajp cldr emoji
-		if config.conf["speech"]["includeCLDR"]:
+		if "cldr" in config.conf["speech"]["symbolDictionaries"]:  # type: ignore
 			fileName = os.path.join("locale", locale, "cldr.dic")
 			if os.path.isfile(fileName):
 				import unicodedata
