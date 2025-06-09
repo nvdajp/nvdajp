@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2024年11月18日
+* 最終更新日：2025年6月9日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -798,6 +798,11 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 * [NVDA APIの C#版デモアプリ](https://osdn.net/ticket/browse.php?group_id=4221&tid=33804)
 
 ## バージョンごとの変更点
+
+### 2025.1jp の変更点
+
+* [2025.1jp の変更点](https://github.com/nvdajp/nvdajp/milestone/68?closed=1)
+* [本家版 2025.1 の翻訳](https://github.com/nvdajp/nvdajp/milestone/67?closed=1)
 
 ### 2024.4jp の変更点
 
