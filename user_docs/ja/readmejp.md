@@ -182,7 +182,7 @@ NVDA日本語版では音声設定「大文字の前に大文字と読む」の�
 
 日本語版では音声エンジンのスペル読み機能ではなく、独自の辞書を使って「スペル読み」を行います。
 
-日本語で SAPI4 の音声エンジンを使っている場合に [「アールエムエス(RMS)」と読み上げる](https://ja.osdn.net/projects/nvdajp/ticket/27714) などの現象を確認しています。このような場合は音声設定「サポートされている場合スペル読み機能を使用」をチェックなしにしてください。
+日本語で SAPI4 の音声エンジンを使っている場合に 「アールエムエス(RMS)」と読み上げる などの現象を確認しています。このような場合は音声設定「サポートされている場合スペル読み機能を使用」をチェックなしにしてください。
 
 ### NVDA設定ダイアログ「点字」カテゴリ
 
@@ -1002,8 +1002,8 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [NVDA本家版2017.4の翻訳](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=37480)
-* [NVDA日本語版2017.4jpの説明](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=37436)
+* NVDA本家版2017.4の翻訳
+* NVDA日本語版2017.4jpの説明
 * [NVDA本体の変更点のリスト](https://github.com/nvdajp/nvdajp/issues?q=milestone%3A2017.4jp)
 * [JTalkと日本語点字出力の変更点のリスト](https://github.com/nvdajp/nvdajpmiscdep/issues?q=milestone%3A2017.4jp)
 
@@ -1069,30 +1069,30 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 NVDA 日本語チームは以下の変更および改良を行いました。
 
 * [設定項目「NVDAのエラーを音で報告」の追加](https://github.com/nvdajp/nvdajp/issues/16)
-* [2016.4jp で行った ANSI RichEdit に関する変更をキャンセル(VoicePopper3 の不具合の回避)](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36770)
-* [Excelで「書式情報の報告」コマンドを実行しても読み上げない不具合への対応](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36889)
+* 2016.4jp で行った ANSI RichEdit に関する変更をキャンセル(VoicePopper3 の不具合の回避)
+* Excelで「書式情報の報告」コマンドを実行しても読み上げない不具合への対応
 * [Excel2007 で結合されたセルの罫線の読み上げの不具合対策](https://github.com/nishimotz/nvda/pull/1)
 * [NetRadioRecorder 5/6 への対応](https://github.com/nvdajp/nvdajp/issues/17)
 
 以下の作業は NVDA 本家版 2017.1 と日本語版 2017.1jp の両方に反映されました。
 
-* [2017.1新規の翻訳](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36902)
+* 2017.1新規の翻訳
 
 ### 2016.4jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [Excel セルの罫線の報告](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36621)
-* [ANSI RichEdit キャレット移動の不具合](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36770)
-* [「NVDAキー」を「NVDA制御キー」に揃える](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36768)
-* [NVDAバイナリのバージョン情報](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36604)
+* Excel セルの罫線の報告
+* ANSI RichEdit キャレット移動の不具合
+* 「NVDAキー」を「NVDA制御キー」に揃える
+* NVDAバイナリのバージョン情報
 
 以下の作業は NVDA 本家版 2016.4 と日本語版 2016.4jp の両方に反映されました。
 
-* [2016.4新規の翻訳](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36647)
-* [ユーザーガイド 8.1.2. Browse Mode in Microsoft Word の修正](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36682)
-* [2016.4に向けた既存の翻訳の改善](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36683)
-* [2016.4に向けた既存の翻訳の改善](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36620)
+* 2016.4新規の翻訳
+* ユーザーガイド 8.1.2. Browse Mode in Microsoft Word の修正
+* 2016.4に向けた既存の翻訳の改善
+* 2016.4に向けた既存の翻訳の改善
 
 ### 2016.3jp の変更点
 
