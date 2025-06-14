@@ -4,7 +4,7 @@
 
 ## Overview
 
-* last update: 2024-08-19
+* last update: 2025-06-13
 * updated by: NVDA Japanese Team / Takuya Nishimoto (Shuaruta Inc.)
 
 Release by [NVDA Japanese Team (nvdajp)](http://www.nvda.jp/en/), based on NVDA from NV Access.
@@ -164,7 +164,7 @@ If you use the environment where HTA is not allowed, disable the option.
 
 If the option is not checked, NVDA may say "No navigation files for this speech style in this language" during interactive navigation of MathML content in Japanese.
 
-The issue is discussed at [NVDAJP ticket 29872](https://osdn.net/ticket/browse.php?group_id=4221&tid=35208) and [#5126](http://community.nvda-project.org/ticket/5126).
+The issue is discussed at [#5126](https://github.com/nvaccess/nvda/issues/5126).
 
 ### Voice settings
 
@@ -233,6 +233,9 @@ JTalk driver is the default synthesizer of NVDAJP, which supports Japanese langu
 
 
 eSpeak NG of NVDA cannot handle Japanese language.
+
+
+
 
 
 
@@ -681,7 +684,8 @@ For Windows XP or Vista, DejaVu Sans font must be installed to display braille p
 
 ### Microsoft Word support
 
-Paragraph indent of Microsoft Word is now supported by NVDA. ([#4165](http://community.nvda-project.org/ticket/4165))
+Paragraph indent of Microsoft Word is now supported by NVDA. ([#4165](https://github.com/nvaccess/nvda/issues/4165))
+
 
 
 
@@ -723,9 +727,6 @@ The file should be plain text with UTF-8 encoding. The lines should be tab-separ
     field 4 (or later): field 2 or later items of charactersDescriptions.dic
 
 If the line starts with '#', it is ignored. If the line starts with '\#', the character is '#' itself.
-
-Details (in Japanese) [NVDAJP ticket 29872](https://osdn.net/ticket/browse.php?group_id=4221&tid=29872)
-
 
 
 
@@ -779,5 +780,5 @@ We use AppVeyor as public build server:
 
 ### Controller Client API
 
-* [Controller Client enhancement by NVDAJP](https://osdn.net/projects/nvdajp/wiki/ControllerClient)
+* [Controller Client enhancement by NVDAJP](https://github.com/nvdajp/nvdajp/wiki/ControllerClient)
 * [NvdaDemoApp (bitbucket.org)](https://bitbucket.org/nishimotz/nvdademoapp)
