@@ -13,7 +13,7 @@ patch -v
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd miscDepsJp\jptools
-call copy_jtalk_core_files.cmd
+rem call copy_jtalk_core_files.cmd - 重複実行を避けるため削除（build-and-test.cmdで最適化版を実行）
 call build-and-test.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
 cd ..\..
