@@ -459,11 +459,22 @@ def handleInputCompositionEnd(result):
 			from NVDAObjects import inputComposition
 
 			gesture = inputComposition.lastKeyGesture
-			ctrl = (winUser.VK_CONTROL, False) in gesture.generalizedModifiers
-			if (gesture.vkCode == winUser.VK_ESCAPE) or ctrl and gesture.vkCode in (0x5A, 0xDB):
-				# Translators: a message when the IME cancelation status
-				speech.speakMessage(_("Clear"))
-				return
+			# Debug logging for Issue #481: ESC key detection in legacy IME
+			log.debug(f"IME cancellation debug: gesture={gesture}")
+			if gesture:
+				log.debug(f"IME cancellation debug: vkCode={gesture.vkCode}, modifiers={gesture.generalizedModifiers}")
+			else:
+				log.debug("IME cancellation debug: gesture is None")
+				# Check current key state as fallback
+				escapeState = winUser.getAsyncKeyState(winUser.VK_ESCAPE)
+				log.debug(f"IME cancellation debug: ESC key state={escapeState}")
+			
+			if gesture:
+				ctrl = (winUser.VK_CONTROL, False) in gesture.generalizedModifiers
+				if (gesture.vkCode == winUser.VK_ESCAPE) or ctrl and gesture.vkCode in (0x5A, 0xDB):
+					# Translators: a message when the IME cancelation status
+					speech.speakMessage(_("Clear"))
+					return
 			else:
 				result = curInputComposition.compositionString.lstrip("\u3000 ")
 				if winUser.getAsyncKeyState(winUser.VK_BACK) & 1:

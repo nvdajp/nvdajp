@@ -331,6 +331,8 @@ def internal_keyDownEvent(vkCode, scanCode, extended, injected):
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 		from NVDAObjects import inputComposition
 
+		# Debug logging for Issue #481: track key events for IME
+		log.debug(f"keyboardHandler: reportKeyDownEvent called with vkCode={gesture.vkCode}, modifiers={gesture.generalizedModifiers}")
 		inputComposition.reportKeyDownEvent(gesture)
 	# nvdajp end
 	return True
