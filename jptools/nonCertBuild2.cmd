@@ -1,6 +1,9 @@
 echo nonCertBuild2: Starting non-certified build with scons...
 set SCONSOPTIONS=%*
 
+cd /d %~dp0
+cd ..
+
 @if not "%VERSION%"=="" goto versionready
 echo nonCertBuild2: Setting development version...
 for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
