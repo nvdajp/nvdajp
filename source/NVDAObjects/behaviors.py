@@ -543,13 +543,16 @@ class EnhancedTermTypedCharSupport(Terminal):
 	#: Timely and reliable textChange events are required
 	#: to support password suppression.
 	_supportsTextChange = True
-	#: A queue of typed characters, to be dispatched on C{textChange}.
-	#: This queue allows NVDA to suppress typed passwords when needed.
-	_queuedChars = []
 	#: Whether the last typed character is a tab.
 	#: If so, we should temporarily disable filtering as completions may
 	#: be short.
 	_hasTab = False
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		#: A queue of typed characters, to be dispatched on C{textChange}.
+		#: This queue allows NVDA to suppress typed passwords when needed.
+		self._queuedChars = []
 
 	def _reportNewLines(self, lines):
 		# Perform typed character filtering, as typed characters are handled with events.
