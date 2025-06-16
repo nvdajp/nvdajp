@@ -1,9 +1,6 @@
 echo nonCertBuild2: Starting non-certified build with scons...
 set SCONSOPTIONS=%*
 
-cd /d %~dp0
-cd ..
-
 @if not "%VERSION%"=="" goto versionready
 echo nonCertBuild2: Setting development version...
 for /F "usebackq" %%t in (`jptools\nowdate.cmd`) do set NOWDATE=%%t
@@ -17,19 +14,19 @@ set OPTIONS=publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVER
 set OPTIONS=%OPTIONS% release=1
 
 echo nonCertBuild2: Building source...
-call scons.bat source %OPTIONS%
+call scons source %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo nonCertBuild2: Building user documentation...
-call scons.bat user_docs %OPTIONS%
+call scons user_docs %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo nonCertBuild2: Building distribution...
-call scons.bat dist %OPTIONS%
+call scons dist %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo nonCertBuild2: Building launcher...
-call scons.bat launcher %OPTIONS%
+call scons launcher %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo nonCertBuild2: Build completed successfully
