@@ -14,19 +14,19 @@ set OPTIONS=publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVER
 set OPTIONS=%OPTIONS% release=1
 
 echo nonCertBuild2: Building source...
-call scons source %OPTIONS%
+call scons.bat source %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo nonCertBuild2: Building user documentation...
-call scons user_docs %OPTIONS%
+call scons.bat user_docs %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo nonCertBuild2: Building distribution...
-call scons dist %OPTIONS%
+call scons.bat dist %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo nonCertBuild2: Building launcher...
-call scons launcher %OPTIONS%
+call scons.bat launcher %OPTIONS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo nonCertBuild2: Build completed successfully
