@@ -18,7 +18,7 @@ patch -v
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd miscDepsJp\jptools
-call copy_jtalk_core_files_optimized.cmd
+call copy_jtalk_core_files.cmd
 cd ..\include\jtalk
 call all-clean.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror

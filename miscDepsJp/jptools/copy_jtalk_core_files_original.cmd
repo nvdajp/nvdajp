@@ -1,33 +1,7 @@
-@echo off
-rem copy_jtalk_core_files.cmd
-rem エラーハンドリングを追加した改善版
-
-echo copy_jtalk_core_files: Copying jtalk core files...
-
 xcopy /E /Y .\jtalk ..\include\jtalk
-if errorlevel 1 goto :error
-
 xcopy /E /Y ..\include\htsengineapi ..\include\python-jtalk\htsengineapi
-if errorlevel 1 goto :error
-
 xcopy /E /Y ..\include\libopenjtalk ..\include\python-jtalk\libopenjtalk
-if errorlevel 1 goto :error
-
 copy /Y ..\include\python-jtalk\jtalkCore.py ..\source\synthDrivers\jtalk\jtalkCore.py
-if errorlevel 1 goto :error
-
 copy /Y ..\include\python-jtalk\mecab.py ..\source\synthDrivers\jtalk\mecab.py
-if errorlevel 1 goto :error
-
 copy /Y ..\include\python-jtalk\text2mecab.py ..\source\synthDrivers\jtalk\text2mecab.py
-if errorlevel 1 goto :error
-
 copy /Y ..\include\python-jtalk\jtalkRunner.py .\jtalkRunner.py
-if errorlevel 1 goto :error
-
-echo copy_jtalk_core_files: Completed successfully
-goto :eof
-
-:error
-echo copy_jtalk_core_files: Error occurred during file copy
-exit /b 1

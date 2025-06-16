@@ -1,4 +1,4 @@
-call copy_jtalk_core_files_optimized.cmd
+call copy_jtalk_core_files.cmd
 
 call ..\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0
