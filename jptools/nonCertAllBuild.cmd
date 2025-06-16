@@ -1,8 +1,12 @@
-call jptools\nonCertBuild1.cmd
+echo nonCertAllBuild: Starting complete non-certified build...
+
+call "%~dp0nonCertBuild1.cmd"
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-call jptools\nonCertBuild2.cmd %*
+call "%~dp0nonCertBuild2.cmd" %*
 @if not "%ERRORLEVEL%"=="0" goto onerror
+
+echo nonCertAllBuild: All builds completed successfully
 
 exit /b 0
 
