@@ -6,7 +6,7 @@
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は NVDA 2024.4jp の場合
+以下は NVDA 2024.4.1jp (2024年11月24日時点での betajp ブランチ) の状況
 
 ### (1) Windows 10/11 64ビット
 
@@ -18,28 +18,25 @@
 
 https://www.visualstudio.com/ja/downloads/
 
-Visual Studio 2022 v17.11.3
+* Visual Studio 2022 v17.12.1 でビルドできることを確認した
 
 #### (2.1) 選択する「ワークロード」の項目
 
 * C++によるデスクトップ開発
-* ユニバーサル Windows プラットフォーム開発
 
 #### (2.2) 「概要」「C++によるデスクトップ開発」「オプション」で選択する項目
 
-* VC++ 2022 最新の v14x ツール
-* Windows 11 SDK (10.0.22621.0)
-* x86 用と x64 用の Visual C++ ATL
-* C++ Clang tools for Windows
+* Windows 用 C++ Clang ツール
 
 #### (2.3) 「個別のコンポーネント」「コードツール」で選択する項目
 
 個別のコンポーネント
 
-* MSVC v143 - VS 2022 C++ ARM64 build tools
-* MSVC v143 - VS 2022 C++ x64/x86 build tools
-* C++ ATL for v143 build tools (x86 & x64)
-* C++ ATL for v143 build tools (ARM64/ARM64EC)
+* Windows 11 SDK (10.0.22621.0)
+* MSVC v143 - VS 2022 C++ ARM64/ARM64EC ビルドツール(最新)
+* MSVC v143 - VS 2022 C++ x64/x86 ビルドツール(最新)
+* 最新の v143 ビルドツール用 C++ ATL (x86 および x64)
+* 最新の v143 ビルドツール用 C++ ATL (ARM64/ARM64EC)
 
 コードツール
 
@@ -77,6 +74,17 @@ C:\Program Files\Git\usr\bin
 備考：
 リモートリポジトリへのアップロード (git push) するためには
 push 先（GitHubなど）のアカウントのセットアップや公開鍵の設定、権限の取得が必要。
+
+#### (2.6) 補足
+
+createDevEnvironment.md の内容だが、この手順書では使っていない。
+
+* VSインストーラーのインポート機能で .vsconfig を読み込むことができる
+* Visual Studio Code を使用する場合は、NVDA用事前設定済みワークスペース構成を利用できる。リポジトリのルートで以下のコマンドを実行することで、ワークスペース構成をチェックアウトできる。
+
+```text
+> git clone https://github.com/nvaccess/vscode-nvda.git .vscode
+```
 
 ### (4) 7-Zip (7z)
 
@@ -159,13 +167,6 @@ NVDA 本体を実行するには
 
 ```text
 > runnvda.bat
-```
-
-システムテストを実行するには
-
-```text
-> runsystemtests.bat -i symbols --test "moveByCharacter"
-> runsystemtests.bat -i chrome
 ```
 
 ### (8) NVDA日本語版のリリースビルド
@@ -289,4 +290,188 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 * chromeTests : 一部のテストについて speech のみを有効化し braille を無効化している。
 * symbolPronunciationTests : 本家版では無効化されているがあえて有効化し、日本語版で動かす改変をしている。今後、日本語版に固有の仕様のテストを整備する。
 
-（以上）
+### システムテストの実行
+
+システムテストを実行するには
+
+```text
+> runsystemtests.bat --include symbols --test "moveByCharacter"
+```
+
+NVDA日本語版のビルドで行っているシステムテスト
+
+```text
+> runsystemtests.bat --include NVDA --exclude restarts_on_crash
+> runsystemtests.bat --variable whichNVDA:installed --variable installDir:"output\nvda_%VERSION%.exe" --include installer
+> runsystemtests.bat --include chrome
+```
+
+* restarts_on_crash タグを追加している。これらは AppVeyor では通るが、ローカル環境では通らないため、除外する
+* installer はビルドした NVDA の exe ファイルを指定する
+* AppVeyor ビルドに時間がかかるため appveyor-jp.yml では chrome テストを NVDA タグから除外している
+* システムテスト中にNVDAの起動と終了で音を出力する
+
+システムテストが失敗する場合
+
+* マルチディスプレイ環境
+* 実行中に画面操作
+* 事前に Chrome を起動している
+
+## 単体テストと文字説明のチェック
+
+開発中に安全に実行できるテストや確認作業として、以下のものがあります。
+
+### 日本語辞書のテスト
+
+```text
+> cd jptools
+> py jpDicTest.py
+```
+
+このスクリプトは日本語辞書（nvdajp_dic.py）の機能をテストします。文字の説明や属性の取得、文字種の判定などをチェックします。
+
+### 文字説明と記号のチェック
+
+jpcharディレクトリには、文字説明と記号の一貫性をチェックするスクリプトがあります。詳細は `jpchar/readme.txt` を参照してください。
+
+主なスクリプト：
+- checkCharDesc.py - 文字説明の一貫性チェック
+- checkSymbols.py - 記号の一貫性チェック
+- compareSymbolsDic.py - 記号辞書の比較
+
+### 依存関係のテストと型チェック
+
+```text
+> jptools\testMiscDepsJp.cmd
+```
+
+このスクリプトは依存関係のテストと型チェックを行います。Python仮想環境を作成し、mypyによる型チェックを実行します。主に以下の処理を行います：
+
+1. Python 3.11 (32bit)の仮想環境を作成
+2. 開発用の依存パッケージをインストール
+3. jtalkコアファイルのコピー
+4. mypyによる型チェック
+5. jtalkのビルドとテスト
+6. HTMLドキュメントの生成
+
+## 今後の課題
+
+### ビルドスクリプトの処理構造と実行フロー
+
+`jptools/certBuild2023.cmd`を中心としたビルドスクリプトは複数のスクリプトが相互に呼び出し合う複雑な構造になっています。以下にその処理の流れを詳細に説明します：
+
+1. **certBuild2023.cmdの主な処理フロー**
+   - 環境変数の設定（SCONSOPTIONS, TIMESERVER）
+   - Visual C++環境の設定（vcsetup.cmd）
+   - nmakeとpatchコマンドの確認
+   - jtalkコアファイルのコピー処理
+     ```
+     cd miscDepsJp\jptools
+     call copy_jtalk_core_files.cmd
+     ```
+   - jtalkのビルドとテスト
+     ```
+     call build-and-test.cmd
+     ```
+   - 依存ライブラリのセットアップ
+     ```
+     call jptools\setupMiscDepsJp.cmd
+     ```
+   - 各種DLLファイルへの電子署名
+     ```
+     %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 [ファイル名]
+     ```
+   - sconsによるNVDAのビルド
+     ```
+     call scons.bat source user_docs launcher release=1 publisher=%PUBLISHER% %SCONSARGS%
+     ```
+   - jtalkとkgsアドオンのパッケージング
+   - コントローラークライアントのビルド
+   - テストの実行
+   - 署名の検証
+
+2. **build-and-test.cmdの処理**
+   - jtalkコアファイルのコピー（copy_jtalk_core_files.cmd）
+   - Visual C++環境の設定
+   - jtalkのビルド処理
+     ```
+     call all-clean.cmd
+     call all-build.cmd
+     call all-install.cmd
+     ```
+   - python-jtalkのクリーン処理
+   - テストの実行
+
+3. **setupMiscDepsJp.cmdの処理**
+   - jtalkのビルド処理
+     ```
+     call all-clean.cmd
+     call all-build.cmd
+     call all-install.cmd
+     call all-clean.cmd
+     ```
+   - 一時ファイルの削除
+   - sourceディレクトリのアーカイブと展開
+     ```
+     7z a ..\nvdajp-miscdep.7z source
+     cd ..
+     7z x -y nvdajp-miscdep.7z
+     del /Q nvdajp-miscdep.7z
+     ```
+   - 各種クリーンアップ処理
+
+4. **スクリプト間の呼び出し関係と重複ファイル**
+   - certBuild2023.cmd → copy_jtalk_core_files.cmd
+   - certBuild2023.cmd → build-and-test.cmd → copy_jtalk_core_files.cmd
+   - certBuild2023.cmd → setupMiscDepsJp.cmd
+   - devbuild.cmd → copy_jtalk_core_files.cmd
+   - devbuild.cmd → setupMiscDepsJp.cmd
+   
+   ビルドスクリプトには同名のファイルが複数の場所に存在しており、それぞれ異なる処理を行っています：
+   
+   1. **build-and-test.cmd**
+      - `miscDepsJp/jptools/build-and-test.cmd`：主にjtalkのビルドとテストを行う
+        ```
+        call copy_jtalk_core_files.cmd
+        call ..\include\python-jtalk\vcsetup.cmd
+        cd /d %~dp0
+        cd ..\include\jtalk
+        call all-clean.cmd
+        call all-build.cmd
+        call all-install.cmd
+        cd ..\python-jtalk
+        call clean.cmd
+        cd ..\..\jptools
+        call test.cmd
+        ```
+      - `miscDepsJp/jptools/jtalk/build-and-test.cmd`：より限定的な処理を行う
+        ```
+        call all-build.cmd
+        call all-install.cmd
+        cd ..\..\jptools
+        call test-mecab.cmd
+        cd ..\include\jtalk
+        ```
+   
+   2. **all-build.cmd / all-clean.cmd / all-install.cmd**
+      - `miscDepsJp/jptools/jtalk/`ディレクトリに存在
+      - `miscDepsJp/include/jtalk/`ディレクトリには存在しないが、上記からコピーされ、スクリプト内で呼び出されている
+   
+   3. **vcsetup.cmd**
+      - `jptools/vcsetup.cmd`（メインリポジトリ）
+      - `miscDepsJp/include/python-jtalk/vcsetup.cmd`（サブモジュール）
+   
+   4. **clean.cmd**
+      - `miscDepsJp/jptools/clean.cmd`（メインリポジトリ）
+      - `miscDepsJp/include/python-jtalk/clean.cmd`（サブモジュール）
+   
+   これらの同名スクリプトは、それぞれ異なる処理を行うために作成されたものですが、呼び出し関係が複雑になっています。
+
+5. **処理の特徴**
+   - 同じファイルのコピーが複数回実行される場合がある
+   - jtalkのビルド処理（clean→build→install）が複数回実行される
+   - クリーンアップ処理が複数のスクリプトに分散している
+   - エラーチェックは一部の処理でのみ実装されている
+   - アーカイブと展開を使ったファイルコピー処理がある
+
+これらの複雑な処理構造は、長年の開発過程で段階的に追加・修正されてきたもので、改善が必要です。

@@ -1,16 +1,17 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2007-2023 NV Access Limited, Aleksey Sadovoy, Leonard de Ruijter, Babbage B.V.
+# Copyright (C) 2007-2025 NV Access Limited, Aleksey Sadovoy, Leonard de Ruijter, Babbage B.V.
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
 """Utilities to generate and play tones"""
 
 import atexit
-import nvwave
-import config
-from logHandler import log
 from ctypes import create_string_buffer
+
+import config
 import extensionPoints
+import nvwave
+from logHandler import log
 
 SAMPLE_RATE = 44100
 
@@ -24,7 +25,7 @@ def initialize():
 			channels=2,
 			samplesPerSec=int(SAMPLE_RATE),
 			bitsPerSample=16,
-			outputDevice=config.conf["speech"]["outputDevice"],
+			outputDevice=config.conf["audio"]["outputDevice"],
 			wantDucking=False,
 			purpose=nvwave.AudioPurpose.SOUNDS,
 		)

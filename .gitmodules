@@ -38,3 +38,19 @@
 	url = https://github.com/nvaccess/nvda-cldr.git
 	branch = main-out
 	shallow = true
+[submodule "vscode-nvda"]
+	path = .vscode
+	url = https://github.com/nvaccess/vscode-nvda.git
+	ignore = dirty
+[submodule "miscDepsJp/include/python-jtalk"]
+	path = miscDepsJp/include/python-jtalk
+	url = https://github.com/nvdajp/python-jtalk.git
+[submodule "miscDepsJp/include/libkuraji"]
+	path = miscDepsJp/include/libkuraji
+	url = https://github.com/nishimotz/libkuraji.git
+[submodule "miscDepsJp/include/libopenjtalk"]
+	path = miscDepsJp/include/libopenjtalk
+	url = https://github.com/nishimotz/libopenjtalk.git
+[submodule "miscDepsJp/include/htsengineapi"]
+	path = miscDepsJp/include/htsengineapi
+	url = https://github.com/nishimotz/htsengineapi.git

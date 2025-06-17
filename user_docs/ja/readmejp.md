@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2024年10月19日
+* 最終更新日：2025年6月13日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -15,9 +15,9 @@ NVDA のユーザーガイドとあわせてお読みください。
 
 NVDA日本語版は無保証です。ご自身の責任でご利用ください。
 
-### Webサイト
+### ウェブサイト
 
-* [NVDA日本語版のWebサイト www.nvda.jp](https://www.nvda.jp)
+* [NVDA日本語版のウェブサイト www.nvda.jp](https://www.nvda.jp)
 * [NVDA日本語チームの連絡先](https://www.nvda.jp/contact)
 * [NVDA日本語版ガイドブック](https://nvdajp-book.readthedocs.io/ja/latest/)
 * [開発者のためのNVDA教材リンク](https://github.com/nvdajp/nvdajp/wiki/ForDeveloper)
@@ -164,7 +164,7 @@ Winbiff など一部のアプリではチェックなしにしてください。
 
 このオプションがチェックなしのとき、コンテンツや設定によって MathML の数式が日本語で読み上げられる場合があります。しかしこのとき、数式の対話的ナビゲーションを実行すると "No navigation files for this speech style in this language" と報告されて操作ができない場合があります。
 
-この問題についての詳細は [チケット35208](https://osdn.net/ticket/browse.php?group_id=4221&tid=35208) および本家チケット [#5126](https://github.com/nvaccess/nvda/issues/5126) を参照してください。
+この問題についての詳細は本家チケット [#5126](https://github.com/nvaccess/nvda/issues/5126) を参照してください。
 
 ### NVDA設定ダイアログ「音声」カテゴリ
 
@@ -182,7 +182,7 @@ NVDA日本語版では音声設定「大文字の前に大文字と読む」の�
 
 日本語版では音声エンジンのスペル読み機能ではなく、独自の辞書を使って「スペル読み」を行います。
 
-日本語で SAPI4 の音声エンジンを使っている場合に [「アールエムエス(RMS)」と読み上げる](https://ja.osdn.net/projects/nvdajp/ticket/27714) などの現象を確認しています。このような場合は音声設定「サポートされている場合スペル読み機能を使用」をチェックなしにしてください。
+日本語で SAPI4 の音声エンジンを使っている場合に 「アールエムエス(RMS)」と読み上げる などの現象を確認しています。このような場合は音声設定「サポートされている場合スペル読み機能を使用」をチェックなしにしてください。
 
 ### NVDA設定ダイアログ「点字」カテゴリ
 
@@ -249,7 +249,7 @@ NVDA 本家版には Microsoft Speech Platform のための音声ドライバー
 
 NVDA 日本語版では Haruka (nvdajp) という日本語専用ドライバーを追加しました。
 
-音声エンジン Haruka はマイクロソフトのWebサイトから入手できます。
+音声エンジン Haruka はマイクロソフトのウェブサイトから入手できます。
 
 [ランタイム(Version 11)の入手](http://www.microsoft.com/download/en/details.aspx?id=27225)
 
@@ -294,11 +294,15 @@ AccessibleToolsLaboratory (ACT Laboratory) が販売する High-speed Synthesize
 
 * [High-speed Synthesizer For NVDA](https://actlab.org/software/HISS)
 
+### SAPI4 対応
+
+* [NVDA日本語版のSAPI4対応](https://github.com/nvdajp/nvdajp/wiki/SAPI4)
+
 ## 点字ディスプレイ
 
 ### 記号の出力
 
-NVDA 日本語版では点字出力テーブル「日本語6点情報処理点字」が利用できます。このテーブルでは、メールアドレスやWebサイトのURLなどに日本の情報処理用点字が使われます。
+NVDA 日本語版では点字出力テーブル「日本語6点情報処理点字」が利用できます。このテーブルでは、メールアドレスやウェブサイトのURLなどに日本の情報処理用点字が使われます。
 
 その他の日本語点字では記号は以下のように出力されます。
 
@@ -639,7 +643,7 @@ USB 接続で使う場合は「ケージーエスUSB/仮想Commドライバー�
 
 NVDAメニューに「NVDA日本語版の説明」が追加されています。
 
-「NVDA Webサイト(nvdajp)」「貢献者(nvdajp)」は「NVDA日本語版の説明」からリンクされています。
+「NVDA ウェブサイト(nvdajp)」「貢献者(nvdajp)」は「NVDA日本語版の説明」からリンクされています。
 
 NVDA 日本語版では日本語設定「ヘルプを独自のウィンドウで開く」がチェックの場合、独自のウィンドウでヘルプを開きます。この独自ウィンドウではブラウズモードの操作ができます。Alt+F4 でウィンドウを閉じることができます。
 
@@ -681,7 +685,7 @@ IME の読み上げを抑止したいアプリを、設定プロファイルの�
 
 ### Microsoft Word サポート
 
-Microsoft Word における段落インデントの読み上げは、NVDA 日本語版 2014.3jp 以降では本家の実装に置き換えられています。 ([本家チケット4165](http://community.nvda-project.org/ticket/4165) [日本語版チケット31399](https://osdn.net/ticket/browse.php?group_id=4221&tid=31399))
+Microsoft Word における段落インデントの読み上げは、NVDA 日本語版 2014.3jp 以降では本家の実装に置き換えられています。 ([本家チケット4165](https://github.com/nvaccess/nvda/issues/4165)
 
 書式情報「段落インデントを報告する」を有効にしてお使いください。
 
@@ -718,8 +722,6 @@ UTF-8 エンコーディングのテキストファイル、以下のフォー�
 
 ただし先頭がシャープ # で始まる行は無視されます。また先頭が \# の行は半角シャープの文字に関する情報です。
 
-* [関連チケット29872](https://osdn.net/ticket/browse.php?group_id=4221&tid=29872)
-
 ## 既知の問題
 
 ### Windows 8 での日本語入力
@@ -731,9 +733,8 @@ Windows 8 で NVDA のテキスト入力（読み上げ辞書の編集や NVDA+C
 * Windows 8 のコントロールパネル「言語の追加」で「英語（米国）」を追加する。Shift+Alt で日本語と英語のレイアウトが切り替えできるようになる。
 * NVDA を終了するダイアログを開いたら Shift+Alt を押していったん英語に切り替える。それから「はい」ボタンを押して NVDA を終了する。
 
-* [関連チケット31592](https://osdn.net/ticket/browse.php?group_id=4221&tid=31592)
-* [本家チケット3233](http://community.nvda-project.org/ticket/3233)
-* [本家チケット2909](http://community.nvda-project.org/ticket/2909)
+* [本家チケット3233](http://github.com/nvaccess/nvda/issues/3233)
+* [本家チケット2909](http://github.com/nvaccess/nvda/issues/2909)
 
 ### Windows 10/11 での日本語入力
 
@@ -764,7 +765,7 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 ### アドオンの紹介
 
 * [NVDA コミュニティによるアドオン紹介](http://addons.nvda-project.org/) は NVDA 日本語チームが翻訳を担当しています。
-* [NVDA 日本語版のアドオン](https://osdn.net/projects/nvdajp/wiki/Addons)
+* [NVDA 日本語版のアドオン](https://github.com/nvdajp/nvdajp/wiki/Addons)
 
 ### チケット登録
 
@@ -792,12 +793,16 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 特定のアプリやクラウドサービスについて「他のスクリーンリーダーでまったく読み上げや操作ができませんが、NVDAで（追加のサポートや開発を依頼したら）なんとかなりますか？」というご連絡をいただくことがありますが、このような場合は、アプリやクラウドサービスの側でなんらかの改修が必要である可能性が高いです。
 導入の前に NVDA を使った検証を行っていただき、アクセシビリティに配慮して開発されたアプリやサービスをお選びいただくことが望ましいです。
 
-* [NVDA に対応したアプリの開発](https://osdn.net/projects/nvdajp/wiki/ControllerClient)
-* [NVDA 日本語版におけるコントローラークライアントAPIの拡張](https://osdn.net/ticket/browse.php?group_id=4221&tid=29342)
-* [スリープモードAPI](https://osdn.net/ticket/browse.php?group_id=4221&tid=32444) を 2014.1jp で追加しました。点字ディスプレイに対応できないなどの副作用があるので、慎重にご利用ください。
-* [NVDA APIの C#版デモアプリ](https://osdn.net/ticket/browse.php?group_id=4221&tid=33804)
+* [NVDA ControllerClient](https://github.com/nvdajp/nvdajp/wiki/ControllerClient)
+* [NvdaDemoApp (bitbucket.org)](https://bitbucket.org/nishimotz/nvdademoapp)
+
 
 ## バージョンごとの変更点
+
+### 2025.1jp の変更点
+
+* [2025.1jp の変更点](https://github.com/nvdajp/nvdajp/milestone/68?closed=1)
+* [本家版 2025.1 の翻訳](https://github.com/nvdajp/nvdajp/milestone/67?closed=1)
 
 ### 2024.4jp の変更点
 
@@ -997,8 +1002,8 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [NVDA本家版2017.4の翻訳](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=37480)
-* [NVDA日本語版2017.4jpの説明](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=37436)
+* NVDA本家版2017.4の翻訳
+* NVDA日本語版2017.4jpの説明
 * [NVDA本体の変更点のリスト](https://github.com/nvdajp/nvdajp/issues?q=milestone%3A2017.4jp)
 * [JTalkと日本語点字出力の変更点のリスト](https://github.com/nvdajp/nvdajpmiscdep/issues?q=milestone%3A2017.4jp)
 
@@ -1013,7 +1018,7 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 
 ### 2017.3jp の変更点
 
-NVDA 日本語チームは[以下の変更および改良](https://osdn.net/ticket/browse.php?group_id=4221&tid=37230)を行いました。
+NVDA 日本語チームは以下の変更および改良を行いました。
 
 * JTalk のデフォルト音声を mei から tohoku-f01 に変更しました。
 * 日本語設定「点字メッセージの表示終了待ち時間の設定を有効化」を廃止しました。点字設定「メッセージの表示を終了させない」オプションが 2017.3 から利用できるので、こちらをお使いください。
@@ -1038,8 +1043,8 @@ NVDA 日本語チームは[以下の変更および改良](https://osdn.net/tick
 
 以下の作業は NVDA 本家版 2017.3 と日本語版 2017.3jp の両方に反映されました。
 
-* [invoke に相当する翻訳を「呼び出し」から「実行」に変更しました。これは NVDA+Enter （既定のアクションの実行）などで使われることがあります。](https://osdn.net/ticket/browse.php?group_id=4221&tid=37356)
-* [翻訳で使われる用語の統一や整理を行いました。例えば点字テーブルの名前「統一英語点字1級点字」「統一英語点字2級点字」を「統一英語点字1級」「統一英語点字2級」に変更しています。](https://osdn.net/ticket/browse.php?group_id=4221&tid=37247)
+* invoke に相当する翻訳を「呼び出し」から「実行」に変更しました。これは NVDA+Enter （既定のアクションの実行）などで使われることがあります。
+* 翻訳で使われる用語の統一や整理を行いました。例えば点字テーブルの名前「統一英語点字1級点字」「統一英語点字2級点字」を「統一英語点字1級」「統一英語点字2級」に変更しています。
 
 ### 2017.2jp の変更点
 
@@ -1056,50 +1061,50 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 
 以下の作業は NVDA 本家版 2017.2 と日本語版 2017.2jp の両方に反映されました。
 
-* [activate の翻訳を「アクティブ化」から「アクションの実行」に変更、その他の修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=36802)
-* [not pressed の翻訳を「押されました なし」から「押されていません」に修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=37124)
+* activate の翻訳を「アクティブ化」から「アクションの実行」に変更、その他の修正
+* not pressed の翻訳を「押されました なし」から「押されていません」に修正
 
 ### 2017.1jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
 * [設定項目「NVDAのエラーを音で報告」の追加](https://github.com/nvdajp/nvdajp/issues/16)
-* [2016.4jp で行った ANSI RichEdit に関する変更をキャンセル(VoicePopper3 の不具合の回避)](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36770)
-* [Excelで「書式情報の報告」コマンドを実行しても読み上げない不具合への対応](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36889)
+* 2016.4jp で行った ANSI RichEdit に関する変更をキャンセル(VoicePopper3 の不具合の回避)
+* Excelで「書式情報の報告」コマンドを実行しても読み上げない不具合への対応
 * [Excel2007 で結合されたセルの罫線の読み上げの不具合対策](https://github.com/nishimotz/nvda/pull/1)
 * [NetRadioRecorder 5/6 への対応](https://github.com/nvdajp/nvdajp/issues/17)
 
 以下の作業は NVDA 本家版 2017.1 と日本語版 2017.1jp の両方に反映されました。
 
-* [2017.1新規の翻訳](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36902)
+* 2017.1新規の翻訳
 
 ### 2016.4jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [Excel セルの罫線の報告](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36621)
-* [ANSI RichEdit キャレット移動の不具合](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36770)
-* [「NVDAキー」を「NVDA制御キー」に揃える](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36768)
-* [NVDAバイナリのバージョン情報](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36604)
+* Excel セルの罫線の報告
+* ANSI RichEdit キャレット移動の不具合
+* 「NVDAキー」を「NVDA制御キー」に揃える
+* NVDAバイナリのバージョン情報
 
 以下の作業は NVDA 本家版 2016.4 と日本語版 2016.4jp の両方に反映されました。
 
-* [2016.4新規の翻訳](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36647)
-* [ユーザーガイド 8.1.2. Browse Mode in Microsoft Word の修正](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36682)
-* [2016.4に向けた既存の翻訳の改善](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36683)
-* [2016.4に向けた既存の翻訳の改善](https://ja.osdn.net/ticket/browse.php?group_id=4221&tid=36620)
+* 2016.4新規の翻訳
+* ユーザーガイド 8.1.2. Browse Mode in Microsoft Word の修正
+* 2016.4に向けた既存の翻訳の改善
+* 2016.4に向けた既存の翻訳の改善
 
 ### 2016.3jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [サロゲートペアへの対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=30841)
-* [「ヘルプを独自のウィンドウで開く」で TypeError の発生を回避](https://osdn.net/ticket/browse.php?group_id=4221&tid=36509)
-* [文字コード u+00e9 を含む単語の処理](https://osdn.net/ticket/browse.php?group_id=4221&tid=36480)
-* [JTalk での英文字列のローマ字式読み付与を改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=36411)
-* [サロゲートペアの絵文字の辞書整備](https://osdn.net/ticket/browse.php?group_id=4221&tid=36402)
-* [JTalk 話者 tohoku-f01 の追加](https://osdn.net/ticket/browse.php?group_id=4221&tid=36346)
-* [「すべて読み上げ」で改行をまたぐ読み上げの改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=33823)
+* サロゲートペアへの対応
+* 「ヘルプを独自のウィンドウで開く」で TypeError の発生を回避
+* 文字コード u+00e9 を含む単語の処理
+* JTalk での英文字列のローマ字式読み付与を改善
+* サロゲートペアの絵文字の辞書整備
+* JTalk 話者 tohoku-f01 の追加
+* 「すべて読み上げ」で改行をまたぐ読み上げの改善
 * [JTalk での一部の単漢字の読みの改善](https://github.com/nvdajp/nvdajpmiscdep/issues/30)
 * [設定ダイアログの表示の調整](https://github.com/nvdajp/nvdajp/issues/10)
 
@@ -1107,106 +1112,106 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [Open JTalk 1.09 への移行](https://osdn.net/ticket/browse.php?group_id=4221&tid=34740)
-* [JTalk mei 音声の調整](https://osdn.net/ticket/browse.php?group_id=4221&tid=36166)
-* [日本語点訳における数字と記号の処理の変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=36052)
-* [日本語点訳の改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=31543)
-* [NVDA+F 2回で表示されるウィンドウの場所の変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=36310)
-* [日本語版の説明の更新](https://osdn.net/ticket/browse.php?group_id=4221&tid=36124)
-* [リリースファイルのビルド環境を AppVeyor に移行](https://osdn.net/ticket/browse.php?group_id=4221&tid=36010)
+* Open JTalk 1.09 への移行
+* JTalk mei 音声の調整
+* 日本語点訳における数字と記号の処理の変更
+* 日本語点訳の改善
+* NVDA+F 2回で表示されるウィンドウの場所の変更
+* 日本語版の説明の更新
+* リリースファイルのビルド環境を AppVeyor に移行
 
 以下の作業は NVDA 本家版 2016.2 と日本語版 2016.2jp の両方に反映されました。
 
-* [2016.2に向けたユーザーガイドなどの翻訳](https://osdn.net/ticket/browse.php?group_id=4221&tid=36119)
-* [Visual C++ 2015 への移行](https://osdn.net/ticket/browse.php?group_id=4221&tid=35617)
+* 2016.2に向けたユーザーガイドなどの翻訳
+* Visual C++ 2015 への移行
 
 ### 2016.1jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [日本語入力を確定した直後の全角および半角スペースの入力の報告についての不具合修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=35997)
-* [日本語点訳で特定の記号を含むテキストがIndexErrorになる不具合の修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=35848)
-* [日本語点訳での数字の前のマスあけ判定の変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=35836)
-* [日本語点訳での金額の点字表記の改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=35777)
-* [日本語点訳での「そうなんです」のマスあけの改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=35430)
-* [JTalkが特定のテキストの読み上げでIndexErrorになる不具合の修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=35898)
-* [JTalkの読み上げ位置の通知を他の音声エンジンに合わせる変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=36007)
-* [JTalkのダッキング対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=35940)
-* [JTalkの英単語の読みの改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=35899)
-* [JTalkで英文字列にローマ字式読み付与を行う改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=35577)
-* [2016.1jpに向けたJTalkおよび日本語点訳のテキスト解析の改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=35847)
+* 日本語入力を確定した直後の全角および半角スペースの入力の報告についての不具合修正
+* 日本語点訳で特定の記号を含むテキストがIndexErrorになる不具合の修正
+* 日本語点訳での数字の前のマスあけ判定の変更
+* 日本語点訳での金額の点字表記の改善
+* 日本語点訳での「そうなんです」のマスあけの改善
+* JTalkが特定のテキストの読み上げでIndexErrorになる不具合の修正
+* JTalkの読み上げ位置の通知を他の音声エンジンに合わせる変更
+* JTalkのダッキング対応
+* JTalkの英単語の読みの改善
+* JTalkで英文字列にローマ字式読み付与を行う改善
+* 2016.1jpに向けたJTalkおよび日本語点訳のテキスト解析の改善
 
 以下の変更は NVDA 本家版 2016.1 と日本語版 2016.1jp の両方に反映されました。
 
-* [2016.1に向けたユーザーガイドなどの翻訳](https://osdn.net/ticket/browse.php?group_id=4221&tid=35796)
-* [2016.1に向けた既存の翻訳の再検討](https://osdn.net/ticket/browse.php?group_id=4221&tid=35764)
-* [Wordの校閲機能を読み上げるとエラーが出る問題の修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=35676)
+* 2016.1に向けたユーザーガイドなどの翻訳
+* 2016.1に向けた既存の翻訳の再検討
+* Wordの校閲機能を読み上げるとエラーが出る問題の修正
 
 ### 2015.4jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [「すべて読み上げ」を実行したときに改行で日本語が不自然に区切られない改善のキャンセル](https://osdn.net/ticket/browse.php?group_id=4221&tid=33823)
+* 「すべて読み上げ」を実行したときに改行で日本語が不自然に区切られない改善のキャンセル
   * 実装が不完全だったため提供を取り止めました。将来のバージョンで改良版の提供を予定しています。
-* [2015.3jp で ATOK 候補コメントが報告されない不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=35441)
-* [文の途中にあるリンクが不適切な順番で読み上げられる不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=35663)
-* [半角カンマを含んだ文字列で点訳エンジンがエラーになる不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=35734)
-* [IMEChangeStatus1 キーの読み上げ](https://osdn.net/ticket/browse.php?group_id=4221&tid=35552)
-* [JTalk の読み付与の改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=35465)
-* [ベータ版自動更新サービスの運用](https://osdn.net/ticket/browse.php?group_id=4221&tid=35464)
-* [コンマの点字表示の改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=35452)
-* [英語環境で使う場合の文字説明の処理の改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=35037)
-* [2015.4jpに向けた Python コーディングスタイルの再検討](https://osdn.net/ticket/browse.php?group_id=4221&tid=33402)
+* 2015.3jp で ATOK 候補コメントが報告されない不具合への対応
+* 文の途中にあるリンクが不適切な順番で読み上げられる不具合への対応
+* 半角カンマを含んだ文字列で点訳エンジンがエラーになる不具合への対応
+* IMEChangeStatus1 キーの読み上げ
+* JTalk の読み付与の改善
+* ベータ版自動更新サービスの運用
+* コンマの点字表示の改善
+* 英語環境で使う場合の文字説明の処理の改善
+* 2015.4jpに向けた Python コーディングスタイルの再検討
 
 以下の変更は NVDA 本家版 2015.4 と日本語版 2015.4jp の両方に反映されました。
 
-* [過去のバージョンの上書きインストール警告ダイアログの修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=35434)
-* [2015.4に向けた既存の翻訳の再検討](https://osdn.net/ticket/browse.php?group_id=4221&tid=35435)
-* [2015.4に向けたユーザーガイドなどの翻訳](https://osdn.net/ticket/browse.php?group_id=4221&tid=35562)
-* [2015.4に向けた記号読み上げ辞書の更新](https://osdn.net/ticket/browse.php?group_id=4221&tid=35649)
+* 過去のバージョンの上書きインストール警告ダイアログの修正
+* 2015.4に向けた既存の翻訳の再検討
+* 2015.4に向けたユーザーガイドなどの翻訳
+* 2015.4に向けた記号読み上げ辞書の更新
 
 ### 2015.3jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [「すべて読み上げ」を実行したときに改行で日本語が不自然に区切られないような改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=33823)
-* [JTalk におけるアルファベット文字列の読み方がカタカナ発音された英語らしくなるように調整](https://osdn.net/ticket/browse.php?group_id=4221&tid=35243)
-* [点字ディスプレイを使っている状態でアルファベットと数字の文字説明がより適切になるように調整](https://osdn.net/ticket/browse.php?group_id=4221&tid=35244)
-* [カナ漢字変換のプリエディット文字列で「っ」（小文字の「つ」）などが読み上げられない問題への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=35244)
-* [2回押すとスペルを読み上げる機能を「文字説明モード」と連動させる](https://osdn.net/ticket/browse.php?group_id=4221&tid=34977)
-* [使用許諾契約の更新](https://osdn.net/ticket/browse.php?group_id=4221&tid=35276)
+* 「すべて読み上げ」を実行したときに改行で日本語が不自然に区切られないような改善
+* JTalk におけるアルファベット文字列の読み方がカタカナ発音された英語らしくなるように調整
+* 点字ディスプレイを使っている状態でアルファベットと数字の文字説明がより適切になるように調整
+* カナ漢字変換のプリエディット文字列で「っ」（小文字の「つ」）などが読み上げられない問題への対応
+* 2回押すとスペルを読み上げる機能を「文字説明モード」と連動させる
+* 使用許諾契約の更新
 
 以下の変更は NVDA 本家版 2015.3 と日本語版 2015.3jp の両方に反映されました。
 
-* [色の読み方や Excel のグラフについての翻訳の再調整](https://osdn.net/ticket/browse.php?group_id=4221&tid=35204)
-* [数学記号に関する記号読み上げ辞書の更新](https://osdn.net/ticket/browse.php?group_id=4221&tid=35296)
-* [簡単音声設定でアクセラレーターキーを読み上げないように変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=34184)
-* [invalid entry の日本語を「無効なエントリー」から「正しくない入力内容」に変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=35288)
-* [report/announce の訳語を「通知」から「報告」に変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=35102)
+* 色の読み方や Excel のグラフについての翻訳の再調整
+* 数学記号に関する記号読み上げ辞書の更新
+* 簡単音声設定でアクセラレーターキーを読み上げないように変更
+* invalid entry の日本語を「無効なエントリー」から「正しくない入力内容」に変更
+* report/announce の訳語を「通知」から「報告」に変更
   * 例えば書式情報「フォント名の通知」から「フォント名の報告」などの変更です。これは「通知」という言葉が Windows の日本語環境で notification の意味に使われているため、将来の混乱を回避するためです。
 
 ### 13.39. 2015.2jp の変更点 
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [日本語設定「ヘルプを独自のウィンドウで開く」オプションの追加](https://osdn.net/ticket/browse.php?group_id=4221&tid=34622)
-* [日本語入力で変換前文字のキャレット移動が「空行」と通知される不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=34933)
-* [日本語点訳で (日) と (火) の区別がつかない問題への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=34973)
-* [ソースコード管理システムを github にまとめる](https://osdn.net/ticket/browse.php?group_id=4221&tid=34984)
-* [BrailleNote 46C/46D でタッチカーソルを押すとエラーになる不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=35006)
-* [更新チェックの HTTPS 移行](https://osdn.net/ticket/browse.php?group_id=4221&tid=35012)
-* [点訳で数字にはさまれたスラッシュ記号の前にマス空けされる問題への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=35030)
-* [点訳で動詞の語尾「う」が長音になる問題への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=35031)
-* [「よろしくお願いします。」などの点訳で不要な記号が挿入される問題への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=35062)
-* [アルファベットを含む複合語の日本語点訳の改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=35065)
-* [初期設定で「大文字にビープを付ける」をチェックなしにして「大文字の前に大文字と読む」をチェックする変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=35098)
-* [ネットラジオレコーダー4の番組表で矢印キーを押したときに番組名を通知させるアプリモジュールの追加](https://osdn.net/ticket/browse.php?group_id=4221&tid=35123)
-* [日本語設定「数式を英語で読み上げる」オプションの追加](https://osdn.net/ticket/browse.php?group_id=4221&tid=35208)
+* 日本語設定「ヘルプを独自のウィンドウで開く」オプションの追加
+* 日本語入力で変換前文字のキャレット移動が「空行」と通知される不具合への対応
+* 日本語点訳で (日) と (火) の区別がつかない問題への対応
+* ソースコード管理システムを github にまとめる
+* BrailleNote 46C/46D でタッチカーソルを押すとエラーになる不具合への対応
+* 更新チェックの HTTPS 移行
+* 点訳で数字にはさまれたスラッシュ記号の前にマス空けされる問題への対応
+* 点訳で動詞の語尾「う」が長音になる問題への対応
+* 「よろしくお願いします。」などの点訳で不要な記号が挿入される問題への対応
+* アルファベットを含む複合語の日本語点訳の改善
+* 初期設定で「大文字にビープを付ける」をチェックなしにして「大文字の前に大文字と読む」をチェックする変更
+* ネットラジオレコーダー4の番組表で矢印キーを押したときに番組名を通知させるアプリモジュールの追加
+* 日本語設定「数式を英語で読み上げる」オプションの追加
 * SourceForge.JP から OSDN へのサイト名変更に伴うドキュメントの更新
 
 また、以下の変更は NVDA 本家版 2015.2 と日本語版 2015.2jp の両方に反映されました。
 
-* [本家版の日本語表記変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=35139)
+* 本家版の日本語表記変更
   * ユーザーガイドにおいて、数を表す漢数字を算用数字（半角数字）に統一。
   * ユーザーガイドにおいて、チェックボックスの説明の表記を「チェックされている場合」「チェックなしの場合」などに統一。
 
@@ -1214,20 +1219,20 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [bullet に対応する日本語の変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=34586) サポート対象の文字を追加し、「バレット」から「ビュレット」に読み方を変更しました。
-* [特定の音声デバイスで JTalk の読み上げが途中で停止してしまう不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=34684)
-* [連続読み上げで JTalk が最後まで読み上げを行わない場合がある不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=34735)
-* [ブレイルメモシリーズの点字ディスプレイドライバーの改善](https://osdn.net/ticket/browse.php?group_id=4221&tid=34739) 機種や接続方法によって自動接続が利用できなかった不具合を改善し、自動選択の処理時間を短縮しました。また自動接続に成功した場合に接続ポートを設定情報に保存しないようになりました。
-* [更新チェックの HTTPS への移行](https://osdn.net/ticket/browse.php?group_id=4221&tid=34796) 日本語チームの更新サーバーは今回のバージョンでは HTTPS 移行を見送りますが、ハッシュ値による完全性のチェック処理は提供を検討中です。
-* [「レビュー内の現在の文字を通知」の仕様変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=34812) 「日本語設定」でかな文字とアルファベットのフォネティック読みを有効にした場合に、「現在の文字を通知」2回押しの場合にのみフォネティック読みを行うように変更されました。
-* [日本語版の日本語表記変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=34891)
+* bullet に対応する日本語の変更 サポート対象の文字を追加し、「バレット」から「ビュレット」に読み方を変更しました。
+* 特定の音声デバイスで JTalk の読み上げが途中で停止してしまう不具合への対応
+* 連続読み上げで JTalk が最後まで読み上げを行わない場合がある不具合への対応
+* ブレイルメモシリーズの点字ディスプレイドライバーの改善 機種や接続方法によって自動接続が利用できなかった不具合を改善し、自動選択の処理時間を短縮しました。また自動接続に成功した場合に接続ポートを設定情報に保存しないようになりました。
+* 更新チェックの HTTPS への移行 日本語チームの更新サーバーは今回のバージョンでは HTTPS 移行を見送りますが、ハッシュ値による完全性のチェック処理は提供を検討中です。
+* 「レビュー内の現在の文字を通知」の仕様変更 「日本語設定」でかな文字とアルファベットのフォネティック読みを有効にした場合に、「現在の文字を通知」2回押しの場合にのみフォネティック読みを行うように変更されました。
+* 日本語版の日本語表記変更
   * 「かな文字をフォネティック読みする」→「かな文字をフォネティック読み」
   * 「アルファベットをフォネティック読みする」→「アルファベットをフォネティック読み」
   * 「点字メッセージの表示終了待ち時間の設定を有効にする」→「点字メッセージの表示終了待ち時間の設定を有効化」
 
 また、以下の変更は NVDA 本家版 2015.1 と日本語版 2015.1jp の両方に反映されました。
 
-* [本家版の日本語表記変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=34621)
+* 本家版の日本語表記変更
   * 表記ゆらぎの解消
   * 語尾「する」の省略に関する表記の統一
   * 項目名末尾のコロンの省略に関する統一
@@ -1235,44 +1240,44 @@ NVDA 日本語チームは以下の変更および改良を行いました。
   * 「設定のリセット」のアクセラレーターの削除
   * 「大見出し」→「バナー」
 
-* [設定ダイアログ OK(O) キャンセル(C) アクセラレーター表記の削除](https://osdn.net/ticket/browse.php?group_id=4221&tid=34482) 設定ダイアログのボタンの O C は OK および キャンセルのアクセラレーターとして表示されているだけで利用できませんでした。2015.1 からは wxPython の更新に伴って表記が削除されました。
+* 設定ダイアログ OK(O) キャンセル(C) アクセラレーター表記の削除 設定ダイアログのボタンの O C は OK および キャンセルのアクセラレーターとして表示されているだけで利用できませんでした。2015.1 からは wxPython の更新に伴って表記が削除されました。
 
 ### 2014.4jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [電子署名の対象ファイルを増やす](https://osdn.net/ticket/browse.php?group_id=4221&tid=34160)
-* [郵便番号の記号などの点字](https://osdn.net/ticket/browse.php?group_id=4221&tid=34369)
-* [ダイアログが必ず画面の中心に来るようにする](https://osdn.net/ticket/browse.php?group_id=4221&tid=34404)
-* [日本語点訳で長音記号の直前の数字がカナになる不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=34438)
-* [既定の言語が日本語でない場合に JTalk が日本語を読み上げない不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=34542)
-* [点訳で数字とアルファベットのあいだに外字符が入らない不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=34545)
-* [Skype 6.22への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=34632)
+* 電子署名の対象ファイルを増やす
+* 郵便番号の記号などの点字
+* ダイアログが必ず画面の中心に来るようにする
+* 日本語点訳で長音記号の直前の数字がカナになる不具合への対応
+* 既定の言語が日本語でない場合に JTalk が日本語を読み上げない不具合への対応
+* 点訳で数字とアルファベットのあいだに外字符が入らない不具合への対応
+* Skype 6.22への対応
 
 また、以下の変更は NVDA 本家版 2014.4 と日本語版 2014.4jp の両方に反映されました。
 
-* [句読点記号読み上げレベルの仕様がわかりにくいことへの対応として、句読点記号辞書のダイアログ表記を「最低読み上げレベル」という表記に変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=34502)
+* 句読点記号読み上げレベルの仕様がわかりにくいことへの対応として、句読点記号辞書のダイアログ表記を「最低読み上げレベル」という表記に変更
 
 ### 2014.3jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [Excel などの見出し自動通知を点字ディスプレイ出力で有効にする](https://osdn.net/ticket/browse.php?group_id=4221&tid=30308)
-* [日本語点字とコンピューター点字(NABCC)の併用モード](https://osdn.net/ticket/browse.php?group_id=4221&tid=31182)
-* [日本語入力(TSF)で文節ごとの候補の読み上げ](https://osdn.net/ticket/browse.php?group_id=4221&tid=31358)
-* [IME を独自に制御するアプリで読み上げの重複を回避する](https://osdn.net/ticket/browse.php?group_id=4221&tid=33660)
-* [「英数かな」のトグル操作を点字ディスプレイに通知](https://osdn.net/ticket/browse.php?group_id=4221&tid=33873)
-* [タブを含むテキストで点字ディスプレイ出力がずれる不具合の修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=33922)
-* [Unicode点字文字列をそのまま点字出力できるようにする](https://osdn.net/ticket/browse.php?group_id=4221&tid=33950)
-* [テキスト編集で改行を通知するオプションの追加](https://osdn.net/ticket/browse.php?group_id=4221&tid=33969)
-* [コマンドキーの読み上げでの「半角全角」などの読み上げ](https://osdn.net/ticket/browse.php?group_id=4221&tid=33974)
-* [点字ディスプレイ出力で chk rbtn などの略語表記を選択可能にする](https://osdn.net/ticket/browse.php?group_id=4221&tid=33982)
-* [Windows 8 の Win+スペース 操作のあとでフォーカスが戻らない不具合への対策](https://osdn.net/ticket/browse.php?group_id=4221&tid=33999)
-* [TeraTerm に ATOK で日本語入力するとエラーが出る不具合への対策](https://osdn.net/ticket/browse.php?group_id=4221&tid=34015)
-* [点訳エンジンが「二十一二」「二十二三」など漢数字の連続を誤変換する不具合への対策](https://osdn.net/ticket/browse.php?group_id=4221&tid=34107)
-* [複数文節の日本語変換をした直後にすべての文節を通知する](https://osdn.net/ticket/browse.php?group_id=4221&tid=34110)
-* [日本語入力のプリエディット文字列が不正確に通知される不具合への対策](https://osdn.net/ticket/browse.php?group_id=4221&tid=34120)
-* [音声エンジンが英語の場合に「アルファベットをフォネティック読みする」の設定が反映されるようにする](https://osdn.net/ticket/browse.php?group_id=4221&tid=34141)
+* Excel などの見出し自動通知を点字ディスプレイ出力で有効にする
+* 日本語点字とコンピューター点字(NABCC)の併用モード
+* 日本語入力(TSF)で文節ごとの候補の読み上げ
+* IME を独自に制御するアプリで読み上げの重複を回避する
+* 「英数かな」のトグル操作を点字ディスプレイに通知
+* タブを含むテキストで点字ディスプレイ出力がずれる不具合の修正
+* Unicode点字文字列をそのまま点字出力できるようにする
+* テキスト編集で改行を通知するオプションの追加
+* コマンドキーの読み上げでの「半角全角」などの読み上げ
+* 点字ディスプレイ出力で chk rbtn などの略語表記を選択可能にする
+* Windows 8 の Win+スペース 操作のあとでフォーカスが戻らない不具合への対策
+* TeraTerm に ATOK で日本語入力するとエラーが出る不具合への対策
+* 点訳エンジンが「二十一二」「二十二三」など漢数字の連続を誤変換する不具合への対策
+* 複数文節の日本語変換をした直後にすべての文節を通知する
+* 日本語入力のプリエディット文字列が不正確に通知される不具合への対策
+* 音声エンジンが英語の場合に「アルファベットをフォネティック読みする」の設定が反映されるようにする
 
 また、以下の変更は NVDA 本家版 2014.3 と日本語版 2014.3jp の両方に反映されました。
 
@@ -1282,88 +1287,88 @@ NVDA 日本語チームは以下の変更および改良を行いました。
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [SAPI4 の声の高さが簡単音声設定で変更できない不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=33821)
-* [アプリケーションが isSpeaking API を使うと非対応の音声エンジンがエラーを出す不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=33819)
-* [ブレイルメモBMスマート40がUSB接続で認識されない不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=33777)
-* [「点字メッセージを待ち時間で消去」オプションの追加](https://osdn.net/ticket/browse.php?group_id=4221&tid=33644)
-* [UIオートメーションの設定の追加](https://osdn.net/ticket/browse.php?group_id=4221&tid=33616)
-* [Winbiff メール内容の読み上げの不具合への対応（「改行位置の不具合対策」オプションの追加）](https://osdn.net/ticket/browse.php?group_id=4221&tid=33555)
-* [テキスト解析辞書の更新](https://osdn.net/ticket/browse.php?group_id=4221&tid=33527)
-* [SAPI4 ProTALKERの話速設定の影響で音声エンジンが起動できない不具合への対策](https://osdn.net/ticket/browse.php?group_id=4221&tid=29870)
+* SAPI4 の声の高さが簡単音声設定で変更できない不具合への対応
+* アプリケーションが isSpeaking API を使うと非対応の音声エンジンがエラーを出す不具合への対応
+* ブレイルメモBMスマート40がUSB接続で認識されない不具合への対応
+* 「点字メッセージを待ち時間で消去」オプションの追加
+* UIオートメーションの設定の追加
+* Winbiff メール内容の読み上げの不具合への対応（「改行位置の不具合対策」オプションの追加）
+* テキスト解析辞書の更新
+* SAPI4 ProTALKERの話速設定の影響で音声エンジンが起動できない不具合への対策
 
 また、以下の変更は NVDA 本家版 2014.2 と日本語版 2014.2jp の両方に反映されました。
 
-* [ユーザーガイドなどの翻訳](https://osdn.net/ticket/browse.php?group_id=4221&tid=33306)
-* [フォーカス追跡モード、キャレット追跡モードなどの翻訳](https://osdn.net/ticket/browse.php?group_id=4221&tid=33554)
-* [レビュー機能に関する翻訳](https://osdn.net/ticket/browse.php?group_id=4221&tid=33273)
-* [キャレットなどの用語の検討](https://osdn.net/ticket/browse.php?group_id=4221&tid=33226)
+* ユーザーガイドなどの翻訳
+* フォーカス追跡モード、キャレット追跡モードなどの翻訳
+* レビュー機能に関する翻訳
+* キャレットなどの用語の検討
 
 以下の NVDA 本家版 2014.2 の不具合には日本語版 2014.2jp で独自に対応しました。
 
-* [日本語入力の候補ウィンドウを閉じたあとでキャレット移動の読み上げができない不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=33812)
-* [ユーザーガイドの目次からページ内リンクでジャンプできない不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=33838)
+* 日本語入力の候補ウィンドウを閉じたあとでキャレット移動の読み上げができない不具合への対応
+* ユーザーガイドの目次からページ内リンクでジャンプできない不具合への対応
 
 ### 2014.1jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [Open JTalk 1.07 への移行](https://osdn.net/ticket/browse.php?group_id=4221&tid=30704)
-* [動的に読み上げをON/OFFするAPI](https://osdn.net/ticket/browse.php?group_id=4221&tid=32444)
-* [簡単音声設定でJTalkの速さが5ずつ変化するように修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=32590)
-* [IME使用時にShift+スペースの別幅空白のキーエコー](https://osdn.net/ticket/browse.php?group_id=4221&tid=32749)
-* [行頭にキャレットがある場合に点字ディスプレイのカーソル点滅位置がずれる不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=32825)
-* [保存された設定の音声エンジンが初期化できないときに eSpeak が選択されないように修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=32986)
-* [スピーチビューワーにフォーカスを切り替える操作を容易にする](https://osdn.net/ticket/browse.php?group_id=4221&tid=33071)
-* [大きな丸、斜め十字の記号読み上げ対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=33104)
-* [コマンド一覧表を既定のブラウザで開かないように修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=33140)
+* Open JTalk 1.07 への移行
+* 動的に読み上げをON/OFFするAPI
+* 簡単音声設定でJTalkの速さが5ずつ変化するように修正
+* IME使用時にShift+スペースの別幅空白のキーエコー
+* 行頭にキャレットがある場合に点字ディスプレイのカーソル点滅位置がずれる不具合への対応
+* 保存された設定の音声エンジンが初期化できないときに eSpeak が選択されないように修正
+* スピーチビューワーにフォーカスを切り替える操作を容易にする
+* 大きな丸、斜め十字の記号読み上げ対応
+* コマンド一覧表を既定のブラウザで開かないように修正
 
 また、以下の変更は NVDA 本家版 2014.1 と日本語版 2014.1jp の両方に反映されました。
 
-* [「自動的に確認してNVDAを更新する」の記述を修正](https://osdn.net/ticket/browse.php?group_id=4221&tid=32619)
-* [詳細説明を開く(NVDA+D)の説明を更新](https://osdn.net/ticket/browse.php?group_id=4221&tid=32672)
-* [入力ヘルプの文体の統一](https://osdn.net/ticket/browse.php?group_id=4221&tid=32841)
-* [「1度押す」「1回押す」の表現の統一](https://osdn.net/ticket/browse.php?group_id=4221&tid=33103)
-* [「コマンドクイックリファレンス」から「コマンド一覧表」に翻訳を変更](https://osdn.net/ticket/browse.php?group_id=4221&tid=33110)
+* 「自動的に確認してNVDAを更新する」の記述を修正
+* 詳細説明を開く(NVDA+D)の説明を更新
+* 入力ヘルプの文体の統一
+* 「1度押す」「1回押す」の表現の統一
+* 「コマンドクイックリファレンス」から「コマンド一覧表」に翻訳を変更
 
 ### 2013.3jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
 * JTalk2 音声ドライバーの言語自動切り替え機能を JTalk で利用できるようにして、JTalk2 ドライバーを廃止しました。
-* [更新の自動チェックとアップデートを有効にする](https://osdn.net/ticket/browse.php?group_id=4221&tid=28159)
-* [タスクトレイの「時計」にアクセスすると何もしゃべらなくなる不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=32466)
-* [既定の入力システムがMicrosoft Office IME 2010でファイルの上書きをするとフリーズする不具合への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=32145)
-* [Microsoft IMEの候補コメントの読み上げ](https://osdn.net/ticket/browse.php?group_id=4221&tid=32314)
-* [ATOKでF2キーなどの変換操作を詳細読み](https://osdn.net/ticket/browse.php?group_id=4221&tid=32255)
-* [JTalk mei の声をすこし低くする](https://osdn.net/ticket/browse.php?group_id=4221&tid=32238)
-* [文字コード説明で16進数の数字出力を音声と点字ディスプレイのそれぞれに最適化](https://osdn.net/ticket/browse.php?group_id=4221&tid=32189)
-* [ATOKの候補コメントの読み上げ](https://osdn.net/ticket/browse.php?group_id=4221&tid=32176)
-* [eSpeak に日本語テキストの読み上げ処理を追加](https://osdn.net/ticket/browse.php?group_id=4221&tid=32115)
-* [JTalk が 1.01 のような数字で小数点を読むように](https://osdn.net/ticket/browse.php?group_id=4221&tid=32087)
-* [日本語入力中にエスケープキーを押すとクリアと通知する](https://osdn.net/ticket/browse.php?group_id=4221&tid=31905)
-* [「文字の読み上げ」無効のときの日本語文字変換候補の読み上げ](https://osdn.net/ticket/browse.php?group_id=4221&tid=31796)
-* [文字説明の点字ディスプレイ出力](https://osdn.net/ticket/browse.php?group_id=4221&tid=29531)
+* 更新の自動チェックとアップデートを有効にする
+* タスクトレイの「時計」にアクセスすると何もしゃべらなくなる不具合への対応
+* 既定の入力システムがMicrosoft Office IME 2010でファイルの上書きをするとフリーズする不具合への対応
+* Microsoft IMEの候補コメントの読み上げ
+* ATOKでF2キーなどの変換操作を詳細読み
+* JTalk mei の声をすこし低くする
+* 文字コード説明で16進数の数字出力を音声と点字ディスプレイのそれぞれに最適化
+* ATOKの候補コメントの読み上げ
+* eSpeak に日本語テキストの読み上げ処理を追加
+* JTalk が 1.01 のような数字で小数点を読むように
+* 日本語入力中にエスケープキーを押すとクリアと通知する
+* 「文字の読み上げ」無効のときの日本語文字変換候補の読み上げ
+* 文字説明の点字ディスプレイ出力
 
 ### 2013.2jp の変更点
 
 NVDA 日本語チームは以下の変更および改良を行いました。
 
-* [日本語版のSkypeフリーズ対策の廃止、本家のSkypeモジュールの有効化](https://osdn.net/ticket/browse.php?group_id=4221&tid=31906)
-* [テキスト解析辞書の更新](https://osdn.net/ticket/browse.php?group_id=4221&tid=31933)
+* 日本語版のSkypeフリーズ対策の廃止、本家のSkypeモジュールの有効化
+* テキスト解析辞書の更新
 
 ### 2013.1jp から 2013.1.1jp への変更点
 
 本家版 NVDA 2013.1.1 では以下の不具合への対応が行われました。
 
-* [Windows 8 で読み上げ辞書などの日本語文字が入力できない問題への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=31343)
+* Windows 8 で読み上げ辞書などの日本語文字が入力できない問題への対応
 
 NVDA 日本語チームは以下の不具合への対応や改良を行いました。
 
-* [読み上げに対応していなかった罫線文字の追加](https://osdn.net/ticket/browse.php?group_id=4221&tid=31396)
-* [特定の文字について音声エンジンに依存せず読み付与する](https://osdn.net/ticket/browse.php?group_id=4221&tid=31441)
-* [点字用の記号の追加（米印、左向き矢印、右向き矢印）](https://osdn.net/ticket/browse.php?group_id=4221&tid=31442)
-* [KGS ブレイルノート46C/46D などへの対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=31455)
-* [「文字を通知」コマンド仕様の再検討と点字ディスプレイ対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=31467)
-* [Microsoft IME の候補に含まれる記号を「記号読み上げなし」のときに読まない問題への対応](https://osdn.net/ticket/browse.php?group_id=4221&tid=31610)
+* 読み上げに対応していなかった罫線文字の追加
+* 特定の文字について音声エンジンに依存せず読み付与する
+* 点字用の記号の追加（米印、左向き矢印、右向き矢印）
+* KGS ブレイルノート46C/46D などへの対応
+* 「文字を通知」コマンド仕様の再検討と点字ディスプレイ対応
+* Microsoft IME の候補に含まれる記号を「記号読み上げなし」のときに読まない問題への対応
 
 （以上）

@@ -1,6 +1,12 @@
+# A part of NonVisual Desktop Access (NVDA)
+# Copyright (C) 2012-2025 NV Access Limited, Cary-Rowen
+# This file is covered by the GNU General Public License.
+# See the file COPYING for more details.
+
 import eventHandler
 import queueHandler
 import controlTypes
+from config.configFlags import TypingEcho
 import characterProcessing
 import speech
 import config
@@ -183,7 +189,11 @@ class InputComposition(EditableTextWithAutoSelectDetection, Window):
 				queueHandler.queueFunction(
 					queueHandler.eventQueue, braille.handler.message, newTextForBraille
 				)
-			if config.conf["keyboard"]["speakTypedCharacters"] or isCandidate:
+			if (
+				config.conf["keyboard"]["speakTypedCharacters"] != TypingEcho.OFF.value
+				or config.conf["keyboard"]["speakTypedWords"] != TypingEcho.OFF.value
+				or isCandidate
+			):
 				queueHandler.queueFunction(
 					queueHandler.eventQueue,
 					speech.speakText,

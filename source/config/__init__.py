@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2006-2024 NV Access Limited, Aleksey Sadovoy, Peter Vágner, Rui Batista, Zahari Yurukov,
+# Copyright (C) 2006-2025 NV Access Limited, Aleksey Sadovoy, Peter Vágner, Rui Batista, Zahari Yurukov,
 # Joseph Lee, Babbage B.V., Łukasz Golonka, Julien Cochuyt, Cyrille Bougot
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -36,11 +36,9 @@ import extensionPoints
 from . import profileUpgrader
 from . import aggregatedSection
 from .configSpec import confspec
-from .configFlags import OutputMode
 from .featureFlag import (
 	_transformSpec_AddFeatureFlagDefault,
 	_validateConfig_featureFlag,
-	FeatureFlag,
 )
 from typing import (
 	Any,
@@ -50,7 +48,6 @@ from typing import (
 	Set,
 	Tuple,
 )
-from addonAPIVersion import BACK_COMPAT_TO
 import NVDAState
 from NVDAState import WritePaths
 
@@ -525,9 +522,9 @@ class ConfigManager(object):
 	BASE_ONLY_SECTIONS = {
 		"general",
 		"update",
-		"upgrade",
 		"development",
 		"addonStore",
+		"remote",
 	}
 	"""
 	Sections that only apply to the base configuration;
@@ -751,6 +748,9 @@ class ConfigManager(object):
 			self._dirtyProfiles.clear()
 		except PermissionError as e:
 			log.warning("Error saving configuration; probably read only file system", exc_info=True)
+			raise e
+		except Exception as e:
+			log.warning("Error saving configuration", exc_info=True)
 			raise e
 		post_configSave.notify()
 
@@ -1069,18 +1069,17 @@ class ConfigManager(object):
 
 
 class ConfigValidationData(object):
-	validationFuncName = None  # type: str
+	validationFuncName: str | None = None
 
 	def __init__(self, validationFuncName):
 		self.validationFuncName = validationFuncName
 		super(ConfigValidationData, self).__init__()
 
 	# args passed to the convert function
-	args = []  # type: List[Any]
+	args: list[Any] = []
 
 	# kwargs passed to the convert function.
-	kwargs = {}  # type: Dict[str, Any]
-
+	kwargs: dict[str, Any] = {}
 	# the default value, used when config is missing.
 	default = None  # converted to the appropriate type
 
@@ -1146,7 +1145,7 @@ class AggregatedSection:
 			else:
 				# This is a setting.
 				if not checkValidity:
-					spec = None
+					return val  # Never cache unvalidated values
 				return self._cacheLeaf(key, spec, val)
 		subProfiles.reverse()
 
@@ -1291,13 +1290,13 @@ class AggregatedSection:
 		except KeyError:
 			pass
 		else:
-			if (
-				# Feature flags override __eq__.
+			if self._isSection(val) or self._isSection(curVal):
+				# If value is a section, continue to update
+				pass
+			elif str(val) == str(curVal):
 				# Check str comparison as this is what is written to the config.
 				# If the value is unchanged, do not update
 				# or mark the profile as dirty.
-				(isinstance(val, FeatureFlag) or isinstance(curVal, FeatureFlag)) and str(val) == str(curVal)
-			):
 				return
 
 		# Set this value in the most recently activated profile.
@@ -1305,74 +1304,37 @@ class AggregatedSection:
 		self.manager._markWriteProfileDirty()
 		self._cache[key] = val
 
-		# Alias ["documentFormatting"]["reportFontAttributes"] and ["speech"]["includeCLDR"]
-		# for backwards compatibility.
-		# TODO: Comment out in 2025.1.
-		if BACK_COMPAT_TO < (2025, 1, 0) and NVDAState._allowDeprecatedAPI():
-			self._linkDeprecatedValues(key, val)
+		# Alias old config items to their new counterparts for backwards compatibility.
+		# Uncomment when there are new links that need to be made.
+		# if BACK_COMPAT_TO < (2026, 1, 0) and NVDAState._allowDeprecatedAPI():
+		# self._linkDeprecatedValues(key, val)
 
 	def _linkDeprecatedValues(self, key: aggregatedSection._cacheKeyT, val: aggregatedSection._cacheValueT):
 		"""Link deprecated config keys and values to their replacements.
 
-		Args:
-			key: The configuration key to link to its new or old counterpart.
-			val: The value associated with the configuration key.
+		:arg key: The configuration key to link to its new or old counterpart.
+		:arg val: The value associated with the configuration key.
 
-		postconditions:
-			- If self.path is "documentFormatting":
-				- If key is "reportFontAttributes":
-					- If val is True, "documentFormatting.fontAttributeReporting" is set to OutputMode.SPEECH_AND_BRAILLE, otherwise, it is set to OutputMode.OFF.
-				- If key is "fontAttributeReporting":
-					- if val is OutputMode.OFF, "documentFormatting.reportFontAttributes" is set to False, otherwise, it is set to True.
+		Example of how to link values:
+
+		>>> match self.path:
+		>>> 	...
+		>>> 	case ("path", "segments"):
+		>>> 		...
+		>>> 		match key:
+		>>> 			case "newKey":
+		>>> 				# Do something to alias the new path/key to the old path/key for backwards compatibility.
+		>>> 			case "oldKey":
+		>>> 				# Do something to alias the old path/key to the new path/key for forwards compatibility.
+		>>> 			case _:
+		>>> 				# We don't care about other keys in this section.
+		>>> 				return
+		>>> 	case _:
+		>>> 		# We don't care about other sections.
+		>>> 		return
+		>>> ...
 		"""
 		match self.path:
-			case ("documentFormatting",):
-				match key:
-					case "fontAttributeReporting":
-						# Alias documentFormatting.fontAttributeReporting to documentFormatting.reportFontAttributes for backwards compatibility.
-						key = "reportFontAttributes"
-						val = bool(val)
-
-					case "reportFontAttributes":
-						# Alias documentFormatting.reportFontAttributes to documentFormatting.fontAttributeReporting for forwards compatibility.
-						log.warning(
-							"documentFormatting.reportFontAttributes is deprecated. Use documentFormatting.fontAttributeReporting instead.",
-							# Include stack info so testers can report warning to add-on author.
-							stack_info=True,
-						)
-						key = "fontAttributeReporting"
-						val = OutputMode.SPEECH_AND_BRAILLE if val else OutputMode.OFF
-
-					case _:
-						# We don't care about other keys in this section.
-						return
-
-			case ("speech",):
-				match key:
-					case "symbolDictionaries":
-						# Alias speech.symbolDictionaries to speech.includeCLDR for backwards compatibility.
-						key = "includeCLDR"
-						val = "cldr" in val
-
-					case "includeCLDR":
-						# Alias speech.includeCLDR to speech.symbolDictionaries for forwards compatibility.
-						log.warning(
-							"speech.includeCLDR is deprecated. Use speech.symbolDictionaries instead.",
-							# Include stack info so testers can report warning to add-on author.
-							stack_info=True,
-						)
-						key = "symbolDictionaries"
-						curVal = self.get(key, []).copy()
-						if val and "cldr" not in curVal:
-							curVal.append("cldr")
-						elif not val and "cldr" in curVal:
-							curVal.remove("cldr")
-						val = curVal
-
-					case _:
-						# We don't care about other keys in this section.
-						return
-
 			case _:
 				# We don't care about other sections.
 				return

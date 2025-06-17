@@ -1,7 +1,7 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2006-2024 NV Access Limited, Babbage B.V., Davy Kager, Bill Dengler, Julien Cochuyt,
+# Copyright (C) 2006-2025 NV Access Limited, Babbage B.V., Davy Kager, Bill Dengler, Julien Cochuyt,
 # Joseph Lee, Dawid Pieper, mltony, Bram Duvigneau, Cyrille Bougot, Rob Meredith,
-# Burman's Computer and Education Ltd., Leonard de Ruijter, Łukasz Golonka
+# Burman's Computer and Education Ltd., Leonard de Ruijter, Łukasz Golonka, Cary-rowen
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -13,7 +13,7 @@ from . import configDefaults
 #: provide an upgrade step (@see profileUpgradeSteps.py). An upgrade step does not need to be added when
 #: just adding a new element to (or removing from) the schema, only when old versions of the config
 #: (conforming to old schema versions) will not work correctly with the new schema.
-latestSchemaVersion = 13
+latestSchemaVersion = 17
 
 #: The configuration specification string
 #: @type: String
@@ -27,6 +27,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	#possible log levels are DEBUG, IO, DEBUGWARNING, INFO
 	loggingLevel = string(default="INFO")
 	showWelcomeDialogAtStartup = boolean(default=true)
+	preventDisplayTurningOff = boolean(default=true)
 
 # nvdajp
 [language]
@@ -47,17 +48,16 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	# symbolLevel: One of the characterProcessing.SymbolLevel values.
 	symbolLevel = integer(default=100)
 	trustVoiceLanguage = boolean(default=true)
-	unicodeNormalization = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="disabled")
+	unicodeNormalization = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 	reportNormalizedForCharacterNavigation = boolean(default=true)
-	# Deprecated in 2025.1
-	includeCLDR = boolean(default=True)
 	symbolDictionaries = string_list(default=list("cldr"))
 	beepSpeechModePitch = integer(default=10000,min=50,max=11025)
-	outputDevice = string(default=default)
 	autoLanguageSwitching = boolean(default=true)
 	autoDialectSwitching = boolean(default=false)
 	delayedCharacterDescriptions = boolean(default=false)
 	excludedSpeechModes = int_list(default=list())
+	trimLeadingSilence = boolean(default=true)
+	useWASAPIForSAPI4 = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 
 	[[__many__]]
 		capPitchChange = integer(default=0,min=-100,max=100)
@@ -67,8 +67,8 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 
 # Audio settings
 [audio]
+	outputDevice = string(default=default)
 	audioDuckingMode = integer(default=0)
-	WASAPI = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 	soundVolumeFollowsVoice = boolean(default=false)
 	soundVolume = integer(default=100, min=0, max=100)
 	audioAwakeTime = integer(default=30, min=0, max=3600)
@@ -106,6 +106,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	nvdajpComPort = integer(default=0) # obsolete (nvdajp)
 	interruptSpeechWhileScrolling = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 	speakOnRouting = boolean(default=false)
+	speakOnNavigatingByUnit = boolean(default=false)
 	showSelection = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 	reportLiveRegions = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 	fontFormattingDisplay = featureFlag(optionsEnum="FontFormattingBrailleModeFlag", behaviorOfDefault="LIBLOUIS")
@@ -195,8 +196,10 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	# Default = 6: NumpadInsert + ExtendedInsert
 	NVDAModifierKeys = integer(1, 7, default=6)
 	keyboardLayout = string(default="desktop")
-	speakTypedCharacters = boolean(default=true)
-	speakTypedWords = boolean(default=false)
+	# 0: Off, 1: Only in edit controls, 2: Always
+	speakTypedCharacters = integer(default=1,min=0,max=2)
+	# 0: Off, 1: Only in edit controls, 2: Always
+	speakTypedWords = integer(default=0,min=0,max=2)
 	beepForLowercaseWithCapslock = boolean(default=true)
 	speakCommandKeys = boolean(default=false)
 	speechInterruptForCharacters = boolean(default=true)
@@ -216,7 +219,6 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	autoSayAllOnPageLoad = boolean(default=true)
 	trapNonCommandGestures = boolean(default=true)
 	enableOnPageLoad = boolean(default=true)
-	autoFocusFocusableElements = boolean(default=False)
 	loadChromiumVBufOnBusyState = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 	textParagraphRegex = string(default="{configDefaults.DEFAULT_TEXT_PARAGRAPH_REGEX}")
 
@@ -231,8 +233,6 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	detectFormatAfterCursor = boolean(default=false)
 	reportFontName = boolean(default=false)
 	reportFontSize = boolean(default=false)
-	# Deprecated in 2025.1
-	reportFontAttributes = boolean(default=false)
 	# 0: Off, 1: Speech, 2: Braille, 3: Speech and Braille
 	fontAttributeReporting = integer(0, 3, default=0)
 	reportRevisions = boolean(default=true)
@@ -259,6 +259,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	# 0: Off, 1: style, 2: color and style
 	reportCellBorders = integer(0, 2, default=0)
 	reportLinks = boolean(default=true)
+	reportLinkType = boolean(default=true)
 	reportGraphics = boolean(default=True)
 	reportComments = boolean(default=true)
 	reportBookmarks = boolean(default=true)
@@ -307,6 +308,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	startupNotification = boolean(default=true)
 	allowUsageStats = boolean(default=false)
 	askedAllowUsageStats = boolean(default=false)
+	serverURL = string(default="")
 
 [inputComposition]
 	autoReportAllCandidates = boolean(default=False) # nvdajp
@@ -331,14 +333,12 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	annotations = boolean(default=false)
 	events = boolean(default=false)
 	garbageHandler = boolean(default=false)
+	remoteClient = boolean(default=False)
 
 [uwpOcr]
 	language = string(default="")
 	autoRefresh = boolean(default=false)
 	autoRefreshInterval = integer(default=1500, min=100)
-
-[upgrade]
-	newLaptopKeyboardLayout = boolean(default=false)
 
 [editableText]
 	caretMoveTimeoutMs = integer(min=0, max=2000, default=100)
@@ -353,8 +353,32 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	playErrorSound = integer(0, 1, default=0)
 
 [addonStore]
-	showWarning = boolean(default=true)
-	automaticUpdates = option("notify", "disabled", default="notify")
+	automaticUpdates = option("notify", "update", "disabled", default="notify")
+	allowIncompatibleUpdates = boolean(default=false)
+	baseServerURL = string(default="")
+	# UpdateChannel values:
+	# same channel (default), any channel, do not update, stable, beta & dev, beta, dev
+	defaultUpdateChannel = integer(0, 6, default=0)
+
+# Remote Settings
+[remote]
+	enabled = boolean(default=False)
+	[[connections]]
+		lastConnected = string_list(default=list())
+	[[controlServer]]
+		autoconnect = boolean(default=False)
+		selfHosted = boolean(default=False)
+		# 0: follower, 1: leader
+		connectionMode = integer(default=0, min=0, max=1)
+		host = string(default="")
+		port = integer(default=6837)
+		key = string(default="")
+	[[seenMOTDs]]
+		__many__ = string(default="")
+	[[trustedCertificates]]
+		__many__ = string(default="")
+	[[ui]]
+		confirmDisconnectAsFollower = boolean(default=True)
 """
 
 #: The configuration specification

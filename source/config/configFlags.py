@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2022-2024 NV Access Limited, Cyrille Bougot
+# Copyright (C) 2022-2025 NV Access Limited, Cyrille Bougot, Cary-rowen
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -11,12 +11,17 @@ When creating new parameter options, consider using F{FeatureFlag} which explici
 the default value.
 """
 
-from enum import unique
+from typing import TYPE_CHECKING
+from enum import unique, verify, CONTINUOUS
 from utils.displayString import (
+	DisplayStringFlag,
 	DisplayStringIntEnum,
 	DisplayStringStrEnum,
 	DisplayStringIntFlag,
 )
+
+if TYPE_CHECKING:
+	import _remoteClient
 
 
 @unique
@@ -42,6 +47,30 @@ class NVDAKey(DisplayStringIntFlag):
 			NVDAKey.CAPS_LOCK: localizedKeyLabels["capslock"],
 			NVDAKey.NUMPAD_INSERT: localizedKeyLabels["numpadinsert"],
 			NVDAKey.EXTENDED_INSERT: localizedKeyLabels["insert"],
+		}
+
+
+@unique
+class TypingEcho(DisplayStringIntEnum):
+	"""Enumeration containing the possible config values for typing echo (characters and words).
+
+	Use TypingEcho.MEMBER.value to compare with the config;
+	use TypingEcho.MEMBER.displayString in the UI for a translatable description of this member.
+	"""
+
+	OFF = 0
+	EDIT_CONTROLS = 1
+	ALWAYS = 2
+
+	@property
+	def _displayStringLabels(self):
+		return {
+			# Translators: One of the choices for typing echo in keyboard settings
+			TypingEcho.OFF: _("Off"),
+			# Translators: One of the choices for typing echo in keyboard settings
+			TypingEcho.EDIT_CONTROLS: _("Only in edit controls"),
+			# Translators: One of the choices for typing echo in keyboard settings
+			TypingEcho.ALWAYS: _("Always"),
 		}
 
 
@@ -211,8 +240,7 @@ class ReportCellBorders(DisplayStringIntEnum):
 
 class AddonsAutomaticUpdate(DisplayStringStrEnum):
 	NOTIFY = "notify"
-	# TODO: uncomment when implementing #3208
-	# UPDATE = "update"
+	UPDATE = "update"
 	DISABLED = "disabled"
 
 	@property
@@ -221,7 +249,8 @@ class AddonsAutomaticUpdate(DisplayStringStrEnum):
 			# Translators: This is a label for the automatic update behaviour for add-ons.
 			# It will notify the user when updates are available.
 			self.NOTIFY: _("Notify"),
-			# self.UPDATE: _("Update Automatically"),
+			# Translators: This is a label for the automatic update behaviour for add-ons.
+			self.UPDATE: _("Update Automatically"),
 			# Translators: This is a label for the automatic update behaviour for add-ons.
 			self.DISABLED: _("Disabled"),
 		}
@@ -269,4 +298,58 @@ class ParagraphStartMarker(DisplayStringStrEnum):
 			# Pilcrow is a symbol also known as "paragraph symbol" or "paragraph marker".
 			# Ensure this is consistent with other strings with the context "paragraphMarker".
 			self.PILCROW: pgettext("paragraphMarker", "Pilcrow (¶)"),
+		}
+
+
+@verify(CONTINUOUS)
+class RemoteConnectionMode(DisplayStringIntEnum):
+	"""Enumeration containing the possible remote connection modes (roles for connected clients).
+
+	Use RemoteConnectionMode.MEMBER.value to compare with the config;
+	use RemoteConnectionMode.MEMBER.displayString in the UI for a translatable description of this member.
+
+	Note: This datatype has been chosen as it may be desireable to implement further roles in future.
+	For instance, an "observer" role, which is neither controlling or controlled, but which allows the user to listen to the other computers in the channel.
+	"""
+
+	FOLLOWER = 0
+	LEADER = 1
+
+	@property
+	def _displayStringLabels(self):
+		return {
+			# Translators: Option that allows this computer to be controlled by the remote computer.
+			RemoteConnectionMode.FOLLOWER: pgettext("remote", "Allow this computer to be controlled"),
+			# Translators: Option that allows this computer to control the remote computer.
+			RemoteConnectionMode.LEADER: pgettext("remote", "Control another computer"),
+		}
+
+	def toConnectionMode(self) -> "_remoteClient.connectionInfo.ConnectionMode":
+		from _remoteClient.connectionInfo import ConnectionMode
+
+		match self:
+			case RemoteConnectionMode.LEADER:
+				return ConnectionMode.LEADER
+			case RemoteConnectionMode.FOLLOWER:
+				return ConnectionMode.FOLLOWER
+
+
+@verify(CONTINUOUS)
+class RemoteServerType(DisplayStringFlag):
+	"""Enumeration containing the possible types of Remote relay server.
+
+	Use RemoteServerType.MEMBER.value to compare with the config;
+	use RemoteServerType.MEMBER.displayString in the UI for a translatable description of this member.
+	"""
+
+	EXISTING = False
+	LOCAL = True
+
+	@property
+	def _displayStringLabels(self):
+		return {
+			# Translators: Use an existing Remote control server
+			RemoteServerType.EXISTING: pgettext("remote", "Use existing"),
+			# Translators: Use NVDA as the Remote control server
+			RemoteServerType.LOCAL: pgettext("remote", "Host locally"),
 		}
