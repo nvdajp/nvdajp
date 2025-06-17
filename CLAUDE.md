@@ -31,7 +31,7 @@ git commit -m "docs: Update README [skip ci]"
 ### ブランチ戦略
 
 - `betajp-` で始まるブランチ名を使用すると、CI でコード署名なしのビルドが実行される
-- 本番リリース用は `betajp` ブランチを使用
+- プルリクエストは `betajp` ブランチに対して行う
 
 ### ビルドシステム
 
