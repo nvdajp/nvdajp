@@ -1,0 +1,153 @@
+name: Build NVDA Japanese Version
+
+on:
+  push:
+    branches:
+      - 'alphajp**'
+      - 'betajp**'
+      - 'releasejp**'
+  pull_request:
+    branches:
+      - 'alphajp**'
+      - 'betajp**'
+      - 'releasejp**'
+  workflow_dispatch:
+
+env:
+  PY_PYTHON: 3.11-32
+  RELEASE: 1
+  PUBLISHER: nvdajp
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 1
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x86'
+
+    - name: Configure git
+      run: |
+        git config --global core.autocrlf true
+        python --version
+
+    - name: Install uv
+      run: |
+        Invoke-Expression (Invoke-WebRequest -Uri https://astral.sh/uv/install.ps1)
+        $env:PATH += ";$env:USERPROFILE\.cargo\bin"
+        uv --version
+      shell: powershell
+
+    - name: Set version variables
+      run: |
+        $baseVersion = "2025.1.2jp"
+        $nowDate = & jptools\nowdate.cmd
+        $updateVersionType = "nvdajp"
+        
+        if ($env:GITHUB_REF_NAME.StartsWith("alphajp")) {
+            $version = "jpalpha_$nowDate"
+            $updateVersionType += "alpha"
+        } elseif ($env:GITHUB_REF_NAME.StartsWith("betajp")) {
+            $version = "$baseVersion-beta-$nowDate"
+            $updateVersionType += "beta"
+        } elseif ($env:GITHUB_REF_NAME.StartsWith("releasejp")) {
+            $version = "$baseVersion-$nowDate"
+        } else {
+            $version = $baseVersion
+        }
+        
+        echo "VERSION=$version" >> $env:GITHUB_ENV
+        echo "UPDATEVERSIONTYPE=$updateVersionType" >> $env:GITHUB_ENV
+        echo "Building version: $version ($updateVersionType)"
+      shell: powershell
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade --no-warn-script-location pip
+
+    - name: Get API version info
+      run: |
+        $apiVersion = python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))"
+        $apiCompatTo = python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))"
+        echo "API Version: $apiVersion"
+        echo "API Back Compat To: $apiCompatTo"
+      shell: powershell
+
+    - name: Build NVDA Japanese version
+      run: |
+        $sconsArgs = "version_build=$env:GITHUB_RUN_NUMBER --all-cores"
+        echo "Building with args: $sconsArgs"
+        & jptools\nonCertAllBuild.cmd $sconsArgs
+      shell: powershell
+
+    - name: Build Japanese addons
+      run: |
+        cd jptools
+        & .\pack_jtalk_addon.cmd
+        & .\pack_kgs_addon.cmd
+        cd ..
+      shell: powershell
+
+    - name: Build Controller Client
+      run: |
+        $sconsArgs = "version_build=$env:GITHUB_RUN_NUMBER --all-cores"
+        & jptools\buildControllerClient.cmd $sconsArgs
+      shell: powershell
+
+    - name: Test miscDepsJp
+      run: |
+        & jptools\testMiscDepsJp.cmd
+      shell: powershell
+
+    - name: Run Japanese tests
+      run: |
+        & jptools\tests.cmd
+        & jpchar\tests.cmd
+      shell: powershell
+
+    - name: Prepare for system tests
+      run: |
+        & appveyor\scripts\tests\beforeTests.ps1
+        & appveyor\scripts\installNVDA.ps1
+      shell: powershell
+
+    - name: Run system tests
+      run: |
+        & appveyor\scripts\tests\translationCheck.ps1
+        & appveyor\scripts\tests\licenseCheck.ps1
+        & appveyor\scripts\tests\unitTests.ps1
+        & appveyor\scripts\tests\systemTests.ps1
+      shell: powershell
+
+    - name: Check test results
+      run: |
+        & appveyor\scripts\tests\checkTestFailure.ps1
+      shell: powershell
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: nvda-jp-build-${{ github.run_number }}
+        path: |
+          output/**/*
+          miscDepsJp/__mypy.txt
+          miscDepsJp/jptools/__h1output.txt
+          miscDepsJp/jptools/__h2output.txt
+          miscDepsJp/jptools/__test_log.txt
+          miscDepsJp/jptools/__jpBrailleHarness.md
+          miscDepsJp/jptools/jpBrailleHarness.html
+          jptools/__jpdictest_log.txt
+          jptools/nvdajp-jtalk-*.nvda-addon
+          jptools/kgsbraille-*.nvda-addon
+          jpchar/__checkchardesc_log.txt
+        retention-days: 30
