@@ -95,4 +95,5 @@ EXPORTS
 	wasSilence_init
 	wasSilence_playFor
 	wasSilence_terminate
+	isScreenFullyBlack
 	localListeningSocketExists
