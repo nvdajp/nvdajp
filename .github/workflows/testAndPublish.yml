@@ -42,17 +42,19 @@ jobs:
 
     - name: Install uv
       run: |
-        Invoke-Expression (Invoke-WebRequest -Uri https://astral.sh/uv/install.ps1 -UseBasicParsing)
-        $uvPath = "$env:USERPROFILE\.cargo\bin"
-        $env:PATH = "$uvPath;$env:PATH"
-        echo "$uvPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        & "$uvPath\uv.exe" --version
+        irm https://astral.sh/uv/install.ps1 | iex
+        $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"
+        Add-Content $env:GITHUB_PATH "$env:USERPROFILE\.cargo\bin"
+        uv --version
       shell: powershell
 
     - name: Set version variables
       run: |
         $baseVersion = "2025.1.2jp"
-        $nowDate = & jptools\nowdate.cmd
+        
+        # Set timezone and get current date
+        tzutil /s "Tokyo Standard Time"
+        $nowDate = python jptools/nowdate.py
         $updateVersionType = "nvdajp"
         
         if ($env:GITHUB_REF_NAME.StartsWith("alphajp")) {
