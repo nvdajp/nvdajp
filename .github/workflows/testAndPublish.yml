@@ -40,11 +40,17 @@ jobs:
       with:
         enable-cache: true
 
+    - name: Setup MSVC environment
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x86
+
     - name: Configure git
       run: |
         git config --global core.autocrlf true
         python --version
         uv --version
+        nmake /? | Select-Object -First 1
 
     - name: Set version variables
       run: |
