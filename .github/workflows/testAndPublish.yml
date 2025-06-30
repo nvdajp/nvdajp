@@ -95,7 +95,7 @@ jobs:
         $sconsArgs = "version_build=$env:GITHUB_RUN_NUMBER --all-cores"
         echo "Building with args: $sconsArgs"
         & jptools\nonCertAllBuild.cmd $sconsArgs
-      shell: powershell
+      shell: cmd
 
     - name: Build Japanese addons
       run: |
@@ -103,24 +103,24 @@ jobs:
         & .\pack_jtalk_addon.cmd
         & .\pack_kgs_addon.cmd
         cd ..
-      shell: powershell
+      shell: cmd
 
     - name: Build Controller Client
       run: |
         $sconsArgs = "version_build=$env:GITHUB_RUN_NUMBER --all-cores"
         & jptools\buildControllerClient.cmd $sconsArgs
-      shell: powershell
+      shell: cmd
 
     - name: Test miscDepsJp
       run: |
         & jptools\testMiscDepsJp.cmd
-      shell: powershell
+      shell: cmd
 
     - name: Run Japanese tests
       run: |
         & jptools\tests.cmd
         & jpchar\tests.cmd
-      shell: powershell
+      shell: cmd
 
     - name: Prepare for system tests
       run: |
