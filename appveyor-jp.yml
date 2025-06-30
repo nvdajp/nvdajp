@@ -21,6 +21,10 @@ init:
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
 
 install:
+ - ps: |
+    Invoke-Expression (Invoke-WebRequest -Uri https://astral.sh/uv/install.ps1)
+    $env:PATH += ";$env:USERPROFILE\.cargo\bin"
+    uv --version
  - set RELEASE=1
  - set VERSION=2025.1.2jp
  - set UPDATEVERSIONTYPE=nvdajp
