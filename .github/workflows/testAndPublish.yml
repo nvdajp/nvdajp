@@ -124,21 +124,98 @@ jobs:
 
     - name: Prepare for system tests
       run: |
-        & appveyor\scripts\tests\beforeTests.ps1
-        & appveyor\scripts\installNVDA.ps1
+        # Create test output directories
+        New-Item -ItemType directory -Path testOutput -Force
+        New-Item -ItemType directory -Path testOutput\unit -Force
+        New-Item -ItemType directory -Path testOutput\system -Force
+        New-Item -ItemType directory -Path testOutput\lint -Force
+        New-Item -ItemType directory -Path testOutput\license -Force
+        
+        # Start Chrome for system tests
+        $chromeStartArgsString = $(py tests/system/libraries/_chromeArgs.py)
+        $chromeStartArgsArray = $chromeStartArgsString -split " "
+        cmd /c start /min $chromeStartArgsArray
+        
+        echo "testFailExitCode=0" >> $env:GITHUB_ENV
+      shell: powershell
+
+    - name: Install NVDA for testing
+      run: |
+        $nvdaLauncherFile = ".\output\nvda_${{ env.VERSION }}.exe"
+        echo "nvdaLauncherFile=$nvdaLauncherFile" >> $env:GITHUB_ENV
+        echo "NVDALauncherFile: $nvdaLauncherFile"
+        
+        $outputDir = $(resolve-path .\testOutput)
+        $installerLogFilePath = "$outputDir\nvda_install.log"
+        $installerProcess = start-process -FilePath "$nvdaLauncherFile" -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -passthru
+        
+        try {
+          $installerProcess | wait-process -Timeout 180 -ErrorAction Stop
+          $errorCode = $installerProcess.ExitCode
+        } catch {
+          echo "::error::NVDA installer process timed out"
+          $errorCode = 1
+        }
+        
+        if($errorCode -ne 0) { 
+          echo "::error::NVDA installation failed with exit code $errorCode"
+          exit $errorCode 
+        }
+      shell: powershell
+
+    - name: Run unit tests
+      run: |
+        $outDir = (Resolve-Path .\testOutput\unit\)
+        $unitTestsXml = "$outDir\unitTests.xml"
+        .\rununittests.bat --output-file "$unitTestsXml" -v
+        
+        if($LastExitCode -ne 0) {
+          echo "testFailExitCode=$LastExitCode" >> $env:GITHUB_ENV
+          echo "::error::Unit tests failed"
+        } else {
+          echo "::notice::Unit tests passed"
+        }
       shell: powershell
 
     - name: Run system tests
       run: |
-        & appveyor\scripts\tests\translationCheck.ps1
-        & appveyor\scripts\tests\licenseCheck.ps1
-        & appveyor\scripts\tests\unitTests.ps1
-        & appveyor\scripts\tests\systemTests.ps1
+        $testOutput = (Resolve-Path .\testOutput\)
+        $systemTestOutput = (Resolve-Path "$testOutput\system")
+        
+        $verboseDebugLogging = if ($env:VERBOSE_SYSTEM_TEST_LOGGING) { "True" } else { "" }
+        $tagsForTest = "installer NVDA"
+        
+        if ($env:INCLUDE_SYSTEM_TEST_TAGS) {
+          if ($env:INCLUDE_SYSTEM_TEST_TAGS -eq "excluded_from_build") {
+            echo "::notice::System tests skipped"
+            return
+          }
+          $tagsForTest = $env:INCLUDE_SYSTEM_TEST_TAGS
+        }
+        
+        $tagsForTestArray = -split $tagsForTest
+        $includeTags = $tagsForTestArray | ForEach-Object { "--include", $_ }
+        
+        .\runsystemtests.bat --variable whichNVDA:installed --variable installDir:"$env:nvdaLauncherFile" --variable verboseDebugLogging:"$verboseDebugLogging" @includeTags
+        
+        if($LastExitCode -ne 0) {
+          echo "testFailExitCode=$LastExitCode" >> $env:GITHUB_ENV
+          echo "::error::System tests failed (tags: $tagsForTest)"
+        } else {
+          echo "::notice::System tests passed (tags: $tagsForTest)"
+        }
+        
+        Compress-Archive -Path "$systemTestOutput\*" -DestinationPath "$testOutput\systemTestResult.zip"
       shell: powershell
 
     - name: Check test results
       run: |
-        & appveyor\scripts\tests\checkTestFailure.ps1
+        if ($env:testFailExitCode -and $env:testFailExitCode -ne "0") {
+          echo "::error::Tests failed with exit code $env:testFailExitCode"
+          exit $env:testFailExitCode
+        } else {
+          echo "::notice::All tests passed"
+        }
       shell: powershell
 
     - name: Upload build artifacts
@@ -148,6 +225,7 @@ jobs:
         name: nvda-jp-build-${{ github.run_number }}
         path: |
           output/**/*
+          testOutput/**/*
           miscDepsJp/__mypy.txt
           miscDepsJp/jptools/__h1output.txt
           miscDepsJp/jptools/__h2output.txt
