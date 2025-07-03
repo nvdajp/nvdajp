@@ -4,6 +4,9 @@
 # A part of NonVisual Desktop Access (NVDA)
 # for unittest, see ../jptools/jpDicTest.py
 
+# Import basic dictionary utilities
+from jpDicUtils import *  # noqa: F401,F403
+
 import characterProcessing
 import languageHandler
 import config
