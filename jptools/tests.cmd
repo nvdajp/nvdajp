@@ -3,6 +3,7 @@
 
 cd jptools
 py jpDicTest.py > __jpdictest_log.txt
+@if not "%ERRORLEVEL%"=="0" goto onerror
 cd ..
 
 exit /b 0
