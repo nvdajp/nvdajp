@@ -3,7 +3,7 @@
 !include "MUI2.nsh"
 
 !define launcher_appExe "nvdaLauncher.exe"
-!define MUI_ICON ..\source\images\nvda.ico
+!define MUI_ICON ..\source\images\nvdajp3.ico
 
 SetCompressor /SOLID LZMA
 SilentInstall silent

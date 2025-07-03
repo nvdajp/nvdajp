@@ -286,7 +286,7 @@ for po in env.Glob(sourceDir.path + "/locale/*/lc_messages/*.po"):
 
 styles = os.path.join(userDocsDir.path, "styles.css")
 numberedHeadingsStyle = os.path.join(userDocsDir.path, "numberedHeadings.css")
-logo = os.path.join(sourceDir.path, "images", "nvda.ico")
+logo = os.path.join(sourceDir.path, "images", "nvdajp3.ico")
 favicon = env.Command(
 	outputDir.File("favicon.ico"),
 	logo,

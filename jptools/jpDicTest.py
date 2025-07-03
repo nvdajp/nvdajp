@@ -14,6 +14,9 @@ import os
 sys.path.append(os.path.normpath(os.path.join(os.getcwd(), "mocks")))
 sys.path.append(r"..\source")
 sys.path.append(r"..\miscdeps\python")
+
+# Import globalVars from mocks before any module that uses it
+import globalVars  # noqa: F401,E402
 import languageHandler
 
 languageHandler.setLanguage("ja")
