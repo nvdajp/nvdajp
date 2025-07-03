@@ -22,6 +22,17 @@ globalVars.appDir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."
 import languageHandler
 
 languageHandler.setLanguage("ja")
+
+# Mock heavy dependencies that aren't needed for dictionary testing
+import sys
+class MockModule:
+	def __getattr__(self, name):
+		return lambda *args, **kwargs: None
+
+sys.modules['braille'] = MockModule()
+sys.modules['louis'] = MockModule()
+sys.modules['louisHelper'] = MockModule()
+
 import jpUtils  # noqa: E402
 
 # import locale
