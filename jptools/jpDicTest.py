@@ -23,7 +23,7 @@ import languageHandler
 
 languageHandler.setLanguage("ja")
 
-# Import Japanese dictionary utilities (lightweight version for testing)
+# Import Japanese dictionary utilities (lightweight version without speech dependencies)
 import jpDicUtils as jpUtils  # noqa: E402
 
 # import locale
