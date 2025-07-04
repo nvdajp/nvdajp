@@ -19,7 +19,89 @@ from logHandler import log
 RE_HIRAGANA = re.compile("^[\u3041-\u309e]+$")
 
 
-# Basic dictionary functions are imported from jpDicUtils
+def getLongDesc(s):
+	try:
+		lang = languageHandler.getLanguage()[:2]
+		if len(s) == 1 and ord(s) < 128 and lang != "ja":
+			d = characterProcessing.getCharacterDescription(lang, s)
+			log.debug(repr([s, d, 0]))
+			if d:
+				r = "  ".join(d)
+				return r
+		d = characterProcessing.getCharacterDescription("ja", s)
+		log.debug(repr([s, d, 1]))
+		if d:
+			r = "  ".join(d)
+			return r
+	except Exception as e:
+		log.debug(repr(e))
+	log.debug(repr([s, 2]))
+	return s
+
+
+def getShortDesc(s):
+	lang = languageHandler.getLanguage()[:2]
+	if len(s) == 1 and ord(s) < 128 and lang != "ja":
+		return characterProcessing.processSpeechSymbol(lang, s)
+	s2 = characterProcessing.processSpeechSymbol("ja", s)
+	if s != s2:
+		return s2
+	return characterProcessing.getCharacterReading("ja", s.lower())
+
+
+# characters which use dictionary for spelling reading
+SMALL_ZEN_KATAKANA = "ァィゥェォッャュョヮヵヶ"
+SMALL_KANA_CHARACTERS = SMALL_ZEN_KATAKANA + "ぁぃぅぇぉっゃゅょゎｧｨｩｪｫｬｭｮｯ"
+SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + "をヲｦはへー"
+FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + "ー"
+
+
+def isJa(locale=None):
+	if locale is None:
+		return languageHandler.getLanguage()[:2] == "ja"
+	return locale[:2] == "ja"
+
+
+def isZenkakuHiragana(c):
+	return re.search("[ぁ-ゞ]", c) is not None
+
+
+def isZenkakuKatakana(c):
+	if c == "ー":
+		return False
+	return re.search("[ァ-ヾ]", c) is not None
+
+
+def isHankakuKatakana(c):
+	return re.search("[ｦ-ﾝ｢｣､｡ｰ]", c) is not None
+
+
+def isHalfShape(c):
+	return len(c) == 1 and (32 < ord(c)) and (ord(c) < 128)
+
+
+def isFullShapeAlphabet(c):
+	return re.search("[ａ-ｚＡ-Ｚ]", c) is not None
+
+
+def isHalfShapeAlphabet(c):
+	return re.search("[a-zA-Z]", c) is not None
+
+
+def isFullShapeNumber(c):
+	return re.search("[０-９]", c) is not None
+
+
+def isHalfShapeNumber(c):
+	return re.search("[0-9]", c) is not None
+
+
+def isKanaCharacter(c):
+	return isZenkakuHiragana(c) or isZenkakuKatakana(c) or isHankakuKatakana(c)
+
+
+def isLatinCharacter(c):
+	return isFullShapeAlphabet(c) or isHalfShapeAlphabet(c)
 
 
 def isFullShapeSymbol(c):
@@ -34,7 +116,6 @@ def isUpper(c):
 
 
 def replaceSpecialKanaCharacter(c):
-	# SPECIAL_KANA_CHARACTERS is imported from jpDicUtils
 	if c in SPECIAL_KANA_CHARACTERS:
 		c = getShortDesc(c)
 	return c
