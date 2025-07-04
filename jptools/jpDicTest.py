@@ -17,7 +17,8 @@ sys.path.append(r"..\miscdeps\python")
 
 # Initialize globalVars.appDir before importing modules that depend on it
 import globalVars
-globalVars.appDir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if not hasattr(globalVars, 'appDir') or not globalVars.appDir:
+	globalVars.appDir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 import languageHandler
 
@@ -154,8 +155,8 @@ class JpUtilsTestCase(unittest.TestCase):
 			braille = jpUtils.getDiscriminantReading(source, forBraille=True)
 			self.assertEqual(braille_expected, braille)
 
-	def test_getDiscrptionForBraille(self):
-		self.assertEqual(jpUtils.getDiscrptionForBraille("a"), "半角 a")
+	def test_getDescriptionForBraille(self):
+		self.assertEqual(jpUtils.getDescriptionForBraille("a"), "半角 a")
 
 	def test_processHexCode(self):
 		self.assertEqual(jpUtils.processHexCode("ja", "u+0000"), "u+ゼロゼロゼロゼロ")
