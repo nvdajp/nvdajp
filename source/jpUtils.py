@@ -404,7 +404,7 @@ def getDiscriminantReading(
 	return r
 
 
-def getDiscrptionForBraille(name, attrOnly=False, sayCapForCapitals=False):
+def getDescriptionForBraille(name, attrOnly=False, sayCapForCapitals=False):
 	return getDiscriminantReading(
 		name, attrOnly=attrOnly, sayCapForCapitals=sayCapForCapitals, forBraille=True
 	)
