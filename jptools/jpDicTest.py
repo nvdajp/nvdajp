@@ -23,64 +23,17 @@ import languageHandler
 
 languageHandler.setLanguage("ja")
 
-# Import only the dictionary module and required functions directly
-sys.path.insert(0, r"..\source")
-import nvdajp_dic  # noqa: E402
+# Mock heavy dependencies that aren't needed for dictionary testing
+import sys
+class MockModule:
+	def __getattr__(self, name):
+		return lambda *args, **kwargs: None
 
-# Import jpUtils functions without heavy dependencies
-# by stopping import at line 435 before speech imports
-import importlib.util
-spec = importlib.util.spec_from_file_location("jpUtils", r"..\source\jpUtils.py")
-jpUtils_module = importlib.util.module_from_spec(spec)
+sys.modules['braille'] = MockModule()
+sys.modules['louis'] = MockModule()
+sys.modules['louisHelper'] = MockModule()
 
-# Execute only the part before speech dependencies
-with open(r"..\source\jpUtils.py", "r", encoding="utf-8") as f:
-	source_code = f.read()
-	# Split at the line that imports speech modules
-	safe_code = source_code.split("from typing import Generator  # noqa: E402")[0]
-	exec(safe_code, jpUtils_module.__dict__)
-
-# Create jpUtils object for backward compatibility
-class jpUtils:
-	@staticmethod
-	def getLongDesc(char):
-		return jpUtils_module.getLongDesc(char)
-	
-	@staticmethod
-	def getShortDesc(char):
-		return jpUtils_module.getShortDesc(char)
-	
-	@staticmethod
-	def isJa(locale):
-		return jpUtils_module.isJa(locale)
-	
-	@staticmethod
-	def isZenkakuHiragana(char):
-		return jpUtils_module.isZenkakuHiragana(char)
-	
-	@staticmethod
-	def isZenkakuKatakana(char):
-		return jpUtils_module.isZenkakuKatakana(char)
-	
-	@staticmethod
-	def isHankakuKatakana(char):
-		return jpUtils_module.isHankakuKatakana(char)
-	
-	@staticmethod
-	def isHalfShape(char):
-		return jpUtils_module.isHalfShape(char)
-	
-	@staticmethod
-	def isFullShapeAlphabet(char):
-		return jpUtils_module.isFullShapeAlphabet(char)
-	
-	@staticmethod
-	def isHalfShapeAlphabet(char):
-		return jpUtils_module.isHalfShapeAlphabet(char)
-	
-	@staticmethod
-	def isFullShapeNumber(char):
-		return jpUtils_module.isFullShapeNumber(char)
+import jpUtils  # noqa: E402
 
 # import locale
 import gettext  # noqa: E402
