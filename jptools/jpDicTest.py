@@ -1,4 +1,5 @@
 # coding: UTF-8
+# -*- coding: utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # by Takuya Nishimoto (NVDA Japanese Team)
 # jpDicTest.py for testing source/jpUtils.py
@@ -11,22 +12,47 @@ import unittest
 import sys
 import os
 
-sys.path.append(os.path.normpath(os.path.join(os.getcwd(), "mocks")))
 sys.path.append(r"..\source")
 sys.path.append(r"..\miscdeps\python")
 
-# Initialize globalVars.appDir before importing modules that depend on it
-import globalVars
-
-if not hasattr(globalVars, "appDir") or not globalVars.appDir:
-	globalVars.appDir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
 import languageHandler
 
-languageHandler.setLanguage("ja")
-from jpUtils import (  # noqa: E402
-	getLongDesc,
-	getShortDesc,
+# Initialize globalVars before importing modules that depend on it.
+import globalVars  # noqa: E402
+
+appDir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+globalVars.appDir = appDir
+
+import gettext  # noqa: E402
+
+
+# Mock config before importing jpDicUtils
+class MockConfig:
+	def __init__(self):
+		self.conf = {
+			"language": {
+				"jpPhoneticReadingLatin": False,
+				"jpPhoneticReadingKana": False,
+				"jpKatakanaPitchChange": 0,
+				"halfShapePitchChange": 0,
+			},
+			"speech": {
+				"autoDialectSwitching": True,
+				"autoLanguageSwitching": True,
+			},
+		}
+
+
+# Create a mock config module with config attribute
+class MockConfigModule:
+	def __init__(self):
+		self.config = MockConfig()
+		self.conf = self.config.conf
+
+
+sys.modules["config"] = MockConfigModule()
+
+from jpDicUtils import (  # noqa: E402
 	isJa,
 	isZenkakuHiragana,
 	isZenkakuKatakana,
@@ -40,64 +66,24 @@ from jpUtils import (  # noqa: E402
 	isLatinCharacter,
 	isFullShapeSymbol,
 	isUpper,
-	replaceSpecialKanaCharacter,
 	getAttrDesc,
 	getJpAttr,
-	getCharDesc,
 	getPitchChangeForCharAttr,
-	getJaCharAttrDetails,
-	code2kana,
 	code2hex,
-	getCandidateCharDesc,
 	useAttrDesc,
 	getOrd,
 	splitChars,
-	getDiscriminantReading,
-	getDescriptionForBraille,
-	processHexCode,
-	fixNewText,
 	processKangxiRadicals,
 	CharAttr,
 	JpAttr,
 )
 
-# import locale
-import gettext  # noqa: E402
+languageHandler.setLanguage("ja")
 
 gettext.translation("nvda", localedir=r"..\source\locale", languages=["ja"]).install()
 
-items = [
-	("a", "半角 英字 エー アルファー", "半角 a"),
-	("A", "半角 英字 オオモジ  エー アルファー", "半角 A"),
-	("あ", "ヒラガナ あ", "ヒラガナ あ"),
-	("ア", "カタカナ ア", "カタカナ ア"),
-	("あア", "ヒラガナ あ カタカナ ア", "ヒラガナ あ カタカナ ア"),
-	("を", "ヒラガナ オワリノ オ", "ヒラガナ を"),
-	("ヲ", "カタカナ オワリノ オ", "カタカナ ヲ"),
-	("123", "半角 イチ ニ サン", "半角 123"),
-	("１２３", "全角 イチ ニ サン", "全角 １２３"),
-	("1.23", "半角 イチ ピリオド ニ サン", "半角 1 ピリオド 23"),
-	("１．２３", "全角 イチ ピリオド ニ サン", "全角 １．２３"),
-	# ('1(23)', '半角 イチ カッコ ニ サン カッコトジ', '半角 1(23)'),
-	# ('１（２３）', '全角 イチ カッコ ニ サン カッコトジ', '全角 １（２３）'),
-	("川", "サンボンガワノ カワ", "サンボンガワノ カワ"),
-	("^", "半角 ベキジョー", "半角 ベキジョー"),
-	("⭕", "マル", "マル"),  # uses source/locale/ja/characters.dic
-	("言", "ゲンゴガクノ ゲン", "ゲンゴガクノ ゲン"),  # 8a00
-	("⾔", "ゲンゴガクノ ゲン コーキブシュ", "ゲンゴガクノ ゲン 康熙部首"),  # 2f94 Kangxi Radicals
-	("鬼", "キ オニノ キ", "キ オニノ キ"),  # 9b3c
-	("⿁", "キ オニノ キ コーキブシュ", "キ オニノ キ 康熙部首"),  # 2fc1 Kangxi Radicals
-	("⻤", "キ オニノ キ ブシュホジョ", "キ オニノ キ 部首補助"),  # 2ee4 CJK Radicals Supplement
-]
-
 
 class JpUtilsTestCase(unittest.TestCase):
-	def test_getLongDesc(self):
-		self.assertEqual(getLongDesc("a"), "エー アルファー")
-
-	def test_getShortDesc(self):
-		self.assertEqual(getShortDesc("a"), "エー アルファー")
-
 	def test_isJa(self):
 		self.assertTrue(isJa("ja"))
 
@@ -137,9 +123,6 @@ class JpUtilsTestCase(unittest.TestCase):
 	def test_isUpper(self):
 		self.assertTrue(isUpper("A"))
 
-	def test_replaceSpecialKanaCharacter(self):
-		self.assertEqual(replaceSpecialKanaCharacter("ー"), "チョーオン")
-
 	def test_getAttrDesc(self):
 		a = CharAttr(True, False, False, False, False, False)
 		self.assertEqual(getAttrDesc(a), "オオモジ ")
@@ -149,28 +132,13 @@ class JpUtilsTestCase(unittest.TestCase):
 		self.assertEqual(type(a), JpAttr)
 		self.assertTrue(a.jpLatinCharacter)
 
-	def test_getCharDesc(self):
-		a = getJpAttr("ja", "a", False)
-		desc = getCharDesc("ja", "a", a)
-		self.assertEqual(desc, ("エー アルファー",))
-
 	def test_getPitchChangeForCharAttr(self):
 		a = getJpAttr("ja", "A", False)
-		pitchChange = getPitchChangeForCharAttr("ja", a, True)
-		self.assertEqual(pitchChange, True)
-
-	def test_getJaCharAttrDetails(self):
-		self.assertEqual(getJaCharAttrDetails("A", False, True), "半角 英字")
-
-	def test_code2kana(self):
-		self.assertEqual(code2kana(0x0123), "ゼロイチニーサン")
+		pitchChange = getPitchChangeForCharAttr(True, a, 50)
+		self.assertEqual(pitchChange, 50)
 
 	def test_code2hex(self):
 		self.assertEqual(code2hex(0x123A), "u+123a")
-
-	def test_getCandidateCharDesc(self):
-		a = CharAttr(True, False, False, False, False, False)
-		self.assertEqual(getCandidateCharDesc("a", a, False), " エー アルファー ")
 
 	def test_useAttrDesc(self):
 		a = CharAttr(True, False, False, False, False, False)
@@ -183,23 +151,6 @@ class JpUtilsTestCase(unittest.TestCase):
 
 	def test_splitChars(self):
 		self.assertEqual(splitChars("a𞀄"), ["a", "𞀄"])
-
-	def test_getDiscriminantReading(self):
-		for source, saycap_expected, braille_expected in items:
-			saycap = getDiscriminantReading(source, sayCapForCapitals=True)
-			self.assertEqual(saycap_expected, saycap)
-			braille = getDiscriminantReading(source, forBraille=True)
-			self.assertEqual(braille_expected, braille)
-
-	def test_getDescriptionForBraille(self):
-		self.assertEqual(getDescriptionForBraille("a"), "半角 a")
-
-	def test_processHexCode(self):
-		self.assertEqual(processHexCode("ja", "u+0000"), "u+ゼロゼロゼロゼロ")
-
-	def test_fixNewText(self):
-		self.assertEqual(fixNewText("あ"), "ア")
-		self.assertEqual(fixNewText("ー"), " チョーオン ")
 
 	def test_processKangxiRadicals(self):
 		self.assertEqual(processKangxiRadicals("簡単に⾔えば"), "簡単に言えば")

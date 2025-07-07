@@ -1175,4 +1175,4 @@ env.RecursiveInstall(
 	targetEspeakDataDir.Dir("voices").Dir("!v"), espeakDataSource.Dir("voices").Dir("!v").abspath
 )
 
-Return("espeakLib")
+Return(["espeakLib", "sonicLib"])
