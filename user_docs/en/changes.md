@@ -69,6 +69,8 @@ There have also been a number of other fixes and improvements, including to mous
 * In Windows 11, NVDA will no longer announce emoji panel items twice while browsing them. (#18236, @josephsl)
 * In focus mode in web browsers, it is now possible to review and spell the labels of controls when those labels are specifically provided for accessibility; e.g. via `aria-label` or `aria-labelledby`. (#15159, @jcsteh)
 * It is now possible to review and spell the labels of controls in Google Chrome menus and dialogs. (#11285, @jcsteh)
+* When typing into a cell in Microsoft Excel, the braille display is now correctly updated to show the new content. (#18391)
+* Fixed bug where NLS eReader Zoomax driver did not work with all devices. (#18406, @florin-trutiu)
 
 ### Changes for Developers
 
@@ -91,6 +93,10 @@ Please refer to [the developer guide](https://www.nvaccess.org/files/nvda/docume
 The several built-in table definitions are moved to the `__tables` module in that package. (#18194, @LeonarddeR)
 * Microsoft SQL Server Management Studio now uses the Visual Studio app module, as SSMS is based on Visual Studio. (#18176, @LeonarddeR)
 * NVDA will report Windows release revision number (for example: 10.0.26100.0) when `winVersion.getWinVer` is called and log this information at startup. (#18266, @josephsl)
+
+#### Deprecations
+
+* The following symbols in `updateCheck` are deprecated for removal without replacement: `CERT_USAGE_MATCH`, `CERT_CHAIN_PARA`, `UPDATE_FETCH_TIMEOUT_S`. (#18354)
 
 ## 2025.1.2
 
