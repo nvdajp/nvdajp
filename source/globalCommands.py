@@ -2208,10 +2208,10 @@ class GlobalCommands(ScriptableObject):
 		scriptCount = scriptHandler.getLastScriptRepeatCount()
 		if scriptCount == 0:
 			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode)
-			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
+			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
 		elif scriptCount == 1:
 			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
-			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
+			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
 		elif scriptCount == 2:
 			try:
 				cList = [ord(c) for c in info.text]
