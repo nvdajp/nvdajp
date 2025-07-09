@@ -4,9 +4,7 @@ version: "{branch}-{build}"
 skip_tags: true
 branches:
  only:
-  - /alphajp.*/
-  - /betajp.*/
-  - /releasejp.*/
+  - /appveyorjp.*/
 
 clone_depth: 1
 
