@@ -4,14 +4,13 @@ version: "{branch}-{build}"
 skip_tags: true
 branches:
  only:
-  - /alphajp.*/
-  - /betajp.*/
-  - /releasejp.*/
+  - /appveyorjp.*/
 
 clone_depth: 1
 
 environment:
  PY_PYTHON: 3.11-32
+ PATH: C:\Users\appveyor\.cargo\bin;C:\Users\appveyor\AppData\Local\Microsoft\WinGet\Packages\astral-sh.uv_astral-sh.uv\uv;%PATH%
 
 init:
  - git config --global core.autocrlf true
@@ -21,6 +20,65 @@ init:
  - set PATH=%PATH%;C:\MinGW;C:\MinGW\bin;C:\MinGW\msys\1.0
 
 install:
+ - ps: |
+    try {
+        Write-Host "Installing uv..."
+        
+        # First try WinGet if available
+        $hasWinGet = [bool](Get-Command winget -ErrorAction SilentlyContinue)
+        if ($hasWinGet) {
+            Write-Host "Attempting to install uv using WinGet..."
+            & winget install --accept-source-agreements --disable-interactivity -e astral-sh.uv
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "uv installed successfully via WinGet"
+                $env:PATH = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\astral-sh.uv_astral-sh.uv\uv;$env:PATH"
+            } else {
+                Write-Host "WinGet installation failed, trying official script..."
+                throw "WinGet failed"
+            }
+        } else {
+            Write-Host "WinGet not available, using official script..."
+            throw "No WinGet"
+        }
+    } catch {
+        Write-Host "Trying official uv installer script..."
+        try {
+            $installScript = Invoke-WebRequest -Uri https://astral.sh/uv/install.ps1 -UseBasicParsing
+            if ($installScript.Content) {
+                Invoke-Expression $installScript.Content
+                $env:PATH += ";$env:USERPROFILE\.cargo\bin"
+                Write-Host "uv installed successfully via official script"
+            } else {
+                throw "Failed to download installer script"
+            }
+        } catch {
+            Write-Host "Official script failed, trying pip fallback..."
+            try {
+                pip install uv
+                Write-Host "uv installed successfully via pip"
+            } catch {
+                Write-Error "All uv installation methods failed: $_"
+                exit 1
+            }
+        }
+    }
+    
+    # Verify uv installation
+    try {
+        $uvVersion = uv --version
+        Write-Host "uv version: $uvVersion"
+        
+        # Update environment variables for the session
+        $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\astral-sh.uv_astral-sh.uv\uv;$env:PATH"
+        
+        # Set Appveyor environment variable for other scripts
+        Set-AppveyorBuildVariable "UV_AVAILABLE" "true"
+        Set-AppveyorBuildVariable "UV_PATH" "$env:USERPROFILE\.cargo\bin"
+    } catch {
+        Write-Error "uv installation verification failed: $_"
+        Set-AppveyorBuildVariable "UV_AVAILABLE" "false"
+        exit 1
+    }
  - set RELEASE=1
  - set VERSION=2025.1.2jp
  - set UPDATEVERSIONTYPE=nvdajp

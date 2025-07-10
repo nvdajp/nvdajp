@@ -1,4 +1,19 @@
 set SCONSOPTIONS=%*
+if not defined SCONSOPTIONS (
+    set SCONSOPTIONS=version_build=1 --all-cores
+)
+echo SCONSOPTIONS is %SCONSOPTIONS%
+
+if "%NOWDATE%"=="" set NOWDATE=250101a
+echo NOWDATE is %NOWDATE%
+if "%VERSION%"=="" set VERSION=jpalpha_%NOWDATE%
+echo VERSION is %VERSION%
+if "%UPDATEVERSIONTYPE%"=="" set UPDATEVERSIONTYPE=nvdajpalpha
+echo UPDATEVERSIONTYPE is %UPDATEVERSIONTYPE%
+if "%PUBLISHER%"=="" set PUBLISHER=nvdajp
+echo PUBLISHER is %PUBLISHER%
+if "%RELEASE%"=="" set RELEASE=1
+echo RELEASE is %RELEASE%
 
 set TIMESERVER=http://timestamp.digicert.com/
 
@@ -64,7 +79,7 @@ timeout /T 5 /NOBREAK
 
 set SCONSARGS=certFile=1 certTimestampServer=%TIMESERVER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
-call scons.bat source user_docs launcher release=1 publisher=%PUBLISHER% %SCONSARGS%
+call scons.bat source user_docs launcher release=%RELEASE% publisher=%PUBLISHER% %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd jptools
@@ -74,7 +89,9 @@ cd ..
 call jptools\buildControllerClient.cmd %SCONSARGS%
 set PYTHONUTF8=1
 call jptools\tests.cmd
+@if not "%ERRORLEVEL%"=="0" goto onerror
 call jpchar\tests.cmd
+@if not "%ERRORLEVEL%"=="0" goto onerror
 
 set VERIFYLOG=output\nvda_%VERSION%_verify.log
 del /Q %VERIFYLOG%

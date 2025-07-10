@@ -1,0 +1,239 @@
+name: CI/CD Japanese Version
+
+on:
+  push:
+    branches:
+      - 'alphajp**'
+      - 'betajp**'
+      - 'releasejp**'
+  pull_request:
+    branches:
+      - 'alphajp**'
+      - 'betajp**'
+      - 'releasejp**'
+  workflow_dispatch:
+
+env:
+  PY_PYTHON: 3.11-32
+  RELEASE: 1
+  PUBLISHER: nvdajp
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 1
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x86'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        enable-cache: true
+
+    - name: Setup MSVC environment
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x86
+
+    - name: Configure git
+      run: |
+        git config --global core.autocrlf true
+        python --version
+        uv --version
+        nmake /? | Select-Object -First 1
+
+    - name: Set version variables
+      run: |
+        $baseVersion = "2025.1.2jp"
+        
+        # Set timezone and get current date
+        tzutil /s "Tokyo Standard Time"
+        $nowDate = python jptools/nowdate.py
+        $updateVersionType = "nvdajp"
+        
+        if ($env:GITHUB_REF_NAME.StartsWith("alphajp")) {
+            $version = "jpalpha_$nowDate"
+            $updateVersionType += "alpha"
+        } elseif ($env:GITHUB_REF_NAME.StartsWith("betajp")) {
+            $version = "$baseVersion-beta-$nowDate"
+            $updateVersionType += "beta"
+        } elseif ($env:GITHUB_REF_NAME.StartsWith("releasejp")) {
+            $version = "$baseVersion-$nowDate"
+        } else {
+            $version = $baseVersion
+        }
+        
+        echo "VERSION=$version" >> $env:GITHUB_ENV
+        echo "UPDATEVERSIONTYPE=$updateVersionType" >> $env:GITHUB_ENV
+        echo "Building version: $version ($updateVersionType)"
+      shell: powershell
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade --no-warn-script-location pip
+
+    - name: Get API version info
+      run: |
+        $apiVersion = python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))"
+        $apiCompatTo = python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))"
+        echo "API Version: $apiVersion"
+        echo "API Back Compat To: $apiCompatTo"
+      shell: powershell
+
+    - name: Build NVDA Japanese version
+      run: |
+        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
+        echo Building with args: %sconsArgs%
+        call jptools\nonCertAllBuild.cmd %sconsArgs%
+      shell: cmd
+
+    - name: Build Japanese addons
+      run: |
+        cd jptools
+        call pack_jtalk_addon.cmd
+        call pack_kgs_addon.cmd
+        cd ..
+      shell: cmd
+
+    - name: Build Controller Client
+      run: |
+        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
+        call jptools\buildControllerClient.cmd %sconsArgs%
+      shell: cmd
+
+    - name: Test miscDepsJp
+      run: |
+        call jptools\testMiscDepsJp.cmd
+      shell: cmd
+
+    - name: Run Japanese tests
+      run: |
+        call jptools\tests.cmd
+        call jpchar\tests.cmd
+      shell: cmd
+
+    - name: Prepare for system tests
+      run: |
+        # Create test output directories
+        New-Item -ItemType directory -Path testOutput -Force
+        New-Item -ItemType directory -Path testOutput\unit -Force
+        New-Item -ItemType directory -Path testOutput\system -Force
+        New-Item -ItemType directory -Path testOutput\lint -Force
+        New-Item -ItemType directory -Path testOutput\license -Force
+        
+        # Start Chrome for system tests
+        $chromeStartArgsString = $(py tests/system/libraries/_chromeArgs.py)
+        $chromeStartArgsArray = $chromeStartArgsString -split " "
+        cmd /c start /min $chromeStartArgsArray
+        
+        echo "testFailExitCode=0" >> $env:GITHUB_ENV
+      shell: powershell
+
+    - name: Install NVDA for testing
+      run: |
+        $nvdaLauncherFile = ".\output\nvda_${{ env.VERSION }}.exe"
+        echo "nvdaLauncherFile=$nvdaLauncherFile" >> $env:GITHUB_ENV
+        echo "NVDALauncherFile: $nvdaLauncherFile"
+        
+        $outputDir = $(resolve-path .\testOutput)
+        $installerLogFilePath = "$outputDir\nvda_install.log"
+        $installerProcess = start-process -FilePath "$nvdaLauncherFile" -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -passthru
+        
+        try {
+          $installerProcess | wait-process -Timeout 180 -ErrorAction Stop
+          $errorCode = $installerProcess.ExitCode
+        } catch {
+          echo "::error::NVDA installer process timed out"
+          $errorCode = 1
+        }
+        
+        if($errorCode -ne 0) { 
+          echo "::error::NVDA installation failed with exit code $errorCode"
+          exit $errorCode 
+        }
+      shell: powershell
+
+    - name: Run unit tests
+      run: |
+        $outDir = (Resolve-Path .\testOutput\unit\)
+        $unitTestsXml = "$outDir\unitTests.xml"
+        .\rununittests.bat --output-file "$unitTestsXml" -v
+        
+        if($LastExitCode -ne 0) {
+          echo "testFailExitCode=$LastExitCode" >> $env:GITHUB_ENV
+          echo "::error::Unit tests failed"
+        } else {
+          echo "::notice::Unit tests passed"
+        }
+      shell: powershell
+
+    - name: Run system tests
+      run: |
+        $testOutput = (Resolve-Path .\testOutput\)
+        $systemTestOutput = (Resolve-Path "$testOutput\system")
+        
+        $verboseDebugLogging = if ($env:VERBOSE_SYSTEM_TEST_LOGGING) { "True" } else { "" }
+        $tagsForTest = "installer NVDA"
+        
+        if ($env:INCLUDE_SYSTEM_TEST_TAGS) {
+          if ($env:INCLUDE_SYSTEM_TEST_TAGS -eq "excluded_from_build") {
+            echo "::notice::System tests skipped"
+            return
+          }
+          $tagsForTest = $env:INCLUDE_SYSTEM_TEST_TAGS
+        }
+        
+        $tagsForTestArray = -split $tagsForTest
+        $includeTags = $tagsForTestArray | ForEach-Object { "--include", $_ }
+        
+        .\runsystemtests.bat --variable whichNVDA:installed --variable installDir:"$env:nvdaLauncherFile" --variable verboseDebugLogging:"$verboseDebugLogging" @includeTags
+        
+        if($LastExitCode -ne 0) {
+          echo "testFailExitCode=$LastExitCode" >> $env:GITHUB_ENV
+          echo "::error::System tests failed (tags: $tagsForTest)"
+        } else {
+          echo "::notice::System tests passed (tags: $tagsForTest)"
+        }
+        
+        Compress-Archive -Path "$systemTestOutput\*" -DestinationPath "$testOutput\systemTestResult.zip"
+      shell: powershell
+
+    - name: Check test results
+      run: |
+        if ($env:testFailExitCode -and $env:testFailExitCode -ne "0") {
+          echo "::error::Tests failed with exit code $env:testFailExitCode"
+          exit $env:testFailExitCode
+        } else {
+          echo "::notice::All tests passed"
+        }
+      shell: powershell
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: nvda-jp-build-${{ github.run_number }}
+        path: |
+          output/**/*
+          testOutput/**/*
+          miscDepsJp/__mypy.txt
+          miscDepsJp/jptools/__h1output.txt
+          miscDepsJp/jptools/__h2output.txt
+          miscDepsJp/jptools/__test_log.txt
+          miscDepsJp/jptools/__jpBrailleHarness.md
+          miscDepsJp/jptools/jpBrailleHarness.html
+          jptools/__jpdictest_log.txt
+          jptools/nvdajp-jtalk-*.nvda-addon
+          jptools/kgsbraille-*.nvda-addon
+          jpchar/__checkchardesc_log.txt
+        retention-days: 30

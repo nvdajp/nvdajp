@@ -70,6 +70,7 @@ from base64 import b16encode
 import vision
 from utils.security import objectBelowLockScreenAndWindowsIsLocked
 import audio
+import synthDriverHandler
 from utils.displayString import DisplayStringEnum
 import _remoteClient
 
@@ -263,15 +264,22 @@ class GlobalCommands(ScriptableObject):
 	def script_reportCurrentLine(self, gesture):
 		obj = api.getFocusObject()
 		treeInterceptor = obj.treeInterceptor
+		isNavigable: bool = False
 		if (
 			isinstance(treeInterceptor, treeInterceptorHandler.DocumentTreeInterceptor)
 			and not treeInterceptor.passThrough
 		):
 			obj = treeInterceptor
-		try:
-			info = obj.makeTextInfo(textInfos.POSITION_CARET)
-		except (NotImplementedError, RuntimeError):
-			info = obj.makeTextInfo(textInfos.POSITION_FIRST)
+			isNavigable = True
+		else:
+			isNavigable = obj._hasNavigableText
+		if isNavigable:
+			try:
+				info = obj.makeTextInfo(textInfos.POSITION_CARET)
+			except (NotImplementedError, RuntimeError):
+				info = obj.makeTextInfo(textInfos.POSITION_FIRST)
+		else:
+			info = NVDAObjectTextInfo(obj, textInfos.POSITION_FIRST)
 		info.expand(textInfos.UNIT_LINE)
 		scriptCount = scriptHandler.getLastScriptRepeatCount()
 		if scriptCount == 0:
@@ -2200,10 +2208,10 @@ class GlobalCommands(ScriptableObject):
 		scriptCount = scriptHandler.getLastScriptRepeatCount()
 		if scriptCount == 0:
 			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode)
-			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
+			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
 		elif scriptCount == 1:
 			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
-			braille.handler.message(jpUtils.getDiscrptionForBraille(info.text))
+			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
 		elif scriptCount == 2:
 			try:
 				cList = [ord(c) for c in info.text]
@@ -2362,14 +2370,11 @@ class GlobalCommands(ScriptableObject):
 		else:
 			ui.reviewMessage(gui.blockAction.Context.WINDOWS_LOCKED.translatedMessage)
 
-	def _getCurrentLanguageForTextInfo(self, info):
+	def _getCurrentLanguageForTextInfo(self, info: textInfos.TextInfo):
 		curLanguage = None
-		if config.conf["speech"]["autoLanguageSwitching"]:
-			for field in info.getTextWithFields({}):
-				if isinstance(field, textInfos.FieldCommand) and field.command == "formatChange":
-					curLanguage = field.field.get("language")
-		if curLanguage is None:
-			curLanguage = speech.getCurrentLanguage()
+		for field in info.getTextWithFields({}):
+			if isinstance(field, textInfos.FieldCommand) and field.command == "formatChange":
+				curLanguage = field.field.get("language")
 		return curLanguage
 
 	@script(
@@ -2385,6 +2390,8 @@ class GlobalCommands(ScriptableObject):
 		info = api.getReviewPosition().copy()
 		info.expand(textInfos.UNIT_CHARACTER)
 		curLanguage = self._getCurrentLanguageForTextInfo(info)
+		if curLanguage is None:
+			curLanguage = speech.getCurrentLanguage()
 		text = info.text
 		expandedSymbol = characterProcessing.processSpeechSymbol(curLanguage, text)
 		if expandedSymbol == text:
@@ -2821,7 +2828,7 @@ class GlobalCommands(ScriptableObject):
 		else:
 			if _isDebugLogCatEnabled:
 				log.debug(
-					"No prior target summary reported:" f" lastReported: {self._annotationNav.lastReported}",
+					f"No prior target summary reported: lastReported: {self._annotationNav.lastReported}",
 				)
 			if self._annotationNav.lastReported and _isDebugLogCatEnabled:
 				log.debug(
@@ -3409,6 +3416,15 @@ class GlobalCommands(ScriptableObject):
 		wx.CallAfter(gui.mainFrame.onAudioSettingsCommand, None)
 
 	@script(
+		# Translators: Input help mode message for go to vision settings command.
+		description=_("Shows NVDA's vision settings"),
+		category=SCRCAT_CONFIG,
+	)
+	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
+	def script_activateVisionSettingsDialog(self, gesture: "inputCore.InputGesture"):
+		wx.CallAfter(gui.mainFrame.onVisionSettingsCommand, None)
+
+	@script(
 		# Translators: Input help mode message for go to keyboard settings command.
 		description=_("Shows NVDA's keyboard settings"),
 		category=SCRCAT_CONFIG,
@@ -3484,6 +3500,33 @@ class GlobalCommands(ScriptableObject):
 	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
 	def script_activateRemoteAccessSettings(self, gesture: "inputCore.InputGesture"):
 		wx.CallAfter(gui.mainFrame.onRemoteAccessSettingsCommand, None)
+
+	@script(
+		# Translators: Input help mode message for go to Add-on Store settings command.
+		description=_("Shows NVDA's Add-on Store settings"),
+		category=SCRCAT_CONFIG,
+	)
+	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
+	def script_activateAddonStoreSettings(self, gesture: "inputCore.InputGesture"):
+		wx.CallAfter(gui.mainFrame.onAddonStoreSettingsCommand, None)
+
+	@script(
+		# Translators: Input help mode message for go to Windows OCR settings command.
+		description=_("Shows NVDA's Windows OCR settings"),
+		category=SCRCAT_CONFIG,
+	)
+	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
+	def script_activateWindowsOCRSettings(self, gesture: "inputCore.InputGesture"):
+		wx.CallAfter(gui.mainFrame.onUwpOcrCommand, None)
+
+	@script(
+		# Translators: Input help mode message for go to Advanced settings command.
+		description=_("Shows NVDA's Advanced settings"),
+		category=SCRCAT_CONFIG,
+	)
+	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
+	def script_activateAdvancedSettings(self, gesture: "inputCore.InputGesture"):
+		wx.CallAfter(gui.mainFrame.onAdvancedSettingsCommand, None)
 
 	@script(
 		# Translators: Input help mode message for opening default dictionary dialog.
@@ -3811,7 +3854,7 @@ class GlobalCommands(ScriptableObject):
 			configSection="braille",
 			configKey="speakOnNavigatingByUnit",
 			# Translators: The message announced when toggling the speaking on navigating by unit braille setting.
-			enabledMsg=_("Speak whenn navigating by line or paragraph with braille on"),
+			enabledMsg=_("Speak when navigating by line or paragraph with braille on"),
 			# Translators: The message announced when toggling the speaking on navigating by unit braille setting.
 			disabledMsg=_("Speak when navigating by line or paragraph with braille off"),
 		)
@@ -4249,8 +4292,7 @@ class GlobalCommands(ScriptableObject):
 	@script(
 		description=_(
 			# Translators: Input help mode message for a braille command.
-			"Virtually toggles the control and shift keys to emulate a "
-			"keyboard shortcut with braille input",
+			"Virtually toggles the control and shift keys to emulate a keyboard shortcut with braille input",
 		),
 		category=inputCore.SCRCAT_KBEMU,
 		bypassInputHelp=True,
@@ -4261,7 +4303,7 @@ class GlobalCommands(ScriptableObject):
 	@script(
 		description=_(
 			# Translators: Input help mode message for a braille command.
-			"Virtually toggles the alt and shift keys to emulate a " "keyboard shortcut with braille input",
+			"Virtually toggles the alt and shift keys to emulate a keyboard shortcut with braille input",
 		),
 		category=inputCore.SCRCAT_KBEMU,
 		bypassInputHelp=True,
@@ -4284,7 +4326,7 @@ class GlobalCommands(ScriptableObject):
 	@script(
 		description=_(
 			# Translators: Input help mode message for a braille command.
-			"Virtually toggles the NVDA and shift keys to emulate a " "keyboard shortcut with braille input",
+			"Virtually toggles the NVDA and shift keys to emulate a keyboard shortcut with braille input",
 		),
 		category=inputCore.SCRCAT_KBEMU,
 		bypassInputHelp=True,
@@ -4295,7 +4337,7 @@ class GlobalCommands(ScriptableObject):
 	@script(
 		description=_(
 			# Translators: Input help mode message for a braille command.
-			"Virtually toggles the control and alt keys to emulate a " "keyboard shortcut with braille input",
+			"Virtually toggles the control and alt keys to emulate a keyboard shortcut with braille input",
 		),
 		category=inputCore.SCRCAT_KBEMU,
 		bypassInputHelp=True,
@@ -4533,8 +4575,7 @@ class GlobalCommands(ScriptableObject):
 	@script(
 		description=_(
 			# Translators: Input help mode message for a touchscreen gesture.
-			"Reports the new object or content under your finger "
-			"if different to where your finger was last",
+			"Reports the new object or content under your finger if different to where your finger was last",
 		),
 		category=SCRCAT_TOUCH,
 		gesture="ts:hover",
@@ -4940,6 +4981,48 @@ class GlobalCommands(ScriptableObject):
 	)
 	def script_cycleSoundSplit(self, gesture: "inputCore.InputGesture") -> None:
 		audio._toggleSoundSplitState()
+
+	@script(
+		description=pgettext(
+			"reportLanguage",
+			# Translators: Input help mode message for report language for caret command.
+			"Reports the language for the text under the caret. "
+			"If pressed twice, presents the information in browse mode",
+		),
+		category=SCRCAT_SYSTEMCARET,
+		speakOnDemand=True,
+	)
+	def script_reportCaretLanguage(self, gesture: "inputCore.InputGesture"):
+		info = self._getTIAtCaret()
+		if info is None:
+			log.debugWarning("No caret")
+			return
+		info.expand(textInfos.UNIT_CHARACTER)
+		curLanguage = self._getCurrentLanguageForTextInfo(info)
+		if curLanguage is None:
+			# Translators: Reported when the language of the text at caret is not defined.
+			languageDescription = pgettext("reportLanguage", "Unknown language")
+		else:
+			languageDescription = languageHandler.getLanguageDescription(curLanguage)
+		if languageDescription is None:
+			languageDescription = curLanguage
+		message = languageDescription
+		curSynth = synthDriverHandler.getSynth()
+		if not curSynth.languageIsSupported(curLanguage):
+			message = pgettext(
+				"reportLanguage",
+				# Translators: Language of the character at caret position when it's not supported by the current synthesizer.
+				"{languageDescription} (not supported)",
+			).format(
+				languageDescription=languageDescription,
+			)
+		repeats = scriptHandler.getLastScriptRepeatCount()
+		if repeats == 0:
+			ui.message(message)
+		elif repeats == 1:
+			# Translators: title for report caret language dialog.
+			title = pgettext("reportLanguage", "Language at caret position")
+			ui.browseableMessage(message, title, copyButton=True, closeButton=True)
 
 	@script(
 		# Translators: Documentation string for the script that toggles whether the output from the remote computer is muted.
