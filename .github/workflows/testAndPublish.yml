@@ -92,7 +92,7 @@ jobs:
 
     - name: Build NVDA Japanese version
       run: |
-        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
+        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% -j 1
         echo Building with args: %sconsArgs%
         call jptools\nonCertAllBuild.cmd %sconsArgs%
       shell: cmd
@@ -107,7 +107,7 @@ jobs:
 
     - name: Build Controller Client
       run: |
-        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
+        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% -j 1
         call jptools\buildControllerClient.cmd %sconsArgs%
       shell: cmd
 
