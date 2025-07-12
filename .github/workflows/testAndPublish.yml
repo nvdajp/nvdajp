@@ -20,7 +20,7 @@ env:
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-2025
     
     steps:
     - name: Checkout code
@@ -44,7 +44,6 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x86
-        toolset: 14.39
 
     - name: Configure git
       run: |
