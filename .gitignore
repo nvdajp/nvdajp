@@ -55,3 +55,4 @@ nvdaHelper/docs/
 *.pfx
 appveyor-tools/
 *.egg-info
+.claude/settings.local.json
