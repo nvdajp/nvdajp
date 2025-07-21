@@ -24,7 +24,7 @@ Support for cursor routing with the point and click action on the Humanware Mona
 LibLouis has been updated, adding new Biblical Hebrew, Russian 6 dot computer braille and Thai Grade 2 braille tables.
 eSpeak NG has been updated, adding support for Aromanian, Crimean Tatar, Mongolian, and Pashto.
 
-There have also been a number of other fixes and improvements, including to mouse and touch interaction, Windows 11 Notepad, Google Chrome.
+There have also been a number of other fixes and improvements, including to mouse and touch interaction, Windows 11 Notepad, and Google Chrome.
 
 ### New Features
 
@@ -39,6 +39,7 @@ There have also been a number of other fixes and improvements, including to mous
 * Unassigned commands have been added to open the NVDA settings dialog in the following categories: Vision, Windows OCR, Add-on Store and Advanced. (#18313, @CyrilleB79)
 * Introduced support for Windows 11 Voice Access, including reporting dictated text and microphone status from everywhere (requires NVDA to be installed). (#16862, #17384, @josephsl)
 * Support for the NLS eReader Zoomax braille display has been added. (#15863, @florin-trutiu)
+* A checkbox has been added in the speech settings to allow users to disable WASAPI for SAPI5 voices. (#18309, @gexgd0419)
 
 ### Changes
 
@@ -52,6 +53,7 @@ There have also been a number of other fixes and improvements, including to mous
 * In browse mode, it is now possible to use number keys 1 to 9 (previously 1 to 6), to navigate to the corresponding heading. (#18014, @CyrilleB79)
 * When the Elements List or Find dialog is opened, NVDA won't change the configuration profile, similar to the behavior in other NVDA dialogs. (#18160, @nvdaes)
 * In Microsoft Edge, NVDA will no longer cancel say all when notifications such as "loading complete" are announced. (#17986, @josephsl)
+* NVDA will now warn before updating when connected as the controlled computer with NVDA Remote Access. (#18455)
 
 ### Bug Fixes
 
@@ -67,9 +69,8 @@ There have also been a number of other fixes and improvements, including to mous
   * NVDA no longer sometimes freezes when navigating in browse mode.
   * Search suggestions are now reported reliably.
 * In Windows 11, NVDA will no longer announce emoji panel items twice while browsing them. (#18236, @josephsl)
-* In focus mode in web browsers, it is now possible to review and spell the labels of controls when those labels are specifically provided for accessibility; e.g. via `aria-label` or `aria-labelledby`. (#15159, @jcsteh)
-* It is now possible to review and spell the labels of controls in Google Chrome menus and dialogs. (#11285, @jcsteh)
 * When typing into a cell in Microsoft Excel, the braille display is now correctly updated to show the new content. (#18391)
+* Fixed bug when trying to access the Add-on Store from certain environments such as corporates. (#18354)
 * When using NVDA Remote Access, speech from User Account Control screens on the remote computer now works reliably. (#18101, @jcsteh)
 
 ### Changes for Developers
@@ -93,6 +94,7 @@ Please refer to [the developer guide](https://www.nvaccess.org/files/nvda/docume
 The several built-in table definitions are moved to the `__tables` module in that package. (#18194, @LeonarddeR)
 * Microsoft SQL Server Management Studio now uses the Visual Studio app module, as SSMS is based on Visual Studio. (#18176, @LeonarddeR)
 * NVDA will report Windows release revision number (for example: 10.0.26100.0) when `winVersion.getWinVer` is called and log this information at startup. (#18266, @josephsl)
+* `ssl.SSLContext` now uses Windows' trusted certificate stores, not `certifi` via `truststore` patching. (#15905)
 
 #### Deprecations
 
