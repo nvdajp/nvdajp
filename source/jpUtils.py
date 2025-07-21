@@ -180,11 +180,6 @@ def getSpellingSpeechWithoutCharMode(
 		yield EndUtteranceCommand()
 
 
-
-
-
-
-
 # Constants for character processing
 RE_HIRAGANA = re.compile("^[\u3041-\u309e]+$")
 SMALL_ZEN_KATAKANA = "ァィゥェォッャュョヮヵヶ"
