@@ -21,7 +21,11 @@ env:
 jobs:
   build:
     runs-on: windows-latest
-    
+    outputs:
+      version: ${{ steps.releaseInfo.outputs.VERSION }}
+      versionType: ${{ steps.releaseInfo.outputs.VERSION_TYPE }}
+      APIVersion: ${{ steps.releaseInfo.outputs.NVDA_API_VERSION }}
+      APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -223,6 +227,13 @@ jobs:
       with:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
+    - name: Store release metadata information
+      id: releaseInfo
+      run: |
+        Write-Output VERSION=$env:version >> $env:GITHUB_OUTPUT
+        Write-Output VERSION_TYPE=$env:versionType >> $env:GITHUB_OUTPUT
+        Write-Output NVDA_API_VERSION=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))") >> $env:GITHUB_OUTPUT
+        Write-Output NVDA_API_COMPAT_TO=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))") >> $env:GITHUB_OUTPUT
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
