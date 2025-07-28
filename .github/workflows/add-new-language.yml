@@ -1,12 +1,19 @@
-name: Add new languages to track from Crowdin
+name: Add new languages to track from Crowdin (DISABLED for nvdajp)
+
+# DISABLED FOR NVDAJP: Language management is handled by upstream nvaccess repository
 
 on:
-  workflow_dispatch:
-    inputs:
-      newLanguages:
-        description: 'JSON style list of new languages to track from Crowdin e.g. ["fr", "de"]'
-        required: true
-        type: string
+  # Disabled - this workflow should not be used in nvdajp repository
+  # workflow_dispatch:
+  #   inputs:
+  #     newLanguages:
+  #       description: 'JSON style list of new languages to track from Crowdin e.g. ["fr", "de"]'
+  #       required: true
+  #       type: string
+  push:
+    branches:
+      # This ensures the workflow never runs
+      - 'never-match-this-branch-name'
 
 jobs:
   add-new-languages:
