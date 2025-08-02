@@ -128,12 +128,8 @@ jobs:
 
     - name: Prepare for system tests
       run: |
-        # Create test output directories
-        New-Item -ItemType directory -Path testOutput -Force
-        New-Item -ItemType directory -Path testOutput\unit -Force
-        New-Item -ItemType directory -Path testOutput\system -Force
-        New-Item -ItemType directory -Path testOutput\lint -Force
-        New-Item -ItemType directory -Path testOutput\license -Force
+        # Create test output directories using the same script as upstream
+        ci/scripts/tests/beforeTests.ps1
         
         # Start Chrome for system tests
         $chromeStartArgsString = $(py tests/system/libraries/_chromeArgs.py)

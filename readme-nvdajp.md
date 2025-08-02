@@ -191,6 +191,38 @@ NVDA 本体を実行するには
 > .\scons
 ```
 
+## マイルストーン自動割り当て機能
+
+NVDA日本語版では、GitHub Actionsを使用してIssueやPull Requestにマイルストーンを自動的に割り当てる機能を導入しています。
+
+### 動作概要
+
+`.github/workflows/assign-milestone-on-close.yml` ワークフローにより、以下の条件を満たす場合に自動的にマイルストーンが割り当てられます：
+
+1. IssueまたはPull Requestがクローズされた時
+2. マイルストーンが未設定である
+3. 以下のいずれかの条件を満たす：
+   - Issueが「completed」としてクローズされた
+   - Pull Requestがマージされた
+
+### 設定方法
+
+リポジトリ変数 `MILESTONE_ID` に、自動割り当てしたいマイルストーンのIDを設定します：
+
+```bash
+gh variable set MILESTONE_ID --body "71" --repo nvdajp/nvdajp
+```
+
+現在は `2025.2jp` (ID: 71) が設定されています。
+
+### 運用手順
+
+1. 新しいリリースの準備時に、GitHubで新しいマイルストーン（例：`2025.3jp`）を作成
+2. マイルストーンのIDを確認（URLの末尾の数字）
+3. `MILESTONE_ID` 変数を新しいマイルストーンのIDに更新
+
+この機能により、リリースノート作成時に該当マイルストーンでフィルタして変更点を簡単に把握できます。
+
 ## git 運用方針とトラブルシューティング
 
 ### ブランチ運用
