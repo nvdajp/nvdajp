@@ -287,7 +287,7 @@ jobs:
   checkPot:
     name: Check translator comments
     runs-on: windows-latest
-    needs: build
+    needs: buildNVDA
     steps:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
