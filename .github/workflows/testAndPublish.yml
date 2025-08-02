@@ -19,7 +19,7 @@ env:
   PUBLISHER: nvdajp
 
 jobs:
-  build:
+  buildNVDA:
     runs-on: windows-latest
     outputs:
       version: ${{ steps.releaseInfo.outputs.VERSION }}
