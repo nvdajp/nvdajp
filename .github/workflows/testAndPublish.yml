@@ -226,8 +226,8 @@ jobs:
     - name: Store release metadata information
       id: releaseInfo
       run: |
-        Write-Output VERSION=$env:version >> $env:GITHUB_OUTPUT
-        Write-Output VERSION_TYPE=$env:versionType >> $env:GITHUB_OUTPUT
+        Write-Output VERSION=$env:VERSION >> $env:GITHUB_OUTPUT
+        Write-Output VERSION_TYPE=$env:UPDATEVERSIONTYPE >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_VERSION=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))") >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_COMPAT_TO=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))") >> $env:GITHUB_OUTPUT
 
@@ -394,8 +394,16 @@ jobs:
         fail-on-cache-miss: true
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
-    - name: Set version variables
-      run: ci/scripts/setBuildVersionVars.ps1
+    - name: Set version variables from buildNVDA
+      run: |
+        # Use version from buildNVDA job
+        echo "version=${{ needs.buildNVDA.outputs.version }}" >> $env:GITHUB_ENV
+        echo "versionType=${{ needs.buildNVDA.outputs.versionType }}" >> $env:GITHUB_ENV
+        echo "UPDATEVERSIONTYPE=${{ needs.buildNVDA.outputs.versionType }}" >> $env:GITHUB_ENV
+        echo "PUBLISHER=nvdajp" >> $env:GITHUB_ENV
+        echo "release=1" >> $env:GITHUB_ENV
+        echo "Using version: ${{ needs.buildNVDA.outputs.version }}"
+      shell: powershell
     - name: Set scons args
       run: ci/scripts/setSconsArgs.ps1
       env:
