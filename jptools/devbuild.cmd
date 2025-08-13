@@ -9,6 +9,9 @@ call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0
 cd ..
 
+call jptools\check_vs_version.cmd
+@if not "%ERRORLEVEL%"=="0" goto onerror
+
 @rem nmakeがない場合はエラー
 nmake /?
 @if not "%ERRORLEVEL%"=="0" goto onerror

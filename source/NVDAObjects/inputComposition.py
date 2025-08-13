@@ -111,7 +111,7 @@ lastCompositionTime = None
 def reportPartialSelection(sel):
 	global lastCompositionText, lastCompositionTime
 	newText = jpUtils.getDiscriminantReading(sel)
-	newTextForBraille = jpUtils.getDiscrptionForBraille(sel)
+	newTextForBraille = jpUtils.getDescriptionForBraille(sel)
 	if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 0.1:
 		newText = None
 	if newText:
@@ -173,7 +173,7 @@ class InputComposition(EditableTextWithAutoSelectDetection, Window):
 		):
 			ns = newString.strip("\u3000")
 			newText = jpUtils.getDiscriminantReading(ns)
-			newTextForBraille = jpUtils.getDiscrptionForBraille(ns)
+			newTextForBraille = jpUtils.getDescriptionForBraille(ns)
 			isCandidate = True
 		if lastCompositionText == newText and lastCompositionTime and time.time() - lastCompositionTime < 1.0:
 			newText = None

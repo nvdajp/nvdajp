@@ -5,7 +5,7 @@
 
 import sys
 
-Import("env", "outputDir", "sourceDir")
+Import("env", "outputDir", "sourceDir", "userDocsDir")
 
 env = env.Clone()
 
@@ -24,12 +24,14 @@ mdFileSub = env.Substfile(
 htmlFile = env.Command(
 	target=mdFile.abspath.replace(".md", ".html"),
 	source=mdFileSub,
-	action=[f'@{sys.executable} source/md2html.py -t developerGuide "$SOURCE" "$TARGET"'],
+	action=[f'@"{sys.executable}" source/md2html.py -t developerGuide "$SOURCE" "$TARGET"'],
 )
 devGuide = env.Command(
-	target=devDocsOutputDir.File("developerGuide.html"), source=htmlFile, action=Move("$TARGET", "$SOURCE")
+	target=userDocsDir.File("developerGuide.html"), source=htmlFile, action=Move("$TARGET", "$SOURCE")
 )
 env.Alias("developerGuide", devGuide)
+# Return the developer docs targets so they can be used as dependencies
+Return(["devGuide"])
 
 devDocs_nvdaHelper_temp = env.Doxygen(source="../../../nvdaHelper/doxyfile")
 devDocs_nvdaHelper = env.Command(
@@ -54,7 +56,6 @@ ignorePaths = [
 	"mathType.py",  # Fails when not installed
 	"oleTypes.py",  # Not our code
 	"setup.py",  # Py2exe
-	"sourceEnv.py",  # Only available when running from source
 ]
 
 sphinxAPIDocs = env.Command(

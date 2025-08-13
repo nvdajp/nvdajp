@@ -148,7 +148,7 @@ def _shouldProceedToRemoveAddonDialog(
 		"addonStore",
 		# Translators: Presented when attempting to remove the selected add-on.
 		# {addon} is replaced with the add-on name.
-		"Are you sure you wish to remove the {addon} add-on from NVDA? " "This cannot be undone.",
+		"Are you sure you wish to remove the {addon} add-on from NVDA? This cannot be undone.",
 	).format(addon=addon.displayName)
 	dlg = ErrorAddonInstallDialogWithYesNoButtons(
 		parent=parent,
@@ -284,7 +284,7 @@ def _showAddonInfo(addon: _AddonGUIModel) -> None:
 		pgettext(
 			"addonStore",
 			# Translators: message shown in the Addon Information dialog.
-			"{summary} ({name})\n" "Version: {version}\n" "Description: {description}\n",
+			"{summary} ({name})\nVersion: {version}\nDescription: {description}\n",
 		).format(
 			summary=addon.displayName,
 			name=addon.addonId,
@@ -522,14 +522,7 @@ class UpdatableAddonsDialog(
 		numInProgress = len(AddonStoreVM._downloader.progress)
 		if numInProgress:
 			res = gui.messageBox(
-				npgettext(
-					"addonStore",
-					# Translators: Message shown prior to installing add-ons when closing the add-on store dialog
-					# The placeholder {} will be replaced with the number of add-ons to be installed
-					"Download of {} add-on in progress, cancel downloading?",
-					"Download of {} add-ons in progress, cancel downloading?",
-					numInProgress,
-				).format(numInProgress),
+				AddonStoreDialog._cancelInstallationPromptMsg(numInProgress),
 				AddonStoreDialog._installationPromptTitle,
 				style=wx.YES_NO,
 			)
@@ -546,14 +539,7 @@ class UpdatableAddonsDialog(
 			installingDialog = gui.IndeterminateProgressDialog(
 				self,
 				AddonStoreDialog._installationPromptTitle,
-				npgettext(
-					"addonStore",
-					# Translators: Message shown while installing add-ons after closing the add-on store dialog
-					# The placeholder {} will be replaced with the number of add-ons to be installed
-					"Installing {} add-on, please wait.",
-					"Installing {} add-ons, please wait.",
-					nAddonsPendingInstall,
-				).format(nAddonsPendingInstall),
+				AddonStoreDialog._installationPromptMsg(nAddonsPendingInstall),
 			)
 			AddonStoreVM.installPending()
 

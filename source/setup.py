@@ -272,7 +272,6 @@ freeze(
 		(".", ["ja-jp-comp6.utb", "ja-jp-rokutenkanji.tbl"]),
 		(".", glob("*.dll") + glob("*.manifest") + ["builtin.dic"]),
 		("documentation", ["../copying.txt"]),
-		("brailleDisplayDrivers", ["brailleDisplayDrivers/DirectBM.dll"]),
 		("lib/%s" % version, glob("lib/*.dll") + glob("lib/*.manifest")),
 		("lib64/%s" % version, glob("lib64/*.dll") + glob("lib64/*.exe")),
 		("libArm64/%s" % version, glob("libArm64/*.dll") + glob("libArm64/*.exe")),
@@ -281,6 +280,7 @@ freeze(
 		("fonts", glob("fonts/*.ttf")),
 		("louis/tables", glob("louis/tables/*")),
 		("COMRegistrationFixes", glob("COMRegistrationFixes/*.reg")),
+		("miscDeps/tools", ["../miscDeps/tools/msgfmt.exe"]),
 		(".", glob("../miscDeps/python/*.dll")),
 		(".", ["message.html"]),
 		(".", [os.path.join(sys.base_prefix, "python3.dll")]),
@@ -314,7 +314,6 @@ freeze(
 				"*/user_docs/styles.css",
 				"*/user_docs/numberedHeadings.css",
 				"*/user_docs/favicon.ico",
-				"*/developerGuide.*",
 			),
 		)
 	),
