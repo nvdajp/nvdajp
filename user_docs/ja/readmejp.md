@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2025年6月13日
+* 最終更新日：2025年8月17日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -760,7 +760,7 @@ NVDA日本語版のソースコード管理には2013年4月から git を使用
 
 公開ビルドサーバーは下記です。コードサイニング証明書を使うビルド環境は公開していません：
 
-* [AppVeyor ビルドサーバー](https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp)
+* [GitHub Actions testAndPublish](https://github.com/nvdajp/nvdajp/actions/workflows/testAndPublish.yml)
 
 ### アドオンの紹介
 
@@ -798,6 +798,11 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 ## バージョンごとの変更点
+
+### 2025.2jp の変更点
+
+* [2025.2jp の変更点](https://github.com/nvdajp/nvdajp/milestone/71?closed=1)
+* [本家版 2025.2 の翻訳](https://github.com/nvdajp/nvdajp/milestone/70?closed=1)
 
 ### 2025.1jp の変更点
 
