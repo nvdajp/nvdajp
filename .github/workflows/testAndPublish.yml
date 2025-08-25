@@ -618,7 +618,7 @@ jobs:
     steps:
       - name: Cleanup cache
         shell: bash
-        run: gh cache delete ${{ github.ref }}-${{ github.run_id }}
+        run: gh cache delete ${{ github.ref }}-${{ github.run_id }} || echo "Cache not found or already deleted"
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
