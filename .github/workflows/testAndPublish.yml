@@ -3,9 +3,8 @@ name: CI/CD Japanese Version
 on:
   push:
     branches:
-      - 'alphajp**'
-      - 'betajp**'
-      - 'releasejp**'
+      - 'betajp'
+      - 'releasejp'
   pull_request:
     branches:
       - 'alphajp**'
