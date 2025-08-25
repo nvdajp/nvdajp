@@ -291,6 +291,11 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
     - name: Check comments for translators
@@ -313,6 +318,11 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
     - name: License check
@@ -329,6 +339,11 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
     - name: Run unit tests
@@ -376,7 +391,7 @@ jobs:
       env:
         crowdinProjectID: ${{ vars.CROWDIN_PROJECT_ID }}
         crowdinAuthToken: ${{ secrets.CROWDIN_AUTH_TOKEN }}
-      run: uv run --with requests --directory ${{ github.workspace }} appveyor\crowdinSync.py uploadSourceFile 2 output\nvda.pot 2>&1
+      run: uv run --with requests --directory ${{ github.workspace }} ci\scripts\crowdinSync.py uploadSourceFile 2 output\nvda.pot 2>&1
 
   createLauncher:
     name: Create launcher
@@ -392,6 +407,11 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
     - name: Set version variables from buildNVDA
@@ -462,6 +482,11 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
     - name: Get NVDA launcher
@@ -510,6 +535,8 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
+    - name: Install Windows SDK
+      run: choco install -y windows-sdk-10.1
     - name: Create build symbols
       env:
         symStore: C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\symstore.exe
@@ -544,6 +571,11 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
     - name: Get symbols
@@ -553,8 +585,7 @@ jobs:
         path: output
     - name: Upload symbols to Mozilla
       continue-on-error: true
-      # TODO: this script should be moved to ci/scripts
-      run: uv run --with requests --directory ${{ github.workspace }} appveyor\mozillaSyms.py
+      run: uv run --with requests --directory ${{ github.workspace }} ci\scripts\mozillaSyms.py
       env:
         mozillaSymsAuthToken: ${{ secrets.MOZILLA_SYMS_TOKEN }}
     - name: Warn on failure
