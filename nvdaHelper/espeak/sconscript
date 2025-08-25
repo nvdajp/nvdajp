@@ -26,6 +26,7 @@ Import(
 freeLibrary = ctypes.windll.kernel32.FreeLibrary
 freeLibrary.argtypes = (ctypes.wintypes.HANDLE,)
 
+
 class AutoFreeCDLL(ctypes.CDLL):
 	def __del__(self):
 		freeLibrary(self._handle)
