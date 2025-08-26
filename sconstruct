@@ -416,7 +416,6 @@ def NVDADistGenerator(target, source, env, for_signature):
 			"nvda_noUIAccess.exe",
 			"nvda_uiAccess.exe",
 			"nvda_slave.exe",
-			"nvda_dmp.exe",
 			"l10nUtil.exe",
 		):
 			action.append(
