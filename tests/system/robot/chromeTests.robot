@@ -22,7 +22,7 @@ default teardown
 	Run Keyword If Test Failed	Take Screenshot	${screenShotName}
 	dump_speech_to_log
 	dump_braille_to_log
-	# leaving the chrome tabs open may slow down / cause chrome to crash on appveyor
+	# leaving the chrome tabs open may slow down / cause chrome to crash
 	close_chrome_tab
 	quit NVDA
 
@@ -50,8 +50,7 @@ ARIA treegrid
 	[Documentation]	Ensure that ARIA treegrids are accessible as a standard table in browse mode.
 	test_ariaTreeGrid_browseMode
 ARIA invalid spelling and grammar
-	[Documentation]	Tests ARIA invalid values of "spelling", "grammar" and "spelling, grammar".
-	[Tags]	excluded_from_build
+	[Documentation]	Tests ARIA invalid values of "spelling" and "grammar".
 	ARIAInvalid_spellingAndGrammar
 ARIA checkbox
 	[Documentation]	Navigate to an unchecked checkbox in reading mode.
@@ -90,17 +89,15 @@ ARIA roleDescription focus
 	test_ariaRoleDescription_focus
 ARIA roleDescription inline browse mode
 	[Documentation]	Read an inline element with a custom role in browse mode
+	[Tags]	robot:skip
 	test_ariaRoleDescription_inline_browseMode
-	# Disabled due to chrome message "To get missing image descriptions, open the context menu."
-	[Tags]	excluded_from_build
 ARIA roleDescription block browse mode
 	[Documentation]	Read a block element with a custom role in browse mode
 	test_ariaRoleDescription_block_browseMode
-	# Disabled due to chrome message "To get missing image descriptions, open the context menu."
 ARIA roleDescription inline content editable
 	[Documentation]	Read an inline element with a custom role in content editables 
+	[Tags]	robot:skip
 	test_ariaRoleDescription_inline_contentEditable
-	[Tags]	excluded_from_build
 ARIA roleDescription block content editable
 	[Documentation]	Read an block element with a custom role in content editables 
 	test_ariaRoleDescription_block_contentEditable
@@ -149,10 +146,11 @@ ARIA details role
 	test_mark_aria_details_role
 multiple ARIA details targets
 	[Documentation]	Test multiple aria details targets being announced
+	[Tags]	robot:skip
 	test_annotations_multi_target
 i10890
 	[Documentation]	Test sort state is announced on column header when changed with inner button
-	[Tags]	excluded_from_build
+	[Tags]	robot:skip
 	test_i10890
 ARIA switch role
 	[Documentation]	Test aria switch control has appropriate role and states in browse mode and when focused

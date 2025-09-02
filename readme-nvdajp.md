@@ -588,3 +588,32 @@ miscDepsJp/include/
 
 - **PR #492**: [Refactor: Improve submodule management strategy for miscDepsJp](https://github.com/nvdajp/nvdajp/pull/492) - サブモジュール入れ子構造の解消
 - **PR #510**: [ビルドスクリプトの重複処理を最適化](https://github.com/nvdajp/nvdajp/pull/510) - コピー処理の最適化
+
+### CI/CD の modernization
+
+2025年8月に本家の CI/CD 改善を取り込み中：
+- GitHub Actions ワークフローの最適化
+- テストジョブの分離（typeCheck, licenseCheck等）
+- SCons MSVC Cache による高速化
+- windows-2025 ランナーへの移行
+
+段階的な改善アプローチ：
+1. 第1段階：本家 CI/CD 構造の取り込み（2025年8月実施）
+2. 第2段階：Python 3.13 対応
+3. 第3段階：x64 ビルド対応の検討
+
+### Python バージョンの対応状況
+
+#### 現在の状況（2025年8月）
+- Python 3.11.9 (32bit) を使用
+- 本家 NVDA は Python 3.11.9 と 3.13.6 のマトリックステストを実施
+
+#### 今後の対応
+- Python 3.13 への対応は段階的に実施予定
+- まず本家 beta のマージと CI/CD の安定化を優先
+- その後、Python 3.13 対応を別 PR で実施
+
+#### Python 3.13 対応時の注意点
+- 依存パッケージの互換性確認が必要
+- 日本語版固有のモジュール（jtalk等）の動作確認が必要
+- マトリックステストの導入を検討

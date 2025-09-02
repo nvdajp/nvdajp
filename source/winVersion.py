@@ -17,6 +17,7 @@ import functools
 import winreg
 import platform
 import NVDAState
+from config.registry import RegistryKey
 from logHandler import log
 
 
@@ -43,6 +44,7 @@ _BUILDS_TO_RELEASE_NAMES: dict[int, str] = {
 	22621: "Windows 11 22H2",
 	22631: "Windows 11 23H2",
 	26100: "Windows 11 24H2",
+	26200: "Windows 11 25H2",
 }
 
 
@@ -54,7 +56,7 @@ def _getRunningVersionNameFromWinReg() -> str:
 	# Cache the version in use on the system.
 	with winreg.OpenKey(
 		winreg.HKEY_LOCAL_MACHINE,
-		r"Software\Microsoft\Windows NT\CurrentVersion",
+		RegistryKey.NT_CURRENT_VERSION.value,
 	) as currentVersion:
 		# Version 20H2 and later where a separate display version string is used.
 		try:
@@ -165,6 +167,7 @@ WIN11 = WIN11_21H2 = WinVersion(major=10, minor=0, build=22000)
 WIN11_22H2 = WinVersion(major=10, minor=0, build=22621)
 WIN11_23H2 = WinVersion(major=10, minor=0, build=22631)
 WIN11_24H2 = WinVersion(major=10, minor=0, build=26100)
+WIN11_25H2 = WinVersion(major=10, minor=0, build=26200)
 
 
 @functools.lru_cache(maxsize=1)
@@ -192,7 +195,7 @@ def getWinVer():
 	# UBR is updated whenever cumulative updates are applied.
 	with winreg.OpenKey(
 		winreg.HKEY_LOCAL_MACHINE,
-		r"Software\Microsoft\Windows NT\CurrentVersion",
+		RegistryKey.NT_CURRENT_VERSION.value,
 	) as currentVersion:
 		# #18617: in Windows 8.1, attempting to access the below registry path results inn an error.
 		# Therefore, set UBR (update build revision) to 0.
