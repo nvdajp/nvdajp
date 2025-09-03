@@ -26,8 +26,8 @@ jobs:
       APIVersion: ${{ steps.releaseInfo.outputs.NVDA_API_VERSION }}
       APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Checkout NVDA
+      uses: actions/checkout@v5
       with:
         submodules: recursive
         fetch-depth: 1
@@ -259,7 +259,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         # Include gettext
         submodules: true
@@ -279,9 +279,9 @@ jobs:
         # Ensure uv environment is up to date.
         # If the uv environment is outdated, running pre-commit will trigger uv to generate a uv.lock file,
         # which causes checkPo to fail without clear errors because pre-commit fails when files are changed during its run.
-        pre-commit run uv-lock --all-files
+        uv run pre-commit run uv-lock --all-files
         # Run pre-commit on the translations
-        pre-commit run checkPo --all-files
+        uv run pre-commit run checkPo --all-files
     - name: Add job summary
       if: ${{ failure() }}
       shell: bash
@@ -508,6 +508,9 @@ jobs:
       run: ci/scripts/installNVDA.ps1
       env:
         nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
+    - name: Download and install Visual Studio Code
+      if: ${{ matrix.testSuite == 'vscode' }}
+      run: choco install -y vscode
     - name: Run system tests
       run: ci/scripts/tests/systemTests.ps1
       env:
