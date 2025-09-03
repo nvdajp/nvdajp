@@ -483,7 +483,7 @@ def getSynthInstance(name, asDefault=False):
 
 # The synthDrivers that should be used by default.
 # The first that successfully initializes will be used when config is set to auto (I.e. new installs of NVDA).
-defaultSynthPriorityList = ["oneCore", "espeak", "silence"]
+defaultSynthPriorityList = ["oneCore", "nvdajp_jtalk", "silence"]
 
 
 def setSynth(name: Optional[str], isFallback: bool = False):
