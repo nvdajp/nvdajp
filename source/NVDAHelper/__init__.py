@@ -37,6 +37,7 @@ import winBindings.oleaut32
 import winBindings.kernel32
 import winBindings.advapi32
 import winBindings.rpcrt4
+import winBindings.shlwapi
 import globalVars
 from NVDAState import ReadPaths
 
@@ -54,39 +55,6 @@ from winAPI.constants import SystemErrorCodes
 
 from utils import _deprecate
 
-
-__getattr__ = _deprecate.handleDeprecations(
-	_deprecate.MovedSymbol(
-		"LOCAL_WIN10_DLL_PATH",
-		"NVDAState",
-		"ReadPaths",
-		"nvdaHelperLocalWin10Dll",
-	),
-	_deprecate.MovedSymbol(
-		"versionedLibPath",
-		"NVDAState",
-		"ReadPaths",
-		"versionedLibX86Path",
-	),
-	_deprecate.MovedSymbol(
-		"coreArchLibPath",
-		"NVDAState",
-		"ReadPaths",
-		"coreArchLibPath",
-	),
-	_deprecate.MovedSymbol(
-		"generateBeep",
-		"NVDAHelper.localLib",
-	),
-	_deprecate.MovedSymbol(
-		"VBuf_getTextInRange",
-		"NVDAHelper.localLib",
-	),
-	_deprecate.MovedSymbol(
-		"nvdaController_onSsmlMarkReached",
-		"NVDAHelper.localLib",
-	),
-)
 
 if typing.TYPE_CHECKING:
 	from speech.priorities import SpeechPriority
@@ -333,7 +301,7 @@ def _lookupKeyboardLayoutNameWithHexString(layoutString):
 				)
 				== 0
 			):  # noqa: F405
-				windll.shlwapi.SHLoadIndirectString(buf.value, buf, 1023, None)
+				winBindings.shlwapi.SHLoadIndirectString(buf.value, buf, 1023, None)
 				return buf.value
 			if winBindings.advapi32.RegQueryValueEx(key, "Layout Text", None, None, buf, byref(bufSize)) == 0:
 				return buf.value
@@ -1079,20 +1047,20 @@ class _RemoteLoader:
 		with open("nul", "wb") as nul:
 			nulHandle = self._duplicateAsInheritable(msvcrt.get_osfhandle(nul.fileno()))
 		# Set the process to start with the appropriate std* handles.
-		si = winKernel.STARTUPINFO(
+		si = winBindings.advapi32.STARTUPINFO(
 			dwFlags=winKernel.STARTF_USESTDHANDLES,
 			hSTDInput=pipeRead,
 			hSTDOutput=nulHandle,
 			hSTDError=nulHandle,
 		)
-		pi = winKernel.PROCESS_INFORMATION()
+		pi = winBindings.advapi32.PROCESS_INFORMATION()
 		# Even if we have uiAccess privileges, they will not be inherited by default.
 		# Therefore, explicitly specify our own process token, which causes them to be inherited.
 		token = winKernel.OpenProcessToken(winKernel.GetCurrentProcess(), winKernel.MAXIMUM_ALLOWED)
 		try:
 			loaderPath = os.path.join(loaderDir, "nvdaHelperRemoteLoader.exe")
 			log.debug(f"Starting {loaderPath}")
-			winKernel.CreateProcessAsUser(token, None, loaderPath, None, None, True, None, None, None, si, pi)
+			winKernel.CreateProcessAsUser(token, None, loaderPath, None, None, True, 0, None, None, si, pi)
 			# We don't need the thread handle.
 			winKernel.closeHandle(pi.hThread)
 			self._process = pi.hProcess
@@ -1232,7 +1200,7 @@ def getHelperLocalWin10Dll():
 	return windll[ReadPaths.nvdaHelperLocalWin10Dll]
 
 
-def bstrReturn(address):
+def _bstrReturn(address: int) -> str:
 	"""Handle a BSTR returned from a ctypes function call.
 	This includes freeing the memory.
 	This is needed for nvdaHelperLocalWin10 functions which return a BSTR.
@@ -1244,3 +1212,38 @@ def bstrReturn(address):
 	val = wstring_at(address)
 	winBindings.oleaut32.SysFreeString(address)
 	return val
+
+
+__getattr__ = _deprecate.handleDeprecations(
+	_deprecate.MovedSymbol(
+		"LOCAL_WIN10_DLL_PATH",
+		"NVDAState",
+		"ReadPaths",
+		"nvdaHelperLocalWin10Dll",
+	),
+	_deprecate.MovedSymbol(
+		"versionedLibPath",
+		"NVDAState",
+		"ReadPaths",
+		"versionedLibX86Path",
+	),
+	_deprecate.MovedSymbol(
+		"coreArchLibPath",
+		"NVDAState",
+		"ReadPaths",
+		"coreArchLibPath",
+	),
+	_deprecate.MovedSymbol(
+		"generateBeep",
+		"NVDAHelper.localLib",
+	),
+	_deprecate.MovedSymbol(
+		"VBuf_getTextInRange",
+		"NVDAHelper.localLib",
+	),
+	_deprecate.MovedSymbol(
+		"nvdaController_onSsmlMarkReached",
+		"NVDAHelper.localLib",
+	),
+	_deprecate.RemovedSymbol("bstrReturn", _bstrReturn),
+)

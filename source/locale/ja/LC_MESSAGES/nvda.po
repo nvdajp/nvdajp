@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nvda\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-31 23:25+0000\n"
-"PO-Revision-Date: 2025-09-01 02:15\n"
+"POT-Creation-Date: 2025-09-05 06:01+0000\n"
+"PO-Revision-Date: 2025-09-08 00:44\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -5011,7 +5011,7 @@ msgstr "キーボードが制御するPCのローカルまたはリモートの�
 #: globalCommands.py:5059
 msgctxt "remote"
 msgid "Sends control+alt+delete to the controlled computer."
-msgstr ""
+msgstr "制御されるPCにcontrol+alt+deleteを送信します。"
 
 #. Translators: a message indicating that configuration profiles can't be activated using gestures,
 #. due to profile activation being suspended.
@@ -9932,7 +9932,7 @@ msgstr "タイ語2級点字"
 #. braille settings dialog.
 #: brailleTables\__tables.py:564
 msgid "Turkish 8 dot computer braille"
-msgstr ""
+msgstr "トルコ語8点コンピューター点字"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
@@ -13992,7 +13992,7 @@ msgstr "制御されるPCの場合に切断の前に確認"
 #: gui\settingsDialogs.py:3410
 msgctxt "remote"
 msgid "&Mute when controlling the local computer"
-msgstr ""
+msgstr "ローカルPCを制御するときはミュート(&M)"
 
 #. Translators: A checkbox in Remote Access settings to set whether NVDA should automatically connect to a control server on startup.
 #: gui\settingsDialogs.py:3420
@@ -15587,19 +15587,19 @@ msgstr "開発者"
 #: gui\addonStoreGui\viewModels\addonList.py:96
 msgctxt "addonStore"
 msgid "Publication date"
-msgstr ""
+msgstr "公開日"
 
 #. Translators: The name of the column that contains the installation date of the add-on.
 #: gui\addonStoreGui\viewModels\addonList.py:101
 msgctxt "addonStore"
 msgid "Install date"
-msgstr ""
+msgstr "インストール日"
 
 #. Translators: The name of the column that contains the minimum version of NVDA required for this add-on.
 #: gui\addonStoreGui\viewModels\addonList.py:107
 msgctxt "addonStore"
 msgid "Minimum NVDA version"
-msgstr ""
+msgstr "最小要件の NVDA バージョン"
 
 #. Translators: The name of the column that contains the last version of NVDA tested with this add-on.
 #: gui\addonStoreGui\viewModels\addonList.py:112

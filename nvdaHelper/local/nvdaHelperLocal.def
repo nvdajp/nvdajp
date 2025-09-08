@@ -98,3 +98,4 @@ EXPORTS
 	wasSilence_terminate
 	isScreenFullyBlack
 	localListeningSocketExists
+	writeCrashDump
