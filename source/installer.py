@@ -11,6 +11,7 @@ import os
 import tempfile
 import shutil
 import itertools
+import winBindings.kernel32
 import shellapi
 import globalVars
 import languageHandler
