@@ -1,3 +1,4 @@
+setlocal enableextensions enabledelayedexpansion
 set SCONSOPTIONS=%*
 if not defined SCONSOPTIONS (
     set SCONSOPTIONS=version_build=1 --all-cores
@@ -45,15 +46,15 @@ if not defined SIGNTOOL set SIGNTOOL=C:\Program Files (x86)\Windows Kits\10\bin\
 
 rem Build signing args similar to NVDA build\prepare.cmd
 if not defined CERT_STORE set CERT_STORE=My
-set "SIGN_ARGS=/fd SHA256 /td SHA256 /tr %TIMESTAMP_URL%"
+set "SIGN_ARGS=/fd SHA256 /td SHA256 /tr !TIMESTAMP_URL!"
 
 rem Prefer specific certificate by SHA1 or Name; else try auto-detect a valid trusted code signing cert
 if defined CERT_SHA1 (
-    set "SIGN_ARGS=%SIGN_ARGS% /s %CERT_STORE% /sha1 %CERT_SHA1%"
-    if defined CERT_MACHINE_STORE set "SIGN_ARGS=%SIGN_ARGS% /sm"
+    set "SIGN_ARGS=!SIGN_ARGS! /s !CERT_STORE! /sha1 !CERT_SHA1!"
+    if defined CERT_MACHINE_STORE set "SIGN_ARGS=!SIGN_ARGS! /sm"
 ) else if defined CERT_NAME (
-    set "SIGN_ARGS=%SIGN_ARGS% /s %CERT_STORE% /n %CERT_NAME%"
-    if defined CERT_MACHINE_STORE set "SIGN_ARGS=%SIGN_ARGS% /sm"
+    set "SIGN_ARGS=!SIGN_ARGS! /s !CERT_STORE! /n !CERT_NAME!"
+    if defined CERT_MACHINE_STORE set "SIGN_ARGS=!SIGN_ARGS! /sm"
 ) else (
     for /f "usebackq delims=" %%T in (`pwsh -NoProfile -Command "$stores=@('Cert:\\CurrentUser\\My','Cert:\\LocalMachine\\My'); $c=Get-ChildItem $stores -CodeSigningCert -ErrorAction SilentlyContinue | Where-Object { $_.HasPrivateKey -and $_.NotBefore -lt (Get-Date) -and $_.NotAfter -gt (Get-Date) } | Sort-Object NotAfter -Descending; if(-not $c){ exit 2 }; $chain=New-Object System.Security.Cryptography.X509Certificates.X509Chain; $chain.ChainPolicy.RevocationMode='NoCheck'; $chain.ChainPolicy.RevocationFlag='EntireChain'; $chain.ChainPolicy.VerificationFlags='NoFlag'; $chosen=$null; foreach($cert in $c){ if($chain.Build($cert)){ $chosen=$cert; break } }; if($null -eq $chosen){ exit 3 }; $chosen.Thumbprint.Replace(' ','')"`) do set "CERT_SHA1=%%T"
     if not defined CERT_SHA1 (
@@ -61,18 +62,18 @@ if defined CERT_SHA1 (
         echo         Set CERT_SHA1 or CERT_NAME to select the correct certificate.>&2
         goto onerror
     )
-    set "SIGN_ARGS=%SIGN_ARGS% /s %CERT_STORE% /sha1 %CERT_SHA1%"
+    set "SIGN_ARGS=!SIGN_ARGS! /s !CERT_STORE! /sha1 !CERT_SHA1!"
 )
 
 rem Ensure /sm is set if CERT_MACHINE_STORE requested
 if defined CERT_MACHINE_STORE (
-    echo %SIGN_ARGS% | findstr /i /c:" /sm" >nul || set "SIGN_ARGS=%SIGN_ARGS% /sm"
+    echo !SIGN_ARGS! | findstr /i /c:" /sm" >nul || set "SIGN_ARGS=!SIGN_ARGS! /sm"
 )
 
 echo Using signtool: %SIGNTOOL%
-if defined CERT_SHA1 echo Using certificate (SHA1): %CERT_SHA1%
-if defined CERT_NAME echo Using certificate (Name): %CERT_NAME%
-echo Timestamp: %TIMESTAMP_URL%
+if defined CERT_SHA1 echo Using certificate (SHA1): !CERT_SHA1!
+if defined CERT_NAME echo Using certificate (Name): !CERT_NAME!
+echo Timestamp: !TIMESTAMP_URL!
 
 call :sign_one source\synthDrivers\jtalk\libmecab.dll
 @if not "%ERRORLEVEL%"=="0" goto onerror
@@ -157,7 +158,7 @@ exit /b -1
 
 rem Subroutine: sign one file with retries and pause
 :sign_one
-setlocal enableextensions
+setlocal enableextensions enabledelayedexpansion
 set "_FILE=%~1"
 if not exist "%_FILE%" (
     echo [ERROR] File not found: %_FILE%>&2
@@ -166,8 +167,8 @@ if not exist "%_FILE%" (
 set "_TRIES=0"
 :_try_sign
 set /a _TRIES+=1 >nul
-echo Signing "%_FILE%" (try %_TRIES%)
-"%SIGNTOOL%" sign %SIGN_ARGS% "%_FILE%"
+echo Signing "!_FILE!" (try !_TRIES!)
+"%SIGNTOOL%" sign !SIGN_ARGS! "!_FILE!"
 if "%ERRORLEVEL%"=="0" (
     timeout /T 5 /NOBREAK >nul
     endlocal & exit /b 0
