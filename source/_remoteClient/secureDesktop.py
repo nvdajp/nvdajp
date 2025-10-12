@@ -482,7 +482,7 @@ class SecureDesktopHandler:
 		if self._mapFile is not None:
 			if not closeHandle(self._mapFile):
 				log.debugWarning(
-					"Failed to close handle to memory mapped IPC file. {GetLastError()}: {FormatError()}"
+					f"Failed to close handle to memory mapped IPC file. {GetLastError()}: {FormatError()}"
 				)
 			self._mapFile = None
 
