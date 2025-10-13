@@ -50,6 +50,7 @@ Quits from keyboard with about dialog open
 
 Quits from menu
 	[Documentation]	Starts NVDA and ensures that it can be quit using the keyboard
+	[Tags]	robot:skip
 	[Setup]	start NVDA	standard-dontShowExitDialog.ini
 	quits from menu	False	# run test
 

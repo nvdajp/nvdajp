@@ -202,23 +202,65 @@ if apiSigningToken:
 	# Export via scons environment so other libraries can be signed
 	env["signExec"] = signExecApi
 elif certFile:
-	# Local code signing with a certFile
+	# Local code signing with a certificate in store or PFX file
 	def signExecCert(target, source, env):
-		# we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages
-		signExecCmd = ["signtool", "sign", "/fd", "SHA256", "/a"]
-		if certPassword:
-			signExecCmd.extend(("/p", certPassword))
+		# Build signtool path (allow override via SIGNTOOL env)
+		signToolPath = os.getenv("SIGNTOOL") or "signtool"
+
+		# Base args: enforce SHA256 digest and timestamp digest
+		baseArgs = [signToolPath, "sign", "/fd", "SHA256"]
 		if certTimestampServer:
-			signExecCmd.extend(("/tr", certTimestampServer, "/td", "SHA256"))
-		print([str(x) for x in target])
-		# #3795: signtool can quite commonly fail with timestamping, so allow it to try up to 3 times with a 1 second delay between each try.
-		res = 0
-		for count in range(3):
-			res = env.Execute([signExecCmd + [target[0].abspath]])
-			if not res:
-				return 0  # success
-			time.sleep(1)
-		return res  # failed
+			baseArgs.extend(("/tr", certTimestampServer, "/td", "SHA256"))
+
+		# Certificate selection
+		args = list(baseArgs)
+		# If certFile points to an existing file, use it with optional password
+		certFilePath = certFile if isinstance(certFile, str) else str(certFile)
+		try:
+			useCertFile = bool(certFilePath) and os.path.isfile(certFilePath)
+		except Exception:
+			useCertFile = False
+
+		if useCertFile:
+			args.extend(("/f", certFilePath))
+			if certPassword:
+				args.extend(("/p", certPassword))
+		else:
+			# Support store-based selection via environment variables
+			certStore = os.getenv("CERT_STORE") or "My"
+			certSha1 = os.getenv("CERT_SHA1")
+			certName = os.getenv("CERT_NAME")
+			certMachine = os.getenv("CERT_MACHINE_STORE")
+			if certSha1:
+				args.extend(("/s", certStore, "/sha1", certSha1))
+				if certMachine:
+					args.append("/sm")
+			elif certName:
+				args.extend(("/s", certStore, "/n", certName))
+				if certMachine:
+					args.append("/sm")
+			else:
+				# Fallback to automatic selection from store
+				args.append("/a")
+
+		# Sign each target that is a PE image, with retries
+		retval = 0
+		for t in target:
+			abspath = t.abspath
+			if not abspath.lower().endswith((".exe", ".dll")):
+				continue
+			attempt = 0
+			res = 1
+			while attempt < 3:
+				attempt += 1
+				res = env.Execute([args + [abspath]])
+				if res == 0:
+					break
+				time.sleep(1)
+			else:
+				print(f"Error signing file: {abspath}")
+				retval = res or 1
+		return retval
 
 	# Export via scons environment so other libraries can be signed
 	env["signExec"] = signExecCert
