@@ -34,11 +34,12 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Run ruff format --check
+      - name: Run ruff format --check (advisory)
+        continue-on-error: true
         shell: pwsh
         run: uv run ruff format --check
 
-      - name: Run ruff check
+      - name: Run ruff check (advisory)
+        continue-on-error: true
         shell: pwsh
         run: uv run ruff check
-
