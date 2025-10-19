@@ -16,6 +16,8 @@ env:
   PY_PYTHON: 3.11-32
   RELEASE: 1
   PUBLISHER: nvdajp
+  # Cache details about available MSVC tooling for subsequent SCons invocations
+  SCONS_CACHE_MSVC_CONFIG: ".scons_msvc_cache.json"
 
 jobs:
   buildNVDA:
@@ -54,6 +56,17 @@ jobs:
         python --version
         uv --version
         nmake /? | Select-Object -First 1
+
+    - name: Set cache key for SCons MSVC Cache
+      shell: powershell
+      run: |
+        echo "SCONS_CACHE_KEY=$env:RUNNER_OS-$env:ImageVersion" >> $env:GITHUB_ENV
+
+    - name: SCons MSVC Cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.SCONS_CACHE_MSVC_CONFIG }}
+        key: ${{ env.SCONS_CACHE_KEY }}
 
     - name: Set version variables
       run: |
