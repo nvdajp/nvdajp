@@ -34,7 +34,9 @@
   - 32bit版 NVDA 日本語版は本家版と同様に 2025.3 系で終了
 
 ## Phase 1 — Build Infra Align on 3.11 x86（Issue #539, Part of #530）
+
 - Scope
+  - nvaccess からのマージを保留
   - Python 3.11 x86 を維持したまま、本家版CI/ビルド前提に寄せる
   - 外部依存（.cmd / 7z / nmake）を段階的に排除し、SCons/純Pythonへ
 - Done（実績）
@@ -49,7 +51,16 @@
   - SCons キャッシュ/引数の整合（ci/scripts/setSconsArgs.ps1 準拠）
   - ユニット/必要最小のシステムテストを安定緑（installerタグは除外可）
 
+## 既知の懸念（メモ）
+
+- Python 3.13 への移行と x64 対応が、fast-diff-match-patch（DMP）依存の配布状況により同時対応になりうる。
+  - 対応方針（今は実装せず記録のみ）
+    - DMP 読み込み失敗時は difflib へ自動フォールバック（コード側で遅延 import/try-except）
+    - CI では 3.13 x64 を先行検証、3.13 x86 は typeCheck/lint のみ等で段階導入
+  - Phase 1 完了時点で再評価し、必要なら Phase 2 の計画に反映
+
 ## Phase 2 — Python 3.13 対応（Part of #530）
+
 - Scope
   - CI マトリクス（3.11 x86 / 3.13 x86）を導入、将来 x64 追加の前段
 - Tasks
@@ -58,8 +69,14 @@
   - CI ジョブ分割（typeCheck / unit / docs / packaging）を本家版構成へ近づける
 - Exit
   - 主要ジョブが 3.11 / 3.13 の双方で緑
+- 補足（運用）
+  - 目的: x64 を既定化に向け安定、3.13 を実用レベルへ（配布は段階導入）
+  - CI マトリクス: 3.13 x64（必須）/ 3.11 x86（EOL まで保守用）/ 3.13 x86（typeCheck・lint のみ任意）
+  - DMP フォールバック: fast-diff-match-patch が利用不可の場合は difflib へ自動退避
+  - 主要 JP アドオン（jtalk/kgs）を x64 で起動確認（任意）
 
 ## Phase 3 — x64 ビルド対応（Part of #530）
+
 - Scope
   - x64（将来 arm64）ビルドの追加、移行パス検証
 - Tasks
@@ -67,21 +84,27 @@
   - 設定移行（32→64）・アンインストーラ fix（本家版の取り込みを反映）
   - 日本語版固有モジュール（jtalk 等）の x64 対応検証
   - アドオン互換性チェックとガイダンス
+- 手順
+  - 先行診断: dry-run マージで衝突箇所を棚卸し（pyproject、sconstruct、workflows、installer/launcher、source 配下）
+  - 先にワークフローと SCons の構造差分を合わせる（コード差分より先）
+  - 段階マージ: ワークフロー → ビルド（SCons/installer） → ランタイム（source） → ドキュメント
+  - 差分の集約・削減: 日本語版固有変更は明示ディレクトリへ寄せ、恒常差分を減らす
 - Exit
   - x86/x64 の並行ビルドがCIで緑、配布準備可
 
 ## リスクとロールバック
+
 - 依存更新でのビルド破綻 → ピン見直し/段階導入
 - システムテストの不安定化 → タグ縮小・再試行の仕組み
 
-## 既知の懸念（メモ）
-- Python 3.13 への移行と x64 対応が、fast-diff-match-patch（DMP）依存の配布状況により同時対応になりうる。
-  - 対応方針（今は実装せず記録のみ）
-    - DMP 読み込み失敗時は difflib へ自動フォールバック（コード側で遅延 import/try-except）
-    - CI では 3.13 x64 を先行検証、3.13 x86 は typeCheck/lint のみ等で段階導入
-  - Phase 1 完了時点で再評価し、必要なら Phase 2 の計画に反映
+## ゲート（判断ポイント）
+
+- Gate A（Phase 2 中間）: 3.13 x64 で unit + 最小 system が安定緑 → installer/署名/シンボル確認へ
+- Gate B（Phase 2 完了）: 3.13 x64 が配布可能、3.11 x86 は EOL まで保守可能 → Phase 3 へ
+- Gate C（Phase 3 開始前）: dry-run マージ結果と衝突一覧の承認 → 実マージ・段階導入へ
 
 ## 参照
+
 - JP Docs Hub: projectDocs/jp/README.md
 - 本家版開発環境: projectDocs/dev/createDevEnvironment.md
 - エージェント向け: AGENTS.md
