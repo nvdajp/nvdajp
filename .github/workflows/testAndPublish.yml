@@ -100,22 +100,16 @@ jobs:
         call jptools\nonCertAllBuild.cmd %sconsArgs%
       shell: cmd
 
-    - name: Build Japanese addons
+    - name: Build Japanese addons (no 7z)
+      shell: pwsh
       run: |
-        set NOWDATE=%VERSION%
-        cd jptools
-        call pack_jtalk_addon.cmd
-        call pack_kgs_addon.cmd
-        cd ..
-      shell: cmd
+        $env:VERSION = "${{ env.VERSION }}"
+        uv run python jptools/pack_jtalk_addon.py --nowdate $env:VERSION
+        uv run python jptools/pack_kgs_addon.py --version $env:VERSION
       env:
         VERSION: ${{ env.VERSION }}
 
-    - name: Build Controller Client
-      run: |
-        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
-        call jptools\buildControllerClient.cmd %sconsArgs%
-      shell: cmd
+    # Controller client zip is produced via SCons in createLauncher job (alias: client)
 
     - name: Test miscDepsJp
       run: |
