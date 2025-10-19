@@ -6,6 +6,7 @@ NVDA 日本語版の概要と最短手順を示します。詳細は JP Docs Hub
 - Python: 3.11 x86 を維持（x64/arm64 切替は未実施）
 - 本家版寄りの CI/ビルド整合を段階導入中（Step 1）
 - 7z / .cmd / nmake 依存は削減中（アドオン梱包は純 Python 化）
+- 32bit は 2025.3 で EOL（予定）
 
 ## クイックスタート
 - 取得: `git clone --recurse-submodules https://github.com/nvdajp/nvdajp.git`
@@ -16,6 +17,9 @@ NVDA 日本語版の概要と最短手順を示します。詳細は JP Docs Hub
 ## CI
 - 型チェック（本家版寄せ・安全導入）: `.github/workflows/nvbeta-typecheck-311x86.yml`
 - 日本語版の包括パイプライン: `.github/workflows/testAndPublish.yml`
+
+## リリース
+- 正式リリースはローカルマシンでコードサイニングして作成（CI は未署名の検証用ビルドのみ）
 
 ## ドキュメント
 - JP Docs Hub（日本語版の要約とリンク集）: `projectDocs/jp/README.md`
