@@ -1,10 +1,10 @@
 # NVDA 日本語版（最小ガイド）
 
-NVDA 日本語版の概要と最短手順を示します。詳細は JP Docs Hub と上流ドキュメントを参照してください。
+NVDA 日本語版の概要と最短手順を示します。詳細は JP Docs Hub と本家版ドキュメントを参照してください。
 
 ## 現状（2025-10）
 - Python: 3.11 x86 を維持（x64/arm64 切替は未実施）
-- 上流寄りの CI/ビルド整合を段階導入中（Step 1）
+- 本家版寄りの CI/ビルド整合を段階導入中（Step 1）
 - 7z / .cmd / nmake 依存は削減中（アドオン梱包は純 Python 化）
 
 ## クイックスタート
@@ -14,12 +14,12 @@ NVDA 日本語版の概要と最短手順を示します。詳細は JP Docs Hub
 - 単体/システムテスト: `ci/scripts/tests/unitTests.ps1` / `ci/scripts/tests/systemTests.ps1`
 
 ## CI
-- 型チェック（上流寄せ・安全導入）: `.github/workflows/nvbeta-typecheck-311x86.yml`
+- 型チェック（本家版寄せ・安全導入）: `.github/workflows/nvbeta-typecheck-311x86.yml`
 - 日本語版の包括パイプライン: `.github/workflows/testAndPublish.yml`
 
 ## ドキュメント
 - JP Docs Hub（日本語版の要約とリンク集）: `projectDocs/jp/README.md`
-- 上流の開発環境ガイド: `projectDocs/dev/createDevEnvironment.md`
+- 本家版の開発環境ガイド: `projectDocs/dev/createDevEnvironment.md`
 - プロダクトビジョン: `projectDocs/product_vision.md`
 - エージェント向け手引き: `AGENTS.md`
 
