@@ -46,7 +46,7 @@
 - TODO（受け入れ基準＝All green + 外部依存縮小）
   - Lint（ruff）ジョブ追加・安定化
   - .python-versions を 3.11 x86 のみに固定（3.13 は次Phase）
-  - testAndPublish の主要ジョブを段階的に windows-2025 へ
+  - testAndPublish の主要ジョブを段階的に windows-2025 へ（後述: ランナー移行計画）
   - jptools/setupMiscDepsJp.cmd の 7z ラウンドトリップ除去（Python/SCons化）
   - SCons キャッシュ/引数の整合（ci/scripts/setSconsArgs.ps1 準拠）
   - ユニット/必要最小のシステムテストを安定緑（installerタグは除外可）
@@ -62,8 +62,9 @@
 ## Phase 2 — Python 3.13 対応（Part of #530）
 
 - Scope
-  - CI マトリクス（3.11 x86 / 3.13 x86）を導入、将来 x64 追加の前段
+  - 3.13 x64 を必須とし、3.11 x86 はEOLまで保守
 - Tasks
+  - 新しいワークフローを 3.13 x64 に切替（ファイル名は nvbeta-typecheck.yml 等に簡素化可）。
   - 依存互換性の確認・ピン更新（wxPython, brlapi など）
   - .python-versions に 3.13 を追加（3.11 と併存）
   - CI ジョブ分割（typeCheck / unit / docs / packaging）を本家版構成へ近づける
@@ -80,6 +81,7 @@
 - Scope
   - x64（将来 arm64）ビルドの追加、移行パス検証
 - Tasks
+  - nvbeta-typecheck.yml は削除。testAndPublish.yml に本家版と同等の typeCheck ジョブを持たせる。
   - JAB 64bit への切替、installer/launcher の x64 条件分岐
   - 設定移行（32→64）・アンインストーラ fix（本家版の取り込みを反映）
   - 日本語版固有モジュール（jtalk 等）の x64 対応検証
@@ -96,6 +98,29 @@
 
 - 依存更新でのビルド破綻 → ピン見直し/段階導入
 - システムテストの不安定化 → タグ縮小・再試行の仕組み
+
+## ランナー移行計画（windows-2025）
+
+- 方針: 本家版と整合させるため、windows-2025 へ段階移行。影響の小さいジョブから先行し、安定確認後に固定。
+- 移行順序（Phase 1 内で実施）
+  - フェーズ1-A（低リスク先行）
+    - 対象: typeCheck（pyright）、checkPo、checkPot、licenseCheck
+    - 方針: 直ちに windows-2025 へ。3 連続グリーンで固定
+  - フェーズ1-B（ビルド要所）
+    - 対象: buildNVDA、createLauncher、createSymbols
+    - 方針: SCons MSVC 設定キャッシュ（SCONS_CACHE_MSVC_CONFIG）を有効化してから 2025 へ。
+      2 連続グリーン＋成果物検証（launcher 起動・symbols 生成）で固定
+  - フェーズ1-C（最後に移行）
+    - 対象: unitTests → systemTests の順
+    - 方針: unitTests を先に 2025 へ。systemTests はタグを限定（例: startupShutdown）で試行→安定後に拡大
+- 受け入れ基準（各段）
+  - 2〜3 連続グリーン（ジョブ特性に応じて調整）
+  - 成果物の基本動作確認（launcher 起動、symbols 正常作成/アップロード）
+  - 実行時間が顕著に悪化しない（悪化時はキャッシュ/並列度を見直し）
+- ロールバック/安全策
+  - 一時的にランナーをマトリクス化（windows-2022/2025 並走）して比較
+  - 不安定な場合は該当ジョブのみ即座に元のランナーへ戻す
+  - systemTests はタグ縮小・再試行の運用でフレークを抑制
 
 ## ゲート（判断ポイント）
 
