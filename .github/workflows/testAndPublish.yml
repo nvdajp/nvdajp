@@ -21,7 +21,7 @@ env:
 
 jobs:
   buildNVDA:
-    runs-on: windows-latest
+    runs-on: windows-2025
     outputs:
       version: ${{ steps.releaseInfo.outputs.VERSION }}
       versionType: ${{ steps.releaseInfo.outputs.VERSION_TYPE }}
@@ -348,7 +348,7 @@ jobs:
 
   unitTests:
     name: Run unit tests
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     steps:
     - name: Checkout cached build
@@ -388,7 +388,7 @@ jobs:
 
   crowdinUpload:
     name: Upload translations to Crowdin
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: [buildNVDA, checkPot]
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/beta' && vars.CROWDIN_PROJECT_ID }}
     steps:
@@ -413,7 +413,7 @@ jobs:
 
   createLauncher:
     name: Create launcher
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     outputs:
       launcherArtifactId: ${{ steps.uploadLauncher.outputs.artifact-id }}
@@ -496,7 +496,7 @@ jobs:
         # Skip chrome tests temporarily - may have issues with Japanese version
         testSuite: [installer, startupShutdown]
     name: Run system tests
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: createLauncher
     steps:
     - name: Checkout cached build
@@ -548,7 +548,7 @@ jobs:
 
   createSymbols:
     name: Create symbols
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     outputs:
       symbolsArtifactId: ${{ steps.uploadArtifact.outputs.artifact-id }}
@@ -585,7 +585,7 @@ jobs:
 
   uploadSymbols:
     name: Upload symbols
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: createSymbols
     if: ${{ github.event_name == 'push' && vars.feature_uploadSymbolsToMozilla }}
     steps:
@@ -786,3 +786,4 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             output/nvda*.exe#Installer
+
