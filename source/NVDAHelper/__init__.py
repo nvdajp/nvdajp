@@ -8,7 +8,7 @@ from ctypes.wintypes import (
 	HANDLE,
 	HKEY,
 )
-from typing import Optional, Tuple
+from typing import Tuple
 import typing
 import os
 import winreg
@@ -33,6 +33,7 @@ from ctypes import (
 	wstring_at,
 )
 
+from winBindings import user32
 import winBindings.oleaut32
 import winBindings.kernel32
 import winBindings.advapi32
@@ -917,7 +918,7 @@ def nvdaControllerInternal_inputLangChangeNotify(threadID, hkl, layoutString):
 	import ui
 
 	buf = create_unicode_buffer(1024)
-	res = windll.kernel32.GetLocaleInfoW(languageID, 2, buf, 1024)
+	res = winBindings.kernel32.GetLocaleInfo(languageID, 2, buf, 1024)
 	# Translators: the label for an unknown language when switching input methods.
 	inputLanguageName = buf.value if res else _("unknown language")
 	layoutStringCodes = []
@@ -1086,11 +1087,11 @@ class _RemoteLoader:
 def initialize() -> None:
 	global _remoteLib, _remoteLoaderX86, _remoteLoaderAMD64, _remoteLoaderARM64
 	global lastLanguageID, lastLayoutString
-	hkl = c_ulong(windll.User32.GetKeyboardLayout(0)).value
+	hkl = user32.GetKeyboardLayout(0)
 	lastLanguageID = winUser.LOWORD(hkl)
 	KL_NAMELENGTH = 9
 	buf = create_unicode_buffer(KL_NAMELENGTH)
-	res = windll.User32.GetKeyboardLayoutNameW(buf)
+	res = user32.GetKeyboardLayoutName(buf)
 	if res:
 		lastLayoutString = buf.value
 	for name, func in [
@@ -1164,16 +1165,21 @@ def initialize() -> None:
 	# Manually start the in-process manager thread for this NVDA main thread now, as a slow system can cause this action to confuse WX
 	_remoteLib.initInprocManagerThreadIfNeeded()
 	arch = winVersion.getWinVer().processorArchitecture
-	if arch != "x86" and ReadPaths.coreArchLibPath != ReadPaths.versionedLibX86Path:
-		_remoteLoaderX86 = _RemoteLoader(ReadPaths.versionedLibX86Path)
-	elif arch in ("AMD64", "ARM64") and ReadPaths.coreArchLibPath != ReadPaths.versionedLibAMD64Path:
-		_remoteLoaderAMD64 = _RemoteLoader(ReadPaths.versionedLibAMD64Path)
-	elif arch == "ARM64" and ReadPaths.coreArchLibPath != ReadPaths.versionedLibARM64Path:
-		_remoteLoaderARM64 = _RemoteLoader(ReadPaths.versionedLibARM64Path)
-		# Windows on ARM from Windows 11 supports running AMD64 apps.
-		# Thus we also need to be able to inject into these.
-		if winVersion.getWinVer() >= winVersion.WIN11:
+	if arch == "AMD64":
+		if ReadPaths.coreArchLibPath != ReadPaths.versionedLibX86Path:
+			_remoteLoaderX86 = _RemoteLoader(ReadPaths.versionedLibX86Path)
+		if ReadPaths.coreArchLibPath != ReadPaths.versionedLibAMD64Path:
 			_remoteLoaderAMD64 = _RemoteLoader(ReadPaths.versionedLibAMD64Path)
+	elif arch == "ARM64":
+		if ReadPaths.coreArchLibPath != ReadPaths.versionedLibX86Path:
+			_remoteLoaderX86 = _RemoteLoader(ReadPaths.versionedLibX86Path)
+		if ReadPaths.coreArchLibPath != ReadPaths.versionedLibAMD64Path:
+			# Windows 10 on ARM does not support AMD64 emulation.
+			# Thus only start the AMD64 remote loader if on Windows 11 or above.
+			if winVersion.getWinVer() >= winVersion.WIN11:
+				_remoteLoaderAMD64 = _RemoteLoader(ReadPaths.versionedLibAMD64Path)
+		if ReadPaths.coreArchLibPath != ReadPaths.versionedLibARM64Path:
+			_remoteLoaderARM64 = _RemoteLoader(ReadPaths.versionedLibARM64Path)
 
 
 def terminate():

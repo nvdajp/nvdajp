@@ -259,7 +259,7 @@ class Application(object):
         requirements = {}
         exclusions = {}
         for swinfo in self._switches_by_func.values():
-            if swinfo.mandatory and not swinfo.func in swfuncs:
+            if swinfo.mandatory and swinfo.func not in swfuncs:
                 raise MissingMandatorySwitch("Switch %s is mandatory" %
                     ("/".join(("-" if len(n) == 1 else "--") + n for n in swinfo.names),))
             requirements[swinfo.func] = set(self._switches_by_name[req] for req in swinfo.requires)

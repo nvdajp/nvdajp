@@ -16,6 +16,14 @@ env:
   PY_PYTHON: 3.11-32
   RELEASE: 1
   PUBLISHER: nvdajp
+  START_BUILD_NUMBER: ${{ vars.BUILD_NUMBER_OFFSET || 0 }}
+  scons_publisher: nvdajp
+  # Don't send telemetry to Microsoft when using MSVC tooling, avoiding an unnecessary PowerShell script invocation.
+  VSCMD_SKIP_SENDTELEMETRY: 1
+  # Cache details about available MSVC tooling for subsequent SCons invocations to the provided file.
+  SCONS_CACHE_MSVC_CONFIG: ".scons_msvc_cache.json"
+  # Allow uv to use a managed Python when project requires 3.13 but runner Python is 3.11 (x86)
+  UV_PYTHON_PREFERENCE: managed
 
 jobs:
   buildNVDA:
@@ -436,17 +444,17 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-    - name: Build scons targets
+    - name: Build scons docs targets
       shell: cmd
-      run: scons %sconsOutTargets% %sconsArgs% %sconsCores%
-    - name: Create launcher
+      run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
+    # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
+    - name: Create launcher and controller client
       shell: cmd
-      # Run launcher separately as we can't safely generate that in parallel to other scons targets (#18867)
       run: |
         PowerShell -Command "Set-ExecutionPolicy Bypass"
         PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
         PowerShell -Command "Install-Module -Name SignPath -Force"
-        scons launcher %sconsArgs% %sconsCores%
+        scons %sconsLauncherOutTargets% %sconsArgs% %sconsCores%
     - name: Upload launcher
       id: uploadLauncher
       uses: actions/upload-artifact@v4
@@ -570,10 +578,13 @@ jobs:
     # Used to protect branches/tags as a general status check so we can check a single job for all rulesets.
     name: Check if all tests pass
     runs-on: ubuntu-latest
+    if: always()
     needs: [buildNVDA, checkPo, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols]
     steps:
     - name: Check if all tests pass
-      run: echo "All tests passed successfully."
+      uses: re-actors/alls-green@v1.2.2
+      with:
+        jobs: ${{ toJSON(needs) }}
 
   uploadSymbols:
     name: Upload symbols

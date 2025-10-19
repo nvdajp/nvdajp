@@ -62,14 +62,14 @@ class RemotePath(Path):
     @property
     @_setdoc(Path)
     def basename(self):
-        if not "/" in str(self):
+        if "/" not in str(self):
             return str(self)
         return str(self).rsplit("/", 1)[1]
 
     @property
     @_setdoc(Path)
     def dirname(self):
-        if not "/" in str(self):
+        if "/" not in str(self):
             return str(self)
         return self.__class__(self.remote, str(self).rsplit("/", 1)[0])
 

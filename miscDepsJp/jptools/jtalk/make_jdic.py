@@ -6,7 +6,6 @@
 open_file = lambda name, mode, encoding: open(name, mode, encoding=encoding)
 
 
-import errno
 import os
 import shutil
 import subprocess
