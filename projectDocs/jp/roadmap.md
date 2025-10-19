@@ -43,8 +43,14 @@
 - 依存更新でのビルド破綻 → ピン見直し/段階導入
 - システムテストの不安定化 → タグ縮小・再試行の仕組み
 
+## 既知の懸念（メモ）
+- Python 3.13 への移行と x64 対応が、fast-diff-match-patch（DMP）依存の配布状況により同時対応になりうる。
+  - 対応方針（今は実装せず記録のみ）
+    - DMP 読み込み失敗時は difflib へ自動フォールバック（コード側で遅延 import/try-except）
+    - CI では 3.13 x64 を先行検証、3.13 x86 は typeCheck/lint のみ等で段階導入
+  - Phase 1 完了時点で再評価し、必要なら Phase 2 の計画に反映
+
 ## 参照
 - JP Docs Hub: projectDocs/jp/README.md
 - 上流開発環境: projectDocs/dev/createDevEnvironment.md
 - エージェント向け: AGENTS.md
-
