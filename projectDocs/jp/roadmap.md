@@ -34,19 +34,9 @@
   - 可能な限り本家版に合わせる
   - 32bit版 NVDA 日本語版は本家版と同様に 2025.3 系で終了
 
-## Phase 1 — Build Infra Align on 3.11 x86（Issue #539, Part of #530）
+  - \.python-versions を 3.11 x86 のみに固定（完了）
 
-- Scope
-  - nvaccess からのマージを保留
-  - Python 3.11 x86 を維持したまま、本家版CI/ビルド前提に寄せる
-  - 外部依存（.cmd / 7z / nmake）を段階的に排除し、SCons/純Pythonへ
-- Done（実績）
-  - 型チェック専用ワークフロー追加: .github/workflows/nvbeta-typecheck-311x86.yml（PR #540）
-  - アドオン梱包の 7z 依存排除: jptools/pack_*.py に置換（PR #540）
-  - ドキュメント整理（最小README、JP Docs Hub、legacy保存）
-- TODO（受け入れ基準＝All green + 外部依存縮小）
   - Lint（ruff）ジョブ追加・安定化
-  - .python-versions を 3.11 x86 のみに固定（3.13 は次Phase）
   - testAndPublish の主要ジョブを段階的に windows-2025 へ（後述: ランナー移行計画）
   - jptools/setupMiscDepsJp.cmd の 7z ラウンドトリップ除去（Python/SCons化）
   - SCons キャッシュ/引数の整合（ci/scripts/setSconsArgs.ps1 準拠）
@@ -134,3 +124,4 @@
 - JP Docs Hub: projectDocs/jp/README.md
 - 本家版開発環境: projectDocs/dev/createDevEnvironment.md
 - エージェント向け: AGENTS.md
+
