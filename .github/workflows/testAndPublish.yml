@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 env:
-  PY_PYTHON: 3.11-32
+  PY_PYTHON: 3.13-32
   RELEASE: 1
   PUBLISHER: nvdajp
   START_BUILD_NUMBER: ${{ vars.BUILD_NUMBER_OFFSET || 0 }}
@@ -40,10 +40,10 @@ jobs:
         submodules: recursive
         fetch-depth: 1
 
-    - name: Setup Python
+    - name: Setup Python (3.13 x86)
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.13.7'
         architecture: 'x86'
 
     - name: Install uv
@@ -271,10 +271,10 @@ jobs:
       with:
         # Include gettext
         submodules: true
-    - name: Set up python
+    - name: Set up Python (3.13 x86)
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.13.7'
         architecture: 'x86'
     - name: Install pre-commit
       run: |
@@ -307,10 +307,10 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
-    - name: Setup Python
+    - name: Setup Python (3.13 x86)
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.13.7'
         architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
@@ -334,10 +334,10 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
-    - name: Setup Python
+    - name: Setup Python (3.13 x86)
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.13.7'
         architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
@@ -355,10 +355,10 @@ jobs:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
-    - name: Setup Python
+    - name: Setup Python (3.13 x86)
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.13.7'
         architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
