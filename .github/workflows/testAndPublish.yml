@@ -108,9 +108,9 @@ jobs:
 
     - name: Build NVDA Japanese version
       run: |
-        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
+        set USE_PY_OVERLAY_COPY=1`n        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
         echo Building with args: %sconsArgs%
-        call jptools\nonCertAllBuild.cmd %sconsArgs%
+        call jptools\nonCertAllBuild.cmd %sconsArgs%`n        echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
       shell: cmd
 
     - name: Build Japanese addons (no 7z)
@@ -786,5 +786,6 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             output/nvda*.exe#Installer
+
 
 
