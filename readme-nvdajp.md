@@ -23,6 +23,8 @@ NVDA 日本語版の概要と最短手順を示します。詳細は JP Docs Hub
 - プロダクトビジョン: `projectDocs/product_vision.md`
 - エージェント向け手引き: `AGENTS.md`
 
+詳細ドキュメント（旧版・参考）: `projectDocs/jp/legacy/readme-nvdajp-legacy.md`
+
 ## 関連 Issue
 - `#530`: 本家 2026.1 の日本語版へのマージ
 - `#539`: Step 1（3.11 x86 のままビルド基盤整合）
