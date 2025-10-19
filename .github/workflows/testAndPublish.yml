@@ -266,7 +266,7 @@ jobs:
 
   checkPo:
     name: Check po files for errors
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -300,7 +300,7 @@ jobs:
 
   checkPot:
     name: Check translator comments
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     steps:
     - name: Checkout cached build
@@ -327,7 +327,7 @@ jobs:
 
   licenseCheck:
     name: Check license compatibility of dependencies
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     steps:
     - name: Checkout cached build
