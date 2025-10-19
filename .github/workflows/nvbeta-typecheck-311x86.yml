@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Set up Python 3.11 x86
         uses: actions/setup-python@v5
@@ -35,4 +37,3 @@ jobs:
       - name: Run type check (pyright)
         shell: pwsh
         run: ci/scripts/tests/typeCheck.ps1
-
