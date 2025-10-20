@@ -44,6 +44,36 @@ jobs:
       shell: pwsh
       run: ci/scripts/tests/typeCheck.ps1
 
+  lint:
+    name: Ruff format and lint (advisory)
+    runs-on: windows-2025
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Set up Python 3.11 x86
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11.9'
+        architecture: 'x86'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+
+    - name: Run ruff format --check (advisory)
+      continue-on-error: true
+      shell: pwsh
+      run: uv run ruff format --check
+
+    - name: Run ruff check (advisory)
+      continue-on-error: true
+      shell: pwsh
+      run: uv run ruff check
+
   buildNVDA:
     runs-on: windows-2025
     outputs:
