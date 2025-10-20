@@ -160,13 +160,23 @@ jobs:
         echo "API Back Compat To: $apiCompatTo"
       shell: powershell
 
-    - name: Build NVDA Japanese version
+    - name: Build NVDA Japanese version (no .cmd wrapper)
       run: |
         set USE_PY_OVERLAY_COPY=1
-        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
-        echo Building with args: %sconsArgs%
+        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% release=%RELEASE%
         echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
-        call jptools\nonCertAllBuild.cmd %sconsArgs%
+        REM Apply miscDepsJp overlay using pure Python (fallback to python if py -3 not available)
+        pushd miscDepsJp
+        py -3 ..\jptools\setup_miscdeps_overlay.py || python ..\jptools\setup_miscdeps_overlay.py
+        popd
+        REM Build via SCons (replicates nonCertAllBuild.cmd)
+        scons source %sconsArgs%
+        if errorlevel 1 exit /b %errorlevel%
+        scons user_docs %sconsArgs%
+        if errorlevel 1 exit /b %errorlevel%
+        scons dist %sconsArgs%
+        if errorlevel 1 exit /b %errorlevel%
+        scons launcher %sconsArgs%
       shell: cmd
 
     - name: Build Japanese addons (no 7z)
