@@ -390,6 +390,17 @@ for userGuideFileSub in env.Glob(os.path.join(userDocsDir.path, "*", "userGuide.
 # Build unicode CLDR dictionaries
 env.SConscript("cldrDict_sconscript", exports=["env", "sourceDir"])
 
+# JP-specific helpers (isolated; add opt-in aliases only)
+try:
+    import jptools.scons_jp as scons_jp
+    _is_jp = (env.get("publisher") or versionInfo.publisher or "").lower() == "nvdajp" or \
+             os.environ.get("NVDAP_JP_HELPERS") == "1"
+    if _is_jp:
+        scons_jp.register_jp_builders(env)
+except Exception:
+    # Never fail the build if JP helpers are unavailable.
+    pass
+
 
 # A builder to generate an NVDA distribution.
 def NVDADistGenerator(target, source, env, for_signature):
