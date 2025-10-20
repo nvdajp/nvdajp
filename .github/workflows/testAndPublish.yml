@@ -16,10 +16,12 @@ env:
   PY_PYTHON: 3.11-32
   RELEASE: 1
   PUBLISHER: nvdajp
+  # Cache details about available MSVC tooling for subsequent SCons invocations
+  SCONS_CACHE_MSVC_CONFIG: ".scons_msvc_cache.json"
 
 jobs:
   buildNVDA:
-    runs-on: windows-latest
+    runs-on: windows-2025
     outputs:
       version: ${{ steps.releaseInfo.outputs.VERSION }}
       versionType: ${{ steps.releaseInfo.outputs.VERSION_TYPE }}
@@ -54,6 +56,17 @@ jobs:
         python --version
         uv --version
         nmake /? | Select-Object -First 1
+
+    - name: Set cache key for SCons MSVC Cache
+      shell: powershell
+      run: |
+        echo "SCONS_CACHE_KEY=$env:RUNNER_OS-$env:ImageVersion" >> $env:GITHUB_ENV
+
+    - name: SCons MSVC Cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.SCONS_CACHE_MSVC_CONFIG }}
+        key: ${{ env.SCONS_CACHE_KEY }}
 
     - name: Set version variables
       run: |
@@ -95,27 +108,23 @@ jobs:
 
     - name: Build NVDA Japanese version
       run: |
+        set USE_PY_OVERLAY_COPY=1
         set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
         echo Building with args: %sconsArgs%
+        echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
         call jptools\nonCertAllBuild.cmd %sconsArgs%
       shell: cmd
 
-    - name: Build Japanese addons
+    - name: Build Japanese addons (no 7z)
+      shell: pwsh
       run: |
-        set NOWDATE=%VERSION%
-        cd jptools
-        call pack_jtalk_addon.cmd
-        call pack_kgs_addon.cmd
-        cd ..
-      shell: cmd
+        $env:VERSION = "${{ env.VERSION }}"
+        uv run python jptools/pack_jtalk_addon.py --nowdate $env:VERSION
+        uv run python jptools/pack_kgs_addon.py --version $env:VERSION
       env:
         VERSION: ${{ env.VERSION }}
 
-    - name: Build Controller Client
-      run: |
-        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
-        call jptools\buildControllerClient.cmd %sconsArgs%
-      shell: cmd
+    # Controller client zip is produced via SCons in createLauncher job (alias: client)
 
     - name: Test miscDepsJp
       run: |
@@ -143,10 +152,17 @@ jobs:
 
     - name: Install NVDA for testing
       run: |
-        $nvdaLauncherFile = ".\output\nvda_${{ env.VERSION }}.exe"
+        # Discover the built installer rather than assuming the exact name.
+        $candidate = Get-ChildItem -Path .\output -Filter "nvda_*.exe" -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if (-not $candidate) {
+          echo "::error::No NVDA installer found under .\\output. Listing directory for diagnostics..."
+          Get-ChildItem -Path .\output -Force -ErrorAction SilentlyContinue | Format-List | Out-String -Width 2000
+          exit 1
+        }
+        $nvdaLauncherFile = $candidate.FullName
         echo "nvdaLauncherFile=$nvdaLauncherFile" >> $env:GITHUB_ENV
         echo "NVDALauncherFile: $nvdaLauncherFile"
-        
+
         $outputDir = $(resolve-path .\testOutput)
         $installerLogFilePath = "$outputDir\nvda_install.log"
         $installerProcess = start-process -FilePath "$nvdaLauncherFile" -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -passthru
@@ -259,7 +275,7 @@ jobs:
 
   checkPo:
     name: Check po files for errors
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -293,7 +309,7 @@ jobs:
 
   checkPot:
     name: Check translator comments
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     steps:
     - name: Checkout cached build
@@ -320,7 +336,7 @@ jobs:
 
   licenseCheck:
     name: Check license compatibility of dependencies
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     steps:
     - name: Checkout cached build
@@ -341,7 +357,7 @@ jobs:
 
   unitTests:
     name: Run unit tests
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     steps:
     - name: Checkout cached build
@@ -381,7 +397,7 @@ jobs:
 
   crowdinUpload:
     name: Upload translations to Crowdin
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: [buildNVDA, checkPot]
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/beta' && vars.CROWDIN_PROJECT_ID }}
     steps:
@@ -406,7 +422,7 @@ jobs:
 
   createLauncher:
     name: Create launcher
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     outputs:
       launcherArtifactId: ${{ steps.uploadLauncher.outputs.artifact-id }}
@@ -489,7 +505,7 @@ jobs:
         # Skip chrome tests temporarily - may have issues with Japanese version
         testSuite: [installer, startupShutdown]
     name: Run system tests
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: createLauncher
     steps:
     - name: Checkout cached build
@@ -541,7 +557,7 @@ jobs:
 
   createSymbols:
     name: Create symbols
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: buildNVDA
     outputs:
       symbolsArtifactId: ${{ steps.uploadArtifact.outputs.artifact-id }}
@@ -578,7 +594,7 @@ jobs:
 
   uploadSymbols:
     name: Upload symbols
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: createSymbols
     if: ${{ github.event_name == 'push' && vars.feature_uploadSymbolsToMozilla }}
     steps:
@@ -779,3 +795,7 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             output/nvda*.exe#Installer
+
+
+
+

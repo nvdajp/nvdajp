@@ -17,10 +17,16 @@ cd ..\..\..\..
 cd source\synthDrivers
 rmdir /S /Q espeak-data
 cd ..\..
-7z a ..\nvdajp-miscdep.7z source
-cd ..
-7z x -y nvdajp-miscdep.7z
-del /Q nvdajp-miscdep.7z
+if defined USE_PY_OVERLAY_COPY (
+  rem CI path: use Python to overlay-copy miscDepsJp\source into repo root\source
+  py -3 ..\jptools\setup_miscdeps_overlay.py
+  cd ..
+) else (
+  7z a ..\nvdajp-miscdep.7z source
+  cd ..
+  7z x -y nvdajp-miscdep.7z
+  del /Q nvdajp-miscdep.7z
+)
 
 @rem cleanup
 
