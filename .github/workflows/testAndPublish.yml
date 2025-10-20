@@ -108,9 +108,11 @@ jobs:
 
     - name: Build NVDA Japanese version
       run: |
-        set USE_PY_OVERLAY_COPY=1`r`n        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
+        set USE_PY_OVERLAY_COPY=1
+        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
         echo Building with args: %sconsArgs%
-        echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)`r`n        call jptools\\nonCertAllBuild.cmd %sconsArgs%
+        echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
+        call jptools\nonCertAllBuild.cmd %sconsArgs%
       shell: cmd
 
     - name: Build Japanese addons (no 7z)
@@ -150,10 +152,17 @@ jobs:
 
     - name: Install NVDA for testing
       run: |
-        $nvdaLauncherFile = ".\output\nvda_${{ env.VERSION }}.exe"
+        # Discover the built installer rather than assuming the exact name.
+        $candidate = Get-ChildItem -Path .\output -Filter "nvda_*.exe" -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if (-not $candidate) {
+          echo "::error::No NVDA installer found under .\\output. Listing directory for diagnostics..."
+          Get-ChildItem -Path .\output -Force -ErrorAction SilentlyContinue | Format-List | Out-String -Width 2000
+          exit 1
+        }
+        $nvdaLauncherFile = $candidate.FullName
         echo "nvdaLauncherFile=$nvdaLauncherFile" >> $env:GITHUB_ENV
         echo "NVDALauncherFile: $nvdaLauncherFile"
-        
+
         $outputDir = $(resolve-path .\testOutput)
         $installerLogFilePath = "$outputDir\nvda_install.log"
         $installerProcess = start-process -FilePath "$nvdaLauncherFile" -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -passthru
