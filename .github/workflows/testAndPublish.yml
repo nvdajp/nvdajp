@@ -167,7 +167,14 @@ jobs:
         echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
         REM Apply JP overlay via SCons alias (miscdepsjp)
         scons miscdepsjp %sconsArgs%
-        if errorlevel 1 exit /b %errorlevel%
+if errorlevel 1 (
+  echo ::warning:: scons alias 'miscdepsjp' unavailable; falling back to Python overlay
+  pushd miscDepsJp
+  py -3 ..\jptools\setup_miscdeps_overlay.py || python ..\jptools\setup_miscdeps_overlay.py
+  if errorlevel 1 exit /b %errorlevel%
+  popd
+)
+
         REM Build via SCons (replicates nonCertAllBuild.cmd)
         scons source %sconsArgs%
         if errorlevel 1 exit /b %errorlevel%
@@ -858,7 +865,6 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             output/nvda*.exe#Installer
-
 
 
 
