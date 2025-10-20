@@ -1,5 +1,4 @@
 cd miscDepsJp
-del /Q nvdajp-miscdep.7z
 cd include\jtalk
 call all-clean.cmd
 call all-build.cmd
@@ -17,16 +16,14 @@ cd ..\..\..\..
 cd source\synthDrivers
 rmdir /S /Q espeak-data
 cd ..\..
-if defined USE_PY_OVERLAY_COPY (
-  rem CI path: use Python to overlay-copy miscDepsJp\source into repo root\source
+rem Always use Python to overlay-copy miscDepsJp\source into repo root\source (avoid 7z roundtrip)
+where py >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
   py -3 ..\jptools\setup_miscdeps_overlay.py
-  cd ..
 ) else (
-  7z a ..\nvdajp-miscdep.7z source
-  cd ..
-  7z x -y nvdajp-miscdep.7z
-  del /Q nvdajp-miscdep.7z
+  python ..\jptools\setup_miscdeps_overlay.py
 )
+cd ..
 
 @rem cleanup
 
