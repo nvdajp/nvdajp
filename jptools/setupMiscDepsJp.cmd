@@ -16,12 +16,18 @@ cd ..\..\..\..
 cd source\synthDrivers
 rmdir /S /Q espeak-data
 cd ..\..
-rem Always use Python to overlay-copy miscDepsJp\source into repo root\source (avoid 7z roundtrip)
-where py >nul 2>&1
+rem Prefer uv to run overlay within repo project; fallback to py/python
+where uv >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
-  py -3 ..\jptools\setup_miscdeps_overlay.py
+  rem Keep CWD in miscDepsJp (script expects this), but use repo root as uv project
+  uv run --project .. python ..\jptools\setup_miscdeps_overlay.py
 ) else (
-  python ..\jptools\setup_miscdeps_overlay.py
+  where py >nul 2>&1
+  if %ERRORLEVEL% EQU 0 (
+    py -3 ..\jptools\setup_miscdeps_overlay.py
+  ) else (
+    python ..\jptools\setup_miscdeps_overlay.py
+  )
 )
 cd ..
 
