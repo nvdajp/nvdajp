@@ -201,8 +201,7 @@ jobs:
 
     - name: Prepare for system tests
       run: |
-        # Create test output directories using the same script as upstream
-        ci/scripts/tests/beforeTests.ps1
+        # testOutput ディレクトリ作成は buildNVDA で実施済み（rc-sync）
         
         # Start Chrome for system tests
         $chromeStartArgsString = $(py tests/system/libraries/_chromeArgs.py)
