@@ -164,7 +164,6 @@ jobs:
       run: |
         set USE_PY_OVERLAY_COPY=1
         set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
-        echo Building with args: %sconsArgs%
         echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
         call jptools\nonCertAllBuild.cmd %sconsArgs%
       shell: cmd
@@ -849,7 +848,3 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             output/nvda*.exe#Installer
-
-
-
-
