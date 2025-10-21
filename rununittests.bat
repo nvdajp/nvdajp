@@ -7,5 +7,6 @@ set testOutput=%here%\testOutput\unit
 md %testOutput%
 
 rem Ensure nvda-misc-deps (editable) is on sys.path by including the 'dev' group alongside 'unit-tests'
-call uv run --group dev --group unit-tests --directory "%here%" -m xmlrunner discover -b -s "%unitTestsPath%" -t "%here%" --output-file "%testOutput%\unitTests.xml" %*
+call uv run --with pylouis --group dev --group unit-tests --directory "%here%" -m xmlrunner discover -b -s "%unitTestsPath%" -t "%here%" --output-file "%testOutput%\unitTests.xml" %*
+
 
