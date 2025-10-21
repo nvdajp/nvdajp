@@ -57,7 +57,7 @@
   - 先頭でキャッシュ復元 → 既存スクリプト（ci/scripts/**）を呼ぶだけに整理（重複した前処理は削除）
 - ユニットテストの前提統一
   - `tests/unit/__init__.py` の設計（CWD を `source/` に変更）に従い、`source/liblouis.dll` を `scons source` で供給する
-  - `rununittests.bat` は上流と同様に uv の unit‑tests グループを使用（PATH 改変などの一時対処は撤回）
+  - `rununittests.bat` は上流と同様に uv の unit-tests グループを使用（PATH 改変などの一時対処は撤回）
 - 受け渡しの安定化
   - 原則はキャッシュ復元で統一。必要に応じて最小限のアーティファクト（例: launcher/symbols）を使用し、任意ファイルの受け渡しに cache を流用しない
 - 変更の進め方（小さく・PR 前提）
