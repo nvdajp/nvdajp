@@ -1,3 +1,7 @@
+
+# Ensure testOutput directory exists for log redirection
+New-Item -ItemType Directory -Force testOutput | Out-Null
+
 if ($env:RUNNER_DEBUG) {
 	cmd.exe /c "scons checkPot -j1 2> testOutput\translationCheckResults.log"
 } else {

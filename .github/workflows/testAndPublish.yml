@@ -295,6 +295,9 @@ jobs:
         architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
+    - name: Prepare test directories
+      shell: pwsh
+      run: ci/scripts/tests/beforeTests.ps1
     - name: Check comments for translators
       run: ci/scripts/tests/translationCheck.ps1
     - name: Upload artifact
@@ -302,7 +305,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: pot-check-${{ github.run_number }}
-        path: testOutput/translationCheck.txt
+        path: testOutput/translationCheckResults.log
 
   licenseCheck:
     name: Check license compatibility of dependencies
@@ -322,8 +325,17 @@ jobs:
         architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
+    - name: Prepare test directories
+      shell: pwsh
+      run: ci/scripts/tests/beforeTests.ps1
     - name: License check
       run: ci/scripts/tests/licenseCheck.ps1
+    - name: Upload license check results
+      if: ${{ success() || failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: license-check-${{ github.run_number }}
+        path: testOutput/license/licenseCheckResults.md
 
   unitTests:
     name: Run unit tests
@@ -343,10 +355,13 @@ jobs:
         architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
+    - name: Prepare test directories
+      shell: pwsh
+      run: ci/scripts/tests/beforeTests.ps1
     - name: Run unit tests
       run: ci/scripts/tests/unitTests.ps1
     - name: Replace relative paths in unit test results
-      if: ${{ failure() }}
+      if: ${{ failure() && hashFiles('testOutput/unit/unitTests.xml') != '' }}
       # Junit reports fail on these
       shell: bash
       run: sed -i 's|file="..\\|file="|g' testOutput/unit/unitTests.xml
