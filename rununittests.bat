@@ -6,4 +6,6 @@ set unitTestsPath=%here%\tests\unit
 set testOutput=%here%\testOutput\unit
 md %testOutput%
 
-call uv run --group unit-tests --directory "%here%" -m xmlrunner discover -b -s "%unitTestsPath%" -t "%here%" --output-file "%testOutput%\unitTests.xml" %*
+rem Ensure nvda-misc-deps (editable) is on sys.path by including the 'dev' group alongside 'unit-tests'
+call uv run --group dev --group unit-tests --directory "%here%" -m xmlrunner discover -b -s "%unitTestsPath%" -t "%here%" --output-file "%testOutput%\unitTests.xml" %*
+
