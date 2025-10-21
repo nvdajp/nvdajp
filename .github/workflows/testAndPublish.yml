@@ -178,6 +178,12 @@ jobs:
     - name: Set scons args (rc-sync)
       run: ci/scripts/setSconsArgs.ps1
 
+    - name: Rebuild COM interfaces (rc-sync)
+      shell: cmd
+      run: |
+        if exist source\comInterfaces\*.py del /q source\comInterfaces\*.py
+        scons comInterfaces %sconsArgs% %sconsCores%
+
     - name: Prepare source code (rc-sync)
       shell: cmd
       run: scons source %sconsArgs% %sconsCores%
