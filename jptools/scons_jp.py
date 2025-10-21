@@ -70,6 +70,8 @@ def _pack_controller_client(target: list[Any], source: list[Any], env: Any) -> i
 
 def register_jp_builders(env: Any) -> None:
     """Register JP-specific aliases without affecting upstream targets."""
+    from SCons.Script import Dir
+
     # Alias: miscdepsjp (overlay stamp)
     stamp = env.File("miscDepsJp/_state/overlay.stamp")
     env.AlwaysBuild(stamp)
@@ -77,9 +79,10 @@ def register_jp_builders(env: Any) -> None:
     env.Alias("miscdepsjp", stamp)
 
     # Alias: controllerClient (zip artifact)
-    out_dir = str(env.get("outputDir", "output"))
+    # Get outputDir as a Dir object (consistent with sconstruct pattern)
+    output_dir = Dir(env.get("outputDir", "output"))
     version = str(env.get("version", "local"))
-    cc_zip = env.File(os.path.join(out_dir, f"nvda_{version}_controllerClientJp.zip"))
+    cc_zip = output_dir.File(f"nvda_{version}_controllerClientJp.zip")
     env.Command(cc_zip, [], _pack_controller_client)
     env.Alias("controllerClient", cc_zip)
 
