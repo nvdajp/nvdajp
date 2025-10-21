@@ -6,8 +6,8 @@ set unitTestsPath=%here%\tests\unit
 set testOutput=%here%\testOutput\unit
 md %testOutput%
 
-rem Ensure liblouis.dll can be found during unit tests
-set PATH=%here%\source;%here%\build\x86\liblouis;%PATH%
+rem Ensure liblouis.dll and dependent DLLs can be found during unit tests
+set PATH=%here%\source;%here%\build\x86\liblouis;%here%\miscDeps\python;%PATH%
 
 rem Ensure nvda-misc-deps (editable) is on sys.path by including the 'dev' group alongside 'unit-tests'
 call uv run --with pylouis --group dev --group unit-tests --directory "%here%" -m xmlrunner discover -b -s "%unitTestsPath%" -t "%here%" --output-file "%testOutput%\unitTests.xml" %*
