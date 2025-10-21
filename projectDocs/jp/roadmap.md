@@ -36,14 +36,15 @@
 
 ## Phase 1 : 基盤整合と安定化
 
-- Windows 32bit / Python 3.11 x86 を基盤とし、本家版との差分を最小化
+- Windows 32-bit / Python 3.11 (x86) を基盤とし、本家版（rc ブランチ、2025.3.1）との差分を最小化する
 - \.python-versions を 3.11 x86 のみに固定
 - CI を SCons で成立させ、.cmd 経由を可能な範囲で排除
 - SCons キャッシュ/引数の整合（ci/scripts/setSconsArgs.ps1 準拠）
 - Lint（ruff）ジョブ追加・安定化
 - 7z ラウンドトリップ除去（Python化）
-- ユニット/必要最小のシステムテストを安定して通す（installerタグは除外可）
+- ユニット/必要最小のシステムテストを安定して通す（installer タグは最小構成で運用可）
 - testAndPublish の主要ジョブを windows-2025 へ（後述: ランナー移行計画）
+- 上流追従容易化: testAndPublish.yml は上流原本を優先し、JP 固有はスクリプト呼び出しの最小パッチに集約
 
 ## Phase 2 : Python 3.13 対応（Part of #530）
 
@@ -121,6 +122,20 @@
 - Gate A（Phase 2 中間）: 3.13 x64 で unit + 最小 system が安定緑 → installer/署名/シンボル確認へ
 - Gate B（Phase 2 完了）: 3.13 x64 が配布可能、3.11 x86 は EOL まで保守可能 → Phase 3 へ
 - Gate C（Phase 3 開始前）: dry-run マージ結果と衝突一覧の承認 → 実マージ・段階導入へ
+
+## 現在の作業キュー（Step 1, refs #539）
+
+- PR #548（ドラフト）: CI 安定化フォローアップ（unit / license / translator）
+  - unit tests: `nvda-misc-deps`（editable）をテスト実行環境へ組み込み（rununittests.bat の `uv --group dev --group unit-tests`）
+  - license check: `testOutput/license` 事前作成＋結果をアーティファクトへ
+  - translator comments: ログ（translationCheckResults.log）をアーティファクトへ
+  - system tests: インストーラ導入前に `beforeTests.ps1` を実行（ディレクトリ作成）
+
+## 運用ルール（ブランチ/PR）
+
+- `betajp` は安定ブランチ（直接 push 禁止）。すべてトピックブランチ→PR で変更。
+- ブランチ保護: `allTestsPass` / TypeCheck を必須チェックに設定。
+- testAndPublish.yml は「上流置換 → JP パッチ再適用」の手順で保守。
 
 ## 参照
 
