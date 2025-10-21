@@ -160,9 +160,27 @@ jobs:
         echo "API Back Compat To: $apiCompatTo"
       shell: powershell
 
+    - name: Ensure MIDL on PATH (rc-sync)
+      shell: pwsh
+      run: |
+        $midl = Get-Command midl.exe -ErrorAction SilentlyContinue
+        if (-not $midl) {
+          choco install -y windows-sdk-10.1
+          $midlExe = Get-ChildItem 'C:\\Program Files (x86)\\Windows Kits\\10\\bin' -Recurse -Filter midl.exe -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match '\\x86\\' } |
+            Select-Object -First 1
+          if (-not $midlExe) { throw 'midl.exe for x86 not found even after installing Windows 10 SDK' }
+          $midlDir = $midlExe.DirectoryName
+          echo "PATH=$midlDir;$env:PATH" >> $env:GITHUB_ENV
+        }
+        midl /? | Out-Null
+
+    - name: Set scons args (rc-sync)
+      run: ci/scripts/setSconsArgs.ps1
+
     - name: Prepare source code (rc-sync)
       shell: cmd
-      run: scons source --all-cores
+      run: scons source %sconsArgs% %sconsCores%
 
     - name: Prepare for tests (rc-sync)
       shell: pwsh
