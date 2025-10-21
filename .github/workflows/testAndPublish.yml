@@ -181,8 +181,8 @@ jobs:
     - name: Rebuild COM interfaces (rc-sync)
       shell: cmd
       run: |
+        rem Remove generated IA2 stubs; they will be rebuilt by 'scons source'
         if exist source\comInterfaces\*.py del /q source\comInterfaces\*.py
-        scons comInterfaces %sconsArgs% %sconsCores%
 
     - name: Prepare source code (rc-sync)
       shell: cmd
