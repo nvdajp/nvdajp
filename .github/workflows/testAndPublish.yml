@@ -245,7 +245,6 @@ jobs:
         nvdaLauncherDir: ${{ github.workspace }}\output
         # On GitHub Actions, avoid installer tests (unsigned build). Run startup/shutdown only.
         INCLUDE_SYSTEM_TEST_TAGS: startupShutdown
-        INCLUDE_SYSTEM_TEST_TAGS: startupShutdown
     - name: Check test results
       run: |
         if ($env:testFailExitCode -and $env:testFailExitCode -ne "0") {
