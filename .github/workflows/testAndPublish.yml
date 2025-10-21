@@ -497,6 +497,9 @@ jobs:
       with:
         name: NVDA launcher
         path: output
+    - name: Prepare test directories
+      shell: pwsh
+      run: ci/scripts/tests/beforeTests.ps1
     - name: Install NVDA
       run: ci/scripts/installNVDA.ps1
       env:
