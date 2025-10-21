@@ -160,38 +160,6 @@ jobs:
         echo "API Back Compat To: $apiCompatTo"
       shell: powershell
 
-    - name: Ensure MIDL on PATH (rc-sync)
-      shell: pwsh
-      run: |
-        $midl = Get-Command midl.exe -ErrorAction SilentlyContinue
-        if (-not $midl) {
-          choco install -y windows-sdk-10.1
-          $midlExe = Get-ChildItem 'C:\\Program Files (x86)\\Windows Kits\\10\\bin' -Recurse -Filter midl.exe -ErrorAction SilentlyContinue |
-            Where-Object { $_.FullName -match '\\x86\\' } |
-            Select-Object -First 1
-          if (-not $midlExe) { throw 'midl.exe for x86 not found even after installing Windows 10 SDK' }
-          $midlDir = $midlExe.DirectoryName
-          echo "PATH=$midlDir;$env:PATH" >> $env:GITHUB_ENV
-        }
-        midl /? | Out-Null
-
-    - name: Set scons args (rc-sync)
-      run: ci/scripts/setSconsArgs.ps1
-
-    - name: Rebuild COM interfaces (rc-sync)
-      shell: cmd
-      run: |
-        rem Remove generated IA2 stubs; they will be rebuilt by 'scons source'
-        if exist source\comInterfaces\*.py del /q source\comInterfaces\*.py
-
-    - name: Prepare source code (rc-sync)
-      shell: cmd
-      run: scons source %sconsArgs% %sconsCores%
-
-    - name: Prepare for tests (rc-sync)
-      shell: pwsh
-      run: ci/scripts/tests/beforeTests.ps1
-
     - name: Build NVDA Japanese version
       run: |
         set USE_PY_OVERLAY_COPY=1
@@ -225,7 +193,8 @@ jobs:
 
     - name: Prepare for system tests
       run: |
-        # testOutput ディレクトリ作成は buildNVDA で実施済み（rc-sync）
+        # Create test output directories using the same script as upstream
+        ci/scripts/tests/beforeTests.ps1
         
         # Start Chrome for system tests
         $chromeStartArgsString = $(py tests/system/libraries/_chromeArgs.py)
@@ -325,11 +294,11 @@ jobs:
         }
       shell: powershell
 
-    - name: Save workspace cache (rc-sync)
+    - name: Cache scons build
       uses: actions/cache/save@v4
       with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
+        path: ${{ github.workspace }}
+        key: ${{ github.ref }}-${{ github.run_id }}
     - name: Store release metadata information
       id: releaseInfo
       run: |
@@ -400,8 +369,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
+        path: ${{ github.workspace }}
+        key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -427,8 +396,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
+        path: ${{ github.workspace }}
+        key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -448,8 +417,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
+        path: ${{ github.workspace }}
+        key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -489,8 +458,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
+        path: ${{ github.workspace }}
+        key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
     - name: Get makePot results
       uses: actions/download-artifact@v4
@@ -516,8 +485,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
+        path: ${{ github.workspace }}
+        key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -596,8 +565,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
+        path: ${{ github.workspace }}
+        key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -650,8 +619,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
+        path: ${{ github.workspace }}
+        key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
     - name: Install Windows SDK
       run: choco install -y windows-sdk-10.1
@@ -686,8 +655,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
+        path: ${{ github.workspace }}
+        key: ${{ github.ref }}-${{ github.run_id }}
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
