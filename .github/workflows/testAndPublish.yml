@@ -164,6 +164,10 @@ jobs:
       shell: cmd
       run: scons source --all-cores
 
+    - name: Prepare for tests (rc-sync)
+      shell: pwsh
+      run: ci/scripts/tests/beforeTests.ps1
+
     - name: Build NVDA Japanese version
       run: |
         set USE_PY_OVERLAY_COPY=1
