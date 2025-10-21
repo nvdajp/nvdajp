@@ -20,6 +20,9 @@
 
 ## CI とブランチ
 - PR の base は通常 `betajp`
+- `betajp` は日本語版の安定ブランチ。直接 push・試行錯誤は禁止。作業は必ずトピックブランチ→Pull Request（PR）で行うこと。
+- ブランチ保護（推奨）: `betajp` に対して PR レビュー必須＋ステータスチェック必須（`allTestsPass`、`NVAccess Beta Aligned TypeCheck (3.11 x86)` など）。
+- CIでの配布系ジョブ（release 等）はデフォルト無効（フラグや条件で明示的に有効化）とし、Secrets を必要とする運用は避ける。
 - 型チェックのみの本家版寄せワークフロー: `.github/workflows/nvbeta-typecheck-311x86.yml`
 - 日本語版の包括的ワークフロー: `.github/workflows/testAndPublish.yml`
 
