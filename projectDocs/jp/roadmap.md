@@ -36,7 +36,7 @@
 
 ## Phase 1 : 基盤整合と安定化
 
-- Windows 32bit / Python 3.11 x86 を基盤とし、本家版との差分を最小化
+- Windows 32-bit / Python 3.11 (x86) を基盤とし、本家版（rc ブランチ、2025.3.1）との差分を最小化する
 - \.python-versions を 3.11 x86 のみに固定
 - CI を SCons で成立させ、.cmd 経由を可能な範囲で排除
 - SCons キャッシュ/引数の整合（ci/scripts/setSconsArgs.ps1 準拠）
