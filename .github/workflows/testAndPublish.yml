@@ -302,11 +302,11 @@ jobs:
         }
       shell: powershell
 
-    - name: Cache scons build
+    - name: Save workspace cache (rc-sync)
       uses: actions/cache/save@v4
       with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
     - name: Store release metadata information
       id: releaseInfo
       run: |
@@ -377,8 +377,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -404,8 +404,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -425,8 +425,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -466,8 +466,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
         fail-on-cache-miss: true
     - name: Get makePot results
       uses: actions/download-artifact@v4
@@ -493,8 +493,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -573,8 +573,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -627,8 +627,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
         fail-on-cache-miss: true
     - name: Install Windows SDK
       run: choco install -y windows-sdk-10.1
@@ -663,8 +663,8 @@ jobs:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
       with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-3.11-x86
         fail-on-cache-miss: true
     - name: Setup Python
       uses: actions/setup-python@v5
