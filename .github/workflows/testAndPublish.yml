@@ -161,19 +161,19 @@ jobs:
       shell: powershell
 
     - name: Build NVDA Japanese version (SCons + JP alias)
-      run: |
+      run: |2
         set USE_PY_OVERLAY_COPY=1
         set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% release=%RELEASE%
         echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
         REM Apply JP overlay via SCons alias (miscdepsjp)
         scons miscdepsjp %sconsArgs%
-if errorlevel 1 (
-  echo ::warning:: scons alias 'miscdepsjp' unavailable; falling back to Python overlay
-  pushd miscDepsJp
+        if errorlevel 1 (
+          echo ::warning:: scons alias 'miscdepsjp' unavailable; falling back to Python overlay
+          pushd miscDepsJp
   py -3 ..\jptools\setup_miscdeps_overlay.py || python ..\jptools\setup_miscdeps_overlay.py
-  if errorlevel 1 exit /b %errorlevel%
-  popd
-)
+          if errorlevel 1 exit /b %errorlevel%
+          popd
+        )
 
         REM Build via SCons (replicates nonCertAllBuild.cmd)
         scons source %sconsArgs%
