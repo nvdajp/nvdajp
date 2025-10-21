@@ -3,29 +3,6 @@ on:
 
 name: CI/CD
 
-on:
-  push:
-    branches:
-      - master
-      - beta
-      - rc
-      - 'try-**'
-      # Temporarily enabled during the 64bit migration
-      - wip-buildX64
-    tags:
-      - 'release-**'
-
-  pull_request:
-    branches:
-      - master
-      - beta
-      - rc
-      # Temporarily enabled during the 64bit migration
-      - wip-buildX64
-
-
-  workflow_dispatch:
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
