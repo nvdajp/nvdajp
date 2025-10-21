@@ -207,53 +207,8 @@ jobs:
         call jpchar\tests.cmd
       shell: cmd
 
-    - name: Prepare for system tests
-      run: |
-        # Create test output directories using the same script as upstream
-        ci/scripts/tests/beforeTests.ps1
-        
-        # Start Chrome for system tests
-        $chromeStartArgsString = $(py tests/system/libraries/_chromeArgs.py)
-        $chromeStartArgsArray = $chromeStartArgsString -split " "
-        cmd /c start /min $chromeStartArgsArray
-        
-        echo "testFailExitCode=0" >> $env:GITHUB_ENV
-      shell: powershell
-
-    - name: Install NVDA for testing
-      run: ci/scripts/installNVDA.ps1
-      env:
-        nvdaLauncherDir: ${{ github.workspace }}\output
-
-    - name: Run unit tests
-      run: |
-        $outDir = (Resolve-Path .\testOutput\unit\)
-        $unitTestsXml = "$outDir\unitTests.xml"
-        .\rununittests.bat --output-file "$unitTestsXml" -v
-        
-        if($LastExitCode -ne 0) {
-          echo "testFailExitCode=$LastExitCode" >> $env:GITHUB_ENV
-          echo "::error::Unit tests failed"
-        } else {
-          echo "::notice::Unit tests passed"
-        }
-      shell: powershell
-
-    - name: Run system tests
-      run: ci/scripts/tests/systemTests.ps1
-      env:
-        nvdaLauncherDir: ${{ github.workspace }}\output
-        # On GitHub Actions, avoid installer tests (unsigned build). Run startup/shutdown only.
-        INCLUDE_SYSTEM_TEST_TAGS: startupShutdown
-    - name: Check test results
-      run: |
-        if ($env:testFailExitCode -and $env:testFailExitCode -ne "0") {
-          echo "::error::Tests failed with exit code $env:testFailExitCode"
-          exit $env:testFailExitCode
-        } else {
-          echo "::notice::All tests passed"
-        }
-      shell: powershell
+    # Tests are executed in dedicated jobs (unitTests/systemTests). Skip install/tests here to avoid duplicate runs and
+    # ensure the launcher built in createLauncher is used consistently.
 
     - name: Cache scons build
       uses: actions/cache/save@v4
