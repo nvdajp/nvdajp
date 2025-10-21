@@ -160,6 +160,10 @@ jobs:
         echo "API Back Compat To: $apiCompatTo"
       shell: powershell
 
+    - name: Prepare source code (rc-sync)
+      shell: cmd
+      run: scons source --all-cores
+
     - name: Build NVDA Japanese version
       run: |
         set USE_PY_OVERLAY_COPY=1
