@@ -161,7 +161,6 @@ jobs:
       shell: powershell
 
     - name: Build NVDA Japanese version (Python wrapper)
-      if: ${{ vars.feature_pyNonCertBuild == 'true' }}
       shell: cmd
       run: |
         setlocal
@@ -170,16 +169,6 @@ jobs:
         echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
         uv run python jptools/nonCertBuild.py -- %sconsArgs%
         if errorlevel 1 exit /b %errorlevel%
-
-    - name: Build NVDA Japanese version (cmd)
-      if: ${{ vars.feature_pyNonCertBuild != 'true' }}
-      shell: cmd
-      run: |
-        setlocal
-        set USE_PY_OVERLAY_COPY=1
-        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
-        echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
-        call jptools\nonCertAllBuild.cmd %sconsArgs%
 
     - name: Build Japanese addons (no 7z)
       shell: pwsh
