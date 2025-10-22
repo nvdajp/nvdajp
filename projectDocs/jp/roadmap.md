@@ -150,6 +150,9 @@
   - translator comments: ログ（translationCheckResults.log）をアーティファクトへ
   - system tests: インストーラ導入前に `beforeTests.ps1` を実行（ディレクトリ作成）
 
+- miscDepsJp（jtalk周辺）の patch.exe 依存の撤去（Makefile/all.mak の `patch` 呼び出しを純 Python 実装に置換）
+- Win32 ツール依存の棚卸しと縮退計画（nmake/cl/link/msgfmt/7z/dump_syms 等）
+
 ## 運用ルール（ブランチ/PR）
 
 - `betajp` は安定ブランチ（直接 push 禁止）。すべてトピックブランチ→PR で変更。
