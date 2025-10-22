@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 from pathlib import Path
+import re
 
 
 def run_cmd(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None) -> None:
@@ -79,6 +80,9 @@ def _prep_miscdepsjp() -> None:
     vcsetup = Path("miscDepsJp/include/python-jtalk/vcsetup.cmd")
     if vcsetup.exists():
         run_cmd(["cmd", "/c", str(vcsetup)])
+    # Replace 'patch' invocations in makefiles at runtime to avoid external patch.exe
+    _replace_patch_invocations()
+
     # jtalk clean→build→install
     jtalk_dir = Path("miscDepsJp/include/jtalk")
     run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
@@ -96,6 +100,31 @@ def _prep_miscdepsjp() -> None:
             p.unlink(missing_ok=True)  # type: ignore[arg-type]
     except Exception:
         pass
+
+
+def _replace_patch_invocations() -> None:
+    """Rewrite 'patch <file> <diff>' lines in jtalk makefiles to use our Python applier.
+    This keeps submodules unmodified in VCS; changes are runtime-only.
+    """
+    files = [
+        Path("miscDepsJp/include/python-jtalk/lib/Makefile.mak"),
+        Path("miscDepsJp/include/python-jtalk/all.mak"),
+    ]
+    for mf in files:
+        if not mf.exists():
+            continue
+        content = mf.read_text(encoding="utf-8", errors="ignore")
+        rel = Path(os.path.relpath(Path("jptools/apply_patch.py"), start=mf.parent))
+        rel_str = str(rel).replace("/", "\\")
+        pattern = re.compile(r"^[\t ]*patch\s+(\S+)\s+(\S+)$", re.MULTILINE)
+
+        def _repl(m: re.Match[str]) -> str:
+            f1, f2 = m.group(1), m.group(2)
+            return f"\tpython {rel_str} --inplace {f1} {f2}"
+
+        new_content = pattern.sub(_repl, content)
+        if new_content != content:
+            mf.write_text(new_content, encoding="utf-8", newline="")
 
     # Remove large/mutable generated dictionary artifacts to keep workspace tidy
     naist_dic = Path("miscDepsJp/include/jtalk/libopenjtalk/mecab-naist-jdic")
