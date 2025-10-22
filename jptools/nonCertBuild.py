@@ -5,10 +5,11 @@ import subprocess
 from pathlib import Path
 
 
-def run_cmd(cmd: list[str]) -> None:
-    print(f"[nonCertBuild] run: {' '.join(cmd)}")
+def run_cmd(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None) -> None:
+    where = f" (cwd={cwd})" if cwd else ""
+    print(f"[nonCertBuild] run: {' '.join(cmd)}{where}")
     try:
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, cwd=str(cwd) if cwd else None, env=env)
     except subprocess.CalledProcessError as e:
         # Propagate the exit code for CI to fail fast
         sys.exit(e.returncode or 1)
@@ -72,14 +73,16 @@ def _prep_miscdepsjp() -> None:
 
     # Run miscDepsJp jtalk prep/build/test
     md_root = Path("miscDepsJp/jptools")
-    run_cmd(["cmd", "/c", str(md_root / "clean.cmd")])
-    run_cmd(["cmd", "/c", str(md_root / "copy_jtalk_core_files.cmd")])
-    run_cmd(["cmd", "/c", str(md_root / "build-and-test.cmd")])
+    run_cmd(["cmd", "/c", "clean.cmd"], cwd=md_root)
+    run_cmd(["cmd", "/c", "copy_jtalk_core_files.cmd"], cwd=md_root)
+    # Keep using the existing orchestrator for now, but ensure correct working dir
+    run_cmd(["cmd", "/c", "build-and-test.cmd"], cwd=md_root)
 
     # Setup overlay for miscDepsJp
-    setup_overlay = Path("jptools/setupMiscDepsJp.cmd")
+    setup_overlay_dir = Path("jptools")
+    setup_overlay = setup_overlay_dir / "setupMiscDepsJp.cmd"
     if setup_overlay.exists():
-        run_cmd(["cmd", "/c", str(setup_overlay)])
+        run_cmd(["cmd", "/c", "setupMiscDepsJp.cmd"], cwd=setup_overlay_dir)
 
 
 def _nowdate() -> str:
