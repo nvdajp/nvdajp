@@ -115,13 +115,14 @@ def _replace_patch_invocations() -> None:
         if not mf.exists():
             continue
         content = mf.read_text(encoding="utf-8", errors="ignore")
-        rel = Path(os.path.relpath(Path("jptools/apply_patch.py"), start=mf.parent))
-        rel_str = str(rel).replace("/", "\\")
+        # Use absolute interpreter and script path to avoid issues with 'cd' inside makefiles
+        py = sys.executable.replace("/", "\\")
+        applier = str(Path.cwd() / "jptools" / "apply_patch.py").replace("/", "\\")
         pattern = re.compile(r"^[\t ]*patch\s+(\S+)\s+(\S+)$", re.MULTILINE)
 
         def _repl(m: re.Match[str]) -> str:
             f1, f2 = m.group(1), m.group(2)
-            return f"\tpython {rel_str} --inplace {f1} {f2}"
+            return f"\t\"{py}\" \"{applier}\" --inplace {f1} {f2}"
 
         new_content = pattern.sub(_repl, content)
         if new_content != content:
