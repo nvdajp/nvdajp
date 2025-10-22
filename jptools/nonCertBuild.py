@@ -71,28 +71,31 @@ def _prep_miscdepsjp() -> None:
             run_cmd(["cmd", "/c", str(vcsetup)])
     _check_vs_version()
 
-    # Run miscDepsJp jtalk prep/build/test
+    # Run miscDepsJp jtalk prep/build/test (inline build-and-test.cmd)
     md_root = Path("miscDepsJp/jptools")
     run_cmd(["cmd", "/c", "clean.cmd"], cwd=md_root)
     run_cmd(["cmd", "/c", "copy_jtalk_core_files.cmd"], cwd=md_root)
-    # Keep using the existing orchestrator for now, but ensure correct working dir
-    run_cmd(["cmd", "/c", "build-and-test.cmd"], cwd=md_root)
-
-    # Setup overlay for miscDepsJp
-    # Replace jptools/setupMiscDepsJp.cmd inline (Python)
+    # The original script invoked python-jtalk vcsetup; do so if it exists
+    vcsetup = Path("miscDepsJp/include/python-jtalk/vcsetup.cmd")
+    if vcsetup.exists():
+        run_cmd(["cmd", "/c", str(vcsetup)])
+    # jtalk clean→build→install
     jtalk_dir = Path("miscDepsJp/include/jtalk")
-    if jtalk_dir.exists():
-        # Clean → Build → Install
-        run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
-        run_cmd(["cmd", "/c", "all-build.cmd"], cwd=jtalk_dir)
-        run_cmd(["cmd", "/c", "all-install.cmd"], cwd=jtalk_dir)
-        # Clean transient artifacts and stray pyc
-        run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
-        try:
-            for p in jtalk_dir.glob("*.pyc"):
-                p.unlink(missing_ok=True)  # type: ignore[arg-type]
-        except Exception:
-            pass
+    run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
+    run_cmd(["cmd", "/c", "all-build.cmd"], cwd=jtalk_dir)
+    run_cmd(["cmd", "/c", "all-install.cmd"], cwd=jtalk_dir)
+    # python-jtalk clean
+    pyjtalk_dir = Path("miscDepsJp/include/python-jtalk")
+    run_cmd(["cmd", "/c", "clean.cmd"], cwd=pyjtalk_dir)
+    # jptools tests
+    run_cmd(["cmd", "/c", "test.cmd"], cwd=md_root)
+
+    # Setup overlay for miscDepsJp (no jtalk rebuild here; already built above)
+    try:
+        for p in jtalk_dir.glob("*.pyc"):
+            p.unlink(missing_ok=True)  # type: ignore[arg-type]
+    except Exception:
+        pass
 
     # Remove large/mutable generated dictionary artifacts to keep workspace tidy
     naist_dic = Path("miscDepsJp/include/jtalk/libopenjtalk/mecab-naist-jdic")
