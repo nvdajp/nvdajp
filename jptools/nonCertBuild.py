@@ -169,6 +169,7 @@ def _ensure_libopenjtalk_deployed() -> None:
     """
     target = Path("miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll")
     if target.exists():
+        print(f"[nonCertBuild] libopenjtalk already present at {target}")
         return
     candidates = [
         Path("miscDepsJp/include/python-jtalk/libopenjtalk.dll"),
@@ -176,6 +177,7 @@ def _ensure_libopenjtalk_deployed() -> None:
         Path("miscDepsJp/include/jtalk/libopenjtalk.dll"),
     ]
     for c in candidates:
+        print(f"[nonCertBuild] check candidate: {c} exists={c.exists()}")
         if c.exists():
             target.parent.mkdir(parents=True, exist_ok=True)
             print(f"[nonCertBuild] deploy libopenjtalk.dll from {c} -> {target}")
