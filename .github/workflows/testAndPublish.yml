@@ -160,14 +160,14 @@ jobs:
         echo "API Back Compat To: $apiCompatTo"
       shell: powershell
 
-    - name: Build NVDA Japanese version (Python wrapper)
+    - name: Build NVDA Japanese version (SCons nonCertBuild)
       shell: cmd
       run: |
         setlocal
         set USE_PY_OVERLAY_COPY=1
         set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
         echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
-        uv run python jptools/nonCertBuild.py -- %sconsArgs%
+        scons nonCertBuild %sconsArgs%
         if errorlevel 1 exit /b %errorlevel%
 
     - name: Build Japanese addons (no 7z)
@@ -850,3 +850,4 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             output/nvda*.exe#Installer
+

@@ -9,6 +9,7 @@ import multiprocessing
 import os
 import sys
 from pathlib import Path
+from SCons.Action import Action
 
 # Ensure we are inside the Python virtual environment, and that it is started with uv
 virtualEnv = os.getenv("VIRTUAL_ENV")
@@ -748,3 +749,9 @@ env.Tool("listModules")
 source = env.Dir(os.path.join(os.getcwd(), "dist"))
 target = env.File(os.path.join(outputDir.abspath, "library_modules.txt"))
 env.Alias("moduleList", env.GenerateModuleList(target, source))
+
+# JP: Provide an alias to build NVDA with JP miscDeps preparation via SCons
+# This runs the JP prep before building dist/launcher, avoiding recursive SCons calls.
+_jp_prep_cmd = f'@"{sys.executable}" -c "import sys; sys.path.insert(0, \"jptools\"); import nonCertBuild as _n; _n._prep_miscdepsjp()"'
+env.AddPreAction([dist, launcher], Action(_jp_prep_cmd, cmdstr='[jp] prep miscDepsJp before build'))
+env.Alias("nonCertBuild", [dist, launcher])
