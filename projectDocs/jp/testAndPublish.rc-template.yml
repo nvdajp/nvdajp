@@ -1,4 +1,4 @@
-name: CI/CD (rc template JP)
+# NOTE: Documentation template for reference only.\n# This file does not run in GitHub Actions.\n# To test locally, copy into .github/workflows/ and adjust as needed.\nname: CI/CD (rc template JP)
 
 on:
   workflow_dispatch:
@@ -707,4 +707,5 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             $NVDA_EXE_NAME#Installer
+
 

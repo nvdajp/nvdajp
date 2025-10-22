@@ -1,4 +1,4 @@
-on:
+# NOTE: Documentation template for reference only.\n# This file does not run in GitHub Actions.\n# To test locally, copy into .github/workflows/ and adjust as needed.\non:
   workflow_dispatch:
 
 name: CI/CD
@@ -693,4 +693,5 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             $NVDA_EXE_NAME#Installer
+
 

@@ -89,6 +89,11 @@ speech.initialize()
 
 import braille  # noqa: E402
 
+# Force English braille table for unit tests to match upstream expectations
+# JP branch defaults to a Japanese table via configSpec; tests assume English widths
+import config  # noqa: E402
+config.conf["braille"]["translationTable"] = "en-ueb-g1.ctb"
+
 # Disable auto detection of braille displays when unit testing.
 config.conf["braille"]["display"] = "noBraille"
 braille.initialize()
