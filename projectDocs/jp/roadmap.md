@@ -45,6 +45,25 @@
 - ユニット/必要最小のシステムテストを安定して通す（installer タグは最小構成で運用可）
 - testAndPublish の主要ジョブを windows-2025 へ（後述: ランナー移行計画）
 - 上流追従容易化: testAndPublish.yml は上流原本を優先し、JP 固有はスクリプト呼び出しの最小パッチに集約
+- certBuild2023.cmd の動作は維持（署名はローカル実施）
+
+### 作業方針（Step 1 実務）
+
+- ワークフロー再同期: testAndPublish.yml は本家 rc ベースに再同期し、差分は Step 1 固定（Windows 32‑bit / Python 3.11 (x86)）のみに限定する
+  - マトリクス固定: `defaultRunner: windows-2025`、`supportedArchitectures: ["x86"]`、`supportedPythonVersions: ["3.11.9"]`
+  - buildNVDA で必ず `scons source` を実行（unit tests に必要な生成物を用意）。直後に `beforeTests.ps1` を 1 回だけ実行
+  - キャッシュ運用は本家に合わせ、path: `.` を `actions/cache/save/restore@v4` で保存・復元（キーに `run_id`・`pythonVersion`・`arch` を含める）
+- 後続ジョブ（typeCheck / checkPo / checkPot / licenseCheck / unitTests / createLauncher / systemTests / createSymbols）
+  - 先頭でキャッシュ復元 → 既存スクリプト（ci/scripts/**）を呼ぶだけに整理（重複した前処理は削除）
+- ユニットテストの前提統一
+  - `tests/unit/__init__.py` の設計（CWD を `source/` に変更）に従い、`source/liblouis.dll` を `scons source` で供給する
+  - `rununittests.bat` は上流と同様に uv の unit-tests グループを使用（PATH 改変などの一時対処は撤回）
+- 受け渡しの安定化
+  - 原則はキャッシュ復元で統一。必要に応じて最小限のアーティファクト（例: launcher/symbols）を使用し、任意ファイルの受け渡しに cache を流用しない
+- 変更の進め方（小さく・PR 前提）
+  - すべてトピックブランチ→PR。`betajp` へ直 push は禁止（ブランチ保護と必須チェックを有効化）
+  - YAML の差分は「3.11 x86 固定」と「スクリプト呼び出し 1 行」に限定。前処理・ログ収集は `ci/scripts/` に集約
+  - 失敗時の診断性向上（翻訳/ライセンス/テスト結果のアーティファクト化、step summary 充実）は別 PR で段階導入
 
 ## Phase 2 : Python 3.13 対応（Part of #530）
 
@@ -130,6 +149,9 @@
   - license check: `testOutput/license` 事前作成＋結果をアーティファクトへ
   - translator comments: ログ（translationCheckResults.log）をアーティファクトへ
   - system tests: インストーラ導入前に `beforeTests.ps1` を実行（ディレクトリ作成）
+
+- miscDepsJp（jtalk周辺）の patch.exe 依存の撤去（Makefile/all.mak の `patch` 呼び出しを純 Python 実装に置換）
+- Win32 ツール依存の棚卸しと縮退計画（nmake/cl/link/msgfmt/7z/dump_syms 等）
 
 ## 運用ルール（ブランチ/PR）
 
