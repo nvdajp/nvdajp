@@ -79,10 +79,54 @@ def _prep_miscdepsjp() -> None:
     run_cmd(["cmd", "/c", "build-and-test.cmd"], cwd=md_root)
 
     # Setup overlay for miscDepsJp
-    setup_overlay_dir = Path("jptools")
-    setup_overlay = setup_overlay_dir / "setupMiscDepsJp.cmd"
-    if setup_overlay.exists():
-        run_cmd(["cmd", "/c", "setupMiscDepsJp.cmd"], cwd=setup_overlay_dir)
+    # Replace jptools/setupMiscDepsJp.cmd inline (Python)
+    jtalk_dir = Path("miscDepsJp/include/jtalk")
+    if jtalk_dir.exists():
+        # Clean → Build → Install
+        run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
+        run_cmd(["cmd", "/c", "all-build.cmd"], cwd=jtalk_dir)
+        run_cmd(["cmd", "/c", "all-install.cmd"], cwd=jtalk_dir)
+        # Clean transient artifacts and stray pyc
+        run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
+        try:
+            for p in jtalk_dir.glob("*.pyc"):
+                p.unlink(missing_ok=True)  # type: ignore[arg-type]
+        except Exception:
+            pass
+
+    # Remove large/mutable generated dictionary artifacts to keep workspace tidy
+    naist_dic = Path("miscDepsJp/include/jtalk/libopenjtalk/mecab-naist-jdic")
+    for rel in ["dic", "_temp"]:
+        try:
+            import shutil as _sh
+            _sh.rmtree(naist_dic / rel, ignore_errors=True)
+        except Exception:
+            pass
+    for pat in [
+        "nvdajp-custom-dic.csv",
+        "nvdajp-eng-dic.csv",
+        "nvdajp-roma-dic.csv",
+        "nvdajp-tankan-dic.csv",
+    ]:
+        try:
+            (naist_dic / pat).unlink(missing_ok=True)  # type: ignore[arg-type]
+        except Exception:
+            pass
+
+    # Ensure espeak-data is not overlaid
+    espeak_data = Path("source/synthDrivers/espeak-data")
+    try:
+        import shutil as _sh
+        _sh.rmtree(espeak_data, ignore_errors=True)
+    except Exception:
+        pass
+
+    # Run overlay script from miscDepsJp as original script expects that CWD
+    try:
+        run_cmd([sys.executable, "jptools/setup_miscdeps_overlay.py"], cwd=Path("miscDepsJp"))
+    except SystemExit:
+        # Propagate normal exit
+        pass
 
 
 def _nowdate() -> str:
