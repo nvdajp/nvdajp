@@ -39,6 +39,7 @@
   - `beforeTests.ps1` で `testOutput/` 配下を作成。
   - installer/system tests は共通スクリプト（`installNVDA.ps1` / `tests/systemTests.ps1`）。
   - 単体テストは `rununittests.bat` で `uv --group dev --group unit-tests` を使用（`miscDeps` を sys.path に含める）。
+  - 参照用テンプレート `projectDocs/jp/*.yml`
 
 ## Actions 運用
 
