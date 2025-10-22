@@ -1,5 +1,5 @@
 import sys
-from typing import Any, Optional
+from typing import Any, Optional, Mapping, cast
 
 try:
     # Importing tests.unit triggers the unit test harness initialization
@@ -9,8 +9,9 @@ try:
     import braille
 
     lang = languageHandler.getLanguage()
-    conf_any: Any = config.conf  # type: ignore[reportAttributeAccessIssue]
-    braille_conf: Any = conf_any["braille"]  # type: ignore[reportIndexIssue]
+    # Treat config.conf as a mapping for diagnostics; avoid over‑promising concrete types
+    conf_map: Mapping[str, Any] = cast(Mapping[str, Any], config.conf)  # type: ignore[reportAttributeAccessIssue]
+    braille_conf: Any = conf_map.get("braille")
     table = braille_conf.get("translationTable") if hasattr(braille_conf, "get") else None
 
     handler: Optional[Any] = getattr(braille, "handler", None)
