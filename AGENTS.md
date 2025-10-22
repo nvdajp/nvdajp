@@ -50,6 +50,20 @@
 
 ## 参照
 
-- 人間向けハブ: `projectDocs/jp/README.md`
-- 本家版の開発環境: `projectDocs/dev/createDevEnvironment.md`
 - 日本語版の概要: `readme-nvdajp.md`
+- 人間向けハブ: `projectDocs/jp/README.md`
+- 日本語版開発のロードマップ: `projectDocs/jp/roadmap.md`
+- `AGENTS.md`（本ファイル）は日本語版の独自ルールです。
+
+### 本家版ドキュメント
+
+日本語版が特に差分を設けていない場合、本家版ドキュメントの内容を参照してください。
+
+- 開発ガイド: `projectDocs/dev/readme.md`
+- 開発環境: `projectDocs/dev/createDevEnvironment.md`
+- コントリビュート方針・PR手順: `projectDocs/dev/contributing.md`
+- コーディング規約（Python/型/Docstring など）: `projectDocs/dev/codingStandards.md`
+- テストの方針/手順: `projectDocs/testing/readme.md`
+- 自動テスト（lint/pyright/unit/system など）: `projectDocs/testing/automated.md`
+- CI/スクリプト構成: `ci/README.md`
+- 翻訳ワークフロー: `projectDocs/translating/readme.md`
