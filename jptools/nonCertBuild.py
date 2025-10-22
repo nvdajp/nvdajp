@@ -88,6 +88,7 @@ def _prep_miscdepsjp() -> None:
     run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
     run_cmd(["cmd", "/c", "all-build.cmd"], cwd=jtalk_dir)
     run_cmd(["cmd", "/c", "all-install.cmd"], cwd=jtalk_dir)
+    _ensure_libopenjtalk_deployed()
     # python-jtalk clean
     pyjtalk_dir = Path("miscDepsJp/include/python-jtalk")
     run_cmd(["cmd", "/c", "clean.cmd"], cwd=pyjtalk_dir)
@@ -159,6 +160,29 @@ def _replace_patch_invocations() -> None:
     except SystemExit:
         # Propagate normal exit
         pass
+
+
+def _ensure_libopenjtalk_deployed() -> None:
+    """Ensure libopenjtalk.dll is present where tests expect it.
+    If missing, try to locate a built DLL and copy it into place.
+    """
+    target = Path("miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll")
+    if target.exists():
+        return
+    candidates = [
+        Path("miscDepsJp/include/python-jtalk/libopenjtalk.dll"),
+        Path("miscDepsJp/include/jtalk/lib/libopenjtalk.dll"),
+        Path("miscDepsJp/include/jtalk/libopenjtalk.dll"),
+    ]
+    for c in candidates:
+        if c.exists():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            print(f"[nonCertBuild] deploy libopenjtalk.dll from {c} -> {target}")
+            import shutil as _sh
+
+            _sh.copy2(c, target)
+            return
+    print("::warning::libopenjtalk.dll not found after install; tests may fail")
 
 
 def _nowdate() -> str:
