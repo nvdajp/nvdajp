@@ -21,9 +21,14 @@ def main() -> int:
     # 1) Run the existing nonCertBuild1.cmd (no args)
     run_cmd(["cmd", "/c", "jptools\\nonCertBuild1.cmd"])
 
-    # 2) Run nonCertBuild2.cmd, forwarding all scons args
-    # Accept arguments after '--' from the workflow step, but allow any argv
-    forwarded_args = sys.argv[1:]
+    # 2) Run nonCertBuild2.cmd, forwarding only args after a "--" separator
+    # This mirrors common CLI semantics and avoids passing a literal "--" to SCons.
+    raw_args = sys.argv[1:]
+    if "--" in raw_args:
+        sep = raw_args.index("--")
+        forwarded_args = raw_args[sep + 1 :]
+    else:
+        forwarded_args = raw_args
     cmd = ["cmd", "/c", "jptools\\nonCertBuild2.cmd"] + forwarded_args
     run_cmd(cmd)
     return 0
