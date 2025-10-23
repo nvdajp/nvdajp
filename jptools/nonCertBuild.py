@@ -221,9 +221,9 @@ def _prep_miscdepsjp() -> None:
     except Exception:
         pass
 
-    # Run overlay script from miscDepsJp as original script expects that CWD
+    # Run overlay script with CWD=miscDepsJp, script located in repo-root/jptools
     try:
-        run_cmd([sys.executable, "jptools/setup_miscdeps_overlay.py"], cwd=Path("miscDepsJp"))
+        run_cmd([sys.executable, "../jptools/setup_miscdeps_overlay.py"], cwd=Path("miscDepsJp"))
     except SystemExit:
         # Propagate normal exit
         pass
