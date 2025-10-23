@@ -77,7 +77,11 @@ def _ensure_nmake_env() -> None:
             ]
             for script in candidates:
                 if script.exists():
-                    call = f"call \"{script}\""
+                    if script.name.lower() == "vsdevcmd.bat":
+                        # Prefer x86 target tools for JP build toolchain
+                        call = f"set VSCMD_ARG_TGT_ARCH=x86 && call \"{script}\" -no_logo"
+                    else:
+                        call = f"call \"{script}\""
                     envmap = _capture_env_via_cmd(call)
                     if envmap:
                         # Prefer build-related keys; update PATH/INCLUDE/LIB/LIBPATH and others.
@@ -181,6 +185,8 @@ def _prep_miscdepsjp() -> None:
     run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
     run_cmd(["cmd", "/c", "all-build.cmd"], cwd=jtalk_dir)
     run_cmd(["cmd", "/c", "all-install.cmd"], cwd=jtalk_dir)
+    # Ensure toolchain remains available for subsequent steps
+    _ensure_nmake_env()
     # python-jtalk clean
     pyjtalk_dir = Path("miscDepsJp/include/python-jtalk")
     run_cmd(["cmd", "/c", "clean.cmd"], cwd=pyjtalk_dir)
