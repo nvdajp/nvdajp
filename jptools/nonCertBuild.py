@@ -33,9 +33,11 @@ def _ensure_nmake_env() -> None:
     except FileNotFoundError:
         pass
 
-    def _capture_env_via_cmd(call_stmt: str) -> dict[str, str] | None:
+    repo_root = Path(__file__).resolve().parents[1]
+
+    def _capture_env_via_cmd(call_stmt: str, *, cwd: Path | None = None) -> dict[str, str] | None:
         try:
-            out = subprocess.check_output(["cmd", "/c", f"{call_stmt} && set"], text=True, errors="ignore")
+            out = subprocess.check_output(["cmd", "/c", f"{call_stmt} && set"], text=True, errors="ignore", cwd=str(cwd) if cwd else None)
         except Exception as e:
             print(f"::warning::Failed to initialize MSVC env via: {call_stmt} ({e})")
             return None
@@ -71,7 +73,26 @@ def _ensure_nmake_env() -> None:
             install_path = ""
 
         if install_path:
-            candidates = [
+            # First, try to directly find exact scripts using vswhere -find
+            found: list[Path] = []
+            for pattern in (
+                r"VC\Auxiliary\Build\vcvars32.bat",
+                r"VC\Auxiliary\Build\vcvarsall.bat",
+                r"Common7\Tools\VsDevCmd.bat",
+            ):
+                try:
+                    p = subprocess.check_output(
+                        [str(vswhere), "-latest", "-products", "*", "-find", pattern, "-format", "value"],
+                        text=True,
+                        errors="ignore",
+                    ).strip()
+                except Exception:
+                    p = ""
+                if p:
+                    found.append(Path(p))
+
+            # Fallback to constructing from installationPath
+            candidates = found or [
                 Path(install_path) / "VC" / "Auxiliary" / "Build" / "vcvars32.bat",
                 Path(install_path) / "VC" / "Auxiliary" / "Build" / "vcvarsall.bat",
                 Path(install_path) / "Common7" / "Tools" / "VsDevCmd.bat",
@@ -111,11 +132,11 @@ def _ensure_nmake_env() -> None:
                         return
 
     # 3) Fallback to JP's repo-local vcsetup.cmd
-    vcsetup = Path("jptools") / "vcsetup.cmd"
+    vcsetup = repo_root / "jptools" / "vcsetup.cmd"
     if not vcsetup.exists():
         print(f"::warning::VC setup script not found: {vcsetup}")
         return
-    envmap = _capture_env_via_cmd(f"call \"{vcsetup}\" >nul")
+    envmap = _capture_env_via_cmd(f"call \"{vcsetup}\" >nul", cwd=repo_root)
     if not envmap:
         return
     updated = 0
