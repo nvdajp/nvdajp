@@ -21,56 +21,99 @@ def run_cmd(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | No
 
 def _ensure_nmake_env() -> None:
     """Ensure MSVC build tools (cl/nmake) are on PATH for this process.
-    - If they are already available, do nothing.
-    - Otherwise, invoke JP's vcsetup.cmd and import the environment it sets.
-    This mirrors the behavior of nonCertBuild1.cmd's first line.
+    Order of attempts:
+    1) If 'cl' seems callable, do nothing.
+    2) Use vswhere to locate Visual Studio and call vcvars32/VsDevCmd, import env.
+    3) Fallback to JP's jptools/vcsetup.cmd and import env.
     """
-    # Fast path: if 'cl' is on PATH, assume VC environment is set.
+    # 1) Fast path: if 'cl' is on PATH, assume VC environment is set.
     try:
         subprocess.run(["cl"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
         return
     except FileNotFoundError:
         pass
 
-    # Fall back to calling the repo's VC setup script and capturing its environment.
-    # We call it via cmd.exe and then run 'set' to dump the environment.
+    def _capture_env_via_cmd(call_stmt: str) -> dict[str, str] | None:
+        try:
+            out = subprocess.check_output(["cmd", "/c", f"{call_stmt} && set"], text=True, errors="ignore")
+        except Exception as e:
+            print(f"::warning::Failed to initialize MSVC env via: {call_stmt} ({e})")
+            return None
+        env: dict[str, str] = {}
+        for line in out.splitlines():
+            if "=" not in line:
+                continue
+            key, val = line.split("=", 1)
+            env[key] = val
+        return env
+
+    # 2) Try vswhere-driven activation (handles Enterprise/Professional/BuildTools and CI images)
+    vswhere = Path(r"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe")
+    if vswhere.exists():
+        try:
+            install_path = subprocess.check_output(
+                [
+                    str(vswhere),
+                    "-latest",
+                    "-products",
+                    "*",
+                    "-requires",
+                    "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+                    "-property",
+                    "installationPath",
+                    "-format",
+                    "value",
+                ],
+                text=True,
+                errors="ignore",
+            ).strip()
+        except Exception:
+            install_path = ""
+
+        if install_path:
+            candidates = [
+                Path(install_path) / "VC" / "Auxiliary" / "Build" / "vcvars32.bat",
+                Path(install_path) / "Common7" / "Tools" / "VsDevCmd.bat",
+            ]
+            for script in candidates:
+                if script.exists():
+                    call = f"call \"{script}\""
+                    envmap = _capture_env_via_cmd(call)
+                    if envmap:
+                        # Prefer build-related keys; update PATH/INCLUDE/LIB/LIBPATH and others.
+                        keys = {
+                            "PATH",
+                            "INCLUDE",
+                            "LIB",
+                            "LIBPATH",
+                            "VCINSTALLDIR",
+                            "VCTOOLSINSTALLDIR",
+                            "VSCMD_ARG_TGT_ARCH",
+                            "WINDOWSSDKDIR",
+                            "UNIVERSALCRTSDKDIR",
+                        }
+                        updated = 0
+                        for k in keys:
+                            if k in envmap:
+                                os.environ[k] = envmap[k]
+                                updated += 1
+                        # Ensure 32-bit arch flag matches JP toolchain expectation
+                        os.environ["CL"] = os.environ.get("CL", "") + (" /arch:IA32" if "/arch:IA32" not in os.environ.get("CL", "") else "")
+                        print(f"[nonCertBuild] MSVC env imported via vswhere from {script.name} ({updated} vars)")
+                        return
+
+    # 3) Fallback to JP's repo-local vcsetup.cmd
     vcsetup = Path("jptools") / "vcsetup.cmd"
     if not vcsetup.exists():
         print(f"::warning::VC setup script not found: {vcsetup}")
         return
-
-    try:
-        # Build a command that calls vcsetup and then prints the environment.
-        cmd = [
-            "cmd",
-            "/c",
-            f"call \"{vcsetup}\" >nul && set",
-        ]
-        out = subprocess.check_output(cmd, text=True, errors="ignore")
-    except Exception as e:
-        print(f"::warning::Failed to initialize MSVC env via vcsetup ({e})")
+    envmap = _capture_env_via_cmd(f"call \"{vcsetup}\" >nul")
+    if not envmap:
         return
-
-    # Parse KEY=VALUE lines and update our environment for child processes.
     updated = 0
-    for line in out.splitlines():
-        if "=" not in line:
-            continue
-        key, val = line.split("=", 1)
-        # Only update plausible build-related variables or those that already exist
-        if key.upper() in {
-            "PATH",
-            "INCLUDE",
-            "LIB",
-            "LIBPATH",
-            "VCINSTALLDIR",
-            "VCTOOLSINSTALLDIR",
-            "VSCMD_ARG_TGT_ARCH",
-            "WINDOWSSDKDIR",
-            "UNIVERSALCRTSDKDIR",
-            "CL",
-        } or key in os.environ:
-            os.environ[key] = val
+    for key in ("PATH", "INCLUDE", "LIB", "LIBPATH", "VCINSTALLDIR", "VCTOOLSINSTALLDIR", "VSCMD_ARG_TGT_ARCH", "WINDOWSSDKDIR", "UNIVERSALCRTSDKDIR", "CL"):
+        if key in envmap:
+            os.environ[key] = envmap[key]
             updated += 1
     if updated:
         print(f"[nonCertBuild] MSVC env imported from vcsetup ({updated} vars)")
