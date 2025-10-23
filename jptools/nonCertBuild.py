@@ -217,8 +217,12 @@ def _prep_miscdepsjp() -> None:
     # Try to run clean under an activated MSVC env within the same cmd session,
     # as some runners may not allow importing env reliably.
     if not _run_with_msvc_activation("clean.cmd", cwd=pyjtalk_dir):
-        # Fallback to plain execution (may fail if MSVC tools aren't available)
-        run_cmd(["cmd", "/c", "clean.cmd"], cwd=pyjtalk_dir)
+        # If in CI and still no toolchain, skip clean as a non-critical step.
+        if _is_ci():
+            print("::warning::MSVC tools unavailable in CI; skipping python-jtalk clean step")
+        else:
+            # Fallback to plain execution (will raise if not available)
+            run_cmd(["cmd", "/c", "clean.cmd"], cwd=pyjtalk_dir)
     # jptools tests
     run_cmd(["cmd", "/c", "test.cmd"], cwd=md_root)
 
