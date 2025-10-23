@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 from pathlib import Path
+import shutil
 
 
 def run_cmd(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None) -> None:
@@ -64,21 +65,16 @@ def _prep_miscdepsjp() -> None:
     """Replicates nonCertBuild1.cmd steps in Python.
     Keeps underlying module .cmd scripts, but removes top-level .cmd dependency.
     """
-    # Only run VS environment setup locally; CI sets up MSVC via ilammy/msvc-dev-cmd
-    if not _is_ci():
-        vcsetup = Path("miscDepsJp/include/python-jtalk/vcsetup.cmd")
-        if vcsetup.exists():
-            run_cmd(["cmd", "/c", str(vcsetup)])
+    # Ensure nmake is available; if not, run local vcsetup (both CI and local)
+    _ensure_nmake_env()
     _check_vs_version()
 
     # Run miscDepsJp jtalk prep/build/test (inline build-and-test.cmd)
     md_root = Path("miscDepsJp/jptools")
     run_cmd(["cmd", "/c", "clean.cmd"], cwd=md_root)
     run_cmd(["cmd", "/c", "copy_jtalk_core_files.cmd"], cwd=md_root)
-    # The original script invoked python-jtalk vcsetup; do so if it exists
-    vcsetup = Path("miscDepsJp/include/python-jtalk/vcsetup.cmd")
-    if vcsetup.exists():
-        run_cmd(["cmd", "/c", str(vcsetup)])
+    # Guard again before build steps in case environment changed
+    _ensure_nmake_env()
     # jtalk clean→build→install
     jtalk_dir = Path("miscDepsJp/include/jtalk")
     run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
@@ -185,4 +181,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
 
