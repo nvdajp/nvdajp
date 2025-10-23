@@ -752,6 +752,23 @@ env.Alias("moduleList", env.GenerateModuleList(target, source))
 
 # JP: Provide an alias to build NVDA with JP miscDeps preparation via SCons
 # This runs the JP prep before building dist/launcher, avoiding recursive SCons calls.
-_jp_prep_cmd = f'@"{sys.executable}" -c "import sys; sys.path.insert(0, \"jptools\"); import nonCertBuild as _n; _n._prep_miscdepsjp()"'
-env.AddPreAction([dist, launcher], Action(_jp_prep_cmd, cmdstr='[jp] prep miscDepsJp before build'))
+def _jp_prep_miscdeps(target, source, env):
+    import os as _os
+    import sys as _sys
+    import importlib as _importlib
+    # Ensure repo root is importable
+    root = _os.getcwd()
+    if root not in _sys.path:
+        _sys.path.insert(0, root)
+    # Import and run JP prep
+    mod = _importlib.import_module('jptools.nonCertBuild')
+    # Some runners may cache older modules; force reload to pick recent changes
+    try:
+        mod = _importlib.reload(mod)
+    except Exception:
+        pass
+    mod._prep_miscdepsjp()
+    return 0
+
+env.AddPreAction([dist, launcher], Action(_jp_prep_miscdeps, cmdstr='[jp] prep miscDepsJp before build'))
 env.Alias("nonCertBuild", [dist, launcher])
