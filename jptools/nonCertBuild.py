@@ -19,6 +19,64 @@ def run_cmd(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | No
         sys.exit(127)
 
 
+def _ensure_nmake_env() -> None:
+    """Ensure MSVC build tools (cl/nmake) are on PATH for this process.
+    - If they are already available, do nothing.
+    - Otherwise, invoke JP's vcsetup.cmd and import the environment it sets.
+    This mirrors the behavior of nonCertBuild1.cmd's first line.
+    """
+    # Fast path: if 'cl' is on PATH, assume VC environment is set.
+    try:
+        subprocess.run(["cl"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+        return
+    except FileNotFoundError:
+        pass
+
+    # Fall back to calling the repo's VC setup script and capturing its environment.
+    # We call it via cmd.exe and then run 'set' to dump the environment.
+    vcsetup = Path("jptools") / "vcsetup.cmd"
+    if not vcsetup.exists():
+        print(f"::warning::VC setup script not found: {vcsetup}")
+        return
+
+    try:
+        # Build a command that calls vcsetup and then prints the environment.
+        cmd = [
+            "cmd",
+            "/c",
+            f"call \"{vcsetup}\" >nul && set",
+        ]
+        out = subprocess.check_output(cmd, text=True, errors="ignore")
+    except Exception as e:
+        print(f"::warning::Failed to initialize MSVC env via vcsetup ({e})")
+        return
+
+    # Parse KEY=VALUE lines and update our environment for child processes.
+    updated = 0
+    for line in out.splitlines():
+        if "=" not in line:
+            continue
+        key, val = line.split("=", 1)
+        # Only update plausible build-related variables or those that already exist
+        if key.upper() in {
+            "PATH",
+            "INCLUDE",
+            "LIB",
+            "LIBPATH",
+            "VCINSTALLDIR",
+            "VCTOOLSINSTALLDIR",
+            "VSCMD_ARG_TGT_ARCH",
+            "WINDOWSSDKDIR",
+            "UNIVERSALCRTSDKDIR",
+            "CL",
+        } or key in os.environ:
+            os.environ[key] = val
+            updated += 1
+    if updated:
+        print(f"[nonCertBuild] MSVC env imported from vcsetup ({updated} vars)")
+    else:
+        print("::warning::vcsetup completed but no environment variables were imported")
+
 def _is_ci() -> bool:
     return os.environ.get("GITHUB_ACTIONS") == "true"
 
