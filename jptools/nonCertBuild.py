@@ -73,13 +73,17 @@ def _ensure_nmake_env() -> None:
         if install_path:
             candidates = [
                 Path(install_path) / "VC" / "Auxiliary" / "Build" / "vcvars32.bat",
+                Path(install_path) / "VC" / "Auxiliary" / "Build" / "vcvarsall.bat",
                 Path(install_path) / "Common7" / "Tools" / "VsDevCmd.bat",
             ]
             for script in candidates:
                 if script.exists():
-                    if script.name.lower() == "vsdevcmd.bat":
+                    name = script.name.lower()
+                    if name == "vsdevcmd.bat":
                         # Prefer x86 target tools for JP build toolchain
                         call = f"set VSCMD_ARG_TGT_ARCH=x86 && call \"{script}\" -no_logo"
+                    elif name == "vcvarsall.bat":
+                        call = f"call \"{script}\" x86"
                     else:
                         call = f"call \"{script}\""
                     envmap = _capture_env_via_cmd(call)
