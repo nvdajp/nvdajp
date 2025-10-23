@@ -214,7 +214,11 @@ def _prep_miscdepsjp() -> None:
     _ensure_nmake_env()
     # python-jtalk clean
     pyjtalk_dir = Path("miscDepsJp/include/python-jtalk")
-    run_cmd(["cmd", "/c", "clean.cmd"], cwd=pyjtalk_dir)
+    # Try to run clean under an activated MSVC env within the same cmd session,
+    # as some runners may not allow importing env reliably.
+    if not _run_with_msvc_activation("clean.cmd", cwd=pyjtalk_dir):
+        # Fallback to plain execution (may fail if MSVC tools aren't available)
+        run_cmd(["cmd", "/c", "clean.cmd"], cwd=pyjtalk_dir)
     # jptools tests
     run_cmd(["cmd", "/c", "test.cmd"], cwd=md_root)
 
@@ -258,6 +262,60 @@ def _prep_miscdepsjp() -> None:
     except SystemExit:
         # Propagate normal exit
         pass
+
+
+def _activation_candidates() -> list[str]:
+    """Return possible activation call statements for MSVC env (x86)."""
+    calls: list[str] = []
+    vswhere = Path(r"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe")
+    def _add(path: Path, args: str = ""):
+        if path.exists():
+            calls.append(f"call \"{path}\"{(' ' + args) if args else ''}")
+    # Prefer vswhere -find to get exact bat paths
+    if vswhere.exists():
+        for pattern, args in (
+            (r"VC\Auxiliary\Build\vcvars32.bat", ""),
+            (r"VC\Auxiliary\Build\vcvarsall.bat", "x86"),
+            (r"Common7\Tools\VsDevCmd.bat", "-no_logo"),
+        ):
+            try:
+                p = subprocess.check_output(
+                    [str(vswhere), "-latest", "-products", "*", "-find", pattern, "-format", "value"],
+                    text=True,
+                    errors="ignore",
+                ).strip()
+            except Exception:
+                p = ""
+            if p:
+                _add(Path(p), args)
+    # Fallback to common install roots
+    for edition in ("Enterprise", "Professional", "Community", "BuildTools"):
+        root = Path(fr"C:\Program Files\Microsoft Visual Studio\2022\{edition}")
+        _add(root / "VC" / "Auxiliary" / "Build" / "vcvars32.bat")
+        _add(root / "VC" / "Auxiliary" / "Build" / "vcvarsall.bat", "x86")
+        _add(root / "Common7" / "Tools" / "VsDevCmd.bat", "-no_logo")
+    return calls
+
+
+def _run_with_msvc_activation(cmd_or_bat: str, *, cwd: Path) -> bool:
+    """Run a command in a single cmd session after activating MSVC env.
+    Returns True on success, False otherwise.
+    """
+    for call_stmt in _activation_candidates():
+        try:
+            subprocess.run(
+                ["cmd", "/c", f"{call_stmt} && {cmd_or_bat}"],
+                cwd=str(cwd),
+                check=True,
+            )
+            print(f"[nonCertBuild] ran under MSVC activation: {call_stmt}")
+            return True
+        except subprocess.CalledProcessError:
+            continue
+        except FileNotFoundError:
+            continue
+    print("::warning::All MSVC activation candidates failed; proceeding without activation")
+    return False
 
 
 def _nowdate() -> str:
