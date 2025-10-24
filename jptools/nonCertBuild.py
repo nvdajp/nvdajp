@@ -310,6 +310,17 @@ def _run_with_msvc_activation(cmd_or_bat: str, *, cwd: Path) -> bool:
     """Run a command in a single cmd session after activating MSVC env.
     Returns True on success, False otherwise.
     """
+    # First, try without activation. On CI, ilammy/msvc-dev-cmd already sets PATH
+    # in the current environment, which child cmd processes inherit.
+    try:
+        subprocess.run(["cmd", "/c", cmd_or_bat], cwd=str(cwd), check=True)
+        print("[nonCertBuild] ran without explicit MSVC activation (inherited env)")
+        return True
+    except subprocess.CalledProcessError:
+        pass
+    except FileNotFoundError:
+        pass
+
     for call_stmt in _activation_candidates():
         try:
             subprocess.run(
