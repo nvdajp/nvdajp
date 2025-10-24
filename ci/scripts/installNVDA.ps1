@@ -12,7 +12,7 @@ Write-Output "Using NVDA installer: $nvdaLauncherFile" >> $env:GITHUB_STEP_SUMMA
 $nvdaInstallerLogDir=$(Resolve-Path ".\testOutput\install")
 $installerLogFilePath="$nvdaInstallerLogDir\nvda_install_temp.log"
 $installerCrashDumpPath="$nvdaInstallerLogDir\nvda_crash.dmp"
-$installerProcess=Start-Process -FilePath $nvdaLauncherFile -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -PassThru
+$installerProcess=Start-Process -FilePath "$nvdaLauncherFile" -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -PassThru
 try {
 	$installerProcess | Wait-Process -Timeout 180 -ErrorAction Stop
 	$errorCode=$installerProcess.ExitCode

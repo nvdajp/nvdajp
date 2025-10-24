@@ -18,6 +18,19 @@ def run_cmd(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | No
         print(f"::error::Command not found: {cmd[0]} ({e})")
         sys.exit(127)
 
+MSVC_ENV_KEYS = (
+    "PATH",
+    "INCLUDE",
+    "LIB",
+    "LIBPATH",
+    "VCINSTALLDIR",
+    "VCTOOLSINSTALLDIR",
+    "VSCMD_ARG_TGT_ARCH",
+    "WINDOWSSDKDIR",
+    "UNIVERSALCRTSDKDIR",
+    "CL",
+)
+
 
 def _ensure_nmake_env() -> None:
     """Ensure MSVC build tools (cl/nmake) are on PATH for this process.
@@ -110,24 +123,17 @@ def _ensure_nmake_env() -> None:
                     envmap = _capture_env_via_cmd(call)
                     if envmap:
                         # Prefer build-related keys; update PATH/INCLUDE/LIB/LIBPATH and others.
-                        keys = {
-                            "PATH",
-                            "INCLUDE",
-                            "LIB",
-                            "LIBPATH",
-                            "VCINSTALLDIR",
-                            "VCTOOLSINSTALLDIR",
-                            "VSCMD_ARG_TGT_ARCH",
-                            "WINDOWSSDKDIR",
-                            "UNIVERSALCRTSDKDIR",
-                        }
                         updated = 0
-                        for k in keys:
+                        for k in MSVC_ENV_KEYS:
                             if k in envmap:
                                 os.environ[k] = envmap[k]
                                 updated += 1
                         # Ensure 32-bit arch flag matches JP toolchain expectation
-                        os.environ["CL"] = os.environ.get("CL", "") + (" /arch:IA32" if "/arch:IA32" not in os.environ.get("CL", "") else "")
+                        current_cl = os.environ.get("CL") or ""
+                        if "/arch:ia32" not in current_cl.lower():
+                            os.environ["CL"] = (current_cl + " /arch:IA32").strip()
+                        else:
+                            os.environ["CL"] = current_cl
                         print(f"[nonCertBuild] MSVC env imported via vswhere from {script.name} ({updated} vars)")
                         return
 
@@ -140,7 +146,7 @@ def _ensure_nmake_env() -> None:
     if not envmap:
         return
     updated = 0
-    for key in ("PATH", "INCLUDE", "LIB", "LIBPATH", "VCINSTALLDIR", "VCTOOLSINSTALLDIR", "VSCMD_ARG_TGT_ARCH", "WINDOWSSDKDIR", "UNIVERSALCRTSDKDIR", "CL"):
+    for key in MSVC_ENV_KEYS:
         if key in envmap:
             os.environ[key] = envmap[key]
             updated += 1
@@ -203,7 +209,7 @@ def _prep_miscdepsjp() -> None:
     md_root = Path("miscDepsJp/jptools")
     run_cmd(["cmd", "/c", "clean.cmd"], cwd=md_root)
     run_cmd(["cmd", "/c", "copy_jtalk_core_files.cmd"], cwd=md_root)
-    # Guard again before build steps in case environment changed
+    # Guard the environment again before build steps, in case it changed
     _ensure_nmake_env()
     # jtalk clean→build→install
     jtalk_dir = Path("miscDepsJp/include/jtalk")
@@ -262,7 +268,9 @@ def _prep_miscdepsjp() -> None:
 
     # Run overlay script with CWD=miscDepsJp, script located in repo-root/jptools
     try:
-        run_cmd([sys.executable, "../jptools/setup_miscdeps_overlay.py"], cwd=Path("miscDepsJp"))
+        repo_root = Path(__file__).resolve().parents[1]
+        overlay_script = repo_root / "jptools" / "setup_miscdeps_overlay.py"
+        run_cmd([sys.executable, str(overlay_script)], cwd=Path("miscDepsJp"))
     except SystemExit:
         # Propagate normal exit
         pass
