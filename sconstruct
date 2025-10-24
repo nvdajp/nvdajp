@@ -751,8 +751,8 @@ source = env.Dir(os.path.join(os.getcwd(), "dist"))
 target = env.File(os.path.join(outputDir.abspath, "library_modules.txt"))
 env.Alias("moduleList", env.GenerateModuleList(target, source))
 
-# JP: Provide an alias to build NVDA with JP miscDeps preparation via SCons
-# This runs the JP prep before building dist/launcher, avoiding recursive SCons calls.
+# JP: Provide a prep action for miscDepsJp and integrate it as a dedicated target
+# Downstream targets depend on this, ensuring it runs once per SCons invocation.
 def _jp_prep_miscdeps(target, source, env):
     # Ensure repo root is importable
     root = os.getcwd()
@@ -766,7 +766,24 @@ def _jp_prep_miscdeps(target, source, env):
     except (ImportError, AttributeError, TypeError) as e:
         print(f"[jp] warning: importlib.reload failed: {e}")
     mod._prep_miscdepsjp()
+    # Write stamp if provided as a target, so SCons can mark completion
+    try:
+        if target:
+            t = str(target[0])
+            os.makedirs(os.path.dirname(t), exist_ok=True)
+            with open(t, 'w', encoding='utf-8') as f:
+                f.write('jp_prep_miscdeps ok\n')
+    except Exception as e:
+        print(f"[jp] warning: failed to write prep stamp: {e}")
     return 0
 
-env.AddPreAction([dist, launcher], Action(_jp_prep_miscdeps, cmdstr='[jp] prep miscDepsJp before build'))
-env.Alias("nonCertBuild", [dist, launcher])
+# Create a dedicated stamp target for JP prep and depend on it
+jpPrepStamp = env.Command(
+    "build\\jp_prep_miscdeps.stamp",
+    [],
+    Action(_jp_prep_miscdeps, cmdstr='[jp] prep miscDepsJp')
+)
+env.AlwaysBuild(jpPrepStamp)
+env.Depends([dist, launcher], jpPrepStamp)
+env.Alias("jpPrep", jpPrepStamp)
+env.Alias("nonCertBuild", [jpPrepStamp, dist, launcher])
