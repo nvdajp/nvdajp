@@ -216,16 +216,6 @@ def _prep_miscdepsjp() -> None:
     run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
     run_cmd(["cmd", "/c", "all-build.cmd"], cwd=jtalk_dir)
     run_cmd(["cmd", "/c", "all-install.cmd"], cwd=jtalk_dir)
-    # Ensure toolchain remains available for subsequent steps
-    _ensure_nmake_env()
-    # python-jtalk clean
-    pyjtalk_dir = Path("miscDepsJp/include/python-jtalk")
-    # Try to run clean under an activated MSVC env within the same cmd session,
-    # as some runners may not allow importing env reliably.
-    if not _run_with_msvc_activation("clean.cmd", cwd=pyjtalk_dir):
-        # MSVC tools are required for python-jtalk clean step; provide a clear error message in all environments.
-        print("::error::MSVC tools are unavailable. The python-jtalk clean step requires the MSVC toolchain. Please install the required tools and try again.")
-        sys.exit(1)
     # jptools tests
     run_cmd(["cmd", "/c", "test.cmd"], cwd=md_root)
 
@@ -391,5 +381,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
-
