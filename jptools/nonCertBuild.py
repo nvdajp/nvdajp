@@ -223,13 +223,9 @@ def _prep_miscdepsjp() -> None:
     # Try to run clean under an activated MSVC env within the same cmd session,
     # as some runners may not allow importing env reliably.
     if not _run_with_msvc_activation("clean.cmd", cwd=pyjtalk_dir):
-        # If in CI and still no toolchain, skip clean as a non-critical step.
-        if _is_ci():
-            print("::warning::MSVC tools unavailable in CI; skipping python-jtalk clean step")
-        else:
-            # MSVC tools are required for python-jtalk clean step; provide a clear error message.
-            print("::error::MSVC tools are unavailable. The python-jtalk clean step requires the MSVC toolchain. Please install the required tools and try again.")
-            sys.exit(1)
+        # MSVC tools are required for python-jtalk clean step; provide a clear error message in all environments.
+        print("::error::MSVC tools are unavailable. The python-jtalk clean step requires the MSVC toolchain. Please install the required tools and try again.")
+        sys.exit(1)
     # jptools tests
     run_cmd(["cmd", "/c", "test.cmd"], cwd=md_root)
 
@@ -281,7 +277,7 @@ def _activation_candidates() -> list[str]:
     """Return possible activation call statements for MSVC env (x86)."""
     calls: list[str] = []
     vswhere = Path(r"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe")
-    def _add(path: Path, args: str = ""):
+    def _add_if_exists(path: Path, args: str = ""):
         if path.exists():
             calls.append(f"call \"{path}\"{(' ' + args) if args else ''}")
     # Prefer vswhere -find to get exact bat paths
@@ -300,13 +296,13 @@ def _activation_candidates() -> list[str]:
             except Exception:
                 p = ""
             if p:
-                _add(Path(p), args)
+                _add_if_exists(Path(p), args)
     # Fallback to common install roots
     for edition in ("Enterprise", "Professional", "Community", "BuildTools"):
         root = Path(fr"C:\Program Files\Microsoft Visual Studio\2022\{edition}")
-        _add(root / "VC" / "Auxiliary" / "Build" / "vcvars32.bat")
-        _add(root / "VC" / "Auxiliary" / "Build" / "vcvarsall.bat", "x86")
-        _add(root / "Common7" / "Tools" / "VsDevCmd.bat", "-no_logo")
+        _add_if_exists(root / "VC" / "Auxiliary" / "Build" / "vcvars32.bat")
+        _add_if_exists(root / "VC" / "Auxiliary" / "Build" / "vcvarsall.bat", "x86")
+        _add_if_exists(root / "Common7" / "Tools" / "VsDevCmd.bat", "-no_logo")
     return calls
 
 

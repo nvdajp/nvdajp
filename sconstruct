@@ -763,8 +763,8 @@ def _jp_prep_miscdeps(target, source, env):
     # Some runners may cache older modules; force reload to pick recent changes
     try:
         mod = importlib.reload(mod)
-    except Exception:
-        pass
+    except (ImportError, AttributeError, TypeError) as e:
+        print(f"[jp] warning: importlib.reload failed: {e}")
     mod._prep_miscdepsjp()
     return 0
 
