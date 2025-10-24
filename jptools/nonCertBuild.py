@@ -227,8 +227,9 @@ def _prep_miscdepsjp() -> None:
         if _is_ci():
             print("::warning::MSVC tools unavailable in CI; skipping python-jtalk clean step")
         else:
-            # Fallback to plain execution (will raise if not available)
-            run_cmd(["cmd", "/c", "clean.cmd"], cwd=pyjtalk_dir)
+            # MSVC tools are required for python-jtalk clean step; provide a clear error message.
+            print("::error::MSVC tools are unavailable. The python-jtalk clean step requires the MSVC toolchain. Please install the required tools and try again.")
+            sys.exit(1)
     # jptools tests
     run_cmd(["cmd", "/c", "test.cmd"], cwd=md_root)
 
