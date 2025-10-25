@@ -13,10 +13,6 @@ Terminology:
   Cleaning (``scons -c``) removes the overlaid files that correspond to
   ``miscDepsJp/source`` (see Clean wiring below).
 
-Status of legacy aliases:
-- The legacy alias name ``jpPrep`` remains for now; prefer ``miscdepsjp``.
-  Removal is planned in a future cleanup.
-
 Aliases added:
 - miscdepsjp: Runs jptools/setup_miscdeps_overlay.py and writes a stamp file.
 - controllerClient: Builds NVDA controller client zip using pack_controller_client.py.
