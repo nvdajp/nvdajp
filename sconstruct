@@ -756,3 +756,11 @@ env.Alias("moduleList", env.GenerateModuleList(target, source))
 # JP: Align on one overlay path. Provide compatibility alias and keep nonCertBuild simple.
 env.Alias("jpPrep", "miscdepsjp")
 env.Alias("nonCertBuild", [dist, launcher])
+# JP: Attach overlay clean-up to major default targets so that `scons -c`
+# also cleans miscDepsJp overlay artifacts.
+try:
+    _overlay_files = scons_jp._compute_overlay_targets(Path.cwd())  # type: ignore[attr-defined]
+    env.Clean(dist, _overlay_files)
+    env.Clean(launcher, _overlay_files)
+except Exception:
+    pass

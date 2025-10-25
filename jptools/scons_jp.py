@@ -68,13 +68,39 @@ def _pack_controller_client(target: list[Any], source: list[Any], env: Any) -> i
     return res.returncode
 
 
+def _compute_overlay_targets(repo_root: Path) -> list[str]:
+    """Return absolute paths for files overlaid from miscDepsJp/source -> source.
+    Used to attach Clean so that `scons -c` can remove overlay artifacts.
+    """
+    targets: list[str] = []
+    src_root = repo_root / "miscDepsJp" / "source"
+    dst_root = repo_root / "source"
+    if not src_root.exists() or not dst_root.exists():
+        return targets
+    for root, _dirs, files in os.walk(src_root):
+        r = Path(root)
+        rel = r.relative_to(src_root)
+        for f in files:
+            # espeak-data は overlay 対象から除外（歴史的挙動を踏襲）
+            if rel.parts[:2] == ("synthDrivers", "espeak-data"):
+                continue
+            targets.append(str((dst_root / rel / f).resolve()))
+    return targets
+
+
 def register_jp_builders(env: Any) -> None:
     """Register JP-specific aliases without affecting upstream targets."""
+    repo_root = Path.cwd()
     # Alias: miscdepsjp (overlay stamp)
     stamp = env.File("miscDepsJp/_state/overlay.stamp")
     env.AlwaysBuild(stamp)
     env.Command(stamp, [], _run_overlay_and_stamp)
     env.Alias("miscdepsjp", stamp)
+    # Ensure `scons -c` removes overlay files as well when cleaning miscdepsjp
+    try:
+        env.Clean(stamp, _compute_overlay_targets(repo_root))
+    except Exception:
+        pass
 
     # Alias: controllerClient (zip artifact)
     out_dir = str(env.get("outputDir", "output"))
