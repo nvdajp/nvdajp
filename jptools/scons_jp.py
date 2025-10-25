@@ -346,9 +346,9 @@ def register_jp_builders(env: Any) -> None:
             env.Depends(env.Alias("certprep"), env.Alias("miscdepsjp"))
             env.Depends("dist", env.Alias("certprep"))
             env.Depends("launcher", env.Alias("certprep"))
-    except Exception:
+    except Exception as e:
         # Be conservative if alias lookup fails during early phases
-        pass
+        print(f'Warning: Could not establish certprep ordering: {e}')
 
     # Alias: certBuild (convenience umbrella alias)
     # Use string targets/aliases so resolution happens after upstream defines them.
