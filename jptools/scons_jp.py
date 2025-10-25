@@ -6,6 +6,14 @@ Goals (Step 1):
   changing upstream targets or default build graph.
 - Keep differences isolated under jptools/ and guard usage via aliases.
 
+Terminology:
+- "JP overlay": Copy of files from ``miscDepsJp/source`` into the repository
+  ``source`` tree, executed by ``jptools/setup_miscdeps_overlay.py`` with
+  CWD=``miscDepsJp``. Historically, ``synthDrivers/espeak-data`` is excluded
+  from the overlay. The overlay is idempotent and required for JP builds.
+  Cleaning (``scons -c``) removes the overlaid files that correspond to
+  ``miscDepsJp/source`` (see Clean wiring below).
+
 Aliases added:
 - miscdepsjp: Runs jptools/setup_miscdeps_overlay.py and writes a stamp file.
 - controllerClient: Builds NVDA controller client zip using pack_controller_client.py.

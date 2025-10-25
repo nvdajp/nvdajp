@@ -38,6 +38,20 @@
 - 日本語版のプロダクトビジョン: `projectDocs/product_vision.md`
 - エージェント／自動化向けの運用ルール: `AGENTS.md`
 
+## 用語: JP オーバレイ（JP overlay）
+- 定義: `miscDepsJp/source` 配下のファイルを、リポジトリ直下の `source/` にコピーして重ねる処理。
+  - 実行スクリプト: `jptools/setup_miscdeps_overlay.py`（実行時の作業ディレクトリは `miscDepsJp/`）。
+  - 既定の除外: `source/synthDrivers/espeak-data` は重ねない（歴史的挙動）。
+- いつ走るか:
+  - `scons source` 実行時に、SCons が `miscdepsjp` エイリアスを依存として自動実行（`sconstruct` に設定）。
+  - `miscdepsjp` エイリアスの明示実行でも可。
+- 性質:
+  - 冪等（同じファイルを繰り返し重ねても破綻しない）。
+  - 日本語版のビルドでは前提となる処理（無効化すると正しくビルドできない）。
+- クリーン:
+  - `scons -c`（クリーン）で、オーバレイで `source/` にコピーしたファイルも削除されるよう Clean を配線済み。
+  - 元の英語版ファイルへ「戻す」場合は、`git checkout -- source/<path>` など VCS 操作で復元する。
+
 ## 進行中タスク（例）
 - `#530`: 本家 2026.1 の日本語版へのマージ（サブタスクに Step 1〜3）
 - `#539`: Step 1（3.11 x86 のままビルド基盤整合）
