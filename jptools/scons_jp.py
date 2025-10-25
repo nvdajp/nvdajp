@@ -77,9 +77,9 @@ def _pack_controller_client(target: list[Any], source: list[Any], env: Any) -> i
             for p in s.iterdir():
                 if p.is_file():
                     (d / p.name).write_bytes(p.read_bytes())
-    except Exception:
+    except Exception as e:
         # Non-fatal; packaging may still succeed if files already present
-        pass
+        print(f"Warning: Failed to sync controller client artifacts: {e}")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
         sys.executable,
