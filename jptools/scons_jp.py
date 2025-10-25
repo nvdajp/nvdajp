@@ -282,8 +282,8 @@ def register_jp_builders(env: Any) -> None:
             dll = env.File(os.path.join("extras", "controllerClient", arch, "nvdaControllerClient.dll"))
             hdr = env.File(os.path.join("extras", "controllerClient", arch, "nvdaController.h"))
             env.Depends(cc_zip, [dll, hdr])
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Warning: Could not set controller client dependencies: {e}")
 
     # Aliases: jtalkAddon / kgsAddon (package JP add-ons)
     jtalk_stamp = env.File("miscDepsJp/_state/addons/jtalkAddon.stamp")
