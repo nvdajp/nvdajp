@@ -720,6 +720,13 @@ potSourceFiles = [
 
 pot = env.Command(outputDir.File("nvda.pot"), potSourceFiles, makePot)
 
+# JP: Ensure overlay exists before generating pot (translation template)
+try:
+	# Even if the alias is empty in non-JP contexts, this is safe.
+	env.Depends(pot, env.Alias("miscdepsjp"))
+except Exception:
+	pass
+
 env.Alias("pot", pot)
 
 symbolsList = []

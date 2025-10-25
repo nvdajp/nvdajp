@@ -13,8 +13,9 @@ Terminology:
   Cleaning (``scons -c``) removes the overlaid files that correspond to
   ``miscDepsJp/source`` (see Clean wiring below).
 
-Deprecated:
-- The legacy alias name ``jpPrep`` has been removed. Use ``miscdepsjp``.
+Status of legacy aliases:
+- The legacy alias name ``jpPrep`` remains for now; prefer ``miscdepsjp``.
+  Removal is planned in a future cleanup.
 
 Aliases added:
 - miscdepsjp: Runs jptools/setup_miscdeps_overlay.py and writes a stamp file.
@@ -29,6 +30,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any
+import subprocess
 
 
 def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> int:
@@ -95,6 +97,31 @@ def _compute_overlay_targets(repo_root: Path) -> list[str]:
     return targets
 
 
+def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
+    """Return only files not tracked by git. Tracked files must not be cleaned.
+
+    This ensures that `scons -c` does not delete repository-tracked sources
+    that happen to be overlay destinations.
+    """
+    out: list[str] = []
+    for p in paths:
+        try:
+            subprocess.run(
+                ["git", "ls-files", "--error-unmatch", p],
+                cwd=str(repo_root),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=True,
+            )
+            # Tracked -> do not clean
+        except subprocess.CalledProcessError:
+            out.append(p)  # Untracked -> safe to clean
+        except Exception:
+            # Be conservative on unexpected errors
+            pass
+    return out
+
+
 def register_jp_builders(env: Any) -> None:
     """Register JP-specific aliases without affecting upstream targets."""
     repo_root = Path.cwd()
@@ -105,7 +132,10 @@ def register_jp_builders(env: Any) -> None:
     env.Alias("miscdepsjp", stamp)
     # Ensure `scons -c` removes overlay files as well when cleaning miscdepsjp
     try:
-        env.Clean(stamp, _compute_overlay_targets(repo_root))
+        files = _compute_overlay_targets(repo_root)
+        files = _filter_untracked(repo_root, files)
+        if files:
+            env.Clean(stamp, files)
     except Exception:
         pass
 
