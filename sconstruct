@@ -760,8 +760,6 @@ source = env.Dir(os.path.join(os.getcwd(), "dist"))
 target = env.File(os.path.join(outputDir.abspath, "library_modules.txt"))
 env.Alias("moduleList", env.GenerateModuleList(target, source))
 
-# JP: Align on one overlay path. Provide compatibility alias and keep nonCertBuild simple.
-env.Alias("nonCertBuild", [dist, launcher])
 # JP: Attach overlay clean-up to major default targets so that `scons -c`
 # also cleans miscDepsJp overlay artifacts.
 try:
