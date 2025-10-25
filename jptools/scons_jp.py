@@ -26,7 +26,6 @@ import os
 import sys
 from pathlib import Path
 from typing import Any
-import subprocess
 
 
 def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> int:
@@ -99,6 +98,8 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
     This ensures that `scons -c` does not delete repository-tracked sources
     that happen to be overlay destinations.
     """
+    # Lazy import to avoid unnecessary overhead when not cleaning
+    import subprocess
     out: list[str] = []
     for p in paths:
         try:

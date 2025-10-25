@@ -499,15 +499,11 @@ jobs:
     - name: Build scons docs targets
       shell: cmd
       run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
-    # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
-    - name: Prepare documentation (SCons docs only)
-      shell: cmd
-      run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
 
     - name: Build packaging metadata and client zip (no launcher rebuild)
       shell: cmd
+      # Avoid rebuilding the launcher; use cached exe from buildNVDA
       run: |
-        rem Avoid rebuilding the launcher; use cached exe from buildNVDA
         scons client moduleList %sconsArgs% %sconsCores%
 
     - name: Verify cached launcher exists
