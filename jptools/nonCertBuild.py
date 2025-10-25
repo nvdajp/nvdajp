@@ -245,13 +245,7 @@ def _prep_miscdepsjp() -> None:
         except Exception:
             pass
 
-    # Ensure espeak-data is not overlaid
-    espeak_data = Path("source/synthDrivers/espeak-data")
-    try:
-        import shutil as _sh
-        _sh.rmtree(espeak_data, ignore_errors=True)
-    except Exception:
-        pass
+    # Overlay policy no longer removes espeak-data. Keep repo content as-is.
 
     # Run overlay script with CWD=miscDepsJp, script located in repo-root/jptools
     try:

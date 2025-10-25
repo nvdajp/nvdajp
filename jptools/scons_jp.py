@@ -9,8 +9,7 @@ Goals (Step 1):
 Terminology:
 - "JP overlay": Copy of files from ``miscDepsJp/source`` into the repository
   ``source`` tree, executed by ``jptools/setup_miscdeps_overlay.py`` with
-  CWD=``miscDepsJp``. Historically, ``synthDrivers/espeak-data`` is excluded
-  from the overlay. The overlay is idempotent and required for JP builds.
+  CWD=``miscDepsJp``. The overlay is idempotent and required for JP builds.
   Cleaning (``scons -c``) removes the overlaid files that correspond to
   ``miscDepsJp/source`` (see Clean wiring below).
 
@@ -92,9 +91,6 @@ def _compute_overlay_targets(repo_root: Path) -> list[str]:
         r = Path(root)
         rel = r.relative_to(src_root)
         for f in files:
-            # espeak-data は overlay 対象から除外（歴史的挙動を踏襲）
-            if rel.parts[:2] == ("synthDrivers", "espeak-data"):
-                continue
             targets.append(str((dst_root / rel / f).resolve()))
     return targets
 

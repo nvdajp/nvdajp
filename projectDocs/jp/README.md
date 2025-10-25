@@ -41,7 +41,7 @@
 ## 用語: JP オーバレイ（JP overlay）
 - 定義: `miscDepsJp/source` 配下のファイルを、リポジトリ直下の `source/` にコピーして重ねる処理。
   - 実行スクリプト: `jptools/setup_miscdeps_overlay.py`（実行時の作業ディレクトリは `miscDepsJp/`）。
-  - 既定の除外: `source/synthDrivers/espeak-data` は重ねない（歴史的挙動）。
+- 現在は特別な除外は設けず、`miscDepsJp/source` の内容をそのまま重ねます（ポリシーとして不要なファイルは配置しない）。
 - いつ走るか:
   - `scons source` 実行時に、SCons が `miscdepsjp` エイリアスを依存として自動実行（`sconstruct` に設定）。
   - `miscdepsjp` エイリアスの明示実行でも可。
