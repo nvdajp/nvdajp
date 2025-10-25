@@ -9,6 +9,7 @@ import multiprocessing
 import os
 import sys
 from pathlib import Path
+from SCons.Action import Action
 
 # Ensure we are inside the Python virtual environment, and that it is started with uv
 virtualEnv = os.getenv("VIRTUAL_ENV")
@@ -21,6 +22,7 @@ if not virtualEnv or not uv or Path.cwd() != Path(virtualEnv).parent:
 	sys.exit(1)
 
 import time  # noqa: E402
+import importlib  # noqa: E402
 import importlib.util  # noqa: E402
 import winreg  # noqa: E402
 
@@ -748,3 +750,40 @@ env.Tool("listModules")
 source = env.Dir(os.path.join(os.getcwd(), "dist"))
 target = env.File(os.path.join(outputDir.abspath, "library_modules.txt"))
 env.Alias("moduleList", env.GenerateModuleList(target, source))
+
+# JP: Provide a prep action for miscDepsJp and integrate it as a dedicated target
+# Downstream targets depend on this, ensuring it runs once per SCons invocation.
+def _jp_prep_miscdeps(target, source, env):
+    # Ensure repo root is importable
+    root = os.getcwd()
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    # Import and run JP prep
+    mod = importlib.import_module('jptools.nonCertBuild')
+    # Some runners may cache older modules; force reload to pick recent changes
+    try:
+        mod = importlib.reload(mod)
+    except (ImportError, AttributeError, TypeError) as e:
+        print(f"[jp] warning: importlib.reload failed: {e}")
+    mod._prep_miscdepsjp()
+    # Write stamp if provided as a target, so SCons can mark completion
+    try:
+        if target:
+            t = str(target[0])
+            os.makedirs(os.path.dirname(t), exist_ok=True)
+            with open(t, 'w', encoding='utf-8') as f:
+                f.write('jp_prep_miscdeps ok\n')
+    except Exception as e:
+        print(f"[jp] warning: failed to write prep stamp: {e}")
+    return 0
+
+# Create a dedicated stamp target for JP prep and depend on it
+jpPrepStamp = env.Command(
+    "build\\jp_prep_miscdeps.stamp",
+    [],
+    Action(_jp_prep_miscdeps, cmdstr='[jp] prep miscDepsJp')
+)
+env.AlwaysBuild(jpPrepStamp)
+env.Depends([dist, launcher], jpPrepStamp)
+env.Alias("jpPrep", jpPrepStamp)
+env.Alias("nonCertBuild", [jpPrepStamp, dist, launcher])
