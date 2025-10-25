@@ -101,7 +101,7 @@ def _pack_jtalk_addon(target: list[Any], source: list[Any], env: Any) -> int:
     if not script.exists():
         return 0
     from subprocess import run
-    # Ensure VERSION is available for the packer (used for nowdate default)
+    # Ensure VERSION is available for the packer (used for current date default)
     version = str(env.get("version", ""))
     run_env = os.environ.copy()
     if version:
