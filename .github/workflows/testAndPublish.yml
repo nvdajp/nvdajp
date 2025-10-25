@@ -160,14 +160,14 @@ jobs:
         echo "API Back Compat To: $apiCompatTo"
       shell: powershell
 
-    - name: Build NVDA Japanese version (SCons nonCertBuild)
+    - name: Build NVDA Japanese version (SCons dist+launcher)
       shell: cmd
       run: |
         setlocal
         set USE_PY_OVERLAY_COPY=1
         set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
         echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
-        scons nonCertBuild %sconsArgs%
+        scons dist launcher %sconsArgs%
         if errorlevel 1 exit /b %errorlevel%
 
     - name: Build Japanese addons (no 7z)
@@ -450,30 +450,16 @@ jobs:
         annotate_only: true
         report_paths: testOutput/unit/unitTests.xml
 
+  # BEGIN JP PATCH: Disable upstream Crowdin upload job for nvdajp
   crowdinUpload:
-    name: Upload translations to Crowdin
+    if: ${{ false }}
+    name: Upload translations to Crowdin (disabled in JP)
     runs-on: windows-2025
     needs: [buildNVDA, checkPot]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/beta' && vars.CROWDIN_PROJECT_ID }}
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v4
-      with:
-        path: ${{ github.workspace }}
-        key: ${{ github.ref }}-${{ github.run_id }}
-        fail-on-cache-miss: true
-    - name: Get makePot results
-      uses: actions/download-artifact@v4
-      with:
-        name: makePot results
-        path: output
-    - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
-    - name: Upload translations to Crowdin
-      env:
-        crowdinProjectID: ${{ vars.CROWDIN_PROJECT_ID }}
-        crowdinAuthToken: ${{ secrets.CROWDIN_AUTH_TOKEN }}
-      run: uv run --with requests --directory ${{ github.workspace }} ci\scripts\crowdinSync.py uploadSourceFile 2 output\nvda.pot 2>&1
+      - name: Skip
+        run: echo "Crowdin upload is disabled for nvdajp."
+  # END JP PATCH
 
   createLauncher:
     name: Create launcher
@@ -513,14 +499,23 @@ jobs:
     - name: Build scons docs targets
       shell: cmd
       run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
-    # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
-    - name: Create launcher and controller client
+
+    - name: Build packaging metadata and client zip (no launcher rebuild)
       shell: cmd
+      # Avoid rebuilding the launcher; use cached exe from buildNVDA
       run: |
-        PowerShell -Command "Set-ExecutionPolicy Bypass"
-        PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
-        PowerShell -Command "Install-Module -Name SignPath -Force"
-        scons %sconsLauncherOutTargets% %sconsArgs% %sconsCores%
+        scons client moduleList %sconsArgs% %sconsCores%
+
+    - name: Verify cached launcher exists
+      shell: powershell
+      run: |
+        $candidate = Get-ChildItem -Path .\output -Filter "nvda_*.exe" -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if (-not $candidate) {
+          echo "::error::No cached NVDA launcher found under .\\output. Ensure buildNVDA produced the installer."
+          Get-ChildItem -Path .\output -Force -ErrorAction SilentlyContinue | Format-List | Out-String -Width 2000
+          exit 1
+        }
+        echo "Using cached launcher: $($candidate.Name)"
     - name: Upload launcher
       id: uploadLauncher
       uses: actions/upload-artifact@v4
@@ -692,7 +687,9 @@ jobs:
     name: Cleanup cache
     permissions:
       actions: write
-    needs: [allTestsPass, crowdinUpload, uploadSymbols]
+    # BEGIN JP PATCH: remove dependency on disabled crowdinUpload
+    needs: [allTestsPass, uploadSymbols]
+    # END JP PATCH
     if: ${{ always() && (github.event_name == 'push' || github.event.pull_request.head.repo.owner == github.repository_owner) }}
     runs-on: ubuntu-latest
     steps:
@@ -850,4 +847,3 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             output/nvda*.exe#Installer
-
