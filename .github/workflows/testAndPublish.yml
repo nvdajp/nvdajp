@@ -160,14 +160,14 @@ jobs:
         echo "API Back Compat To: $apiCompatTo"
       shell: powershell
 
-    - name: Build NVDA Japanese version (SCons nonCertBuild)
+    - name: Build NVDA Japanese version (SCons dist+launcher)
       shell: cmd
       run: |
         setlocal
         set USE_PY_OVERLAY_COPY=1
         set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
         echo Building with args: %sconsArgs% (USE_PY_OVERLAY_COPY=%USE_PY_OVERLAY_COPY%)
-        scons nonCertBuild %sconsArgs%
+        scons dist launcher %sconsArgs%
         if errorlevel 1 exit /b %errorlevel%
 
     - name: Build Japanese addons (no 7z)
@@ -500,13 +500,26 @@ jobs:
       shell: cmd
       run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
     # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
-    - name: Create launcher and controller client
+    - name: Prepare documentation (SCons docs only)
+      shell: cmd
+      run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
+
+    - name: Build packaging metadata and client zip (no launcher rebuild)
       shell: cmd
       run: |
-        PowerShell -Command "Set-ExecutionPolicy Bypass"
-        PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
-        PowerShell -Command "Install-Module -Name SignPath -Force"
-        scons %sconsLauncherOutTargets% %sconsArgs% %sconsCores%
+        rem Avoid rebuilding the launcher; use cached exe from buildNVDA
+        scons client moduleList %sconsArgs% %sconsCores%
+
+    - name: Verify cached launcher exists
+      shell: powershell
+      run: |
+        $candidate = Get-ChildItem -Path .\output -Filter "nvda_*.exe" -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if (-not $candidate) {
+          echo "::error::No cached NVDA launcher found under .\\output. Ensure buildNVDA produced the installer."
+          Get-ChildItem -Path .\output -Force -ErrorAction SilentlyContinue | Format-List | Out-String -Width 2000
+          exit 1
+        }
+        echo "Using cached launcher: $($candidate.Name)"
     - name: Upload launcher
       id: uploadLauncher
       uses: actions/upload-artifact@v4
@@ -838,4 +851,3 @@ jobs:
             --repo ${{ github.repository }} \
             --clobber \
             output/nvda*.exe#Installer
-
