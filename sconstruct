@@ -395,10 +395,12 @@ env.SConscript("cldrDict_sconscript", exports=["env", "sourceDir"])
 # JP-specific helpers (isolated; add opt-in aliases only)
 try:
     import jptools.scons_jp as scons_jp
-    _is_jp = (env.get("publisher") or versionInfo.publisher or "").lower() == "nvdajp" or \
-             os.environ.get("NVDAP_JP_HELPERS") == "1"
-    if _is_jp:
-        scons_jp.register_jp_builders(env)
+    # Always register JP builders in this repo; miscDepsJp overlay is required
+    # for a correct build layout regardless of publisher.
+    scons_jp.register_jp_builders(env)
+    # Ensure miscDepsJp overlay runs before building source artifacts so that
+    # "scons source" is self-contained.
+    env.Depends(sourceDir, env.Alias("miscdepsjp"))
 except Exception:
     # Never fail the build if JP helpers are unavailable.
     pass
@@ -751,39 +753,6 @@ source = env.Dir(os.path.join(os.getcwd(), "dist"))
 target = env.File(os.path.join(outputDir.abspath, "library_modules.txt"))
 env.Alias("moduleList", env.GenerateModuleList(target, source))
 
-# JP: Provide a prep action for miscDepsJp and integrate it as a dedicated target
-# Downstream targets depend on this, ensuring it runs once per SCons invocation.
-def _jp_prep_miscdeps(target, source, env):
-    # Ensure repo root is importable
-    root = os.getcwd()
-    if root not in sys.path:
-        sys.path.insert(0, root)
-    # Import and run JP prep
-    mod = importlib.import_module('jptools.nonCertBuild')
-    # Some runners may cache older modules; force reload to pick recent changes
-    try:
-        mod = importlib.reload(mod)
-    except (ImportError, AttributeError, TypeError) as e:
-        print(f"[jp] warning: importlib.reload failed: {e}")
-    mod._prep_miscdepsjp()
-    # Write stamp if provided as a target, so SCons can mark completion
-    try:
-        if target:
-            t = str(target[0])
-            os.makedirs(os.path.dirname(t), exist_ok=True)
-            with open(t, 'w', encoding='utf-8') as f:
-                f.write('jp_prep_miscdeps ok\n')
-    except Exception as e:
-        print(f"[jp] warning: failed to write prep stamp: {e}")
-    return 0
-
-# Create a dedicated stamp target for JP prep and depend on it
-jpPrepStamp = env.Command(
-    "build\\jp_prep_miscdeps.stamp",
-    [],
-    Action(_jp_prep_miscdeps, cmdstr='[jp] prep miscDepsJp')
-)
-env.AlwaysBuild(jpPrepStamp)
-env.Depends([dist, launcher], jpPrepStamp)
-env.Alias("jpPrep", jpPrepStamp)
-env.Alias("nonCertBuild", [jpPrepStamp, dist, launcher])
+# JP: Align on one overlay path. Provide compatibility alias and keep nonCertBuild simple.
+env.Alias("jpPrep", "miscdepsjp")
+env.Alias("nonCertBuild", [dist, launcher])
