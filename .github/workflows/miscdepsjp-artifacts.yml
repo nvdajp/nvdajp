@@ -62,6 +62,26 @@ jobs:
           }
           patch --version | Select-Object -First 1
 
+      - name: Fetch python-jtalk vendor if missing
+        shell: pwsh
+        run: |
+          $pj = Join-Path $pwd 'miscDepsJp/include/python-jtalk'
+          if (-not (Test-Path (Join-Path $pj 'lib/Makefile.mak'))) {
+            Write-Host "[info] Cloning nvdajp/python-jtalk into $pj"
+            if (-not (Test-Path $pj)) { New-Item -ItemType Directory -Force -Path $pj | Out-Null }
+            git clone --depth 1 https://github.com/nvdajp/python-jtalk "$pj"
+          }
+
+      - name: Sync core trees into python-jtalk
+        shell: pwsh
+        run: |
+          $root = $pwd
+          $src1 = Join-Path $root 'miscDepsJp/include/libopenjtalk'
+          $src2 = Join-Path $root 'miscDepsJp/include/htsengineapi'
+          $dst = Join-Path $root 'miscDepsJp/include/python-jtalk'
+          robocopy "$src1" (Join-Path $dst 'libopenjtalk') /E /NFL /NDL /NJH /NJS /NP | Out-Null
+          robocopy "$src2" (Join-Path $dst 'htsengineapi') /E /NFL /NDL /NJH /NJS /NP | Out-Null
+
       - name: Adjust linker machine flag for x64
         if: matrix.arch == 'x64'
         shell: pwsh
