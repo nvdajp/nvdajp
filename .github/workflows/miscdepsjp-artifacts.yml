@@ -64,6 +64,19 @@ jobs:
           $code2 = $LASTEXITCODE
           $max = [Math]::Max($code1, $code2)
           if ($max -ge 8) { Write-Error "robocopy failed with code $max"; exit $max } else { $global:LASTEXITCODE = 0 }
+      - name: Verify HTS vendor tree
+        shell: pwsh
+        run: |
+          $htsLib = 'miscDepsJp/include/python-jtalk/htsengineapi/lib'
+          if (-not (Test-Path $htsLib)) { Write-Error ("missing: {0}" -f $htsLib); exit 1 }
+          Get-ChildItem $htsLib | Select-Object Name,Length | Format-Table | Out-String -Width 2000 | Write-Host
+          if (-not (Test-Path (Join-Path $htsLib 'Makefile.mak'))) { Write-Error 'Makefile.mak missing in vendor htsengineapi/lib'; exit 1 }
+          if (-not (Test-Path (Join-Path $htsLib 'HTS_label.c'))) { Write-Error 'HTS_label.c missing in vendor htsengineapi/lib'; exit 1 }
+      - name: Build HTS engine (vendor)
+        shell: cmd
+        working-directory: miscDepsJp\include\python-jtalk\htsengineapi\lib
+        run: |
+          nmake /f Makefile.mak
       - name: Build HTS engine (vendor)
         shell: cmd
         working-directory: miscDepsJp\include\python-jtalk\htsengineapi\lib
