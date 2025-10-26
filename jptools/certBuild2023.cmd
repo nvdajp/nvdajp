@@ -51,7 +51,7 @@ set SCONSARGS=certFile=1 certTimestampServer=%TIMESTAMP_URL% version=%VERSION% u
 rem JP PATCH: call SCons targets (JP additions included)
 rem Ensure jtalk (libopenjtalk.dll) is built and JP overlay is applied
 py -3 jptools\nonCertBuild.py --prep-only
-@if not "%ERRORLEVEL%"=="0" goto onerror
+@if not "%ERRORLEVEL%"=="0" echo [WARN] JP prep-only failed (%ERRORLEVEL%), continuing with fallback
 
 rem Fallback: if libopenjtalk.dll was not produced, deploy prebuilt one
 if not exist miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll (
