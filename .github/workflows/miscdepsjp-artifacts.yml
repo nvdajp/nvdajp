@@ -58,12 +58,19 @@ jobs:
           $src1 = Join-Path $root 'miscDepsJp/include/libopenjtalk'
           $src2 = Join-Path $root 'miscDepsJp/include/htsengineapi'
           $dst = Join-Path $root 'miscDepsJp/include/python-jtalk'
-          robocopy "$src1" (Join-Path $dst 'libopenjtalk') /E /NFL /NDL /NJH /NJS /NP | Out-Null
+          $dst1 = Join-Path $dst 'libopenjtalk'
+          $dst2 = Join-Path $dst 'htsengineapi'
+          New-Item -ItemType Directory -Force -Path $dst1 | Out-Null
+          New-Item -ItemType Directory -Force -Path $dst2 | Out-Null
+          # Try robocopy first (fast), then fallback to Copy-Item for reliability
+          robocopy "$src1" "$dst1" /E /NFL /NDL /NJH /NJS /NP | Out-Null
           $code1 = $LASTEXITCODE
-          robocopy "$src2" (Join-Path $dst 'htsengineapi') /E /NFL /NDL /NJH /NJS /NP | Out-Null
+          robocopy "$src2" "$dst2" /E /NFL /NDL /NJH /NJS /NP | Out-Null
           $code2 = $LASTEXITCODE
           $max = [Math]::Max($code1, $code2)
-          if ($max -ge 8) { Write-Error "robocopy failed with code $max"; exit $max } else { $global:LASTEXITCODE = 0 }
+          if ($code1 -ge 8) { Copy-Item -Recurse -Force "$src1\*" $dst1 }
+          if ($code2 -ge 8) { Copy-Item -Recurse -Force "$src2\*" $dst2 }
+          if ($max -ge 8) { Write-Host "[warn] robocopy had errors (code=$max), used Copy-Item fallback"; $global:LASTEXITCODE = 0 }
       - name: Verify HTS vendor tree
         shell: pwsh
         run: |
