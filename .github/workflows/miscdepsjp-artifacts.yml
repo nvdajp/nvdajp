@@ -64,6 +64,11 @@ jobs:
           $code2 = $LASTEXITCODE
           $max = [Math]::Max($code1, $code2)
           if ($max -ge 8) { Write-Error "robocopy failed with code $max"; exit $max } else { $global:LASTEXITCODE = 0 }
+      - name: Build HTS engine (vendor)
+        shell: cmd
+        working-directory: miscDepsJp\include\python-jtalk\htsengineapi\lib
+        run: |
+          nmake /f Makefile.mak
       - name: Build libopenjtalk (nmake)
         shell: cmd
         working-directory: miscDepsJp\include\python-jtalk
