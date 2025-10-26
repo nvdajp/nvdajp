@@ -298,6 +298,33 @@ def register_jp_builders(env: Any) -> None:
     except Exception:
         pass
 
+    # Alias: jtalkPrep (ensure JP jtalk payload is present before overlay)
+    def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int:
+        repo_root = Path.cwd()
+        src_prebuilt = repo_root / "miscDepsJp" / "include" / "python-jtalk" / "libopenjtalk.dll"
+        dst_payload = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
+        try:
+            dst_payload.parent.mkdir(parents=True, exist_ok=True)
+            if not dst_payload.exists() and src_prebuilt.exists():
+                dst_payload.write_bytes(src_prebuilt.read_bytes())
+        except Exception as e:
+            print(f"Warning: jtalkPrep fallback copy failed: {e}")
+            # Non-fatal; overlay/signing may skip if missing
+        Path(str(target[0])).parent.mkdir(parents=True, exist_ok=True)
+        Path(str(target[0])).write_text("ok", encoding="utf-8")
+        return 0
+
+    jtalk_prep_stamp = env.File("miscDepsJp/_state/prep/jtalkPrep.stamp")
+    env.AlwaysBuild(jtalk_prep_stamp)
+    env.Command(jtalk_prep_stamp, [], _ensure_jtalk_payload)
+    env.Alias("jtalkPrep", jtalk_prep_stamp)
+
+    # Ensure overlay runs after jtalkPrep so fallback payload is included
+    try:
+        env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkPrep"))
+    except Exception:
+        pass
+
     # Alias: controllerClient (zip artifact)
     out_dir = str(env.get("outputDir", "output"))
     version = str(env.get("version", "local"))
@@ -381,6 +408,8 @@ def register_jp_builders(env: Any) -> None:
     try:
         if env.get("certFile") or env.get("apiSigningToken"):
             env.Depends(env.Alias("certprep"), env.Alias("miscdepsjp"))
+            # Run jtalkPrep before overlay/certprep so libopenjtalk.dll can be picked up
+            env.Depends(env.Alias("certprep"), env.Alias("jtalkPrep"))
             env.Depends("dist", env.Alias("certprep"))
             env.Depends("launcher", env.Alias("certprep"))
     except Exception as e:
