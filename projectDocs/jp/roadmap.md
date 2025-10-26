@@ -149,6 +149,17 @@
 
 - Win32 ツール依存の棚卸しと縮退計画（nmake/cl/link/msgfmt/dump_syms 等）
 
+### 補足（miscDepsJp x64 / SCons / CI）
+
+- 既存維持: 既存の `miscdepsjp` と `libopenjtalk.dll` は変更しない（後方互換）。
+- 追加: SCons に `miscdepsjp-x64` エイリアスを追加し、x64 向けのビルド検証を実施（ベンダーツリーは不変更／リンク時のみ一時的に `/MACHINE:X64` を適用）。
+- 成果物: `miscDepsJp/_build/libopenjtalk-x64.dll`（成果物のみ。配布/署名なし）。
+- CI 方針（artifacts ワークフロー）:
+  - x86 ベースライン: ジョブ `miscdepsjp-x86`（ラベル `run-miscdepsjp`）
+  - x64 実験: ジョブ `miscdepsjp-x64`（ラベル `run-miscdeps64`、必要に応じて continue-on-error）
+  - JP ユニットテスト（任意）: ジョブ `jp-tests`（ラベル `run-jp-tests`）。SCons の `jpTests` / `jpCharTests` を実行し、ログをアーティファクト化。
+- 取得: `python-jtalk` はサブモジュール込みで取得（`--recurse-submodules`）。YAML 側は最小（SCons 呼び出し中心）。
+
 ## 運用ルール（ブランチ/PR）
 
 - `betajp` は安定ブランチ（直接 push 禁止）。すべてトピックブランチ→PR で変更。
