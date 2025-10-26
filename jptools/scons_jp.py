@@ -300,16 +300,53 @@ def register_jp_builders(env: Any) -> None:
 
     # Alias: jtalkPrep (ensure JP jtalk payload is present before overlay)
     def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int:
+        """Prepare JP jtalk payload for overlay with clear, fail-fast behavior.
+
+        - Resolve TARGET_ARCH (default x86)
+        - Locate vendor DLL under miscDepsJp/include/python-jtalk[/x64]/libopenjtalk.dll
+        - If missing, print actionable error and fail (no vendor rebuild in Step 1)
+        - Write payload into miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+        """
         repo_root = Path.cwd()
-        src_prebuilt = repo_root / "miscDepsJp" / "include" / "python-jtalk" / "libopenjtalk.dll"
-        dst_payload = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
+        arch = str(env.get("TARGET_ARCH", "x86")).lower()
+        vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
+        if arch == "x64":
+            src_prebuilt = vendor_base / "x64" / "libopenjtalk.dll"
+        else:
+            src_prebuilt = vendor_base / "libopenjtalk.dll"
+
+        dst_payload = (
+            repo_root
+            / "miscDepsJp"
+            / "source"
+            / "synthDrivers"
+            / "jtalk"
+            / "libopenjtalk.dll"
+        )
+
+        print(f"jtalkPrep: using TARGET_ARCH={arch}")
+        print(f"jtalkPrep: looking for vendor DLL: {src_prebuilt}")
+
+        if not src_prebuilt.exists():
+            print("ERROR: vendor DLL not found for jtalk.")
+            print(f" - looked at: {src_prebuilt}")
+            print(" - Step 1 では vendor を再ビルドしません（nmake 等は不使用）。")
+            print(
+                " - 配置手順: projectDocs/jp/vendor-submodules.md を参照し、\n"
+                "   指定レイアウトに DLL を配置してください。"
+            )
+            return 1
+
         try:
             dst_payload.parent.mkdir(parents=True, exist_ok=True)
-            if not dst_payload.exists() and src_prebuilt.exists():
-                dst_payload.write_bytes(src_prebuilt.read_bytes())
+            data = src_prebuilt.read_bytes()
+            # Always refresh to ensure correctness/idempotency
+            dst_payload.write_bytes(data)
+            print(f"jtalkPrep: payload -> {dst_payload}")
         except Exception as e:
-            print(f"Warning: jtalkPrep fallback copy failed: {e}")
-            # Non-fatal; overlay/signing may skip if missing
+            print(f"Error: jtalkPrep payload copy failed: {e}")
+            return 1
+
         Path(str(target[0])).parent.mkdir(parents=True, exist_ok=True)
         Path(str(target[0])).write_text("ok", encoding="utf-8")
         return 0
