@@ -94,11 +94,24 @@ jobs:
           if (-not (Test-Path $p)) { Get-ChildItem -Recurse -Directory miscDepsJp | Select-Object -First 20 | Format-List | Out-String | Write-Host; throw "Makefile not found: $p" }
           (Get-Content $p -Raw) -replace '/MACHINE:x86','/MACHINE:X64' | Set-Content $p -Encoding ASCII
 
-      - name: Pre-build HTS engine (vendor lib)
-        shell: cmd
-        working-directory: miscDepsJp\include\python-jtalk\htsengineapi\lib
+      - name: Pre-build HTS engine (vendor or repo)
+        shell: pwsh
         run: |
-          nmake /f Makefile.mak
+          $vendorLib = Join-Path $pwd 'miscDepsJp/include/python-jtalk/htsengineapi/lib'
+          $repoLib   = Join-Path $pwd 'miscDepsJp/include/htsengineapi/lib'
+          if (Test-Path $vendorLib) {
+            Push-Location $vendorLib
+            try { nmake /f Makefile.mak } finally { Pop-Location }
+          } elseif (Test-Path $repoLib) {
+            Push-Location $repoLib
+            try { nmake /f Makefile.mak } finally { Pop-Location }
+            # Ensure vendor path exists then copy built outputs
+            New-Item -ItemType Directory -Force -Path $vendorLib | Out-Null
+            Copy-Item (Join-Path $repoLib 'hts_engine_API.lib') $vendorLib -Force -ErrorAction Stop
+            Get-ChildItem $repoLib -Filter *.obj | Copy-Item -Destination $vendorLib -Force
+          } else {
+            throw "Neither vendor nor repo HTS lib path exists: $vendorLib , $repoLib"
+          }
 
       - name: Build libopenjtalk (nmake)
         shell: cmd
