@@ -16,10 +16,6 @@ Terminology:
 Aliases added:
 - miscdepsjp: Runs jptools/setup_miscdeps_overlay.py and writes a stamp file.
 - controllerClient: Builds NVDA controller client zip using pack_controller_client.py.
-- certprep: Signs pre-existing JP DLLs using env["signExec"].
-  Requires signing to be configured (e.g., `certFile` or `apiSigningToken`).
-  Intended for local builds only; CI should not enable this.
-- certBuild: Convenience alias that runs `certprep` + `source user_docs dist launcher`.
 
 These are intentionally light-weight and safe; wiring them into other
 targets can be done in later phases when stable.
@@ -64,22 +60,6 @@ def _pack_controller_client(target: list[Any], source: list[Any], env: Any) -> i
     # Prefer explicit version from env; fallback to empty (script uses 'local').
     version = str(env.get("version", ""))
     out_path = Path(str(target[0]))
-    # Sync built client artifacts from extras/controllerClient to jptools/nvdajpClient
-    try:
-        src_root = repo_root / "extras" / "controllerClient"
-        dst_root = repo_root / "jptools" / "nvdajpClient"
-        for arch in ("x86", "x64", "arm64"):
-            s = src_root / arch
-            d = dst_root / arch
-            if not s.exists():
-                continue
-            d.mkdir(parents=True, exist_ok=True)
-            for p in s.iterdir():
-                if p.is_file():
-                    (d / p.name).write_bytes(p.read_bytes())
-    except Exception as e:
-        # Non-fatal; packaging may still succeed if files already present
-        print(f"Warning: Failed to sync controller client artifacts: {e}")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
         sys.executable,
@@ -93,6 +73,7 @@ def _pack_controller_client(target: list[Any], source: list[Any], env: Any) -> i
     ]
     res = run(cmd)
     return res.returncode
+
 
 
 def _pack_jtalk_addon(target: list[Any], source: list[Any], env: Any) -> int:
@@ -295,6 +276,8 @@ def _get_vcvarsall_env(vcvarsall_path: str, arch: str) -> dict[str, str] | None:
             pass
 
 
+
+
 def _compute_overlay_targets(repo_root: Path) -> list[str]:
     """Return absolute paths for files overlaid from miscDepsJp/source -> source.
     Used to attach Clean so that `scons -c` can remove overlay artifacts.
@@ -355,6 +338,7 @@ def register_jp_builders(env: Any) -> None:
             env.Clean(stamp, files)
     except Exception:
         pass
+
 
     # Alias: jtalkPrep (ensure JP jtalk payload is present before overlay)
     def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int:
@@ -512,97 +496,12 @@ def register_jp_builders(env: Any) -> None:
     # This creates the dependency chain: dist -> sourceDir -> miscdepsjp -> jtalkPrep
     # No additional wiring needed here; using Dir/target objects (not Alias) is more robust.
 
+
+
     # Alias: controllerClient (zip artifact)
     out_dir = str(env.get("outputDir", "output"))
     version = str(env.get("version", "local"))
     cc_zip = env.File(os.path.join(out_dir, f"nvda_{version}_controllerClientJp.zip"))
     env.Command(cc_zip, [], _pack_controller_client)
     env.Alias("controllerClient", cc_zip)
-    # Ensure controller client binaries are built before packaging JP zip.
-    try:
-        for arch in ("x86", "x64", "arm64"):
-            dll = env.File(os.path.join("extras", "controllerClient", arch, "nvdaControllerClient.dll"))
-            hdr = env.File(os.path.join("extras", "controllerClient", arch, "nvdaController.h"))
-            env.Depends(cc_zip, [dll, hdr])
-    except Exception as e:
-        print(f"Warning: Could not set controller client dependencies: {e}")
 
-    # Aliases: jtalkAddon / kgsAddon (package JP add-ons)
-    jtalk_stamp = env.File("miscDepsJp/_state/addons/jtalkAddon.stamp")
-    env.AlwaysBuild(jtalk_stamp)
-    env.Command(jtalk_stamp, [], _pack_jtalk_addon)
-    env.Alias("jtalkAddon", jtalk_stamp)
-
-    kgs_stamp = env.File("miscDepsJp/_state/addons/kgsAddon.stamp")
-    env.AlwaysBuild(kgs_stamp)
-    env.Command(kgs_stamp, [], _pack_kgs_addon)
-    env.Alias("kgsAddon", kgs_stamp)
-
-    # Aliases: jpTests / jpCharTests
-    jp_tests_stamp = env.File("miscDepsJp/_state/tests/jpTests.stamp")
-    env.AlwaysBuild(jp_tests_stamp)
-    env.Command(jp_tests_stamp, [], _run_jp_tests)
-    env.Alias("jpTests", jp_tests_stamp)
-
-    jp_char_tests_stamp = env.File("miscDepsJp/_state/tests/jpCharTests.stamp")
-    env.AlwaysBuild(jp_char_tests_stamp)
-    env.Command(jp_char_tests_stamp, [], _run_jpchar_tests)
-    env.Alias("jpCharTests", jp_char_tests_stamp)
-
-    # Alias: certprep (sign pre-existing JP DLLs in-place)
-    # Note: This intentionally signs inputs which are later packaged into the dist.
-    # It relies on upstream signExec (certFile/apiSigningToken) and remains a no-op
-    # when signing is not configured (e.g., CI).
-    def _signtarget(relpath: str) -> Any:
-        src_path = str(repo_root / relpath)
-        src_name = Path(src_path).name
-        stamp = env.File(f"miscDepsJp/_state/sign/{src_name}.stamp")
-        # Use an action that tolerates missing files and writes the stamp either way.
-        def _cb(target, source, env, p=src_path):
-            return _sign_optional_path(target, source, env, p)
-        env.Command(stamp, [], _cb)
-        # Ensure the JP overlay runs before signing so files exist in-place
-        try:
-            env.Depends(stamp, env.Alias("miscdepsjp"))
-        except Exception as e:
-            # Be conservative if alias lookup fails in early phases
-            print(f"Warning: Could not establish dependency for {stamp}: {e}")
-        return stamp
-
-    sign_list = [
-        # JP jtalk DLLs
-        "source/synthDrivers/jtalk/libmecab.dll",
-        "source/synthDrivers/jtalk/libopenjtalk.dll",
-        # miscDeps runtime DLLs
-        "miscDeps/python/brlapi-0.8.dll",
-        "miscDeps/python/libgcc_s_dw2-1.dll",
-        # braille driver binary shipped in miscDeps
-        "miscDeps/source/brailleDisplayDrivers/lilli.dll",
-        # wx widgets DLLs from the venv
-        ".venv/Lib/site-packages/wx/wxbase32u_net_vc140.dll",
-        ".venv/Lib/site-packages/wx/wxbase32u_vc140.dll",
-        ".venv/Lib/site-packages/wx/wxmsw32u_core_vc140.dll",
-        ".venv/Lib/site-packages/wx/wxmsw32u_html_vc140.dll",
-        ".venv/Lib/site-packages/wx/wxmsw32u_stc_vc140.dll",
-    ]
-    certprep_stamps: list[Any] = []
-    for rel in sign_list:
-        certprep_stamps.append(_signtarget(rel))
-    env.Alias("certprep", certprep_stamps)
-
-    # If signing is enabled (certFile/apiSigningToken set), ensure ordering:
-    #  miscdepsjp (overlay) -> certprep (sign DLLs in place) -> dist/launcher
-    try:
-        if env.get("certFile") or env.get("apiSigningToken"):
-            env.Depends(env.Alias("certprep"), env.Alias("miscdepsjp"))
-            # Run jtalkPrep before overlay/certprep so libopenjtalk.dll can be picked up
-            env.Depends(env.Alias("certprep"), env.Alias("jtalkPrep"))
-            env.Depends("dist", env.Alias("certprep"))
-            env.Depends("launcher", env.Alias("certprep"))
-    except Exception as e:
-        # Be conservative if alias lookup fails during early phases
-        print(f'Warning: Could not establish certprep ordering: {e}')
-
-    # Alias: certBuild (convenience umbrella alias)
-    # Use string targets/aliases so resolution happens after upstream defines them.
-    env.Alias("certBuild", [env.Alias("certprep"), "source", "user_docs", "dist", "launcher"])
