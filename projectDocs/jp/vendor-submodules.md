@@ -71,3 +71,7 @@
   - 段階1: x86 運用を揃える（SCons の自動選択と検証）
   - 段階2: x64 DLL を同一レイアウトで提供→SCons で TARGET_ARCH=x64 を選択可能に
   - 段階3: testAndPublish のマトリクスに x64 を段階的に追加（typeCheck→unit→system）
+
+## 固定したベンダーのリビジョン（参考）
+- python‑jtalk: 40eb632705e1f16d64b96755cf923b5feb0e688f （PR #2 merge, Add optional x64 build support）
+  - URL: https://github.com/nvdajp/python-jtalk/commit/40eb632705e1f16d64b96755cf923b5feb0e688f
