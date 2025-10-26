@@ -94,6 +94,12 @@ jobs:
           if (-not (Test-Path $p)) { Get-ChildItem -Recurse -Directory miscDepsJp | Select-Object -First 20 | Format-List | Out-String | Write-Host; throw "Makefile not found: $p" }
           (Get-Content $p -Raw) -replace '/MACHINE:x86','/MACHINE:X64' | Set-Content $p -Encoding ASCII
 
+      - name: Pre-build HTS engine (vendor lib)
+        shell: cmd
+        working-directory: miscDepsJp\include\python-jtalk\htsengineapi\lib
+        run: |
+          nmake /f Makefile.mak
+
       - name: Build libopenjtalk (nmake)
         shell: cmd
         working-directory: miscDepsJp\include\python-jtalk
