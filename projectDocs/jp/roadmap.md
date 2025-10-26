@@ -41,16 +41,14 @@
 - CI を SCons で成立させ、.cmd 経由を可能な範囲で排除
 - SCons キャッシュ/引数の整合（ci/scripts/setSconsArgs.ps1 準拠）
 - Lint（ruff）ジョブ追加・安定化
-- 7z ラウンドトリップ除去（Python化）
 - ユニット/必要最小のシステムテストを安定して通す（installer タグは最小構成で運用可）
-- testAndPublish の主要ジョブを windows-2025 へ（後述: ランナー移行計画）
 - 上流追従容易化: testAndPublish.yml は上流原本を優先し、JP 固有はスクリプト呼び出しの最小パッチに集約
 - certBuild2023.cmd の動作は維持（署名はローカル実施）
 
 ### 作業方針（Step 1 実務）
 
 - ワークフロー再同期: testAndPublish.yml は本家 rc ベースに再同期し、差分は Step 1 固定（Windows 32‑bit / Python 3.11 (x86)）のみに限定する
-  - マトリクス固定: `defaultRunner: windows-2025`、`supportedArchitectures: ["x86"]`、`supportedPythonVersions: ["3.11.9"]`
+  - マトリクス固定: `supportedArchitectures: ["x86"]`、`supportedPythonVersions: ["3.11.9"]`
   - buildNVDA で必ず `scons source` を実行（unit tests に必要な生成物を用意）。直後に `beforeTests.ps1` を 1 回だけ実行
   - キャッシュ運用は本家に合わせ、path: `.` を `actions/cache/save/restore@v4` で保存・復元（キーに `run_id`・`pythonVersion`・`arch` を含める）
 - 後続ジョブ（typeCheck / checkPo / checkPot / licenseCheck / unitTests / createLauncher / systemTests / createSymbols）
@@ -64,6 +62,21 @@
   - すべてトピックブランチ→PR。`betajp` へ直 push は禁止（ブランチ保護と必須チェックを有効化）
   - YAML の差分は「3.11 x86 固定」と「スクリプト呼び出し 1 行」に限定。前処理・ログ収集は `ci/scripts/` に集約
   - 失敗時の診断性向上（翻訳/ライセンス/テスト結果のアーティファクト化、step summary 充実）は別 PR で段階導入
+
+### 既知の懸念
+
+- Python 3.13 への移行と x64 対応が、fast-diff-match-patch（DMP）依存の配布状況により同時対応になりうる。
+  - 対応方針（今は実装せず記録のみ）
+    - DMP 読み込み失敗時は difflib へ自動フォールバック（コード側で遅延 import/try-except）
+    - CI では 3.13 x64 を先行検証、3.13 x86 は typeCheck/lint のみ等で段階導入
+  - Phase 1 完了時点で再評価し、必要なら Phase 2 の計画に反映
+
+- 緩和策案（記録のみ・実装は任意）: 先に Python 3.11 x64 を CI 限定で検証し、x64 固有課題を切り出す
+  - 目的: 3.13 への移行前にアーキ依存の問題（DMP を含む）を早期発見
+  - 範囲: NVDA 本体は Step 1 の通り 3.11 x86 を維持。別ジョブで 3.11 x64 を「ビルド/静的検査」だけ実施
+  - CI 方針: `workflow_dispatch` もしくは条件変数で既定無効。`scons source` と typeCheck を対象（installer/署名/配布は行わない）
+  - 禁則: JAB 64bit の導入や本体の x64 切替は行わない（Step 1 の除外項目を遵守）
+  - 受け入れ: 2 連続グリーン＋ログ上で既知差分の説明可能性を確認。結果は Phase 2 計画に反映
 
 ## Phase 2 : Python 3.13 対応（Part of #530）
 
@@ -79,16 +92,7 @@
 - 補足（運用）
   - 目的: x64 を既定化に向け安定、3.13 を実用レベルへ（配布は段階導入）
   - CI マトリクス: 3.13 x64（必須）/ 3.11 x86（EOL まで保守用）/ 3.13 x86（typeCheck・lint のみ任意）
-  - DMP フォールバック: fast-diff-match-patch が利用不可の場合は difflib へ自動退避
   - 主要 JP アドオン（jtalk/kgs）を x64 で起動確認（任意）
-
-### 既知の懸念
-
-- Python 3.13 への移行と x64 対応が、fast-diff-match-patch（DMP）依存の配布状況により同時対応になりうる。
-  - 対応方針（今は実装せず記録のみ）
-    - DMP 読み込み失敗時は difflib へ自動フォールバック（コード側で遅延 import/try-except）
-    - CI では 3.13 x64 を先行検証、3.13 x86 は typeCheck/lint のみ等で段階導入
-  - Phase 1 完了時点で再評価し、必要なら Phase 2 の計画に反映
 
 ## Phase 3 : x64 ビルド対応（Part of #530）
 
@@ -113,29 +117,6 @@
 - 依存更新でのビルド破綻 → ピン見直し/段階導入
 - システムテストの不安定化 → タグ縮小・再試行の仕組み
 
-## ランナー移行計画（windows-2025）
-
-- 方針: 本家版と整合させるため、windows-2025 へ段階移行。影響の小さいジョブから先行し、安定確認後に固定。
-- 移行順序（Phase 1 内で実施）
-  - フェーズ1-A（低リスク先行）
-    - 対象: typeCheck（pyright）、checkPo、checkPot、licenseCheck
-    - 方針: 直ちに windows-2025 へ。3 連続グリーンで固定
-  - フェーズ1-B（ビルド要所）
-    - 対象: buildNVDA、createLauncher、createSymbols
-    - 方針: SCons MSVC 設定キャッシュ（SCONS_CACHE_MSVC_CONFIG）を有効化してから 2025 へ。
-      2 連続グリーン＋成果物検証（launcher 起動・symbols 生成）で固定
-  - フェーズ1-C（最後に移行）
-    - 対象: unitTests → systemTests の順
-    - 方針: unitTests を先に 2025 へ。systemTests はタグを限定（例: startupShutdown）で試行→安定後に拡大
-- 受け入れ基準（各段）
-  - 2〜3 連続グリーン（ジョブ特性に応じて調整）
-  - 成果物の基本動作確認（launcher 起動、symbols 正常作成/アップロード）
-  - 実行時間が顕著に悪化しない（悪化時はキャッシュ/並列度を見直し）
-- ロールバック/安全策
-  - 一時的にランナーをマトリクス化（windows-2022/2025 並走）して比較
-  - 不安定な場合は該当ジョブのみ即座に元のランナーへ戻す
-  - systemTests はタグ縮小・再試行の運用でフレークを抑制
-
 ## ゲート（判断ポイント）
 
 - Gate A（Phase 2 中間）: 3.13 x64 で unit + 最小 system が安定緑 → installer/署名/シンボル確認へ
@@ -144,14 +125,40 @@
 
 ## 現在の作業キュー（Step 1, refs #539）
 
-- PR #548（ドラフト）: CI 安定化フォローアップ（unit / license / translator）
-  - unit tests: `nvda-misc-deps`（editable）をテスト実行環境へ組み込み（rununittests.bat の `uv --group dev --group unit-tests`）
-  - license check: `testOutput/license` 事前作成＋結果をアーティファクトへ
-  - translator comments: ログ（translationCheckResults.log）をアーティファクトへ
-  - system tests: インストーラ導入前に `beforeTests.ps1` を実行（ディレクトリ作成）
+- CI 安定化フォローアップ（小粒PRで段階適用）
+  - unit: `rununittests.bat` で `uv --group dev --group unit-tests` を使用し、`nvda-misc-deps`（editable）を読み込む
+  - license: `testOutput/license` を事前作成し、チェック結果をアーティファクト化
+  - translator: `translationCheckResults.log` をアーティファクト化
+  - system: インストーラ導入前に `ci/scripts/beforeTests.ps1` を実行して `testOutput/` を作成
 
-- miscDepsJp（jtalk周辺）の patch.exe 依存の撤去（Makefile/all.mak の `patch` 呼び出しを純 Python 実装に置換）
-- Win32 ツール依存の棚卸しと縮退計画（nmake/cl/link/msgfmt/7z/dump_syms 等）
+- ワークフロー再同期（testAndPublish.yml）
+  - 上流 rc を取り込み、JP 追加は `# BEGIN JP PATCH`〜`# END JP PATCH` に最小集約
+  - マトリクス固定を確認: `supportedArchitectures: ["x86"]`、`supportedPythonVersions: ["3.11.9"]`
+  - 前後処理は `ci/scripts/` に寄せ、YAML 側はスクリプト呼び出しのみ（cache は `actions/cache@v4` を使用し、キーに `run_id`/`pythonVersion`/`arch` を含める）
+
+- 3.11 x64 事前検証（CI限定・配布なし）
+  - 対象: `scons source` と typeCheck のみ（installer/署名/配布は対象外）
+  - 実行: 既定無効（`workflow_dispatch`/条件変数で手動実行）
+  - 禁則: JAB 64bit の導入や NVDA 本体の x64 切替は行わない（Step 1 の除外を遵守）
+
+- miscDepsJp の x86/x64 マトリクス先行（3.13 前の準備）
+  - 目的: 依存（jtalk 周辺）のアーキ対応を先に固める。NVDA 本体は Step 1 の範囲（3.11 x86）を維持
+  - CI: 独立ジョブ（`strategy.matrix: arch: [x86, x64], python: ["3.11.9"]`）、成果物のみ作成（配布/署名は行わない）
+  - 成果物: `miscDepsJp-<arch>.zip` をアーティファクト化し、アーキ名を明示
+  - 禁則: NVDA 本体の x64 切替は行わない（Step 1 の除外範囲を遵守）
+
+- Win32 ツール依存の棚卸しと縮退計画（nmake/cl/link/msgfmt/dump_syms 等）
+
+### 補足（miscDepsJp x64 / SCons / CI）
+
+- 既存維持: 既存の `miscdepsjp` と `libopenjtalk.dll` は変更しない（後方互換）。
+- 追加: SCons に `miscdepsjp-x64` エイリアスを追加し、x64 向けのビルド検証を実施（ベンダーツリーは不変更／リンク時のみ一時的に `/MACHINE:X64` を適用）。
+- 成果物: `miscDepsJp/_build/libopenjtalk-x64.dll`（成果物のみ。配布/署名なし）。
+- CI 方針（artifacts ワークフロー）:
+  - x86 ベースライン: ジョブ `miscdepsjp-x86`（ラベル `run-miscdepsjp`）
+  - x64 実験: ジョブ `miscdepsjp-x64`（ラベル `run-miscdeps64`、必要に応じて continue-on-error）
+  - JP ユニットテスト（任意）: ジョブ `jp-tests`（ラベル `run-jp-tests`）。SCons の `jpTests` / `jpCharTests` を実行し、ログをアーティファクト化。
+- 取得: `python-jtalk` はサブモジュール込みで取得（`--recurse-submodules`）。YAML 側は最小（SCons 呼び出し中心）。
 
 ## 運用ルール（ブランチ/PR）
 
@@ -164,3 +171,16 @@
 - JP Docs Hub: projectDocs/jp/README.md
 - 本家版開発環境: projectDocs/dev/createDevEnvironment.md
 - エージェント向け: AGENTS.md
+
+## Step 1 注記（Vendor/Overlay/x64 ポリシー）
+
+- Vendor 配置レイアウト（現行仕様） 等は不使用）。Step 1 は「消費のみ」。
+- SCons に軽量チェックとオーバーレイを追加（別 PR）。
+  - `TARGET_ARCH`（既定 x86）に応じて Vendor 配置レイアウト（現行仕様） を探索し、見つからなければ明確に失敗（再ビルドしない）。
+  - 見つかった場合は `source/synthDrivers/jtalk/` へオーバーレイし、入出力パスをログ出力（冪等）。
+- Vendor 配置レイアウト（現行仕様）
+  - `miscDepsJp/include/python-jtalk/libopenjtalk.dll`
+  - `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`
+- 受け入れ条件・運用詳細は `projectDocs/jp/vendor-submodules.md` に準拠。
+- 「miscDepsJp の x86/x64 マトリクスを CI でビルド」は Phase 2 以降に検討（Step 1 では実施しない）。
+
