@@ -113,23 +113,46 @@ jobs:
           $vendorLib = Join-Path $vendorHts 'lib'
           $repoHts   = Join-Path $pwd 'miscDepsJp/include/htsengineapi'
           $repoLib   = Join-Path $repoHts 'lib'
+
+          # ベンダーツリーが無ければ、リポ内の htsengineapi を vendor 配下に作成
           if (-not (Test-Path $vendorHts) -and (Test-Path $repoHts)) {
             Write-Host "[info] Creating vendor htsengineapi from repo copy"
             robocopy "$repoHts" "$vendorHts" /E /NFL /NDL /NJH /NJS /NP | Out-Null
           }
-          if (Test-Path $vendorLib) {
-            Push-Location $vendorLib
-            try { nmake /f Makefile.mak } finally { Pop-Location }
-          } elseif (Test-Path $repoLib) {
-            Push-Location $repoLib
-            try { nmake /f Makefile.mak } finally { Pop-Location }
-            # Ensure vendor path exists then copy built outputs
+
+          function Invoke-NMake($dir, $mk) {
+            Push-Location $dir
+            try { nmake /f $mk } finally { Pop-Location }
+          }
+
+          $builtFrom = $null
+          if (Test-Path (Join-Path $vendorLib 'Makefile.mak')) {
+            Invoke-NMake $vendorLib 'Makefile.mak'
+            $builtFrom = 'vendorLib'
+          } elseif (Test-Path (Join-Path $vendorHts 'Makefile.mak')) {
+            # ルートに Makefile.mak がある場合はそこでビルド
+            Invoke-NMake $vendorHts 'Makefile.mak'
+            $builtFrom = 'vendorRoot'
+          } elseif (Test-Path (Join-Path $repoLib 'Makefile.mak')) {
+            Invoke-NMake $repoLib 'Makefile.mak'
+            $builtFrom = 'repoLib'
             New-Item -ItemType Directory -Force -Path $vendorLib | Out-Null
             Copy-Item (Join-Path $repoLib 'hts_engine_API.lib') $vendorLib -Force -ErrorAction Stop
             Get-ChildItem $repoLib -Filter *.obj | Copy-Item -Destination $vendorLib -Force
+          } elseif (Test-Path (Join-Path $repoHts 'Makefile.mak')) {
+            Invoke-NMake $repoHts 'Makefile.mak'
+            $builtFrom = 'repoRoot'
+            New-Item -ItemType Directory -Force -Path $vendorLib | Out-Null
+            if (Test-Path (Join-Path $repoLib 'hts_engine_API.lib')) {
+              Copy-Item (Join-Path $repoLib 'hts_engine_API.lib') $vendorLib -Force -ErrorAction Stop
+            }
+            if (Test-Path $repoLib) {
+              Get-ChildItem $repoLib -Filter *.obj -ErrorAction SilentlyContinue | Copy-Item -Destination $vendorLib -Force
+            }
           } else {
-            throw "Neither vendor nor repo HTS lib path exists: $vendorLib , $repoLib"
+            throw "HTS Makefile not found in vendor or repo: $vendorHts ; $repoHts"
           }
+          Write-Host "[info] HTS built from: $builtFrom"
 
       - name: Build libopenjtalk (nmake)
         shell: cmd
