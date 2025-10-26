@@ -34,6 +34,20 @@ git config --global core.safecrlf warn
 ## リリース
 
 - 正式リリースはローカルマシンでコードサイニングして作成（CI は未署名の検証用ビルドのみ）
+- 証明書がローカル証明書ストアにある環境で以下を実行:
+
+```cmd
+set SCRIPT=jptools\certBuild2023.cmd
+set RELEASE=1
+set VERSION=2025.3.1jp
+set UPDATEVERSIONTYPE=nvdajpbeta
+set PUBLISHER=nvdajp
+powershell -ExecutionPolicy Bypass -NoProfile -File "ensureuv.ps1" run --directory "." %SCRIPT% version_build=9999 --all-cores
+call rununittests.bat
+call runsystemtests.bat --include NVDA --exclude restarts_on_crash
+call runsystemtests.bat --variable whichNVDA:installed --variable installDir:"output\nvda_%VERSION%.exe" --include installer
+call runsystemtests.bat --include chrome
+```
 
 ## ドキュメント
 
@@ -45,6 +59,7 @@ git config --global core.safecrlf warn
 詳細ドキュメント（旧版・参考）: `projectDocs/jp/legacy/readme-nvdajp-legacy.md`
 
 ## 関連 Issue
+
 - `#530`: 本家 2026.1 の日本語版へのマージ
 - `#539`: Step 1（3.11 x86 のままビルド基盤整合）
 

@@ -1,4 +1,4 @@
-﻿setlocal enableextensions enabledelayedexpansion
+setlocal enableextensions enabledelayedexpansion
 set SCONSOPTIONS=%*
 if not defined SCONSOPTIONS (
     set SCONSOPTIONS=version_build=1 --all-cores
@@ -49,6 +49,9 @@ echo Timestamp: !TIMESTAMP_URL!
 set SCONSARGS=certFile=1 certTimestampServer=%TIMESTAMP_URL% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
 rem JP PATCH: call SCons targets (JP additions included)
+rem Ensure jtalk fallback payload + overlay via SCons aliases
+call scons.bat -Q jtalkPrep miscdepsjp
+
 call scons.bat certprep source user_docs launcher controllerClient jtalkAddon kgsAddon jpTests jpCharTests release=%RELEASE% publisher=%PUBLISHER% %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 

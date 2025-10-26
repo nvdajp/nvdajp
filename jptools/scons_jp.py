@@ -196,8 +196,8 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
         print(f"JP certprep skipped non-PE file: {abspath}")
         return 0
     if not os.path.isfile(abspath):
-        print(f"Error: file not found for signing: {abspath}")
-        return 1
+        print(f"Warning: file not found for signing, skipping: {abspath}")
+        return 0
     # Delegate to upstream signing action
     retval = signExec([src], source, env)
     if retval != 0:
@@ -208,6 +208,34 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
     stamp_path.write_text("ok", encoding="utf-8")
     return 0
 
+
+def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: str) -> int:
+    """Sign file at `path` if it exists; otherwise skip and write a stamp.
+
+    This is tolerant of missing inputs so certprep can run before all payloads
+    are present. Intended only for local convenience.
+    """
+    signExec = env.get("signExec")
+    stamp_path = Path(str(target[0]))
+    stamp_path.parent.mkdir(parents=True, exist_ok=True)
+    if not signExec:
+        print("JP certprep skipped: signing not configured (set certFile or apiSigningToken)")
+        stamp_path.write_text("skip:no-sign-config", encoding="utf-8")
+        return 0
+    if not os.path.isfile(path):
+        print(f"Warning: file not found for signing, skipping: {path}")
+        stamp_path.write_text("skip:not-found", encoding="utf-8")
+        return 0
+    try:
+        node = env.File(path)
+        retval = signExec([node], [node], env)
+        if retval != 0:
+            return retval
+    except Exception as e:
+        print(f"Error: signing failed for {path}: {e}")
+        return 1
+    stamp_path.write_text("ok", encoding="utf-8")
+    return 0
 
 def _compute_overlay_targets(repo_root: Path) -> list[str]:
     """Return absolute paths for files overlaid from miscDepsJp/source -> source.
@@ -270,6 +298,33 @@ def register_jp_builders(env: Any) -> None:
     except Exception:
         pass
 
+    # Alias: jtalkPrep (ensure JP jtalk payload is present before overlay)
+    def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int:
+        repo_root = Path.cwd()
+        src_prebuilt = repo_root / "miscDepsJp" / "include" / "python-jtalk" / "libopenjtalk.dll"
+        dst_payload = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
+        try:
+            dst_payload.parent.mkdir(parents=True, exist_ok=True)
+            if not dst_payload.exists() and src_prebuilt.exists():
+                dst_payload.write_bytes(src_prebuilt.read_bytes())
+        except Exception as e:
+            print(f"Warning: jtalkPrep fallback copy failed: {e}")
+            # Non-fatal; overlay/signing may skip if missing
+        Path(str(target[0])).parent.mkdir(parents=True, exist_ok=True)
+        Path(str(target[0])).write_text("ok", encoding="utf-8")
+        return 0
+
+    jtalk_prep_stamp = env.File("miscDepsJp/_state/prep/jtalkPrep.stamp")
+    env.AlwaysBuild(jtalk_prep_stamp)
+    env.Command(jtalk_prep_stamp, [], _ensure_jtalk_payload)
+    env.Alias("jtalkPrep", jtalk_prep_stamp)
+
+    # Ensure overlay runs after jtalkPrep so fallback payload is included
+    try:
+        env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkPrep"))
+    except Exception:
+        pass
+
     # Alias: controllerClient (zip artifact)
     out_dir = str(env.get("outputDir", "output"))
     version = str(env.get("version", "local"))
@@ -312,10 +367,19 @@ def register_jp_builders(env: Any) -> None:
     # It relies on upstream signExec (certFile/apiSigningToken) and remains a no-op
     # when signing is not configured (e.g., CI).
     def _signtarget(relpath: str) -> Any:
-        src = repo_root / relpath
-        stamp = env.File(f"miscDepsJp/_state/sign/{src.name}.stamp")
-        # Stamp depends on the source file and the signing action writes the stamp
-        env.Command(stamp, env.File(str(src)), _sign_in_place)
+        src_path = str(repo_root / relpath)
+        src_name = Path(src_path).name
+        stamp = env.File(f"miscDepsJp/_state/sign/{src_name}.stamp")
+        # Use an action that tolerates missing files and writes the stamp either way.
+        def _cb(target, source, env, p=src_path):
+            return _sign_optional_path(target, source, env, p)
+        env.Command(stamp, [], _cb)
+        # Ensure the JP overlay runs before signing so files exist in-place
+        try:
+            env.Depends(stamp, env.Alias("miscdepsjp"))
+        except Exception as e:
+            # Be conservative if alias lookup fails in early phases
+            print(f"Warning: Could not establish dependency for {stamp}: {e}")
         return stamp
 
     sign_list = [
@@ -344,6 +408,8 @@ def register_jp_builders(env: Any) -> None:
     try:
         if env.get("certFile") or env.get("apiSigningToken"):
             env.Depends(env.Alias("certprep"), env.Alias("miscdepsjp"))
+            # Run jtalkPrep before overlay/certprep so libopenjtalk.dll can be picked up
+            env.Depends(env.Alias("certprep"), env.Alias("jtalkPrep"))
             env.Depends("dist", env.Alias("certprep"))
             env.Depends("launcher", env.Alias("certprep"))
     except Exception as e:
@@ -353,4 +419,3 @@ def register_jp_builders(env: Any) -> None:
     # Alias: certBuild (convenience umbrella alias)
     # Use string targets/aliases so resolution happens after upstream defines them.
     env.Alias("certBuild", [env.Alias("certprep"), "source", "user_docs", "dist", "launcher"])
-
