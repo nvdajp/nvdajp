@@ -80,7 +80,11 @@ jobs:
           $src2 = Join-Path $root 'miscDepsJp/include/htsengineapi'
           $dst = Join-Path $root 'miscDepsJp/include/python-jtalk'
           robocopy "$src1" (Join-Path $dst 'libopenjtalk') /E /NFL /NDL /NJH /NJS /NP | Out-Null
+          $code1 = $LASTEXITCODE
           robocopy "$src2" (Join-Path $dst 'htsengineapi') /E /NFL /NDL /NJH /NJS /NP | Out-Null
+          $code2 = $LASTEXITCODE
+          $max = [Math]::Max($code1, $code2)
+          if ($max -ge 8) { Write-Error "robocopy failed with code $max"; exit $max } else { Write-Host "robocopy exit code aggregate: $max (treated as success)"; $global:LASTEXITCODE = 0 }
 
       - name: Adjust linker machine flag for x64
         if: matrix.arch == 'x64'
