@@ -75,3 +75,16 @@
 ## 固定したベンダーのリビジョン（参考）
 - python‑jtalk: 40eb632705e1f16d64b96755cf923b5feb0e688f （PR #2 merge, Add optional x64 build support）
   - URL: https://github.com/nvdajp/python-jtalk/commit/40eb632705e1f16d64b96755cf923b5feb0e688f
+\n+---
+\n+## 付録: SCons オーバーレイの例と使い方
+\n+- 目的: CI/開発双方で「ベンダーを再ビルドせずに消費だけする」ことを可視化。
+- ログ例（想定）:
+  - jtalkPrep: using TARGET_ARCH=x86
+  - jtalkPrep: found vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+  - jtalkPrep: overlay -> source/synthDrivers/jtalk/libopenjtalk.dll
+  - jtalkPrep: done (idempotent)
+- 使い方（例）:
+  - x86 既定: `scons miscdepsjp`
+  - 明示 x86: `scons miscdepsjp TARGET_ARCH=x86`
+  - 将来の x64 消費: `scons miscdepsjp TARGET_ARCH=x64`
+    - x64 DLL が見つからない場合は「明確なメッセージで失敗」し、nmake 等の再ビルドは行わない。
