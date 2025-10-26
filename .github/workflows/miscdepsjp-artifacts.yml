@@ -45,6 +45,22 @@ jobs:
           python --version
           where patch || echo "patch not found in PATH"
 
+      - name: Ensure GNU patch available
+        shell: pwsh
+        run: |
+          if (-not (Get-Command patch -ErrorAction SilentlyContinue)) {
+            $gitUsr = Join-Path ${env:ProgramFiles} 'Git\\usr\\bin'
+            if (Test-Path $gitUsr) { $env:PATH = "$gitUsr;" + $env:PATH }
+          }
+          patch --version | Select-Object -First 1
+
+      - name: Adjust linker machine flag for x64
+        if: matrix.arch == 'x64'
+        shell: pwsh
+        working-directory: miscDepsJp/include/python-jtalk/lib
+        run: |
+          (Get-Content Makefile.mak -Raw) -replace '/MACHINE:x86','/MACHINE:X64' | Set-Content Makefile.mak -Encoding ASCII
+
       - name: Build libopenjtalk (nmake)
         shell: cmd
         working-directory: miscDepsJp\include\python-jtalk
@@ -64,4 +80,3 @@ jobs:
         with:
           name: miscDepsJp-${{ matrix.arch }}-artifacts
           path: _artifacts/**
-
