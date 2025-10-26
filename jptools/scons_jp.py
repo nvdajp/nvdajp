@@ -344,8 +344,8 @@ def register_jp_builders(env: Any) -> None:
         src_name = Path(src_path).name
         stamp = env.File(f"miscDepsJp/_state/sign/{src_name}.stamp")
         # Use an action that tolerates missing files and writes the stamp either way.
-        def _cb(t, s, e, p=src_path):
-            return _sign_optional_path(t, s, e, p)
+        def _cb(target, source, env, p=src_path):
+            return _sign_optional_path(target, source, env, p)
         env.Command(stamp, [], _cb)
         # Ensure the JP overlay runs before signing so files exist in-place
         try:
