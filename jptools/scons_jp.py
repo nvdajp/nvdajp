@@ -300,20 +300,23 @@ def register_jp_builders(env: Any) -> None:
 
     # Alias: jtalkPrep (ensure JP jtalk payload is present before overlay)
     def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int:
-        """Prepare JP jtalk payload for overlay with clear, fail-fast behavior.
+        """Prepare JP jtalk payload for overlay with on-demand build.
 
         - Resolve TARGET_ARCH (default x86)
         - Locate vendor DLL under miscDepsJp/include/python-jtalk[/x64]/libopenjtalk.dll
-        - If missing, print actionable error and fail (no vendor rebuild in Step 1)
+        - If missing, attempt to build via nmake (requires MSVC environment)
         - Write payload into miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
         """
         repo_root = Path.cwd()
         arch = str(env.get("TARGET_ARCH", "x86")).lower()
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
+
         if arch == "x64":
             src_prebuilt = vendor_base / "x64" / "libopenjtalk.dll"
+            nmake_machine = "x64"
         else:
             src_prebuilt = vendor_base / "libopenjtalk.dll"
+            nmake_machine = None  # x86 is default
 
         dst_payload = (
             repo_root
@@ -327,24 +330,53 @@ def register_jp_builders(env: Any) -> None:
         print(f"jtalkPrep: using TARGET_ARCH={arch}")
         print(f"jtalkPrep: looking for vendor DLL: {src_prebuilt}")
 
+        # If DLL does not exist, attempt to build via nmake
         if not src_prebuilt.exists():
-            print("ERROR: vendor DLL not found for jtalk.")
-            print(f" - looked at: {src_prebuilt}")
-            print(" - Step 1 では vendor を再ビルドしません（nmake 等は不使用）。")
-            print(
-                " - 配置手順: projectDocs/jp/vendor-submodules.md を参照し、\n"
-                "   指定レイアウトに DLL を配置してください。"
-            )
-            return 1
+            print(f"jtalkPrep: DLL not found, attempting to build via nmake...")
+            try:
+                from subprocess import run
 
+                build_dir = vendor_base
+                if not build_dir.exists():
+                    print(f"ERROR: vendor source directory not found: {build_dir}")
+                    print("  Ensure python-jtalk submodule is checked out.")
+                    return 1
+
+                # Build nmake command
+                nmake_cmd = ["nmake", "/f", "all.mak"]
+                if nmake_machine:
+                    nmake_cmd.append(f"MACHINE={nmake_machine}")
+
+                print(f"jtalkPrep: running: {' '.join(nmake_cmd)} in {build_dir}")
+                result = run(nmake_cmd, cwd=str(build_dir))
+
+                if result.returncode != 0:
+                    print(f"ERROR: nmake failed with exit code {result.returncode}")
+                    print("  Ensure MSVC environment is configured (ilammy/msvc-dev-cmd or vcvarsall.bat)")
+                    return 1
+
+                # Verify DLL was created
+                if not src_prebuilt.exists():
+                    print(f"ERROR: nmake succeeded but DLL not found at {src_prebuilt}")
+                    print("  Check nmake output for errors")
+                    return 1
+
+                print(f"jtalkPrep: build succeeded, DLL created at {src_prebuilt}")
+
+            except Exception as e:
+                print(f"ERROR: failed to build vendor DLL: {e}")
+                return 1
+        else:
+            print(f"jtalkPrep: using existing DLL (build skipped)")
+
+        # Copy DLL to payload location
         try:
             dst_payload.parent.mkdir(parents=True, exist_ok=True)
             data = src_prebuilt.read_bytes()
-            # Always refresh to ensure correctness/idempotency
             dst_payload.write_bytes(data)
             print(f"jtalkPrep: payload -> {dst_payload}")
         except Exception as e:
-            print(f"Error: jtalkPrep payload copy failed: {e}")
+            print(f"ERROR: jtalkPrep payload copy failed: {e}")
             return 1
 
         Path(str(target[0])).parent.mkdir(parents=True, exist_ok=True)
