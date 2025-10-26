@@ -174,12 +174,13 @@
 
 ## Step 1 注記（Vendor/Overlay/x64 ポリシー）
 
-- Vendor の再ビルドは行わない（nmake 等は不使用）。Step 1 は「消費のみ」。
+- Vendor 配置レイアウト（現行仕様） 等は不使用）。Step 1 は「消費のみ」。
 - SCons に軽量チェックとオーバーレイを追加（別 PR）。
-  - `TARGET_ARCH`（既定 x86）に応じて vendor DLL を探索し、見つからなければ明確に失敗（再ビルドしない）。
+  - `TARGET_ARCH`（既定 x86）に応じて Vendor 配置レイアウト（現行仕様） を探索し、見つからなければ明確に失敗（再ビルドしない）。
   - 見つかった場合は `source/synthDrivers/jtalk/` へオーバーレイし、入出力パスをログ出力（冪等）。
-- Vendor 配置レイアウトを固定。
-  - `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`
+- Vendor 配置レイアウト（現行仕様）
+  - `miscDepsJp/include/python-jtalk/libopenjtalk.dll`
   - `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`
 - 受け入れ条件・運用詳細は `projectDocs/jp/vendor-submodules.md` に準拠。
 - 「miscDepsJp の x86/x64 マトリクスを CI でビルド」は Phase 2 以降に検討（Step 1 では実施しない）。
+

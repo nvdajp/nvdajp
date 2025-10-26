@@ -82,7 +82,7 @@
 - 目的: CI/開発双方で「ベンダーを再ビルドせずに消費だけする」ことを可視化。
 - ログ例（想定）:
   - jtalkPrep: using TARGET_ARCH=x86
-  - jtalkPrep: found vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+  - jtalkPrep: found vendor DLL: miscDepsJp/include/python-jtalk/libopenjtalk.dll
   - jtalkPrep: overlay -> source/synthDrivers/jtalk/libopenjtalk.dll
   - jtalkPrep: done (idempotent)
 - 使い方（例）:
