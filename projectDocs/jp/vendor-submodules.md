@@ -4,27 +4,30 @@
 
 ## 基本方針（Step 1）
 
-- CI ではベンダーのネイティブ再ビルド（nmake 等）を行わない。testAndPublish と同様に「事前配置された DLL/ソース」を前提とする。
+- SCons が必要に応じて自動的にベンダーをビルド（nmake 等）。開発者・CI ともに `scons` コマンドのみを意識すればよい。
+- DLL が既に存在する場合は再ビルドをスキップ（ビルド時間の短縮）。
 - オーバーレイは SCons で行う（`jtalkPrep` + `miscdepsjp`）。YAML はスクリプト呼び出しのみ（最小）。
 - サブモジュールやベンダーツリーの更新は手動手順を明示し、PR では差分を最小化する。
 
 ## TODO（実務）
 
-- vendor 構成の確認とドキュメント化
-  - 既定: `miscDepsJp/include/python-jtalk` 配下に必要ファイル（`libopenjtalk.dll` を含む）が存在すること。
-  - `jptools/copy_jtalk_core_files.cmd` の役割と前提（宛先ディレクトリ、xcopy の無対話化）を README 化。
-- 純 Python 化の検討（任意）
-  - `copy_jtalk_core_files.cmd` の置き換え（mkdir + コピー）を純 Python スクリプトに分離し、SCons から呼び出せるようにする。
-  - これにより YAML からも SCons からも同一経路で実行可能にする。
+- SCons でのオンデマンドビルド実装
+  - `jtalkPrep` を拡張し、DLL が存在しない場合は自動的に nmake を実行してビルド
+  - TARGET_ARCH（x86/x64）に応じて適切なビルドパラメータを渡す
+  - ビルド成功後、生成された DLL を payload に配置
 - 検証の追加（SCons 側）
-  - `jtalkPrep` 前後で、最低限の存在チェック（`python-jtalk/libopenjtalk.dll` など）をログに出す軽量検証を追加。
+  - `jtalkPrep` でアーキテクチャ・探索パス・ビルド有無をログ出力
+  - DLL 存在時は再ビルドをスキップし、その旨をログに記録
+- 純 Python 化の検討（中長期）
+  - nmake への依存を将来的に削減するため、ビルドロジックの純 Python 化を検討
+  - ただし Step 1 では nmake の使用を許容する
 - 更新フロー（手動）
-  - ベンダー更新は別トピックブランチで実施し、差分がわかる形で PR 化。
-  - nmake 等のネイティブ再ビルドが必要な場合は、別リポ/別ワークフローで行い、本リポでは成果物消費のみに留める。
+  - ベンダー更新は別トピックブランチで実施し、差分がわかる形で PR 化
+  - サブモジュール更新時は、生成される DLL のハッシュ値を記録（検証用）
 
 ## 非目標（Step 1 ではやらない）
 
-- CI でのベンダー再ビルド（HTS/libopenjtalk の nmake）
+- YAML でのベンダービルドロジック（SCons に集約するため）
 - YAML での複雑な同期・ミラー（robocopy / submodule 再展開等）
 
 ## 関連
@@ -64,8 +67,8 @@
   - 非対話・再入可能・差分最小を満たすこと
 
 - CI 方針（Step 1）
-  - ベンダーの nmake などの再ビルドは行わない
-  - アーティファクト系は「オーバーレイ検証＋収集」に限定（既存 DLL が無ければスキップ・成功扱い）
+  - SCons が必要に応じて自動的にベンダーをビルド（DLL 不在時のみ）
+  - YAML 側ではビルドロジックを持たず、`scons dist` などの標準コマンドのみを実行
 
 - x64 への段階
   - 段階1: x86 運用を揃える（SCons の自動選択と検証）
@@ -79,14 +82,20 @@
 
 ## 付録: SCons オーバーレイの例と使い方
 
-- 目的: CI/開発双方で「ベンダーを再ビルドせずに消費だけする」ことを可視化。
+- 目的: CI/開発双方で「SCons がベンダービルドを自動処理」することを可視化。
 - ログ例（想定）:
-  - jtalkPrep: using TARGET_ARCH=x86
-  - jtalkPrep: found vendor DLL: miscDepsJp/include/python-jtalk/libopenjtalk.dll
-  - jtalkPrep: overlay -> source/synthDrivers/jtalk/libopenjtalk.dll
-  - jtalkPrep: done (idempotent)
+  - DLL 存在時（再ビルドスキップ）:
+    - jtalkPrep: using TARGET_ARCH=x86
+    - jtalkPrep: found vendor DLL: miscDepsJp/include/python-jtalk/libopenjtalk.dll
+    - jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+  - DLL 不在時（自動ビルド）:
+    - jtalkPrep: using TARGET_ARCH=x86
+    - jtalkPrep: DLL not found, attempting to build via nmake...
+    - jtalkPrep: running: nmake /f all.mak in miscDepsJp/include/python-jtalk
+    - jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/libopenjtalk.dll
+    - jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 - 使い方（例）:
   - x86 既定: `scons miscdepsjp`
   - 明示 x86: `scons miscdepsjp TARGET_ARCH=x86`
-  - 将来の x64 消費: `scons miscdepsjp TARGET_ARCH=x64`
-    - x64 DLL が見つからない場合は「明確なメッセージで失敗」し、nmake 等の再ビルドは行わない。
+  - 将来の x64 ビルド: `scons miscdepsjp TARGET_ARCH=x64`
+    - x64 DLL が無い場合は自動的に `nmake /f all.mak MACHINE=x64` を実行

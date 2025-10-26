@@ -141,24 +141,25 @@
   - 実行: 既定無効（`workflow_dispatch`/条件変数で手動実行）
   - 禁則: JAB 64bit の導入や NVDA 本体の x64 切替は行わない（Step 1 の除外を遵守）
 
-- miscDepsJp の x86/x64 マトリクス先行（3.13 前の準備）
-  - 目的: 依存（jtalk 周辺）のアーキ対応を先に固める。NVDA 本体は Step 1 の範囲（3.11 x86）を維持
-  - CI: 独立ジョブ（`strategy.matrix: arch: [x86, x64], python: ["3.11.9"]`）、成果物のみ作成（配布/署名は行わない）
-  - 成果物: `miscDepsJp-<arch>.zip` をアーティファクト化し、アーキ名を明示
-  - 禁則: NVDA 本体の x64 切替は行わない（Step 1 の除外範囲を遵守）
+- SCons でのベンダービルド統合（jtalkPrep 拡張）
+  - 目的: 開発者・CI ともに `scons` コマンドのみでビルド完結
+  - 実装: `jtalkPrep` を拡張し、DLL 不在時に自動的に nmake を実行
+  - TARGET_ARCH（x86/x64）に応じて適切なビルドパラメータを渡す
+  - DLL 存在時は再ビルドをスキップ（ビルド時間の短縮）
+  - ログ出力: アーキテクチャ・探索パス・ビルド有無を明示
 
-- Win32 ツール依存の棚卸しと縮退計画（nmake/cl/link/msgfmt/dump_syms 等）
+- Win32 ツール依存の棚卸し（nmake/cl/link/msgfmt/dump_syms 等）
+  - 現状: nmake への依存を Step 1 では許容
+  - 将来: 純 Python 化を検討（Phase 2 以降）
 
-### 補足（miscDepsJp x64 / SCons / CI）
+### 補足（miscDepsJp / SCons / CI）
 
-- 既存維持: 既存の `miscdepsjp` と `libopenjtalk.dll` は変更しない（後方互換）。
-- 追加: SCons に `miscdepsjp-x64` エイリアスを追加し、x64 向けのビルド検証を実施（ベンダーツリーは不変更／リンク時のみ一時的に `/MACHINE:X64` を適用）。
-- 成果物: `miscDepsJp/_build/libopenjtalk-x64.dll`（成果物のみ。配布/署名なし）。
-- CI 方針（artifacts ワークフロー）:
-  - x86 ベースライン: ジョブ `miscdepsjp-x86`（ラベル `run-miscdepsjp`）
-  - x64 実験: ジョブ `miscdepsjp-x64`（ラベル `run-miscdeps64`、必要に応じて continue-on-error）
-  - JP ユニットテスト（任意）: ジョブ `jp-tests`（ラベル `run-jp-tests`）。SCons の `jpTests` / `jpCharTests` を実行し、ログをアーティファクト化。
-- 取得: `python-jtalk` はサブモジュール込みで取得（`--recurse-submodules`）。YAML 側は最小（SCons 呼び出し中心）。
+- ビルド方針: SCons が自動的にベンダーをオンデマンドビルド
+  - DLL 不在時: `jtalkPrep` が nmake を実行してビルド
+  - DLL 存在時: 再ビルドをスキップ（既存 DLL を使用）
+- CI 方針: YAML 側ではビルドロジックを持たず、`scons dist` などの標準コマンドのみを実行
+- 前提条件: MSVC 環境が整っていること（CI では `ilammy/msvc-dev-cmd@v1` で設定）
+- サブモジュール: `python-jtalk` は `submodules: recursive` で取得（ビルドソース含む）
 
 ## 運用ルール（ブランチ/PR）
 
