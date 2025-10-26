@@ -141,25 +141,47 @@
   - 実行: 既定無効（`workflow_dispatch`/条件変数で手動実行）
   - 禁則: JAB 64bit の導入や NVDA 本体の x64 切替は行わない（Step 1 の除外を遵守）
 
-- SCons でのベンダービルド統合（jtalkPrep 拡張）
-  - 目的: 開発者・CI ともに `scons` コマンドのみでビルド完結
-  - 実装: `jtalkPrep` を拡張し、DLL 不在時に自動的に nmake を実行
-  - TARGET_ARCH（x86/x64）に応じて適切なビルドパラメータを渡す
-  - DLL 存在時は再ビルドをスキップ（ビルド時間の短縮）
-  - ログ出力: アーキテクチャ・探索パス・ビルド有無を明示
+- ~~SCons でのベンダービルド統合（jtalkPrep 拡張）~~ **完了**
+  - ✅ `jtalkPrep` を拡張し、DLL 不在時に自動的に nmake を実行
+  - ✅ TARGET_ARCH（x86/x64）に応じて適切なビルドパラメータを渡す
+  - ✅ DLL 存在時は再ビルドをスキップ（ビルド時間の短縮）
+  - ✅ ログ出力: アーキテクチャ・探索パス・ビルド有無を明示
+  - 結果: 開発者・CI ともに `scons dist` だけでビルド完結
 
-- Win32 ツール依存の棚卸し（nmake/cl/link/msgfmt/dump_syms 等）
-  - 現状: nmake への依存を Step 1 では許容
+- Win32 ツール依存の整理
+  - 現状: nmake への依存を Step 1 では許容（SCons が内部で自動実行）
   - 将来: 純 Python 化を検討（Phase 2 以降）
 
-### 補足（miscDepsJp / SCons / CI）
+### 補足（開発者・CI の操作）
 
-- ビルド方針: SCons が自動的にベンダーをオンデマンドビルド
-  - DLL 不在時: `jtalkPrep` が nmake を実行してビルド
-  - DLL 存在時: 再ビルドをスキップ（既存 DLL を使用）
-- CI 方針: YAML 側ではビルドロジックを持たず、`scons dist` などの標準コマンドのみを実行
-- 前提条件: MSVC 環境が整っていること（CI では `ilammy/msvc-dev-cmd@v1` で設定）
-- サブモジュール: `python-jtalk` は `submodules: recursive` で取得（ビルドソース含む）
+**開発者が意識するコマンド**:
+
+```bash
+# これだけでビルド完結
+scons dist
+
+# または署名ビルド（ローカルのみ）
+scons certBuild certFile=path/to/cert.pfx
+```
+
+**CI での操作**（testAndPublish.yml）:
+
+```yaml
+- name: Build NVDA
+  run: scons dist launcher
+```
+
+**内部で自動実行される**（透過的）:
+
+1. `jtalkPrep`: DLL 不在なら nmake でビルド、存在なら再ビルドスキップ
+2. `miscdepsjp`: overlay で `source/` に配置
+3. `certprep`: 署名（certFile 指定時のみ）
+4. `dist`, `launcher` など: 配布物作成
+
+**前提条件**:
+
+- MSVC 環境（CI では `ilammy/msvc-dev-cmd@v1` で自動設定）
+- サブモジュール取得（`submodules: recursive`）
 
 ## 運用ルール（ブランチ/PR）
 
