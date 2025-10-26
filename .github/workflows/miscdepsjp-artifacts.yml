@@ -20,43 +20,27 @@ concurrency:
 jobs:
   miscdepsjp-x86:
     name: Build miscDepsJp (x86 baseline)
-    # Run when dispatched manually, or when PR has the label 'run-miscdepsjp'.
     if: github.event_name == 'workflow_dispatch' || contains(toJson(github.event.pull_request.labels), 'run-miscdepsjp')
     runs-on: windows-2025
     env:
       NMAKE: /nologo
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python 3.11.9 (x86)
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11.9'
           architecture: x86
-
-      - name: Setup MSVC (x86)
-        uses: ilammy/msvc-dev-cmd@v1
+      - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x86
-
-      - name: Show toolchain
-        shell: pwsh
-        run: |
-          cl 2>$null || echo "cl not found"
-          nmake /? | Select-Object -First 1
-          python --version
-          where patch || echo "patch not found in PATH"
-
       - name: Ensure GNU patch available
         shell: pwsh
         run: |
           if (-not (Get-Command patch -ErrorAction SilentlyContinue)) {
-            $gitUsr = Join-Path ${env:ProgramFiles} 'Git\\usr\\bin'
+            $gitUsr = Join-Path ${env:ProgramFiles} 'Git\usr\bin'
             if (Test-Path $gitUsr) { $env:PATH = "$gitUsr;" + $env:PATH }
           }
           patch --version | Select-Object -First 1
-
       - name: Fetch python-jtalk vendor if missing
         shell: pwsh
         run: |
@@ -65,10 +49,8 @@ jobs:
             Write-Host "[info] Cloning nvdajp/python-jtalk into $pj"
             if (-not (Test-Path $pj)) { New-Item -ItemType Directory -Force -Path $pj | Out-Null }
             git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/nvdajp/python-jtalk "$pj"
-            # Ensure submodules are populated (for safety on shallow clones)
             git -C "$pj" submodule update --init --recursive --depth 1
           }
-
       - name: Sync core trees into python-jtalk
         shell: pwsh
         run: |
@@ -81,165 +63,97 @@ jobs:
           robocopy "$src2" (Join-Path $dst 'htsengineapi') /E /NFL /NDL /NJH /NJS /NP | Out-Null
           $code2 = $LASTEXITCODE
           $max = [Math]::Max($code1, $code2)
-          if ($max -ge 8) { Write-Error "robocopy failed with code $max"; exit $max } else { Write-Host "robocopy exit code aggregate: $max (treated as success)"; $global:LASTEXITCODE = 0 }
-
-      - name: Diagnose tree (python-jtalk and htsengineapi)
-        shell: pwsh
-        run: |
-          Write-Host "[diag] Listing miscDepsJp/include"
-          Get-ChildItem -Path miscDepsJp/include | Select-Object Name,Mode | Format-Table | Out-String -Width 2000 | Write-Host
-          Write-Host "[diag] Listing python-jtalk"
-          Get-ChildItem -Path miscDepsJp/include/python-jtalk | Select-Object Name,Mode | Format-Table | Out-String -Width 2000 | Write-Host
-          Write-Host "[diag] Listing python-jtalk/htsengineapi"
-          if (Test-Path miscDepsJp/include/python-jtalk/htsengineapi) { Get-ChildItem -Path miscDepsJp/include/python-jtalk/htsengineapi | Select-Object Name,Mode | Format-Table | Out-String -Width 2000 | Write-Host } else { Write-Host "(missing)" }
-          Write-Host "[diag] Listing repo htsengineapi/lib"
-          if (Test-Path miscDepsJp/include/htsengineapi/lib) { Get-ChildItem -Path miscDepsJp/include/htsengineapi/lib | Select-Object Name,Length | Format-Table | Out-String -Width 2000 | Write-Host } else { Write-Host "(missing)" }
-
-# removed brittle HTS pre-build (rely on all.mak)
+          if ($max -ge 8) { Write-Error "robocopy failed with code $max"; exit $max } else { $global:LASTEXITCODE = 0 }
       - name: Build libopenjtalk (nmake)
-
-          Write-Host "[info] HTS built from: $builtFrom"
-          }
-            throw "HTS Makefile not found in vendor or repo: $vendorHts ; $repoHts"
-          } else {
-            }
-              Get-ChildItem $repoLib -Filter *.obj -ErrorAction SilentlyContinue | Copy-Item -Destination $vendorLib -Force
-            if (Test-Path $repoLib) {
-            }
-              Copy-Item (Join-Path $repoLib 'hts_engine_API.lib') $vendorLib -Force -ErrorAction Stop
-            if (Test-Path (Join-Path $repoLib 'hts_engine_API.lib')) {
-            New-Item -ItemType Directory -Force -Path $vendorLib | Out-Null
-            $builtFrom = 'repoRoot'
-            Invoke-NMake $repoHts 'Makefile.mak'
-          } elseif (Test-Path (Join-Path $repoHts 'Makefile.mak')) {
-            Get-ChildItem $repoLib -Filter *.obj | Copy-Item -Destination $vendorLib -Force
-            Copy-Item (Join-Path $repoLib 'hts_engine_API.lib') $vendorLib -Force -ErrorAction Stop
-            New-Item -ItemType Directory -Force -Path $vendorLib | Out-Null
-            $builtFrom = 'repoLib'
-            Invoke-NMake $repoLib 'Makefile.mak'
-          } elseif (Test-Path (Join-Path $repoLib 'Makefile.mak')) {
-            $builtFrom = 'vendorRoot'
-            Invoke-NMake $vendorHts 'Makefile.mak'
-            # ルートに Makefile.mak がある場合はそこでビルド
-          } elseif (Test-Path (Join-Path $vendorHts 'Makefile.mak')) {
-            $builtFrom = 'vendorLib'
-            Invoke-NMake $vendorLib 'Makefile.mak'
-          if (Test-Path (Join-Path $vendorLib 'Makefile.mak')) {
-          $builtFrom = $null
-
-          }
-            try { nmake /f $mk } finally { Pop-Location }
-            Push-Location $dir
-          function Invoke-NMake($dir, $mk) {
-
-          }
-            robocopy "$repoHts" "$vendorHts" /E /NFL /NDL /NJH /NJS /NP | Out-Null
-            Write-Host "[info] Creating vendor htsengineapi from repo copy"
-          if (-not (Test-Path $vendorHts) -and (Test-Path $repoHts)) {
-          # ベンダーツリーが無ければ、リポ内の htsengineapi を vendor 配下に作成
-
-          $repoLib   = Join-Path $repoHts 'lib'
-          $repoHts   = Join-Path $pwd 'miscDepsJp/include/htsengineapi'
-          $vendorLib = Join-Path $vendorHts 'lib'
-          $vendorHts = Join-Path $pwd 'miscDepsJp/include/python-jtalk/htsengineapi'
+        shell: cmd
+        working-directory: miscDepsJp\include\python-jtalk
         run: |
+          nmake /f all.mak
+      - name: Collect artifacts
         shell: pwsh
-      - name: Pre-build HTS engine (vendor or repo)
-
-          if (Test-Path miscDepsJp/include/htsengineapi/lib) { Get-ChildItem -Path miscDepsJp/include/htsengineapi/lib | Select-Object Name,Length | Format-Table | Out-String -Width 2000 | Write-Host } else { Write-Host "(missing)" }
-          Write-Host "[diag] Listing repo htsengineapi/lib"
-          if (Test-Path miscDepsJp/include/python-jtalk/htsengineapi) { Get-ChildItem -Path miscDepsJp/include/python-jtalk/htsengineapi | Select-Object Name,Mode | Format-Table | Out-String -Width 2000 | Write-Host } else { Write-Host "(missing)" }
-          Write-Host "[diag] Listing python-jtalk/htsengineapi"
-          Get-ChildItem -Path miscDepsJp/include/python-jtalk | Select-Object Name,Mode | Format-Table | Out-String -Width 2000 | Write-Host
-          Write-Host "[diag] Listing python-jtalk"
-          Get-ChildItem -Path miscDepsJp/include | Select-Object Name,Mode | Format-Table | Out-String -Width 2000 | Write-Host
-          Write-Host "[diag] Listing miscDepsJp/include"
         run: |
-        shell: pwsh
-      - name: Diagnose tree (python-jtalk and htsengineapi)
-
-          if ($max -ge 8) { Write-Error "robocopy failed with code $max"; exit $max } else { Write-Host "robocopy exit code aggregate: $max (treated as success)"; $global:LASTEXITCODE = 0 }
-          $max = [Math]::Max($code1, $code2)
-          $code2 = $LASTEXITCODE
-          robocopy "$src2" (Join-Path $dst 'htsengineapi') /E /NFL /NDL /NJH /NJS /NP | Out-Null
-          $code1 = $LASTEXITCODE
-          robocopy "$src1" (Join-Path $dst 'libopenjtalk') /E /NFL /NDL /NJH /NJS /NP | Out-Null
-          $dst = Join-Path $root 'miscDepsJp/include/python-jtalk'
-          $src2 = Join-Path $root 'miscDepsJp/include/htsengineapi'
-          $src1 = Join-Path $root 'miscDepsJp/include/libopenjtalk'
-          $root = $pwd
-        run: |
-        shell: pwsh
-      - name: Sync core trees into python-jtalk
-
-          }
-            git -C "$pj" submodule update --init --recursive --depth 1
-            # Ensure submodules are populated (for safety on shallow clones)
-            git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/nvdajp/python-jtalk "$pj"
-            if (-not (Test-Path $pj)) { New-Item -ItemType Directory -Force -Path $pj | Out-Null }
-            Write-Host "[info] Cloning nvdajp/python-jtalk into $pj"
-          if (-not (Test-Path (Join-Path $pj 'lib/Makefile.mak'))) {
-          $pj = Join-Path $pwd 'miscDepsJp/include/python-jtalk'
-        run: |
-        shell: pwsh
-      - name: Fetch python-jtalk vendor if missing
-
-          patch --version | Select-Object -First 1
-          }
-            if (Test-Path $gitUsr) { $env:PATH = "$gitUsr;" + $env:PATH }
-            $gitUsr = Join-Path ${env:ProgramFiles} 'Git\\usr\\bin'
-          if (-not (Get-Command patch -ErrorAction SilentlyContinue)) {
-        run: |
-        shell: pwsh
-      - name: Ensure GNU patch available
-
-          where patch || echo "patch not found in PATH"
-          python --version
-          nmake /? | Select-Object -First 1
-          cl 2>$null || echo "cl not found"
-        run: |
-        shell: pwsh
-      - name: Show toolchain
-
-          arch: x86
+          New-Item -ItemType Directory -Force -Path _artifacts | Out-Null
+          $dll = "miscDepsJp/include/python-jtalk/libopenjtalk.dll"
+          if (Test-Path $dll) { Copy-Item $dll _artifacts/libopenjtalk-x86.dll }
+          Get-ChildItem -Recurse -File miscDepsJp/include/python-jtalk | Out-File _artifacts/filelist-x86.txt
+      - uses: actions/upload-artifact@v4
         with:
-        uses: ilammy/msvc-dev-cmd@v1
-      - name: Setup MSVC (x86)
+          name: miscDepsJp-x86-artifacts
+          path: _artifacts/**
 
-          architecture: x86
-          python-version: '3.11.9'
-        with:
-        uses: actions/setup-python@v5
-      - name: Setup Python 3.11.9 (x86)
-
-        uses: actions/checkout@v4
-      - name: Checkout
-    steps:
-      NMAKE: /nologo
-    env:
+  jp-tests:
+    name: JP unit tests (optional)
+    needs: miscdepsjp-x86
+    if: github.event_name == 'workflow_dispatch' || contains(toJson(github.event.pull_request.labels), 'run-jp-tests')
     runs-on: windows-2025
-    if: github.event_name == 'workflow_dispatch' || contains(toJson(github.event.pull_request.labels), 'run-miscdepsjp')
-    # Run when dispatched manually, or when PR has the label 'run-miscdepsjp'.
-    name: Build miscDepsJp (x86 baseline)
-  miscdepsjp-x86:
-jobs:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.9'
+          architecture: x86
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+      - name: Ensure GNU patch available
+        shell: pwsh
+        run: |
+          if (-not (Get-Command patch -ErrorAction SilentlyContinue)) {
+            $gitUsr = Join-Path ${env:ProgramFiles} 'Git\usr\bin'
+            if (Test-Path $gitUsr) { $env:PATH = "$gitUsr;" + $env:PATH }
+          }
+          patch --version | Select-Object -First 1
+      - name: Run JP tests via SCons
+        shell: cmd
+        run: |
+          scons.bat miscdepsjp jpTests jpCharTests -j1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jp-tests-logs
+          path: |
+            miscDepsJp/jptools/__test_log.txt
+            miscDepsJp/jptools/__jpBrailleHarness.md
+            miscDepsJp/jptools/jpBrailleHarness.html
 
-  cancel-in-progress: true
-  group: ${{ github.workflow }}-${{ github.ref }}
-concurrency:
-
-  contents: read
-permissions:
-
-      - '.github/workflows/miscdepsjp-artifacts.yml'
-      - 'jptools/**'
-      - 'miscDepsJp/**'
-    paths:
-    types: [ opened, synchronize, reopened, labeled, unlabeled ]
-    branches: [ betajp ]
-  pull_request:
-  workflow_dispatch:
-on:
-
-name: JP miscDepsJp Artifacts (311 x86/x64)
+  miscdepsjp-x64:
+    name: Build miscDepsJp (x64 experimental)
+    needs: miscdepsjp-x86
+    if: github.event_name == 'workflow_dispatch' || contains(toJson(github.event.pull_request.labels), 'run-miscdeps64')
+    continue-on-error: true
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.9'
+          architecture: x64
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Ensure GNU patch available
+        shell: pwsh
+        run: |
+          if (-not (Get-Command patch -ErrorAction SilentlyContinue)) {
+            $gitUsr = Join-Path ${env:ProgramFiles} 'Git\usr\bin'
+            if (Test-Path $gitUsr) { $env:PATH = "$gitUsr;" + $env:PATH }
+          }
+          patch --version | Select-Object -First 1
+      - name: Fetch python-jtalk vendor if missing
+        shell: pwsh
+        run: |
+          $pj = Join-Path $pwd 'miscDepsJp/include/python-jtalk'
+          if (-not (Test-Path (Join-Path $pj 'lib/Makefile.mak'))) {
+            Write-Host "[info] Cloning nvdajp/python-jtalk into $pj"
+            if (-not (Test-Path $pj)) { New-Item -ItemType Directory -Force -Path $pj | Out-Null }
+            git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/nvdajp/python-jtalk "$pj"
+            git -C "$pj" submodule update --init --recursive --depth 1
+          }
+      - name: Build x64 libopenjtalk via SCons alias
+        shell: cmd
+        run: |
+          scons.bat miscdepsjp-x64 -j1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: miscDepsJp-x64-artifacts
+          path: |
             miscDepsJp/_build/libopenjtalk-x64.dll
