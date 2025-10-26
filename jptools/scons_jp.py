@@ -362,6 +362,15 @@ def register_jp_builders(env: Any) -> None:
     except Exception:
         pass
 
+    # Make common top-level targets aware of the overlay requirement
+    # so that `scons source` / `scons dist` run after JP overlay has prepared files.
+    for t in ("source", "dist"):
+        try:
+            env.Depends(t, env.Alias("miscdepsjp"))
+        except Exception:
+            # Be conservative if target is not yet defined in the calling phase
+            pass
+
     # Alias: controllerClient (zip artifact)
     out_dir = str(env.get("outputDir", "output"))
     version = str(env.get("version", "local"))
