@@ -175,3 +175,38 @@ jobs:
         with:
           name: miscDepsJp-${{ matrix.arch }}-artifacts
           path: _artifacts/**
+
+  jp-tests:
+    name: JP unit tests (optional)
+    needs: build
+    if: github.event_name == 'workflow_dispatch' || contains(toJson(github.event.pull_request.labels), 'run-jp-tests')
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.9'
+          architecture: x86
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+      - name: Ensure GNU patch available
+        shell: pwsh
+        run: |
+          if (-not (Get-Command patch -ErrorAction SilentlyContinue)) {
+            $gitUsr = Join-Path ${env:ProgramFiles} 'Git\usr\bin'
+            if (Test-Path $gitUsr) { $env:PATH = "$gitUsr;" + $env:PATH }
+          }
+          patch --version | Select-Object -First 1
+      - name: Run JP tests via SCons
+        shell: pwsh
+        run: |
+          uv run scons miscdepsjp jpTests jpCharTests -j1
+      - name: Upload JP test logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: jp-tests-logs
+          path: |
+            miscDepsJp/jptools/__test_log.txt
+            miscDepsJp/jptools/__jpBrailleHarness.md
+            miscDepsJp/jptools/jpBrailleHarness.html

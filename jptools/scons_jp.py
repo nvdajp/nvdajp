@@ -419,3 +419,93 @@ def register_jp_builders(env: Any) -> None:
     # Alias: certBuild (convenience umbrella alias)
     # Use string targets/aliases so resolution happens after upstream defines them.
     env.Alias("certBuild", [env.Alias("certprep"), "source", "user_docs", "dist", "launcher"])
+
+    # Alias: miscdepsjp-x64 (build libopenjtalk for x64 without touching vendor sources)
+    def _run_nmake(dir_path: Path, mk: str) -> int:
+        from subprocess import run
+        if not dir_path.exists():
+            print(f"Error: directory not found: {dir_path}")
+            return 1
+        res = run(["nmake", "/f", mk], cwd=str(dir_path))
+        return res.returncode
+
+    def _ensure_hts_prebuilt(vendor_root: Path, repo_root: Path) -> int:
+        """Build hts_engine_API.lib and required objects.
+
+        Try vendor/lib, vendor/, then repo/lib, repo/ (htsengineapi subtree).
+        """
+        vendor_hts = vendor_root / "htsengineapi"
+        repo_hts = repo_root / "miscDepsJp" / "include" / "htsengineapi"
+        # Prefer vendor/lib Makefile
+        candidates: list[tuple[Path, str]] = []
+        candidates.append((vendor_hts / "lib", "Makefile.mak"))
+        candidates.append((vendor_hts, "Makefile.mak"))
+        candidates.append((repo_hts / "lib", "Makefile.mak"))
+        candidates.append((repo_hts, "Makefile.mak"))
+        for d, mk in candidates:
+            if (d / mk).exists():
+                return _run_nmake(d, mk)
+        print(f"Error: HTS Makefile not found under {vendor_hts} or {repo_hts}")
+        return 1
+
+    def _build_openjtalk_x64(target: list[Any], source: list[Any], env: Any) -> int:
+        """Build x64 libopenjtalk via vendor Makefile with a temporary MACHINE flag change.
+
+        Outputs: miscDepsJp/_build/libopenjtalk-x64.dll
+        """
+        from subprocess import run
+        repo_root = Path.cwd()
+        vendor_root = repo_root / "miscDepsJp" / "include" / "python-jtalk"
+        if not vendor_root.exists():
+            print("Error: vendor python-jtalk not found. Clone into miscDepsJp/include/python-jtalk.")
+            return 1
+        # Ensure HTS vendor (or repo) is built first
+        rc = _ensure_hts_prebuilt(vendor_root, repo_root)
+        if rc != 0:
+            return rc
+        # Temporarily adjust MACHINE flag for x64 link
+        lib_dir = vendor_root / "lib"
+        mk_path = lib_dir / "Makefile.mak"
+        original_text = None
+        try:
+            if mk_path.exists():
+                original_text = mk_path.read_text(encoding="utf-8", errors="ignore")
+                patched = original_text.replace("/MACHINE:x86", "/MACHINE:X64")
+                mk_path.write_text(patched, encoding="utf-8")
+            else:
+                print(f"Warning: {mk_path} not found; proceeding without MACHINE patch")
+            # Build all
+            rc = _run_nmake(vendor_root, "all.mak")
+            if rc != 0:
+                return rc
+        finally:
+            # Restore original Makefile if we patched it
+            try:
+                if original_text is not None:
+                    mk_path.write_text(original_text, encoding="utf-8")
+            except Exception:
+                # Non-fatal restore failure
+                pass
+        # Copy resulting DLL to build output
+        out_dir = repo_root / "miscDepsJp" / "_build"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        built = vendor_root / "libopenjtalk.dll"
+        if not built.exists():
+            # Fallback: some trees leave DLL in lib/
+            alt = lib_dir / "libopenjtalk.dll"
+            if alt.exists():
+                built = alt
+        if not built.exists():
+            print("Error: libopenjtalk.dll not produced by build")
+            return 1
+        (out_dir / "libopenjtalk-x64.dll").write_bytes(built.read_bytes())
+        # Stamp
+        stamp_path = Path(str(target[0]))
+        stamp_path.parent.mkdir(parents=True, exist_ok=True)
+        stamp_path.write_text("ok", encoding="utf-8")
+        return 0
+
+    x64_stamp = env.File("miscDepsJp/_state/build/libopenjtalk-x64.stamp")
+    env.AlwaysBuild(x64_stamp)
+    env.Command(x64_stamp, [], _build_openjtalk_x64)
+    env.Alias("miscdepsjp-x64", x64_stamp)
