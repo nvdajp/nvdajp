@@ -53,6 +53,15 @@ rem Ensure jtalk (libopenjtalk.dll) is built and JP overlay is applied
 py -3 jptools\nonCertBuild.py --prep-only
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
+rem Fallback: if libopenjtalk.dll was not produced, deploy prebuilt one
+if not exist miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll (
+    if exist miscDepsJp\include\python-jtalk\libopenjtalk.dll (
+        copy /Y miscDepsJp\include\python-jtalk\libopenjtalk.dll miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll >nul
+    )
+)
+rem Ensure overlay reflects the fallback copy as well
+call scons.bat -Q miscdepsjp
+
 call scons.bat certprep source user_docs launcher controllerClient jtalkAddon kgsAddon jpTests jpCharTests release=%RELEASE% publisher=%PUBLISHER% %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
