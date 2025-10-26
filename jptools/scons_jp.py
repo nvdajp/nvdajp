@@ -209,6 +209,34 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
     return 0
 
 
+def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: str) -> int:
+    """Sign file at `path` if it exists; otherwise skip and write a stamp.
+
+    This is tolerant of missing inputs so certprep can run before all payloads
+    are present. Intended only for local convenience.
+    """
+    signExec = env.get("signExec")
+    stamp_path = Path(str(target[0]))
+    stamp_path.parent.mkdir(parents=True, exist_ok=True)
+    if not signExec:
+        print("JP certprep skipped: signing not configured (set certFile or apiSigningToken)")
+        stamp_path.write_text("skip:no-sign-config", encoding="utf-8")
+        return 0
+    if not os.path.isfile(path):
+        print(f"Warning: file not found for signing, skipping: {path}")
+        stamp_path.write_text("skip:not-found", encoding="utf-8")
+        return 0
+    try:
+        node = env.File(path)
+        retval = signExec([node], [node], env)
+        if retval != 0:
+            return retval
+    except Exception as e:
+        print(f"Error: signing failed for {path}: {e}")
+        return 1
+    stamp_path.write_text("ok", encoding="utf-8")
+    return 0
+
 def _compute_overlay_targets(repo_root: Path) -> list[str]:
     """Return absolute paths for files overlaid from miscDepsJp/source -> source.
     Used to attach Clean so that `scons -c` can remove overlay artifacts.
@@ -312,10 +340,13 @@ def register_jp_builders(env: Any) -> None:
     # It relies on upstream signExec (certFile/apiSigningToken) and remains a no-op
     # when signing is not configured (e.g., CI).
     def _signtarget(relpath: str) -> Any:
-        src = repo_root / relpath
-        stamp = env.File(f"miscDepsJp/_state/sign/{src.name}.stamp")
-        # Stamp depends on the source file and the signing action writes the stamp
-        env.Command(stamp, env.File(str(src)), _sign_in_place)
+        src_path = str(repo_root / relpath)
+        src_name = Path(src_path).name
+        stamp = env.File(f"miscDepsJp/_state/sign/{src_name}.stamp")
+        # Use an action that tolerates missing files and writes the stamp either way.
+        def _cb(t, s, e, p=src_path):
+            return _sign_optional_path(t, s, e, p)
+        env.Command(stamp, [], _cb)
         # Ensure the JP overlay runs before signing so files exist in-place
         try:
             env.Depends(stamp, env.Alias("miscdepsjp"))
