@@ -374,7 +374,7 @@ def register_jp_builders(env: Any) -> None:
             nmake_machine = "x64"
         else:
             src_prebuilt = vendor_base / "libopenjtalk.dll"
-            nmake_machine = None  # x86 is default
+            nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
 
         dst_payload = (
             repo_root
@@ -448,9 +448,8 @@ def register_jp_builders(env: Any) -> None:
                         return 1
 
                 # Build nmake command
-                nmake_cmd = ["nmake", "/f", "all.mak"]
-                if nmake_machine:
-                    nmake_cmd.append(f"MACHINE={nmake_machine}")
+                # Always pass MACHINE (all.mak requires it, even for x86)
+                nmake_cmd = ["nmake", "/f", "all.mak", f"MACHINE={nmake_machine}"]
 
                 print(f"jtalkPrep: running: {' '.join(nmake_cmd)} in {build_dir}")
                 result = run(nmake_cmd, cwd=str(build_dir), env=nmake_env)
