@@ -335,12 +335,37 @@ def register_jp_builders(env: Any) -> None:
             print(f"jtalkPrep: DLL not found, attempting to build via nmake...")
             try:
                 from subprocess import run
+                import shutil
 
                 build_dir = vendor_base
                 if not build_dir.exists():
                     print(f"ERROR: vendor source directory not found: {build_dir}")
                     print("  Ensure python-jtalk submodule is checked out.")
                     return 1
+
+                # Copy vendor files from miscDepsJp/include into python-jtalk
+                # (as done in copy_jtalk_core_files.cmd)
+                misc_include = repo_root / "miscDepsJp" / "include"
+                hts_src = misc_include / "htsengineapi"
+                hts_dst = build_dir / "htsengineapi"
+                lib_src = misc_include / "libopenjtalk"
+                lib_dst = build_dir / "libopenjtalk"
+
+                if hts_src.exists():
+                    print(f"jtalkPrep: copying htsengineapi from {hts_src} to {hts_dst}")
+                    if hts_dst.exists():
+                        shutil.rmtree(str(hts_dst))
+                    shutil.copytree(str(hts_src), str(hts_dst))
+                else:
+                    print(f"Warning: htsengineapi source not found at {hts_src}")
+
+                if lib_src.exists():
+                    print(f"jtalkPrep: copying libopenjtalk from {lib_src} to {lib_dst}")
+                    if lib_dst.exists():
+                        shutil.rmtree(str(lib_dst))
+                    shutil.copytree(str(lib_src), str(lib_dst))
+                else:
+                    print(f"Warning: libopenjtalk source not found at {lib_src}")
 
                 # Build nmake command
                 nmake_cmd = ["nmake", "/f", "all.mak"]
@@ -394,10 +419,11 @@ def register_jp_builders(env: Any) -> None:
     except Exception:
         pass
 
-    # Note: sourceDir -> miscdepsjp dependency is established in sconstruct.
-    # dist -> sourceDir dependency is automatic (dist depends on sourceDir).
-    # Therefore, the dependency chain dist -> sourceDir -> miscdepsjp -> jtalkPrep
-    # is already established without additional wiring here.
+    # Note: Dependencies are already established in sconstruct:
+    #   - sourceDir -> miscdepsjp (L403)
+    #   - dist -> sourceDir (L567, dist depends on sourceDir in NVDADist)
+    # This creates the dependency chain: dist -> sourceDir -> miscdepsjp -> jtalkPrep
+    # No additional wiring needed here; using Dir/target objects (not Alias) is more robust.
 
     # Alias: controllerClient (zip artifact)
     out_dir = str(env.get("outputDir", "output"))
