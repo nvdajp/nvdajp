@@ -65,9 +65,10 @@ jobs:
       - name: Adjust linker machine flag for x64
         if: matrix.arch == 'x64'
         shell: pwsh
-        working-directory: miscDepsJp/include/python-jtalk/lib
         run: |
-          (Get-Content Makefile.mak -Raw) -replace '/MACHINE:x86','/MACHINE:X64' | Set-Content Makefile.mak -Encoding ASCII
+          $p = Join-Path $pwd 'miscDepsJp/include/python-jtalk/lib/Makefile.mak'
+          if (-not (Test-Path $p)) { Get-ChildItem -Recurse -Directory miscDepsJp | Select-Object -First 20 | Format-List | Out-String | Write-Host; throw "Makefile not found: $p" }
+          (Get-Content $p -Raw) -replace '/MACHINE:x86','/MACHINE:X64' | Set-Content $p -Encoding ASCII
 
       - name: Build libopenjtalk (nmake)
         shell: cmd
