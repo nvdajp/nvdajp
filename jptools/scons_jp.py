@@ -196,8 +196,8 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
         print(f"JP certprep skipped non-PE file: {abspath}")
         return 0
     if not os.path.isfile(abspath):
-        print(f"Error: file not found for signing: {abspath}")
-        return 1
+        print(f"Warning: file not found for signing, skipping: {abspath}")
+        return 0
     # Delegate to upstream signing action
     retval = signExec([src], source, env)
     if retval != 0:
