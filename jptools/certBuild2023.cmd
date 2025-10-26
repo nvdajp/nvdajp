@@ -49,6 +49,10 @@ echo Timestamp: !TIMESTAMP_URL!
 set SCONSARGS=certFile=1 certTimestampServer=%TIMESTAMP_URL% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 
 rem JP PATCH: call SCons targets (JP additions included)
+rem Ensure jtalk (libopenjtalk.dll) is built and JP overlay is applied
+py -3 jptools\nonCertBuild.py --prep-only
+@if not "%ERRORLEVEL%"=="0" goto onerror
+
 call scons.bat certprep source user_docs launcher controllerClient jtalkAddon kgsAddon jpTests jpCharTests release=%RELEASE% publisher=%PUBLISHER% %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
