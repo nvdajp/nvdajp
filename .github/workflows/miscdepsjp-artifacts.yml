@@ -1,0 +1,67 @@
+name: JP miscDepsJp Artifacts (311 x86/x64)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build miscDepsJp (${{ matrix.arch }})
+    runs-on: windows-2025
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86, x64]
+        python: ["3.11.9"]
+    env:
+      # Make nmake verbose when we need to debug
+      NMAKE: /nologo
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python }} (${{ matrix.arch }})
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: ${{ matrix.arch }}
+
+      - name: Setup MSVC (${{ matrix.arch }})
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Show toolchain
+        shell: pwsh
+        run: |
+          cl 2>$null || echo "cl not found"
+          nmake /? | Select-Object -First 1
+          python --version
+          where patch || echo "patch not found in PATH"
+
+      - name: Build libopenjtalk (nmake)
+        shell: cmd
+        working-directory: miscDepsJp\include\python-jtalk
+        run: |
+          nmake /f all.mak
+
+      - name: Collect artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path _artifacts | Out-Null
+          $dll = "miscDepsJp/include/python-jtalk/libopenjtalk.dll"
+          if (Test-Path $dll) { Copy-Item $dll _artifacts/libopenjtalk-${{ matrix.arch }}.dll }
+          Get-ChildItem -Recurse -File miscDepsJp/include/python-jtalk | Out-File _artifacts/filelist-${{ matrix.arch }}.txt
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: miscDepsJp-${{ matrix.arch }}-artifacts
+          path: _artifacts/**
+
