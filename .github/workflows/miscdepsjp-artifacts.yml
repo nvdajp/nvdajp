@@ -2,6 +2,12 @@ name: JP miscDepsJp Artifacts (311 x86/x64)
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [ betajp ]
+    types: [ opened, synchronize, reopened, labeled, unlabeled ]
+    paths:
+      - 'miscDepsJp/**'
+      - '.github/workflows/miscdepsjp-artifacts.yml'
 
 permissions:
   contents: read
@@ -13,6 +19,8 @@ concurrency:
 jobs:
   build:
     name: Build miscDepsJp (${{ matrix.arch }})
+    # Run when dispatched manually, or when PR has the label 'run-miscdepsjp'.
+    if: github.event_name == 'workflow_dispatch' || contains(toJson(github.event.pull_request.labels), 'run-miscdepsjp')
     runs-on: windows-2025
     strategy:
       fail-fast: false
