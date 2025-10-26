@@ -69,7 +69,9 @@ jobs:
           if (-not (Test-Path (Join-Path $pj 'lib/Makefile.mak'))) {
             Write-Host "[info] Cloning nvdajp/python-jtalk into $pj"
             if (-not (Test-Path $pj)) { New-Item -ItemType Directory -Force -Path $pj | Out-Null }
-            git clone --depth 1 https://github.com/nvdajp/python-jtalk "$pj"
+            git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/nvdajp/python-jtalk "$pj"
+            # Ensure submodules are populated (for safety on shallow clones)
+            git -C "$pj" submodule update --init --recursive --depth 1
           }
 
       - name: Sync core trees into python-jtalk
