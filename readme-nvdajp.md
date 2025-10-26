@@ -38,7 +38,6 @@ git config --global core.safecrlf warn
 
 ```cmd
 set SCRIPT=jptools\certBuild2023.cmd
-set BRANCH=betajp
 set RELEASE=1
 set VERSION=2025.3.1jp
 set UPDATEVERSIONTYPE=nvdajpbeta
