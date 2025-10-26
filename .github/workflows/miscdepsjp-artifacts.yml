@@ -45,14 +45,15 @@ jobs:
         shell: cmd
         working-directory: miscDepsJp\jptools
         run: |
+          setlocal
+          set XCOPYCMD=/I /Y
+          mkdir ..\include\jtalk 2>nul
+          mkdir ..\include\python-jtalk\htsengineapi 2>nul
+          mkdir ..\include\python-jtalk\libopenjtalk 2>nul
+          mkdir ..\source\synthDrivers\jtalk 2>nul
           call copy_jtalk_core_files.cmd
           if errorlevel 1 exit /b %errorlevel%
-      - name: Sync core trees into python-jtalk
-        shell: cmd
-        working-directory: miscDepsJp\jptools
-        run: |
-          call copy_jtalk_core_files.cmd
-          if errorlevel 1 exit /b %errorlevel%
+          endlocal
       - name: Verify HTS vendor tree
         shell: pwsh
         run: |
@@ -139,8 +140,15 @@ jobs:
         shell: cmd
         working-directory: miscDepsJp\jptools
         run: |
+          setlocal
+          set XCOPYCMD=/I /Y
+          mkdir ..\include\jtalk 2>nul
+          mkdir ..\include\python-jtalk\htsengineapi 2>nul
+          mkdir ..\include\python-jtalk\libopenjtalk 2>nul
+          mkdir ..\source\synthDrivers\jtalk 2>nul
           call copy_jtalk_core_files.cmd
           if errorlevel 1 exit /b %errorlevel%
+          endlocal
       - name: Build x64 libopenjtalk via SCons alias
         shell: cmd
         run: |
