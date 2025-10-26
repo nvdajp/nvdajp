@@ -330,11 +330,6 @@ def main() -> int:
 
     # Parse args; only forward ones after "--" to SCons
     raw_args = sys.argv[1:]
-    # Simple option handling without argparse to keep dependencies minimal
-    prep_only = False
-    if "--prep-only" in raw_args:
-        raw_args.remove("--prep-only")
-        prep_only = True
     if "--" in raw_args:
         sep = raw_args.index("--")
         forwarded_args = raw_args[sep + 1 :]
@@ -342,8 +337,6 @@ def main() -> int:
         forwarded_args = raw_args
 
     _prep_miscdepsjp()
-    if prep_only:
-        return 0
     _build_with_scons(forwarded_args)
     return 0
 
