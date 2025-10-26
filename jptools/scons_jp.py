@@ -394,14 +394,10 @@ def register_jp_builders(env: Any) -> None:
     except Exception:
         pass
 
-    # Make common top-level targets aware of the overlay requirement
-    # so that `scons source` / `scons dist` run after JP overlay has prepared files.
-    for t in ("source", "dist"):
-        try:
-            env.Depends(t, env.Alias("miscdepsjp"))
-        except Exception:
-            # Be conservative if target is not yet defined in the calling phase
-            pass
+    # Note: sourceDir -> miscdepsjp dependency is established in sconstruct.
+    # dist -> sourceDir dependency is automatic (dist depends on sourceDir).
+    # Therefore, the dependency chain dist -> sourceDir -> miscdepsjp -> jtalkPrep
+    # is already established without additional wiring here.
 
     # Alias: controllerClient (zip artifact)
     out_dir = str(env.get("outputDir", "output"))
