@@ -1,4 +1,4 @@
-﻿setlocal enableextensions enabledelayedexpansion
+setlocal enableextensions enabledelayedexpansion
 set SCONSOPTIONS=%*
 if not defined SCONSOPTIONS (
     set SCONSOPTIONS=version_build=1 --all-cores
