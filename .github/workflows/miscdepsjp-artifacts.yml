@@ -41,45 +41,18 @@ jobs:
             if (Test-Path $gitUsr) { $env:PATH = "$gitUsr;" + $env:PATH }
           }
           patch --version | Select-Object -First 1
-      - name: Fetch python-jtalk vendor if missing
-        shell: pwsh
+      - name: Prepare vendor via copy_jtalk_core_files.cmd
+        shell: cmd
+        working-directory: miscDepsJp\jptools
         run: |
-          $pj = Join-Path $pwd 'miscDepsJp/include/python-jtalk'
-          if (-not (Test-Path (Join-Path $pj 'lib/Makefile.mak'))) {
-            Write-Host "[info] Cloning nvdajp/python-jtalk into $pj"
-            if (-not (Test-Path $pj)) { New-Item -ItemType Directory -Force -Path $pj | Out-Null }
-            git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/nvdajp/python-jtalk "$pj"
-            git -C "$pj" submodule update --init --recursive --depth 1
-          }
+          call copy_jtalk_core_files.cmd
+          if errorlevel 1 exit /b %errorlevel%
       - name: Sync core trees into python-jtalk
-        shell: pwsh
+        shell: cmd
+        working-directory: miscDepsJp\jptools
         run: |
-          $root = $pwd
-          $src1 = Join-Path $root 'miscDepsJp/include/libopenjtalk'
-          $src2 = Join-Path $root 'miscDepsJp/include/htsengineapi'
-          $dst = Join-Path $root 'miscDepsJp/include/python-jtalk'
-          $dst1 = Join-Path $dst 'libopenjtalk'
-          $dst2 = Join-Path $dst 'htsengineapi'
-
-          Write-Host "[info] Syncing $src1 -> $dst1"
-          robocopy "$src1" "$dst1" /E /NFL /NDL /NJH /NJS /NP | Out-Null
-          $code1 = $LASTEXITCODE
-          Write-Host "[info] robocopy exit code: $code1"
-
-          Write-Host "[info] Syncing $src2 -> $dst2"
-          robocopy "$src2" "$dst2" /E /NFL /NDL /NJH /NJS /NP | Out-Null
-          $code2 = $LASTEXITCODE
-          Write-Host "[info] robocopy exit code: $code2"
-
-          $max = [Math]::Max($code1, $code2)
-          # robocopy exit codes: 0=no changes, 1=files copied, 2-7=warnings, 8+=errors
-          if ($max -ge 8) {
-            Write-Error "robocopy failed with code $max"
-            exit $max
-          } else {
-            Write-Host "robocopy exit code aggregate: $max (treated as success)"
-            $global:LASTEXITCODE = 0
-          }
+          call copy_jtalk_core_files.cmd
+          if errorlevel 1 exit /b %errorlevel%
       - name: Verify HTS vendor tree
         shell: pwsh
         run: |
@@ -88,16 +61,6 @@ jobs:
           Get-ChildItem $htsLib | Select-Object Name,Length | Format-Table | Out-String -Width 2000 | Write-Host
           if (-not (Test-Path (Join-Path $htsLib 'Makefile.mak'))) { Write-Error 'Makefile.mak missing in vendor htsengineapi/lib'; exit 1 }
           if (-not (Test-Path (Join-Path $htsLib 'HTS_label.c'))) { Write-Error 'HTS_label.c missing in vendor htsengineapi/lib'; exit 1 }
-      - name: Build HTS engine (vendor)
-        shell: cmd
-        working-directory: miscDepsJp\include\python-jtalk\htsengineapi\lib
-        run: |
-          nmake /f Makefile.mak
-      - name: Build HTS engine (vendor)
-        shell: cmd
-        working-directory: miscDepsJp\include\python-jtalk\htsengineapi\lib
-        run: |
-          nmake /f Makefile.mak
       - name: Build libopenjtalk (nmake)
         shell: cmd
         working-directory: miscDepsJp\include\python-jtalk
@@ -172,16 +135,12 @@ jobs:
             if (Test-Path $gitUsr) { $env:PATH = "$gitUsr;" + $env:PATH }
           }
           patch --version | Select-Object -First 1
-      - name: Fetch python-jtalk vendor if missing
-        shell: pwsh
+      - name: Prepare vendor via copy_jtalk_core_files.cmd
+        shell: cmd
+        working-directory: miscDepsJp\jptools
         run: |
-          $pj = Join-Path $pwd 'miscDepsJp/include/python-jtalk'
-          if (-not (Test-Path (Join-Path $pj 'lib/Makefile.mak'))) {
-            Write-Host "[info] Cloning nvdajp/python-jtalk into $pj"
-            if (-not (Test-Path $pj)) { New-Item -ItemType Directory -Force -Path $pj | Out-Null }
-            git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/nvdajp/python-jtalk "$pj"
-            git -C "$pj" submodule update --init --recursive --depth 1
-          }
+          call copy_jtalk_core_files.cmd
+          if errorlevel 1 exit /b %errorlevel%
       - name: Build x64 libopenjtalk via SCons alias
         shell: cmd
         run: |
