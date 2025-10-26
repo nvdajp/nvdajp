@@ -237,6 +237,64 @@ def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: st
     stamp_path.write_text("ok", encoding="utf-8")
     return 0
 
+def _find_vcvarsall() -> str | None:
+    """Find vcvarsall.bat in common Visual Studio install locations.
+    Returns absolute path if found, None otherwise.
+    """
+    common_paths = [
+        r"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat",
+        r"C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat",
+        r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat",
+        r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat",
+        r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvarsall.bat",
+        r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat",
+    ]
+    for p in common_paths:
+        if Path(p).exists():
+            return p
+    return None
+
+
+def _get_vcvarsall_env(vcvarsall_path: str, arch: str) -> dict[str, str] | None:
+    """Call vcvarsall.bat and capture the resulting environment variables.
+    Returns a copy of os.environ with MSVC environment added, or None on failure.
+    """
+    import subprocess
+    import tempfile
+
+    # Create a temporary batch file that calls vcvarsall and outputs env
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".bat", delete=False) as f:
+        bat_path = f.name
+        f.write(f'@echo off\n')
+        f.write(f'call "{vcvarsall_path}" {arch} >nul\n')
+        f.write(f'if errorlevel 1 exit /b 1\n')
+        f.write(f'set\n')
+
+    try:
+        result = subprocess.run(
+            [bat_path],
+            capture_output=True,
+            text=True,
+            shell=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            return None
+
+        # Parse environment variables from output
+        env = os.environ.copy()
+        for line in result.stdout.splitlines():
+            if "=" in line:
+                key, _, value = line.partition("=")
+                env[key] = value
+        return env
+    finally:
+        try:
+            os.unlink(bat_path)
+        except Exception:
+            pass
+
+
 def _compute_overlay_targets(repo_root: Path) -> list[str]:
     """Return absolute paths for files overlaid from miscDepsJp/source -> source.
     Used to attach Clean so that `scons -c` can remove overlay artifacts.
@@ -367,13 +425,35 @@ def register_jp_builders(env: Any) -> None:
                 else:
                     print(f"Warning: libopenjtalk source not found at {lib_src}")
 
+                # Check if nmake is available in PATH
+                # If not, try to setup MSVC environment by calling vcvarsall.bat
+                import subprocess
+                nmake_env = os.environ.copy()
+                try:
+                    run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                except (FileNotFoundError, subprocess.CalledProcessError):
+                    print(f"jtalkPrep: nmake not in PATH, attempting to setup MSVC environment...")
+                    vcvarsall = _find_vcvarsall()
+                    if vcvarsall:
+                        print(f"jtalkPrep: found vcvarsall.bat: {vcvarsall}")
+                        nmake_env = _get_vcvarsall_env(vcvarsall, "x86")
+                        if not nmake_env:
+                            print(f"ERROR: failed to setup MSVC environment via vcvarsall.bat")
+                            print(f"  Run from Visual Studio Developer Command Prompt instead")
+                            return 1
+                    else:
+                        print(f"ERROR: nmake not found and vcvarsall.bat not detected")
+                        print(f"  Install Visual Studio with C++ Desktop Development workload")
+                        print(f"  Or run from Visual Studio Developer Command Prompt")
+                        return 1
+
                 # Build nmake command
                 nmake_cmd = ["nmake", "/f", "all.mak"]
                 if nmake_machine:
                     nmake_cmd.append(f"MACHINE={nmake_machine}")
 
                 print(f"jtalkPrep: running: {' '.join(nmake_cmd)} in {build_dir}")
-                result = run(nmake_cmd, cwd=str(build_dir))
+                result = run(nmake_cmd, cwd=str(build_dir), env=nmake_env)
 
                 if result.returncode != 0:
                     print(f"ERROR: nmake failed with exit code {result.returncode}")
@@ -388,6 +468,14 @@ def register_jp_builders(env: Any) -> None:
 
                 print(f"jtalkPrep: build succeeded, DLL created at {src_prebuilt}")
 
+            except FileNotFoundError as e:
+                print(f"ERROR: nmake not found in PATH")
+                print(f"  {e}")
+                print(f"  Ensure MSVC environment is configured before running SCons:")
+                print(f"    - CI: use ilammy/msvc-dev-cmd action")
+                print(f"    - Local: run vcvarsall.bat or Visual Studio Developer Command Prompt")
+                print(f"    - certBuild2023.cmd: add vcvarsall.bat call before SCons")
+                return 1
             except Exception as e:
                 print(f"ERROR: failed to build vendor DLL: {e}")
                 return 1
