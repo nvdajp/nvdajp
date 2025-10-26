@@ -86,6 +86,18 @@ jobs:
           $max = [Math]::Max($code1, $code2)
           if ($max -ge 8) { Write-Error "robocopy failed with code $max"; exit $max } else { Write-Host "robocopy exit code aggregate: $max (treated as success)"; $global:LASTEXITCODE = 0 }
 
+      - name: Diagnose tree (python-jtalk and htsengineapi)
+        shell: pwsh
+        run: |
+          Write-Host "[diag] Listing miscDepsJp/include"
+          Get-ChildItem -Path miscDepsJp/include | Select-Object Name,Mode | Format-Table | Out-String -Width 2000 | Write-Host
+          Write-Host "[diag] Listing python-jtalk"
+          Get-ChildItem -Path miscDepsJp/include/python-jtalk | Select-Object Name,Mode | Format-Table | Out-String -Width 2000 | Write-Host
+          Write-Host "[diag] Listing python-jtalk/htsengineapi"
+          if (Test-Path miscDepsJp/include/python-jtalk/htsengineapi) { Get-ChildItem -Path miscDepsJp/include/python-jtalk/htsengineapi | Select-Object Name,Mode | Format-Table | Out-String -Width 2000 | Write-Host } else { Write-Host "(missing)" }
+          Write-Host "[diag] Listing repo htsengineapi/lib"
+          if (Test-Path miscDepsJp/include/htsengineapi/lib) { Get-ChildItem -Path miscDepsJp/include/htsengineapi/lib | Select-Object Name,Length | Format-Table | Out-String -Width 2000 | Write-Host } else { Write-Host "(missing)" }
+
       - name: Adjust linker machine flag for x64
         if: matrix.arch == 'x64'
         shell: pwsh
@@ -97,8 +109,14 @@ jobs:
       - name: Pre-build HTS engine (vendor or repo)
         shell: pwsh
         run: |
-          $vendorLib = Join-Path $pwd 'miscDepsJp/include/python-jtalk/htsengineapi/lib'
-          $repoLib   = Join-Path $pwd 'miscDepsJp/include/htsengineapi/lib'
+          $vendorHts = Join-Path $pwd 'miscDepsJp/include/python-jtalk/htsengineapi'
+          $vendorLib = Join-Path $vendorHts 'lib'
+          $repoHts   = Join-Path $pwd 'miscDepsJp/include/htsengineapi'
+          $repoLib   = Join-Path $repoHts 'lib'
+          if (-not (Test-Path $vendorHts) -and (Test-Path $repoHts)) {
+            Write-Host "[info] Creating vendor htsengineapi from repo copy"
+            robocopy "$repoHts" "$vendorHts" /E /NFL /NDL /NJH /NJS /NP | Out-Null
+          }
           if (Test-Path $vendorLib) {
             Push-Location $vendorLib
             try { nmake /f Makefile.mak } finally { Pop-Location }
