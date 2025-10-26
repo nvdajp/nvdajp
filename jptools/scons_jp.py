@@ -316,6 +316,12 @@ def register_jp_builders(env: Any) -> None:
         stamp = env.File(f"miscDepsJp/_state/sign/{src.name}.stamp")
         # Stamp depends on the source file and the signing action writes the stamp
         env.Command(stamp, env.File(str(src)), _sign_in_place)
+        # Ensure the JP overlay runs before signing so files exist in-place
+        try:
+            env.Depends(stamp, env.Alias("miscdepsjp"))
+        except Exception as e:
+            # Be conservative if alias lookup fails in early phases
+            print(f"Warning: Could not establish dependency for {stamp}: {e}")
         return stamp
 
     sign_list = [
@@ -353,4 +359,3 @@ def register_jp_builders(env: Any) -> None:
     # Alias: certBuild (convenience umbrella alias)
     # Use string targets/aliases so resolution happens after upstream defines them.
     env.Alias("certBuild", [env.Alias("certprep"), "source", "user_docs", "dist", "launcher"])
-
