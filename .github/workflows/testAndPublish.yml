@@ -170,6 +170,46 @@ jobs:
         scons dist launcher %sconsArgs%
         if errorlevel 1 exit /b %errorlevel%
 
+  # BEGIN JP PATCH: Optional self-signed build for CI (disabled by default)
+  jpSelfSignedBuild:
+    name: JP Self-signed build (optional)
+    if: ${{ vars.JP_ENABLE_SELF_SIGN_CI == '1' }}
+    runs-on: windows-2025
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Set up Python 3.11 x86
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11.9'
+        architecture: 'x86'
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+    - name: Setup MSVC environment
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x86
+    - name: Create self-signed code-signing certificate
+      shell: pwsh
+      run: ci/scripts/tests/selfSignedCert.ps1 -Mode create -PfxPath "$PWD/selfsigned.pfx" -Subject "CN=NVDA-JP CI SelfSigned"
+    - name: SCons build (signed with self-signed cert)
+      shell: cmd
+      run: |
+        setlocal
+        set USE_PY_OVERLAY_COPY=1
+        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores certFile=%SELF_SIGNED_PFX% certTimestampServer=http://timestamp.digicert.com
+        scons dist launcher %sconsArgs%
+        if errorlevel 1 exit /b %errorlevel%
+    - name: Cleanup self-signed certificate
+      if: always()
+      shell: pwsh
+      run: ci/scripts/tests/selfSignedCert.ps1 -Mode cleanup -Thumbprint "$env:SELF_SIGNED_THUMBPRINT"
+  # END JP PATCH
+
     - name: Build Japanese addons (no 7z)
       shell: pwsh
       run: |
