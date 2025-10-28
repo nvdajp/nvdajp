@@ -768,16 +768,3 @@ try:
     env.Clean(launcher, _overlay_files)
 except Exception:
     pass
-# JP: Add a safe scaffold to generate an extra-signing manifest (no signing).
-try:
-    import jptools.scons_jp_cert_build as _jp_cert
-    _manifest = outputDir.File("sign-extras-manifest.txt")
-    _manifest_cmd = env.Command(
-        _manifest,
-        [dist, launcher],
-        Action(_jp_cert.scons_action_generate_manifest, cmdstr='[jp] build sign manifest')
-    )
-    # Expose as dedicated alias; not part of default build
-    env.Alias("certBuild2023", _manifest_cmd)
-except Exception:
-    pass

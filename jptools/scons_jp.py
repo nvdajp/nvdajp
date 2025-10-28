@@ -15,7 +15,10 @@ Terminology:
 
 Aliases added:
 - miscdepsjp: Runs jptools/setup_miscdeps_overlay.py and writes a stamp file.
-- controllerClient: Builds NVDA controller client zip using pack_controller_client.py.
+- jpStageControllerClient: Stage controller client artifacts into jptools/nvdajpClient.
+- jpControllerClient: Builds JP controller client zip using pack_controller_client.py.
+- jpCertExtras: Sign extra JP DLLs using upstream signing logic.
+- jpVerifySignatures: Run signtool verify and write a log under output/.
 
 These are intentionally light-weight and safe; wiring them into other
 targets can be done in later phases when stable.
@@ -496,12 +499,175 @@ def register_jp_builders(env: Any) -> None:
     # This creates the dependency chain: dist -> sourceDir -> miscdepsjp -> jtalkPrep
     # No additional wiring needed here; using Dir/target objects (not Alias) is more robust.
 
-
-
-    # Alias: controllerClient (zip artifact)
+    # Alias: jpControllerClient (zip artifact)
     out_dir = str(env.get("outputDir", "output"))
     version = str(env.get("version", "local"))
     cc_zip = env.File(os.path.join(out_dir, f"nvda_{version}_controllerClientJp.zip"))
     env.Command(cc_zip, [], _pack_controller_client)
-    env.Alias("controllerClient", cc_zip)
+    env.Alias("jpControllerClient", cc_zip)
 
+    # Alias: jpStageControllerClient (copy built client files into nvdajpClient tree)
+    def _stage_controller_client(target: list[Any], source: list[Any], env: Any) -> int:
+        from pathlib import Path
+        import shutil
+
+        repo_root = Path.cwd()
+        # Where NVDA places built controller client per-arch
+        build_root = repo_root / "build"
+        # Destination used by jptools/pack_controller_client.py
+        client_root = repo_root / "jptools" / "nvdajpClient"
+
+        # (dest_arch, build_arch)
+        arch_map = (
+            ("x86", "x86"),
+            ("x64", "x86_64"),
+            ("arm64", "arm64"),
+        )
+
+        files = (
+            "nvdaController.h",
+            "nvdaControllerClient.dll",
+            "nvdaControllerClient.pdb",
+            "nvdaControllerClient.exp",
+            "nvdaControllerClient.lib",
+        )
+
+        copied_any = False
+        for dest_arch, build_arch in arch_map:
+            src_dir = build_root / build_arch / "client"
+            dst_dir = client_root / dest_arch
+            try:
+                dst_dir.mkdir(parents=True, exist_ok=True)
+            except Exception:
+                pass
+            for name in files:
+                src = src_dir / name
+                dst = dst_dir / name
+                try:
+                    if src.exists():
+                        shutil.copy2(str(src), str(dst))
+                        copied_any = True
+                    else:
+                        # Tolerate missing files (e.g., arch not built)
+                        continue
+                except Exception as e:
+                    print(f"Warning: failed to copy {src} -> {dst}: {e}")
+                    # Keep going; staging is best-effort
+                    continue
+
+        # Write/update stamp
+        stamp_path = Path(str(target[0]))
+        stamp_path.parent.mkdir(parents=True, exist_ok=True)
+        stamp_path.write_text("ok" if copied_any else "skip:no-files", encoding="utf-8")
+        return 0
+
+    stage_stamp = env.File("miscDepsJp/_state/controllerClient/stage.stamp")
+    env.AlwaysBuild(stage_stamp)
+    env.Command(stage_stamp, [], _stage_controller_client)
+    env.Alias("jpStageControllerClient", stage_stamp)
+    # Ensure packaging waits for staging if both are invoked together
+    try:
+        env.Depends(cc_zip, stage_stamp)
+    except Exception:
+        pass
+
+    # Aliases: JP add-ons (packaging)
+    jtalk_stamp = env.File("miscDepsJp/_state/addons/jtalk.stamp")
+    env.AlwaysBuild(jtalk_stamp)
+    env.Command(jtalk_stamp, [], _pack_jtalk_addon)
+    kgs_stamp = env.File("miscDepsJp/_state/addons/kgs.stamp")
+    env.AlwaysBuild(kgs_stamp)
+    env.Command(kgs_stamp, [], _pack_kgs_addon)
+    env.Alias("jtalkAddon", jtalk_stamp)
+    env.Alias("kgsAddon", kgs_stamp)
+    env.Alias("jpAddons", [jtalk_stamp, kgs_stamp])
+
+    # Alias: jpCertExtras — sign extra PE files outside of core SCons graph.
+    # This mirrors legacy certBuild2023.cmd behavior but is tolerant to missing files
+    # and skips if signing is not configured.
+    extra_paths: list[str] = [
+        # JP synth driver payloads
+        os.path.join("source", "synthDrivers", "jtalk", "libmecab.dll"),
+        os.path.join("source", "synthDrivers", "jtalk", "libopenjtalk.dll"),
+        # miscDeps DLLs
+        os.path.join("miscDeps", "python", "brlapi-0.8.dll"),
+        os.path.join("miscDeps", "python", "libgcc_s_dw2-1.dll"),
+        os.path.join("miscDeps", "source", "brailleDisplayDrivers", "lilli.dll"),
+        # wxWidgets DLLs in venv (names used in legacy scripts)
+        os.path.join(".venv", "Lib", "site-packages", "wx", "wxbase32u_net_vc140.dll"),
+        os.path.join(".venv", "Lib", "site-packages", "wx", "wxbase32u_vc140.dll"),
+        os.path.join(".venv", "Lib", "site-packages", "wx", "wxmsw32u_core_vc140.dll"),
+        os.path.join(".venv", "Lib", "site-packages", "wx", "wxmsw32u_html_vc140.dll"),
+        os.path.join(".venv", "Lib", "site-packages", "wx", "wxmsw32u_stc_vc140.dll"),
+    ]
+
+    cert_stamps = []
+    for p in extra_paths:
+        stamp = env.File(os.path.join("miscDepsJp", "_state", "cert", f"{Path(p).name}.stamp"))
+        env.AlwaysBuild(stamp)
+        # Bind the path value at definition time via default arg
+        env.Command(stamp, [], lambda t, s, e, _p=p: _sign_optional_path(t, s, e, _p))
+        cert_stamps.append(stamp)
+    env.Alias("jpCertExtras", cert_stamps)
+
+    # Alias: jpVerifySignatures — verify authenticode signatures with signtool
+    def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
+        import subprocess
+        from pathlib import Path
+
+        repo_root = Path.cwd()
+        out_dir = repo_root / str(env.get("outputDir", "output"))
+        version = str(env.get("version", "local"))
+        log_path = out_dir / f"nvda_{version}_verify.log"
+        try:
+            out_dir.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+
+        signtool = os.getenv("SIGNTOOL") or "signtool"
+        patterns = [
+            out_dir.glob("*.exe"),
+            (repo_root / "dist").rglob("*.exe"),
+            (repo_root / "dist").rglob("*.dll"),
+        ]
+
+        files: list[Path] = []
+        for it in patterns:
+            try:
+                files.extend([p for p in it if p.is_file()])
+            except Exception:
+                continue
+
+        rc = 0
+        with open(log_path, "w", encoding="utf-8") as log:
+            for f in sorted(set(files)):
+                try:
+                    res = subprocess.run([signtool, "verify", "/pa", str(f)], capture_output=True, text=True)
+                    if res.returncode != 0:
+                        rc = res.returncode or 1
+                    log.write(f"## {f}\n")
+                    if res.stdout:
+                        log.write(res.stdout)
+                    if res.stderr:
+                        log.write(res.stderr)
+                    log.write("\n")
+                except FileNotFoundError:
+                    # signtool missing; fail with clear message
+                    with open(log_path, "a", encoding="utf-8") as l2:
+                        l2.write("signtool not found in PATH. Set SIGNTOOL env or install Windows SDK.\n")
+                    return 1
+                except Exception as e:
+                    with open(log_path, "a", encoding="utf-8") as l2:
+                        l2.write(f"Error verifying {f}: {e}\n")
+                    rc = rc or 1
+
+        # Stamp
+        stamp_path = Path(str(target[0]))
+        stamp_path.parent.mkdir(parents=True, exist_ok=True)
+        stamp_path.write_text("ok" if rc == 0 else "fail", encoding="utf-8")
+        return rc
+
+    verify_stamp = env.File("miscDepsJp/_state/verify/signatures.stamp")
+    env.AlwaysBuild(verify_stamp)
+    env.Command(verify_stamp, [], _verify_signatures)
+    env.Alias("jpVerifySignatures", verify_stamp)
