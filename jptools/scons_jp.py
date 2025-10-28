@@ -626,18 +626,20 @@ def register_jp_builders(env: Any) -> None:
             pass
 
         signtool = os.getenv("SIGNTOOL") or "signtool"
-        patterns = [
-            out_dir.glob("*.exe"),
-            (repo_root / "dist").rglob("*.exe"),
-            (repo_root / "dist").rglob("*.dll"),
+        # Verify only known signed artifacts to avoid false failures on unsigned third-party DLLs.
+        # 1) Installer / launcher under output
+        files: list[Path] = [p for p in out_dir.glob("*.exe") if p.is_file()]
+        # 2) JP extra DLLs we sign via jpCertExtras (verify at their source locations)
+        extra_paths = [
+            repo_root / "source" / "synthDrivers" / "jtalk" / "libmecab.dll",
+            repo_root / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll",
+            repo_root / "miscDeps" / "python" / "brlapi-0.8.dll",
+            repo_root / "miscDeps" / "python" / "libgcc_s_dw2-1.dll",
+            repo_root / "miscDeps" / "source" / "brailleDisplayDrivers" / "lilli.dll",
         ]
-
-        files: list[Path] = []
-        for it in patterns:
-            try:
-                files.extend([p for p in it if p.is_file()])
-            except Exception:
-                continue
+        for p in extra_paths:
+            if p.is_file():
+                files.append(p)
 
         rc = 0
         with open(log_path, "w", encoding="utf-8") as log:
