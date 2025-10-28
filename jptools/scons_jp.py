@@ -606,7 +606,8 @@ def register_jp_builders(env: Any) -> None:
         stamp = env.File(os.path.join("miscDepsJp", "_state", "cert", f"{Path(p).name}.stamp"))
         env.AlwaysBuild(stamp)
         # Bind the path value at definition time via default arg
-        env.Command(stamp, [], lambda t, s, e, _p=p: _sign_optional_path(t, s, e, _p))
+        # Use SCons action signature names (target, source, env) to match keyword invocation.
+        env.Command(stamp, [], lambda target, source, env, _p=p: _sign_optional_path(target, source, env, _p))
         cert_stamps.append(stamp)
     env.Alias("jpCertExtras", cert_stamps)
 
