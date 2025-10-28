@@ -625,6 +625,13 @@ def register_jp_builders(env: Any) -> None:
         except Exception:
             pass
 
+        # If signing is not configured, skip verification (nothing is expected to be signed)
+        if not env.get("signExec"):
+            stamp_path = Path(str(target[0]))
+            stamp_path.parent.mkdir(parents=True, exist_ok=True)
+            stamp_path.write_text("skip:no-sign-config", encoding="utf-8")
+            return 0
+
         signtool = os.getenv("SIGNTOOL") or "signtool"
         # Verify only known signed artifacts to avoid false failures on unsigned third-party DLLs.
         # 1) Installer / launcher under output
@@ -674,3 +681,9 @@ def register_jp_builders(env: Any) -> None:
     env.AlwaysBuild(verify_stamp)
     env.Command(verify_stamp, [], _verify_signatures)
     env.Alias("jpVerifySignatures", verify_stamp)
+    # Ensure verification runs after extra signing stamps when both are invoked
+    try:
+        if cert_stamps:
+            env.Depends(verify_stamp, cert_stamps)
+    except Exception:
+        pass
