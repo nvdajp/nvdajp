@@ -16,7 +16,9 @@ on:
 jobs:
   lint:
     name: Ruff format and lint
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

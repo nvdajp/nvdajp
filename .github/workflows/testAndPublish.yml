@@ -18,11 +18,17 @@ env:
   PUBLISHER: nvdajp
   # Cache details about available MSVC tooling for subsequent SCons invocations
   SCONS_CACHE_MSVC_CONFIG: ".scons_msvc_cache.json"
+  # BEGIN JP PATCH: Allow overriding Windows runner label via repo variables
+  # Set repository variable JP_WINDOWS_RUNNER to switch runner, default to windows-latest.
+  # This helps when windows-2025 is unavailable on the target environment.
+  # END JP PATCH
 
 jobs:
   typeCheck:
     name: Static type analysis (pyright)
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -46,7 +52,9 @@ jobs:
 
   lint:
     name: Ruff format and lint (advisory)
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -75,7 +83,9 @@ jobs:
       run: uv run ruff check
 
   buildNVDA:
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     outputs:
       version: ${{ steps.releaseInfo.outputs.VERSION }}
       versionType: ${{ steps.releaseInfo.outputs.VERSION_TYPE }}
@@ -174,7 +184,9 @@ jobs:
   jpSelfSignedBuild:
     name: JP Self-signed build (optional)
     if: ${{ vars.JP_ENABLE_SELF_SIGN_CI == '1' }}
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -370,7 +382,9 @@ jobs:
 
   checkPo:
     name: Check po files for errors
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -404,7 +418,9 @@ jobs:
 
   checkPot:
     name: Check translator comments
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     needs: buildNVDA
     steps:
     - name: Checkout cached build
@@ -431,7 +447,9 @@ jobs:
 
   licenseCheck:
     name: Check license compatibility of dependencies
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     needs: buildNVDA
     steps:
     - name: Checkout cached build
@@ -452,7 +470,9 @@ jobs:
 
   unitTests:
     name: Run unit tests
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     needs: buildNVDA
     steps:
     - name: Checkout cached build
@@ -494,7 +514,9 @@ jobs:
   crowdinUpload:
     if: ${{ false }}
     name: Upload translations to Crowdin (disabled in JP)
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     needs: [buildNVDA, checkPot]
     steps:
       - name: Skip
@@ -503,7 +525,9 @@ jobs:
 
   createLauncher:
     name: Create launcher
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     needs: buildNVDA
     outputs:
       launcherArtifactId: ${{ steps.uploadLauncher.outputs.artifact-id }}
@@ -595,7 +619,9 @@ jobs:
         # Skip chrome tests temporarily - may have issues with Japanese version
         testSuite: [installer, startupShutdown]
     name: Run system tests
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     needs: createLauncher
     steps:
     - name: Checkout cached build
@@ -647,7 +673,9 @@ jobs:
 
   createSymbols:
     name: Create symbols
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     needs: buildNVDA
     outputs:
       symbolsArtifactId: ${{ steps.uploadArtifact.outputs.artifact-id }}
@@ -684,7 +712,9 @@ jobs:
 
   uploadSymbols:
     name: Upload symbols
-    runs-on: windows-2025
+    # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
+    runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
+    # END JP PATCH
     needs: createSymbols
     if: ${{ github.event_name == 'push' && vars.feature_uploadSymbolsToMozilla }}
     steps:
