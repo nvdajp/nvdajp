@@ -83,6 +83,8 @@ jobs:
       run: uv run ruff check
 
   buildNVDA:
+    permissions:
+      actions: write
     # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
     runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
     # END JP PATCH
