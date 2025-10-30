@@ -55,9 +55,7 @@ call scons.bat jpVerifySignatures %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 set PYTHONUTF8=1
-call jptools\tests.cmd
-@if not "%ERRORLEVEL%"=="0" goto onerror
-call jpchar\tests.cmd
+call scons.bat jp_tests %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 echo %UPDATEVERSIONTYPE% %VERSION%
