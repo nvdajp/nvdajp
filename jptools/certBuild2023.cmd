@@ -20,9 +20,11 @@ rem Timestamp server (override via env if needed)
 if defined TIMESERVER if not defined TIMESTAMP_URL set TIMESTAMP_URL=%TIMESERVER%
 if not defined TIMESTAMP_URL set TIMESTAMP_URL=http://timestamp.digicert.com
 
-call miscDepsJp\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0
 cd ..
+
+call jptools\vcsetup.cmd
+@if not "%ERRORLEVEL%"=="0" goto onerror
 
 call jptools\check_vs_version.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
