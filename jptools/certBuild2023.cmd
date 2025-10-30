@@ -35,6 +35,17 @@ nmake /?
 patch -v
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
+rem Ensure signtool is discoverable for SCons (verify/sign)
+if not defined SIGNTOOL (
+    for /f "usebackq delims=" %%S in (`where signtool 2^>NUL`) do set "SIGNTOOL=%%S"
+)
+if not defined SIGNTOOL (
+    for /f "usebackq delims=" %%D in (`pwsh -NoProfile -Command "$base='C:\\Program Files (x86)\\Windows Kits\\10\\bin'; if(Test-Path $base){ Get-ChildItem $base -Directory | Sort-Object Name -Descending | ForEach-Object { $p=Join-Path $_.FullName 'x64\signtool.exe'; if(Test-Path $p){ $p; break }; $p=Join-Path $_.FullName 'x86\signtool.exe'; if(Test-Path $p){ $p; break } } }"`) do set "SIGNTOOL=%%D"
+)
+if not defined SIGNTOOL (
+    echo [WARN] signtool not found in PATH or Windows Kits. Verification may be skipped.
+)
+
 set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% certFile=1 certTimestampServer=%TIMESTAMP_URL% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 call scons.bat jtalkPrep miscdepsjp jpCertExtras %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
