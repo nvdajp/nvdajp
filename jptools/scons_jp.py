@@ -609,21 +609,30 @@ def register_jp_builders(env: Any) -> None:
                 if exe_candidates:
                     exe = exe_candidates[0]
             if not exe:
+                print("jpVerifySignatures: skip (no installer found under output/)\n")
                 stamp_path.write_text("skip:no-installer", encoding="utf-8")
                 return 0
             signtool = os.environ.get("SIGNTOOL", "signtool")
-            result = subprocess.run([signtool, "verify", "/pa", str(exe)], capture_output=True, text=True)
+            result = subprocess.run([signtool, "verify", "/pa", "/v", str(exe)], capture_output=True, text=True)
             content = [f"file={exe}", f"rc={result.returncode}"]
             if result.stdout:
                 content.append(result.stdout)
             if result.stderr:
                 content.append(result.stderr)
             stamp_path.write_text("\n".join(content), encoding="utf-8")
-            return 0 if result.returncode == 0 else result.returncode
+            if result.returncode == 0:
+                print(f"jpVerifySignatures: verified OK: {exe}")
+                return 0
+            else:
+                print(f"jpVerifySignatures: verification FAILED (rc={result.returncode}): {exe}")
+                print("  See output/_jp_verify_signatures.stamp for full details.")
+                return result.returncode
         except FileNotFoundError:
+            print("jpVerifySignatures: skip (signtool not found). Ensure Windows SDK is installed or SIGNTOOL is set.")
             stamp_path.write_text("skip:no-signtool", encoding="utf-8")
             return 0
         except Exception as e:
+            print(f"jpVerifySignatures: error while verifying: {e}")
             stamp_path.write_text(f"error:{e}", encoding="utf-8")
             return 1
 
