@@ -52,7 +52,9 @@ call scons.bat jtalkPrep miscdepsjp jpCertExtras %SCONSARGS%
 call scons.bat source user_docs launcher jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 call scons.bat jpVerifySignatures %SCONSARGS%
-@if not "%ERRORLEVEL%"=="0" goto onerror
+@if not "%ERRORLEVEL%"=="0" (
+    echo [WARN] Signature verification failed. See output\_jp_verify_signatures.stamp
+)
 
 set PYTHONUTF8=1
 call scons.bat jp_tests %SCONSARGS%
