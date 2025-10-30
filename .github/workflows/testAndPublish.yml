@@ -430,7 +430,7 @@ jobs:
       with:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
-        fail-on-cache-miss: true
+        fail-on-cache-miss: false
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -459,7 +459,7 @@ jobs:
       with:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
-        fail-on-cache-miss: true
+        fail-on-cache-miss: false
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -482,7 +482,7 @@ jobs:
       with:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
-        fail-on-cache-miss: true
+        fail-on-cache-miss: false
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -540,7 +540,7 @@ jobs:
       with:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
-        fail-on-cache-miss: true
+        fail-on-cache-miss: false
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -631,7 +631,7 @@ jobs:
       with:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
-        fail-on-cache-miss: true
+        fail-on-cache-miss: false
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -687,7 +687,7 @@ jobs:
       with:
         path: ${{ github.workspace }}
         key: ${{ github.ref }}-${{ github.run_id }}
-        fail-on-cache-miss: true
+        fail-on-cache-miss: false
     - name: Install Windows SDK
       run: choco install -y windows-sdk-10.1
     - name: Create build symbols
