@@ -440,12 +440,14 @@ jobs:
       uses: astral-sh/setup-uv@v6
     - name: Check comments for translators
       run: ci/scripts/tests/translationCheck.ps1
-    - name: Upload artifact
-      if: ${{ success() || failure() }}
+    - name: Upload translation check log (optional)
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: pot-check-${{ github.run_number }}
-        path: testOutput/translationCheck.txt
+        path: |
+          testOutput/translationCheckResults.log
+          testOutput/translationCheck.txt
 
   licenseCheck:
     name: Check license compatibility of dependencies
