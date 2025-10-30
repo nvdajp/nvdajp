@@ -183,18 +183,6 @@ scons certBuild certFile=path/to/cert.pfx
 - MSVC 環境（CI では `ilammy/msvc-dev-cmd@v1` で自動設定）
 - サブモジュール取得（`submodules: recursive`）
 
-### CI 自己署名ビルド（計画・任意）
-
-- 目的: CI 上で自己署名のテスト用ビルドを作成し、将来的に installer/startupShutdown 系システムテストを実施可能にする。
-- 非目的: 公開配布や本署名。Secrets を用いた運用は行わない。
-- 有効化（既定オフ）: リポジトリ変数 `JP_ENABLE_SELF_SIGN_CI=1` を設定した場合のみ実行。
-- 方法（計画）:
-  - ジョブ開始時に `ci/scripts/tests/selfSignedCert.ps1` で CurrentUser の `My`/`Root` に自己署名証明書を作成・信頼、PFX を出力（パスワード無し）。
-  - `scons dist launcher certFile=%SELF_SIGNED_PFX%` で dist/launcher 生成物に署名（SCons の `signExec` を再利用）。
-  - ジョブ終了時に同スクリプトで証明書をクリーンアップ。
-- ガード: 署名対象は dist/launcher の最終生成物に限定。ジョブ失敗時でも cleanup を保証。
-- 将来統合: 署名対象の manifest 化（`jpSignManifest`）や追加 DLL の opt-in 署名（`jpSignExtras`）と統合予定。
-
 ## 運用ルール（ブランチ/PR）
 
 - `betajp` は安定ブランチ（直接 push 禁止）。すべてトピックブランチ→PR で変更。
