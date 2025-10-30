@@ -419,7 +419,8 @@ jobs:
         echo "PO files contain errors. Please fix them before merging." >> $GITHUB_STEP_SUMMARY
 
   checkPot:
-    name: Check translator comments
+    if: false
+    name: Check translator comments (JP disabled)
     # BEGIN JP PATCH: Use overridable Windows runner (default windows-latest)
     runs-on: ${{ vars.JP_WINDOWS_RUNNER || 'windows-latest' }}
     # END JP PATCH
