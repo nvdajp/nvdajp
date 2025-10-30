@@ -340,6 +340,17 @@ def register_jp_builders(env: Any) -> None:
         pass
 
 
+    # Alias: jp_tests (run JP dictionary tests and JP char description tests)
+    jp_tests_stamp = env.File("jptools/_state/jp_tests.stamp")
+    env.AlwaysBuild(jp_tests_stamp)
+    env.Command(jp_tests_stamp, [], _run_jp_tests)
+
+    jpchar_tests_stamp = env.File("jpchar/_state/jpchar_tests.stamp")
+    env.AlwaysBuild(jpchar_tests_stamp)
+    env.Command(jpchar_tests_stamp, [], _run_jpchar_tests)
+
+    env.Alias("jp_tests", [jp_tests_stamp, jpchar_tests_stamp])
+
     # Alias: jtalkPrep (ensure JP jtalk payload is present before overlay)
     def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int:
         """Prepare JP jtalk payload for overlay with on-demand build.
@@ -504,4 +515,3 @@ def register_jp_builders(env: Any) -> None:
     cc_zip = env.File(os.path.join(out_dir, f"nvda_{version}_controllerClientJp.zip"))
     env.Command(cc_zip, [], _pack_controller_client)
     env.Alias("controllerClient", cc_zip)
-
