@@ -132,7 +132,7 @@
   - system: インストーラ導入前に `ci/scripts/beforeTests.ps1` を実行して `testOutput/` を作成
 
 - ワークフロー再同期（testAndPublish.yml）
-  - 上流 rc を取り込み、JP 追加は `# BEGIN JP PATCH`〜`# END JP PATCH` に最小集約
+  - 上流 rc を取り込み、JP 追加は最小集約
   - マトリクス固定を確認: `supportedArchitectures: ["x86"]`、`supportedPythonVersions: ["3.11.9"]`
   - 前後処理は `ci/scripts/` に寄せ、YAML 側はスクリプト呼び出しのみ（cache は `actions/cache@v4` を使用し、キーに `run_id`/`pythonVersion`/`arch` を含める）
 
@@ -206,4 +206,3 @@ scons certBuild certFile=path/to/cert.pfx
   - `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`
 - 受け入れ条件・運用詳細は `projectDocs/jp/vendor-submodules.md` に準拠。
 - 「miscDepsJp の x86/x64 マトリクスを CI でビルド」は Phase 2 以降に検討（Step 1 では実施しない）。
-

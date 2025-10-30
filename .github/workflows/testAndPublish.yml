@@ -181,15 +181,9 @@ jobs:
 
     # Controller client zip is produced via SCons in createLauncher job (alias: client)
 
-    - name: Test miscDepsJp
+    - name: Run Japanese tests (SCons)
       run: |
-        call jptools\testMiscDepsJp.cmd
-      shell: cmd
-
-    - name: Run Japanese tests
-      run: |
-        call jptools\tests.cmd
-        call jpchar\tests.cmd
+        scons jp_tests
       shell: cmd
 
     - name: Prepare for system tests
