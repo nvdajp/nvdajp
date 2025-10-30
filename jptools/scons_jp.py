@@ -516,6 +516,17 @@ def register_jp_builders(env: Any) -> None:
     env.Command(cc_zip, [], _pack_controller_client)
     env.Alias("controllerClient", cc_zip)
 
+    # Alias: jpAddons (build JP addons using existing packers)
+    jtalk_addon_stamp = env.File("jptools/_state/jtalk_addon.stamp")
+    env.AlwaysBuild(jtalk_addon_stamp)
+    env.Command(jtalk_addon_stamp, [], _pack_jtalk_addon)
+
+    kgs_addon_stamp = env.File("jptools/_state/kgs_addon.stamp")
+    env.AlwaysBuild(kgs_addon_stamp)
+    env.Command(kgs_addon_stamp, [], _pack_kgs_addon)
+
+    env.Alias("jpAddons", [jtalk_addon_stamp, kgs_addon_stamp])
+
     # JP aliases required by certBuild2023.cmd (minimal safe wiring)
     # 1) Stage controller client artifacts (ensure client root exists)
     def _stage_controller_client(target: list[Any], source: list[Any], env: Any) -> int:
