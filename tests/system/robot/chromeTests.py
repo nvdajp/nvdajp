@@ -89,6 +89,11 @@ def _getNoVBuf_AriaDetails_sample() -> str:
 def _doTestAriaDetails_NoVBufNoTextInterface(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	_chrome.prepareChrome(_getNoVBuf_AriaDetails_sample())
 	spy: "NVDASpyLib" = _NvdaLib.getSpyLib()
+	# Ensure sufficient braille cells so tokens don't clip mid-word (eg 'details' -> 'deta')
+	try:
+		spy.setBrailleCellCount(400)
+	except Exception:
+		pass
 	spy.modifyNVDAConfig(nvdaConfValues)
 
 	actualSpeech = _NvdaLib.getSpeechAfterKey("tab")
