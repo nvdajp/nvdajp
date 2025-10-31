@@ -609,7 +609,7 @@ def register_jp_builders(env: Any) -> None:
                 if exe_candidates:
                     exe = exe_candidates[0]
             if not exe:
-                print("jpVerifySignatures: skip (no installer found under output/)\n")
+                print("jpVerifySignatures: skip (no installer found under output/)")
                 stamp_path.write_text("skip:no-installer", encoding="utf-8")
                 return 0
             signtool = os.environ.get("SIGNTOOL", "signtool")
