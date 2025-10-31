@@ -619,13 +619,21 @@ def register_jp_builders(env: Any) -> None:
                 content.append(result.stdout)
             if result.stderr:
                 content.append(result.stderr)
-            stamp_path.write_text("\n".join(content), encoding="utf-8")
+            text = "\n".join(content)
+            # Keep backward-compatible stamp output
+            stamp_path.write_text(text, encoding="utf-8")
+            # And also write the historical per-installer verify log: output\\<name>_verify.log
+            try:
+                verify_log = out_dir / f"{exe.stem}_verify.log"
+                verify_log.write_text(text, encoding="utf-8")
+            except Exception:
+                pass
             if result.returncode == 0:
                 print(f"jpVerifySignatures: verified OK: {exe}")
                 return 0
             else:
                 print(f"jpVerifySignatures: verification FAILED (rc={result.returncode}): {exe}")
-                print("  See output/_jp_verify_signatures.stamp for full details.")
+                print("  See output/_jp_verify_signatures.stamp or the *_verify.log for details.")
                 return result.returncode
         except FileNotFoundError:
             print("jpVerifySignatures: skip (signtool not found). Ensure Windows SDK is installed or SIGNTOOL is set.")
