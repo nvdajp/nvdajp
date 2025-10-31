@@ -46,7 +46,47 @@ if not defined SIGNTOOL (
     echo [WARN] signtool not found in PATH or Windows Kits. Verification may be skipped.
 )
 
-set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% certFile=1 certTimestampServer=%TIMESTAMP_URL% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+rem Auto-detect a valid code signing cert from Windows cert store when not explicitly specified
+rem Preference: CurrentUser\My, then LocalMachine\My. Exclude self-signed.
+if not defined CERT_SHA1 if not defined CERT_NAME (
+    for /f "usebackq tokens=1,2" %%A in (`pwsh -NoProfile -Command ^
+        "$now=Get-Date; "^
+        "function FindCert([string]\$root){ "^
+        "  Get-ChildItem -Path \$root -ErrorAction SilentlyContinue | Where-Object { "^
+        "    \$_.HasPrivateKey -and \$_.NotAfter -gt \$now -and \$_.NotBefore -le \$now -and "^
+        "    (\$_.EnhancedKeyUsageList | Where-Object { \$_.ObjectId -eq '1.3.6.1.5.5.7.3.3' }) -and "^
+        "    \$_.Issuer -ne \$_.Subject "^
+        "  } | Sort-Object NotAfter -Descending | Select-Object -First 1 "^
+        "}; "^
+        "\$cert=FindCert 'Cert:\\CurrentUser\\My'; \$scope='USER'; if(-not \$cert){ \$cert=FindCert 'Cert:\\LocalMachine\\My'; \$scope='MACHINE' } ; "^
+        "if(\$cert){ Write-Output (\"\$scope \" + (\$cert.Thumbprint -replace ' ','').ToUpper()) } "
+    `) do (
+        set "_CERT_SCOPE=%%A"
+        set "_CERT_THUMB=%%B"
+    )
+    if defined _CERT_THUMB (
+        set CERT_STORE=My
+        set CERT_SHA1=%_CERT_THUMB%
+        if /I "%_CERT_SCOPE%"=="MACHINE" set CERT_MACHINE_STORE=1
+        echo Using certificate from store: scope=%_CERT_SCOPE% sha1=%_CERT_THUMB%
+    ) else (
+        echo [INFO] No suitable code signing certificate found in store. Falling back to signtool automatic selection.
+    )
+    set _CERT_SCOPE=
+    set _CERT_THUMB=
+)
+
+rem Build SCons args; enable signing only when a valid store cert is selected
+set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
+if defined CERT_NAME if not defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
+if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN (
+    echo [ERROR] コードサイニング証明書が見つかりませんでした。自己署名や自動選択にはフォールバックしません。
+    echo         正しい証明書を CurrentUser\My または LocalMachine\My にインポートするか、
+    echo         CERT_SHA1 もしくは CERT_NAME を指定してください。
+    echo         どうしても自動選択に任せる場合は ALLOW_AUTO_SIGN=1 を設定してください。
+    goto onerror
+)
 call scons.bat jtalkPrep miscdepsjp jpCertExtras %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 call scons.bat source user_docs launcher jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient %SCONSARGS%
