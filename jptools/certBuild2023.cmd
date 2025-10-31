@@ -76,6 +76,17 @@ if not defined CERT_SHA1 if not defined CERT_NAME (
     set _CERT_THUMB=
 )
 
+rem Validate CERT_SHA1 (must be exactly 40 hex chars). If invalid, clear it.
+if defined CERT_SHA1 (
+    for /f "usebackq delims=" %%V in (`pwsh -NoProfile -Command ^
+        "$v=$env:CERT_SHA1; if($v -match '^[0-9A-Fa-f]{40}$'){ 'OK' }"`) do set "__SHA1_OK=%%V"
+    if not defined __SHA1_OK (
+        echo [WARN] Ignoring invalid CERT_SHA1 value: %CERT_SHA1%
+        set CERT_SHA1=
+    )
+    set __SHA1_OK=
+)
+
 rem Build SCons args; enable signing only when a valid store cert is selected
 set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
