@@ -446,21 +446,26 @@ def getSpeechAndBrailleAfterKey(key) -> _Tuple[str, str]:
 	spy.wait_for_speech_to_finish()
 
 	nextSpeechIndex = spy.get_next_speech_index()
-	nextBrailleIndex = spy.get_next_braille_index()
+	brailleStartIndex = spy.get_next_braille_index()
 
 	spy.emulateKeyPress(key)
 
 	spy.wait_for_speech_to_finish(speechStartedIndex=nextSpeechIndex)
 	speech = spy.get_speech_at_index_until_now(nextSpeechIndex)
 
-	# Wait for at least one braille update, then briefly drain any rapid subsequent updates
-	spy.wait_for_braille_update(nextBrailleIndex)
-	for _ in range(3):
-		nextBrailleIndex = spy.get_next_braille_index()
-		# Small timeout; if no further update arrives, break.
-		spy.wait_for_braille_update(nextBrailleIndex, maxWaitSeconds=0.2)
-		if spy.get_last_braille_index() < nextBrailleIndex:
-			break
+	# Prefer waiting for braille quiescence when supported by the spy
+	try:
+		# type: ignore[attr-defined]
+		spy.wait_for_braille_to_finish(brailleStartedIndex=brailleStartIndex)
+	except Exception:
+		# Fallback: wait for at least one update, then briefly drain subsequent updates
+		nextBrailleIndex = brailleStartIndex
+		spy.wait_for_braille_update(nextBrailleIndex)
+		for _ in range(3):
+			nextBrailleIndex = spy.get_next_braille_index()
+			spy.wait_for_braille_update(nextBrailleIndex, maxWaitSeconds=0.2)
+			if spy.get_last_braille_index() < nextBrailleIndex:
+				break
 	braille = spy.get_last_braille()
 
 	return speech, braille

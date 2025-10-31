@@ -56,6 +56,7 @@ class NVDASpyLib:
 	"""
 
 	SPEECH_HAS_FINISHED_SECONDS: float = 1.0
+	BRAILLE_HAS_FINISHED_SECONDS: float = 0.3
 	_brailleCellCount: int = 120
 
 	def __init__(self):
@@ -76,6 +77,7 @@ class NVDASpyLib:
 		]
 		#: Lock to protect members that are written to in _onNvdaBraille.
 		self._brailleLock = threading.RLock()
+		self._lastBrailleTime_requiresLock = _timer()
 
 		self._isNvdaStartupComplete = False
 		self._allSpeechStartIndex = self.get_last_speech_index()
@@ -213,6 +215,7 @@ class NVDASpyLib:
 		with self._brailleLock:
 			log.debug(f"Appending to braille spy at index {len(self._nvdaBraille_requiresLock)}")
 			self._nvdaBraille_requiresLock.append(rawText)
+			self._lastBrailleTime_requiresLock = _timer()
 
 	def _onNvdaSpeech(self, speechSequence=None):
 		if not speechSequence:
@@ -507,6 +510,29 @@ class NVDASpyLib:
 			giveUpAfterSeconds=self._minTimeout(maxWaitSeconds),
 			errorMessage=None,
 		)
+
+	def _hasBrailleFinished(self, brailleStartedIndex: typing.Optional[int] = None) -> bool:
+		with self._brailleLock:
+			nextIndex = self.get_next_braille_index()
+			started = brailleStartedIndex is None or brailleStartedIndex < nextIndex
+			elapsed = _timer() - self._lastBrailleTime_requiresLock
+			log.debug(
+				f"braille started: {started} (brailleStartedIndex: {brailleStartedIndex}, nextIndex: {nextIndex}) "
+				f"elapsedSinceLastBraille: {elapsed}"
+			)
+			finished = self.BRAILLE_HAS_FINISHED_SECONDS < elapsed
+			return started and finished
+
+	def wait_for_braille_to_finish(self, brailleStartedIndex: typing.Optional[int] = None, maxWaitSeconds=2.0) -> bool:
+		"""Waits until there has been at least one braille update after 'brailleStartedIndex'
+		and there have been no further updates for BRAILLE_HAS_FINISHED_SECONDS.
+		"""
+		success, _value = _blockUntilConditionMet(
+			getValue=lambda: self._hasBrailleFinished(brailleStartedIndex),
+			giveUpAfterSeconds=self._minTimeout(maxWaitSeconds),
+			errorMessage=None,
+		)
+		return success
 
 	def get_last_braille(self) -> str:
 		return self._getBrailleAtIndex(-1)
