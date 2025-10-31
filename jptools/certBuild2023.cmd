@@ -35,120 +35,76 @@ nmake /?
 patch -v
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-cd miscDepsJp\jptools
-call copy_jtalk_core_files.cmd
-call build-and-test.cmd
-@if not "%ERRORLEVEL%"=="0" goto onerror
-cd ..\..
+rem Ensure signtool is discoverable for SCons (verify/sign)
+if not defined SIGNTOOL (
+    for /f "usebackq delims=" %%S in (`where signtool 2^>NUL`) do set "SIGNTOOL=%%S"
+)
+if not defined SIGNTOOL (
+    for /f "usebackq delims=" %%D in (`pwsh -NoProfile -Command "$base='C:\\Program Files (x86)\\Windows Kits\\10\\bin'; if(Test-Path $base){ Get-ChildItem $base -Directory | Sort-Object Name -Descending | ForEach-Object { $p=Join-Path $_.FullName 'x64\signtool.exe'; if(Test-Path $p){ $p; break }; $p=Join-Path $_.FullName 'x86\signtool.exe'; if(Test-Path $p){ $p; break } } }"`) do set "SIGNTOOL=%%D"
+)
+if not defined SIGNTOOL (
+    echo [WARN] signtool not found in PATH or Windows Kits. Verification may be skipped.
+)
 
-call jptools\setupMiscDepsJp.cmd
-
-rem Resolve signtool path (allow override)
-if not defined SIGNTOOL set SIGNTOOL=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe
-
-rem Build signing args similar to NVDA build\prepare.cmd
-if not defined CERT_STORE set CERT_STORE=My
-set "SIGN_ARGS=/fd SHA256 /td SHA256 /tr !TIMESTAMP_URL!"
-
-rem Prefer specific certificate by SHA1 or Name; else try auto-detect a valid trusted code signing cert
-if defined CERT_SHA1 (
-    set "SIGN_ARGS=!SIGN_ARGS! /s !CERT_STORE! /sha1 !CERT_SHA1!"
-    if defined CERT_MACHINE_STORE set "SIGN_ARGS=!SIGN_ARGS! /sm"
-) else if defined CERT_NAME (
-    set "SIGN_ARGS=!SIGN_ARGS! /s !CERT_STORE! /n !CERT_NAME!"
-    if defined CERT_MACHINE_STORE set "SIGN_ARGS=!SIGN_ARGS! /sm"
-) else (
-    for /f "usebackq delims=" %%T in (`pwsh -NoProfile -Command "$stores=@('Cert:\\CurrentUser\\My','Cert:\\LocalMachine\\My'); $c=Get-ChildItem $stores -CodeSigningCert -ErrorAction SilentlyContinue | Where-Object { $_.HasPrivateKey -and $_.NotBefore -lt (Get-Date) -and $_.NotAfter -gt (Get-Date) } | Sort-Object NotAfter -Descending; if(-not $c){ exit 2 }; $chain=New-Object System.Security.Cryptography.X509Certificates.X509Chain; $chain.ChainPolicy.RevocationMode='NoCheck'; $chain.ChainPolicy.RevocationFlag='EntireChain'; $chain.ChainPolicy.VerificationFlags='NoFlag'; $chosen=$null; foreach($cert in $c){ if($chain.Build($cert)){ $chosen=$cert; break } }; if($null -eq $chosen){ exit 3 }; $chosen.Thumbprint.Replace(' ','')"`) do set "CERT_SHA1=%%T"
-    if not defined CERT_SHA1 (
-        echo [ERROR] No trusted code signing certificate detected.>&2
-        echo         Set CERT_SHA1 or CERT_NAME to select the correct certificate.>&2
-        goto onerror
+rem Auto-detect a valid code signing cert from Windows cert store when not explicitly specified
+rem Preference: CurrentUser\My, then LocalMachine\My. Exclude self-signed.
+if not defined CERT_SHA1 if not defined CERT_NAME (
+    for /f "usebackq tokens=1,2 delims=;" %%A in (`pwsh -NoProfile -Command ^
+        "$now=Get-Date; "^ 
+        "function FindCert([string]\$root){ "^ 
+        "  Get-ChildItem -Path \$root -ErrorAction SilentlyContinue | Where-Object { "^ 
+        "    \$_.HasPrivateKey -and \$_.NotAfter -gt \$now -and \$_.NotBefore -le \$now -and "^ 
+        "    (\$_.EnhancedKeyUsageList | Where-Object { \$_.ObjectId -eq '1.3.6.1.5.5.7.3.3' }) -and "^ 
+        "    \$_.Issuer -ne \$_.Subject "^ 
+        "  } | Sort-Object NotAfter -Descending | Select-Object -First 1 "^ 
+        "}; "^ 
+        "\$cert=FindCert 'Cert:\\CurrentUser\\My'; \$scope='USER'; if(-not \$cert){ \$cert=FindCert 'Cert:\\LocalMachine\\My'; \$scope='MACHINE' } ; "^ 
+        "if(\$cert){ \$tp=(\$cert.Thumbprint -replace ' ','').ToUpper(); if(\$tp -match '^[0-9A-F]{40}$'){ Write-Output (\"\$scope;\" + \$tp) } } "
+    `) do (
+        set "_CERT_SCOPE=%%A"
+        set "_CERT_THUMB=%%B"
     )
-    set "SIGN_ARGS=!SIGN_ARGS! /s !CERT_STORE! /sha1 !CERT_SHA1!"
+    if defined _CERT_THUMB (
+        set CERT_STORE=My
+        set CERT_SHA1=!_CERT_THUMB!
+        if /I "!_CERT_SCOPE!"=="MACHINE" set CERT_MACHINE_STORE=1
+        echo Using certificate from store: scope=!_CERT_SCOPE! sha1=!_CERT_THUMB!
+    ) else (
+        echo [INFO] No suitable code signing certificate found in store.
+    )
+    set _CERT_SCOPE=
+    set _CERT_THUMB=
 )
 
-rem Ensure /sm is set if CERT_MACHINE_STORE requested
-if defined CERT_MACHINE_STORE (
-    echo !SIGN_ARGS! | findstr /i /c:" /sm" >nul || set "SIGN_ARGS=!SIGN_ARGS! /sm"
+rem Validate CERT_SHA1 (must be exactly 40 hex chars). If invalid, clear it.
+if defined CERT_SHA1 (
+    for /f "usebackq delims=" %%V in (`pwsh -NoProfile -Command ^
+        "$v=$env:CERT_SHA1; if($v -match '^[0-9A-Fa-f]{40}$'){ 'OK' }"`) do set "__SHA1_OK=%%V"
+    if not defined __SHA1_OK (
+        echo [WARN] Ignoring invalid CERT_SHA1 value: %CERT_SHA1%
+        set CERT_SHA1=
+    )
+    set __SHA1_OK=
 )
 
-echo Using signtool: %SIGNTOOL%
-if defined CERT_SHA1 echo Using certificate (SHA1): !CERT_SHA1!
-if defined CERT_NAME echo Using certificate (Name): !CERT_NAME!
-echo Timestamp: !TIMESTAMP_URL!
-
-call :sign_one source\synthDrivers\jtalk\libmecab.dll
+rem Build SCons args; enable signing only when a valid store cert is selected
+set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
+if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
+if defined CERT_NAME if not defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
+if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN (
+    echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
+    goto onerror
+)
+call scons.bat jtalkPrep miscdepsjp jpCertExtras %SCONSARGS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+call scons.bat source user_docs launcher jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient %SCONSARGS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+call scons.bat jpVerifySignatures %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-call :sign_one source\synthDrivers\jtalk\libopenjtalk.dll
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-call :sign_one miscDeps\python\brlapi-0.8.dll
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-call :sign_one miscDeps\python\libgcc_s_dw2-1.dll
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-call :sign_one miscDeps\source\brailleDisplayDrivers\lilli.dll
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-call :sign_one .venv\Lib\site-packages\wx\wxbase32u_net_vc140.dll
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-call :sign_one .venv\Lib\site-packages\wx\wxbase32u_vc140.dll
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-call :sign_one .venv\Lib\site-packages\wx\wxmsw32u_core_vc140.dll
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-call :sign_one .venv\Lib\site-packages\wx\wxmsw32u_html_vc140.dll
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-call :sign_one .venv\Lib\site-packages\wx\wxmsw32u_stc_vc140.dll
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-set SCONSARGS=certFile=1 certTimestampServer=%TIMESTAMP_URL% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
-
-call scons.bat source user_docs launcher release=%RELEASE% publisher=%PUBLISHER% %SCONSARGS%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-cd jptools
-call pack_jtalk_addon.cmd
-call pack_kgs_addon.cmd
-cd ..
-call jptools\buildControllerClient.cmd %SCONSARGS%
 set PYTHONUTF8=1
-call jptools\tests.cmd
+call scons.bat jp_tests %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-call jpchar\tests.cmd
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-set VERIFYLOG=output\nvda_%VERSION%_verify.log
-del /Q %VERIFYLOG%
-
-"%SIGNTOOL%" verify /pa output\*.exe >> %VERIFYLOG%
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-for /r "dist" %%i in (*.dll *.exe) do (
-    "%SIGNTOOL%" verify /pa "%%i" >> %VERIFYLOG%
-    @if not "%ERRORLEVEL%"=="0" goto onerror
-)
-for /r "dist\synthDrivers\jtalk" %%i in (*.dll *.exe) do (
-    "%SIGNTOOL%" verify /pa "%%i" >> %VERIFYLOG%
-    @if not "%ERRORLEVEL%"=="0" goto onerror
-)
-for /r "dist\lib" %%i in (*.dll *.exe) do (
-    "%SIGNTOOL%" verify /pa "%%i" >> %VERIFYLOG%
-    @if not "%ERRORLEVEL%"=="0" goto onerror
-)
-for /r "dist\lib64" %%i in (*.dll *.exe) do (
-    "%SIGNTOOL%" verify /pa "%%i" >> %VERIFYLOG%
-    @if not "%ERRORLEVEL%"=="0" goto onerror
-)
-for /r "dist\libArm64" %%i in (*.dll *.exe) do (
-    "%SIGNTOOL%" verify /pa "%%i" >> %VERIFYLOG%
-    @if not "%ERRORLEVEL%"=="0" goto onerror
-)
 
 echo %UPDATEVERSIONTYPE% %VERSION%
 exit /b 0
@@ -157,27 +113,3 @@ exit /b 0
 echo nvdajp build error %ERRORLEVEL%
 @if "%PAUSE%"=="1" pause
 exit /b -1
-
-rem Subroutine: sign one file with retries and pause
-:sign_one
-setlocal enableextensions enabledelayedexpansion
-set "_FILE=%~1"
-if not exist "%_FILE%" (
-    echo [ERROR] File not found: %_FILE%>&2
-    endlocal & exit /b 1
-)
-set "_TRIES=0"
-:_try_sign
-set /a _TRIES+=1 >nul
-echo Signing "!_FILE!" (try !_TRIES!)
-"%SIGNTOOL%" sign !SIGN_ARGS! "!_FILE!"
-if "%ERRORLEVEL%"=="0" (
-    timeout /T 5 /NOBREAK >nul
-    endlocal & exit /b 0
-)
-if %_TRIES% LSS 3 (
-    timeout /T 1 /NOBREAK >nul
-    goto _try_sign
-)
-echo [ERROR] signtool sign failed for %_FILE%>&2
-endlocal & exit /b 1

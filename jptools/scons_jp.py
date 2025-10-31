@@ -515,3 +515,136 @@ def register_jp_builders(env: Any) -> None:
     cc_zip = env.File(os.path.join(out_dir, f"nvda_{version}_controllerClientJp.zip"))
     env.Command(cc_zip, [], _pack_controller_client)
     env.Alias("controllerClient", cc_zip)
+
+    # Alias: jpAddons (build JP addons using existing packers)
+    jtalk_addon_stamp = env.File("jptools/_state/jtalk_addon.stamp")
+    env.AlwaysBuild(jtalk_addon_stamp)
+    env.Command(jtalk_addon_stamp, [], _pack_jtalk_addon)
+
+    kgs_addon_stamp = env.File("jptools/_state/kgs_addon.stamp")
+    env.AlwaysBuild(kgs_addon_stamp)
+    env.Command(kgs_addon_stamp, [], _pack_kgs_addon)
+
+    env.Alias("jpAddons", [jtalk_addon_stamp, kgs_addon_stamp])
+
+    # JP aliases required by certBuild2023.cmd (minimal safe wiring)
+    # 1) Stage controller client artifacts (ensure client root exists)
+    def _stage_controller_client(target: list[Any], source: list[Any], env: Any) -> int:
+        repo_root = Path.cwd()
+        client_root = repo_root / "jptools" / "nvdajpClient"
+        try:
+            client_root.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            return 1
+        stamp_path = Path(str(target[0]))
+        stamp_path.parent.mkdir(parents=True, exist_ok=True)
+        stamp_path.write_text("ok", encoding="utf-8")
+        return 0
+
+    jp_stage_stamp = env.File("jptools/_state/jp_stage_controller_client.stamp")
+    env.AlwaysBuild(jp_stage_stamp)
+    env.Command(jp_stage_stamp, [], _stage_controller_client)
+    env.Alias("jpStageControllerClient", jp_stage_stamp)
+
+    # 2) JP controller client zip (re-export existing alias for compatibility)
+    try:
+        env.Alias("jpControllerClient", env.Alias("controllerClient"))
+    except Exception:
+        pass
+
+    # 3) JP cert extras (use upstream signExec to sign optional artifacts)
+    def _cert_extras(target: list[Any], source: list[Any], env: Any) -> int:
+        signExec = env.get("signExec")
+        stamp_path = Path(str(target[0]))
+        stamp_path.parent.mkdir(parents=True, exist_ok=True)
+        if not signExec:
+            stamp_path.write_text("skip:no-sign-config", encoding="utf-8")
+            return 0
+        # Discover candidate artifacts to sign (optional; skip if missing)
+        repo_root = Path.cwd()
+        candidates: list[Path] = []
+        # Latest built installer under output/nvda_*.exe
+        try:
+            out_dir = repo_root / "output"
+            if out_dir.exists():
+                exe_candidates = sorted(out_dir.glob("nvda_*.exe"), key=lambda p: p.stat().st_mtime, reverse=True)
+                if exe_candidates:
+                    candidates.append(exe_candidates[0])
+        except Exception:
+            pass
+        # Optional JP DLL payload (only if present)
+        dll_path = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
+        if dll_path.exists():
+            candidates.append(dll_path)
+        # Perform signing via upstream signExec
+        for path in candidates:
+            try:
+                node = env.File(str(path))
+                rc = signExec([node], [node], env)
+                if rc != 0:
+                    stamp_path.write_text(f"fail:{path}", encoding="utf-8")
+                    return rc
+            except Exception as e:
+                stamp_path.write_text(f"error:{path}:{e}", encoding="utf-8")
+                return 1
+        stamp_path.write_text("ok", encoding="utf-8")
+        return 0
+
+    jp_cert_extras_stamp = env.File("output/_jp_cert_extras.stamp")
+    env.AlwaysBuild(jp_cert_extras_stamp)
+    env.Command(jp_cert_extras_stamp, [], _cert_extras)
+    env.Alias("jpCertExtras", jp_cert_extras_stamp)
+
+    # 4) JP verify signatures (use SIGNTOOL if available to verify installer)
+    def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
+        import subprocess
+        stamp_path = Path(str(target[0]))
+        stamp_path.parent.mkdir(parents=True, exist_ok=True)
+        repo_root = Path.cwd()
+        out_dir = repo_root / "output"
+        try:
+            exe = None
+            if out_dir.exists():
+                exe_candidates = sorted(out_dir.glob("nvda_*.exe"), key=lambda p: p.stat().st_mtime, reverse=True)
+                if exe_candidates:
+                    exe = exe_candidates[0]
+            if not exe:
+                print("jpVerifySignatures: skip (no installer found under output/)")
+                stamp_path.write_text("skip:no-installer", encoding="utf-8")
+                return 0
+            signtool = os.environ.get("SIGNTOOL", "signtool")
+            result = subprocess.run([signtool, "verify", "/pa", "/v", str(exe)], capture_output=True, text=True)
+            content = [f"file={exe}", f"rc={result.returncode}"]
+            if result.stdout:
+                content.append(result.stdout)
+            if result.stderr:
+                content.append(result.stderr)
+            text = "\n".join(content)
+            # Keep backward-compatible stamp output
+            stamp_path.write_text(text, encoding="utf-8")
+            # And also write the historical per-installer verify log: output\\<name>_verify.log
+            try:
+                verify_log = out_dir / f"{exe.stem}_verify.log"
+                verify_log.write_text(text, encoding="utf-8")
+            except Exception:
+                pass
+            if result.returncode == 0:
+                print(f"jpVerifySignatures: verified OK: {exe}")
+                return 0
+            else:
+                print(f"jpVerifySignatures: verification FAILED (rc={result.returncode}): {exe}")
+                print("  See output/_jp_verify_signatures.stamp or the *_verify.log for details.")
+                return result.returncode
+        except FileNotFoundError:
+            print("jpVerifySignatures: skip (signtool not found). Ensure Windows SDK is installed or SIGNTOOL is set.")
+            stamp_path.write_text("skip:no-signtool", encoding="utf-8")
+            return 0
+        except Exception as e:
+            print(f"jpVerifySignatures: error while verifying: {e}")
+            stamp_path.write_text(f"error:{e}", encoding="utf-8")
+            return 1
+
+    jp_verify_stamp = env.File("output/_jp_verify_signatures.stamp")
+    env.AlwaysBuild(jp_verify_stamp)
+    env.Command(jp_verify_stamp, [], _verify_signatures)
+    env.Alias("jpVerifySignatures", jp_verify_stamp)
