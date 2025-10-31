@@ -9,6 +9,7 @@ NVDA config before NVDA is started by the system tests.
 """
 
 from os.path import join as _pJoin
+import time
 from .getLib import _getLib
 import sys
 from typing import Optional
@@ -124,7 +125,27 @@ def teardownProfile(stagingDir: str):
 	@param stagingDir: Where the profile was constructed
 	"""
 	builtIn.log("Cleaning up NVDA profile", level="DEBUG")
-	opSys.remove_directory(
-		_pJoin(stagingDir, "nvdaProfile"),
-		recursive=True,
-	)
+	# Best-effort ensure NVDA is not running to release nvda.log handles.
+	try:
+		process.run_process(
+			"taskkill /IM nvda.exe /T /F",
+			shell=True,
+		)
+	except Exception:
+		pass
+	# Retry removal to avoid transient file locks (e.g. nvda.log)
+	profilePath = _pJoin(stagingDir, "nvdaProfile")
+	lastErr: Exception | None = None
+	for _ in range(10):
+		try:
+			opSys.remove_directory(
+				profilePath,
+				recursive=True,
+			)
+			return
+		except Exception as e:
+			lastErr = e
+			time.sleep(0.5)
+	# If still failing after retries, raise the last error
+	if lastErr:
+		raise lastErr
