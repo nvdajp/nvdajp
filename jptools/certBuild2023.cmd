@@ -66,11 +66,11 @@ if not defined CERT_SHA1 if not defined CERT_NAME (
     )
     if defined _CERT_THUMB (
         set CERT_STORE=My
-        set CERT_SHA1=%_CERT_THUMB%
-        if /I "%_CERT_SCOPE%"=="MACHINE" set CERT_MACHINE_STORE=1
-        echo Using certificate from store: scope=%_CERT_SCOPE% sha1=%_CERT_THUMB%
+        set CERT_SHA1=!_CERT_THUMB!
+        if /I "!_CERT_SCOPE!"=="MACHINE" set CERT_MACHINE_STORE=1
+        echo Using certificate from store: scope=!_CERT_SCOPE! sha1=!_CERT_THUMB!
     ) else (
-        echo [INFO] No suitable code signing certificate found in store. Falling back to signtool automatic selection.
+        echo [INFO] No suitable code signing certificate found in store.
     )
     set _CERT_SCOPE=
     set _CERT_THUMB=
@@ -81,10 +81,7 @@ set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% version=%VERSION% updateVe
 if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
 if defined CERT_NAME if not defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
 if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN (
-    echo [ERROR] コードサイニング証明書が見つかりませんでした。自己署名や自動選択にはフォールバックしません。
-    echo         正しい証明書を CurrentUser\My または LocalMachine\My にインポートするか、
-    echo         CERT_SHA1 もしくは CERT_NAME を指定してください。
-    echo         どうしても自動選択に任せる場合は ALLOW_AUTO_SIGN=1 を設定してください。
+    echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
     goto onerror
 )
 call scons.bat jtalkPrep miscdepsjp jpCertExtras %SCONSARGS%
