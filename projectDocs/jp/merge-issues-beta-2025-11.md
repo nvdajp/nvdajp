@@ -2,6 +2,8 @@
 
 本ファイルは `projectDocs/jp/roadmap.md`（Step 1）に基づき、現在進行中の「本家 nvaccess/beta を日本語版へ取り込み」作業で発生している主な問題点を一箇所に集約したものです。Step 1 の前提（3.11 x86 維持・差分最小・CI は上流構成に整合しつつ JP パッチ最小）に従って整理しています。
 
+- 再現用メタ情報: `projectDocs/jp/merge-issues-beta-2025-11.meta.md`
+
 ## スコープと前提
 
 - 目標: Python 3.11 x86 を維持したまま、本家 beta の変更を取り込み、CI/ビルドは上流構成に整合（差分は最小）。
