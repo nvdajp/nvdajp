@@ -821,11 +821,10 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 				roleText += childControlCount
 				childControlCount = None
 
->>>>>>> nvaccess/beta
-		elif (
-			name or cellCoordsText or rowNumber or columnNumber
-		) and role in controlTypes.silentRolesOnFocus:
-			roleText = None
+			elif (
+				name or cellCoordsText or rowNumber or columnNumber
+			) and role in controlTypes.silentRolesOnFocus:
+				roleText = None
 		else:
 			roleText = getRoleLabel(role, role.displayString)
 	elif role is None:
