@@ -1,6 +1,14 @@
 # nvaccess/beta から betajp へのマージ計画（Step 1）
 
-この文書は、`projectDocs/jp/roadmap.md` の Step 1 方針に基づき、nvaccess/beta を betajp にマージするための段階的な実行計画です。
+この文書は、`projectDocs/jp/roadmap.md` の **Phase 1: 基盤整合と安定化（Step 1）** 方針に基づき、nvaccess/beta を betajp にマージするための段階的な実行計画です。
+
+## この計画書の位置づけ
+
+- **上位ロードマップ**: `projectDocs/jp/roadmap.md` の Phase 1 (Step 1) 全体が目標
+- **この計画書**: Step 1 の中での「nvaccess/beta マージ作業」を細分化した作業段階（Phase 1-7）
+- **用語の注意**: 
+  - `roadmap.md` の「Phase 1」= Step 1 全体（大きなマイルストーン）
+  - この計画書の「Phase 1-7」= Step 1 の中の細かい作業段階（作業フェーズ）
 
 ## 前提条件
 
@@ -21,7 +29,23 @@
 
 コンフリクトを優先度順に分類し、依存関係を考慮して段階的に解決します。
 
-## Phase 1: 基盤整備（依存関係の解決）
+## 準備段階（Phase 0）
+
+### 0.1 コンフリクトレポートの記録
+
+**状態**: ✅ 完了（PR #570）
+
+**成果物**:
+- `projectDocs/jp/merge-conflicts-detailed-2025-11.md` - 詳細コンフリクト記録
+- `projectDocs/jp/merge-issues-beta-2025-11.md` - 問題まとめ
+- `projectDocs/jp/merge-issues-beta-2025-11.meta.md` - メタ情報
+- `ci/scripts/tests/recordMergeConflicts.ps1` - コンフリクト記録スクリプト
+
+**次のステップ**: 作業段階 1 から順次実行
+
+## 作業段階 1: 基盤整備（依存関係の解決）
+
+**注**: この「作業段階 1」は `roadmap.md` の Phase 1 (Step 1) の中の最初の作業フェーズです。
 
 ### 1.1 サブモジュールとロックファイル
 **優先度**: 最高（他の作業の前提）
@@ -43,11 +67,11 @@
 - `uv sync` が正常に完了
 - `uv lock` がエラーなく実行
 
-**PR**: `fix/merge-phase1-foundation` (小規模)
+**PR**: `fix/merge-step1-foundation` (小規模)
 
 ---
 
-## Phase 2: ビルドシステム（SCons・ヘルパー）
+## 作業段階 2: ビルドシステム（SCons・ヘルパー）
 
 ### 2.1 NVDAHelper パッケージ化
 **優先度**: 高（多くのファイルが依存）
@@ -66,7 +90,7 @@
 - 型チェック: `ci/scripts/tests/typeCheck.ps1`
 - ビルド: `scons source --all-cores`
 
-**PR**: `fix/merge-phase2-nvdahelper-package`
+**PR**: `fix/merge-step1-nvdahelper-package`
 
 ### 2.2 nvdaHelper/archBuild_sconscript
 **優先度**: 高（ビルドに必須）
@@ -86,11 +110,11 @@
 - ビルド: `scons source --all-cores`
 - 生成物確認: `source/liblouis.dll` が存在
 
-**PR**: `fix/merge-phase2-scons-arch` (2.1 と統合可能)
+**PR**: `fix/merge-step1-scons-arch` (2.1 と統合可能)
 
 ---
 
-## Phase 3: CI/ワークフロー（最大のコンフリクト）
+## 作業段階 3: CI/ワークフロー（最大のコンフリクト）
 
 ### 3.1 testAndPublish.yml の完全再構築
 **優先度**: 高（22箇所のコンフリクト）
@@ -122,11 +146,11 @@
 - YAML 構文チェック: `gh workflow view testAndPublish.yml`
 - ローカルで主要ジョブをシミュレート（実際の実行は PR 後に）
 
-**PR**: `fix/merge-phase3-workflow-rebase` (大規模、慎重にレビュー)
+**PR**: `fix/merge-step1-workflow-rebase` (大規模、慎重にレビュー)
 
 ---
 
-## Phase 4: ソースコード（機能的なコンフリクト）
+## 作業段階 4: ソースコード（機能的なコンフリクト）
 
 ### 4.1 構文・軽微な変更
 **優先度**: 中
@@ -143,7 +167,7 @@
 - Lint: `uv run ruff format --check && uv run ruff check`
 - ビルド: `scons source --all-cores`
 
-**PR**: `fix/merge-phase4-source-minor`
+**PR**: `fix/merge-step1-source-minor`
 
 ### 4.2 Braille 表示ロジック（JP 拡張の再適用）
 **優先度**: 中（機能的な差分）
@@ -172,7 +196,7 @@
 - 単体テスト: `rununittests.bat`
 - ビルド: `scons source --all-cores`
 
-**PR**: `fix/merge-phase4-braille` (機能テストを追加)
+**PR**: `fix/merge-step1-braille` (機能テストを追加)
 
 ### 4.3 GUI・インストーラ（JP 固有の表示）
 **優先度**: 中
@@ -192,7 +216,7 @@
 - ビルド: `scons source --all-cores`
 - インストーラビルド: `scons dist launcher` (ローカルのみ)
 
-**PR**: `fix/merge-phase4-gui-installer`
+**PR**: `fix/merge-step1-gui-installer`
 
 ### 4.4 合成音声ドライバ
 **優先度**: 中
@@ -214,11 +238,11 @@
 - ビルド: `scons source --all-cores`
 - 単体テスト: `rununittests.bat`
 
-**PR**: `fix/merge-phase4-synth` (4.3 と統合可能)
+**PR**: `fix/merge-step1-synth` (4.3 と統合可能)
 
 ---
 
-## Phase 5: テスト（テストコードの整合）
+## 作業段階 5: テスト（テストコードの整合）
 
 ### 5.1 SystemTest 設定
 **優先度**: 低（テストのみ）
@@ -234,11 +258,11 @@
 **検証**:
 - システムテスト: `ci/scripts/tests/systemTests.ps1` (ローカルで実行)
 
-**PR**: `fix/merge-phase5-tests` (Phase 4 と統合可能)
+**PR**: `fix/merge-step1-tests` (作業段階 4 と統合可能)
 
 ---
 
-## Phase 6: 翻訳ファイル（大規模、手動作業）
+## 作業段階 6: 翻訳ファイル（大規模、手動作業）
 
 ### 6.1 nvda.po のマージ
 **優先度**: 中（38箇所のコンフリクト）
@@ -265,11 +289,11 @@
 - 翻訳チェック: `ci/scripts/tests/translationCheck.ps1`
 - ビルド: `scons source --all-cores`
 
-**PR**: `fix/merge-phase6-translation` (大規模、レビュー要)
+**PR**: `fix/merge-step1-translation` (大規模、レビュー要)
 
 ---
 
-## Phase 7: 最終統合と検証
+## 作業段階 7: 最終統合と検証
 
 ### 7.1 全体マージの実行
 **優先度**: 最高
@@ -284,7 +308,7 @@
   ```
 - [ ] 残存コンフリクトの確認
   - 予期しないコンフリクトがないか確認
-  - 各 Phase で解決したはずのファイルに再コンフリクトがないか確認
+  - 各作業段階で解決したはずのファイルに再コンフリクトがないか確認
 
 **検証**:
 - 型チェック: `ci/scripts/tests/typeCheck.ps1`
@@ -299,7 +323,7 @@
 
 ## 検証チェックリスト
 
-各 Phase 完了時に以下を確認:
+各作業段階完了時に以下を確認:
 
 ### 必須チェック
 - [ ] 型チェック: `ci/scripts/tests/typeCheck.ps1` が通過
@@ -316,38 +340,41 @@
 ## リスクと対策
 
 ### リスク 1: コンフリクトの再発
-**対策**: 各 Phase で解決したファイルを追跡し、最終マージ時に再確認
+**対策**: 各作業段階で解決したファイルを追跡し、最終マージ時に再確認
 
 ### リスク 2: ビルド失敗
-**対策**: 各 Phase でビルドを検証し、失敗した場合はその Phase で修正
+**対策**: 各作業段階でビルドを検証し、失敗した場合はその作業段階で修正
 
 ### リスク 3: テスト失敗
-**対策**: 単体テストは各 Phase で実行し、システムテストは最終 Phase で実行
+**対策**: 単体テストは各作業段階で実行し、システムテストは最終作業段階で実行
 
 ### リスク 4: 翻訳ファイルの大規模変更
-**対策**: Phase 6 は独立して進め、他の Phase の影響を受けないようにする
+**対策**: 作業段階 6 は独立して進め、他の作業段階の影響を受けないようにする
 
 ---
 
 ## タイムライン（目安）
 
-- **Phase 1**: 1-2日（基盤整備）
-- **Phase 2**: 2-3日（ビルドシステム）
-- **Phase 3**: 3-5日（CI/ワークフロー、最大のコンフリクト）
-- **Phase 4**: 2-3日（ソースコード）
-- **Phase 5**: 1日（テスト）
-- **Phase 6**: 3-5日（翻訳、手動作業）
-- **Phase 7**: 1-2日（最終統合）
+- **準備段階（Phase 0）**: ✅ 完了（PR #570）
+- **作業段階 1**: 1-2日（基盤整備）
+- **作業段階 2**: 2-3日（ビルドシステム）
+- **作業段階 3**: 3-5日（CI/ワークフロー、最大のコンフリクト）
+- **作業段階 4**: 2-3日（ソースコード）
+- **作業段階 5**: 1日（テスト）
+- **作業段階 6**: 3-5日（翻訳、手動作業）
+- **作業段階 7**: 1-2日（最終統合）
 
 **合計**: 約 2-3週間（PR レビュー時間を含む）
+
+**注**: これらは `roadmap.md` の Phase 1 (Step 1) の中の作業段階です。
 
 ---
 
 ## 次のステップ
 
-1. この計画をレビュー・承認
-2. Phase 1 から順次実行（小さな PR で進める）
-3. 各 Phase で検証を実施
+1. ✅ 準備段階（Phase 0）完了: コンフリクトレポート記録（PR #570）
+2. 作業段階 1 から順次実行（小さな PR で進める）
+3. 各作業段階で検証を実施
 4. 最終マージ前に全体検証を実施
 
 ---
@@ -442,7 +469,7 @@
 
 **質問**:
 - なぜ x86 限定にしていますか？（Step 1 の制約以外に技術的理由はありますか）
-- 上流の `isNVDACoreArch` への移行は Phase 3 以降で検討しますか？
+- 上流の `isNVDACoreArch` への移行は roadmap.md の Phase 2 以降で検討しますか？
 
 **回答**: *(to be written)*
 
