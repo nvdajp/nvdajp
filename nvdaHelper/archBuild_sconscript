@@ -270,7 +270,7 @@ if TARGET_ARCH == "x86":
 	if signExec:
 		thirdPartyEnv.AddPostAction(espeakLib, signExec)
 		thirdPartyEnv.AddPostAction(sonicLib, signExec)
-# nvdajp end: Step 1 - x86 only
 	thirdPartyEnv.SConscript("liblouis/sconscript")
 	thirdPartyEnv.SConscript("javaAccessBridge/sconscript")
 	thirdPartyEnv.SConscript("uwp/sconscript")
+# nvdajp end: Step 1 - x86 only
