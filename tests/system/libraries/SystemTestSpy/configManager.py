@@ -106,6 +106,9 @@ def setupProfile(
 		_pJoin(repoRoot, "tests", "system", "nvdaSettingsFiles", settingsFileName),
 		_pJoin(stagingDir, "nvdaProfile", "nvda.ini"),
 	)
+	if _shouldGenerateMockModel(_pJoin(stagingDir, "nvdaProfile", "nvda.ini")):
+		_configModels(_pJoin(stagingDir, "nvdaProfile", "models", "mock", "vit-gpt2-image-captioning"))
+
 	if gesturesFileName is not None:
 		opSys.copy_file(
 			# Despite duplication, specify full paths for clarity.
@@ -125,7 +128,7 @@ def teardownProfile(stagingDir: str):
 	@param stagingDir: Where the profile was constructed
 	"""
 	builtIn.log("Cleaning up NVDA profile", level="DEBUG")
-	# Best-effort ensure NVDA is not running to release nvda.log handles.
+	# nvdajp begin: Best-effort ensure NVDA is not running to release nvda.log handles.
 	try:
 		process.run_process(
 			"taskkill /IM nvda.exe /T /F",
@@ -133,7 +136,8 @@ def teardownProfile(stagingDir: str):
 		)
 	except Exception:
 		pass
-	# Retry removal to avoid transient file locks (e.g. nvda.log)
+	# nvdajp end
+	# nvdajp begin: Retry removal to avoid transient file locks (e.g. nvda.log)
 	profilePath = _pJoin(stagingDir, "nvdaProfile")
 	lastErr: Exception | None = None
 	for _ in range(10):
@@ -149,3 +153,28 @@ def teardownProfile(stagingDir: str):
 	# If still failing after retries, raise the last error
 	if lastErr:
 		raise lastErr
+	# nvdajp end
+
+
+def _configModels(modelsDirectory: str) -> None:
+	from .mockModels import MockVisionEncoderDecoderGenerator
+
+	generator = MockVisionEncoderDecoderGenerator(randomSeed=8)
+	generator.generateAllFiles(modelsDirectory)
+
+
+def _shouldGenerateMockModel(iniPath: str) -> bool:
+	# Read original lines
+	with open(iniPath, "r", encoding="utf-8") as f:
+		lines = f.readlines()
+
+	for line in lines:
+		# Detect section headers
+		stripLine = line.strip()
+		if stripLine.startswith("[") and stripLine.endswith("]"):
+			hasCaptionSection = stripLine.lower() == "[automatedimagedescriptions]"
+			if hasCaptionSection:
+				return True
+			else:
+				continue
+	return False
