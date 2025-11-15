@@ -364,7 +364,7 @@ def register_jp_builders(env: Any) -> None:
         arch = str(env.get("TARGET_ARCH", "x86")).lower()
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 
-        if arch == "x64":
+        if arch in ("x64", "x86_64"):
             src_prebuilt = vendor_base / "x64" / "libopenjtalk.dll"
             nmake_machine = "x64"
         else:
