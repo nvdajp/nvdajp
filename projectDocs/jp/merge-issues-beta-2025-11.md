@@ -112,3 +112,9 @@
 
 参照: `projectDocs/jp/roadmap.md`, `AGENTS.md`, `projectDocs/jp/vendor-submodules.md`, `ci/README.md`
 
+
+## Known Issues / Step 1 制約メモ
+
+- `onnxruntime==1.22.1` は `win_amd64` 向けホイールしか提供されておらず、32-bit (Python 3.11 x86) では解決不可。  
+  - `ci/scripts/tests/typeCheck.ps1` や `scons.bat source --all-cores` を実行すると、仮想環境作成 (`uv sync`) の時点で失敗する。  
+  - Step 1 では “既知の制約” として扱い、typeCheck/ビルドの CI 成功は求めない。Phase 2 以降で 3.13 x64 への移行や条件付き依存（AMD64 限定）で解消予定。
