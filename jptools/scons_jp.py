@@ -362,13 +362,16 @@ def register_jp_builders(env: Any) -> None:
         """
         repo_root = Path.cwd()
         arch = str(env.get("TARGET_ARCH", "x86")).lower()
-        if arch != "x86":
-            print(f"jtalkPrep: TARGET_ARCH={arch} not supported yet, skipping payload prep")
-            return 0
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 
-        src_prebuilt = vendor_base / "libopenjtalk.dll"
-        nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
+        if arch == "x64":
+            src_prebuilt = vendor_base / "x64" / "libopenjtalk.dll"
+            nmake_machine = "x64"
+        else:
+            src_prebuilt = vendor_base / "libopenjtalk.dll"
+            nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
+
+        built_dll = vendor_base / "libopenjtalk.dll"
 
         dst_payload = (
             repo_root
@@ -454,10 +457,14 @@ def register_jp_builders(env: Any) -> None:
                     return 1
 
                 # Verify DLL was created
-                if not src_prebuilt.exists():
-                    print(f"ERROR: nmake succeeded but DLL not found at {src_prebuilt}")
+                if not built_dll.exists():
+                    print(f"ERROR: nmake succeeded but DLL not found at {built_dll}")
                     print("  Check nmake output for errors")
                     return 1
+
+                if src_prebuilt != built_dll:
+                    src_prebuilt.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(built_dll, src_prebuilt)
 
                 print(f"jtalkPrep: build succeeded, DLL created at {src_prebuilt}")
 
