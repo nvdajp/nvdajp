@@ -42,14 +42,12 @@ env:
   SCONS_CACHE_MSVC_CONFIG: ".scons_msvc_cache.json"
   defaultRunner: 'windows-2025'
   supportedRunners: '["windows-2022", "windows-2025"]'
-  # BEGIN JP PATCH: Step 1 - x86 only
-  PY_PYTHON: 3.11-32
-  RELEASE: 1
+  defaultArch: x64
+  supportedArchitectures: '["x64"]'
+  defaultPythonVersion: '3.13.9'
+  supportedPythonVersions: '["3.13.9"]'
+  # BEGIN JP PATCH: force publisher metadata
   PUBLISHER: nvdajp
-  defaultArch: x86
-  supportedArchitectures: '["x86"]'
-  defaultPythonVersion: '3.11.9'
-  supportedPythonVersions: '["3.11.9"]'
   # END JP PATCH
 
 jobs:
@@ -289,7 +287,7 @@ jobs:
     name: Upload translations to Crowdin
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA, checkPot]
-    # BEGIN JP PATCH: Disable crowdin upload for Japanese version
+    # BEGIN JP PATCH: translations handled outside CI
     if: ${{ false }}
     # END JP PATCH
     # Original condition: if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/beta' && vars.CROWDIN_PROJECT_ID }}
@@ -447,7 +445,7 @@ jobs:
       run: ci/scripts/installNVDA.ps1
       env:
         nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
-    # BEGIN JP PATCH: Prepare test output directories before system tests
+    # BEGIN JP PATCH: prepare directories for JP system test logging
     - name: Prepare for tests
       run: ci/scripts/tests/beforeTests.ps1
     # END JP PATCH

@@ -1,4 +1,4 @@
-name: NVAccess Beta Aligned TypeCheck (3.11 x86)
+name: NVAccess Beta Aligned TypeCheck (3.13 x64)
 
 on:
   push:
@@ -23,11 +23,11 @@ jobs:
         with:
           submodules: true
 
-      - name: Set up Python 3.11 x86
+      - name: Set up Python 3.13 x64
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11.9'
-          architecture: 'x86'
+          python-version: '3.13.9'
+          architecture: 'x64'
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6

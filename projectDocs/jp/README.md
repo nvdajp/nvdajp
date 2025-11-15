@@ -18,7 +18,7 @@
 - Step 3: x64 ビルド対応の検討（日本語版固有モジュールの対応評価を含む）
 
 ## CI/ビルド クイックスタート
-- 型チェックのみ（本家版寄せ・安全導入）: `.github/workflows/nvbeta-typecheck-311x86.yml`
+- 型チェックのみ（本家版寄せ・安全導入）: `.github/workflows/nvbeta-typecheck.yml`
 - 包括パイプラインにも `typeCheck` ジョブを追加（3.11 x86／pyright）
 - lint（ruff）は包括パイプラインにも advisory で追加（`lint` ジョブ）
 - 日本語版フルビルド・配布系: `.github/workflows/testAndPublish.yml`

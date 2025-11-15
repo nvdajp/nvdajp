@@ -47,7 +47,7 @@
 - 監視: `gh run list -w .github/workflows/testAndPublish.yml -b betajp -L 3`
 - 失敗調査: `gh run view <runId> --log`、またはチェックランのアノテーションを参照。
 - 再実行: `gh run rerun <runId> --failed`
-- 型チェックのみの本家版寄せワークフロー: `.github/workflows/nvbeta-typecheck-311x86.yml`
+- 型チェックのみの本家版寄せワークフロー: `.github/workflows/nvbeta-typecheck.yml`
 - 日本語版の包括的ワークフロー: `.github/workflows/testAndPublish.yml`
 
 ## 参照

@@ -74,7 +74,7 @@
 
 - Lint/TypeCheck の実行方式
   - 事象: `runlint.bat` の呼び出しや Pyright 実行方法の差分。
-  - 方針: Lint は advisory（失敗で落とさない）に統一。型チェックは `.github/workflows/nvbeta-typecheck-311x86.yml` と `ci/scripts/tests/typeCheck.ps1` を唯一のソースとする。
+  - 方針: Lint は advisory（失敗で落とさない）に統一。型チェックは `.github/workflows/nvbeta-typecheck.yml` と `ci/scripts/tests/typeCheck.ps1` を唯一のソースとする。
 
 ## CI 上の具体対応（YAML 最小差分方針）
 
