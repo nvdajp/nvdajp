@@ -362,14 +362,13 @@ def register_jp_builders(env: Any) -> None:
         """
         repo_root = Path.cwd()
         arch = str(env.get("TARGET_ARCH", "x86")).lower()
+        if arch != "x86":
+            print(f"jtalkPrep: TARGET_ARCH={arch} not supported yet, skipping payload prep")
+            return 0
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 
-        if arch == "x64":
-            src_prebuilt = vendor_base / "x64" / "libopenjtalk.dll"
-            nmake_machine = "x64"
-        else:
-            src_prebuilt = vendor_base / "libopenjtalk.dll"
-            nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
+        src_prebuilt = vendor_base / "libopenjtalk.dll"
+        nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
 
         dst_payload = (
             repo_root
