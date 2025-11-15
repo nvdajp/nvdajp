@@ -24,6 +24,8 @@
 - 日本語版フルビルド・配布系: `.github/workflows/testAndPublish.yml`
 - ローカル最小ビルド例: `scons --help` を確認し、通常は `scons source dist launcher --all-cores`
 - 単体/システムテスト: `ci/scripts/tests/unitTests.ps1`、`ci/scripts/tests/systemTests.ps1`
+- **PR CI 監視**: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` (単回) または `-Watch` (継続監視)
+  - CI チェックの状態を確認し、失敗時に自動分析とアドバイスを提供
 
 ## ポリシー（抜粋）
 - 本家版との差分は最小に保つ。差分は明示的な場所に集約する

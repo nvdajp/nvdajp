@@ -30,6 +30,7 @@ git config --global core.safecrlf warn
 - 型チェック（本家版寄せ・安全導入）: `.github/workflows/nvbeta-typecheck.yml`
 - `testAndPublish.yml` にも `typeCheck` ジョブを追加（3.11 x86／pyright）
 - 日本語版の包括パイプライン: `.github/workflows/testAndPublish.yml`
+- PR CI 監視: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` (単回) または `-Watch` (継続監視)
 
 ## リリース
 

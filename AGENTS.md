@@ -41,6 +41,9 @@ This document summarizes the rules automation agents/scripts must obey when work
 - View logs: `gh run view <runId> --job <jobId> --log`
 - Rerun failures: `gh run rerun <runId> --failed`
 - Key workflows: `.github/workflows/testAndPublish.yml`, `.github/workflows/nvbeta-typecheck.yml`
+- **PR CI monitoring**: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <number>` (single check) or `-Watch` (continuous monitoring)
+  - Automatically analyzes failures and provides specific advice
+  - Detects common issues like JTalk build architecture mismatches, MSVC environment problems, etc.
 
 ## References
 
@@ -98,6 +101,9 @@ This document summarizes the rules automation agents/scripts must obey when work
 - 監視: `gh run list -w .github/workflows/testAndPublish.yml -b betajp -L 3`
 - ログ: `gh run view <runId> --job <jobId> --log`
 - 再実行: `gh run rerun <runId> --failed`
+- **PR CI 監視スクリプト**: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` (単回チェック) または `-Watch` (継続監視)
+  - 失敗を自動分析し、具体的なアドバイスを提供
+  - JTalk ビルドのアーキテクチャ不一致、MSVC 環境の問題などを検出
 
 ### 参考
 
