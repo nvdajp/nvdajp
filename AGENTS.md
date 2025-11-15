@@ -5,9 +5,10 @@ This document summarizes the rules automation agents/scripts must obey when work
 ## Scope
 
 - Target platform: Windows x64 with Python 3.13 (matching `nvaccess/beta`)
-- Out of scope: legacy Python 3.11/x86 builds, arm64, Java Access Bridge 64-bit, CI releases using secrets
-- arm64/JAB 64-bit support will be revisited in later phases once 3.13 x64 is stable
+- Out of scope: legacy Python 3.11/x86 builds, arm64, CI releases using secrets
+- arm64 support will be revisited in later phases once 3.13 x64 is stable
 - Related issues: #539 (workflow alignment), #530 (2026.1 merge)
+- Note: Java Access Bridge 64-bit is supported (submodule commit 0cc5c9d includes windowsaccessbridge-64.dll)
 
 ## Principles
 
@@ -69,8 +70,9 @@ This document summarizes the rules automation agents/scripts must obey when work
 ### スコープ
 
 - 対象: Windows x64 + Python 3.13（本家と同じ）
-- 除外: 3.11/x86、arm64、JAB 64bit、Secrets を使う配布系ジョブ
-- 3.13 x64 が落ち着いたら Phase 2/3 で arm64 や JAB 64bit を順次検討する
+- 除外: 3.11/x86、arm64、Secrets を使う配布系ジョブ
+- 3.13 x64 が落ち着いたら Phase 2/3 で arm64 を順次検討する
+- 注記: Java Access Bridge 64-bit は対応済み（submodule commit 0cc5c9d に windowsaccessbridge-64.dll が含まれる）
 
 ### 禁則と優先
 
