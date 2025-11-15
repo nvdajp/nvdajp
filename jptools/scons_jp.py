@@ -431,7 +431,7 @@ def register_jp_builders(env: Any) -> None:
                     vcvarsall = _find_vcvarsall()
                     if vcvarsall:
                         print(f"jtalkPrep: found vcvarsall.bat: {vcvarsall}")
-                        nmake_env = _get_vcvarsall_env(vcvarsall, "x86")
+                        nmake_env = _get_vcvarsall_env(vcvarsall, nmake_machine)
                         if not nmake_env:
                             print(f"ERROR: failed to setup MSVC environment via vcvarsall.bat")
                             print(f"  Run from Visual Studio Developer Command Prompt instead")
