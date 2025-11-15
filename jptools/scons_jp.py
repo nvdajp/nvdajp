@@ -371,7 +371,7 @@ def register_jp_builders(env: Any) -> None:
             src_prebuilt = vendor_base / "libopenjtalk.dll"
             nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
 
-        built_dll = vendor_base / "libopenjtalk.dll"
+        built_dll = src_prebuilt
 
         dst_payload = (
             repo_root
