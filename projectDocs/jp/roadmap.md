@@ -32,7 +32,7 @@
 
 - ディプリケーション計画
   - 可能な限り本家版に合わせる
-  - 32bit 版（Python 3.11 x86）は 2025.3 系の EOL までは「必要最小限の検証のみ」を維持し、それ以降は廃止（CI でも optional かつ成功保証はしない）
+  - 32bit 版（Python 3.11 x86）は Step 1 での既知課題を把握したのち、Phase 2 以降は原則として扱わずアーカイブ。CI では optional ジョブも削除し、3.13 x64 のみを対象とする。
 
 ## Phase 1 : 基盤整合と安定化
 
@@ -81,17 +81,17 @@
 ## Phase 2 : Python 3.13 / x64 ベースライン整備（Part of #530）
 
 - Scope
-  - 3.13 x64 を必須とし、3.11 x86 は optional（通る範囲のみ・失敗は Known Issue として許容）
+  - 3.13 x64のみを対象とし、3.11 x86 / 3.13 x86 は CI・ビルドともに扱わない（必要ならローカル検証に留める）
 - Tasks
   - 新しいワークフローを 3.13 x64 に切替（ファイル名は nvbeta-typecheck.yml 等に簡素化可）。
   - 依存互換性の確認・ピン更新（wxPython, brlapi など）
-  - .python-versions に 3.13 x64 を追加（3.11 x86 と併存させつつ優先度は 3.13 側へ）
+  - .python-versions に 3.13 x64 のみを定義し、3.11 系の記述は削除
   - CI ジョブ分割（typeCheck / unit / docs / packaging）を本家版構成へ近づける
 - Exit
-  - 3.13 x64 が安定して緑、3.11 x86 については「どのジョブが失敗するか」を明示したうえで optional 扱いにする
+  - 3.13 x64 が安定して緑（typeCheck / unit / system / packaging）。3.11 x86 での再現性は保証しない
 - 補足（運用）
   - 目的: x64 を既定化に向け安定、3.13 を実用レベルへ（配布は段階導入）
-  - CI マトリクス: 3.13 x64（必須）/ 3.11 x86（optional・成功保証なし）/ 3.13 x86（typeCheck・lint のみ任意、依存調査用）
+  - CI 構成: 3.13 x64 のみ（typeCheck / unit / system / packaging）。3.11 x86 / 3.13 x86 は optional ジョブも置かない
   - 主要 JP アドオン（jtalk/kgs）を x64 で起動確認（任意）
 
 ## Phase 3 : x64 ビルド対応（Part of #530）
@@ -120,7 +120,7 @@
 ## ゲート（判断ポイント）
 
 - Gate A（Phase 2 中間）: 3.13 x64 で unit + 最小 system が安定緑 → installer/署名/シンボル確認へ
-- Gate B（Phase 2 完了）: 3.13 x64 が配布可能、3.11 x86 の optional ジョブが既知の失敗リストつきで管理できている状態 → Phase 3 へ
+- Gate B（Phase 2 完了）: 3.13 x64 が配布可能。3.11 x86 はサポート対象外とし、必要時のみ個別検証 → Phase 3 へ
 - Gate C（Phase 3 開始前）: dry-run マージ結果と衝突一覧の承認 → 実マージ・段階導入へ
 
 ## 現在の作業キュー（Step 1, refs #539）
