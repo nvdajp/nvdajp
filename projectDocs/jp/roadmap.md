@@ -16,9 +16,8 @@
 
 ## 今後の検討
 
-- Gate A: 3.13 x64 で unit + 最小 system が安定緑 → installer/署名/シンボル確認へ
-- Gate B: 3.13 x64 が配布可能。3.11 x86 はサポート対象外とし、必要時のみ個別検証 → Phase 3 へ
-- Gate C: dry-run マージ結果と衝突一覧の承認 → 実マージ・段階導入へ
+- GitHub Actions (CI) 3.13 x64 で unit + system が安定緑
+- 署名ビルドで system テスト安定緑
 - 差分削減の自動レポート化と定期棚卸し
 
 ## 現在の作業キュー（refs #539）
