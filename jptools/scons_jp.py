@@ -460,7 +460,9 @@ def register_jp_builders(env: Any) -> None:
                     # Run vcvarsall.bat and nmake in the same cmd.exe shell
                     # This ensures the environment variables are available to nmake
                     print(f"jtalkPrep: running nmake via vcvarsall.bat with arch={nmake_machine}")
+                    # cmd.exe /c takes the third argument as a complete command string
                     cmd_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
+                    print(f"jtalkPrep: cmd_script = {cmd_script}")
                     result = run(
                         ["cmd.exe", "/c", cmd_script],
                         cwd=str(build_dir),
