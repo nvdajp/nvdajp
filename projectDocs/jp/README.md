@@ -20,7 +20,7 @@
 ## CI/ビルド クイックスタート
 - 型チェックのみ（本家版寄せ・安全導入）: `.github/workflows/nvbeta-typecheck.yml`
 - 包括パイプラインにも `typeCheck` ジョブを追加（3.11 x86／pyright）
-- lint（ruff）は包括パイプラインにも advisory で追加（`lint` ジョブ）
+- lint（ruff）は包括パイプラインにも追加（`lint` ジョブ）
 - 日本語版フルビルド・配布系: `.github/workflows/testAndPublish.yml`
 - ローカル最小ビルド例: `scons --help` を確認し、通常は `scons source dist launcher --all-cores`
 - 単体/システムテスト: `ci/scripts/tests/unitTests.ps1`、`ci/scripts/tests/systemTests.ps1`

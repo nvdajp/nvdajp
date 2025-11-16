@@ -49,7 +49,7 @@
 
 - 翻訳ファイル（po）の大規模衝突
   - 事象: `source/locale/ja/LC_MESSAGES/nvda.po` に大量の衝突。
-  - 方針: `msgmerge` 等で上流 pot へ追随しつつ手動解決。CI では `ci/scripts/tests/translationCheck.ps1` を advisory に実行。
+  - 方針: `msgmerge` 等で上流 pot へ追随しつつ手動解決。CI では `ci/scripts/tests/translationCheck.ps1` を実行。
 
 - 依存ロック `uv.lock` の衝突
   - 事象: 上流更新と JP でのバージョン差によりロックが競合。
@@ -57,7 +57,7 @@
 
 - Lint/TypeCheck の実行方式
   - 事象: `runlint.bat` の呼び出しや Pyright 実行方法の差分。
-  - 方針: Lint は advisory（失敗で落とさない）に統一。型チェックは `.github/workflows/nvbeta-typecheck.yml` と `ci/scripts/tests/typeCheck.ps1` を唯一のソースとする。
+  - 方針: Lint は失敗で落とさない。型チェックは `.github/workflows/nvbeta-typecheck.yml` と `ci/scripts/tests/typeCheck.ps1` を唯一のソースとする。
 
 ## CI 上の具体対応（YAML 最小差分方針）
 
