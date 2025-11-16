@@ -99,12 +99,6 @@ jobs:
       uses: astral-sh/setup-uv@v6
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
-    # BEGIN JP PATCH: ensure MSVC tools for jtalk Prep
-    - name: Set up MSVC
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: ${{ matrix.arch }}
-    # END JP PATCH
     - name: Set version variables
       run: ci/scripts/setBuildVersionVars.ps1
     - name: Set scons args
