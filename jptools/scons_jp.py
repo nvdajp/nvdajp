@@ -247,8 +247,11 @@ def _get_vcvarsall_env(vcvarsall_path: str, arch: str) -> dict[str, str] | None:
     with tempfile.NamedTemporaryFile(mode="w", suffix=".bat", delete=False) as f:
         bat_path = f.name
         f.write(f'@echo off\n')
-        f.write(f'call "{vcvarsall_path}" {arch} >nul\n')
+        # Don't suppress vcvarsall output - let it go to stderr so we can debug
+        f.write(f'call "{vcvarsall_path}" {arch}\n')
         f.write(f'if errorlevel 1 exit /b 1\n')
+        # Use a marker to separate vcvarsall output from environment dump
+        f.write(f'echo __ENV_START__\n')
         f.write(f'set\n')
 
     try:
@@ -260,14 +263,31 @@ def _get_vcvarsall_env(vcvarsall_path: str, arch: str) -> dict[str, str] | None:
             check=False,
         )
         if result.returncode != 0:
+            print(f"  vcvarsall.bat failed with return code {result.returncode}")
+            if result.stderr:
+                print(f"  stderr: {result.stderr}")
+            if result.stdout:
+                print(f"  stdout: {result.stdout}")
             return None
 
-        # Parse environment variables from output
+        # Parse environment variables from output after __ENV_START__ marker
         env = os.environ.copy()
+        env_section = False
         for line in result.stdout.splitlines():
-            if "=" in line:
+            if "__ENV_START__" in line:
+                env_section = True
+                continue
+            if env_section and "=" in line:
                 key, _, value = line.partition("=")
                 env[key] = value
+
+        # Verify nmake is in the PATH
+        path = env.get("PATH", "")
+        if "nmake" not in path.lower() and "VC\\Tools" not in path:
+            print(f"  Warning: vcvarsall succeeded but PATH doesn't contain MSVC tools")
+            print(f"  PATH: {path[:200]}...")
+            return None
+
         return env
     finally:
         try:
@@ -428,16 +448,19 @@ def register_jp_builders(env: Any) -> None:
                 nmake_env = os.environ.copy()
                 try:
                     run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                    print(f"jtalkPrep: nmake found in PATH")
                 except (FileNotFoundError, subprocess.CalledProcessError):
                     print(f"jtalkPrep: nmake not in PATH, attempting to setup MSVC environment...")
                     vcvarsall = _find_vcvarsall()
                     if vcvarsall:
                         print(f"jtalkPrep: found vcvarsall.bat: {vcvarsall}")
+                        print(f"jtalkPrep: calling vcvarsall with arch={nmake_machine}")
                         nmake_env = _get_vcvarsall_env(vcvarsall, nmake_machine)
                         if not nmake_env:
                             print(f"ERROR: failed to setup MSVC environment via vcvarsall.bat")
                             print(f"  Run from Visual Studio Developer Command Prompt instead")
                             return 1
+                        print(f"jtalkPrep: MSVC environment configured successfully")
                     else:
                         print(f"ERROR: nmake not found and vcvarsall.bat not detected")
                         print(f"  Install Visual Studio with C++ Desktop Development workload")
