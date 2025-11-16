@@ -70,10 +70,10 @@
 ## 検証手順（ローカル）
 
 - 型チェック: `ci/scripts/tests/typeCheck.ps1`
-- Lint（任意）: `uv run ruff format --check && uv run ruff check`
+- Lint: `uv run ruff format --check && uv run ruff check`
 - 最小ビルド: `scons source --all-cores`
 - 単体テスト: `rununittests.bat`（`uv --group unit-tests` 使用）
-- System tests（任意）: `ci/scripts/tests/systemTests.ps1`（要 `ci/scripts/tests/beforeTests.ps1`）
+- System tests: `ci/scripts/tests/systemTests.ps1`（要 `ci/scripts/tests/beforeTests.ps1`）
 
 refs #539
 
