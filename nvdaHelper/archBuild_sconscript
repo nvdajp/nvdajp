@@ -266,7 +266,29 @@ if not isNVDAHelperLocalArch:
 
 # nvdajp begin: Step 1 - x86 only
 if TARGET_ARCH == "x86":
+	# Debug: Check thirdPartyEnv TARGET_ARCH before building espeak
+	print(f"[DEBUG] Building espeak with thirdPartyEnv TARGET_ARCH={thirdPartyEnv.get('TARGET_ARCH')}")
+	print(f"[DEBUG] PYTHON_PLATFORM={PYTHON_PLATFORM}, env TARGET_ARCH={env.get('TARGET_ARCH')}")
 	espeakLib, sonicLib = thirdPartyEnv.SConscript("espeak/sconscript")
+	# Debug: Check actual DLL path and architecture after building
+	espeakDllPath = espeakLib[0].abspath
+	print(f"[DEBUG] espeakLib[0].abspath={espeakDllPath}")
+	# Check DLL architecture using dumpbin
+	import subprocess
+	try:
+		dumpbinResult = subprocess.run(
+			["dumpbin", "/headers", espeakDllPath],
+			capture_output=True,
+			text=True,
+			timeout=10
+		)
+		# Extract machine type from dumpbin output
+		for line in dumpbinResult.stdout.split('\n'):
+			if 'machine' in line.lower() or '8664' in line or '014C' in line or 'AA64' in line:
+				print(f"[DEBUG] DLL architecture info: {line.strip()}")
+				break
+	except Exception as e:
+		print(f"[DEBUG] Failed to check DLL architecture: {e}")
 	if signExec:
 		thirdPartyEnv.AddPostAction(espeakLib, signExec)
 		thirdPartyEnv.AddPostAction(sonicLib, signExec)
