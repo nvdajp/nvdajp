@@ -264,16 +264,13 @@ jobs:
     - name: Run unit tests
       run: ci/scripts/tests/unitTests.ps1
     # BEGIN JP PATCH: JP braille translator smoke (ensures jpBrailleRunner/translator2 load correctly)
-    - name: Install SCons for JP overlay
+    - name: Install tools for JP overlay
       shell: pwsh
-      run: python -m pip install scons
+      run: uv pip install scons pytest
     - name: Prepare JP misc deps overlay
       # scons.bat sets NVDA_VIRTUAL_ENV; direct scons fails in CI
       shell: cmd
       run: .\scons.bat miscdepsjp
-    - name: Install pytest for JP smoke
-      shell: pwsh
-      run: python -m pip install pytest
     - name: Run JP braille/JTalk smoke tests
       shell: pwsh
       run: python -m pytest miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
