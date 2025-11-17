@@ -263,6 +263,22 @@ jobs:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Run unit tests
       run: ci/scripts/tests/unitTests.ps1
+    # BEGIN JP PATCH: JP braille translator smoke (ensures jpBrailleRunner/translator2 load correctly)
+    - name: Prepare JP misc deps overlay
+      shell: pwsh
+      run: scons miscdepsjp
+    - name: Run JP braille/JTalk smoke tests
+      shell: pwsh
+      run: python -m pytest miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
+    - name: Upload JP smoke artifacts
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: JP tests logs
+        path: |
+          __h1output.txt
+          __h2output.txt
+    # END JP PATCH
     - name: Replace relative paths in unit test results
       if: ${{ failure() }}
       # Junit reports fail on these
