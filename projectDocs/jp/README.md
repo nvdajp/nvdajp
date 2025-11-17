@@ -36,7 +36,9 @@
 
 * 日本語版の恒常情報（人間向け）: `readme-nvdajp.md`
 * 本家版の開発環境ガイド: `projectDocs/dev/createDevEnvironment.md`
-* 日本語版のプロダクトビジョン: `projectDocs/product_vision.md`
+* 本家版のプロダクトビジョン: `projectDocs/product_vision.md`
+* 日本語点字出力テーブル: `projectDocs/jp/braille-ja-jp-comp6.md`
+* 日本語版 CI/ビルド基盤: `projectDocs/jp/ci`
 * エージェント／自動化向けの運用ルール: `AGENTS.md`
 
 ## 用語: JP オーバレイ（JP overlay）
