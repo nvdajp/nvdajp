@@ -28,6 +28,41 @@ from pathlib import Path
 from typing import Any
 
 
+def _copy_jtalk_core_files(repo_root: Path) -> int:
+    """Copy JTalk core Python files from miscDepsJp/include/python-jtalk to source/synthDrivers/jtalk.
+
+    This replicates the functionality of copy_jtalk_core_files.cmd.
+    """
+    python_jtalk_dir = repo_root / "miscDepsJp" / "include" / "python-jtalk"
+    jtalk_dest_dir = repo_root / "source" / "synthDrivers" / "jtalk"
+
+    if not python_jtalk_dir.exists():
+        print(f"Warning: python-jtalk directory not found: {python_jtalk_dir}")
+        return 0
+
+    if not jtalk_dest_dir.exists():
+        print(f"Warning: jtalk destination directory not found: {jtalk_dest_dir}")
+        return 0
+
+    files_to_copy = [
+        "jtalkCore.py",
+        "mecab.py",
+        "text2mecab.py",
+    ]
+
+    import shutil
+    for filename in files_to_copy:
+        src = python_jtalk_dir / filename
+        dst = jtalk_dest_dir / filename
+        if src.exists():
+            shutil.copy2(src, dst)
+            print(f"Copied {filename} to {dst}")
+        else:
+            print(f"Warning: Source file not found: {src}")
+
+    return 0
+
+
 def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> int:
     repo_root = Path.cwd()
     script = repo_root / "jptools" / "setup_miscdeps_overlay.py"
@@ -43,6 +78,12 @@ def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> in
     res = run([sys.executable, str(script)], cwd=str(misc_root))
     if res.returncode != 0:
         return res.returncode
+
+    # Copy JTalk core files (equivalent to copy_jtalk_core_files.cmd)
+    copy_result = _copy_jtalk_core_files(repo_root)
+    if copy_result != 0:
+        return copy_result
+
     # Write/update stamp
     stamp_path = Path(str(target[0]))
     stamp_path.parent.mkdir(parents=True, exist_ok=True)
