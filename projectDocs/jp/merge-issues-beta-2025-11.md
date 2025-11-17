@@ -59,6 +59,12 @@
   - 事象: `runlint.bat` の呼び出しや Pyright 実行方法の差分。
   - 方針: Lint は失敗で落とさない。型チェックは `.github/workflows/nvbeta-typecheck.yml` と `ci/scripts/tests/typeCheck.ps1` を唯一のソースとする。
 
+- IAccessible2Lib/ia2.tlb の配置変更
+  - 事象: JP版では `miscDepsJp/source/typelibs/ia2.tlb` にオーバーレイしていたが、これはJP独自差分だった。上流は元々 `source/typelibs/ia2.tlb` を直接配置する運用。
+  - 方針: JP独自のオーバーレイを削除し、上流と同じ配置（`source/typelibs/ia2.tlb`）に戻す。
+  - 影響: `IAccessible2Lib.py` は `source/comInterfaces_sconscript` で `source/typelibs/ia2.tlb` からビルド時に自動生成される。生成ロジックは変更なし。
+  - 注意: `ia2.tlb` 自体はリポジトリに追跡されており、通常のビルドでは追跡済みのファイルを使用する。必要に応じて `nvdaHelper/ia2_sconscript` で IDL ファイルから再生成可能（Windows 環境の MIDL 前提）。
+
 ## CI 上の具体対応（YAML 最小差分方針）
 
 - `testAndPublish.yml` は上流最新版をベースに戻し、JP 追加は以下のみ（JP PATCH マーカーで囲む）。
