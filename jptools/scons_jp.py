@@ -29,38 +29,43 @@ from typing import Any
 
 
 def _copy_jtalk_core_files(repo_root: Path) -> int:
-    """Copy JTalk core Python files from miscDepsJp/include/python-jtalk to source/synthDrivers/jtalk.
+	"""Copy JTalk core Python files from miscDepsJp/include/python-jtalk to source/synthDrivers/jtalk.
 
-    This replicates the functionality of copy_jtalk_core_files.cmd.
-    """
-    python_jtalk_dir = repo_root / "miscDepsJp" / "include" / "python-jtalk"
-    jtalk_dest_dir = repo_root / "source" / "synthDrivers" / "jtalk"
+	This replicates the functionality of copy_jtalk_core_files.cmd.
+	"""
+	python_jtalk_dir = repo_root / "miscDepsJp" / "include" / "python-jtalk"
+	jtalk_dest_dir = repo_root / "source" / "synthDrivers" / "jtalk"
 
-    if not python_jtalk_dir.exists():
-        print(f"Warning: python-jtalk directory not found: {python_jtalk_dir}")
-        return 0
+	if not python_jtalk_dir.exists():
+		print(f"Error: python-jtalk directory not found: {python_jtalk_dir}")
+		return 1
 
-    if not jtalk_dest_dir.exists():
-        print(f"Warning: jtalk destination directory not found: {jtalk_dest_dir}")
-        return 0
+	if not jtalk_dest_dir.exists():
+		print(f"Error: jtalk destination directory not found: {jtalk_dest_dir}")
+		return 1
 
-    files_to_copy = [
-        "jtalkCore.py",
-        "mecab.py",
-        "text2mecab.py",
-    ]
+	files_to_copy = [
+		"jtalkCore.py",
+		"mecab.py",
+		"text2mecab.py",
+	]
 
-    import shutil
-    for filename in files_to_copy:
-        src = python_jtalk_dir / filename
-        dst = jtalk_dest_dir / filename
-        if src.exists():
-            shutil.copy2(src, dst)
-            print(f"Copied {filename} to {dst}")
-        else:
-            print(f"Warning: Source file not found: {src}")
+	import shutil
+	missing_files: list[str] = []
+	for filename in files_to_copy:
+		src = python_jtalk_dir / filename
+		dst = jtalk_dest_dir / filename
+		if src.exists():
+			shutil.copy2(src, dst)
+			print(f"Copied {filename} to {dst}")
+		else:
+			print(f"Error: Source file not found: {src}")
+			missing_files.append(filename)
 
-    return 0
+	if missing_files:
+		return 1
+
+	return 0
 
 
 def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> int:
