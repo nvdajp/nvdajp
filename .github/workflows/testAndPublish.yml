@@ -271,6 +271,9 @@ jobs:
       # scons.bat sets NVDA_VIRTUAL_ENV; direct scons fails in CI
       shell: cmd
       run: .\scons.bat miscdepsjp
+    - name: Install pytest for JP smoke
+      shell: pwsh
+      run: python -m pip install pytest
     - name: Run JP braille/JTalk smoke tests
       shell: pwsh
       run: python -m pytest miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
