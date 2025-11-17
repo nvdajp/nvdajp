@@ -51,6 +51,7 @@
 - **レイアウト**
   - x64: `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`
   - MeCab 辞書: アーキ非依存のため共通
+  - libmecab.dll: payload `miscDepsJp/source/synthDrivers/jtalk/libmecab.dll` は PyPI `mecab-python3` 1.0.10 (`cp311` win_amd64 wheel) から採取した x64 DLL。MeCab と同じく GPL/LGPL/BSD（三条項）併記で、wheel の `COPYING` に明記
 
 - **サブモジュール更新手順**
   - サブモジュール更新: `git submodule update --init --recursive`
