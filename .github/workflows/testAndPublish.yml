@@ -274,6 +274,8 @@ jobs:
     - name: Run JP braille/JTalk smoke tests
       shell: pwsh
       working-directory: miscDepsJp/jptools
+      env:
+        PYTHONPATH: "..\\include\\python-jtalk;..\\source\\synthDrivers\\jtalk"
       run: uv run python -m pytest test.py -k "JpBrailleTests or JtalkTests"
     - name: Upload JP smoke artifacts
       if: ${{ failure() }}
