@@ -273,7 +273,8 @@ jobs:
       run: .\scons.bat miscdepsjp
     - name: Run JP braille/JTalk smoke tests
       shell: pwsh
-      run: uv run python -m pytest miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
+      working-directory: miscDepsJp/jptools
+      run: uv run python -m pytest test.py -k "JpBrailleTests or JtalkTests"
     - name: Upload JP smoke artifacts
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
