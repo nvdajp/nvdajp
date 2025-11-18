@@ -29,7 +29,7 @@ jtalk_dir = os.path.normpath(
 sys.path.append(jtalk_dir)
 # Also add source/synthDrivers/jtalk where mecab.py is copied by scons miscdepsjp
 source_jtalk_dir = os.path.normpath(
-    os.path.join(getcwd(), "..", "..", "..", "source", "synthDrivers", "jtalk")
+    os.path.join(getcwd(), "..", "..", "source", "synthDrivers", "jtalk")
 )
 if os.path.isdir(source_jtalk_dir):
     sys.path.insert(0, source_jtalk_dir)  # Insert at beginning to prioritize
