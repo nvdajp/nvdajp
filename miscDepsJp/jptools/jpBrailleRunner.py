@@ -184,26 +184,31 @@ def pass2(verboseMode=False):
                 ):
                     isError = True
                     count += 1
-                if isError or verboseMode:
-                    f.write("text   : " + t["text"] + "\n")
-                    f.write("correct: " + t["input"] + "\n")
-                    f.write("result : " + result + "\n")
-                    f.write("pat    : " + pat + "\n")
-                    if correct_inpos2:
-                        f.write("cor_in2: " + correct_inpos2 + "\n")
-                    if correct_inpos1:
-                        f.write("cor_in1: " + correct_inpos1 + "\n")
-                    if correct_inpos:
-                        f.write("cor_in : " + correct_inpos + "\n")
-                    if correct_outpos:
-                        f.write("cor_out: " + correct_outpos + "\n")
-                    f.write("res_in2: " + result_inpos2 + "\n")
-                    f.write("res_in1: " + result_inpos1 + "\n")
-                    f.write("res_in : " + result_inpos + "\n")
-                    f.write("res_out: " + result_outpos + "\n")
-                    if "comment" in t and t["comment"]:
-                        f.write("comment: " + t["comment"] + "\n")
-                    f.write("\n")
+                    if isError or verboseMode:
+                        f.write("text   : " + t["text"] + "\n")
+                        f.write("correct: " + t["input"] + "\n")
+                        f.write("result : " + result + "\n")
+                        f.write("pat    : " + pat + "\n")
+                        if correct_inpos2:
+                            f.write("cor_in2: " + correct_inpos2 + "\n")
+                        if correct_inpos1:
+                            f.write("cor_in1: " + correct_inpos1 + "\n")
+                        if correct_inpos:
+                            f.write("cor_in : " + correct_inpos + "\n")
+                        if correct_outpos:
+                            f.write("cor_out: " + correct_outpos + "\n")
+                        f.write("res_in2: " + result_inpos2 + "\n")
+                        f.write("res_in1: " + result_inpos1 + "\n")
+                        f.write("res_in : " + result_inpos + "\n")
+                        f.write("res_out: " + result_outpos + "\n")
+                        if "comment" in t and t["comment"]:
+                            comment = t["comment"]
+                            if isinstance(comment, (list, tuple)):
+                                comment = " ".join(str(c) for c in comment)
+                            else:
+                                comment = str(comment)
+                            f.write("comment: " + comment + "\n")
+                        f.write("\n")
                     f.write(log)
                     f.write("\n")
         print("h2: %d error(s). see %s" % (count, outfile))
