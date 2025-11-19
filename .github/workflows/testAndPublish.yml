@@ -277,14 +277,23 @@ jobs:
       env:
         PYTHONPATH: "..\\include\\python-jtalk;..\\source\\synthDrivers\\jtalk"
       run: uv run python -m pytest test.py -k "JpBrailleTests or JtalkTests"
+    - name: Show JP smoke logs
+      if: ${{ failure() }}
+      shell: pwsh
+      working-directory: miscDepsJp/jptools
+      run: |
+        Write-Host "__h1output.txt:"
+        Get-Content __h1output.txt -ErrorAction SilentlyContinue
+        Write-Host "__h2output.txt:"
+        Get-Content __h2output.txt -ErrorAction SilentlyContinue
     - name: Upload JP smoke artifacts
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
       with:
         name: JP tests logs
         path: |
-          __h1output.txt
-          __h2output.txt
+          miscDepsJp/jptools/__h1output.txt
+          miscDepsJp/jptools/__h2output.txt
     # END JP PATCH
     - name: Replace relative paths in unit test results
       if: ${{ failure() }}
