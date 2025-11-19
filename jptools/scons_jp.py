@@ -420,28 +420,68 @@ def register_jp_builders(env: Any) -> None:
         - Locate vendor DLL under miscDepsJp/include/python-jtalk[/x64]/libopenjtalk.dll
         - If missing, attempt to build via nmake (requires MSVC environment)
         - Write payload into miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+          and copy libmecab.dll alongside it.
         """
         repo_root = Path.cwd()
         arch = str(env.get("TARGET_ARCH", "x86")).lower()
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
-
+        payloads: list[dict[str, Path]] = []
         if arch in ("x64", "x86_64"):
             src_prebuilt = vendor_base / "x64" / "libopenjtalk.dll"
+            payloads.append(
+                {
+                    "name": "libopenjtalk.dll",
+                    "src": vendor_base / "x64" / "libopenjtalk.dll",
+                    "dst": repo_root
+                    / "miscDepsJp"
+                    / "source"
+                    / "synthDrivers"
+                    / "jtalk"
+                    / "libopenjtalk.dll",
+                }
+            )
+            payloads.append(
+                {
+                    "name": "libmecab.dll",
+                    "src": vendor_base / "x64" / "libmecab.dll",
+                    "dst": repo_root
+                    / "miscDepsJp"
+                    / "source"
+                    / "synthDrivers"
+                    / "jtalk"
+                    / "libmecab.dll",
+                }
+            )
             nmake_machine = "x64"
         else:
             src_prebuilt = vendor_base / "libopenjtalk.dll"
+            payloads.append(
+                {
+                    "name": "libopenjtalk.dll",
+                    "src": vendor_base / "libopenjtalk.dll",
+                    "dst": repo_root
+                    / "miscDepsJp"
+                    / "source"
+                    / "synthDrivers"
+                    / "jtalk"
+                    / "libopenjtalk.dll",
+                }
+            )
+            payloads.append(
+                {
+                    "name": "libmecab.dll",
+                    "src": vendor_base / "libmecab.dll",
+                    "dst": repo_root
+                    / "miscDepsJp"
+                    / "source"
+                    / "synthDrivers"
+                    / "jtalk"
+                    / "libmecab.dll",
+                }
+            )
             nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
 
         built_dll = src_prebuilt
-
-        dst_payload = (
-            repo_root
-            / "miscDepsJp"
-            / "source"
-            / "synthDrivers"
-            / "jtalk"
-            / "libopenjtalk.dll"
-        )
 
         print(f"jtalkPrep: using TARGET_ARCH={arch}")
         print(f"jtalkPrep: looking for vendor DLL: {src_prebuilt}")
@@ -550,15 +590,27 @@ def register_jp_builders(env: Any) -> None:
         else:
             print(f"jtalkPrep: using existing DLL (build skipped)")
 
-        # Copy DLL to payload location
-        try:
-            dst_payload.parent.mkdir(parents=True, exist_ok=True)
-            data = src_prebuilt.read_bytes()
-            dst_payload.write_bytes(data)
-            print(f"jtalkPrep: payload -> {dst_payload}")
-        except Exception as e:
-            print(f"ERROR: jtalkPrep payload copy failed: {e}")
-            return 1
+        import shutil
+
+        for payload in payloads:
+            src = payload["src"]
+            dst = payload["dst"]
+            name = payload["name"]
+            if not src.exists():
+                print(f"ERROR: vendor payload missing: {src}")
+                print(
+                    f"  Ensure python-jtalk submodule provides {name} "
+                    f"(x86: miscDepsJp/include/python-jtalk/{name}, "
+                    f"x64: miscDepsJp/include/python-jtalk/x64/{name})."
+                )
+                return 1
+            try:
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+                print(f"jtalkPrep: payload -> {dst}")
+            except Exception as e:
+                print(f"ERROR: jtalkPrep payload copy failed for {name}: {e}")
+                return 1
 
         Path(str(target[0])).parent.mkdir(parents=True, exist_ok=True)
         Path(str(target[0])).write_text("ok", encoding="utf-8")
