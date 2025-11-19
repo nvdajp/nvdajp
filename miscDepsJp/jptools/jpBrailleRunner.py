@@ -36,7 +36,7 @@ if os.path.isdir(source_jtalk_dir):
 import jtalkDir  # type: ignore
 import translator1  # type: ignore
 import translator2  # type: ignore
-from mecab import mecab, libmc  # type: ignore
+import mecab as mecab_module  # type: ignore
 
 dic_dir = os.path.join(jtalk_dir, "dic")
 user_dics = jtalkDir.user_dics
@@ -132,8 +132,8 @@ def pass2(verboseMode=False):
         f.write(log)
         f.write("\n")
         # Verify MeCab initialization
-        if libmc is None or mecab is None:
-            f.write("ERROR: MeCab initialization failed: libmc=%s, mecab=%s\n" % (libmc, mecab))
+        if mecab_module.libmc is None or mecab_module.mecab is None:
+            f.write("ERROR: MeCab initialization failed: libmc=%s, mecab=%s\n" % (mecab_module.libmc, mecab_module.mecab))
             f.write("This will cause access violations. Aborting.\n")
             return (1, outfile)
         count = 0
