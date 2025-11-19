@@ -427,11 +427,11 @@ def register_jp_builders(env: Any) -> None:
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
         payloads: list[dict[str, Path]] = []
         if arch in ("x64", "x86_64"):
-            src_prebuilt = vendor_base / "x64" / "libopenjtalk.dll"
             payloads.append(
                 {
                     "name": "libopenjtalk.dll",
                     "src": vendor_base / "x64" / "libopenjtalk.dll",
+                    "fallback": None,
                     "dst": repo_root
                     / "miscDepsJp"
                     / "source"
@@ -444,6 +444,12 @@ def register_jp_builders(env: Any) -> None:
                 {
                     "name": "libmecab.dll",
                     "src": vendor_base / "x64" / "libmecab.dll",
+                    "fallback": repo_root
+                    / "miscDepsJp"
+                    / "source"
+                    / "synthDrivers"
+                    / "jtalk"
+                    / "libmecab.dll",
                     "dst": repo_root
                     / "miscDepsJp"
                     / "source"
@@ -452,13 +458,14 @@ def register_jp_builders(env: Any) -> None:
                     / "libmecab.dll",
                 }
             )
+            src_prebuilt = payloads[0]["src"]
             nmake_machine = "x64"
         else:
-            src_prebuilt = vendor_base / "libopenjtalk.dll"
             payloads.append(
                 {
                     "name": "libopenjtalk.dll",
                     "src": vendor_base / "libopenjtalk.dll",
+                    "fallback": None,
                     "dst": repo_root
                     / "miscDepsJp"
                     / "source"
@@ -471,6 +478,12 @@ def register_jp_builders(env: Any) -> None:
                 {
                     "name": "libmecab.dll",
                     "src": vendor_base / "libmecab.dll",
+                    "fallback": repo_root
+                    / "miscDepsJp"
+                    / "source"
+                    / "synthDrivers"
+                    / "jtalk"
+                    / "libmecab.dll",
                     "dst": repo_root
                     / "miscDepsJp"
                     / "source"
@@ -479,9 +492,10 @@ def register_jp_builders(env: Any) -> None:
                     / "libmecab.dll",
                 }
             )
+            src_prebuilt = payloads[0]["src"]
             nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
 
-        built_dll = src_prebuilt
+        built_dll = payloads[0]["src"]
 
         print(f"jtalkPrep: using TARGET_ARCH={arch}")
         print(f"jtalkPrep: looking for vendor DLL: {src_prebuilt}")
@@ -597,13 +611,22 @@ def register_jp_builders(env: Any) -> None:
             dst = payload["dst"]
             name = payload["name"]
             if not src.exists():
-                print(f"ERROR: vendor payload missing: {src}")
-                print(
-                    f"  Ensure python-jtalk submodule provides {name} "
-                    f"(x86: miscDepsJp/include/python-jtalk/{name}, "
-                    f"x64: miscDepsJp/include/python-jtalk/x64/{name})."
-                )
-                return 1
+                fallback = payload.get("fallback")
+                if fallback and fallback.exists():
+                    print(
+                        f"jtalkPrep: vendor payload missing at {src}, using fallback {fallback}"
+                    )
+                    src = fallback
+                else:
+                    print(f"ERROR: vendor payload missing: {src}")
+                    print(
+                        f"  Ensure python-jtalk submodule provides {name} "
+                        f"(x86: miscDepsJp/include/python-jtalk/{name}, "
+                        f"x64: miscDepsJp/include/python-jtalk/x64/{name})."
+                    )
+                    if fallback:
+                        print(f"  Fallback also missing at {fallback}")
+                    return 1
             try:
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src, dst)
