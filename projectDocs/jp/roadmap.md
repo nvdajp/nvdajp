@@ -4,36 +4,56 @@
 
 ## 現行マイルストン（2026.1jp を想定）
 
-- 目標: 3.13 x64 で本家構成を通す。差分は最小、CI も本家準拠。
-- プラットフォーム/CI: Windows + Python 3.13 x64 のみ。32bit は扱わない。
-- ビルド/オーケストレーション: SCons を唯一の手段に統一（.cmd 依存は可能な限り削減）。
-- ワークフロー: 本家 YAML をベースに、JP 固有は branch フィルター・Crowdin 無効化・スクリプト呼び出し 1 行など最小パッチ。
-- サブモジュール: JAB/espeak/jtalk 等は本家に追従し、差分を最小化。
-- 差分管理: JP 固有差分は専用ディレクトリ＋最小パッチで集約。恒常差分を定期に棚卸し。
-- リリース/署名: 署名・配布はローカル実施（CI は未署名の検証用のみ）。
-- ドキュメント/ADR: 重要決定は `projectDocs/jp/adr/` に 1 ページで記録。
-- 非対象: 3.11/x86。CI リリースジョブ（Secrets 使用）も対象外。
+* 目標: 3.13 x64 で本家構成を通す。差分は最小、CI も本家準拠。
+* プラットフォーム/CI: Windows + Python 3.13 x64 のみ。32bit は扱わない。
+* ビルド/オーケストレーション: SCons を唯一の手段に統一（.cmd 依存は可能な限り削減）。
+* ワークフロー: 本家 YAML をベースに、JP 固有は branch フィルター・Crowdin 無効化・スクリプト呼び出し 1 行など最小パッチ。
+* サブモジュール: JAB/espeak/jtalk 等は本家に追従し、差分を最小化。
+* 差分管理: JP 固有差分は専用ディレクトリ＋最小パッチで集約。恒常差分を定期に棚卸し。
+* リリース/署名: 署名・配布はローカル実施（CI は未署名の検証用のみ）。
+* ドキュメント/ADR: 重要決定は `projectDocs/jp/adr/` に 1 ページで記録。
+* 非対象: 3.11/x86。CI リリースジョブ（Secrets 使用）も対象外。
 
 ## 今後の検討
 
-- GitHub Actions (CI) 3.13 x64 で unit + system が安定緑
-- 署名ビルドで system テスト安定緑
-- 差分削減の自動レポート化と定期棚卸し
+* GitHub Actions (CI) 3.13 x64 で unit + system が安定緑
+* 署名ビルドで system テスト安定緑
+* 差分削減の自動レポート化と定期棚卸し
 
-## 現在の作業キュー（refs #539）
+## 現在の作業キュー（2025年11月19日時点）
 
-- CI 安定化フォローアップ（小粒PRで段階適用）
-  - unit: `rununittests.bat` で `uv --group dev --group unit-tests` を使用し、`nvda-misc-deps`（editable）を読み込む
-  - license: `testOutput/license` を事前作成し、チェック結果をアーティファクト化
-  - translator: `translationCheckResults.log` をアーティファクト化
-  - system: インストーラ導入前に `ci/scripts/beforeTests.ps1` を実行して `testOutput/` を作成
+### PR #573 の残課題（優先度：高）
 
-- ワークフロー同期（testAndPublish.yml）
-  - 上流 beta を取り込み、JP 追加は最小集約
+* ❌ **JP Braille テスト修正**
+  * 失敗: `miscDepsJp/jptools/test.py::JpBrailleTests::test_pass2`
+  * エラー: `jpBrailleRunner.pass2()` が 1 を返す（期待値: 0）
+  * 対応: MeCab 初期化や Python 3.13 x64 互換性の確認が必要
 
-- Win32 ツール依存の整理
-  - 現状: nmake への依存を許容（SCons が内部で自動実行）
-  - 将来: 純 Python 化を検討
+* ❌ **System Tests タイムアウト調査**
+  * Chrome テスト（windows-2022 & windows-2025）: スピーチ出力タイムアウト
+  * Symbols テスト（windows-2025）: 記号読み上げタイムアウト
+  * 対応: スピーチ合成エンジン初期化問題の調査
+
+### PR #573 完了後の作業（優先度：中～低）
+
+* 📝 **翻訳ファイル（nvda.po）のマージ**
+  * 現状: 上流を採用済み
+  * TODO: msgmerge で最新化、JP 固有翻訳の維持
+
+* 📝 **実機での動作確認**
+  * JTalk 動作確認
+  * 日本語点訳エンジン動作確認
+
+### 完了した作業（PR #573）
+
+* ✅ Python 3.13 x64 対応完了
+* ✅ CI/ビルド基盤の整合
+* ✅ testAndPublish.yml の上流準拠化（JP PATCH 最小化）
+* ✅ 基盤整備（サブモジュール、依存関係、ビルドシステム）
+* ✅ ソースコード整合（構文、Braille、GUI、synthDriverHandler）
+* ✅ テストファイル整合（SystemTestSpy、test_brailleTables）
+* ✅ JTalk x64 ビルド対応
+* ✅ CI 主要テスト成功（Build, Launcher, Symbols, 多数の System Tests）
 
 ### 補足（開発者・CI の操作）
 
@@ -63,16 +83,16 @@ scons certBuild certFile=path/to/cert.pfx
 
 **前提条件**:
 
-- サブモジュール取得（`submodules: recursive`）
+* サブモジュール取得（`submodules: recursive`）
 
 ## 運用ルール（ブランチ/PR）
 
-- `betajp` は安定ブランチ（直接 push 禁止）。すべてトピックブランチ→PR で変更。
-- ブランチ保護: `allTestsPass` / TypeCheck を必須チェックに設定。
-- testAndPublish.yml は「上流置換 → JP パッチ再適用」の手順で保守。
+* `betajp` は安定ブランチ（直接 push 禁止）。すべてトピックブランチ→PR で変更。
+* ブランチ保護: `allTestsPass` / TypeCheck を必須チェックに設定。
+* testAndPublish.yml は「上流置換 → JP パッチ再適用」の手順で保守。
 
 ## 参照
 
-- JP Docs Hub: projectDocs/jp/README.md
-- 本家版開発環境: projectDocs/dev/createDevEnvironment.md
-- エージェント向け: AGENTS.md
+* JP Docs Hub: projectDocs/jp/README.md
+* 本家版開発環境: projectDocs/dev/createDevEnvironment.md
+* エージェント向け: AGENTS.md

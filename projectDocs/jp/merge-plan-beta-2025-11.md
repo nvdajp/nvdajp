@@ -2,14 +2,59 @@
 
 この文書は、`projectDocs/jp/roadmap.md` に基づき、nvaccess/beta を betajp にマージするための段階的な実行計画です。
 
-## 実装状況（2025年11月時点）
+## 実装状況（2025年11月19日時点）
 
-**重要**: **Python 3.13 x64 対応が完了**しています（PR #573）。
+**重要**: **Python 3.13 x64 対応がほぼ完了**しています（PR #573）。
+
+### 完了した作業（PR #573）
 
 * ✅ **完了**: Python 3.13 x64 対応、CI/ビルド基盤の整合
 * ✅ **完了**: `.github/workflows/testAndPublish.yml` の上流準拠化（JP PATCH最小化）
 * ✅ **完了**: 基盤整備（サブモジュール、依存関係、ビルドシステム）
-* 📝 **進行中/未完了**: 翻訳ファイル（nvda.po）のマージ、その他の細かい調整
+* ✅ **完了**: ビルドシステム（NVDAHelper パッケージ化、archBuild_sconscript）
+* ✅ **完了**: ソースコード（構文、Braille、GUI/インストーラ、synthDriverHandler）
+* ✅ **完了**: テストファイル（SystemTestSpy、test_brailleTables）
+* ✅ **完了**: JTalk x64 ビルド対応
+* ✅ **完了**: CI テスト多数成功（Build, Launcher, Symbols, 各種 System Tests）
+
+### 現在の課題（PR #573）
+
+#### ❌ 失敗しているテスト（3種類）
+
+1. **Unit Tests - JP Braille テスト**
+   * 失敗箇所: `miscDepsJp/jptools/test.py::JpBrailleTests::test_pass2`
+   * エラー: `AssertionError: 1 != 0`
+   * 原因: `jpBrailleRunner.pass2()` が期待値 0 でなく 1 を返している
+   * 影響: 日本語点字変換の第2パス処理で何らかのエラー発生
+
+2. **System Tests - Chrome (windows-2022 & windows-2025)**
+   * 失敗箇所: `tests\system\robot\chromeTests.py`
+   * エラー: `Speech did not finish before timeout` (10件)
+   * 影響: Chrome ブラウザでのスピーチ出力がタイムアウト
+
+3. **System Tests - Symbols (windows-2025)**
+   * 失敗箇所: `tests\system\robot\symbolPronunciationTests.py`
+   * エラー: `Speech did not finish before timeout` (4件)
+   * 影響: 記号読み上げテストでスピーチ出力がタイムアウト
+
+### 次のステップ
+
+**優先度1（高）**: JP Braille テスト修正
+
+* `jpBrailleRunner.pass2()` の問題特定とデバッグ
+* ローカル環境での再現テスト
+* MeCab 初期化や Python 3.13 x64 互換性の確認
+
+**優先度2（中）**: System Tests タイムアウト調査
+
+* スピーチ合成エンジン初期化の問題調査
+* CI 環境特有のタイミング問題の確認
+* 上流の変更による影響分析
+
+**優先度3（低～中）**: 残作業
+
+* 📝 **未完了**: 翻訳ファイル（nvda.po）のマージ
+* 📝 **未完了**: 実機での JTalk/点訳エンジン動作確認
 
 ## 前提条件
 
@@ -61,134 +106,129 @@
 
 ## 作業段階 2: ビルドシステム（SCons・ヘルパー）
 
+**状態**: ✅ 完了（PR #573）
+
 ### 2.1 NVDAHelper パッケージ化
 
-* [ ] `source/NVDAHelper/__init__.py` のコンフリクト解決
+* [x] `source/NVDAHelper/__init__.py` のコンフリクト解決
   * 上流のパッケージ構成を採用
   * 旧 `source/NVDAHelper.py` からの import を `source/NVDAHelper/__init__.py` に移行
   * JP 固有の変更があれば `# nvdajp begin/end` で囲う
-* [ ] 旧 `NVDAHelper.py` 参照の検索・置換
+* [x] 旧 `NVDAHelper.py` 参照の検索・置換
   * `grep -r "from NVDAHelper import"` で参照箇所を検索
   * `from NVDAHelper import` → `from NVDAHelper import` (パッケージとして読み込む)
   * `import NVDAHelper` → `from NVDAHelper import` に統一
 
-**検証**:
+**検証**: ✅ 完了
 
-* 型チェック: `ci/scripts/tests/typeCheck.ps1`
-* ビルド: `scons source --all-cores`
-
-**PR**: `fix/merge-step1-nvdahelper-package`
+* 型チェック: `ci/scripts/tests/typeCheck.ps1` - 成功
+* ビルド: `scons source --all-cores` - 成功
 
 ### 2.2 nvdaHelper/archBuild_sconscript
 
-* [ ] eSpeak ビルド条件の解決（267行目）
+* [x] eSpeak ビルド条件の解決（267行目）
   * 上流: `if isNVDACoreArch:` (x86/x64/arm64 すべて)
-* [ ] liblouis と javaAccessBridge の条件も確認
+* [x] liblouis と javaAccessBridge の条件も確認
   * 上流では `isNVDACoreArch` で条件分岐
 
-**検証**:
+**検証**: ✅ 完了
 
-* ビルド: `scons source --all-cores`
-* 生成物確認: `source/liblouis.dll` が存在
+* ビルド: `scons source --all-cores` - 成功
+* 生成物確認: `source/liblouis.dll` が存在 - 確認済み
 
 ## 作業段階 3: CI/ワークフロー（最大のコンフリクト）
+
+**状態**: ✅ 完了（PR #573）
 
 ### 3.1 testAndPublish.yml の完全再構築
 
 **戦略**: 上流ファイルを丸ごと取り込み、JP パッチを最小限に再適用
 
-* [ ] 上流ファイルをベースに取得
-
-  ```powershell
-  git show nvaccess/beta:.github/workflows/testAndPublish.yml > .github/workflows/testAndPublish.yml.upstream
-  ```
-
-* [ ] JP 固有の変更点をリストアップ
-  * Python/Arch を 3.11/x86 固定
+* [x] 上流ファイルをベースに取得
+* [x] JP 固有の変更点をリストアップ
+  * Python/Arch を **3.13/x64** に更新（3.11/x86 から変更）
   * `ci/scripts/tests/beforeTests.ps1` の呼び出し
   * crowdin upload ジョブの無効化
-  * SCons 実行前の `ilammy/msvc-dev-cmd@v1` で `arch: x86`
+  * JP 固有スクリプト（JTalk prep, JP Braille/JTalk smoke tests）の追加
   * キャッシュキーに `run_id`/`pythonVersion`/`arch` を含める
-* [ ] 上流ファイルをベースに、JP パッチを `# BEGIN JP PATCH`/`# END JP PATCH` で最小限に注入
+* [x] 上流ファイルをベースに、JP パッチを `# BEGIN JP PATCH`/`# END JP PATCH` で最小限に注入
 
 **JP パッチ箇所**:
 
 1. **トリガー** (6行目): ブランチ名を `betajp`/`releasejp` に変更
-2. **Python セットアップ** (複数箇所): `python-version: '3.11.9'`, `architecture: 'x86'` に固定
-3. **MSVC セットアップ** (複数箇所): `arch: x86` を追加
-4. **beforeTests.ps1 呼び出し** (192行目付近): システムテスト前に実行
-5. **crowdinUpload ジョブ** (447-456行目): `if: ${{ false }}` で無効化（既存パッチ継続）
-6. **キャッシュキー**: `run_id`/`pythonVersion`/`arch` を含める
+2. **Python セットアップ** (複数箇所): `python-version: '3.13.9'`, `architecture: 'x64'` に設定
+3. **JP 固有ビルド準備**: JTalk準備、JP miscDeps overlay
+4. **JP 固有テスト**: JP Braille/JTalk smoke tests の追加
+5. **beforeTests.ps1 呼び出し** (システムテスト前): テスト環境準備
+6. **crowdinUpload ジョブ**: `if: ${{ false }}` で無効化
+7. **キャッシュキー**: `run_id`/`pythonVersion`/`arch` を含める
+
+**検証**: ✅ 大部分完了（一部テスト失敗）
+
+* Build NVDA - 成功
+* Create launcher - 成功
+* Create symbols - 成功
+* Check types with Pyright - 成功
+* 多数の System Tests - 成功
+* ❌ JP Braille テスト - 失敗（`test_pass2`）
+* ❌ Chrome/Symbols System Tests - タイムアウト
 
 ## 作業段階 4: ソースコード（機能的なコンフリクト）
 
+**状態**: ✅ 完了（PR #573）
+
 ### 4.1 構文・軽微な変更
 
-* [ ] `source/_remoteClient/secureDesktop.py` (483行目)
+* [x] `source/_remoteClient/secureDesktop.py` (483行目)
   * 上流: f-string の引数が変更
   * 解決: 上流の形式を採用（f-string の引数は上流に合わせる）
-* [ ] `runlint.bat` (12行目)
+* [x] `runlint.bat` (12行目)
   * 上流: ruff format の出力先処理が変更
   * 解決: 上流の形式を採用し、JP 固有の除外オプションは維持
 
 ### 4.2 Braille 表示ロジック（JP 拡張の再適用）
 
-* [ ] `source/braille.py` の2箇所のコンフリクト解決
+* [x] `source/braille.py` の2箇所のコンフリクト解決
   * **802行目**: `_nvdajp("vlnk")` vs `_("vlnk")`
-    * 上流の `_("vlnk")` を採用
-    * JP 固有の翻訳が必要なら `_nvdajp()` を維持（ただし上流の構造に合わせる）
+    * JP 固有の `_nvdajp()` を維持（NABCC有効時の英字省略表記対応）
   * **886行目**: ロール処理順序の変更
     * 上流の処理順序を採用
-    * JP 固有の変更（rowHeaderText/columnHeaderText）は `# nvdajp begin/end` で囲って維持（835-842行目）
-* [ ] `tests/unit/test_brailleTables.py` (23行目)
+    * JP 固有の変更（rowHeaderText/columnHeaderText）は `# nvdajp begin/end` で囲って維持
+* [x] `tests/unit/test_brailleTables.py` (23行目)
   * 上流: `subTest` 構造に変更
   * JP: `TABLES_DIR_JP` を参照する独自ロジック
   * 解決: 上流の `subTest` 構造を採用し、JP テーブルチェックは条件分岐で追加
 
-    ```python
-    with self.subTest(table=table.fileName):
-        tables_dir = brailleTables.TABLES_DIR
-        if table.displayName in ("Japanese 6 dot computer braille", ...):
-            tables_dir = brailleTables.TABLES_DIR_JP
-        self.assertTrue(...)
-    ```
-
 ### 4.3 GUI・インストーラ（JP 固有の表示）
 
-* [ ] `source/gui/__init__.py` (113行目)
+* [x] `source/gui/__init__.py` (113行目)
   * ICON_PATH: `nvdajp3.ico` を維持（JP 固有）
   * DONATE_URL: `https://www.nvda.jp/donate.html` を維持（JP 固有）
   * 上流の `buildVersion` への変更は採用
   * 解決: 上流の構造を採用し、JP 固有の値は `# nvdajp begin/end` で囲う
-* [ ] `source/installer.py` (276行目)
+* [x] `source/installer.py` (276行目)
   * DisplayIcon: `nvdajp3.ico` を維持（JP 固有）
   * 上流の `buildVersion` への変更は採用
   * 解決: 同様に上流構造を採用し、JP 固有値を明示
 
 ### 4.4 合成音声ドライバ
 
-* [ ] `source/synthDriverHandler.py` (486行目)
+* [x] `source/synthDriverHandler.py` (486行目)
   * 上流: `["oneCore", "espeak", "silence"]`
   * JP: `["nvdajp_jtalk", "espeak", "silence"]` を先頭に
-  * 解決: JP の優先順位を維持（jtalk を先頭）
-    * ただし上流の構造（Windows 10 で oneCore を先頭）は条件分岐で維持
-
-    ```python
-    defaultSynthPriorityList = ["nvdajp_jtalk", "espeak", "silence"]
-    if winVersion.getWinVer() >= winVersion.WIN10:
-        # Insert oneCore for Windows 10+, but keep jtalk first
-        defaultSynthPriorityList.insert(1, "oneCore")
-    ```
+  * 解決: JP の優先順位を維持（jtalk を先頭）し、上流の構造も考慮
 
 ## 作業段階 5: テスト（テストコードの整合）
 
+**状態**: ✅ 完了（PR #573）
+
 ### 5.1 SystemTest 設定
 
-* [ ] `tests/system/libraries/SystemTestSpy/configManager.py` (131行目)
+* [x] `tests/system/libraries/SystemTestSpy/configManager.py` (131行目)
   * 上流: シンプルな `remove_directory` 呼び出し
   * JP: リトライロジックと `taskkill` 呼び出し
   * 解決: JP のリトライロジックを維持（CI での安定性向上）
-    * ただし上流の構造に合わせて整理
+    * 上流の構造に合わせて整理
     * `# nvdajp begin: retry logic for CI stability` で明示
 
 ## 作業段階 6: 翻訳ファイル
