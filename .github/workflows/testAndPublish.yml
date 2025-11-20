@@ -70,7 +70,9 @@ jobs:
   buildNVDA:
     name: Build NVDA
     needs: matrix
-    runs-on: ${{ needs.matrix.outputs.defaultRunner }}
+    # BEGIN JP PATCH: MeCab辞書ビルドのコードページ問題回避のため windows-2022 を使用
+    runs-on: windows-2022
+    # END JP PATCH
     strategy:
       fail-fast: false
       matrix:
