@@ -629,8 +629,11 @@ def register_jp_builders(env: Any) -> None:
                     return 1
             try:
                 dst.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(src, dst)
-                print(f"jtalkPrep: payload -> {dst}")
+                if src.resolve() == dst.resolve():
+                    print(f"jtalkPrep: payload already in place at {dst}")
+                else:
+                    shutil.copy2(src, dst)
+                    print(f"jtalkPrep: payload -> {dst}")
             except Exception as e:
                 print(f"ERROR: jtalkPrep payload copy failed for {name}: {e}")
                 return 1
