@@ -727,11 +727,15 @@ def register_jp_builders(env: Any) -> None:
                     if rc_dic != 0:
                         print(f"jtalkSync: nmake (mecab-naist-jdic) failed with rc={rc_dic}")
                         return rc_dic
-                    # Dictionary build outputs to libopenjtalk/mecab-naist-jdic/dic
-                    built_dic = vendor_base / "libopenjtalk" / "mecab-naist-jdic" / "dic"
-                    if built_dic.joinpath("sys.dic").exists():
-                        dic_src = built_dic
-                        sys_dic = dic_src / "sys.dic"
+                    # The Makefile writes sys.dic into mecab-naist-jdic (no /dic subdir in our tree).
+                    built_root = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
+                    built_dic = built_root / "dic"
+                    for candidate in (built_dic, built_root):
+                        candidate_sys_dic = candidate / "sys.dic"
+                        if candidate_sys_dic.exists():
+                            dic_src = candidate
+                            sys_dic = candidate_sys_dic
+                            break
 
                 if not sys_dic.exists():
                     print(f"jtalkSync: sys.dic still missing after build; no fallback available")
