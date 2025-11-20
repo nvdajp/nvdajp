@@ -622,7 +622,31 @@ def register_jp_builders(env: Any) -> None:
                 dic_src = source_dic
                 sys_dic = dic_src / "sys.dic"
             else:
-                # Try to build dictionary via mecab-naist-jdic Makefile
+                # Try to build mecab binary and dictionary via mecab-naist-jdic Makefile
+                def _build_mecab_bin(machine: str) -> int:
+                    base = vendor_base / "libopenjtalk" / "mecab"
+                    makefile = base / "Makefile.mak"
+                    if not makefile.exists():
+                        print(f"jtalkSync: Makefile.mak not found for mecab bin build: {makefile}")
+                        return 1
+                    import subprocess
+                    from subprocess import run
+                    try:
+                        run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                        use_vcvarsall = False
+                    except (FileNotFoundError, subprocess.CalledProcessError):
+                        vcvarsall = _find_vcvarsall()
+                        if not vcvarsall:
+                            print("jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build")
+                            return 1
+                        use_vcvarsall = True
+                        cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
+                        result = run(cmd_script, cwd=str(base), shell=True)
+                        return result.returncode
+                    cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
+                    result = run(cmd, cwd=str(base))
+                    return result.returncode
+
                 def _build_dic(machine: str) -> int:
                     base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
                     makefile = base / "Makefile.mak"
@@ -656,7 +680,18 @@ def register_jp_builders(env: Any) -> None:
                     print(f"jtalkSync: nmake (all.mak) failed with rc={rc}")
                     return rc
 
-                # After all.mak, try explicit dic build if still missing
+                # Build mecab binary (mecab-dict-index.exe) if missing
+                mecab_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+                if not mecab_bin.exists():
+                    rc_bin = _build_mecab_bin(machine)
+                    if rc_bin != 0:
+                        print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                        return rc_bin
+                    if not mecab_bin.exists():
+                        print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_bin}")
+                        return 1
+
+                # After all.mak and mecab bin, try explicit dic build if still missing
                 if not sys_dic.exists():
                     rc_dic = _build_dic(machine)
                     if rc_dic != 0:
