@@ -670,10 +670,18 @@ def register_jp_builders(env: Any) -> None:
                             print("jtalkSync: nmake not found and vcvarsall.bat not detected for dic build")
                             return 1
                         use_vcvarsall = True
-                        cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
+                        # Force CP932 so mecab-dict-index reads SJIS rewrite.def correctly on UTF-8 consoles.
+                        cmd_script = (
+                            f'call "{vcvarsall}" {machine} && chcp 932>nul && '
+                            f'nmake /f Makefile.mak MACHINE={machine}'
+                        )
                         result = run(cmd_script, cwd=str(base), shell=True)
                         return result.returncode
-                    cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
+                    cmd = [
+                        "cmd",
+                        "/c",
+                        f"chcp 932>nul && nmake /f Makefile.mak MACHINE={machine}",
+                    ]
                     result = run(cmd, cwd=str(base))
                     return result.returncode
 
