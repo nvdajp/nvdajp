@@ -23,10 +23,12 @@ from os import getcwd
 
 open_file = lambda name, mode: open(name, mode, encoding="utf-8")
 
-jtalk_dir = os.path.normpath(
-    os.path.join(getcwd(), "..", "source", "synthDrivers", "jtalk")
-)
+repo_root = os.path.abspath(os.path.join(getcwd(), "..", ".."))  # miscDepsJp の 2 つ上
+jtalk_dir = os.path.join(repo_root, "miscDepsJp", "source", "synthDrivers", "jtalk")
 # Prefer the miscDepsJp overlay; fail fast if it's missing.
+# Remove any existing occurrence to ensure JP overlay wins for imports
+if jtalk_dir in sys.path:
+    sys.path.remove(jtalk_dir)
 sys.path.insert(0, jtalk_dir)  # nvdajp: ensure JP overlay wins for imports
 import jtalkDir  # type: ignore
 import translator1  # type: ignore
