@@ -25,6 +25,7 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
+import shutil
 from typing import Any
 
 
@@ -572,6 +573,117 @@ def register_jp_builders(env: Any) -> None:
     # Ensure overlay runs after jtalkPrep so fallback payload is included
     try:
         env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkPrep"))
+    except Exception:
+        pass
+
+    # Alias: jtalkSync (build/copy jtalk dictionay and python stubs into source/)
+    def _sync_jtalk_assets(target: list[Any], source: list[Any], env: Any) -> int:
+        repo_root = Path.cwd()
+        vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
+        jtalk_dir = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk"
+        dic_src = vendor_base / "dic"
+        dic_dst = jtalk_dir / "dic"
+
+        try:
+            jtalk_dir.mkdir(parents=True, exist_ok=True)
+            dic_dst.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            print(f"jtalkSync: failed to create destination dirs: {e}")
+            return 1
+
+        def _run_nmake(machine: str) -> int:
+            import subprocess
+            from subprocess import run
+
+            try:
+                run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                use_vcvarsall = False
+            except (FileNotFoundError, subprocess.CalledProcessError):
+                vcvarsall = _find_vcvarsall()
+                if not vcvarsall:
+                    print("jtalkSync: nmake not found and vcvarsall.bat not detected")
+                    return 1
+                use_vcvarsall = True
+                cmd_script = f'call "{vcvarsall}" {machine} && nmake /f all.mak MACHINE={machine}'
+                result = run(cmd_script, cwd=str(vendor_base), shell=True)
+                return result.returncode
+            cmd = ["nmake", "/f", "all.mak", f"MACHINE={machine}"]
+            result = run(cmd, cwd=str(vendor_base))
+            return result.returncode
+
+        sys_dic = dic_src / "sys.dic"
+        # If the vendor dic is missing, attempt to build it.
+        if not sys_dic.exists():
+            print("jtalkSync: sys.dic missing; running nmake to build python-jtalk assets")
+            arch = str(env.get("TARGET_ARCH", "x86")).lower()
+            machine = "x64" if arch in ("x64", "x86_64") else "x86"
+            rc = _run_nmake(machine)
+            if rc != 0:
+                print(f"jtalkSync: nmake failed with rc={rc}")
+                return rc
+            if not sys_dic.exists():
+                print(f"jtalkSync: sys.dic still missing after build: {sys_dic}")
+                return 1
+
+        # Copy dictionary files
+        try:
+            dic_files = [
+                "sys.dic",
+                "unk.dic",
+                "char.bin",
+                "matrix.bin",
+                "left-id.def",
+                "right-id.def",
+                "rewrite.def",
+                "pos-id.def",
+                "dicrc",
+                "DIC_VERSION",
+            ]
+            for name in dic_files:
+                src = dic_src / name
+                if src.exists():
+                    shutil.copy2(src, dic_dst / name)
+            print(f"jtalkSync: copied dictionary assets to {dic_dst}")
+        except Exception as e:
+            print(f"jtalkSync: failed to copy dictionary assets: {e}")
+            return 1
+
+        # Copy core python/jtalk files if present
+        try:
+            core_files = [
+                "libmecab.dll",
+                "libopenjtalk.dll",
+                "mecab.py",
+                "text2mecab.py",
+                "jtalkCore.py",
+            ]
+            for name in core_files:
+                src = vendor_base / name
+                if src.exists():
+                    shutil.copy2(src, jtalk_dir / name)
+            # Also try arch-specific libopenjtalk if present (x64)
+            arch = str(env.get("TARGET_ARCH", "x86")).lower()
+            if arch in ("x64", "x86_64"):
+                src64 = vendor_base / "x64" / "libopenjtalk.dll"
+                if src64.exists():
+                    shutil.copy2(src64, jtalk_dir / "libopenjtalk.dll")
+            print(f"jtalkSync: copied core assets to {jtalk_dir}")
+        except Exception as e:
+            print(f"jtalkSync: failed to copy core assets: {e}")
+            return 1
+
+        stamp_path = Path(str(target[0]))
+        stamp_path.parent.mkdir(parents=True, exist_ok=True)
+        stamp_path.write_text("ok", encoding="utf-8")
+        return 0
+
+    jtalk_sync_stamp = env.File("miscDepsJp/_state/prep/jtalkSync.stamp")
+    env.AlwaysBuild(jtalk_sync_stamp)
+    env.Command(jtalk_sync_stamp, [], _sync_jtalk_assets)
+    env.Alias("jtalkSync", jtalk_sync_stamp)
+
+    try:
+        env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkSync"))
     except Exception:
         pass
 
