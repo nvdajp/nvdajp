@@ -124,7 +124,17 @@ def pass2(verboseMode=False):
     with open_file(outfile, "w") as f:
         output = io.StringIO()
         # jtalk_dir points to miscDepsJp/source/synthDrivers/jtalk/ where libmecab.dll is located
-        translator2.initialize(__print, jtalk_dir, dic_dir, user_dics)
+        try:
+            translator2.initialize(__print, jtalk_dir, dic_dir, user_dics)
+        except OSError as e:
+            log = output.getvalue()
+            output.close()
+            f.write(log)
+            f.write("\n")
+            f.write(f"ERROR: Failed to load MeCab DLL: {e}\n")
+            f.write(f"Expected libmecab.dll at: {os.path.join(jtalk_dir, 'libmecab.dll')}\n")
+            raise RuntimeError(f"MeCab DLL load failed: {e}") from e
+
         log = output.getvalue()
         output.close()
         f.write(log)
@@ -242,7 +252,7 @@ def make_doc():
                 # "=== 見出し ===" => "#### 見出し"
                 # "== 見出し ==" => "### 見出し"
                 # "+ 見出し +" => "## 見出し"
-                if note.startswith("====") and note.endswith("===="):
+                if note.startswith("====") and note.endswith("==="):
                     note = "##### " + note[4:-4]
                 elif note.startswith("===") and note.endswith("==="):
                     note = "#### " + note[3:-3]

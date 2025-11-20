@@ -278,7 +278,6 @@ jobs:
         PYTHONPATH: "${{ github.workspace }}\\miscDepsJp\\include\\python-jtalk;${{ github.workspace }}\\miscDepsJp\\source\\synthDrivers\\jtalk"
       run: uv run python -m pytest test.py -k "JpBrailleTests or JtalkTests"
     - name: Show JP smoke logs
-      if: ${{ failure() }}
       shell: pwsh
       working-directory: miscDepsJp/jptools
       run: |
