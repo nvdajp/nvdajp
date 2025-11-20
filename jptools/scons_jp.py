@@ -659,6 +659,16 @@ def register_jp_builders(env: Any) -> None:
                     if not makefile.exists():
                         print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
                         return 1
+
+                    # BEGIN JP PATCH: Create dicrc to set config-charset=sjis for .def files
+                    dicrc = base / "dicrc"
+                    if not dicrc.exists():
+                        # Minimal dicrc with config-charset=sjis for SJIS .def files
+                        # Other settings use mecab-dict-index defaults
+                        dicrc.write_text("config-charset=sjis\n", encoding="utf-8")
+                        print(f"jtalkSync: created dicrc with config-charset=sjis")
+                    # END JP PATCH
+
                     import subprocess
                     from subprocess import run
                     try:
