@@ -671,17 +671,24 @@ def register_jp_builders(env: Any) -> None:
                             return 1
                         use_vcvarsall = True
                         # Force CP932 so mecab-dict-index reads SJIS rewrite.def correctly on UTF-8 consoles.
+                        # Use explicit cmd /c to ensure code page change takes effect in CI environment
                         cmd_script = (
-                            f'call "{vcvarsall}" {machine} && chcp 932>nul && '
+                            f'cmd /c "'
+                            f'call "{vcvarsall}" {machine} && '
+                            f'chcp 932 && '
                             f'nmake /f Makefile.mak MACHINE={machine}'
+                            f'"'
                         )
+                        print(f"jtalkSync: building dictionary with CP932 (SJIS) code page")
                         result = run(cmd_script, cwd=str(base), shell=True)
                         return result.returncode
+                    # Force CP932 for nmake path as well
                     cmd = [
                         "cmd",
                         "/c",
-                        f"chcp 932>nul && nmake /f Makefile.mak MACHINE={machine}",
+                        f"chcp 932 && nmake /f Makefile.mak MACHINE={machine}",
                     ]
+                    print(f"jtalkSync: building dictionary with CP932 (SJIS) code page")
                     result = run(cmd, cwd=str(base))
                     return result.returncode
 
