@@ -26,13 +26,8 @@ open_file = lambda name, mode: open(name, mode, encoding="utf-8")
 jtalk_dir = os.path.normpath(
     os.path.join(getcwd(), "..", "source", "synthDrivers", "jtalk")
 )
-sys.path.append(jtalk_dir)
-# Also add source/synthDrivers/jtalk where mecab.py is copied by scons miscdepsjp
-source_jtalk_dir = os.path.normpath(
-    os.path.join(getcwd(), "..", "..", "source", "synthDrivers", "jtalk")
-)
-if os.path.isdir(source_jtalk_dir):
-    sys.path.insert(0, source_jtalk_dir)  # Insert at beginning to prioritize
+# Prefer the miscDepsJp overlay; fail fast if it's missing.
+sys.path.insert(0, jtalk_dir)  # nvdajp: ensure JP overlay wins for imports
 import jtalkDir  # type: ignore
 import translator1  # type: ignore
 import translator2  # type: ignore
