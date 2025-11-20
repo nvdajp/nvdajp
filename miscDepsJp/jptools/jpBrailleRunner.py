@@ -126,7 +126,9 @@ def pass2(verboseMode=False):
     outfile = "__h2output.txt"
     with open_file(outfile, "w") as f:
         output = io.StringIO()
-        translator2.initialize(__print, jtalk_dir, dic_dir, user_dics)
+        # Use source_jtalk_dir for libmecab.dll location
+        mecab_dir = source_jtalk_dir if os.path.isdir(source_jtalk_dir) else jtalk_dir
+        translator2.initialize(__print, mecab_dir, dic_dir, user_dics)
         log = output.getvalue()
         output.close()
         f.write(log)
