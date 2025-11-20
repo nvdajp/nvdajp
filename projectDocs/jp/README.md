@@ -64,6 +64,7 @@
 * 定義: `miscDepsJp/source` 配下のファイルを、リポジトリ直下の `source/` にコピーして重ねる処理。
   * 実行スクリプト: `jptools/setup_miscdeps_overlay.py`（実行時の作業ディレクトリは `miscDepsJp/`）。
 * 現在は特別な除外は設けず、`miscDepsJp/source` の内容をそのまま重ねます（ポリシーとして不要なファイルは配置しない）。
+* （辞書が見つからない場合のみ）`scons jtalkSync` で JP 辞書/DLL/Python スタブを再配置できます
 * いつ走るか:
   * `scons source` 実行時に、SCons が `miscdepsjp` エイリアスを依存として自動実行（`sconstruct` に設定）。
   * `miscdepsjp` エイリアスの明示実行でも可。
