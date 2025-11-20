@@ -616,20 +616,60 @@ def register_jp_builders(env: Any) -> None:
         sys_dic = dic_src / "sys.dic"
         # If the vendor dic is missing, attempt to build it; otherwise, if source already has built dic, reuse it.
         if not sys_dic.exists():
+            # Prefer existing source dic if already present
             if source_dic.joinpath("sys.dic").exists():
                 print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
                 dic_src = source_dic
                 sys_dic = dic_src / "sys.dic"
             else:
-                print("jtalkSync: sys.dic missing; running nmake to build python-jtalk assets")
+                # Try to build dictionary via mecab-naist-jdic Makefile
+                def _build_dic(machine: str) -> int:
+                    base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
+                    makefile = base / "Makefile.mak"
+                    if not makefile.exists():
+                        print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
+                        return 1
+                    import subprocess
+                    from subprocess import run
+                    try:
+                        run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                        use_vcvarsall = False
+                    except (FileNotFoundError, subprocess.CalledProcessError):
+                        vcvarsall = _find_vcvarsall()
+                        if not vcvarsall:
+                            print("jtalkSync: nmake not found and vcvarsall.bat not detected for dic build")
+                            return 1
+                        use_vcvarsall = True
+                        cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
+                        result = run(cmd_script, cwd=str(base), shell=True)
+                        return result.returncode
+                    cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
+                    result = run(cmd, cwd=str(base))
+                    return result.returncode
+
                 arch = str(env.get("TARGET_ARCH", "x86")).lower()
                 machine = "x64" if arch in ("x64", "x86_64") else "x86"
+
+                print("jtalkSync: sys.dic missing; attempting to build python-jtalk (nmake all) and mecab dic")
                 rc = _run_nmake(machine)
                 if rc != 0:
-                    print(f"jtalkSync: nmake failed with rc={rc}")
+                    print(f"jtalkSync: nmake (all.mak) failed with rc={rc}")
                     return rc
+
+                # After all.mak, try explicit dic build if still missing
                 if not sys_dic.exists():
-                    print(f"jtalkSync: sys.dic still missing after build: {sys_dic}")
+                    rc_dic = _build_dic(machine)
+                    if rc_dic != 0:
+                        print(f"jtalkSync: nmake (mecab-naist-jdic) failed with rc={rc_dic}")
+                        return rc_dic
+                    # Dictionary build outputs to libopenjtalk/mecab-naist-jdic/dic
+                    built_dic = vendor_base / "libopenjtalk" / "mecab-naist-jdic" / "dic"
+                    if built_dic.joinpath("sys.dic").exists():
+                        dic_src = built_dic
+                        sys_dic = dic_src / "sys.dic"
+
+                if not sys_dic.exists():
+                    print(f"jtalkSync: sys.dic still missing after build; no fallback available")
                     return 1
 
         # Copy dictionary files
