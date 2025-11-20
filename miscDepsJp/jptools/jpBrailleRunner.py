@@ -122,6 +122,21 @@ def pass2(verboseMode=False):
     global output
     outfile = "__h2output.txt"
     with open_file(outfile, "w") as f:
+        libmecab_path = os.path.join(jtalk_dir, "libmecab.dll")
+        f.write(f"jtalk_dir: {jtalk_dir}\n")
+        f.write(f"libmecab.dll exists: {os.path.exists(libmecab_path)} ({libmecab_path})\n")
+        f.write(f"dic_dir exists: {os.path.isdir(dic_dir)} ({dic_dir})\n")
+        f.write("user_dics: %s\n" % (", ".join(user_dics) if user_dics else "<none>"))
+        f.write("\n")
+
+        dll_dir_handle = None
+        if hasattr(os, "add_dll_directory"):
+            try:
+                dll_dir_handle = os.add_dll_directory(jtalk_dir)
+                f.write("add_dll_directory: OK\n")
+            except OSError as e:
+                f.write(f"WARNING: add_dll_directory failed for {jtalk_dir}: {e}\n")
+
         output = io.StringIO()
         # jtalk_dir points to miscDepsJp/source/synthDrivers/jtalk/ where libmecab.dll is located
         try:
@@ -132,8 +147,11 @@ def pass2(verboseMode=False):
             f.write(log)
             f.write("\n")
             f.write(f"ERROR: Failed to load MeCab DLL: {e}\n")
-            f.write(f"Expected libmecab.dll at: {os.path.join(jtalk_dir, 'libmecab.dll')}\n")
+            f.write(f"Expected libmecab.dll at: {libmecab_path}\n")
             raise RuntimeError(f"MeCab DLL load failed: {e}") from e
+        finally:
+            if dll_dir_handle is not None:
+                dll_dir_handle.close()
 
         log = output.getvalue()
         output.close()
