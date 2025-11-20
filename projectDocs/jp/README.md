@@ -32,6 +32,24 @@
 * 秘密情報（署名トークン等）は GitHub Secrets/Variables 経由。リポジトリへの直書き禁止
 * 署名/配布はローカルで実施（CI は未署名）
 
+## 開発方針（本家版準拠）
+
+日本語版のコードも本家版の開発方針に準拠することを推奨します。詳細は `projectDocs/dev/codingStandards.md` を参照してください。
+
+### 優先度の高い改善点
+
+* **型ヒント**: すべての新規コードに PEP 484 形式の型ヒントを追加
+* **ログ**: `print` の代わりに `logHandler.log` を使用
+* **Docstring**: Sphinx 形式の docstring を追加（公開関数・クラス・メソッド）
+
+### その他の推奨事項
+
+* グローバル変数の削減（関数の引数として渡す、またはクラスにカプセル化）
+* 単体テストの追加（統合テストに加えて）
+* 後方互換性の考慮（`projectDocs/dev/deprecations.md` 参照）
+
+詳細は `projectDocs/dev/codingStandards.md`、`projectDocs/dev/contributing.md` を参照してください。
+
 ## 関連ドキュメント
 
 * 日本語版の恒常情報（人間向け）: `readme-nvdajp.md`
