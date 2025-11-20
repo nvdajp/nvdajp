@@ -131,9 +131,13 @@ def pass2(verboseMode=False):
         f.write("\n")
         # Verify MeCab initialization
         if mecab_module.libmc is None or mecab_module.mecab is None:
-            f.write("ERROR: MeCab initialization failed: libmc=%s, mecab=%s\n" % (mecab_module.libmc, mecab_module.mecab))
+            msg = "MeCab initialization failed: libmc=%s, mecab=%s" % (
+                mecab_module.libmc,
+                mecab_module.mecab,
+            )
+            f.write(msg + "\n")
             f.write("This will cause access violations. Aborting.\n")
-            return (1, outfile)
+            raise RuntimeError(msg)
         count = 0
         for t in tests:
             if "input" not in t:
