@@ -583,6 +583,8 @@ def register_jp_builders(env: Any) -> None:
         jtalk_dir = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk"
         dic_src = vendor_base / "dic"
         dic_dst = jtalk_dir / "dic"
+        # If vendor dic is missing, fall back to the already-present source dic
+        source_dic = jtalk_dir / "dic"
 
         try:
             jtalk_dir.mkdir(parents=True, exist_ok=True)
@@ -612,38 +614,46 @@ def register_jp_builders(env: Any) -> None:
             return result.returncode
 
         sys_dic = dic_src / "sys.dic"
-        # If the vendor dic is missing, attempt to build it.
+        # If the vendor dic is missing, attempt to build it; otherwise, if source already has built dic, reuse it.
         if not sys_dic.exists():
-            print("jtalkSync: sys.dic missing; running nmake to build python-jtalk assets")
-            arch = str(env.get("TARGET_ARCH", "x86")).lower()
-            machine = "x64" if arch in ("x64", "x86_64") else "x86"
-            rc = _run_nmake(machine)
-            if rc != 0:
-                print(f"jtalkSync: nmake failed with rc={rc}")
-                return rc
-            if not sys_dic.exists():
-                print(f"jtalkSync: sys.dic still missing after build: {sys_dic}")
-                return 1
+            if source_dic.joinpath("sys.dic").exists():
+                print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
+                dic_src = source_dic
+                sys_dic = dic_src / "sys.dic"
+            else:
+                print("jtalkSync: sys.dic missing; running nmake to build python-jtalk assets")
+                arch = str(env.get("TARGET_ARCH", "x86")).lower()
+                machine = "x64" if arch in ("x64", "x86_64") else "x86"
+                rc = _run_nmake(machine)
+                if rc != 0:
+                    print(f"jtalkSync: nmake failed with rc={rc}")
+                    return rc
+                if not sys_dic.exists():
+                    print(f"jtalkSync: sys.dic still missing after build: {sys_dic}")
+                    return 1
 
         # Copy dictionary files
         try:
-            dic_files = [
-                "sys.dic",
-                "unk.dic",
-                "char.bin",
-                "matrix.bin",
-                "left-id.def",
-                "right-id.def",
-                "rewrite.def",
-                "pos-id.def",
-                "dicrc",
-                "DIC_VERSION",
-            ]
-            for name in dic_files:
-                src = dic_src / name
-                if src.exists():
-                    shutil.copy2(src, dic_dst / name)
-            print(f"jtalkSync: copied dictionary assets to {dic_dst}")
+            if dic_src.resolve() == dic_dst.resolve():
+                print(f"jtalkSync: dictionary source and destination are identical; skipping copy.")
+            else:
+                dic_files = [
+                    "sys.dic",
+                    "unk.dic",
+                    "char.bin",
+                    "matrix.bin",
+                    "left-id.def",
+                    "right-id.def",
+                    "rewrite.def",
+                    "pos-id.def",
+                    "dicrc",
+                    "DIC_VERSION",
+                ]
+                for name in dic_files:
+                    src = dic_src / name
+                    if src.exists():
+                        shutil.copy2(src, dic_dst / name)
+                print(f"jtalkSync: copied dictionary assets to {dic_dst}")
         except Exception as e:
             print(f"jtalkSync: failed to copy dictionary assets: {e}")
             return 1
