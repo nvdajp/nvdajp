@@ -585,6 +585,7 @@ def register_jp_builders(env: Any) -> None:
         dic_dst = jtalk_dir / "dic"
         # If vendor dic is missing, fall back to the already-present source dic
         source_dic = jtalk_dir / "dic"
+        source_sys_dic = source_dic / "sys.dic"
 
         try:
             jtalk_dir.mkdir(parents=True, exist_ok=True)
@@ -614,6 +615,11 @@ def register_jp_builders(env: Any) -> None:
             return result.returncode
 
         sys_dic = dic_src / "sys.dic"
+        # Short-circuit: if source dic already has sys.dic, reuse it without building
+        if not sys_dic.exists() and source_sys_dic.exists():
+            print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
+            dic_src = source_dic
+            sys_dic = dic_src / "sys.dic"
         # If the vendor dic is missing, attempt to build it; otherwise, if source already has built dic, reuse it.
         if not sys_dic.exists():
             # Prefer existing source dic if already present
