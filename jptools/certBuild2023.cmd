@@ -143,6 +143,16 @@ for /f "usebackq tokens=1,2 delims=;" %%A in (`pwsh -NoProfile -Command ^
     set "_CERT_SCOPE=%%A"
     set "_CERT_THUMB=%%B"
 )
+rem Validate auto-detected thumbprint (must be 40 hex chars)
+if defined _CERT_THUMB (
+    for /f "usebackq delims=" %%V in (`pwsh -NoProfile -Command ^
+        "$v=$env:_CERT_THUMB; if($v -match '^[0-9A-Fa-f]{40}$'){ 'OK' }"`) do set "__AUTO_THUMB_OK=%%V"
+    if not defined __AUTO_THUMB_OK (
+        echo [WARN] Ignoring invalid auto-detected certificate thumbprint: !_CERT_THUMB!
+        set "_CERT_THUMB="
+    )
+    set "__AUTO_THUMB_OK="
+)
 if defined _CERT_THUMB (
     set CERT_STORE=My
     set CERT_SHA1=!_CERT_THUMB!
