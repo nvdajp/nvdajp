@@ -587,6 +587,27 @@ def register_jp_builders(env: Any) -> None:
         source_dic = jtalk_dir / "dic"
         source_sys_dic = source_dic / "sys.dic"
 
+        def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
+            """Return (has_sys_dic, has_utf8_version)."""
+            sys_dic_path = dic_dir / "sys.dic"
+            if not sys_dic_path.exists():
+                return False, False
+            version_file = dic_dir / "DIC_VERSION"
+            if not version_file.exists():
+                print(f"jtalkSync: DIC_VERSION missing for {dic_dir}; will rebuild as UTF-8.")
+                return True, False
+            try:
+                version_text = version_file.read_text(encoding="utf-8").lower()
+            except Exception as e:
+                print(f"jtalkSync: failed to read DIC_VERSION at {version_file}: {e}")
+                return True, False
+            if "utf-8" not in version_text and "utf8" not in version_text:
+                print(
+                    f"jtalkSync: dictionary at {dic_dir} not marked UTF-8 (version={version_text.strip()}); rebuilding."
+                )
+                return True, False
+            return True, True
+
         try:
             jtalk_dir.mkdir(parents=True, exist_ok=True)
             dic_dst.mkdir(parents=True, exist_ok=True)
@@ -615,20 +636,30 @@ def register_jp_builders(env: Any) -> None:
             return result.returncode
 
         sys_dic = dic_src / "sys.dic"
-        # Short-circuit: if source dic already has sys.dic, reuse it without building
-        if not sys_dic.exists() and source_sys_dic.exists():
+        # Prefer UTF-8 dictionaries; rebuild if missing or unmarked.
+        vendor_has_dic, vendor_utf8 = _dic_state(dic_src)
+        source_has_dic, source_utf8 = _dic_state(source_dic)
+        should_rebuild_dic = False
+        if vendor_has_dic and vendor_utf8:
+            sys_dic = dic_src / "sys.dic"
+        elif source_has_dic and source_utf8:
             print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
             dic_src = source_dic
             sys_dic = dic_src / "sys.dic"
-        # If the vendor dic is missing, attempt to build it; otherwise, if source already has built dic, reuse it.
-        if not sys_dic.exists():
-            # Prefer existing source dic if already present
-            if source_dic.joinpath("sys.dic").exists():
+        else:
+            should_rebuild_dic = vendor_has_dic or source_has_dic or not sys_dic.exists()
+            if should_rebuild_dic:
+                print("jtalkSync: dictionary present but not UTF-8; rebuilding via make_jdic.py.")
+            sys_dic = dic_src / "sys.dic"
+
+        # If the vendor dic is missing/invalid, attempt to build it; otherwise, if source already has a UTF-8 dic, reuse it.
+        if should_rebuild_dic or not sys_dic.exists():
+            if source_dic.joinpath("sys.dic").exists() and source_utf8 and not should_rebuild_dic:
                 print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
                 dic_src = source_dic
                 sys_dic = dic_src / "sys.dic"
             else:
-                # Try to build mecab binary and dictionary via mecab-naist-jdic Makefile
+                # Try to build mecab binary and dictionary via mecab-naist-jdic
                 def _build_mecab_bin(machine: str) -> int:
                     base = vendor_base / "libopenjtalk" / "mecab"
                     makefile = base / "Makefile.mak"
@@ -656,6 +687,18 @@ def register_jp_builders(env: Any) -> None:
                 def _build_dic(machine: str) -> int:
                     base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
                     makefile = base / "Makefile.mak"
+                    builder_script = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
+                    import subprocess
+                    from subprocess import run
+
+                    if builder_script.exists():
+                        python_exe = sys.executable or "python"
+                        env_vars = os.environ.copy()
+                        env_vars.setdefault("PYTHONUTF8", "1")
+                        print("jtalkSync: building dictionary with make_jdic.py (UTF-8).")
+                        result = run([python_exe, str(builder_script)], cwd=str(builder_script.parent), env=env_vars)
+                        return result.returncode
+
                     if not makefile.exists():
                         print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
                         return 1
@@ -668,8 +711,6 @@ def register_jp_builders(env: Any) -> None:
                         print(f"jtalkSync: created dicrc with config-charset = sjis")
                     # END JP PATCH
 
-                    import subprocess
-                    from subprocess import run
                     try:
                         run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
                         use_vcvarsall = False
@@ -704,7 +745,7 @@ def register_jp_builders(env: Any) -> None:
                 arch = str(env.get("TARGET_ARCH", "x86")).lower()
                 machine = "x64" if arch in ("x64", "x86_64") else "x86"
 
-                print("jtalkSync: sys.dic missing; attempting to build python-jtalk (nmake all) and mecab dic")
+                print("jtalkSync: sys.dic missing or out of date; building python-jtalk (nmake all) and mecab dic")
                 rc = _run_nmake(machine)
                 if rc != 0:
                     print(f"jtalkSync: nmake (all.mak) failed with rc={rc}")
@@ -721,13 +762,13 @@ def register_jp_builders(env: Any) -> None:
                         print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_bin}")
                         return 1
 
-                # After all.mak and mecab bin, try explicit dic build if still missing
-                if not sys_dic.exists():
+                # After all.mak and mecab bin, try explicit dic build if still missing or needs rebuild
+                if should_rebuild_dic or not sys_dic.exists():
                     rc_dic = _build_dic(machine)
                     if rc_dic != 0:
-                        print(f"jtalkSync: nmake (mecab-naist-jdic) failed with rc={rc_dic}")
+                        print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
                         return rc_dic
-                    # The Makefile writes sys.dic into mecab-naist-jdic (no /dic subdir in our tree).
+                    # make_jdic.py writes into mecab-naist-jdic/dic.
                     built_root = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
                     built_dic = built_root / "dic"
                     for candidate in (built_dic, built_root):

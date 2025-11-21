@@ -66,10 +66,16 @@
   * copy_jtalk_core_files.cmd を Python スクリプト化
   * nmake の置き換えを検討（現状は内部実装の詳細として許容）
 
-## 固定したベンダーのリビジョン（参考）
+### mecab 辞書ファイルの文字コード
 
-* python‑jtalk: 40eb632705e1f16d64b96755cf923b5feb0e688f （PR #2 merge, Add optional x64 build support）
-  * URL: <https://github.com/nvdajp/python-jtalk/commit/40eb632705e1f16d64b96755cf923b5feb0e688f>
+synthDrivers/jtalk/dic へのパッケージングについて、特に文字コードの処理を説明する。
+
+* miscDepsJp/jptools/jtalk/libopenjtalk は、もともとサブモジュール miscDepsJp/include/libopenjtalk（nishimotz/libopenjtalk）由来の内容をワークツリー側に持ってきたコピーである。
+* miscDepsJp/include/jtalk/libopenjtalk/mecab/src/Makefile.mak の CFLAGS に /D CHARSET_SHIFT_JIS が入っており、これにより mecab-dict-index.exe はソースコードが Shift_JIS（CP932）の前提でビルドされる。
+* miscDepsJp\jptools\jtalk\libopenjtalk\mecab-naist-jdic には EUC-JP の mecab テキスト辞書ファイルがある。これを make_jdic.py の convert_file が UTF-8 に変換する。
+* mecab-dict-index が UTF-8 ファイルを入力して UTF-8 対応バイナリ辞書をビルドする。
+* パッケージングされる synthDrivers/jtalk/dic 以下のファイルはバイナリ辞書も def ファイルなども UTF-8 ベースで統一される。
+* DIC_VERSION が無い（または UTF-8 記載が無い）辞書は CI で無効扱いとし、make_jdic.py で UTF-8 辞書を再生成してから JP スモークテストを実行する。
 
 ## 付録: 開発者の操作とログ例
 
