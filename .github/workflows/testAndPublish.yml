@@ -121,6 +121,11 @@ jobs:
       run: scons source %sconsArgs% %sconsCores%
     - name: Prepare for tests
       run: ci/scripts/tests/beforeTests.ps1
+    # BEGIN JP PATCH: ensure JP misc deps (including UTF-8 mecab dic) are built and cached
+    - name: Prepare JP misc deps overlay
+      shell: cmd
+      run: .\scons.bat miscdepsjp
+    # END JP PATCH
     - name: Cache scons build
       uses: actions/cache/save@v4
       with:
@@ -269,10 +274,6 @@ jobs:
     - name: Install tools for JP overlay
       shell: pwsh
       run: uv pip install scons pytest
-    - name: Prepare JP misc deps overlay
-      # scons.bat sets NVDA_VIRTUAL_ENV; direct scons fails in CI
-      shell: cmd
-      run: .\scons.bat miscdepsjp
     - name: Run JP braille/JTalk smoke tests
       shell: pwsh
       working-directory: miscDepsJp/jptools
