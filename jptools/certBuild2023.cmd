@@ -51,9 +51,9 @@ if not defined SIGNTOOL (
     echo [WARN] signtool not found in PATH or Windows Kits. Verification may be skipped.
 )
 
-rem Auto-detect a valid code signing cert from Windows cert store unless caller pins one
+rem Plan to auto-detect when nothing valid is provided
 set "_CERT_FORCE_AUTO="
-call :AutoDetectCert
+if not defined CERT_SHA1 if not defined CERT_NAME set "_CERT_FORCE_AUTO=1"
 
 rem Auto-detect a valid code signing cert from Windows cert store when not explicitly specified
 rem Preference: CurrentUser\My, then LocalMachine\My. Exclude self-signed.
