@@ -23,13 +23,17 @@ from os import getcwd
 
 open_file = lambda name, mode: open(name, mode, encoding="utf-8")
 
-jtalk_dir = os.path.normpath(
-    os.path.join(getcwd(), "..", "source", "synthDrivers", "jtalk")
-)
-sys.path.append(jtalk_dir)
+repo_root = os.path.abspath(os.path.join(getcwd(), "..", ".."))  # miscDepsJp の 2 つ上
+jtalk_dir = os.path.join(repo_root, "miscDepsJp", "source", "synthDrivers", "jtalk")
+# Prefer the miscDepsJp overlay; fail fast if it's missing.
+# Remove any existing occurrence to ensure JP overlay wins for imports
+if jtalk_dir in sys.path:
+    sys.path.remove(jtalk_dir)
+sys.path.insert(0, jtalk_dir)  # nvdajp: ensure JP overlay wins for imports
 import jtalkDir  # type: ignore
 import translator1  # type: ignore
 import translator2  # type: ignore
+import mecab as mecab_module  # type: ignore
 
 dic_dir = os.path.join(jtalk_dir, "dic")
 user_dics = jtalkDir.user_dics
@@ -118,12 +122,50 @@ def pass2(verboseMode=False):
     global output
     outfile = "__h2output.txt"
     with open_file(outfile, "w") as f:
+        libmecab_path = os.path.join(jtalk_dir, "libmecab.dll")
+        f.write(f"jtalk_dir: {jtalk_dir}\n")
+        f.write(f"libmecab.dll exists: {os.path.exists(libmecab_path)} ({libmecab_path})\n")
+        f.write(f"dic_dir exists: {os.path.isdir(dic_dir)} ({dic_dir})\n")
+        f.write("user_dics: %s\n" % (", ".join(user_dics) if user_dics else "<none>"))
+        f.write("\n")
+
+        dll_dir_handle = None
+        if hasattr(os, "add_dll_directory"):
+            try:
+                dll_dir_handle = os.add_dll_directory(jtalk_dir)
+                f.write("add_dll_directory: OK\n")
+            except OSError as e:
+                f.write(f"WARNING: add_dll_directory failed for {jtalk_dir}: {e}\n")
+
         output = io.StringIO()
-        translator2.initialize(__print, jtalk_dir, dic_dir, user_dics)
+        # jtalk_dir points to miscDepsJp/source/synthDrivers/jtalk/ where libmecab.dll is located
+        try:
+            translator2.initialize(__print, jtalk_dir, dic_dir, user_dics)
+        except OSError as e:
+            log = output.getvalue()
+            output.close()
+            f.write(log)
+            f.write("\n")
+            f.write(f"ERROR: Failed to load MeCab DLL: {e}\n")
+            f.write(f"Expected libmecab.dll at: {libmecab_path}\n")
+            raise RuntimeError(f"MeCab DLL load failed: {e}") from e
+        finally:
+            if dll_dir_handle is not None:
+                dll_dir_handle.close()
+
         log = output.getvalue()
         output.close()
         f.write(log)
         f.write("\n")
+        # Verify MeCab initialization
+        if mecab_module.libmc is None or mecab_module.mecab is None:
+            msg = "MeCab initialization failed: libmc=%s, mecab=%s" % (
+                mecab_module.libmc,
+                mecab_module.mecab,
+            )
+            f.write(msg + "\n")
+            f.write("This will cause access violations. Aborting.\n")
+            raise RuntimeError(msg)
         count = 0
         for t in tests:
             if "input" not in t:
@@ -178,26 +220,31 @@ def pass2(verboseMode=False):
                 ):
                     isError = True
                     count += 1
-                if isError or verboseMode:
-                    f.write("text   : " + t["text"] + "\n")
-                    f.write("correct: " + t["input"] + "\n")
-                    f.write("result : " + result + "\n")
-                    f.write("pat    : " + pat + "\n")
-                    if correct_inpos2:
-                        f.write("cor_in2: " + correct_inpos2 + "\n")
-                    if correct_inpos1:
-                        f.write("cor_in1: " + correct_inpos1 + "\n")
-                    if correct_inpos:
-                        f.write("cor_in : " + correct_inpos + "\n")
-                    if correct_outpos:
-                        f.write("cor_out: " + correct_outpos + "\n")
-                    f.write("res_in2: " + result_inpos2 + "\n")
-                    f.write("res_in1: " + result_inpos1 + "\n")
-                    f.write("res_in : " + result_inpos + "\n")
-                    f.write("res_out: " + result_outpos + "\n")
-                    if "comment" in t and t["comment"]:
-                        f.write("comment: " + t["comment"] + "\n")
-                    f.write("\n")
+                    if isError or verboseMode:
+                        f.write("text   : " + t["text"] + "\n")
+                        f.write("correct: " + t["input"] + "\n")
+                        f.write("result : " + result + "\n")
+                        f.write("pat    : " + pat + "\n")
+                        if correct_inpos2:
+                            f.write("cor_in2: " + correct_inpos2 + "\n")
+                        if correct_inpos1:
+                            f.write("cor_in1: " + correct_inpos1 + "\n")
+                        if correct_inpos:
+                            f.write("cor_in : " + correct_inpos + "\n")
+                        if correct_outpos:
+                            f.write("cor_out: " + correct_outpos + "\n")
+                        f.write("res_in2: " + result_inpos2 + "\n")
+                        f.write("res_in1: " + result_inpos1 + "\n")
+                        f.write("res_in : " + result_inpos + "\n")
+                        f.write("res_out: " + result_outpos + "\n")
+                        if "comment" in t and t["comment"]:
+                            comment = t["comment"]
+                            if isinstance(comment, (list, tuple)):
+                                comment = " ".join(str(c) for c in comment)
+                            else:
+                                comment = str(comment)
+                            f.write("comment: " + comment + "\n")
+                        f.write("\n")
                     f.write(log)
                     f.write("\n")
         print("h2: %d error(s). see %s" % (count, outfile))
@@ -223,7 +270,7 @@ def make_doc():
                 # "=== 見出し ===" => "#### 見出し"
                 # "== 見出し ==" => "### 見出し"
                 # "+ 見出し +" => "## 見出し"
-                if note.startswith("====") and note.endswith("===="):
+                if note.startswith("====") and note.endswith("==="):
                     note = "##### " + note[4:-4]
                 elif note.startswith("===") and note.endswith("==="):
                     note = "#### " + note[3:-3]

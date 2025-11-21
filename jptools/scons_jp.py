@@ -25,7 +25,48 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
+import shutil
 from typing import Any
+
+
+def _copy_jtalk_core_files(repo_root: Path) -> int:
+	"""Copy JTalk core Python files from miscDepsJp/include/python-jtalk to source/synthDrivers/jtalk.
+
+	This replicates the functionality of copy_jtalk_core_files.cmd.
+	"""
+	python_jtalk_dir = repo_root / "miscDepsJp" / "include" / "python-jtalk"
+	jtalk_dest_dir = repo_root / "source" / "synthDrivers" / "jtalk"
+
+	if not python_jtalk_dir.exists():
+		print(f"Error: python-jtalk directory not found: {python_jtalk_dir}")
+		return 1
+
+	if not jtalk_dest_dir.exists():
+		print(f"Error: jtalk destination directory not found: {jtalk_dest_dir}")
+		return 1
+
+	files_to_copy = [
+		"jtalkCore.py",
+		"mecab.py",
+		"text2mecab.py",
+	]
+
+	import shutil
+	missing_files: list[str] = []
+	for filename in files_to_copy:
+		src = python_jtalk_dir / filename
+		dst = jtalk_dest_dir / filename
+		if src.exists():
+			shutil.copy2(src, dst)
+			print(f"Copied {filename} to {dst}")
+		else:
+			print(f"Error: Source file not found: {src}")
+			missing_files.append(filename)
+
+	if missing_files:
+		return 1
+
+	return 0
 
 
 def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> int:
@@ -43,6 +84,12 @@ def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> in
     res = run([sys.executable, str(script)], cwd=str(misc_root))
     if res.returncode != 0:
         return res.returncode
+
+    # Copy JTalk core files (equivalent to copy_jtalk_core_files.cmd)
+    copy_result = _copy_jtalk_core_files(repo_root)
+    if copy_result != 0:
+        return copy_result
+
     # Write/update stamp
     stamp_path = Path(str(target[0]))
     stamp_path.parent.mkdir(parents=True, exist_ok=True)
@@ -241,39 +288,54 @@ def _get_vcvarsall_env(vcvarsall_path: str, arch: str) -> dict[str, str] | None:
     Returns a copy of os.environ with MSVC environment added, or None on failure.
     """
     import subprocess
-    import tempfile
 
-    # Create a temporary batch file that calls vcvarsall and outputs env
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".bat", delete=False) as f:
-        bat_path = f.name
-        f.write(f'@echo off\n')
-        f.write(f'call "{vcvarsall_path}" {arch} >nul\n')
-        f.write(f'if errorlevel 1 exit /b 1\n')
-        f.write(f'set\n')
+    # Run vcvarsall inside cmd.exe, then dump the environment (classic pattern).
+    cmd = f'"{vcvarsall_path}" {arch} && echo __ENV_START__ && set'
+    result = subprocess.run(
+        ["cmd", "/s", "/c", cmd],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        print(f"  vcvarsall.bat failed with return code {result.returncode}")
+        if result.stderr:
+            print(f"  stderr: {result.stderr}")
+        if result.stdout:
+            print(f"  stdout: {result.stdout}")
+        return None
 
-    try:
-        result = subprocess.run(
-            [bat_path],
-            capture_output=True,
-            text=True,
-            shell=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            return None
+    stdout = result.stdout or ""
+    if "__ENV_START__" not in stdout:
+        print("  Warning: __ENV_START__ marker not found in vcvarsall output")
+        print(f"  vcvarsall stdout (first 500 chars): {stdout[:500]}")
+        return None
 
-        # Parse environment variables from output
-        env = os.environ.copy()
-        for line in result.stdout.splitlines():
-            if "=" in line:
-                key, _, value = line.partition("=")
-                env[key] = value
-        return env
-    finally:
-        try:
-            os.unlink(bat_path)
-        except Exception:
-            pass
+    # Parse environment variables from output after __ENV_START__ marker
+    env = os.environ.copy()
+    env_section = False
+    env_lines_found = 0
+    for line in stdout.splitlines():
+        if "__ENV_START__" in line:
+            env_section = True
+            continue
+        if env_section and "=" in line:
+            key, _, value = line.partition("=")
+            env[key] = value
+            env_lines_found += 1
+
+    print(f"  vcvarsall: captured {env_lines_found} environment variables")
+
+    # Verify nmake is in the PATH
+    path = env.get("PATH", "")
+    if "nmake" not in path.lower() and "vc\\tools" not in path.lower():
+        print("  Warning: vcvarsall succeeded but PATH doesn't contain MSVC tools")
+        print(f"  Original PATH: {os.environ.get('PATH', '')[:180]}...")
+        print(f"  Captured PATH: {path[:180]}...")
+        print(f"  vcvarsall stdout (first 500 chars): {stdout[:500]}")
+        return None
+
+    return env
 
 
 
@@ -364,12 +426,14 @@ def register_jp_builders(env: Any) -> None:
         arch = str(env.get("TARGET_ARCH", "x86")).lower()
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 
-        if arch == "x64":
+        if arch in ("x64", "x86_64"):
             src_prebuilt = vendor_base / "x64" / "libopenjtalk.dll"
             nmake_machine = "x64"
         else:
             src_prebuilt = vendor_base / "libopenjtalk.dll"
             nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
+
+        built_dll = src_prebuilt
 
         dst_payload = (
             repo_root
@@ -421,33 +485,40 @@ def register_jp_builders(env: Any) -> None:
                     print(f"Warning: libopenjtalk source not found at {lib_src}")
 
                 # Check if nmake is available in PATH
-                # If not, try to setup MSVC environment by calling vcvarsall.bat
+                # If not, we'll run nmake via vcvarsall.bat in the same shell
                 import subprocess
-                nmake_env = os.environ.copy()
                 try:
                     run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                    print(f"jtalkPrep: nmake found in PATH")
+                    use_vcvarsall = False
                 except (FileNotFoundError, subprocess.CalledProcessError):
-                    print(f"jtalkPrep: nmake not in PATH, attempting to setup MSVC environment...")
+                    print(f"jtalkPrep: nmake not in PATH, will use vcvarsall.bat")
                     vcvarsall = _find_vcvarsall()
-                    if vcvarsall:
-                        print(f"jtalkPrep: found vcvarsall.bat: {vcvarsall}")
-                        nmake_env = _get_vcvarsall_env(vcvarsall, "x86")
-                        if not nmake_env:
-                            print(f"ERROR: failed to setup MSVC environment via vcvarsall.bat")
-                            print(f"  Run from Visual Studio Developer Command Prompt instead")
-                            return 1
-                    else:
+                    if not vcvarsall:
                         print(f"ERROR: nmake not found and vcvarsall.bat not detected")
                         print(f"  Install Visual Studio with C++ Desktop Development workload")
                         print(f"  Or run from Visual Studio Developer Command Prompt")
                         return 1
+                    print(f"jtalkPrep: found vcvarsall.bat: {vcvarsall}")
+                    use_vcvarsall = True
 
-                # Build nmake command
-                # Always pass MACHINE (all.mak requires it, even for x86)
-                nmake_cmd = ["nmake", "/f", "all.mak", f"MACHINE={nmake_machine}"]
-
-                print(f"jtalkPrep: running: {' '.join(nmake_cmd)} in {build_dir}")
-                result = run(nmake_cmd, cwd=str(build_dir), env=nmake_env)
+                # Build nmake command - if using vcvarsall, wrap it in cmd /c call
+                if use_vcvarsall:
+                    # Run vcvarsall.bat and nmake in the same cmd.exe shell
+                    # This ensures the environment variables are available to nmake
+                    print(f"jtalkPrep: running nmake via vcvarsall.bat with arch={nmake_machine}")
+                    # Use shell=True to avoid subprocess quote escaping issues
+                    cmd_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
+                    result = run(
+                        cmd_script,
+                        cwd=str(build_dir),
+                        capture_output=False,  # Let output go to console for debugging
+                        shell=True,  # Required to handle quotes in vcvarsall path correctly
+                    )
+                else:
+                    nmake_cmd = ["nmake", "/f", "all.mak", f"MACHINE={nmake_machine}"]
+                    print(f"jtalkPrep: running: {' '.join(nmake_cmd)} in {build_dir}")
+                    result = run(nmake_cmd, cwd=str(build_dir))
 
                 if result.returncode != 0:
                     print(f"ERROR: nmake failed with exit code {result.returncode}")
@@ -455,10 +526,14 @@ def register_jp_builders(env: Any) -> None:
                     return 1
 
                 # Verify DLL was created
-                if not src_prebuilt.exists():
-                    print(f"ERROR: nmake succeeded but DLL not found at {src_prebuilt}")
+                if not built_dll.exists():
+                    print(f"ERROR: nmake succeeded but DLL not found at {built_dll}")
                     print("  Check nmake output for errors")
                     return 1
+
+                if src_prebuilt != built_dll:
+                    src_prebuilt.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(built_dll, src_prebuilt)
 
                 print(f"jtalkPrep: build succeeded, DLL created at {src_prebuilt}")
 
@@ -498,6 +573,295 @@ def register_jp_builders(env: Any) -> None:
     # Ensure overlay runs after jtalkPrep so fallback payload is included
     try:
         env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkPrep"))
+    except Exception:
+        pass
+
+    # Alias: jtalkSync (build/copy jtalk dictionay and python stubs into source/)
+    def _sync_jtalk_assets(target: list[Any], source: list[Any], env: Any) -> int:
+        repo_root = Path.cwd()
+        vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
+        jtalk_dir = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk"
+        dic_src = vendor_base / "dic"
+        dic_dst = jtalk_dir / "dic"
+        # If vendor dic is missing, fall back to the already-present source dic
+        source_dic = jtalk_dir / "dic"
+        source_sys_dic = source_dic / "sys.dic"
+        builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
+
+        def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
+            """Return (has_sys_dic, has_utf8_version)."""
+            sys_dic_path = dic_dir / "sys.dic"
+            if not sys_dic_path.exists():
+                return False, False
+            version_file = dic_dir / "DIC_VERSION"
+            if not version_file.exists():
+                print(f"jtalkSync: DIC_VERSION missing for {dic_dir}; will rebuild as UTF-8.")
+                return True, False
+            try:
+                version_text = version_file.read_text(encoding="utf-8").lower()
+            except Exception as e:
+                print(f"jtalkSync: failed to read DIC_VERSION at {version_file}: {e}")
+                return True, False
+            if "utf-8" not in version_text and "utf8" not in version_text:
+                print(
+                    f"jtalkSync: dictionary at {dic_dir} not marked UTF-8 (version={version_text.strip()}); rebuilding."
+                )
+                return True, False
+            return True, True
+
+        try:
+            jtalk_dir.mkdir(parents=True, exist_ok=True)
+            dic_dst.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            print(f"jtalkSync: failed to create destination dirs: {e}")
+            return 1
+
+        def _run_nmake(machine: str) -> int:
+            import subprocess
+            from subprocess import run
+
+            try:
+                run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                use_vcvarsall = False
+            except (FileNotFoundError, subprocess.CalledProcessError):
+                vcvarsall = _find_vcvarsall()
+                if not vcvarsall:
+                    print("jtalkSync: nmake not found and vcvarsall.bat not detected")
+                    return 1
+                use_vcvarsall = True
+                cmd_script = f'call "{vcvarsall}" {machine} && nmake /f all.mak MACHINE={machine}'
+                result = run(cmd_script, cwd=str(vendor_base), shell=True)
+                return result.returncode
+            cmd = ["nmake", "/f", "all.mak", f"MACHINE={machine}"]
+            result = run(cmd, cwd=str(vendor_base))
+            return result.returncode
+
+        sys_dic = dic_src / "sys.dic"
+        # Prefer UTF-8 dictionaries; rebuild if missing or unmarked.
+        vendor_has_dic, vendor_utf8 = _dic_state(dic_src)
+        source_has_dic, source_utf8 = _dic_state(source_dic)
+        should_rebuild_dic = False
+        if vendor_has_dic and vendor_utf8:
+            sys_dic = dic_src / "sys.dic"
+        elif source_has_dic and source_utf8:
+            print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
+            dic_src = source_dic
+            sys_dic = dic_src / "sys.dic"
+        else:
+            should_rebuild_dic = vendor_has_dic or source_has_dic or not sys_dic.exists()
+            if should_rebuild_dic:
+                print("jtalkSync: dictionary present but not UTF-8; rebuilding via make_jdic.py.")
+            sys_dic = dic_src / "sys.dic"
+
+        # If the vendor dic is missing/invalid, attempt to build it; otherwise, if source already has a UTF-8 dic, reuse it.
+        if should_rebuild_dic or not sys_dic.exists():
+            if source_dic.joinpath("sys.dic").exists() and source_utf8 and not should_rebuild_dic:
+                print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
+                dic_src = source_dic
+                sys_dic = dic_src / "sys.dic"
+            else:
+                # Try to build mecab binary and dictionary via mecab-naist-jdic
+                def _build_mecab_bin(machine: str) -> int:
+                    base = vendor_base / "libopenjtalk" / "mecab"
+                    makefile = base / "Makefile.mak"
+                    if not makefile.exists():
+                        print(f"jtalkSync: Makefile.mak not found for mecab bin build: {makefile}")
+                        return 1
+                    import subprocess
+                    from subprocess import run
+                    try:
+                        run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                        use_vcvarsall = False
+                    except (FileNotFoundError, subprocess.CalledProcessError):
+                        vcvarsall = _find_vcvarsall()
+                        if not vcvarsall:
+                            print("jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build")
+                            return 1
+                        use_vcvarsall = True
+                        cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
+                        result = run(cmd_script, cwd=str(base), shell=True)
+                        return result.returncode
+                    cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
+                    result = run(cmd, cwd=str(base))
+                    return result.returncode
+
+                def _build_dic(machine: str) -> int:
+                    base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
+                    makefile = base / "Makefile.mak"
+                    mecab_dict_index_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+                    import subprocess
+                    from subprocess import run
+
+                    if builder_script_path.exists():
+                        rc_bin = _build_mecab_bin(machine)
+                        if rc_bin != 0:
+                            print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                            return rc_bin
+                        if not mecab_dict_index_bin.exists():
+                            print(
+                                f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
+                            )
+                            return 1
+                        # make_jdic.py expects mecab-dict-index.exe under jptools/jtalk/libopenjtalk/mecab/src
+                        make_jdic_mecab_bin = builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+                        try:
+                            make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
+                            shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
+                            print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin}")
+                        except Exception as e:
+                            print(f"jtalkSync: failed to copy mecab-dict-index.exe to make_jdic path: {e}")
+                            return 1
+                        python_exe = sys.executable or "python"
+                        env_vars = os.environ.copy()
+                        env_vars.setdefault("PYTHONUTF8", "1")
+                        print("jtalkSync: building dictionary with make_jdic.py (UTF-8).")
+                        result = run([python_exe, str(builder_script_path)], cwd=str(builder_script_path.parent), env=env_vars)
+                        return result.returncode
+
+                    if not makefile.exists():
+                        print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
+                        return 1
+
+                    # BEGIN JP PATCH: Create dicrc to set config-charset=sjis for .def files
+                    dicrc = base / "dicrc"
+                    if not dicrc.exists():
+                        # Use same format as existing dicrc (with spaces around =)
+                        dicrc.write_text("config-charset = sjis\n", encoding="utf-8")
+                        print(f"jtalkSync: created dicrc with config-charset = sjis")
+                    # END JP PATCH
+
+                    try:
+                        run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                        use_vcvarsall = False
+                    except (FileNotFoundError, subprocess.CalledProcessError):
+                        vcvarsall = _find_vcvarsall()
+                        if not vcvarsall:
+                            print("jtalkSync: nmake not found and vcvarsall.bat not detected for dic build")
+                            return 1
+                        use_vcvarsall = True
+                        # Force CP932 so mecab-dict-index reads SJIS rewrite.def correctly on UTF-8 consoles.
+                        # Use explicit cmd /c to ensure code page change takes effect in CI environment
+                        cmd_script = (
+                            f'cmd /c "'
+                            f'call "{vcvarsall}" {machine} && '
+                            f'chcp 932 && '
+                            f'nmake /f Makefile.mak MACHINE={machine}'
+                            f'"'
+                        )
+                        print(f"jtalkSync: building dictionary with CP932 (SJIS) code page")
+                        result = run(cmd_script, cwd=str(base), shell=True)
+                        return result.returncode
+                    # Force CP932 for nmake path as well
+                    cmd = [
+                        "cmd",
+                        "/c",
+                        f"chcp 932 && nmake /f Makefile.mak MACHINE={machine}",
+                    ]
+                    print(f"jtalkSync: building dictionary with CP932 (SJIS) code page")
+                    result = run(cmd, cwd=str(base))
+                    return result.returncode
+
+                arch = str(env.get("TARGET_ARCH", "x86")).lower()
+                machine = "x64" if arch in ("x64", "x86_64") else "x86"
+
+                print("jtalkSync: sys.dic missing or out of date; building python-jtalk (nmake all) and mecab dic")
+                rc = _run_nmake(machine)
+                if rc != 0:
+                    print(f"jtalkSync: nmake (all.mak) failed with rc={rc}")
+                    return rc
+
+                # Build mecab binary (mecab-dict-index.exe) if missing
+                mecab_dict_index_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+                rc_bin = _build_mecab_bin(machine)
+                if rc_bin != 0:
+                    print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                    return rc_bin
+                if not mecab_dict_index_bin.exists():
+                    print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}")
+                    return 1
+
+                # After all.mak and mecab bin, try explicit dic build if still missing or needs rebuild
+                if should_rebuild_dic or not sys_dic.exists():
+                    rc_dic = _build_dic(machine)
+                    if rc_dic != 0:
+                        print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
+                        return rc_dic
+                    # make_jdic.py writes into mecab-naist-jdic/dic (relative to builder_script)
+                    built_root = builder_script_path.parent / "libopenjtalk" / "mecab-naist-jdic"
+                    built_dic = built_root / "dic"
+                    for candidate in (built_dic, built_root):
+                        candidate_sys_dic = candidate / "sys.dic"
+                        if candidate_sys_dic.exists():
+                            dic_src = candidate
+                            sys_dic = candidate_sys_dic
+                            break
+
+                if not sys_dic.exists():
+                    print(f"jtalkSync: sys.dic still missing after build; no fallback available")
+                    return 1
+
+        # Copy dictionary files
+        try:
+            if dic_src.resolve() == dic_dst.resolve():
+                print(f"jtalkSync: dictionary source and destination are identical; skipping copy.")
+            else:
+                dic_files = [
+                    "sys.dic",
+                    "unk.dic",
+                    "char.bin",
+                    "matrix.bin",
+                    "left-id.def",
+                    "right-id.def",
+                    "rewrite.def",
+                    "pos-id.def",
+                    "dicrc",
+                    "DIC_VERSION",
+                ]
+                for name in dic_files:
+                    src = dic_src / name
+                    if src.exists():
+                        shutil.copy2(src, dic_dst / name)
+                print(f"jtalkSync: copied dictionary assets to {dic_dst}")
+        except Exception as e:
+            print(f"jtalkSync: failed to copy dictionary assets: {e}")
+            return 1
+
+        # Copy core python/jtalk files if present
+        try:
+            core_files = [
+                "libmecab.dll",
+                "libopenjtalk.dll",
+                "mecab.py",
+                "text2mecab.py",
+                "jtalkCore.py",
+            ]
+            for name in core_files:
+                src = vendor_base / name
+                if src.exists():
+                    shutil.copy2(src, jtalk_dir / name)
+            # Also try arch-specific libopenjtalk if present (x64)
+            arch = str(env.get("TARGET_ARCH", "x86")).lower()
+            if arch in ("x64", "x86_64"):
+                src64 = vendor_base / "x64" / "libopenjtalk.dll"
+                if src64.exists():
+                    shutil.copy2(src64, jtalk_dir / "libopenjtalk.dll")
+            print(f"jtalkSync: copied core assets to {jtalk_dir}")
+        except Exception as e:
+            print(f"jtalkSync: failed to copy core assets: {e}")
+            return 1
+
+        stamp_path = Path(str(target[0]))
+        stamp_path.parent.mkdir(parents=True, exist_ok=True)
+        stamp_path.write_text("ok", encoding="utf-8")
+        return 0
+
+    jtalk_sync_stamp = env.File("miscDepsJp/_state/prep/jtalkSync.stamp")
+    env.AlwaysBuild(jtalk_sync_stamp)
+    env.Command(jtalk_sync_stamp, [], _sync_jtalk_assets)
+    env.Alias("jtalkSync", jtalk_sync_stamp)
+
+    try:
+        env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkSync"))
     except Exception:
         pass
 

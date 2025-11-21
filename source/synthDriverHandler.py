@@ -1,7 +1,7 @@
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2006-2024 NV Access Limited, Peter Vágner, Aleksey Sadovoy,
+# Copyright (C) 2006-2025 NV Access Limited, Peter Vágner, Aleksey Sadovoy,
 # Joseph Lee, Arnold Loubriat, Leonard de Ruijter
 
 import pkgutil
@@ -484,10 +484,12 @@ def getSynthInstance(name, asDefault=False):
 
 # The synthDrivers that should be used by default.
 # The first that successfully initializes will be used when config is set to auto (I.e. new installs of NVDA).
+# nvdajp begin: Japanese version specific synth priority (jtalk first)
 defaultSynthPriorityList = ["nvdajp_jtalk", "espeak", "silence"]
 if winVersion.getWinVer() >= winVersion.WIN10:
 	# Default to OneCore on Windows 10 and above
 	defaultSynthPriorityList.insert(0, "oneCore")
+# nvdajp end
 
 
 def setSynth(name: Optional[str], isFallback: bool = False):

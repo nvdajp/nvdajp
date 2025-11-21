@@ -10,12 +10,20 @@ import mecabRunner
 
 class JpBrailleTests(unittest.TestCase):
     def test_pass1(self):
-        count, outfile = jpBrailleRunner.pass1()
-        self.assertEqual(count, 0)
+        try:
+            count, outfile = jpBrailleRunner.pass1()
+            self.assertEqual(count, 0, f"pass1 failed with {count} errors. See {outfile}")
+        except Exception as e:
+            self.fail(f"pass1 raised exception: {e}")
 
     def test_pass2(self):
-        count, outfile = jpBrailleRunner.pass2()
-        self.assertEqual(count, 0)
+        try:
+            count, outfile = jpBrailleRunner.pass2()
+            self.assertEqual(count, 0, f"pass2 failed with {count} errors. See {outfile}")
+        except RuntimeError as e:
+            self.fail(f"pass2 initialization failed: {e}")
+        except Exception as e:
+            self.fail(f"pass2 raised unexpected exception: {e}")
 
 
 class MecabTests(unittest.TestCase):

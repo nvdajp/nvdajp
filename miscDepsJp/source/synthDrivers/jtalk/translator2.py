@@ -585,6 +585,24 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo, nabcc=False, logwrite=_logwr
     ################################
     # True
     ################################
+    # Keep short katakana compounds together (e.g. ピンディスプレイ)
+    if (
+        prev_mo
+        and mo
+        and prev_mo.hinshi1 == "名詞"
+        and mo.hinshi1 == "名詞"
+        and RE_KATAKANA.match(prev_mo.hyouki)
+        and RE_KATAKANA.match(mo.hyouki)
+        and prev_mo.hyouki.endswith("ン")
+        and len(prev_mo.hyouki) <= 3
+        and len(mo.hyouki) <= 6
+    ):
+        return False
+
+    # Insert a break after "型" when followed by another noun.
+    if prev_mo.hyouki == "型" and mo.hinshi1 == "名詞":
+        return True
+
 
     # 括弧開の前
     # (あける)

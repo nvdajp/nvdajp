@@ -5,6 +5,11 @@ if not defined SCONSOPTIONS (
 )
 echo SCONSOPTIONS is %SCONSOPTIONS%
 
+rem Build architecture (default to x64 now that upstream is 64-bit only)
+if not defined BUILD_ARCH if defined TARGET_ARCH set BUILD_ARCH=%TARGET_ARCH%
+if not defined BUILD_ARCH set BUILD_ARCH=x64
+echo BUILD_ARCH is %BUILD_ARCH%
+
 if "%NOWDATE%"=="" set NOWDATE=250101a
 echo NOWDATE is %NOWDATE%
 if "%VERSION%"=="" set VERSION=jpalpha_%NOWDATE%
@@ -23,7 +28,7 @@ if not defined TIMESTAMP_URL set TIMESTAMP_URL=http://timestamp.digicert.com
 cd /d %~dp0
 cd ..
 
-call jptools\vcsetup.cmd
+call jptools\vcsetup.cmd %BUILD_ARCH%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 call jptools\check_vs_version.cmd

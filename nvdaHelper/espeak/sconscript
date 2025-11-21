@@ -157,7 +157,26 @@ def espeak_compilePhonemeData_buildAction(target, source, env):
 	# This is because it writes to stderr but doesn't flush it.
 	# Unfortunately, there's no way we can flush it or use a different stream
 	# because our eSpeak statically links the CRT.
-	espeak = AutoFreeCDLL(espeakLib[0].abspath)
+	dllPath = espeakLib[0].abspath
+	print(f"[DEBUG espeak_compilePhonemeData] Loading DLL: {dllPath}")
+	print(f"[DEBUG espeak_compilePhonemeData] env TARGET_ARCH={env.get('TARGET_ARCH')}")
+	# Check DLL architecture using dumpbin if available
+	import subprocess
+	try:
+		dumpbinResult = subprocess.run(
+			["dumpbin", "/headers", dllPath],
+			capture_output=True,
+			text=True,
+			timeout=10
+		)
+		# Extract machine type from dumpbin output
+		for line in dumpbinResult.stdout.split('\n'):
+			if 'machine' in line.lower() or '8664' in line or '014C' in line or 'AA64' in line or 'arm64' in line.lower():
+				print(f"[DEBUG espeak_compilePhonemeData] DLL architecture: {line.strip()}")
+				break
+	except Exception as e:
+		print(f"[DEBUG espeak_compilePhonemeData] Failed to check DLL architecture: {e}")
+	espeak = AutoFreeCDLL(dllPath)
 	espeak.espeak_ng_InitializePath(os.fsencode(espeakRepo.abspath))
 	espeak.espeak_ng_CompileIntonation(None, None)
 	espeak.espeak_ng_CompilePhonemeData(22050, None, None)
