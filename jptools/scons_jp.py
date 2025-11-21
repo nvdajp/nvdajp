@@ -786,8 +786,8 @@ def register_jp_builders(env: Any) -> None:
                     if rc_dic != 0:
                         print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
                         return rc_dic
-                    # make_jdic.py writes into mecab-naist-jdic/dic.
-                    built_root = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
+                    # make_jdic.py writes into mecab-naist-jdic/dic (relative to builder_script)
+                    built_root = builder_script.parent / "libopenjtalk" / "mecab-naist-jdic"
                     built_dic = built_root / "dic"
                     for candidate in (built_dic, built_root):
                         candidate_sys_dic = candidate / "sys.dic"
