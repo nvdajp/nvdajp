@@ -586,6 +586,7 @@ def register_jp_builders(env: Any) -> None:
         # If vendor dic is missing, fall back to the already-present source dic
         source_dic = jtalk_dir / "dic"
         source_sys_dic = source_dic / "sys.dic"
+        builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
 
         def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
             """Return (has_sys_dic, has_utf8_version)."""
@@ -687,12 +688,11 @@ def register_jp_builders(env: Any) -> None:
                 def _build_dic(machine: str) -> int:
                     base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
                     makefile = base / "Makefile.mak"
-                    builder_script = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
                     mecab_dict_index_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
                     import subprocess
                     from subprocess import run
 
-                    if builder_script.exists():
+                    if builder_script_path.exists():
                         rc_bin = _build_mecab_bin(machine)
                         if rc_bin != 0:
                             print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
@@ -703,7 +703,7 @@ def register_jp_builders(env: Any) -> None:
                             )
                             return 1
                         # make_jdic.py expects mecab-dict-index.exe under jptools/jtalk/libopenjtalk/mecab/src
-                        make_jdic_mecab_bin = builder_script.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+                        make_jdic_mecab_bin = builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
                         try:
                             make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
                             shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
@@ -715,7 +715,7 @@ def register_jp_builders(env: Any) -> None:
                         env_vars = os.environ.copy()
                         env_vars.setdefault("PYTHONUTF8", "1")
                         print("jtalkSync: building dictionary with make_jdic.py (UTF-8).")
-                        result = run([python_exe, str(builder_script)], cwd=str(builder_script.parent), env=env_vars)
+                        result = run([python_exe, str(builder_script_path)], cwd=str(builder_script_path.parent), env=env_vars)
                         return result.returncode
 
                     if not makefile.exists():
@@ -787,7 +787,7 @@ def register_jp_builders(env: Any) -> None:
                         print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
                         return rc_dic
                     # make_jdic.py writes into mecab-naist-jdic/dic (relative to builder_script)
-                    built_root = builder_script.parent / "libopenjtalk" / "mecab-naist-jdic"
+                    built_root = builder_script_path.parent / "libopenjtalk" / "mecab-naist-jdic"
                     built_dic = built_root / "dic"
                     for candidate in (built_dic, built_root):
                         candidate_sys_dic = candidate / "sys.dic"
