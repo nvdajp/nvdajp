@@ -20,29 +20,14 @@
 * 署名ビルドで system テスト安定緑
 * 差分削減の自動レポート化と定期棚卸し
 
-## 現在の作業キュー（2025年11月19日時点）
+## 現在の作業キュー（2025年11月21日時点）
 
-### PR #573 の残課題（優先度：高）
-
-* ❌ **JP Braille テスト修正**
-  * 失敗: `miscDepsJp/jptools/test.py::JpBrailleTests::test_pass2`
-  * エラー: `jpBrailleRunner.pass2()` が 1 を返す（期待値: 0）
-  * 対応: MeCab 初期化や Python 3.13 x64 互換性の確認が必要
-
-* ❌ **System Tests タイムアウト調査**
-  * Chrome テスト（windows-2022 & windows-2025）: スピーチ出力タイムアウト
-  * Symbols テスト（windows-2025）: 記号読み上げタイムアウト
-  * 対応: スピーチ合成エンジン初期化問題の調査
-
-### PR #573 完了後の作業（優先度：中～低）
+### PR #573 完了後の作業
 
 * 📝 **翻訳ファイル（nvda.po）のマージ**
   * 現状: 上流を採用済み
   * TODO: msgmerge で最新化、JP 固有翻訳の維持
-
-* 📝 **実機での動作確認**
-  * JTalk 動作確認
-  * 日本語点訳エンジン動作確認
+* ビルドランナーを windows-latest に戻す
 
 ### 完了した作業（PR #573）
 
@@ -52,8 +37,9 @@
 * ✅ 基盤整備（サブモジュール、依存関係、ビルドシステム）
 * ✅ ソースコード整合（構文、Braille、GUI、synthDriverHandler）
 * ✅ テストファイル整合（SystemTestSpy、test_brailleTables）
-* ✅ JTalk x64 ビルド対応
 * ✅ CI 主要テスト成功（Build, Launcher, Symbols, 多数の System Tests）
+* ✅ JTalk x64 ビルド対応、動作確認
+* ✅ 日本語点訳エンジン動作確認
 
 ### 補足（開発者・CI の操作）
 

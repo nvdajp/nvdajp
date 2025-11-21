@@ -75,8 +75,9 @@ synthDrivers/jtalk/dic へのパッケージングについて、特に文字コ
 * miscDepsJp\jptools\jtalk\libopenjtalk\mecab-naist-jdic には EUC-JP の mecab テキスト辞書ファイルがある。これを make_jdic.py の convert_file が UTF-8 に変換する。
 * mecab-dict-index が UTF-8 ファイルを入力して UTF-8 対応バイナリ辞書をビルドする。
 * パッケージングされる synthDrivers/jtalk/dic 以下のファイルはバイナリ辞書も def ファイルなども UTF-8 ベースで統一される。
-* CI のビルドステージなどで `scons miscdepsjp` を実行すると、DIC_VERSION が無い（または UTF-8 記載が無い）場合は辞書を make_jdic.py で生成する。CI では後続のランチャー作成／JP スモークテストはビルドステージのキャッシュを利用する。
-* miscDepsJp/jptools/jtusrdic/mecab-dict-index.exe はいずれ廃止して、ビルドし直したバイナリを使うようにする予定。
+* CI のビルドステージなどで `scons miscdepsjp` を実行すると、DIC_VERSION が無い（または UTF-8 記載が無い）辞書を make_jdic.py で生成し直し、その成果物をキャッシュして後続のランチャー作成／JP スモークテストに使う。
+* mecab-dict-index.exe は `scons miscdepsjp` 実行時に nmake で毎回ビルド（TARGET_ARCH に応じて x64/x86）。make_jdic.py が参照するパスにも同一バイナリをコピーしているが、将来的には検索先を一本化して複製を廃止する予定。
+* miscDepsJp/jptools/jtusrdic/mecab-dict-index.exe はユーザ辞書用の旧バイナリで、今後はビルド済みの exe を使う方式に移行する計画。
 
 ## 付録: 開発者の操作とログ例
 
