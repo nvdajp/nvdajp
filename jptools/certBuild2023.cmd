@@ -130,7 +130,7 @@ if defined CERT_NAME goto :eof
 set "_CERT_AUTO_RAN=1"
 for /f "usebackq tokens=1,2 delims=;" %%A in (`pwsh -NoProfile -Command ^
     "$now=Get-Date; "^ 
-    "function FindCert([string]\$root){ "^ 
+    "function FindCert([string]$root){ "^ 
     "  Get-ChildItem -Path \$root -ErrorAction SilentlyContinue | Where-Object { "^ 
     "    \$_.HasPrivateKey -and \$_.NotAfter -gt \$now -and \$_.NotBefore -le \$now -and "^ 
     "    (\$_.EnhancedKeyUsageList | Where-Object { \$_.ObjectId -eq '1.3.6.1.5.5.7.3.3' }) -and "^ 
