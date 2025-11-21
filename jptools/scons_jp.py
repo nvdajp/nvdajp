@@ -688,10 +688,20 @@ def register_jp_builders(env: Any) -> None:
                     base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
                     makefile = base / "Makefile.mak"
                     builder_script = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
+                    mecab_dict_index_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
                     import subprocess
                     from subprocess import run
 
                     if builder_script.exists():
+                        rc_bin = _build_mecab_bin(machine)
+                        if rc_bin != 0:
+                            print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                            return rc_bin
+                        if not mecab_dict_index_bin.exists():
+                            print(
+                                f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
+                            )
+                            return 1
                         python_exe = sys.executable or "python"
                         env_vars = os.environ.copy()
                         env_vars.setdefault("PYTHONUTF8", "1")
@@ -752,15 +762,14 @@ def register_jp_builders(env: Any) -> None:
                     return rc
 
                 # Build mecab binary (mecab-dict-index.exe) if missing
-                mecab_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
-                if not mecab_bin.exists():
-                    rc_bin = _build_mecab_bin(machine)
-                    if rc_bin != 0:
-                        print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
-                        return rc_bin
-                    if not mecab_bin.exists():
-                        print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_bin}")
-                        return 1
+                mecab_dict_index_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+                rc_bin = _build_mecab_bin(machine)
+                if rc_bin != 0:
+                    print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                    return rc_bin
+                if not mecab_dict_index_bin.exists():
+                    print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}")
+                    return 1
 
                 # After all.mak and mecab bin, try explicit dic build if still missing or needs rebuild
                 if should_rebuild_dic or not sys_dic.exists():
