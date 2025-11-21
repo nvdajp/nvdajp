@@ -51,36 +51,12 @@ if not defined SIGNTOOL (
     echo [WARN] signtool not found in PATH or Windows Kits. Verification may be skipped.
 )
 
+rem Auto-detect a valid code signing cert from Windows cert store unless caller pins one
+set "_CERT_FORCE_AUTO="
+call :AutoDetectCert
+
 rem Auto-detect a valid code signing cert from Windows cert store when not explicitly specified
 rem Preference: CurrentUser\My, then LocalMachine\My. Exclude self-signed.
-if not defined CERT_SHA1 if not defined CERT_NAME (
-    for /f "usebackq tokens=1,2 delims=;" %%A in (`pwsh -NoProfile -Command ^
-        "$now=Get-Date; "^ 
-        "function FindCert([string]\$root){ "^ 
-        "  Get-ChildItem -Path \$root -ErrorAction SilentlyContinue | Where-Object { "^ 
-        "    \$_.HasPrivateKey -and \$_.NotAfter -gt \$now -and \$_.NotBefore -le \$now -and "^ 
-        "    (\$_.EnhancedKeyUsageList | Where-Object { \$_.ObjectId -eq '1.3.6.1.5.5.7.3.3' }) -and "^ 
-        "    \$_.Issuer -ne \$_.Subject "^ 
-        "  } | Sort-Object NotAfter -Descending | Select-Object -First 1 "^ 
-        "}; "^ 
-        "\$cert=FindCert 'Cert:\\CurrentUser\\My'; \$scope='USER'; if(-not \$cert){ \$cert=FindCert 'Cert:\\LocalMachine\\My'; \$scope='MACHINE' } ; "^ 
-        "if(\$cert){ \$tp=(\$cert.Thumbprint -replace ' ','').ToUpper(); if(\$tp -match '^[0-9A-F]{40}$'){ Write-Output (\"\$scope;\" + \$tp) } } "
-    `) do (
-        set "_CERT_SCOPE=%%A"
-        set "_CERT_THUMB=%%B"
-    )
-    if defined _CERT_THUMB (
-        set CERT_STORE=My
-        set CERT_SHA1=!_CERT_THUMB!
-        if /I "!_CERT_SCOPE!"=="MACHINE" set CERT_MACHINE_STORE=1
-        echo Using certificate from store: scope=!_CERT_SCOPE! sha1=!_CERT_THUMB!
-    ) else (
-        echo [INFO] No suitable code signing certificate found in store.
-    )
-    set _CERT_SCOPE=
-    set _CERT_THUMB=
-)
-
 rem Validate CERT_SHA1 (must be exactly 40 hex chars). If invalid, clear it.
 if defined CERT_SHA1 (
     for /f "usebackq delims=" %%V in (`pwsh -NoProfile -Command ^
@@ -88,8 +64,36 @@ if defined CERT_SHA1 (
     if not defined __SHA1_OK (
         echo [WARN] Ignoring invalid CERT_SHA1 value: %CERT_SHA1%
         set CERT_SHA1=
+        set "_CERT_FORCE_AUTO=1"
     )
     set __SHA1_OK=
+)
+
+rem Re-run auto-detect when a provided CERT_SHA1 was rejected
+if defined _CERT_FORCE_AUTO (
+    set "CERT_NAME="
+    call :AutoDetectCert
+)
+set "_CERT_FORCE_AUTO="
+
+rem Validate CERT_NAME early to fail fast when it does not exist
+if defined CERT_NAME if not defined CERT_SHA1 (
+    for /f "usebackq delims=" %%V in (`pwsh -NoProfile -Command ^
+        "$name=$env:CERT_NAME; $now=Get-Date; "^
+        "$roots=@('Cert:\\CurrentUser\\My','Cert:\\LocalMachine\\My'); "^
+        "$c = $roots | ForEach-Object { Get-ChildItem $_ -ErrorAction SilentlyContinue } | "^
+        "Where-Object { $_.HasPrivateKey -and $_.NotAfter -gt $now -and $_.NotBefore -le $now -and "^
+        "($_.Subject -like ('*' + $name + '*') -or $_.FriendlyName -like ('*' + $name + '*')) -and "^
+        "($_.EnhancedKeyUsageList | Where-Object { $_.ObjectId -eq '1.3.6.1.5.5.7.3.3' }) } | Select-Object -First 1; "^
+        "if($c){ if($c.PSParentPath -match '\\\\LocalMachine\\\\'){ Write-Output 'FOUND;MACHINE' } else { Write-Output 'FOUND;USER' } }"`) do (
+        for /f "tokens=1,2 delims=;" %%A in ("%%V") do (
+            if /I "%%A"=="FOUND" set "__CERT_NAME_OK=1"& if /I "%%B"=="MACHINE" set "CERT_MACHINE_STORE=1"
+        )
+    )
+    if not defined __CERT_NAME_OK (
+        echo [WARN] CERT_NAME not found in store: %CERT_NAME%
+    )
+    set __CERT_NAME_OK=
 )
 
 rem Build SCons args; enable signing only when a valid store cert is selected
@@ -118,3 +122,35 @@ exit /b 0
 echo nvdajp build error %ERRORLEVEL%
 @if "%PAUSE%"=="1" pause
 exit /b -1
+
+rem Auto-detect helper (CurrentUser\My then LocalMachine\My)
+:AutoDetectCert
+if defined CERT_SHA1 goto :eof
+if defined CERT_NAME goto :eof
+set "_CERT_AUTO_RAN=1"
+for /f "usebackq tokens=1,2 delims=;" %%A in (`pwsh -NoProfile -Command ^
+    "$now=Get-Date; "^ 
+    "function FindCert([string]\$root){ "^ 
+    "  Get-ChildItem -Path \$root -ErrorAction SilentlyContinue | Where-Object { "^ 
+    "    \$_.HasPrivateKey -and \$_.NotAfter -gt \$now -and \$_.NotBefore -le \$now -and "^ 
+    "    (\$_.EnhancedKeyUsageList | Where-Object { \$_.ObjectId -eq '1.3.6.1.5.5.7.3.3' }) -and "^ 
+    "    \$_.Issuer -ne \$_.Subject "^ 
+    "  } | Sort-Object NotAfter -Descending | Select-Object -First 1 "^ 
+    "}; "^ 
+    "\$cert=FindCert 'Cert:\\CurrentUser\\My'; \$scope='USER'; if(-not \$cert){ \$cert=FindCert 'Cert:\\LocalMachine\\My'; \$scope='MACHINE' } ; "^ 
+    "if(\$cert){ \$tp=(\$cert.Thumbprint -replace ' ','').ToUpper(); if(\$tp -match '^[0-9A-F]{40}$'){ Write-Output (\"\$scope;\" + \$tp) } } "
+`) do (
+    set "_CERT_SCOPE=%%A"
+    set "_CERT_THUMB=%%B"
+)
+if defined _CERT_THUMB (
+    set CERT_STORE=My
+    set CERT_SHA1=!_CERT_THUMB!
+    if /I "!_CERT_SCOPE!"=="MACHINE" set CERT_MACHINE_STORE=1
+    echo Using certificate from store: scope=!_CERT_SCOPE! sha1=!_CERT_THUMB!
+) else (
+    echo [INFO] No suitable code signing certificate found in store.
+)
+set _CERT_SCOPE=
+set _CERT_THUMB=
+goto :eof
