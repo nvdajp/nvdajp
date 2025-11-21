@@ -22,10 +22,8 @@ def main() -> int:
     # Destination is the repository root 'source' directory
     dst = cwd.parent / "source"
 
-    # Mirror historical behavior: exclude espeak-data from overlay
-    espeak_data = src / "synthDrivers" / "espeak-data"
-    if espeak_data.exists():
-        shutil.rmtree(espeak_data, ignore_errors=True)
+    # Copy all files under miscDepsJp/source as-is into repo source.
+    # Any content policy (e.g. not placing espeak-data here) is enforced at repo level.
 
     overlay_copy(src, dst)
     return 0

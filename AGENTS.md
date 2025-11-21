@@ -1,29 +1,113 @@
-# AGENTS.md — 日本語版向けエージェント手引き（最小）
+# AGENTS.md — JP automation guidelines (minimal)
 
-このファイルは、リポジトリ内で自動化エージェント／スクリプトが守る最小限のルールと最短手順を示します。詳細な説明は人間向けドキュメントを参照してください。
+This document summarizes the rules automation agents/scripts must obey when working in this repository. Human-oriented guides live under `projectDocs/jp/`.
 
-## スコープ（Step 1）
-- 目的: 3.11 x86 を維持したまま「本家版寄りのCI/ビルド基盤」に整合
-- 除外: x64/arm64 切替、Java Access Bridge 64bit、Python 3.13 への移行
-- 関連: Issue #539（Step 1）、Issue #530（本家版 2026.1 マージ全体）
+## Scope
 
-## 禁則と優先
-- 破壊的操作を避ける（履歴の書換は明示指示時のみ）
-- 本家版との差分は最小化し、差分は明示的な場所に集約
-- 可能な限り SCons / 純 Python を優先（.cmd / 7z / nmake 依存は削減）
-- コードサイニング/配布は CI で行わない（Secrets を使用しない）。正式リリースはローカルで実施
+- Target platform: Windows x64 with Python 3.13 (matching `nvaccess/beta`)
+- Out of scope: legacy Python 3.11/x86 builds, arm64, CI releases using secrets
+- arm64 support will be revisited in later phases once 3.13 x64 is stable
+- Related issues: #539 (workflow alignment), #530 (2026.1 merge)
+- Note: Java Access Bridge 64-bit is supported (submodule commit 0cc5c9d includes windowsaccessbridge-64.dll)
 
-## 最短コマンド
-- 型チェック: `ci/scripts/tests/typeCheck.ps1`（Pyright）
-- Lint（推奨）: `uv run ruff format --check && uv run ruff check`
-- ビルド例: `scons source dist launcher --all-cores`
+## Principles
 
-## CI とブランチ
-- PR の base は通常 `betajp`
-- 型チェックのみの本家版寄せワークフロー: `.github/workflows/nvbeta-typecheck-311x86.yml`
-- 日本語版の包括的ワークフロー: `.github/workflows/testAndPublish.yml`
+- Avoid destructive operations (no history rewrites or force pushes unless explicitly requested)
+- Minimize diffs against upstream; mark JP-specific code with `# nvdajp` or `# BEGIN/END JP PATCH`
+- Prefer SCons/pure Python tooling; auxiliary `.cmd` or `nmake` usage should be limited to JP-specific overlays
+- Do not perform code-signing or releases in CI (no secrets). Official release builds happen locally.
 
-## 参照
-- 人間向けハブ: `projectDocs/jp/README.md`
-- 本家版の開発環境: `projectDocs/dev/createDevEnvironment.md`
-- 日本語版の概要: `readme-nvdajp.md`
+## Quick commands
+
+- Type check: `ci/scripts/tests/typeCheck.ps1`
+- Lint (optional): `uv run ruff format --check && uv run ruff check`
+- Build example: `scons source dist launcher --all-cores`
+
+## CI & branching
+
+- Base branch for PRs: `betajp` (protected; direct pushes forbidden)
+- Required checks: `allTestsPass`, `NVAccess Beta Aligned TypeCheck (3.13 x64)`, etc.
+- Release/snapshot jobs stay disabled unless explicitly requested; avoid secrets.
+
+## Aligning `testAndPublish.yml`
+
+- Use upstream `testAndPublish.yml` verbatim; JP additions must:
+  - Call helper scripts (`ci/scripts/...`) instead of embedding logic
+  - Be wrapped with `# BEGIN/END JP PATCH`
+  - Stay focused on JP-only requirements (e.g., `beforeTests.ps1`, crowdin upload disabled)
+
+## Actions usage
+
+- Monitor: `gh run list -w .github/workflows/testAndPublish.yml -b betajp -L 3`
+- View logs: `gh run view <runId> --job <jobId> --log`
+- Rerun failures: `gh run rerun <runId> --failed`
+- Key workflows: `.github/workflows/testAndPublish.yml`, `.github/workflows/nvbeta-typecheck.yml`
+- **PR CI monitoring**: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <number>` (single check) or `-Watch` (continuous monitoring)
+  - Automatically analyzes failures and provides specific advice
+  - Detects common issues like JTalk build architecture mismatches, MSVC environment problems, etc.
+
+## References
+
+- JP landing page: `readme-nvdajp.md`
+- JP Docs Hub: `projectDocs/jp/README.md`
+- Roadmap: `projectDocs/jp/roadmap.md`
+- Upstream docs (when no JP diff exists):
+  - `projectDocs/dev/readme.md`
+  - `projectDocs/dev/createDevEnvironment.md`
+  - `projectDocs/dev/contributing.md`
+  - `projectDocs/dev/codingStandards.md`
+  - `projectDocs/testing/readme.md`
+  - `projectDocs/testing/automated.md`
+  - `ci/README.md`
+  - `projectDocs/translating/readme.md`
+
+---
+
+## 日本語まとめ
+
+このファイルは、自動化エージェント／スクリプトが守る最小限のルールを示します。人間向けの詳細は `projectDocs/jp/` を参照してください。
+
+### スコープ
+
+- 対象: Windows x64 + Python 3.13（本家と同じ）
+- 除外: 3.11/x86、arm64、Secrets を使う配布系ジョブ
+- 3.13 x64 が落ち着いたら Phase 2/3 で arm64 を順次検討する
+- 注記: Java Access Bridge 64-bit は対応済み（submodule commit 0cc5c9d に windowsaccessbridge-64.dll が含まれる）
+
+### 禁則と優先
+
+- 履歴書き換えや force push は指示が無い限り禁止
+- JP 固有差分は `# nvdajp`／`# BEGIN JP PATCH` で明示
+- ビルドは SCons／純 Python を優先。`.cmd` や `nmake` は JP 独自処理のみ
+- CI ではコードサインや Secrets 利用を行わない
+
+### 最短コマンド
+
+- 型チェック: `ci/scripts/tests/typeCheck.ps1`
+- Lint（任意）: `uv run ruff format --check && uv run ruff check`
+- ビルド: `scons source dist launcher --all-cores`
+
+### CI とブランチ
+
+- PR は `betajp` を base（保護ブランチ）
+- 必須チェック: `allTestsPass`, `NVAccess Beta Aligned TypeCheck (3.13 x64)` など
+- 配布系ジョブはデフォルト無効／Secrets 不使用
+
+### `testAndPublish.yml`
+
+- 上流ファイルをそのまま使い、JP 追加はスクリプト呼び出し＋`# BEGIN/END JP PATCH` のみにする
+- `beforeTests.ps1` 呼び出し、crowdin upload 無効化など最小の JP 追加だけを維持
+
+### Actions 運用
+
+- 監視: `gh run list -w .github/workflows/testAndPublish.yml -b betajp -L 3`
+- ログ: `gh run view <runId> --job <jobId> --log`
+- 再実行: `gh run rerun <runId> --failed`
+- **PR CI 監視スクリプト**: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` (単回チェック) または `-Watch` (継続監視)
+  - 失敗を自動分析し、具体的なアドバイスを提供
+  - JTalk ビルドのアーキテクチャ不一致、MSVC 環境の問題などを検出
+
+### 参考
+
+- `readme-nvdajp.md`, `projectDocs/jp/README.md`, `projectDocs/jp/roadmap.md`
+- 差分が無い場合は上流ドキュメントを参照

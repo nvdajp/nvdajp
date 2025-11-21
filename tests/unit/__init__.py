@@ -89,6 +89,11 @@ speech.initialize()
 
 import braille  # noqa: E402
 
+# Force English braille table for unit tests to match upstream expectations
+# JP branch defaults to a Japanese table via configSpec; tests assume English widths
+import config  # noqa: E402
+config.conf["braille"]["translationTable"] = "en-ueb-g1.ctb"
+
 # Disable auto detection of braille displays when unit testing.
 config.conf["braille"]["display"] = "noBraille"
 braille.initialize()
@@ -132,10 +137,9 @@ config.conf["braille"]["cursorBlink"] = False
 # textutils tests need uniscribe in NVDAHelper local lib
 import ctypes  # noqa: E402
 import NVDAHelper  # noqa: E402
+import NVDAState  # noqa: E402
 
-NVDAHelper.localLib = ctypes.cdll.LoadLibrary(
-	os.path.join(NVDAHelper.versionedLibPath, "nvdaHelperLocal.dll"),
-)
+NVDAHelper.localLib = ctypes.cdll.LoadLibrary(NVDAState.ReadPaths.nvdaHelperLocalDll)
 # The focus and navigator objects need to be initialized to something.
 from .objectProvider import PlaceholderNVDAObject, NVDAObjectWithRole  # noqa: E402, F401
 

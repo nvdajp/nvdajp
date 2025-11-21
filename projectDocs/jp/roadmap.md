@@ -2,127 +2,83 @@
 
 目的: 本家版との差分を最小化しながら、順序立てて基盤整合 → 言語/依存更新 → 64bit 対応を進める。
 
-## 2026.1jp の先 — 目標状態（2026–2027）
+## 現行マイルストン（2026.1jp を想定）
 
-日本語版を小さく安定に保ち、本家版追従のコストとリスクを継続的に低減する。
+* 目標: 3.13 x64 で本家構成を通す。差分は最小、CI も本家準拠。
+* プラットフォーム/CI: Windows + Python 3.13 x64 のみ。32bit は扱わない。
+* ビルド/オーケストレーション: SCons を唯一の手段に統一（.cmd 依存は可能な限り削減）。
+* ワークフロー: 本家 YAML をベースに、JP 固有は branch フィルター・Crowdin 無効化・スクリプト呼び出し 1 行など最小パッチ。
+* サブモジュール: JAB/espeak/jtalk 等は本家に追従し、差分を最小化。
+* 差分管理: JP 固有差分は専用ディレクトリ＋最小パッチで集約。恒常差分を定期に棚卸し。
+* リリース/署名: 署名・配布はローカル実施（CI は未署名の検証用のみ）。
+* ドキュメント/ADR: 重要決定は `projectDocs/jp/adr/` に 1 ページで記録。
+* 非対象: 3.11/x86。CI リリースジョブ（Secrets 使用）も対象外。
 
-- 本家版との差分（最小化）
-  - 目標: 日本語版固有差分は「専用ディレクトリ＋パッチ最小」。恒常的な差分ファイル数 ≤ 50、差分行数 ≤ 2,000 を維持。
-  - 運用: 四半期ごとに差分レポート（自動生成）を確認し、不要差分を削減。
+## 今後の検討
 
-- プラットフォーム戦略
-  - 本家版に合わせる
+* GitHub Actions (CI) 3.13 x64 で unit + system が安定緑
+* 署名ビルドで system テスト安定緑
+* 差分削減の自動レポート化と定期棚卸し
 
-- CI/品質（グリーン基準）
-  - 可能な限り本家版に合わせる
+## 現在の作業キュー（2025年11月21日時点）
 
-- リリース運用
-  - 可能な限り本家版に合わせる
-  - 正式リリースの署名/配布はローカル実施（CI は未署名の検証用ビルドのみ）
+### PR #573 完了後の作業
 
-- アドオン互換性
-  - 本家版に合わせる
+* 📝 **翻訳ファイル（nvda.po）のマージ**
+  * 現状: 上流を採用済み
+  * TODO: msgmerge で最新化、JP 固有翻訳の維持
+* ビルドランナーを windows-latest に戻す
 
-- ドキュメント
-  - readme-nvdajp.md は最小を維持、JP Docs Hub を常に最新に。
-  - 重要決定は ADR として `projectDocs/jp/adr/` に 1 ページ記録。
+### 完了した作業（PR #573）
 
-- セキュリティ/コンプライアンス
-  - 可能な限り本家版に合わせる
+* ✅ Python 3.13 x64 対応完了
+* ✅ CI/ビルド基盤の整合
+* ✅ testAndPublish.yml の上流準拠化（JP PATCH 最小化）
+* ✅ 基盤整備（サブモジュール、依存関係、ビルドシステム）
+* ✅ ソースコード整合（構文、Braille、GUI、synthDriverHandler）
+* ✅ テストファイル整合（SystemTestSpy、test_brailleTables）
+* ✅ CI 主要テスト成功（Build, Launcher, Symbols, 多数の System Tests）
+* ✅ JTalk x64 ビルド対応、動作確認
+* ✅ 日本語点訳エンジン動作確認
 
-- ディプリケーション計画
-  - 可能な限り本家版に合わせる
-  - 32bit版 NVDA 日本語版は本家版と同様に 2025.3 系で終了
+### 補足（開発者・CI の操作）
 
-  - \.python-versions を 3.11 x86 のみに固定（完了）
+**開発者が意識するコマンド**:
 
-  - Lint（ruff）ジョブ追加・安定化
-  - testAndPublish の主要ジョブを段階的に windows-2025 へ（後述: ランナー移行計画）
-  - jptools/setupMiscDepsJp.cmd の 7z ラウンドトリップ除去（Python/SCons化）
-  - SCons キャッシュ/引数の整合（ci/scripts/setSconsArgs.ps1 準拠）
-  - ユニット/必要最小のシステムテストを安定緑（installerタグは除外可）
+```bash
+# これだけでビルド完結
+scons dist
 
-## 既知の懸念（メモ）
+# または署名ビルド（ローカルのみ）
+scons certBuild certFile=path/to/cert.pfx
+```
 
-- Python 3.13 への移行と x64 対応が、fast-diff-match-patch（DMP）依存の配布状況により同時対応になりうる。
-  - 対応方針（今は実装せず記録のみ）
-    - DMP 読み込み失敗時は difflib へ自動フォールバック（コード側で遅延 import/try-except）
-    - CI では 3.13 x64 を先行検証、3.13 x86 は typeCheck/lint のみ等で段階導入
-  - Phase 1 完了時点で再評価し、必要なら Phase 2 の計画に反映
+**CI での操作**（testAndPublish.yml）:
 
-## Phase 2 — Python 3.13 対応（Part of #530）
+```yaml
+- name: Build NVDA
+  run: scons dist launcher
+```
 
-- Scope
-  - 3.13 x64 を必須とし、3.11 x86 はEOLまで保守
-- Tasks
-  - 新しいワークフローを 3.13 x64 に切替（ファイル名は nvbeta-typecheck.yml 等に簡素化可）。
-  - 依存互換性の確認・ピン更新（wxPython, brlapi など）
-  - .python-versions に 3.13 を追加（3.11 と併存）
-  - CI ジョブ分割（typeCheck / unit / docs / packaging）を本家版構成へ近づける
- - Exit
-  - 3.13 x64 が安定して緑、3.11 x86 は EOL（2025.3）まで緑を維持
-- 補足（運用）
-  - 目的: x64 を既定化に向け安定、3.13 を実用レベルへ（配布は段階導入）
-  - CI マトリクス: 3.13 x64（必須）/ 3.11 x86（EOL まで保守用）/ 3.13 x86（typeCheck・lint のみ任意）
-  - DMP フォールバック: fast-diff-match-patch が利用不可の場合は difflib へ自動退避
-  - 主要 JP アドオン（jtalk/kgs）を x64 で起動確認（任意）
+**内部で自動実行される**（透過的）:
 
-## Phase 3 — x64 ビルド対応（Part of #530）
+1. `jtalkPrep`: DLL 不在なら nmake でビルド、存在なら再ビルドスキップ
+2. `miscdepsjp`: overlay で `source/` に配置
+3. `certprep`: 署名（certFile 指定時のみ）
+4. `dist`, `launcher` など: 配布物作成
 
-- Scope
-  - x64（将来 arm64）ビルドの追加、移行パス検証
-- Tasks
-  - nvbeta-typecheck.yml は削除。testAndPublish.yml に本家版と同等の typeCheck ジョブを持たせる。
-  - JAB 64bit への切替、installer/launcher の x64 条件分岐
-  - 設定移行（32→64）・アンインストーラ fix（本家版の取り込みを反映）
-  - 日本語版固有モジュール（jtalk 等）の x64 対応検証
-  - アドオン互換性チェックとガイダンス
-- 手順
-  - 先行診断: dry-run マージで衝突箇所を棚卸し（pyproject、sconstruct、workflows、installer/launcher、source 配下）
-  - 先にワークフローと SCons の構造差分を合わせる（コード差分より先）
-  - 段階マージ: ワークフロー → ビルド（SCons/installer） → ランタイム（source） → ドキュメント
-  - 差分の集約・削減: 日本語版固有変更は明示ディレクトリへ寄せ、恒常差分を減らす
-- Exit
-  - x86/x64 の並行ビルドがCIで緑、配布準備可
+**前提条件**:
 
-## リスクとロールバック
+* サブモジュール取得（`submodules: recursive`）
 
-- 依存更新でのビルド破綻 → ピン見直し/段階導入
-- システムテストの不安定化 → タグ縮小・再試行の仕組み
+## 運用ルール（ブランチ/PR）
 
-## ランナー移行計画（windows-2025）
-
-- 方針: 本家版と整合させるため、windows-2025 へ段階移行。影響の小さいジョブから先行し、安定確認後に固定。
-- 移行順序（Phase 1 内で実施）
-  - フェーズ1-A（低リスク先行）
-    - 対象: typeCheck（pyright）、checkPo、checkPot、licenseCheck
-    - 方針: 直ちに windows-2025 へ。3 連続グリーンで固定
-  - フェーズ1-B（ビルド要所）
-    - 対象: buildNVDA、createLauncher、createSymbols
-    - 方針: SCons MSVC 設定キャッシュ（SCONS_CACHE_MSVC_CONFIG）を有効化してから 2025 へ。
-      2 連続グリーン＋成果物検証（launcher 起動・symbols 生成）で固定
-  - フェーズ1-C（最後に移行）
-    - 対象: unitTests → systemTests の順
-    - 方針: unitTests を先に 2025 へ。systemTests はタグを限定（例: startupShutdown）で試行→安定後に拡大
-- 受け入れ基準（各段）
-  - 2〜3 連続グリーン（ジョブ特性に応じて調整）
-  - 成果物の基本動作確認（launcher 起動、symbols 正常作成/アップロード）
-  - 実行時間が顕著に悪化しない（悪化時はキャッシュ/並列度を見直し）
-- ロールバック/安全策
-  - 一時的にランナーをマトリクス化（windows-2022/2025 並走）して比較
-  - 不安定な場合は該当ジョブのみ即座に元のランナーへ戻す
-  - systemTests はタグ縮小・再試行の運用でフレークを抑制
-
-## ゲート（判断ポイント）
-
-- Gate A（Phase 2 中間）: 3.13 x64 で unit + 最小 system が安定緑 → installer/署名/シンボル確認へ
-- Gate B（Phase 2 完了）: 3.13 x64 が配布可能、3.11 x86 は EOL まで保守可能 → Phase 3 へ
-- Gate C（Phase 3 開始前）: dry-run マージ結果と衝突一覧の承認 → 実マージ・段階導入へ
+* `betajp` は安定ブランチ（直接 push 禁止）。すべてトピックブランチ→PR で変更。
+* ブランチ保護: `allTestsPass` / TypeCheck を必須チェックに設定。
+* testAndPublish.yml は「上流置換 → JP パッチ再適用」の手順で保守。
 
 ## 参照
 
-- JP Docs Hub: projectDocs/jp/README.md
-- 本家版開発環境: projectDocs/dev/createDevEnvironment.md
-- エージェント向け: AGENTS.md
-
-
+* JP Docs Hub: projectDocs/jp/README.md
+* 本家版開発環境: projectDocs/dev/createDevEnvironment.md
+* エージェント向け: AGENTS.md

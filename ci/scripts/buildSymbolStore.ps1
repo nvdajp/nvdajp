@@ -18,4 +18,12 @@ foreach ($syms in
 }
 
 Set-Location symbols
-7z a -tzip -r ..\output\symbols.zip *.dl_ *.ex_ *.pd_
+# Create symbols.zip without external 7z dependency
+$dest = Join-Path (Resolve-Path ..\output) 'symbols.zip'
+if (Test-Path $dest) { Remove-Item -Force $dest }
+$files = Get-ChildItem -Recurse -File -Include *.dl_,*.ex_,*.pd_ | Select-Object -ExpandProperty FullName
+if ($files -and $files.Count -gt 0) {
+    Compress-Archive -Path $files -DestinationPath $dest
+} else {
+    Write-Host "No symbol files (*.dl_, *.ex_, *.pd_) found to archive."
+}

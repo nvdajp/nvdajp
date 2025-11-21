@@ -3,25 +3,41 @@
 NVDA 日本語版の概要と最短手順を示します。詳細は JP Docs Hub と本家版ドキュメントを参照してください。
 
 ## 現状（2025-10）
+
 - Python: 3.11 x86 を維持（x64/arm64 切替は未実施）
 - 本家版寄りの CI/ビルド整合を段階導入中（Step 1）
 - 7z / .cmd / nmake 依存は削減中（アドオン梱包は純 Python 化）
 - 32bit は 2025.3 で EOL（予定）
 
+## git 改行コードの設定
+
+コミット時に LF へ正規化され、Windows ローカルの CRLF は許容されます（.gitattributes と .editorconfig により運用）
+
+```bash
+git config --global core.autocrlf true
+git config --global core.safecrlf warn
+```
+
 ## クイックスタート
+
 - 取得: `git clone --recurse-submodules https://github.com/nvdajp/nvdajp.git`
 - ビルド例: `scons source dist launcher --all-cores`
 - 起動: `runnvda.bat`
 - 単体/システムテスト: `ci/scripts/tests/unitTests.ps1` / `ci/scripts/tests/systemTests.ps1`
 
 ## CI
-- 型チェック（本家版寄せ・安全導入）: `.github/workflows/nvbeta-typecheck-311x86.yml`
+
+- 型チェック（本家版寄せ・安全導入）: `.github/workflows/nvbeta-typecheck.yml`
+- `testAndPublish.yml` にも `typeCheck` ジョブを追加（3.11 x86／pyright）
 - 日本語版の包括パイプライン: `.github/workflows/testAndPublish.yml`
+- PR CI 監視: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` (単回) または `-Watch` (継続監視)
 
 ## リリース
+
 - 正式リリースはローカルマシンでコードサイニングして作成（CI は未署名の検証用ビルドのみ）
 
 ## ドキュメント
+
 - JP Docs Hub（日本語版の要約とリンク集）: `projectDocs/jp/README.md`
 - 本家版の開発環境ガイド: `projectDocs/dev/createDevEnvironment.md`
 - プロダクトビジョン: `projectDocs/product_vision.md`
