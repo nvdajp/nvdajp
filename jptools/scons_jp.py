@@ -702,6 +702,15 @@ def register_jp_builders(env: Any) -> None:
                                 f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
                             )
                             return 1
+                        # make_jdic.py expects mecab-dict-index.exe under jptools/jtalk/libopenjtalk/mecab/src
+                        make_jdic_mecab_bin = builder_script.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+                        try:
+                            make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
+                            shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
+                            print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin}")
+                        except Exception as e:
+                            print(f"jtalkSync: failed to copy mecab-dict-index.exe to make_jdic path: {e}")
+                            return 1
                         python_exe = sys.executable or "python"
                         env_vars = os.environ.copy()
                         env_vars.setdefault("PYTHONUTF8", "1")
