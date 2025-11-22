@@ -14,32 +14,25 @@
 * ドキュメント/ADR: 重要決定は `projectDocs/jp/adr/` に 1 ページで記録。
 * 非対象: 3.11/x86。CI リリースジョブ（Secrets 使用）も対象外。
 
-## 今後の検討
+## 現在の作業キュー（2025年11月22日時点）
 
-* GitHub Actions (CI) 3.13 x64 で unit + system が安定緑
-* 署名ビルドで system テスト安定緑
-* 差分削減の自動レポート化と定期棚卸し
+### JTalk x64 ビルドの安定化
 
-## 現在の作業キュー（2025年11月21日時点）
+* 署名ビルドで nvdajp_jtalk に切替後、短い発話でも MeCab が断続的にアクセス違反 (synthDrivers\jtalk\mecab.py:Mecab_analysis 内) を起こし、読み上げが途切れる。
+* 同梱 MeCab DLL/Python 拡張が旧 MSVC ランタイムでビルドされたままになっており、Python 3.13 / VS2022 (v1944) と ABI が不一致でヒープが壊れている可能性がある。
 
-### PR #573 完了後の作業
+### 翻訳ファイル（nvda.po）のマージ
 
-* 📝 **翻訳ファイル（nvda.po）のマージ**
-  * 現状: 上流を採用済み
-  * TODO: msgmerge で最新化、JP 固有翻訳の維持
+* 現状: 上流を採用済み
+* TODO: msgmerge で最新化、JP 固有翻訳の維持
+
+### ビルドワークフローの差分を減らす
+
 * ビルドランナーを windows-latest に戻す
 
-### 完了した作業（PR #573）
+### 将来にむけた保守性の向上
 
-* ✅ Python 3.13 x64 対応完了
-* ✅ CI/ビルド基盤の整合
-* ✅ testAndPublish.yml の上流準拠化（JP PATCH 最小化）
-* ✅ 基盤整備（サブモジュール、依存関係、ビルドシステム）
-* ✅ ソースコード整合（構文、Braille、GUI、synthDriverHandler）
-* ✅ テストファイル整合（SystemTestSpy、test_brailleTables）
-* ✅ CI 主要テスト成功（Build, Launcher, Symbols, 多数の System Tests）
-* ✅ JTalk x64 ビルド対応、動作確認
-* ✅ 日本語点訳エンジン動作確認
+* 差分削減の自動レポート化と定期棚卸し
 
 ### 補足（開発者・CI の操作）
 
