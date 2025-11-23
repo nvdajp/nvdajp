@@ -93,10 +93,21 @@ convert_file(
     path.join(THISDIR, jdic_file), "euc-jp", path.join(TEMPDIR, jdic_file), CODE, apply_filter=True
 )
 
-print(TEMPDIR, [MECAB_DICT_INDEX, "-d", ".", "-o", OUTDIR, "-f", CODE, "-c", CODE])
-subprocess.check_call(
-    [MECAB_DICT_INDEX, "-d", ".", "-o", OUTDIR, "-f", CODE, "-c", CODE], cwd=TEMPDIR
+cmd = [MECAB_DICT_INDEX, "-d", ".", "-o", OUTDIR, "-f", CODE, "-c", CODE]
+print(TEMPDIR, cmd)
+# Suppress normal mecab-dict-index chatter but surface output on failure
+result = subprocess.run(
+    cmd,
+    cwd=TEMPDIR,
+    capture_output=True,
+    text=True,
 )
+if result.returncode != 0:
+    if result.stdout:
+        print(result.stdout)
+    if result.stderr:
+        print(result.stderr)
+    result.check_returncode()
 
 print("copy %s to %s" % (path.join(THISDIR, "dicrc"), OUTDIR))
 shutil.copy(path.join(THISDIR, "dicrc"), OUTDIR)

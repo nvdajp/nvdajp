@@ -21,7 +21,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 - Type check: `ci/scripts/tests/typeCheck.ps1`
 - Lint (optional): `uv run ruff format --check && uv run ruff check`
-- Build example: `scons source dist launcher --all-cores`
+- Build example: `scons source dist launcher --all-cores`（Windows 環境では `scons.bat` を使う）
 
 ## CI & branching
 

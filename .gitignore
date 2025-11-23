@@ -57,3 +57,7 @@ nvdaHelper/docs/
 *.pfx
 *.egg-info
 .claude/settings.local.json
+miscDepsJp/_state/
+miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp/
+miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic/
+miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-*.csv
