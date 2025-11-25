@@ -3,7 +3,7 @@
     Runs the JP braille / JTalk smoke tests locally with the same steps as CI.
 
 .DESCRIPTION
-    1. Optionally installs the minimal tooling (uv pip install scons pytest).
+    1. Optionally syncs all dependencies (uv sync) to set up the NVDA build environment.
     2. Optionally runs "scons.bat miscdepsjp" to prepare the overlay.
     3. Sets PYTHONPATH so that python-jtalk + source/synthDrivers/jtalk are importable.
     4. Invokes "uv run python -m pytest miscDepsJp/jptools/test.py -k 'JpBrailleTests or JtalkTests'".
@@ -23,8 +23,10 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $repoRoot
 
 if (-not $SkipInstall) {
-    Write-Host "Installing uv dependencies (scons, pytest)..." -ForegroundColor Cyan
-    uv pip install scons pytest
+    Write-Host "Syncing NVDA dependencies..." -ForegroundColor Cyan
+    & "$repoRoot\ensureuv.ps1" sync
+    Write-Host "Installing pytest for JP smoke tests..." -ForegroundColor Cyan
+    & "$repoRoot\ensureuv.ps1" pip install pytest
 }
 
 if (-not $SkipOverlay) {
