@@ -280,6 +280,13 @@ jobs:
       env:
         PYTHONPATH: "${{ github.workspace }}\\miscDepsJp\\include\\python-jtalk;${{ github.workspace }}\\miscDepsJp\\source\\synthDrivers\\jtalk"
       run: uv run python -m pytest test.py -k "JpBrailleTests or JtalkTests"
+    - name: Run MeCab access violation reproduction test
+      shell: pwsh
+      working-directory: ${{ github.workspace }}
+      env:
+        PYTHONPATH: "${{ github.workspace }}\\miscDepsJp\\include\\python-jtalk;${{ github.workspace }}\\miscDepsJp\\source\\synthDrivers\\jtalk"
+      run: .\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -RunMecabAccessViolationTest
+      continue-on-error: true
     - name: Show JP smoke logs
       shell: pwsh
       working-directory: miscDepsJp/jptools

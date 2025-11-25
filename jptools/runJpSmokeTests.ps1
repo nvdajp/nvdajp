@@ -9,11 +9,15 @@
     4. Invokes "uv run python -m pytest miscDepsJp/jptools/test.py -k 'JpBrailleTests or JtalkTests'".
 
     Use -SkipInstall or -SkipOverlay if you already prepared the environment.
+    Use -IncludeThreadSafety to include MeCab thread safety tests.
+    Use -RunMecabAccessViolationTest to run the MeCab access violation reproduction script.
 #>
 [CmdletBinding()]
 param(
     [switch]$SkipInstall,
-    [switch]$SkipOverlay
+    [switch]$SkipOverlay,
+    [switch]$IncludeThreadSafety,
+    [switch]$RunMecabAccessViolationTest
 )
 
 Set-StrictMode -Version Latest
@@ -35,5 +39,16 @@ if (-not $SkipOverlay) {
 $env:PYTHONPATH = "miscDepsJp\include\python-jtalk;miscDepsJp\source\synthDrivers\jtalk"
 Write-Host "PYTHONPATH set to $($env:PYTHONPATH)" -ForegroundColor Cyan
 
-Write-Host "Running JP braille/JTalk smoke tests..." -ForegroundColor Cyan
-uv run python -m pytest miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
+if ($RunMecabAccessViolationTest) {
+    Write-Host "Running MeCab access violation reproduction script..." -ForegroundColor Cyan
+    uv run python miscDepsJp/jptools/reproduce_mecab_access_violation.py
+} else {
+    $testFilter = "JpBrailleTests or JtalkTests"
+    if ($IncludeThreadSafety) {
+        $testFilter = "JpBrailleTests or JtalkTests or MecabThreadSafetyTests"
+        Write-Host "Running JP braille/JTalk smoke tests (including thread safety tests)..." -ForegroundColor Cyan
+    } else {
+        Write-Host "Running JP braille/JTalk smoke tests..." -ForegroundColor Cyan
+    }
+    uv run python -m pytest miscDepsJp/jptools/test.py -k $testFilter
+}

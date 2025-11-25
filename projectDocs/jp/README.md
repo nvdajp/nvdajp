@@ -57,6 +57,7 @@
 * 本家版のプロダクトビジョン: `projectDocs/product_vision.md`
 * 日本語点字出力テーブル: `projectDocs/jp/braille-ja-jp-comp6.md`
 * 日本語版 CI/ビルド基盤: `projectDocs/jp/ci`
+* MeCab アクセス違反の原因分析: `projectDocs/jp/mecab-access-violation-analysis.md`
 * エージェント／自動化向けの運用ルール: `AGENTS.md`
 
 ## 用語: JP オーバレイ（JP overlay）
