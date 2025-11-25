@@ -213,7 +213,7 @@ def pass2(verboseMode=False):
                 # output
                 isError = False
                 if (
-                    result != t["input"]
+                    pat != t["input"]
                     or (correct_inpos2 and result_inpos2 != correct_inpos2)
                     or (correct_inpos and result_inpos != correct_inpos)
                     or (correct_outpos and result_outpos != correct_outpos)
