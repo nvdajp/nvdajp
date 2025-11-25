@@ -175,7 +175,7 @@ def pass2(verboseMode=False):
                 nabcc = True
             if "text" in t:
                 output = io.StringIO()
-                result, pat, inpos1, inpos2 = translator2.translateWithInPos2(
+                pat, result, inpos1, inpos2 = translator2.translateWithInPos2(
                     t["text"], logwrite=__print, nabcc=nabcc
                 )
                 log = output.getvalue()
