@@ -43,6 +43,8 @@ Write-Host "PYTHONPATH set to $($env:PYTHONPATH)" -ForegroundColor Cyan
 
 if ($RunMecabAccessViolationTest) {
     Write-Host "Running MeCab access violation reproduction script..." -ForegroundColor Cyan
+    # Set UTF-8 encoding for Python output to avoid UnicodeEncodeError on Windows console
+    $env:PYTHONUTF8 = "1"
     uv run python miscDepsJp/jptools/reproduce_mecab_access_violation.py
 } else {
     $testFilter = "JpBrailleTests or JtalkTests"

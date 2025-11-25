@@ -14,6 +14,16 @@ import sys
 import time
 import threading
 
+# Fix Unicode encoding issues on Windows console (cp1252)
+if sys.platform == "win32":
+    try:
+        # Try to reconfigure stdout to UTF-8
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except (AttributeError, ValueError):
+        # Fallback: set PYTHONUTF8 environment variable for subprocesses
+        os.environ.setdefault('PYTHONUTF8', '1')
+
 # Setup path
 repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 jtalk_dir = os.path.join(repo_root, "miscDepsJp", "source", "synthDrivers", "jtalk")
@@ -39,13 +49,22 @@ user_dics = []
 
 
 def logwrite(s=""):
-    print(f"[{threading.current_thread().name}] {s}")
+    try:
+        print(f"[{threading.current_thread().name}] {s}")
+    except UnicodeEncodeError:
+        # Fallback: encode with errors='replace' to avoid crashes
+        safe_s = str(s).encode(sys.stdout.encoding or 'utf-8', errors='replace').decode(sys.stdout.encoding or 'utf-8', errors='replace')
+        print(f"[{threading.current_thread().name}] {safe_s}")
 
 
 def test_mecab_analysis(text):
     """MeCab 解析を実行"""
     try:
-        print(f"\nTesting: {text!r}")
+        # Safe print for Unicode strings
+        try:
+            print(f"\nTesting: {text!r}")
+        except UnicodeEncodeError:
+            print(f"\nTesting: {repr(text.encode('utf-8', errors='replace').decode('utf-8', errors='replace'))}")
         mf = MecabFeatures()
         Mecab_analysis(text.encode("utf-8"), mf, logwrite_=logwrite)
         print(f"  Success: size={mf.size}")
