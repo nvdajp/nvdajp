@@ -502,6 +502,15 @@ def register_jp_builders(env: Any) -> None:
                     print(f"jtalkPrep: found vcvarsall.bat: {vcvarsall}")
                     use_vcvarsall = True
 
+                # Clean before building to avoid architecture mismatches
+                print(f"jtalkPrep: cleaning build artifacts for arch={nmake_machine}")
+                if use_vcvarsall:
+                    clean_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak clean MACHINE={nmake_machine}'
+                    run(clean_script, cwd=str(build_dir), shell=True, capture_output=True)
+                else:
+                    clean_cmd = ["nmake", "/f", "all.mak", "clean", f"MACHINE={nmake_machine}"]
+                    run(clean_cmd, cwd=str(build_dir), capture_output=True)
+
                 # Build nmake command - if using vcvarsall, wrap it in cmd /c call
                 if use_vcvarsall:
                     # Run vcvarsall.bat and nmake in the same cmd.exe shell
