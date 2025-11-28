@@ -314,12 +314,12 @@ members = [
 dev = [
 	"nvda-misc-deps",
 	# NVDA's build system is SCons
-	"SCons==4.9.1",
+	"SCons==4.10.1",
 	# Packaging NVDA
 	"py2exe==0.14.0.0",
 	"setuptools~=80.9",
-	"uv==0.9.11",
 	"nvda-mathcat",
+	"uv==0.9.11",
 ]
 lint = [
 	"ruff==0.12.7",
