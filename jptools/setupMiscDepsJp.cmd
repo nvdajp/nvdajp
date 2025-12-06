@@ -1,5 +1,4 @@
 cd miscDepsJp
-del /Q nvdajp-miscdep.7z
 cd include\jtalk
 call all-clean.cmd
 call all-build.cmd
@@ -17,10 +16,20 @@ cd ..\..\..\..
 cd source\synthDrivers
 rmdir /S /Q espeak-data
 cd ..\..
-7z a ..\nvdajp-miscdep.7z source
+rem Prefer uv to run overlay within repo project; fallback to py/python
+where uv >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
+  rem Keep CWD in miscDepsJp (script expects this), but use repo root as uv project
+  uv run --project .. python ..\jptools\setup_miscdeps_overlay.py
+) else (
+  where py >nul 2>&1
+  if %ERRORLEVEL% EQU 0 (
+    py -3 ..\jptools\setup_miscdeps_overlay.py
+  ) else (
+    python ..\jptools\setup_miscdeps_overlay.py
+  )
+)
 cd ..
-7z x -y nvdajp-miscdep.7z
-del /Q nvdajp-miscdep.7z
 
 @rem cleanup
 

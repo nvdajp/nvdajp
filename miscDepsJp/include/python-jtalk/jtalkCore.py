@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2013-2019 Takuya Nishimoto
 
+import os
+
 try:
     from .mecab import *
 except (ImportError, ValueError):
@@ -270,7 +272,40 @@ def libjt_initialize(JT_DLL):
     global libjt, njd, jpcommon, engine
 
     if libjt is None:
-        libjt = cdll.LoadLibrary(JT_DLL)
+        # Use absolute path and add DLL directory to search path
+        dll_path = os.path.abspath(JT_DLL)
+        dll_dir = os.path.dirname(dll_path)
+
+        # Ensure DLL directory exists
+        if not os.path.isdir(dll_dir):
+            raise OSError(f"DLL directory does not exist: {dll_dir}")
+        if not os.path.exists(dll_path):
+            raise OSError(f"DLL file does not exist: {dll_path}")
+
+        # Add DLL directory to search path for dependencies
+        if hasattr(os, "add_dll_directory"):
+            try:
+                os.add_dll_directory(dll_dir)
+            except OSError:
+                pass  # Ignore if already added or fails
+
+        # Use LoadLibraryExW with LOAD_WITH_ALTERED_SEARCH_PATH for better dependency resolution
+        try:
+            from ctypes import windll, CDLL, cdll
+            from ctypes.wintypes import HANDLE, DWORD, LPCWSTR
+            LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008
+            LoadLibraryExW = windll.kernel32.LoadLibraryExW
+            LoadLibraryExW.argtypes = [LPCWSTR, HANDLE, DWORD]
+            LoadLibraryExW.restype = HANDLE
+
+            h = LoadLibraryExW(dll_path, None, LOAD_WITH_ALTERED_SEARCH_PATH)
+            if not h:
+                raise OSError(f"LoadLibraryExW failed for {dll_path}")
+            libjt = CDLL("libopenjtalk", handle=h)
+        except (ImportError, AttributeError, OSError):
+            # Fallback to standard LoadLibrary if LoadLibraryExW fails
+            from ctypes import cdll
+            libjt = cdll.LoadLibrary(dll_path)
     libjt.jt_version.restype = c_char_p
 
     # argtypes & restype

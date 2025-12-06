@@ -57,7 +57,7 @@ jobs:
 
     - name: Set version variables
       run: |
-        $baseVersion = "2025.1.2jp"
+        $baseVersion = "2025.3.2jp"
         
         # Set timezone and get current date
         tzutil /s "Tokyo Standard Time"

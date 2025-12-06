@@ -22,7 +22,14 @@ copy ..\..\build\arm64\client\nvdaControllerClient.exp arm64
 copy ..\..\build\arm64\client\nvdaControllerClient.lib arm64
 
 SET OUTFILE=..\..\output\nvda_%VERSION%_controllerClientJp.zip
-del /Q %OUTFILE%
-7z a %OUTFILE% arm64 examples x64 x86 license.txt readme.html readmejp.txt
+IF EXIST "%OUTFILE%" DEL /Q "%OUTFILE%"
+REM Prefer Python-based packer to avoid 7z dependency
+py -3 ..\pack_controller_client.py --version %VERSION% --client-root . --output "%OUTFILE%"
+IF EXIST "%OUTFILE%" GOTO :pack_done
+python ..\pack_controller_client.py --version %VERSION% --client-root . --output "%OUTFILE%"
+IF EXIST "%OUTFILE%" GOTO :pack_done
+REM Fallback to 7z if Python packer is not available
+7z a "%OUTFILE%" arm64 examples x64 x86 license.txt readme.html readmejp.txt
+:pack_done
 cd ..
 cd ..

@@ -1,0 +1,156 @@
+# タブ文字を含むテストケースでの MeCab クラッシュ問題
+
+## 問題の概要
+
+日本語点字翻訳の`test_pass2_tab_characters`テストで、タブ文字を含む入力が MeCab をクラッシュさせる問題が発生しています。
+
+## 処理フロー
+
+タブ文字は以下の流れで処理されます：
+
+1. **`translator2.py`**: タブ文字を `TAB_CODE` に置換
+2. **`text2mecab()`**: Unicode正規化と全角変換を実行
+3. **MeCab**: 形態素解析を実行
+4. **点字変換**: 解析結果を点字に変換
+
+問題は、どの文字を `TAB_CODE` として使用しても MeCab がクラッシュするか、出力から消えてしまうことです。
+
+## 根本原因の特定 (2025-11-27調査)
+
+複数の文字コード置換アプローチを試した結果、MeCab クラッシュの根本原因が判明しました：
+
+**全角ASCII文字と空白文字の組み合わせが MeCab をクラッシュさせる**
+
+### 調査の経緯
+
+#### 試行1: U+200B (ZERO WIDTH SPACE)
+- 状態: **失敗 - クラッシュ**
+- 理由: UTF-8専用文字であり、CHARSET_SHIFT_JIS でコンパイルされた MeCab では扱えない
+
+#### 試行2: U+3000 (全角スペース・IDEOGRAPHIC SPACE)
+- 状態: **失敗 - クラッシュ**
+- 問題:
+  - `unicodedata.normalize("NFKC", "\u3000")` が U+0020 (半角スペース) に正規化される
+  - `text2mecab_convert` が空白を再び全角スペースに変換: `[re.compile(" "), "　"]`
+  - text2mecab_convert はASCII文字も全角に変換 (例: `a` → `ａ`)
+  - **全角ASCII (ａ) + 全角スペース (　) の組み合わせで MeCab がクラッシュ**
+
+#### 試行3: U+E000 (Private Use Area)
+- 状態: **失敗 - 辞書ビルドエラー**
+- エラー: `dictionary.cpp(396) [lid >= 0 && rid >= 0...] invalid ids are found`
+- 理由: プライベート利用領域の文字は MeCab 辞書で適切に処理されない
+
+#### 試行4: 半角スペース + NFKD正規化
+- 状態: **クラッシュ解消、テスト失敗**
+- 実装:
+  ```python
+  # text2mecab.py
+  TAB_PLACEHOLDER = "\uE000"
+  txt = txt.replace("\t", TAB_PLACEHOLDER)
+  txt = unicodedata.normalize("NFKC", txt)
+  txt = text2mecab_convert(txt)  # ASCII→全角変換
+  txt = txt.replace(TAB_PLACEHOLDER, " ")
+  txt = unicodedata.normalize("NFKD", txt)  # 全角→半角に戻す
+  ```
+- 結果:
+  - ✅ MeCab クラッシュなし
+  - ❌ スペースが MeCab 出力から消える (MeCab は空白をトークン区切りとして扱い出力に含めない)
+  - テスト結果: 1 passed, 5 failed (Test 2: `あ\tあ` のみ成功)
+
+#### 試行5: U+2800 (BRAILLE PATTERN BLANK)
+- 状態: **失敗 - クラッシュ**
+- char.def に追加: `0x2800 SPACE  # BRAILLE PATTERN BLANK for TAB_CODE`
+- 問題:
+  - 辞書が再ビルドされなかった (scons: "dictionary source and destination are identical")
+  - 辞書を再ビルドしても、MeCab は未知のUnicode文字でメモリアクセス違反を起こす
+  - テスト結果: 全テスト空の出力でクラッシュ (0 passed, 6 failed)
+
+### クラッシュの技術的詳細
+
+MeCab は以下の条件でクラッシュします:
+
+1. **全角ASCII文字** (U+FF01-U+FF5E の範囲) が入力に含まれる
+2. それに続いて **任意の空白類似文字** がある
+3. 特に問題を起こす組み合わせ例:
+   - `ａ ` (全角a + 半角スペース)
+   - `ａ　` (全角a + 全角スペース)
+   - `ａ⠀` (全角a + U+2800)
+
+一方、**日本語文字 + 全角スペース** は正常に動作:
+- Test 2: `あ\tあ` → `あ　あ` は成功 (唯一のパステスト)
+
+### Makefile.mak の修正 (副次的な問題)
+
+調査中に、11個の Makefile.mak で文字コード設定が不適切であることが判明:
+
+```makefile
+# 修正前
+CFLAGS = ... /D CHARSET_SHIFT_JIS /source-charset:shift_jis /execution-charset:shift_jis
+
+# 修正後
+CFLAGS = ... /D CHARSET_UTF_8 /source-charset:utf-8 /execution-charset:utf-8
+```
+
+修正したファイル:
+- `miscDepsJp/include/python-jtalk/jpcommon/Makefile.mak`
+- `miscDepsJp/include/python-jtalk/libopenjtalk/*/Makefile.mak` (10ファイル)
+
+しかし、この変更だけではクラッシュ問題は解決しませんでした。
+
+### 必要な解決策
+
+MeCab は空白文字をトークン区切りとして扱うため、**空白類似文字を MeCab に渡す方法では解決できません**。
+
+#### 提案する解決アプローチ:
+1. **タブ文字で入力を分割** (MeCab 呼び出し前)
+2. **各セグメントを個別に MeCab で処理**
+3. **U+2800 でセグメントを結合** (MeCab 呼び出し後)
+
+この方法であれば:
+- U+2800 が MeCab を通過しない (クラッシュ回避)
+- タブ位置が点字空白 (U+2800) として保持される
+- MeCab は各セグメントを独立して正しく処理できる
+
+### 参考: テストケース詳細
+
+```
+Test 1: a\ta     → 期待: a a     → 結果: aa     (FAILED)
+Test 2: あ\tあ   → 期待: ア ア   → 結果: ア ア  (PASSED) ← 唯一の成功例
+Test 3: a\ta     → 期待: a⡀a     → 結果: aa     (FAILED)
+Test 4: if\ta(): → 期待: if⡀a(): → 結果: ifa    (FAILED)
+Test 5: file name\t"a",\t'c', → 期待: file name⡀"a",⡀'c', → (FAILED)
+Test 6: fil\t"a",\t'c',       → 期待: fil⡀"a",⡀'c',      → (FAILED)
+```
+
+### 次のステップ
+
+`text2mecab.py` または `translator2.py` でタブ文字分割処理を実装する必要があります。
+
+---
+
+## 追加調査結果 (2025-11-27)
+
+### 点字空白（U+2800）実装でのテスト結果
+
+タブ文字を点字空白（U+2800）に置換する実装で、0-100の範囲のテストを実行した結果：
+
+- **クラッシュ率**: 36.5% (27/74テスト)
+- **タブ文字を含むテスト**: 2件すべてクラッシュ
+- **全角スペースを含むテスト**: 8件すべてクラッシュ
+- **括弧文字を含むテスト**: 14件すべてクラッシュ
+
+詳細は `projectDocs/jp/mecab_crash_test_results.md` を参照。
+
+### 重要な発見
+
+1. **点字空白（U+2800）でもクラッシュが継続**: タブ文字を点字空白に置換しても、クラッシュは解消されませんでした。
+
+2. **全角スペースが問題**: NFKD正規化でも全角スペース（`　`）が半角スペースに変換されていない可能性があります。
+
+3. **括弧文字も問題**: 様々な括弧文字を含むテストがクラッシュしています。
+
+### 推奨される対策
+
+1. 全角スペースを明示的に半角スペースに変換
+2. タブ文字で入力を分割し、各セグメントを個別にMeCabで処理
+3. 括弧文字の処理を調査
