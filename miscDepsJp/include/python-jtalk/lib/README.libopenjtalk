@@ -1,0 +1,95 @@
+Dynamic library version of Open JTalk
+
+document updated on 2011-05-08
+
+libopenjtalk by Takuya Nishimoto (@nishimotz,@24motz)
+http://ja.nishimotz.com/project:libopenjtalk
+(contribution of nishimotz is New BSD lisence)
+since 2010-06-27
+
+obsolated: Python Wrapper https://github.com/nishimotz/ojt-python
+pending: branch ubuntu_utf16
+
+based on Open JTalk
+http://sourceforge.net/projects/open-jtalk/
+see README and COPYING
+
+=============================================
+building libopenjtalk.dll for nvdajp 
+
+requires: https://github.com/nishimotz/htsengineapi
+using Windows XP 32bit, cygwin-1.7, mecab-0.98 for Win32, Python 2.7 Win32
+
+$ cd libopenjtalk/lib
+$ bash rebuild_dll.sh
+$ file libopenjtalk.dll
+libopenjtalk.dll: PE32 executable for MS Windows (DLL) (console) Intel 80386 32-bit
+
+Notice: mecab & mecab-naist-jdic are not used.
+
+---------------------------------------------
+using libopenjtalk.dll for nvdajp
+
+see source/synthDrivers/_jtalk_core.py
+http://bazaar.launchpad.net/~nishimotz/nvdajp/releases_2011.1
+
+=============================================
+testing libopenjtalk.dll for nvdajp
+
+uses lib/jtalk.py
+
+requires nvwave.py from nvdajp
+requires libmecab.dll from http://mecab.sourceforge.net/
+
+JT_DIR = r'C:\work\jtalk'
+DIC = JT_DIR + r"\dic"     # shift_jis version of mecab dic is c:/work/jtalk/dic
+VOICE = JT_DIR + r"\voice" # m001 voice is c:/work/jtalk/voice
+MECAB_DLL = JT_DIR + r"\libmecab.dll"  # c:/work/jtalk/libmecab.dll
+MECABRC = JT_DIR + r"\mecabrc"         # c:/work/jtalk/mecabrc
+JT_DLL = JT_DIR + r"\libopenjtalk.dll" # c:/work/jtalk/libopenjtalk.dll
+
+$ python jtalk.py
+
+=============================================
+usage for Ubuntu Linux (tested with 9.04)
+(dic charset is Shift_JIS)
+
+requires: https://github.com/nishimotz/htsengineapi
+
+$ sudo apt-get install autoconf libtool
+$ cd libopenjtalk/lib
+$ bash rebuild_linuxso.sh
+
+# $ cd htsengineapi
+# $ autoreconf
+# $ autoconf
+# $ CC='gcc -fPIC' ./configure
+# $ make clean
+# $ make
+# $ cd ..
+# $ cd libopenjtalk
+# $ autoreconf
+# $ sh do_configure_ubuntu.sh
+# $ make clean
+# $ make
+# $ cd lib
+# $ make -f Makefile.ubuntu target
+
+check symbols:
+$ nm ./libs/libopenjtalk.so.0.0.0 | lv 
+
+test (not working):
+$ export LD_LIBRARY_PATH=.libs ; ./mytest
+
+=============================================
+building shift_jis dic for nvdajp 
+
+see mecab-naist-jdic/
+  eng_dic_maker.py
+  tankan_dic_maker.py
+  custom_dic_maker.py
+  make_jdic.sh
+requires:
+http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic
+nvdajp: source/nvdajp_dic.py
+
