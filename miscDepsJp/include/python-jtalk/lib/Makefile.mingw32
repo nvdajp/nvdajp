@@ -1,0 +1,66 @@
+# Makefile
+# libopenjtalk by Takuya Nishimoto
+# for cygwin-mingw-gcc3
+# based on Open-JTalk
+# 
+
+target: libopenjtalk.o libopenjtalk.dll mytest.exe
+
+CC = gcc -mno-cygwin
+CXX = g++ -mno-cygwin
+
+INCLUDES = -I ../text2mecab \
+           -I ../mecab/src \
+           -I ../mecab2njd \
+           -I ../njd \
+           -I ../njd_set_pronunciation \
+           -I ../njd_set_digit \
+           -I ../njd_set_accent_phrase \
+           -I ../njd_set_accent_type \
+           -I ../njd_set_unvoiced_vowel \
+           -I ../njd_set_long_vowel \
+           -I ../njd2jpcommon \
+           -I ../mecab2njd \
+           -I ../jpcommon \
+           -I ../../htsengineapi/include \
+           -I. \
+           -I../mecab
+
+LDADD = ../text2mecab/libtext2mecab.a \
+           ../mecab2njd/libmecab2njd.a \
+           ../njd/libnjd.a \
+           ../njd_set_pronunciation/libnjd_set_pronunciation.a \
+           ../njd_set_digit/libnjd_set_digit.a \
+           ../njd_set_accent_phrase/libnjd_set_accent_phrase.a \
+           ../njd_set_accent_type/libnjd_set_accent_type.a \
+           ../njd_set_unvoiced_vowel/libnjd_set_unvoiced_vowel.a \
+           ../njd_set_long_vowel/libnjd_set_long_vowel.a \
+           ../njd2jpcommon/libnjd2jpcommon.a \
+           ../jpcommon/libjpcommon.a \
+           ../../htsengineapi/lib/libHTSEngine.a
+
+libopenjtalk.o: libopenjtalk.c
+	$(CC) -c -o libopenjtalk.o -DHAVE_CONFIG_H $(INCLUDES) libopenjtalk.c
+
+libopenjtalk.dll: libopenjtalk.o
+	$(CC) -shared -o libopenjtalk.dll \
+	libopenjtalk.o $(LDADD) \
+	-Wl,--output-def,libopenjtalk.def,--out-implib,libopenjtalk_imp.lib
+
+mytest.exe:
+	$(CC) mytest.c $(INCLUDES) -o mytest
+
+clean:
+	\rm -f libopenjtalk.dll libopenjtalk.o mytest.exe
+
+htsengineapi:
+	pushd ../../htsengineapi; make; popd
+
+libjpcommon:
+	pushd ../jpcommon; make; popd
+
+njd_set_unvoiced_vowel:
+	pushd ../njd_set_unvoiced_vowel; make; popd
+
+clean-dll:
+	\rm -f libopenjtalk.dll

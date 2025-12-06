@@ -1,0 +1,70 @@
+# Makefile.ubuntu
+# libopenjtalk by Takuya Nishimoto
+# for ubuntu 9.04
+# based on Open-JTalk
+# 
+
+target: .libs/libopenjtalk.so mytest
+
+CC = gcc
+CXX = g++
+
+INCLUDES = -I ../text2mecab \
+           -I ../mecab/src \
+           -I ../mecab2njd \
+           -I ../njd \
+           -I ../njd_set_pronunciation \
+           -I ../njd_set_digit \
+           -I ../njd_set_accent_phrase \
+           -I ../njd_set_accent_type \
+           -I ../njd_set_unvoiced_vowel \
+           -I ../njd_set_long_vowel \
+           -I ../njd2jpcommon \
+           -I ../mecab2njd \
+           -I ../jpcommon \
+           -I ../../htsengineapi/include \
+           -I. \
+           -I../mecab
+
+LDADD = ../jpcommon/jpcommon.o \
+      ../jpcommon/jpcommon_label.o \
+      ../jpcommon/jpcommon_node.o \
+      ../mecab2njd/mecab2njd.o \
+      ../njd/njd.o \
+      ../njd/njd_node.o \
+      ../njd2jpcommon/njd2jpcommon.o \
+      ../njd_set_accent_phrase/njd_set_accent_phrase.o \
+      ../njd_set_accent_type/njd_set_accent_type.o \
+      ../njd_set_digit/njd_set_digit.o \
+      ../njd_set_long_vowel/njd_set_long_vowel.o \
+      ../njd_set_pronunciation/njd_set_pronunciation.o \
+      ../njd_set_unvoiced_vowel/njd_set_unvoiced_vowel.o \
+      ../text2mecab/text2mecab.o \
+      ../../htsengineapi/lib/HTS_audio.o \
+      ../../htsengineapi/lib/HTS_engine.o \
+      ../../htsengineapi/lib/HTS_gstream.o \
+      ../../htsengineapi/lib/HTS_label.o \
+      ../../htsengineapi/lib/HTS_misc.o \
+      ../../htsengineapi/lib/HTS_model.o \
+      ../../htsengineapi/lib/HTS_pstream.o \
+      ../../htsengineapi/lib/HTS_sstream.o \
+      ../../htsengineapi/lib/HTS_vocoder.o
+
+libopenjtalk.lo: libopenjtalk.c
+	libtool --mode=compile $(CC) -c -o libopenjtalk.lo -DHAVE_CONFIG_H $(INCLUDES) libopenjtalk.c
+
+.libs/libopenjtalk.so: libopenjtalk.lo
+	libtool --mode=link $(CC) -o libopenjtalk.la libopenjtalk.lo $(LDADD) -lm \
+	-rpath `pwd`
+
+#libopenjtalk.o: libopenjtalk.c
+#	$(CC) -c -o libopenjtalk.o -DHAVE_CONFIG_H $(INCLUDES) libopenjtalk.c
+
+#libopenjtalk.so: libopenjtalk.o
+#	$(CC) -shared -o libopenjtalk.so libopenjtalk.o $(LDADD) -lm 
+
+mytest: mytest_ubuntu.c
+	$(CC) mytest_ubuntu.c $(INCLUDES) -ldl -o mytest
+
+clean:
+	\rm -f *.o *.la *.lo .libs/* mytest
