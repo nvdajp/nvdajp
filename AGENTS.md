@@ -13,6 +13,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 - Avoid destructive operations (no history rewrites or force pushes unless explicitly requested)
 - Minimize diffs against upstream; mark JP-specific code with `# nvdajp` or `# BEGIN/END JP PATCH`
+  - **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files (e.g., `jptools/*.ps1`, `ci/scripts/tests/runJpSmokeTests.ps1`) do not need these markers.
 - Prefer SCons/pure Python tooling; auxiliary `.cmd` or `nmake` usage should be limited to JP-specific overlays
 - Do not perform code-signing or releases in CI (no secrets). Official release builds happen locally.
 
@@ -32,8 +33,9 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 - Use upstream `testAndPublish.yml` verbatim; JP additions must:
   - Call helper scripts (`ci/scripts/...`) instead of embedding logic
-  - Be wrapped with `# BEGIN/END JP PATCH`
+  - Be wrapped with `# BEGIN/END JP PATCH` (only when modifying upstream files)
   - Stay focused on JP-only requirements (e.g., `beforeTests.ps1`, crowdin upload disabled)
+  - **Note**: JP-specific new files do not need JP PATCH markers
 
 ## Actions usage
 
@@ -75,7 +77,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 ### 禁則と優先
 
 - 履歴書き換えや force push は指示が無い限り禁止
-- JP 固有差分は `# nvdajp`／`# BEGIN JP PATCH` で明示
+- JP 固有差分は `# nvdajp`／`# BEGIN JP PATCH` で明示（**注**: 本家版ファイルを変更する場合のみ。日本語版固有の新規ファイルには不要）
 - ビルドは SCons／純 Python を優先。`.cmd` や `nmake` は JP 独自処理のみ
 - CI ではコードサインや Secrets 利用を行わない
 
@@ -93,8 +95,9 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 ### `testAndPublish.yml`
 
-- 上流ファイルをそのまま使い、JP 追加はスクリプト呼び出し＋`# BEGIN/END JP PATCH` のみにする
+- 上流ファイルをそのまま使い、JP 追加はスクリプト呼び出し＋`# BEGIN/END JP PATCH` のみにする（**注**: 本家版ファイルを変更する場合のみ）
 - `beforeTests.ps1` 呼び出し、crowdin upload 無効化など最小の JP 追加だけを維持
+- 日本語版固有の新規ファイル（例: `ci/scripts/tests/runJpSmokeTests.ps1`）には JP PATCH マーカーは不要
 
 ### Actions 運用
 
