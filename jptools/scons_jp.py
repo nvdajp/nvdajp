@@ -478,7 +478,10 @@ def register_jp_builders(env: Any) -> None:
                     shutil.copytree(str(hts_src), str(hts_dst))
                     # Restore .gitkeep if it was present (for Git tracking of empty directories)
                     if gitkeep_exists:
-                        gitkeep_path.touch()
+                        try:
+                            gitkeep_path.touch()
+                        except OSError as e:
+                            print(f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}")
                 else:
                     print(f"Warning: htsengineapi source not found at {hts_src}")
 
@@ -492,24 +495,28 @@ def register_jp_builders(env: Any) -> None:
                     shutil.copytree(str(lib_src), str(lib_dst))
                     # Restore .gitkeep if it was present (for Git tracking of empty directories)
                     if gitkeep_exists:
-                        gitkeep_path.touch()
+                        try:
+                            gitkeep_path.touch()
+                        except OSError as e:
+                            print(f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}")
                 else:
                     print(f"Warning: libopenjtalk source not found at {lib_src}")
 
                 # Check if nmake is available in PATH
                 # If not, we'll run nmake via vcvarsall.bat in the same shell
                 import subprocess
+                vcvarsall: str | None = None
                 try:
                     run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-                    print(f"jtalkPrep: nmake found in PATH")
+                    print("jtalkPrep: nmake found in PATH")
                     use_vcvarsall = False
                 except (FileNotFoundError, subprocess.CalledProcessError):
-                    print(f"jtalkPrep: nmake not in PATH, will use vcvarsall.bat")
+                    print("jtalkPrep: nmake not in PATH, will use vcvarsall.bat")
                     vcvarsall = _find_vcvarsall()
                     if not vcvarsall:
-                        print(f"ERROR: nmake not found and vcvarsall.bat not detected")
-                        print(f"  Install Visual Studio with C++ Desktop Development workload")
-                        print(f"  Or run from Visual Studio Developer Command Prompt")
+                        print("ERROR: nmake not found and vcvarsall.bat not detected")
+                        print("  Install Visual Studio with C++ Desktop Development workload")
+                        print("  Or run from Visual Studio Developer Command Prompt")
                         return 1
                     print(f"jtalkPrep: found vcvarsall.bat: {vcvarsall}")
                     use_vcvarsall = True
@@ -517,6 +524,7 @@ def register_jp_builders(env: Any) -> None:
                 # Clean before building to avoid architecture mismatches
                 print(f"jtalkPrep: cleaning build artifacts for arch={nmake_machine}")
                 if use_vcvarsall:
+                    assert vcvarsall is not None  # Type narrowing for type checker
                     clean_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak clean MACHINE={nmake_machine}'
                     run(clean_script, cwd=str(build_dir), shell=True, capture_output=True)
                 else:
@@ -527,6 +535,7 @@ def register_jp_builders(env: Any) -> None:
                 if use_vcvarsall:
                     # Run vcvarsall.bat and nmake in the same cmd.exe shell
                     # This ensures the environment variables are available to nmake
+                    assert vcvarsall is not None  # Type narrowing for type checker
                     print(f"jtalkPrep: running nmake via vcvarsall.bat with arch={nmake_machine}")
                     # Use shell=True to avoid subprocess quote escaping issues
                     cmd_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
@@ -606,7 +615,6 @@ def register_jp_builders(env: Any) -> None:
         dic_dst = jtalk_dir / "dic"
         # If vendor dic is missing, fall back to the already-present source dic
         source_dic = jtalk_dir / "dic"
-        source_sys_dic = source_dic / "sys.dic"
         builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
 
         def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
@@ -643,19 +651,18 @@ def register_jp_builders(env: Any) -> None:
 
             try:
                 run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-                use_vcvarsall = False
+                # nmake is available, use it directly
+                cmd = ["nmake", "/f", "all.mak", f"MACHINE={machine}"]
+                result = run(cmd, cwd=str(vendor_base))
+                return result.returncode
             except (FileNotFoundError, subprocess.CalledProcessError):
                 vcvarsall = _find_vcvarsall()
                 if not vcvarsall:
                     print("jtalkSync: nmake not found and vcvarsall.bat not detected")
                     return 1
-                use_vcvarsall = True
                 cmd_script = f'call "{vcvarsall}" {machine} && nmake /f all.mak MACHINE={machine}'
                 result = run(cmd_script, cwd=str(vendor_base), shell=True)
                 return result.returncode
-            cmd = ["nmake", "/f", "all.mak", f"MACHINE={machine}"]
-            result = run(cmd, cwd=str(vendor_base))
-            return result.returncode
 
         sys_dic = dic_src / "sys.dic"
         # Prefer UTF-8 dictionaries; rebuild if missing or unmarked.
@@ -692,19 +699,18 @@ def register_jp_builders(env: Any) -> None:
                     from subprocess import run
                     try:
                         run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-                        use_vcvarsall = False
+                        # nmake is available, use it directly
+                        cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
+                        result = run(cmd, cwd=str(base))
+                        return result.returncode
                     except (FileNotFoundError, subprocess.CalledProcessError):
                         vcvarsall = _find_vcvarsall()
                         if not vcvarsall:
                             print("jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build")
                             return 1
-                        use_vcvarsall = True
                         cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
                         result = run(cmd_script, cwd=str(base), shell=True)
                         return result.returncode
-                    cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
-                    result = run(cmd, cwd=str(base))
-                    return result.returncode
 
                 def _build_dic(machine: str) -> int:
                     base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
@@ -753,32 +759,46 @@ def register_jp_builders(env: Any) -> None:
 
                     try:
                         run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-                        use_vcvarsall = False
+                        # nmake is available, use it directly
+                        # Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
+                        # chcp 932 is a fallback for environments where dicrc config might not be respected.
+                        # Use explicit cmd /c to ensure code page change takes effect in CI environment
+                        # If chcp fails, continue anyway (dicrc config should handle it)
+                        cmd_script = (
+                            'cmd /c "'
+                            'chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && '
+                            f'nmake /f Makefile.mak MACHINE={machine}'
+                            '"'
+                        )
+                        print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
+                        result = run(cmd_script, cwd=str(base), shell=True)
+                        return result.returncode
                     except (FileNotFoundError, subprocess.CalledProcessError):
                         vcvarsall = _find_vcvarsall()
                         if not vcvarsall:
                             print("jtalkSync: nmake not found and vcvarsall.bat not detected for dic build")
                             return 1
-                        use_vcvarsall = True
-                        # Force CP932 so mecab-dict-index reads SJIS rewrite.def correctly on UTF-8 consoles.
-                        # Use explicit cmd /c to ensure code page change takes effect in CI environment
+                        # Force CP932 for nmake path as well
+                        # Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
+                        # chcp 932 is a fallback for environments where dicrc config might not be respected.
                         cmd_script = (
                             f'cmd /c "'
                             f'call "{vcvarsall}" {machine} && '
-                            f'chcp 932 && '
+                            f'chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && '
                             f'nmake /f Makefile.mak MACHINE={machine}'
                             f'"'
                         )
-                        print(f"jtalkSync: building dictionary with CP932 (SJIS) code page")
+                        print("jtalkSync: building dictionary via vcvarsall (dicrc config-charset=sjis, chcp 932 as fallback)")
                         result = run(cmd_script, cwd=str(base), shell=True)
                         return result.returncode
-                    # Force CP932 for nmake path as well
+                    # This code path should not be reached, but kept for safety
+                    # Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
                     cmd = [
                         "cmd",
                         "/c",
-                        f"chcp 932 && nmake /f Makefile.mak MACHINE={machine}",
+                        f"chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && nmake /f Makefile.mak MACHINE={machine}",
                     ]
-                    print(f"jtalkSync: building dictionary with CP932 (SJIS) code page")
+                    print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
                     result = run(cmd, cwd=str(base))
                     return result.returncode
 
