@@ -7,7 +7,12 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path .).Path
 Set-Location $repoRoot
 
-# In CI, we skip install and overlay since they're already done in buildNVDA job
+# Install pytest (required for smoke tests)
+# Note: We skip overlay since it's already done in buildNVDA job, but we need pytest
+Write-Host "Installing pytest for smoke tests..." -ForegroundColor Cyan
+uv pip install pytest
+
+# In CI, we skip overlay since it's already done in buildNVDA job
 Write-Host "Running JP smoke tests in CI environment..." -ForegroundColor Cyan
 & "$repoRoot\jptools\runJpSmokeTests.ps1" -SkipInstall -SkipOverlay
 
