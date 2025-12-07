@@ -470,17 +470,29 @@ def register_jp_builders(env: Any) -> None:
 
                 if hts_src.exists():
                     print(f"jtalkPrep: copying htsengineapi from {hts_src} to {hts_dst}")
+                    # Preserve .gitkeep if it exists (for Git tracking of empty directories)
+                    gitkeep_path = hts_dst / ".gitkeep"
+                    gitkeep_exists = gitkeep_path.exists()
                     if hts_dst.exists():
                         shutil.rmtree(str(hts_dst))
                     shutil.copytree(str(hts_src), str(hts_dst))
+                    # Restore .gitkeep if it was present (for Git tracking of empty directories)
+                    if gitkeep_exists:
+                        gitkeep_path.touch()
                 else:
                     print(f"Warning: htsengineapi source not found at {hts_src}")
 
                 if lib_src.exists():
                     print(f"jtalkPrep: copying libopenjtalk from {lib_src} to {lib_dst}")
+                    # Preserve .gitkeep if it exists (for Git tracking of empty directories)
+                    gitkeep_path = lib_dst / ".gitkeep"
+                    gitkeep_exists = gitkeep_path.exists()
                     if lib_dst.exists():
                         shutil.rmtree(str(lib_dst))
                     shutil.copytree(str(lib_src), str(lib_dst))
+                    # Restore .gitkeep if it was present (for Git tracking of empty directories)
+                    if gitkeep_exists:
+                        gitkeep_path.touch()
                 else:
                     print(f"Warning: libopenjtalk source not found at {lib_src}")
 

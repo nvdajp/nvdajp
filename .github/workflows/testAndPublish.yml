@@ -95,10 +95,8 @@ jobs:
 
     - name: Build NVDA Japanese version
       run: |
-        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
-        echo Building with args: %sconsArgs%
-        call jptools\nonCertAllBuild.cmd %sconsArgs%
-      shell: cmd
+        python jptools/nonCertBuild.py -- version_build=${{ github.run_number }} --all-cores
+      shell: powershell
 
     - name: Build Japanese addons
       run: |

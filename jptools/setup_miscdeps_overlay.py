@@ -12,7 +12,17 @@ def overlay_copy(src: Path, dst: Path) -> None:
         for f in files:
             s = r / f
             d = target_dir / f
-            shutil.copy2(s, d)
+            try:
+                # If destination exists and is identical, skip copy
+                if d.exists() and d.stat().st_mtime >= s.stat().st_mtime and d.stat().st_size == s.stat().st_size:
+                    continue
+                shutil.copy2(s, d)
+            except (PermissionError, OSError) as e:
+                # If file is locked or permission denied, log warning and continue
+                # This can happen when comInterfaces generates files that are still in use
+                print(f"Warning: Could not copy {s} to {d}: {e}")
+                print(f"  Skipping this file (may be locked by another process)")
+                continue
 
 
 def main() -> int:
@@ -31,4 +41,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

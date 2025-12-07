@@ -465,7 +465,7 @@ scons source user_docs launcher
 現在、GitHub Actionsを使用したCI/CDパイプラインが実装されています（`.github/workflows/testAndPublish.yml`）：
 
 - **ビルド環境**: Windowsランナー、Python 3.11 (32bit)
-- **ビルドプロセス**: `jptools/nonCertAllBuild.cmd` を使用
+- **ビルドプロセス**: `jptools/nonCertBuild.py` を使用（Python版に移行済み）
 - **テスト**: ユニットテスト、システムテスト、日本語版固有のテストを実行
 - **自動化**: betajp、releasejpブランチへのpush時に自動ビルド
 

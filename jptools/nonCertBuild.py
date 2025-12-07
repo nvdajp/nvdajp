@@ -3,7 +3,6 @@ import os
 import sys
 import subprocess
 from pathlib import Path
-import shutil
 
 
 def run_cmd(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None) -> None:
@@ -200,31 +199,26 @@ def _check_vs_version() -> None:
 def _prep_miscdepsjp() -> None:
     """Replicates nonCertBuild1.cmd steps in Python.
     Keeps underlying module .cmd scripts, but removes top-level .cmd dependency.
+
+    Remove duplicate build step - let scons jtalkPrep handle it.
+    The build steps (all-build.cmd, all-install.cmd, build-and-test.cmd) are now
+    handled by scons jtalkPrep which is automatically invoked when scons source is run.
+    This avoids duplicate builds and aligns with vendor-submodules.md policy.
     """
     # Ensure nmake is available; if not, run local vcsetup (both CI and local)
     _ensure_nmake_env()
     _check_vs_version()
 
-    # Run miscDepsJp jtalk prep/build/test (inline build-and-test.cmd)
+    # Copy JTalk core files only (no build - handled by scons jtalkPrep)
     md_root = Path("miscDepsJp/jptools")
-    run_cmd(["cmd", "/c", "clean.cmd"], cwd=md_root)
     run_cmd(["cmd", "/c", "copy_jtalk_core_files.cmd"], cwd=md_root)
-    # Guard the environment again before build steps, in case it changed
-    _ensure_nmake_env()
-    # jtalk clean→build→install
-    jtalk_dir = Path("miscDepsJp/include/jtalk")
-    run_cmd(["cmd", "/c", "all-clean.cmd"], cwd=jtalk_dir)
-    run_cmd(["cmd", "/c", "all-build.cmd"], cwd=jtalk_dir)
-    run_cmd(["cmd", "/c", "all-install.cmd"], cwd=jtalk_dir)
-    # jptools tests
-    run_cmd(["cmd", "/c", "test.cmd"], cwd=md_root)
 
-    # Setup overlay for miscDepsJp (no jtalk rebuild here; already built above)
-    try:
-        for p in jtalk_dir.glob("*.pyc"):
-            p.unlink(missing_ok=True)  # type: ignore[arg-type]
-    except Exception:
-        pass
+    # Note: Build steps (all-build.cmd, all-install.cmd, build-and-test.cmd) are
+    # now handled by scons jtalkPrep, which is automatically invoked when scons source is run.
+    # This avoids duplicate builds and aligns with vendor-submodules.md policy.
+
+    # Setup overlay for miscDepsJp (build is handled by scons jtalkPrep)
+    # Note: Cleanup of build artifacts is handled by scons -c (clean) via jtalkPrep
 
     # Remove large/mutable generated dictionary artifacts to keep workspace tidy
     naist_dic = Path("miscDepsJp/include/jtalk/libopenjtalk/mecab-naist-jdic")

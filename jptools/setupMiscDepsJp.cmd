@@ -1,8 +1,11 @@
+rem Remove duplicate build step - let scons jtalkPrep handle it
+rem The build steps (all-build.cmd, all-install.cmd) are now handled by scons jtalkPrep
+rem which is automatically invoked when scons source is run.
+rem This avoids duplicate builds and aligns with vendor-submodules.md policy.
+
 cd miscDepsJp
 cd include\jtalk
-call all-clean.cmd
-call all-build.cmd
-call all-install.cmd
+rem Clean only (no build - handled by scons jtalkPrep)
 call all-clean.cmd
 del /Q *.pyc
 cd libopenjtalk\mecab-naist-jdic
@@ -32,9 +35,11 @@ if %ERRORLEVEL% EQU 0 (
 cd ..
 
 @rem cleanup
+rem Note: DLL cleanup is handled by scons -c (clean) via jtalkPrep
 
 cd miscDepsJp
 cd include\jtalk
+rem Clean only (no build - handled by scons jtalkPrep)
 call all-clean.cmd
 del /Q *.pyc
 del /Q libopenjtalk\lib\libopenjtalk.exp
@@ -42,10 +47,12 @@ del /Q libopenjtalk\lib\libopenjtalk.lib
 cd ..\..
 del /Q jptools\mecabHarness.pyc
 del /Q source\synthDrivers\jtalk\mecab.pyc
-del /Q source\synthDrivers\jtalk\dic\DIC_VERSION
-del /Q source\synthDrivers\jtalk\dic\sys.dic
-del /Q source\synthDrivers\jtalk\dic\unk.dic
-del /Q source\synthDrivers\jtalk\libopenjtalk.dll
+rem Dictionary files are handled by scons jtalkSync
+rem del /Q source\synthDrivers\jtalk\dic\DIC_VERSION
+rem del /Q source\synthDrivers\jtalk\dic\sys.dic
+rem del /Q source\synthDrivers\jtalk\dic\unk.dic
+rem DLL is handled by scons jtalkPrep
+rem del /Q source\synthDrivers\jtalk\libopenjtalk.dll
 cd ..\jptools
 call cleanMiscDepsJp.cmd
 cd ..
