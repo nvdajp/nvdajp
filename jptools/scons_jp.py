@@ -898,7 +898,8 @@ def register_jp_builders(env: Any) -> None:
 
     jtalk_sync_stamp = env.File("miscDepsJp/_state/prep/jtalkSync.stamp")
     env.AlwaysBuild(jtalk_sync_stamp)
-    env.Command(jtalk_sync_stamp, [], _sync_jtalk_assets)
+    # jtalkSync depends on jtalkPrep to avoid file lock conflicts when both try to build hts.mak
+    env.Command(jtalk_sync_stamp, [jtalk_prep_stamp], _sync_jtalk_assets)
     env.Alias("jtalkSync", jtalk_sync_stamp)
 
     try:
