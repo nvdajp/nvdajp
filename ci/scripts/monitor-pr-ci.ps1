@@ -15,14 +15,40 @@ function Get-PrCiStatus {
     
     Write-Host "`n=== PR #$Number CI Status ===" -ForegroundColor Cyan
     
-    # Get PR info
-    $pr = gh pr view $Number --json number,title,state,statusCheckRollup,url,mergeable,mergeStateStatus,headRefName,baseRefName
-    if (-not $pr) {
-        Write-Host "Error: Could not fetch PR #$Number" -ForegroundColor Red
-        return $null
+    # Get PR info (extract title separately to avoid JSON parse issues with special characters)
+    try {
+        # Get basic PR info without title first (title may contain problematic characters)
+        $prJson = gh pr view $Number --json number,state,url,mergeable,mergeStateStatus,headRefName,baseRefName 2>&1 | Out-String
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Error: Could not fetch PR #$Number" -ForegroundColor Red
+            return $null
+        }
+        
+        $prObj = $prJson.Trim() | ConvertFrom-Json
+        
+        # Extract title from full JSON using regex (more robust for special characters)
+        $fullJson = gh pr view $Number --json number,title,state,url,headRefName,baseRefName 2>&1 | Out-String
+        $title = "N/A"
+        if ($fullJson -match '"title":"([^"]+)"') {
+            # Extract title value, handling escaped characters
+            $title = $matches[1] -replace '\\"', '"' -replace '\\n', "`n" -replace '\\/', '/'
+        }
+        $prObj | Add-Member -NotePropertyName "title" -NotePropertyValue $title -Force
+    } catch {
+        Write-Host "Warning: Failed to parse PR JSON: $_" -ForegroundColor Yellow
+        # Try minimal JSON with just essential fields
+        try {
+            $minJson = gh pr view $Number --json number,state,headRefName,baseRefName 2>&1 | Out-String
+            $prObj = $minJson.Trim() | ConvertFrom-Json
+            $prObj | Add-Member -NotePropertyName "title" -NotePropertyValue "N/A (parse error)" -Force
+            $prObj | Add-Member -NotePropertyName "url" -NotePropertyValue "https://github.com/nvdajp/nvdajp/pull/$Number" -Force
+            $prObj | Add-Member -NotePropertyName "mergeable" -NotePropertyValue $null -Force
+            $prObj | Add-Member -NotePropertyName "mergeStateStatus" -NotePropertyValue $null -Force
+        } catch {
+            Write-Host "Error: Could not parse PR info even with minimal fields" -ForegroundColor Red
+            return $null
+        }
     }
-    
-    $prObj = $pr | ConvertFrom-Json
     Write-Host "Title: $($prObj.title)" -ForegroundColor Yellow
     Write-Host "State: $($prObj.state)" -ForegroundColor $(if ($prObj.state -eq "OPEN") { "Green" } else { "Gray" })
     Write-Host "Branch: $($prObj.headRefName) -> $($prObj.baseRefName)" -ForegroundColor Gray
@@ -208,4 +234,3 @@ if ($Watch) {
         exit 0
     }
 }
-
