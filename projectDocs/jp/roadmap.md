@@ -15,6 +15,23 @@
 * **リリース/署名**: 署名・配布はローカル実施（CI は未署名の検証用のみ）。
 * **ドキュメント/ADR**: 重要決定は `projectDocs/jp/adr/` に 1 ページで記録。
 
+## 最優先目標: 2025.3.xjp安定版リリースの維持とローカル開発環境の整備
+
+**基本方針**: 現状の2025.3.xjp安定版がリリースできる状態を維持しながら、ローカル開発環境でjpSmokeTestをx86/x64並行実行できて成功する状態を作る。
+
+* **最優先**: 2025.3.xjp安定版のリリース継続を維持
+  * 既存のビルドプロセス（x86/Python 3.11）が正常に動作することを最優先
+  * リリースに影響を与える変更は段階的に実施
+  * 各変更は小さなPR単位で実施し、全テスト通過を確認
+* **開発環境整備**: ローカル開発環境でのjpSmokeTest x86/x64並行実行を成功させる
+  * ローカル環境でx86/x64の両方でjpSmokeTestを実行できる環境を構築
+  * ビルド成果物の上書きを避けるためのディレクトリ構造の整備
+  * 開発中の迅速なフィードバックループを確立
+* **段階的アプローチ**: 安定版維持 → ローカル環境整備 → CI統合
+  * Phase 1: 安定版リリースを維持しながら、ローカル開発環境を整備
+  * Phase 2: ローカル環境でのx86/x64並行実行を成功させる
+  * Phase 3: 成功したローカル環境の手法をCIに統合（オプション）
+
 ## 将来のマイルストン（2026.1jp を想定、別ブランチで実施予定）
 
 * 目標: 3.13 x64 で本家構成を通す。差分は最小、CI も本家準拠。
@@ -153,71 +170,75 @@
   * 1つのPRで1つの変更のみ（例: Pythonバージョン更新、ランナー更新など）
   * **ローカル環境でテスト済みの変更のみをCIに反映**
 
-* [ ] **Phase 1.5: jpSmokeTest のマトリクス実行（x86/x64並行）の検討**
-  * **目的**: x86環境でjpSmokeTestをx86/x64の両方で並行実行し、将来のx64対応を早期に検証
-  * **現状**: jpSmokeTestはCIで明示的に実行されていない（`runJpSmokeTests.ps1`は存在するがCI未統合）
-  * **検討事項**:
-    1. **jpSmokeTest専用ジョブの追加**
-       * `buildNVDA`ジョブとは独立した`jpSmokeTests`ジョブを作成
-       * マトリクス戦略で`architecture: [x86, x64]`を設定
-       * 各アーキテクチャで独立してビルドとテストを実行
-    2. **ビルド成果物の扱い**
-       * x86/x64それぞれで`jtalkPrep`と`miscdepsjp`を実行（アーキテクチャ別のビルドが必要）
-       * キャッシュキーに`architecture`を含めて、x86/x64のビルド成果物を分離
-       * または、`buildNVDA`ジョブでx86/x64の両方をビルドしてキャッシュに保存
-    3. **実行タイミング**
-       * `buildNVDA`ジョブの後に実行（`needs: buildNVDA`）
-       * または、`buildNVDA`ジョブと並行実行（独立したビルドを実行）
-    4. **実装方針**
-       * **オプションA（推奨）**: jpSmokeTest専用ジョブで、各アーキテクチャで独立してビルド
-         * メリット: ビルドとテストが一体化し、アーキテクチャ別の問題を早期に発見
-         * デメリット: ビルド時間が増加（x86/x64の両方をビルド）
-       * **オプションB**: `buildNVDA`ジョブでx86/x64の両方をビルドしてキャッシュに保存し、jpSmokeTestジョブで利用
-         * メリット: ビルド時間の重複を避けられる
-         * デメリット: `buildNVDA`ジョブが複雑になる、キャッシュの管理が複雑
-       * **オプションC（段階的）**: まずx86環境でjpSmokeTestをCIに統合し、動作確認後にx64を追加
-         * メリット: 段階的な導入でリスクを最小化
-         * デメリット: x64対応が後回しになる
-  * **推奨アプローチ**: オプションC（段階的導入）
-    1. Phase 1.5.1: x86環境でjpSmokeTestをCIに統合（`buildNVDA`ジョブ内または独立ジョブ）
-    2. Phase 1.5.2: x86環境での動作確認と安定化
-    3. Phase 1.5.3: マトリクス戦略でx64を追加（x86/x64並行実行）
-  * **実装方針（Phase 1.5.3）**:
-    * GitHub Actionsのマトリクス戦略を使用（`strategy.matrix.architecture: [x86, x64]`）
-    * 各アーキテクチャで独立したジョブを実行（`fail-fast: false`で並行実行）
-    * PythonセットアップとMSVC環境をアーキテクチャ別に設定
-    * アーキテクチャ別にJTalk DLLをビルド（`scons jtalkPrep`）
-    * ビルド後に`jptools/runJpSmokeTests.ps1`を実行
+* [ ] **Phase 1.5: ローカル開発環境でのjpSmokeTest x86/x64並行実行の実現（最優先）**
+  * **目的**: 2025.3.xjp安定版リリースを維持しながら、ローカル開発環境でjpSmokeTestをx86/x64並行実行できて成功する状態を作る
+  * **基本方針**:
+    * 安定版リリースに影響を与えない範囲で実施
+    * ローカル環境での開発効率を向上させる
+    * 将来のx64対応を見据えた検証環境を構築
+  * **現状**:
+    * jpSmokeTestはCIで明示的に実行されていない（`runJpSmokeTests.ps1`は存在するがCI未統合）
+    * ローカル環境ではx86/x64を順次実行することは可能だが、並行実行は困難（ビルド成果物の上書き問題）
+  * **段階的実装計画**:
+    1. **Phase 1.5.1: DLLパス構造の統一（前提条件）**
+       * Phase 1.2で計画されているDLLパス構造の統一を先に実施
+       * x86 DLL: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`
+       * x64 DLL: `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`
+       * payload側も同様にx86/x64ディレクトリを分離
+       * **検証**: 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
+    2. **Phase 1.5.2: ローカル環境でのx86/x64並行実行の実現**
+       * `runJpSmokeTests.ps1`に`-Architecture`パラメータを追加
+       * アーキテクチャ別のビルド成果物パスを自動選択
+       * PowerShellジョブを使用してx86/x64を並行実行
+       * **検証**: ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認
+    3. **Phase 1.5.3: ローカル環境での動作安定化**
+       * 並行実行時のリソース競合を解決
+       * エラーハンドリングとログ出力の改善
+       * 開発者向けドキュメントの作成
+       * **検証**: 複数回の実行で安定して成功することを確認
+    4. **Phase 1.5.4: CI統合（オプション、将来の検討事項）**
+       * ローカル環境での成功を確認した後、CIへの統合を検討
+       * GitHub Actionsのマトリクス戦略を使用
+       * 安定版リリースに影響を与えない範囲で実施
+  * **実装詳細（Phase 1.5.2）**:
+    * `runJpSmokeTests.ps1`の拡張
+      * `-Architecture`パラメータを追加（`x86`または`x64`）
+      * `TARGET_ARCH`環境変数を自動設定
+      * アーキテクチャ別のDLLパスを自動選択
+      * `-Parallel`パラメータを追加してx86/x64を並行実行
+    * PowerShellジョブを使用した並行実行
+      * `Start-Job`でx86/x64のテストを並行実行
+      * 各ジョブの結果を収集してレポート
+      * エラー時の詳細なログ出力
+    * ビルド成果物の分離
+      * x86 DLL: `miscDepsJp/source/synthDrivers/jtalk/x86/libopenjtalk.dll`
+      * x64 DLL: `miscDepsJp/source/synthDrivers/jtalk/x64/libopenjtalk.dll`
+      * 各アーキテクチャで独立してビルド可能
   * **利点**:
+    * ローカル開発環境での開発効率が向上（x86/x64を並行検証可能）
     * x64対応前にx64環境でのjpSmokeTestを検証できる
     * アーキテクチャ別の問題を早期に発見できる
-    * ビルドとテストの一貫性が保たれる
+    * 安定版リリースに影響を与えない（ローカル環境のみの変更）
+    * CI統合は後から検討可能（オプション）
   * **注意点**:
+    * Phase 1.2（DLLパス構造の統一）が完了している必要がある
     * x64環境でのビルドにはx64用のDLL（libopenjtalk.dll、libmecab.dll）が必要
-    * Phase 1.2.5（libmecab.dllのソースビルド化）とPhase 2.3（x64対応）の完了が必要
-    * ビルド時間の増加を許容できるか確認
-  * **ローカル開発環境でのマトリクス実行**:
-    * **現状**: ローカル環境ではGitHub Actionsのマトリクス戦略は使えないが、手動でx86/x64を切り替えて実行することは可能
-    * **制約**:
-      * 現在の実装では、`miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll`に1つのDLLしか配置できない
-      * x86とx64のビルド成果物が同じパスを上書きするため、並行実行は困難
-      * 順次実行（x86ビルド→x86テスト→x64ビルド→x64テスト）は可能だが、ビルド成果物の上書きに注意が必要
-    * **実現方法**:
-      * **方法1（現状）**: `TARGET_ARCH`環境変数を設定して順次実行
-        * `$env:TARGET_ARCH="x86"; scons jtalkPrep; jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`
-        * `$env:TARGET_ARCH="x64"; scons jtalkPrep; jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`
-      * **方法2（Phase 1.2完了後）**: Phase 1.2でx86/x64ディレクトリ分離が完了すれば、ビルド成果物の上書きを避けられる
-        * x86 DLL: `miscDepsJp/source/synthDrivers/jtalk/x86/libopenjtalk.dll`
-        * x64 DLL: `miscDepsJp/source/synthDrivers/jtalk/x64/libopenjtalk.dll`
-        * この構造により、x86とx64のビルド成果物が共存可能になり、並行実行（PowerShellジョブなど）も検討可能
-      * **方法3（推奨）**: `runJpSmokeTests.ps1`に`-Architecture`パラメータを追加し、アーキテクチャ別のテスト実行を簡素化
-        * `jptools/runJpSmokeTests.ps1 -Architecture x86`
-        * `jptools/runJpSmokeTests.ps1 -Architecture x64`
-        * 内部で`TARGET_ARCH`環境変数を設定し、適切なDLLパスを選択
-    * **推奨アプローチ**:
-      * Phase 1.2（DLLパス構造の統一）完了後に、ローカル環境でのマトリクス実行を検討
-      * Phase 1.2完了前は、順次実行（方法1）で十分
-      * Phase 1.2完了後は、方法2または方法3を実装して、ローカル環境でもCIと同様のマトリクス実行を可能にする
+    * Phase 1.2.5（libmecab.dllのソースビルド化）の完了が推奨される
+    * ローカル環境でのMSVC環境の切り替えが必要（x86/x64）
+    * 安定版リリースに影響を与えない範囲で実施
+  * **検証方法**:
+    * **Phase 1.5.1完了後**: 既存のx86ビルドが正常に動作することを確認
+      * `scons source dist launcher`が成功することを確認
+      * 既存のjpSmokeTest（x86）が成功することを確認
+      * 安定版リリースに影響がないことを確認
+    * **Phase 1.5.2完了後**: ローカル環境でx86/x64並行実行が成功することを確認
+      * `jptools/runJpSmokeTests.ps1 -Parallel`が成功することを確認
+      * x86/x64の両方でjpSmokeTestが成功することを確認
+      * ビルド成果物が正しく分離されていることを確認
+    * **Phase 1.5.3完了後**: 複数回の実行で安定して成功することを確認
+      * 並行実行時のリソース競合がないことを確認
+      * エラーハンドリングが適切に動作することを確認
+      * 開発者向けドキュメントが整備されていることを確認
 
 ### 段階2: Python 3.13 x64対応（優先度：高）
 
