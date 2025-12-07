@@ -55,7 +55,9 @@ if (-not $SkipOverlay) {
     & "$repoRoot\scons.bat" miscdepsjp
 }
 
-$env:PYTHONPATH = "miscDepsJp\include\python-jtalk;miscDepsJp\source\synthDrivers\jtalk"
+$pythonJtalk = Join-Path $repoRoot "miscDepsJp\include\python-jtalk"
+$jtalkOverlay = Join-Path $repoRoot "miscDepsJp\source\synthDrivers\jtalk"
+$env:PYTHONPATH = "$pythonJtalk;$jtalkOverlay"
 Write-Host "PYTHONPATH set to $($env:PYTHONPATH)" -ForegroundColor Cyan
 
 # Set max tests environment variable if specified
