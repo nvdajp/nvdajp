@@ -21,7 +21,8 @@ configDir = getcwd()
 try:
     import globalVars  # type: ignore
 
-    configDir = globalVars.appArgs.configPath
+    if globalVars.appArgs.configPath:
+        configDir = globalVars.appArgs.configPath
     d = os.path.join(
         globalVars.appArgs.configPath, "addons", "nvdajp_jtalk", "synthDrivers", "jtalk"
     )

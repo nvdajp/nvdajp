@@ -20,14 +20,34 @@ except:
     pyaudio = None  # type: ignore
 # import cProfile
 # import pstats
-jtalk_dir = JT_DIR = os.path.normpath(
-    os.path.join(getcwd(), "..", "source", "synthDrivers", "jtalk")
-)
-sys.path.append(JT_DIR)
+# Calculate repo root (miscDepsJp's parent) and use miscDepsJp/source/synthDrivers/jtalk
+# Use __file__ to get the script's directory, which is more reliable than getcwd()
+# jtalkRunner.py is in miscDepsJp/include/python-jtalk
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# script_dir -> miscDepsJp/include/python-jtalk
+# ../.. -> miscDepsJp
+# ../.. -> repo root (betajp-251206v4)
+repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
+# Verify repo_root contains miscDepsJp
+if not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
+    # Fallback: try going up one more level if current calculation is wrong
+    repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", "..", ".."))
+jtalk_dir = JT_DIR = os.path.join(repo_root, "miscDepsJp", "source", "synthDrivers", "jtalk")
+# Prefer the miscDepsJp overlay; fail fast if it's missing.
+# Remove any existing occurrence to ensure JP overlay wins for imports
+if JT_DIR in sys.path:
+    sys.path.remove(JT_DIR)
+sys.path.insert(0, JT_DIR)  # nvdajp: ensure JP overlay wins for imports
 import jtalkPrepare  # type: ignore
 from jtalkCore import *  # type: ignore
 
-JT_DLL = os.path.join(JT_DIR, "libopenjtalk.dll")
+JT_DLL = os.path.abspath(os.path.join(JT_DIR, "libopenjtalk.dll"))
+# Ensure DLL directory is in search path
+if hasattr(os, "add_dll_directory"):
+    try:
+        os.add_dll_directory(JT_DIR)
+    except OSError:
+        pass  # Ignore if already added or fails
 
 voices = [
     {

@@ -57,7 +57,7 @@ jobs:
 
     - name: Set version variables
       run: |
-        $baseVersion = "2025.1.2jp"
+        $baseVersion = "2025.3.2jp"
         
         # Set timezone and get current date
         tzutil /s "Tokyo Standard Time"
@@ -95,10 +95,8 @@ jobs:
 
     - name: Build NVDA Japanese version
       run: |
-        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
-        echo Building with args: %sconsArgs%
-        call jptools\nonCertAllBuild.cmd %sconsArgs%
-      shell: cmd
+        python jptools/nonCertBuild.py -- version_build=${{ github.run_number }} --all-cores
+      shell: powershell
 
     - name: Build Japanese addons
       run: |

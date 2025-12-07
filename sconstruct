@@ -390,6 +390,19 @@ for userGuideFileSub in env.Glob(os.path.join(userDocsDir.path, "*", "userGuide.
 # Build unicode CLDR dictionaries
 env.SConscript("cldrDict_sconscript", exports=["env", "sourceDir"])
 
+# JP-specific helpers (isolated; add opt-in aliases only)
+try:
+    import jptools.scons_jp as scons_jp
+    # Always register JP builders in this repo; miscDepsJp overlay is required
+    # for a correct build layout regardless of publisher.
+    scons_jp.register_jp_builders(env)
+    # Ensure miscDepsJp overlay runs before building source artifacts so that
+    # "scons source" is self-contained.
+    env.Depends(sourceDir, env.Alias("miscdepsjp"))
+except Exception:
+    # Never fail the build if JP helpers are unavailable.
+    pass
+
 
 # A builder to generate an NVDA distribution.
 def NVDADistGenerator(target, source, env, for_signature):
@@ -705,6 +718,13 @@ potSourceFiles = [
 
 pot = env.Command(outputDir.File("nvda.pot"), potSourceFiles, makePot)
 
+# JP: Ensure overlay exists before generating pot (translation template)
+try:
+	# Even if the alias is empty in non-JP contexts, this is safe.
+	env.Depends(pot, env.Alias("miscdepsjp"))
+except Exception:
+	pass
+
 env.Alias("pot", pot)
 
 symbolsList = []
@@ -737,3 +757,12 @@ env.Tool("listModules")
 source = env.Dir(os.path.join(os.getcwd(), "dist"))
 target = env.File(os.path.join(outputDir.abspath, "library_modules.txt"))
 env.Alias("moduleList", env.GenerateModuleList(target, source))
+
+# JP: Attach overlay clean-up to major default targets so that `scons -c`
+# also cleans miscDepsJp overlay artifacts.
+try:
+    _overlay_files = scons_jp._compute_overlay_targets(Path.cwd())  # type: ignore[attr-defined]
+    env.Clean(dist, _overlay_files)
+    env.Clean(launcher, _overlay_files)
+except Exception:
+    pass

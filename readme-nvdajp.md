@@ -6,7 +6,7 @@
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は NVDA 2024.4.1jp (2024年11月24日時点での betajp ブランチ) の状況
+以下は2025年12月6日時点での betajp ブランチの状況
 
 ### (1) Windows 10/11 64ビット
 
@@ -18,7 +18,7 @@
 
 https://www.visualstudio.com/ja/downloads/
 
-* Visual Studio 2022 v17.12.1 でビルドできることを確認した
+* Visual Studio 2022 でビルドできることを確認している
 
 #### (2.1) 選択する「ワークロード」の項目
 
@@ -131,19 +131,6 @@ C:\Program Files\Git\usr\bin\patch.exe
 C:\Program Files\7-Zip\7z.exe
 ```
 
-またはコマンドプロンプトで git, patch, 7z がそれぞれ実行できる。
-
-```text
-> where git
-C:\Program Files\Git\cmd\git.exe
-
-> where patch
-C:\Program Files\Git\usr\bin\patch.exe
-
-> where 7z
-C:\Program Files\7-Zip\7z.exe
-```
-
 ### (7) NVDA日本語版のソースコード取得とビルド
 
 以下で本体および Git のサブモジュールが取得される。
@@ -158,7 +145,7 @@ C:\Program Files\7-Zip\7z.exe
 
 ```text
 > cd betajp-dev
-> jptools\devbuild2024.cmd
+> .\scons.bat source
 ```
 
 ユニットテストの出力が `OK (skipped=5)` であれば依存モジュールは準備できている。
@@ -166,7 +153,7 @@ C:\Program Files\7-Zip\7z.exe
 NVDA 本体を実行するには
 
 ```text
-> runnvda.bat
+> .\runnvda.bat
 ```
 
 ### (8) NVDA日本語版のリリースビルド
@@ -175,9 +162,9 @@ NVDA 本体を実行するには
 
 ```text
 > cd betajp-dev
-> set VERSION=2024.3jp
-> venvUtils\venvCmd jptools\certBuild2023.cmd version_build=99999
-> rununittests.bat
+> set VERSION=2025.3.2jp
+> .\jptools\certBuild2023.cmd version_build=99999
+> .\rununittests.bat
 ```
 
 ### (9) NVDA本家版のソースコード取得とビルド
@@ -188,7 +175,7 @@ NVDA 本体を実行するには
 
 ```text
 > cd nvda
-> .\scons
+> .\scons.bat
 ```
 
 ## マイルストーン自動割り当て機能
@@ -213,7 +200,7 @@ NVDA日本語版では、GitHub Actionsを使用してIssueやPull Requestにマ
 gh variable set MILESTONE_ID --body "71" --repo nvdajp/nvdajp
 ```
 
-現在は `2025.2jp` (ID: 71) が設定されています。
+現在のマイルストーンIDはリポジトリ変数 `MILESTONE_ID` で管理されています。最新のマイルストーンIDはGitHubのリポジトリ設定で確認してください。
 
 ### 運用手順
 
@@ -295,8 +282,8 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 comInterfaces ファイルは git で管理されていないため、下記のようにして再生成する。
 
 ```text
-> venvUtils\venvCmd.bat scons source\comInterfaces -c
-> venvUtils\venvCmd.bat scons source\comInterfaces
+> scons.bat source\comInterfaces -c
+> scons.bat source\comInterfaces
 ```
 
 ## システムテスト
@@ -314,7 +301,6 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 
 ### 対応
 
-* appveyor-jp.yml : 実際に使用している AppVeyor 設定ファイル。本家版の appveyor.yml はそのまま残している。
 * _chromeArgs.py : ローカル環境と AppVeyor を共通のコードで動かすため Chrome の UI 言語を ja-JP に変更している。また、ゲストモードで起動するために必要なオプションを追加している。
 * ChromeLib.py : アドレス検索バーの読み上げとして期待するテキストを "Address and search bar" から "アドレス検索バー" に変更している。
 * jpRobotUtil.py : press_numpad2_4_times を実装しており、文字説明の読み上げを本家版にそろえるためにテストコードに追加している。
@@ -327,15 +313,15 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 システムテストを実行するには
 
 ```text
-> runsystemtests.bat --include symbols --test "moveByCharacter"
+> .\runsystemtests.bat --include symbols --test "moveByCharacter"
 ```
 
 NVDA日本語版のビルドで行っているシステムテスト
 
 ```text
-> runsystemtests.bat --include NVDA --exclude restarts_on_crash
-> runsystemtests.bat --variable whichNVDA:installed --variable installDir:"output\nvda_%VERSION%.exe" --include installer
-> runsystemtests.bat --include chrome
+> .\runsystemtests.bat --include NVDA --exclude restarts_on_crash
+> .\runsystemtests.bat --variable whichNVDA:installed --variable installDir:"output\nvda_%VERSION%.exe" --include installer
+> .\runsystemtests.bat --include chrome
 ```
 
 * restarts_on_crash タグを追加している。これらは AppVeyor では通るが、ローカル環境では通らないため、除外する
@@ -386,227 +372,115 @@ jpcharディレクトリには、文字説明と記号の一貫性をチェッ�
 5. jtalkのビルドとテスト
 6. HTMLドキュメントの生成
 
-## 今後の課題
+## SCons ビルドターゲット
 
-### ビルドスクリプトの処理構造と実行フロー
+NVDA日本語版では、SConsを使用したビルドシステムが実装されています。開発者は `scons` コマンドのみを意識すればよく、複雑なビルドスクリプトを直接呼び出す必要はありません。
 
-`jptools/certBuild2023.cmd`を中心としたビルドスクリプトは複数のスクリプトが相互に呼び出し合う複雑な構造になっています。以下にその処理の流れを詳細に説明します：
+### 主要なターゲット
 
-1. **certBuild2023.cmdの主な処理フロー**
-   - 環境変数の設定（SCONSOPTIONS, TIMESERVER）
-   - Visual C++環境の設定（vcsetup.cmd）
-   - nmakeとpatchコマンドの確認
-   - jtalkコアファイルのコピー処理
-     ```
-     cd miscDepsJp\jptools
-     call copy_jtalk_core_files.cmd
-     ```
-   - jtalkのビルドとテスト
-     ```
-     call build-and-test.cmd
-     ```
-   - 依存ライブラリのセットアップ
-     ```
-     call jptools\setupMiscDepsJp.cmd
-     ```
-   - 各種DLLファイルへの電子署名
-     ```
-     %SIGNTOOL% sign /a /fd SHA256 /tr %TIMESERVER% /td SHA256 [ファイル名]
-     ```
-   - sconsによるNVDAのビルド
-     ```
-     call scons.bat source user_docs launcher release=1 publisher=%PUBLISHER% %SCONSARGS%
-     ```
-   - jtalkとkgsアドオンのパッケージング
-   - コントローラークライアントのビルド
-   - テストの実行
-   - 署名の検証
+#### `scons jtalkPrep`
 
-2. **build-and-test.cmdの処理**
-   - jtalkコアファイルのコピー（copy_jtalk_core_files.cmd）
-   - Visual C++環境の設定
-   - jtalkのビルド処理
-     ```
-     call all-clean.cmd
-     call all-build.cmd
-     call all-install.cmd
-     ```
-   - python-jtalkのクリーン処理
-   - テストの実行
+JTalk DLLのビルドとペイロードへの配置を行います。
 
-3. **setupMiscDepsJp.cmdの処理**
-   - jtalkのビルド処理
-     ```
-     call all-clean.cmd
-     call all-build.cmd
-     call all-install.cmd
-     call all-clean.cmd
-     ```
-   - 一時ファイルの削除
-   - sourceディレクトリのアーカイブと展開
-     ```
-     7z a ..\nvdajp-miscdep.7z source
-     cd ..
-     7z x -y nvdajp-miscdep.7z
-     del /Q nvdajp-miscdep.7z
-     ```
-   - 各種クリーンアップ処理
+**動作**：
+- DLLが存在する場合: 再ビルドをスキップ（高速）
+- DLLが存在しない場合: 自動的に `nmake /f all.mak` を実行してビルド
+- ビルド成功後、生成されたDLLをペイロード位置（`miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll`）に配置
 
-4. **スクリプト間の呼び出し関係と重複ファイル**
-   - certBuild2023.cmd → copy_jtalk_core_files.cmd
-   - certBuild2023.cmd → build-and-test.cmd → copy_jtalk_core_files.cmd
-   - certBuild2023.cmd → setupMiscDepsJp.cmd
-   - devbuild.cmd → copy_jtalk_core_files.cmd
-   - devbuild.cmd → setupMiscDepsJp.cmd
-   
-   ビルドスクリプトには同名のファイルが複数の場所に存在しており、それぞれ異なる処理を行っています：
-   
-   1. **build-and-test.cmd**
-      - `miscDepsJp/jptools/build-and-test.cmd`：主にjtalkのビルドとテストを行う
-        ```
-        call copy_jtalk_core_files.cmd
-        call ..\include\python-jtalk\vcsetup.cmd
-        cd /d %~dp0
-        cd ..\include\jtalk
-        call all-clean.cmd
-        call all-build.cmd
-        call all-install.cmd
-        cd ..\python-jtalk
-        call clean.cmd
-        cd ..\..\jptools
-        call test.cmd
-        ```
-      - `miscDepsJp/jptools/jtalk/build-and-test.cmd`：より限定的な処理を行う
-        ```
-        call all-build.cmd
-        call all-install.cmd
-        cd ..\..\jptools
-        call test-mecab.cmd
-        cd ..\include\jtalk
-        ```
-   
-   2. **all-build.cmd / all-clean.cmd / all-install.cmd**
-      - `miscDepsJp/jptools/jtalk/`ディレクトリに存在
-      - `miscDepsJp/include/jtalk/`ディレクトリには存在しないが、上記からコピーされ、スクリプト内で呼び出されている
-   
-   3. **vcsetup.cmd**
-      - `jptools/vcsetup.cmd`（メインリポジトリ）
-      - `miscDepsJp/include/python-jtalk/vcsetup.cmd`（サブモジュール）
-   
-   4. **clean.cmd**
-      - `miscDepsJp/jptools/clean.cmd`（メインリポジトリ）
-      - `miscDepsJp/include/python-jtalk/clean.cmd`（サブモジュール）
-   
-   これらの同名スクリプトは、それぞれ異なる処理を行うために作成されたものですが、呼び出し関係が複雑になっています。
+**実行例**：
+```bash
+# JTalk DLLのビルドと配置
+scons jtalkPrep
 
-5. **処理の特徴**
-   - 同じファイルのコピーが複数回実行される場合がある
-   - jtalkのビルド処理（clean→build→install）が複数回実行される
-   - クリーンアップ処理が複数のスクリプトに分散している
-   - エラーチェックは一部の処理でのみ実装されている
-   - アーカイブと展開を使ったファイルコピー処理がある
-
-これらの複雑な処理構造は、長年の開発過程で段階的に追加・修正されてきたもので、改善が必要です。
-
-### ビルドスクリプト複雑化の歴史的経緯
-
-#### サブモジュール入れ子構造の問題と解消
-
-NVDA日本語版では、以前は `miscDepsJp` をサブモジュールとして管理し、その中でさらに複数のサブモジュール（python-jtalk, htsengineapi, libopenjtalk, libkuraji）を使用する入れ子構造を採用していました。これにより、依存関係のあるコンポーネント（jtalk関連のライブラリなど）が自然な形で配置されていました。
-
-しかし、サブモジュールの入れ子構造にはいくつかの問題がありました：
-- 複雑な依存関係の管理
-- サブモジュール更新時の問題
-- 開発環境のセットアップの困難さ
-- Git操作の複雑性（特に `git submodule update --init --recursive`）
-
-**2025年3月にPR #492により入れ子構造を解消**：
-- `miscDepsJp` サブモジュールを削除し、その内容を直接メインリポジトリに統合
-- 個別のサブモジュール（python-jtalk等）は維持し、`miscDepsJp/include/` 配下に配置
-- この変更により約260万行のファイルがメインリポジトリに追加された
-
-**現在のサブモジュール構成**：
-```
-miscDepsJp/include/
-├── python-jtalk/     # サブモジュール (nvdajp/python-jtalk)
-├── htsengineapi/     # サブモジュール (nishimotz/htsengineapi)
-├── libopenjtalk/     # サブモジュール (nishimotz/libopenjtalk)
-└── libkuraji/        # サブモジュール (nishimotz/libkuraji)
+# x86 ビルドの場合（このブランチのデフォルト）
+scons jtalkPrep TARGET_ARCH=x86
 ```
 
-#### ディレクトリ構成維持のためのコピー処理
+**ログ例（DLL存在時）**：
+```
+jtalkPrep: using TARGET_ARCH=x86
+jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+jtalkPrep: using existing DLL (build skipped)
+jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+```
 
-サブモジュールの入れ子構造を解消する際、以下の制約がありました：
-- 既存のディレクトリ構成を大幅に変更したくない
-- ビルドスクリプトへの影響を最小限に抑えたい
-- 既存の開発者の作業環境への影響を避けたい
+**ログ例（DLL不在時）**：
+```
+jtalkPrep: using TARGET_ARCH=x86
+jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+jtalkPrep: DLL not found, attempting to build via nmake...
+jtalkPrep: running nmake via vcvarsall.bat with arch=x86
+[nmake の出力...]
+jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+```
 
-この結果、**コピー処理によって既存のディレクトリ構成を模倣する**方法が採用されました：
+#### `scons miscdepsjp`
 
-1. **copy_jtalk_core_files.cmd**の導入
-   - サブモジュールから必要なファイルを適切な場所にコピー
-   - `miscDepsJp/include/htsengineapi` → `miscDepsJp/include/python-jtalk/htsengineapi`
-   - `miscDepsJp/include/python-jtalk/*.py` → `source/synthDrivers/jtalk/`
+日本語版固有のファイルを `source/` ディレクトリにオーバーレイします。
 
-2. **重複実行の発生**
-   - 異なるビルドフェーズで同じコピー処理を実行
-   - 安全性を重視してコピー処理を複数箇所に配置
+**動作**：
+- `miscDepsJp/source` 配下のファイルを `source/` にコピー
+- JTalkコアファイル（`jtalkCore.py`, `mecab.py`, `text2mecab.py`）を `source/synthDrivers/jtalk/` にコピー
+- `jtalkPrep` に依存しているため、JTalk DLLも自動的に準備される
 
-#### 技術的負債としての現状
+**実行例**：
+```bash
+# オーバーレイのみ実行（デバッグ用）
+scons miscdepsjp
+```
 
-この歴史的経緯により、現在のビルドシステムは以下の特徴を持っています：
+**注意**: `scons source` を実行すると、`miscdepsjp` が依存として自動実行されます。通常は明示的に実行する必要はありません。
 
-**利点**：
-- 既存の開発環境への影響を最小化
-- 段階的な移行が可能
-- ビルドの安定性確保
+### 通常のビルドフロー
 
-**課題**：
-- ビルド時間の増加（重複処理）
-- メンテナンスの複雑性
-- 新規開発者への理解負担
+開発者が通常実行するコマンド：
 
-#### 今後の改善方向
+```bash
+# これだけでビルド完結（ベンダービルド・overlay・dist 作成すべて自動）
+scons dist
 
-理想的には以下の順序で改善を進めることが望ましいです：
+# または
+scons source user_docs launcher
+```
 
-1. **短期的改善**（現在実施中）
-   - 重複処理の最適化
-   - エラーハンドリングの改善
-   - PR #510 での `copy_jtalk_core_files.cmd` 最適化
+**内部で自動実行される**（開発者は意識不要）：
+1. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
+2. `miscdepsjp`: overlayで `source/` に配置
+3. `source`, `dist` などのビルド
 
-2. **中期的改善**
-   - ディレクトリ構成の段階的整理
-   - ビルドスクリプトの構造化
-   - 同名スクリプトファイルの統合
+### ビルドシステムの改善
 
-3. **長期的改善**
-   - 根本的なディレクトリ構成の見直し
-   - 依存関係管理の現代化
+従来は複数の `.cmd` スクリプトが相互に呼び出し合う複雑な構造でしたが、SConsターゲットの導入により以下の改善が実現されました：
 
-#### 参考リンク
+- **簡素化**: 開発者は `scons` コマンドのみを意識すればよい
+- **自動化**: 依存関係が自動的に解決される
+- **高速化**: DLLが存在する場合は再ビルドをスキップ
+- **透明性**: ビルドプロセスが明確になる
 
-- **PR #492**: [Refactor: Improve submodule management strategy for miscDepsJp](https://github.com/nvdajp/nvdajp/pull/492) - サブモジュール入れ子構造の解消
-- **PR #510**: [ビルドスクリプトの重複処理を最適化](https://github.com/nvdajp/nvdajp/pull/510) - コピー処理の最適化
+詳細は `projectDocs/jp/vendor-submodules.md` を参照してください。
 
-### CI/CD の modernization
+### CI/CD の現状
 
-2025年8月に本家の CI/CD 改善を取り込み中：
-- GitHub Actions ワークフローの最適化
+現在、GitHub Actionsを使用したCI/CDパイプラインが実装されています（`.github/workflows/testAndPublish.yml`）：
+
+- **ビルド環境**: Windowsランナー、Python 3.11 (32bit)
+- **ビルドプロセス**: `jptools/nonCertBuild.py` を使用（Python版に移行済み）
+- **テスト**: ユニットテスト、システムテスト、日本語版固有のテストを実行
+- **自動化**: betajp、releasejpブランチへのpush時に自動ビルド
+
+**今後の改善予定**：
+- 本家のCI/CD改善の取り込み
 - テストジョブの分離（typeCheck, licenseCheck等）
-- SCons MSVC Cache による高速化
-- windows-2025 ランナーへの移行
-
-段階的な改善アプローチ：
-1. 第1段階：本家 CI/CD 構造の取り込み（2025年8月実施）
-2. 第2段階：Python 3.13 対応
-3. 第3段階：x64 ビルド対応の検討
+- SCons MSVC Cacheによる高速化
+- Python 3.13対応の検討
 
 ### Python バージョンの対応状況
 
-#### 現在の状況（2025年8月）
-- Python 3.11.9 (32bit) を使用
-- 本家 NVDA は Python 3.11.9 と 3.13.6 のマトリックステストを実施
+#### 現在の状況（2025年12月）
+- Python 3.11 (32bit) を使用
+- CI/CDでは Python 3.11 を使用（`.github/workflows/testAndPublish.yml`）
+- 本家 NVDA は Python 3.11 と 3.13 のマトリックステストを実施
 
 #### 今後の対応
 - Python 3.13 への対応は段階的に実施予定
