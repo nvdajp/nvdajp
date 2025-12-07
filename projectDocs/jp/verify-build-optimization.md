@@ -24,8 +24,9 @@
 scons -c
 
 # JTalk DLLを削除（存在する場合）
+# 注: 現状は x86 DLL は miscDepsJp\include\python-jtalk\libopenjtalk.dll（x86サブディレクトリなし）
+# 将来のリファクタリングで x86 も miscDepsJp\include\python-jtalk\x86\libopenjtalk.dll に統一予定
 Remove-Item -ErrorAction SilentlyContinue miscDepsJp\include\python-jtalk\libopenjtalk.dll
-Remove-Item -ErrorAction SilentlyContinue miscDepsJp\include\python-jtalk\x86\libopenjtalk.dll
 Remove-Item -ErrorAction SilentlyContinue miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll
 ```
 

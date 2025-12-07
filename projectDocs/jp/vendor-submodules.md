@@ -59,7 +59,9 @@
   * 開発者は `scons dist` だけを実行すればよい
 
 * **レイアウト**
-  * x86: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`（このブランチ）
+  * x86（現状）: `miscDepsJp/include/python-jtalk/libopenjtalk.dll`（このブランチ）
+  * x86（将来のリファクタリング予定）: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`（統一性のため）
+  * x64（将来のリファクタリング予定）: `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`（別ブランチ）
   * MeCab 辞書: アーキ非依存のため共通
   * libmecab.dll: payload `miscDepsJp/source/synthDrivers/jtalk/libmecab.dll` は PyPI `mecab-python3` 1.0.10 (`cp311` win32 wheel) から採取した x86 DLL。MeCab と同じく GPL/LGPL/BSD（三条項）併記で、wheel の `COPYING` に明記
 
@@ -107,7 +109,7 @@ scons source user_docs launcher
 
 ```text
 jtalkPrep: using TARGET_ARCH=x86
-jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/libopenjtalk.dll
 jtalkPrep: using existing DLL (build skipped)
 jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 ```
@@ -116,13 +118,15 @@ jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 
 ```text
 jtalkPrep: using TARGET_ARCH=x86
-jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/libopenjtalk.dll
 jtalkPrep: DLL not found, attempting to build via nmake...
 jtalkPrep: running nmake via vcvarsall.bat with arch=x86
 [nmake の出力...]
-jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/libopenjtalk.dll
 jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 ```
+
+**注**: 将来のリファクタリングで、x86 DLL も `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll` に統一する予定です。
 
 ### 手動で overlay だけ実行したい場合（通常は不要）
 
