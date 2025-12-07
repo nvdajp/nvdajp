@@ -38,4 +38,3 @@ $(HTSLIB)\HTS_audio.obj: $(HTSLIB)\HTS_audio.c
 clean:
 	del $(HTSLIB)\*.lib
 	del $(HTSLIB)\*.obj
-
