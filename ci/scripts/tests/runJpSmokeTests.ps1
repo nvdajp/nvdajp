@@ -11,11 +11,15 @@ Set-Location $repoRoot
 Write-Host "Installing pytest for smoke tests..." -ForegroundColor Cyan
 uv pip install pytest
 
-# Ensure jtalkPrep is done (creates miscDepsJp/source/synthDrivers/jtalk/ directory and DLL)
+# Check if DLL exists in cache, if not run jtalkPrep
 # Note: jtalkPrep is idempotent - if DLL already exists, it skips the build
-# This ensures the directory structure exists even if cache doesn't include it
-Write-Host "Ensuring JTalk DLL is prepared via scons jtalkPrep..." -ForegroundColor Cyan
-& "$repoRoot\scons.bat" jtalkPrep
+$dllPath = Join-Path $repoRoot "miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll"
+if (Test-Path $dllPath) {
+    Write-Host "JTalk DLL found in cache, skipping jtalkPrep" -ForegroundColor Green
+} else {
+    Write-Host "JTalk DLL not found in cache, running jtalkPrep..." -ForegroundColor Yellow
+    & "$repoRoot\scons.bat" jtalkPrep
+}
 
 # Run smoke tests (skip install and overlay since we already have everything)
 Write-Host "Running JP smoke tests in CI environment..." -ForegroundColor Cyan
