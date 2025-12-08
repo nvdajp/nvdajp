@@ -23,15 +23,36 @@ except:
 # Calculate repo root (miscDepsJp's parent) and use miscDepsJp/source/synthDrivers/jtalk
 # Use __file__ to get the script's directory, which is more reliable than getcwd()
 # jtalkRunner.py is in miscDepsJp/include/python-jtalk
-script_dir = os.path.dirname(os.path.abspath(__file__))
-# script_dir -> miscDepsJp/include/python-jtalk
-# ../.. -> miscDepsJp
-# ../.. -> repo root (betajp-251206v4)
-repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
-# Verify repo_root contains miscDepsJp
-if not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
-    # Fallback: try going up one more level if current calculation is wrong
-    repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", "..", ".."))
+# First, try to get repo root from PYTHONPATH (more reliable in CI environments)
+repo_root = None
+for path in sys.path:
+    if path and os.path.isdir(path):
+        # Check if this path contains miscDepsJp/include/python-jtalk
+        if path.endswith("miscDepsJp/include/python-jtalk") or path.endswith("miscDepsJp\\include\\python-jtalk"):
+            # Go up two levels: miscDepsJp/include/python-jtalk -> miscDepsJp -> repo root
+            candidate = os.path.dirname(os.path.dirname(path))
+            if os.path.exists(os.path.join(candidate, "miscDepsJp")):
+                repo_root = os.path.dirname(candidate)
+                break
+        # Also check if path is miscDepsJp/source/synthDrivers/jtalk
+        elif path.endswith("miscDepsJp/source/synthDrivers/jtalk") or path.endswith("miscDepsJp\\source\\synthDrivers\\jtalk"):
+            # Go up three levels: miscDepsJp/source/synthDrivers/jtalk -> miscDepsJp/source -> miscDepsJp -> repo root
+            candidate = os.path.dirname(os.path.dirname(os.path.dirname(path)))
+            if os.path.exists(os.path.join(candidate, "miscDepsJp")):
+                repo_root = os.path.dirname(candidate)
+                break
+
+# Fallback to __file__-based calculation if PYTHONPATH method didn't work
+if repo_root is None or not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # script_dir -> miscDepsJp/include/python-jtalk
+    # ../.. -> miscDepsJp
+    # ../.. -> repo root (betajp-251206v4)
+    repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
+    # Verify repo_root contains miscDepsJp
+    if not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
+        # Fallback: try going up one more level if current calculation is wrong
+        repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", "..", ".."))
 jtalk_dir = JT_DIR = os.path.join(repo_root, "miscDepsJp", "source", "synthDrivers", "jtalk")
 # Prefer the miscDepsJp overlay; fail fast if it's missing.
 # Remove any existing occurrence to ensure JP overlay wins for imports
