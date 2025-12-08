@@ -58,17 +58,25 @@ NVDA のログは通常 `%APPDATA%\nvda\nvda.log` に出力されます。
 
 `runnvda.bat` の代わりに、`runJpSmokeTests.ps1` を使って MeCab の動作をテストすることもできます。
 
+**詳細なトラブルシューティング情報は `projectDocs/jp/troubleshooting_runjp_smoke_tests.md` を参照してください。**
+
 ### 基本的な使い方
 
 ```powershell
-# すべてのテストを実行
+# すべてのテストを実行（依存関係とoverlayを自動実行）
+.\jptools\runJpSmokeTests.ps1
+
+# 依存関係が既にインストールされている場合
 .\jptools\runJpSmokeTests.ps1 -SkipInstall
 
+# 依存関係とoverlayが既に準備されている場合
+.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
+
 # 特定のテストのみ実行（例: test_pass2）
-.\jptools\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_pass2"
+.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "test_pass2"
 
 # テストケース数を制限して実行（例: 10件まで）
-.\jptools\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_pass2" -MaxTests 10
+.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "test_pass2" -MaxTests 10
 ```
 
 ### テストケース数の段階的な増やし方
@@ -101,13 +109,21 @@ Get-Content miscDepsJp\jptools\__h2output.txt | Select-Object -Last 30
 Get-Content miscDepsJp\jptools\__h2output.txt | Select-String "Test \d+:"
 ```
 
+### オプションの説明
+
+- `-SkipInstall`: `uv pip install scons pytest` をスキップします（依存関係が既にインストールされている場合に使用）
+- `-SkipOverlay`: `scons jtalkPrep` と `scons miscdepsjp` をスキップします（overlay が既に実行されている場合に使用）
+  - **注意**: `-SkipOverlay` を指定すると、`libopenjtalk.dll` が見つからないエラーが発生する可能性があります
+- `-TestFilter`: 実行するテストをフィルタリングします（例: `"JtalkTests"`, `"test_pass2"`）
+- `-MaxTests`: `pass2` 関数に渡され、テストケースの実行数を制限します
+
 ### 注意事項
 
-- `-SkipInstall` オプションを指定すると、`scons miscdepsjp` が自動的に実行されます（overlay が実行されます）
-- `-SkipOverlay` オプションを指定すると overlay がスキップされますが、`libopenjtalk.dll` が見つからないエラーが発生する可能性があります
-- `-MaxTests` オプションは `pass2` 関数に渡され、テストケースの実行数を制限します
+- `-SkipInstall` を指定しても、`-SkipOverlay` を指定しない限り、`scons jtalkPrep` と `scons miscdepsjp` は自動的に実行されます
 - Windows fatal exception が発生した場合、`__h2output.txt` にログが書き込まれない可能性があります（ログが書き込まれる前にクラッシュするため）
 
 ### トラブルシューティング
 
-`pytest` モジュールが見つからないエラーが発生した場合、`projectDocs/jp/troubleshooting_runjp_smoke_tests.md` を参照してください。
+- `pytest` モジュールが見つからないエラー: `projectDocs/jp/troubleshooting_runjp_smoke_tests.md` を参照
+- CI環境での `__file__` 解決エラー: `projectDocs/jp/troubleshooting_runjp_smoke_tests.md` を参照
+- ローカル環境での検証手順: `projectDocs/jp/local_verification_jtalk_runner_fix.md` を参照

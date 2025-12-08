@@ -83,9 +83,87 @@ CI では `uv pip install` で直接インストールしてから `uv run` で�
 2. **2回目以降**: 依存関係が既にインストールされていることを確認した上で `-SkipInstall` を使用
 3. **依存関係が不明な場合**: `-SkipInstall` を外して実行（依存関係のインストールは比較的高速）
 
+## 問題: CI環境で `jtalkRunner.py` の `__file__` 解決が失敗する
+
+### エラーメッセージ
+
+```
+OSError: DLL directory does not exist: D:\a\miscDepsJp\source\synthDrivers\jtalk
+FAILED miscDepsJp/jptools/test.py::JtalkTests::test_jtalk - OSError: DLL directory does not exist: D:\a\miscDepsJp\source\synthDrivers\jtalk
+```
+
+### 原因
+
+`jptools/runJpSmokeTests.ps1` で PYTHONPATH を相対パスで設定していたため、CI環境で `jtalkRunner.py` の `__file__` 解決が正しく動作していませんでした。
+
+**技術的な詳細:**
+- `jptools/runJpSmokeTests.ps1` で `$env:PYTHONPATH = "miscDepsJp\include\python-jtalk;miscDepsJp\source\synthDrivers\jtalk"` のように相対パスを設定
+- CI環境では、作業ディレクトリがリポジトリルートと異なる場合がある
+- `jtalkRunner.py` が `__file__` からリポジトリルートを計算する際、`__file__` が `D:\a\miscDepsJp\include\python-jtalk\jtalkRunner.py` として解決されていた（正しくは `D:\a\nvdajp\nvdajp\miscDepsJp\include\python-jtalk\jtalkRunner.py`）
+- その結果、`repo_root` が `D:\a\miscDepsJp` として計算され、正しいパス `D:\a\nvdajp\nvdajp\miscDepsJp\source\synthDrivers\jtalk` を見つけられなかった
+
+### 解決策
+
+#### 修正 1: PYTHONPATH を絶対パスに変更
+
+`jptools/runJpSmokeTests.ps1` で PYTHONPATH を絶対パスに変更：
+
+```powershell
+$pythonJtalk = Join-Path $repoRoot "miscDepsJp\include\python-jtalk"
+$jtalkOverlay = Join-Path $repoRoot "miscDepsJp\source\synthDrivers\jtalk"
+$env:PYTHONPATH = "$pythonJtalk;$jtalkOverlay"
+```
+
+#### 修正 2: `jtalkRunner.py` の `repo_root` 計算ロジックを改善
+
+`miscDepsJp/include/python-jtalk/jtalkRunner.py` で、PYTHONPATH 環境変数からリポジトリルートを推論する方法を優先：
+
+```python
+# Fallback 1: Try to get repo root from PYTHONPATH environment variable
+if repo_root is None:
+    pythonpath = os.environ.get('PYTHONPATH', '')
+    if pythonpath:
+        for path in pythonpath.split(os.pathsep):
+            if path and os.path.isdir(path):
+                # Check if this path contains miscDepsJp/include/python-jtalk
+                if path.endswith("miscDepsJp/include/python-jtalk") or path.endswith("miscDepsJp\\include\\python-jtalk"):
+                    # Go up two levels: miscDepsJp/include/python-jtalk -> miscDepsJp -> repo root
+                    candidate = os.path.dirname(os.path.dirname(path))
+                    if os.path.exists(os.path.join(candidate, "miscDepsJp")):
+                        repo_root = os.path.dirname(candidate)
+                        break
+
+# Fallback 2: Use __file__-based calculation (depends on miscDepsJp folder structure)
+if repo_root is None or not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # script_dir -> miscDepsJp/include/python-jtalk
+    # ../.. -> miscDepsJp
+    # ../.. -> repo root
+    repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
+```
+
+**注意**: 現在の実装では `miscDepsJp/include/python-jtalk` パスのみを処理しています。`miscDepsJp/source/synthDrivers/jtalk` パスのケースは実装されていません。
+
+### 検証方法
+
+ローカル環境での詳細な検証手順は、`projectDocs/jp/local_verification_jtalk_runner_fix.md` を参照してください。
+
+簡単な検証：
+
+```powershell
+# ローカル環境でPYTHONPATHを設定してテスト
+$repoRoot = (Resolve-Path .).Path
+$pythonJtalk = Join-Path $repoRoot "miscDepsJp\include\python-jtalk"
+$jtalkOverlay = Join-Path $repoRoot "miscDepsJp\source\synthDrivers\jtalk"
+$env:PYTHONPATH = "$pythonJtalk;$jtalkOverlay"
+python -c "import sys; sys.path.insert(0, r'$pythonJtalk'); import jtalkRunner; print('Success')"
+```
+
 ### 関連ドキュメント
 
 - `jptools/runJpSmokeTests.ps1` - スクリプトの実装
-- `projectDocs/jp/runnvda_workflow.md` - ワークフローの説明
+- `miscDepsJp/include/python-jtalk/jtalkRunner.py` - `repo_root` 計算ロジック
+- `projectDocs/jp/runnvda_workflow.md` - `runJpSmokeTests.ps1` の基本的な使い方
+- `projectDocs/jp/local_verification_jtalk_runner_fix.md` - ローカル環境での検証手順
 - `pyproject.toml` - 依存関係の定義
 - `.github/workflows/testAndPublish.yml` - CI での実行方法

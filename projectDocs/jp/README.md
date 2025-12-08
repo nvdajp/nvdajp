@@ -59,6 +59,7 @@
 * 本家版のプロダクトビジョン: `projectDocs/product_vision.md`
 * 日本語点字出力テーブル: `projectDocs/jp/braille-ja-jp-comp6.md`
 * 日本語版 CI/ビルド基盤: `projectDocs/jp/ci`
+* **miscDepsJp と JP overlay の現状と方針**: `projectDocs/jp/miscdepsjp-overlay-strategy.md`
 * エージェント／自動化向けの運用ルール: `AGENTS.md`
 
 ## 用語集
@@ -78,11 +79,13 @@
   * `scons -c`（クリーン）で、オーバレイで `source/` にコピーしたファイルも削除されるよう Clean を配線済み。
   * 元の英語版ファイルへ「戻す」場合は、`git checkout -- source/<path>` など VCS 操作で復元する。
 
+**現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
+
 ### ベンダーツリー（Vendor Tree）
 
 * **定義**: 外部リポジトリから取り込んだコードを保持するディレクトリ。
 * **現在の構成**: `miscDepsJp/include/` 配下に配置（python-jtalk、htsengineapi、libopenjtalk、libkuraji など）。
-* **管理方法**: git subtree merge によりメインリポジトリに統合（PR #492）。サブモジュールではないため、`git submodule update` は不要。
+* **管理方法**: `miscDepsJp` フォルダ全体は PR #492 でメインリポジトリに統合され、`miscDepsJp/include/*` 配下のベンダーツリーは PR #582 で git subtree merge によりメインリポジトリに統合。サブモジュールではないため、`git submodule update` は不要。
 * **更新方法**: 通常のGit操作（`git pull`、`git merge`等）で対応。
 
 ### SCons ターゲット
