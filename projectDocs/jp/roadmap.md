@@ -62,26 +62,32 @@
 
 **目標**: x86環境でビルドシステムとCI基盤を確実に整備し、将来のx64対応を見据えたリファクタリングを実施
 
-* [ ] **Phase 1.0: 開発環境の整備（最優先）**
+* [x] **Phase 1.0: 開発環境の整備（最優先）** ✅ 完了
   * **MeCabユニットテスト環境の構築（32bit環境）**
-    * `miscDepsJp/jptools/test.py`の`MecabTests`をローカルで頻繁に実行できる環境を整備
-    * 32bit環境（Python 3.11 x86）で事前に整備
-    * テスト実行スクリプトの作成・改善（`ci/scripts/tests/runJpUnitTests.ps1` など）
-    * 開発中の迅速なフィードバックループを確立
-    * CIに依存せずに問題を特定・修正できる環境を構築
+    * `miscDepsJp/jptools/test.py`の`MecabTests`をローカルで頻繁に実行できる環境を整備 ✅
+    * 32bit環境（Python 3.11 x86）で事前に整備 ✅
+    * テスト実行スクリプト: `jptools/runJpSmokeTests.ps1`を使用（`ci/scripts/tests/runJpUnitTests.ps1`は不要、jptoolsに統合済み） ✅
+    * 開発中の迅速なフィードバックループを確立 ✅
+    * CIに依存せずに問題を特定・修正できる環境を構築 ✅
   * **JP Brailleテスト環境の構築（32bit環境）**
-    * `miscDepsJp/jptools/test.py`の`JpBrailleTests`をローカルで頻繁に実行できる環境を整備
-    * 32bit環境で事前に整備
+    * `miscDepsJp/jptools/test.py`の`JpBrailleTests`をローカルで頻繁に実行できる環境を整備 ✅
+    * 32bit環境で事前に整備 ✅
+    * テスト実行スクリプト: `jptools/runJpSmokeTests.ps1`を使用 ✅
   * **その他のユニットテスト環境の整備**
-    * JTalk関連テストのローカル実行環境
-    * テスト実行の自動化スクリプトの作成
+    * JTalk関連テストのローカル実行環境 ✅
+    * テスト実行の自動化スクリプト: `jptools/runJpSmokeTests.ps1`を使用 ✅
 
-* [ ] **Phase 1.1: ビルドシステムの検証と改善**
-  * 現在のbetajpブランチで `scons source` が成功することを確認
-  * ローカル環境でのビルドが安定することを確認
-  * 各段階でテストを実行し、問題があれば即座に修正
-  * **整備した開発環境でMeCabテストを実行し、問題がないことを確認**
-  * `.cmd`依存の削減（`copy_jtalk_core_files.cmd` のPython化など）
+* [x] **Phase 1.1: ビルドシステムの検証と改善** ✅ 完了（.cmd依存削減）
+  * 現在のbetajpブランチで `scons source` が成功することを確認（要検証）
+  * ローカル環境でのビルドが安定することを確認（要検証）
+  * 各段階でテストを実行し、問題があれば即座に修正（要検証）
+  * **整備した開発環境でMeCabテストを実行し、問題がないことを確認**（要検証）
+  * `.cmd`依存の削減（`copy_jtalk_core_files.cmd` のPython化など） ✅ 完了
+    * `jptools/nonCertBuild.py`: Python関数を使用するように修正 ✅
+    * `jptools/nonCertBuild1.cmd`: Python関数を呼び出すように修正 ✅
+    * `jptools/testMiscDepsJp.cmd`: Python関数を呼び出すように修正 ✅
+    * `jptools/devbuild.cmd`: Python関数を呼び出すように修正 ✅
+    * `miscDepsJp/jptools/build-and-test.cmd`: Python関数を呼び出すように修正 ✅
 
 * [ ] **Phase 1.1.5: overlay 処理の廃止とコピー処理の削減（x86環境でのリファクタリング）**
   * **目的**: ビルドプロセスを簡素化し、x64対応時の作業量を削減。本家版との差分を最小化
