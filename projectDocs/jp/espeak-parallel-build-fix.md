@@ -101,7 +101,7 @@ env.Depends(dictFile, [espeakLib, phonemeData, cleanup_stamp])
 - SConsの依存関係管理を活用
 - マルチコアビルド時のファイルロック競合を完全に防止
 
-**実装状況**: ✅ 実装済み（`nvdaHelper/espeak/sconscript` 1136-1148行目、1171行目）
+**実装状況**: ✅ 実装済み（`nvdaHelper/espeak/sconscript` 1136-1148行目、1172行目）
 
 ### 対策3: espeakビルドの並列度を制限（簡易対策）
 
