@@ -588,6 +588,8 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x86
+    - name: Install pytest
+      run: uv pip install pytest
     - name: Run JP smoke tests
       run: jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
     - name: Upload artifact
