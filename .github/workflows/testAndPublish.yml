@@ -598,7 +598,7 @@ jobs:
       with:
         name: JP smoke tests results
         path: |
-          miscDepsJp/jptools/__test_log.txt
+          miscDepsJp/jptools/__h2output.txt
           miscDepsJp/jptools/__jpBrailleHarness.md
           miscDepsJp/jptools/jpBrailleHarness.html
 
