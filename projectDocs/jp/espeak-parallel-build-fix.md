@@ -169,7 +169,7 @@ for dictFileName, (langCode, inputFiles) in espeakDictionaryCompileList.items():
 
 ## 関連ファイル
 
-- `nvdaHelper/espeak/sconscript`: 1134-1138行目
+- `nvdaHelper/espeak/sconscript`: 1136-1149行目
 - `.github/workflows/testAndPublish.yml`: ビルドジョブ設定
 - `jptools/nonCertBuild.py`: ローカルビルドスクリプト
 
