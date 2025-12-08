@@ -246,7 +246,6 @@ jobs:
           miscDepsJp/__mypy.txt
           miscDepsJp/jptools/__h1output.txt
           miscDepsJp/jptools/__h2output.txt
-          miscDepsJp/jptools/__test_log.txt
           miscDepsJp/jptools/__jpBrailleHarness.md
           miscDepsJp/jptools/jpBrailleHarness.html
           jptools/__jpdictest_log.txt

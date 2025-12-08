@@ -116,34 +116,33 @@ $env:PYTHONPATH = "$pythonJtalk;$jtalkOverlay"
 
 #### 修正 2: `jtalkRunner.py` の `repo_root` 計算ロジックを改善
 
-`miscDepsJp/include/python-jtalk/jtalkRunner.py` で、PYTHONPATH からリポジトリルートを推論する方法を優先：
+`miscDepsJp/include/python-jtalk/jtalkRunner.py` で、PYTHONPATH 環境変数からリポジトリルートを推論する方法を優先：
 
 ```python
-# First, try to get repo root from PYTHONPATH (more reliable in CI environments)
-repo_root = None
-for path in sys.path:
-    if path and os.path.isdir(path):
-        # Check if this path contains miscDepsJp/include/python-jtalk
-        if path.endswith("miscDepsJp/include/python-jtalk") or path.endswith("miscDepsJp\\include\\python-jtalk"):
-            # Go up two levels: miscDepsJp/include/python-jtalk -> miscDepsJp -> repo root
-            candidate = os.path.dirname(os.path.dirname(path))
-            if os.path.exists(os.path.join(candidate, "miscDepsJp")):
-                repo_root = os.path.dirname(candidate)
-                break
-        # Also check if path is miscDepsJp/source/synthDrivers/jtalk
-        elif path.endswith("miscDepsJp/source/synthDrivers/jtalk") or path.endswith("miscDepsJp\\source\\synthDrivers\\jtalk"):
-            # Go up three levels: miscDepsJp/source/synthDrivers/jtalk -> miscDepsJp/source -> miscDepsJp -> repo root
-            candidate = os.path.dirname(os.path.dirname(os.path.dirname(path)))
-            if os.path.exists(os.path.join(candidate, "miscDepsJp")):
-                repo_root = os.path.dirname(candidate)
-                break
+# Fallback 1: Try to get repo root from PYTHONPATH environment variable
+if repo_root is None:
+    pythonpath = os.environ.get('PYTHONPATH', '')
+    if pythonpath:
+        for path in pythonpath.split(os.pathsep):
+            if path and os.path.isdir(path):
+                # Check if this path contains miscDepsJp/include/python-jtalk
+                if path.endswith("miscDepsJp/include/python-jtalk") or path.endswith("miscDepsJp\\include\\python-jtalk"):
+                    # Go up two levels: miscDepsJp/include/python-jtalk -> miscDepsJp -> repo root
+                    candidate = os.path.dirname(os.path.dirname(path))
+                    if os.path.exists(os.path.join(candidate, "miscDepsJp")):
+                        repo_root = os.path.dirname(candidate)
+                        break
 
-# Fallback to __file__-based calculation if PYTHONPATH method didn't work
+# Fallback 2: Use __file__-based calculation (depends on miscDepsJp folder structure)
 if repo_root is None or not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    # script_dir -> miscDepsJp/include/python-jtalk
+    # ../.. -> miscDepsJp
+    # ../.. -> repo root
     repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
-    # ... 既存のフォールバックロジック
 ```
+
+**注意**: 現在の実装では `miscDepsJp/include/python-jtalk` パスのみを処理しています。`miscDepsJp/source/synthDrivers/jtalk` パスのケースは実装されていません。
 
 ### 検証方法
 

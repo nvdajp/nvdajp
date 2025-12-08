@@ -64,6 +64,10 @@ Write-Host "REPO_ROOT set to $repoRoot" -ForegroundColor Cyan
 if (-not $SkipInstall) {
     Write-Host "Installing uv dependencies (scons, pytest)..." -ForegroundColor Cyan
     uv pip install scons pytest
+    if ($LastExitCode -ne 0) {
+        Write-Error "Failed to install dependencies with exit code $LastExitCode"
+        exit $LastExitCode
+    }
 }
 
 if (-not $SkipOverlay) {
@@ -75,13 +79,25 @@ if (-not $SkipOverlay) {
         } else {
             Write-Host "JTalk DLL not found in cache, running jtalkPrep..." -ForegroundColor Yellow
             & "$repoRoot\scons.bat" jtalkPrep
+            if ($LastExitCode -ne 0) {
+                Write-Error "Failed to run scons jtalkPrep with exit code $LastExitCode"
+                exit $LastExitCode
+            }
         }
     } else {
         Write-Host "Preparing JTalk DLL via scons jtalkPrep..." -ForegroundColor Cyan
         & "$repoRoot\scons.bat" jtalkPrep
+        if ($LastExitCode -ne 0) {
+            Write-Error "Failed to run scons jtalkPrep with exit code $LastExitCode"
+            exit $LastExitCode
+        }
     }
     Write-Host "Preparing miscDeps overlay via scons..." -ForegroundColor Cyan
     & "$repoRoot\scons.bat" miscdepsjp
+    if ($LastExitCode -ne 0) {
+        Write-Error "Failed to run scons miscdepsjp with exit code $LastExitCode"
+        exit $LastExitCode
+    }
 }
 
 $pythonJtalk = Join-Path $repoRoot "miscDepsJp\include\python-jtalk"

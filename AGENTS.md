@@ -13,7 +13,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 - Avoid destructive operations (no history rewrites or force pushes unless explicitly requested)
 - Minimize diffs against upstream; mark JP-specific code with `# nvdajp` or `# BEGIN/END JP PATCH`
-  - **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files (e.g., `jptools/*.ps1`, `ci/scripts/tests/runJpSmokeTests.ps1`) do not need these markers.
+  - **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files (e.g., `jptools/*.ps1`, `jptools/runJpSmokeTests.ps1`) do not need these markers.
 - Prefer SCons/pure Python tooling; auxiliary `.cmd` or `nmake` usage should be limited to JP-specific overlays
 - Do not perform code-signing or releases in CI (no secrets). Official release builds happen locally.
 
@@ -98,7 +98,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 - 上流ファイルをそのまま使い、JP 追加はスクリプト呼び出し＋`# BEGIN/END JP PATCH` のみにする（**注**: 本家版ファイルを変更する場合のみ）
 - `beforeTests.ps1` 呼び出し、crowdin upload 無効化など最小の JP 追加だけを維持
-- 日本語版固有の新規ファイル（例: `ci/scripts/tests/runJpSmokeTests.ps1`）には JP PATCH マーカーは不要
+- 日本語版固有の新規ファイル（例: `jptools/runJpSmokeTests.ps1`）には JP PATCH マーカーは不要
 
 ### Actions 運用
 
