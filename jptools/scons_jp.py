@@ -42,8 +42,11 @@ def _copy_jtalk_core_files(repo_root: Path) -> int:
 		return 1
 
 	if not jtalk_dest_dir.exists():
-		print(f"Error: jtalk destination directory not found: {jtalk_dest_dir}")
-		return 1
+		try:
+			jtalk_dest_dir.mkdir(parents=True, exist_ok=True)
+		except Exception as e:
+			print(f"Error: failed to create jtalk destination directory {jtalk_dest_dir}: {e}")
+			return 1
 
 	files_to_copy = [
 		"jtalkCore.py",
