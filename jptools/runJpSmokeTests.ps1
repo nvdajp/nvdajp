@@ -11,6 +11,9 @@
     Use -SkipInstall or -SkipOverlay if you already prepared the environment.
     Use -TestFilter to run specific tests (e.g., "JpBrailleTests.test_pass2" or "JtalkTests").
     Use -TestIndices to run specific test cases by index (e.g., "11" or "11,12,13").
+    
+    In CI environments (detected via GITHUB_ACTIONS environment variable), additional CI-specific
+    processing is performed (cache checking, GitHub Actions step summary, etc.).
 
 .EXAMPLE
     .\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JpBrailleTests.test_pass2"
@@ -40,8 +43,23 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+# Detect CI environment
+$isCI = $env:GITHUB_ACTIONS -eq "true"
+
+# Determine repo root
+if ($isCI) {
+    # In CI, we're already in the repo root
+    $repoRoot = (Resolve-Path .).Path
+} else {
+    # In local environment, calculate from script location
+    $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+}
 Set-Location $repoRoot
+
+# Set REPO_ROOT environment variable for long-term maintainability
+# This allows scripts to get repo root without depending on miscDepsJp folder structure
+$env:REPO_ROOT = $repoRoot
+Write-Host "REPO_ROOT set to $repoRoot" -ForegroundColor Cyan
 
 if (-not $SkipInstall) {
     Write-Host "Installing uv dependencies (scons, pytest)..." -ForegroundColor Cyan
@@ -49,8 +67,19 @@ if (-not $SkipInstall) {
 }
 
 if (-not $SkipOverlay) {
-    Write-Host "Preparing JTalk DLL via scons jtalkPrep..." -ForegroundColor Cyan
-    & "$repoRoot\scons.bat" jtalkPrep
+    # In CI, check cache first to avoid unnecessary builds
+    if ($isCI) {
+        $dllPath = Join-Path $repoRoot "miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll"
+        if (Test-Path $dllPath) {
+            Write-Host "JTalk DLL found in cache, skipping jtalkPrep" -ForegroundColor Green
+        } else {
+            Write-Host "JTalk DLL not found in cache, running jtalkPrep..." -ForegroundColor Yellow
+            & "$repoRoot\scons.bat" jtalkPrep
+        }
+    } else {
+        Write-Host "Preparing JTalk DLL via scons jtalkPrep..." -ForegroundColor Cyan
+        & "$repoRoot\scons.bat" jtalkPrep
+    }
     Write-Host "Preparing miscDeps overlay via scons..." -ForegroundColor Cyan
     & "$repoRoot\scons.bat" miscdepsjp
 }
@@ -91,4 +120,15 @@ if ($TestFilter -match "\.test_") {
 } else {
     $pytestFilter = $TestFilter
 }
+
+# Run tests
 uv run python -m pytest miscDepsJp/jptools/test.py -k "$pytestFilter"
+$testExitCode = $LastExitCode
+
+# CI-specific post-processing
+if ($isCI -and $testExitCode -ne 0) {
+    Write-Output "FAIL: JP smoke tests. See test results for more information." >> $env:GITHUB_STEP_SUMMARY
+    Write-Output "testFailExitCode=$testExitCode" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+}
+
+exit $testExitCode

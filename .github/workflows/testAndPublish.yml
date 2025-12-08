@@ -589,7 +589,7 @@ jobs:
       with:
         arch: x86
     - name: Run JP smoke tests
-      run: ci/scripts/tests/runJpSmokeTests.ps1
+      run: jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
     - name: Upload artifact
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
