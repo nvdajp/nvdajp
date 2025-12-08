@@ -446,8 +446,11 @@ scons source user_docs launcher
 
 **内部で自動実行される**（開発者は意識不要）：
 1. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
-2. `miscdepsjp`: overlayで `source/` に配置
-3. `source`, `dist` などのビルド
+2. `jtalkSync`: 辞書ファイルのビルドとコピー
+3. `miscdepsjp`: overlayで `source/` に配置
+4. `source`, `dist` などのビルド
+
+**注意**: 詳細な処理内容や現状の問題点については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
 
 ### ビルドシステムの改善
 
@@ -457,6 +460,8 @@ scons source user_docs launcher
 - **自動化**: 依存関係が自動的に解決される
 - **高速化**: DLLが存在する場合は再ビルドをスキップ
 - **透明性**: ビルドプロセスが明確になる
+
+**現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
 
 詳細は `projectDocs/jp/vendor-submodules.md` を参照してください。
 

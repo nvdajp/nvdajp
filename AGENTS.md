@@ -52,6 +52,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 - JP landing page: `readme-nvdajp.md`
 - JP Docs Hub: `projectDocs/jp/README.md`
 - Roadmap: `projectDocs/jp/roadmap.md`
+- Build system strategy: `projectDocs/jp/miscdepsjp-overlay-strategy.md`
 - Upstream docs (when no JP diff exists):
   - `projectDocs/dev/readme.md`
   - `projectDocs/dev/createDevEnvironment.md`
@@ -111,4 +112,5 @@ This document summarizes the rules automation agents/scripts must obey when work
 ### 参考
 
 - `readme-nvdajp.md`, `projectDocs/jp/README.md`, `projectDocs/jp/roadmap.md`
+- ビルドシステムの方針: `projectDocs/jp/miscdepsjp-overlay-strategy.md`
 - 差分が無い場合は上流ドキュメントを参照

@@ -39,6 +39,8 @@
   * ベンダーツリー更新時は、生成される DLL のハッシュ値を記録（検証用）
   * 別トピックブランチで実施し、差分がわかる形で PR 化
 
+**現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
+
 ## 非目標
 
 * YAML でのベンダービルドロジック（SCons に集約するため）
@@ -65,7 +67,7 @@
   * MeCab 辞書: アーキ非依存のため共通
   * libmecab.dll: payload `miscDepsJp/source/synthDrivers/jtalk/libmecab.dll` は PyPI `mecab-python3` 1.0.10 (`cp311` win32 wheel) から採取した x86 DLL。MeCab と同じく GPL/LGPL/BSD（三条項）併記で、wheel の `COPYING` に明記
 
-**注意**: `miscDepsJp` およびその配下のベンダーツリー（python-jtalk等）は、git subtree mergeによりメインリポジトリに統合されています（PR #492）。サブモジュールの更新操作（`git submodule update`）は不要です。ベンダーツリーの更新が必要な場合は、通常のGit操作（`git pull`、`git merge`等）で対応します。
+**注意**: `miscDepsJp` フォルダ全体は PR #492 でメインリポジトリに統合され、`miscDepsJp/include/*` 配下のベンダーツリー（python-jtalk等）は PR #582 で git subtree merge によりメインリポジトリに統合されています。サブモジュールの更新操作（`git submodule update`）は不要です。ベンダーツリーの更新が必要な場合は、通常のGit操作（`git pull`、`git merge`等）で対応します。
 
 ### 将来の TODO
 
@@ -77,7 +79,7 @@
 
 synthDrivers/jtalk/dic へのパッケージングについて、特に文字コードの処理を説明する。
 
-* miscDepsJp/jptools/jtalk/libopenjtalk は、もともとサブモジュール miscDepsJp/include/libopenjtalk（nishimotz/libopenjtalk）由来の内容をワークツリー側に持ってきたコピーである（PR #492でsubtree mergeによりメインリポジトリに統合済み）。
+* miscDepsJp/jptools/jtalk/libopenjtalk は、もともとサブモジュール miscDepsJp/include/libopenjtalk（nishimotz/libopenjtalk）由来の内容をワークツリー側に持ってきたコピーである（PR #582 で subtree merge によりメインリポジトリに統合済み）。
 * miscDepsJp/include/jtalk/libopenjtalk/mecab/src/Makefile.mak の CFLAGS に /D CHARSET_SHIFT_JIS が入っており、これにより mecab-dict-index.exe はソースコードが Shift_JIS（CP932）の前提でビルドされる。
 * miscDepsJp\jptools\jtalk\libopenjtalk\mecab-naist-jdic には EUC-JP の mecab テキスト辞書ファイルがある。これを make_jdic.py の convert_file が UTF-8 に変換する。
 * mecab-dict-index が UTF-8 ファイルを入力して UTF-8 対応バイナリ辞書をビルドする。
