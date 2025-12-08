@@ -72,7 +72,7 @@
 ### 将来の TODO
 
 * **純 Python 化**
-  * copy_jtalk_core_files.cmd を Python スクリプト化
+  * copy_jtalk_core_files.cmd → `jptools/copy_jtalk_core_files.py` への置き換えは完了済み
   * nmake の置き換えを検討（現状は内部実装の詳細として許容）
 
 ### mecab 辞書ファイルの文字コード

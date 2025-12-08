@@ -90,7 +90,7 @@ call jptools\nonCertBuild1.cmd
 
 # 期待される動作:
 # - check_vs_version.cmd が実行される
-# - copy_jtalk_core_files.cmd が実行される
+# - jptools/copy_jtalk_core_files.py が実行される（`uv run python ...` 経由）
 # - setupMiscDepsJp.cmd が実行される（ビルドなし）
 # - **nmake の出力が表示されない**ことを確認
 
