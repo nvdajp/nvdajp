@@ -24,8 +24,8 @@
 scons -c
 
 # JTalk DLLを削除（存在する場合）
-# 注: 現状は x86 DLL は miscDepsJp\include\python-jtalk\libopenjtalk.dll（x86サブディレクトリなし）
-# 将来のリファクタリングで x86 も miscDepsJp\include\python-jtalk\x86\libopenjtalk.dll に統一予定
+# 注: Phase 1.2で、x86 DLL も miscDepsJp\include\python-jtalk\x86\libopenjtalk.dll に統一されました
+Remove-Item -ErrorAction SilentlyContinue miscDepsJp\include\python-jtalk\x86\libopenjtalk.dll
 Remove-Item -ErrorAction SilentlyContinue miscDepsJp\include\python-jtalk\libopenjtalk.dll
 Remove-Item -ErrorAction SilentlyContinue miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll
 ```
@@ -38,15 +38,15 @@ scons jtalkPrep
 
 # 期待されるログ:
 # jtalkPrep: using TARGET_ARCH=x86
-# jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/libopenjtalk.dll
+# jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
 # jtalkPrep: DLL not found, attempting to build via nmake...
 # jtalkPrep: running nmake via vcvarsall.bat with arch=x86
 # [nmake の出力...]
-# jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/libopenjtalk.dll
+# jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
 # jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 
 # DLLが生成されたことを確認
-Test-Path miscDepsJp\include\python-jtalk\libopenjtalk.dll  # True であるべき
+Test-Path miscDepsJp\include\python-jtalk\x86\libopenjtalk.dll  # True であるべき
 Test-Path miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll  # True であるべき
 ```
 
@@ -58,7 +58,7 @@ scons jtalkPrep
 
 # 期待されるログ:
 # jtalkPrep: using TARGET_ARCH=x86
-# jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/libopenjtalk.dll
+# jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
 # jtalkPrep: using existing DLL (build skipped)
 # jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 
@@ -109,6 +109,7 @@ scons source
 ```powershell
 # クリーンな状態から完全なビルドを実行
 scons -c
+Remove-Item -ErrorAction SilentlyContinue miscDepsJp\include\python-jtalk\x86\libopenjtalk.dll
 Remove-Item -ErrorAction SilentlyContinue miscDepsJp\include\python-jtalk\libopenjtalk.dll
 
 # 完全なビルド（DLL不在時）
@@ -135,6 +136,7 @@ scons dist
 ```powershell
 # クリーンな状態から
 scons -c
+Remove-Item -ErrorAction SilentlyContinue miscDepsJp\include\python-jtalk\x86\libopenjtalk.dll
 Remove-Item -ErrorAction SilentlyContinue miscDepsJp\include\python-jtalk\libopenjtalk.dll
 
 # nonCertAllBuild.cmd を実行（CI相当のフロー）
