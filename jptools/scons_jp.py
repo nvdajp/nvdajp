@@ -421,7 +421,7 @@ def register_jp_builders(env: Any) -> None:
         """Prepare JP jtalk payload for overlay with on-demand build.
 
         - Resolve TARGET_ARCH (default x86)
-        - Locate vendor DLL under miscDepsJp/include/python-jtalk[/x64]/libopenjtalk.dll
+        - Locate vendor DLL under miscDepsJp/include/python-jtalk[/x86|x64]/libopenjtalk.dll
         - If missing, attempt to build via nmake (requires MSVC environment)
         - Write payload into miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
         """
@@ -433,10 +433,12 @@ def register_jp_builders(env: Any) -> None:
             src_prebuilt = vendor_base / "x64" / "libopenjtalk.dll"
             nmake_machine = "x64"
         else:
-            src_prebuilt = vendor_base / "libopenjtalk.dll"
+            # x86 DLL is now in x86 subdirectory for consistency with x64
+            src_prebuilt = vendor_base / "x86" / "libopenjtalk.dll"
             nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
 
-        built_dll = src_prebuilt
+        # all.mak builds DLL to vendor_base/libopenjtalk.dll, then we move it to arch-specific subdirectory
+        built_dll = vendor_base / "libopenjtalk.dll"
 
         dst_payload = (
             repo_root
@@ -449,6 +451,19 @@ def register_jp_builders(env: Any) -> None:
 
         print(f"jtalkPrep: using TARGET_ARCH={arch}")
         print(f"jtalkPrep: looking for vendor DLL: {src_prebuilt}")
+
+        # Migrate existing DLL from old location (vendor_base/libopenjtalk.dll) to new location (x86 subdirectory)
+        old_dll_location = vendor_base / "libopenjtalk.dll"
+        if arch not in ("x64", "x86_64") and old_dll_location.exists() and not src_prebuilt.exists():
+            print(f"jtalkPrep: migrating DLL from old location: {old_dll_location} -> {src_prebuilt}")
+            try:
+                import shutil
+                src_prebuilt.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(old_dll_location), str(src_prebuilt))
+                print(f"jtalkPrep: DLL migrated successfully")
+            except Exception as e:
+                print(f"Warning: failed to migrate DLL: {e}")
+                print(f"  Will attempt to build new DLL")
 
         # If DLL does not exist, attempt to build via nmake
         if not src_prebuilt.exists():
@@ -558,16 +573,15 @@ def register_jp_builders(env: Any) -> None:
                     print("  Ensure MSVC environment is configured (ilammy/msvc-dev-cmd or vcvarsall.bat)")
                     return 1
 
-                # Verify DLL was created
+                # Verify DLL was created by all.mak (it copies to vendor_base/libopenjtalk.dll)
                 if not built_dll.exists():
                     print(f"ERROR: nmake succeeded but DLL not found at {built_dll}")
                     print("  Check nmake output for errors")
                     return 1
 
-                if src_prebuilt != built_dll:
-                    src_prebuilt.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(built_dll, src_prebuilt)
-
+                # Move built DLL to architecture-specific subdirectory
+                src_prebuilt.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(built_dll), str(src_prebuilt))
                 print(f"jtalkPrep: build succeeded, DLL created at {src_prebuilt}")
 
             except FileNotFoundError as e:
@@ -874,7 +888,6 @@ def register_jp_builders(env: Any) -> None:
         try:
             core_files = [
                 "libmecab.dll",
-                "libopenjtalk.dll",
                 "mecab.py",
                 "text2mecab.py",
                 "jtalkCore.py",
@@ -883,12 +896,14 @@ def register_jp_builders(env: Any) -> None:
                 src = vendor_base / name
                 if src.exists():
                     shutil.copy2(src, jtalk_dir / name)
-            # Also try arch-specific libopenjtalk if present (x64)
+            # Copy arch-specific libopenjtalk.dll (x86 or x64)
             arch = str(env.get("TARGET_ARCH", "x86")).lower()
             if arch in ("x64", "x86_64"):
-                src64 = vendor_base / "x64" / "libopenjtalk.dll"
-                if src64.exists():
-                    shutil.copy2(src64, jtalk_dir / "libopenjtalk.dll")
+                src_dll = vendor_base / "x64" / "libopenjtalk.dll"
+            else:
+                src_dll = vendor_base / "x86" / "libopenjtalk.dll"
+            if src_dll.exists():
+                shutil.copy2(src_dll, jtalk_dir / "libopenjtalk.dll")
             print(f"jtalkSync: copied core assets to {jtalk_dir}")
         except Exception as e:
             print(f"jtalkSync: failed to copy core assets: {e}")
