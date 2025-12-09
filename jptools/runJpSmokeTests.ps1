@@ -214,7 +214,7 @@ function Invoke-JpSmoke {
     }
 
     # Run tests
-    uv run python -m pytest miscDepsJp/jptools/test.py -k "$pytestFilter"
+    uv run pytest miscDepsJp/jptools/test.py -k "$pytestFilter"
     $testExitCode = $LastExitCode
 
     # CI-specific post-processing
