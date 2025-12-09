@@ -21,7 +21,8 @@ patch -v
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd miscDepsJp\jptools
-call copy_jtalk_core_files.cmd
+uv run python ..\..\jptools\copy_jtalk_core_files.py
+@if not "%ERRORLEVEL%"=="0" goto onerror
 cd ..\include\jtalk
 call all-clean.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror

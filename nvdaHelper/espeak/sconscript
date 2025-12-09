@@ -1131,11 +1131,22 @@ for i in phonemeData:
 
 # Removes files that are created when installing from dictsource/extra/*_* to dictsource.
 # Also removes emoji files from dictsource compilation, refer to cleanEmoji for justification.
-env.AddPreAction(espeakLib, env.Action(cleanFiles_preBuildAction))
+# Use a stamp file to ensure cleanup happens before Install and dictionary compilation.
+# This prevents file lock conflicts in parallel builds.
+cleanup_stamp = env.File("build/espeak/_cleanup.stamp")
+env.Command(
+	cleanup_stamp,
+	[],
+	env.Action(cleanFiles_preBuildAction, "Cleaning espeak dictsource files")
+)
+env.AlwaysBuild(cleanup_stamp)
 # Move any extra dictionaries into dictsource for compilation
-env.Install(
+# Ensure Install happens after cleanup to avoid file lock conflicts
+install_targets = env.Install(
 	espeakRepo.Dir("dictsource"), env.Glob(os.path.join(espeakRepo.abspath, "dictsource", "extra", "*_*"))
 )
+env.Depends(install_targets, cleanup_stamp)
+env.Depends(espeakLib, cleanup_stamp)
 
 excludeLangs: typing.List[str] = []
 """Used to exclude languages which don't compile.
@@ -1158,7 +1169,7 @@ for dictFileName, (langCode, inputFiles) in espeakDictionaryCompileList.items():
 		action=espeak_compileDict_buildAction,
 	)
 
-	env.Depends(dictFile, [espeakLib, phonemeData])
+	env.Depends(dictFile, [espeakLib, phonemeData, cleanup_stamp])
 
 	# Dictionaries can not be compiled in parallel, force SCons not to do this
 	env.SideEffect("_espeak_compileDict", dictFile)

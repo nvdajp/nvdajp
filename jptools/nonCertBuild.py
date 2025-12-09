@@ -210,8 +210,17 @@ def _prep_miscdepsjp() -> None:
     _check_vs_version()
 
     # Copy JTalk core files only (no build - handled by scons jtalkPrep)
-    md_root = Path("miscDepsJp/jptools")
-    run_cmd(["cmd", "/c", "copy_jtalk_core_files.cmd"], cwd=md_root)
+    # Use Python function instead of .cmd script
+    repo_root = Path(__file__).resolve().parents[1]
+    sys.path.insert(0, str(repo_root / "jptools"))
+    try:
+        from scons_jp import _copy_jtalk_core_files
+        copy_result = _copy_jtalk_core_files(repo_root)
+        if copy_result != 0:
+            print(f"::error::Failed to copy JTalk core files (exit code: {copy_result})")
+            sys.exit(copy_result)
+    finally:
+        sys.path.pop(0)
 
     # Note: Build steps (all-build.cmd, all-install.cmd, build-and-test.cmd) are
     # now handled by scons jtalkPrep, which is automatically invoked when scons source is run.

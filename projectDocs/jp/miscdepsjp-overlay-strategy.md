@@ -184,12 +184,10 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 
 ### 4. 古いスクリプトの残存
 
-- **問題**: `copy_jtalk_core_files.cmd` がまだ使用されている
-  - `nonCertBuild.py` や `testMiscDepsJp.cmd` で呼び出されている
-
+- **現状**: `copy_jtalk_core_files.cmd` は `jptools/copy_jtalk_core_files.py` へ置き換え済み（`uv run python`／`python`で呼び出し）
 - **影響**:
-  - Python 化の方針と矛盾
-  - 保守性の低下
+  - Python 化方針に整合
+  - 引用符エスケープ問題を回避
 
 ### 5. miscDepsJp フォルダ構造への依存
 
