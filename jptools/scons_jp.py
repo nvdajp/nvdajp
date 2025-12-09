@@ -698,6 +698,30 @@ def register_jp_builders(env: Any) -> None:
                 print("jtalkSync: dictionary present but not UTF-8; rebuilding via make_jdic.py.")
             sys_dic = dic_src / "sys.dic"
 
+        def _build_mecab_bin(machine: str) -> int:
+            # Makefile.mak is in src subdirectory
+            base = vendor_base / "libopenjtalk" / "mecab" / "src"
+            makefile = base / "Makefile.mak"
+            if not makefile.exists():
+                print(f"jtalkSync: Makefile.mak not found for mecab bin build: {makefile}")
+                return 1
+            import subprocess
+            from subprocess import run
+            try:
+                run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                # nmake is available, use it directly
+                cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
+                result = run(cmd, cwd=str(base))
+                return result.returncode
+            except (FileNotFoundError, subprocess.CalledProcessError):
+                vcvarsall = _find_vcvarsall()
+                if not vcvarsall:
+                    print("jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build")
+                    return 1
+                cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
+                result = run(cmd_script, cwd=str(base), shell=True)
+                return result.returncode
+
         # If the vendor dic is missing/invalid, attempt to build it; otherwise, if source already has a UTF-8 dic, reuse it.
         if should_rebuild_dic or not sys_dic.exists():
             if source_dic.joinpath("sys.dic").exists() and source_utf8 and not should_rebuild_dic:
@@ -706,29 +730,6 @@ def register_jp_builders(env: Any) -> None:
                 sys_dic = dic_src / "sys.dic"
             else:
                 # Try to build mecab binary and dictionary via mecab-naist-jdic
-                def _build_mecab_bin(machine: str) -> int:
-                    # Makefile.mak is in src subdirectory
-                    base = vendor_base / "libopenjtalk" / "mecab" / "src"
-                    makefile = base / "Makefile.mak"
-                    if not makefile.exists():
-                        print(f"jtalkSync: Makefile.mak not found for mecab bin build: {makefile}")
-                        return 1
-                    import subprocess
-                    from subprocess import run
-                    try:
-                        run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-                        # nmake is available, use it directly
-                        cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
-                        result = run(cmd, cwd=str(base))
-                        return result.returncode
-                    except (FileNotFoundError, subprocess.CalledProcessError):
-                        vcvarsall = _find_vcvarsall()
-                        if not vcvarsall:
-                            print("jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build")
-                            return 1
-                        cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
-                        result = run(cmd_script, cwd=str(base), shell=True)
-                        return result.returncode
 
                 def _build_dic(machine: str) -> int:
                     base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
@@ -916,28 +917,7 @@ def register_jp_builders(env: Any) -> None:
             if not built_libmecab.exists():
                 # Build libmecab.dll if it doesn't exist
                 print("jtalkSync: libmecab.dll not found, building...")
-                def _build_mecab_bin_for_dll(machine: str) -> int:
-                    base = vendor_base / "libopenjtalk" / "mecab" / "src"
-                    makefile = base / "Makefile.mak"
-                    if not makefile.exists():
-                        print(f"jtalkSync: Makefile.mak not found for mecab bin build: {makefile}")
-                        return 1
-                    import subprocess
-                    from subprocess import run
-                    try:
-                        run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-                        cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
-                        result = run(cmd, cwd=str(base))
-                        return result.returncode
-                    except (FileNotFoundError, subprocess.CalledProcessError):
-                        vcvarsall = _find_vcvarsall()
-                        if not vcvarsall:
-                            print("jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build")
-                            return 1
-                        cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
-                        result = run(cmd_script, cwd=str(base), shell=True)
-                        return result.returncode
-                rc_bin = _build_mecab_bin_for_dll(machine)
+                rc_bin = _build_mecab_bin(machine)
                 if rc_bin != 0:
                     print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
                     # Continue anyway, will try fallback

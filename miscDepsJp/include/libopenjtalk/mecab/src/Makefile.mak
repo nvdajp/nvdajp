@@ -34,10 +34,6 @@ libmecab.dll: $(CORES_DLL)
 .cpp.obj:
 	$(CC) $(CFLAGS) /c $<
 
-# Rule to compile source files for DLL (with DLL_EXPORT)
-.cpp_dll.obj:
-	$(CC) $(CFLAGS_DLL) /c $< /Fo$@
-
 # Explicit rules for DLL object files
 char_property_dll.obj: char_property.cpp
 	$(CC) $(CFLAGS_DLL) /c char_property.cpp /Fo$@
