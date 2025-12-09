@@ -1,7 +1,5 @@
 # ベンダーサブモジュール運用（方針・TODO）
 
-> **注意**: このドキュメントには、betajp-251206ブランチ（x64実験）からバックポートされた内容が含まれています。このブランチ（betajp-251206v4）は x86 ビルドを維持しているため、x64 ビルドに関する記述（x64 DLL のパスなど）はこのブランチには当てはまりません。
-
 ## このブランチの対象
 
 * **アーキテクチャ**: x86（32bit）
@@ -22,8 +20,7 @@
 ## 実装済み
 
 * SCons でのオンデマンドビルド（`jtalkPrep` 拡張）
-  * DLL 不在時: 自動的に `nmake /f all.mak` を実行してビルド
-  * TARGET_ARCH（x86/x64）に応じて適切な `MACHINE` パラメータを渡す（このブランチは x86）
+  * DLL 不在時: mecab/src の `Makefile.mak` を `nmake /f Makefile.mak MACHINE=x86` でビルド（このブランチは x86）
   * ビルド成功後、生成された DLL を payload に配置
   * DLL 存在時: 再ビルドをスキップし「build skipped」とログ出力
 * 検証・ログ出力
@@ -64,7 +61,7 @@
   * x86: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`（Phase 1.2で統一済み）
   * x64: `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`（将来のリファクタリング予定、別ブランチ）
   * MeCab 辞書: アーキ非依存のため共通
-  * libmecab.dll: Phase 1.3でソースビルド化（`miscDepsJp/include/libopenjtalk/mecab/src/Makefile.mak` でビルド）。以前は PyPI `mecab-python3` 1.0.10 (`cp311` win32 wheel) から採取した x86 DLL を使用していたが、ソースからビルドする方式に移行。MeCab と同じく GPL/LGPL/BSD（三条項）併記。
+  * libmecab.dll: Phase 1.3でソースビルド化（`miscDepsJp/include/libopenjtalk/mecab/src/Makefile.mak` と vendor側 `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/Makefile.mak` でビルド）。リポジトリに長く含まれていたバイナリDLLを削除し、CFLAGSを静的/動的で分離してビルドする方式に移行。MeCab と同じく GPL/LGPL/BSD（三条項）併記。
 
 **注意**: `miscDepsJp` フォルダ全体は PR #492 でメインリポジトリに統合され、`miscDepsJp/include/*` 配下のベンダーツリー（python-jtalk等）は PR #582 で git subtree merge によりメインリポジトリに統合されています。サブモジュールの更新操作（`git submodule update`）は不要です。ベンダーツリーの更新が必要な場合は、通常のGit操作（`git pull`、`git merge`等）で対応します。
 
@@ -79,7 +76,7 @@
 synthDrivers/jtalk/dic へのパッケージングについて、特に文字コードの処理を説明する。
 
 * miscDepsJp/jptools/jtalk/libopenjtalk は、もともとサブモジュール miscDepsJp/include/libopenjtalk（nishimotz/libopenjtalk）由来の内容をワークツリー側に持ってきたコピーである（PR #582 で subtree merge によりメインリポジトリに統合済み）。
-* miscDepsJp/include/jtalk/libopenjtalk/mecab/src/Makefile.mak の CFLAGS に /D CHARSET_SHIFT_JIS が入っており、これにより mecab-dict-index.exe はソースコードが Shift_JIS（CP932）の前提でビルドされる。
+* miscDepsJp/include/libopenjtalk/mecab/src/Makefile.mak の CFLAGS に /D CHARSET_SHIFT_JIS が入っており、これにより mecab-dict-index.exe はソースコードが Shift_JIS（CP932）の前提でビルドされる。
 * miscDepsJp\jptools\jtalk\libopenjtalk\mecab-naist-jdic には EUC-JP の mecab テキスト辞書ファイルがある。これを make_jdic.py の convert_file が UTF-8 に変換する。
 * mecab-dict-index が UTF-8 ファイルを入力して UTF-8 対応バイナリ辞書をビルドする。
 * パッケージングされる synthDrivers/jtalk/dic 以下のファイルはバイナリ辞書も def ファイルなども UTF-8 ベースで統一される。
@@ -92,10 +89,10 @@ synthDrivers/jtalk/dic へのパッケージングについて、特に文字コ
 
 ```powershell
 # これだけでビルド完結（ベンダービルド・overlay・dist 作成すべて自動）
-scons dist
+scons.bat dist
 
 # または
-scons source user_docs launcher
+scons.bat source user_docs launcher
 ```
 
 **内部で自動実行される**（開発者は意識不要）:
