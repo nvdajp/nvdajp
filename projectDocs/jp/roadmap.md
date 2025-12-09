@@ -95,17 +95,18 @@
     * `jptools/devbuild.cmd`: Python関数を呼び出すように修正 ✅
     * `miscDepsJp/jptools/build-and-test.cmd`: Python関数を呼び出すように修正 ✅
 
-* [ ] **Phase 1.2: DLLパス構造の統一（x86環境でのリファクタリング）**（優先度：高・Phase 1.4の前提条件）
+* [x] **Phase 1.2: DLLパス構造の統一（x86環境でのリファクタリング）**（優先度：高・Phase 1.4の前提条件） ✅ 完了
   * **注**: Phase 1.4.1の前提条件として必須。Phase 1.4の実現に不可欠。
   * **目的**: 将来のx64対応を見据えて、x86/x64のパス構造を統一
   * **現状**: x86 DLLは `miscDepsJp/include/python-jtalk/libopenjtalk.dll`（x86サブディレクトリなし）
   * **目標**: x86 DLLを `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll` に移動
   * **作業内容**:
-    1. **コードの更新**: `jptools/scons_jp.py` の `_ensure_jtalk_payload()` を更新してx86もx86サブディレクトリを参照
-    2. **DLLの移動**: 既存のDLLを新しいパスに移動（またはビルド先を変更）
-    3. **ドキュメントの更新**: `vendor-submodules.md`、`verify-build-optimization.md` を更新
-    4. **動作確認**: テストを実行して動作確認
+    1. **コードの更新**: `jptools/scons_jp.py` の `_ensure_jtalk_payload()` を更新してx86もx86サブディレクトリを参照 ✅
+    2. **DLLの移動**: 既存のDLLを新しいパスに移動（またはビルド先を変更） ✅
+    3. **ドキュメントの更新**: `vendor-submodules.md`、`verify-build-optimization.md` を更新 ✅
+    4. **動作確認**: テストを実行して動作確認 ✅（jpSmokeTest、launcherビルド、署名ビルドで確認済み）
   * **利点**: x64対応時にパス構造の一貫性が保たれ、コード変更が最小限になる
+  * **完了確認**: 署名ビルドで正常に動作することを確認。`miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`にベンダーDLLが配置され、ビルドプロセスが正常に動作することを確認済み。
 
 * [ ] **Phase 1.3: libmecab.dll のソースビルド化（x86環境で先に実施）**（優先度：高・Phase 1.4の推奨条件）
   * **注**: Phase 1.4の実現に推奨される（Phase 1.4の注意点で明記）。x64対応時のDLL取得を容易にする。
