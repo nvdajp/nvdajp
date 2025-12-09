@@ -108,7 +108,7 @@
   * **利点**: x64対応時にパス構造の一貫性が保たれ、コード変更が最小限になる
   * **完了確認**: 署名ビルドで正常に動作することを確認。`miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`にベンダーDLLが配置され、ビルドプロセスが正常に動作することを確認済み。
 
-* [ ] **Phase 1.3: libmecab.dll のソースビルド化（x86環境で先に実施）**（優先度：高・Phase 1.4の推奨条件）
+* [x] **Phase 1.3: libmecab.dll のソースビルド化（x86環境で先に実施）**（優先度：高・Phase 1.4の推奨条件）
   * **注**: Phase 1.4の実現に推奨される（Phase 1.4の注意点で明記）。x64対応時のDLL取得を容易にする。
   * **目的**: PyPI wheelからのバイナリ依存を排除し、ソースからビルドする方式に移行
   * **現状**: `miscDepsJp/source/synthDrivers/jtalk/libmecab.dll` は x86 DLL
