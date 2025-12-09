@@ -69,70 +69,26 @@
 * **ついでに実施可能（Phase 1.4.4 CI統合時に実施可能）**: Phase 1.7（CI基盤の更新）
 
 * [x] **Phase 1.0: 開発環境の整備（最優先）** ✅ 完了
-  * **MeCabユニットテスト環境の構築（32bit環境）**
-    * `miscDepsJp/jptools/test.py`の`MecabTests`をローカルで頻繁に実行できる環境を整備 ✅
-    * 32bit環境（Python 3.11 x86）で事前に整備 ✅
-    * テスト実行スクリプト: `jptools/runJpSmokeTests.ps1`を使用（`ci/scripts/tests/runJpUnitTests.ps1`は不要、jptoolsに統合済み） ✅
-    * 開発中の迅速なフィードバックループを確立 ✅
-    * CIに依存せずに問題を特定・修正できる環境を構築 ✅
-  * **JP Brailleテスト環境の構築（32bit環境）**
-    * `miscDepsJp/jptools/test.py`の`JpBrailleTests`をローカルで頻繁に実行できる環境を整備 ✅
-    * 32bit環境で事前に整備 ✅
-    * テスト実行スクリプト: `jptools/runJpSmokeTests.ps1`を使用 ✅
-  * **その他のユニットテスト環境の整備**
-    * JTalk関連テストのローカル実行環境 ✅
-    * テスト実行の自動化スクリプト: `jptools/runJpSmokeTests.ps1`を使用 ✅
+  * Python 3.11 x86 で MeCab / JP Braille を `jptools/runJpSmokeTests.ps1` から実行できるローカル環境を整備済み
+  * CIに頼らず即時フィードバックを得られるテストループを確立済み
 
 * [x] **Phase 1.1: ビルドシステムの検証と改善** ✅ 完了（.cmd依存削減）
-  * 現在のbetajpブランチで `scons source` が成功することを確認（要検証）
-  * ローカル環境でのビルドが安定することを確認（要検証）
-  * 各段階でテストを実行し、問題があれば即座に修正（要検証）
-  * **整備した開発環境でMeCabテストを実行し、問題がないことを確認**（要検証）
-  * `.cmd`依存の削減（`copy_jtalk_core_files.cmd` のPython化など） ✅ 完了
-    * `jptools/nonCertBuild.py`: Python関数を使用するように修正 ✅
-    * `jptools/nonCertBuild1.cmd`: Python関数を呼び出すように修正 ✅
-    * `jptools/testMiscDepsJp.cmd`: Python関数を呼び出すように修正 ✅
-    * `jptools/devbuild.cmd`: Python関数を呼び出すように修正 ✅
-    * `miscDepsJp/jptools/build-and-test.cmd`: Python関数を呼び出すように修正 ✅
+  * `scons source` を前提にビルド手順を安定化し、主要 .cmd をPython呼び出しへ置換済み
+  * `jptools/nonCertBuild.py` などに集約し、ばらつきを削減済み
 
-* [x] **Phase 1.2: DLLパス構造の統一（x86環境でのリファクタリング）**（優先度：高・Phase 1.4の前提条件） ✅ 完了
-  * **注**: Phase 1.4.1の前提条件として必須。Phase 1.4の実現に不可欠。
-  * **目的**: 将来のx64対応を見据えて、x86/x64のパス構造を統一
-  * **現状**: x86 DLLは `miscDepsJp/include/python-jtalk/libopenjtalk.dll`（x86サブディレクトリなし）
-  * **目標**: x86 DLLを `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll` に移動
-  * **作業内容**:
-    1. **コードの更新**: `jptools/scons_jp.py` の `_ensure_jtalk_payload()` を更新してx86もx86サブディレクトリを参照 ✅
-    2. **DLLの移動**: 既存のDLLを新しいパスに移動（またはビルド先を変更） ✅
-    3. **ドキュメントの更新**: `vendor-submodules.md`、`verify-build-optimization.md` を更新 ✅
-    4. **動作確認**: テストを実行して動作確認 ✅（jpSmokeTest、launcherビルド、署名ビルドで確認済み）
-  * **利点**: x64対応時にパス構造の一貫性が保たれ、コード変更が最小限になる
-  * **完了確認**: 署名ビルドで正常に動作することを確認。`miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`にベンダーDLLが配置され、ビルドプロセスが正常に動作することを確認済み。
+* [x] **Phase 1.2: DLLパス構造の統一（x86環境でのリファクタリング）** ✅ 完了
+  * x86 DLL を `miscDepsJp/include/python-jtalk/x86/` へ統一し、`jtalkPrep`/`jtalkSync` を新パス対応済み
+  * jp smoke test / launcher / 署名ビルドで動作確認済み
 
-* [x] **Phase 1.3: libmecab.dll のソースビルド化（x86環境で先に実施）**（優先度：高・Phase 1.4の推奨条件）
-  * **注**: Phase 1.4の実現に推奨される（Phase 1.4の注意点で明記）。x64対応時のDLL取得を容易にする。
-  * **目的**: PyPI wheelからのバイナリ依存を排除し、ソースからビルドする方式に移行
-  * **現状**: `miscDepsJp/source/synthDrivers/jtalk/libmecab.dll` は x86 DLL
-  * **問題点**:
-    * x64対応時にPyPI wheelからx64 DLLを採取する必要がある
-    * ビルドオプション（CHARSET_SHIFT_JISなど）を制御できない
-    * 依存関係が不明確
-  * **メリット**:
-    * アーキテクチャ（x86/x64）に応じたビルドが可能
-    * ビルドオプションを制御できる（CHARSET_SHIFT_JISなど）
-    * 依存関係が明確になる
-    * 将来的なx64対応が容易になる（同じビルドプロセスでx86/x64を生成）
-    * ライセンスの扱いが明確になる（ソースからビルド）
-  * **作業内容**:
-    1. **Makefile.makの修正**: `libmecab.dll`（動的ライブラリ）をビルドするターゲットを追加（`/DLL` フラグ、`DLL_EXPORT` マクロ、`MACHINE` パラメータ対応）
-    2. **SCons統合**: `_build_mecab_bin()` 関数を拡張して `libmecab.dll` をビルド・配置（アーキテクチャ別パス対応）
-    3. **検証**: ビルドされたDLLの動作確認、MeCab機能テスト、既存DLLとの互換性確認、ビルド時間の影響確認
-    4. **ドキュメント更新**: `vendor-submodules.md` にビルド方式への移行を記録
-  * **注意点**:
-    * 既存のPyPI wheel由来のDLLとの互換性を確認（API互換性、動作確認）
-    * ビルド時間の増加を許容できるか確認
-    * ビルド環境（MSVC）が必要であることを明記
-    * 段階的な移行: まずx86環境で動作確認してから、x64対応時にx64 DLLもビルド
-  * **利点**: x64対応時に同じビルドプロセスでx86/x64の両方を生成でき、PyPI wheelへの依存を排除できる
+* [x] **Phase 1.3: libmecab.dll のソースビルド化（x86環境で先に実施）** ✅ 完了
+  * 目的: バイナリDLLを排除し、ソースビルドへ移行
+  * 現状: x86でソースビルドに移行済み。`scons miscdepsjp` / jp smoke test / launcher をローカル成功。CIは最新ラン確認中。リポジトリに長く存在していたバイナリDLLは削除済み。
+  * 作業内容（完了）:
+    1. Makefile.mak: DLLターゲット追加、静的/動的でCFLAGS分離、`DLL_EXPORT`/`MACHINE`対応
+    2. SCons統合: `_build_mecab_bin()` でビルド・配置
+    3. 検証: libmecab.dll 動作確認、jp smoke test / launcher ローカル成功
+    4. ドキュメント更新: `vendor-submodules.md` 等
+  * 残課題: x64対応時に同手順でビルド・配置できるか検証（Phase 1.4以降）
 
 * [ ] **Phase 1.4: ローカル開発環境でのjpSmokeTest x86/x64並行実行の実現とCI統合（最優先）**
   * **注**: Phase 1.2（DLLパス構造の統一）が完了している必要がある。Phase 1.3（libmecab.dllのソースビルド化）の完了が推奨される。
