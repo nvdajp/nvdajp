@@ -48,6 +48,7 @@
 #include <windows.h>
 #endif
 
+#define MECAB_DEFINING_FUNCTIONS
 #include "mecab.h"
 #include "tokenizer.h"
 #include "utils.h"

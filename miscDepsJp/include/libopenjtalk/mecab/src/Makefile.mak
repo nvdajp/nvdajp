@@ -78,6 +78,9 @@ learner_dll.obj: learner.cpp
 learner_tagger_dll.obj: learner_tagger.cpp
 	$(CC) $(CFLAGS_DLL) /c learner_tagger.cpp /Fo$@
 
+libmecab.obj: libmecab.cpp
+	$(CC) $(CFLAGS) /c libmecab.cpp /Fo$@
+
 libmecab_dll.obj: libmecab.cpp
 	$(CC) $(CFLAGS_DLL) /c libmecab.cpp /Fo$@
 
