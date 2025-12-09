@@ -426,7 +426,12 @@ def register_jp_builders(env: Any) -> None:
         - Write payload into miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
         """
         repo_root = Path.cwd()
-        arch = str(env.get("TARGET_ARCH", "x86")).lower()
+        # Get TARGET_ARCH from SCons env or environment variable (JP override)
+        scons_arch = env.get("TARGET_ARCH")
+        env_arch = os.getenv("JP_TARGET_ARCH") or os.getenv("TARGET_ARCH")
+        arch = str(scons_arch or env_arch or "x86").lower()
+        if scons_arch or env_arch:
+            print(f"jtalkPrep: TARGET_ARCH from SCons env={scons_arch}, from env={env_arch}, using={arch}")
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 
         if arch in ("x64", "x86_64"):
@@ -837,7 +842,8 @@ def register_jp_builders(env: Any) -> None:
                     result = run(cmd, cwd=str(base))
                     return result.returncode
 
-                arch = str(env.get("TARGET_ARCH", "x86")).lower()
+                # Get TARGET_ARCH from SCons env or environment variable (JP override)
+                arch = str(env.get("TARGET_ARCH") or os.getenv("JP_TARGET_ARCH") or os.getenv("TARGET_ARCH") or "x86").lower()
                 machine = "x64" if arch in ("x64", "x86_64") else "x86"
                 arch_libmecab = vendor_base / ("x64" if machine == "x64" else "x86") / "libmecab.dll"
 
@@ -921,7 +927,8 @@ def register_jp_builders(env: Any) -> None:
                 if src.exists():
                     shutil.copy2(src, jtalk_dir / name)
             # Copy libmecab.dll (built from source or fallback to existing)
-            arch = str(env.get("TARGET_ARCH", "x86")).lower()
+            # Get TARGET_ARCH from SCons env or environment variable (JP override)
+            arch = str(env.get("TARGET_ARCH") or os.getenv("JP_TARGET_ARCH") or os.getenv("TARGET_ARCH") or "x86").lower()
             machine = "x64" if arch in ("x64", "x86_64") else "x86"
             arch_libmecab = vendor_base / ("x64" if machine == "x64" else "x86") / "libmecab.dll"
             built_libmecab_src = vendor_base / "libopenjtalk" / "mecab" / "src" / "libmecab.dll"

@@ -56,6 +56,14 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# Allow JP_TARGET_ARCH environment variable to override default architecture when not explicitly specified
+if (-not $PSBoundParameters.ContainsKey("Architecture")) {
+    if ($env:JP_TARGET_ARCH) {
+        $Architecture = $env:JP_TARGET_ARCH
+        Write-Host "JP_TARGET_ARCH detected; using Architecture=$Architecture" -ForegroundColor Cyan
+    }
+}
+
 # Detect CI environment
 $isCI = $env:GITHUB_ACTIONS -eq "true"
 
@@ -109,6 +117,8 @@ function Invoke-JpSmoke {
 
     $sconsArch = if ($Arch -eq "x64") { "x86_64" } else { "x86" }
     Write-Host "Using architecture: $Arch (TARGET_ARCH=$sconsArch)" -ForegroundColor Cyan
+    $prevJpTargetArch = $env:JP_TARGET_ARCH
+    $env:JP_TARGET_ARCH = $Arch
     $prevTargetArch = $env:TARGET_ARCH
     $env:TARGET_ARCH = $sconsArch
 
@@ -214,6 +224,7 @@ function Invoke-JpSmoke {
     }
 
     $env:TARGET_ARCH = $prevTargetArch
+    $env:JP_TARGET_ARCH = $prevJpTargetArch
     return $testExitCode
 }
 

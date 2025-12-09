@@ -9,6 +9,7 @@ import multiprocessing
 import os
 import sys
 from pathlib import Path
+from SCons.Variables import BoolVariable, ListVariable, EnumVariable, PathVariable, Variables
 
 # Ensure we are inside the Python virtual environment, and that it is started with uv
 virtualEnv = os.getenv("VIRTUAL_ENV")
@@ -55,6 +56,8 @@ makensis = os.path.abspath(os.path.join("include", "nsis", "NSIS", "makensis.exe
 XGETTEXT = os.path.abspath(os.path.join("miscDeps", "tools", "xgettext.exe"))
 
 
+defaultArch = os.getenv("JP_TARGET_ARCH") or os.getenv("TARGET_ARCH") or "x86"
+
 vars = Variables()
 vars.Add("version", "The version of this build", versionInfo.version)
 vars.Add("version_build", "A unique number for this build.", "0")
@@ -97,6 +100,14 @@ vars.Add(
 		"The level of logging you wish to see, lower is more verbose",
 		"15",
 		allowed_values=[str(x) for x in range(60)],
+	)
+)
+vars.Add(
+	EnumVariable(
+		"TARGET_ARCH",
+		"Target architecture (x86, x86_64, arm64)",
+		defaultArch,
+		allowed_values=["x86", "x86_64", "arm64"],
 	)
 )
 
@@ -275,7 +286,12 @@ env32["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
 env64["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
 envArm64["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
 
-env = env32
+if env["TARGET_ARCH"] == "x86_64":
+	env = env64
+elif env["TARGET_ARCH"] == "arm64":
+	env = envArm64
+else:
+	env = env32
 
 projectRCSubstDict = {
 	"%version_year%": env["version_year"],
