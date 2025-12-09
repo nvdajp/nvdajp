@@ -97,39 +97,14 @@
 
 * [ ] **Phase 1.2: DLLパス構造の統一（x86環境でのリファクタリング）**（優先度：高・Phase 1.4の前提条件）
   * **注**: Phase 1.4.1の前提条件として必須。Phase 1.4の実現に不可欠。
-  * **目的**: ビルドプロセスを簡素化し、x64対応時の作業量を削減。本家版との差分を最小化
-  * **現状の問題点**:
-    * 複数のコピー処理が存在し、混乱を招いている（`_copy_jtalk_core_files()` と `jtalkSync` で重複）
-    * overlay 処理（`miscDepsJp/source` → `source/`）が中間段階として機能しているが、実際には利点がない
-    * コピー処理の段階が2段階（`jtalkSync` → overlay）になっており、複雑
-  * **作業内容**:
-    1. **Phase 1.1.5.1: コピー処理の統合と削減（短期・優先度高）**
-       * `_copy_jtalk_core_files()` と `jtalkSync` のコアファイルコピーを統合
-       * `_copy_jtalk_core_files()` を削除し、`jtalkSync` 経由の1つの経路に統一
-       * 古い `.cmd` スクリプトの削除
-    2. **Phase 1.1.5.2: overlay 処理の廃止（中期・優先度高）**
-       * `jtalkSync` のコピー先を `miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に直接変更
-       * `miscDepsJp/source` へのコピーを削減し、overlay 処理を廃止
-       * `miscdepsjp` エイリアスを削除（overlay 処理が不要になるため）
-       * 直接コピーでも SCons の依存関係管理により冪等性は保証される
-       * 直接コピーでも `env.Clean()` を配線することでクリーン処理は容易
-  * **利点**:
-    * コピー処理の段階を2段階（`jtalkSync` → overlay）から1段階（直接配置）に削減
-    * overlay 処理自体が不要になり、ビルドプロセスが大幅に簡素化
-    * ビルド時間の短縮
-    * x64対応時にアーキテクチャ別の処理を追加するだけで済む（コピー処理が1箇所に集約）
-    * 本家版との差分を最小化（overlay 処理という独自の仕組みを削除）
-  * **検証要件**: リリースビルド、ローカルの署名なしビルド、ローカルのユニットテスト、Actions CI の全てで検証が必要
-  * **参考**: 詳細は `projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照
-
   * **目的**: 将来のx64対応を見据えて、x86/x64のパス構造を統一
   * **現状**: x86 DLLは `miscDepsJp/include/python-jtalk/libopenjtalk.dll`（x86サブディレクトリなし）
   * **目標**: x86 DLLを `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll` に移動
   * **作業内容**:
-    * `jptools/scons_jp.py` の `_ensure_jtalk_payload()` を更新してx86もx86サブディレクトリを参照
-    * 既存のDLLを新しいパスに移動（またはビルド先を変更）
-    * ドキュメント（`vendor-submodules.md`、`verify-build-optimization.md`）を更新
-    * テストを実行して動作確認
+    1. **コードの更新**: `jptools/scons_jp.py` の `_ensure_jtalk_payload()` を更新してx86もx86サブディレクトリを参照
+    2. **DLLの移動**: 既存のDLLを新しいパスに移動（またはビルド先を変更）
+    3. **ドキュメントの更新**: `vendor-submodules.md`、`verify-build-optimization.md` を更新
+    4. **動作確認**: テストを実行して動作確認
   * **利点**: x64対応時にパス構造の一貫性が保たれ、コード変更が最小限になる
 
 * [ ] **Phase 1.3: libmecab.dll のソースビルド化（x86環境で先に実施）**（優先度：高・Phase 1.4の推奨条件）
