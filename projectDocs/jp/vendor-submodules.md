@@ -64,7 +64,7 @@
   * x86: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`（Phase 1.2で統一済み）
   * x64: `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`（将来のリファクタリング予定、別ブランチ）
   * MeCab 辞書: アーキ非依存のため共通
-  * libmecab.dll: payload `miscDepsJp/source/synthDrivers/jtalk/libmecab.dll` は PyPI `mecab-python3` 1.0.10 (`cp311` win32 wheel) から採取した x86 DLL。MeCab と同じく GPL/LGPL/BSD（三条項）併記で、wheel の `COPYING` に明記
+  * libmecab.dll: Phase 1.3でソースビルド化（`miscDepsJp/include/libopenjtalk/mecab/src/Makefile.mak` でビルド）。以前は PyPI `mecab-python3` 1.0.10 (`cp311` win32 wheel) から採取した x86 DLL を使用していたが、ソースからビルドする方式に移行。MeCab と同じく GPL/LGPL/BSD（三条項）併記。
 
 **注意**: `miscDepsJp` フォルダ全体は PR #492 でメインリポジトリに統合され、`miscDepsJp/include/*` 配下のベンダーツリー（python-jtalk等）は PR #582 で git subtree merge によりメインリポジトリに統合されています。サブモジュールの更新操作（`git submodule update`）は不要です。ベンダーツリーの更新が必要な場合は、通常のGit操作（`git pull`、`git merge`等）で対応します。
 

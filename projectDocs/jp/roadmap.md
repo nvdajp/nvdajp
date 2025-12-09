@@ -2,7 +2,7 @@
 
 目的: 本家版との差分を最小化しながら、順序立てて基盤整合 → 言語/依存更新 → 64bit 対応を進める。
 
-## 現行マイルストン（このブランチ: alphajp-251209）
+## 現行マイルストン（このブランチ: alphajp-251209v2）
 
 * **アーキテクチャ**: x86（32bit）
 * **Python バージョン**: 3.11
@@ -111,7 +111,7 @@
 * [ ] **Phase 1.3: libmecab.dll のソースビルド化（x86環境で先に実施）**（優先度：高・Phase 1.4の推奨条件）
   * **注**: Phase 1.4の実現に推奨される（Phase 1.4の注意点で明記）。x64対応時のDLL取得を容易にする。
   * **目的**: PyPI wheelからのバイナリ依存を排除し、ソースからビルドする方式に移行
-  * **現状**: `miscDepsJp/source/synthDrivers/jtalk/libmecab.dll` は PyPI `mecab-python3` 1.0.10 (`cp311` win32 wheel) から採取した x86 DLL
+  * **現状**: `miscDepsJp/source/synthDrivers/jtalk/libmecab.dll` は x86 DLL
   * **問題点**:
     * x64対応時にPyPI wheelからx64 DLLを採取する必要がある
     * ビルドオプション（CHARSET_SHIFT_JISなど）を制御できない
