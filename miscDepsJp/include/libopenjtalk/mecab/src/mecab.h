@@ -378,17 +378,21 @@ extern "C" {
 
 #ifdef _WIN32
 #include <windows.h>
-/* for Open JTalk
 #  ifdef DLL_EXPORT
 #    define MECAB_DLL_EXTERN  __declspec(dllexport)
 #    define MECAB_DLL_CLASS_EXTERN  __declspec(dllexport)
-#  else
+#  elif defined(MECAB_DLL_IMPORT)
 #    define MECAB_DLL_EXTERN  __declspec(dllimport)
+#    define MECAB_DLL_CLASS_EXTERN  __declspec(dllimport)
+#  elif defined(MECAB_STATIC) || defined(MECAB_DEFINING_FUNCTIONS)
+#    define MECAB_DLL_EXTERN
+#    define MECAB_DLL_CLASS_EXTERN
+#  else
+#    define MECAB_DLL_EXTERN
+#    define MECAB_DLL_CLASS_EXTERN
 #  endif
-*/
 #endif
 
-/* for Open JTalk
 #ifndef MECAB_DLL_EXTERN
 #  define MECAB_DLL_EXTERN extern
 #endif
@@ -396,11 +400,6 @@ extern "C" {
 #ifndef MECAB_DLL_CLASS_EXTERN
 #  define MECAB_DLL_CLASS_EXTERN
 #endif
-*/
-
-/* for Open JTalk */
-#define MECAB_DLL_EXTERN
-#define MECAB_DLL_CLASS_EXTERN
 
   typedef struct mecab_t                 mecab_t;
   typedef struct mecab_model_t           mecab_model_t;
