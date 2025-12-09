@@ -381,12 +381,15 @@ extern "C" {
 #  ifdef DLL_EXPORT
 #    define MECAB_DLL_EXTERN  __declspec(dllexport)
 #    define MECAB_DLL_CLASS_EXTERN  __declspec(dllexport)
+#  elif defined(MECAB_DLL_IMPORT)
+#    define MECAB_DLL_EXTERN  __declspec(dllimport)
+#    define MECAB_DLL_CLASS_EXTERN  __declspec(dllimport)
+#  elif defined(MECAB_STATIC) || defined(MECAB_DEFINING_FUNCTIONS)
+#    define MECAB_DLL_EXTERN
+#    define MECAB_DLL_CLASS_EXTERN
 #  else
-#    ifdef MECAB_DEFINING_FUNCTIONS
-#      define MECAB_DLL_EXTERN
-#    else
-#      define MECAB_DLL_EXTERN  __declspec(dllimport)
-#    endif
+#    define MECAB_DLL_EXTERN
+#    define MECAB_DLL_CLASS_EXTERN
 #  endif
 #endif
 

@@ -8,7 +8,7 @@ MACHINE = x86
 !ENDIF
 
 # CFLAGS for static library and executable
-CFLAGS = /O2 /Ob2 /Oi /Ot /Oy /GT /GL /TP /EHsc /D CHARSET_SHIFT_JIS /source-charset:shift_jis /execution-charset:shift_jis /D DIC_VERSION=102 /D MECAB_WITHOUT_MUTEX_LOCK /D MECAB_DEFAULT_RC=\"dummy\" /D PACKAGE=\"open_jtalk\" /D VERSION=\"1.01\" /D HAVE_WINDOWS_H
+CFLAGS = /O2 /Ob2 /Oi /Ot /Oy /GT /GL /TP /EHsc /D CHARSET_SHIFT_JIS /source-charset:shift_jis /execution-charset:shift_jis /D DIC_VERSION=102 /D MECAB_WITHOUT_MUTEX_LOCK /D MECAB_DEFAULT_RC=\"dummy\" /D PACKAGE=\"open_jtalk\" /D VERSION=\"1.01\" /D HAVE_WINDOWS_H /D MECAB_STATIC
 # CFLAGS for DLL (add DLL_EXPORT macro)
 CFLAGS_DLL = $(CFLAGS) /D DLL_EXPORT
 LFLAGS = /LTCG
