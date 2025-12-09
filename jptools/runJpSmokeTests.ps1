@@ -6,7 +6,7 @@
     1. Optionally installs the minimal tooling (uv pip install scons pytest).
     2. Optionally runs "scons.bat miscdepsjp" to prepare the overlay.
     3. Sets PYTHONPATH so that python-jtalk + source/synthDrivers/jtalk are importable.
-    4. Invokes "uv run python -m pytest miscDepsJp/jptools/test.py -k 'JpBrailleTests or JtalkTests'".
+    4. Invokes "uv run pytest miscDepsJp/jptools/test.py -k 'JpBrailleTests or JtalkTests'".
 
     Use -SkipInstall or -SkipOverlay if you already prepared the environment.
     Use -TestFilter to run specific tests (e.g., "JpBrailleTests.test_pass2" or "JtalkTests").
