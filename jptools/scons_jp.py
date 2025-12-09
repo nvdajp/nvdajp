@@ -426,7 +426,12 @@ def register_jp_builders(env: Any) -> None:
         - Write payload into miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
         """
         repo_root = Path.cwd()
-        arch = str(env.get("TARGET_ARCH", "x86")).lower()
+        # Get TARGET_ARCH from SCons env or environment variable (JP override)
+        scons_arch = env.get("TARGET_ARCH")
+        env_arch = os.getenv("JP_TARGET_ARCH") or os.getenv("TARGET_ARCH")
+        arch = str(scons_arch or env_arch or "x86").lower()
+        if scons_arch or env_arch:
+            print(f"jtalkPrep: TARGET_ARCH from SCons env={scons_arch}, from env={env_arch}, using={arch}")
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 
         if arch in ("x64", "x86_64"):
@@ -698,7 +703,7 @@ def register_jp_builders(env: Any) -> None:
                 print("jtalkSync: dictionary present but not UTF-8; rebuilding via make_jdic.py.")
             sys_dic = dic_src / "sys.dic"
 
-        def _build_mecab_bin(machine: str) -> int:
+        def _build_mecab_bin(machine: str, arch_dst: Path) -> int:
             # Makefile.mak is in src subdirectory
             base = vendor_base / "libopenjtalk" / "mecab" / "src"
             makefile = base / "Makefile.mak"
@@ -721,6 +726,15 @@ def register_jp_builders(env: Any) -> None:
                 cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
                 result = run(cmd_script, cwd=str(base), shell=True)
                 return result.returncode
+            finally:
+                built_src = base / "libmecab.dll"
+                if built_src.exists():
+                    try:
+                        arch_dst.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(built_src, arch_dst)
+                        print(f"jtalkSync: copied libmecab.dll to arch path {arch_dst}")
+                    except Exception as e:
+                        print(f"jtalkSync: warning: failed to copy libmecab.dll to {arch_dst}: {e}")
 
         # If the vendor dic is missing/invalid, attempt to build it; otherwise, if source already has a UTF-8 dic, reuse it.
         if should_rebuild_dic or not sys_dic.exists():
@@ -742,7 +756,8 @@ def register_jp_builders(env: Any) -> None:
                         mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
                         mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
                         libmecab_dll = mecab_src_dir / "libmecab.dll"
-                        rc_bin = _build_mecab_bin(machine)
+                        arch_libmecab = vendor_base / ("x64" if machine == "x64" else "x86") / "libmecab.dll"
+                        rc_bin = _build_mecab_bin(machine, arch_libmecab)
                         if rc_bin != 0:
                             print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
                             return rc_bin
@@ -827,8 +842,10 @@ def register_jp_builders(env: Any) -> None:
                     result = run(cmd, cwd=str(base))
                     return result.returncode
 
-                arch = str(env.get("TARGET_ARCH", "x86")).lower()
+                # Get TARGET_ARCH from SCons env or environment variable (JP override)
+                arch = str(env.get("TARGET_ARCH") or os.getenv("JP_TARGET_ARCH") or os.getenv("TARGET_ARCH") or "x86").lower()
                 machine = "x64" if arch in ("x64", "x86_64") else "x86"
+                arch_libmecab = vendor_base / ("x64" if machine == "x64" else "x86") / "libmecab.dll"
 
                 print("jtalkSync: sys.dic missing or out of date; building python-jtalk (nmake all) and mecab dic")
                 rc = _run_nmake(machine)
@@ -840,7 +857,7 @@ def register_jp_builders(env: Any) -> None:
                 mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
                 mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
                 libmecab_dll = mecab_src_dir / "libmecab.dll"
-                rc_bin = _build_mecab_bin(machine)
+                rc_bin = _build_mecab_bin(machine, arch_libmecab)
                 if rc_bin != 0:
                     print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
                     return rc_bin
@@ -910,22 +927,28 @@ def register_jp_builders(env: Any) -> None:
                 if src.exists():
                     shutil.copy2(src, jtalk_dir / name)
             # Copy libmecab.dll (built from source or fallback to existing)
-            arch = str(env.get("TARGET_ARCH", "x86")).lower()
+            # Get TARGET_ARCH from SCons env or environment variable (JP override)
+            arch = str(env.get("TARGET_ARCH") or os.getenv("JP_TARGET_ARCH") or os.getenv("TARGET_ARCH") or "x86").lower()
             machine = "x64" if arch in ("x64", "x86_64") else "x86"
-            # First, try to find built libmecab.dll from mecab/src directory
-            built_libmecab = vendor_base / "libopenjtalk" / "mecab" / "src" / "libmecab.dll"
-            if not built_libmecab.exists():
-                # Build libmecab.dll if it doesn't exist
-                print("jtalkSync: libmecab.dll not found, building...")
-                rc_bin = _build_mecab_bin(machine)
+            arch_libmecab = vendor_base / ("x64" if machine == "x64" else "x86") / "libmecab.dll"
+            built_libmecab_src = vendor_base / "libopenjtalk" / "mecab" / "src" / "libmecab.dll"
+
+            if not arch_libmecab.exists():
+                # Build libmecab.dll and copy to arch-specific path
+                print(f"jtalkSync: libmecab.dll not found at {arch_libmecab}, building...")
+                rc_bin = _build_mecab_bin(machine, arch_libmecab)
                 if rc_bin != 0:
                     print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
                     # Continue anyway, will try fallback
-                elif not built_libmecab.exists():
-                    print(f"jtalkSync: libmecab.dll still missing after build: {built_libmecab}")
-            if built_libmecab.exists():
-                shutil.copy2(built_libmecab, jtalk_dir / "libmecab.dll")
-                print(f"jtalkSync: copied built libmecab.dll from {built_libmecab}")
+                elif not arch_libmecab.exists():
+                    print(f"jtalkSync: libmecab.dll still missing after build: {arch_libmecab}")
+
+            if arch_libmecab.exists():
+                shutil.copy2(arch_libmecab, jtalk_dir / "libmecab.dll")
+                print(f"jtalkSync: copied libmecab.dll from {arch_libmecab}")
+            elif built_libmecab_src.exists():
+                shutil.copy2(built_libmecab_src, jtalk_dir / "libmecab.dll")
+                print(f"jtalkSync: copied libmecab.dll from build source {built_libmecab_src}")
             else:
                 # Fallback to existing libmecab.dll (if present, e.g., from PyPI wheel)
                 fallback_libmecab = vendor_base / "libmecab.dll"
@@ -933,7 +956,10 @@ def register_jp_builders(env: Any) -> None:
                     shutil.copy2(fallback_libmecab, jtalk_dir / "libmecab.dll")
                     print(f"jtalkSync: copied fallback libmecab.dll from {fallback_libmecab}")
                 else:
-                    print(f"jtalkSync: warning: libmecab.dll not found (expected at {built_libmecab} or {fallback_libmecab})")
+                    print(
+                        "jtalkSync: warning: libmecab.dll not found "
+                        f"(expected at {arch_libmecab}, {built_libmecab_src} or {fallback_libmecab})"
+                    )
             # Copy arch-specific libopenjtalk.dll (x86 or x64)
             if arch in ("x64", "x86_64"):
                 src_dll = vendor_base / "x64" / "libopenjtalk.dll"

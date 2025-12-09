@@ -5,6 +5,8 @@
 # This file may be used under the terms of the GNU General Public License, version 2 or later.
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 
+# pyright: reportUndefinedVariable=false, reportAttributeAccessIssue=false, reportGeneralTypeIssues=false
+
 import multiprocessing
 import os
 import sys
@@ -23,6 +25,23 @@ if not virtualEnv or not uv or Path.cwd() != Path(virtualEnv).parent:
 import time  # noqa: E402
 import importlib.util  # noqa: E402
 import winreg  # noqa: E402
+from SCons.Variables import BoolVariable, ListVariable, EnumVariable, PathVariable, Variables  # noqa: E402
+from SCons.Script import (  # noqa: E402  # type: ignore
+	AddOption,
+	AlwaysBuild,
+	Builder,
+	Command,
+	Copy,
+	Delete,
+	Dir,
+	Environment,
+	Export,
+	File,
+	GetOption,
+	Mkdir,
+	SetOption,
+	Exit,
+)
 
 
 def recursiveCopy(env, targetDir, sourceDir):
@@ -45,7 +64,7 @@ import gettext  # noqa: E402
 
 gettext.install("nvda")
 sys.path.append("source")
-import versionInfo  # noqa: E402
+import versionInfo  # noqa: E402  # type: ignore
 
 del sys.path[-1]
 
@@ -54,6 +73,8 @@ makensis = os.path.abspath(os.path.join("include", "nsis", "NSIS", "makensis.exe
 # Get the path to xgettext.
 XGETTEXT = os.path.abspath(os.path.join("miscDeps", "tools", "xgettext.exe"))
 
+
+defaultArch = os.getenv("JP_TARGET_ARCH") or os.getenv("TARGET_ARCH") or "x86"
 
 vars = Variables()
 vars.Add("version", "The version of this build", versionInfo.version)
@@ -97,6 +118,14 @@ vars.Add(
 		"The level of logging you wish to see, lower is more verbose",
 		"15",
 		allowed_values=[str(x) for x in range(60)],
+	)
+)
+vars.Add(
+	EnumVariable(
+		"TARGET_ARCH",
+		"Target architecture (x86, x86_64, arm64)",
+		defaultArch,
+		allowed_values=["x86", "x86_64", "arm64"],
 	)
 )
 
@@ -275,7 +304,12 @@ env32["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
 env64["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
 envArm64["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
 
-env = env32
+if env["TARGET_ARCH"] == "x86_64":
+	env = env64
+elif env["TARGET_ARCH"] == "arm64":
+	env = envArm64
+else:
+	env = env32
 
 projectRCSubstDict = {
 	"%version_year%": env["version_year"],
@@ -438,7 +472,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 	if env.get("uiAccess"):
 		buildCmd.append("--enable-uiAccess")
 
-	action.append(buildCmd)
+	action.append(buildCmd)  # type: ignore[arg-type]
 
 	# #10031: Apps written in Python 3 require Universal CRT to be installed. We cannot assume users have it on their systems.
 	# Therefore , copy required libraries from Windows 10 SDK.
@@ -464,7 +498,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 	with os.scandir(CRTDir) as dir:
 		for file in dir:
 			if file.name.endswith(".dll") and file.is_file():
-				action.append(Copy(target[0], file.path))
+				action.append(Copy(target[0], file.path))  # type: ignore[arg-type]
 
 	if certFile or apiSigningToken:
 		for prog in (
@@ -479,7 +513,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 				)
 			)
 
-	action.extend((Delete(buildVersionFn), Delete(importlib.util.cache_from_source(buildVersionFn))))
+	action.extend((Delete(buildVersionFn), Delete(importlib.util.cache_from_source(buildVersionFn))))  # type: ignore[arg-type]
 
 	return action
 

@@ -141,9 +141,18 @@ jobs:
 
     - name: Install NVDA for testing
       run: |
-        $nvdaLauncherFile = ".\output\nvda_${{ env.VERSION }}.exe"
+        # BEGIN JP PATCH: pick built launcher automatically to handle version suffixes
+        $nvdaLauncher = Get-ChildItem -Path .\output -Filter "nvda*.exe" -ErrorAction SilentlyContinue |
+          Sort-Object LastWriteTime -Descending |
+          Select-Object -First 1
+        if (-not $nvdaLauncher) {
+          echo "::error::NVDA launcher (.exe) not found under output/"
+          exit 1
+        }
+        $nvdaLauncherFile = $nvdaLauncher.FullName
         echo "nvdaLauncherFile=$nvdaLauncherFile" >> $env:GITHUB_ENV
         echo "NVDALauncherFile: $nvdaLauncherFile"
+        # END JP PATCH
         
         $outputDir = $(resolve-path .\testOutput)
         $installerLogFilePath = "$outputDir\nvda_install.log"

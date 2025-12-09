@@ -29,13 +29,13 @@
 
 ## 最優先目標: 2025.3.xjp安定版リリースの維持とローカル開発環境の整備、CIでのjpSmokeTest実行
 
-**基本方針**: 現状の2025.3.xjp安定版がリリースできる状態を維持しながら、ローカル開発環境でjpSmokeTestをx86/x64並行実行できて成功する状態を作り、**CIでもjpSmokeTestを実行して品質を保証する**。
+**基本方針**: 現状の2025.3.xjp安定版がリリースできる状態を維持しながら、ローカル開発環境でjpSmokeTestをx86/x64マトリクス実行できて成功する状態を作り、**CIでもjpSmokeTestを実行して品質を保証する**。
 
 * **最優先**: 2025.3.xjp安定版のリリース継続を維持
   * 既存のビルドプロセス（x86/Python 3.11）が正常に動作することを最優先
   * リリースに影響を与える変更は段階的に実施
   * 各変更は小さなPR単位で実施し、全テスト通過を確認
-* **開発環境整備**: ローカル開発環境でのjpSmokeTest x86/x64並行実行を成功させる
+* **開発環境整備**: ローカル開発環境でのjpSmokeTest x86/x64マトリクス実行を成功させる
   * ローカル環境でx86/x64の両方でjpSmokeTestを実行できる環境を構築
   * ビルド成果物の上書きを避けるためのディレクトリ構造の整備
   * 開発中の迅速なフィードバックループを確立
@@ -44,7 +44,7 @@
   * CIでの実行が安定して成功することを確認
 * **段階的アプローチ**: 安定版維持 → ローカル環境整備 → CI統合
   * Phase 1: 安定版リリースを維持しながら、ローカル開発環境を整備
-  * Phase 2: ローカル環境でのx86/x64並行実行を成功させる
+  * Phase 2: ローカル環境でのx86/x64マトリクス実行を成功させる
   * Phase 3: 成功したローカル環境の手法をCIに統合（**必須**）
 
 ## 現在の作業キュー（2025年12月時点）
@@ -64,7 +64,7 @@
 
 **優先順位の整理**:
 
-* **最重要（Phase 1.4の実現に必須/推奨）**: Phase 1.2（DLLパス構造の統一）、Phase 1.3（libmecab.dllのソースビルド化）、Phase 1.4（jpSmokeTest x86/x64並行実行とCI統合）
+* **最重要（Phase 1.4の実現に必須/推奨）**: Phase 1.2（DLLパス構造の統一）、Phase 1.3（libmecab.dllのソースビルド化）、Phase 1.4（jpSmokeTest x86/x64マトリクス実行とCI統合）
 * **ついでに実施可能（Phase 1.4遂行時に実施可能）**: Phase 1.5（overlay処理の廃止）、Phase 1.6（コード品質の改善）
 * **ついでに実施可能（Phase 1.4.4 CI統合時に実施可能）**: Phase 1.7（CI基盤の更新）
 
@@ -90,74 +90,83 @@
     4. ドキュメント更新: `vendor-submodules.md` 等
   * 残課題: x64対応時に同手順でビルド・配置できるか検証（Phase 1.4以降）
 
-* [ ] **Phase 1.4: ローカル開発環境でのjpSmokeTest x86/x64並行実行の実現とCI統合（最優先）**
+* [ ] **Phase 1.4: ローカル開発環境でのjpSmokeTest x86/x64マトリクス実行の実現（x86で実行、x64はビルドのみ）**（進行中）
   * **注**: Phase 1.2（DLLパス構造の統一）が完了している必要がある。Phase 1.3（libmecab.dllのソースビルド化）の完了が推奨される。
 
-  * **目的**: 2025.3.xjp安定版リリースを維持しながら、ローカル開発環境でjpSmokeTestをx86/x64並行実行できて成功する状態を作り、CIでもjpSmokeTestを実行する
+* **目的**: 2025.3.xjp安定版リリースを維持しながら、ローカル開発環境でjpSmokeTestのマトリクス枠を整備し、x86でビルドとテストを通す（x64はビルドのみ確認し、テストは未実施／未成功のまま次段階へ繰り出し）
   * **基本方針**:
     * 安定版リリースに影響を与えない範囲で実施
     * ローカル環境での開発効率を向上させる
-    * **CIでjpSmokeTestを実行して品質を保証する**（必須）
     * 将来のx64対応を見据えた検証環境を構築
   * **現状**:
-    * **jpSmokeTestはCIで実行されていない**（`runJpSmokeTests.ps1`は存在するがCI未統合）← **これは改善すべき問題**
-    * ローカル環境ではx86/x64を順次実行することは可能だが、並行実行は困難（ビルド成果物の上書き問題）
-    * **課題**: jpSmokeTestが失敗してもCIが成功扱いになるケースがある（ジョブ失敗をステータスに反映させる必要あり）
-  * **段階的実装計画**:
-    1. **Phase 1.4.1: DLLパス構造の統一（前提条件）**
-       * Phase 1.2で計画されているDLLパス構造の統一を先に実施
+    * ✅ **CI統合は既に完了**: `testAndPublish.yml`に`jpSmokeTests`ジョブが存在し、`allTestsPass`の必須チェックに含まれている
+    * ✅ **ローカル環境でのx86/x64マトリクス実行枠**: `runJpSmokeTests.ps1`に`-Architecture`と`-Parallel`パラメータを追加済み（テスト実行はx86のみ）
+    * ✅ **libopenjtalk.dllのアーキテクチャ別パス対応**: Phase 1.2で`miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`に統一済み
+    * ✅ **libmecab.dllのアーキテクチャ別パス対応**: 完了（`miscDepsJp/include/python-jtalk/x86|x64/libmecab.dll`をビルド配置済み）
+    * ✅ **x64ビルド確認済み**: `JP_TARGET_ARCH=x86_64` で libopenjtalk.dll / libmecab.dll のビルド・配置成功（テストは未実施）
+    * ⚠️ **注意**: マトリクス実行（`-Parallel`使用時）は`-SkipOverlay`必須（アーキ別の成果物分離が整うまで）
+  * **完了した作業**:
+    1. ✅ **Phase 1.4.1: libopenjtalk.dllのパス構造の統一（前提条件）** - Phase 1.2で完了
        * x86 DLL: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`
        * x64 DLL: `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`
-       * payload側も同様にx86/x64ディレクトリを分離
-       * **検証**: 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
-    2. **Phase 1.4.2: ローカル環境でのx86/x64並行実行の実現**
-       * `runJpSmokeTests.ps1`に`-Architecture`パラメータを追加
-       * アーキテクチャ別のビルド成果物パスを自動選択
-       * PowerShellジョブを使用してx86/x64を並行実行
-       * **検証**: ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認
-    3. **Phase 1.4.3: ローカル環境での動作安定化**
-       * 並行実行時のリソース競合を解決
-       * エラーハンドリングとログ出力の改善
-       * 開発者向けドキュメントの作成
-       * **検証**: 複数回の実行で安定して成功することを確認
-    4. **Phase 1.4.4: CI統合（必須）**
-    * **目的**: CIでjpSmokeTestを実行して、すべてのPRで品質を保証する
-    * ローカル環境での成功を確認した後、CIへの統合を実施
-    * GitHub Actionsのマトリクス戦略を使用（x86環境での実行）
-    * `testAndPublish.yml`にjpSmokeTest実行ステップを追加
-    * 安定版リリースに影響を与えない範囲で実施
-    * **検証**: CIでjpSmokeTestが安定して成功することを確認
-  * **実装詳細（Phase 1.4.2）**:
-    * `runJpSmokeTests.ps1`の拡張
-      * `-Architecture`パラメータを追加（`x86`または`x64`）
-      * `TARGET_ARCH`環境変数を自動設定
-      * アーキテクチャ別のDLLパスを自動選択
-      * `-Parallel`パラメータを追加してx86/x64を並行実行
-    * PowerShellジョブを使用した並行実行
-      * `Start-Job`でx86/x64のテストを並行実行
-      * 各ジョブの結果を収集してレポート
+    2. ✅ **Phase 1.4.1.5: libmecab.dllのパス構造の統一** - 完了
+       * `miscDepsJp/include/python-jtalk/x86|x64/libmecab.dll` にビルド・配置し、`jtalkSync` がアーキ別パスからコピー
+    3. ✅ **Phase 1.4.2: ローカル環境でのx86/x64マトリクス実行枠の実現** - 完了
+       * `runJpSmokeTests.ps1`に`-Architecture`パラメータを追加（`x86`または`x64`、デフォルト: `x86`）
+       * `-Parallel`パラメータを追加してx86/x64をマトリクス実行可能（順次実行も可能）
+       * `TARGET_ARCH`環境変数の自動設定（`JP_TARGET_ARCH` も利用可能）※衝突回避と明示指定のためJP専用を優先
+       * アーキテクチャ別のDLLパス自動選択（フォールバック機構付き）
+       * マトリクス実行時のログ出力とエラーハンドリングの改善
+       * pytestの自動インストール機能
+    4. ✅ **Phase 1.4.3: ローカル環境での動作安定化（部分的に完了）**
+       * ✅ マトリクス実行時のログ出力改善（各アーキテクチャの出力を表示、結果サマリー）
+       * ✅ エラーハンドリングの改善（各アーキテクチャの失敗を明確に表示）
+       * ⚠️ リソース競合の完全解決は、アーキ別の成果物分離が整うまで保留
+    5. ✅ **Phase 1.4.4: CI統合** - 既に実装済み（`testAndPublish.yml`の`jpSmokeTests`ジョブ）
+       * `testAndPublish.yml`に`jpSmokeTests`ジョブが存在
+       * `allTestsPass`の必須チェックに含まれている
+       * x86環境での実行が実装済み
+  * **実装詳細（完了済み）**:
+    * ✅ `runJpSmokeTests.ps1`の拡張
+      * `-Architecture`パラメータを追加（`x86`または`x64`、デフォルト: `x86`）
+      * `TARGET_ARCH`環境変数を自動設定（x64の場合は`x86_64`に変換）
+      * アーキテクチャ別のDLLパスを自動選択（`miscDepsJp/include/python-jtalk/<arch>/`を優先、フォールバックあり）
+      * `-Parallel`パラメータを追加してx86/x64をマトリクス実行可能（順次実行も可能）
+      * pytestの自動インストール機能（`-SkipInstall`でもpytestが見つからない場合は自動インストール）
+    * ✅ PowerShellジョブを使用したマトリクス実行（`-Parallel`使用時）
+      * オーケストレーションに `Start-Job` を使い、ジョブ内で `Start-Process` で x86/x64 を別プロセス実行（並行または順次）
+      * 各プロセスの出力をキャプチャして表示
+      * 各アーキテクチャの結果を収集してサマリー表示
       * エラー時の詳細なログ出力
-    * ビルド成果物の分離
-      * x86 DLL: `miscDepsJp/source/synthDrivers/jtalk/x86/libopenjtalk.dll`
-      * x64 DLL: `miscDepsJp/source/synthDrivers/jtalk/x64/libopenjtalk.dll`
-      * 各アーキテクチャで独立してビルド可能
+    * ✅ libopenjtalk.dllのアーキテクチャ別パス対応
+      * Phase 1.2でDLLパス構造が統一済み
+      * x86 DLL: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`
+      * x64 DLL: `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`
+    * ✅ libmecab.dllのアーキテクチャ別パス対応
+      * `miscDepsJp/include/python-jtalk/x86|x64/libmecab.dll` に配置
+    * ✅ CI統合（既に実装済み）
+      * `testAndPublish.yml`に`jpSmokeTests`ジョブが存在
+      * x86環境での実行が実装済み
+      * `allTestsPass`の必須チェックに含まれている
   * **利点**:
-    * ローカル開発環境での開発効率が向上（x86/x64を並行検証可能）
-    * x64対応前にx64環境でのjpSmokeTestを検証できる
-    * アーキテクチャ別の問題を早期に発見できる
-    * **CIでjpSmokeTestを実行することで、すべてのPRで品質を保証できる**（必須）
-    * 安定版リリースに影響を与えない範囲で実施
+    * ✅ ローカル開発環境での開発効率が向上（x86を確実に、x64はビルド確認まで）
+    * ✅ x64対応前にx64ビルド手順と配置を検証できる（テスト実行は次段階へ繰り出し）
+    * ✅ アーキテクチャ別の問題を早期に発見できる
+    * ✅ **CIでjpSmokeTestを実行することで、すべてのPRで品質を保証**（既に実装済み）
+    * ✅ 安定版リリースに影響を与えない範囲で実施
   * **注意点**:
-    * Phase 1.2（DLLパス構造の統一）が完了している必要がある
-    * x64環境でのビルドにはx64用のDLL（libopenjtalk.dll、libmecab.dll）が必要
-    * Phase 1.3（libmecab.dllのソースビルド化）の完了が推奨される
-    * ローカル環境でのMSVC環境の切り替えが必要（x86/x64）
-    * 安定版リリースに影響を与えない範囲で実施
-  * **検証方法**:
-    * **Phase 1.4.1完了後**: 既存のx86ビルドが正常に動作することを確認（`scons source dist launcher`、jpSmokeTest成功、安定版リリースに影響なし）
-    * **Phase 1.4.2完了後**: ローカル環境でx86/x64並行実行が成功することを確認（`runJpSmokeTests.ps1 -Parallel`、両アーキテクチャで成功、ビルド成果物の分離確認）
-    * **Phase 1.4.3完了後**: 複数回の実行で安定して成功することを確認（リソース競合なし、エラーハンドリング適切、ドキュメント整備）
-    * **Phase 1.4.4完了後**: CIでjpSmokeTestが安定して成功することを確認（CI実行確認、複数回の安定実行、エラーメッセージ適切）
+    * ✅ Phase 1.2（DLLパス構造の統一）が完了済み
+    * ⚠️ マトリクス実行（`-Parallel`使用時）は`-SkipOverlay`必須（アーキ別の成果物分離が整うまで）
+    * ⚠️ x64環境でのビルドにはx64用のDLL（libopenjtalk.dll、libmecab.dll）が必要
+    * ✅ Phase 1.3（libmecab.dllのソースビルド化）が完了済み
+    * ⚠️ ローカル環境でのMSVC環境の切り替えが必要（x86/x64）
+  * **検証状況**:
+    * ✅ **Phase 1.4.1（libopenjtalk.dll）**: Phase 1.2で完了済み（x86ビルドが正常に動作することを確認済み）
+    * ✅ **Phase 1.4.1.5（libmecab.dll）**: 完了（x86/x64 両方に配置）
+    * ✅ **Phase 1.4.2**: ローカル環境でx86での動作確認済み（`runJpSmokeTests.ps1 -Architecture x86`で成功）
+    * ⚠️ **Phase 1.4.2（マトリクス実行）**: 実装完了、x64はビルドまで確認しテストは未実施（または未成功のまま）。テスト対応は次段階（Phase 2系）で行う。
+    * ✅ **Phase 1.4.3**: ログ出力とエラーハンドリングの改善完了
+    * ✅ **Phase 1.4.4**: CI統合は既に実装済み（`testAndPublish.yml`の`jpSmokeTests`ジョブ）
 
 * [ ] **Phase 1.5: overlay 処理の廃止とコピー処理の削減（x86環境でのリファクタリング）**（優先度：中・Phase 1.4遂行時に実施可能）
   * **注**: Phase 1.4の直接的な前提条件ではない。Phase 1.4を遂行するときに、ついでにやれたらやる改善項目。ビルドプロセスの簡素化により、Phase 1.4の実装が少し楽になる可能性がある。
@@ -204,6 +213,7 @@
 * [ ] **Phase 1.8: ユーザー辞書テストの有効化**
   * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86/x64双方で検証）
   * 併せて `mecab-dict-index.exe` をリポジトリから除外（.gitignore）し、SConsビルドで欠如時にビルドする運用に統一
+  * ⚠️ まずはリスク低で「mecab-dict-index の x64 ビルド・辞書生成のみ」を試験対象にして進める（本体の x64 テストは次段階）
 
 ### 段階2: Python 3.13 x64対応（優先度：高）
 
