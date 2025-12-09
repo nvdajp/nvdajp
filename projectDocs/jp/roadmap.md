@@ -213,6 +213,7 @@
 * [ ] **Phase 1.8: ユーザー辞書テストの有効化**
   * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86/x64双方で検証）
   * 併せて `mecab-dict-index.exe` をリポジトリから除外（.gitignore）し、SConsビルドで欠如時にビルドする運用に統一
+  * ⚠️ まずはリスク低で「mecab-dict-index の x64 ビルド・辞書生成のみ」を試験対象にして進める（本体の x64 テストは次段階）
 
 ### 段階2: Python 3.13 x64対応（優先度：高）
 

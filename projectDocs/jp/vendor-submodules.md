@@ -38,6 +38,11 @@
 
 **現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
 
+### 既知の課題: *.py.txt の残存について
+
+* `miscDepsJp/source/synthDrivers/jtalk/` に `jtalkCore.py.txt` / `mecab.py.txt` / `text2mecab.py.txt` などのコピーが残っているが、現行ビルドでは `.py` 本体（`miscDepsJp/include/python-jtalk/…` からの配置）を参照しており、`.py.txt` は不要。
+* 方針: 参照がないことを確認した上で `.py.txt` を削除する（overlay 簡素化の一環）。削除後は x86 smoke test を実行して影響がないことを確認する。
+
 ## 非目標
 
 * YAML でのベンダービルドロジック（SCons に集約するため）
