@@ -245,6 +245,9 @@
   * 1つのPRで1つの変更のみ（例: Pythonバージョン更新、ランナー更新など）
   * **ローカル環境でテスト済みの変更のみをCIに反映**
 
+* [ ] **Phase 1.8: ユーザー辞書テストの有効化**
+  * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86/x64双方で検証）
+
 ### 段階2: Python 3.13 x64対応（優先度：高）
 
 **目標**: Python 3.13 x64対応を段階的に実施
