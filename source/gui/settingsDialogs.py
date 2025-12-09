@@ -50,9 +50,10 @@ import vision.providerBase
 import vision.providerInfo
 import winUser
 import wx
-import wx.adv
+from wx.lib import scrolledpanel
 from NVDAState import WritePaths
 
+import screenCurtain._screenCurtain
 from utils import mmdevice
 from vision.providerBase import VisionEnhancementProviderSettings
 from wx.lib.expando import ExpandoTextCtrl
@@ -73,7 +74,6 @@ from config.configFlags import (
 	ShowMessages,
 	TetherTo,
 	TypingEcho,
-	ReportNotSupportedLanguage,
 	LoggingLevel,
 )
 from logHandler import log
@@ -82,7 +82,9 @@ from utils.displayString import DisplayStringEnum
 
 import gui
 import gui.contextHelp
-
+import screenCurtain
+import api
+import ui
 from . import guiHelper
 
 try:
@@ -594,7 +596,7 @@ class MultiCategorySettingsDialog(SettingsDialog):
 		# The provided column header is just a placeholder, as it is hidden due to the wx.LC_NO_HEADER style flag.
 		self.catListCtrl.InsertColumn(0, categoriesLabelText)
 
-		self.container = nvdaControls.TabbableScrolledPanel(
+		self.container = scrolledpanel.ScrolledPanel(
 			parent=self,
 			style=wx.TAB_TRAVERSAL | wx.BORDER_THEME,
 			size=containerDim,
@@ -2566,7 +2568,7 @@ class ObjectPresentationPanel(SettingsPanel):
 
 		# Translators: This is the label for a checkbox in the
 		# object presentation settings panel.
-		reportMultiSelectText = _("Report when lists support &multiple selection")
+		reportMultiSelectText = _("Report when objects support &multiple selection")
 		self.reportMultiSelectCheckBox = sHelper.addItem(wx.CheckBox(self, label=reportMultiSelectText))
 		self.bindHelpEvent("ReportMultiSelect", self.reportMultiSelectCheckBox)
 		self.reportMultiSelectCheckBox.SetValue(
@@ -3261,7 +3263,7 @@ class DocumentFormattingPanel(SettingsPanel):
 
 		# Translators: This is the label for a checkbox in the
 		# document formatting settings panel.
-		commentsText = _("No&tes and comments")
+		commentsText = _("Commen&ts")
 		self.commentsCheckBox = docInfoGroup.addItem(wx.CheckBox(docInfoBox, label=commentsText))
 		self.commentsCheckBox.SetValue(config.conf["documentFormatting"]["reportComments"])
 
@@ -4240,10 +4242,19 @@ class UwpOcrPanel(SettingsPanel):
 		self.bindHelpEvent("Win10OcrSettingsAutoRefresh", self.autoRefreshCheckbox)
 		self.autoRefreshCheckbox.SetValue(config.conf["uwpOcr"]["autoRefresh"])
 
+		# Translators: The label for a setting in OCR settings to automatically say all on result.
+		autoSayAllText = _("Automatically say all on result")
+		self.autoSayAllOnResultCheckbox = sHelper.addItem(
+			wx.CheckBox(self, label=autoSayAllText),
+		)
+		self.bindHelpEvent("Win10OcrSettingsAutoSayAllOnResult", self.autoSayAllOnResultCheckbox)
+		self.autoSayAllOnResultCheckbox.SetValue(config.conf["uwpOcr"]["autoSayAllOnResult"])
+
 	def onSave(self):
 		lang = self.languageCodes[self.languageChoice.Selection]
 		config.conf["uwpOcr"]["language"] = lang
 		config.conf["uwpOcr"]["autoRefresh"] = self.autoRefreshCheckbox.IsChecked()
+		config.conf["uwpOcr"]["autoSayAllOnResult"] = self.autoSayAllOnResultCheckbox.IsChecked()
 
 
 class AdvancedPanelControls(
@@ -4601,17 +4612,6 @@ class AdvancedPanelControls(
 		self.trimLeadingSilenceCheckBox.SetValue(config.conf["speech"]["trimLeadingSilence"])
 		self.trimLeadingSilenceCheckBox.defaultValue = self._getDefaultValue(["speech", "trimLeadingSilence"])
 
-		# Translators: This is the label for a combo-box control in the
-		#  Advanced settings panel.
-		label = _("Use WASAPI for SAPI 4 audio output:")
-		self.useWASAPIForSAPI4Combo = speechGroup.addLabeledControl(
-			labelText=label,
-			wxCtrlClass=nvdaControls.FeatureFlagCombo,
-			keyPath=["speech", "useWASAPIForSAPI4"],
-			conf=config.conf,
-		)
-		self.bindHelpEvent("UseWASAPIForSAPI4", self.useWASAPIForSAPI4Combo)
-
 		# Translators: This is the label for a group of advanced options in the
 		#  Advanced settings panel
 		label = _("Virtual Buffers")
@@ -4800,7 +4800,6 @@ class AdvancedPanelControls(
 			and self.cancelExpiredFocusSpeechCombo.GetSelection()
 			== self.cancelExpiredFocusSpeechCombo.defaultValue
 			and self.trimLeadingSilenceCheckBox.IsChecked() == self.trimLeadingSilenceCheckBox.defaultValue
-			and self.useWASAPIForSAPI4Combo.isValueConfigSpecDefault()
 			and self.loadChromeVBufWhenBusyCombo.isValueConfigSpecDefault()
 			and self.caretMoveTimeoutSpinControl.GetValue() == self.caretMoveTimeoutSpinControl.defaultValue
 			and self.reportTransparentColorCheckBox.GetValue()
@@ -4830,7 +4829,6 @@ class AdvancedPanelControls(
 		self.wtStrategyCombo.resetToConfigSpecDefault()
 		self.cancelExpiredFocusSpeechCombo.SetSelection(self.cancelExpiredFocusSpeechCombo.defaultValue)
 		self.trimLeadingSilenceCheckBox.SetValue(self.trimLeadingSilenceCheckBox.defaultValue)
-		self.useWASAPIForSAPI4Combo.resetToConfigSpecDefault()
 		self.loadChromeVBufWhenBusyCombo.resetToConfigSpecDefault()
 		self.caretMoveTimeoutSpinControl.SetValue(self.caretMoveTimeoutSpinControl.defaultValue)
 		self.reportTransparentColorCheckBox.SetValue(self.reportTransparentColorCheckBox.defaultValue)
@@ -4844,8 +4842,6 @@ class AdvancedPanelControls(
 
 		shouldResetSynth = (
 			config.conf["speech"]["trimLeadingSilence"] != self.trimLeadingSilenceCheckBox.IsChecked()
-			or config.conf["speech"]["useWASAPIForSAPI4"]
-			!= self.useWASAPIForSAPI4Combo._getControlCurrentFlag()
 		)
 
 		config.conf["development"]["enableScratchpadDir"] = self.scratchpadCheckBox.IsChecked()
@@ -4861,7 +4857,6 @@ class AdvancedPanelControls(
 			self.cancelExpiredFocusSpeechCombo.GetSelection()
 		)
 		config.conf["speech"]["trimLeadingSilence"] = self.trimLeadingSilenceCheckBox.IsChecked()
-		self.useWASAPIForSAPI4Combo.saveCurrentValueToConf()
 		config.conf["UIA"]["allowInChromium"] = self.UIAInChromiumCombo.GetSelection()
 		self.enhancedEventProcessingComboBox.saveCurrentValueToConf()
 		config.conf["terminals"]["speakPasswords"] = self.winConsoleSpeakPasswordsCheckBox.IsChecked()
@@ -6061,14 +6056,7 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 	def makeSettings(self, sizer: wx.BoxSizer):
 		sHelper = guiHelper.BoxSizerHelper(self, sizer=sizer)
 
-		# Import late to avoid circular import
-		from visionEnhancementProviders.screenCurtain import ScreenCurtainProvider, WarnOnLoadDialog, warnOnLoadCheckBoxText
-
-		self._screenCurtainConfig = config.conf["vision"]["screenCurtain"]
-		screenCurtainId = ScreenCurtainProvider.getSettings().getId()
-		screenCurtainProviderInfo = vision.handler.getProviderInfo(screenCurtainId)
-		screenCurtainInstance = vision.handler.getProviderInstance(screenCurtainProviderInfo)
-
+		self._screenCurtainConfig = config.conf["screenCurtain"]
 		# Translators: Name for a feature that disables output to the screen,
 		# making it black.
 		screenCurtainSizer = wx.StaticBoxSizer(wx.VERTICAL, self, label=_("Screen Curtain"))
@@ -6084,18 +6072,16 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 			),
 		)
 		self._screenCurtainEnabledCheckbox.SetValue(
-			screenCurtainInstance is not None and screenCurtainInstance.enabled,
+			screenCurtain.screenCurtain is not None and screenCurtain.screenCurtain.enabled,
 		)
 		self._screenCurtainEnabledCheckbox.Bind(wx.EVT_CHECKBOX, self._ensureScreenCurtainEnableState)
-		self._screenCurtainEnabledCheckbox.Enable(screenCurtainInstance is not None)
+		self._screenCurtainEnabledCheckbox.Enable(screenCurtain.screenCurtain is not None)
 		self.bindHelpEvent("ScreenCurtainEnable", self._screenCurtainEnabledCheckbox)
-		self._screenCurtainProviderInfo = screenCurtainProviderInfo
-		self._screenCurtainInstance = screenCurtainInstance
 
 		self._screenCurtainWarnOnLoadCheckbox = screenCurtainGroup.addItem(
 			wx.CheckBox(
 				screenCurtainBox,
-				label=warnOnLoadCheckBoxText,
+				label=screenCurtain._screenCurtain.WARN_ON_LOAD_CHECKBOX_TEXT,
 			),
 		)
 		self._screenCurtainWarnOnLoadCheckbox.SetValue(self._screenCurtainConfig["warnOnLoad"])
@@ -6140,19 +6126,10 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 		except StopIteration:
 			log.debugWarning("Could not set log level list to current log level")
 
-		# BEGIN JP PATCH (Replace "NV Access" with "NVDA Japanese Team")
 		self._allowUsageStatsCheckBox: wx.CheckBox = generalGroup.addItem(
-			wx.CheckBox(
-				generalBox,
-				# Translators: The label of a checkbox in privacy and security settings to toggle allowing of usage stats gathering
-				label=_("Allow NV Access to gather NVDA usage statistics").replace(
-					"NV Access",
-					# Translators: The name of the NVDA Japanese Team (replaces "NV Access" in the usage statistics checkbox label)
-					_("NVDA Japanese Team")
-				),
-			),
+			# Translators: The label of a checkbox in privacy and security settings to toggle allowing of usage stats gathering
+			wx.CheckBox(generalBox, label=_("Allow NV Access to gather NVDA usage statistics")),
 		)
-		# END JP PATCH
 		self.bindHelpEvent("GeneralSettingsGatherUsageStats", self._allowUsageStatsCheckBox)
 		self._allowUsageStatsCheckBox.Value = config.conf["update"]["allowUsageStats"]
 		if not updateCheck:
@@ -6162,13 +6139,10 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 	def onSave(self):
 		# We intentionally don't save whether the screen curtain is enabled here,
 		# so we don't unintentionally persist a temporary screen curtain to config.
-		# Import late to avoid circular import
-		from visionEnhancementProviders.screenCurtain import ScreenCurtainProvider
-
-		screenCurtainSettings = ScreenCurtainProvider.getSettings()
-		screenCurtainSettings.warnOnLoad = self._screenCurtainWarnOnLoadCheckbox.IsChecked()
-		screenCurtainSettings.playToggleSounds = self._screenCurtainPlayToggleSoundsCheckbox.IsChecked()
-		screenCurtainSettings.saveSettings()
+		self._screenCurtainConfig["warnOnLoad"] = self._screenCurtainWarnOnLoadCheckbox.IsChecked()
+		self._screenCurtainConfig["playToggleSounds"] = (
+			self._screenCurtainPlayToggleSoundsCheckbox.IsChecked()
+		)
 
 		if not logHandler.isLogLevelForced():
 			config.conf["general"]["loggingLevel"] = logging.getLevelName(
@@ -6188,72 +6162,46 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 		"""
 		# Import late to avoid circular import
 		from contentRecog.recogUi import RefreshableRecogResultNVDAObject
-		import api
-		import speech
-		import ui
 
 		focusObj = api.getFocusObject()
 		if isinstance(focusObj, RefreshableRecogResultNVDAObject) and focusObj.recognizer.allowAutoRefresh:
-			# Translators: Warning message when trying to enable the screen curtain when OCR is active.
-			warningMessage = _("Could not enable screen curtain when performing content recognition")
-			ui.message(warningMessage, speechPriority=speech.priorities.Spri.NOW)
+			ui.message(
+				screenCurtain._screenCurtain.UNAVAILABLE_WHEN_RECOGNISING_CONTENT_MESSAGE,
+				speechPriority=speech.priorities.Spri.NOW,
+			)
 			return True
 		return False
 
 	def _ensureScreenCurtainEnableState(self, evt: wx.CommandEvent):
 		"""Ensures that toggling the Screen Curtain checkbox toggles the Screen Curtain."""
-		# Import late to avoid circular import
-		from visionEnhancementProviders.screenCurtain import ScreenCurtainProvider
-		import speech
-		import ui
-
 		shouldBeEnabled = evt.IsChecked()
-		screenCurtainInstance = vision.handler.getProviderInstance(self._screenCurtainProviderInfo)
-		if screenCurtainInstance is None:
+		if screenCurtain.screenCurtain is None:
 			self._screenCurtainEnabledCheckbox.SetValue(False)
 			return
-		currentlyEnabled = screenCurtainInstance.enabled
+		currentlyEnabled = screenCurtain.screenCurtain.enabled
 		if shouldBeEnabled and not currentlyEnabled:
 			confirmed = self._confirmEnableScreenCurtainWithUser()
 			if not confirmed or self._ocrActive():
 				self._screenCurtainEnabledCheckbox.SetValue(False)
 			else:
-				try:
-					vision.handler.initializeProvider(
-						self._screenCurtainProviderInfo,
-						temporary=False,
-					)
-					# Update instance reference
-					self._screenCurtainInstance = vision.handler.getProviderInstance(self._screenCurtainProviderInfo)
-				except Exception:
-					log.error("Error enabling Screen Curtain.", exc_info=True)
-					# Translators: Reported when the screen curtain could not be enabled.
-					errorMessage = _("Error enabling screen curtain")
-					ui.message(errorMessage, speechPriority=speech.priorities.Spri.NOW)
-					self._screenCurtainEnabledCheckbox.SetValue(False)
+				screenCurtain.screenCurtain.enable()
 		elif not shouldBeEnabled and currentlyEnabled:
-			vision.handler.terminateProvider(self._screenCurtainProviderInfo)
-			# Update instance reference
-			self._screenCurtainInstance = vision.handler.getProviderInstance(self._screenCurtainProviderInfo)
+			screenCurtain.screenCurtain.disable()
 
 	def _confirmEnableScreenCurtainWithUser(self) -> bool:
 		"""Confirm with the user before enabling Screen Curtain, if configured to do so.
 
 		:return: ``True`` if the Screen Curtain should be enabled; ``False`` otherwise.
 		"""
-		# Import late to avoid circular import
-		from visionEnhancementProviders.screenCurtain import WarnOnLoadDialog, ScreenCurtainProvider
-
-		screenCurtainSettings = ScreenCurtainProvider.getSettings()
-		if not screenCurtainSettings.warnOnLoad:
+		if not self._screenCurtainConfig["warnOnLoad"]:
 			return True
-		with WarnOnLoadDialog(
-			screenCurtainSettingsStorage=screenCurtainSettings,
+		with screenCurtain._screenCurtain.WarnOnLoadDialog(
+			screenCurtainSettingsStorage=self._screenCurtainConfig,
 			parent=self,
 		) as dlg:
 			res = dlg.ShowModal()
 			# WarnOnLoadDialog can change settings, reload them
-			self._screenCurtainWarnOnLoadCheckbox.SetValue(screenCurtainSettings.warnOnLoad)
+			self._screenCurtainWarnOnLoadCheckbox.SetValue(self._screenCurtainConfig["warnOnLoad"])
 			return res == wx.YES
 
 
@@ -6316,10 +6264,10 @@ class NVDASettingsDialog(MultiCategorySettingsDialog):
 			not NvdaSettingsDialogActiveConfigProfile
 			or isinstance(self.currentCategory, GeneralSettingsPanel)
 			or isinstance(self.currentCategory, AddonStorePanel)
-		or isinstance(self.currentCategory, RemoteSettingsPanel)
-		or isinstance(self.currentCategory, LocalCaptionerSettingsPanel)
-		or isinstance(self.currentCategory, MathSettingsPanel)
-		or isinstance(self.currentCategory, PrivacyAndSecuritySettingsPanel)
+			or isinstance(self.currentCategory, RemoteSettingsPanel)
+			or isinstance(self.currentCategory, LocalCaptionerSettingsPanel)
+			or isinstance(self.currentCategory, MathSettingsPanel)
+			or isinstance(self.currentCategory, PrivacyAndSecuritySettingsPanel)
 		):
 			# Translators: The profile name for normal configuration
 			NvdaSettingsDialogActiveConfigProfile = _("normal configuration")

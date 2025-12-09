@@ -473,7 +473,7 @@ class FormattingMarker(NamedTuple):
 		:return: `True` if the element should be reported, `False` otherwise.
 		"""
 		formatConfig = config.conf["documentFormatting"]
-		if key == "invalid-spelling":
+		if key in ("invalid-spelling", "invalid-grammar"):
 			return bool(formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.BRAILLE)
 		return formatConfig["fontAttributeReporting"] & OutputMode.BRAILLE
 
