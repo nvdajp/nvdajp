@@ -196,6 +196,24 @@ source → miscdepsjp → jtalkSync → jtalkPrep
   - フォルダ構造の変更に弱い
   - 長期的な保守性の低下
 
+### 6. patch.exe への依存
+
+- **問題**: ビルドプロセスで `patch.exe`（通常は Git for Windows に含まれる）が必要
+  - `miscDepsJp/include/python-jtalk/lib/Makefile.mak`: `HTS_gstream_ex.c` と `HTS_engine_ex.c` にパッチを適用
+  - `miscDepsJp/include/python-jtalk/all.mak`: `jpcommon_label.c` にパッチを適用
+  - `jptools/devbuild.cmd` と `jptools/certBuild2023.cmd`: `patch -v` で存在チェック
+
+- **影響**:
+  - 外部ツール（Git for Windows）への依存が発生
+  - ビルド環境のセットアップが複雑化
+  - CI環境での依存関係管理が煩雑
+  - パッチファイルの管理と適用処理が分散
+
+- **パッチ適用箇所**:
+  1. `HTS_gstream_ex.patch`: `htsengineapi/lib/HTS_gstream.c` をコピーした `HTS_gstream_ex.c` に適用（関数シグネチャの拡張）
+  2. `HTS_engine_ex.patch`: `htsengineapi/lib/HTS_engine.c` をコピーした `HTS_engine_ex.c` に適用（関数シグネチャの拡張）
+  3. `jpcommon_label.patch`: `libopenjtalk/jpcommon/jpcommon_label.c` に適用（日本語版固有の変更）
+
 ## 改善計画
 
 **重要**: これらの改善は、将来的な x64 移行をスムーズにするためにも重要です。複雑なコピー処理やフォルダ構造への依存が残っていると、x64 対応時にさらに複雑になり、作業量が増加する可能性があります。早い段階で構造を簡素化することで、x64 移行時の作業を大幅に削減できます。
@@ -435,6 +453,17 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 1. `_copy_jtalk_core_files()` と `jtalkSync` のコアファイルコピーを統合
 2. `_copy_jtalk_core_files()` を削除し、`jtalkSync` 経由の1つの経路に統一
 3. 古い `.cmd` スクリプトの削除
+4. **`patch.exe` への依存の排除**:
+   - **方針**: サブモジュールをやめたため、パッチ済みファイルを直接リポジトリに含める（推奨）
+     - ベンダーツリーは既に PR #582 で git subtree merge によりメインリポジトリに統合済み（`vendor-submodules.md` 参照）
+     - サブモジュールを使わないため、元のベンダーリポジトリを参照する必要がない
+     - パッチ済みファイル（`HTS_gstream_ex.c`、`HTS_engine_ex.c`、`jpcommon_label.c`）をリポジトリに直接含めることで、ビルド時のパッチ適用処理が不要になる
+   - **作業内容**:
+     - パッチ済みファイルを適切な場所（`miscDepsJp/include/python-jtalk/lib/`、`miscDepsJp/include/python-jtalk/jpcommon/` など）に配置
+     - `Makefile.mak` と `all.mak` から `patch` コマンド呼び出しを削除し、パッチ済みファイルを直接使用するように変更
+     - `jptools/devbuild.cmd` と `jptools/certBuild2023.cmd` から `patch -v` チェックを削除
+     - パッチファイル（`.patch`）は履歴保持のため残すか、ドキュメント化して削除
+   - **代替案（非推奨）**: Pythonスクリプトでパッチ処理を代替（`difflib` や `unidiff` を使用）する方法もあるが、サブモジュールをやめた現状では不要な複雑さを追加することになる
 
 **検証要件**: リリースビルド、ローカルの署名なしビルド、ローカルのユニットテスト、Actions CI の全てで検証が必要
 
