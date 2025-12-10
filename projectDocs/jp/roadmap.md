@@ -104,29 +104,10 @@
 * [ ] **Phase 1.5: overlay 処理の廃止とコピー処理の削減（x86環境でのリファクタリング）**（優先度：中・Phase 1.4完了後に実施可能）
   * **注**: Phase 1.4の直接的な前提条件ではない。Phase 1.4完了後に実施可能な改善項目。ビルドプロセスの簡素化により、将来のx64対応時の作業量を削減できる。**Phase 1.6、1.7、1.8の前に実施することを推奨**（ビルドプロセスの根本的な変更のため、後続のPhaseに影響を与える可能性がある）。
   * **目的**: ビルドプロセスを簡素化し、x64対応時の作業量を削減。本家版との差分を最小化
-  * **現状の問題点**:
-    * 複数のコピー処理が存在し、混乱を招いている（`_copy_jtalk_core_files()` と `jtalkSync` で重複）
-    * overlay 処理（`miscDepsJp/source` → `source/`）が中間段階として機能しているが、実際には利点がない
-    * コピー処理の段階が2段階（`jtalkSync` → overlay）になっており、複雑
   * **作業内容**:
-    1. **Phase 1.5.1: コピー処理の統合と削減（短期・優先度高）**
-       * `_copy_jtalk_core_files()` と `jtalkSync` のコアファイルコピーを統合
-       * `_copy_jtalk_core_files()` を削除し、`jtalkSync` 経由の1つの経路に統一
-       * 古い `.cmd` スクリプトの削除
-    2. **Phase 1.5.2: overlay 処理の廃止（中期・優先度高）**
-       * `jtalkSync` のコピー先を `miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に直接変更
-       * `miscDepsJp/source` へのコピーを削減し、overlay 処理を廃止
-       * `miscdepsjp` エイリアスを削除（overlay 処理が不要になるため）
-       * 直接コピーでも SCons の依存関係管理により冪等性は保証される
-       * 直接コピーでも `env.Clean()` を配線することでクリーン処理は容易
-  * **利点**:
-    * コピー処理の段階を2段階（`jtalkSync` → overlay）から1段階（直接配置）に削減
-    * overlay 処理自体が不要になり、ビルドプロセスが大幅に簡素化
-    * ビルド時間の短縮
-    * x64対応時にアーキテクチャ別の処理を追加するだけで済む（コピー処理が1箇所に集約）
-    * 本家版との差分を最小化（overlay 処理という独自の仕組みを削除）
-  * **検証要件**: リリースビルド、ローカルの署名なしビルド、ローカルのユニットテスト、Actions CI の全てで検証が必要
-  * **参考**: 詳細は `projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照
+    1. **Phase 1.5.1**: コピー処理の統合と削減（`_copy_jtalk_core_files()` と `jtalkSync` の統合）
+    2. **Phase 1.5.2**: overlay 処理の廃止（`jtalkSync` を直接 `source/` にコピーする方式に変更）
+  * **参考**: 詳細な計画、現状の問題点、作業内容、検証要件は `projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照（Phase 1 = Phase 1.5.1、Phase 2 = Phase 1.5.2に対応）
 
 * [ ] **Phase 1.6: コード品質の改善（x86環境で実施可能）**（優先度：中・Phase 1.4完了後に実施可能）
   * **注**: Phase 1.4の直接的な前提条件ではない。Phase 1.4完了後に実施可能な改善項目。コード品質向上により、将来のx64対応時の作業が容易になる。**Phase 1.5のリファクタリング後のコードを改善するため、Phase 1.5の後に実施することを推奨**。

@@ -205,6 +205,13 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 
 **基本方針**: コピー処理を「統合」するだけでなく、積極的に「削減」し、ビルドプロセスを単純化することを目指します。
 
+**roadmap.mdとの対応関係**:
+
+- このドキュメントのPhase 1とPhase 2は、`roadmap.md`のPhase 1.5（overlay処理の廃止とコピー処理の削減）に対応しています
+  - Phase 1 = roadmap.mdのPhase 1.5.1（コピー処理の統合と削減）
+  - Phase 2 = roadmap.mdのPhase 1.5.2（overlay処理の廃止）
+- Phase 3以降は、roadmap.mdのPhase 1.5の範囲外ですが、長期的な改善として記載しています
+
 **miscDepsJp フォルダと JP overlay 処理の将来**:
 
 - 本家版との差分を最小化する方針（`projectDocs/jp/roadmap.md` 参照）に基づき検討する
@@ -220,6 +227,8 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 
 ### Phase 1: コピー処理の統合と削減（短期・優先度高）
 
+**注**: このPhaseは`roadmap.md`のPhase 1.5.1に対応しています。
+
 - **目標**: 重複するコピー処理を統合し、コピー処理の総数を削減
 - **作業内容**:
   - `_copy_jtalk_core_files()` と `jtalkSync` のコアファイルコピーを統合
@@ -234,6 +243,8 @@ source → miscdepsjp → jtalkSync → jtalkPrep
   - 重複処理が残っていると、x64 対応時に複数箇所を修正する必要がある
 
 ### Phase 2: 中間コピー段階の削減と overlay 処理の廃止（中期・優先度高）
+
+**注**: このPhaseは`roadmap.md`のPhase 1.5.2に対応しています。Phase 1の完了後に実施してください。
 
 - **目標**: `miscDepsJp/source` への中間コピーを削減し、直接 `source/` への配置に変更。overlay 処理自体を廃止することを検討
 - **作業内容**:
