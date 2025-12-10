@@ -65,7 +65,7 @@
 **優先順位の整理**:
 
 * **最重要（Phase 1.4の実現に必須/推奨）**: Phase 1.2（DLLパス構造の統一）、Phase 1.3（libmecab.dllのソースビルド化）、Phase 1.4（jpSmokeTest x86/x64マトリクス実行とCI統合）✅ 完了
-* **ついでに実施可能（Phase 1.4完了後に実施可能）**: Phase 1.4.5（タイプライブラリの上書き廃止）✅ 完了、Phase 1.4.6（.cmdスクリプトの整理）作業開始予定、Phase 1.5（overlay処理の廃止）、Phase 1.6（コード品質の改善）
+* **ついでに実施可能（Phase 1.4完了後に実施可能）**: Phase 1.4.5（タイプライブラリの上書き廃止）✅ 完了、Phase 1.4.6（.cmdスクリプトの整理）✅ 完了、Phase 1.5（overlay処理の廃止）、Phase 1.6（コード品質の改善）
 * **ついでに実施可能（Phase 1.4完了後に実施可能）**: Phase 1.7（CI基盤の更新）
 
 * [x] **Phase 1.0: 開発環境の整備（最優先）** ✅ 完了
@@ -115,7 +115,7 @@
   * **検証要件**: リリースビルド、ローカルの署名なしビルド、Actions CI の全てで検証が必要
   * **理由**: タイプライブラリは本家版でもIDLファイルから生成され、`source/typelibs/`にインストールされるため、`miscDepsJp/source/typelibs/`からの上書きは不要。独立したPRとして実施することで、影響範囲を限定し、検証を容易にする。
 
-* [ ] **Phase 1.4.6: 使用されていない古い`.cmd`スクリプトの削除（独立したPRとして実施）**（優先度：中・Phase 1.4完了後に実施可能・作業開始予定）
+* [x] **Phase 1.4.6: 使用されていない古い`.cmd`スクリプトの削除（独立したPRとして実施）** ✅ 完了
   * **目的**: 使用されていない古い`.cmd`スクリプトを削除し、コードベースを整理。SCons/純Python化方針に整合
   * **背景**:
     * 既にPython版に置き換えられているスクリプトや、`jtalkPrep`で処理されているスクリプトは不要
@@ -124,13 +124,16 @@
     * `devbuild.cmd`: `patch.exe`への依存があり、`nonCertBuild.py`への移行が推奨される
     * CIで使用されている`.cmd`スクリプト（`pack_jtalk_addon.cmd`, `pack_kgs_addon.cmd`, `testMiscDepsJp.cmd`など）は現時点で保持が必要
   * **作業内容**:
-    1. `jptools/`配下の`.cmd`スクリプトを全てリストアップ
-    2. 各スクリプトの使用箇所を確認（grep検索、CI設定、ドキュメント参照など）
-    3. 使用されていないスクリプトを特定
-    4. 使用されていないスクリプトを削除（小さなPR単位で実施）
-    5. ドキュメントの更新（必要に応じて）
+    1. ✅ `jptools/`配下の`.cmd`スクリプトを全てリストアップ
+    2. ✅ 各スクリプトの使用箇所を確認（grep検索、CI設定、ドキュメント参照など）
+    3. ✅ 使用されていないスクリプトを特定
+    4. ✅ 使用されていないスクリプトを削除（合計15個のスクリプトを削除）
+       - Phase 1: Python版に置き換え済み（`nonCertBuild1.cmd`, `nonCertBuild2.cmd`, `nonCertAllBuild.cmd`）
+       - Phase 2: patch.exeへの依存があるスクリプト（`devbuild.cmd`, `devbuild2024.cmd`）
+       - Phase 3: 古いスクリプト（`cleanAndRevert.cmd`, `gitsubup.cmd`, `update_dic.cmd`, `stop_nvda.cmd`, `signed_makensis.cmd`, `signed_output_pack.cmd`, `selfcert_setup.cmd`, `selfcert_scons.cmd`, `selfcert_pack_dist.cmd`, `selfcert_clean.cmd`）
+    5. ✅ ドキュメントの更新（`jptools/.cmd-analysis.md`に分析結果を記録）
     6. **注意**: CIで使用されているスクリプトは現時点で保持。将来的にPython化を検討
-  * **検証要件**: リリースビルド、ローカルの署名なしビルド、Actions CI の全てで検証が必要
+  * **検証要件**: リリースビルド、ローカルの署名なしビルド、Actions CI の全てで検証が必要（検証中）
   * **理由**: 既にPython版に置き換えられているスクリプトや、`jtalkPrep`で処理されているスクリプトは不要。独立したPRとして実施することで、影響範囲を限定し、検証を容易にする。SCons/純Python化方針（`AGENTS.md`参照）に整合。
   * **注意**: 各スクリプトが本当に使用されていないかを十分に確認してから削除すること。Phase 1.5.1の「古い`.cmd`スクリプトの削除」と重複する可能性があるが、独立して実施することで、影響範囲を限定できる。
 

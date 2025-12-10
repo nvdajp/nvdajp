@@ -201,7 +201,7 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 - **問題**: ビルドプロセスで `patch.exe`（通常は Git for Windows に含まれる）が必要
   - `miscDepsJp/include/python-jtalk/lib/Makefile.mak`: `HTS_gstream_ex.c` と `HTS_engine_ex.c` にパッチを適用
   - `miscDepsJp/include/python-jtalk/all.mak`: `jpcommon_label.c` にパッチを適用
-  - `jptools/devbuild.cmd` と `jptools/certBuild2023.cmd`: `patch -v` で存在チェック
+  - `jptools/certBuild2023.cmd`: `patch -v` で存在チェック（`devbuild.cmd`は削除済み、`nonCertBuild.py`で代替）
 
 - **影響**:
   - 外部ツール（Git for Windows）への依存が発生
@@ -461,7 +461,7 @@ source → miscdepsjp → jtalkSync → jtalkPrep
    - **作業内容**:
      - パッチ済みファイルを適切な場所（`miscDepsJp/include/python-jtalk/lib/`、`miscDepsJp/include/python-jtalk/jpcommon/` など）に配置
      - `Makefile.mak` と `all.mak` から `patch` コマンド呼び出しを削除し、パッチ済みファイルを直接使用するように変更
-     - `jptools/devbuild.cmd` と `jptools/certBuild2023.cmd` から `patch -v` チェックを削除
+     - `jptools/certBuild2023.cmd` から `patch -v` チェックを削除（`devbuild.cmd`は既に削除済み）
      - パッチファイル（`.patch`）は履歴保持のため残すか、ドキュメント化して削除
    - **代替案（非推奨）**: Pythonスクリプトでパッチ処理を代替（`difflib` や `unidiff` を使用）する方法もあるが、サブモジュールをやめた現状では不要な複雑さを追加することになる
 
