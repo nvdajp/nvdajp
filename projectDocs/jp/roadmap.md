@@ -101,7 +101,7 @@
     * ⚠️ マトリクス実行（`-Parallel`使用時）は`-SkipOverlay`必須（アーキ別の成果物分離が整うまで）
     * ⚠️ x64環境でのテスト実行は次段階（Phase 2系）で実施予定
 
-* [ ] **Phase 1.4.5: タイプライブラリの上書き廃止（独立したPRとして実施）**（優先度：中・Phase 1.4完了後に実施可能）
+* [x] **Phase 1.4.5: タイプライブラリの上書き廃止（独立したPRとして実施）**（優先度：中・Phase 1.4完了後に実施可能）
   * **目的**: タイプライブラリの上書きを廃止し、本家版のビルドプロセスに統合
   * **背景**:
     * 本家版ではIDLファイルからタイプライブラリを生成し、`source/typelibs/`にインストールする（`nvdaHelper/archBuild_sconscript`参照）
@@ -109,9 +109,9 @@
     * `FlashAccessibility.tlb`, `ServProv.tlb`: 使用箇所が確認できないため、不要の可能性が高い
     * **現状**: `miscDepsJp/source/typelibs/`に存在するが、本家版のビルドプロセスで生成されるため、overlay処理でコピーする必要はない
   * **作業内容**:
-    1. `miscDepsJp/source/typelibs/`フォルダを削除
-    2. overlay処理からタイプライブラリのコピー処理を削除
-    3. 本家版のビルドプロセス（`nvdaHelper/archBuild_sconscript`）で生成されるタイプライブラリが正しく動作することを確認
+    1. ✅ `miscDepsJp/source/typelibs/`フォルダを削除
+    2. ✅ overlay処理からタイプライブラリのコピー処理を削除（フォルダ削除により自動的に停止）
+    3. ✅ 本家版のビルドプロセス（`nvdaHelper/archBuild_sconscript`）で生成されるタイプライブラリが正しく動作することを確認（ローカルビルドで確認済み）
   * **検証要件**: リリースビルド、ローカルの署名なしビルド、Actions CI の全てで検証が必要
   * **理由**: タイプライブラリは本家版でもIDLファイルから生成され、`source/typelibs/`にインストールされるため、`miscDepsJp/source/typelibs/`からの上書きは不要。独立したPRとして実施することで、影響範囲を限定し、検証を容易にする。
 
