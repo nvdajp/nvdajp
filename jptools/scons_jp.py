@@ -88,11 +88,6 @@ def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> in
     if res.returncode != 0:
         return res.returncode
 
-    # Copy JTalk core files (equivalent to copy_jtalk_core_files.cmd)
-    copy_result = _copy_jtalk_core_files(repo_root)
-    if copy_result != 0:
-        return copy_result
-
     # Write/update stamp
     stamp_path = Path(str(target[0]))
     stamp_path.parent.mkdir(parents=True, exist_ok=True)
