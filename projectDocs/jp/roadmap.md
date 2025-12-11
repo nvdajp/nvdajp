@@ -69,19 +69,19 @@
 * **並行で実施可能**: overlay処理の廃止、コード品質の改善
 * **CIに触れるタイミングで実施**: CI基盤の更新
 
-* [x] **タスク 1.0: 開発環境の整備（最優先）** ✅ 完了
+* [x] **開発環境の整備（最優先）** ✅ 完了
   * Python 3.11 x86 で MeCab / JP Braille を `jptools/runJpSmokeTests.ps1` から実行できるローカル環境を整備済み
   * CIに頼らず即時フィードバックを得られるテストループを確立済み
 
-* [x] **タスク 1.1: ビルドシステムの検証と改善** ✅ 完了（.cmd依存削減）
+* [x] **ビルドシステムの検証と改善** ✅ 完了（.cmd依存削減）
   * `scons source` を前提にビルド手順を安定化し、主要 .cmd をPython呼び出しへ置換済み
   * `jptools/nonCertBuild.py` などに集約し、ばらつきを削減済み
 
-* [x] **タスク 1.2: DLLパス構造の統一（x86環境でのリファクタリング）** ✅ 完了
+* [x] **DLLパス構造の統一（x86環境でのリファクタリング）** ✅ 完了
   * x86 DLL を `miscDepsJp/include/python-jtalk/x86/` へ統一し、`jtalkPrep`/`jtalkSync` を新パス対応済み
   * jp smoke test / launcher / 署名ビルドで動作確認済み
 
-* [x] **タスク 1.3: libmecab.dll のソースビルド化（x86環境で先に実施）** ✅ 完了
+* [x] **libmecab.dll のソースビルド化（x86環境で先に実施）** ✅ 完了
   * 目的: バイナリDLLを排除し、ソースビルドへ移行
   * 現状: x86でソースビルドに移行済み。`scons miscdepsjp` / jp smoke test / launcher をローカル成功。CIは最新ラン確認中。リポジトリに長く存在していたバイナリDLLは削除済み。
   * 作業内容（完了）:
