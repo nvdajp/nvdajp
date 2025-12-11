@@ -147,6 +147,8 @@
   * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86/x64双方で検証）
   * 併せて `mecab-dict-index.exe` をリポジトリから除外（.gitignore）し、SConsビルドで欠如時にビルドする運用に統一
 
+**注意 (クリーン時の再配置)**: `scons -c` は overlay でコピーされた日本語版固有ファイル（例: `source/brailleDisplayDrivers/DirectBM.dll`, `source/images/nvdajp*.ico`, `nvdajp_cd.png`）も削除する。必要に応じて `scons miscdepsjp` または通常のビルド（例: `scons source dist launcher`）で再配置すること。
+
 ### ステージ2: ローカル開発環境でのマトリクス実行整備
 
 * [ ] **タスク 2.0: ローカル開発環境でのjpSmokeTest x86/x64マトリクス実行の実現（最優先）**
