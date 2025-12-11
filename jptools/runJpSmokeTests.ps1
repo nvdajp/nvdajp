@@ -61,12 +61,56 @@ Set-Location $repoRoot
 $env:REPO_ROOT = $repoRoot
 Write-Host "REPO_ROOT set to $repoRoot" -ForegroundColor Cyan
 
-if (-not $SkipInstall) {
-    Write-Host "Installing uv dependencies (scons, pytest)..." -ForegroundColor Cyan
-    uv pip install scons pytest
+$pythonExe = Join-Path $repoRoot ".venv\Scripts\python.exe"
+if (-not (Test-Path $pythonExe)) {
+    $pythonExe = "python"
+}
+
+function Test-PytestPresent {
+    $pytestCheck = @'
+import importlib.util, sys
+sys.exit(0 if importlib.util.find_spec("pytest") else 1)
+'@
+    & $pythonExe -c $pytestCheck
+    return $LastExitCode -eq 0
+}
+
+function Install-Packages {
+    param(
+        [string[]]$Packages
+    )
+    Write-Host "Installing dependencies: $($Packages -join ', ')" -ForegroundColor Cyan
+    $installOk = $false
+    try {
+        uv pip install @Packages
+        if ($LastExitCode -eq 0) { $installOk = $true }
+    } catch {
+        Write-Warning "uv is not available; falling back to python -m pip"
+    }
+    if (-not $installOk) {
+        & $pythonExe -m pip install @Packages
+    }
     if ($LastExitCode -ne 0) {
         Write-Error "Failed to install dependencies with exit code $LastExitCode"
         exit $LastExitCode
+    }
+}
+
+$packages = @("pytest")
+if (-not $SkipInstall) {
+    # Always refresh scons/pytest when not skipping install
+    $packages = @("scons", "pytest")
+}
+
+$needsInstall = (-not $SkipInstall) -or (-not (Test-PytestPresent))
+if ($needsInstall) {
+    if ($SkipInstall -and (-not (Test-PytestPresent))) {
+        Write-Host "pytest not found; installing despite -SkipInstall" -ForegroundColor Yellow
+    }
+    Install-Packages -Packages $packages
+    if (-not (Test-PytestPresent)) {
+        Write-Error "pytest is still missing after installation"
+        exit 1
     }
 }
 

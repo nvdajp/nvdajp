@@ -449,7 +449,7 @@ def is_alpha_or_single(s):
 
 
 RE_ASCII_SYMBOLS = re.compile(
-    "^[\,\.\:\;\!\?\@\#\\\$\%\&\*\|\+\-\/\=\<\>\"'\^\`\_\~]+$"
+    r"^[\,\.\:\;\!\?\@\#\\\$\%\&\*\|\+\-\/\=\<\>\"'\^\`\_\~]+$"
 )
 
 
@@ -1244,10 +1244,10 @@ def morphs_to_string(li, inbuf, logwrite):
     return (outbuf, inpos2)
 
 
-RE_MB_ALPHA_NUM_SPACE = re.compile("^[0-9A-Za-z\- ０-９Ａ-Ｚａ-ｚ　]+$")
-RE_ASCII_CHARS = re.compile("^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; ]+$")
-RE_INFORMATION = re.compile("^[A-Za-z0-9\+\@\/\#\$\%\&\*\;\.\<\>\-\_\{\}\[\] ]+$")
-RE_GAIJI = re.compile("^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]+$")
+RE_MB_ALPHA_NUM_SPACE = re.compile(r"^[0-9A-Za-z\- ０-９Ａ-Ｚａ-ｚ　]+$")
+RE_ASCII_CHARS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; ]+$")
+RE_INFORMATION = re.compile(r"^[A-Za-z0-9\+\@\/\#\$\%\&\*\;\.\<\>\-\_\{\}\[\] ]+$")
+RE_GAIJI = re.compile(r"^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]+$")
 RE_KATAKANA = re.compile("^[ァ-ヾ]+$")
 RE_HIRAGANA = re.compile("^[ぁ-ゞ]+$")
 RE_HALF_KATAKANA = re.compile("^[ｦ-ﾟ]+$")  # ff66 .. ff9f

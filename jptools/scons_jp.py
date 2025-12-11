@@ -863,7 +863,7 @@ def register_jp_builders(env: Any) -> None:
                             break
 
                 if not sys_dic.exists():
-                    print(f"jtalkSync: sys.dic still missing after build; no fallback available")
+                    print("jtalkSync: sys.dic still missing after build; no fallback available")
                     return 1
 
         # Copy dictionary files
