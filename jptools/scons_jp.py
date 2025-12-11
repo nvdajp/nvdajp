@@ -455,14 +455,14 @@ def register_jp_builders(env: Any) -> None:
                 import shutil
                 src_prebuilt.parent.mkdir(parents=True, exist_ok=True)
                 shutil.move(str(old_dll_location), str(src_prebuilt))
-                print(f"jtalkPrep: DLL migrated successfully")
+                print("jtalkPrep: DLL migrated successfully")
             except Exception as e:
                 print(f"Warning: failed to migrate DLL: {e}")
-                print(f"  Will attempt to build new DLL")
+                print("  Will attempt to build new DLL")
 
         # If DLL does not exist, attempt to build via nmake
         if not src_prebuilt.exists():
-            print(f"jtalkPrep: DLL not found, attempting to build via nmake...")
+            print("jtalkPrep: DLL not found, attempting to build via nmake...")
             try:
                 from subprocess import run
                 import shutil
@@ -580,18 +580,18 @@ def register_jp_builders(env: Any) -> None:
                 print(f"jtalkPrep: build succeeded, DLL created at {src_prebuilt}")
 
             except FileNotFoundError as e:
-                print(f"ERROR: nmake not found in PATH")
+                print("ERROR: nmake not found in PATH")
                 print(f"  {e}")
-                print(f"  Ensure MSVC environment is configured before running SCons:")
-                print(f"    - CI: use ilammy/msvc-dev-cmd action")
-                print(f"    - Local: run vcvarsall.bat or Visual Studio Developer Command Prompt")
-                print(f"    - certBuild2023.cmd: add vcvarsall.bat call before SCons")
+                print("  Ensure MSVC environment is configured before running SCons:")
+                print("    - CI: use ilammy/msvc-dev-cmd action")
+                print("    - Local: run vcvarsall.bat or Visual Studio Developer Command Prompt")
+                print("    - certBuild2023.cmd: add vcvarsall.bat call before SCons")
                 return 1
             except Exception as e:
                 print(f"ERROR: failed to build vendor DLL: {e}")
                 return 1
         else:
-            print(f"jtalkPrep: using existing DLL (build skipped)")
+            print("jtalkPrep: using existing DLL (build skipped)")
 
         # Copy DLL to payload location
         try:
@@ -774,7 +774,7 @@ def register_jp_builders(env: Any) -> None:
                     if not dicrc.exists():
                         # Use same format as existing dicrc (with spaces around =)
                         dicrc.write_text("config-charset = sjis\n", encoding="utf-8")
-                        print(f"jtalkSync: created dicrc with config-charset = sjis")
+                        print("jtalkSync: created dicrc with config-charset = sjis")
                     # END JP PATCH
 
                     try:
@@ -869,7 +869,7 @@ def register_jp_builders(env: Any) -> None:
         # Copy dictionary files
         try:
             if dic_src.resolve() == dic_dst.resolve():
-                print(f"jtalkSync: dictionary source and destination are identical; skipping copy.")
+                print("jtalkSync: dictionary source and destination are identical; skipping copy.")
             else:
                 dic_files = [
                     "sys.dic",
