@@ -67,12 +67,14 @@ if (-not (Test-Path $pythonExe)) {
 }
 
 function Test-PytestPresent {
-    $pytestCheck = @'
-import importlib.util, sys
-sys.exit(0 if importlib.util.find_spec("pytest") else 1)
-'@
-    & $pythonExe -c $pytestCheck
-    return $LastExitCode -eq 0
+    # Use uv run to check pytest, since we use uv run to execute tests
+    # This ensures we check the same environment that will be used for testing
+    try {
+        uv run python -m pytest --version 2>&1 | Out-Null
+        return $LastExitCode -eq 0
+    } catch {
+        return $false
+    }
 }
 
 function Install-Packages {
