@@ -16,6 +16,16 @@
 
 - コピー処理は「統合」だけでなく「削減」して単純化する
 - Python コードは最初から `source/` に置く形を理想とし、overlay という中間段階を廃止して本家設計に揃える
+- **基本方針との整合性**: この見直しは、以下の基本方針に完全に整合している：
+  - ✅ **本家との差分を最小化**: overlay という独自仕組みを廃止し、本家設計（`source/` に直接配置）に揃える
+  - ✅ **コピー処理の削減**: ビルド時のコピー処理自体が不要になり、ビルドプロセスが大幅に簡素化される
+  - ✅ **小さなPR単位で進める**: Phase 1 で段階的に実施し、各段階で検証を行う
+  - ✅ **安定版リリースの継続を優先**: 段階的な検証により、安定版リリースに影響を与えない範囲で実施できる
+- 最初から `source/synthDrivers/jtalk` にあるべきファイルは、コピーではなく move（または Git で直接配置）してもよい。これにより、ビルド時のコピー処理自体が不要になる可能性がある
+  - ベンダーツリー由来のファイル（`jtalkCore.py`, `mecab.py`, `text2mecab.py` など）: `miscDepsJp/include/python-jtalk` から move または Git で直接配置
+  - 日本語版固有の JTalk ドライバー依存ファイル（`jtalkDir.py`, `jtalkDriver.py`, `translator1.py`, `translator2.py` など）: `miscDepsJp/source/synthDrivers/jtalk` から move または Git で直接配置（これらは日本語版固有のファイルなので、最初から `source/synthDrivers/jtalk` に配置するのが自然）
+- **重要**: `miscDepsJp/include/python-jtalk` と `source/synthDrivers/jtalk` に Python ソースファイルを重複させなくても、NVDA のビルドやユニットテスト、jp smoke test は実行できる。NVDA のソースコードは `source/synthDrivers/jtalk` からインポートしており、テストコードも `source/synthDrivers/jtalk` を参照しているため、`miscDepsJp/include/python-jtalk` に Python ファイルを保持する必要はない
+- **注**: ファイルを move する場合、`miscDepsJp/include/python-jtalk` から `source/synthDrivers/jtalk` に移動すると、ベンダーツリーからファイルがなくなる可能性がある。これは許容されるが、ベンダーツリーの更新や管理方法に影響を与える可能性があるため、注意が必要。ただし、`miscDepsJp/include/python-jtalk` はバイナリや辞書のビルド場所として残る意味がある。また、`miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に移動すると、`miscDepsJp/source` フォルダ自体が不要になる可能性がある
 
 **重要**: これらの改善は、将来的な x64 移行をスムーズにするためにも重要です。複雑な構造を早い段階で簡素化することで、x64 対応時の作業量を大幅に削減できます。詳細は「改善計画」セクションを参照してください。
 
@@ -46,11 +56,20 @@
 miscDepsJp/
 ├── include/          # ベンダーツリー（python-jtalk、htsengineapi、libopenjtalk、libkuraji など）
 │   └── python-jtalk/ # JTalk コアファイル（jtalkCore.py、mecab.py、text2mecab.py など）
+│                     # バイナリビルド場所（x86/libopenjtalk.dll、x64/libopenjtalk.dll など）
+│                     # 辞書ビルド場所（dic/ など）
 ├── source/           # 日本語版固有のソースファイル（overlay のソース）
 │   └── synthDrivers/
 │       └── jtalk/    # JTalk ドライバーと点訳エンジン
 └── jptools/          # テストとビルドツール（一部のツールはリポジトリルートの jptools/ に移動済み）
 ```
+
+**`miscDepsJp` の役割**:
+
+- **ベンダーツリーの保持**: `miscDepsJp/include` にベンダーツリーのソースコードを保持
+- **バイナリのビルド場所**: `jtalkPrep` で DLL をビルドし、`miscDepsJp/include/python-jtalk/x86/` や `miscDepsJp/include/python-jtalk/x64/` に配置
+- **辞書ファイルのビルド場所**: `jtalkSync` で辞書ファイルをビルドし、`miscDepsJp/include/python-jtalk/dic/` に配置
+- **注**: Python ファイルを `source/synthDrivers/jtalk` に move しても、バイナリや辞書のビルド場所としては `miscDepsJp` が残る意味がある。ビルド成果物（DLL、辞書ファイル）は `miscDepsJp` でビルドし、その後 `source/synthDrivers/jtalk` にコピーまたは配置する
 
 ### jptools フォルダ
 
@@ -263,13 +282,23 @@ source → miscdepsjp → jtalkSync → jtalkPrep
   - **テストの依存関係を変更**（優先）: ユニットテストや jp smoke test が最初から `source/synthDrivers/jtalk` に直接依存するように変更
     - `jptools/runJpSmokeTests.ps1` の PYTHONPATH を `source/synthDrivers/jtalk` に変更
     - `miscDepsJp/jptools/jpBrailleRunner.py` などのテストスクリプトが `source/synthDrivers/jtalk` からインポートするように変更
-  - `_copy_jtalk_core_files()` と `jtalkSync` のコアファイルコピーを統合
-  - `_copy_jtalk_core_files()` を削除し、`jtalkSync` 経由の1つの経路に統一
-  - `jtalkSync` のコピー先を直接 `source/synthDrivers/jtalk` に変更（`miscDepsJp/source/synthDrivers/jtalk` への中間コピーをスキップ）
+  - **ファイルの配置方法の検討**: 最初から `source/synthDrivers/jtalk` にあるべきファイルは、コピーではなく move（または Git で直接配置）してもよい。これにより、ビルド時のコピー処理自体が不要になる可能性がある
+    - **ベンダーツリー由来のファイル**（`jtalkCore.py`, `mecab.py`, `text2mecab.py` など）:
+      - `miscDepsJp/include/python-jtalk` から `source/synthDrivers/jtalk` への move を検討
+      - または、最初から `source/synthDrivers/jtalk` に Git で直接配置し、`miscDepsJp/include/python-jtalk` からは削除または参照のみにする
+    - **日本語版固有の JTalk ドライバー依存ファイル**（`jtalkDir.py`, `jtalkDriver.py`, `jtalkPrepare.py`, `translator1.py`, `translator2.py` など）:
+      - `miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` への move を検討
+      - または、最初から `source/synthDrivers/jtalk` に Git で直接配置（これらは日本語版固有のファイルなので、最初から `source/synthDrivers/jtalk` に配置するのが自然）
+    - **注意**:
+      - ベンダーツリー由来のファイルを move する場合、`miscDepsJp/include/python-jtalk` から `source/synthDrivers/jtalk` に移動すると、ベンダーツリーからファイルがなくなる可能性がある。これは許容されるが、ベンダーツリーの更新や管理方法に影響を与える可能性があるため、注意が必要。ベンダーツリーの更新が必要な場合は、`source/synthDrivers/jtalk` に直接反映する必要がある
+      - 日本語版固有のファイルを move する場合、`miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に移動すると、`miscDepsJp/source` フォルダ自体が不要になる可能性がある
+  - `_copy_jtalk_core_files()` と `jtalkSync` のコアファイルコピーを統合（ファイルを move する場合は、この処理自体が不要になる）
+  - `_copy_jtalk_core_files()` を削除し、`jtalkSync` 経由の1つの経路に統一（または、ファイルを move する場合は両方とも削除）
+  - `jtalkSync` のコピー先を直接 `source/synthDrivers/jtalk` に変更（`miscDepsJp/source/synthDrivers/jtalk` への中間コピーをスキップ）。ファイルを move する場合は、`jtalkSync` でのコピー処理自体が不要になる可能性がある
   - `miscDepsJp/source` へのコピーを削減し、overlay 処理を廃止
   - `miscdepsjp` エイリアスを削除（overlay 処理が不要になるため）
-  - 直接コピーでも SCons の依存関係管理により冪等性は保証される
-  - 直接コピーでも `env.Clean()` を配線することでクリーン処理は容易
+  - 直接コピーでも SCons の依存関係管理により冪等性は保証される（ファイルを move する場合は、ビルド時のコピー処理自体が不要になる）
+  - 直接コピーでも `env.Clean()` を配線することでクリーン処理は容易（ファイルを move する場合は、Git で管理されるためクリーン処理は不要）
   - 古い `.cmd` スクリプトの削除（`copy_jtalk_core_files.cmd` は既に `jptools/copy_jtalk_core_files.py` へ置き換え済み）
 - **削減効果**:
   - コピー処理の経路を2つから1つに削減（直接コピー経路を削除）
