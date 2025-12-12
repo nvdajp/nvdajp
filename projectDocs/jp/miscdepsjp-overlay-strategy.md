@@ -4,6 +4,19 @@
 
 このドキュメントは、`miscDepsJp` フォルダと JP overlay 処理の現状の問題点と、長期的な改善方針を整理したものです。
 
+### 基本方針（roadmap.md と整合）
+
+**roadmap.md の原則に従う**:
+
+- 本家との差分を最小化（独自仕組みは段階的に廃止）
+- 小さなPR単位・段階検証・完了定義を明確に
+- 安定版リリースの継続を優先し、問題があれば停止して対処
+
+**改善の方向性**:
+
+- コピー処理は「統合」だけでなく「削減」して単純化する
+- Python コードは最初から `source/` に置く形を理想とし、overlay という中間段階を廃止して本家設計に揃える
+
 **重要**: これらの改善は、将来的な x64 移行をスムーズにするためにも重要です。複雑な構造を早い段階で簡素化することで、x64 対応時の作業量を大幅に削減できます。詳細は「改善計画」セクションを参照してください。
 
 ## 現状の構造
@@ -198,6 +211,23 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 - **影響**:
   - フォルダ構造の変更に弱い
   - 長期的な保守性の低下
+
+### 6. patch.exe への依存
+
+- **問題**: ビルドで `patch.exe`（Git for Windows 同梱）に依存
+  - `miscDepsJp/include/python-jtalk/lib/Makefile.mak`: `HTS_gstream_ex.c`, `HTS_engine_ex.c` へのパッチ
+  - `miscDepsJp/include/python-jtalk/all.mak`: `jpcommon_label.c` へのパッチ
+  - `jptools/certBuild2023.cmd`: `patch -v` で存在チェック（`devbuild.cmd`は削除済み、`nonCertBuild.py`で代替）
+- **影響**:
+  - 外部ツール依存でセットアップが煩雑
+  - CI での依存管理が増える
+  - パッチ適用箇所が分散しメンテが難しい
+
+**パッチ適用箇所**:
+
+1. `HTS_gstream_ex.patch`: `HTS_gstream_ex.c`
+2. `HTS_engine_ex.patch`: `HTS_engine_ex.c`
+3. `jpcommon_label.patch`: `jpcommon_label.c`
 
 ## 改善計画
 
