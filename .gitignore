@@ -45,6 +45,7 @@ user_docs/*/*.ico
 extras/controllerClient/x86/nvdaController.h
 extras/controllerClient/x64
 extras/controllerClient/arm64
+jptools/nvdajpClient/
 source/_buildVersion.py
 output
 testOutput
