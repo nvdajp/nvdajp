@@ -100,9 +100,12 @@ if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN
     echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
     goto onerror
 )
-call scons.bat jtalkPrep miscdepsjp jpCertExtras %SCONSARGS%
+call scons.bat jtalkPrep miscdepsjp %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 call scons.bat source user_docs launcher jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient %SCONSARGS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+rem Sign dist/ files after dist is built (jpCertExtras signs files in dist/ if available)
+call scons.bat jpCertExtras %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 call scons.bat jpVerifySignatures %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror

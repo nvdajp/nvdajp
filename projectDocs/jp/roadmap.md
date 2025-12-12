@@ -97,12 +97,14 @@
 * [x] **不要な古い .cmd スクリプトの削除**
   * SCons/純Python化方針に合わせ、未使用の `.cmd` を整理
 
-* [ ] **タスク 1.5: overlay 処理の廃止とコピー処理の削減（x86環境でのリファクタリング）**（優先度：中）
+* [x] **タスク 1.5: overlay 処理の廃止とコピー処理の削減（x86環境でのリファクタリング）** ✅ 完了（2025-12-12）
   * **注**: ローカルマトリクス整備と並行で進められる改善。ビルドプロセス簡素化によりテスト安定化が楽になる。将来的な x64 移行をスムーズにするためにも重要。
   * **目的**: ビルドプロセスを簡素化し、x64対応時の作業量を削減。本家版との差分を最小化（overlay 処理という独自の仕組みを削除）
   * **基本方針**: コピー処理を「統合」するだけでなく、積極的に「削減」し、ビルドプロセスを単純化することを目指す。Python コードは最初から `source/` に置く形を理想とし、overlay という中間段階を廃止して本家設計に揃える。
-  * **進捗（2025-12-12）**: Phase 1 実装済み（Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動、テスト依存を直接参照に変更）。`scons.bat dist`、`scons.bat launcher`、`jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` がローカル成功。
-  * **注意点**: クリーン時の再配置: `scons -c` は overlay でコピーされた日本語版固有ファイルも削除する。必要に応じて `scons miscdepsjp` または通常のビルドで再配置すること（overlay が廃止されると、この注意点は解消される）
+  * **完了内容**:
+    * **Phase 1 完了**: Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動、テスト依存を直接参照に変更。`scons.bat dist`、`scons.bat launcher`、`jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` がローカル成功。
+    * **Phase 2 完了**: `miscDepsJp/source` の全ファイルを `source/` に移動し、overlay 処理を不要化。`miscdepsjp` エイリアスを削除し、依存関係を `source → jtalkSync → jtalkPrep` に簡素化。`sconstruct` の依存関係を更新し、`jptools/runJpSmokeTests.ps1` を調整済み。
+  * **効果**: overlay 処理が完全に廃止され、ビルドプロセスが大幅に簡素化。`scons -c` で削除されるファイルは `source/` に直接配置されたファイルのみとなり、overlay による再配置の必要がなくなった。
   * **参考**: 詳細（現状の問題点、作業内容の詳細、検証要件、削減効果、x64 移行への影響など）は `projectDocs/jp/miscdepsjp-overlay-strategy.md` の「改善計画」セクション（Phase 1-2）を参照
 
 * [ ] **タスク 1.6: コード品質の改善（x86環境で実施可能）**（優先度：中）
@@ -121,10 +123,8 @@
   * **ローカル環境でテスト済みの変更のみをCIに反映**
 
 * [ ] **タスク 1.8: ユーザー辞書テストの有効化**
-  * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86/x64双方で検証）
+  * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86で検証）
   * 併せて `mecab-dict-index.exe` をリポジトリから除外（.gitignore）し、SConsビルドで欠如時にビルドする運用に統一
-
-**注意 (クリーン時の再配置)**: `scons -c` は overlay でコピーされた日本語版固有ファイル（例: `source/brailleDisplayDrivers/DirectBM.dll`, `source/images/nvdajp*.ico`, `nvdajp_cd.png`）も削除する。必要に応じて `scons miscdepsjp` または通常のビルド（例: `scons source dist launcher`）で再配置すること。
 
 ### ステージ2: ローカル開発環境でのマトリクス実行整備
 
