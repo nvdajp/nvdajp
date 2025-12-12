@@ -279,45 +279,28 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 
 - **目標**: 重複するコピー処理を統合し、コピー処理の総数を削減。テストの依存関係を変更することで、中間コピー段階をスキップして直接 `source/` への配置に移行
 - **作業内容**:
+  - **ファイルの移動**: 最初から `source/synthDrivers/jtalk` にあるべきファイルをコピー元から移動する。これにより、ビルド時のコピー処理自体が不要になる
+    - **ベンダーツリー由来のファイル**（`jtalkCore.py`, `mecab.py`, `text2mecab.py` など）: `miscDepsJp/include/python-jtalk` から `source/synthDrivers/jtalk` に移動
+    - **日本語版固有の JTalk ドライバー依存ファイル**（`jtalkDir.py`, `jtalkDriver.py`, `jtalkPrepare.py`, `translator1.py`, `translator2.py` など）: `miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に移動
   - **テストの依存関係を変更**（優先）: ユニットテストや jp smoke test が最初から `source/synthDrivers/jtalk` に直接依存するように変更
     - `jptools/runJpSmokeTests.ps1` の PYTHONPATH を `source/synthDrivers/jtalk` に変更
     - `miscDepsJp/jptools/jpBrailleRunner.py` などのテストスクリプトが `source/synthDrivers/jtalk` からインポートするように変更
-  - **ファイルの配置方法の検討**: 最初から `source/synthDrivers/jtalk` にあるべきファイルは、コピーではなく move（または Git で直接配置）してもよい。これにより、ビルド時のコピー処理自体が不要になる可能性がある
-    - **ベンダーツリー由来のファイル**（`jtalkCore.py`, `mecab.py`, `text2mecab.py` など）:
-      - `miscDepsJp/include/python-jtalk` から `source/synthDrivers/jtalk` への move を検討
-      - または、最初から `source/synthDrivers/jtalk` に Git で直接配置し、`miscDepsJp/include/python-jtalk` からは削除または参照のみにする
-    - **日本語版固有の JTalk ドライバー依存ファイル**（`jtalkDir.py`, `jtalkDriver.py`, `jtalkPrepare.py`, `translator1.py`, `translator2.py` など）:
-      - `miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` への move を検討
-      - または、最初から `source/synthDrivers/jtalk` に Git で直接配置（これらは日本語版固有のファイルなので、最初から `source/synthDrivers/jtalk` に配置するのが自然）
-    - **注意**:
-      - ベンダーツリー由来のファイルを move する場合、`miscDepsJp/include/python-jtalk` から `source/synthDrivers/jtalk` に移動すると、ベンダーツリーからファイルがなくなる可能性がある。これは許容されるが、ベンダーツリーの更新や管理方法に影響を与える可能性があるため、注意が必要。ベンダーツリーの更新が必要な場合は、`source/synthDrivers/jtalk` に直接反映する必要がある
-      - 日本語版固有のファイルを move する場合、`miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に移動すると、`miscDepsJp/source` フォルダ自体が不要になる可能性がある
-  - `_copy_jtalk_core_files()` と `jtalkSync` のコアファイルコピーを統合（ファイルを move する場合は、この処理自体が不要になる）
-  - `_copy_jtalk_core_files()` を削除し、`jtalkSync` 経由の1つの経路に統一（または、ファイルを move する場合は両方とも削除）
-  - `jtalkSync` のコピー先を直接 `source/synthDrivers/jtalk` に変更（`miscDepsJp/source/synthDrivers/jtalk` への中間コピーをスキップ）。ファイルを move する場合は、`jtalkSync` でのコピー処理自体が不要になる可能性がある
-  - `miscDepsJp/source` へのコピーを削減し、overlay 処理を廃止
-  - `miscdepsjp` エイリアスを削除（overlay 処理が不要になるため）
-  - 直接コピーでも SCons の依存関係管理により冪等性は保証される（ファイルを move する場合は、ビルド時のコピー処理自体が不要になる）
-  - 直接コピーでも `env.Clean()` を配線することでクリーン処理は容易（ファイルを move する場合は、Git で管理されるためクリーン処理は不要）
-  - 古い `.cmd` スクリプトの削除（`copy_jtalk_core_files.cmd` は既に `jptools/copy_jtalk_core_files.py` へ置き換え済み）
+    - ただし辞書やDLLなどビルドが必要なものは miscDepsJP で従来の処理を行い、リポジトリルートの `source/synthDrivers` および `source/synthDrivers/jtalk` にコピーする処理を残す
 - **削減効果**:
-  - コピー処理の経路を2つから1つに削減（直接コピー経路を削除）
-  - コピー処理の実行箇所を1箇所に集約
+  - Python ファイルのコピー処理が不要になる（ファイルを move したため）
+  - 辞書やDLLなどビルドが必要なもののコピー処理は残るが、経路を2つから1つに削減（直接コピー経路を削除）
+  - コピー処理の実行箇所を1箇所に集約（辞書やDLLのコピー処理のみ）
   - コピー処理の段階を2段階（`jtalkSync` → overlay）から1段階（直接配置）に削減
   - overlay 処理自体が不要になり、ビルドプロセスが大幅に簡素化
   - ビルド時間の短縮
 - **x64 移行への影響**:
   - コピー処理が1箇所に集約されていれば、x64 対応時にアーキテクチャ別の処理を追加するだけで済む
   - 重複処理が残っていると、x64 対応時に複数箇所を修正する必要がある
-- **overlay 処理の利点の再評価**:
-  - **冪等性**: `setup_miscdeps_overlay.py` はタイムスタンプとサイズを比較してスキップするだけだが、SCons 自体が依存関係を管理しているため、直接コピーでも冪等性は保証される
-  - **クリーン処理の容易さ**: SConstruct で `env.Clean()` を配線しているが、直接コピーでも同じように配線できる（`_compute_overlay_targets()` と同様のファイルリスト計算を直接コピーでも実装可能）
-  - **結論**: overlay 処理を残すことの利点は実際には存在しないか、または直接コピーでも同じ利点を得られる
-- **既存の実装例**:
-  - `_copy_jtalk_core_files()` は既に直接コピーを実装しており、overlay を経由していない。これは overlay が不要であることの証拠
 - **検証要件**: 上記の「検証要件」セクションを参照。各 Phase の実装後は、これらの環境全てで動作確認を行い、問題が発生した場合は即座に修正する必要があります。
 
 **注**: テストの依存関係を最初に変更することで、`miscDepsJp/source/synthDrivers/jtalk` への中間コピーが不要になり、Phase 1 と Phase 2 を統合して一気に直接コピー方式に移行できます。これにより、コピー処理の削減をより効率的に実施できます。
+
+**注意**: ベンダーツリーの更新が必要な場合は、`source/synthDrivers` からベンダーツリーに書き戻す必要がある。ベンダーツリーの扱いはリファクタリング完了後に再検討する。
 
 ### Phase 2: 依存関係の明確化とエイリアスの統合（中期）
 
