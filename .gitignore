@@ -1,5 +1,3 @@
-source/synthDrivers/jtalk
-source/synthDrivers/nvdajp_jtalk.py
 *.mo
 source/comInterfaces/*.py
 !source/comInterfaces/__init__.py
@@ -10,8 +8,17 @@ build_debug
 dist
 *.dll
 !source/brailleDisplayDrivers/DirectBM.dll
-!miscDepsJp/source/brailleDisplayDrivers/DirectBM.dll
 *.exe
+source/synthDrivers/jtalk/dic/sys.dic
+source/synthDrivers/jtalk/dic/unk.dic
+source/synthDrivers/jtalk/dic/DIC_VERSION
+source/synthDrivers/jtalk/dic/char.bin
+source/synthDrivers/jtalk/dic/left-id.def
+source/synthDrivers/jtalk/dic/pos-id.def
+source/synthDrivers/jtalk/dic/right-id.def
+source/synthDrivers/jtalk/dic/matrix.bin
+source/synthDrivers/jtalk/dic/rewrite.def
+source/synthDrivers/jtalk/dic/rewrite.bin
 *.manifest
 source/synthDrivers/espeak-ng-data
 source/lib

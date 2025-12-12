@@ -40,22 +40,8 @@ def _copy_jtalk_core_files(repo_root: Path) -> int:
 
 
 def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> int:
-    repo_root = Path.cwd()
-    script = repo_root / "jptools" / "setup_miscdeps_overlay.py"
-    # Run the overlay copy script from miscDepsJp directory (historical behavior)
-    misc_root = repo_root / "miscDepsJp"
-    if not script.exists() or not misc_root.exists():
-        # Nothing to do; succeed without error
-        return 0
-    # Execute the script using the same Python interpreter that runs SCons
-    # The script expects cwd=miscDepsJp
-    from subprocess import run
-
-    res = run([sys.executable, str(script)], cwd=str(misc_root))
-    if res.returncode != 0:
-        return res.returncode
-
-    # Write/update stamp
+    # Overlay is no longer required (Phase 2: miscDepsJp/source is empty).
+    # Keep the stamp for compatibility with existing dependencies.
     stamp_path = Path(str(target[0]))
     stamp_path.parent.mkdir(parents=True, exist_ok=True)
     stamp_path.write_text("ok", encoding="utf-8")
@@ -358,13 +344,7 @@ def register_jp_builders(env: Any) -> None:
     env.Command(stamp, [], _run_overlay_and_stamp)
     env.Alias("miscdepsjp", stamp)
     # Ensure `scons -c` removes overlay files as well when cleaning miscdepsjp
-    try:
-        files = _compute_overlay_targets(repo_root)
-        files = _filter_untracked(repo_root, files)
-        if files:
-            env.Clean(stamp, files)
-    except Exception:
-        pass
+    # No Clean wiring needed because overlay is a no-op after Phase 2.
 
 
     # Alias: jp_tests (run JP dictionary tests and JP char description tests)

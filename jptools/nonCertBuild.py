@@ -240,14 +240,7 @@ def _prep_miscdepsjp() -> None:
 
     # Overlay policy no longer removes espeak-data. Keep repo content as-is.
 
-    # Run overlay script with CWD=miscDepsJp, script located in repo-root/jptools
-    try:
-        repo_root = Path(__file__).resolve().parents[1]
-        overlay_script = repo_root / "jptools" / "setup_miscdeps_overlay.py"
-        run_cmd([sys.executable, str(overlay_script)], cwd=Path("miscDepsJp"))
-    except SystemExit:
-        # Propagate normal exit
-        pass
+    # Overlay is no longer required after Phase 2 (miscDepsJp/source is empty); skip.
 
 
 def _activation_candidates() -> list[str]:

@@ -96,6 +96,22 @@ function Install-Packages {
     }
 }
 
+function Ensure-JtalkDic {
+    param(
+        [string]$RepoRoot,
+        [string]$JtalkSource
+    )
+    $charBin = Join-Path $JtalkSource "dic\char.bin"
+    if (-not (Test-Path $charBin)) {
+        Write-Host "JTalk dictionaries not found under $JtalkSource; running scons jtalkSync..." -ForegroundColor Yellow
+        & "$RepoRoot\scons.bat" jtalkSync
+        if ($LastExitCode -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
+            exit $LastExitCode
+        }
+    }
+}
+
 $packages = @("pytest")
 if (-not $SkipInstall) {
     # Always refresh scons/pytest when not skipping install
@@ -145,6 +161,9 @@ if (-not $SkipOverlay) {
 }
 
 $jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
+# Ensure dictionaries are present in source/ even when overlay is skipped
+Ensure-JtalkDic -RepoRoot $repoRoot -JtalkSource $jtalkSource
+
 # jtalkRunner.py is still in miscDepsJp/include/python-jtalk, so add it to PYTHONPATH
 $pythonJtalk = Join-Path $repoRoot "miscDepsJp\include\python-jtalk"
 $env:PYTHONPATH = "$jtalkSource;$pythonJtalk"
