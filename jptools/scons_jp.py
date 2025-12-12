@@ -32,43 +32,10 @@ from typing import Any
 def _copy_jtalk_core_files(repo_root: Path) -> int:
 	"""Copy JTalk core Python files from miscDepsJp/include/python-jtalk to source/synthDrivers/jtalk.
 
-	This replicates the functionality of copy_jtalk_core_files.cmd.
+	This function is now a no-op since files have been moved to source/synthDrivers/jtalk in Phase 1.
+	Kept for backward compatibility with existing callers.
 	"""
-	python_jtalk_dir = repo_root / "miscDepsJp" / "include" / "python-jtalk"
-	jtalk_dest_dir = repo_root / "source" / "synthDrivers" / "jtalk"
-
-	if not python_jtalk_dir.exists():
-		print(f"Error: python-jtalk directory not found: {python_jtalk_dir}")
-		return 1
-
-	if not jtalk_dest_dir.exists():
-		try:
-			jtalk_dest_dir.mkdir(parents=True, exist_ok=True)
-		except Exception as e:
-			print(f"Error: failed to create jtalk destination directory {jtalk_dest_dir}: {e}")
-			return 1
-
-	files_to_copy = [
-		"jtalkCore.py",
-		"mecab.py",
-		"text2mecab.py",
-	]
-
-	import shutil
-	missing_files: list[str] = []
-	for filename in files_to_copy:
-		src = python_jtalk_dir / filename
-		dst = jtalk_dest_dir / filename
-		if src.exists():
-			shutil.copy2(src, dst)
-			print(f"Copied {filename} to {dst}")
-		else:
-			print(f"Error: Source file not found: {src}")
-			missing_files.append(filename)
-
-	if missing_files:
-		return 1
-
+	# Files have been moved to source/synthDrivers/jtalk, so no copying is needed
 	return 0
 
 
@@ -418,7 +385,7 @@ def register_jp_builders(env: Any) -> None:
         - Resolve TARGET_ARCH (default x86)
         - Locate vendor DLL under miscDepsJp/include/python-jtalk[/x86|x64]/libopenjtalk.dll
         - If missing, attempt to build via nmake (requires MSVC environment)
-        - Write payload into miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+        - Write payload into source/synthDrivers/jtalk/libopenjtalk.dll (Phase 1: files moved)
         """
         repo_root = Path.cwd()
         arch = str(env.get("TARGET_ARCH", "x86")).lower()
@@ -435,9 +402,9 @@ def register_jp_builders(env: Any) -> None:
         # all.mak builds DLL to vendor_base/libopenjtalk.dll, then we move it to arch-specific subdirectory
         built_dll = vendor_base / "libopenjtalk.dll"
 
+        # Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
         dst_payload = (
             repo_root
-            / "miscDepsJp"
             / "source"
             / "synthDrivers"
             / "jtalk"
@@ -618,11 +585,12 @@ def register_jp_builders(env: Any) -> None:
     except Exception:
         pass
 
-    # Alias: jtalkSync (build/copy jtalk dictionay and python stubs into source/)
+    # Alias: jtalkSync (build/copy jtalk dictionary and DLLs into source/)
     def _sync_jtalk_assets(target: list[Any], source: list[Any], env: Any) -> int:
         repo_root = Path.cwd()
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
-        jtalk_dir = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk"
+        # Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
+        jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
         dic_src = vendor_base / "dic"
         dic_dst = jtalk_dir / "dic"
         # If vendor dic is missing, fall back to the already-present source dic
@@ -892,18 +860,8 @@ def register_jp_builders(env: Any) -> None:
             print(f"jtalkSync: failed to copy dictionary assets: {e}")
             return 1
 
-        # Copy core python/jtalk files if present
+        # Copy core assets (DLLs only; Python files have been moved to source/synthDrivers/jtalk in Phase 1)
         try:
-            # Copy Python files
-            python_files = [
-                "mecab.py",
-                "text2mecab.py",
-                "jtalkCore.py",
-            ]
-            for name in python_files:
-                src = vendor_base / name
-                if src.exists():
-                    shutil.copy2(src, jtalk_dir / name)
             # Copy libmecab.dll (built from source or fallback to existing)
             arch = str(env.get("TARGET_ARCH", "x86")).lower()
             machine = "x64" if arch in ("x64", "x86_64") else "x86"
@@ -1029,7 +987,7 @@ def register_jp_builders(env: Any) -> None:
         except Exception:
             pass
         # Optional JP DLL payload (only if present)
-        dll_path = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
+        dll_path = repo_root / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
         if dll_path.exists():
             candidates.append(dll_path)
         # Perform signing via upstream signExec

@@ -9,10 +9,13 @@ from os import getcwd
 
 from mecabHarness import tasks
 
-jt_dir = os.path.normpath(
-    os.path.join(getcwd(), "..", "source", "synthDrivers", "jtalk")
-)
-sys.path.append(jt_dir)
+# Use source/synthDrivers/jtalk directly (files moved from miscDepsJp in Phase 1)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# script_dir -> miscDepsJp/jptools
+# ../.. -> repo root
+repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
+jt_dir = os.path.join(repo_root, "source", "synthDrivers", "jtalk")
+sys.path.insert(0, jt_dir)
 import jtalkDir  # type: ignore
 from _nvdajp_unicode import unicode_normalize  # type: ignore
 from mecab import *  # type: ignore

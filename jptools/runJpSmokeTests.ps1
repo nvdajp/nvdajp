@@ -144,9 +144,8 @@ if (-not $SkipOverlay) {
     }
 }
 
-$pythonJtalk = Join-Path $repoRoot "miscDepsJp\include\python-jtalk"
-$jtalkOverlay = Join-Path $repoRoot "miscDepsJp\source\synthDrivers\jtalk"
-$env:PYTHONPATH = "$pythonJtalk;$jtalkOverlay"
+$jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
+$env:PYTHONPATH = "$jtalkSource"
 Write-Host "PYTHONPATH set to $($env:PYTHONPATH)" -ForegroundColor Cyan
 
 # Set max tests environment variable if specified

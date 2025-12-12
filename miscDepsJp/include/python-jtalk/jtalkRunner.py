@@ -50,12 +50,12 @@ if repo_root is None or not os.path.exists(os.path.join(repo_root, "miscDepsJp")
     # ../.. -> miscDepsJp
     # ../.. -> repo root
     repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
-jtalk_dir = JT_DIR = os.path.join(repo_root, "miscDepsJp", "source", "synthDrivers", "jtalk")
-# Prefer the miscDepsJp overlay; fail fast if it's missing.
-# Remove any existing occurrence to ensure JP overlay wins for imports
+jtalk_dir = JT_DIR = os.path.join(repo_root, "source", "synthDrivers", "jtalk")
+# Use source/synthDrivers/jtalk directly (files moved from miscDepsJp in Phase 1)
+# Remove any existing occurrence to ensure correct import path
 if JT_DIR in sys.path:
     sys.path.remove(JT_DIR)
-sys.path.insert(0, JT_DIR)  # nvdajp: ensure JP overlay wins for imports
+sys.path.insert(0, JT_DIR)
 import jtalkPrepare  # type: ignore
 from jtalkCore import *  # type: ignore
 

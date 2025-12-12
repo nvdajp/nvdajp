@@ -27,18 +27,18 @@ open_file = lambda name, mode: open(name, mode, encoding="utf-8")
 # jpBrailleRunner.py is in miscDepsJp/jptools
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # script_dir -> miscDepsJp/jptools
-# ../.. -> repo root (betajp-251206v4)
+# ../.. -> repo root
 repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
 # Verify repo_root contains miscDepsJp
 if not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
     # Fallback: try going up one more level if current calculation is wrong
     repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
-jtalk_dir = os.path.join(repo_root, "miscDepsJp", "source", "synthDrivers", "jtalk")
-# Prefer the miscDepsJp overlay; fail fast if it's missing.
-# Remove any existing occurrence to ensure JP overlay wins for imports
+jtalk_dir = os.path.join(repo_root, "source", "synthDrivers", "jtalk")
+# Use source/synthDrivers/jtalk directly (files moved from miscDepsJp in Phase 1)
+# Remove any existing occurrence to ensure correct import path
 if jtalk_dir in sys.path:
     sys.path.remove(jtalk_dir)
-sys.path.insert(0, jtalk_dir)  # nvdajp: ensure JP overlay wins for imports
+sys.path.insert(0, jtalk_dir)
 import jtalkDir  # type: ignore
 import translator1  # type: ignore
 import translator2  # type: ignore

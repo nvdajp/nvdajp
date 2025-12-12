@@ -10,6 +10,17 @@ import os
 import addonHandler
 import globalVars
 from logHandler import log
+import os
+import sys
+
+# Use source/synthDrivers/jtalk directly (files moved from miscDepsJp in Phase 1)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# script_dir -> miscDepsJp/jptools/jtusrdic
+# ../../.. -> repo root
+repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
+jtalk_dir = os.path.join(repo_root, "source", "synthDrivers", "jtalk")
+if jtalk_dir not in sys.path:
+    sys.path.insert(0, jtalk_dir)
 import jtalkDir
 import codecs
 import sys
