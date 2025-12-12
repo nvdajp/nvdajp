@@ -302,39 +302,45 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 
 **注意**: ベンダーツリーの更新が必要な場合は、`source/synthDrivers` からベンダーツリーに書き戻す必要がある。ベンダーツリーの扱いはリファクタリング完了後に再検討する。
 
+**実施状況（2025-12-12）**:
+
+- Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動し、`_copy_jtalk_core_files()` は no-op 化済み
+- テスト依存を `source/synthDrivers/jtalk` 直接参照に統一（`runJpSmokeTests.ps1` は `miscDepsJp/include/python-jtalk` を `PYTHONPATH` に追加し、`jtalkRunner.py` を参照）
+- `jtalkPrep`/`jtalkSync` は DLL・辞書を直接 `source/synthDrivers/jtalk` へ配置するよう更新
+- 検証結果: `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`、`scons.bat dist --all-cores`、`scons.bat launcher --all-cores` をローカル x86 で成功
+
 ### Phase 2: 依存関係の明確化とエイリアスの統合（中期）
 
 - **目標**: 依存関係を明確にし、エイリアスを統合してビルドプロセスを単純化
 - **作業内容**:
-  - 各エイリアスの役割を明確化
-  - Phase 1 で overlay 処理が廃止され、`miscdepsjp` エイリアスが削除されたため、依存関係の整理とドキュメント化を実施
-  - 依存関係のドキュメント化
-  - エラーメッセージの改善
-- **単純化効果**:
-  - Phase 1 で `miscdepsjp` エイリアスが削除されたため、エイリアスの数を削減し、ビルドプロセスの理解を容易にする
-  - 依存関係の複雑さを削減（`source → miscdepsjp → jtalkSync → jtalkPrep` から `source → jtalkSync → jtalkPrep` に簡素化）
+  - Phase 1 で JTalk 関連の Python ファイルと話者モデルは `source/synthDrivers/jtalk` に移動済み
+  - `miscDepsJp/source` の以下のファイルも `source` に移動して overlay 処理を不要とする
+    - `brailleDisplayDrivers/DirectBM.dll`（点字ディスプレイドライバー。移動は可能だが x86 バイナリである点に注意）
+    - `images/` 配下の画像ファイル（`nvdajp.ico`, `nvdajp_cd.png` など）
+    - `synthDrivers/nvdajp_jtalk.py`（日本語版固有の合成音声ドライバー）
+    - `synthDrivers/jtalk/` 配下の一部ファイル（`_bgthread.py`, `_nvdajp_espeak.py`, `_nvdajp_spellchar.py`, `_nvdajp_unicode.py`, `roma2kana.py` など）
+    - ライセンスファイルなど
+    - `DirectBM.dll` を移動する場合は x86 バイナリであることを明記し、`kgs_addon` のビルドスクリプト（`jptools/scons_jp.py` 内 `kgs_addon` 関連）で期待される配置を崩さないように調整する
+    - `.gitignore` の設定: `DirectBM.dll` は既に Git で管理される設定（`!source/brailleDisplayDrivers/DirectBM.dll`）があるため、移動後も問題なく管理される。移動後は `.gitignore` の 13行目（`!miscDepsJp/source/brailleDisplayDrivers/DirectBM.dll`）を削除し、12行目（`!source/brailleDisplayDrivers/DirectBM.dll`）を維持する
+  - **エラーメッセージの改善**: ビルドエラー時のメッセージを改善し、原因特定を容易にする
+  - **`miscdepsjp` エイリアスの削除準備**: `miscDepsJp/source` が空になったら削除できるように準備
+  - **依存関係の整理とドキュメント化**: 依存関係を更新して文書化
+  - `miscdepsjp` エイリアスを削除し、依存関係を `source → jtalkSync → jtalkPrep` に簡素化できる
 
-### Phase 3: フォルダ構造への依存削減と直接参照の検討（長期）
+### Phase 3: フォルダ構造への依存削減と参照方式の簡素化（長期）
 
-- **目標**: `miscDepsJp` フォルダ構造への依存を削減し、より統合的な方式への移行を検討
+- **前提**: Phase 2 で `miscDepsJp/source` は空にし、overlay/`miscdepsjp` エイリアスを廃止する。以降、`miscDepsJp` に残るのはベンダーツリー（include）とビルド成果物置き場のみ。
+- **目標**: `miscDepsJp/include` への依存を薄型化し、パス解決を共通化して x64 移行時の変更箇所を最小化する
 - **作業内容**:
-  - 環境変数（`REPO_ROOT`）の活用
-  - パス解決の共通ユーティリティ化
-  - 設定ファイルからの取得（将来的に検討）
-  - **直接参照方式の検討**: コピーではなく、`miscDepsJp/include` から直接参照する方式への移行を検討
-    - Python の `sys.path` や `PYTHONPATH` を活用した直接参照
-    - シンボリックリンクの活用（Windows の制約を考慮）
-    - ビルド時のパス解決の改善
-  - **注意**: Phase 2 で overlay 処理が廃止され、`jtalkSync` が直接 `source/` にコピーするようになれば、`miscDepsJp/source` フォルダ自体が不要になる可能性がある
+  - 環境変数 `REPO_ROOT` を用いたパス解決の共通ユーティリティ化（テスト／ビルドスクリプトで共通利用）
+  - 直接参照の検討対象を「辞書・DLL」に限定し、`sys.path`/`PYTHONPATH` やシンボリックリンク活用を将来の選択肢として評価（Python ソースは既に `source/` に集約済み）
+  - 設定ファイル経由の取得は優先度低で「将来検討」とし、まず共通ユーティリティ化で対応
 - **削減効果**:
-  - コピー処理自体を削減または排除する可能性
-  - `miscDepsJp/source` フォルダが不要になれば、フォルダ構造がさらに簡素化される
-  - ビルドプロセスの大幅な単純化
-- **x64 移行への影響**:
-  - フォルダ構造への依存が強いと、x64 対応時のパス変更（例: `x86/`, `x64/` サブディレクトリの追加）が困難になる
-  - 環境変数や共通ユーティリティを使用することで、x64 対応時の変更箇所を最小化できる
-  - 直接参照方式であれば、x64 対応時にパス解決ロジックを変更するだけで済む可能性がある
-  - ロードマップの Phase 1.2（DLL パス構造の統一）と連携して実施することで、x64 対応の前提条件を整備できる
+  - `miscDepsJp/source` 廃止後のフォルダ構造をさらに簡素化し、パス解決ロジックを一元化
+  - x64 移行時のパス変更を最小限にし、辞書・DLL 参照の切替箇所を限定
+- **検証の観点（直接参照を試す場合）**:
+  - jp smoke test / launcher / `scons dist` が成功すること
+  - `kgs_addon` など既存ビルドスクリプトの期待パスを壊さないこと
 
 ### Phase 4: 純 Python 化とビルドプロセスの最終的な単純化（長期）
 
