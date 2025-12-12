@@ -906,13 +906,43 @@ def register_jp_builders(env: Any) -> None:
     env.Alias("jpAddons", [jtalk_addon_stamp, kgs_addon_stamp])
 
     # JP aliases required by certBuild2023.cmd (minimal safe wiring)
-    # 1) Stage controller client artifacts (ensure client root exists)
+    # 1) Stage controller client artifacts (copy from extras/controllerClient to jptools/nvdajpClient)
     def _stage_controller_client(target: list[Any], source: list[Any], env: Any) -> int:
         repo_root = Path.cwd()
         client_root = repo_root / "jptools" / "nvdajpClient"
+        extras_client_dir = repo_root / "extras" / "controllerClient"
         try:
             client_root.mkdir(parents=True, exist_ok=True)
-        except Exception:
+            # Copy files from extras/controllerClient to jptools/nvdajpClient
+            # This mirrors the behavior of buildControllerClient.cmd
+            for arch in ["x86", "x64", "arm64"]:
+                src_arch_dir = extras_client_dir / arch
+                dst_arch_dir = client_root / arch
+                if src_arch_dir.exists():
+                    dst_arch_dir.mkdir(parents=True, exist_ok=True)
+                    # Copy DLL, header, lib, exp files
+                    for pattern in ["*.dll", "*.h", "*.lib", "*.exp", "*.pdb"]:
+                        for src_file in src_arch_dir.glob(pattern):
+                            dst_file = dst_arch_dir / src_file.name
+                            shutil.copy2(src_file, dst_file)
+                            print(f"jpStageControllerClient: copied {src_file.name} to {dst_arch_dir}")
+            # Copy documentation files if they exist
+            for doc_file in ["license.txt", "readme.html", "readmejp.txt"]:
+                src_doc = extras_client_dir / doc_file
+                if src_doc.exists():
+                    dst_doc = client_root / doc_file
+                    shutil.copy2(src_doc, dst_doc)
+                    print(f"jpStageControllerClient: copied {doc_file}")
+            # Copy examples directory if it exists
+            src_examples = extras_client_dir / "examples"
+            if src_examples.exists():
+                dst_examples = client_root / "examples"
+                if dst_examples.exists():
+                    shutil.rmtree(dst_examples)
+                shutil.copytree(src_examples, dst_examples)
+                print(f"jpStageControllerClient: copied examples directory")
+        except Exception as e:
+            print(f"jpStageControllerClient: error: {e}")
             return 1
         stamp_path = Path(str(target[0]))
         stamp_path.parent.mkdir(parents=True, exist_ok=True)
@@ -920,8 +950,19 @@ def register_jp_builders(env: Any) -> None:
         return 0
 
     jp_stage_stamp = env.File("jptools/_state/jp_stage_controller_client.stamp")
-    env.AlwaysBuild(jp_stage_stamp)
-    env.Command(jp_stage_stamp, [], _stage_controller_client)
+    # Depend on extras/controllerClient files to ensure they are built before copying
+    # This makes the copy step run only when source files change
+    extras_client_dir = Path.cwd() / "extras" / "controllerClient"
+    source_files = []
+    for arch in ["x86", "x64", "arm64"]:
+        # Add DLL as dependency (main artifact)
+        dll_path = extras_client_dir / arch / "nvdaControllerClient.dll"
+        if dll_path.exists() or not source_files:  # Include at least one file per arch for dependency tracking
+            source_files.append(env.File(str(dll_path)))
+    # If no files exist yet, use empty list (will be created on first run)
+    if not source_files:
+        env.AlwaysBuild(jp_stage_stamp)
+    env.Command(jp_stage_stamp, source_files, _stage_controller_client)
     env.Alias("jpStageControllerClient", jp_stage_stamp)
 
     # 2) JP controller client zip (re-export existing alias for compatibility)
