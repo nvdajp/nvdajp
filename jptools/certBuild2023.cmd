@@ -102,10 +102,14 @@ if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN
 )
 call scons.bat jtalkPrep miscdepsjp %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-call scons.bat source user_docs launcher jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient %SCONSARGS%
+rem Build dist first (source and user_docs create dist/)
+call scons.bat source user_docs %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-rem Sign dist/ files after dist is built (jpCertExtras signs files in dist/ if available)
+rem Sign dist/ files before launcher is built (so launcher includes signed DLLs)
 call scons.bat jpCertExtras %SCONSARGS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+rem Build launcher with signed DLLs from dist/
+call scons.bat launcher jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 call scons.bat jpVerifySignatures %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
