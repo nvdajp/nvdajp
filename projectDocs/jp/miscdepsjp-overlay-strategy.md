@@ -323,9 +323,15 @@ source → miscdepsjp → jtalkSync → jtalkPrep
     - `DirectBM.dll` を移動する場合は x86 バイナリであることを明記し、`kgs_addon` のビルドスクリプト（`jptools/scons_jp.py` 内 `kgs_addon` 関連）で期待される配置を崩さないように調整する
     - `.gitignore` の設定: `DirectBM.dll` は既に Git で管理される設定（`!source/brailleDisplayDrivers/DirectBM.dll`）があるため、移動後も問題なく管理される。移動後は `.gitignore` の 13行目（`!miscDepsJp/source/brailleDisplayDrivers/DirectBM.dll`）を削除し、12行目（`!source/brailleDisplayDrivers/DirectBM.dll`）を維持する
   - **エラーメッセージの改善**: ビルドエラー時のメッセージを改善し、原因特定を容易にする
-  - **`miscdepsjp` エイリアスの削除準備**: `miscDepsJp/source` が空になったら削除できるように準備
+  - **`miscdepsjp` エイリアスの削除**: `miscDepsJp/source` が空になったため、エイリアスを削除し、依存関係を `source → jtalkSync → jtalkPrep` に簡素化
   - **依存関係の整理とドキュメント化**: 依存関係を更新して文書化
-  - `miscdepsjp` エイリアスを削除し、依存関係を `source → jtalkSync → jtalkPrep` に簡素化できる
+
+**実施状況（2025-12-12）**:
+
+- `miscDepsJp/source` の全ファイルを `source/` に移動し、overlay 処理を不要化
+- `miscdepsjp` エイリアスを削除し、`sconstruct` の依存関係を `sourceDir → jtalkSync`、`pot → jtalkSync` に変更
+- `jptools/runJpSmokeTests.ps1` の `miscdepsjp` 呼び出しを削除し、`jtalkSync` に変更
+- 依存関係チェーンを `source → jtalkSync → jtalkPrep` に簡素化
 
 ### Phase 3: フォルダ構造への依存削減と参照方式の簡素化（長期）
 

@@ -338,13 +338,7 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
 def register_jp_builders(env: Any) -> None:
     """Register JP-specific aliases without affecting upstream targets."""
     repo_root = Path.cwd()
-    # Alias: miscdepsjp (overlay stamp)
-    stamp = env.File("miscDepsJp/_state/overlay.stamp")
-    env.AlwaysBuild(stamp)
-    env.Command(stamp, [], _run_overlay_and_stamp)
-    env.Alias("miscdepsjp", stamp)
-    # Ensure `scons -c` removes overlay files as well when cleaning miscdepsjp
-    # No Clean wiring needed because overlay is a no-op after Phase 2.
+    # miscdepsjp alias removed in Phase 2 (miscDepsJp/source is empty, overlay is no-op)
 
 
     # Alias: jp_tests (run JP dictionary tests and JP char description tests)
@@ -558,12 +552,6 @@ def register_jp_builders(env: Any) -> None:
     env.AlwaysBuild(jtalk_prep_stamp)
     env.Command(jtalk_prep_stamp, [], _ensure_jtalk_payload)
     env.Alias("jtalkPrep", jtalk_prep_stamp)
-
-    # Ensure overlay runs after jtalkPrep so fallback payload is included
-    try:
-        env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkPrep"))
-    except Exception:
-        pass
 
     # Alias: jtalkSync (build/copy jtalk dictionary and DLLs into source/)
     def _sync_jtalk_assets(target: list[Any], source: list[Any], env: Any) -> int:
@@ -890,15 +878,11 @@ def register_jp_builders(env: Any) -> None:
     env.Command(jtalk_sync_stamp, [jtalk_prep_stamp], _sync_jtalk_assets)
     env.Alias("jtalkSync", jtalk_sync_stamp)
 
-    try:
-        env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkSync"))
-    except Exception:
-        pass
-
     # Note: Dependencies are already established in sconstruct:
-    #   - sourceDir -> miscdepsjp (L403)
+    #   - sourceDir -> jtalkSync (L401)
+    #   - pot -> jtalkSync (L724)
     #   - dist -> sourceDir (L567, dist depends on sourceDir in NVDADist)
-    # This creates the dependency chain: dist -> sourceDir -> miscdepsjp -> jtalkPrep
+    # This creates the dependency chain: dist -> sourceDir -> jtalkSync -> jtalkPrep
     # No additional wiring needed here; using Dir/target objects (not Alias) is more robust.
 
 

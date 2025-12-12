@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     1. Optionally installs the minimal tooling (uv pip install scons pytest).
-    2. Optionally runs "scons.bat miscdepsjp" to prepare the overlay.
+    2. Optionally runs "scons.bat jtalkSync" to prepare JTalk assets (DLLs and dictionaries).
     3. Sets PYTHONPATH so that python-jtalk + source/synthDrivers/jtalk are importable.
     4. Invokes "uv run python -m pytest miscDepsJp/jptools/test.py -k 'JpBrailleTests or JtalkTests'".
 
@@ -133,30 +133,24 @@ if ($needsInstall) {
 if (-not $SkipOverlay) {
     # In CI, check cache first to avoid unnecessary builds
     if ($isCI) {
-        $dllPath = Join-Path $repoRoot "miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll"
+        $dllPath = Join-Path $repoRoot "source\synthDrivers\jtalk\libopenjtalk.dll"
         if (Test-Path $dllPath) {
-            Write-Host "JTalk DLL found in cache, skipping jtalkPrep" -ForegroundColor Green
+            Write-Host "JTalk DLL found in cache, skipping jtalkSync" -ForegroundColor Green
         } else {
-            Write-Host "JTalk DLL not found in cache, running jtalkPrep..." -ForegroundColor Yellow
-            & "$repoRoot\scons.bat" jtalkPrep
+            Write-Host "JTalk DLL not found in cache, running jtalkSync..." -ForegroundColor Yellow
+            & "$repoRoot\scons.bat" jtalkSync
             if ($LastExitCode -ne 0) {
-                Write-Error "Failed to run scons jtalkPrep with exit code $LastExitCode"
+                Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
                 exit $LastExitCode
             }
         }
     } else {
-        Write-Host "Preparing JTalk DLL via scons jtalkPrep..." -ForegroundColor Cyan
-        & "$repoRoot\scons.bat" jtalkPrep
+        Write-Host "Preparing JTalk assets via scons jtalkSync..." -ForegroundColor Cyan
+        & "$repoRoot\scons.bat" jtalkSync
         if ($LastExitCode -ne 0) {
-            Write-Error "Failed to run scons jtalkPrep with exit code $LastExitCode"
+            Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
             exit $LastExitCode
         }
-    }
-    Write-Host "Preparing miscDeps overlay via scons..." -ForegroundColor Cyan
-    & "$repoRoot\scons.bat" miscdepsjp
-    if ($LastExitCode -ne 0) {
-        Write-Error "Failed to run scons miscdepsjp with exit code $LastExitCode"
-        exit $LastExitCode
     }
 }
 
