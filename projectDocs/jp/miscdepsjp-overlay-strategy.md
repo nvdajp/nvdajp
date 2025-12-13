@@ -4,7 +4,7 @@
 
 このドキュメントは、`miscDepsJp` フォルダの現状の問題点と、長期的な改善方針を整理したものです。
 
-**注**: JP overlay 処理は Phase 2 で廃止されました（2025-12-12）。日本語版固有ファイルは `source/` に直接配置されています。
+**注**: 多くの日本語版固有ファイルは `source/` に直接配置されています。
 
 ### 基本方針（roadmap.md と整合）
 
@@ -203,7 +203,7 @@ source → jtalkSync → jtalkPrep
 
 **実施状況（2025-12-12）**:
 
-- Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動し、`_copy_jtalk_core_files()` は no-op 化済み
+- Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動し、`copy_jtalk_core_files.py` は削除済み（Phase 1完了後、不要になったため）
 - テスト依存を `source/synthDrivers/jtalk` 直接参照に統一（`runJpSmokeTests.ps1` は `miscDepsJp/include/python-jtalk` を `PYTHONPATH` に追加し、`jtalkRunner.py` を参照）
 - `jtalkPrep`/`jtalkSync` は DLL・辞書を直接 `source/synthDrivers/jtalk` へ配置するよう更新
 - 検証結果: `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipJtalkSync`、`scons.bat dist --all-cores`、`scons.bat launcher --all-cores` をローカル x86 で成功
@@ -253,7 +253,7 @@ source → jtalkSync → jtalkPrep
 
 - **目標**: `.cmd` スクリプトを完全に Python 化し、ビルドプロセスを最終的に単純化
 - **作業内容**:
-  - `copy_jtalk_core_files.cmd` の Python 化（既に `_copy_jtalk_core_files()` として実装済み）
+  - 残存する `.cmd` スクリプトの削除（`copy_jtalk_core_files.py` は Phase 1完了後、削除済み）
   - 残存する `.cmd` スクリプトの削除
   - nmake 依存の削減（将来的に検討）
   - ビルドプロセスの最終的な見直しと単純化

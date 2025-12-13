@@ -100,9 +100,9 @@
 
 ### ビルド時の処理
 
-* `jptools/scons_jp.py` の `_run_overlay_and_stamp()` 関数で、`miscdepsjp` エイリアス実行時に `_copy_jtalk_core_files()` が呼ばれる
-* これにより、必要なPythonモジュールが `source/synthDrivers/jtalk/` にコピーされる
-* `sconstruct` で `env.Depends(sourceDir, env.Alias("miscdepsjp"))` により、`source` ビルド前に自動実行される
+* Phase 2完了後（2025-12-12）、オーバーレイ処理は廃止されました
+* 日本語版固有ファイルは `source/` に直接配置されています
+* `sconstruct` で `env.Depends(sourceDir, env.Alias("jtalkSync"))` により、`source` ビルド前に `jtalkSync` が自動実行されます
 
 ## テストコードの状況
 
@@ -178,7 +178,6 @@ py jpBrailleRunner.py
 
 * **ビルド**:
   * `jptools/scons_jp.py` (SCons エイリアス定義)
-  * `miscDepsJp/jptools/copy_jtalk_core_files.cmd` (ファイルコピー)
 
 ## 参考資料
 

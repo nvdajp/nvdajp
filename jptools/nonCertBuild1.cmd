@@ -6,13 +6,8 @@ rem This avoids duplicate builds and aligns with vendor-submodules.md policy.
 call jptools\check_vs_version.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-rem Copy JTalk core files only (no build - handled by scons jtalkPrep)
-rem Use Python script instead of .cmd script
-uv run python jptools/copy_jtalk_core_files.py
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
-rem Setup overlay (no build - handled by scons miscdepsjp)
-call jptools\setupMiscDepsJp.cmd
+rem Copy JTalk core files removed (Phase 1: files moved to source/synthDrivers/jtalk)
+rem Setup overlay removed (Phase 2: overlay processing removed)
 
 exit /b 0
 

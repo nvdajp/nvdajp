@@ -62,23 +62,6 @@
 
 ## 用語集
 
-### JP オーバレイ（JP overlay）
-
-* **定義**: `miscDepsJp/source` 配下のファイルを、リポジトリ直下の `source/` にコピーして重ねる処理。
-  * 実行スクリプト: `jptools/setup_miscdeps_overlay.py`（実行時の作業ディレクトリは `miscDepsJp/`）。
-* **実行方法**:
-  * `scons source` 実行時に、SCons が `miscdepsjp` エイリアスを依存として自動実行（`sconstruct` に設定）。
-  * `miscdepsjp` エイリアスの明示実行でも可。
-* **性質**:
-  * 冪等（同じファイルを繰り返し重ねても破綻しない）。
-  * 日本語版のビルドでは前提となる処理（無効化すると正しくビルドできない）。
-  * 現在は特別な除外は設けず、`miscDepsJp/source` の内容をそのまま重ねます（ポリシーとして不要なファイルは配置しない）。
-* **クリーン**:
-  * `scons -c`（クリーン）で、オーバレイで `source/` にコピーしたファイルも削除されるよう Clean を配線済み。
-  * 元の英語版ファイルへ「戻す」場合は、`git checkout -- source/<path>` など VCS 操作で復元する。
-
-**現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
-
 ### ベンダーツリー（Vendor Tree）
 
 * **定義**: 外部リポジトリから取り込んだコードを保持するディレクトリ。
@@ -89,8 +72,9 @@
 ### SCons ターゲット
 
 * **`scons jtalkPrep`**: JTalk DLLのビルドとペイロードへの配置を行う。DLLが存在する場合は再ビルドをスキップ。
-* **`scons miscdepsjp`**: 日本語版固有のファイルを `source/` ディレクトリにオーバーレイする。`jtalkPrep` に依存。
-* **`scons source`**: NVDA本体のビルド。`miscdepsjp` が自動的に実行される。
+* **`scons jtalkSync`**: 辞書ファイルのビルドとコピーを行う。`jtalkPrep` に依存。
+* **`scons source`**: NVDA本体のビルド。`jtalkSync` が自動的に実行される。
+* **`scons -c`**: ビルド成果物をクリーンアップ。`jtalkSync` で生成されるファイルも削除されます。
 
 詳細は `projectDocs/jp/vendor-submodules.md` を参照してください。
 

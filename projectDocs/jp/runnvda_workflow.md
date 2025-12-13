@@ -10,49 +10,33 @@
 
 ## 前提条件
 
-- `miscDepsJp/include/python-jtalk/mecab.py` を編集
-- `source/synthDrivers/jtalk/mecab.py` に変更を反映する必要がある
+- 多くの日本語版固有ファイルは `source/` に直接配置されています
+- `source/synthDrivers/jtalk/mecab.py` を直接編集します
 
 ## ワークフロー
 
 ### 1. mecab.py を編集
 
 ```powershell
-# miscDepsJp/include/python-jtalk/mecab.py を編集
-code miscDepsJp/include/python-jtalk/mecab.py
+# source/synthDrivers/jtalk/mecab.py を直接編集
+code source/synthDrivers/jtalk/mecab.py
 ```
 
-### 2. overlay を実行して source にコピー
-
-```powershell
-# scons miscdepsjp を実行
-# これにより以下が実行される:
-# - miscDepsJp/source から source への overlay コピー
-# - miscDepsJp/include/python-jtalk から source/synthDrivers/jtalk へのコピー
-#   (jtalkCore.py, mecab.py, text2mecab.py)
-uv run scons miscdepsjp
-```
-
-### 3. runnvda.bat でテスト
+### 2. runnvda.bat でテスト
 
 ```powershell
 # NVDA を起動してテスト
 .\runnvda.bat
 ```
 
-### 4. ログを確認
+### 3. ログを確認
 
 NVDA のログは通常 `%APPDATA%\nvda\nvda.log` に出力されます。
 
 ## 注意事項
 
-- `mecab.py` を編集したら、必ず `scons miscdepsjp` を実行して `source/synthDrivers/jtalk/mecab.py` を更新する必要があります
-- `scons miscdepsjp` は `jtalkPrep` に依存しているため、`libopenjtalk.dll` が `miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll` に存在する必要があります
-- `scons miscdepsjp` は比較的高速に実行されます（Python ファイルのコピーのみ）
-
-## 高速化のヒント
-
-`mecab.py` の変更が小さい場合、直接 `source/synthDrivers/jtalk/mecab.py` を編集して `runnvda.bat` でテストすることも可能ですが、最終的には `miscDepsJp/include/python-jtalk/mecab.py` に反映する必要があります。
+- `source/synthDrivers/jtalk/mecab.py` を直接編集します（Git 管理も `source/` 配下で行われます）
+- `source/synthDrivers/jtalk/libopenjtalk.dll` や `libmecab.dll` が必要な場合は、`scons jtalkSync` を実行してください
 
 ## runJpSmokeTests.ps1 を使ったテスト
 

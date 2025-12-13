@@ -1,21 +1,19 @@
 """
 Minimal JP-specific SCons helpers.
 
-Goals (Step 1):
+Goals:
 - Provide opt-in aliases that wrap existing pure-Python tools, without
   changing upstream targets or default build graph.
 - Keep differences isolated under jptools/ and guard usage via aliases.
 
-Terminology:
-- "JP overlay": Copy of files from ``miscDepsJp/source`` into the repository
-  ``source`` tree, executed by ``jptools/setup_miscdeps_overlay.py`` with
-  CWD=``miscDepsJp``. The overlay is idempotent and required for JP builds.
-  Cleaning (``scons -c``) removes the overlaid files that correspond to
-  ``miscDepsJp/source`` (see Clean wiring below).
+Note: Phase 2 (2025-12-12) completed - overlay processing has been removed.
+Japanese-specific files are now directly placed in the ``source/`` tree.
 
 Aliases added:
-- miscdepsjp: Runs jptools/setup_miscdeps_overlay.py and writes a stamp file.
+- jtalkPrep: Builds JTalk DLL and places it in source/synthDrivers/jtalk/.
+- jtalkSync: Builds MeCab dictionary and copies DLLs to source/synthDrivers/jtalk/.
 - controllerClient: Builds NVDA controller client zip using pack_controller_client.py.
+- jp_tests: Runs JP dictionary tests and JP char description tests.
 
 These are intentionally light-weight and safe; wiring them into other
 targets can be done in later phases when stable.
@@ -28,24 +26,6 @@ from pathlib import Path
 import shutil
 from typing import Any
 
-
-def _copy_jtalk_core_files(repo_root: Path) -> int:
-	"""Copy JTalk core Python files from miscDepsJp/include/python-jtalk to source/synthDrivers/jtalk.
-
-	This function is now a no-op since files have been moved to source/synthDrivers/jtalk in Phase 1.
-	Kept for backward compatibility with existing callers.
-	"""
-	# Files have been moved to source/synthDrivers/jtalk, so no copying is needed
-	return 0
-
-
-def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> int:
-    # Overlay is no longer required (Phase 2: miscDepsJp/source is empty).
-    # Keep the stamp for compatibility with existing dependencies.
-    stamp_path = Path(str(target[0]))
-    stamp_path.parent.mkdir(parents=True, exist_ok=True)
-    stamp_path.write_text("ok", encoding="utf-8")
-    return 0
 
 
 def _pack_controller_client(target: list[Any], source: list[Any], env: Any) -> int:
@@ -414,7 +394,7 @@ def register_jp_builders(env: Any) -> None:
                     return 1
 
                 # Copy vendor files from miscDepsJp/include into python-jtalk
-                # (as done in copy_jtalk_core_files.cmd)
+                # (Phase 1: files moved to source/synthDrivers/jtalk)
                 misc_include = repo_root / "miscDepsJp" / "include"
                 hts_src = misc_include / "htsengineapi"
                 hts_dst = build_dir / "htsengineapi"

@@ -65,7 +65,7 @@
 ### 現在の実装状況
 
 * **純 Python 化の進捗**
-  * `copy_jtalk_core_files.cmd` → `jptools/copy_jtalk_core_files.py` への置き換えは完了済み
+  * `copy_jtalk_core_files.py` は Phase 1完了後、削除済み（ファイルは `source/synthDrivers/jtalk` に直接配置されているため不要）
   * nmake は現在も使用中（内部実装の詳細として許容）
   * 長期的な改善方針については `projectDocs/jp/miscdepsjp-overlay-strategy.md` の Phase 4 を参照
 
@@ -136,3 +136,22 @@ scons jtalkSync
 # このブランチは x86 がデフォルト
 # x64 が必要な場合は TARGET_ARCH=x64 を指定（別ブランチ）
 ```
+
+### クリーンアップ（scons -c）
+
+`jtalkSync` で生成されるファイルは、`scons -c` で自動的に削除されます：
+
+```powershell
+# すべてのビルド成果物をクリーンアップ
+scons -c
+
+# jtalkSync 関連のファイルのみクリーンアップ
+scons -c jtalkSync
+```
+
+**削除されるファイル**:
+* `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/mecab-dict-index.exe`
+* `source/synthDrivers/jtalk/libmecab.dll`
+* `source/synthDrivers/jtalk/libopenjtalk.dll`
+
+**注意**: ファイルがロックされている場合（NVDA やデバッガーが実行中など）、削除に失敗することがあります。その場合は、該当プロセスを終了してから再実行してください。
