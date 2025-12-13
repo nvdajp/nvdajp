@@ -21,6 +21,9 @@ echo PUBLISHER is %PUBLISHER%
 if "%RELEASE%"=="" set RELEASE=1
 echo RELEASE is %RELEASE%
 
+rem Set Python UTF-8 mode for all Python commands (needed for JP tests and smoke tests)
+set PYTHONUTF8=1
+
 rem Timestamp server (override via env if needed)
 if defined TIMESERVER if not defined TIMESTAMP_URL set TIMESTAMP_URL=%TIMESERVER%
 if not defined TIMESTAMP_URL set TIMESTAMP_URL=http://timestamp.digicert.com
@@ -100,14 +103,26 @@ if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN
     echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
     goto onerror
 )
-call scons.bat jtalkPrep miscdepsjp jpCertExtras %SCONSARGS%
+call scons.bat jtalkPrep jtalkSync %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-call scons.bat source user_docs launcher jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient %SCONSARGS%
+rem Run JP smoke tests (JpBrailleTests and JtalkTests) right after jtalkSync prepares DLLs and dictionaries
+powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
+@if not "%ERRORLEVEL%"=="0" goto onerror
+rem Build dist first (source and user_docs are prerequisites for dist)
+call scons.bat source user_docs dist %SCONSARGS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+rem Sign dist/ files before launcher is built (so launcher includes signed DLLs)
+call scons.bat jpCertExtras %SCONSARGS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+rem Build launcher with signed DLLs from dist/
+call scons.bat launcher %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 call scons.bat jpVerifySignatures %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-
-set PYTHONUTF8=1
+rem Build JP addons and controller client (independent from launcher)
+call scons.bat jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient %SCONSARGS%
+@if not "%ERRORLEVEL%"=="0" goto onerror
+rem Run JP tests (dictionary and char description tests)
 call scons.bat jp_tests %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 

@@ -396,9 +396,9 @@ try:
     # Always register JP builders in this repo; miscDepsJp overlay is required
     # for a correct build layout regardless of publisher.
     scons_jp.register_jp_builders(env)
-    # Ensure miscDepsJp overlay runs before building source artifacts so that
+    # Ensure jtalkSync runs before building source artifacts so that
     # "scons source" is self-contained.
-    env.Depends(sourceDir, env.Alias("miscdepsjp"))
+    env.Depends(sourceDir, env.Alias("jtalkSync"))
 except Exception:
     # Never fail the build if JP helpers are unavailable.
     pass
@@ -718,10 +718,10 @@ potSourceFiles = [
 
 pot = env.Command(outputDir.File("nvda.pot"), potSourceFiles, makePot)
 
-# JP: Ensure overlay exists before generating pot (translation template)
+# JP: Ensure jtalkSync runs before generating pot (translation template)
 try:
 	# Even if the alias is empty in non-JP contexts, this is safe.
-	env.Depends(pot, env.Alias("miscdepsjp"))
+	env.Depends(pot, env.Alias("jtalkSync"))
 except Exception:
 	pass
 

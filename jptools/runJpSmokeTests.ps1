@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     1. Optionally installs the minimal tooling (uv pip install scons pytest).
-    2. Optionally runs "scons.bat miscdepsjp" to prepare the overlay.
+    2. Optionally runs "scons.bat jtalkSync" to prepare JTalk assets (DLLs and dictionaries).
     3. Sets PYTHONPATH so that python-jtalk + source/synthDrivers/jtalk are importable.
     4. Invokes "uv run python -m pytest miscDepsJp/jptools/test.py -k 'JpBrailleTests or JtalkTests'".
 
@@ -67,12 +67,14 @@ if (-not (Test-Path $pythonExe)) {
 }
 
 function Test-PytestPresent {
-    $pytestCheck = @'
-import importlib.util, sys
-sys.exit(0 if importlib.util.find_spec("pytest") else 1)
-'@
-    & $pythonExe -c $pytestCheck
-    return $LastExitCode -eq 0
+    # Use uv run to check pytest, since we use uv run to execute tests
+    # This ensures we check the same environment that will be used for testing
+    try {
+        uv run python -m pytest --version 2>&1 | Out-Null
+        return $LastExitCode -eq 0
+    } catch {
+        return $false
+    }
 }
 
 function Install-Packages {
@@ -93,6 +95,22 @@ function Install-Packages {
     if ($LastExitCode -ne 0) {
         Write-Error "Failed to install dependencies with exit code $LastExitCode"
         exit $LastExitCode
+    }
+}
+
+function Ensure-JtalkDic {
+    param(
+        [string]$RepoRoot,
+        [string]$JtalkSource
+    )
+    $charBin = Join-Path $JtalkSource "dic\char.bin"
+    if (-not (Test-Path $charBin)) {
+        Write-Host "JTalk dictionaries not found under $JtalkSource; running scons jtalkSync..." -ForegroundColor Yellow
+        & "$RepoRoot\scons.bat" jtalkSync
+        if ($LastExitCode -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
+            exit $LastExitCode
+        }
     }
 }
 
@@ -117,36 +135,34 @@ if ($needsInstall) {
 if (-not $SkipOverlay) {
     # In CI, check cache first to avoid unnecessary builds
     if ($isCI) {
-        $dllPath = Join-Path $repoRoot "miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll"
+        $dllPath = Join-Path $repoRoot "source\synthDrivers\jtalk\libopenjtalk.dll"
         if (Test-Path $dllPath) {
-            Write-Host "JTalk DLL found in cache, skipping jtalkPrep" -ForegroundColor Green
+            Write-Host "JTalk DLL found in cache, skipping jtalkSync" -ForegroundColor Green
         } else {
-            Write-Host "JTalk DLL not found in cache, running jtalkPrep..." -ForegroundColor Yellow
-            & "$repoRoot\scons.bat" jtalkPrep
+            Write-Host "JTalk DLL not found in cache, running jtalkSync..." -ForegroundColor Yellow
+            & "$repoRoot\scons.bat" jtalkSync
             if ($LastExitCode -ne 0) {
-                Write-Error "Failed to run scons jtalkPrep with exit code $LastExitCode"
+                Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
                 exit $LastExitCode
             }
         }
     } else {
-        Write-Host "Preparing JTalk DLL via scons jtalkPrep..." -ForegroundColor Cyan
-        & "$repoRoot\scons.bat" jtalkPrep
+        Write-Host "Preparing JTalk assets via scons jtalkSync..." -ForegroundColor Cyan
+        & "$repoRoot\scons.bat" jtalkSync
         if ($LastExitCode -ne 0) {
-            Write-Error "Failed to run scons jtalkPrep with exit code $LastExitCode"
+            Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
             exit $LastExitCode
         }
     }
-    Write-Host "Preparing miscDeps overlay via scons..." -ForegroundColor Cyan
-    & "$repoRoot\scons.bat" miscdepsjp
-    if ($LastExitCode -ne 0) {
-        Write-Error "Failed to run scons miscdepsjp with exit code $LastExitCode"
-        exit $LastExitCode
-    }
 }
 
+$jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
+# Ensure dictionaries are present in source/ even when overlay is skipped
+Ensure-JtalkDic -RepoRoot $repoRoot -JtalkSource $jtalkSource
+
+# jtalkRunner.py is still in miscDepsJp/include/python-jtalk, so add it to PYTHONPATH
 $pythonJtalk = Join-Path $repoRoot "miscDepsJp\include\python-jtalk"
-$jtalkOverlay = Join-Path $repoRoot "miscDepsJp\source\synthDrivers\jtalk"
-$env:PYTHONPATH = "$pythonJtalk;$jtalkOverlay"
+$env:PYTHONPATH = "$jtalkSource;$pythonJtalk"
 Write-Host "PYTHONPATH set to $($env:PYTHONPATH)" -ForegroundColor Cyan
 
 # Set max tests environment variable if specified

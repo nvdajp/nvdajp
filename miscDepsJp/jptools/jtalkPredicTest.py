@@ -3,11 +3,14 @@
 
 import os
 import sys
-from os import getcwd
 
-sys.path.append(
-    os.path.normpath(os.path.join(getcwd(), "..", "source", "synthDrivers", "jtalk"))
-)
+# Use source/synthDrivers/jtalk directly (files moved from miscDepsJp in Phase 1)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# script_dir -> miscDepsJp/jptools
+# ../.. -> repo root
+repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
+jtalk_dir = os.path.join(repo_root, "source", "synthDrivers", "jtalk")
+sys.path.insert(0, jtalk_dir)
 import jtalkPrepare  # type: ignore
 from _nvdajp_unicode import unicode_normalize  # type: ignore
 

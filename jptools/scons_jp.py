@@ -32,63 +32,16 @@ from typing import Any
 def _copy_jtalk_core_files(repo_root: Path) -> int:
 	"""Copy JTalk core Python files from miscDepsJp/include/python-jtalk to source/synthDrivers/jtalk.
 
-	This replicates the functionality of copy_jtalk_core_files.cmd.
+	This function is now a no-op since files have been moved to source/synthDrivers/jtalk in Phase 1.
+	Kept for backward compatibility with existing callers.
 	"""
-	python_jtalk_dir = repo_root / "miscDepsJp" / "include" / "python-jtalk"
-	jtalk_dest_dir = repo_root / "source" / "synthDrivers" / "jtalk"
-
-	if not python_jtalk_dir.exists():
-		print(f"Error: python-jtalk directory not found: {python_jtalk_dir}")
-		return 1
-
-	if not jtalk_dest_dir.exists():
-		try:
-			jtalk_dest_dir.mkdir(parents=True, exist_ok=True)
-		except Exception as e:
-			print(f"Error: failed to create jtalk destination directory {jtalk_dest_dir}: {e}")
-			return 1
-
-	files_to_copy = [
-		"jtalkCore.py",
-		"mecab.py",
-		"text2mecab.py",
-	]
-
-	import shutil
-	missing_files: list[str] = []
-	for filename in files_to_copy:
-		src = python_jtalk_dir / filename
-		dst = jtalk_dest_dir / filename
-		if src.exists():
-			shutil.copy2(src, dst)
-			print(f"Copied {filename} to {dst}")
-		else:
-			print(f"Error: Source file not found: {src}")
-			missing_files.append(filename)
-
-	if missing_files:
-		return 1
-
+	# Files have been moved to source/synthDrivers/jtalk, so no copying is needed
 	return 0
 
 
 def _run_overlay_and_stamp(target: list[Any], source: list[Any], env: Any) -> int:
-    repo_root = Path.cwd()
-    script = repo_root / "jptools" / "setup_miscdeps_overlay.py"
-    # Run the overlay copy script from miscDepsJp directory (historical behavior)
-    misc_root = repo_root / "miscDepsJp"
-    if not script.exists() or not misc_root.exists():
-        # Nothing to do; succeed without error
-        return 0
-    # Execute the script using the same Python interpreter that runs SCons
-    # The script expects cwd=miscDepsJp
-    from subprocess import run
-
-    res = run([sys.executable, str(script)], cwd=str(misc_root))
-    if res.returncode != 0:
-        return res.returncode
-
-    # Write/update stamp
+    # Overlay is no longer required (Phase 2: miscDepsJp/source is empty).
+    # Keep the stamp for compatibility with existing dependencies.
     stamp_path = Path(str(target[0]))
     stamp_path.parent.mkdir(parents=True, exist_ok=True)
     stamp_path.write_text("ok", encoding="utf-8")
@@ -384,20 +337,7 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
 
 def register_jp_builders(env: Any) -> None:
     """Register JP-specific aliases without affecting upstream targets."""
-    repo_root = Path.cwd()
-    # Alias: miscdepsjp (overlay stamp)
-    stamp = env.File("miscDepsJp/_state/overlay.stamp")
-    env.AlwaysBuild(stamp)
-    env.Command(stamp, [], _run_overlay_and_stamp)
-    env.Alias("miscdepsjp", stamp)
-    # Ensure `scons -c` removes overlay files as well when cleaning miscdepsjp
-    try:
-        files = _compute_overlay_targets(repo_root)
-        files = _filter_untracked(repo_root, files)
-        if files:
-            env.Clean(stamp, files)
-    except Exception:
-        pass
+    # miscdepsjp alias removed in Phase 2 (miscDepsJp/source is empty, overlay is no-op)
 
 
     # Alias: jp_tests (run JP dictionary tests and JP char description tests)
@@ -418,7 +358,7 @@ def register_jp_builders(env: Any) -> None:
         - Resolve TARGET_ARCH (default x86)
         - Locate vendor DLL under miscDepsJp/include/python-jtalk[/x86|x64]/libopenjtalk.dll
         - If missing, attempt to build via nmake (requires MSVC environment)
-        - Write payload into miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+        - Write payload into source/synthDrivers/jtalk/libopenjtalk.dll (Phase 1: files moved)
         """
         repo_root = Path.cwd()
         arch = str(env.get("TARGET_ARCH", "x86")).lower()
@@ -435,9 +375,9 @@ def register_jp_builders(env: Any) -> None:
         # all.mak builds DLL to vendor_base/libopenjtalk.dll, then we move it to arch-specific subdirectory
         built_dll = vendor_base / "libopenjtalk.dll"
 
+        # Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
         dst_payload = (
             repo_root
-            / "miscDepsJp"
             / "source"
             / "synthDrivers"
             / "jtalk"
@@ -612,17 +552,12 @@ def register_jp_builders(env: Any) -> None:
     env.Command(jtalk_prep_stamp, [], _ensure_jtalk_payload)
     env.Alias("jtalkPrep", jtalk_prep_stamp)
 
-    # Ensure overlay runs after jtalkPrep so fallback payload is included
-    try:
-        env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkPrep"))
-    except Exception:
-        pass
-
-    # Alias: jtalkSync (build/copy jtalk dictionay and python stubs into source/)
+    # Alias: jtalkSync (build/copy jtalk dictionary and DLLs into source/)
     def _sync_jtalk_assets(target: list[Any], source: list[Any], env: Any) -> int:
         repo_root = Path.cwd()
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
-        jtalk_dir = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk"
+        # Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
+        jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
         dic_src = vendor_base / "dic"
         dic_dst = jtalk_dir / "dic"
         # If vendor dic is missing, fall back to the already-present source dic
@@ -892,18 +827,8 @@ def register_jp_builders(env: Any) -> None:
             print(f"jtalkSync: failed to copy dictionary assets: {e}")
             return 1
 
-        # Copy core python/jtalk files if present
+        # Copy core assets (DLLs only; Python files have been moved to source/synthDrivers/jtalk in Phase 1)
         try:
-            # Copy Python files
-            python_files = [
-                "mecab.py",
-                "text2mecab.py",
-                "jtalkCore.py",
-            ]
-            for name in python_files:
-                src = vendor_base / name
-                if src.exists():
-                    shutil.copy2(src, jtalk_dir / name)
             # Copy libmecab.dll (built from source or fallback to existing)
             arch = str(env.get("TARGET_ARCH", "x86")).lower()
             machine = "x64" if arch in ("x64", "x86_64") else "x86"
@@ -952,15 +877,11 @@ def register_jp_builders(env: Any) -> None:
     env.Command(jtalk_sync_stamp, [jtalk_prep_stamp], _sync_jtalk_assets)
     env.Alias("jtalkSync", jtalk_sync_stamp)
 
-    try:
-        env.Depends(env.Alias("miscdepsjp"), env.Alias("jtalkSync"))
-    except Exception:
-        pass
-
     # Note: Dependencies are already established in sconstruct:
-    #   - sourceDir -> miscdepsjp (L403)
+    #   - sourceDir -> jtalkSync (L401)
+    #   - pot -> jtalkSync (L724)
     #   - dist -> sourceDir (L567, dist depends on sourceDir in NVDADist)
-    # This creates the dependency chain: dist -> sourceDir -> miscdepsjp -> jtalkPrep
+    # This creates the dependency chain: dist -> sourceDir -> jtalkSync -> jtalkPrep
     # No additional wiring needed here; using Dir/target objects (not Alias) is more robust.
 
 
@@ -984,13 +905,43 @@ def register_jp_builders(env: Any) -> None:
     env.Alias("jpAddons", [jtalk_addon_stamp, kgs_addon_stamp])
 
     # JP aliases required by certBuild2023.cmd (minimal safe wiring)
-    # 1) Stage controller client artifacts (ensure client root exists)
+    # 1) Stage controller client artifacts (copy from extras/controllerClient to jptools/nvdajpClient)
     def _stage_controller_client(target: list[Any], source: list[Any], env: Any) -> int:
         repo_root = Path.cwd()
         client_root = repo_root / "jptools" / "nvdajpClient"
+        extras_client_dir = repo_root / "extras" / "controllerClient"
         try:
             client_root.mkdir(parents=True, exist_ok=True)
-        except Exception:
+            # Copy files from extras/controllerClient to jptools/nvdajpClient
+            # This mirrors the behavior of buildControllerClient.cmd
+            for arch in ["x86", "x64", "arm64"]:
+                src_arch_dir = extras_client_dir / arch
+                dst_arch_dir = client_root / arch
+                if src_arch_dir.exists():
+                    dst_arch_dir.mkdir(parents=True, exist_ok=True)
+                    # Copy DLL, header, lib, exp files
+                    for pattern in ["*.dll", "*.h", "*.lib", "*.exp", "*.pdb"]:
+                        for src_file in src_arch_dir.glob(pattern):
+                            dst_file = dst_arch_dir / src_file.name
+                            shutil.copy2(src_file, dst_file)
+                            print(f"jpStageControllerClient: copied {src_file.name} to {dst_arch_dir}")
+            # Copy documentation files if they exist
+            for doc_file in ["license.txt", "readme.html", "readmejp.txt"]:
+                src_doc = extras_client_dir / doc_file
+                if src_doc.exists():
+                    dst_doc = client_root / doc_file
+                    shutil.copy2(src_doc, dst_doc)
+                    print(f"jpStageControllerClient: copied {doc_file}")
+            # Copy examples directory if it exists
+            src_examples = extras_client_dir / "examples"
+            if src_examples.exists():
+                dst_examples = client_root / "examples"
+                if dst_examples.exists():
+                    shutil.rmtree(dst_examples)
+                shutil.copytree(src_examples, dst_examples)
+                print("jpStageControllerClient: copied examples directory")
+        except Exception as e:
+            print(f"jpStageControllerClient: error: {e}")
             return 1
         stamp_path = Path(str(target[0]))
         stamp_path.parent.mkdir(parents=True, exist_ok=True)
@@ -998,8 +949,19 @@ def register_jp_builders(env: Any) -> None:
         return 0
 
     jp_stage_stamp = env.File("jptools/_state/jp_stage_controller_client.stamp")
-    env.AlwaysBuild(jp_stage_stamp)
-    env.Command(jp_stage_stamp, [], _stage_controller_client)
+    # Depend on extras/controllerClient files to ensure they are built before copying
+    # This makes the copy step run only when source files change
+    extras_client_dir = Path.cwd() / "extras" / "controllerClient"
+    source_files = []
+    for arch in ["x86", "x64", "arm64"]:
+        # Add DLL as dependency (main artifact)
+        dll_path = extras_client_dir / arch / "nvdaControllerClient.dll"
+        if dll_path.exists() or not source_files:  # Include at least one file per arch for dependency tracking
+            source_files.append(env.File(str(dll_path)))
+    # If no files exist yet, use empty list (will be created on first run)
+    if not source_files:
+        env.AlwaysBuild(jp_stage_stamp)
+    env.Command(jp_stage_stamp, source_files, _stage_controller_client)
     env.Alias("jpStageControllerClient", jp_stage_stamp)
 
     # 2) JP controller client zip (re-export existing alias for compatibility)
@@ -1028,21 +990,58 @@ def register_jp_builders(env: Any) -> None:
                     candidates.append(exe_candidates[0])
         except Exception:
             pass
-        # Optional JP DLL payload (only if present)
-        dll_path = repo_root / "miscDepsJp" / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
-        if dll_path.exists():
-            candidates.append(dll_path)
+        # Required JP DLL payload in dist/ (must be signed before launcher is built)
+        # NOTE: We sign files in dist/, not source/, because:
+        # 1. jtalkSync copies DLLs to source/synthDrivers/jtalk/
+        # 2. dist build copies files from source/ to dist/ (unsigned)
+        # 3. jpCertExtras signs files in dist/ (this step)
+        # 4. launcher builds installer from dist/ (includes signed DLLs)
+        dist_dir = repo_root / "dist"
+        required_dlls = ["libopenjtalk.dll", "libmecab.dll"]
+        missing_required = []
+        if not dist_dir.exists():
+            print("jpCertExtras: ERROR - dist/ directory does not exist")
+            print("jpCertExtras: dist/ must be built before jpCertExtras can sign DLLs")
+            print("jpCertExtras: Build order: jtalkSync -> dist -> jpCertExtras -> launcher")
+            stamp_path.write_text("error:dist-not-built", encoding="utf-8")
+            return 1
+        dist_jtalk_dir = dist_dir / "synthDrivers" / "jtalk"
+        for dll_name in required_dlls:
+            dll_path = dist_jtalk_dir / dll_name
+            if dll_path.exists():
+                candidates.append(dll_path)
+            else:
+                missing_required.append(dll_path)
+        # Report missing required DLLs (must be in dist/, not source/)
+        if missing_required:
+            print("jpCertExtras: ERROR - Required DLLs not found in dist/:")
+            for dll_path in missing_required:
+                print(f"  {dll_path}")
+            print("jpCertExtras: These files must be present in dist/ before signing.")
+            print("jpCertExtras: Build order: jtalkSync (copies to source/) -> dist (copies to dist/) -> jpCertExtras (signs dist/)")
+            stamp_path.write_text(f"error:missing-dlls:{','.join(str(p.name) for p in missing_required)}", encoding="utf-8")
+            return 1
         # Perform signing via upstream signExec
+        signed_count = 0
         for path in candidates:
             try:
+                print(f"jpCertExtras: signing {path}")
                 node = env.File(str(path))
                 rc = signExec([node], [node], env)
                 if rc != 0:
+                    print(f"jpCertExtras: ERROR - signing failed for {path} (rc={rc})")
                     stamp_path.write_text(f"fail:{path}", encoding="utf-8")
                     return rc
+                signed_count += 1
+                print(f"jpCertExtras: successfully signed {path}")
             except Exception as e:
+                print(f"jpCertExtras: ERROR - exception while signing {path}: {e}")
                 stamp_path.write_text(f"error:{path}:{e}", encoding="utf-8")
                 return 1
+        if signed_count > 0:
+            print(f"jpCertExtras: signed {signed_count} file(s)")
+        else:
+            print("jpCertExtras: no files to sign")
         stamp_path.write_text("ok", encoding="utf-8")
         return 0
 
@@ -1051,30 +1050,215 @@ def register_jp_builders(env: Any) -> None:
     env.Command(jp_cert_extras_stamp, [], _cert_extras)
     env.Alias("jpCertExtras", jp_cert_extras_stamp)
 
-    # 4) JP verify signatures (use SIGNTOOL if available to verify installer)
+    # Add dependency: launcher depends on jpCertExtras (only when signing is configured)
+    # This ensures dist/ DLLs are signed before launcher includes them.
+    # For non-cert builds, jpCertExtras will skip gracefully (returns 0 when signExec is None).
+    try:
+        signExec = env.get("signExec")
+        certFile = env.get("certFile")
+        apiSigningToken = env.get("apiSigningToken")
+        # Only add dependency if signing is configured
+        if signExec or certFile or apiSigningToken:
+            # Use env.Alias() to get the launcher alias (same pattern as sconstruct L401, L724)
+            launcher_alias = env.Alias("launcher")
+            if launcher_alias:
+                env.Depends(launcher_alias, jp_cert_extras_stamp)
+    except Exception:
+        # If launcher alias is not available, that's okay (non-cert builds, etc.)
+        pass
+
+    # 4) JP verify signatures (use SIGNTOOL if available to verify installer and dist files)
     def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
         import subprocess
         stamp_path = Path(str(target[0]))
         stamp_path.parent.mkdir(parents=True, exist_ok=True)
         repo_root = Path.cwd()
         out_dir = repo_root / "output"
+        dist_dir = repo_root / "dist"
+        # Files that are not distributed or excluded from launcher, so signature verification errors can be ignored
+        IGNORED_FILES = [
+            "msgfmt.exe",
+            "lilli.dll",
+            "brlapi-0.8.dll",
+            "libgcc_s_dw2-1.dll",
+            "wxbase32u_net_vc140.dll",
+            "wxbase32u_vc140.dll",
+            "wxmsw32u_aui_vc140.dll",
+            "wxmsw32u_core_vc140.dll",
+            "wxmsw32u_html_vc140.dll",
+            "wxmsw32u_stc_vc140.dll",
+        ]
         try:
             exe = None
             if out_dir.exists():
                 exe_candidates = sorted(out_dir.glob("nvda_*.exe"), key=lambda p: p.stat().st_mtime, reverse=True)
                 if exe_candidates:
-                    exe = exe_candidates[0]
+                    exe = exe_candidates[0]  # Use the most recent installer
             if not exe:
                 print("jpVerifySignatures: skip (no installer found under output/)")
                 stamp_path.write_text("skip:no-installer", encoding="utf-8")
                 return 0
             signtool = os.environ.get("SIGNTOOL", "signtool")
-            result = subprocess.run([signtool, "verify", "/pa", "/v", str(exe)], capture_output=True, text=True)
-            content = [f"file={exe}", f"rc={result.returncode}"]
-            if result.stdout:
-                content.append(result.stdout)
-            if result.stderr:
-                content.append(result.stderr)
+            # Verify installer first
+            result_installer = subprocess.run([signtool, "verify", "/pa", "/v", str(exe)], capture_output=True, text=True)
+            all_output_lines = []
+            all_output_lines.append(f"File: {exe}")
+            # For installer, only include detailed output if there are errors
+            installer_has_errors = result_installer.returncode != 0
+            installer_output = (result_installer.stdout or "") + "\n" + (result_installer.stderr or "")
+            if "Number of errors:" in installer_output:
+                for line in installer_output.split("\n"):
+                    if "Number of errors:" in line:
+                        try:
+                            error_count = int(line.split(":")[-1].strip())
+                            installer_has_errors = error_count > 0
+                        except (ValueError, IndexError):
+                            # Ignore lines that do not match the expected "Number of errors: <int>" format
+                            pass
+                        break
+            if installer_has_errors:
+                # Include full output for installer with errors
+                if result_installer.stdout:
+                    all_output_lines.append(result_installer.stdout)
+                if result_installer.stderr:
+                    all_output_lines.append(result_installer.stderr)
+            else:
+                # For successful installer, just include success message
+                for line in installer_output.split("\n"):
+                    if "Successfully verified:" in line:
+                        all_output_lines.append(line.strip())
+                        break
+            # Verify all files in dist directory
+            verified_files = []
+            failed_files_output = []
+            if dist_dir.exists():
+                dist_files = []
+                for pattern in ["**/*.exe", "**/*.dll"]:
+                    dist_files.extend(dist_dir.glob(pattern))
+                # Sort for consistent output
+                dist_files.sort(key=str)
+                for dist_file in dist_files:
+                    if dist_file.is_file():
+                        result_dist = subprocess.run([signtool, "verify", "/pa", "/v", str(dist_file)], capture_output=True, text=True)
+                        # Check if this file has errors
+                        has_errors = result_dist.returncode != 0
+                        dist_output = (result_dist.stdout or "") + "\n" + (result_dist.stderr or "")
+                        if "Number of errors:" in dist_output:
+                            # Parse to check if there are actual errors
+                            for line in dist_output.split("\n"):
+                                if "Number of errors:" in line:
+                                    try:
+                                        error_count = int(line.split(":")[-1].strip())
+                                        has_errors = error_count > 0
+                                    except (ValueError, IndexError):
+                                        # Ignore parse errors; treat as no errors found
+                                        pass
+                                    break
+                        if has_errors:
+                            # Include essential error information only (remove verbose output)
+                            failed_files_output.append(f"File: {dist_file}")
+                            dist_output_clean = result_dist.stdout or ""
+                            if result_dist.stderr:
+                                dist_output_clean += "\n" + result_dist.stderr
+                            # Extract only essential error information
+                            error_lines = []
+                            for line in dist_output_clean.split("\n"):
+                                line_trimmed = line.rstrip()
+                                # Skip verbose output lines
+                                if any(skip in line_trimmed for skip in [
+                                    "Verifying:",
+                                    "Number of files successfully Verified:",
+                                    "Number of warnings:",
+                                    "Number of errors:",
+                                ]):
+                                    continue
+                                # Keep error messages and other important info
+                                if line_trimmed and (
+                                    "Error:" in line_trimmed or
+                                    "Warning:" in line_trimmed or
+                                    "SignTool" in line_trimmed
+                                ):
+                                    error_lines.append(line_trimmed)
+                            if error_lines:
+                                failed_files_output.append("\n".join(error_lines))
+                        else:
+                            # Just record success for files without errors
+                            verified_files.append(str(dist_file))
+            # Combine output: installer + failed files details + success summary
+            combined_output = "\n".join(all_output_lines)
+            if failed_files_output:
+                combined_output += "\n" + "\n".join(failed_files_output)
+            if verified_files:
+                combined_output += f"\n\nSuccessfully verified {len(verified_files)} file(s):"
+                for vf in verified_files:
+                    combined_output += f"\n  {vf}"
+            # Check if errors are only from ignored files
+            original_rc = result_installer.returncode
+            final_rc = original_rc
+            # Parse combined output to count errors from non-ignored files
+            # Also check failed_files_output to detect errors from dist/ files (since we removed "Number of errors:" lines)
+            lines = combined_output.split("\n")
+            current_file = None
+            ignored_errors = 0
+            total_errors = 0
+            failed_files = []
+            # Track files that appear in failed_files_output (these have errors)
+            files_with_errors = set()
+            for item in failed_files_output:
+                # Each item may be a single line or multiple lines (file path + error messages)
+                for line in item.split("\n"):
+                    if line.strip().startswith("File: "):
+                        file_path = line.strip()[6:].strip()
+                        file_name = Path(file_path).name
+                        files_with_errors.add(file_name)
+                        break  # Only need the file name from each failed_files_output item
+            # Parse output for error counts and file names
+            for i, line in enumerate(lines):
+                if line.startswith("File: "):
+                    file_path = line[6:].strip()
+                    file_name = Path(file_path).name
+                    current_file = file_name
+                    # Check if this file has errors (from failed_files_output or "Number of errors:" line)
+                    if file_name in files_with_errors:
+                        total_errors += 1
+                        # Check if current file is in ignored list
+                        if current_file and any(ignored in current_file for ignored in IGNORED_FILES):
+                            ignored_errors += 1
+                            print(f"jpVerifySignatures: ignoring error for {current_file} (not distributed)")
+                        else:
+                            # Track files with non-ignored errors
+                            if current_file:
+                                failed_files.append(current_file)
+                elif "Number of errors:" in line:
+                    try:
+                        error_count = int(line.split(":")[-1].strip())
+                        total_errors += error_count
+                        # Check if current file is in ignored list
+                        if current_file and any(ignored in current_file for ignored in IGNORED_FILES):
+                            ignored_errors += error_count
+                            print(f"jpVerifySignatures: ignoring {error_count} error(s) for {current_file} (not distributed)")
+                        else:
+                            # Track files with non-ignored errors
+                            if current_file and error_count > 0:
+                                failed_files.append(current_file)
+                    except (ValueError, IndexError):
+                        # Ignore lines that do not contain a valid error count
+                        pass
+            # If all errors are from ignored files, treat as success
+            if total_errors > 0 and ignored_errors == total_errors:
+                print(f"jpVerifySignatures: all {total_errors} error(s) are from ignored files, treating as success")
+                final_rc = 0
+            elif total_errors > ignored_errors:
+                # There are errors from non-ignored files
+                non_ignored_errors = total_errors - ignored_errors
+                print(f"jpVerifySignatures: {non_ignored_errors} error(s) from non-ignored files")
+                if failed_files:
+                    print(f"jpVerifySignatures: failed files: {', '.join(failed_files)}")
+                final_rc = 1  # Ensure non-zero return code to stop scons
+            # Write combined output to log files (for backward compatibility)
+            # The rc in the log should reflect the original signtool return code
+            content = [f"file={exe}", f"rc={original_rc}"]
+            content.append(combined_output)
             text = "\n".join(content)
             # Keep backward-compatible stamp output
             stamp_path.write_text(text, encoding="utf-8")
@@ -1084,13 +1268,13 @@ def register_jp_builders(env: Any) -> None:
                 verify_log.write_text(text, encoding="utf-8")
             except Exception:
                 pass
-            if result.returncode == 0:
+            if final_rc == 0:
                 print(f"jpVerifySignatures: verified OK: {exe}")
                 return 0
             else:
-                print(f"jpVerifySignatures: verification FAILED (rc={result.returncode}): {exe}")
+                print(f"jpVerifySignatures: verification FAILED (rc={final_rc}): {exe}")
                 print("  See output/_jp_verify_signatures.stamp or the *_verify.log for details.")
-                return result.returncode
+                return final_rc
         except FileNotFoundError:
             print("jpVerifySignatures: skip (signtool not found). Ensure Windows SDK is installed or SIGNTOOL is set.")
             stamp_path.write_text("skip:no-signtool", encoding="utf-8")

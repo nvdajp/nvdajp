@@ -1,8 +1,10 @@
-# miscDepsJp と JP overlay の現状と長期的な方針
+# miscDepsJp の現状と長期的な方針
 
 ## 概要
 
-このドキュメントは、`miscDepsJp` フォルダと JP overlay 処理の現状の問題点と、長期的な改善方針を整理したものです。
+このドキュメントは、`miscDepsJp` フォルダの現状の問題点と、長期的な改善方針を整理したものです。
+
+**注**: JP overlay 処理は Phase 2 で廃止されました（2025-12-12）。日本語版固有ファイルは `source/` に直接配置されています。
 
 ### 基本方針（roadmap.md と整合）
 
@@ -15,7 +17,17 @@
 **改善の方向性**:
 
 - コピー処理は「統合」だけでなく「削減」して単純化する
-- Python コードは最初から `source/` に置く形を理想とし、overlay という中間段階を廃止して本家設計に揃える
+- Python コードは最初から `source/` に置く形を理想とし、本家設計に揃える
+- **基本方針との整合性**: この見直しは、以下の基本方針に完全に整合している：
+  - ✅ **本家との差分を最小化**: 独自仕組みを廃止し、本家設計（`source/` に直接配置）に揃える
+  - ✅ **コピー処理の削減**: ビルド時のコピー処理を最小化し、ビルドプロセスを簡素化
+  - ✅ **小さなPR単位で進める**: Phase 1-2 で段階的に実施し、各段階で検証を行う
+  - ✅ **安定版リリースの継続を優先**: 段階的な検証により、安定版リリースに影響を与えない範囲で実施できる
+- 最初から `source/synthDrivers/jtalk` にあるべきファイルは、コピーではなく move（または Git で直接配置）してもよい。これにより、ビルド時のコピー処理自体が不要になる可能性がある
+  - ベンダーツリー由来のファイル（`jtalkCore.py`, `mecab.py`, `text2mecab.py` など）: `miscDepsJp/include/python-jtalk` から move または Git で直接配置
+  - 日本語版固有の JTalk ドライバー依存ファイル（`jtalkDir.py`, `jtalkDriver.py`, `translator1.py`, `translator2.py` など）: `miscDepsJp/source/synthDrivers/jtalk` から move または Git で直接配置（これらは日本語版固有のファイルなので、最初から `source/synthDrivers/jtalk` に配置するのが自然）
+- **重要**: `miscDepsJp/include/python-jtalk` と `source/synthDrivers/jtalk` に Python ソースファイルを重複させなくても、NVDA のビルドやユニットテスト、jp smoke test は実行できる。NVDA のソースコードは `source/synthDrivers/jtalk` からインポートしており、テストコードも `source/synthDrivers/jtalk` を参照しているため、`miscDepsJp/include/python-jtalk` に Python ファイルを保持する必要はない
+- **注**: ファイルを move する場合、`miscDepsJp/include/python-jtalk` から `source/synthDrivers/jtalk` に移動すると、ベンダーツリーからファイルがなくなる可能性がある。これは許容されるが、ベンダーツリーの更新や管理方法に影響を与える可能性があるため、注意が必要。ただし、`miscDepsJp/include/python-jtalk` はバイナリや辞書のビルド場所として残る意味がある。また、`miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に移動すると、`miscDepsJp/source` フォルダ自体が不要になる可能性がある
 
 **重要**: これらの改善は、将来的な x64 移行をスムーズにするためにも重要です。複雑な構造を早い段階で簡素化することで、x64 対応時の作業量を大幅に削減できます。詳細は「改善計画」セクションを参照してください。
 
@@ -23,17 +35,15 @@
 
 ### リポジトリのフォルダ構成
 
-日本語版リポジトリのルートには、以下の2つの主要なフォルダがあります：
+日本語版リポジトリのルートには、以下の主要なフォルダがあります：
 
 ```text
 リポジトリルート/
 ├── source/           # 本家版（upstream）のソースコード
 │   └── synthDrivers/
-│       └── jtalk/    # 本家版の JTalk ドライバー（存在する場合）
+│       └── jtalk/    # 日本語版固有のフォルダ
+├── jptools/          # 日本語版固有のフォルダ
 └── miscDepsJp/       # 日本語版固有のフォルダ
-    ├── include/      # ベンダーツリー
-    ├── source/       # 日本語版固有のソースファイル（overlay のソース）
-    └── jptools/      # テストとビルドツール
 ```
 
 ### 本家版の `source` フォルダ
@@ -47,12 +57,27 @@
 ```text
 miscDepsJp/
 ├── include/          # ベンダーツリー（python-jtalk、htsengineapi、libopenjtalk、libkuraji など）
-│   └── python-jtalk/ # JTalk コアファイル（jtalkCore.py、mecab.py、text2mecab.py など）
-├── source/           # 日本語版固有のソースファイル（overlay のソース）
-│   └── synthDrivers/
-│       └── jtalk/    # JTalk ドライバーと点訳エンジン
-└── jptools/          # テストとビルドツール
+│   └── python-jtalk/ # バイナリビルド場所（x86/libopenjtalk.dll、x64/libopenjtalk.dll など）
+│                     # 辞書ビルド場所（dic/ など）
+└── jptools/          # テストとビルドツール（一部のツールはリポジトリルートの jptools/ に移動済み）
 ```
+
+**`miscDepsJp` の役割**:
+
+- **ベンダーツリーの保持**: `miscDepsJp/include` にベンダーツリーのソースコードを保持
+- **バイナリのビルド場所**: `jtalkPrep` で DLL をビルドし、`miscDepsJp/include/python-jtalk/x86/` や `miscDepsJp/include/python-jtalk/x64/` に配置
+- **辞書ファイルのビルド場所**: `jtalkSync` で辞書ファイルをビルドし、`miscDepsJp/include/python-jtalk/dic/` に配置
+- **ビルド成果物の配置**: ビルド成果物（DLL、辞書ファイル）は `miscDepsJp` でビルドし、その後 `source/synthDrivers/jtalk` に直接配置される
+
+### jptools フォルダ
+
+- **役割**: 日本語版固有のテストとビルドツールを保持
+- **配置**:
+  - リポジトリルート直下（`jptools/`）: 主要なビルドスクリプトとテストスクリプト
+  - `miscDepsJp/jptools/`: 一部のツール（例: `jpBrailleRunner.py`、`jtusrdic/` など）
+- **内容**:
+  - リポジトリルートの `jptools/`: ビルドスクリプト（`scons_jp.py`、`nonCertBuild.py` など）、テストスクリプト（`runJpSmokeTests.ps1` など）
+  - `miscDepsJp/jptools/`: 一部のテストツールとユーティリティ
 
 ### miscDepsJp の管理方法の変遷
 
@@ -80,139 +105,40 @@ miscDepsJp/
 
 **参考**: 詳細は `projectDocs/jp/vendor-submodules.md` を参照してください。
 
-### `miscDepsJp/source` と本家版の `source/` の関係
+### 現在のビルド処理
 
-- **`miscDepsJp/source`**: 日本語版固有のソースファイルを保持（overlay のソース）
-- **本家版の `source/`**: 本家版のソースコードを保持（overlay のターゲット）
-- **overlay 処理**: `miscDepsJp/source` の内容を本家版の `source/` にコピーして上書き
-  - 同じパスのファイルがある場合、本家版のファイルが日本語版のファイルで上書きされる
-  - 本家版に存在しないパスのファイルは新規に追加される
-  - 本家版のファイルは Git で管理されているため、`git checkout` で復元可能
+JTalk 関連のビルド処理は以下の通りです：
 
-### 現在のコピー処理
-
-JP overlay 処理では、以下の複数のコピー処理が実行されます：
-
-1. **`setup_miscdeps_overlay.py`** (`miscdepsjp` エイリアス内)
-   - `miscDepsJp/source` → `source/`（本家版の `source` フォルダ）への全体コピー
-   - これにより、`miscDepsJp/source/synthDrivers/jtalk` の内容が `source/synthDrivers/jtalk` に到達
-   - **注意**: 本家版の `source/` に既存のファイルがある場合、日本語版のファイルで上書きされる
-
-2. **`_copy_jtalk_core_files()`** (`miscdepsjp` エイリアス内)
-   - `miscDepsJp/include/python-jtalk` → `source/synthDrivers/jtalk`（本家版の `source` フォルダ）への直接コピー
-   - コピーされるファイル: `jtalkCore.py`, `mecab.py`, `text2mecab.py`
-   - **注意**: これは本家版の `source/synthDrivers/jtalk` への直接コピー（overlay を経由しない）
-
-3. **`jtalkPrep` エイリアス**
+1. **`jtalkPrep` エイリアス**
    - DLL のビルド（必要時）
    - `htsengineapi` と `libopenjtalk` を `miscDepsJp/include/python-jtalk` にコピー
-   - DLL を `miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll` にコピー
-   - この DLL は後続の overlay 処理で `source/synthDrivers/jtalk/libopenjtalk.dll` に到達
+   - DLL を `source/synthDrivers/jtalk/libopenjtalk.dll` に直接配置
 
-4. **`jtalkSync` エイリアス**
+2. **`jtalkSync` エイリアス**
    - 辞書ファイルのビルドとコピー
-     - `miscDepsJp/include/python-jtalk/dic` → `miscDepsJp/source/synthDrivers/jtalk/dic`
-   - コアファイル（DLL、Python ファイル）を `miscDepsJp/include/python-jtalk` → `miscDepsJp/source/synthDrivers/jtalk` にコピー
-     - コピーされるファイル: `libmecab.dll`, `libopenjtalk.dll`, `mecab.py`, `text2mecab.py`, `jtalkCore.py`
-   - これらのファイルは後続の overlay 処理で `source/synthDrivers/jtalk` に到達
-
-### 本家版の `source/` への overlay の影響
-
-**基本的な方針**: overlay で上書きされる本家版のソースファイルは基本的にありません。`miscDepsJp/source` には主に日本語版固有のファイルが含まれており、本家版の `source/` に存在しないパスに配置されています。
-
-**`miscDepsJp/source` の主な内容**:
-
-- **`synthDrivers/jtalk/`**: 日本語版固有の JTalk ドライバーと点訳エンジン（本家版には存在しない）
-- **`synthDrivers/nvdajp_jtalk.py`**: 日本語版固有の合成音声ドライバー（本家版には存在しない）
-- **`brailleDisplayDrivers/DirectBM.dll`**: 日本語版固有の点字ディスプレイドライバー（本家版には存在しない）
-- **`images/`**: 日本語版固有の画像ファイル（本家版には存在しない）
-- **`typelibs/`**: 過去には `ia2.tlb` を overlay していたが、現在は本家版が直接配置する運用に変更済み（`projectDocs/jp/merge-issues-beta-2025-11.md` 参照）
-
-**overlay 処理の動作**:
-
-- **新規追加されるファイル**: `miscDepsJp/source` にのみ存在するファイルは、本家版の `source/` に新規追加される
-- **上書きされるファイル**: 理論的には同じパスのファイルがある場合に上書きされるが、実際には `miscDepsJp/source` に本家版のソースファイルと重複するパスは基本的に存在しない
-- **影響を受けないファイル**: `miscDepsJp/source` に存在しない本家版のファイルはそのまま残る
-
-**注意**: 過去には `typelibs/ia2.tlb` を overlay していたが、本家版との差分を最小化する方針に基づき、本家版と同じ配置（`source/typelibs/ia2.tlb`）に変更されました。
-
-**復元方法**: 万が一 overlay で上書きされたファイルを本家版の状態に戻す必要がある場合は、`git checkout -- source/<path>` を使用します。
-
-### `source/synthDrivers/jtalk` への到達経路
-
-本家版の `source/synthDrivers/jtalk` ディレクトリへのファイル到達には、以下の2つの経路があります：
-
-1. **直接コピー経路** (`_copy_jtalk_core_files()`)
-   - `miscDepsJp/include/python-jtalk` → `source/synthDrivers/jtalk`
-   - 対象ファイル: `jtalkCore.py`, `mecab.py`, `text2mecab.py`
-   - overlay を経由しない直接コピー
-
-2. **間接コピー経路** (`jtalkSync` → `setup_miscdeps_overlay.py`)
-   - `miscDepsJp/include/python-jtalk` → `miscDepsJp/source/synthDrivers/jtalk` (jtalkSync)
-   - `miscDepsJp/source` → `source/`（本家版の `source` フォルダ）(overlay)
-   - 対象ファイル: 辞書ファイル（`dic/` 配下）、DLL、Python ファイル（`jtalkCore.py`, `mecab.py`, `text2mecab.py` を含む）
-
-**問題点**: `jtalkCore.py`, `mecab.py`, `text2mecab.py` は両方の経路でコピーされるため、重複が発生しています。
+     - `miscDepsJp/include/python-jtalk/dic` → `source/synthDrivers/jtalk/dic`
+   - DLL を `miscDepsJp/include/python-jtalk` → `source/synthDrivers/jtalk` にコピー
+     - コピーされるファイル: `libmecab.dll`, `libopenjtalk.dll`
 
 ### 依存関係
 
 ```text
-source → miscdepsjp → jtalkSync → jtalkPrep
+source → jtalkSync → jtalkPrep
 ```
 
 ## 現状の問題点
 
-### 1. 複数のコピー処理が存在し、混乱を招く
-
-- **問題**: 同じファイルが複数の場所からコピーされる
-  - `_copy_jtalk_core_files()`: `miscDepsJp/include/python-jtalk` → `source/synthDrivers/jtalk`
-  - `jtalkSync`: `miscDepsJp/include/python-jtalk` → `miscDepsJp/source/synthDrivers/jtalk`
-  - 最終的に `miscDepsJp/source` → `source/` への overlay で `source/` に到達
-
-- **影響**:
-  - どの処理がどのファイルをコピーするか理解が困難
-  - デバッグ時に原因特定が難しい
-  - 新しい開発者が理解するのに時間がかかる
-
-### 2. コピー処理の重複
-
-- **問題**: `_copy_jtalk_core_files()` と `jtalkSync` でコアファイルが重複コピー
-  - `jtalkCore.py`, `mecab.py`, `text2mecab.py` が両方でコピーされる
-  - `_copy_jtalk_core_files()`: `miscDepsJp/include/python-jtalk` → `source/synthDrivers/jtalk` に直接コピー
-  - `jtalkSync`: `miscDepsJp/include/python-jtalk` → `miscDepsJp/source/synthDrivers/jtalk` にコピーし、その後 overlay で `source/synthDrivers/jtalk` に到達
-
-- **影響**:
-  - 無駄な処理が発生
-  - 保守性の低下
-  - どちらの経路でファイルが到達したか理解が困難
-
-### 3. 複雑な依存関係
-
-- **問題**: `miscdepsjp` → `jtalkSync` → `jtalkPrep` の依存チェーンが複雑
-  - 各エイリアスが異なる目的を持ち、相互に依存
-
-- **影響**:
-  - ビルドプロセスの理解が困難
-  - エラー時の原因特定が難しい
-
-### 4. 古いスクリプトの残存
-
-- **現状**: `copy_jtalk_core_files.cmd` は `jptools/copy_jtalk_core_files.py` へ置き換え済み（`uv run python`／`python`で呼び出し）
-- **影響**:
-  - Python 化方針に整合
-  - 引用符エスケープ問題を回避
-
-### 5. miscDepsJp フォルダ構造への依存
+### 1. miscDepsJp フォルダ構造への依存
 
 - **問題**: 多くのスクリプトが `miscDepsJp` フォルダ構造に依存
   - `jtalkRunner.py`: `miscDepsJp/include/python-jtalk` から `repo_root` を推論
-  - `runJpSmokeTests.ps1`: `miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll` へのハードコード
+  - 一部のテストスクリプトが `miscDepsJp` のパスに依存
 
 - **影響**:
   - フォルダ構造の変更に弱い
   - 長期的な保守性の低下
 
-### 6. patch.exe への依存
+### 2. patch.exe への依存
 
 - **問題**: ビルドで `patch.exe`（Git for Windows 同梱）に依存
   - `miscDepsJp/include/python-jtalk/lib/Makefile.mak`: `HTS_gstream_ex.c`, `HTS_engine_ex.c` へのパッチ
@@ -241,8 +167,8 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 
 **検証要件**: これらの改善はビルドシステムの根幹に関わる変更のため、品質保証の観点から、以下の全ての環境で検証が必要です：
 
-- **リリースビルド**: 署名付きリリースビルドが正常に完了することを確認
-- **ローカルの署名なしビルド**: `.\scons.bat dist` や `.\scons.bat source dist launcher` が正常に完了することを確認
+- **リリースビルド**: 署名付きリリースビルドが正常に完了することを確認（`jptools/certBuild2025.ps1`）
+- **ローカルの署名なしビルド**: `scons source dist launcher` や `scons source dist` が正常に完了することを確認
 - **ローカルのユニットテスト**: `rununittests.bat` や `jptools/runJpSmokeTests.ps1` が正常に実行されることを確認
 - **Actions CI**: GitHub Actions の CI パイプライン（`.github/workflows/testAndPublish.yml`）が正常に完了することを確認
 
@@ -250,75 +176,80 @@ source → miscdepsjp → jtalkSync → jtalkPrep
 
 ### Phase 1: コピー処理の統合と削減（短期・優先度高）
 
-- **目標**: 重複するコピー処理を統合し、コピー処理の総数を削減
+- **目標**: 重複するコピー処理を統合し、コピー処理の総数を削減。テストの依存関係を変更することで、中間コピー段階をスキップして直接 `source/` への配置に移行
 - **作業内容**:
-  - `_copy_jtalk_core_files()` と `jtalkSync` のコアファイルコピーを統合
-  - `_copy_jtalk_core_files()` を削除し、`jtalkSync` 経由の1つの経路に統一
-  - `jtalkSync` でコピーしたファイルを `miscDepsJp/source/synthDrivers/jtalk` に配置し、overlay で `source/` に到達させる方式に統一
-  - 古い `.cmd` スクリプトの削除
+  - **ファイルの移動**: 最初から `source/synthDrivers/jtalk` にあるべきファイルをコピー元から移動する。これにより、ビルド時のコピー処理自体が不要になる
+    - **ベンダーツリー由来のファイル**（`jtalkCore.py`, `mecab.py`, `text2mecab.py` など）: `miscDepsJp/include/python-jtalk` から `source/synthDrivers/jtalk` に移動
+    - **日本語版固有の JTalk ドライバー依存ファイル**（`jtalkDir.py`, `jtalkDriver.py`, `jtalkPrepare.py`, `translator1.py`, `translator2.py` など）: `miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に移動
+  - **テストの依存関係を変更**（優先）: ユニットテストや jp smoke test が最初から `source/synthDrivers/jtalk` に直接依存するように変更
+    - `jptools/runJpSmokeTests.ps1` の PYTHONPATH を `source/synthDrivers/jtalk` に変更
+    - `miscDepsJp/jptools/jpBrailleRunner.py` などのテストスクリプトが `source/synthDrivers/jtalk` からインポートするように変更
+    - ただし辞書やDLLなどビルドが必要なものは miscDepsJP で従来の処理を行い、リポジトリルートの `source/synthDrivers` および `source/synthDrivers/jtalk` にコピーする処理を残す
 - **削減効果**:
-  - コピー処理の経路を2つから1つに削減（直接コピー経路を削除）
-  - コピー処理の実行箇所を1箇所に集約
-- **x64 移行への影響**:
-  - コピー処理が1箇所に集約されていれば、x64 対応時にアーキテクチャ別の処理を追加するだけで済む
-  - 重複処理が残っていると、x64 対応時に複数箇所を修正する必要がある
-
-### Phase 2: 中間コピー段階の削減と overlay 処理の廃止（中期・優先度高）
-
-- **目標**: `miscDepsJp/source` への中間コピーを削減し、直接 `source/` への配置に変更。overlay 処理自体を廃止することを検討
-- **作業内容**:
-  - `jtalkSync` のコピー先を `miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に直接変更
-  - `miscDepsJp/source` へのコピーを削減し、overlay 処理を廃止
-  - 直接コピーでも SCons の依存関係管理により冪等性は保証される
-  - 直接コピーでも `env.Clean()` を配線することでクリーン処理は容易
-- **削減効果**:
+  - Python ファイルのコピー処理が不要になる（ファイルを move したため）
+  - 辞書やDLLなどビルドが必要なもののコピー処理は残るが、経路を2つから1つに削減（直接コピー経路を削除）
+  - コピー処理の実行箇所を1箇所に集約（辞書やDLLのコピー処理のみ）
   - コピー処理の段階を2段階（`jtalkSync` → overlay）から1段階（直接配置）に削減
   - overlay 処理自体が不要になり、ビルドプロセスが大幅に簡素化
   - ビルド時間の短縮
-- **overlay 処理の利点の再評価**:
-  - **冪等性**: `setup_miscdeps_overlay.py` はタイムスタンプとサイズを比較してスキップするだけだが、SCons 自体が依存関係を管理しているため、直接コピーでも冪等性は保証される
-  - **クリーン処理の容易さ**: SConstruct で `env.Clean()` を配線しているが、直接コピーでも同じように配線できる（`_compute_overlay_targets()` と同様のファイルリスト計算を直接コピーでも実装可能）
-  - **結論**: overlay 処理を残すことの利点は実際には存在しないか、または直接コピーでも同じ利点を得られる
-- **既存の実装例**:
-  - `_copy_jtalk_core_files()` は既に直接コピーを実装しており、overlay を経由していない。これは overlay が不要であることの証拠
+- **x64 移行への影響**:
+  - コピー処理が1箇所に集約されていれば、x64 対応時にアーキテクチャ別の処理を追加するだけで済む
+  - 重複処理が残っていると、x64 対応時に複数箇所を修正する必要がある
+- **検証要件**: 上記の「検証要件」セクションを参照。各 Phase の実装後は、これらの環境全てで動作確認を行い、問題が発生した場合は即座に修正する必要があります。
 
-### Phase 3: 依存関係の明確化とエイリアスの統合（中期）
+**注**: テストの依存関係を最初に変更することで、`miscDepsJp/source/synthDrivers/jtalk` への中間コピーが不要になり、Phase 1 と Phase 2 を統合して一気に直接コピー方式に移行できます。これにより、コピー処理の削減をより効率的に実施できます。
+
+**注意**: ベンダーツリーの更新が必要な場合は、`source/synthDrivers` からベンダーツリーに書き戻す必要がある。ベンダーツリーの扱いはリファクタリング完了後に再検討する。
+
+**実施状況（2025-12-12）**:
+
+- Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動し、`_copy_jtalk_core_files()` は no-op 化済み
+- テスト依存を `source/synthDrivers/jtalk` 直接参照に統一（`runJpSmokeTests.ps1` は `miscDepsJp/include/python-jtalk` を `PYTHONPATH` に追加し、`jtalkRunner.py` を参照）
+- `jtalkPrep`/`jtalkSync` は DLL・辞書を直接 `source/synthDrivers/jtalk` へ配置するよう更新
+- 検証結果: `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`、`scons.bat dist --all-cores`、`scons.bat launcher --all-cores` をローカル x86 で成功
+
+### Phase 2: 依存関係の明確化とエイリアスの統合（中期）
 
 - **目標**: 依存関係を明確にし、エイリアスを統合してビルドプロセスを単純化
 - **作業内容**:
-  - 各エイリアスの役割を明確化
-  - Phase 2 で overlay 処理が廃止されれば、`miscdepsjp` エイリアス自体が不要になる可能性
-  - `jtalkSync` を直接 `source/` にコピーするように変更し、依存関係を単純化
-  - 依存関係のドキュメント化
-  - エラーメッセージの改善
-- **単純化効果**:
-  - overlay 処理が廃止されれば、`miscdepsjp` エイリアスを削除できる
-  - エイリアスの数を削減し、ビルドプロセスの理解を容易にする
-  - 依存関係の複雑さを削減（`source → miscdepsjp → jtalkSync → jtalkPrep` から `source → jtalkSync → jtalkPrep` に簡素化）
+  - Phase 1 で JTalk 関連の Python ファイルと話者モデルは `source/synthDrivers/jtalk` に移動済み
+  - `miscDepsJp/source` の以下のファイルも `source` に移動して overlay 処理を不要とする
+    - `brailleDisplayDrivers/DirectBM.dll`（点字ディスプレイドライバー。移動は可能だが x86 バイナリである点に注意）
+    - `images/` 配下の画像ファイル（`nvdajp.ico`, `nvdajp_cd.png` など）
+    - `synthDrivers/nvdajp_jtalk.py`（日本語版固有の合成音声ドライバー）
+    - `synthDrivers/jtalk/` 配下の一部ファイル（`_bgthread.py`, `_nvdajp_espeak.py`, `_nvdajp_spellchar.py`, `_nvdajp_unicode.py`, `roma2kana.py` など）
+    - ライセンスファイルなど
+    - `DirectBM.dll` を移動する場合は x86 バイナリであることを明記し、`kgs_addon` のビルドスクリプト（`jptools/scons_jp.py` 内 `kgs_addon` 関連）で期待される配置を崩さないように調整する
+    - `.gitignore` の設定: `DirectBM.dll` は既に Git で管理される設定（`!source/brailleDisplayDrivers/DirectBM.dll`）があるため、移動後も問題なく管理される。移動後は `.gitignore` の 13行目（`!miscDepsJp/source/brailleDisplayDrivers/DirectBM.dll`）を削除し、12行目（`!source/brailleDisplayDrivers/DirectBM.dll`）を維持する
+  - **エラーメッセージの改善**: ビルドエラー時のメッセージを改善し、原因特定を容易にする
+  - **`miscdepsjp` エイリアスの削除**: `miscDepsJp/source` が空になったため、エイリアスを削除し、依存関係を `source → jtalkSync → jtalkPrep` に簡素化
+  - **依存関係の整理とドキュメント化**: 依存関係を更新して文書化
 
-### Phase 4: フォルダ構造への依存削減と直接参照の検討（長期）
+**実施状況（2025-12-12）**: ✅ **完了**
 
-- **目標**: `miscDepsJp` フォルダ構造への依存を削減し、より統合的な方式への移行を検討
+- `miscDepsJp/source` の全ファイルを `source/` に移動し、overlay 処理を不要化
+- `miscdepsjp` エイリアスを削除し、`sconstruct` の依存関係を `sourceDir → jtalkSync`、`pot → jtalkSync` に変更
+- `jptools/runJpSmokeTests.ps1` の `miscdepsjp` 呼び出しを削除し、`jtalkSync` に変更
+- `jptools/scons_jp.py` の `_run_overlay_and_stamp()` を no-op 化（`miscDepsJp/source` が空のため）
+- 依存関係チェーンを `source → jtalkSync → jtalkPrep` に簡素化
+- 検証結果: ローカル x86 で `scons.bat dist`、`scons.bat launcher`、`jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` が成功
+
+### Phase 3: フォルダ構造への依存削減と参照方式の簡素化（長期）
+
+- **前提**: Phase 2 完了により、`miscDepsJp/source` は空になり、overlay/`miscdepsjp` エイリアスは廃止済み。現在、`miscDepsJp` に残るのはベンダーツリー（include）とビルド成果物置き場のみ。
+- **目標**: `miscDepsJp/include` への依存を薄型化し、パス解決を共通化して x64 移行時の変更箇所を最小化する
 - **作業内容**:
-  - 環境変数（`REPO_ROOT`）の活用
-  - パス解決の共通ユーティリティ化
-  - 設定ファイルからの取得（将来的に検討）
-  - **直接参照方式の検討**: コピーではなく、`miscDepsJp/include` から直接参照する方式への移行を検討
-    - Python の `sys.path` や `PYTHONPATH` を活用した直接参照
-    - シンボリックリンクの活用（Windows の制約を考慮）
-    - ビルド時のパス解決の改善
-  - **注意**: Phase 2 で overlay 処理が廃止され、`jtalkSync` が直接 `source/` にコピーするようになれば、`miscDepsJp/source` フォルダ自体が不要になる可能性がある
+  - 環境変数 `REPO_ROOT` を用いたパス解決の共通ユーティリティ化（テスト／ビルドスクリプトで共通利用）
+  - 直接参照の検討対象を「辞書・DLL」に限定し、`sys.path`/`PYTHONPATH` やシンボリックリンク活用を将来の選択肢として評価（Python ソースは既に `source/` に集約済み）
+  - 設定ファイル経由の取得は優先度低で「将来検討」とし、まず共通ユーティリティ化で対応
 - **削減効果**:
-  - コピー処理自体を削減または排除する可能性
-  - `miscDepsJp/source` フォルダが不要になれば、フォルダ構造がさらに簡素化される
-  - ビルドプロセスの大幅な単純化
-- **x64 移行への影響**:
-  - フォルダ構造への依存が強いと、x64 対応時のパス変更（例: `x86/`, `x64/` サブディレクトリの追加）が困難になる
-  - 環境変数や共通ユーティリティを使用することで、x64 対応時の変更箇所を最小化できる
-  - 直接参照方式であれば、x64 対応時にパス解決ロジックを変更するだけで済む可能性がある
-  - ロードマップの Phase 1.2（DLL パス構造の統一）と連携して実施することで、x64 対応の前提条件を整備できる
+  - `miscDepsJp/source` 廃止後のフォルダ構造をさらに簡素化し、パス解決ロジックを一元化
+  - x64 移行時のパス変更を最小限にし、辞書・DLL 参照の切替箇所を限定
+- **検証の観点（直接参照を試す場合）**:
+  - jp smoke test / launcher / `scons dist` が成功すること
+  - `kgs_addon` など既存ビルドスクリプトの期待パスを壊さないこと
 
-### Phase 5: 純 Python 化とビルドプロセスの最終的な単純化（長期）
+### Phase 4: 純 Python 化とビルドプロセスの最終的な単純化（長期）
 
 - **目標**: `.cmd` スクリプトを完全に Python 化し、ビルドプロセスを最終的に単純化
 - **作業内容**:
