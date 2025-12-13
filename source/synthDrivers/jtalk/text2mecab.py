@@ -46,7 +46,7 @@ def text2mecab_setup():
             [re.compile("<"), "＜"],
             [re.compile("="), "＝"],
             [re.compile(">"), "＞"],
-            [re.compile("\?"), "？"],
+            [re.compile(r"\?"), "？"],
             [re.compile("@"), "＠"],
             [re.compile("A"), "Ａ"],
             [re.compile("B"), "Ｂ"],

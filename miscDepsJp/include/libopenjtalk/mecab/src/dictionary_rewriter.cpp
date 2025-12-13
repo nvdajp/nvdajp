@@ -137,6 +137,11 @@ bool DictionaryRewriter::open(const char *filename,
   int append_to = 0;
   std::string line;
   while (std::getline(ifs, line)) {
+    // BEGIN JP PATCH: handle CRLF text files on Windows
+    if (!line.empty() && line.back() == '\r') {
+      line.pop_back();
+    }
+    // END JP PATCH
     if (iconv) iconv->convert(&line);
     if (line.empty() || line[0] == '#') continue;
     if (line == "[unigram rewrite]") {
@@ -213,6 +218,11 @@ bool POSIDGenerator::open(const char *filename,
   std::string line;
   char *col[2];
   while (std::getline(ifs, line)) {
+    // BEGIN JP PATCH: handle CRLF text files on Windows
+    if (!line.empty() && line.back() == '\r') {
+      line.pop_back();
+    }
+    // END JP PATCH
     if (iconv) iconv->convert(&line);
     const size_t n = tokenize2(const_cast<char *>(line.c_str()),
                                " \t", col, 2);

@@ -652,12 +652,32 @@ def register_jp_builders(env: Any) -> None:
                 result = run(cmd_script, cwd=str(base), shell=True)
                 return result.returncode
 
+        # Check if mecab-dict-index.exe is needed (for user dictionary building)
+        mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
+        mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
+        needs_mecab_dict_index = not mecab_dict_index_bin.exists()
+        if needs_mecab_dict_index:
+            print(f"jtalkSync: mecab-dict-index.exe not found at {mecab_dict_index_bin}, will build it")
+
         # If the vendor dic is missing/invalid, attempt to build it; otherwise, if source already has a UTF-8 dic, reuse it.
         if should_rebuild_dic or not sys_dic.exists():
             if source_dic.joinpath("sys.dic").exists() and source_utf8 and not should_rebuild_dic:
                 print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
                 dic_src = source_dic
                 sys_dic = dic_src / "sys.dic"
+                # Even if dictionary exists, we may still need mecab-dict-index.exe for user dictionary building
+                if needs_mecab_dict_index:
+                    arch = str(env.get("TARGET_ARCH", "x86")).lower()
+                    machine = "x64" if arch in ("x64", "x86_64") else "x86"
+                    print("jtalkSync: dictionary exists but mecab-dict-index.exe is missing; building mecab binary")
+                    rc_bin = _build_mecab_bin(machine)
+                    if rc_bin != 0:
+                        print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                        return rc_bin
+                    if not mecab_dict_index_bin.exists():
+                        print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}")
+                        return 1
+                    print(f"jtalkSync: successfully built mecab-dict-index.exe at {mecab_dict_index_bin}")
             else:
                 # Try to build mecab binary and dictionary via mecab-naist-jdic
 
@@ -787,42 +807,84 @@ def register_jp_builders(env: Any) -> None:
                     if rc_dic != 0:
                         print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
                         return rc_dic
-                    # make_jdic.py writes into mecab-naist-jdic/dic (relative to builder_script)
-                    built_root = builder_script_path.parent / "libopenjtalk" / "mecab-naist-jdic"
-                    built_dic = built_root / "dic"
-                    for candidate in (built_dic, built_root):
-                        candidate_sys_dic = candidate / "sys.dic"
-                        if candidate_sys_dic.exists():
-                            dic_src = candidate
-                            sys_dic = candidate_sys_dic
-                            break
-
-                if not sys_dic.exists():
-                    print("jtalkSync: sys.dic still missing after build; no fallback available")
+        else:
+            # Dictionary exists and is valid, but check if mecab-dict-index.exe is needed
+            if needs_mecab_dict_index:
+                arch = str(env.get("TARGET_ARCH", "x86")).lower()
+                machine = "x64" if arch in ("x64", "x86_64") else "x86"
+                print("jtalkSync: dictionary exists but mecab-dict-index.exe is missing; building mecab binary")
+                rc_bin = _build_mecab_bin(machine)
+                if rc_bin != 0:
+                    print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                    return rc_bin
+                if not mecab_dict_index_bin.exists():
+                    print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}")
                     return 1
+                print(f"jtalkSync: successfully built mecab-dict-index.exe at {mecab_dict_index_bin}")
 
         # Copy dictionary files
         try:
+            dic_files = [
+                "sys.dic",
+                "unk.dic",
+                "char.bin",
+                "matrix.bin",
+                "left-id.def",
+                "right-id.def",
+                "rewrite.def",
+                "pos-id.def",
+                "dicrc",
+                "DIC_VERSION",
+            ]
             if dic_src.resolve() == dic_dst.resolve():
-                print("jtalkSync: dictionary source and destination are identical; skipping copy.")
+                print("jtalkSync: dictionary source and destination are identical; checking for missing .def files.")
+                # Even if source and destination are the same, we may need to copy .def files from mecab-naist-jdic
+                mecab_naist_jdic = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
+                for name in dic_files:
+                    dst = dic_dst / name
+                    if not dst.exists() and name.endswith(".def"):
+                        # Try to copy from mecab-naist-jdic if missing
+                        src = mecab_naist_jdic / name
+                        if src.exists():
+                            # .def files in mecab-naist-jdic are already UTF-8 (or will be converted by make_jdic.py)
+                            # Direct copy is sufficient
+                            shutil.copy2(src, dst)
+                            print(f"jtalkSync: copied {name} from mecab-naist-jdic to {dst}")
+
+                # Update dicrc config-charset to UTF-8 (make_jdic.py creates UTF-8 dictionaries)
+                dicrc_path = dic_dst / "dicrc"
+                if dicrc_path.exists():
+                    try:
+                        dicrc_content = dicrc_path.read_text(encoding="utf-8")
+                        # Replace config-charset = EUC-JP with config-charset = utf-8
+                        if "config-charset = EUC-JP" in dicrc_content:
+                            dicrc_content = dicrc_content.replace("config-charset = EUC-JP", "config-charset = utf-8")
+                            dicrc_path.write_text(dicrc_content, encoding="utf-8")
+                            print(f"jtalkSync: updated dicrc config-charset to utf-8")
+                    except Exception as e:
+                        print(f"jtalkSync: warning: failed to update dicrc config-charset: {e}")
             else:
-                dic_files = [
-                    "sys.dic",
-                    "unk.dic",
-                    "char.bin",
-                    "matrix.bin",
-                    "left-id.def",
-                    "right-id.def",
-                    "rewrite.def",
-                    "pos-id.def",
-                    "dicrc",
-                    "DIC_VERSION",
-                ]
                 for name in dic_files:
                     src = dic_src / name
                     if src.exists():
-                        shutil.copy2(src, dic_dst / name)
+                        dst = dic_dst / name
+                        # .def files are already UTF-8 (or will be converted by make_jdic.py)
+                        # Direct copy is sufficient
+                        shutil.copy2(src, dst)
                 print(f"jtalkSync: copied dictionary assets to {dic_dst}")
+
+                # Update dicrc config-charset to UTF-8 (make_jdic.py creates UTF-8 dictionaries)
+                dicrc_path = dic_dst / "dicrc"
+                if dicrc_path.exists():
+                    try:
+                        dicrc_content = dicrc_path.read_text(encoding="utf-8")
+                        # Replace config-charset = EUC-JP with config-charset = utf-8
+                        if "config-charset = EUC-JP" in dicrc_content:
+                            dicrc_content = dicrc_content.replace("config-charset = EUC-JP", "config-charset = utf-8")
+                            dicrc_path.write_text(dicrc_content, encoding="utf-8")
+                            print(f"jtalkSync: updated dicrc config-charset to utf-8")
+                    except Exception as e:
+                        print(f"jtalkSync: warning: failed to update dicrc config-charset: {e}")
         except Exception as e:
             print(f"jtalkSync: failed to copy dictionary assets: {e}")
             return 1
@@ -876,6 +938,20 @@ def register_jp_builders(env: Any) -> None:
     # jtalkSync depends on jtalkPrep to avoid file lock conflicts when both try to build hts.mak
     env.Command(jtalk_sync_stamp, [jtalk_prep_stamp], _sync_jtalk_assets)
     env.Alias("jtalkSync", jtalk_sync_stamp)
+
+    # Register files generated by jtalkSync for cleanup (scons -c)
+    repo_root = Path.cwd()
+    vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
+    jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
+    # mecab-dict-index.exe (built by jtalkSync)
+    mecab_dict_index = str(vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe")
+    env.Clean(jtalk_sync_stamp, mecab_dict_index)
+    # libmecab.dll (copied to source/synthDrivers/jtalk by jtalkSync)
+    libmecab_dll = str(jtalk_dir / "libmecab.dll")
+    env.Clean(jtalk_sync_stamp, libmecab_dll)
+    # libopenjtalk.dll (copied to source/synthDrivers/jtalk by jtalkSync)
+    libopenjtalk_dll = str(jtalk_dir / "libopenjtalk.dll")
+    env.Clean(jtalk_sync_stamp, libopenjtalk_dll)
 
     # Note: Dependencies are already established in sconstruct:
     #   - sourceDir -> jtalkSync (L401)

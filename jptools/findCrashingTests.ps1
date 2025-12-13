@@ -9,8 +9,8 @@
 .PARAMETER SkipInstall
     Skip installing uv dependencies.
 
-.PARAMETER SkipOverlay
-    Skip running scons miscdepsjp overlay.
+.PARAMETER SkipJtalkSync
+    Skip running scons jtalkSync.
 
 .PARAMETER StartIndex
     Start index for test cases (0-based). Default: 0.
@@ -28,7 +28,7 @@
 [CmdletBinding()]
 param(
     [switch]$SkipInstall,
-    [switch]$SkipOverlay,
+    [switch]$SkipJtalkSync,
     [int]$StartIndex = 0,
     [int]$EndIndex = -1,
     [string]$OutputFile = "crashing_tests_report.md"
@@ -45,9 +45,9 @@ if (-not $SkipInstall) {
     uv pip install scons pytest
 }
 
-if (-not $SkipOverlay) {
-    Write-Host "Preparing miscDeps overlay via scons..." -ForegroundColor Cyan
-    & "$repoRoot\scons.bat" miscdepsjp
+if (-not $SkipJtalkSync) {
+    Write-Host "Preparing JTalk assets via scons jtalkSync..." -ForegroundColor Cyan
+    & "$repoRoot\scons.bat" jtalkSync
 }
 
 $env:PYTHONPATH = "miscDepsJp\include\python-jtalk;miscDepsJp\source\synthDrivers\jtalk"

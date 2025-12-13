@@ -206,7 +206,7 @@ source → jtalkSync → jtalkPrep
 - Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動し、`_copy_jtalk_core_files()` は no-op 化済み
 - テスト依存を `source/synthDrivers/jtalk` 直接参照に統一（`runJpSmokeTests.ps1` は `miscDepsJp/include/python-jtalk` を `PYTHONPATH` に追加し、`jtalkRunner.py` を参照）
 - `jtalkPrep`/`jtalkSync` は DLL・辞書を直接 `source/synthDrivers/jtalk` へ配置するよう更新
-- 検証結果: `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`、`scons.bat dist --all-cores`、`scons.bat launcher --all-cores` をローカル x86 で成功
+- 検証結果: `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipJtalkSync`、`scons.bat dist --all-cores`、`scons.bat launcher --all-cores` をローカル x86 で成功
 
 ### Phase 2: 依存関係の明確化とエイリアスの統合（中期）
 
@@ -232,7 +232,7 @@ source → jtalkSync → jtalkPrep
 - `jptools/runJpSmokeTests.ps1` の `miscdepsjp` 呼び出しを削除し、`jtalkSync` に変更
 - `jptools/scons_jp.py` の `_run_overlay_and_stamp()` を no-op 化（`miscDepsJp/source` が空のため）
 - 依存関係チェーンを `source → jtalkSync → jtalkPrep` に簡素化
-- 検証結果: ローカル x86 で `scons.bat dist`、`scons.bat launcher`、`jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` が成功
+- 検証結果: ローカル x86 で `scons.bat dist`、`scons.bat launcher`、`jptools/runJpSmokeTests.ps1 -SkipInstall -SkipJtalkSync` が成功
 
 ### Phase 3: フォルダ構造への依存削減と参照方式の簡素化（長期）
 

@@ -40,7 +40,7 @@
 #### パラメータ説明
 
 - `-SkipInstall`: uv依存関係のインストールをスキップ（既にインストール済みの場合）
-- `-SkipOverlay`: `scons.bat miscdepsjp`の実行をスキップ（既に実行済みの場合）
+- `-SkipJtalkSync`: `scons jtalkSync`の実行をスキップ（既に実行済みの場合）
 - `-StartIndex`: 開始インデックス（0ベース）
 - `-EndIndex`: 終了インデックス（0ベース、排他的）
 - `-OutputFile`: 出力Markdownファイルのパス

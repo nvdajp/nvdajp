@@ -133,7 +133,7 @@ bool Param::load(const char *filename) {
   set<std::string>("bos-feature","BOS/EOS,*,*,*,*,*,*,*,*",false);
   set<std::string>("eval-size","8",false);
   set<std::string>("unk-eval-size","4",false);
-  set<std::string>("config-charset","EUC-JP",false);
+  set<std::string>("config-charset","utf-8",false);
   set<std::string>("node-format-yomi","%pS%f[7]",false);
   set<std::string>("unk-format-yomi","%M",false);
   set<std::string>("eos-format-yomi","\n",false);

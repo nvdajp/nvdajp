@@ -73,3 +73,6 @@ miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-eng-dic.csv
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-tankan-dic.csv
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic
+# mecab-dict-index.exe should be built via SCons, not committed to repository
+miscDepsJp/jptools/jtusrdic/mecab-dict-index.exe
+miscDepsJp/include/libopenjtalk/mecab/src/mecab-dict-index.exe

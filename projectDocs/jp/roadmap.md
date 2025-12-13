@@ -2,7 +2,7 @@
 
 目的: 本家版との差分を最小化しながら、順序立てて基盤整合 → 言語/依存更新 → 64bit 対応を進める。
 
-## 現行マイルストン（このブランチ: alphajp-251212）
+## 現行マイルストン（このブランチ: alphajp-251213）
 
 * **アーキテクチャ**: x86（32bit）
 * **Python バージョン**: 3.11
@@ -102,7 +102,7 @@
   * **目的**: ビルドプロセスを簡素化し、x64対応時の作業量を削減。本家版との差分を最小化（overlay 処理という独自の仕組みを削除）
   * **基本方針**: コピー処理を「統合」するだけでなく、積極的に「削減」し、ビルドプロセスを単純化することを目指す。Python コードは最初から `source/` に置く形を理想とし、overlay という中間段階を廃止して本家設計に揃える。
   * **完了内容**:
-    * **Phase 1 完了**: Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動、テスト依存を直接参照に変更。`scons.bat dist`、`scons.bat launcher`、`jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` がローカル成功。
+    * **Phase 1 完了**: Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動、テスト依存を直接参照に変更。`scons.bat dist`、`scons.bat launcher`、`jptools/runJpSmokeTests.ps1 -SkipInstall -SkipJtalkSync` がローカル成功。
     * **Phase 2 完了**: `miscDepsJp/source` の全ファイルを `source/` に移動し、overlay 処理を不要化。`miscdepsjp` エイリアスを削除し、依存関係を `source → jtalkSync → jtalkPrep` に簡素化。`sconstruct` の依存関係を更新し、`jptools/runJpSmokeTests.ps1` を調整済み。
   * **効果**: overlay 処理が完全に廃止され、ビルドプロセスが大幅に簡素化。`scons -c` で削除されるファイルは `source/` に直接配置されたファイルのみとなり、overlay による再配置の必要がなくなった。
   * **参考**: 詳細（現状の問題点、作業内容の詳細、検証要件、削減効果、x64 移行への影響など）は `projectDocs/jp/miscdepsjp-overlay-strategy.md` の「改善計画」セクション（Phase 1-2）を参照
@@ -122,13 +122,20 @@
   * 1つのPRで1つの変更のみ（例: Pythonバージョン更新、ランナー更新など）
   * **ローカル環境でテスト済みの変更のみをCIに反映**
 
-* [ ] **タスク 1.8: ユーザー辞書テストの有効化**
-  * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86で検証）
-  * 併せて `mecab-dict-index.exe` をリポジトリから除外（.gitignore）し、SConsビルドで欠如時にビルドする運用に統一
-
 ### ステージ2: ローカル開発環境でのマトリクス実行整備
 
-* [ ] **タスク 2.0: ローカル開発環境でのjpSmokeTest x86/x64マトリクス実行の実現（最優先）**
+* [x] **タスク 2.0: ユーザー辞書テストの有効化** ✅ 完了（2025-12-13）
+  * **目的**: `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86で検証）
+  * **完了内容**:
+    * `mecabRunner.py` に `_find_mecab_dict_index()` と `_build_user_dic_from_csv()` 関数を追加
+    * `runTasks(enableUserDic=True)` で `jtusr.csv` から自動的にユーザー辞書を生成する機能を実装
+    * `mecab-dict-index.exe` のパスをビルド済みのもの（`miscDepsJp/include/libopenjtalk/mecab/src/`）から取得するように変更
+    * `.gitignore` に `mecab-dict-index.exe` を明示的に追加（リポジトリから除外）
+    * SConsビルド（`scons jtalkSync`）で `mecab-dict-index.exe` が欠如時に自動ビルドされることを確認
+  * **効果**: ユーザー辞書テストが自動化され、ステージ2のマトリクス実行整備に役立つ
+  * **注意**: リポジトリに含まれている `miscDepsJp/jptools/jtusrdic/mecab-dict-index.exe` は削除が必要（手動で実施）
+
+* [ ] **タスク 2.1: ローカル開発環境でのjpSmokeTest x86/x64マトリクス実行の実現（最優先）**
 
   * **目的**: 2025.3.xjp安定版リリースを維持しながら、ローカル開発環境でjpSmokeTestをx86/x64マトリクス実行できて成功する状態を作る
   * **基本方針**:
@@ -155,7 +162,7 @@
        * **検証**: 複数回の実行で安定して成功することを確認
     4. **タスク 2.4: CI統合**
        * **現状**: `testAndPublish.yml` で `jpSmokeTests` ジョブが存在し、`allTestsPass` 必須チェックに含まれている（CI統合は完了済み）
-       * **補足**: x86 実行・`-SkipInstall -SkipOverlay` で安定化済み。x64 マトリクス統合は後続ステージで検討。
+       * **補足**: x86 実行・`-SkipInstall -SkipJtalkSync` で安定化済み。x64 マトリクス統合は後続ステージで検討。
 
   * **実装詳細（タスク 2.2）**:
     * `runJpSmokeTests.ps1`の拡張

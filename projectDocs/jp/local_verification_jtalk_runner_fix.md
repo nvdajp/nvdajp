@@ -67,7 +67,7 @@ Test-Path "miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll"
 ### 推奨: JTalkテストのみ実行（修正の検証）
 
 ```powershell
-.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JtalkTests"
+.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipJtalkSync -TestFilter "JtalkTests"
 ```
 
 ### すべての準備を自動実行
@@ -79,7 +79,7 @@ Test-Path "miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll"
 ### 準備済みの場合はスキップ
 
 ```powershell
-.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
+.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipJtalkSync
 ```
 
 ## 検証内容

@@ -138,7 +138,10 @@ inline size_t tokenizeCSV(char *str,
       str = std::find(str, eos, ',');
       end = str;
     }
-    if (max-- > 1) *end = '\0';
+    // BEGIN JP PATCH: always NUL-terminate each field.
+    // Without this, the last CSV field may keep a trailing '"' (Windows CRLF + quoted last column).
+    if (max-- > 0) *end = '\0';
+    // END JP PATCH
     *out++ = start;
     ++n;
     if (max == 0) break;

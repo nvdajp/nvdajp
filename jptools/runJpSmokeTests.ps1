@@ -8,7 +8,7 @@
     3. Sets PYTHONPATH so that python-jtalk + source/synthDrivers/jtalk are importable.
     4. Invokes "uv run python -m pytest miscDepsJp/jptools/test.py -k 'JpBrailleTests or JtalkTests'".
 
-    Use -SkipInstall or -SkipOverlay if you already prepared the environment.
+    Use -SkipInstall or -SkipJtalkSync if you already prepared the environment.
     Use -TestFilter to run specific tests (e.g., "JpBrailleTests.test_pass2" or "JtalkTests").
     Use -TestIndices to run specific test cases by index (e.g., "11" or "11,12,13").
     
@@ -16,7 +16,7 @@
     processing is performed (cache checking, GitHub Actions step summary, etc.).
 
 .EXAMPLE
-    .\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JpBrailleTests.test_pass2"
+    .\runJpSmokeTests.ps1 -SkipInstall -SkipJtalkSync -TestFilter "JpBrailleTests.test_pass2"
     Runs only the pass2 test (MeCab-related test).
 
 .EXAMPLE
@@ -34,7 +34,7 @@
 [CmdletBinding()]
 param(
     [switch]$SkipInstall,
-    [switch]$SkipOverlay,
+    [switch]$SkipJtalkSync,
     [string]$TestFilter = "JpBrailleTests or JtalkTests",
     [int]$MaxTests = 0,
     [string]$TestIndices = ""
@@ -114,6 +114,28 @@ function Ensure-JtalkDic {
     }
 }
 
+function Ensure-MecabDictIndex {
+    param(
+        [string]$RepoRoot
+    )
+    # Check if mecab-dict-index.exe exists in the build output location
+    # (built by scons jtalkSync)
+    $mecabDictIndex = Join-Path $RepoRoot "miscDepsJp\include\python-jtalk\libopenjtalk\mecab\src\mecab-dict-index.exe"
+    
+    if (-not (Test-Path $mecabDictIndex)) {
+        Write-Host "mecab-dict-index.exe not found; running scons jtalkSync to build it..." -ForegroundColor Yellow
+        & "$RepoRoot\scons.bat" jtalkSync
+        if ($LastExitCode -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
+            exit $LastExitCode
+        }
+        # Verify it was built
+        if (-not (Test-Path $mecabDictIndex)) {
+            Write-Warning "mecab-dict-index.exe still not found after jtalkSync. User dictionary tests may fail."
+        }
+    }
+}
+
 $packages = @("pytest")
 if (-not $SkipInstall) {
     # Always refresh scons/pytest when not skipping install
@@ -132,7 +154,7 @@ if ($needsInstall) {
     }
 }
 
-if (-not $SkipOverlay) {
+if (-not $SkipJtalkSync) {
     # In CI, check cache first to avoid unnecessary builds
     if ($isCI) {
         $dllPath = Join-Path $repoRoot "source\synthDrivers\jtalk\libopenjtalk.dll"
@@ -159,6 +181,8 @@ if (-not $SkipOverlay) {
 $jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
 # Ensure dictionaries are present in source/ even when overlay is skipped
 Ensure-JtalkDic -RepoRoot $repoRoot -JtalkSource $jtalkSource
+# Ensure mecab-dict-index.exe is available for user dictionary tests
+Ensure-MecabDictIndex -RepoRoot $repoRoot
 
 # jtalkRunner.py is still in miscDepsJp/include/python-jtalk, so add it to PYTHONPATH
 $pythonJtalk = Join-Path $repoRoot "miscDepsJp\include\python-jtalk"
