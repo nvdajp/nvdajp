@@ -1073,6 +1073,7 @@ def register_jp_builders(env: Any) -> None:
                             error_count = int(line.split(":")[-1].strip())
                             installer_has_errors = error_count > 0
                         except (ValueError, IndexError):
+                            # Ignore lines that do not match the expected "Number of errors: <int>" format
                             pass
                         break
             if installer_has_errors:
@@ -1095,11 +1096,10 @@ def register_jp_builders(env: Any) -> None:
                 for pattern in ["**/*.exe", "**/*.dll"]:
                     dist_files.extend(dist_dir.glob(pattern))
                 # Sort for consistent output
-                dist_files.sort(key=lambda p: str(p))
+                dist_files.sort(key=str)
                 for dist_file in dist_files:
                     if dist_file.is_file():
                         result_dist = subprocess.run([signtool, "verify", "/pa", "/v", str(dist_file)], capture_output=True, text=True)
-                        file_name = dist_file.name
                         # Check if this file has errors
                         has_errors = result_dist.returncode != 0
                         dist_output = (result_dist.stdout or "") + "\n" + (result_dist.stderr or "")
@@ -1111,6 +1111,7 @@ def register_jp_builders(env: Any) -> None:
                                         error_count = int(line.split(":")[-1].strip())
                                         has_errors = error_count > 0
                                     except (ValueError, IndexError):
+                                        # Ignore parse errors; treat as no errors found
                                         pass
                                     break
                         if has_errors:
@@ -1198,6 +1199,7 @@ def register_jp_builders(env: Any) -> None:
                             if current_file and error_count > 0:
                                 failed_files.append(current_file)
                     except (ValueError, IndexError):
+                        # Ignore lines that do not contain a valid error count
                         pass
             # If all errors are from ignored files, treat as success
             if total_errors > 0 and ignored_errors == total_errors:
