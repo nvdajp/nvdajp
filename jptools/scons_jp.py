@@ -337,7 +337,6 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
 
 def register_jp_builders(env: Any) -> None:
     """Register JP-specific aliases without affecting upstream targets."""
-    repo_root = Path.cwd()
     # miscdepsjp alias removed in Phase 2 (miscDepsJp/source is empty, overlay is no-op)
 
 
@@ -940,7 +939,7 @@ def register_jp_builders(env: Any) -> None:
                 if dst_examples.exists():
                     shutil.rmtree(dst_examples)
                 shutil.copytree(src_examples, dst_examples)
-                print(f"jpStageControllerClient: copied examples directory")
+                print("jpStageControllerClient: copied examples directory")
         except Exception as e:
             print(f"jpStageControllerClient: error: {e}")
             return 1
@@ -991,34 +990,58 @@ def register_jp_builders(env: Any) -> None:
                     candidates.append(exe_candidates[0])
         except Exception:
             pass
-        # Optional JP DLL payload in dist/ (prefer dist/ over source/ since dist/ is what gets distributed)
+        # Required JP DLL payload in dist/ (must be signed before launcher is built)
+        # NOTE: We sign files in dist/, not source/, because:
+        # 1. jtalkSync copies DLLs to source/synthDrivers/jtalk/
+        # 2. dist build copies files from source/ to dist/ (unsigned)
+        # 3. jpCertExtras signs files in dist/ (this step)
+        # 4. launcher builds installer from dist/ (includes signed DLLs)
         dist_dir = repo_root / "dist"
-        if dist_dir.exists():
-            dist_jtalk_dir = dist_dir / "synthDrivers" / "jtalk"
-            for dll_name in ["libopenjtalk.dll", "libmecab.dll"]:
-                dll_path = dist_jtalk_dir / dll_name
-                if dll_path.exists():
-                    candidates.append(dll_path)
-        # Fallback to source/ if dist/ doesn't exist yet (for early signing)
-        if not candidates or not any("dist" in str(p) for p in candidates if "libopenjtalk" in str(p) or "libmecab" in str(p)):
-            source_jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
-            for dll_name in ["libopenjtalk.dll", "libmecab.dll"]:
-                dll_path = source_jtalk_dir / dll_name
-                if dll_path.exists():
-                    # Only add if not already in candidates from dist/
-                    if not any(str(dll_path) == str(c) or dll_path.name == c.name for c in candidates):
-                        candidates.append(dll_path)
+        required_dlls = ["libopenjtalk.dll", "libmecab.dll"]
+        missing_required = []
+        if not dist_dir.exists():
+            print("jpCertExtras: ERROR - dist/ directory does not exist")
+            print("jpCertExtras: dist/ must be built before jpCertExtras can sign DLLs")
+            print("jpCertExtras: Build order: jtalkSync -> dist -> jpCertExtras -> launcher")
+            stamp_path.write_text("error:dist-not-built", encoding="utf-8")
+            return 1
+        dist_jtalk_dir = dist_dir / "synthDrivers" / "jtalk"
+        for dll_name in required_dlls:
+            dll_path = dist_jtalk_dir / dll_name
+            if dll_path.exists():
+                candidates.append(dll_path)
+            else:
+                missing_required.append(dll_path)
+        # Report missing required DLLs (must be in dist/, not source/)
+        if missing_required:
+            print("jpCertExtras: ERROR - Required DLLs not found in dist/:")
+            for dll_path in missing_required:
+                print(f"  {dll_path}")
+            print("jpCertExtras: These files must be present in dist/ before signing.")
+            print("jpCertExtras: Build order: jtalkSync (copies to source/) -> dist (copies to dist/) -> jpCertExtras (signs dist/)")
+            stamp_path.write_text(f"error:missing-dlls:{','.join(str(p.name) for p in missing_required)}", encoding="utf-8")
+            return 1
         # Perform signing via upstream signExec
+        signed_count = 0
         for path in candidates:
             try:
+                print(f"jpCertExtras: signing {path}")
                 node = env.File(str(path))
                 rc = signExec([node], [node], env)
                 if rc != 0:
+                    print(f"jpCertExtras: ERROR - signing failed for {path} (rc={rc})")
                     stamp_path.write_text(f"fail:{path}", encoding="utf-8")
                     return rc
+                signed_count += 1
+                print(f"jpCertExtras: successfully signed {path}")
             except Exception as e:
+                print(f"jpCertExtras: ERROR - exception while signing {path}: {e}")
                 stamp_path.write_text(f"error:{path}:{e}", encoding="utf-8")
                 return 1
+        if signed_count > 0:
+            print(f"jpCertExtras: signed {signed_count} file(s)")
+        else:
+            print("jpCertExtras: no files to sign")
         stamp_path.write_text("ok", encoding="utf-8")
         return 0
 
@@ -1026,6 +1049,23 @@ def register_jp_builders(env: Any) -> None:
     env.AlwaysBuild(jp_cert_extras_stamp)
     env.Command(jp_cert_extras_stamp, [], _cert_extras)
     env.Alias("jpCertExtras", jp_cert_extras_stamp)
+
+    # Add dependency: launcher depends on jpCertExtras (only when signing is configured)
+    # This ensures dist/ DLLs are signed before launcher includes them.
+    # For non-cert builds, jpCertExtras will skip gracefully (returns 0 when signExec is None).
+    try:
+        signExec = env.get("signExec")
+        certFile = env.get("certFile")
+        apiSigningToken = env.get("apiSigningToken")
+        # Only add dependency if signing is configured
+        if signExec or certFile or apiSigningToken:
+            # Use env.Alias() to get the launcher alias (same pattern as sconstruct L401, L724)
+            launcher_alias = env.Alias("launcher")
+            if launcher_alias:
+                env.Depends(launcher_alias, jp_cert_extras_stamp)
+    except Exception:
+        # If launcher alias is not available, that's okay (non-cert builds, etc.)
+        pass
 
     # 4) JP verify signatures (use SIGNTOOL if available to verify installer and dist files)
     def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
@@ -1116,7 +1156,7 @@ def register_jp_builders(env: Any) -> None:
                                     break
                         if has_errors:
                             # Include essential error information only (remove verbose output)
-                            failed_files_output.append(f"\nFile: {dist_file}")
+                            failed_files_output.append(f"File: {dist_file}")
                             dist_output_clean = result_dist.stdout or ""
                             if result_dist.stderr:
                                 dist_output_clean += "\n" + result_dist.stderr
@@ -1164,11 +1204,14 @@ def register_jp_builders(env: Any) -> None:
             failed_files = []
             # Track files that appear in failed_files_output (these have errors)
             files_with_errors = set()
-            for line in failed_files_output:
-                if line.startswith("File: "):
-                    file_path = line[6:].strip()
-                    file_name = Path(file_path).name
-                    files_with_errors.add(file_name)
+            for item in failed_files_output:
+                # Each item may be a single line or multiple lines (file path + error messages)
+                for line in item.split("\n"):
+                    if line.strip().startswith("File: "):
+                        file_path = line.strip()[6:].strip()
+                        file_name = Path(file_path).name
+                        files_with_errors.add(file_name)
+                        break  # Only need the file name from each failed_files_output item
             # Parse output for error counts and file names
             for i, line in enumerate(lines):
                 if line.startswith("File: "):
