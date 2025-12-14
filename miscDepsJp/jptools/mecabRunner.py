@@ -149,7 +149,9 @@ def _build_user_dic_from_csv(csv_path, dic_path):
         with open(src, "rb") as rf:
             data = rf.read()
         data = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        dst_dir = os.path.dirname(dst)
+        if dst_dir:
+            os.makedirs(dst_dir, exist_ok=True)
         with open(dst, "wb") as f:
             f.write(data)
 
@@ -227,7 +229,7 @@ def _build_user_dic_from_csv(csv_path, dic_path):
         if filtered_stderr:
             error_msg += f"stderr (filtered): {filtered_stderr}\n"
         # Check if the error is only the known harmless warnings
-        if not filtered_stderr and e.returncode != 0:
+        if not filtered_stderr:
             # If stderr was completely filtered but return code is non-zero,
             # there might be a real error, so include original stderr
             if e.stderr:

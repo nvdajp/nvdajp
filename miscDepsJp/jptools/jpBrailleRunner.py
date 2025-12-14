@@ -141,7 +141,9 @@ def _build_user_dic_from_csv(csv_path, dic_path, debug_file=None):
             data = rf.read()
         # Normalize CRLF/CR -> LF
         data = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        dst_dir = os.path.dirname(dst)
+        if dst_dir:
+            os.makedirs(dst_dir, exist_ok=True)
         with open(dst, "wb") as f:
             f.write(data)
 
@@ -215,7 +217,7 @@ def _build_user_dic_from_csv(csv_path, dic_path, debug_file=None):
 
     try:
         # Use cp932 encoding for Windows console output (mecab-dict-index.exe may output in CP932)
-        result = subprocess.run(cmd, capture_output=True, text=True, encoding='cp932', errors='replace', check=True)
+        subprocess.run(cmd, capture_output=True, text=True, encoding='cp932', errors='replace', check=True)
         return dic_path
     except subprocess.CalledProcessError as e:
         error_msg = f"Failed to build user dictionary: {e}\n"
@@ -223,9 +225,10 @@ def _build_user_dic_from_csv(csv_path, dic_path, debug_file=None):
             error_msg += f"stdout: {e.stdout}\n"
         if e.stderr:
             # Filter out known harmless error messages
+            # Skip lines that contain context_id.cpp AND have LEFT-ID/RIGHT-ID errors
             filtered_stderr = "\n".join([
                 line for line in e.stderr.split('\n')
-                if 'context_id.cpp' not in line or ('cannot find LEFT-ID' not in line and 'cannot find RIGHT-ID' not in line)
+                if not ('context_id.cpp' in line and ('cannot find LEFT-ID' in line or 'cannot find RIGHT-ID' in line))
             ])
             if filtered_stderr:
                 error_msg += f"stderr (filtered): {filtered_stderr}\n"
