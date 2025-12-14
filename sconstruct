@@ -391,11 +391,10 @@ for userGuideFileSub in env.Glob(os.path.join(userDocsDir.path, "*", "userGuide.
 env.SConscript("cldrDict_sconscript", exports=["env", "sourceDir"])
 
 # JP-specific helpers (isolated; add opt-in aliases only)
+# Note: register_jp_builders is called after dist is defined (see below)
+# But we need to set up jtalkSync dependency for sourceDir here
 try:
     import jptools.scons_jp as scons_jp
-    # Always register JP builders in this repo; miscDepsJp overlay is required
-    # for a correct build layout regardless of publisher.
-    scons_jp.register_jp_builders(env)
     # Ensure jtalkSync runs before building source artifacts so that
     # "scons source" is self-contained.
     env.Depends(sourceDir, env.Alias("jtalkSync"))
@@ -571,6 +570,17 @@ AlwaysBuild(dist)
 env.Clean(dist, dist)
 # Clean the intermediate build directory.
 env.Clean([dist], buildDir)
+
+# Register JP builders after dist is defined so jpCertExtras can depend on dist target
+try:
+    import jptools.scons_jp as scons_jp
+    # Always register JP builders in this repo; miscDepsJp overlay is required
+    # for a correct build layout regardless of publisher.
+    # Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds)
+    scons_jp.register_jp_builders(env, dist_target=dist)
+except Exception:
+    # Never fail the build if JP helpers are unavailable.
+    pass
 
 launcher = env.Command(
 	outputDir.File("%s.exe" % outFilePrefix),
