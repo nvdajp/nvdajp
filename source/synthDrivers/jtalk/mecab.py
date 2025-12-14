@@ -170,9 +170,17 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
         if logwrite_:
             if not mecab:
                 logwrite_("mecab_new failed.")
-            s = libmc.mecab_strerror(mecab).strip()
-            if s:
-                logwrite_(s)
+                # Try to get error message from a temporary mecab instance
+                # mecab_strerror requires a valid mecab pointer, so we can't call it if mecab is None
+                # Instead, log the parameters that were used
+                logwrite_(f"mecab_new failed with dic={dic}, mecabrc={mecabrc}")
+                if user_dics:
+                    logwrite_(f"user_dics={user_dics}")
+            else:
+                # Only call mecab_strerror if mecab is not None
+                s = libmc.mecab_strerror(mecab).strip()
+                if s:
+                    logwrite_(s)
 
 
 def Mecab_analysis(src, features, logwrite_=None):
