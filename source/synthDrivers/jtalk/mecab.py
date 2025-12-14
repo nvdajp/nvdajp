@@ -133,6 +133,7 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
         libmc.mecab_version.restype = c_char_p
         libmc.mecab_strerror.restype = c_char_p
         libmc.mecab_sparse_tonode.restype = mecab_node_t_ptr
+        libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]
         libmc.mecab_new.argtypes = [c_int, c_char_p_p]
     global mecab
     if mecab is None:
@@ -180,10 +181,13 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
                 # Only call mecab_strerror if mecab is not None
                 s = libmc.mecab_strerror(mecab).strip()
                 if s:
-                    logwrite_(s)
+                    logwrite_(f"mecab_strerror: {s}")
+                else:
+                    logwrite_("mecab_new succeeded (no error message)")
 
 
 def Mecab_analysis(src, features, logwrite_=None):
+    global mecab, libmc, lock
     if not src:
         if logwrite_:
             logwrite_("src empty")
@@ -199,7 +203,11 @@ def Mecab_analysis(src, features, logwrite_=None):
             logwrite_("libmc is None, cannot analyze")
         features.size = 0
         return
-    head = libmc.mecab_sparse_tonode(mecab, src)
+    # Ensure src is bytes
+    if isinstance(src, str):
+        src = src.encode(CODE, "ignore")
+    with lock:
+        head = libmc.mecab_sparse_tonode(mecab, src)
     if head is None:
         if logwrite_:
             logwrite_("mecab_sparse_tonode result empty")

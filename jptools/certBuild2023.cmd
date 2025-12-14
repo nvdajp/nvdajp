@@ -106,7 +106,7 @@ if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN
 call scons.bat jtalkPrep jtalkSync %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 rem Run JP smoke tests (JpBrailleTests and JtalkTests) right after jtalkSync prepares DLLs and dictionaries
-powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipJtalkSync
+powershell -ExecutionPolicy Bypass -File "%~dp0runJpSmokeTests.ps1" -SkipInstall -SkipJtalkSync
 @if not "%ERRORLEVEL%"=="0" goto onerror
 rem Build dist first (source and user_docs are prerequisites for dist)
 call scons.bat source user_docs dist %SCONSARGS%

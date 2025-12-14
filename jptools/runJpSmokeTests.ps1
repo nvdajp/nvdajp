@@ -101,10 +101,15 @@ function Install-Packages {
 function Ensure-JtalkDic {
     param(
         [string]$RepoRoot,
-        [string]$JtalkSource
+        [string]$JtalkSource,
+        [switch]$SkipJtalkSync
     )
     $charBin = Join-Path $JtalkSource "dic\char.bin"
     if (-not (Test-Path $charBin)) {
+        if ($SkipJtalkSync) {
+            Write-Warning "JTalk dictionaries not found under $JtalkSource, but -SkipJtalkSync is set. Tests may fail."
+            return
+        }
         Write-Host "JTalk dictionaries not found under $JtalkSource; running scons jtalkSync..." -ForegroundColor Yellow
         & "$RepoRoot\scons.bat" jtalkSync
         if ($LastExitCode -ne 0) {
@@ -116,7 +121,8 @@ function Ensure-JtalkDic {
 
 function Ensure-MecabDictIndex {
     param(
-        [string]$RepoRoot
+        [string]$RepoRoot,
+        [switch]$SkipJtalkSync
     )
     # Check if mecab-dict-index.exe exists in the build output location
     # (built by scons jtalkSync)
@@ -146,6 +152,14 @@ function Ensure-MecabDictIndex {
     }
 
     if ((-not (Test-Path $mecabDictIndex)) -or $needsRebuild) {
+        if ($SkipJtalkSync) {
+            if (-not (Test-Path $mecabDictIndex)) {
+                Write-Warning "mecab-dict-index.exe not found, but -SkipJtalkSync is set. User dictionary tests may fail."
+            } else {
+                Write-Warning "mecab-dict-index.exe is older than utils.h, but -SkipJtalkSync is set. User dictionary tests may fail."
+            }
+            return
+        }
         if ($needsRebuild) {
             Write-Host "mecab-dict-index.exe is older than utils.h; forcing rebuild..." -ForegroundColor Yellow
             # Remove executable to force rebuild (obj files will be cleaned by nmake clean in _build_mecab_bin)
@@ -209,9 +223,9 @@ if (-not $SkipJtalkSync) {
 
 $jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
 # Ensure dictionaries are present in source/ even when overlay is skipped
-Ensure-JtalkDic -RepoRoot $repoRoot -JtalkSource $jtalkSource
+Ensure-JtalkDic -RepoRoot $repoRoot -JtalkSource $jtalkSource -SkipJtalkSync:$SkipJtalkSync
 # Ensure mecab-dict-index.exe is available for user dictionary tests
-Ensure-MecabDictIndex -RepoRoot $repoRoot
+Ensure-MecabDictIndex -RepoRoot $repoRoot -SkipJtalkSync:$SkipJtalkSync
 
 # jtalkRunner.py is still in miscDepsJp/include/python-jtalk, so add it to PYTHONPATH
 $pythonJtalk = Join-Path $repoRoot "miscDepsJp\include\python-jtalk"
