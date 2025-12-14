@@ -693,18 +693,22 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                         mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
                         mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
                         libmecab_dll = mecab_src_dir / "libmecab.dll"
-                        rc_bin = _build_mecab_bin(machine)
-                        if rc_bin != 0:
-                            print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
-                            return rc_bin
-                        if not mecab_dict_index_bin.exists():
-                            print(
-                                f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
-                            )
-                            return 1
-                        if not libmecab_dll.exists():
-                            print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
-                            print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
+                        # Only build if binaries are missing (may have been built earlier in jtalkSync)
+                        if not mecab_dict_index_bin.exists() or not libmecab_dll.exists():
+                            rc_bin = _build_mecab_bin(machine)
+                            if rc_bin != 0:
+                                print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                                return rc_bin
+                            if not mecab_dict_index_bin.exists():
+                                print(
+                                    f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
+                                )
+                                return 1
+                            if not libmecab_dll.exists():
+                                print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
+                                print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
+                        else:
+                            print("jtalkSync: mecab binaries already exist, skipping rebuild")
                         # make_jdic.py expects mecab-dict-index.exe under jptools/jtalk/libopenjtalk/mecab/src
                         make_jdic_mecab_bin = builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
                         try:
