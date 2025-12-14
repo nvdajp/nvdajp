@@ -81,6 +81,28 @@ synthDrivers/jtalk/dic へのパッケージングについて、特に文字コ
 * CI のビルドステージなどで `scons jtalkSync` を実行すると、DIC_VERSION が無い（または UTF-8 記載が無い）場合は辞書を make_jdic.py で生成する。CI では後続のランチャー作成／JP スモークテストはビルドステージのキャッシュを利用する。
 * miscDepsJp/jptools/jtusrdic/mecab-dict-index.exe はいずれ廃止して、ビルドし直したバイナリを使うようにする予定。
 
+### 辞書ファイルのコピー処理（dic_src と dic_dst）
+
+`jtalkSync` では、辞書ファイルを `dic_src` から `dic_dst` にコピーします：
+
+* **`dic_src`**: `miscDepsJp/include/python-jtalk/dic`（辞書のビルド場所）
+* **`dic_dst`**: `source/synthDrivers/jtalk/dic`（NVDA 実行時に使用される辞書の配置場所）
+
+**通常は `dic_src != dic_dst` を想定**していますが、場合によっては同じパスになることもあります（シンボリックリンクや同じディレクトリを指している場合）。
+
+`jptools/scons_jp.py` の `_sync_jtalk_assets` 関数では、以下の処理を行います：
+
+1. **`dic_src == dic_dst` の場合**:
+   * 辞書ファイルが既に `dic_dst` に存在する場合は、コピーをスキップ
+   * ただし、`.def` ファイル（`left-id.def`, `right-id.def`, `pos-id.def`, `rewrite.def`）や `DIC_VERSION`、`mecabrc` が欠如している場合は、`mecab-naist-jdic` からコピー
+
+2. **`dic_src != dic_dst` の場合**:
+   * `dic_src` から `dic_dst` に辞書ファイルをコピー
+   * `dic_src` に存在しない `.def` ファイルや `DIC_VERSION` は、`mecab-naist-jdic` からフォールバックコピー
+   * `mecabrc` は `dic_dst/dicrc` から `source/synthDrivers/jtalk/mecabrc` にコピー（欠如時）
+
+この処理により、辞書ファイルが正しく `source/synthDrivers/jtalk/dic` に配置され、MeCab が正常に初期化できるようになります。
+
 ## 付録: 開発者の操作とログ例
 
 ### 通常のビルド（開発者が意識するコマンド）

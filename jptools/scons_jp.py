@@ -548,6 +548,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
         dic_dst = jtalk_dir / "dic"
         # If vendor dic is missing, fall back to the already-present source dic
         source_dic = jtalk_dir / "dic"
+        print(f"jtalkSync: dic_src = {dic_src.resolve()}")
+        print(f"jtalkSync: dic_dst = {dic_dst.resolve()}")
+        print(f"jtalkSync: dic_src == dic_dst: {dic_src.resolve() == dic_dst.resolve()}")
         builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
 
         def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
@@ -631,8 +634,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                 # Clean first to remove stale object files
                 clean_cmd = ["nmake", "/f", "Makefile.mak", "clean", f"MACHINE={machine}"]
                 run(clean_cmd, cwd=str(base), capture_output=True)
-                # Then build
-                cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
+                # Then build with /A flag to force rebuild of all targets
+                # This ensures all .obj files are rebuilt after clean
+                cmd = ["nmake", "/A", "/f", "Makefile.mak", f"MACHINE={machine}"]
                 result = run(cmd, cwd=str(base))
                 return result.returncode
             except (FileNotFoundError, subprocess.CalledProcessError):
@@ -643,8 +647,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                 # Clean first to remove stale object files
                 clean_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak clean MACHINE={machine}'
                 run(clean_script, cwd=str(base), shell=True, capture_output=True)
-                # Then build
-                cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
+                # Then build with /A flag to force rebuild of all targets
+                # This ensures all .obj files are rebuilt after clean
+                cmd_script = f'call "{vcvarsall}" {machine} && nmake /A /f Makefile.mak MACHINE={machine}'
                 result = run(cmd_script, cwd=str(base), shell=True)
                 return result.returncode
 
@@ -877,14 +882,31 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                     except Exception as e:
                         print(f"jtalkSync: warning: failed to update dicrc config-charset: {e}")
             else:
+                # dic_src != dic_dst: copy from dic_src, but also check mecab-naist-jdic for missing .def files
+                mecab_naist_jdic = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "libopenjtalk" / "mecab-naist-jdic"
                 for name in dic_files:
+                    dst = dic_dst / name
                     src = dic_src / name
                     if src.exists():
-                        dst = dic_dst / name
-                        # .def files are already UTF-8 (or will be converted by make_jdic.py)
-                        # Direct copy is sufficient
                         shutil.copy2(src, dst)
+                    elif not dst.exists():
+                        # If file is missing from dic_src, try to copy from mecab-naist-jdic (for .def files and DIC_VERSION)
+                        if name.endswith(".def") or name == "DIC_VERSION":
+                            if name == "DIC_VERSION":
+                                fallback_src = mecab_naist_jdic / "dic" / name
+                            else:
+                                fallback_src = mecab_naist_jdic / name
+                            if fallback_src.exists():
+                                shutil.copy2(fallback_src, dst)
+                                print(f"jtalkSync: copied {name} from mecab-naist-jdic to {dst} (not found in dic_src)")
                 print(f"jtalkSync: copied dictionary assets to {dic_dst}")
+
+                # Copy mecabrc from dic directory to jtalk_dir if missing or empty
+                mecabrc_dst = jtalk_dir / "mecabrc"
+                mecabrc_src = dic_dst / "dicrc"
+                if mecabrc_src.exists() and (not mecabrc_dst.exists() or mecabrc_dst.stat().st_size == 0):
+                    shutil.copy2(mecabrc_src, mecabrc_dst)
+                    print(f"jtalkSync: copied mecabrc from {mecabrc_src} to {mecabrc_dst}")
 
                 # Update dicrc config-charset to UTF-8 (make_jdic.py creates UTF-8 dictionaries)
                 dicrc_path = dic_dst / "dicrc"
