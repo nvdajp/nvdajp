@@ -837,17 +837,25 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                 # Even if source and destination are the same, we may need to copy .def files from mecab-naist-jdic
                 # mecab-naist-jdic is located at miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic
                 mecab_naist_jdic = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "libopenjtalk" / "mecab-naist-jdic"
+                if not mecab_naist_jdic.exists():
+                    print(f"jtalkSync: warning: mecab-naist-jdic not found at {mecab_naist_jdic}")
                 for name in dic_files:
                     dst = dic_dst / name
                     if not dst.exists():
                         # Try to copy from mecab-naist-jdic if missing (for .def files and DIC_VERSION)
                         if name.endswith(".def") or name == "DIC_VERSION":
-                            src = mecab_naist_jdic / "dic" / name
+                            # .def files are in mecab-naist-jdic root, DIC_VERSION is in dic subdirectory
+                            if name == "DIC_VERSION":
+                                src = mecab_naist_jdic / "dic" / name
+                            else:
+                                src = mecab_naist_jdic / name
                             if src.exists():
                                 # .def files in mecab-naist-jdic are already UTF-8 (or will be converted by make_jdic.py)
                                 # Direct copy is sufficient
                                 shutil.copy2(src, dst)
                                 print(f"jtalkSync: copied {name} from mecab-naist-jdic to {dst}")
+                            else:
+                                print(f"jtalkSync: warning: {name} not found at {src}, cannot copy to {dst}")
                 
                 # Copy mecabrc from dic directory to jtalk_dir if missing or empty
                 mecabrc_dst = jtalk_dir / "mecabrc"
