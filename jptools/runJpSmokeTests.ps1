@@ -148,10 +148,7 @@ function Ensure-MecabDictIndex {
     if ((-not (Test-Path $mecabDictIndex)) -or $needsRebuild) {
         if ($needsRebuild) {
             Write-Host "mecab-dict-index.exe is older than utils.h; forcing rebuild..." -ForegroundColor Yellow
-            # Makefile.mak may not track header dependencies reliably on some setups.
-            # Force rebuild by removing object files so nmake must recompile.
-            Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $mecabSrcDir "*.obj")
-            Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $mecabSrcDir "*_dll.obj")
+            # Remove executable to force rebuild (obj files will be cleaned by nmake clean in _build_mecab_bin)
             Remove-Item -Force -ErrorAction SilentlyContinue $mecabDictIndex
         } else {
             Write-Host "mecab-dict-index.exe not found; running scons jtalkSync to build it..." -ForegroundColor Yellow
