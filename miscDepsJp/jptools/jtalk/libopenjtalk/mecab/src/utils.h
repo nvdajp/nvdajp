@@ -139,12 +139,14 @@ inline size_t tokenizeCSV(char *str,
       end = str;
     }
     // BEGIN JP PATCH: always NUL-terminate each field.
-    // Without this, the last CSV field may keep a trailing '"' (Windows CRLF + quoted last column).
-    if (max-- > 0) *end = '\0';
+    // Without this, the last CSV field may keep a trailing '"' (quoted last column).
+    // Note: termination must be unconditional; limiting it by max can leave garbage at the end.
+    if (max == 0) break;
+    *end = '\0';
     // END JP PATCH
     *out++ = start;
     ++n;
-    if (max == 0) break;
+    if (--max == 0) break;
   }
 
   return n;

@@ -121,9 +121,41 @@ function Ensure-MecabDictIndex {
     # Check if mecab-dict-index.exe exists in the build output location
     # (built by scons jtalkSync)
     $mecabDictIndex = Join-Path $RepoRoot "miscDepsJp\include\python-jtalk\libopenjtalk\mecab\src\mecab-dict-index.exe"
+    # Rebuild mecab-dict-index.exe when sources are newer (e.g. utils.h JP PATCH changes)
+    $mecabUtilsH = Join-Path $RepoRoot "miscDepsJp\include\python-jtalk\libopenjtalk\mecab\src\utils.h"
+    $mecabSrcDir = Split-Path -Parent $mecabDictIndex
+    $mecabUtilsObj = Join-Path $mecabSrcDir "utils.obj"
     
-    if (-not (Test-Path $mecabDictIndex)) {
-        Write-Host "mecab-dict-index.exe not found; running scons jtalkSync to build it..." -ForegroundColor Yellow
+    $needsRebuild = $false
+    if (Test-Path $mecabDictIndex) {
+        if (Test-Path $mecabUtilsH) {
+            $exeTime = (Get-Item $mecabDictIndex).LastWriteTimeUtc
+            $hdrTime = (Get-Item $mecabUtilsH).LastWriteTimeUtc
+            if ($hdrTime -gt $exeTime) {
+                $needsRebuild = $true
+            }
+            # Header-only changes may not trigger a rebuild if object files are already present.
+            # Detect stale objects too (utils.obj is built from code that includes utils.h).
+            if ((-not $needsRebuild) -and (Test-Path $mecabUtilsObj)) {
+                $objTime = (Get-Item $mecabUtilsObj).LastWriteTimeUtc
+                if ($hdrTime -gt $objTime) {
+                    $needsRebuild = $true
+                }
+            }
+        }
+    }
+
+    if ((-not (Test-Path $mecabDictIndex)) -or $needsRebuild) {
+        if ($needsRebuild) {
+            Write-Host "mecab-dict-index.exe is older than utils.h; forcing rebuild..." -ForegroundColor Yellow
+            # Makefile.mak may not track header dependencies reliably on some setups.
+            # Force rebuild by removing object files so nmake must recompile.
+            Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $mecabSrcDir "*.obj")
+            Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $mecabSrcDir "*_dll.obj")
+            Remove-Item -Force -ErrorAction SilentlyContinue $mecabDictIndex
+        } else {
+            Write-Host "mecab-dict-index.exe not found; running scons jtalkSync to build it..." -ForegroundColor Yellow
+        }
         & "$RepoRoot\scons.bat" jtalkSync
         if ($LastExitCode -ne 0) {
             Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"

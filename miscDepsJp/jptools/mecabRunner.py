@@ -134,11 +134,13 @@ def _build_user_dic_from_csv(csv_path, dic_path):
         raise FileNotFoundError(f"User dictionary CSV file not found: {csv_path}")
 
     # Ensure output directory exists
-    dic_dir = os.path.dirname(dic_path)
-    if dic_dir and not os.path.exists(dic_dir):
-        os.makedirs(dic_dir, exist_ok=True)
+    dic_dir_path = os.path.dirname(dic_path)
+    if dic_dir_path and not os.path.exists(dic_dir_path):
+        os.makedirs(dic_dir_path, exist_ok=True)
 
     # Build user dictionary in a temporary dicdir (stable on Windows/CRLF + dicrc parsing differences).
+    # Use global 'dic' variable (source/synthDrivers/jtalk/dic) as the source dictionary directory
+    dic_dir = dic
     temp_dic_dir = tempfile.mkdtemp()
     converted_csv = os.path.join(temp_dic_dir, "jtusr_userdic.csv")
     model_bin = os.path.join(temp_dic_dir, "model.bin")
@@ -171,11 +173,11 @@ def _build_user_dic_from_csv(csv_path, dic_path):
         "model.bin",
     ]
     for name in assets_text:
-        src = os.path.join(dic, name)
+        src = os.path.join(dic_dir, name)
         if os.path.exists(src):
             _copy_text_lf(src, os.path.join(temp_dic_dir, name))
     for name in assets_bin:
-        src = os.path.join(dic, name)
+        src = os.path.join(dic_dir, name)
         if os.path.exists(src):
             shutil.copy2(src, os.path.join(temp_dic_dir, name))
 
