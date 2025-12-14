@@ -412,32 +412,15 @@ jtalkPrep: DLL not found, attempting to build via nmake...
 jtalkPrep: running nmake via vcvarsall.bat with arch=x86
 [nmake の出力...]
 jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
-jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+jtalkPrep: payload -> source/synthDrivers/jtalk/libopenjtalk.dll
 ```
-
-#### `scons miscdepsjp`
-
-日本語版固有のファイルを `source/` ディレクトリにオーバーレイします。
-
-**動作**：
-- `miscDepsJp/source` 配下のファイルを `source/` にコピー
-- JTalkコアファイル（`jtalkCore.py`, `mecab.py`, `text2mecab.py`）を `source/synthDrivers/jtalk/` にコピー
-- `jtalkPrep` に依存しているため、JTalk DLLも自動的に準備される
-
-**実行例**：
-```bash
-# オーバーレイのみ実行（デバッグ用）
-scons miscdepsjp
-```
-
-**注意**: `scons source` を実行すると、`miscdepsjp` が依存として自動実行されます。通常は明示的に実行する必要はありません。
 
 ### 通常のビルドフロー
 
 開発者が通常実行するコマンド：
 
 ```bash
-# これだけでビルド完結（ベンダービルド・overlay・dist 作成すべて自動）
+# これだけでビルド完結（ベンダービルド・辞書ビルド・dist 作成すべて自動）
 scons dist
 
 # または
@@ -445,10 +428,11 @@ scons source user_docs launcher
 ```
 
 **内部で自動実行される**（開発者は意識不要）：
-1. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
-2. `jtalkSync`: 辞書ファイルのビルドとコピー
-3. `miscdepsjp`: overlayで `source/` に配置
-4. `source`, `dist` などのビルド
+1. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → `source/synthDrivers/jtalk` に配置
+2. `jtalkSync`: 辞書ファイルのビルドとコピー → `source/synthDrivers/jtalk` に配置
+3. `source`, `dist` などのビルド
+
+**注意**: Phase 2（2025-12-12）完了により、オーバーレイ処理（`miscdepsjp` エイリアス）は廃止されました。日本語版固有ファイルは `source/` に直接配置されています。
 
 **注意**: 詳細な処理内容や現状の問題点については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
 

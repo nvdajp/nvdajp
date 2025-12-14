@@ -261,6 +261,6 @@ source → jtalkSync → jtalkPrep
 ## 関連ドキュメント
 
 - `projectDocs/jp/vendor-submodules.md` - ベンダーツリーの運用方針
-- `projectDocs/jp/README.md` - JP overlay の定義
+- `projectDocs/jp/README.md` - JP ドキュメントハブ
 - `readme-nvdajp.md` - SCons ビルドターゲットの説明
 - `projectDocs/jp/roadmap.md` - 長期的なロードマップ
