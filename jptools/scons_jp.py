@@ -835,17 +835,26 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
             if dic_src.resolve() == dic_dst.resolve():
                 print("jtalkSync: dictionary source and destination are identical; checking for missing .def files.")
                 # Even if source and destination are the same, we may need to copy .def files from mecab-naist-jdic
-                mecab_naist_jdic = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
+                # mecab-naist-jdic is located at miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic
+                mecab_naist_jdic = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "libopenjtalk" / "mecab-naist-jdic"
                 for name in dic_files:
                     dst = dic_dst / name
-                    if not dst.exists() and name.endswith(".def"):
-                        # Try to copy from mecab-naist-jdic if missing
-                        src = mecab_naist_jdic / name
-                        if src.exists():
-                            # .def files in mecab-naist-jdic are already UTF-8 (or will be converted by make_jdic.py)
-                            # Direct copy is sufficient
-                            shutil.copy2(src, dst)
-                            print(f"jtalkSync: copied {name} from mecab-naist-jdic to {dst}")
+                    if not dst.exists():
+                        # Try to copy from mecab-naist-jdic if missing (for .def files and DIC_VERSION)
+                        if name.endswith(".def") or name == "DIC_VERSION":
+                            src = mecab_naist_jdic / "dic" / name
+                            if src.exists():
+                                # .def files in mecab-naist-jdic are already UTF-8 (or will be converted by make_jdic.py)
+                                # Direct copy is sufficient
+                                shutil.copy2(src, dst)
+                                print(f"jtalkSync: copied {name} from mecab-naist-jdic to {dst}")
+                
+                # Copy mecabrc from dic directory to jtalk_dir if missing or empty
+                mecabrc_dst = jtalk_dir / "mecabrc"
+                mecabrc_src = dic_dst / "dicrc"
+                if mecabrc_src.exists() and (not mecabrc_dst.exists() or mecabrc_dst.stat().st_size == 0):
+                    shutil.copy2(mecabrc_src, mecabrc_dst)
+                    print(f"jtalkSync: copied mecabrc from {mecabrc_src} to {mecabrc_dst}")
 
                 # Update dicrc config-charset to UTF-8 (make_jdic.py creates UTF-8 dictionaries)
                 dicrc_path = dic_dst / "dicrc"
