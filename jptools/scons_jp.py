@@ -1173,7 +1173,17 @@ def register_jp_builders(env: Any) -> None:
 
     jp_cert_extras_stamp = env.File("output/_jp_cert_extras.stamp")
     env.AlwaysBuild(jp_cert_extras_stamp)
-    env.Command(jp_cert_extras_stamp, [], _cert_extras)
+    # Make jpCertExtras depend on dist to ensure dist/ is fully built before signing
+    try:
+        dist_alias = env.Alias("dist")
+        if dist_alias:
+            env.Command(jp_cert_extras_stamp, dist_alias, _cert_extras)
+        else:
+            # Fallback: use dist directory as source dependency
+            env.Command(jp_cert_extras_stamp, env.Dir("dist"), _cert_extras)
+    except Exception:
+        # If dist alias is not available, use empty source list (will check in _cert_extras)
+        env.Command(jp_cert_extras_stamp, [], _cert_extras)
     env.Alias("jpCertExtras", jp_cert_extras_stamp)
 
     # Add dependency: launcher depends on jpCertExtras (only when signing is configured)
