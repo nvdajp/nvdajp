@@ -1,8 +1,5 @@
 setlocal enableextensions enabledelayedexpansion
 set SCONSOPTIONS=%*
-if not defined SCONSOPTIONS (
-    set SCONSOPTIONS=version_build=1 --all-cores
-)
 echo SCONSOPTIONS is %SCONSOPTIONS%
 
 rem Build architecture (default to x86)

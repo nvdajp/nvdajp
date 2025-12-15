@@ -7,7 +7,7 @@
     It sets up the environment variables and calls certBuild2023.cmd with appropriate parameters.
 
 .PARAMETER VersionBuild
-    Version build number. If not specified, certBuild2023.cmd will use its default (1).
+    Version build number. If not specified, SCons default (usually 0) is used.
 
 .PARAMETER SConsOptions
     Additional SCons options to pass to certBuild2023.cmd (e.g., "--all-cores").

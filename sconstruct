@@ -390,6 +390,7 @@ for userGuideFileSub in env.Glob(os.path.join(userDocsDir.path, "*", "userGuide.
 # Build unicode CLDR dictionaries
 env.SConscript("cldrDict_sconscript", exports=["env", "sourceDir"])
 
+# BEGIN JP PATCH (build dependencies)
 # JP-specific helpers (isolated; add opt-in aliases only)
 # Note: register_jp_builders is called after dist is defined (see below)
 # But we need to set up jtalkSync dependency for sourceDir here
@@ -401,6 +402,7 @@ try:
 except Exception:
     # Never fail the build if JP helpers are unavailable.
     pass
+# END JP PATCH (build dependencies)
 
 
 # A builder to generate an NVDA distribution.
@@ -571,6 +573,7 @@ env.Clean(dist, dist)
 # Clean the intermediate build directory.
 env.Clean([dist], buildDir)
 
+# BEGIN JP PATCH (build dependencies)
 # Register JP builders after dist is defined so jpCertExtras can depend on dist target
 try:
     import jptools.scons_jp as scons_jp
@@ -583,6 +586,7 @@ except Exception as e:
     # Log the exception for debugging purposes (e.g., during development)
     import warnings
     warnings.warn(f"Failed to register JP builders: {e}", UserWarning)
+# END JP PATCH (build dependencies)
 
 launcher = env.Command(
 	outputDir.File("%s.exe" % outFilePrefix),
