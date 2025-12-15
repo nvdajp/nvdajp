@@ -68,6 +68,98 @@ if (-not $env:CERT_SHA1) {
 $env:PYTHONUTF8 = "1"
 $env:RELEASE = "1"
 
+# Test signtool with a dummy file before building
+# This ensures signing environment is properly configured
+Write-Host "Testing signtool with dummy file..." -ForegroundColor Cyan
+$msgfmtPath = Join-Path $repoRoot "miscDeps" "tools" "msgfmt.exe"
+if (-not (Test-Path $msgfmtPath)) {
+    Write-Warning "msgfmt.exe not found at $msgfmtPath, skipping signtool test"
+} else {
+    # Find signtool (similar to certBuild2023.cmd)
+    $signtool = $env:SIGNTOOL
+    if (-not $signtool) {
+        $signtool = Get-Command signtool -ErrorAction SilentlyContinue
+        if ($signtool) {
+            $signtool = $signtool.Source
+        }
+    }
+    if (-not $signtool) {
+        # Try Windows Kits
+        $kitsBase = "C:\Program Files (x86)\Windows Kits\10\bin"
+        if (Test-Path $kitsBase) {
+            $kitsDirs = Get-ChildItem $kitsBase -Directory | Sort-Object Name -Descending
+            foreach ($kitDir in $kitsDirs) {
+                $signtoolX64 = Join-Path $kitDir.FullName "x64\signtool.exe"
+                $signtoolX86 = Join-Path $kitDir.FullName "x86\signtool.exe"
+                if (Test-Path $signtoolX64) {
+                    $signtool = $signtoolX64
+                    break
+                } elseif (Test-Path $signtoolX86) {
+                    $signtool = $signtoolX86
+                    break
+                }
+            }
+        }
+    }
+    if ($signtool) {
+        # Copy msgfmt.exe to temp directory and sign it
+        $tempDir = $env:TEMP
+        $tempMsgfmt = Join-Path $tempDir "msgfmt_test.exe"
+        Write-Host "  Copying $msgfmtPath to $tempMsgfmt" -ForegroundColor Gray
+        Copy-Item -Path $msgfmtPath -Destination $tempMsgfmt -Force
+        try {
+            # Build signtool command similar to certBuild2023.cmd
+            $signArgs = @("sign", "/fd", "SHA256")
+            if ($env:CERT_SHA1) {
+                $certStore = $env:CERT_STORE
+                if (-not $certStore) {
+                    $certStore = "My"
+                }
+                $signArgs += @("/s", $certStore, "/sha1", $env:CERT_SHA1)
+                if ($env:CERT_MACHINE_STORE) {
+                    $signArgs += "/sm"
+                }
+            } elseif ($env:CERT_NAME) {
+                $certStore = $env:CERT_STORE
+                if (-not $certStore) {
+                    $certStore = "My"
+                }
+                $signArgs += @("/s", $certStore, "/n", $env:CERT_NAME)
+                if ($env:CERT_MACHINE_STORE) {
+                    $signArgs += "/sm"
+                }
+            } else {
+                # Fallback to automatic selection
+                $signArgs += "/a"
+            }
+            if ($env:TIMESTAMP_URL) {
+                $signArgs += @("/tr", $env:TIMESTAMP_URL, "/td", "SHA256")
+            } elseif ($env:TIMESERVER) {
+                $signArgs += @("/tr", $env:TIMESERVER, "/td", "SHA256")
+            } else {
+                $signArgs += @("/tr", "http://timestamp.digicert.com", "/td", "SHA256")
+            }
+            $signArgs += $tempMsgfmt
+            Write-Host "  Running: $signtool $($signArgs -join ' ')" -ForegroundColor Gray
+            & $signtool $signArgs
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "  signtool test completed successfully" -ForegroundColor Green
+            } else {
+                Write-Error "signtool test failed with exit code $LASTEXITCODE. Code signing environment is not properly configured."
+                Write-Error "Please ensure CERT_SHA1 or CERT_NAME is set correctly, and the certificate is accessible."
+                exit 1
+            }
+        } finally {
+            # Clean up temp file
+            if (Test-Path $tempMsgfmt) {
+                Remove-Item -Path $tempMsgfmt -Force -ErrorAction SilentlyContinue
+            }
+        }
+    } else {
+        Write-Warning "signtool not found, skipping test"
+    }
+}
+
 # Get NOWDATE from nowdate.cmd
 $nowdateScript = Join-Path $PSScriptRoot "nowdate.cmd"
 $nowdateOutput = & cmd /c $nowdateScript 2>&1
@@ -91,6 +183,19 @@ if ($VersionBuild -gt 0) {
 
 # Add additional SCons options
 $buildArgs += $SConsOptions
+
+# Default to -j1 if no parallel build option is specified
+# Check if user explicitly specified -j, --num-jobs, or --all-cores
+$hasParallelOption = $false
+foreach ($arg in $SConsOptions) {
+    if ($arg -match '^-j\d+|^--num-jobs=|^--all-cores') {
+        $hasParallelOption = $true
+        break
+    }
+}
+if (-not $hasParallelOption) {
+    $buildArgs += "-j1"
+}
 
 # Build the command line
 $buildArgsString = $buildArgs -join " "

@@ -58,6 +58,7 @@
 * 日本語点字出力テーブル: `projectDocs/jp/braille-ja-jp-comp6.md`
 * 日本語版 CI/ビルド基盤: `projectDocs/jp/ci`
 * **miscDepsJp と JP overlay の現状と方針**: `projectDocs/jp/miscdepsjp-overlay-strategy.md`
+* **コード署名を考慮したビルド依存関係**: `projectDocs/jp/code-signing-dependencies.md`
 * エージェント／自動化向けの運用ルール: `AGENTS.md`
 
 ## 用語集

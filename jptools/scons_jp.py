@@ -335,8 +335,14 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
     return out
 
 
-def register_jp_builders(env: Any) -> None:
-    """Register JP-specific aliases without affecting upstream targets."""
+def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
+    """Register JP-specific aliases without affecting upstream targets.
+
+    Args:
+        env: SCons environment
+        dist_target: Optional dist target node from sconstruct. If provided, jpCertExtras will depend on it
+                    to ensure correct ordering in parallel builds (--all-cores).
+    """
     # miscdepsjp alias removed in Phase 2 (miscDepsJp/source is empty, overlay is no-op)
 
 
@@ -1047,7 +1053,15 @@ def register_jp_builders(env: Any) -> None:
 
     jp_cert_extras_stamp = env.File("output/_jp_cert_extras.stamp")
     env.AlwaysBuild(jp_cert_extras_stamp)
-    env.Command(jp_cert_extras_stamp, [], _cert_extras)
+    # Make jpCertExtras depend on dist target to ensure dist/ is fully built before signing
+    # This ensures correct ordering even in parallel builds (--all-cores)
+    if dist_target is not None:
+        # Use dist target from sconstruct (most reliable for parallel builds)
+        env.Command(jp_cert_extras_stamp, dist_target, _cert_extras)
+    else:
+        # Fallback: use dist directory node (less safe in parallel builds, but works)
+        dist_dir_node = env.Dir("dist")
+        env.Command(jp_cert_extras_stamp, dist_dir_node, _cert_extras)
     env.Alias("jpCertExtras", jp_cert_extras_stamp)
 
     # Add dependency: launcher depends on jpCertExtras (only when signing is configured)
