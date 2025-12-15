@@ -1018,6 +1018,12 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                 candidates.append(dll_path)
             else:
                 missing_required.append(dll_path)
+        # Note: nvdaHelper*.dll files (IAccessible2proxy.dll, ISimpleDOM.dll, nvdaHelperRemote.dll,
+        # nvdaHelperRemoteLoader.exe, UIARemote.dll, nvdaHelperLocal.dll, nvdaHelperLocalWin10.dll)
+        # are signed during source build (see nvdaHelper/archBuild_sconscript) and should remain
+        # signed when copied to dist/ during dist build. They are NOT signed by jpCertExtras.
+        # If any of these files are unsigned in dist/, that indicates a build problem that should
+        # be fixed at the source build level, not worked around here.
         # Report missing required DLLs (must be in dist/, not source/)
         if missing_required:
             print("jpCertExtras: ERROR - Required DLLs not found in dist/:")
@@ -1081,6 +1087,33 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
         # If launcher alias is not available, that's okay (non-cert builds, etc.)
         pass
 
+    # Clean up old version directories in dist/lib/, dist/lib64/, dist/libArm64/
+    # to prevent signature verification failures from old unsigned files.
+    # These directories are created by py2exe with version-specific names (e.g., dist/lib/{version}/),
+    # and old versions may remain after repeated builds if not explicitly cleaned.
+    try:
+        current_version = str(env.get("version", ""))
+        if current_version and dist_target is not None:
+            repo_root = Path.cwd()
+            dist_dir = repo_root / "dist"
+            old_version_dirs = []
+            for lib_subdir in ["lib", "lib64", "libArm64"]:
+                lib_dir = dist_dir / lib_subdir
+                if lib_dir.exists():
+                    for version_dir in lib_dir.iterdir():
+                        if version_dir.is_dir() and version_dir.name != current_version:
+                            # This is an old version directory that should be cleaned
+                            old_version_dirs.append(str(version_dir))
+            if old_version_dirs:
+                # Add old version directories to clean targets
+                # This ensures scons -c removes old version directories that may contain unsigned files
+                # Use dist_target (same pattern as sconstruct L775: env.Clean(dist, _overlay_files))
+                env.Clean(dist_target, old_version_dirs)
+    except Exception:
+        # If version is not available, dist_target is None, or cleanup setup fails, that's okay
+        # (env.Clean(dist, dist) in sconstruct L570 should still clean the entire dist directory)
+        pass
+
     # 4) JP verify signatures (use SIGNTOOL if available to verify installer and dist files)
     def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
         import subprocess
@@ -1101,6 +1134,8 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
             "wxmsw32u_core_vc140.dll",
             "wxmsw32u_html_vc140.dll",
             "wxmsw32u_stc_vc140.dll",
+            # Note: nvdaHelper*.dll files are signed during source build and/or jpCertExtras.
+            # They should be signed and verified successfully, so they are NOT in IGNORED_FILES.
         ]
         try:
             exe = None
