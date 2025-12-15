@@ -8,6 +8,7 @@ import os
 
 import config
 import yaml
+from languageHandler import getLanguage
 from logHandler import log
 from NVDAState import ReadPaths
 from utils.displayString import DisplayStringStrEnum
@@ -228,6 +229,61 @@ def getBrailleCodes() -> list[str]:
 				resultBrailleCodes.append(brailleCode)
 	return resultBrailleCodes
 
+
+def getAutoBrailleCode(
+	availableCodes: list[str] | None = None,
+	languageCode: str | None = None,
+) -> str:
+	"""
+	Determine the automatic MathCAT Braille code to use based on the current
+	or provided NVDA language.
+	"""
+	if not availableCodes:
+		availableCodes = getBrailleCodes()
+	if languageCode is None:
+		languageCode = getLanguage()
+
+	# de, nb, and nn should probably use Marburg when implemented upstream
+	languagesToBrailleCodes: dict[str, str] = {
+		"af": "UEB",
+		"an": "CMU",
+		"ca": "CMU",
+		"da": "LaTeX",
+		"de": "LaTeX",
+		"en": "UEB",
+		"es": "CMU",
+		"fi": "ASCIIMath-fi",
+		"ga": "UEB",
+		"gl": "CMU",
+		"mn": "UEB",
+		"nb": "LaTeX",
+		"nn": "LaTeX",
+		"pt": "CMU",
+		"ro": "UEB",
+		"sv": "Swedish",
+		"vi": "Vietnam",
+	}
+
+	res = languagesToBrailleCodes.get(languageCode.split("_")[0])
+	if res and res in availableCodes:
+		return res
+	return "ASCIIMath"
+
+
+def setEffectiveBrailleCode() -> None:
+	"""
+	Apply the effective Braille code to MathCAT at runtime, resolving auto
+	if needed.
+	"""
+	try:
+		brailleCodePref = config.conf["math"]["braille"]["brailleCode"]
+		effectiveCode = getAutoBrailleCode() if brailleCodePref == "Auto" else brailleCodePref
+		libmathcat.SetPreference("BrailleCode", effectiveCode)
+	except Exception as e:
+		log.debugWarning(
+			f"MathCAT: failed to set BrailleCode preference: {e}",
+			exc_info=True,
+		)
 
 def toNVDAConfigKey(key: str) -> str:
 	"""Converts a key for MathCAT's preferences (UpperCamelCase) to a
