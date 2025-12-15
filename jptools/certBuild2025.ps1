@@ -21,7 +21,7 @@
 
 .EXAMPLE
     .\jptools\certBuild2025.ps1
-    Builds with default settings (version_build=1 from certBuild2023.cmd).
+    Builds with SCons default settings.
 
 .EXAMPLE
     .\jptools\certBuild2025.ps1 -VersionBuild 123 --all-cores
