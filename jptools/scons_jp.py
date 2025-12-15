@@ -1061,15 +1061,8 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
         # Discover candidate artifacts to sign (optional; skip if missing)
         repo_root = Path.cwd()
         candidates: list[Path] = []
-        # Latest built installer under output/nvda_*.exe
-        try:
-            out_dir = repo_root / "output"
-            if out_dir.exists():
-                exe_candidates = sorted(out_dir.glob("nvda_*.exe"), key=lambda p: p.stat().st_mtime, reverse=True)
-                if exe_candidates:
-                    candidates.append(exe_candidates[0])
-        except Exception:
-            pass
+        # Note: We intentionally do not sign output/nvda_*.exe here.
+        # The installer is signed as part of the launcher target via AddPostAction(env["signExec"]).
         # Required JP DLL payload in dist/ (must be signed before launcher is built)
         # NOTE: We sign files in dist/, not source/, because:
         # 1. jtalkSync copies DLLs to source/synthDrivers/jtalk/
@@ -1189,15 +1182,24 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
         pass
 
     # 4) JP verify signatures (use SIGNTOOL if available to verify installer and dist files)
+    # Default is a fast check of critical artifacts; for a full scan use jpVerifySignaturesAll.
     def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
         import subprocess
+
         stamp_path = Path(str(target[0]))
         stamp_path.parent.mkdir(parents=True, exist_ok=True)
         repo_root = Path.cwd()
         out_dir = repo_root / "output"
         dist_dir = repo_root / "dist"
-        # Files that are not distributed or excluded from launcher, so signature verification errors can be ignored
-        IGNORED_FILES = [
+
+        mode = str(env.get("JP_VERIFY_SIGNATURES_MODE", os.environ.get("JP_VERIFY_SIGNATURES_MODE", "fast"))).lower()
+        verbose = str(env.get("JP_VERIFY_SIGNATURES_VERBOSE", os.environ.get("JP_VERIFY_SIGNATURES_VERBOSE", "0"))).lower() in (
+            "1",
+            "true",
+            "yes",
+            "on",
+        )
+        ignored_files = {
             "msgfmt.exe",
             "lilli.dll",
             "brlapi-0.8.dll",
@@ -1208,196 +1210,151 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
             "wxmsw32u_core_vc140.dll",
             "wxmsw32u_html_vc140.dll",
             "wxmsw32u_stc_vc140.dll",
-            # Note: nvdaHelper*.dll files are signed during source build and/or jpCertExtras.
-            # They should be signed and verified successfully, so they are NOT in IGNORED_FILES.
-        ]
+        }
+
+        def _signtool_verify(signtool_path: str, file_path: Path, *, quiet: bool) -> subprocess.CompletedProcess[str]:
+            args = [signtool_path, "verify", "/pa"]
+            args.append("/q" if quiet else "/v")
+            return subprocess.run(args + [str(file_path)], capture_output=True, text=True)
+
+        def _format_signtool_output(result: subprocess.CompletedProcess[str]) -> str:
+            out = (result.stdout or "").strip()
+            err = (result.stderr or "").strip()
+            if out and err:
+                return f"{out}\n{err}"
+            return out or err or ""
+
+        def _verify_one(signtool_path: str, file_path: Path, *, allow_ignored: bool) -> tuple[bool, bool, str]:
+            result = _signtool_verify(signtool_path, file_path, quiet=True)
+            if result.returncode == 0:
+                return True, False, ""
+            file_name = file_path.name
+            is_ignored = allow_ignored and (file_name in ignored_files)
+            detail = ""
+            if verbose or not is_ignored:
+                detail_result = _signtool_verify(signtool_path, file_path, quiet=False)
+                detail = _format_signtool_output(detail_result)
+            return False, is_ignored, detail
+
         try:
-            exe = None
+            exe: Path | None = None
             if out_dir.exists():
                 exe_candidates = sorted(out_dir.glob("nvda_*.exe"), key=lambda p: p.stat().st_mtime, reverse=True)
                 if exe_candidates:
-                    exe = exe_candidates[0]  # Use the most recent installer
+                    exe = exe_candidates[0]
             if not exe:
                 print("jpVerifySignatures: skip (no installer found under output/)")
                 stamp_path.write_text("skip:no-installer", encoding="utf-8")
                 return 0
+
             signtool = os.environ.get("SIGNTOOL", "signtool")
-            # Verify installer first
-            result_installer = subprocess.run([signtool, "verify", "/pa", "/v", str(exe)], capture_output=True, text=True)
-            all_output_lines = []
-            all_output_lines.append(f"File: {exe}")
-            # For installer, only include detailed output if there are errors
-            installer_has_errors = result_installer.returncode != 0
-            installer_output = (result_installer.stdout or "") + "\n" + (result_installer.stderr or "")
-            if "Number of errors:" in installer_output:
-                for line in installer_output.split("\n"):
-                    if "Number of errors:" in line:
-                        try:
-                            error_count = int(line.split(":")[-1].strip())
-                            installer_has_errors = error_count > 0
-                        except (ValueError, IndexError):
-                            # Ignore lines that do not match the expected "Number of errors: <int>" format
-                            pass
-                        break
-            if installer_has_errors:
-                # Include full output for installer with errors
-                if result_installer.stdout:
-                    all_output_lines.append(result_installer.stdout)
-                if result_installer.stderr:
-                    all_output_lines.append(result_installer.stderr)
+
+            if mode not in ("fast", "all"):
+                print(f"jpVerifySignatures: unknown mode {mode!r}, falling back to 'fast'")
+                mode = "fast"
+
+            failures: list[str] = []
+            ignored_failures: list[str] = []
+            checked = 0
+            verified = 0
+
+            def _check(path: Path, *, allow_ignored: bool) -> None:
+                nonlocal checked, verified
+                checked += 1
+                if not path.exists():
+                    failures.append(f"missing:{path}")
+                    return
+                ok, is_ignored, detail = _verify_one(signtool, path, allow_ignored=allow_ignored)
+                if ok:
+                    verified += 1
+                    return
+                if is_ignored:
+                    ignored_failures.append(str(path))
+                    if detail and verbose:
+                        ignored_failures.append(detail)
+                    return
+                failures.append(str(path))
+                if detail:
+                    failures.append(detail)
+
+            if mode == "fast":
+                build_version = str(env.get("version", ""))
+                critical_paths: list[Path] = [
+                    exe,
+                    dist_dir / "synthDrivers" / "jtalk" / "libopenjtalk.dll",
+                    dist_dir / "synthDrivers" / "jtalk" / "libmecab.dll",
+                    dist_dir / "nvda_noUIAccess.exe",
+                    dist_dir / "nvda_uiAccess.exe",
+                    dist_dir / "nvda_slave.exe",
+                    dist_dir / "l10nUtil.exe",
+                    dist_dir / "uninstall.exe",
+                ]
+                if build_version:
+                    for root_name in ("lib", "lib64", "libArm64"):
+                        version_dir = dist_dir / root_name / build_version
+                        if version_dir.exists():
+                            for helper_name in (
+                                "IAccessible2proxy.dll",
+                                "ISimpleDOM.dll",
+                                "nvdaHelperRemote.dll",
+                                "nvdaHelperRemoteLoader.exe",
+                                "UIARemote.dll",
+                                "nvdaHelperLocal.dll",
+                                "nvdaHelperLocalWin10.dll",
+                            ):
+                                critical_paths.append(version_dir / helper_name)
+                for path in critical_paths:
+                    _check(path, allow_ignored=False)
             else:
-                # For successful installer, just include success message
-                for line in installer_output.split("\n"):
-                    if "Successfully verified:" in line:
-                        all_output_lines.append(line.strip())
-                        break
-            # Verify all files in dist directory
-            verified_files = []
-            failed_files_output = []
-            if dist_dir.exists():
-                dist_files = []
-                for pattern in ["**/*.exe", "**/*.dll"]:
-                    dist_files.extend(dist_dir.glob(pattern))
-                # Sort for consistent output
-                dist_files.sort(key=str)
-                for dist_file in dist_files:
-                    if dist_file.is_file():
-                        result_dist = subprocess.run([signtool, "verify", "/pa", "/v", str(dist_file)], capture_output=True, text=True)
-                        # Check if this file has errors
-                        has_errors = result_dist.returncode != 0
-                        dist_output = (result_dist.stdout or "") + "\n" + (result_dist.stderr or "")
-                        if "Number of errors:" in dist_output:
-                            # Parse to check if there are actual errors
-                            for line in dist_output.split("\n"):
-                                if "Number of errors:" in line:
-                                    try:
-                                        error_count = int(line.split(":")[-1].strip())
-                                        has_errors = error_count > 0
-                                    except (ValueError, IndexError):
-                                        # Ignore parse errors; treat as no errors found
-                                        pass
-                                    break
-                        if has_errors:
-                            # Include essential error information only (remove verbose output)
-                            failed_files_output.append(f"File: {dist_file}")
-                            dist_output_clean = result_dist.stdout or ""
-                            if result_dist.stderr:
-                                dist_output_clean += "\n" + result_dist.stderr
-                            # Extract only essential error information
-                            error_lines = []
-                            for line in dist_output_clean.split("\n"):
-                                line_trimmed = line.rstrip()
-                                # Skip verbose output lines
-                                if any(skip in line_trimmed for skip in [
-                                    "Verifying:",
-                                    "Number of files successfully Verified:",
-                                    "Number of warnings:",
-                                    "Number of errors:",
-                                ]):
-                                    continue
-                                # Keep error messages and other important info
-                                if line_trimmed and (
-                                    "Error:" in line_trimmed or
-                                    "Warning:" in line_trimmed or
-                                    "SignTool" in line_trimmed
-                                ):
-                                    error_lines.append(line_trimmed)
-                            if error_lines:
-                                failed_files_output.append("\n".join(error_lines))
-                        else:
-                            # Just record success for files without errors
-                            verified_files.append(str(dist_file))
-            # Combine output: installer + failed files details + success summary
-            combined_output = "\n".join(all_output_lines)
-            if failed_files_output:
-                combined_output += "\n" + "\n".join(failed_files_output)
-            if verified_files:
-                combined_output += f"\n\nSuccessfully verified {len(verified_files)} file(s):"
-                for vf in verified_files:
-                    combined_output += f"\n  {vf}"
-            # Check if errors are only from ignored files
-            original_rc = result_installer.returncode
-            final_rc = original_rc
-            # Parse combined output to count errors from non-ignored files
-            # Also check failed_files_output to detect errors from dist/ files (since we removed "Number of errors:" lines)
-            lines = combined_output.split("\n")
-            current_file = None
-            ignored_errors = 0
-            total_errors = 0
-            failed_files = []
-            # Track files that appear in failed_files_output (these have errors)
-            files_with_errors = set()
-            for item in failed_files_output:
-                # Each item may be a single line or multiple lines (file path + error messages)
-                for line in item.split("\n"):
-                    if line.strip().startswith("File: "):
-                        file_path = line.strip()[6:].strip()
-                        file_name = Path(file_path).name
-                        files_with_errors.add(file_name)
-                        break  # Only need the file name from each failed_files_output item
-            # Parse output for error counts and file names
-            for i, line in enumerate(lines):
-                if line.startswith("File: "):
-                    file_path = line[6:].strip()
-                    file_name = Path(file_path).name
-                    current_file = file_name
-                    # Check if this file has errors (from failed_files_output or "Number of errors:" line)
-                    if file_name in files_with_errors:
-                        total_errors += 1
-                        # Check if current file is in ignored list
-                        if current_file and any(ignored in current_file for ignored in IGNORED_FILES):
-                            ignored_errors += 1
-                            print(f"jpVerifySignatures: ignoring error for {current_file} (not distributed)")
-                        else:
-                            # Track files with non-ignored errors
-                            if current_file:
-                                failed_files.append(current_file)
-                elif "Number of errors:" in line:
-                    try:
-                        error_count = int(line.split(":")[-1].strip())
-                        total_errors += error_count
-                        # Check if current file is in ignored list
-                        if current_file and any(ignored in current_file for ignored in IGNORED_FILES):
-                            ignored_errors += error_count
-                            print(f"jpVerifySignatures: ignoring {error_count} error(s) for {current_file} (not distributed)")
-                        else:
-                            # Track files with non-ignored errors
-                            if current_file and error_count > 0:
-                                failed_files.append(current_file)
-                    except (ValueError, IndexError):
-                        # Ignore lines that do not contain a valid error count
-                        pass
-            # If all errors are from ignored files, treat as success
-            if total_errors > 0 and ignored_errors == total_errors:
-                print(f"jpVerifySignatures: all {total_errors} error(s) are from ignored files, treating as success")
-                final_rc = 0
-            elif total_errors > ignored_errors:
-                # There are errors from non-ignored files
-                non_ignored_errors = total_errors - ignored_errors
-                print(f"jpVerifySignatures: {non_ignored_errors} error(s) from non-ignored files")
-                if failed_files:
-                    print(f"jpVerifySignatures: failed files: {', '.join(failed_files)}")
-                final_rc = 1  # Ensure non-zero return code to stop scons
-            # Write combined output to log files (for backward compatibility)
-            # The rc in the log should reflect the original signtool return code
-            content = [f"file={exe}", f"rc={original_rc}"]
-            content.append(combined_output)
-            text = "\n".join(content)
-            # Keep backward-compatible stamp output
+                _check(exe, allow_ignored=False)
+                if dist_dir.exists():
+                    dist_files: list[Path] = []
+                    for pattern in ("**/*.exe", "**/*.dll"):
+                        dist_files.extend(dist_dir.glob(pattern))
+                    dist_files = [p for p in dist_files if p.is_file()]
+                    dist_files.sort(key=str)
+                    for dist_file in dist_files:
+                        _check(dist_file, allow_ignored=True)
+                else:
+                    failures.append("missing:dist/")
+
+            summary_lines = [
+                f"mode={mode}",
+                f"installer={exe}",
+                f"checked={checked}",
+                f"verified={verified}",
+                f"ignored={len(ignored_failures)}",
+            ]
+            if failures:
+                summary_lines.append("FAILED")
+            else:
+                summary_lines.append("OK")
+
+            details_lines: list[str] = []
+            if failures:
+                details_lines.append("Failures:")
+                details_lines.extend(f"  {line}" for line in failures)
+            if ignored_failures and verbose:
+                details_lines.append("Ignored failures (verbose):")
+                details_lines.extend(f"  {line}" for line in ignored_failures)
+
+            text = "\n".join(summary_lines + details_lines) + "\n"
             stamp_path.write_text(text, encoding="utf-8")
-            # And also write the historical per-installer verify log: output\\<name>_verify.log
             try:
                 verify_log = out_dir / f"{exe.stem}_verify.log"
                 verify_log.write_text(text, encoding="utf-8")
             except Exception:
                 pass
-            if final_rc == 0:
-                print(f"jpVerifySignatures: verified OK: {exe}")
-                return 0
+
+            if failures:
+                print(f"jpVerifySignatures: FAILED ({mode})")
+                print("  See output/_jp_verify_signatures*.stamp or the *_verify.log for details.")
+                return 1
+            if ignored_failures and not verbose:
+                print(f"jpVerifySignatures: OK ({mode}) with {len(ignored_failures)} ignored failure(s)")
             else:
-                print(f"jpVerifySignatures: verification FAILED (rc={final_rc}): {exe}")
-                print("  See output/_jp_verify_signatures.stamp or the *_verify.log for details.")
-                return final_rc
+                print(f"jpVerifySignatures: OK ({mode})")
+            return 0
         except FileNotFoundError:
             print("jpVerifySignatures: skip (signtool not found). Ensure Windows SDK is installed or SIGNTOOL is set.")
             stamp_path.write_text("skip:no-signtool", encoding="utf-8")
@@ -1411,3 +1368,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
     env.AlwaysBuild(jp_verify_stamp)
     env.Command(jp_verify_stamp, [], _verify_signatures)
     env.Alias("jpVerifySignatures", jp_verify_stamp)
+
+    verify_all_env = env.Clone(JP_VERIFY_SIGNATURES_MODE="all")
+    jp_verify_all_stamp = verify_all_env.File("output/_jp_verify_signatures_all.stamp")
+    verify_all_env.AlwaysBuild(jp_verify_all_stamp)
+    verify_all_env.Command(jp_verify_all_stamp, [], _verify_signatures)
+    env.Alias("jpVerifySignaturesAll", jp_verify_all_stamp)

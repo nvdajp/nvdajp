@@ -39,6 +39,8 @@ param(
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$SConsOptions = @(),
     
+    [string]$LogPath = "",
+    
     [switch]$SkipUnitTests,
     [switch]$SkipSystemTests
 )
@@ -176,6 +178,14 @@ $env:VERSION = "jpalpha_$env:NOWDATE"
 $env:UPDATEVERSIONTYPE = "nvdajpalpha"
 $env:PUBLISHER = "nvdajp"
 
+# Optional logging: tee output of invoked cmd/bat into a file.
+if ($LogPath -eq "") {
+    $outputDir = Join-Path $repoRoot "output"
+    New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+    $LogPath = Join-Path $outputDir ("{0}_certBuild2025.log" -f $env:VERSION)
+}
+Write-Host "Logging cmd output to: $LogPath" -ForegroundColor Cyan
+
 # Build command arguments for certBuild2023.cmd
 $scriptPath = Join-Path $PSScriptRoot "certBuild2023.cmd"
 $buildArgs = @()
@@ -222,7 +232,11 @@ Write-Host "  RELEASE=$env:RELEASE" -ForegroundColor Gray
 Write-Host "  NOWDATE=$env:NOWDATE" -ForegroundColor Gray
 
 Write-Host "Executing: cmd /c `"$certBuildCmd $cmdArgs`"" -ForegroundColor Gray
-& cmd /c "`"$certBuildCmd`" $cmdArgs"
+if ($cmdArgs) {
+    cmd /c "`"$certBuildCmd`" $cmdArgs" 2>&1 | Tee-Object -FilePath $LogPath -Append
+} else {
+    cmd /c "`"$certBuildCmd`"" 2>&1 | Tee-Object -FilePath $LogPath -Append
+}
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Build failed with exit code $LASTEXITCODE"
     exit 1
@@ -233,7 +247,7 @@ if (-not $SkipUnitTests) {
     Write-Host "`nRunning unit tests..." -ForegroundColor Cyan
     $unitTestScript = Join-Path $repoRoot "rununittests.bat"
     if (Test-Path $unitTestScript) {
-        & cmd /c $unitTestScript
+        cmd /c $unitTestScript 2>&1 | Tee-Object -FilePath $LogPath -Append
         if ($LASTEXITCODE -ne 0) {
             Write-Error "Unit tests failed with exit code $LASTEXITCODE"
             exit 1
@@ -250,14 +264,14 @@ if (-not $SkipSystemTests) {
         Write-Warning "runsystemtests.bat not found, skipping system tests"
     } else {
         Write-Host "`nRunning system tests (Chrome)..." -ForegroundColor Cyan
-        & cmd /c $systemTestScript "--include" "chrome"
+        cmd /c $systemTestScript "--include" "chrome" 2>&1 | Tee-Object -FilePath $LogPath -Append
         if ($LASTEXITCODE -ne 0) {
             Write-Error "System tests (Chrome) failed with exit code $LASTEXITCODE"
             exit 1
         }
 
         Write-Host "`nRunning system tests (NVDA)..." -ForegroundColor Cyan
-        & cmd /c $systemTestScript "--include" "NVDA" "--exclude" "restarts_on_crash" "--exclude" "vscode" "--exclude" "symbols" "--exclude" "imageDescriptions"
+        cmd /c $systemTestScript "--include" "NVDA" "--exclude" "restarts_on_crash" "--exclude" "vscode" "--exclude" "symbols" "--exclude" "imageDescriptions" 2>&1 | Tee-Object -FilePath $LogPath -Append
         if ($LASTEXITCODE -ne 0) {
             Write-Error "System tests (NVDA) failed with exit code $LASTEXITCODE"
             exit 1
