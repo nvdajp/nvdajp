@@ -160,6 +160,11 @@ uv run ruff check
 .\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
 ```
 
+> **Note:**  
+> `-SkipOverlay` は現在のコードベースで正しいオプション名です。  
+> このオプションは `scons jtalkSync` の実行をスキップします（JTalk の DLL と辞書の準備をスキップ）。  
+> PR #595 で `-SkipJtalkSync` へのリネームが提案されましたが、その PR は破棄されたため、`-SkipOverlay` を使用してください。
+
 **確認事項**:
 - JTalk と MeCab の基本動作が正常
 - ビルド依存関係の変更が JTalk 機能に影響していない

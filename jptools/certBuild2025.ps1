@@ -137,6 +137,10 @@ if (-not (Test-Path $msgfmtPath)) {
             } elseif ($env:TIMESERVER) {
                 $signArgs += @("/tr", $env:TIMESERVER, "/td", "SHA256")
             } else {
+                # Use HTTP (not HTTPS) for timestamp server:
+                # - Microsoft Authenticode specification uses HTTP 1.1 POST for timestamp requests
+                # - Only hash values are sent (not original data), so encryption is less critical
+                # - HTTP has lower overhead and better compatibility with existing tools
                 $signArgs += @("/tr", "http://timestamp.digicert.com", "/td", "SHA256")
             }
             $signArgs += $tempMsgfmt
@@ -188,7 +192,7 @@ $buildArgs += $SConsOptions
 # Check if user explicitly specified -j, --num-jobs, or --all-cores
 $hasParallelOption = $false
 foreach ($arg in $SConsOptions) {
-    if ($arg -match '^-j\d+|^--num-jobs=|^--all-cores') {
+    if ($arg -match '^-j(\d+)?$|^--num-jobs=|^--all-cores') {
         $hasParallelOption = $true
         break
     }

@@ -578,9 +578,11 @@ try:
     # for a correct build layout regardless of publisher.
     # Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds)
     scons_jp.register_jp_builders(env, dist_target=dist)
-except Exception:
+except Exception as e:
     # Never fail the build if JP helpers are unavailable.
-    pass
+    # Log the exception for debugging purposes (e.g., during development)
+    import warnings
+    warnings.warn(f"Failed to register JP builders: {e}", UserWarning)
 
 launcher = env.Command(
 	outputDir.File("%s.exe" % outFilePrefix),

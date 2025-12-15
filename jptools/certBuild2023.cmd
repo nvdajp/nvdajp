@@ -25,6 +25,10 @@ rem Set Python UTF-8 mode for all Python commands (needed for JP tests and smoke
 set PYTHONUTF8=1
 
 rem Timestamp server (override via env if needed)
+rem Note: HTTP (not HTTPS) is intentional:
+rem - Microsoft Authenticode spec uses HTTP 1.1 POST for timestamp requests
+rem - Only hash values are sent (not original data), so encryption is less critical
+rem - HTTP has lower overhead and better compatibility with existing tools
 if defined TIMESERVER if not defined TIMESTAMP_URL set TIMESTAMP_URL=%TIMESERVER%
 if not defined TIMESTAMP_URL set TIMESTAMP_URL=http://timestamp.digicert.com
 
