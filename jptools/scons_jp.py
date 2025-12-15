@@ -1290,18 +1290,35 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                     dist_dir / "uninstall.exe",
                 ]
                 if build_version:
-                    for root_name in ("lib", "lib64", "libArm64"):
+                    helper_files_by_root = {
+                        # dist/lib/<version>/ contains x86 binaries, including local/UIA helpers.
+                        "lib": (
+                            "IAccessible2proxy.dll",
+                            "ISimpleDOM.dll",
+                            "UIARemote.dll",
+                            "nvdaHelperLocal.dll",
+                            "nvdaHelperLocalWin10.dll",
+                            "nvdaHelperRemote.dll",
+                            "windowsaccessbridge-32.dll",
+                        ),
+                        # dist/lib64/<version>/ and dist/libArm64/<version>/ contain remote helpers only.
+                        "lib64": (
+                            "IAccessible2proxy.dll",
+                            "ISimpleDOM.dll",
+                            "nvdaHelperRemote.dll",
+                            "nvdaHelperRemoteLoader.exe",
+                        ),
+                        "libArm64": (
+                            "IAccessible2proxy.dll",
+                            "ISimpleDOM.dll",
+                            "nvdaHelperRemote.dll",
+                            "nvdaHelperRemoteLoader.exe",
+                        ),
+                    }
+                    for root_name, helper_names in helper_files_by_root.items():
                         version_dir = dist_dir / root_name / build_version
                         if version_dir.exists():
-                            for helper_name in (
-                                "IAccessible2proxy.dll",
-                                "ISimpleDOM.dll",
-                                "nvdaHelperRemote.dll",
-                                "nvdaHelperRemoteLoader.exe",
-                                "UIARemote.dll",
-                                "nvdaHelperLocal.dll",
-                                "nvdaHelperLocalWin10.dll",
-                            ):
+                            for helper_name in helper_names:
                                 critical_paths.append(version_dir / helper_name)
                 for path in critical_paths:
                     _check(path, allow_ignored=False)
