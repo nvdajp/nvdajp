@@ -7,7 +7,7 @@
     It sets up the environment variables and calls certBuild2023.cmd with appropriate parameters.
 
 .PARAMETER VersionBuild
-    Version build number. If not specified, certBuild2023.cmd will use its default (1).
+    Version build number. If not specified, SCons default (usually 0) is used.
 
 .PARAMETER SConsOptions
     Additional SCons options to pass to certBuild2023.cmd (e.g., "--all-cores").
@@ -21,7 +21,7 @@
 
 .EXAMPLE
     .\jptools\certBuild2025.ps1
-    Builds with default settings (version_build=1 from certBuild2023.cmd).
+    Builds with SCons default settings.
 
 .EXAMPLE
     .\jptools\certBuild2025.ps1 -VersionBuild 123 --all-cores
@@ -38,6 +38,8 @@ param(
     
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$SConsOptions = @(),
+    
+    [string]$LogPath = "",
     
     [switch]$SkipUnitTests,
     [switch]$SkipSystemTests
@@ -68,6 +70,102 @@ if (-not $env:CERT_SHA1) {
 $env:PYTHONUTF8 = "1"
 $env:RELEASE = "1"
 
+# Test signtool with a dummy file before building
+# This ensures signing environment is properly configured
+Write-Host "Testing signtool with dummy file..." -ForegroundColor Cyan
+$msgfmtPath = Join-Path $repoRoot "miscDeps" "tools" "msgfmt.exe"
+if (-not (Test-Path $msgfmtPath)) {
+    Write-Warning "msgfmt.exe not found at $msgfmtPath, skipping signtool test"
+} else {
+    # Find signtool (similar to certBuild2023.cmd)
+    $signtool = $env:SIGNTOOL
+    if (-not $signtool) {
+        $signtool = Get-Command signtool -ErrorAction SilentlyContinue
+        if ($signtool) {
+            $signtool = $signtool.Source
+        }
+    }
+    if (-not $signtool) {
+        # Try Windows Kits
+        $kitsBase = "C:\Program Files (x86)\Windows Kits\10\bin"
+        if (Test-Path $kitsBase) {
+            $kitsDirs = Get-ChildItem $kitsBase -Directory | Sort-Object Name -Descending
+            foreach ($kitDir in $kitsDirs) {
+                $signtoolX64 = Join-Path $kitDir.FullName "x64\signtool.exe"
+                $signtoolX86 = Join-Path $kitDir.FullName "x86\signtool.exe"
+                if (Test-Path $signtoolX64) {
+                    $signtool = $signtoolX64
+                    break
+                } elseif (Test-Path $signtoolX86) {
+                    $signtool = $signtoolX86
+                    break
+                }
+            }
+        }
+    }
+    if ($signtool) {
+        # Copy msgfmt.exe to temp directory and sign it
+        $tempDir = $env:TEMP
+        $tempMsgfmt = Join-Path $tempDir "msgfmt_test.exe"
+        Write-Host "  Copying $msgfmtPath to $tempMsgfmt" -ForegroundColor Gray
+        Copy-Item -Path $msgfmtPath -Destination $tempMsgfmt -Force
+        try {
+            # Build signtool command similar to certBuild2023.cmd
+            $signArgs = @("sign", "/fd", "SHA256")
+            if ($env:CERT_SHA1) {
+                $certStore = $env:CERT_STORE
+                if (-not $certStore) {
+                    $certStore = "My"
+                }
+                $signArgs += @("/s", $certStore, "/sha1", $env:CERT_SHA1)
+                if ($env:CERT_MACHINE_STORE) {
+                    $signArgs += "/sm"
+                }
+            } elseif ($env:CERT_NAME) {
+                $certStore = $env:CERT_STORE
+                if (-not $certStore) {
+                    $certStore = "My"
+                }
+                $signArgs += @("/s", $certStore, "/n", $env:CERT_NAME)
+                if ($env:CERT_MACHINE_STORE) {
+                    $signArgs += "/sm"
+                }
+            } else {
+                # Fallback to automatic selection
+                $signArgs += "/a"
+            }
+            if ($env:TIMESTAMP_URL) {
+                $signArgs += @("/tr", $env:TIMESTAMP_URL, "/td", "SHA256")
+            } elseif ($env:TIMESERVER) {
+                $signArgs += @("/tr", $env:TIMESERVER, "/td", "SHA256")
+            } else {
+                # Use HTTP (not HTTPS) for timestamp server:
+                # - Microsoft Authenticode specification uses HTTP 1.1 POST for timestamp requests
+                # - Only hash values are sent (not original data), so encryption is less critical
+                # - HTTP has lower overhead and better compatibility with existing tools
+                $signArgs += @("/tr", "http://timestamp.digicert.com", "/td", "SHA256")
+            }
+            $signArgs += $tempMsgfmt
+            Write-Host "  Running: $signtool $($signArgs -join ' ')" -ForegroundColor Gray
+            & $signtool $signArgs
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "  signtool test completed successfully" -ForegroundColor Green
+            } else {
+                Write-Error "signtool test failed with exit code $LASTEXITCODE. Code signing environment is not properly configured."
+                Write-Error "Please ensure CERT_SHA1 or CERT_NAME is set correctly, and the certificate is accessible."
+                exit 1
+            }
+        } finally {
+            # Clean up temp file
+            if (Test-Path $tempMsgfmt) {
+                Remove-Item -Path $tempMsgfmt -Force -ErrorAction SilentlyContinue
+            }
+        }
+    } else {
+        Write-Warning "signtool not found, skipping test"
+    }
+}
+
 # Get NOWDATE from nowdate.cmd
 $nowdateScript = Join-Path $PSScriptRoot "nowdate.cmd"
 $nowdateOutput = & cmd /c $nowdateScript 2>&1
@@ -80,6 +178,14 @@ $env:VERSION = "jpalpha_$env:NOWDATE"
 $env:UPDATEVERSIONTYPE = "nvdajpalpha"
 $env:PUBLISHER = "nvdajp"
 
+# Optional logging: tee output of invoked cmd/bat into a file.
+if ($LogPath -eq "") {
+    $outputDir = Join-Path $repoRoot "output"
+    New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+    $LogPath = Join-Path $outputDir ("{0}_certBuild2025.log" -f $env:VERSION)
+}
+Write-Host "Logging cmd output to: $LogPath" -ForegroundColor Cyan
+
 # Build command arguments for certBuild2023.cmd
 $scriptPath = Join-Path $PSScriptRoot "certBuild2023.cmd"
 $buildArgs = @()
@@ -91,6 +197,19 @@ if ($VersionBuild -gt 0) {
 
 # Add additional SCons options
 $buildArgs += $SConsOptions
+
+# Default to -j1 if no parallel build option is specified
+# Check if user explicitly specified -j, --num-jobs, or --all-cores
+$hasParallelOption = $false
+foreach ($arg in $SConsOptions) {
+    if ($arg -match '^-j(\d+)?$|^--num-jobs=|^--all-cores') {
+        $hasParallelOption = $true
+        break
+    }
+}
+if (-not $hasParallelOption) {
+    $buildArgs += "-j1"
+}
 
 # Build the command line
 $buildArgsString = $buildArgs -join " "
@@ -113,7 +232,11 @@ Write-Host "  RELEASE=$env:RELEASE" -ForegroundColor Gray
 Write-Host "  NOWDATE=$env:NOWDATE" -ForegroundColor Gray
 
 Write-Host "Executing: cmd /c `"$certBuildCmd $cmdArgs`"" -ForegroundColor Gray
-& cmd /c "`"$certBuildCmd`" $cmdArgs"
+if ($cmdArgs) {
+    cmd /c "`"$certBuildCmd`" $cmdArgs" 2>&1 | Tee-Object -FilePath $LogPath -Append
+} else {
+    cmd /c "`"$certBuildCmd`"" 2>&1 | Tee-Object -FilePath $LogPath -Append
+}
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Build failed with exit code $LASTEXITCODE"
     exit 1
@@ -124,7 +247,7 @@ if (-not $SkipUnitTests) {
     Write-Host "`nRunning unit tests..." -ForegroundColor Cyan
     $unitTestScript = Join-Path $repoRoot "rununittests.bat"
     if (Test-Path $unitTestScript) {
-        & cmd /c $unitTestScript
+        cmd /c $unitTestScript 2>&1 | Tee-Object -FilePath $LogPath -Append
         if ($LASTEXITCODE -ne 0) {
             Write-Error "Unit tests failed with exit code $LASTEXITCODE"
             exit 1
@@ -141,14 +264,14 @@ if (-not $SkipSystemTests) {
         Write-Warning "runsystemtests.bat not found, skipping system tests"
     } else {
         Write-Host "`nRunning system tests (Chrome)..." -ForegroundColor Cyan
-        & cmd /c $systemTestScript "--include" "chrome"
+        cmd /c $systemTestScript "--include" "chrome" 2>&1 | Tee-Object -FilePath $LogPath -Append
         if ($LASTEXITCODE -ne 0) {
             Write-Error "System tests (Chrome) failed with exit code $LASTEXITCODE"
             exit 1
         }
 
         Write-Host "`nRunning system tests (NVDA)..." -ForegroundColor Cyan
-        & cmd /c $systemTestScript "--include" "NVDA" "--exclude" "restarts_on_crash" "--exclude" "vscode" "--exclude" "symbols" "--exclude" "imageDescriptions"
+        cmd /c $systemTestScript "--include" "NVDA" "--exclude" "restarts_on_crash" "--exclude" "vscode" "--exclude" "symbols" "--exclude" "imageDescriptions" 2>&1 | Tee-Object -FilePath $LogPath -Append
         if ($LASTEXITCODE -ne 0) {
             Write-Error "System tests (NVDA) failed with exit code $LASTEXITCODE"
             exit 1
