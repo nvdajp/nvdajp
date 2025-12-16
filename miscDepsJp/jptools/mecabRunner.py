@@ -5,7 +5,6 @@
 
 import os
 import sys
-from os import getcwd
 
 from mecabHarness import tasks
 
@@ -77,13 +76,9 @@ def get_reading(msg):
     return reading
 
 
-def runTasks(enableUserDic=False):
-    if enableUserDic:
-        print(jt_dir, dic, user_dics)
-        Mecab_initialize(__print, jt_dir, dic, user_dics)
-    else:
-        print(jt_dir, dic)
-        Mecab_initialize(__print, jt_dir, dic)
+def runTasks():
+    print(jt_dir, dic)
+    Mecab_initialize(__print, jt_dir, dic)
     count = 0
     for i in tasks:
         if isinstance(i, dict):
@@ -124,4 +119,4 @@ def runTasks(enableUserDic=False):
 
 
 if __name__ == "__main__":
-    runTasks(enableUserDic=True)
+    runTasks()

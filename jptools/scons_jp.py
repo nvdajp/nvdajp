@@ -812,23 +812,13 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
             if dic_src.resolve() == dic_dst.resolve():
                 print("jtalkSync: dictionary source and destination are identical; skipping copy.")
             else:
-                dic_files = [
-                    "sys.dic",
-                    "unk.dic",
-                    "char.bin",
-                    "matrix.bin",
-                    "left-id.def",
-                    "right-id.def",
-                    "rewrite.def",
-                    "pos-id.def",
-                    "dicrc",
-                    "DIC_VERSION",
-                ]
-                for name in dic_files:
-                    src = dic_src / name
-                    if src.exists():
-                        shutil.copy2(src, dic_dst / name)
-                print(f"jtalkSync: copied dictionary assets to {dic_dst}")
+                # Copy all files from OUTDIR to dic_dst (matching past all-install.cmd behavior)
+                copied_count = 0
+                for item in dic_src.iterdir():
+                    if item.is_file():
+                        shutil.copy2(item, dic_dst / item.name)
+                        copied_count += 1
+                print(f"jtalkSync: copied {copied_count} dictionary files to {dic_dst}")
         except Exception as e:
             print(f"jtalkSync: failed to copy dictionary assets: {e}")
             return 1

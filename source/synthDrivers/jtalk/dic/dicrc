@@ -1,4 +1,4 @@
-;
+
 ; Configuration file of IPADIC
 ;
 ; $Id: dicrc,v 1.4 2006/04/08 06:41:36 taku-ku Exp $;
@@ -7,7 +7,7 @@ cost-factor = 800
 bos-feature = BOS/EOS,*,*,*,*,*,*,*,*
 eval-size = 8
 unk-eval-size = 4
-config-charset = EUC-JP
+config-charset = UTF-8
 
 ; yomi
 node-format-yomi = %pS%f[7]

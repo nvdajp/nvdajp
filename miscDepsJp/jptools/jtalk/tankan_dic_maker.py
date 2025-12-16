@@ -60,13 +60,18 @@ def read_characters_file(cs_file):
     return ar
 
 
-def make_dic(CODE, CS_FILE, THISDIR):
+def make_dic(CODE, CS_FILE, THISDIR, naist_jdic_dir=None):
+    # naist_jdic_dir: directory to read naist-jdic.csv from (default: THISDIR)
+    # If naist_jdic_dir is not provided, use THISDIR (for backward compatibility)
+    if naist_jdic_dir is None:
+        naist_jdic_dir = THISDIR
     char_dic = read_characters_file(CS_FILE)
     print("char_dic %d" % len(char_dic))
     import csv
 
     jdic_tankan = {}
-    reader = csv.reader(open_file(path.join(THISDIR, "naist-jdic.csv"), "r", "euc-jp"))
+    # Read naist-jdic.csv from naist_jdic_dir (UTF-8)
+    reader = csv.reader(open_file(path.join(naist_jdic_dir, "naist-jdic.csv"), "r", CODE))
     for row in reader:
         hyousou = row[0]
         if len(hyousou) == 1:

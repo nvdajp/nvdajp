@@ -20,9 +20,7 @@ class JpBrailleTests(unittest.TestCase):
 
 class MecabTests(unittest.TestCase):
     def test_all(self):
-        count = mecabRunner.runTasks(enableUserDic=False)
-        self.assertEqual(count, 0)
-        count = mecabRunner.runTasks(enableUserDic=True)
+        count = mecabRunner.runTasks()
         self.assertEqual(count, 0)
 
 
