@@ -148,6 +148,31 @@ synthDrivers/jtalk/dic へのパッケージングについて、特に文字コ
 * CI のビルドステージなどで `scons jtalkSync` を実行すると、DIC_VERSION が無い（または UTF-8 記載が無い）場合は辞書を make_jdic.py で生成する。CI では後続のランチャー作成／JP スモークテストはビルドステージのキャッシュを利用する。
 * miscDepsJp/jptools/jtusrdic/mecab-dict-index.exe はいずれ廃止して、ビルドし直したバイナリを使うようにする予定。
 
+#### mecab-dict-index.exe の辞書フォーマット仕様（仮説）
+
+`mecab-dict-index.exe`は、システム辞書とユーザー辞書で異なるCSVフォーマットを期待します：
+
+**システム辞書（NAIST-JDIC形式）**:
+* **フィールド数**: 13フィールド（カンマ区切り）
+* **形式**: `表層形,左文脈ID,右文脈ID,コスト,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用型,活用形,原形,読み,発音`
+* **例**: `naist-jdic.csv`（`make_jdic.py`でビルドされるシステム辞書）
+
+**ユーザー辞書（簡易形式）**:
+* **フィールド数**: 5フィールド（カンマ区切り）
+* **形式**: `表層形,左文脈ID,右文脈ID,コスト,品詞情報（カンマ区切り）`
+* **実装**: `miscDepsJp/include/libopenjtalk/mecab/src/dictionary.cpp`の215-216行目で`tokenizeCSV(line.get(), col, 5)`と`CHECK_DIE(n == 5)`により5フィールド形式を強制
+* **例**: `jtusr.csv`（ユーザー辞書ソース）は5フィールド形式である必要がある
+
+**注意事項**:
+* ユーザー辞書のCSVファイルがNAIST-JDIC形式（13フィールド）の場合、`mecab-dict-index.exe`は`dictionary.cpp:216`で`format error`を出力し、ビルドに失敗する
+* ユーザー辞書をビルドする際は、`-u`オプションで指定するCSVファイルが5フィールド形式であることを確認する必要がある
+* システム辞書の`naist-jdic.csv`は13フィールド形式だが、`mecab-dict-index.exe`は`-d`オプションでシステム辞書をビルドする際は13フィールド形式を正しく処理する（`dictionary.cpp`の実装が異なる処理パスを使用）
+
+**参考実装**:
+* `miscDepsJp/include/libopenjtalk/mecab/src/dictionary.cpp:215-216`: ユーザー辞書ビルド時の5フィールドチェック
+* `miscDepsJp/jptools/userdicBuilder.cmd`: ユーザー辞書ビルドコマンド例（`-u`オプション使用）
+* `miscDepsJp/jptools/jtusrdic/__init__.py:72-74`: ユーザー辞書ビルド処理（`-u`オプション使用）
+
 #### 過去の実装との比較と現状の課題
 
 **過去の実装（`.cmd`ファイルとMakefile）**:
