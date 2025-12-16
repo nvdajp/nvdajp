@@ -247,7 +247,10 @@ def pass2(verboseMode=False):
                     f.write("res_in : " + result_inpos + "\n")
                     f.write("res_out: " + result_outpos + "\n")
                     if "comment" in t and t["comment"]:
-                        f.write("comment: " + t["comment"] + "\n")
+                        if isinstance(t["comment"], str):
+                            f.write("comment: " + t["comment"] + "\n")
+                        else:
+                            f.write("comment: " + ", ".join(t["comment"]) + "\n")
                     f.write("\n")
                     f.write(log)
                     f.write("\n")
