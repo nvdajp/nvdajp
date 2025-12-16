@@ -69,17 +69,133 @@
   * nmake は現在も使用中（内部実装の詳細として許容）
   * 長期的な改善方針については `projectDocs/jp/miscdepsjp-overlay-strategy.md` の Phase 4 を参照
 
-### mecab 辞書ファイルの文字コード
+### mecab 辞書ファイルの文字コードと配置場所
 
-synthDrivers/jtalk/dic へのパッケージングについて、特に文字コードの処理を説明する。
+synthDrivers/jtalk/dic へのパッケージングについて、特に文字コードの処理と複数のディレクトリの役割を説明する。
 
-* miscDepsJp/jptools/jtalk/libopenjtalk は、もともとサブモジュール miscDepsJp/include/libopenjtalk（nishimotz/libopenjtalk）由来の内容をワークツリー側に持ってきたコピーである（PR #582 で subtree merge によりメインリポジトリに統合済み）。
-* miscDepsJp/include/libopenjtalk/mecab/src/Makefile.mak の CFLAGS に /D CHARSET_SHIFT_JIS が入っており、これにより mecab-dict-index.exe はソースコードが Shift_JIS（CP932）の前提でビルドされる。
-* miscDepsJp\jptools\jtalk\libopenjtalk\mecab-naist-jdic には EUC-JP の mecab テキスト辞書ファイルがある。これを make_jdic.py の convert_file が UTF-8 に変換する。
+#### 辞書ファイルの配置場所と役割
+
+ビルドプロセスでは、以下のディレクトリが使用されます：
+
+1. **`miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`** (UTF-8版)
+   - **役割**: UTF-8変換済みの辞書ファイルの配置場所（Git管理対象）
+   - **内容**: UTF-8 エンコーディングのテキスト辞書ファイル（`*.def`、`naist-jdic.csv`など、13個のファイル）
+   - **用途**: リポジトリにコミットされているUTF-8版のソースファイル
+   - **注意**: 実際にはUTF-8でエンコードされている。`THISDIR`のファイルをUTF-8に変換したものとほぼ一致（`char.def`のみバージョン管理情報行の有無で差異あり）
+
+2. **`miscDepsJp/include/python-jtalk/libopenjtalk/mecab-naist-jdic/`** (ビルド用コピー)
+   - **役割**: ビルドプロセスでコピーされた辞書ファイルの配置場所
+   - **内容**: `miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`からコピーされたファイル（13個のファイル）
+   - **用途**: `jtalkPrep`やその他のビルドプロセスで使用される可能性がある
+
+3. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/`** (THISDIR)
+   - **役割**: ビルド用のソース辞書ファイルの配置場所（Git管理対象）
+   - **内容**: EUC-JP エンコーディングのテキスト辞書ファイル（17個のファイル、追加ファイルあり）
+   - **用途**: `make_jdic.py`がこのディレクトリからファイルを読み込んでUTF-8に変換
+   - **注意**: 
+     * このディレクトリもリポジトリにコミットされている（ビルドプロセスでのコピーではない）
+     * **Open JTalk由来の元のソース**（EUC-JP）。`char.def`には`$Id: char.def,v 1.2 2009-11-11 04:14:46 uratec Exp $;`というOpen JTalkのバージョン管理情報が含まれている
+     * UTF-8に変換すると`miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`のファイルとほぼ一致（実質的に同じ内容）
+
+4. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp/`** (TEMPDIR)
+   - **役割**: 一時作業ディレクトリ
+   - **内容**: UTF-8に変換されたテキスト辞書ファイル（`*.def`、`naist-jdic.csv`など）
+   - **用途**: `mecab-dict-index.exe`がこのディレクトリを`-d`オプションで指定してバイナリ辞書をビルド
+   - **注意**: ビルド後も残るが、再ビルド時に上書きされる
+
+5. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic/`** (OUTDIR)
+   - **役割**: ビルド済み辞書ファイルの出力先
+   - **内容**: 
+     * バイナリ辞書ファイル（`sys.dic`、`unk.dic`、`char.bin`、`matrix.bin`）
+     * UTF-8変換済みの`.def`ファイル（全8種類：`char.def`、`feature.def`、`left-id.def`、`matrix.def`、`pos-id.def`、`rewrite.def`、`right-id.def`、`unk.def`）
+     * `dicrc`（`config-charset = UTF-8`に更新済み）
+     * `DIC_VERSION`（UTF-8ビルドであることを示す）
+   - **用途**: `jptools/scons_jp.py`の`jtalkSync`がこのディレクトリから`source/synthDrivers/jtalk/dic`にコピー
+   - **注意**: 過去の`all-install.cmd`では`dic\*`で全ファイルをコピーしていたが、現在の`jptools/scons_jp.py`では`dic_files`リストに明示的に列挙されたファイルのみをコピー。
+
+6. **`source/synthDrivers/jtalk/dic/`** (dic_dst)
+   - **役割**: 最終的な配置先（実行時に使用される）
+   - **内容**: `OUTDIR`からコピーされたすべての辞書ファイル
+   - **用途**: NVDA実行時にMeCabがこのディレクトリから辞書を読み込む
+
+**注意**: `miscDepsJp/include/python-jtalk/dic/`は存在せず、実際には使用されていません（過去の名残）。
+
+#### ビルドフロー
+
+1. **ビルドプロセスでのコピー**:
+   * `miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`（元のソース）から`miscDepsJp/include/python-jtalk/libopenjtalk/mecab-naist-jdic/`や`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/`（THISDIR）にコピー
+
+2. **`make_jdic.py`の実行**:
+   * `THISDIR`からEUC-JPファイルを読み込み
+   * `TEMPDIR`にUTF-8変換して配置
+   * `mecab-dict-index.exe`を`TEMPDIR`を`-d`オプションで実行し、`OUTDIR`にバイナリ辞書を生成
+   * `TEMPDIR`から`OUTDIR`に`.def`ファイルをコピー（UTF-8変換済み）
+   * `dicrc`を`OUTDIR`にコピーし、`config-charset = EUC-JP`を`config-charset = UTF-8`に変更
+
+3. **`scons jtalkSync`の実行**:
+   * `OUTDIR`から`dic_dst`（`source/synthDrivers/jtalk/dic`）に`dic_files`リストに列挙されたファイルをコピー
+   * **注意**: 過去の`all-install.cmd`では`dic\*`で全ファイルをコピーしていたが、現在は明示的なリストに基づいてコピー。`char.def`、`feature.def`、`matrix.def`、`unk.def`がリストに含まれているか要確認。
+
+#### 文字コードの統一
+
+* `miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/`（THISDIR）は、**Open JTalk由来の元のソース**（EUC-JP）で、リポジトリにコミットされている（Git管理対象）。`char.def`には`$Id: char.def,v 1.2 2009-11-11 04:14:46 uratec Exp $;`というOpen JTalkのバージョン管理情報が含まれている。
+* `miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`は、もともとサブモジュール（nishimotz/libopenjtalk）由来の内容で、PR #582 で subtree merge によりメインリポジトリに統合済み。このディレクトリに辞書ファイルがコミットされている（Git管理対象）。**実際にはUTF-8でエンコードされている**。`THISDIR`のファイルをUTF-8に変換したものとほぼ一致（実質的に同じ内容）。
+* `make_jdic.py`は`THISDIR`（EUC-JP）からファイルを読み込み、UTF-8に変換してビルドする。
+* `miscDepsJp/include/libopenjtalk/mecab/src/Makefile.mak`の CFLAGS に /D CHARSET_SHIFT_JIS が入っており、これにより mecab-dict-index.exe はソースコードが Shift_JIS（CP932）の前提でビルドされる。
+* `miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/`には EUC-JP の mecab テキスト辞書ファイルがある。これを make_jdic.py の convert_file が UTF-8 に変換する。
 * mecab-dict-index が UTF-8 ファイルを入力して UTF-8 対応バイナリ辞書をビルドする。
 * パッケージングされる synthDrivers/jtalk/dic 以下のファイルはバイナリ辞書も def ファイルなども UTF-8 ベースで統一される。
 * CI のビルドステージなどで `scons jtalkSync` を実行すると、DIC_VERSION が無い（または UTF-8 記載が無い）場合は辞書を make_jdic.py で生成する。CI では後続のランチャー作成／JP スモークテストはビルドステージのキャッシュを利用する。
 * miscDepsJp/jptools/jtusrdic/mecab-dict-index.exe はいずれ廃止して、ビルドし直したバイナリを使うようにする予定。
+
+#### mecab-dict-index.exe の辞書フォーマット仕様（仮説）
+
+これは暫定的なメモで、さらに確認が必要。
+
+`mecab-dict-index.exe`は、システム辞書とユーザー辞書で異なるCSVフォーマットを期待します：
+
+**システム辞書（NAIST-JDIC形式）**:
+
+* **フィールド数**: 13フィールド（カンマ区切り）
+* **形式**: `表層形,左文脈ID,右文脈ID,コスト,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用型,活用形,原形,読み,発音`
+* **例**: `naist-jdic.csv`（`make_jdic.py`でビルドされるシステム辞書）
+
+**ユーザー辞書（簡易形式）**:
+
+* **フィールド数**: 5フィールド（カンマ区切り）
+* **形式**: `表層形,左文脈ID,右文脈ID,コスト,品詞情報（カンマ区切り）`
+* **実装**: `miscDepsJp/include/libopenjtalk/mecab/src/dictionary.cpp`の215-216行目で`tokenizeCSV(line.get(), col, 5)`と`CHECK_DIE(n == 5)`により5フィールド形式を強制
+* **例**: `jtusr.csv`（ユーザー辞書ソース）は5フィールド形式である必要がある
+
+**注意事項**:
+
+* ユーザー辞書のCSVファイルがNAIST-JDIC形式（13フィールド）の場合、`mecab-dict-index.exe`は`dictionary.cpp:216`で`format error`を出力し、ビルドに失敗する
+* ユーザー辞書をビルドする際は、`-u`オプションで指定するCSVファイルが5フィールド形式であることを確認する必要がある
+* システム辞書の`naist-jdic.csv`は13フィールド形式だが、`mecab-dict-index.exe`は`-d`オプションでシステム辞書をビルドする際は13フィールド形式を正しく処理する（`dictionary.cpp`の実装が異なる処理パスを使用）
+
+**参考実装**:
+
+* `miscDepsJp/include/libopenjtalk/mecab/src/dictionary.cpp:215-216`: ユーザー辞書ビルド時の5フィールドチェック
+* `miscDepsJp/jptools/userdicBuilder.cmd`: ユーザー辞書ビルドコマンド例（`-u`オプション使用）
+* `miscDepsJp/jptools/jtusrdic/__init__.py:72-74`: ユーザー辞書ビルド処理（`-u`オプション使用）
+
+#### 過去の実装との比較と現状の課題
+
+**過去の実装（`.cmd`ファイルとMakefile）**:
+
+* `all-install.cmd`: `copy libopenjtalk\mecab-naist-jdic\dic\*` で全ファイルをコピー
+* `Makefile.mak`: 明示的に8つのファイルをコピー（`char.bin`、`matrix.bin`、`sys.dic`、`unk.dic`、`left-id.def`、`right-id.def`、`rewrite.def`、`pos-id.def`）
+
+**現在の実装**:
+
+* `make_jdic.py`: `euc_files`（8種類の`.def`ファイル）をOUTDIRにコピー（2025-12修正済み）
+* `jptools/scons_jp.py`: `dic_files`リストに列挙された10個のファイルのみをコピー
+
+**ファイルコピーの不足**:
+
+* `OUTDIR`には14個のファイルが存在するが、`jptools/scons_jp.py`の`dic_files`リストには10個しか含まれていない
+* 不足している可能性があるファイル: `char.def`、`feature.def`、`matrix.def`、`unk.def`
+* 過去の`all-install.cmd`では`dic\*`で全ファイルをコピーしていたため、これらのファイルも含まれていた可能性が高い
 
 ## 付録: 開発者の操作とログ例
 
