@@ -77,18 +77,7 @@ synthDrivers/jtalk/dic へのパッケージングについて、特に文字コ
 
 ビルドプロセスでは、以下のディレクトリが使用されます：
 
-1. **`miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`** (UTF-8版)
-   * **役割**: UTF-8変換済みの辞書ファイルの配置場所（Git管理対象）
-   * **内容**: UTF-8 エンコーディングのテキスト辞書ファイル（`*.def`、`naist-jdic.csv`など、13個のファイル）
-   * **用途**: リポジトリにコミットされているUTF-8版のソースファイル
-   * **注意**: 実際にはUTF-8でエンコードされている。`THISDIR`のファイルをUTF-8に変換したものとほぼ一致（`char.def`のみバージョン管理情報行の有無で差異あり）
-
-2. **`miscDepsJp/include/python-jtalk/libopenjtalk/mecab-naist-jdic/`** (ビルド用コピー)
-   * **役割**: ビルドプロセスでコピーされた辞書ファイルの配置場所
-   * **内容**: `miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`からコピーされたファイル（13個のファイル）
-   * **用途**: `jtalkPrep`やその他のビルドプロセスで使用される可能性がある
-
-3. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/`** (THISDIR)
+1. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/`** (THISDIR)
    * **役割**: ビルド用のソース辞書ファイルの配置場所（Git管理対象）
    * **内容**: EUC-JP エンコーディングのテキスト辞書ファイル（17個のファイル、追加ファイルあり）
    * **用途**: `make_jdic.py`がこのディレクトリからファイルを読み込んでUTF-8に変換
@@ -97,25 +86,20 @@ synthDrivers/jtalk/dic へのパッケージングについて、特に文字コ
      * **Open JTalk由来の元のソース**（EUC-JP）。`char.def`には`$Id: char.def,v 1.2 2009-11-11 04:14:46 uratec Exp $;`というOpen JTalkのバージョン管理情報が含まれている
      * UTF-8に変換すると`miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`のファイルとほぼ一致（実質的に同じ内容）
 
-4. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp/`** (TEMPDIR)
+2. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp/`** (TEMPDIR)
    * **役割**: 一時作業ディレクトリ
    * **内容**: UTF-8に変換されたテキスト辞書ファイル（`*.def`、`naist-jdic.csv`など）
    * **用途**: `mecab-dict-index.exe`がこのディレクトリを`-d`オプションで指定してバイナリ辞書をビルド
    * **注意**: ビルド後も残るが、再ビルド時に上書きされる
 
-5. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic/`** (旧 OUTDIR)
-   * **役割**: かつての出力先（現在は使わない）
-   * **内容**: `make_jdic.py`はここへは出力しない（ビルドは直接 `source/synthDrivers/jtalk/dic` へ）
-   * **注意**: `.def` は `_temp` にのみ存在し、ここにも `source/` にもコピーされない
-
-6. **`source/synthDrivers/jtalk/dic/`** (dic_dst / 実際のOUTDIR)
+3. **`source/synthDrivers/jtalk/dic/`** (dic_dst / 実際のOUTDIR)
    * **役割**: 最終的な配置先（実行時に使用される）
    * **内容**: `make_jdic.py`が直接生成するバイナリ辞書 (`sys.dic`、`unk.dic`、`char.bin`、`matrix.bin`) と `dicrc`、`DIC_VERSION`
    * **用途**: NVDA実行時にMeCabがこのディレクトリから辞書を読み込む
 
 **注意**:
 
-* `miscDepsJp/include/python-jtalk/dic/`は存在せず、実際には使用されていません（過去の名残）
+* `miscDepsJp/include/python-jtalk/dic/`は存在せず、実際には使用されていません（過去の名残。現在はツリーから削除済み）
 * `jtalkSync`は辞書を `source/synthDrivers/jtalk/dic` で直接チェックし、足りなければ `make_jdic.py` を実行して同じ場所へ生成する（コピーは行わない）
 
 #### ビルドフロー
@@ -135,7 +119,7 @@ synthDrivers/jtalk/dic へのパッケージングについて、特に文字コ
 #### 文字コードの統一
 
 * `miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/`（THISDIR）は、**Open JTalk由来の元のソース**（EUC-JP）で、リポジトリにコミットされている（Git管理対象）。`char.def`には`$Id: char.def,v 1.2 2009-11-11 04:14:46 uratec Exp $;`というOpen JTalkのバージョン管理情報が含まれている。
-* `miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`は、もともとサブモジュール（nishimotz/libopenjtalk）由来の内容で、PR #582 で subtree merge によりメインリポジトリに統合済み。このディレクトリに辞書ファイルがコミットされている（Git管理対象）。**実際にはUTF-8でエンコードされている**。`THISDIR`のファイルをUTF-8に変換したものとほぼ一致（実質的に同じ内容）。
+* 上流由来の UTF-8 版（`miscDepsJp/include/libopenjtalk/mecab-naist-jdic/` など）は重複を避けるため削除済み。必要なら別ブランチ・アーカイブで参照。
 * `make_jdic.py`は`THISDIR`（EUC-JP）からファイルを読み込み、UTF-8に変換してビルドする。
 * `miscDepsJp/include/libopenjtalk/mecab/src/Makefile.mak`の CFLAGS に /D CHARSET_SHIFT_JIS が入っており、これにより mecab-dict-index.exe はソースコードが Shift_JIS（CP932）の前提でビルドされる。
 * `miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/`には EUC-JP の mecab テキスト辞書ファイルがある。これを make_jdic.py の convert_file が UTF-8 に変換する。
