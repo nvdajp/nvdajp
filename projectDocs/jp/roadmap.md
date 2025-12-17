@@ -135,7 +135,7 @@
          * `scons.bat jtalkSync TARGET_ARCH=x64` で x64 DLL が正しくビルド・配置されることを確認
     2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現** 🔄 進行中
        * **現状**: x64 での smoke テスト実行環境が整備済み
-         * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 環境での smoke テストを実行可能
+         * `.\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 環境での smoke テストを実行可能
          * `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
          * uv で Python 3.11.14 x64 を自動インストール・使用
          * x64 DLL が x64 Python で正しくロードされることを確認（`OSError: [WinError 193]` エラーは発生せず）
