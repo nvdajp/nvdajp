@@ -94,8 +94,27 @@ if ($allOk) {
         $oldArch = $env:TARGET_ARCH
         try {
             $env:TARGET_ARCH = $Architecture
-            & pwsh -NoLogo -File "jptools/runJpSmokeTests.ps1" -SkipOverlay
-            if (-not $?) { throw "jp smoke tests failed" }
+            if ($Architecture -eq 'x64') {
+                # Use uv to run pytest with Python 3.11 x64 (uv will install if needed).
+                # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
+                # Ensure PYTHONPATH is set for JTalk modules.
+                $venvX64 = "$repoRoot\.venv-x64"
+                $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk"
+                # Create venv if it doesn't exist
+                if (-not (Test-Path "$venvX64\Scripts\python.exe")) {
+                    & uv venv --python 3.11 $venvX64
+                    if (-not $?) { throw "uv venv failed" }
+                    # Install pytest in the venv using uv pip
+                    & uv pip install --python "$venvX64\Scripts\python.exe" pytest
+                    if (-not $?) { throw "uv pip install pytest failed" }
+                }
+                # Run pytest in the x64 venv
+                & "$venvX64\Scripts\python.exe" -m pytest -q miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
+                if (-not $?) { throw "jp smoke tests failed" }
+            } else {
+                & pwsh -NoLogo -File "jptools/runJpSmokeTests.ps1" -SkipOverlay
+                if (-not $?) { throw "jp smoke tests failed" }
+            }
         } finally {
             $env:TARGET_ARCH = $oldArch
             Pop-Location

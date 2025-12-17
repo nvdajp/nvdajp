@@ -121,19 +121,30 @@
     * ローカル環境での開発効率を向上させる
     * 将来のx64対応を見据えた検証環境を構築
   * **現状**:
-    * ローカル環境ではx86/x64を順次実行することは可能だが、成果物の衝突回避を要検討
+    * タスク 2.1 完了: x86/x64 の DLL ビルド・検証環境が整備済み
+    * タスク 2.2 進行中: x64 での smoke テスト実行環境が整備され、過去の失敗（access violation）を再現可能な状態
   * **段階的実装計画**:
-    1. **タスク 2.1: DLLパス構造の統一（前提条件）**
+    1. **タスク 2.1: DLLパス構造の統一（前提条件）** ✅ 完了
        * x86 DLL: `miscDepsJp/include/python-jtalk/x86/(libopenjtalk|libmecab).dll`
        * x64 DLL: `miscDepsJp/include/python-jtalk/x64/(libopenjtalk|libmecab).dll`
        * payload 側 (source/synthDrivers/jtalk/) は `scons.bat -c jtalkSync` で mecab/src の obj/lib/dll/dic をクリーンし、`scons.bat jtalkSync TARGET_ARCH=x86`（または x64）で再生成して切り替える。クリーンにアーキ指定は不要。並列は避け、逐次で安定化を確認。
-       * **検証**: 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
-       * checkJtalkArch.ps1 で x86/x64 両方の DLL を dumpbin 判定して OK になることを確認。
-    2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現**
-       * `runJpSmokeTests.ps1 -SkipOverlay` を checkJtalkArch.ps1 から使用
-       * アーキテクチャ別のビルド成果物パスを使用
-       * PowerShellジョブを使用してx86/x64をマトリクス実行
-       * **検証**: ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認
+       * **完了内容**:
+         * `jptools/scons_jp.py` で `TARGET_ARCH` をコマンドライン/環境変数から読み取り可能に修正
+         * `miscDepsJp/include/python-jtalk/lib/Makefile.mak` で `/MACHINE:$(MACHINE)` を正しく設定
+         * `jptools/checkJtalkArch.ps1` を実装: x86/x64 の DLL を dumpbin で検証可能
+         * `scons.bat jtalkSync TARGET_ARCH=x64` で x64 DLL が正しくビルド・配置されることを確認
+    2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現** 🔄 進行中
+       * **現状**: x64 での smoke テスト実行環境が整備済み
+         * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 環境での smoke テストを実行可能
+         * `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
+         * uv で Python 3.11.14 x64 を自動インストール・使用
+         * x64 DLL が x64 Python で正しくロードされることを確認（`OSError: [WinError 193]` エラーは発生せず）
+       * **発見された問題**: x64 での smoke テスト実行時に `access violation` エラーが発生
+         * アーキテクチャ不一致ではなく、x64 DLL の呼び出し時のメモリアクセス違反
+         * 過去に発生していた可能性のある問題を安全に再現可能な状態
+         * x86 での smoke テストは成功（`checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests`）
+       * **次のステップ**: x64 での `access violation` エラーの原因調査と修正
+       * **検証**: ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認（x64 は修正後）
     3. **タスク 2.3: ローカル環境での動作安定化**
        * マトリクス実行時のリソース競合を解決
        * エラーハンドリングとログ出力の改善
@@ -144,19 +155,23 @@
        * **補足**: x86 実行・`-SkipInstall -SkipOverlay` で安定化済み。x64 マトリクス統合は後続ステージで検討。
 
   * **実装詳細（タスク 2.2）**:
-    * `runJpSmokeTests.ps1`の拡張
-      * `-Architecture`パラメータを追加（`x86`または`x64`）
-      * `TARGET_ARCH`環境変数を自動設定
-      * アーキテクチャ別のDLLパスを自動選択
-      * `-Parallel`パラメータを追加してx86/x64をマトリクス実行
-    * PowerShellジョブを使用したマトリクス実行
+    * `checkJtalkArch.ps1` の実装（完了）
+      * `-Architecture` パラメータ（`x86` または `x64`）でアーキテクチャを指定
+      * `-SkipBuild` でビルドをスキップして検証のみ実行可能
+      * `-RunSmokeTests` で smoke テストを実行
+      * `scons.bat jtalkSync TARGET_ARCH=$Architecture` でビルド実行
+      * dumpbin で DLL のアーキテクチャを検証（vcvarsall.bat フォールバック対応）
+      * x64 では `.venv-x64` を使用して x86 の `.venv` と分離
+      * uv で Python 3.11.14 x64 を自動インストール・使用
+    * ビルド成果物の分離（完了）
+      * x86 DLL: `miscDepsJp/include/python-jtalk/x86/(libopenjtalk|libmecab).dll`
+      * x64 DLL: `miscDepsJp/include/python-jtalk/x64/(libopenjtalk|libmecab).dll`
+      * payload 側: `source/synthDrivers/jtalk/(libopenjtalk|libmecab).dll`（`scons jtalkSync TARGET_ARCH=$Arch` で切り替え）
+      * 各アーキテクチャで独立してビルド可能
+    * 今後の拡張予定
+      * PowerShellジョブを使用したマトリクス実行（`-Parallel` パラメータ）
       * `Start-Job`でx86/x64のテストをマトリクス実行
       * 各ジョブの結果を収集してレポート
-      * エラー時の詳細なログ出力
-    * ビルド成果物の分離
-      * x86 DLL: `miscDepsJp/source/synthDrivers/jtalk/x86/libopenjtalk.dll`
-      * x64 DLL: `miscDepsJp/source/synthDrivers/jtalk/x64/libopenjtalk.dll`
-      * 各アーキテクチャで独立してビルド可能
   * **利点**:
     * ローカル開発環境での開発効率が向上（x86/x64をマトリクス検証可能）
     * x64対応前にx64環境でのjpSmokeTestを検証できる
@@ -167,10 +182,19 @@
     * ローカル環境でのMSVC環境の切り替えが必要（x86/x64）
     * 安定版リリースに影響を与えない範囲で実施
   * **検証方法**:
-    * **タスク 2.1 完了後**: 既存のx86ビルドが正常に動作することを確認（`scons source dist launcher`、jpSmokeTest成功、安定版リリースに影響なし）
-    * **タスク 2.2 完了後**: ローカル環境でx86/x64マトリクス実行が成功することを確認（`runJpSmokeTests.ps1 -Parallel`、両アーキテクチャで成功、ビルド成果物の分離確認）
-    * **タスク 2.3 完了後**: 複数回の実行で安定して成功することを確認（リソース競合なし、エラーハンドリング適切、ドキュメント整備）
-    * **タスク 2.4 完了後**: CIでjpSmokeTestが安定して成功することを確認（既にx86で統合済み。x64統合は後続で検討）
+    * **タスク 2.1 完了**: ✅ 確認済み
+      * `scons.bat jtalkSync TARGET_ARCH=x86` で x86 DLL が正しくビルド・配置される
+      * `scons.bat jtalkSync TARGET_ARCH=x64` で x64 DLL が正しくビルド・配置される
+      * `checkJtalkArch.ps1 -Architecture x86` で x86 DLL が dumpbin 検証で OK
+      * `checkJtalkArch.ps1 -Architecture x64` で x64 DLL が dumpbin 検証で OK
+      * 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
+    * **タスク 2.2 進行中**: 🔄 検証中
+      * `checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` で x86 smoke テストが成功 ✅
+      * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 smoke テスト実行環境が整備済み ✅
+      * x64 での `access violation` エラーが発生（原因調査中）⚠️
+      * ローカル環境でx86/x64マトリクス実行が成功することを確認（x64 は修正後）
+    * **タスク 2.3 未着手**: 複数回の実行で安定して成功することを確認（リソース競合なし、エラーハンドリング適切、ドキュメント整備）
+    * **タスク 2.4 完了**: CIでjpSmokeTestが安定して成功することを確認（既にx86で統合済み。x64統合は後続で検討）
 
 * [ ] **タスク 2.5: コード品質の改善（x86環境で実施可能）**（優先度：中）
   * **注**: ローカルマトリクス整備の直接前提ではないが、並行して行うと後続の安定化が容易になる。
