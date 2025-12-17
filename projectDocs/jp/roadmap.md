@@ -121,8 +121,8 @@
     * ローカル環境での開発効率を向上させる
     * 将来のx64対応を見据えた検証環境を構築
   * **現状**:
-    * タスク 2.1 完了: x86/x64 の DLL ビルド・検証環境が整備済み
-    * タスク 2.2 進行中: x64 での smoke テスト実行環境が整備され、過去の失敗（access violation）を再現可能な状態
+    * タスク 2.1 完了: x86/x64 の DLL ビルド・検証環境が整備済み ✅
+    * タスク 2.2 完了: x64 での smoke テスト実行環境が整備され、過去の失敗（access violation）を修正済み ✅
   * **段階的実装計画**:
     1. **タスク 2.1: DLLパス構造の統一（前提条件）** ✅ 完了
        * x86 DLL: `miscDepsJp/include/python-jtalk/x86/(libopenjtalk|libmecab).dll`
@@ -133,18 +133,37 @@
          * `miscDepsJp/include/python-jtalk/lib/Makefile.mak` で `/MACHINE:$(MACHINE)` を正しく設定
          * `jptools/checkJtalkArch.ps1` を実装: x86/x64 の DLL を dumpbin で検証可能
          * `scons.bat jtalkSync TARGET_ARCH=x64` で x64 DLL が正しくビルド・配置されることを確認
-    2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現** 🔄 進行中
-       * **現状**: x64 での smoke テスト実行環境が整備済み
+    2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現** ✅ 完了
+       * **完了内容**: x64 での smoke テスト実行環境が整備済み ✅
          * `.\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 環境での smoke テストを実行可能
          * `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
          * uv で Python 3.11.14 x64 を自動インストール・使用
          * x64 DLL が x64 Python で正しくロードされることを確認（`OSError: [WinError 193]` エラーは発生せず）
-       * **発見された問題**: x64 での smoke テスト実行時に `access violation` エラーが発生
+         * x64 での `access violation` エラーを修正（ctypes のポインタ型指定）
+       * **発見された問題**: x64 での smoke テスト実行時に `access violation` エラーが発生 ✅ 解決済み
          * アーキテクチャ不一致ではなく、x64 DLL の呼び出し時のメモリアクセス違反
          * 過去に発生していた可能性のある問題を安全に再現可能な状態
          * x86 での smoke テストは成功（`checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests`）
-       * **次のステップ**: x64 での `access violation` エラーの原因調査と修正
-       * **検証**: ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認（x64 は修正後）
+         * エラー発生箇所:
+           * `mecab.py:173`: `libmc.mecab_strerror(mecab)` - `mecab` が NULL の場合に発生
+           * `mecab.py:184`: `libmc.mecab_sparse_tonode(mecab, src)` - MeCab 解析時に発生
+       * **原因**: ctypes のポインタ型指定不足
+         * x64 ではポインタが 8 バイトだが、ctypes のデフォルト型（`c_int` は 4 バイト）では正しく読み取れない
+         * `mecab_new` の戻り値、`mecab_strerror` と `mecab_sparse_tonode` の引数でポインタ型を明示する必要がある
+       * **修正内容**:
+         1. **NULL ポインタチェックの追加**: `mecab.py:173` で `mecab` が NULL の場合に `mecab_strerror` を呼ばないように修正
+         2. **ctypes のポインタ型を明示**: `source/synthDrivers/jtalk/mecab.py` で以下を追加
+            * `libmc.mecab_new.restype = c_void_p` - 戻り値のポインタ型を明示（8 バイト）
+            * `libmc.mecab_strerror.argtypes = [c_void_p]` - 引数のポインタ型を明示（8 バイト）
+            * `libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]` - 引数のポインタ型を明示（8 バイト）
+       * **調査プロセス**:
+         1. NULL ポインタチェックを追加 → エラーが `access violation` から `OverflowError: int too long to convert` に変化
+         2. エラーメッセージから ctypes の型変換問題を特定
+         3. `mecab_new.restype` を `c_void_p` に設定 → エラーが `OverflowError` に変化
+         4. `mecab_strerror` と `mecab_sparse_tonode` の `argtypes` も修正 → 成功
+       * **検証結果**: ✅ ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認
+         * `checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` → 成功
+         * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` → 成功（修正後）
     3. **タスク 2.3: ローカル環境での動作安定化**
        * マトリクス実行時のリソース競合を解決
        * エラーハンドリングとログ出力の改善
@@ -188,11 +207,11 @@
       * `checkJtalkArch.ps1 -Architecture x86` で x86 DLL が dumpbin 検証で OK
       * `checkJtalkArch.ps1 -Architecture x64` で x64 DLL が dumpbin 検証で OK
       * 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
-    * **タスク 2.2 進行中**: 🔄 検証中
+    * **タスク 2.2 完了**: ✅ 確認済み
       * `checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` で x86 smoke テストが成功 ✅
-      * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 smoke テスト実行環境が整備済み ✅
-      * x64 での `access violation` エラーが発生（原因調査中）⚠️
-      * ローカル環境でx86/x64マトリクス実行が成功することを確認（x64 は修正後）
+      * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 smoke テストが成功 ✅
+      * x64 での `access violation` エラーを修正（ctypes のポインタ型指定不足）✅
+      * ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認 ✅
     * **タスク 2.3 未着手**: 複数回の実行で安定して成功することを確認（リソース競合なし、エラーハンドリング適切、ドキュメント整備）
     * **タスク 2.4 完了**: CIでjpSmokeTestが安定して成功することを確認（既にx86で統合済み。x64統合は後続で検討）
 
