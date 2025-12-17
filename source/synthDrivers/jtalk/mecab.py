@@ -186,6 +186,12 @@ def Mecab_analysis(src, features, logwrite_=None):
             logwrite_("src empty")
         features.size = 0
         return
+    # Check if mecab and libmc are initialized (prevents access violation on x64)
+    if mecab is None or libmc is None:
+        if logwrite_:
+            logwrite_("mecab or libmc is not initialized")
+        features.size = 0
+        return
     head = libmc.mecab_sparse_tonode(mecab, src)
     if head is None:
         if logwrite_:
