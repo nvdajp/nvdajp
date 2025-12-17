@@ -128,7 +128,19 @@ if ($allOk) {
                 # Create venv if it doesn't exist
                 if (-not (Test-Path "$venvX64\Scripts\python.exe")) {
                     Write-Host "Creating x64 virtual environment..."
-                    & uv venv --python 3.11 $venvX64
+                    # Use UV_PYTHON_PREFERENCE=only-managed to prefer uv-managed Python (x64)
+                    # This prevents uv from using the x86 Python from PATH
+                    $oldPreference = $env:UV_PYTHON_PREFERENCE
+                    $env:UV_PYTHON_PREFERENCE = "only-managed"
+                    try {
+                        & uv venv --python 3.11 $venvX64
+                    } finally {
+                        if ($oldPreference) {
+                            $env:UV_PYTHON_PREFERENCE = $oldPreference
+                        } else {
+                            Remove-Item env:UV_PYTHON_PREFERENCE -ErrorAction SilentlyContinue
+                        }
+                    }
                     if (-not $?) { throw "uv venv failed" }
                     
                     # Verify venv Python is x64
