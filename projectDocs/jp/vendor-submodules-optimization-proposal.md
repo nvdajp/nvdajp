@@ -68,25 +68,6 @@ if dic_src.resolve() == dic_dst.resolve():
 - `OUTDIR`から`source/`へのコピー処理を削除
 - `dic_src`の設定を簡素化（`make_jdic.py`実行後、`dic_src`は既に`source/synthDrivers/jtalk/dic/`を指す）
 
-### 案2: `TEMPDIR`も`source/`配下に配置（案1の拡張）
-
-**変更内容**:
-
-- `TEMPDIR`も`source/synthDrivers/jtalk/dic/_temp/`に設定
-- ビルド完了後に`_temp/`ディレクトリを削除
-
-**メリット**:
-
-- すべてのビルド成果物が`source/`配下に集約される
-- 一時ファイルの管理が明確になる
-
-**デメリット**:
-
-- `_temp/`ディレクトリの削除処理が必要
-- ビルド失敗時に一時ファイルが残る可能性がある
-
-**推奨**: 案1のみで十分。`TEMPDIR`は`miscDepsJp/`配下に残しても問題なし。
-
 ## 実装手順
 
 1. **`make_jdic.py`の修正**:

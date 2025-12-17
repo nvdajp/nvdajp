@@ -103,48 +103,34 @@ synthDrivers/jtalk/dic へのパッケージングについて、特に文字コ
    * **用途**: `mecab-dict-index.exe`がこのディレクトリを`-d`オプションで指定してバイナリ辞書をビルド
    * **注意**: ビルド後も残るが、再ビルド時に上書きされる
 
-5. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic/`** (OUTDIR)
-   * **役割**: ビルド済み辞書ファイルの出力先
-   * **内容**:
-     * バイナリ辞書ファイル（`sys.dic`、`unk.dic`、`char.bin`、`matrix.bin`）
-     * `dicrc`（`THISDIR`からコピーされたもの）
-     * `DIC_VERSION`（UTF-8ビルドであることを示す）
-   * **用途**: `jptools/scons_jp.py`の`jtalkSync`がこのディレクトリから`source/synthDrivers/jtalk/dic`にコピー
-   * **注意**:
-     * `mecab-dict-index.exe`は`TEMPDIR`から`.def`ファイルを読み込んでバイナリ辞書を生成するが、`.def`ファイル自体は`OUTDIR`にコピーされない（`make_jdic.py`の実装では`.def`ファイルのコピー処理がない）
-     * 過去の`all-install.cmd`では`dic\*`で全ファイルをコピーしていたが、現在の`jptools/scons_jp.py`では`dic_files`リストに明示的に列挙された10個のファイルのみをコピー
-     * `dic_files`リストには以下のファイルが含まれる：`sys.dic`、`unk.dic`、`char.bin`、`matrix.bin`、`left-id.def`、`right-id.def`、`rewrite.def`、`pos-id.def`、`dicrc`、`DIC_VERSION`
-     * **注意**: `char.def`、`feature.def`、`matrix.def`、`unk.def`は`dic_files`リストに含まれていない
+5. **`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic/`** (旧 OUTDIR)
+   * **役割**: かつての出力先（現在は使わない）
+   * **内容**: `make_jdic.py`はここへは出力しない（ビルドは直接 `source/synthDrivers/jtalk/dic` へ）
+   * **注意**: `.def` は `_temp` にのみ存在し、ここにも `source/` にもコピーされない
 
-6. **`source/synthDrivers/jtalk/dic/`** (dic_dst)
+6. **`source/synthDrivers/jtalk/dic/`** (dic_dst / 実際のOUTDIR)
    * **役割**: 最終的な配置先（実行時に使用される）
-   * **内容**: `OUTDIR`からコピーされたすべての辞書ファイル
+   * **内容**: `make_jdic.py`が直接生成するバイナリ辞書 (`sys.dic`、`unk.dic`、`char.bin`、`matrix.bin`) と `dicrc`、`DIC_VERSION`
    * **用途**: NVDA実行時にMeCabがこのディレクトリから辞書を読み込む
 
 **注意**:
 
 * `miscDepsJp/include/python-jtalk/dic/`は存在せず、実際には使用されていません（過去の名残）
-* `jptools/scons_jp.py`の`jtalkSync`では、最初に`dic_src = vendor_base / "dic"`（`miscDepsJp/include/python-jtalk/dic`）に設定されるが、このディレクトリは存在しないため、`make_jdic.py`実行後に`dic_src`が`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic/`（OUTDIR）に再設定される
+* `jtalkSync`は辞書を `source/synthDrivers/jtalk/dic` で直接チェックし、足りなければ `make_jdic.py` を実行して同じ場所へ生成する（コピーは行わない）
 
 #### ビルドフロー
 
-1. **ビルドプロセスでのコピー**:
-   * `miscDepsJp/include/libopenjtalk/mecab-naist-jdic/`（元のソース）から`miscDepsJp/include/python-jtalk/libopenjtalk/mecab-naist-jdic/`や`miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/`（THISDIR）にコピー
-
-2. **`make_jdic.py`の実行**:
+1. **`make_jdic.py`の実行**:
    * `THISDIR`からEUC-JPファイルを読み込み
    * `TEMPDIR`にUTF-8変換して配置（`euc_files`リストの8種類の`.def`ファイルと`naist-jdic.csv`）
-   * `mecab-dict-index.exe`を`TEMPDIR`を`-d`オプションで実行し、`OUTDIR`にバイナリ辞書を生成
-   * **注意**: `mecab-dict-index.exe`は`TEMPDIR`から`.def`ファイルを読み込んでバイナリ辞書を生成するが、`.def`ファイル自体は`OUTDIR`にコピーされない（`make_jdic.py`の実装では`.def`ファイルのコピー処理がない）
-   * `dicrc`を`THISDIR`から`OUTDIR`にコピー（文字コード設定の変更は行わない）
-   * `DIC_VERSION`を`OUTDIR`に作成（UTF-8ビルドであることを示す）
+   * `mecab-dict-index.exe`を`TEMPDIR`を`-d`オプションで実行し、**`source/synthDrivers/jtalk/dic`に直接**バイナリ辞書を生成
+   * **注意**: `.def`ファイルは`_temp`にのみ存在し、`source/`には出力されない
+   * `dicrc`を`THISDIR`から`source/synthDrivers/jtalk/dic`にコピー（文字コード設定の変更は行わない）
+   * `DIC_VERSION`を`source/synthDrivers/jtalk/dic`に作成（UTF-8ビルドであることを示す）
 
-3. **`scons jtalkSync`の実行**:
-   * `OUTDIR`から`dic_dst`（`source/synthDrivers/jtalk/dic`）に`dic_files`リストに列挙された10個のファイルをコピー
-   * **注意**:
-     * 過去の`all-install.cmd`では`dic\*`で全ファイルをコピーしていたが、現在は明示的なリストに基づいてコピー
-     * `dic_files`リストには以下のファイルが含まれる：`sys.dic`、`unk.dic`、`char.bin`、`matrix.bin`、`left-id.def`、`right-id.def`、`rewrite.def`、`pos-id.def`、`dicrc`、`DIC_VERSION`
-     * `char.def`、`feature.def`、`matrix.def`、`unk.def`は`dic_files`リストに含まれていない（`OUTDIR`にも存在しない可能性がある）
+2. **`scons jtalkSync`の実行**:
+   * `source/synthDrivers/jtalk/dic`を直接検査し、辞書が無い・UTF-8マークが無い場合のみ`make_jdic.py`を再実行
+   * 辞書のコピー処理は行わず、「no copy needed」で完了する
 
 #### 文字コードの統一
 
