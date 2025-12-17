@@ -25,7 +25,9 @@ CS_FILE = path.normpath(path.join(JTDIR, "characters-ja.dic"))
 
 # THISDIR = path.normpath(path.join(JTDIR, "..", "python-jtalk", "libopenjtalk", "mecab-naist-jdic"))
 THISDIR = path.normpath(path.join(JTDIR, "libopenjtalk", "mecab-naist-jdic"))
-OUTDIR = path.normpath(path.join(THISDIR, "dic"))
+# Build output directly under source/ to avoid extra copy in jtalkSync.
+REPO_ROOT = path.normpath(path.join(JTDIR, "..", "..", ".."))
+OUTDIR = path.normpath(path.join(REPO_ROOT, "source", "synthDrivers", "jtalk", "dic"))
 TEMPDIR = path.normpath(path.join(THISDIR, "_temp"))
 MECAB_DICT_INDEX = path.normpath(
     path.join(THISDIR, "..", "mecab", "src", "mecab-dict-index.exe")
