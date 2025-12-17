@@ -124,9 +124,10 @@
     * ローカル環境ではx86/x64を順次実行することは可能だが、成果物の衝突回避を要検討
   * **段階的実装計画**:
     1. **タスク 2.1: DLLパス構造の統一（前提条件）**
-       * x86 DLL: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`
-       * x64 DLL: `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`
-       * payload側も同様にx86/x64ディレクトリを分離
+       * x86 DLL: `miscDepsJp/include/python-jtalk/x86/(libopenjtalk|libmecab).dll`
+       * x64 DLL: `miscDepsJp/include/python-jtalk/x64/(libopenjtalk|libmecab).dll`
+       * payload 側 (source/synthDrivers/jtalk/) は scons.bat -c jtalkSync して scons.bat jtalkSync TARGET_ARCH=x86(x64) することで切り替える。クリーンにはアーキテクチャ指定は不要。
+       * scons -c jtalkSync は mecab/src の obj/lib を含めクリーンできる
        * **検証**: 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
     2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現**
        * `runJpSmokeTests.ps1`に`-Architecture`パラメータを追加
