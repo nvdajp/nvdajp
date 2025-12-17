@@ -115,19 +115,36 @@ if ($allOk) {
         try {
             $env:TARGET_ARCH = $Architecture
             if ($Architecture -eq 'x64') {
-                # Use uv to run pytest with Python 3.11 x64 (uv will install if needed).
+                # Use uv to run pytest with Python 3.11 x64.
                 # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
-                # Ensure PYTHONPATH is set for JTalk modules.
                 $venvX64 = "$repoRoot\.venv-x64"
                 $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk"
+                
+                # Ensure x64 Python is available (uv will skip if already installed)
+                Write-Host "Ensuring Python 3.11 x64 is available..."
+                & uv python install 3.11
+                if (-not $?) { throw "uv python install failed" }
+                
                 # Create venv if it doesn't exist
                 if (-not (Test-Path "$venvX64\Scripts\python.exe")) {
+                    Write-Host "Creating x64 virtual environment..."
                     & uv venv --python 3.11 $venvX64
                     if (-not $?) { throw "uv venv failed" }
-                    # Install pytest in the venv using uv pip
-                    & uv pip install --python "$venvX64\Scripts\python.exe" pytest
+                    
+                    # Verify venv Python is x64
+                    $venvPython = "$venvX64\Scripts\python.exe"
+                    $pythonArch = & $venvPython -c "import platform; print(platform.architecture()[0])"
+                    if ($pythonArch -ne "64bit") {
+                        Write-Error "ERROR: venv Python is not x64 ($pythonArch). Ensure x64 Python is installed: uv python install 3.11"
+                        throw "venv Python architecture mismatch"
+                    }
+                    
+                    # Install pytest in the venv
+                    Write-Host "Installing pytest in x64 venv..."
+                    & uv pip install --python $venvPython pytest
                     if (-not $?) { throw "uv pip install pytest failed" }
                 }
+                
                 # Run pytest in the x64 venv
                 & "$venvX64\Scripts\python.exe" -m pytest -q miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
                 if (-not $?) { throw "jp smoke tests failed" }

@@ -34,6 +34,14 @@ jobs:
       with:
         enable-cache: true
 
+    - name: Install Python 3.11 x64 (for smoke tests)
+      run: |
+        # Install x64 Python explicitly for smoke tests
+        # This ensures uv venv uses x64 Python instead of the x86 Python from setup-python
+        uv python install 3.11
+        uv python list
+      shell: powershell
+
     - name: Setup MSVC environment (x64)
       uses: ilammy/msvc-dev-cmd@v1
       with:
