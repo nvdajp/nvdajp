@@ -564,10 +564,8 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
         # Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
         jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
-        dic_src = vendor_base / "dic"
+        dic_src = jtalk_dir / "dic"
         dic_dst = jtalk_dir / "dic"
-        # If vendor dic is missing, fall back to the already-present source dic
-        source_dic = jtalk_dir / "dic"
         builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
 
         def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
@@ -617,22 +615,11 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                 result = run(cmd_script, cwd=str(vendor_base), shell=True)
                 return result.returncode
 
-        sys_dic = dic_src / "sys.dic"
-        # Prefer UTF-8 dictionaries; rebuild if missing or unmarked.
-        vendor_has_dic, vendor_utf8 = _dic_state(dic_src)
-        source_has_dic, source_utf8 = _dic_state(source_dic)
-        should_rebuild_dic = False
-        if vendor_has_dic and vendor_utf8:
-            sys_dic = dic_src / "sys.dic"
-        elif source_has_dic and source_utf8:
-            print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
-            dic_src = source_dic
-            sys_dic = dic_src / "sys.dic"
-        else:
-            should_rebuild_dic = vendor_has_dic or source_has_dic or not sys_dic.exists()
-            if should_rebuild_dic:
-                print("jtalkSync: dictionary present but not UTF-8; rebuilding via make_jdic.py.")
-            sys_dic = dic_src / "sys.dic"
+        sys_dic = dic_dst / "sys.dic"
+        has_dic, is_utf8_dic = _dic_state(dic_dst)
+        should_rebuild_dic = not (has_dic and is_utf8_dic)
+        if should_rebuild_dic:
+            print("jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py.")
 
         def _build_mecab_bin(machine: str) -> int:
             # Makefile.mak is in src subdirectory
@@ -658,180 +645,139 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                 result = run(cmd_script, cwd=str(base), shell=True)
                 return result.returncode
 
-        # If the vendor dic is missing/invalid, attempt to build it; otherwise, if source already has a UTF-8 dic, reuse it.
+        # If dictionary is missing or invalid, build it directly into source/synthDrivers/jtalk/dic
         if should_rebuild_dic or not sys_dic.exists():
-            if source_dic.joinpath("sys.dic").exists() and source_utf8 and not should_rebuild_dic:
-                print(f"jtalkSync: using existing source dic as fallback: {source_dic}")
-                dic_src = source_dic
-                sys_dic = dic_src / "sys.dic"
-            else:
-                # Try to build mecab binary and dictionary via mecab-naist-jdic
+            def _build_dic(machine: str) -> int:
+                base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
+                makefile = base / "Makefile.mak"
+                mecab_dict_index_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+                import subprocess
+                from subprocess import run
 
-                def _build_dic(machine: str) -> int:
-                    base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
-                    makefile = base / "Makefile.mak"
-                    mecab_dict_index_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
-                    import subprocess
-                    from subprocess import run
-
-                    if builder_script_path.exists():
-                        mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
-                        mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
-                        libmecab_dll = mecab_src_dir / "libmecab.dll"
-                        rc_bin = _build_mecab_bin(machine)
-                        if rc_bin != 0:
-                            print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
-                            return rc_bin
-                        if not mecab_dict_index_bin.exists():
-                            print(
-                                f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
-                            )
-                            return 1
-                        if not libmecab_dll.exists():
-                            print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
-                            print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
-                        # make_jdic.py expects mecab-dict-index.exe under jptools/jtalk/libopenjtalk/mecab/src
-                        make_jdic_mecab_bin = builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
-                        try:
-                            make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
-                            shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
-                            print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin}")
-                        except Exception as e:
-                            print(f"jtalkSync: failed to copy mecab-dict-index.exe to make_jdic path: {e}")
-                            return 1
-                        python_exe = sys.executable or "python"
-                        env_vars = os.environ.copy()
-                        env_vars.setdefault("PYTHONUTF8", "1")
-                        print("jtalkSync: building dictionary with make_jdic.py (UTF-8).")
-                        result = run([python_exe, str(builder_script_path)], cwd=str(builder_script_path.parent), env=env_vars)
-                        return result.returncode
-
-                    if not makefile.exists():
-                        print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
+                if builder_script_path.exists():
+                    mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
+                    mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
+                    libmecab_dll = mecab_src_dir / "libmecab.dll"
+                    rc_bin = _build_mecab_bin(machine)
+                    if rc_bin != 0:
+                        print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                        return rc_bin
+                    if not mecab_dict_index_bin.exists():
+                        print(
+                            f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
+                        )
                         return 1
-
-                    # BEGIN JP PATCH: Create dicrc to set config-charset=sjis for .def files
-                    dicrc = base / "dicrc"
-                    if not dicrc.exists():
-                        # Use same format as existing dicrc (with spaces around =)
-                        dicrc.write_text("config-charset = sjis\n", encoding="utf-8")
-                        print("jtalkSync: created dicrc with config-charset = sjis")
-                    # END JP PATCH
-
+                    if not libmecab_dll.exists():
+                        print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
+                        print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
+                    # make_jdic.py expects mecab-dict-index.exe under jptools/jtalk/libopenjtalk/mecab/src
+                    make_jdic_mecab_bin = builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
                     try:
-                        run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-                        # nmake is available, use it directly
-                        # Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
-                        # chcp 932 is a fallback for environments where dicrc config might not be respected.
-                        # Use explicit cmd /c to ensure code page change takes effect in CI environment
-                        # If chcp fails, continue anyway (dicrc config should handle it)
-                        cmd_script = (
-                            'cmd /c "'
-                            'chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && '
-                            f'nmake /f Makefile.mak MACHINE={machine}'
-                            '"'
-                        )
-                        print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
-                        result = run(cmd_script, cwd=str(base), shell=True)
-                        return result.returncode
-                    except (FileNotFoundError, subprocess.CalledProcessError):
-                        vcvarsall = _find_vcvarsall()
-                        if not vcvarsall:
-                            print("jtalkSync: nmake not found and vcvarsall.bat not detected for dic build")
-                            return 1
-                        # Force CP932 for nmake path as well
-                        # Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
-                        # chcp 932 is a fallback for environments where dicrc config might not be respected.
-                        cmd_script = (
-                            f'cmd /c "'
-                            f'call "{vcvarsall}" {machine} && '
-                            f'chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && '
-                            f'nmake /f Makefile.mak MACHINE={machine}'
-                            f'"'
-                        )
-                        print("jtalkSync: building dictionary via vcvarsall (dicrc config-charset=sjis, chcp 932 as fallback)")
-                        result = run(cmd_script, cwd=str(base), shell=True)
-                        return result.returncode
-                    # This code path should not be reached, but kept for safety
-                    # Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
-                    cmd = [
-                        "cmd",
-                        "/c",
-                        f"chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && nmake /f Makefile.mak MACHINE={machine}",
-                    ]
-                    print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
-                    result = run(cmd, cwd=str(base))
+                        make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
+                        print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin}")
+                    except Exception as e:
+                        print(f"jtalkSync: failed to copy mecab-dict-index.exe to make_jdic path: {e}")
+                        return 1
+                    python_exe = sys.executable or "python"
+                    env_vars = os.environ.copy()
+                    env_vars.setdefault("PYTHONUTF8", "1")
+                    print("jtalkSync: building dictionary with make_jdic.py (UTF-8).")
+                    result = run([python_exe, str(builder_script_path)], cwd=str(builder_script_path.parent), env=env_vars)
                     return result.returncode
 
-                arch = str(env.get("TARGET_ARCH", "x86")).lower()
-                machine = "x64" if arch in ("x64", "x86_64") else "x86"
-
-                print("jtalkSync: sys.dic missing or out of date; building python-jtalk (nmake all) and mecab dic")
-                rc = _run_nmake(machine)
-                if rc != 0:
-                    print(f"jtalkSync: nmake (all.mak) failed with rc={rc}")
-                    return rc
-
-                # Build mecab binary (mecab-dict-index.exe) and libmecab.dll if missing
-                mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
-                mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
-                libmecab_dll = mecab_src_dir / "libmecab.dll"
-                rc_bin = _build_mecab_bin(machine)
-                if rc_bin != 0:
-                    print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
-                    return rc_bin
-                if not mecab_dict_index_bin.exists():
-                    print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}")
-                    return 1
-                if not libmecab_dll.exists():
-                    print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
-                    print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
-
-                # After all.mak and mecab bin, try explicit dic build if still missing or needs rebuild
-                if should_rebuild_dic or not sys_dic.exists():
-                    rc_dic = _build_dic(machine)
-                    if rc_dic != 0:
-                        print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
-                        return rc_dic
-                    # make_jdic.py writes into mecab-naist-jdic/dic (relative to builder_script)
-                    built_root = builder_script_path.parent / "libopenjtalk" / "mecab-naist-jdic"
-                    built_dic = built_root / "dic"
-                    for candidate in (built_dic, built_root):
-                        candidate_sys_dic = candidate / "sys.dic"
-                        if candidate_sys_dic.exists():
-                            dic_src = candidate
-                            sys_dic = candidate_sys_dic
-                            break
-
-                if not sys_dic.exists():
-                    print("jtalkSync: sys.dic still missing after build; no fallback available")
+                if not makefile.exists():
+                    print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
                     return 1
 
-        # Copy dictionary files
-        try:
-            if dic_src.resolve() == dic_dst.resolve():
-                print("jtalkSync: dictionary source and destination are identical; skipping copy.")
-            else:
-                dic_files = [
-                    "sys.dic",
-                    "unk.dic",
-                    "char.bin",
-                    "matrix.bin",
-                    "left-id.def",
-                    "right-id.def",
-                    "rewrite.def",
-                    "pos-id.def",
-                    "dicrc",
-                    "DIC_VERSION",
+                # BEGIN JP PATCH: Create dicrc to set config-charset=sjis for .def files
+                dicrc = base / "dicrc"
+                if not dicrc.exists():
+                    # Use same format as existing dicrc (with spaces around =)
+                    dicrc.write_text("config-charset = sjis\n", encoding="utf-8")
+                    print("jtalkSync: created dicrc with config-charset = sjis")
+                # END JP PATCH
+
+                try:
+                    run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+                    # nmake is available, use it directly
+                    # Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
+                    # chcp 932 is a fallback for environments where dicrc config might not be respected.
+                    # Use explicit cmd /c to ensure code page change takes effect in CI environment
+                    # If chcp fails, continue anyway (dicrc config should handle it)
+                    cmd_script = (
+                        'cmd /c "'
+                        'chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && '
+                        f'nmake /f Makefile.mak MACHINE={machine}'
+                        '"'
+                    )
+                    print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
+                    result = run(cmd_script, cwd=str(base), shell=True)
+                    return result.returncode
+                except (FileNotFoundError, subprocess.CalledProcessError):
+                    vcvarsall = _find_vcvarsall()
+                    if not vcvarsall:
+                        print("jtalkSync: nmake not found and vcvarsall.bat not detected for dic build")
+                        return 1
+                    # Force CP932 for nmake path as well
+                    # Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
+                    # chcp 932 is a fallback for environments where dicrc config might not be respected.
+                    cmd_script = (
+                        f'cmd /c "'
+                        f'call "{vcvarsall}" {machine} && '
+                        f'chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && '
+                        f'nmake /f Makefile.mak MACHINE={machine}'
+                        f'"'
+                    )
+                    print("jtalkSync: building dictionary via vcvarsall (dicrc config-charset=sjis, chcp 932 as fallback)")
+                    result = run(cmd_script, cwd=str(base), shell=True)
+                    return result.returncode
+                # This code path should not be reached, but kept for safety
+                # Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
+                cmd = [
+                    "cmd",
+                    "/c",
+                    f"chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && nmake /f Makefile.mak MACHINE={machine}",
                 ]
-                for name in dic_files:
-                    src = dic_src / name
-                    if src.exists():
-                        shutil.copy2(src, dic_dst / name)
-                print(f"jtalkSync: copied dictionary assets to {dic_dst}")
-        except Exception as e:
-            print(f"jtalkSync: failed to copy dictionary assets: {e}")
+                print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
+                result = run(cmd, cwd=str(base))
+                return result.returncode
+
+            arch = str(env.get("TARGET_ARCH", "x86")).lower()
+            machine = "x64" if arch in ("x64", "x86_64") else "x86"
+
+            print("jtalkSync: sys.dic missing or out of date; building python-jtalk (nmake all) and mecab dic")
+            rc = _run_nmake(machine)
+            if rc != 0:
+                print(f"jtalkSync: nmake (all.mak) failed with rc={rc}")
+                return rc
+
+            # Build mecab binary (mecab-dict-index.exe) and libmecab.dll if missing
+            mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
+            mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
+            libmecab_dll = mecab_src_dir / "libmecab.dll"
+            rc_bin = _build_mecab_bin(machine)
+            if rc_bin != 0:
+                print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
+                return rc_bin
+            if not mecab_dict_index_bin.exists():
+                print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}")
+                return 1
+            if not libmecab_dll.exists():
+                print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
+                print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
+
+            # After all.mak and mecab bin, try explicit dic build if still missing or needs rebuild
+            rc_dic = _build_dic(machine)
+            if rc_dic != 0:
+                print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
+                return rc_dic
+            sys_dic = dic_dst / "sys.dic"
+
+        if not sys_dic.exists():
+            print("jtalkSync: sys.dic still missing after build; no fallback available")
             return 1
+        print(f"jtalkSync: dictionary ready at {dic_dst} (no copy needed).")
 
         # Copy core assets (DLLs only; Python files have been moved to source/synthDrivers/jtalk in Phase 1)
         try:
