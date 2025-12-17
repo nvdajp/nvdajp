@@ -22,6 +22,12 @@ jobs:
         submodules: recursive
         fetch-depth: 1
 
+    - name: Setup Python 3.11 x86 (for scons.bat)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x86'
+
     - name: Install uv
       uses: astral-sh/setup-uv@v6
       with:
@@ -35,6 +41,7 @@ jobs:
     - name: Configure git and verify tools
       run: |
         git config --global core.autocrlf true
+        python --version
         uv --version
         # Verify dumpbin is available (should be in PATH after msvc-dev-cmd)
         # dumpbin /? may return non-zero exit code even when available, so check command existence instead
@@ -51,6 +58,8 @@ jobs:
     - name: Build JTalk for x64 and run smoke tests
       run: |
         $env:TARGET_ARCH = 'x64'
+        # scons.bat runs with x86 Python (via uv run), but TARGET_ARCH=x64 controls the build
+        # checkJtalkArch.ps1 will use x64 Python for smoke tests (via .venv-x64)
         .\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
       shell: powershell
       env:
