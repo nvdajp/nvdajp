@@ -8,7 +8,8 @@
 param(
     [ValidateSet('x86', 'x64')]
     [string]$Architecture = 'x64',
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    [switch]$RunSmokeTests
 )
 
 $ErrorActionPreference = 'Stop'
@@ -87,6 +88,19 @@ foreach ($dll in $dlls) {
 
 if ($allOk) {
     Write-Host "Done: payload binaries match $Architecture" -ForegroundColor Green
+    if ($RunSmokeTests) {
+        Write-Host "Running jp smoke tests for $Architecture ..."
+        Push-Location $repoRoot
+        $oldArch = $env:TARGET_ARCH
+        try {
+            $env:TARGET_ARCH = $Architecture
+            & pwsh -NoLogo -File "jptools/runJpSmokeTests.ps1" -SkipOverlay
+            if (-not $?) { throw "jp smoke tests failed" }
+        } finally {
+            $env:TARGET_ARCH = $oldArch
+            Pop-Location
+        }
+    }
     exit 0
 }
 Write-Host "Done: mismatches detected" -ForegroundColor Yellow

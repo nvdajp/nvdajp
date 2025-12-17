@@ -130,8 +130,8 @@
        * **検証**: 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
        * checkJtalkArch.ps1 で x86/x64 両方の DLL を dumpbin 判定して OK になることを確認。
     2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現**
-       * `runJpSmokeTests.ps1`に`-Architecture`パラメータを追加
-       * アーキテクチャ別のビルド成果物パスを自動選択
+       * `runJpSmokeTests.ps1 -SkipOverlay` を checkJtalkArch.ps1 から使用
+       * アーキテクチャ別のビルド成果物パスを使用
        * PowerShellジョブを使用してx86/x64をマトリクス実行
        * **検証**: ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認
     3. **タスク 2.3: ローカル環境での動作安定化**
