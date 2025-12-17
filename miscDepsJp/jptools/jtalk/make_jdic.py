@@ -118,12 +118,18 @@ def _main():
         )
 
         print(tempdir, [mecab_dict_index, "-d", ".", "-o", outdir, "-f", code, "-c", code])
+        # In console mode (log_fp is None), don't set stdout/stderr to preserve default console output
+        # In file mode (log_fp is set), redirect both stdout and stderr to the log file
+        run_kwargs = {
+            "cwd": tempdir,
+            "text": True,
+        }
+        if log_fp:
+            run_kwargs["stdout"] = log_fp
+            run_kwargs["stderr"] = subprocess.STDOUT
         result = subprocess.run(
             [mecab_dict_index, "-d", ".", "-o", outdir, "-f", code, "-c", code],
-            cwd=tempdir,
-            text=True,
-            stdout=log_fp,
-            stderr=subprocess.STDOUT if log_fp else None,
+            **run_kwargs,
         )
         if result.returncode != 0:
             raise SystemExit(result.returncode)
