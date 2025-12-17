@@ -343,6 +343,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
         dist_target: Optional dist target node from sconstruct. If provided, jpCertExtras will depend on it
                     to ensure correct ordering in parallel builds (--all-cores).
     """
+    # Allow TARGET_ARCH override from command line/environment (x86 default).
+    # This enables `scons.bat jtalkSync TARGET_ARCH=x64` for dictionary/DLL切替。
+    env["TARGET_ARCH"] = str(env.get("TARGET_ARCH", os.environ.get("TARGET_ARCH", "x86"))).lower()
     # miscdepsjp alias removed in Phase 2 (miscDepsJp/source is empty, overlay is no-op)
 
 
@@ -564,7 +567,6 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
         vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
         # Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
         jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
-        dic_src = jtalk_dir / "dic"
         dic_dst = jtalk_dir / "dic"
         builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
 
