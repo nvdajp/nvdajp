@@ -44,8 +44,13 @@ jobs:
         python --version
         uv --version
         # Verify dumpbin is available (should be in PATH after msvc-dev-cmd)
-        dumpbin /? | Select-Object -First 1
-        if ($LASTEXITCODE -ne 0) {
+        # dumpbin /? may return non-zero exit code even when available, so check command existence instead
+        $dumpbinFound = $false
+        try {
+          $null = Get-Command dumpbin -ErrorAction Stop
+          $dumpbinFound = $true
+          Write-Host "dumpbin found in PATH"
+        } catch {
           Write-Host "WARNING: dumpbin not found in PATH, checkJtalkArch.ps1 will use vcvarsall.bat fallback"
         }
       shell: powershell
