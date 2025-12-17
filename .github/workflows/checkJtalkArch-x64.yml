@@ -4,11 +4,12 @@ on:
   push:
     branches:
       - 'betajp'
-      - 'alphajp**'
+      - 'releasejp'
   pull_request:
     branches:
-      - 'betajp'
       - 'alphajp**'
+      - 'betajp**'
+      - 'releasejp**'
   workflow_dispatch:
 
 jobs:
