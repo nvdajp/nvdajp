@@ -67,8 +67,9 @@ jobs:
     - name: Build JTalk for x64 and run smoke tests
       run: |
         $env:TARGET_ARCH = 'x64'
-        # scons.bat runs with x86 Python (via uv run), but TARGET_ARCH=x64 controls the build
-        # checkJtalkArch.ps1 will use x64 Python for smoke tests (via .venv-x64)
+        # scons.bat uses x86 Python from PATH (via uv run)
+        # TARGET_ARCH=x64 controls the DLL build architecture (x64 DLLs are built)
+        # checkJtalkArch.ps1 uses x64 Python for smoke tests (via .venv-x64 with UV_PYTHON_PREFERENCE=only-managed)
         .\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
       shell: powershell
       env:
