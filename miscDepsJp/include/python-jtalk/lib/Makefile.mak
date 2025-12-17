@@ -59,7 +59,7 @@ libopenjtalk-timestamp.h:
 	$(CC) $(INCLUDES) $(CFLAGS) /c $*.c /Fo$@
 
 libopenjtalk.dll: libopenjtalk.obj HTS_gstream_ex.obj HTS_engine_ex.obj
-	$(LINK) /DLL /RELEASE /MACHINE:x86 /LTCG /OUT:libopenjtalk.dll \
+	$(LINK) /DLL /RELEASE /MACHINE:$(MACHINE) /LTCG /OUT:libopenjtalk.dll \
 	libopenjtalk.obj HTS_gstream_ex.obj HTS_engine_ex.obj $(LDADD) /DEF:libopenjtalk.def
 
 clean:	
