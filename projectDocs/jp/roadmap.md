@@ -128,6 +128,7 @@
        * x64 DLL: `miscDepsJp/include/python-jtalk/x64/(libopenjtalk|libmecab).dll`
        * payload 側 (source/synthDrivers/jtalk/) は `scons.bat -c jtalkSync` で mecab/src の obj/lib/dll/dic をクリーンし、`scons.bat jtalkSync TARGET_ARCH=x86`（または x64）で再生成して切り替える。クリーンにアーキ指定は不要。並列は避け、逐次で安定化を確認。
        * **検証**: 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
+       * checkJtalkArch.ps1 で x86/x64 両方の DLL を dumpbin 判定して OK になることを確認。
     2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現**
        * `runJpSmokeTests.ps1`に`-Architecture`パラメータを追加
        * アーキテクチャ別のビルド成果物パスを自動選択
