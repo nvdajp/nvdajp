@@ -2,7 +2,7 @@
 
 ## このブランチの対象
 
-* **アーキテクチャ**: x86（32bit）
+* **アーキテクチャ**: x86（32bit）がデフォルト、x64（64bit）もサポート
 * **Python バージョン**: 3.11
 * **ビルド環境**: Windows 10/11
 
@@ -20,7 +20,8 @@
 ## 実装済み
 
 * SCons でのオンデマンドビルド（`jtalkPrep` 拡張）
-  * DLL 不在時: mecab/src の `Makefile.mak` を `nmake /f Makefile.mak MACHINE=x86` でビルド（このブランチは x86）
+  * DLL 不在時: mecab/src の `Makefile.mak` を `nmake /f Makefile.mak MACHINE=x86`（または `x64`）でビルド
+  * `TARGET_ARCH` 環境変数で x86/x64 を切り替え可能（デフォルトは x86）
   * ビルド成功後、生成された DLL を payload に配置
   * DLL 存在時: 再ビルドをスキップし「build skipped」とログ出力
 * 検証・ログ出力
@@ -55,10 +56,11 @@
   * 開発者は `scons dist` だけを実行すればよい
 
 * **レイアウト**
-  * x86 DLL: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`
+  * x86 DLL: `miscDepsJp/include/python-jtalk/x86/(libopenjtalk|libmecab).dll`
+  * x64 DLL: `miscDepsJp/include/python-jtalk/x64/(libopenjtalk|libmecab).dll`
   * MeCab 辞書: `miscDepsJp/include/python-jtalk/dic/`（アーキテクチャ非依存）
   * libmecab.dll: ソースビルド化済み（`miscDepsJp/include/libopenjtalk/mecab/src/Makefile.mak` と `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/Makefile.mak` でビルド）。CFLAGSを静的/動的で分離してビルドする方式。MeCab と同じく GPL/LGPL/BSD（三条項）併記。
-  * ビルド成果物の配置: DLL と辞書ファイルは `source/synthDrivers/jtalk` に直接配置される
+  * ビルド成果物の配置: DLL と辞書ファイルは `source/synthDrivers/jtalk` に直接配置される（`TARGET_ARCH` で切り替え）
 
 **注意**: `miscDepsJp` およびその配下のベンダーツリーは、すべてメインリポジトリに統合されています。サブモジュールではないため、`git submodule update` は不要です。ベンダーツリーの更新が必要な場合は、通常のGit操作（`git pull`、`git merge`等）で対応します。
 
@@ -206,7 +208,7 @@ jtalkPrep: using existing DLL (build skipped)
 jtalkPrep: payload -> source/synthDrivers/jtalk/libopenjtalk.dll
 ```
 
-**DLL 不在時（自動ビルド）**:
+**DLL 不在時（自動ビルド、x86）**:
 
 ```text
 jtalkPrep: using TARGET_ARCH=x86
@@ -218,7 +220,19 @@ jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86/l
 jtalkPrep: payload -> source/synthDrivers/jtalk/libopenjtalk.dll
 ```
 
-**注**: Phase 1.2で、x86 DLL も `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll` に統一されました。既存のDLLが古い場所にある場合は、自動的に新しい場所に移動されます。
+**DLL 不在時（自動ビルド、x64）**:
+
+```text
+jtalkPrep: using TARGET_ARCH=x64
+jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll
+jtalkPrep: DLL not found, attempting to build via nmake...
+jtalkPrep: running nmake via vcvarsall.bat with arch=x64
+[nmake の出力...]
+jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll
+jtalkPrep: payload -> source/synthDrivers/jtalk/libopenjtalk.dll
+```
+
+**注**: Phase 1.2で、x86 DLL も `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll` に統一されました。x64 DLL は `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll` に配置されます。既存のDLLが古い場所にある場合は、自動的に新しい場所に移動されます。
 
 ### 手動で JTalk 関連のビルドだけ実行したい場合（通常は不要）
 
@@ -229,6 +243,11 @@ scons jtalkPrep
 # 辞書ファイルのビルドとコピーのみ実行
 scons jtalkSync
 
-# このブランチは x86 がデフォルト
-# x64 が必要な場合は TARGET_ARCH=x64 を指定（別ブランチ）
+# アーキテクチャの切り替え
+# デフォルトは x86、x64 が必要な場合は TARGET_ARCH=x64 を指定
+scons jtalkSync TARGET_ARCH=x64
+
+# x86/x64 の DLL を検証・smoke テストを実行
+.\jptools\checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests
+.\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
 ```

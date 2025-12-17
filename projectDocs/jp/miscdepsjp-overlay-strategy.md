@@ -165,7 +165,7 @@ source → jtalkSync → jtalkPrep
 
 - 本家版との差分を最小化する方針（`projectDocs/jp/roadmap.md` 参照）に基づき検討する
 
-**検証要件**: これらの改善はビルドシステムの根幹に関わる変更のため、品質保証の観点から、以下の全ての環境で検証が必要です：
+**検証要件**: Phase 3-4 の実装時は、ビルドシステムの根幹に関わる変更のため、品質保証の観点から、以下の全ての環境で検証が必要です：
 
 - **リリースビルド**: 署名付きリリースビルドが正常に完了することを確認（`jptools/certBuild2025.ps1`）
 - **ローカルの署名なしビルド**: `scons source dist launcher` や `scons source dist` が正常に完了することを確認
@@ -174,65 +174,29 @@ source → jtalkSync → jtalkPrep
 
 各 Phase の実装後は、これらの環境全てで動作確認を行い、問題が発生した場合は即座に修正する必要があります。
 
-### Phase 1: コピー処理の統合と削減（短期・優先度高）
+**注**: Phase 1-2 は既に完了しており、上記の検証要件を満たしています。
+
+### Phase 1: コピー処理の統合と削減（短期・優先度高）✅ 完了（2025-12-12）
 
 - **目標**: 重複するコピー処理を統合し、コピー処理の総数を削減。テストの依存関係を変更することで、中間コピー段階をスキップして直接 `source/` への配置に移行
-- **作業内容**:
-  - **ファイルの移動**: 最初から `source/synthDrivers/jtalk` にあるべきファイルをコピー元から移動する。これにより、ビルド時のコピー処理自体が不要になる
-    - **ベンダーツリー由来のファイル**（`jtalkCore.py`, `mecab.py`, `text2mecab.py` など）: `miscDepsJp/include/python-jtalk` から `source/synthDrivers/jtalk` に移動
-    - **日本語版固有の JTalk ドライバー依存ファイル**（`jtalkDir.py`, `jtalkDriver.py`, `jtalkPrepare.py`, `translator1.py`, `translator2.py` など）: `miscDepsJp/source/synthDrivers/jtalk` から `source/synthDrivers/jtalk` に移動
-  - **テストの依存関係を変更**（優先）: ユニットテストや jp smoke test が最初から `source/synthDrivers/jtalk` に直接依存するように変更
-    - `jptools/runJpSmokeTests.ps1` の PYTHONPATH を `source/synthDrivers/jtalk` に変更
-    - `miscDepsJp/jptools/jpBrailleRunner.py` などのテストスクリプトが `source/synthDrivers/jtalk` からインポートするように変更
-    - ただし辞書やDLLなどビルドが必要なものは miscDepsJP で従来の処理を行い、リポジトリルートの `source/synthDrivers` および `source/synthDrivers/jtalk` にコピーする処理を残す
-- **削減効果**:
-  - Python ファイルのコピー処理が不要になる（ファイルを move したため）
-  - 辞書やDLLなどビルドが必要なもののコピー処理は残るが、経路を2つから1つに削減（直接コピー経路を削除）
-  - コピー処理の実行箇所を1箇所に集約（辞書やDLLのコピー処理のみ）
-  - コピー処理の段階を2段階（`jtalkSync` → overlay）から1段階（直接配置）に削減
-  - overlay 処理自体が不要になり、ビルドプロセスが大幅に簡素化
-  - ビルド時間の短縮
-- **x64 移行への影響**:
-  - コピー処理が1箇所に集約されていれば、x64 対応時にアーキテクチャ別の処理を追加するだけで済む
-  - 重複処理が残っていると、x64 対応時に複数箇所を修正する必要がある
-- **検証要件**: 上記の「検証要件」セクションを参照。各 Phase の実装後は、これらの環境全てで動作確認を行い、問題が発生した場合は即座に修正する必要があります。
+- **完了内容**:
+  - Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動し、`_copy_jtalk_core_files()` は no-op 化
+  - テスト依存を `source/synthDrivers/jtalk` 直接参照に統一
+  - `jtalkPrep`/`jtalkSync` は DLL・辞書を直接 `source/synthDrivers/jtalk` へ配置するよう更新
+  - 検証結果: ローカル x86 で `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`、`scons.bat dist`、`scons.bat launcher` が成功
+- **効果**: Python ファイルのコピー処理が不要になり、コピー処理の実行箇所を1箇所に集約。x64 対応時にアーキテクチャ別の処理を追加するだけで済むようになった
+- **詳細**: `projectDocs/jp/roadmap.md` の「タスク 1.5: overlay 処理の廃止とコピー処理の削減」セクションを参照
 
-**注**: テストの依存関係を最初に変更することで、`miscDepsJp/source/synthDrivers/jtalk` への中間コピーが不要になり、Phase 1 と Phase 2 を統合して一気に直接コピー方式に移行できます。これにより、コピー処理の削減をより効率的に実施できます。
-
-**注意**: ベンダーツリーの更新が必要な場合は、`source/synthDrivers` からベンダーツリーに書き戻す必要がある。ベンダーツリーの扱いはリファクタリング完了後に再検討する。
-
-**実施状況（2025-12-12）**:
-
-- Python ファイルと話者モデルを `source/synthDrivers/jtalk` に移動し、`_copy_jtalk_core_files()` は no-op 化済み
-- テスト依存を `source/synthDrivers/jtalk` 直接参照に統一（`runJpSmokeTests.ps1` は `miscDepsJp/include/python-jtalk` を `PYTHONPATH` に追加し、`jtalkRunner.py` を参照）
-- `jtalkPrep`/`jtalkSync` は DLL・辞書を直接 `source/synthDrivers/jtalk` へ配置するよう更新
-- 検証結果: `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`、`scons.bat dist --all-cores`、`scons.bat launcher --all-cores` をローカル x86 で成功
-
-### Phase 2: 依存関係の明確化とエイリアスの統合（中期）
+### Phase 2: 依存関係の明確化とエイリアスの統合（中期）✅ 完了（2025-12-12）
 
 - **目標**: 依存関係を明確にし、エイリアスを統合してビルドプロセスを単純化
-- **作業内容**:
-  - Phase 1 で JTalk 関連の Python ファイルと話者モデルは `source/synthDrivers/jtalk` に移動済み
-  - `miscDepsJp/source` の以下のファイルも `source` に移動して overlay 処理を不要とする
-    - `brailleDisplayDrivers/DirectBM.dll`（点字ディスプレイドライバー。移動は可能だが x86 バイナリである点に注意）
-    - `images/` 配下の画像ファイル（`nvdajp.ico`, `nvdajp_cd.png` など）
-    - `synthDrivers/nvdajp_jtalk.py`（日本語版固有の合成音声ドライバー）
-    - `synthDrivers/jtalk/` 配下の一部ファイル（`_bgthread.py`, `_nvdajp_espeak.py`, `_nvdajp_spellchar.py`, `_nvdajp_unicode.py`, `roma2kana.py` など）
-    - ライセンスファイルなど
-    - `DirectBM.dll` を移動する場合は x86 バイナリであることを明記し、`kgs_addon` のビルドスクリプト（`jptools/scons_jp.py` 内 `kgs_addon` 関連）で期待される配置を崩さないように調整する
-    - `.gitignore` の設定: `DirectBM.dll` は既に Git で管理される設定（`!source/brailleDisplayDrivers/DirectBM.dll`）があるため、移動後も問題なく管理される。移動後は `.gitignore` の 13行目（`!miscDepsJp/source/brailleDisplayDrivers/DirectBM.dll`）を削除し、12行目（`!source/brailleDisplayDrivers/DirectBM.dll`）を維持する
-  - **エラーメッセージの改善**: ビルドエラー時のメッセージを改善し、原因特定を容易にする
-  - **`miscdepsjp` エイリアスの削除**: `miscDepsJp/source` が空になったため、エイリアスを削除し、依存関係を `source → jtalkSync → jtalkPrep` に簡素化
-  - **依存関係の整理とドキュメント化**: 依存関係を更新して文書化
-
-**実施状況（2025-12-12）**: ✅ **完了**
-
-- `miscDepsJp/source` の全ファイルを `source/` に移動し、overlay 処理を不要化
-- `miscdepsjp` エイリアスを削除し、`sconstruct` の依存関係を `sourceDir → jtalkSync`、`pot → jtalkSync` に変更
-- `jptools/runJpSmokeTests.ps1` の `miscdepsjp` 呼び出しを削除し、`jtalkSync` に変更
-- `jptools/scons_jp.py` の `_run_overlay_and_stamp()` を no-op 化（`miscDepsJp/source` が空のため）
-- 依存関係チェーンを `source → jtalkSync → jtalkPrep` に簡素化
-- 検証結果: ローカル x86 で `scons.bat dist`、`scons.bat launcher`、`jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` が成功
+- **完了内容**:
+  - `miscDepsJp/source` の全ファイルを `source/` に移動し、overlay 処理を不要化
+  - `miscdepsjp` エイリアスを削除し、依存関係を `source → jtalkSync → jtalkPrep` に簡素化
+  - `jptools/scons_jp.py` の `_run_overlay_and_stamp()` を no-op 化
+  - 検証結果: ローカル x86 で `scons.bat dist`、`scons.bat launcher`、`jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` が成功
+- **効果**: overlay 処理が完全に廃止され、ビルドプロセスが大幅に簡素化。`scons -c` で削除されるファイルは `source/` に直接配置されたファイルのみとなり、overlay による再配置の必要がなくなった
+- **詳細**: `projectDocs/jp/roadmap.md` の「タスク 1.5: overlay 処理の廃止とコピー処理の削減」セクションを参照
 
 ### Phase 3: フォルダ構造への依存削減と参照方式の簡素化（長期）
 

@@ -1,7 +1,7 @@
 # certBuild2023.cmd 評価レポート
 
-評価日: 2025-01-XX  
-ブランチ: betajp-251206v4
+評価日: 2025-12-18  
+ブランチ: alphajp-251218
 
 ## 概要
 
@@ -24,7 +24,7 @@
 | ターゲット | 定義場所 | 状態 |
 |-----------|---------|------|
 | `jtalkPrep` | `jptools/scons_jp.py:580` | ✅ 定義済み |
-| `miscdepsjp` | `jptools/scons_jp.py:394` | ✅ 定義済み |
+| `jtalkSync` | `jptools/scons_jp.py:828` | ✅ 定義済み |
 | `jpCertExtras` | `jptools/scons_jp.py:969` | ✅ 定義済み |
 | `source` | 上流ターゲット | ✅ 存在 |
 | `user_docs` | 上流ターゲット | ✅ 存在 |
@@ -60,11 +60,17 @@
 - 証明書が見つからない場合のエラーチェック
 - `ALLOW_AUTO_SIGN=1` で自動検出を許可可能
 
-#### 3.6 ビルドステップ（103-112行目）
-1. `jtalkPrep miscdepsjp jpCertExtras` - JTalk 準備とオーバーレイ
-2. `source user_docs launcher jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient` - メインビルド
-3. `jpVerifySignatures` - 署名検証
-4. `jp_tests` - テスト実行
+#### 3.6 ビルドステップ（107-125行目）
+1. `jtalkPrep jtalkSync` - JTalk DLL と辞書の準備（overlay 処理は廃止済み）
+2. `runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` - JP smoke テスト実行
+3. `source user_docs dist` - メインビルド
+4. `jpCertExtras` - 署名処理（dist/ のファイルに署名）
+5. `launcher` - ランチャービルド（署名済み DLL を含む）
+6. `jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient` - 追加コンポーネント
+7. `jpVerifySignatures` - 署名検証
+8. `jp_tests` - テスト実行
+
+**注**: overlay 処理は Phase 2（2025-12-12）で廃止されました。`miscdepsjp` エイリアスは削除済みです。
 
 #### 3.7 MeCab辞書ビルド時のエラーメッセージ（正常動作）
 
@@ -134,9 +140,89 @@ context_id.cpp(103) [it != right_.end()] cannot find RIGHT-ID  for 蜷崎ｩ・�
 - コード署名証明書（または `ALLOW_AUTO_SIGN=1` 設定）
 - `patch` コマンド
 
+## certBuild2025.ps1 について
+
+`certBuild2025.ps1` は `certBuild2023.cmd` をラップする PowerShell スクリプトで、以下の機能を提供します：
+
+### 主な機能
+
+1. **環境変数の自動設定**
+   - `CERT_SHA1` を `certBuild2025Env.ps1` から読み込み（Secrets をコミットしない）
+   - `VERSION`, `NOWDATE`, `PUBLISHER` などを自動設定
+   - `PYTHONUTF8=1` を設定
+
+2. **signtool の事前チェック**
+   - ビルド前に `signtool` が正しく動作するか確認
+   - 証明書が利用可能か検証
+   - 環境不備を早期に検出
+
+3. **ユニットテストとシステムテストの実行**
+   - `certBuild2023.cmd` 実行後に自動的にテストを実行
+   - `-SkipUnitTests` / `-SkipSystemTests` でスキップ可能
+
+4. **ログファイルの出力**
+   - ビルドとテストの出力を `output/<VERSION>_certBuild2025.log` に保存
+
+### 使用方法
+
+```powershell
+# 基本的な使用方法（証明書は certBuild2025Env.ps1 から読み込み）
+.\jptools\certBuild2025.ps1
+
+# バージョンビルド番号を指定
+.\jptools\certBuild2025.ps1 -VersionBuild 123
+
+# 並列ビルドを有効化
+.\jptools\certBuild2025.ps1 --all-cores
+
+# システムテストをスキップ
+.\jptools\certBuild2025.ps1 -SkipSystemTests
+
+# カスタムログパスを指定
+.\jptools\certBuild2025.ps1 -LogPath "C:\logs\build.log"
+```
+
+### 証明書の設定
+
+`certBuild2025Env.ps1` を作成して証明書情報を設定します：
+
+```powershell
+# certBuild2025Env.sample.ps1 をコピーして作成
+Copy-Item jptools\certBuild2025Env.sample.ps1 jptools\certBuild2025Env.ps1
+
+# certBuild2025Env.ps1 を編集して CERT_SHA1 を設定
+# $env:CERT_SHA1 = "your-certificate-thumbprint"
+```
+
+### certBuild2023.cmd との違い
+
+| 機能 | certBuild2023.cmd | certBuild2025.ps1 |
+|------|-------------------|-------------------|
+| 環境変数の設定 | 手動設定が必要 | 自動設定 |
+| signtool の事前チェック | なし | あり |
+| ユニットテスト | なし | 自動実行 |
+| システムテスト | なし | 自動実行 |
+| ログファイル | なし | 自動生成 |
+| 証明書の管理 | 環境変数 | `certBuild2025Env.ps1` |
+
+### 推奨事項
+
+- **通常のビルド**: `certBuild2025.ps1` を使用（環境設定とテストが自動化される）
+- **カスタムビルド**: `certBuild2023.cmd` を直接使用（より細かい制御が必要な場合）
+
 ## テスト推奨事項
 
 実際の動作確認のため、以下を推奨します：
+
+### certBuild2025.ps1 を使用する場合（推奨）
+
+```powershell
+# 証明書を設定（certBuild2025Env.ps1 を作成）
+# その後、ビルドとテストを実行
+.\jptools\certBuild2025.ps1
+```
+
+### certBuild2023.cmd を直接使用する場合
 
 ```cmd
 REM 最小限のテスト（署名なし）
