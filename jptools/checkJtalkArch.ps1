@@ -33,10 +33,30 @@ function Invoke-DumpbinMachine {
         $dumpbinOk = $false
     }
     if (-not $dumpbinOk) {
-        # Fallback: run dumpbin via vcvarsall.bat (VS2022 Community)
-        $vcvarsall = 'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat'
-        if (-not (Test-Path $vcvarsall)) {
-            Write-Host "ERROR: dumpbin not found and vcvarsall.bat missing at expected path."
+        # Fallback: run dumpbin via vcvarsall.bat
+        # Try multiple Visual Studio installation paths (Community, Enterprise, Professional, BuildTools)
+        $vcvarsallPaths = @(
+            'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat',
+            'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat',
+            'C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat',
+            'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat'
+        )
+        # Also try VSINSTALLDIR environment variable if set
+        if ($env:VSINSTALLDIR) {
+            $vcvarsallFromEnv = Join-Path $env:VSINSTALLDIR "VC\Auxiliary\Build\vcvarsall.bat"
+            if (Test-Path $vcvarsallFromEnv) {
+                $vcvarsallPaths = @($vcvarsallFromEnv) + $vcvarsallPaths
+            }
+        }
+        $vcvarsall = $null
+        foreach ($p in $vcvarsallPaths) {
+            if (Test-Path $p) {
+                $vcvarsall = $p
+                break
+            }
+        }
+        if (-not $vcvarsall) {
+            Write-Host "ERROR: dumpbin not found and vcvarsall.bat not found in common paths."
             return $false
         }
         $cmd = "call `"$vcvarsall`" $ArchForVcvars && dumpbin /headers `"$Path`""

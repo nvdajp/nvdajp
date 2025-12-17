@@ -1,0 +1,70 @@
+name: Check JTalk Architecture (x64)
+
+on:
+  push:
+    branches:
+      - 'betajp'
+      - 'alphajp**'
+  pull_request:
+    branches:
+      - 'betajp'
+      - 'alphajp**'
+  workflow_dispatch:
+
+jobs:
+  checkJtalkArchX64:
+    name: Check JTalk x64 DLLs and smoke tests
+    runs-on: windows-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 1
+
+    - name: Setup Python 3.11 x64
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x64'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+
+    - name: Setup MSVC environment (x64)
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+
+    - name: Configure git and verify tools
+      run: |
+        git config --global core.autocrlf true
+        python --version
+        uv --version
+        # Verify dumpbin is available (should be in PATH after msvc-dev-cmd)
+        dumpbin /? | Select-Object -First 1
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "WARNING: dumpbin not found in PATH, checkJtalkArch.ps1 will use vcvarsall.bat fallback"
+        }
+      shell: powershell
+
+    - name: Build JTalk for x64 and run smoke tests
+      run: |
+        $env:TARGET_ARCH = 'x64'
+        .\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
+      shell: powershell
+      env:
+        TARGET_ARCH: x64
+
+    - name: Upload artifact on failure
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: JTalk x64 test results
+        path: |
+          miscDepsJp/jptools/__h2output.txt
+          miscDepsJp/jptools/__jpBrailleHarness.md
+          miscDepsJp/jptools/jpBrailleHarness.html
+          source/synthDrivers/jtalk/*.dll

@@ -164,14 +164,18 @@
        * **検証結果**: ✅ ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認
          * `checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` → 成功
          * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` → 成功（修正後）
-    3. **タスク 2.3: ローカル環境での動作安定化**
-       * マトリクス実行時のリソース競合を解決
-       * エラーハンドリングとログ出力の改善
-       * 開発者向けドキュメントの作成
-       * **検証**: 複数回の実行で安定して成功することを確認
+    3. **タスク 2.3: ローカル環境での動作安定化** ✅ 完了
+       * マトリクス実行時のリソース競合を解決（`.venv-x64` で x86 の `.venv` と分離）
+       * エラーハンドリングとログ出力の改善（`checkJtalkArch.ps1` で dumpbin 検証と smoke テストを統合）
+       * 開発者向けドキュメントの作成（`roadmap.md` に調査プロセスと修正内容を記録）
+       * **検証**: クリーン後の再ビルドで x86/x64 の両方で安定して成功することを確認 ✅
     4. **タスク 2.4: CI統合**
-       * **現状**: `testAndPublish.yml` で `jpSmokeTests` ジョブが存在し、`allTestsPass` 必須チェックに含まれている（CI統合は完了済み）
-       * **補足**: x86 実行・`-SkipInstall -SkipOverlay` で安定化済み。x64 マトリクス統合は後続ステージで検討。
+       * **現状**: `testAndPublish.yml` で `jpSmokeTests` ジョブが存在し、`allTestsPass` 必須チェックに含まれている（x86 CI統合は完了済み）
+       * **x64 CI統合**: `checkJtalkArch` x64 専用の独立した GitHub Actions workflow を作成予定
+         * `testAndPublish.yml` とは別の workflow ファイル（例: `.github/workflows/checkJtalkArch-x64.yml`）
+         * x64 のみを実行し、x86 の CI に影響を与えない
+         * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` を使用
+       * **補足**: x86 実行・`-SkipInstall -SkipOverlay` で安定化済み。x64 は独立 workflow で検証。
 
   * **実装詳細（タスク 2.2）**:
     * `checkJtalkArch.ps1` の実装（完了）
@@ -212,8 +216,16 @@
       * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 smoke テストが成功 ✅
       * x64 での `access violation` エラーを修正（ctypes のポインタ型指定不足）✅
       * ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認 ✅
-    * **タスク 2.3 未着手**: 複数回の実行で安定して成功することを確認（リソース競合なし、エラーハンドリング適切、ドキュメント整備）
-    * **タスク 2.4 完了**: CIでjpSmokeTestが安定して成功することを確認（既にx86で統合済み。x64統合は後続で検討）
+    * **タスク 2.3 完了**: ✅ 確認済み
+      * クリーン後の再ビルドで x86/x64 の両方で安定して成功することを確認 ✅
+      * `.venv-x64` で x86 の `.venv` と分離し、リソース競合なし ✅
+      * エラーハンドリング適切（dumpbin 検証と smoke テストを統合）✅
+      * ドキュメント整備（`roadmap.md` に調査プロセスと修正内容を記録）✅
+    * **タスク 2.4 進行中**: 🔄 CI統合中
+      * x86 CI統合完了: `testAndPublish.yml` で `jpSmokeTests` ジョブが `allTestsPass` 必須チェックに含まれている ✅
+      * x64 CI統合: `.github/workflows/checkJtalkArch-x64.yml` を作成（独立した workflow）✅
+      * x64 workflow は `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` を使用
+      * x86 の CI に影響を与えず、x64 のみを検証可能
 
 * [ ] **タスク 2.5: コード品質の改善（x86環境で実施可能）**（優先度：中）
   * **注**: ローカルマトリクス整備の直接前提ではないが、並行して行うと後続の安定化が容易になる。
