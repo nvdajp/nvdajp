@@ -170,11 +170,14 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
                 ud.encode("utf-8"),
             )
         mecab = libmc.mecab_new(argc, args)
+        if not mecab:
+            # mecab_new failed - mecab_strerror should not be called with NULL pointer (causes access violation on x64)
+            error_msg = "mecab_new failed: failed to initialize MeCab"
+            if logwrite_:
+                logwrite_(error_msg)
+            # Raise exception to prevent using uninitialized mecab (causes access violation on x64)
+            raise RuntimeError(error_msg)
         if logwrite_:
-            if not mecab:
-                logwrite_("mecab_new failed.")
-                # mecab_strerror should not be called with NULL pointer (causes access violation on x64)
-                return
             s = libmc.mecab_strerror(mecab).strip()
             if s:
                 logwrite_(s)
