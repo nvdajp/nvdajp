@@ -173,10 +173,17 @@ if ($allOk) {
                     }
                 }
                 
-                # Run pytest in the x64 venv
-                & "$venvX64\Scripts\python.exe" -m pytest -q miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
-                if (-not $?) {
-                    Write-Error "jp smoke tests failed"
+                # Run pytest in the x64 venv with timeout to prevent hang on access violation
+                $process = Start-Process -FilePath "$venvX64\Scripts\python.exe" -ArgumentList "-m pytest -q miscDepsJp/jptools/test.py -k `"JpBrailleTests or JtalkTests`"" -PassThru -NoNewWindow -Wait:$false
+                $process | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
+                if (-not $process.HasExited) {
+                    Write-Warning "pytest timed out after 120 seconds, forcing termination"
+                    $process | Stop-Process -Force -ErrorAction SilentlyContinue
+                    Write-Error "jp smoke tests timed out"
+                    exit 1
+                }
+                if ($process.ExitCode -ne 0) {
+                    Write-Error "jp smoke tests failed (exit code: $($process.ExitCode))"
                     exit 1
                 }
             } else {

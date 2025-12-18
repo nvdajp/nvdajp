@@ -64,6 +64,14 @@ jobs:
         }
       shell: powershell
 
+    - name: Disable Windows Error Reporting UI
+      shell: powershell
+      run: |
+        # Disable Windows Error Reporting UI to prevent hang on access violation
+        reg add "HKCU\Software\Microsoft\Windows\Windows Error Reporting" /v DontShowUI /t REG_DWORD /d 1 /f
+        reg add "HKCU\Software\Microsoft\Windows\Windows Error Reporting" /v Disabled /t REG_DWORD /d 1 /f
+        Write-Host "Windows Error Reporting UI disabled"
+
     - name: Build JTalk for x64 and run smoke tests
       run: |
         $env:TARGET_ARCH = 'x64'
