@@ -198,6 +198,22 @@ def Mecab_analysis(src, features, logwrite_=None):
             logwrite_("mecab or libmc is not initialized")
         features.size = 0
         return
+    # Ensure src is bytes and null-terminated (required for mecab_sparse_tonode on x64)
+    if not isinstance(src, bytes):
+        if logwrite_:
+            logwrite_(f"src is not bytes: {type(src)}")
+        features.size = 0
+        return
+    # Ensure null-terminated string for mecab_sparse_tonode
+    if not src.endswith(b'\0'):
+        src = src + b'\0'
+    # Validate mecab pointer is not NULL (prevents access violation on x64)
+    # mecab is already c_void_p type from mecab_new, so check value directly
+    if hasattr(mecab, 'value') and mecab.value == 0:
+        if logwrite_:
+            logwrite_("mecab pointer is NULL or invalid")
+        features.size = 0
+        return
     head = libmc.mecab_sparse_tonode(mecab, src)
     if head is None:
         if logwrite_:
