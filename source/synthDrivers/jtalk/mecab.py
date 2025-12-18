@@ -5,6 +5,7 @@ CODE = "utf-8"
 
 import os
 import re
+import sys
 import threading
 from ctypes import *
 
@@ -251,16 +252,19 @@ def Mecab_analysis(src, features, logwrite_=None):
     src_buf = create_string_buffer(src)
     # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
     # Force immediate output to stderr to ensure logs are captured even on crash
-    import sys
     if logwrite_:
         try:
             # Verify null termination in buffer (create_string_buffer automatically adds null terminator)
             buf_ends_null = src_buf.value.endswith(b'\0') if src_buf.value else False
             log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, buf_len={len(src_buf)}, buf_ends_null={buf_ends_null}"
+            # Write to stderr first to ensure it's captured even if logwrite_ buffer is lost
+            try:
+                sys.stderr.write(log_msg + "\n")
+                sys.stderr.flush()
+            except Exception:
+                pass
+            # Then write to logwrite_ (may be io.StringIO() buffer)
             logwrite_(log_msg)
-            # Also write directly to stderr to ensure it's captured even if logwrite_ buffer is lost
-            sys.stderr.write(log_msg + "\n")
-            sys.stderr.flush()
         except Exception as e:
             # If logging fails, try to write to stderr directly
             try:
