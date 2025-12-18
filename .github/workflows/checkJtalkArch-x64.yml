@@ -95,3 +95,4 @@ jobs:
           miscDepsJp/jptools/__jpBrailleHarness.md
           miscDepsJp/jptools/jpBrailleHarness.html
           source/synthDrivers/jtalk/*.dll
+          source/synthDrivers/jtalk/mecab_debug.log
