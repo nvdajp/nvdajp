@@ -302,11 +302,16 @@ def Mecab_analysis(src, features, logwrite_=None):
     # This ensures logs are captured even if process crashes immediately
     _write_debug_log(log_msg)
     # Call mecab_sparse_tonode - argtypes are already configured for x64 safety
-    # Pass bytes directly (matches original jtalk.py implementation)
-    # ctypes will automatically convert bytes to c_char_p when argtypes is [c_void_p, c_char_p]
+    # Explicitly ensure mecab is c_void_p and src is c_char_p for x64 safety
+    # On x64, explicit type conversion ensures correct pointer size (8 bytes) is passed
     # Note: access violations may not be caught by Python exception handlers,
     # but logging before the call ensures we capture state even if crash occurs
-    head = libmc.mecab_sparse_tonode(mecab, src)
+    # mecab is already c_void_p from mecab_new, but ensure it's the right type
+    mecab_ptr = mecab if isinstance(mecab, c_void_p) else cast(mecab, c_void_p)
+    # src is bytes, convert to c_char_p explicitly for x64 safety
+    src_ptr = c_char_p(src) if isinstance(src, bytes) else src
+    _write_debug_log(f"Mecab_analysis: mecab_ptr type={type(mecab_ptr)}, src_ptr type={type(src_ptr)}")
+    head = libmc.mecab_sparse_tonode(mecab_ptr, src_ptr)
     if head is None:
         if logwrite_:
             logwrite_("mecab_sparse_tonode result empty")
