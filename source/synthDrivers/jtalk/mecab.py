@@ -130,13 +130,16 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
     global libmc
     if libmc is None:
         libmc = cdll.LoadLibrary(mecab_dll)
+        # Configure ctypes signatures. On 64-bit Python, we must explicitly
+        # specify pointer argument and return types so that 8-byte pointers
+        # are handled correctly.
         libmc.mecab_version.restype = c_char_p
         libmc.mecab_strerror.restype = c_char_p
-        libmc.mecab_strerror.argtypes = [c_void_p]  # x64 requires explicit pointer type (8 bytes)
+        libmc.mecab_strerror.argtypes = [c_void_p]
         libmc.mecab_sparse_tonode.restype = mecab_node_t_ptr
-        libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]  # x64 requires explicit pointer type (8 bytes)
+        libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]
         libmc.mecab_new.argtypes = [c_int, c_char_p_p]
-        libmc.mecab_new.restype = c_void_p  # x64 requires explicit pointer type (8 bytes)
+        libmc.mecab_new.restype = c_void_p
     global mecab
     if mecab is None:
         if logwrite_:

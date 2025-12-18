@@ -75,8 +75,8 @@ function Invoke-DumpbinMachine {
         Write-Host "WARN: machine line not found in dumpbin output for $Path"
         return $false
     }
-    $isX64 = $machineLine -match '8664'
-    $isX86 = $machineLine -match '14C'
+    $isX64 = $machineLine -match '\b8664\b'
+    $isX86 = $machineLine -match '\b14C\b'
     $archText = if ($isX64) { 'x64 (8664)' } elseif ($isX86) { 'x86 (14C)' } else { $machineLine.Trim() }
     $status = if (($ArchForVcvars -eq 'x64' -and $isX64) -or ($ArchForVcvars -eq 'x86' -and $isX86)) { 'OK' } else { 'NG' }
     Write-Host "$($status): $Path -> $archText"
@@ -145,11 +145,7 @@ if ($allOk) {
                     try {
                         & uv venv --python 3.11 $venvX64
                     } finally {
-                        if ($oldPreference) {
-                            $env:UV_PYTHON_PREFERENCE = $oldPreference
-                        } else {
-                            Remove-Item env:UV_PYTHON_PREFERENCE -ErrorAction SilentlyContinue
-                        }
+                        $env:UV_PYTHON_PREFERENCE = $oldPreference
                     }
                     if (-not $?) {
                         Write-Error "uv venv failed"
