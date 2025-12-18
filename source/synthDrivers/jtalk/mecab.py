@@ -203,44 +203,69 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
 
 
 def Mecab_analysis(src, features, logwrite_=None):
+    # Helper function to write to debug log file (ensures logs are captured even on crash)
+    def _write_debug_log(msg):
+        try:
+            debug_log_path = os.path.join(os.path.dirname(__file__), "mecab_debug.log")
+            with open(debug_log_path, "a", encoding="utf-8", errors="replace") as f:
+                f.write(msg + "\n")
+                f.flush()
+                os.fsync(f.fileno())  # Force write to disk
+        except Exception:
+            pass
+    
+    _write_debug_log(f"Mecab_analysis: called with src type={type(src)}, len={len(src) if src else 0}")
+    
     if not src:
+        msg = "src empty"
+        _write_debug_log(msg)
         if logwrite_:
-            logwrite_("src empty")
+            logwrite_(msg)
         features.size = 0
         return
     # Check if mecab and libmc are initialized (prevents access violation on x64)
     if mecab is None or libmc is None:
+        msg = "mecab or libmc is not initialized"
+        _write_debug_log(msg)
         if logwrite_:
-            logwrite_("mecab or libmc is not initialized")
+            logwrite_(msg)
         features.size = 0
         return
     # Ensure src is bytes (required for mecab_sparse_tonode on x64)
     if not isinstance(src, bytes):
+        msg = f"src is not bytes: {type(src)}"
+        _write_debug_log(msg)
         if logwrite_:
-            logwrite_(f"src is not bytes: {type(src)}")
+            logwrite_(msg)
         features.size = 0
         return
     # Log src type and content for debugging (first 100 bytes)
-    if logwrite_:
-        try:
-            src_preview = src[:100] if len(src) > 100 else src
-            null_byte = b'\0'
-            ends_with_null = src.endswith(null_byte)
-            logwrite_(f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}")
-        except Exception:
-            pass
+    try:
+        src_preview = src[:100] if len(src) > 100 else src
+        null_byte = b'\0'
+        ends_with_null = src.endswith(null_byte)
+        msg = f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}"
+        _write_debug_log(msg)
+        if logwrite_:
+            logwrite_(msg)
+    except Exception as e:
+        _write_debug_log(f"Mecab_analysis: failed to log src preview: {e}")
     # Validate mecab pointer is not NULL (prevents access violation on x64)
     # mecab is already c_void_p type from mecab_new, so check value directly
     if not mecab or (hasattr(mecab, 'value') and mecab.value == 0):
+        msg = "mecab pointer is NULL or invalid"
+        _write_debug_log(msg)
         if logwrite_:
-            logwrite_("mecab pointer is NULL or invalid")
+            logwrite_(msg)
         features.size = 0
         return
     # Additional validation: ensure mecab pointer value is valid (non-zero)
     mecab_value = mecab.value if hasattr(mecab, 'value') else mecab
     if mecab_value == 0:
+        msg = "mecab pointer value is 0 (NULL)"
+        _write_debug_log(msg)
         if logwrite_:
-            logwrite_("mecab pointer value is 0 (NULL)")
+            logwrite_(msg)
         features.size = 0
         return
     # Ensure null-terminated string for mecab_sparse_tonode
@@ -252,25 +277,30 @@ def Mecab_analysis(src, features, logwrite_=None):
         src = src + null_byte
     # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
     # Force immediate output to stderr to ensure logs are captured even on crash
+    # Use multiple output methods for maximum reliability:
+    # 1. sys.stderr (unbuffered, captured by CI)
+    # 2. logwrite_ (may be io.StringIO() buffer, can be lost on crash)
+    # 3. Try to write to file if possible (most reliable for crash debugging)
+    src_ends_null = src.endswith(null_byte)
+    log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, src_ends_null={src_ends_null}"
+
+    # Method 1: Write to stderr first (unbuffered, captured by CI)
+    try:
+        sys.stderr.write(log_msg + "\n")
+        sys.stderr.flush()
+    except Exception:
+        pass
+
+    # Method 2: Write to logwrite_ if available (may be io.StringIO() buffer)
     if logwrite_:
         try:
-            src_ends_null = src.endswith(null_byte)
-            log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, src_ends_null={src_ends_null}"
-            # Write to stderr first to ensure it's captured even if logwrite_ buffer is lost
-            try:
-                sys.stderr.write(log_msg + "\n")
-                sys.stderr.flush()
-            except Exception:
-                pass
-            # Then write to logwrite_ (may be io.StringIO() buffer)
             logwrite_(log_msg)
-        except Exception as e:
-            # If logging fails, try to write to stderr directly
-            try:
-                sys.stderr.write(f"Mecab_analysis: logging failed: {e}\n")
-                sys.stderr.flush()
-            except Exception:
-                pass
+        except Exception:
+            pass
+
+    # Method 3: Write to debug file (most reliable for crash debugging)
+    # This ensures logs are captured even if process crashes immediately
+    _write_debug_log(log_msg)
     # Call mecab_sparse_tonode - argtypes are already configured for x64 safety
     # Pass bytes directly (matches original jtalk.py implementation)
     # ctypes will automatically convert bytes to c_char_p when argtypes is [c_void_p, c_char_p]
