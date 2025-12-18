@@ -204,11 +204,27 @@ def Mecab_analysis(src, features, logwrite_=None):
             logwrite_(f"src is not bytes: {type(src)}")
         features.size = 0
         return
+    # Log src type and content for debugging (first 100 bytes)
+    if logwrite_:
+        try:
+            src_preview = src[:100] if len(src) > 100 else src
+            null_byte = b'\0'
+            ends_with_null = src.endswith(null_byte)
+            logwrite_(f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}")
+        except Exception:
+            pass
     # Validate mecab pointer is not NULL (prevents access violation on x64)
     # mecab is already c_void_p type from mecab_new, so check value directly
     if not mecab or (hasattr(mecab, 'value') and mecab.value == 0):
         if logwrite_:
             logwrite_("mecab pointer is NULL or invalid")
+        features.size = 0
+        return
+    # Additional validation: ensure mecab pointer value is valid (non-zero)
+    mecab_value = mecab.value if hasattr(mecab, 'value') else mecab
+    if mecab_value == 0:
+        if logwrite_:
+            logwrite_("mecab pointer value is 0 (NULL)")
         features.size = 0
         return
     # Ensure null-terminated string for mecab_sparse_tonode
@@ -218,9 +234,18 @@ def Mecab_analysis(src, features, logwrite_=None):
         src_buf = create_string_buffer(src + b'\0')
     else:
         src_buf = create_string_buffer(src)
+    # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
+    if logwrite_:
+        try:
+            logwrite_(f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}")
+        except Exception:
+            pass
     # Call mecab_sparse_tonode - argtypes are already configured for x64 safety
     # Using create_string_buffer ensures proper memory layout on x64
-    head = libmc.mecab_sparse_tonode(mecab, src_buf)
+    # Explicitly cast to c_char_p for x64 compatibility (prevents access violation)
+    # create_string_buffer can be passed directly, but explicit cast is safer on x64
+    src_cstr = cast(src_buf, c_char_p)
+    head = libmc.mecab_sparse_tonode(mecab, src_cstr)
     if head is None:
         if logwrite_:
             logwrite_("mecab_sparse_tonode result empty")
