@@ -94,5 +94,8 @@ jobs:
           miscDepsJp/jptools/__h2output.txt
           miscDepsJp/jptools/__jpBrailleHarness.md
           miscDepsJp/jptools/jpBrailleHarness.html
+          __h2output.txt
+          __jpBrailleHarness.md
+          jpBrailleHarness.html
           source/synthDrivers/jtalk/*.dll
           source/synthDrivers/jtalk/mecab_debug.log
