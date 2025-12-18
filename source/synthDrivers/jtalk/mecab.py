@@ -243,18 +243,12 @@ def Mecab_analysis(src, features, logwrite_=None):
         features.size = 0
         return
     # Ensure null-terminated string for mecab_sparse_tonode
-    # For x64 safety, use fixed-length buffer approach similar to FELEN/FECOUNT pattern
-    # Fixed-length buffers are safer for ctypes pointer passing on x64
-    # Check if src length exceeds reasonable limit (prevent buffer overflow)
-    MAX_SRC_LEN = 8192  # Reasonable limit for MeCab input (8KB)
-    if len(src) > MAX_SRC_LEN:
-        if logwrite_:
-            logwrite_(f"Mecab_analysis: src length {len(src)} exceeds MAX_SRC_LEN {MAX_SRC_LEN}, truncating")
-        src = src[:MAX_SRC_LEN]
-    # Use create_string_buffer with explicit size for x64 safety
-    # Fixed-size buffer ensures stable memory layout for ctypes pointer passing
-    # create_string_buffer automatically adds null termination
-    src_buf = create_string_buffer(src, MAX_SRC_LEN + 1)  # +1 for null terminator
+    # Use create_string_buffer for x64 memory safety (prevents access violation)
+    # create_string_buffer automatically adds null termination and creates buffer of appropriate size
+    # Do not specify explicit size - let create_string_buffer determine size based on src length
+    # This matches the pattern used in the original jtalk.py implementation
+    # Fixed-size buffers can cause memory layout issues on x64 in some environments
+    src_buf = create_string_buffer(src)
     # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
     if logwrite_:
         try:
