@@ -1355,7 +1355,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 
     text = text2mecab(text)
     mf = MecabFeatures()
-    Mecab_analysis(text, mf)
+    Mecab_analysis(text, mf, logwrite_=logwrite)
     Mecab_correctFeatures(mf)
     Mecab_print(mf, logwrite, output_header=False)
     li = mecab_to_morphs(mf)
