@@ -2,7 +2,7 @@
 
 目的: 本家版との差分を最小化しながら、順序立てて基盤整合 → 言語/依存更新 → 64bit 対応を進める。
 
-## 現行マイルストン（このブランチ: alphajp-251212）
+## 現行マイルストン（このブランチ: alphajp-251218）
 
 * **アーキテクチャ**: x86（32bit）
 * **Python バージョン**: 3.11
@@ -97,6 +97,10 @@
 * [x] **不要な古い .cmd スクリプトの削除**
   * SCons/純Python化方針に合わせ、未使用の `.cmd` を整理
 
+* [x] **MeCab辞書ビルドのログ抑制を make_jdic.py に集約** ✅ 完了
+  * `JP_MECAB_LOG_MODE`（`file` デフォルト）で切替。`file` 時は `output/_logs/make_jdic.log` に退避してコンソール膨張を防止、`console` で従来出力。
+  * SCons 側の特別対応は不要（上流との差分最小化を維持）。
+
 * [x] **タスク 1.5: overlay 処理の廃止とコピー処理の削減（x86環境でのリファクタリング）** ✅ 完了（2025-12-12）
   * **注**: ローカルマトリクス整備と並行で進められる改善。ビルドプロセス簡素化によりテスト安定化が楽になる。将来的な x64 移行をスムーズにするためにも重要。
   * **目的**: ビルドプロセスを簡素化し、x64対応時の作業量を削減。本家版との差分を最小化（overlay 処理という独自の仕組みを削除）
@@ -106,25 +110,6 @@
     * **Phase 2 完了**: `miscDepsJp/source` の全ファイルを `source/` に移動し、overlay 処理を不要化。`miscdepsjp` エイリアスを削除し、依存関係を `source → jtalkSync → jtalkPrep` に簡素化。`sconstruct` の依存関係を更新し、`jptools/runJpSmokeTests.ps1` を調整済み。
   * **効果**: overlay 処理が完全に廃止され、ビルドプロセスが大幅に簡素化。`scons -c` で削除されるファイルは `source/` に直接配置されたファイルのみとなり、overlay による再配置の必要がなくなった。
   * **参考**: 詳細（現状の問題点、作業内容の詳細、検証要件、削減効果、x64 移行への影響など）は `projectDocs/jp/miscdepsjp-overlay-strategy.md` の「改善計画」セクション（Phase 1-2）を参照
-
-* [ ] **タスク 1.6: コード品質の改善（x86環境で実施可能）**（優先度：中）
-  * **注**: ローカルマトリクス整備の直接前提ではないが、並行して行うと後続の安定化が容易になる。
-  * **型ヒントの追加**: 新規コード・既存コードの重要な部分にPEP 484形式の型ヒントを追加
-  * **ログの改善**: `print` の代わりに `logHandler.log` を使用（`jptools/scons_jp.py` など）
-  * **Docstringの追加**: 公開関数・クラス・メソッドにSphinx形式のdocstringを追加
-  * **エラーハンドリングの改善**: より明確なエラーメッセージと例外処理
-  * **コードの整理**: 未使用コードの削除、重複の排除、関数の分割
-
-* [ ] **タスク 1.7: CI基盤の最小限の更新**（優先度：中）
-  * **注**: `testAndPublish.yml` に手を入れるタイミングで、上流変更を最小パッチで取り込む。
-  * 上流のtestAndPublish.ymlの変更を最小限のJPパッチで取り込み
-  * 各変更ごとにPRを作成し、全テスト通過を確認
-  * 1つのPRで1つの変更のみ（例: Pythonバージョン更新、ランナー更新など）
-  * **ローカル環境でテスト済みの変更のみをCIに反映**
-
-* [ ] **タスク 1.8: ユーザー辞書テストの有効化**
-  * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86で検証）
-  * 併せて `mecab-dict-index.exe` をリポジトリから除外（.gitignore）し、SConsビルドで欠如時にビルドする運用に統一
 
 ### ステージ2: ローカル開発環境でのマトリクス実行整備
 
@@ -136,41 +121,84 @@
     * ローカル環境での開発効率を向上させる
     * 将来のx64対応を見据えた検証環境を構築
   * **現状**:
-    * ローカル環境ではx86/x64を順次実行することは可能だが、成果物の衝突回避を要検討
+    * タスク 2.1 完了: x86/x64 の DLL ビルド・検証環境が整備済み ✅
+    * タスク 2.2 完了: x64 での smoke テスト実行環境が整備され、過去の失敗（access violation）を修正済み ✅
   * **段階的実装計画**:
-    1. **タスク 2.1: DLLパス構造の統一（前提条件）**
-       * x86 DLL: `miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll`
-       * x64 DLL: `miscDepsJp/include/python-jtalk/x64/libopenjtalk.dll`
-       * payload側も同様にx86/x64ディレクトリを分離
-       * **検証**: 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
-    2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現**
-       * `runJpSmokeTests.ps1`に`-Architecture`パラメータを追加
-       * アーキテクチャ別のビルド成果物パスを自動選択
-       * PowerShellジョブを使用してx86/x64をマトリクス実行
-       * **検証**: ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認
-    3. **タスク 2.3: ローカル環境での動作安定化**
-       * マトリクス実行時のリソース競合を解決
-       * エラーハンドリングとログ出力の改善
-       * 開発者向けドキュメントの作成
-       * **検証**: 複数回の実行で安定して成功することを確認
+    1. **タスク 2.1: DLLパス構造の統一（前提条件）** ✅ 完了
+       * x86 DLL: `miscDepsJp/include/python-jtalk/x86/(libopenjtalk|libmecab).dll`
+       * x64 DLL: `miscDepsJp/include/python-jtalk/x64/(libopenjtalk|libmecab).dll`
+       * payload 側 (source/synthDrivers/jtalk/) は `scons.bat -c jtalkSync` で mecab/src の obj/lib/dll/dic をクリーンし、`scons.bat jtalkSync TARGET_ARCH=x86`（または x64）で再生成して切り替える。クリーンにアーキ指定は不要。並列は避け、逐次で安定化を確認。
+       * **完了内容**:
+         * `jptools/scons_jp.py` で `TARGET_ARCH` をコマンドライン/環境変数から読み取り可能に修正
+         * `miscDepsJp/include/python-jtalk/lib/Makefile.mak` で `/MACHINE:$(MACHINE)` を正しく設定
+         * `jptools/checkJtalkArch.ps1` を実装: x86/x64 の DLL を dumpbin で検証可能
+         * `scons.bat jtalkSync TARGET_ARCH=x64` で x64 DLL が正しくビルド・配置されることを確認
+    2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現** ✅ 完了
+       * **完了内容**: x64 での smoke テスト実行環境が整備済み ✅
+         * `.\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 環境での smoke テストを実行可能
+         * `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
+         * uv で Python 3.11.14 x64 を自動インストール・使用
+         * x64 DLL が x64 Python で正しくロードされることを確認（`OSError: [WinError 193]` エラーは発生せず）
+         * x64 での `access violation` エラーを修正（ctypes のポインタ型指定）
+       * **発見された問題**: x64 での smoke テスト実行時に `access violation` エラーが発生 ✅ 解決済み
+         * アーキテクチャ不一致ではなく、x64 DLL の呼び出し時のメモリアクセス違反
+         * 過去に発生していた可能性のある問題を安全に再現可能な状態
+         * x86 での smoke テストは成功（`checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests`）
+         * エラー発生箇所:
+           * `mecab.py:173`: `libmc.mecab_strerror(mecab)` - `mecab` が NULL の場合に発生
+           * `mecab.py:184`: `libmc.mecab_sparse_tonode(mecab, src)` - MeCab 解析時に発生
+       * **原因**: ctypes のポインタ型指定不足
+         * x64 ではポインタが 8 バイトだが、ctypes のデフォルト型（`c_int` は 4 バイト）では正しく読み取れない
+         * `mecab_new` の戻り値、`mecab_strerror` と `mecab_sparse_tonode` の引数でポインタ型を明示する必要がある
+       * **修正内容**:
+         1. **NULL ポインタチェックの追加**: `mecab.py:173` で `mecab` が NULL の場合に `mecab_strerror` を呼ばないように修正
+         2. **ctypes のポインタ型を明示**: `source/synthDrivers/jtalk/mecab.py` で以下を追加
+            * `libmc.mecab_new.restype = c_void_p` - 戻り値のポインタ型を明示（8 バイト）
+            * `libmc.mecab_strerror.argtypes = [c_void_p]` - 引数のポインタ型を明示（8 バイト）
+            * `libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]` - 引数のポインタ型を明示（8 バイト）
+       * **調査プロセス**:
+         1. NULL ポインタチェックを追加 → エラーが `access violation` から `OverflowError: int too long to convert` に変化
+         2. エラーメッセージから ctypes の型変換問題を特定
+         3. `mecab_new.restype` を `c_void_p` に設定 → エラーが `OverflowError` に変化
+         4. `mecab_strerror` と `mecab_sparse_tonode` の `argtypes` も修正 → 成功
+       * **検証結果**: ✅ ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認
+         * `checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` → 成功
+         * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` → 成功（修正後）
+    3. **タスク 2.3: ローカル環境での動作安定化** ✅ 完了
+       * マトリクス実行時のリソース競合を解決（`.venv-x64` で x86 の `.venv` と分離）
+       * エラーハンドリングとログ出力の改善（`checkJtalkArch.ps1` で dumpbin 検証と smoke テストを統合）
+       * 開発者向けドキュメントの作成（`roadmap.md` に調査プロセスと修正内容を記録）
+       * **検証**: クリーン後の再ビルドで x86/x64 の両方で安定して成功することを確認 ✅
     4. **タスク 2.4: CI統合**
-       * **現状**: `testAndPublish.yml` で `jpSmokeTests` ジョブが存在し、`allTestsPass` 必須チェックに含まれている（CI統合は完了済み）
-       * **補足**: x86 実行・`-SkipInstall -SkipOverlay` で安定化済み。x64 マトリクス統合は後続ステージで検討。
+       * **現状**: `testAndPublish.yml` で `jpSmokeTests` ジョブが存在し、`allTestsPass` 必須チェックに含まれている（x86 CI統合は完了済み）✅
+       * **x64 CI統合**: `checkJtalkArch` x64 専用の独立した GitHub Actions workflow を作成済み 🔄 無効化中
+         * `.github/workflows/checkJtalkArch-x64.yml` を作成済み
+         * x64 のみを実行し、x86 の CI に影響を与えない設計
+         * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` を使用
+         * **現状の問題**: x64 smoke test がまだ安定していないため、自動実行を無効化
+           * 自動実行（`push`/`pull_request` トリガー）はコメントアウト
+           * 手動実行（`workflow_dispatch`）のみ有効化
+           * x64 smoke test の安定化後に自動実行を再有効化予定
+       * **補足**: x86 実行・`-SkipInstall -SkipOverlay` で安定化済み。x64 は独立 workflow で検証中。
 
   * **実装詳細（タスク 2.2）**:
-    * `runJpSmokeTests.ps1`の拡張
-      * `-Architecture`パラメータを追加（`x86`または`x64`）
-      * `TARGET_ARCH`環境変数を自動設定
-      * アーキテクチャ別のDLLパスを自動選択
-      * `-Parallel`パラメータを追加してx86/x64をマトリクス実行
-    * PowerShellジョブを使用したマトリクス実行
+    * `checkJtalkArch.ps1` の実装（完了）
+      * `-Architecture` パラメータ（`x86` または `x64`）でアーキテクチャを指定
+      * `-SkipBuild` でビルドをスキップして検証のみ実行可能
+      * `-RunSmokeTests` で smoke テストを実行
+      * `scons.bat jtalkSync TARGET_ARCH=$Architecture` でビルド実行
+      * dumpbin で DLL のアーキテクチャを検証（vcvarsall.bat フォールバック対応）
+      * x64 では `.venv-x64` を使用して x86 の `.venv` と分離
+      * uv で Python 3.11.14 x64 を自動インストール・使用
+    * ビルド成果物の分離（完了）
+      * x86 DLL: `miscDepsJp/include/python-jtalk/x86/(libopenjtalk|libmecab).dll`
+      * x64 DLL: `miscDepsJp/include/python-jtalk/x64/(libopenjtalk|libmecab).dll`
+      * payload 側: `source/synthDrivers/jtalk/(libopenjtalk|libmecab).dll`（`scons jtalkSync TARGET_ARCH=$Arch` で切り替え）
+      * 各アーキテクチャで独立してビルド可能
+    * 今後の拡張予定
+      * PowerShellジョブを使用したマトリクス実行（`-Parallel` パラメータ）
       * `Start-Job`でx86/x64のテストをマトリクス実行
       * 各ジョブの結果を収集してレポート
-      * エラー時の詳細なログ出力
-    * ビルド成果物の分離
-      * x86 DLL: `miscDepsJp/source/synthDrivers/jtalk/x86/libopenjtalk.dll`
-      * x64 DLL: `miscDepsJp/source/synthDrivers/jtalk/x64/libopenjtalk.dll`
-      * 各アーキテクチャで独立してビルド可能
   * **利点**:
     * ローカル開発環境での開発効率が向上（x86/x64をマトリクス検証可能）
     * x64対応前にx64環境でのjpSmokeTestを検証できる
@@ -181,10 +209,52 @@
     * ローカル環境でのMSVC環境の切り替えが必要（x86/x64）
     * 安定版リリースに影響を与えない範囲で実施
   * **検証方法**:
-    * **タスク 2.1 完了後**: 既存のx86ビルドが正常に動作することを確認（`scons source dist launcher`、jpSmokeTest成功、安定版リリースに影響なし）
-    * **タスク 2.2 完了後**: ローカル環境でx86/x64マトリクス実行が成功することを確認（`runJpSmokeTests.ps1 -Parallel`、両アーキテクチャで成功、ビルド成果物の分離確認）
-    * **タスク 2.3 完了後**: 複数回の実行で安定して成功することを確認（リソース競合なし、エラーハンドリング適切、ドキュメント整備）
-    * **タスク 2.4 完了後**: CIでjpSmokeTestが安定して成功することを確認（既にx86で統合済み。x64統合は後続で検討）
+    * **タスク 2.1 完了**: ✅ 確認済み
+      * `scons.bat jtalkSync TARGET_ARCH=x86` で x86 DLL が正しくビルド・配置される
+      * `scons.bat jtalkSync TARGET_ARCH=x64` で x64 DLL が正しくビルド・配置される
+      * `checkJtalkArch.ps1 -Architecture x86` で x86 DLL が dumpbin 検証で OK
+      * `checkJtalkArch.ps1 -Architecture x64` で x64 DLL が dumpbin 検証で OK
+      * 既存のx86ビルドが正常に動作することを確認（安定版リリースに影響なし）
+    * **タスク 2.2 完了**: ✅ 確認済み
+      * `checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` で x86 smoke テストが成功 ✅
+      * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 smoke テストが成功 ✅
+      * x64 での `access violation` エラーを修正（ctypes のポインタ型指定不足）✅
+      * ローカル環境でx86/x64の両方でjpSmokeTestが成功することを確認 ✅
+    * **タスク 2.3 完了**: ✅ 確認済み
+      * クリーン後の再ビルドで x86/x64 の両方で安定して成功することを確認 ✅
+      * `.venv-x64` で x86 の `.venv` と分離し、リソース競合なし ✅
+      * エラーハンドリング適切（dumpbin 検証と smoke テストを統合）✅
+      * ドキュメント整備（`roadmap.md` に調査プロセスと修正内容を記録）✅
+    * **タスク 2.4 進行中**: 🔄 CI統合中（x64 は無効化）
+      * x86 CI統合完了: `testAndPublish.yml` で `jpSmokeTests` ジョブが `allTestsPass` 必須チェックに含まれている ✅
+      * x64 CI統合: `.github/workflows/checkJtalkArch-x64.yml` を作成（独立した workflow）✅
+        * x64 workflow は `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` を使用
+        * x86 の CI に影響を与えず、x64 のみを検証可能
+        * **現状**: x64 smoke test がまだ安定していないため、自動実行を無効化中
+          * 自動実行（`push`/`pull_request`）はコメントアウト済み
+          * 手動実行（`workflow_dispatch`）のみ有効
+          * ローカル環境では x64 smoke test が成功するが、CI 環境では `access violation` 後にハングする問題が発生
+          * Windows Error Reporting 無効化とタイムアウト処理を追加済みだが、まだ安定化していない
+          * x64 smoke test の安定化後に自動実行を再有効化予定
+
+* [ ] **タスク 2.5: コード品質の改善（x86環境で実施可能）**（優先度：中）
+  * **注**: ローカルマトリクス整備の直接前提ではないが、並行して行うと後続の安定化が容易になる。
+  * **型ヒントの追加**: 新規コード・既存コードの重要な部分にPEP 484形式の型ヒントを追加
+  * **ログの改善**: `print` の代わりに `logHandler.log` を使用（`jptools/scons_jp.py` など）
+  * **Docstringの追加**: 公開関数・クラス・メソッドにSphinx形式のdocstringを追加
+  * **エラーハンドリングの改善**: より明確なエラーメッセージと例外処理
+  * **コードの整理**: 未使用コードの削除、重複の排除、関数の分割
+
+* [ ] **タスク 2.6: CI基盤の最小限の更新**（優先度：中）
+  * **注**: `testAndPublish.yml` に手を入れるタイミングで、上流変更を最小パッチで取り込む。
+  * 上流のtestAndPublish.ymlの変更を最小限のJPパッチで取り込み
+  * 各変更ごとにPRを作成し、全テスト通過を確認
+  * 1つのPRで1つの変更のみ（例: Pythonバージョン更新、ランナー更新など）
+  * **ローカル環境でテスト済みの変更のみをCIに反映**
+
+* [ ] **タスク 2.7: ユーザー辞書テストの有効化**
+  * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張を追加（x86で検証）
+  * 併せて `mecab-dict-index.exe` をリポジトリから除外（.gitignore）し、SConsビルドで欠如時にビルドする運用に統一
 
 ### ステージ3: Python 3.13 x64対応（優先度：高）
 

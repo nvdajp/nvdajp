@@ -132,8 +132,11 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
         libmc = cdll.LoadLibrary(mecab_dll)
         libmc.mecab_version.restype = c_char_p
         libmc.mecab_strerror.restype = c_char_p
+        libmc.mecab_strerror.argtypes = [c_void_p]  # x64 requires explicit pointer type (8 bytes)
         libmc.mecab_sparse_tonode.restype = mecab_node_t_ptr
+        libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]  # x64 requires explicit pointer type (8 bytes)
         libmc.mecab_new.argtypes = [c_int, c_char_p_p]
+        libmc.mecab_new.restype = c_void_p  # x64 requires explicit pointer type (8 bytes)
     global mecab
     if mecab is None:
         if logwrite_:
@@ -167,9 +170,14 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
                 ud.encode("utf-8"),
             )
         mecab = libmc.mecab_new(argc, args)
+        if not mecab:
+            # mecab_new failed - mecab_strerror should not be called with NULL pointer (causes access violation on x64)
+            error_msg = "mecab_new failed: failed to initialize MeCab"
+            if logwrite_:
+                logwrite_(error_msg)
+            # Raise exception to prevent using uninitialized mecab (causes access violation on x64)
+            raise RuntimeError(error_msg)
         if logwrite_:
-            if not mecab:
-                logwrite_("mecab_new failed.")
             s = libmc.mecab_strerror(mecab).strip()
             if s:
                 logwrite_(s)
@@ -179,6 +187,12 @@ def Mecab_analysis(src, features, logwrite_=None):
     if not src:
         if logwrite_:
             logwrite_("src empty")
+        features.size = 0
+        return
+    # Check if mecab and libmc are initialized (prevents access violation on x64)
+    if mecab is None or libmc is None:
+        if logwrite_:
+            logwrite_("mecab or libmc is not initialized")
         features.size = 0
         return
     head = libmc.mecab_sparse_tonode(mecab, src)

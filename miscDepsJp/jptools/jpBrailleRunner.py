@@ -114,14 +114,14 @@ def pass1():
                     or (len(result) != len(inpos1))
                 ):
                     count += 1
-                    f.write("input: " + t["input"].encode("utf-8") + "\n")
-                    f.write("result: " + result.encode("utf-8") + "\n")
-                    f.write("correct: " + t["output"].encode("utf-8") + "\n")
+                    f.write("input: " + t["input"] + "\n")
+                    f.write("result: " + result + "\n")
+                    f.write("correct: " + t["output"] + "\n")
                     if correct_inpos1:
                         f.write("correct_inpos1: " + correct_inpos1 + "\n")
                     f.write("result_inpos1: " + result_inpos1 + "\n")
                     if "comment" in t:
-                        f.write("comment: " + t["comment"].encode("utf-8") + "\n")
+                        f.write("comment: " + t["comment"] + "\n")
                     f.write("\n")
         print("h1: %d error(s). see %s" % (count, outfile))
     return (count, outfile)
