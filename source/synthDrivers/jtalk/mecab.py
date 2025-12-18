@@ -250,15 +250,27 @@ def Mecab_analysis(src, features, logwrite_=None):
     # Fixed-size buffers can cause memory layout issues on x64 in some environments
     src_buf = create_string_buffer(src)
     # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
+    # Force immediate output to stderr to ensure logs are captured even on crash
+    import sys
     if logwrite_:
         try:
             # Verify null termination in buffer (create_string_buffer automatically adds null terminator)
             buf_ends_null = src_buf.value.endswith(b'\0') if src_buf.value else False
-            logwrite_(f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, buf_len={len(src_buf)}, buf_ends_null={buf_ends_null}")
-        except Exception:
-            pass
+            log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, buf_len={len(src_buf)}, buf_ends_null={buf_ends_null}"
+            logwrite_(log_msg)
+            # Also write directly to stderr to ensure it's captured even if logwrite_ buffer is lost
+            sys.stderr.write(log_msg + "\n")
+            sys.stderr.flush()
+        except Exception as e:
+            # If logging fails, try to write to stderr directly
+            try:
+                sys.stderr.write(f"Mecab_analysis: logging failed: {e}\n")
+                sys.stderr.flush()
+            except Exception:
+                pass
     # Call mecab_sparse_tonode - argtypes are already configured for x64 safety
-    # Fixed-size buffer ensures stable memory layout for ctypes pointer passing on x64
+    # Note: access violations may not be caught by Python exception handlers,
+    # but logging before the call ensures we capture state even if crash occurs
     head = libmc.mecab_sparse_tonode(mecab, src_buf)
     if head is None:
         if logwrite_:

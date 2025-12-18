@@ -147,15 +147,29 @@ if ($allOk) {
                     exit 1
                 }
                 
-                # Create venv if it doesn't exist
-                if (-not (Test-Path "$venvX64\Scripts\python.exe")) {
-                    Write-Host "Creating x64 virtual environment..."
+                # Create venv if it doesn't exist or is incomplete
+                $venvPython = "$venvX64\Scripts\python.exe"
+                $venvNeedsRecreate = $false
+                if (-not (Test-Path $venvPython)) {
+                    $venvNeedsRecreate = $true
+                } elseif (-not (Test-Path "$venvX64\pyvenv.cfg")) {
+                    # Incomplete venv (missing pyvenv.cfg), remove and recreate
+                    Write-Host "Incomplete venv detected, removing and recreating..."
+                    Remove-Item -Recurse -Force $venvX64 -ErrorAction SilentlyContinue
+                    Start-Sleep -Seconds 1
+                    $venvNeedsRecreate = $true
+                }
+                
+                if ($venvNeedsRecreate) {
+                    Write-Host "Creating x64 virtual environment with Python 3.11.14..."
                     # Use UV_PYTHON_PREFERENCE=only-managed to prefer uv-managed Python (x64)
                     # This prevents uv from using the x86 Python from PATH
                     $oldPreference = $env:UV_PYTHON_PREFERENCE
                     $env:UV_PYTHON_PREFERENCE = "only-managed"
                     try {
-                        & uv venv --python 3.11 $venvX64
+                        # Use Python 3.11.14 explicitly to match GitHub Actions environment
+                        # Use --clear flag to replace existing directory if it exists
+                        & uv venv --python 3.11.14 --clear $venvX64
                     } finally {
                         $env:UV_PYTHON_PREFERENCE = $oldPreference
                     }
