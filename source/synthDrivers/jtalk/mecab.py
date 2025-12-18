@@ -228,12 +228,18 @@ def Mecab_analysis(src, features, logwrite_=None):
         features.size = 0
         return
     # Ensure null-terminated string for mecab_sparse_tonode
-    # Use create_string_buffer for x64 memory safety (prevents access violation)
-    # create_string_buffer automatically adds null termination, so we don't need to add it manually
-    # However, we need to ensure the buffer size includes space for null terminator
-    # Pass the original bytes (without manual null termination) to create_string_buffer
-    # This ensures proper memory layout and null termination for ctypes on x64
-    src_buf = create_string_buffer(src)
+    # For x64 safety, use fixed-length buffer approach similar to FELEN/FECOUNT pattern
+    # Fixed-length buffers are safer for ctypes pointer passing on x64
+    # Check if src length exceeds reasonable limit (prevent buffer overflow)
+    MAX_SRC_LEN = 8192  # Reasonable limit for MeCab input (8KB)
+    if len(src) > MAX_SRC_LEN:
+        if logwrite_:
+            logwrite_(f"Mecab_analysis: src length {len(src)} exceeds MAX_SRC_LEN {MAX_SRC_LEN}, truncating")
+        src = src[:MAX_SRC_LEN]
+    # Use create_string_buffer with explicit size for x64 safety
+    # Fixed-size buffer ensures stable memory layout for ctypes pointer passing
+    # create_string_buffer automatically adds null termination
+    src_buf = create_string_buffer(src, MAX_SRC_LEN + 1)  # +1 for null terminator
     # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
     if logwrite_:
         try:
@@ -243,8 +249,7 @@ def Mecab_analysis(src, features, logwrite_=None):
         except Exception:
             pass
     # Call mecab_sparse_tonode - argtypes are already configured for x64 safety
-    # create_string_buffer can be passed directly to c_char_p parameter
-    # On x64, passing the buffer directly (not cast) is safer for null-terminated strings
+    # Fixed-size buffer ensures stable memory layout for ctypes pointer passing on x64
     head = libmc.mecab_sparse_tonode(mecab, src_buf)
     if head is None:
         if logwrite_:
