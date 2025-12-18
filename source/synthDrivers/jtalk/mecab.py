@@ -213,9 +213,9 @@ def Mecab_analysis(src, features, logwrite_=None):
                 os.fsync(f.fileno())  # Force write to disk
         except Exception:
             pass
-    
+
     _write_debug_log(f"Mecab_analysis: called with src type={type(src)}, len={len(src) if src else 0}")
-    
+
     if not src:
         msg = "src empty"
         _write_debug_log(msg)
