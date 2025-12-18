@@ -12,6 +12,10 @@ param(
     [switch]$RunSmokeTests
 )
 
+# Disable PowerShell debug mode to prevent hanging in CI
+Set-PSDebug -Off
+$DebugPreference = 'SilentlyContinue'
+
 $ErrorActionPreference = 'Stop'
 
 function Invoke-DumpbinMachine {
@@ -87,7 +91,10 @@ if (-not $SkipBuild) {
     try {
         $env:TARGET_ARCH = $Architecture
         & "$repoRoot\scons.bat" "jtalkSync"
-        if (-not $?) { throw "scons failed" }
+        if (-not $?) {
+            Write-Error "scons failed"
+            exit 1
+        }
     } finally {
         $env:TARGET_ARCH = $oldArch
         Pop-Location
@@ -123,7 +130,10 @@ if ($allOk) {
                 # Ensure x64 Python is available (uv will skip if already installed)
                 Write-Host "Ensuring Python 3.11 x64 is available..."
                 & uv python install 3.11
-                if (-not $?) { throw "uv python install failed" }
+                if (-not $?) {
+                    Write-Error "uv python install failed"
+                    exit 1
+                }
                 
                 # Create venv if it doesn't exist
                 if (-not (Test-Path "$venvX64\Scripts\python.exe")) {
@@ -141,28 +151,40 @@ if ($allOk) {
                             Remove-Item env:UV_PYTHON_PREFERENCE -ErrorAction SilentlyContinue
                         }
                     }
-                    if (-not $?) { throw "uv venv failed" }
+                    if (-not $?) {
+                        Write-Error "uv venv failed"
+                        exit 1
+                    }
                     
                     # Verify venv Python is x64
                     $venvPython = "$venvX64\Scripts\python.exe"
                     $pythonArch = & $venvPython -c "import platform; print(platform.architecture()[0])"
                     if ($pythonArch -ne "64bit") {
                         Write-Error "ERROR: venv Python is not x64 ($pythonArch). Ensure x64 Python is installed: uv python install 3.11"
-                        throw "venv Python architecture mismatch"
+                        exit 1
                     }
                     
                     # Install pytest in the venv
                     Write-Host "Installing pytest in x64 venv..."
                     & uv pip install --python $venvPython pytest
-                    if (-not $?) { throw "uv pip install pytest failed" }
+                    if (-not $?) {
+                        Write-Error "uv pip install pytest failed"
+                        exit 1
+                    }
                 }
                 
                 # Run pytest in the x64 venv
                 & "$venvX64\Scripts\python.exe" -m pytest -q miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
-                if (-not $?) { throw "jp smoke tests failed" }
+                if (-not $?) {
+                    Write-Error "jp smoke tests failed"
+                    exit 1
+                }
             } else {
                 & pwsh -NoLogo -File "jptools/runJpSmokeTests.ps1" -SkipOverlay
-                if (-not $?) { throw "jp smoke tests failed" }
+                if (-not $?) {
+                    Write-Error "jp smoke tests failed"
+                    exit 1
+                }
             }
         } finally {
             $env:TARGET_ARCH = $oldArch
