@@ -90,11 +90,26 @@ mecab = None
 libmc = None
 lock = threading.Lock()
 
+# Configure malloc/calloc/free for x64 safety
+# On x64, we must explicitly specify argtypes to ensure correct argument sizes
+# size_t is 8 bytes on x64, so we use c_size_t (or c_ulonglong as fallback)
+try:
+    from ctypes import c_size_t
+except ImportError:
+    # Fallback for older Python versions: use c_ulonglong (8 bytes on x64)
+    c_size_t = c_ulonglong
+
 mc_malloc = cdll.msvcrt.malloc
+mc_malloc.argtypes = [c_size_t]  # malloc(size_t size)
 mc_malloc.restype = POINTER(c_ubyte)
+
 mc_calloc = cdll.msvcrt.calloc
+mc_calloc.argtypes = [c_size_t, c_size_t]  # calloc(size_t nmemb, size_t size)
 mc_calloc.restype = POINTER(c_ubyte)
+
 mc_free = cdll.msvcrt.free
+mc_free.argtypes = [c_void_p]  # free(void *ptr)
+mc_free.restype = None
 
 
 class NonblockingMecabFeatures(object):
