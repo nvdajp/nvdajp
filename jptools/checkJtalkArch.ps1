@@ -182,7 +182,9 @@ if ($allOk) {
                 }
                 
                 # Run pytest in the x64 venv with timeout to prevent hang on access violation
-                $process = Start-Process -FilePath "$venvX64\Scripts\python.exe" -ArgumentList "-m pytest -q miscDepsJp/jptools/test.py -k `"JpBrailleTests or JtalkTests`"" -PassThru -NoNewWindow -Wait:$false
+                # Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
+                $env:PYTHONUTF8 = "1"
+                $process = Start-Process -FilePath "$venvX64\Scripts\python.exe" -ArgumentList "-m pytest -q miscDepsJp/jptools/test.py -k `"JpBrailleTests or JtalkTests`"" -PassThru -NoNewWindow -Wait:$false -UseNewEnvironment:$false
                 $process | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
                 if (-not $process.HasExited) {
                     Write-Warning "pytest timed out after 120 seconds, forcing termination"
