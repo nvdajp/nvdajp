@@ -198,15 +198,12 @@ def Mecab_analysis(src, features, logwrite_=None):
             logwrite_("mecab or libmc is not initialized")
         features.size = 0
         return
-    # Ensure src is bytes and null-terminated (required for mecab_sparse_tonode on x64)
+    # Ensure src is bytes (required for mecab_sparse_tonode on x64)
     if not isinstance(src, bytes):
         if logwrite_:
             logwrite_(f"src is not bytes: {type(src)}")
         features.size = 0
         return
-    # Ensure null-terminated string for mecab_sparse_tonode
-    if not src.endswith(b'\0'):
-        src = src + b'\0'
     # Validate mecab pointer is not NULL (prevents access violation on x64)
     # mecab is already c_void_p type from mecab_new, so check value directly
     if hasattr(mecab, 'value') and mecab.value == 0:
@@ -214,10 +211,25 @@ def Mecab_analysis(src, features, logwrite_=None):
             logwrite_("mecab pointer is NULL or invalid")
         features.size = 0
         return
-    head = libmc.mecab_sparse_tonode(mecab, src)
+    # Create a null-terminated string buffer for mecab_sparse_tonode
+    # This ensures proper memory layout for x64 (prevents access violation)
+    # ctypes will automatically handle null termination for c_char_p, but
+    # create_string_buffer is safer for x64 environments
+    if not src.endswith(b'\0'):
+        src_buf = create_string_buffer(src + b'\0')
+    else:
+        src_buf = create_string_buffer(src)
+    head = libmc.mecab_sparse_tonode(mecab, src_buf)
     if head is None:
         if logwrite_:
             logwrite_("mecab_sparse_tonode result empty")
+        features.size = 0
+        return
+    # Validate head pointer is not NULL (prevents access violation on x64)
+    # head is mecab_node_t_ptr type, check if it's a valid pointer
+    if hasattr(head, 'value') and head.value == 0:
+        if logwrite_:
+            logwrite_("mecab_sparse_tonode returned NULL pointer")
         features.size = 0
         return
     features.size = 0
