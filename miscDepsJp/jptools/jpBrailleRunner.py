@@ -61,6 +61,7 @@ output = None
 
 def __print(s=""):
     global output
+    print(s)  # Also output to console for x64 smoke test debugging
     output.write(s + "\n")
 
 
