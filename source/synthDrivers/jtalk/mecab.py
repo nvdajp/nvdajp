@@ -211,15 +211,14 @@ def Mecab_analysis(src, features, logwrite_=None):
             logwrite_("mecab pointer is NULL or invalid")
         features.size = 0
         return
-    # Create a null-terminated string buffer for mecab_sparse_tonode
-    # This ensures proper memory layout for x64 (prevents access violation)
-    # ctypes will automatically handle null termination for c_char_p, but
-    # create_string_buffer is safer for x64 environments
+    # Ensure null-terminated string for mecab_sparse_tonode
+    # ctypes will automatically convert bytes to c_char_p with null termination
+    # For x64, we must ensure the bytes object is null-terminated
     if not src.endswith(b'\0'):
-        src_buf = create_string_buffer(src + b'\0')
+        src_bytes = src + b'\0'
     else:
-        src_buf = create_string_buffer(src)
-    head = libmc.mecab_sparse_tonode(mecab, src_buf)
+        src_bytes = src
+    head = libmc.mecab_sparse_tonode(mecab, src_bytes)
     if head is None:
         if logwrite_:
             logwrite_("mecab_sparse_tonode result empty")
