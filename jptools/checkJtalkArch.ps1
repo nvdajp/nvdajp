@@ -127,6 +127,18 @@ if ($allOk) {
                 $venvX64 = "$repoRoot\.venv-x64"
                 $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk"
                 
+                # Ensure JTalk dictionaries are present (required for smoke tests)
+                $jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
+                $charBin = Join-Path $jtalkSource "dic\char.bin"
+                if (-not (Test-Path $charBin)) {
+                    Write-Host "JTalk dictionaries not found under $jtalkSource; running scons jtalkSync..." -ForegroundColor Yellow
+                    & "$repoRoot\scons.bat" jtalkSync
+                    if ($LastExitCode -ne 0) {
+                        Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
+                        exit $LastExitCode
+                    }
+                }
+                
                 # Ensure x64 Python is available (uv will skip if already installed)
                 Write-Host "Ensuring Python 3.11 x64 is available..."
                 & uv python install 3.11

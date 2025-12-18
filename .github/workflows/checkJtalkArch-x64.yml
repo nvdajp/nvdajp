@@ -1,18 +1,19 @@
 name: Check JTalk Architecture (x64)
 
-# Workflow disabled - x64 smoke tests are not stable yet
-# on:
-#   push:
-#     branches:
-#       - 'betajp'
-#       - 'releasejp'
-#   pull_request:
-#     branches:
-#       - 'alphajp**'
-#       - 'betajp**'
-#       - 'releasejp**'
+# x64 smoke tests: Enabled for pull_request to validate stability.
+# Dictionary file check was added to checkJtalkArch.ps1 to fix standalone execution.
+# If stable, push trigger can be enabled later.
 on:
-  workflow_dispatch:  # Manual trigger only
+  pull_request:
+    branches:
+      - 'alphajp**'
+      - 'betajp**'
+      - 'releasejp**'
+  workflow_dispatch:  # Manual trigger for testing
+  # push:
+  #   branches:
+  #     - 'betajp'
+  #     - 'releasejp'
 
 jobs:
   checkJtalkArchX64:
