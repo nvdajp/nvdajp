@@ -244,19 +244,18 @@ def Mecab_analysis(src, features, logwrite_=None):
         features.size = 0
         return
     # Ensure null-terminated string for mecab_sparse_tonode
-    # Use create_string_buffer for x64 memory safety (prevents access violation)
-    # create_string_buffer automatically adds null termination and creates buffer of appropriate size
-    # Do not specify explicit size - let create_string_buffer determine size based on src length
-    # This matches the pattern used in the original jtalk.py implementation
-    # Fixed-size buffers can cause memory layout issues on x64 in some environments
-    src_buf = create_string_buffer(src)
+    # On x64, we need to ensure the string is null-terminated and passed correctly
+    # The original jtalk.py passes bytes directly, but we need to ensure null termination
+    # Try passing bytes directly first (matches original jtalk.py), but ensure null termination
+    null_byte = b'\0'
+    if not src.endswith(null_byte):
+        src = src + null_byte
     # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
     # Force immediate output to stderr to ensure logs are captured even on crash
     if logwrite_:
         try:
-            # Verify null termination in buffer (create_string_buffer automatically adds null terminator)
-            buf_ends_null = src_buf.value.endswith(b'\0') if src_buf.value else False
-            log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, buf_len={len(src_buf)}, buf_ends_null={buf_ends_null}"
+            src_ends_null = src.endswith(null_byte)
+            log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, src_ends_null={src_ends_null}"
             # Write to stderr first to ensure it's captured even if logwrite_ buffer is lost
             try:
                 sys.stderr.write(log_msg + "\n")
@@ -273,9 +272,11 @@ def Mecab_analysis(src, features, logwrite_=None):
             except Exception:
                 pass
     # Call mecab_sparse_tonode - argtypes are already configured for x64 safety
+    # Pass bytes directly (matches original jtalk.py implementation)
+    # ctypes will automatically convert bytes to c_char_p when argtypes is [c_void_p, c_char_p]
     # Note: access violations may not be caught by Python exception handlers,
     # but logging before the call ensures we capture state even if crash occurs
-    head = libmc.mecab_sparse_tonode(mecab, src_buf)
+    head = libmc.mecab_sparse_tonode(mecab, src)
     if head is None:
         if logwrite_:
             logwrite_("mecab_sparse_tonode result empty")
