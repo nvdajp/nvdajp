@@ -229,23 +229,23 @@ def Mecab_analysis(src, features, logwrite_=None):
         return
     # Ensure null-terminated string for mecab_sparse_tonode
     # Use create_string_buffer for x64 memory safety (prevents access violation)
-    # This ensures proper memory layout and null termination for ctypes
-    if not src.endswith(b'\0'):
-        src_buf = create_string_buffer(src + b'\0')
-    else:
-        src_buf = create_string_buffer(src)
+    # create_string_buffer automatically adds null termination, so we don't need to add it manually
+    # However, we need to ensure the buffer size includes space for null terminator
+    # Pass the original bytes (without manual null termination) to create_string_buffer
+    # This ensures proper memory layout and null termination for ctypes on x64
+    src_buf = create_string_buffer(src)
     # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
     if logwrite_:
         try:
-            logwrite_(f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}")
+            # Verify null termination in buffer (create_string_buffer automatically adds null terminator)
+            buf_ends_null = src_buf.value.endswith(b'\0') if src_buf.value else False
+            logwrite_(f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, buf_len={len(src_buf)}, buf_ends_null={buf_ends_null}")
         except Exception:
             pass
     # Call mecab_sparse_tonode - argtypes are already configured for x64 safety
-    # Using create_string_buffer ensures proper memory layout on x64
-    # Explicitly cast to c_char_p for x64 compatibility (prevents access violation)
-    # create_string_buffer can be passed directly, but explicit cast is safer on x64
-    src_cstr = cast(src_buf, c_char_p)
-    head = libmc.mecab_sparse_tonode(mecab, src_cstr)
+    # create_string_buffer can be passed directly to c_char_p parameter
+    # On x64, passing the buffer directly (not cast) is safer for null-terminated strings
+    head = libmc.mecab_sparse_tonode(mecab, src_buf)
     if head is None:
         if logwrite_:
             logwrite_("mecab_sparse_tonode result empty")
