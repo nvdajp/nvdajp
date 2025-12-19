@@ -154,3 +154,62 @@ Test 6: fil\t"a",\t'c',       → 期待: fil⡀"a",⡀'c',      → (FAILED)
 1. 全角スペースを明示的に半角スペースに変換
 2. タブ文字で入力を分割し、各セグメントを個別にMeCabで処理
 3. 括弧文字の処理を調査
+
+---
+
+## CI環境でのコードページ設定問題 (2025-01-XX)
+
+### 問題の概要
+
+GitHub Actions CI環境でx64 smoke testが`access violation`でクラッシュする問題が発生しました。
+
+### 原因
+
+CI環境とローカル環境でコードページが異なっていました：
+- **CI環境**: コードページ1252 (英語ロケール、Windows-1252)
+- **ローカル環境**: コードページ932 (日本語ロケール、Shift-JIS)
+
+MeCabは`CHARSET_SHIFT_JIS`でコンパイルされているため、コードページ932での動作が前提となっています。コードページ1252の環境では、文字列処理やメモリアクセスで不整合が発生し、`access violation`が発生していました。
+
+### 解決策
+
+コードページ932を確実に設定するため、以下の2つのレベルで対策を実装しました：
+
+#### 1. ワークフローレベル (`.github/workflows/checkJtalkArch-x64.yml`)
+
+```yaml
+- name: Build JTalk for x64 and run smoke tests
+  run: |
+    # Set code page to 932 (Japanese Shift-JIS) to match local environment
+    cmd /c "chcp 932 >nul 2>&1 && powershell.exe -NoProfile -ExecutionPolicy Bypass -Command `".\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests`""
+  shell: cmd
+```
+
+`cmd`シェルで`chcp 932`を実行してからPowerShellスクリプトを起動することで、ワークフローレベルでコードページ932を設定します。
+
+#### 2. スクリプトレベル (`jptools/checkJtalkArch.ps1`)
+
+x64 smoke test実行時に、一時バッチファイルを作成し、その中で`chcp 932`を実行してからpytestを実行します：
+
+```powershell
+$batchFile = Join-Path $env:TEMP "run_pytest_x64_$(Get-Date -Format 'yyyyMMddHHmmss').bat"
+$batchContent = @"
+@echo off
+chcp 932 >nul 2>&1
+cd /d "$repoRoot"
+"$venvX64\Scripts\python.exe" -m pytest -q miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
+exit /b %ERRORLEVEL%
+"@
+```
+
+この二重の保護により、CI環境でもコードページ932が確実に設定されます。
+
+### 検証
+
+- `mecab_debug.log`に`code_page=932`が記録されることを確認
+- CI環境でのx64 smoke testが正常に完了することを確認
+- ローカル環境（x86/x64）でも正常に動作することを確認
+
+### 今後の対応
+
+コードページ932でしばらくCIを回し、安定性を確認します。問題が再発しないことを確認できれば、この設定を維持します。
