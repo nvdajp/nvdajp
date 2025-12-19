@@ -275,22 +275,15 @@ def Mecab_analysis(src, features, logwrite_=None):
             logwrite_("mecab pointer is NULL or invalid")
         features.size = 0
         return
-    # Ensure null-terminated string for mecab_sparse_tonode
-    # On x64, we need to ensure the string is null-terminated and passed correctly
-    # The original jtalk.py passes bytes directly, but we need to ensure null termination
-    # Try passing bytes directly first (matches original jtalk.py), but ensure null termination
-    null_byte = b'\0'
-    if not src.endswith(null_byte):
-        src = src + null_byte
     # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
     # Force immediate output to stderr to ensure logs are captured even on crash
     # Use multiple output methods for maximum reliability:
     # 1. sys.stderr (unbuffered, captured by CI)
     # 2. logwrite_ (may be io.StringIO() buffer, can be lost on crash)
     # 3. Try to write to file if possible (most reliable for crash debugging)
-    # src is guaranteed to end with null_byte after the check above
-    src_ends_null = True
-    log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, src_ends_null={src_ends_null}"
+    # Note: ctypes automatically null-terminates bytes when converting to c_char_p,
+    # so no manual null termination is needed (matches original jtalk.py behavior)
+    log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}"
 
     # Method 1: Write to stderr first (unbuffered, captured by CI)
     try:
