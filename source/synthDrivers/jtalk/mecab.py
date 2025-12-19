@@ -173,7 +173,7 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
             f.close()
             logwrite_("mecab:" + libmc.mecab_version() + " " + s)
             # check utf-8 dictionary
-            if not CODE in s:
+            if CODE not in s:
                 raise RuntimeError("utf-8 dictionary for mecab required.")
         except:
             pass
@@ -183,7 +183,7 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
         )
         if user_dics:
             # ignore item which contains comma
-            ud = ",".join([s for s in user_dics if not "," in s])
+            ud = ",".join([s for s in user_dics if "," not in s])
             if logwrite_:
                 logwrite_("user_dics: %s" % ud)
             argc, args = 7, (c_char_p * 7)(
