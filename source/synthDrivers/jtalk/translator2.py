@@ -421,7 +421,7 @@ def replace_digit_morphs(li):
         elif (
             mo.hinshi2 == "数"
             and not mo.output.isdigit()
-            and not mo.hyouki in ("・", "万", "億", "兆", "京", "．")
+            and mo.hyouki not in ("・", "万", "億", "兆", "京", "．")
         ):
             # 漢数字の結合
             num_morphs.append(mo)
@@ -1355,7 +1355,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 
     text = text2mecab(text)
     mf = MecabFeatures()
-    Mecab_analysis(text, mf)
+    Mecab_analysis(text, mf, logwrite_=logwrite)
     Mecab_correctFeatures(mf)
     Mecab_print(mf, logwrite, output_header=False)
     li = mecab_to_morphs(mf)
@@ -1665,7 +1665,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
     for pos in range(len(li) - 1):
         mo = li[pos]
         mo2 = li[pos + 1]
-        if mo2.hyouki == "，" and not (mo.hinshi2 in ("アルファベット", "数", "括弧閉")):
+        if mo2.hyouki == "，" and mo.hinshi2 not in ("アルファベット", "数", "括弧閉"):
             mo2.hyouki = mo2.nhyouki = mo2.output = "、"
 
     # 分かち書き判定

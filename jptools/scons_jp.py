@@ -344,7 +344,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
                     to ensure correct ordering in parallel builds (--all-cores).
     """
     # Allow TARGET_ARCH override from environment (takes priority) or existing env (fallback).
-    # This enables `set TARGET_ARCH=x64` then `scons.bat jtalkSync` for x64 payload/DLL切替。
+    # This enables `set TARGET_ARCH=x64` then `scons.bat jtalkSync` for x64 payload/DLL switching.
     env["TARGET_ARCH"] = str(os.environ.get("TARGET_ARCH", env.get("TARGET_ARCH", "x86"))).lower()
     # miscdepsjp alias removed in Phase 2 (miscDepsJp/source is empty, overlay is no-op)
 

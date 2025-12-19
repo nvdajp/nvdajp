@@ -1,18 +1,19 @@
 name: Check JTalk Architecture (x64)
 
-# Workflow disabled - x64 smoke tests are not stable yet
-# on:
-#   push:
-#     branches:
-#       - 'betajp'
-#       - 'releasejp'
-#   pull_request:
-#     branches:
-#       - 'alphajp**'
-#       - 'betajp**'
-#       - 'releasejp**'
+# x64 smoke tests: Enabled for pull_request to validate stability.
+# Dictionary file check was added to checkJtalkArch.ps1 to fix standalone execution.
+# If stable, push trigger can be enabled later.
 on:
-  workflow_dispatch:  # Manual trigger only
+  pull_request:
+    branches:
+      - 'alphajp**'
+      - 'betajp**'
+      - 'releasejp**'
+  workflow_dispatch:  # Manual trigger for testing
+  push:
+    branches:
+      - 'betajp'
+      - 'releasejp'
 
 jobs:
   checkJtalkArchX64:
@@ -76,12 +77,11 @@ jobs:
 
     - name: Build JTalk for x64 and run smoke tests
       run: |
-        $env:TARGET_ARCH = 'x64'
-        # scons.bat uses x86 Python from PATH (via uv run)
-        # TARGET_ARCH=x64 controls the DLL build architecture (x64 DLLs are built)
-        # checkJtalkArch.ps1 uses x64 Python for smoke tests (via .venv-x64 with UV_PYTHON_PREFERENCE=only-managed)
-        .\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
-      shell: powershell
+        # Set code page to 932 (Japanese Shift-JIS) to match local environment
+        # This ensures consistent behavior for ctypes string handling and MeCab internal processing
+        # Use cmd /c to ensure code page is set in the PowerShell session
+        cmd /c "chcp 932 >nul 2>&1 && powershell.exe -NoProfile -ExecutionPolicy Bypass -Command `".\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests`""
+      shell: cmd
       env:
         TARGET_ARCH: x64
 
@@ -94,4 +94,8 @@ jobs:
           miscDepsJp/jptools/__h2output.txt
           miscDepsJp/jptools/__jpBrailleHarness.md
           miscDepsJp/jptools/jpBrailleHarness.html
+          __h2output.txt
+          __jpBrailleHarness.md
+          jpBrailleHarness.html
           source/synthDrivers/jtalk/*.dll
+          source/synthDrivers/jtalk/mecab_debug.log

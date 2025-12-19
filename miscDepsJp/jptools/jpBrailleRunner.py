@@ -61,6 +61,18 @@ output = None
 
 def __print(s=""):
     global output
+    # Also output to console for x64 smoke test debugging
+    # PYTHONUTF8=1 is set in checkJtalkArch.ps1, so print() should handle Unicode correctly
+    try:
+        print(s, flush=True)
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        # Fallback for environments without PYTHONUTF8=1
+        try:
+            sys.stdout.buffer.write((s + "\n").encode('utf-8', errors='replace'))
+            sys.stdout.buffer.flush()
+        except Exception:
+            # If all else fails, silently skip console output
+            pass
     output.write(s + "\n")
 
 

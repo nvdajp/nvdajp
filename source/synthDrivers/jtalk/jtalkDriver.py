@@ -21,7 +21,6 @@ from .jtalkCore import *
 from . import jtalkPrepare
 from ..jtalk._nvdajp_unicode import unicode_normalize
 from ..jtalk import _bgthread
-import time
 import watchdog
 import config
 from .jtalkDir import jtalk_dir, dic_dir, user_dics

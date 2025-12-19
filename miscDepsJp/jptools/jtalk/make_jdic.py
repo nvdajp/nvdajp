@@ -16,10 +16,6 @@ import tankan_dic_maker
 from filter_jdic import filter_jdic
 
 
-def open_file(name, mode, encoding):
-    return open(name, mode, encoding=encoding)
-
-
 def _log_mode() -> str:
     mode = os.environ.get("JP_MECAB_LOG_MODE", "file").lower()
     if mode not in {"file", "console"}:
@@ -45,8 +41,8 @@ def mkdir_p(path):
 
 def convert_file(src_file, src_enc, dest_file, dest_enc, apply_filter=False):
     print("converting %s to %s" % (src_file, dest_file))
-    with open_file(src_file, "r", src_enc) as sf:
-        with open_file(dest_file, "w", dest_enc) as df:
+    with open(src_file, "r", encoding=src_enc) as sf:
+        with open(dest_file, "w", encoding=dest_enc) as df:
             while 1:
                 s = sf.readline()
                 if not s:
@@ -123,16 +119,15 @@ def _main():
         run_kwargs = {
             "cwd": tempdir,
             "text": True,
+            "check": True,
         }
         if log_fp:
             run_kwargs["stdout"] = log_fp
             run_kwargs["stderr"] = subprocess.STDOUT
-        result = subprocess.run(
+        subprocess.run(
             [mecab_dict_index, "-d", ".", "-o", outdir, "-f", code, "-c", code],
             **run_kwargs,
         )
-        if result.returncode != 0:
-            raise SystemExit(result.returncode)
 
         print("copy %s to %s" % (path.join(thisdir, "dicrc"), outdir))
         shutil.copy(path.join(thisdir, "dicrc"), outdir)
@@ -140,7 +135,7 @@ def _main():
         print("dic version file: " + dic_version_file)
         version = f"nvdajp-jtalk-dic ({code}) {datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
         print(version)
-        with open_file(dic_version_file, "w", "utf-8") as f:
+        with open(dic_version_file, "w", encoding="utf-8") as f:
             f.write(version + os.linesep)
 
     if mode == "file" and log_path:

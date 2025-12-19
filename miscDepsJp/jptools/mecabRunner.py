@@ -67,7 +67,7 @@ def Mecab_get_reading(mf, CODE_=CODE):  # type: ignore
 def get_reading(msg):
     s = text2mecab(msg)
     mf = MecabFeatures()
-    Mecab_analysis(s, mf)
+    Mecab_analysis(s, mf, logwrite_=__print)
     Mecab_print(mf, logwrite_=__print_dummy)
     Mecab_correctFeatures(mf)
     Mecab_print(mf, logwrite_=__print_dummy)
