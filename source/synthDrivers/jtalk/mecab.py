@@ -311,7 +311,16 @@ def Mecab_analysis(src, features, logwrite_=None):
     # src is bytes, convert to c_char_p explicitly for x64 safety
     src_ptr = c_char_p(src) if isinstance(src, bytes) else src
     _write_debug_log(f"Mecab_analysis: mecab_ptr type={type(mecab_ptr)}, src_ptr type={type(src_ptr)}")
+    _write_debug_log(f"Mecab_analysis: mecab_ptr.value={mecab_ptr.value if hasattr(mecab_ptr, 'value') else mecab_ptr}")
+    _write_debug_log(f"Mecab_analysis: src_ptr.value={src_ptr.value if hasattr(src_ptr, 'value') else src_ptr}")
+    _write_debug_log(f"Mecab_analysis: about to call mecab_sparse_tonode...")
+    # Note: access violations may not be caught by Python exception handlers,
+    # but logging before the call ensures we capture state even if crash occurs
     head = libmc.mecab_sparse_tonode(mecab_ptr, src_ptr)
+    # If we reach here, the call succeeded (no access violation)
+    _write_debug_log(f"Mecab_analysis: mecab_sparse_tonode returned, head={head}")
+    if head is not None and hasattr(head, 'value'):
+        _write_debug_log(f"Mecab_analysis: head.value={head.value}")
     if head is None:
         if logwrite_:
             logwrite_("mecab_sparse_tonode result empty")
