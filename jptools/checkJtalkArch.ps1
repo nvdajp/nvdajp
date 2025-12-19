@@ -202,7 +202,35 @@ if ($allOk) {
                 $env:PYTHONUTF8 = "1"
                 # Set code page in the process that will run pytest
                 # Note: Start-Process creates a new process, so we need to set code page via cmd /c
-                $process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c chcp 932 >nul 2>&1 && `"$venvX64\Scripts\python.exe`" -m pytest -q miscDepsJp/jptools/test.py -k `"JpBrailleTests or JtalkTests`"" -PassThru -NoNewWindow -Wait:$false -UseNewEnvironment:$false
+                # Create a temporary batch file to ensure chcp 932 is executed before python
+                # This is more reliable than using && or & in cmd /c
+                $batchFile = Join-Path $env:TEMP "run_pytest_x64_$(Get-Date -Format 'yyyyMMddHHmmss').bat"
+                $batchContent = @"
+@echo off
+chcp 932 >nul 2>&1
+cd /d "$repoRoot"
+"$venvX64\Scripts\python.exe" -m pytest -q miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
+exit /b %ERRORLEVEL%
+"@
+                try {
+                    $batchContent | Out-File -FilePath $batchFile -Encoding ASCII -NoNewline
+                    $process = Start-Process -FilePath $batchFile -PassThru -NoNewWindow -Wait:$false -UseNewEnvironment:$false -WorkingDirectory $repoRoot
+                } finally {
+                    # Clean up batch file after process completes
+                    # Wait for process to finish first, then clean up
+                    $process | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
+                    if (-not $process.HasExited) {
+                        Write-Warning "pytest timed out after 120 seconds, forcing termination"
+                        $process | Stop-Process -Force -ErrorAction SilentlyContinue
+                        Write-Error "jp smoke tests timed out"
+                        exit 1
+                    }
+                    # Clean up batch file after process exits
+                    Start-Sleep -Milliseconds 500
+                    if (Test-Path $batchFile) {
+                        Remove-Item $batchFile -Force -ErrorAction SilentlyContinue
+                    }
+                }
                 $process | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
                 if (-not $process.HasExited) {
                     Write-Warning "pytest timed out after 120 seconds, forcing termination"
