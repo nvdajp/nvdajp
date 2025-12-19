@@ -10,10 +10,10 @@ on:
       - 'betajp**'
       - 'releasejp**'
   workflow_dispatch:  # Manual trigger for testing
-  # push:
-  #   branches:
-  #     - 'betajp'
-  #     - 'releasejp'
+  push:
+    branches:
+      - 'betajp'
+      - 'releasejp'
 
 jobs:
   checkJtalkArchX64:
