@@ -16,13 +16,6 @@ try:
 except (ImportError, AttributeError):
     _kernel32 = None
 
-# Try to import Windows API for code page detection
-try:
-    from ctypes import windll
-    _kernel32 = windll.kernel32
-except (ImportError, AttributeError):
-    _kernel32 = None
-
 try:
     from ._nvdajp_spellchar import convert as convertSpellChar
     from .roma2kana import getKanaFromRoma
@@ -226,6 +219,9 @@ def Mecab_analysis(src, features, logwrite_=None):
                 f.flush()
                 os.fsync(f.fileno())  # Force write to disk
         except Exception:
+            # Debug logging is best-effort only. Failures when writing the debug log
+            # must not interfere with normal Mecab operation, so we intentionally
+            # ignore any exceptions raised here.
             pass
 
     # Log code page information for debugging (Windows only)
@@ -235,6 +231,8 @@ def Mecab_analysis(src, features, logwrite_=None):
             cp = _kernel32.GetACP()
             code_page_info = f", code_page={cp}"
         except Exception:
+            # Code page detection is best-effort only. Failures must not interfere
+            # with normal Mecab operation, so we intentionally ignore exceptions.
             pass
 
     _write_debug_log(f"Mecab_analysis: called with src type={type(src)}, len={len(src) if src else 0}{code_page_info}")
@@ -266,19 +264,15 @@ def Mecab_analysis(src, features, logwrite_=None):
             ends_with_null = src.endswith(null_byte)
             logwrite_(f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}")
         except Exception:
+            # Logging is best-effort only. Failures must not interfere
+            # with normal Mecab operation, so we intentionally ignore exceptions.
             pass
     # Validate mecab pointer is not NULL (prevents access violation on x64)
     # mecab is already c_void_p type from mecab_new, so check value directly
-    if not mecab or (hasattr(mecab, 'value') and mecab.value == 0):
+    mecab_value = mecab.value if hasattr(mecab, 'value') else mecab
+    if not mecab or mecab_value == 0:
         if logwrite_:
             logwrite_("mecab pointer is NULL or invalid")
-        features.size = 0
-        return
-    # Additional validation: ensure mecab pointer value is valid (non-zero)
-    mecab_value = mecab.value if hasattr(mecab, 'value') else mecab
-    if mecab_value == 0:
-        if logwrite_:
-            logwrite_("mecab pointer value is 0 (NULL)")
         features.size = 0
         return
     # Ensure null-terminated string for mecab_sparse_tonode
@@ -294,7 +288,8 @@ def Mecab_analysis(src, features, logwrite_=None):
     # 1. sys.stderr (unbuffered, captured by CI)
     # 2. logwrite_ (may be io.StringIO() buffer, can be lost on crash)
     # 3. Try to write to file if possible (most reliable for crash debugging)
-    src_ends_null = src.endswith(null_byte)
+    # src is guaranteed to end with null_byte after the check above
+    src_ends_null = True
     log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}, src_ends_null={src_ends_null}"
 
     # Method 1: Write to stderr first (unbuffered, captured by CI)
@@ -302,6 +297,8 @@ def Mecab_analysis(src, features, logwrite_=None):
         sys.stderr.write(log_msg + "\n")
         sys.stderr.flush()
     except Exception:
+        # stderr writing is best-effort only. Failures must not interfere
+        # with normal Mecab operation, so we intentionally ignore exceptions.
         pass
 
     # Method 2: Write to logwrite_ if available (may be io.StringIO() buffer)
@@ -309,18 +306,13 @@ def Mecab_analysis(src, features, logwrite_=None):
         try:
             logwrite_(log_msg)
         except Exception:
+            # logwrite_ callback is best-effort only. Failures must not interfere
+            # with normal Mecab operation, so we intentionally ignore exceptions.
             pass
 
     # Method 3: Try to write to a debug file (most reliable for crash debugging)
     # This ensures logs are captured even if process crashes immediately
-    try:
-        debug_log_path = os.path.join(os.path.dirname(__file__), "mecab_debug.log")
-        with open(debug_log_path, "a", encoding="utf-8", errors="replace") as f:
-            f.write(log_msg + "\n")
-            f.flush()
-            os.fsync(f.fileno())  # Force write to disk
-    except Exception:
-        pass
+    _write_debug_log(log_msg)
     # Call mecab_sparse_tonode - argtypes are already configured for x64 safety
     # Pass bytes directly (matches original jtalk.py implementation)
     # ctypes will automatically convert bytes to c_char_p when argtypes is [c_void_p, c_char_p]

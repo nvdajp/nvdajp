@@ -171,7 +171,12 @@ if ($allOk) {
                         # Use --clear flag to replace existing directory if it exists
                         & uv venv --python 3.11.14 --clear $venvX64
                     } finally {
-                        $env:UV_PYTHON_PREFERENCE = $oldPreference
+                        # Restore original UV_PYTHON_PREFERENCE value, or remove if it was not set
+                        if ($null -ne $oldPreference -and $oldPreference -ne "") {
+                            $env:UV_PYTHON_PREFERENCE = $oldPreference
+                        } else {
+                            Remove-Item Env:UV_PYTHON_PREFERENCE -ErrorAction SilentlyContinue
+                        }
                     }
                     if (-not $?) {
                         Write-Error "uv venv failed"
