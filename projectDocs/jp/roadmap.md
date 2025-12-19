@@ -171,14 +171,16 @@
        * **検証**: クリーン後の再ビルドで x86/x64 の両方で安定して成功することを確認 ✅
     4. **タスク 2.4: CI統合**
        * **現状**: `testAndPublish.yml` で `jpSmokeTests` ジョブが存在し、`allTestsPass` 必須チェックに含まれている（x86 CI統合は完了済み）✅
-       * **x64 CI統合**: `checkJtalkArch` x64 専用の独立した GitHub Actions workflow を作成済み 🔄 無効化中
+       * **x64 CI統合**: `checkJtalkArch` x64 専用の独立した GitHub Actions workflow を作成済み ✅ 完了
          * `.github/workflows/checkJtalkArch-x64.yml` を作成済み
          * x64 のみを実行し、x86 の CI に影響を与えない設計
          * `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` を使用
-         * **現状の問題**: x64 smoke test がまだ安定していないため、自動実行を無効化
-           * 自動実行（`push`/`pull_request` トリガー）はコメントアウト
-           * 手動実行（`workflow_dispatch`）のみ有効化
-           * x64 smoke test の安定化後に自動実行を再有効化予定
+         * **完了内容**: CI環境でのコードページ設定問題を解決し、x64 smoke testがCIで成功するようになった ✅
+           * `pull_request` トリガーを有効化し、PRで自動実行されるように設定
+           * コードページ932をワークフローレベルとスクリプトレベルの両方で設定
+           * ローカル環境とCI環境の両方でx64 smoke testが成功することを確認
+           * `push` トリガーは将来の安定性確認後に有効化予定（現時点ではコメントアウト）
+           * 手動実行（`workflow_dispatch`）も引き続き有効
        * **補足**: x86 実行・`-SkipInstall -SkipOverlay` で安定化済み。x64 は独立 workflow で検証中。
 
   * **実装詳細（タスク 2.2）**:
@@ -225,17 +227,17 @@
       * `.venv-x64` で x86 の `.venv` と分離し、リソース競合なし ✅
       * エラーハンドリング適切（dumpbin 検証と smoke テストを統合）✅
       * ドキュメント整備（`roadmap.md` に調査プロセスと修正内容を記録）✅
-    * **タスク 2.4 進行中**: 🔄 CI統合中（x64 は無効化）
+    * **タスク 2.4 完了**: ✅ CI統合完了
       * x86 CI統合完了: `testAndPublish.yml` で `jpSmokeTests` ジョブが `allTestsPass` 必須チェックに含まれている ✅
-      * x64 CI統合: `.github/workflows/checkJtalkArch-x64.yml` を作成（独立した workflow）✅
+      * x64 CI統合完了: `.github/workflows/checkJtalkArch-x64.yml` を作成（独立した workflow）✅
         * x64 workflow は `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` を使用
         * x86 の CI に影響を与えず、x64 のみを検証可能
-        * **現状**: x64 smoke test がまだ安定していないため、自動実行を無効化中
-          * 自動実行（`push`/`pull_request`）はコメントアウト済み
-          * 手動実行（`workflow_dispatch`）のみ有効
-          * ローカル環境では x64 smoke test が成功するが、CI 環境では `access violation` 後にハングする問題が発生
-          * Windows Error Reporting 無効化とタイムアウト処理を追加済みだが、まだ安定化していない
-          * x64 smoke test の安定化後に自動実行を再有効化予定
+        * **完了内容**:
+          * `pull_request` トリガーを有効化し、PRで自動実行されるように設定 ✅
+          * CI環境でのコードページ設定問題を解決（コードページ932を設定）✅
+          * ローカル環境とCI環境の両方でx64 smoke testが成功することを確認 ✅
+          * `push` トリガーは将来の安定性確認後に有効化予定（現時点ではコメントアウト）
+          * 手動実行（`workflow_dispatch`）も引き続き有効
 
 * [ ] **タスク 2.5: コード品質の改善（x86環境で実施可能）**（優先度：中）
   * **注**: ローカルマトリクス整備の直接前提ではないが、並行して行うと後続の安定化が容易になる。
