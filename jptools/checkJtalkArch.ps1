@@ -230,15 +230,8 @@ exit /b %ERRORLEVEL%
                     if (Test-Path $batchFile) {
                         Remove-Item $batchFile -Force -ErrorAction SilentlyContinue
                     }
-                }
-                $process | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
-                if (-not $process.HasExited) {
-                    Write-Warning "pytest timed out after 120 seconds, forcing termination"
-                    $process | Stop-Process -Force -ErrorAction SilentlyContinue
-                    Write-Error "jp smoke tests timed out"
-                    exit 1
-                }
-                if ($process.ExitCode -ne 0) {
+                    # Check exit code after process completes
+                    if ($process.ExitCode -ne 0) {
                     Write-Error "jp smoke tests failed (exit code: $($process.ExitCode))"
                     exit 1
                 }
