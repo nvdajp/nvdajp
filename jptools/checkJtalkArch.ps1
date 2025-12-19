@@ -232,8 +232,9 @@ exit /b %ERRORLEVEL%
                     }
                     # Check exit code after process completes
                     if ($process.ExitCode -ne 0) {
-                    Write-Error "jp smoke tests failed (exit code: $($process.ExitCode))"
-                    exit 1
+                        Write-Error "jp smoke tests failed (exit code: $($process.ExitCode))"
+                        exit 1
+                    }
                 }
             } else {
                 & pwsh -NoLogo -File "jptools/runJpSmokeTests.ps1" -SkipOverlay
