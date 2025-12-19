@@ -9,6 +9,20 @@ import sys
 import threading
 from ctypes import *
 
+# Try to import Windows API for code page detection
+try:
+    from ctypes import windll
+    _kernel32 = windll.kernel32
+except (ImportError, AttributeError):
+    _kernel32 = None
+
+# Try to import Windows API for code page detection
+try:
+    from ctypes import windll
+    _kernel32 = windll.kernel32
+except (ImportError, AttributeError):
+    _kernel32 = None
+
 try:
     from ._nvdajp_spellchar import convert as convertSpellChar
     from .roma2kana import getKanaFromRoma
@@ -214,7 +228,16 @@ def Mecab_analysis(src, features, logwrite_=None):
         except Exception:
             pass
 
-    _write_debug_log(f"Mecab_analysis: called with src type={type(src)}, len={len(src) if src else 0}")
+    # Log code page information for debugging (Windows only)
+    code_page_info = ""
+    if _kernel32 is not None:
+        try:
+            cp = _kernel32.GetACP()
+            code_page_info = f", code_page={cp}"
+        except Exception:
+            pass
+
+    _write_debug_log(f"Mecab_analysis: called with src type={type(src)}, len={len(src) if src else 0}{code_page_info}")
 
     if not src:
         msg = "src empty"
@@ -225,47 +248,37 @@ def Mecab_analysis(src, features, logwrite_=None):
         return
     # Check if mecab and libmc are initialized (prevents access violation on x64)
     if mecab is None or libmc is None:
-        msg = "mecab or libmc is not initialized"
-        _write_debug_log(msg)
         if logwrite_:
-            logwrite_(msg)
+            logwrite_("mecab or libmc is not initialized")
         features.size = 0
         return
     # Ensure src is bytes (required for mecab_sparse_tonode on x64)
     if not isinstance(src, bytes):
-        msg = f"src is not bytes: {type(src)}"
-        _write_debug_log(msg)
         if logwrite_:
-            logwrite_(msg)
+            logwrite_(f"src is not bytes: {type(src)}")
         features.size = 0
         return
     # Log src type and content for debugging (first 100 bytes)
-    try:
-        src_preview = src[:100] if len(src) > 100 else src
-        null_byte = b'\0'
-        ends_with_null = src.endswith(null_byte)
-        msg = f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}"
-        _write_debug_log(msg)
-        if logwrite_:
-            logwrite_(msg)
-    except Exception as e:
-        _write_debug_log(f"Mecab_analysis: failed to log src preview: {e}")
+    if logwrite_:
+        try:
+            src_preview = src[:100] if len(src) > 100 else src
+            null_byte = b'\0'
+            ends_with_null = src.endswith(null_byte)
+            logwrite_(f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}")
+        except Exception:
+            pass
     # Validate mecab pointer is not NULL (prevents access violation on x64)
     # mecab is already c_void_p type from mecab_new, so check value directly
     if not mecab or (hasattr(mecab, 'value') and mecab.value == 0):
-        msg = "mecab pointer is NULL or invalid"
-        _write_debug_log(msg)
         if logwrite_:
-            logwrite_(msg)
+            logwrite_("mecab pointer is NULL or invalid")
         features.size = 0
         return
     # Additional validation: ensure mecab pointer value is valid (non-zero)
     mecab_value = mecab.value if hasattr(mecab, 'value') else mecab
     if mecab_value == 0:
-        msg = "mecab pointer value is 0 (NULL)"
-        _write_debug_log(msg)
         if logwrite_:
-            logwrite_(msg)
+            logwrite_("mecab pointer value is 0 (NULL)")
         features.size = 0
         return
     # Ensure null-terminated string for mecab_sparse_tonode
@@ -298,29 +311,22 @@ def Mecab_analysis(src, features, logwrite_=None):
         except Exception:
             pass
 
-    # Method 3: Write to debug file (most reliable for crash debugging)
+    # Method 3: Try to write to a debug file (most reliable for crash debugging)
     # This ensures logs are captured even if process crashes immediately
-    _write_debug_log(log_msg)
+    try:
+        debug_log_path = os.path.join(os.path.dirname(__file__), "mecab_debug.log")
+        with open(debug_log_path, "a", encoding="utf-8", errors="replace") as f:
+            f.write(log_msg + "\n")
+            f.flush()
+            os.fsync(f.fileno())  # Force write to disk
+    except Exception:
+        pass
     # Call mecab_sparse_tonode - argtypes are already configured for x64 safety
-    # Explicitly ensure mecab is c_void_p and src is c_char_p for x64 safety
-    # On x64, explicit type conversion ensures correct pointer size (8 bytes) is passed
+    # Pass bytes directly (matches original jtalk.py implementation)
+    # ctypes will automatically convert bytes to c_char_p when argtypes is [c_void_p, c_char_p]
     # Note: access violations may not be caught by Python exception handlers,
     # but logging before the call ensures we capture state even if crash occurs
-    # mecab is already c_void_p from mecab_new, but ensure it's the right type
-    mecab_ptr = mecab if isinstance(mecab, c_void_p) else cast(mecab, c_void_p)
-    # src is bytes, convert to c_char_p explicitly for x64 safety
-    src_ptr = c_char_p(src) if isinstance(src, bytes) else src
-    _write_debug_log(f"Mecab_analysis: mecab_ptr type={type(mecab_ptr)}, src_ptr type={type(src_ptr)}")
-    _write_debug_log(f"Mecab_analysis: mecab_ptr.value={mecab_ptr.value if hasattr(mecab_ptr, 'value') else mecab_ptr}")
-    _write_debug_log(f"Mecab_analysis: src_ptr.value={src_ptr.value if hasattr(src_ptr, 'value') else src_ptr}")
-    _write_debug_log(f"Mecab_analysis: about to call mecab_sparse_tonode...")
-    # Note: access violations may not be caught by Python exception handlers,
-    # but logging before the call ensures we capture state even if crash occurs
-    head = libmc.mecab_sparse_tonode(mecab_ptr, src_ptr)
-    # If we reach here, the call succeeded (no access violation)
-    _write_debug_log(f"Mecab_analysis: mecab_sparse_tonode returned, head={head}")
-    if head is not None and hasattr(head, 'value'):
-        _write_debug_log(f"Mecab_analysis: head.value={head.value}")
+    head = libmc.mecab_sparse_tonode(mecab, src)
     if head is None:
         if logwrite_:
             logwrite_("mecab_sparse_tonode result empty")

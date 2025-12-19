@@ -197,8 +197,12 @@ if ($allOk) {
                 
                 # Run pytest in the x64 venv with timeout to prevent hang on access violation
                 # Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
+                # Set code page to 932 (Japanese Shift-JIS) to match local environment behavior
+                # This ensures consistent behavior for ctypes string handling and MeCab internal processing
                 $env:PYTHONUTF8 = "1"
-                $process = Start-Process -FilePath "$venvX64\Scripts\python.exe" -ArgumentList "-m pytest -q miscDepsJp/jptools/test.py -k `"JpBrailleTests or JtalkTests`"" -PassThru -NoNewWindow -Wait:$false -UseNewEnvironment:$false
+                # Set code page in the process that will run pytest
+                # Note: Start-Process creates a new process, so we need to set code page via cmd /c
+                $process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c chcp 932 >nul 2>&1 && `"$venvX64\Scripts\python.exe`" -m pytest -q miscDepsJp/jptools/test.py -k `"JpBrailleTests or JtalkTests`"" -PassThru -NoNewWindow -Wait:$false -UseNewEnvironment:$false
                 $process | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
                 if (-not $process.HasExited) {
                     Write-Warning "pytest timed out after 120 seconds, forcing termination"
