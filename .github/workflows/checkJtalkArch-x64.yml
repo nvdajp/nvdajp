@@ -79,12 +79,9 @@ jobs:
       run: |
         # Set code page to 932 (Japanese Shift-JIS) to match local environment
         # This ensures consistent behavior for ctypes string handling and MeCab internal processing
-        chcp 932 | Out-Null
-        # scons.bat uses x86 Python from PATH (via uv run)
-        # TARGET_ARCH=x64 controls the DLL build architecture (x64 DLLs are built)
-        # checkJtalkArch.ps1 uses x64 Python for smoke tests (via .venv-x64 with UV_PYTHON_PREFERENCE=only-managed)
-        .\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
-      shell: powershell
+        # Use cmd /c to ensure code page is set in the PowerShell session
+        cmd /c "chcp 932 >nul 2>&1 && powershell.exe -NoProfile -ExecutionPolicy Bypass -Command `".\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests`""
+      shell: cmd
       env:
         TARGET_ARCH: x64
 
