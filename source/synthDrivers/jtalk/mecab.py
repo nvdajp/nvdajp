@@ -276,9 +276,8 @@ def Mecab_analysis(src, features, logwrite_=None):
         features.size = 0
         return
     # Log debug info before calling mecab_sparse_tonode (for troubleshooting)
-    # Force immediate output to stderr to ensure logs are captured even on crash
     # Use multiple output methods for maximum reliability:
-    # 1. sys.stderr (unbuffered, captured by CI)
+    # 1. sys.stderr (unbuffered, captured by CI) - only if NVDA_MECAB_STDERR_DEBUG is set
     # 2. logwrite_ (may be io.StringIO() buffer, can be lost on crash)
     # 3. Try to write to file if possible (most reliable for crash debugging)
     # Note: ctypes automatically null-terminates bytes when converting to c_char_p,
@@ -286,13 +285,28 @@ def Mecab_analysis(src, features, logwrite_=None):
     log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}"
 
     # Method 1: Write to stderr first (unbuffered, captured by CI)
-    try:
-        sys.stderr.write(log_msg + "\n")
-        sys.stderr.flush()
-    except Exception:
-        # stderr writing is best-effort only. Failures must not interfere
-        # with normal Mecab operation, so we intentionally ignore exceptions.
-        pass
+    # Only output to stderr if explicitly enabled via environment variable to avoid
+    # excessive logging during normal operation (e.g., jp smoke tests, production builds)
+    #
+    # When to enable NVDA_MECAB_STDERR_DEBUG=1:
+    # - When debugging MeCab-related crashes that occur before logwrite_ or debug log file
+    #   can be written (e.g., access violations in mecab_sparse_tonode)
+    # - When investigating issues in CI environments where stderr is captured but
+    #   log files may not be accessible
+    # - When reproducing specific crashes in development environments
+    # - NOT needed for normal jp smoke tests (sufficient logging via logwrite_ and
+    #   mecab_debug.log is available)
+    #
+    # Usage example:
+    #   $env:NVDA_MECAB_STDERR_DEBUG="1"; python -m pytest miscDepsJp/jptools/test.py
+    if os.environ.get("NVDA_MECAB_STDERR_DEBUG") == "1":
+        try:
+            sys.stderr.write(log_msg + "\n")
+            sys.stderr.flush()
+        except Exception:
+            # stderr writing is best-effort only. Failures must not interfere
+            # with normal Mecab operation, so we intentionally ignore exceptions.
+            pass
 
     # Method 2: Write to logwrite_ if available (may be io.StringIO() buffer)
     if logwrite_:
