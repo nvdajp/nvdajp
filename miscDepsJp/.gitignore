@@ -7,6 +7,7 @@ source/synthDrivers/jtalk/dic/DIC_VERSION
 source/synthDrivers/jtalk/dic/sys.dic
 source/synthDrivers/jtalk/dic/unk.dic
 source/synthDrivers/jtalk/libopenjtalk.dll
+source/synthDrivers/jtalk/libmecab.dll
 source/synthDrivers/jtalk/jtalkCore.py
 source/synthDrivers/jtalk/mecab.py
 source/synthDrivers/jtalk/text2mecab.py

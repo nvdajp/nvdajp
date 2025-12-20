@@ -6,7 +6,8 @@ call .venv\scripts\activate
 python -m pip install --upgrade pip
 pip install -r requirements-dev.txt
 cd jptools
-call copy_jtalk_core_files.cmd
+python ..\..\jptools\copy_jtalk_core_files.py
+@if not "%ERRORLEVEL%"=="0" goto onerror
 mypy @"../mypy_jptools.txt" > ..\__mypy.txt
 cd ..
 cd source\synthDrivers

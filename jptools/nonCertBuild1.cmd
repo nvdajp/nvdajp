@@ -7,9 +7,9 @@ call jptools\check_vs_version.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 rem Copy JTalk core files only (no build - handled by scons jtalkPrep)
-cd miscDepsJp\jptools
-call copy_jtalk_core_files.cmd
-cd ..\..
+rem Use Python script instead of .cmd script
+uv run python jptools/copy_jtalk_core_files.py
+@if not "%ERRORLEVEL%"=="0" goto onerror
 
 rem Setup overlay (no build - handled by scons miscdepsjp)
 call jptools\setupMiscDepsJp.cmd

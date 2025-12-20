@@ -21,7 +21,7 @@ def overlay_copy(src: Path, dst: Path) -> None:
                 # If file is locked or permission denied, log warning and continue
                 # This can happen when comInterfaces generates files that are still in use
                 print(f"Warning: Could not copy {s} to {d}: {e}")
-                print(f"  Skipping this file (may be locked by another process)")
+                print("  Skipping this file (may be locked by another process)")
                 continue
 
 

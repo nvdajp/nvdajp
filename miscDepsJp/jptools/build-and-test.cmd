@@ -1,4 +1,5 @@
-call copy_jtalk_core_files.cmd
+uv run python ..\..\jptools\copy_jtalk_core_files.py
+@if not "%ERRORLEVEL%"=="0" goto onerror
 
 call ..\include\python-jtalk\vcsetup.cmd
 cd /d %~dp0

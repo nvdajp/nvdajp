@@ -390,18 +390,19 @@ for userGuideFileSub in env.Glob(os.path.join(userDocsDir.path, "*", "userGuide.
 # Build unicode CLDR dictionaries
 env.SConscript("cldrDict_sconscript", exports=["env", "sourceDir"])
 
+# BEGIN JP PATCH (build dependencies)
 # JP-specific helpers (isolated; add opt-in aliases only)
+# Note: register_jp_builders is called after dist is defined (see below)
+# But we need to set up jtalkSync dependency for sourceDir here
 try:
     import jptools.scons_jp as scons_jp
-    # Always register JP builders in this repo; miscDepsJp overlay is required
-    # for a correct build layout regardless of publisher.
-    scons_jp.register_jp_builders(env)
-    # Ensure miscDepsJp overlay runs before building source artifacts so that
+    # Ensure jtalkSync runs before building source artifacts so that
     # "scons source" is self-contained.
-    env.Depends(sourceDir, env.Alias("miscdepsjp"))
+    env.Depends(sourceDir, env.Alias("jtalkSync"))
 except Exception:
     # Never fail the build if JP helpers are unavailable.
     pass
+# END JP PATCH (build dependencies)
 
 
 # A builder to generate an NVDA distribution.
@@ -572,6 +573,21 @@ env.Clean(dist, dist)
 # Clean the intermediate build directory.
 env.Clean([dist], buildDir)
 
+# BEGIN JP PATCH (build dependencies)
+# Register JP builders after dist is defined so jpCertExtras can depend on dist target
+try:
+    import jptools.scons_jp as scons_jp
+    # Always register JP builders in this repo; miscDepsJp overlay is required
+    # for a correct build layout regardless of publisher.
+    # Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds)
+    scons_jp.register_jp_builders(env, dist_target=dist)
+except Exception as e:
+    # Never fail the build if JP helpers are unavailable.
+    # Log the exception for debugging purposes (e.g., during development)
+    import warnings
+    warnings.warn(f"Failed to register JP builders: {e}", UserWarning)
+# END JP PATCH (build dependencies)
+
 launcher = env.Command(
 	outputDir.File("%s.exe" % outFilePrefix),
 	["launcher/nvdaLauncher.nsi", dist],
@@ -718,10 +734,10 @@ potSourceFiles = [
 
 pot = env.Command(outputDir.File("nvda.pot"), potSourceFiles, makePot)
 
-# JP: Ensure overlay exists before generating pot (translation template)
+# JP: Ensure jtalkSync runs before generating pot (translation template)
 try:
 	# Even if the alias is empty in non-JP contexts, this is safe.
-	env.Depends(pot, env.Alias("miscdepsjp"))
+	env.Depends(pot, env.Alias("jtalkSync"))
 except Exception:
 	pass
 

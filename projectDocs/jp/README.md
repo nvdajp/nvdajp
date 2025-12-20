@@ -1,7 +1,5 @@
 # NVDA 日本語版 ドキュメント ハブ（JP Docs Hub）
 
-> **注意**: このドキュメントには、betajp-251206ブランチ（x64実験）からバックポートされた内容が含まれています。このブランチ（betajp-251206v4）は x86 ビルドを維持しているため、x64 専用の記述（Python 3.13 x64 対応など）はこのブランチには当てはまりません。
-
 このフォルダは、日本語版に固有の運用・方針・進行中タスクを集約する着地点です。人間開発者向けの恒常情報は `readme-nvdajp.md` に、本家版の一般開発情報は `projectDocs/dev/createDevEnvironment.md` を参照してください。
 
 ## 目的と役割
@@ -13,7 +11,7 @@
 ## ロードマップ（要約）
 
 * CI/ビルド基盤を整合（Refs: `#539`, Part of `#530`）
-* 注: Python 3.13 x64 対応は betajp-251206ブランチ（x64実験）で実施。このブランチ（betajp-251206v4）は x86 ビルドを維持。
+* Python 3.13 x64 対応は別ブランチ（x64実験系）で管理。現ブランチは x86 を維持。
 
 ## CI/ビルド クイックスタート
 
@@ -59,6 +57,9 @@
 * 本家版のプロダクトビジョン: `projectDocs/product_vision.md`
 * 日本語点字出力テーブル: `projectDocs/jp/braille-ja-jp-comp6.md`
 * 日本語版 CI/ビルド基盤: `projectDocs/jp/ci`
+* **miscDepsJp と JP overlay の現状と方針**: `projectDocs/jp/miscdepsjp-overlay-strategy.md`
+* **コード署名を考慮したビルド依存関係**: `projectDocs/jp/code-signing-dependencies.md`
+* TODO: **署名ビルドの冗長実行とログ運用**: `projectDocs/jp/todo_build_script_redundancy_and_logging.md`
 * エージェント／自動化向けの運用ルール: `AGENTS.md`
 
 ## 用語集
@@ -78,11 +79,13 @@
   * `scons -c`（クリーン）で、オーバレイで `source/` にコピーしたファイルも削除されるよう Clean を配線済み。
   * 元の英語版ファイルへ「戻す」場合は、`git checkout -- source/<path>` など VCS 操作で復元する。
 
+**現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
+
 ### ベンダーツリー（Vendor Tree）
 
 * **定義**: 外部リポジトリから取り込んだコードを保持するディレクトリ。
 * **現在の構成**: `miscDepsJp/include/` 配下に配置（python-jtalk、htsengineapi、libopenjtalk、libkuraji など）。
-* **管理方法**: git subtree merge によりメインリポジトリに統合（PR #492）。サブモジュールではないため、`git submodule update` は不要。
+* **管理方法**: `miscDepsJp` フォルダ全体は PR #492 でメインリポジトリに統合され、`miscDepsJp/include/*` 配下のベンダーツリーは PR #582 で git subtree merge によりメインリポジトリに統合。サブモジュールではないため、`git submodule update` は不要。
 * **更新方法**: 通常のGit操作（`git pull`、`git merge`等）で対応。
 
 ### SCons ターゲット

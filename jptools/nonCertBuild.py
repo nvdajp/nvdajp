@@ -209,9 +209,8 @@ def _prep_miscdepsjp() -> None:
     _ensure_nmake_env()
     _check_vs_version()
 
-    # Copy JTalk core files only (no build - handled by scons jtalkPrep)
-    md_root = Path("miscDepsJp/jptools")
-    run_cmd(["cmd", "/c", "copy_jtalk_core_files.cmd"], cwd=md_root)
+    # JTalk core Python files have been moved to source/synthDrivers/jtalk in Phase 1
+    # No copying needed; files are already in place
 
     # Note: Build steps (all-build.cmd, all-install.cmd, build-and-test.cmd) are
     # now handled by scons jtalkPrep, which is automatically invoked when scons source is run.
@@ -241,14 +240,7 @@ def _prep_miscdepsjp() -> None:
 
     # Overlay policy no longer removes espeak-data. Keep repo content as-is.
 
-    # Run overlay script with CWD=miscDepsJp, script located in repo-root/jptools
-    try:
-        repo_root = Path(__file__).resolve().parents[1]
-        overlay_script = repo_root / "jptools" / "setup_miscdeps_overlay.py"
-        run_cmd([sys.executable, str(overlay_script)], cwd=Path("miscDepsJp"))
-    except SystemExit:
-        # Propagate normal exit
-        pass
+    # Overlay is no longer required after Phase 2 (miscDepsJp/source is empty); skip.
 
 
 def _activation_candidates() -> list[str]:

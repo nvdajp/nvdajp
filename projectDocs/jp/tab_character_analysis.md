@@ -154,3 +154,115 @@ Test 6: fil\t"a",\t'c',       → 期待: fil⡀"a",⡀'c',      → (FAILED)
 1. 全角スペースを明示的に半角スペースに変換
 2. タブ文字で入力を分割し、各セグメントを個別にMeCabで処理
 3. 括弧文字の処理を調査
+
+---
+
+## CI環境でのコードページ設定問題 (2025-12-19調査)
+
+### 問題の概要
+
+GitHub Actions CI環境でx64 smoke testが`access violation`でクラッシュする問題が発生しました。
+
+### 原因
+
+CI環境とローカル環境でコードページが異なっていました：
+- **CI環境**: コードページ1252 (英語ロケール、Windows-1252)
+- **ローカル環境**: コードページ932 (日本語ロケール、Shift-JIS)
+
+MeCabは`CHARSET_SHIFT_JIS`でコンパイルされているため、コードページ932での動作が前提となっています。コードページ1252の環境では、文字列処理やメモリアクセスで不整合が発生し、`access violation`が発生していました。
+
+### 解決策
+
+コードページ932を確実に設定するため、以下の2つのレベルで対策を実装しました：
+
+#### 1. ワークフローレベル (`.github/workflows/checkJtalkArch-x64.yml`)
+
+```yaml
+- name: Build JTalk for x64 and run smoke tests
+  run: |
+    # Set code page to 932 (Japanese Shift-JIS) to match local environment
+    cmd /c "chcp 932 >nul 2>&1 && powershell.exe -NoProfile -ExecutionPolicy Bypass -Command `".\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests`""
+  shell: cmd
+```
+
+`cmd`シェルで`chcp 932`を実行してからPowerShellスクリプトを起動することで、ワークフローレベルでコードページ932を設定します。
+
+#### 2. スクリプトレベル (`jptools/checkJtalkArch.ps1`)
+
+x64 smoke test実行時に、一時バッチファイルを作成し、その中で`chcp 932`を実行してからpytestを実行します：
+
+```powershell
+$batchFile = Join-Path $env:TEMP "run_pytest_x64_$(Get-Date -Format 'yyyyMMddHHmmss').bat"
+$batchContent = @"
+@echo off
+chcp 932 >nul 2>&1
+cd /d "$repoRoot"
+"$venvX64\Scripts\python.exe" -m pytest -q miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
+exit /b %ERRORLEVEL%
+"@
+```
+
+この二重の保護により、CI環境でもコードページ932が確実に設定されます。
+
+### 検証
+
+- `mecab_debug.log`に`code_page=932`が記録されることを確認
+- CI環境でのx64 smoke testが正常に完了することを確認
+- ローカル環境（x86/x64）でも正常に動作することを確認
+
+### 今後の対応
+
+コードページ932でしばらくCIを回し、安定性を確認します。問題が再発しないことを確認できれば、この設定を維持します。
+
+---
+
+## なぜゼロ幅空白（U+200B）が使えていたのか (2025-12-19調査)
+
+### 疑問
+
+MeCabが`CHARSET_SHIFT_JIS`でコンパイルされているのに、なぜゼロ幅空白（U+200B）をTABマーカーとして使えていたのか？
+
+### 重要な事実
+
+MeCab解析結果にゼロ幅空白が含まれている：
+- `translator2.py`の1366行目で`if TAB_CODE in mo.nhyouki:`とチェックしている
+- これは、MeCab解析結果（`mo.nhyouki`）にゼロ幅空白（U+200B）が含まれていることを意味する
+- つまり、MeCabは`CHARSET_SHIFT_JIS`でコンパイルされているにもかかわらず、UTF-8専用文字であるゼロ幅空白を処理できていた
+
+### 処理フローの確認
+
+1. `translator2.py`でタブ文字を`TAB_CODE = chr(0x200B)`に置換
+2. `text2mecab(text)`で処理:
+   - `unicodedata.normalize("NFKC", txt)` - Unicode正規化（U+200Bはそのまま）
+   - `text2mecab_convert(txt)` - 全角変換（U+200Bは変換されない）
+   - `txt.encode("utf-8", "ignore")` - UTF-8にエンコード（`"ignore"`エラーハンドリング）
+3. MeCabにUTF-8バイト列として渡される
+4. MeCab解析結果をPython側でUTF-8としてデコード:
+   - `mecab.py`の338行目: `s.decode(CODE, "ignore")` - CODE = "utf-8"
+   - `translator2.py`の226行目: `s.decode(CODE, "ignore")` - CODE = "utf-8"
+5. ゼロ幅空白が`mo.nhyouki`に含まれる
+
+### 矛盾の発見
+
+- MeCabは`CHARSET_SHIFT_JIS`でコンパイルされているが、実際にはUTF-8バイト列を受け取って処理している
+- Python側では一貫してUTF-8として処理している（`CODE = "utf-8"`）
+- ゼロ幅空白がMeCab解析結果に含まれているという事実は、MeCabがUTF-8バイト列を処理していることを示している
+
+### コードページ932環境での動作
+
+- Python側ではUTF-8として処理され、U+200BはUTF-8バイト列（`\xE2\x80\x8B`）としてMeCabに渡される
+- MeCabは`CHARSET_SHIFT_JIS`でコンパイルされているが、実際にはUTF-8バイト列を受け取って処理している
+- コードページ932の環境では、MeCabの内部処理（文字列処理、メモリアクセス）が何らかの形で動作していた
+- MeCab解析結果をPython側でUTF-8としてデコードすることで、ゼロ幅空白が`mo.nhyouki`に含まれる
+
+### コードページ1252環境での問題
+
+- 同様にUTF-8バイト列として渡されるが、コードページ1252の環境では、MeCabの内部処理（文字列処理、メモリアクセス）で不整合が発生
+- 特に、x64環境ではポインタサイズが8バイトになり、メモリアクセスのパターンが変わるため、コードページの不一致による影響がより顕著に現れる
+- これにより、MeCabの内部処理でメモリアクセス違反が発生し、`access violation`が発生した
+
+### 結論
+
+- MeCabは`CHARSET_SHIFT_JIS`でコンパイルされているが、実際にはUTF-8バイト列を受け取って処理している
+- コードページ932の環境では、この矛盾が何らかの形で処理されていたが、コードページ1252の環境（特にx64）では問題が顕在化した
+- ゼロ幅空白がMeCab解析結果に含まれているという事実は、MeCabがUTF-8バイト列を処理していることを示している

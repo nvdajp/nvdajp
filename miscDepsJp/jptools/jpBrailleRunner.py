@@ -27,18 +27,18 @@ open_file = lambda name, mode: open(name, mode, encoding="utf-8")
 # jpBrailleRunner.py is in miscDepsJp/jptools
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # script_dir -> miscDepsJp/jptools
-# ../.. -> repo root (betajp-251206v4)
+# ../.. -> repo root
 repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
 # Verify repo_root contains miscDepsJp
 if not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
     # Fallback: try going up one more level if current calculation is wrong
     repo_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
-jtalk_dir = os.path.join(repo_root, "miscDepsJp", "source", "synthDrivers", "jtalk")
-# Prefer the miscDepsJp overlay; fail fast if it's missing.
-# Remove any existing occurrence to ensure JP overlay wins for imports
+jtalk_dir = os.path.join(repo_root, "source", "synthDrivers", "jtalk")
+# Use source/synthDrivers/jtalk directly (files moved from miscDepsJp in Phase 1)
+# Remove any existing occurrence to ensure correct import path
 if jtalk_dir in sys.path:
     sys.path.remove(jtalk_dir)
-sys.path.insert(0, jtalk_dir)  # nvdajp: ensure JP overlay wins for imports
+sys.path.insert(0, jtalk_dir)
 import jtalkDir  # type: ignore
 import translator1  # type: ignore
 import translator2  # type: ignore
@@ -61,6 +61,18 @@ output = None
 
 def __print(s=""):
     global output
+    # Also output to console for x64 smoke test debugging
+    # PYTHONUTF8=1 is set in checkJtalkArch.ps1, so print() should handle Unicode correctly
+    try:
+        print(s, flush=True)
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        # Fallback for environments without PYTHONUTF8=1
+        try:
+            sys.stdout.buffer.write((s + "\n").encode('utf-8', errors='replace'))
+            sys.stdout.buffer.flush()
+        except Exception:
+            # If all else fails, silently skip console output
+            pass
     output.write(s + "\n")
 
 
@@ -114,14 +126,14 @@ def pass1():
                     or (len(result) != len(inpos1))
                 ):
                     count += 1
-                    f.write("input: " + t["input"].encode("utf-8") + "\n")
-                    f.write("result: " + result.encode("utf-8") + "\n")
-                    f.write("correct: " + t["output"].encode("utf-8") + "\n")
+                    f.write("input: " + t["input"] + "\n")
+                    f.write("result: " + result + "\n")
+                    f.write("correct: " + t["output"] + "\n")
                     if correct_inpos1:
                         f.write("correct_inpos1: " + correct_inpos1 + "\n")
                     f.write("result_inpos1: " + result_inpos1 + "\n")
                     if "comment" in t:
-                        f.write("comment: " + t["comment"].encode("utf-8") + "\n")
+                        f.write("comment: " + t["comment"] + "\n")
                     f.write("\n")
         print("h1: %d error(s). see %s" % (count, outfile))
     return (count, outfile)
