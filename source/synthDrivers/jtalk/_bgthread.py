@@ -16,58 +16,57 @@ import threading
 import queue as Queue
 
 
-
 bgThread = None
 bgQueue = None
 isSpeaking = False
 
 
 class BgThread(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.setDaemon(True)
+	def __init__(self):
+		threading.Thread.__init__(self)
+		self.setDaemon(True)
 
-    def run(self):
-        global isSpeaking
-        assert bgQueue is not None  # Type narrowing for type checkers
-        while True:
-            func, args, kwargs = bgQueue.get()
-            if not func:
-                break
-            try:
-                func(*args, **kwargs)
-            except Exception:
-                log.error("Error running function from queue", exc_info=True)
-            finally:
-                isSpeaking = False
-                bgQueue.task_done()
+	def run(self):
+		global isSpeaking
+		assert bgQueue is not None  # Type narrowing for type checkers
+		while True:
+			func, args, kwargs = bgQueue.get()
+			if not func:
+				break
+			try:
+				func(*args, **kwargs)
+			except Exception:
+				log.error("Error running function from queue", exc_info=True)
+			finally:
+				isSpeaking = False
+				bgQueue.task_done()
 
 
 def execWhenDone(func, *args, **kwargs):
-    global bgQueue
-    assert bgQueue is not None  # Type narrowing for type checkers
-    # This can't be a kwarg in the function definition because it will consume the first non-keywor dargument which is meant for func.
-    mustBeAsync = kwargs.pop("mustBeAsync", False)
-    if mustBeAsync or bgQueue.unfinished_tasks != 0:
-        # Either this operation must be asynchronous or There is still an operation in progress.
-        # Therefore, run this asynchronously in the background thread.
-        bgQueue.put((func, args, kwargs))
-    else:
-        func(*args, **kwargs)
+	global bgQueue
+	assert bgQueue is not None  # Type narrowing for type checkers
+	# This can't be a kwarg in the function definition because it will consume the first non-keywor dargument which is meant for func.
+	mustBeAsync = kwargs.pop("mustBeAsync", False)
+	if mustBeAsync or bgQueue.unfinished_tasks != 0:
+		# Either this operation must be asynchronous or There is still an operation in progress.
+		# Therefore, run this asynchronously in the background thread.
+		bgQueue.put((func, args, kwargs))
+	else:
+		func(*args, **kwargs)
 
 
 def initialize():
-    global bgThread, bgQueue
-    bgQueue = Queue.Queue()
-    bgThread = BgThread()
-    bgThread.start()
+	global bgThread, bgQueue
+	bgQueue = Queue.Queue()
+	bgThread = BgThread()
+	bgThread.start()
 
 
 def terminate():
-    global bgThread, bgQueue
-    assert bgQueue is not None  # Type narrowing for type checkers
-    assert bgThread is not None  # Type narrowing for type checkers
-    bgQueue.put((None, None, None))
-    bgThread.join()
-    bgThread = None
-    bgQueue = None
+	global bgThread, bgQueue
+	assert bgQueue is not None  # Type narrowing for type checkers
+	assert bgThread is not None  # Type narrowing for type checkers
+	bgQueue.put((None, None, None))
+	bgThread.join()
+	bgThread = None
+	bgQueue = None

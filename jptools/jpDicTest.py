@@ -16,7 +16,7 @@ script_dir = Path(__file__).parent
 sys.path.append(str(script_dir.parent / "source"))
 sys.path.append(str(script_dir.parent / "miscdeps" / "python"))
 
-import languageHandler
+import languageHandler  # noqa: E402
 
 # Initialize globalVars before importing modules that depend on it.
 import globalVars  # noqa: E402
@@ -81,7 +81,9 @@ from jpDicUtils import (  # noqa: E402
 
 languageHandler.setLanguage("ja")
 
-gettext.translation("nvda", localedir=str(script_dir.parent / "source" / "locale"), languages=["ja"]).install()
+gettext.translation(
+	"nvda", localedir=str(script_dir.parent / "source" / "locale"), languages=["ja"]
+).install()
 
 
 class JpUtilsTestCase(unittest.TestCase):

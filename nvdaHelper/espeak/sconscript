@@ -1134,11 +1134,7 @@ for i in phonemeData:
 # Use a stamp file to ensure cleanup happens before Install and dictionary compilation.
 # This prevents file lock conflicts in parallel builds.
 cleanup_stamp = env.File("build/espeak/_cleanup.stamp")
-env.Command(
-	cleanup_stamp,
-	[],
-	env.Action(cleanFiles_preBuildAction, "Cleaning espeak dictsource files")
-)
+env.Command(cleanup_stamp, [], env.Action(cleanFiles_preBuildAction, "Cleaning espeak dictsource files"))
 env.AlwaysBuild(cleanup_stamp)
 # Move any extra dictionaries into dictsource for compilation
 # Ensure Install happens after cleanup to avoid file lock conflicts

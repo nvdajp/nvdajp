@@ -79,6 +79,15 @@ if JT_DIR_str in sys.path:
 sys.path.insert(0, JT_DIR_str)
 import jtalkPrepare  # type: ignore
 from jtalkCore import *  # type: ignore
+from mecab import (  # type: ignore
+    Mecab_initialize,
+    Mecab_analysis,
+    Mecab_print,
+    Mecab_correctFeatures,
+    Mecab_utf8_to_cp932,
+    MecabFeatures,
+)
+from text2mecab import text2mecab  # type: ignore
 
 JT_DLL = (JT_DIR / "libopenjtalk.dll").resolve()
 # Ensure DLL directory is in search path
