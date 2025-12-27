@@ -174,7 +174,7 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
     if not abspath.lower().endswith((".dll", ".exe")):
         print(f"JP certprep skipped non-PE file: {abspath}")
         return 0
-    if not os.path.isfile(abspath):
+    if not Path(abspath).is_file():
         print(f"Warning: file not found for signing, skipping: {abspath}")
         return 0
     # Delegate to upstream signing action
@@ -201,7 +201,7 @@ def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: st
         print("JP certprep skipped: signing not configured (set certFile or apiSigningToken)")
         stamp_path.write_text("skip:no-sign-config", encoding="utf-8")
         return 0
-    if not os.path.isfile(path):
+    if not Path(path).is_file():
         print(f"Warning: file not found for signing, skipping: {path}")
         stamp_path.write_text("skip:not-found", encoding="utf-8")
         return 0
@@ -917,7 +917,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
     # Alias: controllerClient (zip artifact)
     out_dir = str(env.get("outputDir", "output"))
     version = str(env.get("version", "local"))
-    cc_zip = env.File(os.path.join(out_dir, f"nvda_{version}_controllerClientJp.zip"))
+    cc_zip = env.File(str(Path(out_dir) / f"nvda_{version}_controllerClientJp.zip"))
     env.Command(cc_zip, [], _pack_controller_client)
     env.Alias("controllerClient", cc_zip)
 
