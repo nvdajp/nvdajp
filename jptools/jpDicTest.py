@@ -10,7 +10,7 @@
 
 import unittest
 import sys
-import os
+from pathlib import Path
 
 sys.path.append(r"..\source")
 sys.path.append(r"..\miscdeps\python")
@@ -20,7 +20,7 @@ import languageHandler
 # Initialize globalVars before importing modules that depend on it.
 import globalVars  # noqa: E402
 
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+appDir = str(Path(__file__).parent.parent.resolve())
 globalVars.appDir = appDir
 
 import gettext  # noqa: E402
