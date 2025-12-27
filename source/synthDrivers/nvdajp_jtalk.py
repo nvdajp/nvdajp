@@ -21,7 +21,7 @@ try:
         PitchCommand,
         SpeechCommand,
     )
-except:
+except ImportError:
     from speech import (
         IndexCommand,
         CharacterModeCommand,
@@ -37,11 +37,8 @@ from .jtalk._nvdajp_espeak import isJapaneseLang
 
 try:
     from synthDriverHandler import synthIndexReached, synthDoneSpeaking
-except:
+except ImportError:
     synthIndexReached = synthDoneSpeaking = None
-
-unicode = str
-basestring = str
 
 
 class SynthDriver(SynthDriver):
@@ -91,7 +88,7 @@ class SynthDriver(SynthDriver):
         lang = defaultLanguage
         currentLang = lang
         for item in speechSequence:
-            if isinstance(item, basestring):
+            if isinstance(item, str):
                 p = VoiceProperty()
                 p.pitch = min(max(self._pitch + self._pitchOffset, 0), 100)
                 p.inflection = self._inflection
@@ -120,10 +117,7 @@ class SynthDriver(SynthDriver):
                 jtalkDriver.updateIndex(item.index)
                 self.speakingIndex = item.index
             elif isinstance(item, CharacterModeCommand):
-                if item.state:
-                    spellState = True
-                else:
-                    spellState = True
+                spellState = item.state
             elif isinstance(item, LangChangeCommand):
                 lang = (item.lang if item.lang else defaultLanguage).replace("_", "-")
                 if lang[:2] == "ja":
