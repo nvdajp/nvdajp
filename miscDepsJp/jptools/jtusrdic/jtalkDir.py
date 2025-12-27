@@ -6,7 +6,6 @@
 import sys
 from glob import glob
 import tempfile
-import codecs
 from pathlib import Path
 
 jtalk_dir = (Path(__file__).parent / ".." / ".." / ".." / ".." / ".." / "synthDrivers" / "jtalk").resolve()
@@ -32,11 +31,9 @@ def user_dic_srcs():
     user_dics = []
     for u in [Path(d).resolve() for d in glob(str(configDir / "jtusr*.txt"))]:
         d = tempDir / u.name
-        file_reader = codecs.open(str(u), "r", "utf-8-sig")
-        file_writer = codecs.open(str(d), "w", "utf-8")
-        for line in file_reader:
-            file_writer.write(line)
-        file_writer.close()
-        file_reader.close()
+        with open(str(u), "r", encoding="utf-8-sig") as file_reader:
+            with open(str(d), "w", encoding="utf-8") as file_writer:
+                for line in file_reader:
+                    file_writer.write(line)
         user_dics.append(str(d))
     return user_dics

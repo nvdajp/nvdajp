@@ -23,7 +23,6 @@ jtalk_dir_str = str(jtalk_dir)
 if jtalk_dir_str not in sys.path:
     sys.path.insert(0, jtalk_dir_str)
 import jtalkDir
-import codecs
 
 impPath = Path(__file__).resolve().parent
 sys.path.append(str(impPath))
@@ -48,7 +47,7 @@ def editUserDicSrc(self):
             os.startfile(s)
     else:
         fileName = str(Path(jtalkDir.configDir) / "jtusr.txt")
-        with codecs.open(fileName, "w", "utf_8", errors="replace") as f:
+        with open(fileName, "w", encoding="utf-8", errors="replace") as f:
             f.writelines(
                 ["足手纏い,,,,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n"]
             )

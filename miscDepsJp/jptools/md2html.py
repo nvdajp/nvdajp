@@ -4,11 +4,10 @@
 
 import sys
 import markdown
-import codecs
 
 def convert_md_to_html(md_file, html_file):
     """Convert Markdown file to HTML file."""
-    with codecs.open(md_file, 'r', encoding='utf-8') as f:
+    with open(md_file, 'r', encoding='utf-8') as f:
         md_text = f.read()
 
     # Convert Markdown to HTML with TOC extension
@@ -32,7 +31,7 @@ def convert_md_to_html(md_file, html_file):
 </html>
 """
 
-    with codecs.open(html_file, 'w', encoding='utf-8') as f:
+    with open(html_file, 'w', encoding='utf-8') as f:
         f.write(html_doc)
 
 if __name__ == "__main__":
