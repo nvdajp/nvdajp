@@ -6,21 +6,22 @@
 import os
 import sys
 from os import getcwd
+from pathlib import Path
 
 from mecabHarness import tasks
 
 # Use source/synthDrivers/jtalk directly (files moved from miscDepsJp in Phase 1)
-script_dir = os.path.dirname(os.path.abspath(__file__))
+script_dir = Path(__file__).resolve().parent
 # script_dir -> miscDepsJp/jptools
 # ../.. -> repo root
-repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-jt_dir = os.path.join(repo_root, "source", "synthDrivers", "jtalk")
-sys.path.insert(0, jt_dir)
+repo_root = (script_dir / ".." / "..").resolve()
+jt_dir = repo_root / "source" / "synthDrivers" / "jtalk"
+sys.path.insert(0, str(jt_dir))
 import jtalkDir  # type: ignore
 from _nvdajp_unicode import unicode_normalize  # type: ignore
 from mecab import *  # type: ignore
 
-dic = os.path.join(jt_dir, "dic")
+dic = jt_dir / "dic"
 user_dics_org = jtalkDir.user_dics_org
 user_dics = jtalkDir.user_dics
 
@@ -80,10 +81,10 @@ def get_reading(msg):
 def runTasks(enableUserDic=False):
     if enableUserDic:
         print(jt_dir, dic, user_dics)
-        Mecab_initialize(__print, jt_dir, dic, user_dics)
+        Mecab_initialize(__print, str(jt_dir), str(dic), user_dics)
     else:
         print(jt_dir, dic)
-        Mecab_initialize(__print, jt_dir, dic)
+        Mecab_initialize(__print, str(jt_dir), str(dic))
     count = 0
     for i in tasks:
         if isinstance(i, dict):
