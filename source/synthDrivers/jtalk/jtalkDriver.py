@@ -26,15 +26,18 @@ from .jtalkCore import (
     libjt_set_on_done,
     libjt_synthesis,
     libjt_version,
+)
+from .mecab import (
+    mecab,
     Mecab_analysis,
     Mecab_correctFeatures,
     Mecab_initialize,
     MecabFeatures,
     Mecab_print,
+    Mecab_splitFeatures,
     Mecab_utf8_to_cp932,
-    text2mecab,
 )
-from .mecab import mecab, Mecab_splitFeatures
+from .text2mecab import text2mecab
 from . import jtalkPrepare
 from ..jtalk._nvdajp_unicode import unicode_normalize
 from ..jtalk import _bgthread
