@@ -143,7 +143,7 @@ def setSpeaking(b):
 
 
 def _jtalk_speak(msg, index=None, prop=None):
-    global currIndex, buff
+    global currIndex
     global currentEngine
     global lastIndex
     # log.info("index %r msg(%s) start" % (index, msg))
