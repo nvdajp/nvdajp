@@ -408,7 +408,7 @@ def initialize(voice=default_jtalk_voice, onIndexReached=None):
             channels=1,
             samplesPerSec=voice_args["samp_rate"],
             bitsPerSample=16,
-            outputDevice=config.conf["audio"]["outputDevice"],
+            outputDevice=str(config.conf["audio"]["outputDevice"]),
         )
     if not _bgthread.bgThread:
         _bgthread.initialize()
