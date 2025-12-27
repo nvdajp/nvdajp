@@ -193,10 +193,61 @@ nvaccess/beta から以下の新規ファイルが追加されます：
    - `nvda.po` のマージ
    - JP 固有翻訳の維持
 
+## 2025年11月の記録との比較
+
+### 参考になる点
+
+**`projectDocs/jp/merge-plan-beta-2025-11.md` と `projectDocs/jp/merge-conflicts-detailed-2025-11.md` は非常に参考になります**：
+
+1. **重要なファイルの解決方針が詳細に記載されている**
+   - `testAndPublish.yml`（作業段階 3）: 上流ファイルをベースに、JP パッチを最小限に再適用する戦略
+   - `source/braille.py`（作業段階 4.2）: JP 固有の `_nvdajp()` や `rowHeaderText/columnHeaderText` の維持方法
+   - `source/gui/__init__.py`, `source/installer.py`（作業段階 4.3）: JP 固有のアイコンパスとドネーションURLの維持方法
+   - `source/synthDriverHandler.py`（作業段階 4.4）: jtalk の優先順位の維持方法
+   - `nvdaHelper/archBuild_sconscript`（作業段階 2.2）: eSpeak ビルド条件の解決方法
+
+2. **段階的な解決手順が明確**
+   - 作業段階 1-6 に分かれており、依存関係を考慮した順序が明確
+   - 各段階での検証方法も記載されている
+
+3. **コンフリクトの詳細な記録**
+   - `merge-conflicts-detailed-2025-11.md` には、各コンフリクトファイルの具体的な内容が記録されている
+   - 特に `testAndPublish.yml` の22箇所のコンフリクト位置が記録されている
+
+### 違いと注意点
+
+1. **規模の違い**
+   - **2025年11月**: 17ファイルのコンフリクト（通常のマージ）
+   - **2025年12月27日**: 436ファイルのコンフリクト（unrelated histories のマージ）
+   - 今回の方が規模が大きいが、**重要なファイルのコンフリクトパターンは類似している**
+
+2. **Python バージョンの違い**
+   - **2025年11月**: Python 3.13 x64 への移行を前提（PR #573）
+   - **2025年12月27日**: 現在は Python 3.11 x86 を維持（x64 移行は今後の目標）
+   - `.python-versions` の解決方針は、x64 移行のタイミングで適用する必要がある
+
+3. **解決済みの項目**
+   - PR #573 で多くの作業が完了している（作業段階 1-5）
+   - ただし、今回の unrelated histories マージでは、これらの解決済み項目も再度確認が必要
+
+### 推奨される活用方法
+
+1. **`merge-plan-beta-2025-11.md` を主要な参照として使用**
+   - 各作業段階の解決方針を参照
+   - 特に作業段階 3（CI/ワークフロー）と作業段階 4（ソースコード）は重要
+
+2. **`merge-conflicts-detailed-2025-11.md` で具体的なコンフリクト内容を確認**
+   - 重要なファイル（`testAndPublish.yml`, `source/braille.py` など）のコンフリクトパターンを参照
+   - ただし、行番号は変わっている可能性があるため、内容のパターンを参考にする
+
+3. **段階的な解決手順に従う**
+   - 小さなPR単位で進める
+   - 各段階でテスト通過を確認
+   - 品質保証原則に従う
+
 ## 参照
 
-- 詳細なマージ計画: `projectDocs/jp/merge-plan-beta-2025-11.md`
-- コンフリクト記録（2025-11）: `projectDocs/jp/merge-conflicts-detailed-2025-11.md`
+- 詳細なマージ計画: `projectDocs/jp/merge-plan-beta-2025-11.md`（**主要な参照**）
+- コンフリクト記録（2025-11）: `projectDocs/jp/merge-conflicts-detailed-2025-11.md`（**具体的なコンフリクト内容の参考**）
 - 問題点まとめ: `projectDocs/jp/merge-issues-beta-2025-11.md`
 - ロードマップ: `projectDocs/jp/roadmap.md`
-
