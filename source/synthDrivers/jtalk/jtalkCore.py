@@ -2,12 +2,64 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2013-2019 Takuya Nishimoto
 
+import os
 from pathlib import Path
+from ctypes import (
+    POINTER,
+    Structure,
+    byref,
+    cast,
+    c_char,
+    c_char_p,
+    c_double,
+    c_int,
+    c_short,
+    c_size_t,
+    c_ubyte,
+    c_ulonglong,
+    c_void_p,
+    cdll,
+    create_string_buffer,
+    sizeof,
+    string_at,
+    windll,
+    CDLL,
+)
 
+# Import mecab-specific types and functions
 try:
-    from .mecab import *
+    from .mecab import (
+        FEATURE_ptr_array_ptr,
+        Mecab_initialize,
+        Mecab_analysis,
+        Mecab_print,
+        Mecab_correctFeatures,
+        Mecab_utf8_to_cp932,
+        MecabFeatures,
+        NonblockingMecabFeatures,
+    )
+    from .text2mecab import text2mecab
 except (ImportError, ValueError):
-    from mecab import *
+    from mecab import (  # type: ignore
+        FEATURE_ptr_array_ptr,
+        Mecab_initialize,
+        Mecab_analysis,
+        Mecab_print,
+        Mecab_correctFeatures,
+        Mecab_utf8_to_cp932,
+        MecabFeatures,
+        NonblockingMecabFeatures,
+    )
+    try:
+        from text2mecab import text2mecab  # type: ignore
+    except ImportError:
+        from .text2mecab import text2mecab  # type: ignore
+
+# Define type aliases (matching mecab.py definitions)
+c_double_p = POINTER(c_double)
+c_double_p_p = POINTER(c_double_p)
+c_short_p = POINTER(c_short)
+c_char_p_p = POINTER(c_char_p)
 
 ############################################
 
