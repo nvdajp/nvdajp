@@ -12,8 +12,6 @@ except:
     from speech import CharacterModeCommand
 
 
-basestring = str
-
 _logwrite = log.debug
 
 
@@ -219,7 +217,7 @@ def replaceJapaneseFromSpeechSequence(speechSequence):
     charmode = False
     for item in speechSequence:
         disableCharMode = False
-        if isinstance(item, basestring):
+        if isinstance(item, str):
             item = unicode_normalize(item)
             if isJapaneseLang(item):
                 item = replaceJapanese(item)
