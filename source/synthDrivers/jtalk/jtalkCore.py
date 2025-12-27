@@ -4,6 +4,7 @@
 
 import os
 from pathlib import Path
+from typing import Callable, Optional
 from ctypes import (
     POINTER,
     Structure,
@@ -308,10 +309,10 @@ FILENAME = c_char * FNLEN
 FILENAME_ptr = POINTER(FILENAME)
 FILENAME_ptr_ptr = POINTER(FILENAME_ptr)
 
-libjt = None
-njd = NJD()
-jpcommon = JPCommon()
-engine = HTS_Engine()
+libjt: Optional[CDLL] = None
+njd: NJD = NJD()
+jpcommon: JPCommon = JPCommon()
+engine: HTS_Engine = HTS_Engine()
 
 
 def libjt_version():
@@ -500,10 +501,10 @@ def libjt_clear():
     libjt.HTS_Engine_clear(engine)
 
 
-libjt_on_done = None
+libjt_on_done: Optional[Callable[[], None]] = None
 
 
-def libjt_set_on_done(func):
+def libjt_set_on_done(func: Callable[[], None]) -> None:
     global libjt_on_done
     libjt_on_done = func
 
