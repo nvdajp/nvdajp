@@ -338,7 +338,7 @@ def libjt_initialize(JT_DLL):
         # Add DLL directory to search path for dependencies
         if hasattr(os, "add_dll_directory"):
             try:
-                os.add_dll_directory(dll_dir)
+                os.add_dll_directory(str(dll_dir))
             except OSError:
                 pass  # Ignore if already added or fails
 
@@ -358,7 +358,7 @@ def libjt_initialize(JT_DLL):
         except (ImportError, AttributeError, OSError):
             # Fallback to standard LoadLibrary if LoadLibraryExW fails
             from ctypes import cdll
-            libjt = cdll.LoadLibrary(dll_path)
+            libjt = cdll.LoadLibrary(str(dll_path))
     # At this point, libjt is guaranteed to be initialized (not None)
     assert libjt is not None  # Type narrowing for type checkers
     libjt.jt_version.restype = c_char_p
