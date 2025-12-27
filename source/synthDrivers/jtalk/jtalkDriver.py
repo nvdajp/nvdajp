@@ -150,10 +150,12 @@ def _jtalk_speak(msg, index=None, prop=None):
     global currentEngine
     global lastIndex
     global voice_args
+    global player
     # log.info("index %r msg(%s) start" % (index, msg))
     if prop is None:
         return
     assert voice_args is not None  # Type narrowing for type checkers
+    assert player is not None  # Type narrowing for type checkers
     currIndex = index
     if prop.characterMode:
         fperiod_current = voice_args["fperiod"]
@@ -231,6 +233,8 @@ espeakMark: int = 10000
 
 def _espeak_speak(msg, lang, index=None, prop=None):
     global currentEngine, lastIndex, espeakMark
+    assert _espeak is not None  # Type narrowing for type checkers
+    assert lastIndex is not None  # Type narrowing for type checkers
     currentEngine = 1
     msg = str(msg)
     msg.translate({ord("\01"): None, ord("<"): "&lt;", ord(">"): "&gt;"})
@@ -285,6 +289,7 @@ def _processIndexReached():
 def _updateSpeakIndex(index):
     global currIndex
     global lastIndex
+    assert indexReachedFunc is not None  # Type narrowing for type checkers
     lastIndex = currIndex = index
     # log.info("lastIndex %r" % lastIndex)
     _processIndexReached()
