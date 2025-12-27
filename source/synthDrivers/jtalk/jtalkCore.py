@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2013-2019 Takuya Nishimoto
 
-import os
+from pathlib import Path
 
 try:
     from .mecab import *
@@ -273,13 +273,13 @@ def libjt_initialize(JT_DLL):
 
     if libjt is None:
         # Use absolute path and add DLL directory to search path
-        dll_path = os.path.abspath(JT_DLL)
-        dll_dir = os.path.dirname(dll_path)
+        dll_path = Path(JT_DLL).resolve()
+        dll_dir = dll_path.parent
 
         # Ensure DLL directory exists
-        if not os.path.isdir(dll_dir):
+        if not dll_dir.is_dir():
             raise OSError(f"DLL directory does not exist: {dll_dir}")
-        if not os.path.exists(dll_path):
+        if not dll_path.exists():
             raise OSError(f"DLL file does not exist: {dll_path}")
 
         # Add DLL directory to search path for dependencies

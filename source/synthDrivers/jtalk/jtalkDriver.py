@@ -11,10 +11,10 @@ import time
 import queue as Queue
 
 
-import os
 import baseObject
 import copy
 import nvwave
+from pathlib import Path
 
 _espeak = None  # from .. import _espeak
 from .jtalkCore import *
@@ -40,7 +40,7 @@ _jtalk_voices = [
         "lf0_base": 5.0,
         "pitch_bias": 0,
         "speaker_attenuation": 1.0,
-        "htsvoice": os.path.join(jtalk_dir, "m001", "m001.htsvoice"),
+        "htsvoice": str(jtalk_dir / "m001" / "m001.htsvoice"),
         "alpha": 0.55,
         "beta": 0.00,
         "espeak_variant": "max",
@@ -55,7 +55,7 @@ _jtalk_voices = [
         "pitch_bias": -25,
         "inflection_bias": -10,
         "speaker_attenuation": 0.8,
-        "htsvoice": os.path.join(jtalk_dir, "mei", "mei_happy.htsvoice"),
+        "htsvoice": str(jtalk_dir / "mei" / "mei_happy.htsvoice"),
         "alpha": 0.60,  # 0.55,
         "beta": 0.00,
         "espeak_variant": "f1",
@@ -69,7 +69,7 @@ _jtalk_voices = [
         "lf0_base": 5.0,
         "pitch_bias": 0,
         "speaker_attenuation": 1.0,
-        "htsvoice": os.path.join(jtalk_dir, "lite", "voice.htsvoice"),
+        "htsvoice": str(jtalk_dir / "lite" / "voice.htsvoice"),
         "alpha": 0.42,
         "beta": 0.00,
         "espeak_variant": "max",
@@ -85,7 +85,7 @@ _jtalk_voices = [
         "pitch_bias": 0,
         "inflection_bias": 0,
         "speaker_attenuation": 0.8,
-        "htsvoice": os.path.join(jtalk_dir, "tohokuf01", "tohoku-f01-neutral.htsvoice"),
+        "htsvoice": str(jtalk_dir / "tohokuf01" / "tohoku-f01-neutral.htsvoice"),
         "alpha": 0.54,
         "beta": 0.00,
         "espeak_variant": "f1",
@@ -384,13 +384,13 @@ def initialize(voice=default_jtalk_voice, onIndexReached=None):
         Mecab_initialize(lw, jtalk_dir, dic_dir, user_dics)
     jtalkPrepare.setup()
 
-    jt_dll = os.path.join(jtalk_dir, "libopenjtalk.dll")
+    jt_dll = str(jtalk_dir / "libopenjtalk.dll")
     log.debug("jt_dll %s" % jt_dll)
     libjt_initialize(jt_dll)
     libjt_set_on_done(onJtalkDone)
     log.debug(libjt_version())
 
-    if os.path.isfile(voice_args["htsvoice"]):
+    if Path(voice_args["htsvoice"]).is_file():
         libjt_load(voice_args["htsvoice"])
         # log.info("loaded " + voice_args['htsvoice'])
     else:
