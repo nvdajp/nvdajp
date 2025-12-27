@@ -409,12 +409,12 @@ def libjt_initialize(JT_DLL):
     # MSD threshold
     libjt.HTS_Engine_set_msd_threshold.argtypes = [HTS_Engine_ptr, c_size_t, c_double]
     libjt.HTS_Engine_get_msd_threshold.argtypes = [HTS_Engine_ptr, c_size_t]
-    libjt.HTS_Engine_get_msd_threshold.restypes = c_double
+    libjt.HTS_Engine_get_msd_threshold.restype = c_double
 
     # GV weight
     libjt.HTS_Engine_set_gv_weight.argtypes = [HTS_Engine_ptr, c_size_t, c_double]
     libjt.HTS_Engine_get_gv_weight.argtypes = [HTS_Engine_ptr, c_size_t]
-    libjt.HTS_Engine_get_gv_weight.restypes = c_double
+    libjt.HTS_Engine_get_gv_weight.restype = c_double
 
     # alpha
     libjt.HTS_Engine_set_alpha.argtypes = [HTS_Engine_ptr, c_double]
