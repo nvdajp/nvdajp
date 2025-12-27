@@ -314,7 +314,7 @@ def make_doc():
             if "mode" in t:
                 __writeln(f, "- モード: " + t["mode"])
             if "comment" in t:
-                if type(t["comment"]) == str:
+                if isinstance(t["comment"], str):
                     __writeln(f, "- コメント: " + t["comment"])
                 else:
                     __writeln(f, "- コメント: ")
