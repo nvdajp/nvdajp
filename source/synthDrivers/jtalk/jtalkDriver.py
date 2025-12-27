@@ -333,7 +333,7 @@ def updateSpeakIndexWhenDone(index):
 
 
 def stop():
-    global currentEngine, indexCommands
+    global currentEngine, indexCommands, lastIndex
     if indexReachedFunc:
         for item in indexCommands:
             indexReachedFunc(item)
