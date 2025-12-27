@@ -17,7 +17,7 @@ from pathlib import Path
 
 try:
     import pyaudio
-except:
+except Exception:
     pyaudio = None  # type: ignore
 # import cProfile
 # import pstats

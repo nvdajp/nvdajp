@@ -35,7 +35,7 @@ class BgThread(threading.Thread):
                 break
             try:
                 func(*args, **kwargs)
-            except:
+            except Exception:
                 log.error("Error running function from queue", exc_info=True)
             finally:
                 isSpeaking = False

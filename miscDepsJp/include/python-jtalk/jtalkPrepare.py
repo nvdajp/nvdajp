@@ -23,7 +23,7 @@ def convert(msg):
     for p in predic:
         try:
             msg = re.sub(p[0], p[1], msg)
-        except:
+        except Exception:
             pass
     msg = msg.lower()
     return msg

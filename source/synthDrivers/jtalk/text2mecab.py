@@ -118,7 +118,7 @@ def text2mecab_convert(s):
     for p in predic:
         try:
             s = re.sub(p[0], p[1], s)
-        except:
+        except Exception:
             pass
     return s
 

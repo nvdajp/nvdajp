@@ -127,6 +127,6 @@ def convert(msg):
     for p in _dic:
         try:
             msg = re.sub(p[0], p[1], msg)
-        except:
+        except Exception:
             pass
     return msg

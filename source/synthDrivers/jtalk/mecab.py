@@ -132,7 +132,7 @@ class NonblockingMecabFeatures(object):
         for i in range(0, FECOUNT):
             try:
                 mc_free(self.feature[i])
-            except:
+            except Exception:
                 pass
 
 
@@ -175,7 +175,7 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
             # check utf-8 dictionary
             if CODE not in s:
                 raise RuntimeError("utf-8 dictionary for mecab required.")
-        except:
+        except Exception:
             pass
         mecabrc = os.path.join(libmecab_dir, "mecabrc")
         argc, args = 5, (c_char_p * 5)(

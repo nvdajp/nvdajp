@@ -25,7 +25,7 @@ try:
     from logHandler import log  # type: ignore
 
     _logwrite = log.debug
-except:
+except Exception:
 
     def __print(s):
         print(s)

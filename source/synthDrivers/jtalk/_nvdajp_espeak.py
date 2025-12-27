@@ -8,7 +8,7 @@ from ._nvdajp_unicode import unicode_normalize
 
 try:
     from speech.commands import CharacterModeCommand
-except:
+except Exception:
     from speech import CharacterModeCommand
 
 
@@ -206,7 +206,7 @@ def replaceJapanese(msg):
     for p in kanadic:
         try:
             msg = re.sub(p[0], p[1], msg)
-        except:
+        except Exception:
             pass
     return msg
 

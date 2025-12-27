@@ -28,7 +28,7 @@ try:
     )
     if os.path.isdir(d):
         jtalk_dir = d
-except:
+except Exception:
     pass
 
 dic_dir = os.path.join(jtalk_dir, "dic")

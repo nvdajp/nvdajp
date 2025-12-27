@@ -33,7 +33,7 @@ try:
     import globalVars
 
     configDir = os.path.abspath(globalVars.appArgs.configPath)
-except:
+except Exception:
     pass
 
 tempDir = tempfile.mkdtemp()
