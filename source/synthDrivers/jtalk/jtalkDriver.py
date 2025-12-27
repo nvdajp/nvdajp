@@ -339,6 +339,9 @@ def updateSpeakIndexWhenDone(index):
 
 def stop():
     global currentEngine, indexCommands, lastIndex
+    assert _espeak is not None  # Type narrowing for type checkers
+    assert _bgthread.bgQueue is not None  # Type narrowing for type checkers
+    assert player is not None  # Type narrowing for type checkers
     if indexReachedFunc:
         for item in indexCommands:
             indexReachedFunc(item)
@@ -375,6 +378,8 @@ def stop():
 
 
 def pause(switch):
+    assert _espeak is not None  # Type narrowing for type checkers
+    assert player is not None  # Type narrowing for type checkers
     if currentEngine == 1:
         _espeak.pause(switch)
     elif currentEngine == 2:
@@ -387,6 +392,7 @@ def initialize(voice=default_jtalk_voice, onIndexReached=None):
     global indexReachedFunc
     indexReachedFunc = onIndexReached
     voice_args = voice
+    assert voice_args is not None  # Type narrowing for type checkers
     speaker_attenuation = voice_args["speaker_attenuation"]
     if _espeak:
         if not _espeak.espeakDLL:
