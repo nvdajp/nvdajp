@@ -12,8 +12,9 @@ import unittest
 import sys
 from pathlib import Path
 
-sys.path.append(r"..\source")
-sys.path.append(r"..\miscdeps\python")
+script_dir = Path(__file__).parent
+sys.path.append(str(script_dir.parent / "source"))
+sys.path.append(str(script_dir.parent / "miscdeps" / "python"))
 
 import languageHandler
 
@@ -80,7 +81,7 @@ from jpDicUtils import (  # noqa: E402
 
 languageHandler.setLanguage("ja")
 
-gettext.translation("nvda", localedir=r"..\source\locale", languages=["ja"]).install()
+gettext.translation("nvda", localedir=str(script_dir.parent / "source" / "locale"), languages=["ja"]).install()
 
 
 class JpUtilsTestCase(unittest.TestCase):
