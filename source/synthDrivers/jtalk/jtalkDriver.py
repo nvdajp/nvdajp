@@ -6,7 +6,7 @@
 
 from logHandler import log
 import time
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, cast
 
 import queue as Queue
 
@@ -404,11 +404,12 @@ def initialize(voice=default_jtalk_voice, onIndexReached=None):
         _espeak.setVoiceByLanguage("en")
         _espeak.setVoiceAndVariant(variant=voice["espeak_variant"])
     if not player:
+        audio_config = cast(dict[str, Any], config.conf["audio"])
         player = nvwave.WavePlayer(
             channels=1,
             samplesPerSec=voice_args["samp_rate"],
             bitsPerSample=16,
-            outputDevice=str(config.conf["audio"]["outputDevice"]),
+            outputDevice=str(audio_config["outputDevice"]),
         )
     if not _bgthread.bgThread:
         _bgthread.initialize()
