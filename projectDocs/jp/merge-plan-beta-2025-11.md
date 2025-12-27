@@ -19,33 +19,37 @@
 * ✅ **完了**: JTalk x64 ビルド対応
 * ✅ **完了**: CI テスト多数成功（Build, Launcher, Symbols, 各種 System Tests）
 
-### 現在の課題（PR #573）
+### 現在の課題（PR #573 時点 → 2025-12更新）
 
-#### ❌ 失敗しているテスト（3種類）
+#### ✅ 解決済み（PR #601 以降）
 
-1. **Unit Tests - JP Braille テスト**
+1. **Unit Tests - JP Braille テスト** ✅ 解決済み
    * 失敗箇所: `miscDepsJp/jptools/test.py::JpBrailleTests::test_pass2`
-   * エラー: `AssertionError: 1 != 0`
-   * 原因: `jpBrailleRunner.pass2()` が期待値 0 でなく 1 を返している
-   * 影響: 日本語点字変換の第2パス処理で何らかのエラー発生
+   * エラー: `AssertionError: 1 != 0`（PR #573 時点）
+   * 解決: PR #601 で JP smoke tests の CI 統合が完了し、`jpSmokeTests` ジョブが `allTestsPass` 必須チェックに含まれるようになった
+   * 現状: CI で正常に実行され、テストが通過していることを確認済み
 
-2. **System Tests - Chrome (windows-2022 & windows-2025)**
+#### ❌ 残っている課題（優先度：中）
+
+1. **System Tests - Chrome (windows-2022 & windows-2025)**
    * 失敗箇所: `tests\system\robot\chromeTests.py`
    * エラー: `Speech did not finish before timeout` (10件)
    * 影響: Chrome ブラウザでのスピーチ出力がタイムアウト
+   * 注: 致命的ではない。マージ作業中に対応可能
 
-3. **System Tests - Symbols (windows-2025)**
+2. **System Tests - Symbols (windows-2025)**
    * 失敗箇所: `tests\system\robot\symbolPronunciationTests.py`
    * エラー: `Speech did not finish before timeout` (4件)
    * 影響: 記号読み上げテストでスピーチ出力がタイムアウト
+   * 注: 致命的ではない。マージ作業中に対応可能
 
 ### 次のステップ
 
-**優先度1（高）**: JP Braille テスト修正
+**優先度1（高）**: nvaccess/beta のマージ準備 ✅ 完了
 
-* `jpBrailleRunner.pass2()` の問題特定とデバッグ
-* ローカル環境での再現テスト
-* MeCab 初期化や Python 3.13 x64 互換性の確認
+* ✅ JP Braille テスト修正（PR #601 で解決）
+* ✅ ローカル環境での開発環境整備（`roadmap.md` 参照）
+* ✅ CI での jpSmokeTests 実行（`testAndPublish.yml` に統合済み）
 
 **優先度2（中）**: System Tests タイムアウト調査
 
@@ -172,8 +176,8 @@
 * Create symbols - 成功
 * Check types with Pyright - 成功
 * 多数の System Tests - 成功
-* ❌ JP Braille テスト - 失敗（`test_pass2`）
-* ❌ Chrome/Symbols System Tests - タイムアウト
+* ✅ JP Braille テスト - 成功（PR #601 で解決済み）
+* ❌ Chrome/Symbols System Tests - タイムアウト（優先度：中、致命的ではない）
 
 ## 作業段階 4: ソースコード（機能的なコンフリクト）
 
