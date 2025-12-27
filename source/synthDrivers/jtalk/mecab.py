@@ -638,7 +638,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
 					h=hyoki, h1=hin1, h2=hin2, y=yomi, p=pron, m=mora
 				)
 				Mecab_setFeature(mf, pos - 1, feature, CODE_=CODE_)
-			elif ar3 and len(ar3) > 10 and ar3[1] != "記号":
+			elif ar3 and ar2 and len(ar3) > 10 and ar3[1] != "記号":
 				hyoki = ar3[0] + ar2[0] + "ー"
 				hin1 = ar3[1]
 				hin2 = ar3[2]
