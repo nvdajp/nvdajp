@@ -7,16 +7,33 @@
 
 import copy
 import re
+from ctypes import string_at
 
 
 try:
     from ._nvdajp_unicode import unicode_normalize
-    from .mecab import *
+    from .mecab import (
+        CODE,
+        MecabFeatures,
+        Mecab_analysis,
+        Mecab_correctFeatures,
+        Mecab_initialize,
+        Mecab_print,
+    )
+    from .text2mecab import text2mecab
     from . import translator1
     from .jtalkDir import jtalk_dir, dic_dir, user_dics
 except (ImportError, ValueError):
     from _nvdajp_unicode import unicode_normalize  # type: ignore
-    from mecab import *  # type: ignore
+    from mecab import (  # type: ignore
+        CODE,
+        MecabFeatures,
+        Mecab_analysis,
+        Mecab_correctFeatures,
+        Mecab_initialize,
+        Mecab_print,
+    )
+    from text2mecab import text2mecab  # type: ignore
     import translator1  # type: ignore
     from jtalkDir import jtalk_dir, dic_dir, user_dics  # type: ignore
 
