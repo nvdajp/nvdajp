@@ -3,32 +3,28 @@
 # for python-jtalk
 
 import re
-
+from typing import Any, Optional
 
 re_ascii = re.ASCII
 
+predic: Optional[list[list[Any]]] = None
 
-predic = None
 
-
-def setup():
+def setup() -> None:
     global predic
     if predic is None:
         predic = load()
 
 
-def convert(msg):
+def convert(msg: str) -> str:
     setup()
-    for p in predic:
-        try:
-            msg = re.sub(p[0], p[1], msg)
-        except Exception:
-            pass
-    msg = msg.lower()
-    return msg
+    assert predic is not None  # Type narrowing for type checkers
+    for pattern, replacement in predic:
+        msg = pattern.sub(replacement, msg)
+    return msg.lower()
 
 
-def load():
+def load() -> list[list[Any]]:
     return [
         [re.compile("^ー$"), "チョーオン"],
         [re.compile("^ン$"), "ウン"],
