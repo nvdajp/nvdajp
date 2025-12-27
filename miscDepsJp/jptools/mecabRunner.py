@@ -3,9 +3,7 @@
 # Japanese text processor test module
 # by Takuya Nishimoto
 
-import os
 import sys
-from os import getcwd
 from pathlib import Path
 
 from mecabHarness import tasks

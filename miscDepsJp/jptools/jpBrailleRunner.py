@@ -20,8 +20,6 @@ from nabccHarness import tests as nabcc_tests
 
 tests.extend(nabcc_tests)
 
-from os import getcwd
-
 open_file = lambda name, mode: open(name, mode, encoding="utf-8")
 
 # Use __file__ to get the script's directory, which is more reliable than getcwd()
