@@ -436,6 +436,7 @@ def terminate():
     global player
     stop()
     _bgthread.terminate()
+    assert player is not None  # Type narrowing for type checkers
     player.close()
     player = None
     if _espeak:
