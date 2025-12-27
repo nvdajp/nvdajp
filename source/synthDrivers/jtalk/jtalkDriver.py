@@ -17,7 +17,25 @@ import nvwave
 from pathlib import Path
 
 _espeak = None  # from .. import _espeak
-from .jtalkCore import *
+from .jtalkCore import (
+    libjt_initialize,
+    libjt_load,
+    libjt_refresh,
+    libjt_set_alpha,
+    libjt_set_beta,
+    libjt_set_on_done,
+    libjt_synthesis,
+    libjt_version,
+    mecab,
+    Mecab_analysis,
+    Mecab_correctFeatures,
+    Mecab_initialize,
+    MecabFeatures,
+    Mecab_print,
+    Mecab_splitFeatures,
+    Mecab_utf8_to_cp932,
+    text2mecab,
+)
 from . import jtalkPrepare
 from ..jtalk._nvdajp_unicode import unicode_normalize
 from ..jtalk import _bgthread
