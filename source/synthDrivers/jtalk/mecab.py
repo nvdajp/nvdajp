@@ -208,8 +208,9 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
         except Exception:
             pass
         mecabrc = str(Path(libmecab_dir) / "mecabrc")
+        dic_str = str(dic)
         argc, args = 5, (c_char_p * 5)(
-            b"mecab", b"-d", dic.encode("utf-8"), b"-r", mecabrc.encode("utf-8")
+            b"mecab", b"-d", dic_str.encode("utf-8"), b"-r", mecabrc.encode("utf-8")
         )
         if user_dics:
             # ignore item which contains comma
@@ -219,7 +220,7 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
             argc, args = 7, (c_char_p * 7)(
                 b"mecab",
                 b"-d",
-                dic.encode("utf-8"),
+                dic_str.encode("utf-8"),
                 b"-r",
                 mecabrc.encode("utf-8"),
                 b"-u",

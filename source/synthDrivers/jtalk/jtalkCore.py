@@ -298,7 +298,7 @@ def libjt_initialize(JT_DLL):
             LoadLibraryExW.argtypes = [LPCWSTR, HANDLE, DWORD]
             LoadLibraryExW.restype = HANDLE
 
-            h = LoadLibraryExW(dll_path, None, LOAD_WITH_ALTERED_SEARCH_PATH)
+            h = LoadLibraryExW(str(dll_path), None, LOAD_WITH_ALTERED_SEARCH_PATH)
             if not h:
                 raise OSError(f"LoadLibraryExW failed for {dll_path}")
             libjt = CDLL("libopenjtalk", handle=h)
