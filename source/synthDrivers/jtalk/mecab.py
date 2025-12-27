@@ -27,7 +27,6 @@ from ctypes import (
     cdll,
     create_string_buffer,
     memmove,
-    sizeof,
     string_at,
     windll,
 )
@@ -178,6 +177,8 @@ class MecabFeatures(NonblockingMecabFeatures):
 
 
 def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None, user_dics=None):
+    if libmecab_dir is None or dic is None:
+        raise ValueError("libmecab_dir and dic must be provided")
     mecab_dll = str(Path(libmecab_dir) / "libmecab.dll")
     global libmc
     if libmc is None:
@@ -192,6 +193,8 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
         libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]
         libmc.mecab_new.argtypes = [c_int, c_char_p_p]
         libmc.mecab_new.restype = c_void_p
+    # At this point, libmc is guaranteed to be initialized (not None)
+    assert libmc is not None  # Type narrowing for type checkers
     global mecab
     if mecab is None:
         if logwrite_:
@@ -201,7 +204,8 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
             f = open(dic_version_path, encoding="utf-8")
             s = f.read().strip()
             f.close()
-            logwrite_("mecab:" + libmc.mecab_version() + " " + s)
+            if logwrite_:
+                logwrite_("mecab:" + libmc.mecab_version() + " " + s)
             # check utf-8 dictionary
             if CODE not in s:
                 raise RuntimeError("utf-8 dictionary for mecab required.")
@@ -645,7 +649,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
             # https://github.com/nvdajp/nvdajpmiscdep/issues/42
             # print ((unicode(ar3[0]) if ar3 else '*') + '/' + (unicode(ar2[0]) if ar2 else '*') + '/' + (unicode(ar[0]) if ar else '*')).encode('utf-8')
             # pattern 5
-            if ar3 and ar2[0] in ("'", "’"):
+            if ar3 and ar2 and ar2[0] in ("'", "’"):
                 # PATTERN 5 "author's"
                 # before:
                 # 0 ａｕｔｈｏｒ,名詞,一般,*,*,*,*,ａｕｔｈｏｒ,オーサー,オーサー,1/4,C0
@@ -660,7 +664,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
                 Mecab_setFeature(mf, pos - 1, ",,,*,*,*,*", CODE_=CODE_)
                 f = _makeFeatureFromLatinWordAndPostfix(ar[0], ar3, symbol="'")
                 Mecab_setFeature(mf, pos, f, CODE_=CODE_)
-            elif len(ar2) > 10 and RE_FULLSHAPE_ALPHA.match(ar2[0]) and len(ar2[0]) > 1:
+            elif ar2 and len(ar2) > 10 and RE_FULLSHAPE_ALPHA.match(ar2[0]) and len(ar2[0]) > 1:
                 # PATTERN 4
                 # before:
                 # 0 ｔａｋｅ,名詞,一般,*,*,*,*,ｔａｋｅ,テイク,テイク,1/3,C0
