@@ -9,52 +9,39 @@
 # Copyright (C) 2010-2021 Takuya Nishimoto (nishimotz.com)
 # Released under GPL 2
 
-from synthDriverHandler import SynthDriver, VoiceInfo
+from synthDriverHandler import SynthDriver as BaseSynthDriver, VoiceInfo
 from collections import OrderedDict
 from logHandler import log
+from autoSettingsUtils.driverSetting import BooleanDriverSetting
 
-try:
-    from speech.commands import (
-        IndexCommand,
-        CharacterModeCommand,
-        LangChangeCommand,
-        PitchCommand,
-        SpeechCommand,
-    )
-except ImportError:
-    from speech import (
-        IndexCommand,
-        CharacterModeCommand,
-        LangChangeCommand,
-        PitchCommand,
-        SpeechCommand,
-    )
-import synthDriverHandler
+from speech.commands import (
+	IndexCommand,
+	CharacterModeCommand,
+	LangChangeCommand,
+	PitchCommand,
+	SpeechCommand,
+)
 import languageHandler
 from .jtalk import jtalkDriver
 from .jtalk.jtalkDriver import VoiceProperty
 from .jtalk._nvdajp_espeak import isJapaneseLang
-
-try:
-    from synthDriverHandler import synthIndexReached, synthDoneSpeaking
-except ImportError:
-    synthIndexReached = synthDoneSpeaking = None
+from synthDriverHandler import synthIndexReached, synthDoneSpeaking
 
 
-class SynthDriver(SynthDriver):
+class SynthDriver(BaseSynthDriver):
     """A Japanese synth driver for NVDAjp."""
 
     name = "nvdajp_jtalk"
     description = "JTalk"
     supportedSettings = (
-        SynthDriver.VoiceSetting(),
-        SynthDriver.RateSetting(),
-        SynthDriver.RateBoostSetting()
-        if hasattr(SynthDriver, "RateBoostSetting")
-        else synthDriverHandler.BooleanSynthSetting("rateBoost", _("Rate boos&t")),
-        SynthDriver.PitchSetting(),
-        SynthDriver.InflectionSetting(),
-        SynthDriver.VolumeSetting(),
+        BaseSynthDriver.VoiceSetting(),
+        BaseSynthDriver.RateSetting(),
+        BaseSynthDriver.RateBoostSetting()
+        if hasattr(BaseSynthDriver, "RateBoostSetting")
+        else BooleanDriverSetting("rateBoost", _("Rate boos&t")),
+        BaseSynthDriver.PitchSetting(),
+        BaseSynthDriver.InflectionSetting(),
+        BaseSynthDriver.VolumeSetting(),
     )
     supportedCommands = {
         IndexCommand,
@@ -65,7 +52,7 @@ class SynthDriver(SynthDriver):
     supportedNotifications = {synthIndexReached, synthDoneSpeaking}
 
     @classmethod
-    def check(cls):
+    def check(cls):  # type: ignore[override]
         return True
 
     def __init__(self):
@@ -90,9 +77,9 @@ class SynthDriver(SynthDriver):
         for item in speechSequence:
             if isinstance(item, str):
                 p = VoiceProperty()
-                p.pitch = min(max(self._pitch + self._pitchOffset, 0), 100)
-                p.inflection = self._inflection
-                p.characterMode = spellState
+                p.pitch = min(max(self._pitch + self._pitchOffset, 0), 100)  # type: ignore[attr-defined]
+                p.inflection = self._inflection  # type: ignore[attr-defined]
+                p.characterMode = spellState  # type: ignore[attr-defined]
                 msg = str(item)
                 isMsgJp = isJapaneseLang(msg)
                 lang = currentLang
@@ -105,9 +92,9 @@ class SynthDriver(SynthDriver):
                     % (
                         lang,
                         self.speakingIndex,
-                        p.pitch,
-                        p.inflection,
-                        p.characterMode,
+                        p.pitch,  # type: ignore[attr-defined]
+                        p.inflection,  # type: ignore[attr-defined]
+                        p.characterMode,  # type: ignore[attr-defined]
                         msg,
                     )
                 )
@@ -157,27 +144,27 @@ class SynthDriver(SynthDriver):
     def _get_rate(self):
         return jtalkDriver.get_rate(self._rateBoost)
 
-    def _set_rate(self, rate):
+    def _set_rate(self, rate):  # type: ignore[override]
         jtalkDriver.set_rate(int(rate), self._rateBoost)
 
     def _get_pitch(self):
         return self._pitch
 
-    def _set_pitch(self, pitch):
+    def _set_pitch(self, pitch):  # type: ignore[override]
         self._pitch = int(pitch)
 
     def _get_volume(self):
         return self._volume
 
-    def _set_volume(self, volume_):
+    def _set_volume(self, volume_):  # type: ignore[override]
         self._volume = int(volume_)
         jtalkDriver.set_volume(self._volume)
         return
 
-    def _get_inflection(self):
+    def _get_inflection(self):  # type: ignore[override]
         return self._inflection
 
-    def _set_inflection(self, val):
+    def _set_inflection(self, val):  # type: ignore[override]
         self._inflection = int(val)
 
     def _getAvailableVoices(self):
@@ -191,7 +178,7 @@ class SynthDriver(SynthDriver):
         log.debug("_get_voice called")
         return self.voice_id
 
-    def _set_voice(self, identifier):
+    def _set_voice(self, identifier):  # type: ignore[override]
         log.debug("_set_voice %s" % (identifier))
         rate = jtalkDriver.get_rate(self._rateBoost)
         for v in jtalkDriver._jtalk_voices:
