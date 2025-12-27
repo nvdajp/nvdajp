@@ -8,6 +8,12 @@ import re
 import sys
 import threading
 from ctypes import *
+from typing import Callable, Optional
+
+# Type alias for logging functions
+# Accepts both logHandler.log.debug (method) and custom print functions (callable)
+# Used in Mecab_initialize, Mecab_analysis, etc.
+LogWriteFunc = Optional[Callable[[str], None]]
 
 # Try to import Windows API for code page detection
 try:
@@ -148,7 +154,7 @@ class MecabFeatures(NonblockingMecabFeatures):
         lock.release()
 
 
-def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None):
+def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None, user_dics=None):
     mecab_dll = os.path.join(libmecab_dir, "libmecab.dll")
     global libmc
     if libmc is None:
@@ -209,7 +215,7 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
                 logwrite_(s)
 
 
-def Mecab_analysis(src, features, logwrite_=None):
+def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
     # Helper function to write to debug log file (ensures logs are captured even on crash)
     def _write_debug_log(msg):
         try:
