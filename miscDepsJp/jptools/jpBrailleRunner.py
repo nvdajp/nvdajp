@@ -188,6 +188,12 @@ def pass2(verboseMode=False):
             f.write("This will cause access violations. Aborting.\n")
             raise RuntimeError(msg)
         count = 0
+        error_summary = {
+            "result_mismatch": 0,
+            "inpos2_mismatch": 0,
+            "inpos_mismatch": 0,
+            "outpos_mismatch": 0,
+        }
         for t in tests:
             if "input" not in t:
                 continue
@@ -233,15 +239,28 @@ def pass2(verboseMode=False):
                 result_outpos = ",".join(["%d" % n for n in outpos])
                 # output
                 isError = False
-                if (
-                    result != t["input"]
-                    or (correct_inpos2 and result_inpos2 != correct_inpos2)
-                    or (correct_inpos and result_inpos != correct_inpos)
-                    or (correct_outpos and result_outpos != correct_outpos)
-                ):
+                error_types = []
+                if result != t["input"]:
                     isError = True
+                    error_types.append("result_mismatch")
+                    error_summary["result_mismatch"] += 1
+                if correct_inpos2 and result_inpos2 != correct_inpos2:
+                    isError = True
+                    error_types.append("inpos2_mismatch")
+                    error_summary["inpos2_mismatch"] += 1
+                if correct_inpos and result_inpos != correct_inpos:
+                    isError = True
+                    error_types.append("inpos_mismatch")
+                    error_summary["inpos_mismatch"] += 1
+                if correct_outpos and result_outpos != correct_outpos:
+                    isError = True
+                    error_types.append("outpos_mismatch")
+                    error_summary["outpos_mismatch"] += 1
+                if isError:
                     count += 1
                 if isError or verboseMode:
+                    if isError:
+                        f.write(f"=== ERROR #{count}: {', '.join(error_types)} ===\n")
                     f.write("text   : " + t["text"] + "\n")
                     f.write("correct: " + t["input"] + "\n")
                     f.write("result : " + result + "\n")
@@ -263,7 +282,37 @@ def pass2(verboseMode=False):
                     f.write("\n")
                     f.write(log)
                     f.write("\n")
-        print("h2: %d error(s). see %s" % (count, outfile))
+        # Write error summary
+        if count > 0:
+            f.write("=" * 60 + "\n")
+            f.write("ERROR SUMMARY\n")
+            f.write("=" * 60 + "\n")
+            f.write(f"Total errors: {count}\n")
+            if error_summary["result_mismatch"] > 0:
+                f.write(f"  - Result mismatch: {error_summary['result_mismatch']}\n")
+            if error_summary["inpos2_mismatch"] > 0:
+                f.write(f"  - inpos2 mismatch: {error_summary['inpos2_mismatch']}\n")
+            if error_summary["inpos_mismatch"] > 0:
+                f.write(f"  - inpos mismatch: {error_summary['inpos_mismatch']}\n")
+            if error_summary["outpos_mismatch"] > 0:
+                f.write(f"  - outpos mismatch: {error_summary['outpos_mismatch']}\n")
+            f.write("=" * 60 + "\n")
+        outfile_path = Path(outfile).resolve()
+        if count > 0:
+            print(f"h2: {count} error(s) found. Details written to: {outfile_path}")
+            print("    Error breakdown: ", end="")
+            parts = []
+            if error_summary["result_mismatch"] > 0:
+                parts.append(f"result={error_summary['result_mismatch']}")
+            if error_summary["inpos2_mismatch"] > 0:
+                parts.append(f"inpos2={error_summary['inpos2_mismatch']}")
+            if error_summary["inpos_mismatch"] > 0:
+                parts.append(f"inpos={error_summary['inpos_mismatch']}")
+            if error_summary["outpos_mismatch"] > 0:
+                parts.append(f"outpos={error_summary['outpos_mismatch']}")
+            print(", ".join(parts))
+        else:
+            print(f"h2: All tests passed. Output written to: {outfile_path}")
     return (count, outfile)
 
 
