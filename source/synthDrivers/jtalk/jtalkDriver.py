@@ -149,9 +149,11 @@ def _jtalk_speak(msg, index=None, prop=None):
     global currIndex
     global currentEngine
     global lastIndex
+    global voice_args
     # log.info("index %r msg(%s) start" % (index, msg))
     if prop is None:
         return
+    assert voice_args is not None  # Type narrowing for type checkers
     currIndex = index
     if prop.characterMode:
         fperiod_current = voice_args["fperiod"]
@@ -438,6 +440,8 @@ def get_rate(rateBoost):
 
 def set_rate(rate, rateBoost):
     global fperiod, rate_percent
+    global voice_args
+    assert voice_args is not None  # Type narrowing for type checkers
     rate_percent = rate
     if voice_args["samp_rate"] == 16000:
         fperiod = int(80 - int(rate) / 2)  # 80..30
