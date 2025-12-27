@@ -177,21 +177,46 @@ nvaccess/beta から以下の新規ファイルが追加されます：
 
 ### 段階的な実施計画
 
+**参照**: `merge-plan-beta-2025-11.md` の作業段階 1-6 を参照
+
 1. **Phase 1: 基盤整備**（`merge-plan-beta-2025-11.md` の「作業段階 1-2」）
-   - サブモジュールの更新
-   - ビルドシステムの更新
+   - サブモジュールの更新（上流のコミットを採用）
+   - ビルドシステムの更新（NVDAHelper パッケージ化、archBuild_sconscript）
+   - `.python-versions` と `uv.lock` の解決（**注意**: x64 移行のタイミングで更新）
 
 2. **Phase 2: CI/ワークフロー**（`merge-plan-beta-2025-11.md` の「作業段階 3」）
-   - `testAndPublish.yml` の更新
-   - JP パッチの最小化
+   - `testAndPublish.yml` の更新（上流ファイルをベースに、JP パッチを最小限に再適用）
+   - **参照**: `merge-issues-beta-2025-11.md` の「CI 上の具体対応（YAML 最小差分方針）」
+   - JP パッチ箇所:
+     - トリガー: ブランチ名を `betajp`/`releasejp` に変更
+     - Python/Arch: 現在は 3.11/x86 を維持（x64 移行時に対応）
+     - `ci/scripts/tests/beforeTests.ps1` の呼び出し
+     - crowdin upload ジョブの無効化
+     - JP 固有テスト（jpSmokeTests）の追加
 
 3. **Phase 3: ソースコード**（`merge-plan-beta-2025-11.md` の「作業段階 4」）
    - JP 固有変更の再適用
+     - `source/braille.py`: `_nvdajp()`, `rowHeaderText/columnHeaderText` の維持
+     - `source/gui/__init__.py`, `source/installer.py`: JP 固有のアイコンパスとドネーションURLの維持
+     - `source/synthDriverHandler.py`: jtalk の優先順位の維持
+   - **参照**: `merge-issues-beta-2025-11.md` の「主要な論点と解決方針」
    - テストの更新
 
 4. **Phase 4: 翻訳ファイル**（`merge-plan-beta-2025-11.md` の「作業段階 6」）
-   - `nvda.po` のマージ
-   - JP 固有翻訳の維持
+   - `nvda.po` のマージ（`msgmerge` で上流 pot に追随）
+   - JP 固有翻訳の維持（IME 関連など）
+   - **参照**: `merge-issues-beta-2025-11.md` の「翻訳ファイル（po）の大規模衝突」
+
+### 検証手順（各 Phase で実施）
+
+**参照**: `merge-issues-beta-2025-11.md` の「検証手順（ローカル）」
+
+- 型チェック: `ci/scripts/tests/typeCheck.ps1`
+- Lint: `uv run ruff format --check && uv run ruff check`
+- 最小ビルド: `scons source --all-cores`
+- 単体テスト: `rununittests.bat`（`uv --group unit-tests` 使用）
+- System tests: `ci/scripts/tests/systemTests.ps1`（要 `ci/scripts/tests/beforeTests.ps1`）
+- JP smoke tests: `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`
 
 ## 2025年11月の記録との比較
 
@@ -245,9 +270,42 @@ nvaccess/beta から以下の新規ファイルが追加されます：
    - 各段階でテスト通過を確認
    - 品質保証原則に従う
 
-## 参照
+## 参照ドキュメント
 
-- 詳細なマージ計画: `projectDocs/jp/merge-plan-beta-2025-11.md`（**主要な参照**）
-- コンフリクト記録（2025-11）: `projectDocs/jp/merge-conflicts-detailed-2025-11.md`（**具体的なコンフリクト内容の参考**）
-- 問題点まとめ: `projectDocs/jp/merge-issues-beta-2025-11.md`
+### 主要な参照（優先度順）
+
+1. **`projectDocs/jp/merge-plan-beta-2025-11.md`** - **最重要**
+   - 段階的な解決手順（作業段階 1-6）
+   - 各コンフリクトファイルの具体的な解決方法
+   - 検証手順と完了条件
+
+2. **`projectDocs/jp/merge-issues-beta-2025-11.md`** - **重要**
+   - 主要な論点と解決方針が簡潔にまとまっている
+   - CI 上の具体対応（YAML 最小差分方針）
+   - 検証手順（ローカル）
+   - 各問題点に対する具体的な解決方針
+   - **特に有用な情報**:
+     - CI 行列とトリガーの整合方針
+     - nvdaHelper 構成変更の解決方針
+     - Braille 表示ロジックの JP 拡張の維持方法
+     - 翻訳ファイル（po）の大規模衝突の解決方針
+     - IAccessible2Lib/ia2.tlb の配置変更（JP 独自オーバーレイの削除）
+
+3. **`projectDocs/jp/merge-conflicts-detailed-2025-11.md`** - **参考**
+   - 具体的なコンフリクト内容の記録
+   - 各コンフリクトファイルの行番号と内容
+   - 特に `testAndPublish.yml` の22箇所のコンフリクト位置
+
+4. **`projectDocs/jp/merge-issues-beta-2025-11.meta.md`** - **参考**
+   - コンフリクト検出コマンド（PowerShell）
+   - 再現性のための情報
+   - 今回のリハーサルでも同様のコマンドが使用可能
+   - **有用なコマンド例**:
+     - `rg -n "^(<<<<<<<|=======|>>>>>>>)" -S` - すべてのコンフリクトマーカー行を一覧
+     - ファイルごとの最初の衝突位置を要約するスクリプト
+     - 個別ファイル（workflow）の衝突だけ確認するコマンド
+
+### その他の参照
+
 - ロードマップ: `projectDocs/jp/roadmap.md`
+- エージェント向け: `AGENTS.md`
