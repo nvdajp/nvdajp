@@ -6,7 +6,7 @@
 
 from logHandler import log
 import time
-
+from typing import Any, Callable, Optional
 
 import queue as Queue
 
@@ -16,7 +16,7 @@ import copy
 import nvwave
 from pathlib import Path
 
-_espeak = None  # from .. import _espeak
+_espeak: Optional[Any] = None  # from .. import _espeak
 from .jtalkCore import (
     libjt_initialize,
     libjt_load,
@@ -112,7 +112,7 @@ _jtalk_voices = [
     },
 ]
 default_jtalk_voice = _jtalk_voices[3]  # V4
-voice_args = None
+voice_args: Optional[dict[str, Any]] = None
 
 
 class VoiceProperty(baseObject.AutoPropertyObject):
@@ -121,20 +121,20 @@ class VoiceProperty(baseObject.AutoPropertyObject):
 
 
 # if samp_rate==16000: normal speed = 80samples period
-fperiod = 240
+fperiod: int = 240
 
 # gain control
-max_level = 32000
-thres_level = 128
-thres2_level = 128
-speaker_attenuation = 1.0
+max_level: int = 32000
+thres_level: int = 128
+thres2_level: int = 128
+speaker_attenuation: float = 1.0
 
-logwrite = log.debug
-lastIndex = None
-currIndex = None
-player = None
-currentEngine = 0  # 1:espeak 2:jtalk
-indexReachedFunc = None
+logwrite: Callable[[str], None] = log.debug
+lastIndex: Optional[int] = None
+currIndex: Optional[int] = None
+player: Optional[nvwave.WavePlayer] = None
+currentEngine: int = 0  # 1:espeak 2:jtalk
+indexReachedFunc: Optional[Callable[[Optional[int]], None]] = None
 
 
 def isSpeaking():
@@ -226,7 +226,7 @@ def _jtalk_speak(msg, index=None, prop=None):
     currentEngine = 0
 
 
-espeakMark = 10000
+espeakMark: int = 10000
 
 
 def _espeak_speak(msg, lang, index=None, prop=None):
@@ -262,8 +262,8 @@ def _speak(arg):
         _espeak_speak(msg, lang, index, prop)
 
 
-indexCommands = []
-lastIndexCommand = None
+indexCommands: list[int] = []
+lastIndexCommand: Optional[int] = None
 
 
 def _processIndexReached():
@@ -431,7 +431,7 @@ def terminate():
         _espeak.terminate()
 
 
-rate_percent = 50
+rate_percent: int = 50
 
 
 def get_rate(rateBoost):
