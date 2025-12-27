@@ -7,7 +7,30 @@ import os
 import re
 import sys
 import threading
-from ctypes import *
+from ctypes import (
+    POINTER,
+    Structure,
+    byref,
+    cast,
+    c_char,
+    c_char_p,
+    c_double,
+    c_float,
+    c_int,
+    c_long,
+    c_short,
+    c_ubyte,
+    c_uint,
+    c_ulonglong,
+    c_ushort,
+    c_void_p,
+    cdll,
+    create_string_buffer,
+    memmove,
+    sizeof,
+    string_at,
+    windll,
+)
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -18,7 +41,6 @@ LogWriteFunc = Optional[Callable[[str], None]]
 
 # Try to import Windows API for code page detection
 try:
-    from ctypes import windll
     _kernel32 = windll.kernel32
 except (ImportError, AttributeError):
     _kernel32 = None
