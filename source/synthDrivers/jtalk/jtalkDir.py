@@ -22,9 +22,9 @@ try:
 
     if globalVars.appArgs.configPath:
         configDir = Path(globalVars.appArgs.configPath)
-    d = Path(globalVars.appArgs.configPath) / "addons" / "nvdajp_jtalk" / "synthDrivers" / "jtalk"
-    if d.is_dir():
-        jtalk_dir = d
+        d = Path(globalVars.appArgs.configPath) / "addons" / "nvdajp_jtalk" / "synthDrivers" / "jtalk"
+        if d.is_dir():
+            jtalk_dir = d
 except Exception:
     pass
 
