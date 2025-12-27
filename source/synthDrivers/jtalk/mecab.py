@@ -8,6 +8,7 @@ import re
 import sys
 import threading
 from ctypes import *
+from pathlib import Path
 from typing import Callable, Optional
 
 # Type alias for logging functions
@@ -155,7 +156,7 @@ class MecabFeatures(NonblockingMecabFeatures):
 
 
 def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None, user_dics=None):
-    mecab_dll = os.path.join(libmecab_dir, "libmecab.dll")
+    mecab_dll = str(Path(libmecab_dir) / "libmecab.dll")
     global libmc
     if libmc is None:
         libmc = cdll.LoadLibrary(mecab_dll)
@@ -174,7 +175,8 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
         if logwrite_:
             logwrite_("dic: %s" % dic)
         try:
-            f = open(os.path.join(dic, "DIC_VERSION"))
+            dic_version_path = Path(dic) / "DIC_VERSION"
+            f = open(dic_version_path, encoding="utf-8")
             s = f.read().strip()
             f.close()
             logwrite_("mecab:" + libmc.mecab_version() + " " + s)
@@ -183,7 +185,7 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
                 raise RuntimeError("utf-8 dictionary for mecab required.")
         except Exception:
             pass
-        mecabrc = os.path.join(libmecab_dir, "mecabrc")
+        mecabrc = str(Path(libmecab_dir) / "mecabrc")
         argc, args = 5, (c_char_p * 5)(
             b"mecab", b"-d", dic.encode("utf-8"), b"-r", mecabrc.encode("utf-8")
         )
@@ -219,7 +221,7 @@ def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
     # Helper function to write to debug log file (ensures logs are captured even on crash)
     def _write_debug_log(msg):
         try:
-            debug_log_path = os.path.join(os.path.dirname(__file__), "mecab_debug.log")
+            debug_log_path = Path(__file__).parent / "mecab_debug.log"
             with open(debug_log_path, "a", encoding="utf-8", errors="replace") as f:
                 f.write(msg + "\n")
                 f.flush()
