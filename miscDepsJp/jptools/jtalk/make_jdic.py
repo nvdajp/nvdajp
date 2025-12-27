@@ -74,9 +74,9 @@ def _main():
         mkdir_p(outdir)
         mkdir_p(tempdir)
 
-        eng_dic_maker.make_dic(str(engdic), code, str(thisdir))
-        tankan_dic_maker.make_dic(code, str(cs_file), str(thisdir))
-        custom_dic_maker.make_dic(code, str(thisdir))
+        eng_dic_maker.make_dic(engdic, code, thisdir)
+        tankan_dic_maker.make_dic(code, cs_file, thisdir)
+        custom_dic_maker.make_dic(code, thisdir)
 
         files = [
             "dicrc",
