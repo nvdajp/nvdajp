@@ -197,13 +197,13 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
     assert libmc is not None  # Type narrowing for type checkers
     global mecab
     if mecab is None:
+        # libmc is guaranteed to be initialized at this point (asserted above)
+        assert libmc is not None  # Type narrowing for type checkers
         if logwrite_:
             logwrite_("dic: %s" % dic)
         try:
             dic_version_path = Path(dic) / "DIC_VERSION"
-            f = open(dic_version_path, encoding="utf-8")
-            s = f.read().strip()
-            f.close()
+            s = dic_version_path.read_text(encoding="utf-8").strip()
             if logwrite_:
                 logwrite_("mecab:" + libmc.mecab_version() + " " + s)
             # check utf-8 dictionary
