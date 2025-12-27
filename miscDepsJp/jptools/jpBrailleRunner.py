@@ -369,15 +369,15 @@ if __name__ == "__main__":
     )
     (options, args) = parser.parse_args()
 
-    if options.make_doc == True:
+    if options.make_doc:
         make_doc()
-    elif options.pass1_only == True:
+    elif options.pass1_only:
         t = timeit.Timer(stmt=pass1)
         print(t.timeit(number=options.number))
-    elif options.pass2_only == True:
+    elif options.pass2_only:
         t = timeit.Timer(stmt=pass2)
         print(t.timeit(number=options.number))
-    elif options.verbose == True:
+    elif options.verbose:
         pass2(verboseMode=True)
     else:
         pass1()
