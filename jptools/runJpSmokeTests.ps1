@@ -114,6 +114,76 @@ function Ensure-JtalkDic {
     }
 }
 
+function Initialize-MsvcEnvironment {
+    <#
+    .SYNOPSIS
+        Initializes MSVC environment variables (PATH, INCLUDE, LIB, etc.) for x86 builds.
+        This ensures tools like dumpbin, cl, nmake are available in the current PowerShell session.
+    #>
+    # Check if cl is already available (fast path)
+    try {
+        $null = Get-Command cl -ErrorAction Stop
+        Write-Host "MSVC environment already configured (cl is available)" -ForegroundColor Green
+        return
+    } catch {
+        # cl not found, need to set up environment
+    }
+
+    # Try to find vcvarsall.bat in common Visual Studio locations
+    # Currently supports Visual Studio 2022 only
+    $vcvarsallPaths = @(
+        # VS 2022 (Program Files, 64-bit installer)
+        "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat",
+        "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat",
+        "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat",
+        "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
+    )
+
+    $vcvarsall = $null
+    foreach ($path in $vcvarsallPaths) {
+        if (Test-Path $path) {
+            $vcvarsall = $path
+            break
+        }
+    }
+
+    if (-not $vcvarsall) {
+        Write-Warning "vcvarsall.bat not found in common locations. MSVC tools (dumpbin, cl, nmake) may not be available."
+        Write-Warning "You may need to manually run 'vcvarsall.bat x86' in a Developer Command Prompt."
+        return
+    }
+
+    Write-Host "Setting up MSVC environment for x86 using: $vcvarsall" -ForegroundColor Cyan
+    
+    # Run vcvarsall.bat x86 and capture environment variables
+    $envOutput = cmd /c "`"$vcvarsall`" x86 >nul 2>&1 && set"
+    
+    # Parse environment variables and set them in current PowerShell session
+    $envVarsSet = 0
+    foreach ($line in $envOutput) {
+        if ($line -match '^([^=]+)=(.*)$') {
+            $key = $matches[1]
+            $value = $matches[2]
+            [System.Environment]::SetEnvironmentVariable($key, $value, 'Process')
+            $envVarsSet++
+        }
+    }
+
+    if ($envVarsSet -gt 0) {
+        Write-Host "MSVC environment configured ($envVarsSet environment variables set)" -ForegroundColor Green
+        
+        # Verify dumpbin is available
+        try {
+            $null = Get-Command dumpbin -ErrorAction Stop
+            Write-Host "dumpbin is now available" -ForegroundColor Green
+        } catch {
+            Write-Warning "dumpbin is still not available after MSVC environment setup"
+        }
+    } else {
+        Write-Warning "Failed to set MSVC environment variables"
+    }
+}
+
 $packages = @("pytest")
 if (-not $SkipInstall) {
     # Always refresh scons/pytest when not skipping install
@@ -130,6 +200,12 @@ if ($needsInstall) {
         Write-Error "pytest is still missing after installation"
         exit 1
     }
+}
+
+# Initialize MSVC environment for local runs (needed for dumpbin, cl, nmake)
+# CI environments already have MSVC environment set up via ilammy/msvc-dev-cmd@v1
+if (-not $isCI) {
+    Initialize-MsvcEnvironment
 }
 
 if (-not $SkipOverlay) {

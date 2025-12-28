@@ -223,14 +223,14 @@ def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: st
 def _find_vcvarsall() -> str | None:
 	"""Find vcvarsall.bat in common Visual Studio install locations.
 	Returns absolute path if found, None otherwise.
+	Currently supports Visual Studio 2022 only.
 	"""
 	common_paths = [
+		# VS 2022 (Program Files, 64-bit installer)
+		r"C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat",
 		r"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat",
 		r"C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat",
 		r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat",
-		r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat",
-		r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvarsall.bat",
-		r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat",
 	]
 	for p in common_paths:
 		if Path(p).exists():
