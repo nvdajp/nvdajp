@@ -1,14 +1,25 @@
 # 日本語版ロードマップ（2025-12更新）
 
-## 長期的な目標（このブランチ: betajp-251227）
+## 長期的な目標（このブランチ: betajp-251230）
 
 **このブランチの長期的な目標**:
 
-1. **nvaccess（本家）beta をマージする**
+1. **nvaccess（本家）beta をマージする**（段階的アプローチ）
+   * **第1段階**: x86 Python 3.13 の段階（コミット `9613ce6e3`）までマージ
+   * **第2段階**: x64 Python 3.13 への移行（コミット `58dd14767` 以降）
 2. **nvdajp を x64 移行する**
 3. **品質保証原則に従って作業する**（小さなPR単位、段階的検証、全テスト通過を必須とする）
 
-**基本方針**: 本家版との差分を最小化しながら、順序立てて基盤整合 → 言語/依存更新 → 64bit 対応を進める。
+**基本方針**: 本家版との差分を最小化しながら、順序立てて基盤整合 → x86 Python 3.13対応 → x64 Python 3.13対応を進める。
+
+**マージ戦略の変更（2025年12月）**:
+
+* **251227での教訓**: 段階的に進めようとしたが、依存関係が複雑化してしまった
+* **新方針**: nvaccess/beta にも x86 Python 3.13 の段階があったため、そのリビジョン（`9613ce6e3`）までマージしてから、x64移行を実施
+* **利点**:
+  * 段階的アプローチで依存関係の複雑化を抑制
+  * x86環境での検証が容易
+  * 変更量を分割してリスクを低減
 
 ## 現行マイルストン（このブランチ: betajp-251227）
 
@@ -64,7 +75,11 @@
   * 全テストが通過することを確認
   * CIが安定して緑になることを確認
 
-**注**: betajp-251206ブランチの失敗要因の詳細な分析は `projectDocs/jp/merge-plan-beta-2025-11.md` を参照してください。
+**注**:
+
+* betajp-251206ブランチの失敗要因の詳細な分析は `projectDocs/jp/merge-plan-beta-2025-11.md` を参照してください。
+* betajp-251227での教訓: 段階的に進めようとしたが、依存関係が複雑化。新方針として、nvaccess/beta の x86 Python 3.13 段階（コミット `9613ce6e3`）までマージしてから、x64移行を実施する方針に変更。
+* マージ計画の詳細は `projectDocs/jp/merge-plan-beta-2025-11.md` を参照。
 
 ### ステージ1: 基盤整備とリファクタリング（優先度：高）
 
@@ -265,26 +280,83 @@
   * 1つのPRで1つの変更のみ（例: Pythonバージョン更新、ランナー更新など）
   * **ローカル環境でテスト済みの変更のみをCIに反映**
 
-* [ ] **タスク 2.7: Python 3.13対応の準備**
-  * jp smoke test だけを Python 3.13 x64 と Python 3.11 x86 に対応させる
-  * 依存関係の互換性確認
+* [ ] **タスク 2.7: Python 3.13対応の準備（x86環境）**
+  * **注**: ステージ3a（x86 Python 3.13への移行）の準備として実施
+  * jp smoke test を Python 3.13 x86 と Python 3.11 x86 の両方に対応させる
+  * 依存関係の互換性確認（Python 3.13 x86環境）
   * 型チェックの通過確認
   * 単体テストの通過確認
-  * 完了条件：jp smoke testがPython 3.13 x64で成功する
+  * 完了条件：jp smoke testがPython 3.13 x86で成功する
 
-* [ ] **タスク 2.8: Python 3.13対応の実施**
-  * Python 3.11 x86 のまま Python 3.13 x64 で動かないと思われるコードを修正する
+* [ ] **タスク 2.8: Python 3.13対応の実施（x86環境）**
+  * **注**: ステージ3a（x86 Python 3.13への移行）の一部として実施
+  * Python 3.11 x86 から Python 3.13 x86 で動かないと思われるコードを修正する
   * 小さなPR単位で変更
   * 各PRで全テスト通過を確認
   * 問題があれば即座に修正
+  * **注意**: x64移行はステージ3bで実施
 
-### ステージ3: Python 3.13 x64対応（優先度：高）
+### ステージ3a: x86 Python 3.13への移行（優先度：高）
 
-**目標**: Python 3.13 x64対応を段階的に実施
+**目標**: nvaccess/beta の x86 Python 3.13 段階（コミット `9613ce6e3`）までマージして、x86環境でPython 3.13に対応する
 
-* [ ] **タスク 3.1: x64対応の実施**
-  * 本家 beta ブランチをマージして、衝突を修正し、ユニットテストとビルドが通る状態にする
-  * libopenjtalk.dllとlibmecab.dllのx64移行など
+**マージ戦略**:
+
+* **段階的アプローチ**: x86 Python 3.13の段階までマージし、依存関係の複雑化を避ける
+* **マージベース**: nvaccess/beta のコミット `9613ce6e3` (2025年8月15日) "Update to Python 3.13 for 2026.1 #18689"
+  * この時点では `.python-versions` が `cpython-3.13.6-windows-x86-none` (x86 Python 3.13)
+  * x64移行（コミット `58dd14767`）の299コミット分の変更は後回し
+* **参照**: `projectDocs/jp/merge-plan-beta-2025-11.md` の作業段階1-6に従って段階的に解決
+
+* [ ] **タスク 3a.1: nvaccess/beta (x86 Python 3.13段階) のマージ準備**
+  * 現在のbetajpブランチの状態確認（全テスト通過、CI安定）
+  * マージリハーサルの実施（`git merge --no-commit --no-ff --allow-unrelated-histories nvaccess/beta`）
+  * コンフリクトファイルの記録と優先順位付け
+  * 参照: `projectDocs/jp/merge-rehearsal-2025-12-27.md` の手順
+
+* [ ] **タスク 3a.2: 基盤整備（依存関係の解決）**
+  * サブモジュールとロックファイル（`miscDeps`, `.python-versions`, `uv.lock`）のコンフリクト解決
+  * 上流のコミットを採用し、`uv lock --upgrade` で再生成
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 1」
+
+* [ ] **タスク 3a.3: ビルドシステムの更新**
+  * NVDAHelper パッケージ化の対応（`source/NVDAHelper/__init__.py`）
+  * `nvdaHelper/archBuild_sconscript` の eSpeak ビルド条件の解決
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 2」
+
+* [ ] **タスク 3a.4: CI/ワークフローの更新**
+  * `.github/workflows/testAndPublish.yml` の上流準拠化
+  * 上流ファイルをベースに、JP パッチを `# BEGIN JP PATCH`/`# END JP PATCH` で最小限に再適用
+  * Python/Arch を **3.13/x86** に更新（3.11/x86 から変更）
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 3」
+
+* [ ] **タスク 3a.5: ソースコードの更新**
+  * 構文・軽微な変更の解決
+  * Braille 表示ロジック（JP 拡張の再適用）
+  * GUI・インストーラ（JP 固有の表示）
+  * 合成音声ドライバ（jtalk の優先順位維持）
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 4」
+
+* [ ] **タスク 3a.6: テストの更新**
+  * SystemTest 設定の更新
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 5」
+
+* [ ] **タスク 3a.7: 検証と完了確認**
+  * 型チェック: `ci/scripts/tests/typeCheck.ps1`
+  * ビルド: `scons source --all-cores`
+  * 単体テスト: `rununittests.bat`
+  * JP smoke tests: `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`
+  * 全テスト通過とCI安定を確認
+
+### ステージ3b: x64 Python 3.13への移行（優先度：高）
+
+**目標**: x86 Python 3.13対応完了後、x64 Python 3.13への移行を実施
+
+* [ ] **タスク 3b.1: x64対応の実施**
+  * nvaccess/beta の x64移行コミット（`58dd14767` 以降）をマージ
+  * 衝突を修正し、ユニットテストとビルドが通る状態にする
+  * libopenjtalk.dllとlibmecab.dllのx64移行
+  * `.python-versions` を `cpython-3.13.x-windows-x86_64-none` に更新
   * x86 対応コードは削除する
 
 ### ステージ4: テスト修正（優先度：高）
