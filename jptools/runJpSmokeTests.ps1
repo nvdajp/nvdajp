@@ -119,6 +119,7 @@ function Initialize-MsvcEnvironment {
     .SYNOPSIS
         Initializes MSVC environment variables (PATH, INCLUDE, LIB, etc.) for x86 builds.
         This ensures tools like dumpbin, cl, nmake are available in the current PowerShell session.
+        Currently supports Visual Studio 2022 only.
     #>
     # Check if cl is already available (fast path)
     try {
@@ -129,18 +130,12 @@ function Initialize-MsvcEnvironment {
         # cl not found, need to set up environment
     }
 
-    # Try to find vcvarsall.bat in common Visual Studio locations
-    # Currently supports Visual Studio 2022 only
-    $vcvarsallPaths = @(
-        # VS 2022 (Program Files, 64-bit installer)
-        "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat",
-        "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat",
-        "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat",
-        "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
-    )
-
+    # VS 2022: Search in BuildTools, Community, Professional, Enterprise order
+    $editions = @("BuildTools", "Community", "Professional", "Enterprise")
     $vcvarsall = $null
-    foreach ($path in $vcvarsallPaths) {
+    
+    foreach ($edition in $editions) {
+        $path = "C:\Program Files\Microsoft Visual Studio\2022\$edition\VC\Auxiliary\Build\vcvarsall.bat"
         if (Test-Path $path) {
             $vcvarsall = $path
             break
@@ -148,7 +143,7 @@ function Initialize-MsvcEnvironment {
     }
 
     if (-not $vcvarsall) {
-        Write-Warning "vcvarsall.bat not found in common locations. MSVC tools (dumpbin, cl, nmake) may not be available."
+        Write-Warning "Visual Studio 2022 vcvarsall.bat not found. MSVC tools (dumpbin, cl, nmake) may not be available."
         Write-Warning "You may need to manually run 'vcvarsall.bat x86' in a Developer Command Prompt."
         return
     }

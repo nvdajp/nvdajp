@@ -224,17 +224,16 @@ def _find_vcvarsall() -> str | None:
 	"""Find vcvarsall.bat in common Visual Studio install locations.
 	Returns absolute path if found, None otherwise.
 	Currently supports Visual Studio 2022 only.
+	Search order: BuildTools, Community, Professional, Enterprise.
 	"""
-	common_paths = [
-		# VS 2022 (Program Files, 64-bit installer)
-		r"C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat",
-		r"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat",
-		r"C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat",
-		r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat",
-	]
-	for p in common_paths:
-		if Path(p).exists():
-			return p
+	# VS 2022: Search in BuildTools, Community, Professional, Enterprise order
+	editions = ["BuildTools", "Community", "Professional", "Enterprise"]
+	base_path = r"C:\Program Files\Microsoft Visual Studio\2022"
+
+	for edition in editions:
+		path = Path(base_path) / edition / "VC" / "Auxiliary" / "Build" / "vcvarsall.bat"
+		if path.exists():
+			return str(path)
 	return None
 
 
