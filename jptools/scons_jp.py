@@ -29,6 +29,27 @@ from pathlib import Path
 import shutil
 from typing import Any
 
+# Import shared VS utilities
+# Note: We import directly since jptools is not a package
+import importlib.util
+_vs_utils_path = Path(__file__).parent / "vs_utils.py"
+_vs_utils_spec = importlib.util.spec_from_file_location("vs_utils", _vs_utils_path)
+if _vs_utils_spec and _vs_utils_spec.loader:
+	_vs_utils = importlib.util.module_from_spec(_vs_utils_spec)
+	_vs_utils_spec.loader.exec_module(_vs_utils)
+	find_vcvarsall = _vs_utils.find_vcvarsall
+else:
+	# Fallback if import fails
+	def find_vcvarsall() -> str | None:
+		"""Fallback implementation if vs_utils cannot be imported."""
+		editions = ["BuildTools", "Community", "Professional", "Enterprise"]
+		base_path = Path(r"C:\Program Files\Microsoft Visual Studio\2022")
+		for edition in editions:
+			path = base_path / edition / "VC" / "Auxiliary" / "Build" / "vcvarsall.bat"
+			if path.exists():
+				return str(path)
+		return None
+
 
 def _copy_jtalk_core_files(repo_root: Path) -> int:
 	"""Copy JTalk core Python files from miscDepsJp/include/python-jtalk to source/synthDrivers/jtalk.
@@ -225,16 +246,10 @@ def _find_vcvarsall() -> str | None:
 	Returns absolute path if found, None otherwise.
 	Currently supports Visual Studio 2022 only.
 	Search order: BuildTools, Community, Professional, Enterprise.
-	"""
-	# VS 2022: Search in BuildTools, Community, Professional, Enterprise order
-	editions = ["BuildTools", "Community", "Professional", "Enterprise"]
-	base_path = r"C:\Program Files\Microsoft Visual Studio\2022"
 
-	for edition in editions:
-		path = Path(base_path) / edition / "VC" / "Auxiliary" / "Build" / "vcvarsall.bat"
-		if path.exists():
-			return str(path)
-	return None
+	Note: This function delegates to jptools.vs_utils.find_vcvarsall() for shared logic.
+	"""
+	return find_vcvarsall()
 
 
 def _get_vcvarsall_env(vcvarsall_path: str, arch: str) -> dict[str, str] | None:

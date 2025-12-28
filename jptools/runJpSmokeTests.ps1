@@ -131,6 +131,8 @@ function Initialize-MsvcEnvironment {
     }
 
     # VS 2022: Search in BuildTools, Community, Professional, Enterprise order
+    # Note: This logic is shared with jptools/scons_jp.py via jptools/vs_utils.py
+    # For consistency, we use the same search order here
     $editions = @("BuildTools", "Community", "Professional", "Enterprise")
     $vcvarsall = $null
     
