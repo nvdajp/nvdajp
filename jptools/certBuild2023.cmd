@@ -105,13 +105,17 @@ if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN
     goto onerror
 )
 rem Build launcher (final target)
-rem Note: jtalkPrep, jtalkSync, source, user_docs, dist, and jpCertExtras are automatically executed
-rem via SCons dependencies (launcher -> dist -> source -> jtalkSync -> jtalkPrep, and launcher -> jpCertExtras)
-rem This reduces redundant scons.bat invocations and jtalkSync executions
+rem Note: we only invoke the "launcher" target here and rely on the SCons dependency chain
+rem (launcher -> dist -> source -> jtalkSync -> jtalkPrep, and launcher -> jpCertExtras)
+rem to run intermediate targets such as jtalkSync and jtalkPrep. This reduces redundant
+rem scons.bat invocations and jtalkSync executions, but assumes that SCons' dependency
+rem tracking is correctly configured; this script does not independently verify that
+rem jtalkSync actually executed.
 call scons.bat launcher %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-rem Run JP smoke tests (JpBrailleTests and JtalkTests) after jtalkSync has prepared DLLs and dictionaries
-rem Note: jtalkSync is executed as a dependency of launcher, so DLLs and dictionaries are ready
+rem Run JP smoke tests (JpBrailleTests and JtalkTests) after the launcher build completes
+rem Note: the launcher build typically runs jtalkSync via its dependency chain, so DLLs
+rem and dictionaries should be up to date
 powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
 @if not "%ERRORLEVEL%"=="0" goto onerror
 call scons.bat jpVerifySignatures %SCONSARGS%
