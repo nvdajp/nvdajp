@@ -321,8 +321,8 @@ def _build_with_scons(forwarded_args: list[str]) -> None:
 	# Note: we only invoke the "launcher" target here and rely on the SCons dependency chain
 	# (launcher -> dist -> source -> jtalkSync -> jtalkPrep) to run intermediate targets
 	# such as jtalkSync and jtalkPrep. This reduces redundant scons.bat invocations and
-	# jtalkSync executions, but assumes that SCons' dependency tracking is correctly
-	# configured; this script does not independently verify that jtalkSync actually executed.
+	# jtalkSync executions, and relies on SCons' dependency tracking and build verification
+	# (a failed or skipped jtalkSync causes the SCons build, and thus this script, to fail).
 	# Use scons.bat (which uses uv run SCons) to ensure it works in CI environments
 	repo_root = Path(__file__).resolve().parents[1]
 	scons_bat = repo_root / "scons.bat"
