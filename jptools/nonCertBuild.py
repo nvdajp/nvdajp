@@ -317,15 +317,19 @@ def _build_with_scons(forwarded_args: list[str]) -> None:
 	# Forward args from caller (after -- separator)
 	scons_args = options + forwarded_args
 
-	# Build targets in the same order as nonCertBuild2.cmd
+	# Build launcher (final target)
+	# Note: we only invoke the "launcher" target here and rely on the SCons dependency chain
+	# (launcher -> dist -> source -> jtalkSync -> jtalkPrep) to run intermediate targets
+	# such as jtalkSync and jtalkPrep. This reduces redundant scons.bat invocations and
+	# jtalkSync executions, and relies on SCons' dependency tracking and build verification
+	# (a failed or skipped jtalkSync causes the SCons build, and thus this script, to fail).
 	# Use scons.bat (which uses uv run SCons) to ensure it works in CI environments
 	repo_root = Path(__file__).resolve().parents[1]
 	scons_bat = repo_root / "scons.bat"
 	if not scons_bat.exists():
 		print(f"Error: scons.bat not found at {scons_bat}")
 		sys.exit(1)
-	for target in ("source", "user_docs", "dist", "launcher"):
-		run_cmd([str(scons_bat), target] + scons_args)
+	run_cmd([str(scons_bat), "launcher"] + scons_args)
 
 
 def main() -> int:

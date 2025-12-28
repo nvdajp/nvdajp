@@ -392,17 +392,9 @@ env.SConscript("cldrDict_sconscript", exports=["env", "sourceDir"])
 
 # BEGIN JP PATCH (build dependencies)
 # JP-specific helpers (isolated; add opt-in aliases only)
-# Note: register_jp_builders is called after dist is defined (see below)
-# But we need to set up jtalkSync dependency for sourceDir here
-try:
-	import jptools.scons_jp as scons_jp
-
-	# Ensure jtalkSync runs before building source artifacts so that
-	# "scons source" is self-contained.
-	env.Depends(sourceDir, env.Alias("jtalkSync"))
-except Exception:
-	# Never fail the build if JP helpers are unavailable.
-	pass
+# Note: jtalkSync dependency for sourceDir is set up in register_jp_builders
+# (after jtalkSync alias is created with correct TARGET_ARCH) to ensure
+# architecture-specific stamp files are used correctly.
 # END JP PATCH (build dependencies)
 
 
@@ -582,7 +574,8 @@ try:
 	# Always register JP builders in this repo; miscDepsJp overlay is required
 	# for a correct build layout regardless of publisher.
 	# Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds)
-	scons_jp.register_jp_builders(env, dist_target=dist)
+	# Pass sourceDir so it can depend on jtalkSync with current TARGET_ARCH (ensures correct architecture-specific builds)
+	scons_jp.register_jp_builders(env, dist_target=dist, source_dir=sourceDir)
 except Exception as e:
 	# Never fail the build if JP helpers are unavailable.
 	# Log the exception for debugging purposes (e.g., during development)
