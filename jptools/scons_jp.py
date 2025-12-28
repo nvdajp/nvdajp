@@ -870,8 +870,8 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	# Note: jtalkSync output files (sys.dic, libmecab.dll, libopenjtalk.dll) are not added here as
 	# explicit dependencies. jtalkSync first produces these files under miscDepsJp and then copies
 	# them into the source tree. The top-level 'source' target already depends on jtalkSync
-	# (see sconstruct L402), so adding the individual output files as dependencies on this stamp
-	# target would be redundant rather than preventing a circular dependency.
+	# via env.Depends(source_dir, jtalk_sync_stamp) below, so adding the individual output files
+	# as dependencies on this stamp target would be redundant rather than preventing a circular dependency.
 	env.Command(jtalk_sync_stamp, [jtalk_prep_stamp], _sync_jtalk_assets)
 	env.Alias("jtalkSync", jtalk_sync_stamp)
 
