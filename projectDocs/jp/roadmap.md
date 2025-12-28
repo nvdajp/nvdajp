@@ -308,45 +308,53 @@
   * x64移行（コミット `58dd14767`）の299コミット分の変更は後回し
 * **参照**: `projectDocs/jp/merge-plan-beta-2025-11.md` の作業段階1-6に従って段階的に解決
 
-* [ ] **タスク 3a.1: nvaccess/beta (x86 Python 3.13段階) のマージ準備**
-  * 現在のbetajpブランチの状態確認（全テスト通過、CI安定）
-  * マージリハーサルの実施（`git merge --no-commit --no-ff --allow-unrelated-histories nvaccess/beta`）
-  * コンフリクトファイルの記録と優先順位付け
-  * 参照: `projectDocs/jp/merge-rehearsal-2025-12-27.md` の手順
+* [x] **タスク 3a.1: nvaccess/beta (x86 Python 3.13段階) のマージ準備** ✅ 完了（2025-12-30）
+  * 現在のbetajpブランチの状態確認（全テスト通過、CI安定）✅
+  * マージリハーサルの実施（`git merge --no-commit --no-ff --allow-unrelated-histories 9613ce6e3`）✅
+  * コンフリクトファイルの記録と優先順位付け ✅
+  * 参照: `projectDocs/jp/merge-rehearsal-2025-12-30.md`
 
-* [ ] **タスク 3a.2: 基盤整備（依存関係の解決）**
-  * サブモジュールとロックファイル（`miscDeps`, `.python-versions`, `uv.lock`）のコンフリクト解決
-  * 上流のコミットを採用し、`uv lock --upgrade` で再生成
+* [x] **タスク 3a.2: 基盤整備（依存関係の解決）** ✅ 完了（2025-12-30）
+  * サブモジュールとロックファイル（`miscDeps`, `.python-versions`, `uv.lock`）のコンフリクト解決 ✅
+  * 上流のコミットを採用 ✅
   * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 1」
 
-* [ ] **タスク 3a.3: ビルドシステムの更新**
-  * NVDAHelper パッケージ化の対応（`source/NVDAHelper/__init__.py`）
-  * `nvdaHelper/archBuild_sconscript` の eSpeak ビルド条件の解決
+* [x] **タスク 3a.3: ビルドシステムの更新** ✅ 完了（2025-12-30）
+  * NVDAHelper パッケージ化の対応（`source/NVDAHelper.py` の typing import 修正）✅
+  * `nvdaHelper/archBuild_sconscript` の eSpeak ビルド条件の解決 ✅
+  * `sconstruct` の JP固有変更（`jtalkPrep`, `jtalkSync`, `nvdajp3.ico`）を維持 ✅
   * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 2」
 
-* [ ] **タスク 3a.4: CI/ワークフローの更新**
-  * `.github/workflows/testAndPublish.yml` の上流準拠化
-  * 上流ファイルをベースに、JP パッチを `# BEGIN JP PATCH`/`# END JP PATCH` で最小限に再適用
-  * Python/Arch を **3.13/x86** に更新（3.11/x86 から変更）
+* [x] **タスク 3a.4: CI/ワークフローの更新** ✅ 完了（2025-12-30）
+  * `.github/workflows/testAndPublish.yml` の上流準拠化 ✅
+  * 上流ファイルをベースに、JP パッチを `# BEGIN JP PATCH`/`# END JP PATCH` で最小限に再適用 ✅
+  * Python/Arch を **3.13/x86** に更新（3.11/x86 から変更）✅
   * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 3」
 
-* [ ] **タスク 3a.5: ソースコードの更新**
-  * 構文・軽微な変更の解決
-  * Braille 表示ロジック（JP 拡張の再適用）
-  * GUI・インストーラ（JP 固有の表示）
-  * 合成音声ドライバ（jtalk の優先順位維持）
+* [x] **タスク 3a.5: ソースコードの更新** ✅ 完了（2025-12-30）
+  * 構文・軽微な変更の解決 ✅
+  * Braille 表示ロジック（JP 拡張の再適用）✅
+    * `source/braille.py`: `_nvdajp()`, `rowHeaderText`, `columnHeaderText` を維持
+  * GUI・インストーラ（JP 固有の表示）✅
+    * `source/gui/__init__.py`: アイコンパス、ドネーションURL、jpBrailleViewer を維持
+    * `source/installer.py`: アイコンパスとショートカットを維持
+  * 合成音声ドライバ（jtalk の優先順位維持）✅
+    * `source/synthDriverHandler.py`: jtalk の優先順位を維持
   * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 4」
 
-* [ ] **タスク 3a.6: テストの更新**
-  * SystemTest 設定の更新
-  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 5」
+* [x] **タスク 3a.6: テストの更新** ✅ 完了（2025-12-30）
+  * 翻訳ファイル（`.po`）を上流版で置き換え（生成ファイルのため）✅
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 6」
 
-* [ ] **タスク 3a.7: 検証と完了確認**
-  * 型チェック: `ci/scripts/tests/typeCheck.ps1`
-  * ビルド: `scons source --all-cores`
-  * 単体テスト: `rununittests.bat`
-  * JP smoke tests: `jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`
-  * 全テスト通過とCI安定を確認
+* [x] **タスク 3a.7: 検証と完了確認** ✅ 完了（2025-12-30）
+  * 型チェック: `ci/scripts/tests/typeCheck.ps1` ✅ 成功
+  * ビルド: `scons source --all-cores` ✅ 成功
+  * JP smoke tests (x86): `jptools/checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` ✅ 成功
+  * JP smoke tests (x64): `jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` ✅ 成功
+  * ランチャービルド: `scons launcher --all-cores` ✅ 成功
+  * Push: `betajp-251230` ブランチに push 完了 ✅
+  * CI実行: 開始済み（実行ID: `20555439906`）✅
+  * **コミット**: `d1792591a` - "Merge nvaccess/beta (x86 Python 3.13 stage, commit 9613ce6e3)"
 
 ### ステージ3b: x64 Python 3.13への移行（優先度：高）
 

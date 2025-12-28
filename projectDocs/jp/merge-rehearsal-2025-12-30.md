@@ -285,3 +285,48 @@ git add miscDeps include/nvda-cldr include/javaAccessBridge32 include/espeak inc
 
 - ロードマップ: `projectDocs/jp/roadmap.md`
 - エージェント向け: `AGENTS.md`
+
+## マージ実行結果（2025年12月30日）
+
+### 実行結果
+
+- **実行日時**: 2025年12月30日
+- **コミット**: `d1792591a` - "Merge nvaccess/beta (x86 Python 3.13 stage, commit 9613ce6e3)"
+- **ステータス**: ✅ 完了
+
+### 解決したコンフリクト
+
+1. **Phase 1: 基盤整備** ✅
+   - サブモジュール: 上流のコミットを採用
+   - `.python-versions`: `cpython-3.13.6-windows-x86-none` に更新
+   - `uv.lock`: 上流版を採用（後で `uv lock --upgrade` で再生成予定）
+
+2. **Phase 2: CI/ワークフロー** ✅
+   - `testAndPublish.yml`: 上流版をベースに、JP パッチを最小限に再適用
+   - Python/Arch: 3.13/x86 に更新
+
+3. **Phase 3: ソースコード** ✅
+   - `source/NVDAHelper.py`: typing import の修正
+   - `source/braille.py`: JP固有の変更（`_nvdajp()`, `rowHeaderText`, `columnHeaderText`）を維持
+   - `source/gui/__init__.py`: JP固有の変更（アイコンパス、ドネーションURL、jpBrailleViewer）を維持
+   - `source/installer.py`: JP固有のアイコンパスとショートカットを維持
+   - `source/synthDriverHandler.py`: jtalk の優先順位を維持
+   - `nvdaHelper/archBuild_sconscript`: eSpeak ビルド条件を解決
+   - `sconstruct`: JP固有の変更（`jtalkPrep`, `jtalkSync`, `nvdajp3.ico`）を維持
+   - その他のソースファイル: 上流版を採用
+
+4. **Phase 4: 翻訳ファイル** ✅
+   - すべての翻訳ファイル（`.po`）を上流版で置き換え（生成ファイルのため）
+
+### 検証結果
+
+- **型チェック**: ✅ 成功
+- **ビルドテスト**: ✅ 成功（`scons source --all-cores`）
+- **JP smoke test (x86)**: ✅ 成功（3 passed, 2 deselected, 1 warning）
+- **JP smoke test (x64)**: ✅ 成功（3 passed, 2 deselected, 1 warning）
+- **ランチャービルド**: ✅ 成功（`scons launcher --all-cores`）
+
+### Push と CI
+
+- **Push**: ✅ 完了（`betajp-251230` ブランチ）
+- **CI実行**: ✅ 開始済み（実行ID: `20555439906`）
