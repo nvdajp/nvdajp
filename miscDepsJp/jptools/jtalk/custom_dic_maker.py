@@ -9,7 +9,7 @@ import sys
 open_file = lambda name, mode, encoding: open(name, mode, encoding=encoding)
 
 
-from os import path
+from pathlib import Path
 
 
 jdic = [
@@ -1458,7 +1458,12 @@ class DicItem(object):
 
 
 def make_dic(CODE, THISDIR):
-    with open_file(path.join(THISDIR, OUT_FILE), "w", CODE) as file:
+    # Accept both str and Path objects for compatibility
+    if isinstance(THISDIR, Path):
+        THISDIR = Path(THISDIR)
+    else:
+        THISDIR = Path(THISDIR)
+    with open_file(str(THISDIR / OUT_FILE), "w", CODE) as file:
         ## jdic
         for i in jdic:
             di = DicItem(i)

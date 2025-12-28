@@ -1,60 +1,57 @@
 @echo off
 rem Setup MSVC build environment persistently. Usage: vcsetup.cmd [x64|x86]
 rem Defaults to x86.
+rem Currently supports Visual Studio 2022 only.
+
+rem Fast path: check if cl is already available
+cl >nul 2>&1
+if "%ERRORLEVEL%" neq "9009" (
+  rem cl is available, MSVC environment already configured
+  goto :done
+)
 
 set "ARCH=%~1"
 if /I "%ARCH%"=="x64" (
-  set "VCVARS=vcvars64.bat"
-  set "VS2015_ARG=amd64"
+  set "SET_CL_ARCH="
 ) else (
-  set "VCVARS=vcvars32.bat"
-  set "VS2015_ARG=x86"
+  set "SET_CL_ARCH=1"
 )
 
+rem Use shared Python module for VS path detection (jptools/vs_utils.py)
+rem This ensures consistency with scons_jp.py and runJpSmokeTests.ps1
+rem Note: %~dp0 is jptools/ directory, so find_vcvars.py is in the same directory
 set "FOUND="
-set "NEED_ARCH_ARG="
-
-rem VS 2022
-for %%E in (BuildTools Community Professional Enterprise) do if not defined FOUND if exist "%ProgramFiles%\Microsoft Visual Studio\2022\%%E\VC\Auxiliary\Build\%VCVARS%" (
-  set "FOUND=%ProgramFiles%\Microsoft Visual Studio\2022\%%E\VC\Auxiliary\Build\%VCVARS%"
-  set "NEED_ARCH_ARG="
-)
-
-rem VS 2019
-if not defined FOUND for %%E in (BuildTools Community Professional Enterprise) do if not defined FOUND if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\%%E\VC\Auxiliary\Build\%VCVARS%" (
-  set "FOUND=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\%%E\VC\Auxiliary\Build\%VCVARS%"
-  set "NEED_ARCH_ARG="
-)
-
-rem VS 2017
-if not defined FOUND for %%E in (BuildTools Community Professional Enterprise) do if not defined FOUND if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\%%E\VC\Auxiliary\Build\%VCVARS%" (
-  set "FOUND=%ProgramFiles(x86)%\Microsoft Visual Studio\2017\%%E\VC\Auxiliary\Build\%VCVARS%"
-  set "NEED_ARCH_ARG="
-)
-
-rem VS 2015 fallbacks
-if not defined FOUND if /I "%VCVARS%"=="vcvars32.bat" if exist "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat" (
-  set "FOUND=%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
-  set "NEED_ARCH_ARG="
-)
-if not defined FOUND if exist "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" (
-  set "FOUND=%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
-  set "NEED_ARCH_ARG=1"
+for /f "delims=" %%P in ('python "%~dp0find_vcvars.py" %ARCH% 2^>nul') do (
+  set "FOUND=%%P"
 )
 
 if not defined FOUND (
-  echo [ERROR] Could not locate Visual Studio vcvars script for %ARCH%>&2
+  rem Fallback to direct search if Python call fails
+  if /I "%ARCH%"=="x64" (
+    set "VCVARS=vcvars64.bat"
+  ) else (
+    set "VCVARS=vcvars32.bat"
+  )
+  for %%E in (BuildTools Community Professional Enterprise) do (
+    if not defined FOUND (
+      if exist "%ProgramFiles%\Microsoft Visual Studio\2022\%%E\VC\Auxiliary\Build\%VCVARS%" (
+        set "FOUND=%ProgramFiles%\Microsoft Visual Studio\2022\%%E\VC\Auxiliary\Build\%VCVARS%"
+      )
+    )
+  )
+)
+
+if not defined FOUND (
+  echo [ERROR] Could not locate Visual Studio 2022 vcvars script for %ARCH%>&2
   exit /b 1
 )
 
 echo [vcsetup] Using: "%FOUND%"
-
-if defined NEED_ARCH_ARG (
-  call "%FOUND%" %VS2015_ARG%
-) else (
-  call "%FOUND%"
+call "%FOUND%"
+if defined SET_CL_ARCH (
+  SET CL=/arch:IA32
 )
-
 echo [vcsetup] after vcvars
 
+:done
 exit /b 0

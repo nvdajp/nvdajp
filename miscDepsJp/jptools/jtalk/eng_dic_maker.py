@@ -12,12 +12,19 @@ DEFAULT_COST = 1600
 open_file = lambda name, mode, encoding: open(name, mode, encoding=encoding)
 
 
-from os import path
+from pathlib import Path
 
 from alpha2mb import alpha2mb
 
 
 def make_dic(IN_FILE, CODE, THISDIR):
+    # Accept both str and Path objects for compatibility
+    if isinstance(IN_FILE, Path):
+        IN_FILE = str(IN_FILE)
+    if isinstance(THISDIR, Path):
+        THISDIR = Path(THISDIR)
+    else:
+        THISDIR = Path(THISDIR)
     import re
 
     d = [
@@ -357,7 +364,7 @@ def make_dic(IN_FILE, CODE, THISDIR):
             d.append([a1, a2])
             k[a1] = True
     d.sort()
-    with open_file(path.join(THISDIR, OUT_FILE), "w", CODE) as file:
+    with open_file(str(THISDIR / OUT_FILE), "w", CODE) as file:
         for i in d:
             k = i[0]
             # skip such as SHE'LL

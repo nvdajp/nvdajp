@@ -16,8 +16,11 @@
    - 例: `launcher` を主ターゲットにし、依存関係で `dist` / `jpCertExtras` / `jpVerifySignatures` を自然に走らせる。
 2. `jtalkPrep` / `jtalkSync` の `AlwaysBuild`（または同等の強制実行）を見直し、同一ビルド内の複数呼び出しで再実行されにくくする。
 3. `jpCertExtras` の重複実行を避ける（明示呼び出しの削除 or 依存関係の整理）。
+   - **次のPRで実装予定**: `certBuild2023.cmd` 116行目の `jpCertExtras` 明示呼び出しを削除。
+     - `launcher` が既に `jpCertExtras` に依存しているため（`scons_jp.py` 1134行目）、明示呼び出しは不要。
+     - SCons の依存関係により、`scons launcher` を実行するだけでも `jpCertExtras` が自動実行される（`code-signing-dependencies.md` 191行目参照）。
+     - 修正例: 116行目をコメントアウトまたは削除し、コメントで「`jpCertExtras` は `launcher` の依存関係で自動実行される」と明記。
 4. ビルドログの運用を標準化する。
    - 画面表示が不要なら `>> build.log 2>&1` を基本とする（cmd 側で安全）。
    - 警告の大量出力は後処理でフィルタする（例: `jptools/filterBuildLog.ps1`）。
 5. ログの文字コード（CP932/UTF-8）をどちらに寄せるか決め、閲覧方法をドキュメント化する。
-

@@ -291,7 +291,7 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 ### 方針
 
 * 本ドキュメントの手順で日本語 Windows 環境（ローカル環境）でシステムテストが通ること
-* 同時に AppVeyor でシステムテストが通ること
+* 同時に GitHub Actions でシステムテストが通ること
 
 ### 本家版の課題
 
@@ -301,7 +301,7 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 
 ### 対応
 
-* _chromeArgs.py : ローカル環境と AppVeyor を共通のコードで動かすため Chrome の UI 言語を ja-JP に変更している。また、ゲストモードで起動するために必要なオプションを追加している。
+* _chromeArgs.py : ローカル環境と GitHub Actions を共通のコードで動かすため Chrome の UI 言語を ja-JP に変更している。また、ゲストモードで起動するために必要なオプションを追加している。
 * ChromeLib.py : アドレス検索バーの読み上げとして期待するテキストを "Address and search bar" から "アドレス検索バー" に変更している。
 * jpRobotUtil.py : press_numpad2_4_times を実装しており、文字説明の読み上げを本家版にそろえるためにテストコードに追加している。
 * NVDA そのものの言語（NVDA に由来するテキスト）は英語のままテストをしている。テストのさらなる日本語化は今後の課題である。
@@ -324,9 +324,9 @@ NVDA日本語版のビルドで行っているシステムテスト
 > .\runsystemtests.bat --include chrome
 ```
 
-* restarts_on_crash タグを追加している。これらは AppVeyor では通るが、ローカル環境では通らないため、除外する
+* restarts_on_crash タグを追加している。これらは GitHub Actions では通るが、ローカル環境では通らないため、除外する
 * installer はビルドした NVDA の exe ファイルを指定する
-* AppVeyor ビルドに時間がかかるため appveyor-jp.yml では chrome テストを NVDA タグから除外している
+* GitHub Actions ビルドに時間がかかるため `.github/workflows/testAndPublish.yml` では chrome テストを NVDA タグから除外している
 * システムテスト中にNVDAの起動と終了で音を出力する
 
 システムテストが失敗する場合
@@ -356,21 +356,6 @@ jpcharディレクトリには、文字説明と記号の一貫性をチェッ�
 - checkCharDesc.py - 文字説明の一貫性チェック
 - checkSymbols.py - 記号の一貫性チェック
 - compareSymbolsDic.py - 記号辞書の比較
-
-### 依存関係のテストと型チェック
-
-```text
-> jptools\testMiscDepsJp.cmd
-```
-
-このスクリプトは依存関係のテストと型チェックを行います。Python仮想環境を作成し、mypyによる型チェックを実行します。主に以下の処理を行います：
-
-1. Python 3.11 (32bit)の仮想環境を作成
-2. 開発用の依存パッケージをインストール
-3. jtalkコアファイルのコピー
-4. mypyによる型チェック
-5. jtalkのビルドとテスト
-6. HTMLドキュメントの生成
 
 ## SCons ビルドターゲット
 

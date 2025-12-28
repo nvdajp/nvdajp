@@ -10,9 +10,8 @@ OUT_FILE = "nvdajp-tankan-dic.csv"
 open_file = lambda name, mode, encoding: open(name, mode, encoding=encoding)
 
 
-import os
 import re
-from os import path
+from pathlib import Path
 
 
 def contains_hankaku_katakana(k):
@@ -61,12 +60,19 @@ def read_characters_file(cs_file):
 
 
 def make_dic(CODE, CS_FILE, THISDIR):
+    # Accept both str and Path objects for compatibility
+    if isinstance(CS_FILE, Path):
+        CS_FILE = str(CS_FILE)
+    if isinstance(THISDIR, Path):
+        THISDIR = Path(THISDIR)
+    else:
+        THISDIR = Path(THISDIR)
     char_dic = read_characters_file(CS_FILE)
     print("char_dic %d" % len(char_dic))
     import csv
 
     jdic_tankan = {}
-    reader = csv.reader(open_file(path.join(THISDIR, "naist-jdic.csv"), "r", "euc-jp"))
+    reader = csv.reader(open_file(str(THISDIR / "naist-jdic.csv"), "r", "euc-jp"))
     for row in reader:
         hyousou = row[0]
         if len(hyousou) == 1:
@@ -75,7 +81,7 @@ def make_dic(CODE, CS_FILE, THISDIR):
             if hyousou == "聾":
                 continue
             jdic_tankan[hyousou] = row
-    with open_file(path.join(THISDIR, OUT_FILE), "w", CODE) as file:
+    with open_file(str(THISDIR / OUT_FILE), "w", CODE) as file:
         for k, v in char_dic.items():
             if contains_hankaku_katakana(k):
                 continue

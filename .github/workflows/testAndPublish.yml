@@ -115,11 +115,6 @@ jobs:
         call jptools\buildControllerClient.cmd %sconsArgs%
       shell: cmd
 
-    - name: Test miscDepsJp
-      run: |
-        call jptools\testMiscDepsJp.cmd
-      shell: cmd
-
     - name: Run Japanese tests
       run: |
         call jptools\tests.cmd

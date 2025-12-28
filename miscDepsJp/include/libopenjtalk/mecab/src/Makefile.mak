@@ -1,6 +1,8 @@
 
 CC = cl
-CL = link
+# Use LINK instead of CL to avoid conflict with environment variable CL (set by vcsetup.cmd)
+# Environment variable CL is used by MSVC compiler for additional flags (e.g., /arch:IA32)
+LINK = link
 
 # MACHINE parameter support (x86 or x64, default to x86)
 !IFNDEF MACHINE
@@ -28,10 +30,10 @@ mecab.lib: $(CORES)
 	lib $(LFLAGS) /OUT:$@ $(CORES)
 
 mecab-dict-index.exe: mecab-dict-index.obj
-	$(CL) /LTCG /OUT:$@ $(LIBS) $(@B).obj
+	$(LINK) /LTCG /OUT:$@ $(LIBS) $(@B).obj
 
 libmecab.dll: $(CORES_DLL)
-	$(CL) /DLL /RELEASE /MACHINE:$(MACHINE) /LTCG /OUT:libmecab.dll $(CORES_DLL) Advapi32.lib /DEF:libmecab.def
+	$(LINK) /DLL /RELEASE /MACHINE:$(MACHINE) /LTCG /OUT:libmecab.dll $(CORES_DLL) Advapi32.lib /DEF:libmecab.def
 
 .cpp.obj:
 	$(CC) $(CFLAGS) /c $<
