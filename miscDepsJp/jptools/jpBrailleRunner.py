@@ -61,19 +61,29 @@ output = None
 
 def __print(s=""):
     global output
-    # Also output to console for x64 smoke test debugging
-    # PYTHONUTF8=1 is set in checkJtalkArch.ps1, so print() should handle Unicode correctly
+    # Write to mecab_debug.log file only (not to console)
+    # This ensures MeCab logs are only stored in logfile, not printed to console
     try:
-        print(s, flush=True)
-    except (UnicodeEncodeError, UnicodeDecodeError):
-        # Fallback for environments without PYTHONUTF8=1
+        # Calculate path to mecab_debug.log relative to repo root
+        script_dir = Path(__file__).resolve().parent
+        # script_dir -> miscDepsJp/jptools
+        # ../.. -> repo root
+        repo_root = (script_dir / ".." / "..").resolve()
+        debug_log_path = repo_root / "source" / "synthDrivers" / "jtalk" / "mecab_debug.log"
+        debug_log_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(debug_log_path, "a", encoding="utf-8", errors="replace") as f:
+            f.write(str(s) + "\n")
+            f.flush()
+    except Exception:
+        # Logging is best-effort only. Failures must not interfere with normal operation.
+        pass
+    # Also write to output buffer for test result collection (if output is set)
+    if output is not None:
         try:
-            sys.stdout.buffer.write((s + "\n").encode('utf-8', errors='replace'))
-            sys.stdout.buffer.flush()
+            output.write(str(s) + "\n")
         except Exception:
-            # If all else fails, silently skip console output
+            # Output buffer writing is best-effort only.
             pass
-    output.write(s + "\n")
 
 
 def dot_numbers(s):
