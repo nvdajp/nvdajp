@@ -122,7 +122,7 @@ if ($allOk) {
         try {
             $env:TARGET_ARCH = $Architecture
             if ($Architecture -eq 'x64') {
-                # Use uv to run pytest with Python 3.11 x64.
+                # Use uv to run pytest with Python 3.13 x64.
                 # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
                 $venvX64 = "$repoRoot\.venv-x64"
                 $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk"
@@ -139,9 +139,9 @@ if ($allOk) {
                     }
                 }
                 
-                # Ensure x64 Python is available (uv will skip if already installed)
-                Write-Host "Ensuring Python 3.11 x64 is available..."
-                & uv python install 3.11
+                # Ensure x64 Python 3.13 is available (uv will skip if already installed)
+                Write-Host "Ensuring Python 3.13 x64 is available..."
+                & uv python install 3.13
                 if (-not $?) {
                     Write-Error "uv python install failed"
                     exit 1
@@ -161,15 +161,15 @@ if ($allOk) {
                 }
                 
                 if ($venvNeedsRecreate) {
-                    Write-Host "Creating x64 virtual environment with Python 3.11.14..."
+                    Write-Host "Creating x64 virtual environment with Python 3.13..."
                     # Use UV_PYTHON_PREFERENCE=only-managed to prefer uv-managed Python (x64)
                     # This prevents uv from using the x86 Python from PATH
                     $oldPreference = $env:UV_PYTHON_PREFERENCE
                     $env:UV_PYTHON_PREFERENCE = "only-managed"
                     try {
-                        # Use Python 3.11.14 explicitly to match GitHub Actions environment
+                        # Use Python 3.13 explicitly (uv will select the latest 3.13.x x64 version)
                         # Use --clear flag to replace existing directory if it exists
-                        & uv venv --python 3.11.14 --clear $venvX64
+                        & uv venv --python 3.13 --clear $venvX64
                     } finally {
                         # Restore original UV_PYTHON_PREFERENCE value, or remove if it was not set
                         if ($null -ne $oldPreference -and $oldPreference -ne "") {
@@ -187,7 +187,7 @@ if ($allOk) {
                     $venvPython = "$venvX64\Scripts\python.exe"
                     $pythonArch = & $venvPython -c "import platform; print(platform.architecture()[0])"
                     if ($pythonArch -ne "64bit") {
-                        Write-Error "ERROR: venv Python is not x64 ($pythonArch). Ensure x64 Python is installed: uv python install 3.11"
+                        Write-Error "ERROR: venv Python is not x64 ($pythonArch). Ensure x64 Python is installed: uv python install 3.13"
                         exit 1
                     }
                     

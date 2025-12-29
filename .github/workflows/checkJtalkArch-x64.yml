@@ -31,11 +31,11 @@ jobs:
       with:
         enable-cache: true
 
-    - name: Install Python 3.11 x64
+    - name: Install Python 3.13 x64
       run: |
         # Install x64 Python explicitly for x64 builds
         # This ensures uv venv uses x64 Python for both scons.bat and smoke tests
-        uv python install 3.11
+        uv python install 3.13
         uv python list
       shell: powershell
 
