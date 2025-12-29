@@ -83,6 +83,74 @@ function Invoke-DumpbinMachine {
     return $status -eq 'OK'
 }
 
+function Initialize-MsvcEnvironment {
+    param(
+        [string]$Architecture
+    )
+    # For x64 builds, always set up x64 MSVC environment (even if x86 cl is available)
+    # For x86 builds, check if cl is already available (fast path)
+    if ($Architecture -eq 'x86') {
+        try {
+            $null = Get-Command cl -ErrorAction Stop
+            Write-Host "MSVC environment already configured (cl is available)"
+            return
+        } catch {
+            # cl not found, need to set up environment
+        }
+    } else {
+        # For x64 builds, always set up environment to ensure x64 tools are used
+        # (x86 cl might be available from previous x86 build)
+    }
+
+    # VS 2022: Search in BuildTools, Community, Professional, Enterprise order
+    $editions = @("BuildTools", "Community", "Professional", "Enterprise")
+    $vcvarsall = $null
+    
+    foreach ($edition in $editions) {
+        $path = "C:\Program Files\Microsoft Visual Studio\2022\$edition\VC\Auxiliary\Build\vcvarsall.bat"
+        if (Test-Path $path) {
+            $vcvarsall = $path
+            break
+        }
+    }
+    
+    if (-not $vcvarsall) {
+        Write-Warning "vcvarsall.bat not found. MSVC tools may not be available."
+        return
+    }
+
+    Write-Host "Setting up MSVC environment for $Architecture using: $vcvarsall"
+    
+    # Run vcvarsall.bat with the specified architecture and capture environment variables
+    $vcvarsArch = if ($Architecture -eq 'x64') { 'x64' } else { 'x86' }
+    $envOutput = cmd /c "`"$vcvarsall`" $vcvarsArch >nul 2>&1 && set"
+    
+    # Parse environment variables and set them in current PowerShell session
+    $envVarsSet = 0
+    foreach ($line in $envOutput) {
+        if ($line -match '^([^=]+)=(.*)$') {
+            $key = $matches[1]
+            $value = $matches[2]
+            [System.Environment]::SetEnvironmentVariable($key, $value, 'Process')
+            $envVarsSet++
+        }
+    }
+
+    if ($envVarsSet -gt 0) {
+        Write-Host "MSVC environment configured ($envVarsSet environment variables set)"
+        
+        # Verify dumpbin is available
+        try {
+            $null = Get-Command dumpbin -ErrorAction Stop
+            Write-Host "dumpbin is now available"
+        } catch {
+            Write-Warning "dumpbin is still not available after MSVC environment setup"
+        }
+    } else {
+        Write-Warning "Failed to set MSVC environment variables"
+    }
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 if (-not $SkipBuild) {
     Write-Host "Building jtalkSync for $Architecture ..."
@@ -90,6 +158,8 @@ if (-not $SkipBuild) {
     $oldArch = $env:TARGET_ARCH
     try {
         $env:TARGET_ARCH = $Architecture
+        # Initialize MSVC environment for the target architecture
+        Initialize-MsvcEnvironment -Architecture $Architecture
         # Ensure UV_PYTHON_PREFERENCE is set to use managed Python
         # This allows uv to use the correct Python version (x86 or x64) based on what's installed
         if (-not $env:UV_PYTHON_PREFERENCE) {
@@ -130,7 +200,7 @@ if ($allOk) {
                 # Use uv to run unittest with Python 3.13 x64.
                 # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
                 $venvX64 = "$repoRoot\.venv-x64"
-                $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk"
+                $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk;$repoRoot\miscDepsJp\jptools"
                 
                 # Ensure JTalk dictionaries are present (required for smoke tests)
                 $jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
