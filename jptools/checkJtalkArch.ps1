@@ -122,7 +122,7 @@ if ($allOk) {
         try {
             $env:TARGET_ARCH = $Architecture
             if ($Architecture -eq 'x64') {
-                # Use uv to run pytest with Python 3.13 x64.
+                # Use uv to run unittest with Python 3.13 x64.
                 # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
                 $venvX64 = "$repoRoot\.venv-x64"
                 $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk"
@@ -191,30 +191,24 @@ if ($allOk) {
                         exit 1
                     }
                     
-                    # Install pytest in the venv
-                    Write-Host "Installing pytest in x64 venv..."
-                    & uv pip install --python $venvPython pytest
-                    if (-not $?) {
-                        Write-Error "uv pip install pytest failed"
-                        exit 1
-                    }
+                    # unittest is part of Python standard library, no installation needed
                 }
                 
-                # Run pytest in the x64 venv with timeout to prevent hang on access violation
+                # Run unittest in the x64 venv with timeout to prevent hang on access violation
                 # Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
                 # Set code page to 932 (Japanese Shift-JIS) to match local environment behavior
                 # This ensures consistent behavior for ctypes string handling and MeCab internal processing
                 $env:PYTHONUTF8 = "1"
-                # Set code page in the process that will run pytest
+                # Set code page in the process that will run unittest
                 # Note: Start-Process creates a new process, so we need to set code page via cmd /c
                 # Create a temporary batch file to ensure chcp 932 is executed before python
                 # This is more reliable than using && or & in cmd /c
-                $batchFile = Join-Path $env:TEMP "run_pytest_x64_$(Get-Date -Format 'yyyyMMddHHmmss').bat"
+                $batchFile = Join-Path $env:TEMP "run_unittest_x64_$(Get-Date -Format 'yyyyMMddHHmmss').bat"
                 $batchContent = @"
 @echo off
 chcp 932 >nul 2>&1
 cd /d "$repoRoot"
-"$venvX64\Scripts\python.exe" -m pytest -q miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
+"$venvX64\Scripts\python.exe" -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests
 exit /b %ERRORLEVEL%
 "@
                 try {
@@ -225,7 +219,7 @@ exit /b %ERRORLEVEL%
                     # Wait for process to finish first, then clean up
                     $process | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
                     if (-not $process.HasExited) {
-                        Write-Warning "pytest timed out after 120 seconds, forcing termination"
+                        Write-Warning "unittest timed out after 120 seconds, forcing termination"
                         $process | Stop-Process -Force -ErrorAction SilentlyContinue
                         Write-Error "jp smoke tests timed out"
                         exit 1

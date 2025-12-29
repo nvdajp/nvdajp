@@ -341,7 +341,7 @@ def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
 	#   mecab_debug.log is available)
 	#
 	# Usage example:
-	#   $env:NVDA_MECAB_STDERR_DEBUG="1"; python -m pytest miscDepsJp/jptools/test.py
+	#   $env:NVDA_MECAB_STDERR_DEBUG="1"; python -m unittest miscDepsJp.jptools.test
 	if os.environ.get("NVDA_MECAB_STDERR_DEBUG") == "1":
 		try:
 			sys.stderr.write(log_msg + "\n")

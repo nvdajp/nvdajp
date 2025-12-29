@@ -189,15 +189,15 @@ MeCabは`CHARSET_SHIFT_JIS`でコンパイルされているため、コード�
 
 #### 2. スクリプトレベル (`jptools/checkJtalkArch.ps1`)
 
-x64 smoke test実行時に、一時バッチファイルを作成し、その中で`chcp 932`を実行してからpytestを実行します：
+x64 smoke test実行時に、一時バッチファイルを作成し、その中で`chcp 932`を実行してからunittestを実行します：
 
 ```powershell
-$batchFile = Join-Path $env:TEMP "run_pytest_x64_$(Get-Date -Format 'yyyyMMddHHmmss').bat"
+$batchFile = Join-Path $env:TEMP "run_unittest_x64_$(Get-Date -Format 'yyyyMMddHHmmss').bat"
 $batchContent = @"
 @echo off
 chcp 932 >nul 2>&1
 cd /d "$repoRoot"
-"$venvX64\Scripts\python.exe" -m pytest -q miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"
+"$venvX64\Scripts\python.exe" -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests
 exit /b %ERRORLEVEL%
 "@
 ```

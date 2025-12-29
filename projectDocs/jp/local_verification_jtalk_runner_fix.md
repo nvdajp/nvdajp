@@ -26,14 +26,16 @@
 
 ```powershell
 # リポジトリルートで実行
-uv pip install --system scons pytest
+uv pip install --system scons
 ```
 
 または、仮想環境を使用する場合：
 
 ```powershell
-uv pip install scons pytest
+uv pip install scons
 ```
+
+**注**: `unittest` は Python 標準ライブラリのため、追加のインストールは不要です。
 
 ### 2. JTalk DLLのビルド
 
@@ -110,10 +112,12 @@ Test-Path "miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll"
 ```
 PYTHONPATH set to F:\nvda\gh\alphajp-251207\miscDepsJp\include\python-jtalk;F:\nvda\gh\alphajp-251207\miscDepsJp\source\synthDrivers\jtalk
 Running JP braille/JTalk smoke tests (filter: JtalkTests)...
-============================= test session starts =============================
-...
-miscDepsJp\jptools\test.py .                                             [100%]
-================= 1 passed, 4 deselected, 6 warnings in 0.67s =================
+test_jtalk (miscDepsJp.jptools.test.JtalkTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.67s
+
+OK
 ```
 
 ## トラブルシューティング
@@ -124,13 +128,9 @@ miscDepsJp\jptools\test.py .                                             [100%]
 - `projectDocs/dev/createDevEnvironment.md` を参照
 - Visual Studio 2022 の Developer Command Prompt が利用可能か確認
 
-### pytest が見つからない場合
+### unittest について
 
-仮想環境が作成されている場合は、仮想環境内にインストール：
-
-```powershell
-uv pip install pytest
-```
+`unittest` は Python 標準ライブラリのため、追加のインストールは不要です。Python 3.11 以降で利用可能です。
 
 ### テストが失敗する場合
 

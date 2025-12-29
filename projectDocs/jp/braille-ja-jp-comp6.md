@@ -139,9 +139,9 @@ py jpBrailleRunner.py
 
 * GitHub Actions `unitTests` job runs JP smoke after overlay.
   * `scons miscdepsjp` applies the JP overlay and copies JTalk core files.
-  * `python -m pytest miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"` checks translator2 and libopenjtalk.dll load.
+  * `python -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests` checks translator2 and libopenjtalk.dll load.
   * On failure, `__h1output.txt` / `__h2output.txt` are uploaded as artifacts.
-* Local quick run: `python -m pytest miscDepsJp/jptools/test.py -k "JpBrailleTests or JtalkTests"` or `py jpBrailleRunner.py`.
+* Local quick run: `.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` or `py jpBrailleRunner.py`.
 
 ## 既知の問題と課題
 
