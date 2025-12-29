@@ -88,7 +88,8 @@ def get_reading(msg):
 
 def runTasks(enableUserDic=False):
     if enableUserDic:
-        __print(f"Initializing MeCab with user dictionaries: {jt_dir}, {dic}, {user_dics}")
+        user_dics_str = ', '.join(map(str, user_dics)) if user_dics else 'None'
+        __print(f"Initializing MeCab with user dictionaries: {jt_dir}, {dic}, {user_dics_str}")
         Mecab_initialize(__print, str(jt_dir), str(dic), user_dics)
     else:
         __print(f"Initializing MeCab: {jt_dir}, {dic}")

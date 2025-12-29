@@ -80,8 +80,10 @@ if (-not (Test-Path $pythonExe)) {
 }
 
 function Test-UnittestAvailable {
-    # unittest is part of Python standard library, so it's always available
-    # This function is kept for compatibility but always returns true
+    # unittest is part of the Python standard library, so it's always available.
+    # Compatibility shim: this function is retained for older scripts/CI jobs that still
+    # invoke Test-UnittestAvailable, but it is effectively a no-op and always returns $true.
+    # TODO: Remove this function once all external callers have been updated to stop using it.
     return $true
 }
 
