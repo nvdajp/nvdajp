@@ -10,11 +10,15 @@ if /I "%ARCH%"=="x64" (
   rem (x86 cl might be available from previous x86 build)
 ) else (
   set "SET_CL_ARCH=1"
-  rem Fast path for x86: check if cl is already available
+  rem Fast path for x86: check if both cl and nmake are already available
   cl >nul 2>&1
   if "%ERRORLEVEL%" neq "9009" (
-    rem cl is available, MSVC environment already configured
-    goto :done
+    rem cl is available, check if nmake is also available
+    nmake /? >nul 2>&1
+    if "%ERRORLEVEL%" neq "9009" (
+      rem Both cl and nmake are available, MSVC environment already configured
+      goto :done
+    )
   )
 )
 
