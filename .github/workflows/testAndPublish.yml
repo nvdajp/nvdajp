@@ -313,6 +313,8 @@ jobs:
       uses: astral-sh/setup-uv@v6
     - name: Check comments for translators
       run: ci/scripts/tests/translationCheck.ps1
+      env:
+        UV_PYTHON_PREFERENCE: managed
     - name: Upload artifact
       if: ${{ success() || failure() }}
       uses: actions/upload-artifact@v4
@@ -340,6 +342,8 @@ jobs:
       uses: astral-sh/setup-uv@v6
     - name: License check
       run: ci/scripts/tests/licenseCheck.ps1
+      env:
+        UV_PYTHON_PREFERENCE: managed
 
   unitTests:
     name: Run unit tests
@@ -361,6 +365,8 @@ jobs:
       uses: astral-sh/setup-uv@v6
     - name: Run unit tests
       run: ci/scripts/tests/unitTests.ps1
+      env:
+        UV_PYTHON_PREFERENCE: managed
     - name: Replace relative paths in unit test results
       if: ${{ failure() }}
       # Junit reports fail on these
@@ -444,6 +450,8 @@ jobs:
     - name: Build scons docs targets
       shell: cmd
       run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
+      env:
+        UV_PYTHON_PREFERENCE: managed
     # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
     - name: Create launcher and controller client
       shell: cmd
@@ -452,6 +460,8 @@ jobs:
         PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
         PowerShell -Command "Install-Module -Name SignPath -Force"
         scons %sconsLauncherOutTargets% %sconsArgs% %sconsCores%
+      env:
+        UV_PYTHON_PREFERENCE: managed
     - name: Upload launcher
       id: uploadLauncher
       uses: actions/upload-artifact@v4
@@ -523,6 +533,7 @@ jobs:
         nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
         # On GitHub Actions, always skip 'installer' by mapping to an exclusion tag understood by the script
         INCLUDE_SYSTEM_TEST_TAGS: ${{ matrix.testSuite == 'installer' && 'excluded_from_build' || matrix.testSuite }}
+        UV_PYTHON_PREFERENCE: managed
     - name: Upload system tests results
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
