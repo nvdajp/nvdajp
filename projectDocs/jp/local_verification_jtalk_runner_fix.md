@@ -149,9 +149,11 @@ x64 環境での smoke テストは、`checkJtalkArch.ps1` を使用します：
 
 このスクリプトは：
 - `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
-- `uv` で Python 3.11 x64 を自動インストール・使用
+- `uv` で Python 3.13 x64 を自動インストール・使用
 - x64 DLL が正しくビルド・配置されることを確認（dumpbin で検証）
 - x64 Python で smoke テストを実行
+
+**注意**: `scons.bat`は常にx86 Python 3.13で実行されますが、`TARGET_ARCH=x64`によりx64 DLLがビルドされます。
 
 ### x64 環境での準備手順
 

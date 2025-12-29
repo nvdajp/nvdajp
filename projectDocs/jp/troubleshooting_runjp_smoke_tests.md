@@ -152,18 +152,28 @@ x64 環境で MeCab DLL を呼び出す際、`ctypes` のポインタ型指定�
 
 ### x64 環境での smoke テスト実行
 
-x64 環境での smoke テストは、専用のスクリプト `checkJtalkArch.ps1` を使用します：
+x64 環境での smoke テストは、以下の2つの方法があります：
 
-```powershell
-# x64 DLL をビルドして smoke テストを実行
-.\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
-```
+1. **`runJpSmokeTests.ps1`を使用（推奨）**:
+   - `certBuild2023.cmd`から自動的に呼び出される
+   - `BUILD_ARCH`または`TARGET_ARCH`環境変数が`x64`の場合、自動的にx64 Python 3.13と`.venv-x64`を使用
+   - `scons.bat`は常にx86 Python 3.13で実行されるが、`TARGET_ARCH=x64`によりx64 DLLがビルドされる
+   - smoke testは`TARGET_ARCH`に応じて適切なPythonアーキテクチャを使用
 
-このスクリプトは：
-- `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
-- `uv` で Python 3.13 x64 を自動インストール・使用
-- x64 DLL が正しくビルド・配置されることを確認
-- x64 Python で smoke テストを実行（unittest を使用）
+2. **`checkJtalkArch.ps1`を使用（手動実行時）**:
+   ```powershell
+   # x64 DLL をビルドして smoke テストを実行
+   .\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
+   ```
+   - `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
+   - `uv` で Python 3.13 x64 を自動インストール・使用
+   - x64 DLL が正しくビルド・配置されることを確認
+   - x64 Python で smoke テストを実行（unittest を使用）
+
+**重要な注意点**:
+- `scons.bat`は常にx86 Python 3.13で実行される（`.venv`はx86 Python 3.13を使用）
+- `TARGET_ARCH`環境変数により、ビルドされるDLLのアーキテクチャが決まる
+- `runJpSmokeTests.ps1`は`BUILD_ARCH`/`TARGET_ARCH`を読み取り、x64の場合はx64 Python 3.13を使用
 
 ### CI での x64 検証
 

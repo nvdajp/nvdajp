@@ -235,8 +235,10 @@
     2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現** ✅ 完了
        * **完了内容**: x64 での smoke テスト実行環境が整備済み ✅
          * `.\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 環境での smoke テストを実行可能
+         * `runJpSmokeTests.ps1`は`BUILD_ARCH`/`TARGET_ARCH`を読み取り、x64の場合は自動的にx64 Python 3.13と`.venv-x64`を使用
          * `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
-         * uv で Python 3.11.14 x64 を自動インストール・使用
+         * uv で Python 3.13 x64 を自動インストール・使用
+         * **注意**: `scons.bat`は常にx86 Python 3.13で実行されるが、`TARGET_ARCH=x64`によりx64 DLLがビルドされる
          * x64 DLL が x64 Python で正しくロードされることを確認（`OSError: [WinError 193]` エラーは発生せず）
          * x64 での `access violation` エラーを修正（ctypes のポインタ型指定）
        * **発見された問題**: x64 での smoke テスト実行時に `access violation` エラーが発生 ✅ 解決済み
