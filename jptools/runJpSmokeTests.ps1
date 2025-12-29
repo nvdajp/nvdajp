@@ -74,10 +74,43 @@ Start-Transcript -Path $logFile -Append | Out-Null
 Write-Host "REPO_ROOT set to $repoRoot"
 Write-Host "Log file: $logFile"
 
-$pythonExe = Join-Path $repoRoot ".venv\Scripts\python.exe"
-if (-not (Test-Path $pythonExe)) {
-    $pythonExe = "python"
+# Determine build architecture from BUILD_ARCH or TARGET_ARCH environment variable
+$buildArch = if ($env:BUILD_ARCH) { $env:BUILD_ARCH } elseif ($env:TARGET_ARCH) { $env:TARGET_ARCH } else { "x86" }
+Write-Host "Build architecture: $buildArch"
+
+# For x64 builds, use x64 Python and separate venv (.venv-x64)
+# For x86 builds, use x86 Python and default venv (.venv)
+if ($buildArch -eq "x64") {
+    Write-Host "x64 build detected: using x64 Python and .venv-x64"
+    # Ensure x64 Python 3.13 is available
+    Write-Host "Ensuring Python 3.13 x64 is available..."
+    & uv python install 3.13
+    if (-not $?) {
+        Write-Error "uv python install failed"
+        Stop-Transcript | Out-Null
+        exit 1
+    }
+    # Use separate venv for x64 to avoid conflicts with x86 .venv
+    $venvX64 = Join-Path $repoRoot ".venv-x64"
+    $pythonExe = Join-Path $venvX64 "Scripts\python.exe"
+    if (-not (Test-Path $pythonExe)) {
+        Write-Host "Creating x64 virtual environment..."
+        & uv venv $venvX64 --python 3.13
+        if (-not $?) {
+            Write-Error "Failed to create x64 virtual environment"
+            Stop-Transcript | Out-Null
+            exit 1
+        }
+        $pythonExe = Join-Path $venvX64 "Scripts\python.exe"
+    }
+} else {
+    # x86 build: use default .venv
+    $pythonExe = Join-Path $repoRoot ".venv\Scripts\python.exe"
+    if (-not (Test-Path $pythonExe)) {
+        $pythonExe = "python"
+    }
 }
+Write-Host "Using Python: $pythonExe"
 
 function Test-UnittestAvailable {
     # unittest is part of the Python standard library, so it's always available.
@@ -89,12 +122,18 @@ function Test-UnittestAvailable {
 
 function Install-Packages {
     param(
-        [string[]]$Packages
+        [string[]]$Packages,
+        [string]$VenvPath = ""
     )
     Write-Host "Installing dependencies: $($Packages -join ', ')"
     $installOk = $false
     try {
-        uv pip install @Packages
+        if ($VenvPath) {
+            # Use specific venv for installation
+            & uv pip install --python $pythonExe @Packages
+        } else {
+            & uv pip install @Packages
+        }
         if ($LastExitCode -eq 0) { $installOk = $true }
     } catch {
         Write-Warning "uv is not available; falling back to python -m pip"
@@ -127,17 +166,24 @@ function Ensure-JtalkDic {
 function Initialize-MsvcEnvironment {
     <#
     .SYNOPSIS
-        Initializes MSVC environment variables (PATH, INCLUDE, LIB, etc.) for x86 builds.
+        Initializes MSVC environment variables (PATH, INCLUDE, LIB, etc.) for the specified architecture.
         This ensures tools like dumpbin, cl, nmake are available in the current PowerShell session.
         Currently supports Visual Studio 2022 only.
     #>
-    # Check if cl is already available (fast path)
-    try {
-        $null = Get-Command cl -ErrorAction Stop
-        Write-Host "MSVC environment already configured (cl is available)"
-        return
-    } catch {
-        # cl not found, need to set up environment
+    param(
+        [string]$Architecture = "x86"
+    )
+    
+    # For x64 builds, always set up environment to ensure x64 tools are used
+    # For x86 builds, check if cl is already available (fast path)
+    if ($Architecture -eq "x86") {
+        try {
+            $null = Get-Command cl -ErrorAction Stop
+            Write-Host "MSVC environment already configured (cl is available)"
+            return
+        } catch {
+            # cl not found, need to set up environment
+        }
     }
 
     # VS 2022: Search in BuildTools, Community, Professional, Enterprise order
@@ -156,14 +202,14 @@ function Initialize-MsvcEnvironment {
 
     if (-not $vcvarsall) {
         Write-Warning "Visual Studio 2022 vcvarsall.bat not found. MSVC tools (dumpbin, cl, nmake) may not be available."
-        Write-Warning "You may need to manually run 'vcvarsall.bat x86' in a Developer Command Prompt."
+        Write-Warning "You may need to manually run 'vcvarsall.bat $Architecture' in a Developer Command Prompt."
         return
     }
 
-    Write-Host "Setting up MSVC environment for x86 using: $vcvarsall"
+    Write-Host "Setting up MSVC environment for $Architecture using: $vcvarsall"
     
-    # Run vcvarsall.bat x86 and capture environment variables
-    $envOutput = cmd /c "`"$vcvarsall`" x86 >nul 2>&1 && set"
+    # Run vcvarsall.bat with the specified architecture and capture environment variables
+    $envOutput = cmd /c "`"$vcvarsall`" $Architecture >nul 2>&1 && set"
     
     # Parse environment variables and set them in current PowerShell session
     $envVarsSet = 0
@@ -197,14 +243,15 @@ if (-not $SkipInstall) {
     $packages = @("scons")
 }
 
-if ($needsInstall = (-not $SkipInstall)) {
-    Install-Packages -Packages $packages
+if (-not $SkipInstall) {
+    $venvPath = if ($buildArch -eq "x64") { Join-Path $repoRoot ".venv-x64" } else { Join-Path $repoRoot ".venv" }
+    Install-Packages -Packages $packages -VenvPath $venvPath
 }
 
 # Initialize MSVC environment for local runs (needed for dumpbin, cl, nmake)
 # CI environments already have MSVC environment set up via ilammy/msvc-dev-cmd@v1
 if (-not $isCI) {
-    Initialize-MsvcEnvironment
+    Initialize-MsvcEnvironment -Architecture $buildArch
 }
 
 if (-not $SkipOverlay) {
@@ -285,13 +332,13 @@ if ($TestFilter -and $TestFilter -ne "JpBrailleTests or JtalkTests") {
 # Run tests
 $testExitCode = 0
 if ($unittestArgs.Count -eq 1) {
-    uv run python -m unittest $unittestArgs[0] -v
+    & uv run --python $pythonExe python -m unittest $unittestArgs[0] -v
     $testExitCode = $LastExitCode
 } else {
     # Multiple test classes: run each separately and combine exit codes
     $allPassed = $true
     foreach ($testArg in $unittestArgs) {
-        uv run python -m unittest $testArg -v
+        & uv run --python $pythonExe python -m unittest $testArg -v
         if ($LastExitCode -ne 0) {
             $allPassed = $false
         }
