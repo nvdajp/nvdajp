@@ -52,7 +52,11 @@ if not defined FOUND (
 )
 
 echo [vcsetup] Using: "%FOUND%"
-call "%FOUND%"
+call "%FOUND%" >nul 2>&1
+if "%ERRORLEVEL%" neq "0" (
+  echo [ERROR] Failed to execute vcvars script: "%FOUND%" >&2
+  exit /b 1
+)
 if defined SET_CL_ARCH (
   SET CL=/arch:IA32
 )
