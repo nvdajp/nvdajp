@@ -46,7 +46,7 @@ jobs:
     - name: Install Python 3.13 x86
       run: |
         # Install x86 Python 3.13 explicitly for builds
-        # This ensures uv uses Python 3.13 x86 as specified in .python-version
+        # This ensures uv uses Python 3.13 x86 for builds
         uv python install cpython-3.13.6-windows-x86-none
         uv python list
       shell: powershell
@@ -602,7 +602,7 @@ jobs:
     - name: Install Python 3.13 x86
       run: |
         # Install x86 Python 3.13 explicitly for smoke tests
-        # This ensures uv uses Python 3.13 x86 as specified in .python-version
+        # This ensures uv uses Python 3.13 x86 for smoke tests
         uv python install cpython-3.13.6-windows-x86-none
         uv python list
       shell: powershell

@@ -88,7 +88,7 @@
   * `jptools/runJpSmokeTests.ps1`で`UV_PYTHON_PREFERENCE=managed`を設定
   * CIの`buildNVDA`ジョブと`jpSmokeTests`ジョブでPython 3.13 x86をインストール
   * CIの`buildNVDA`ジョブと`jpSmokeTests`ジョブで`UV_PYTHON_PREFERENCE=managed`を設定
-  * `jptools/checkJtalkArch.ps1`でx64ビルド時に`.python-version`を一時的に無視する処理を追加
+  * `jptools/checkJtalkArch.ps1`で`UV_PYTHON_PREFERENCE=managed`を設定して、uvが管理するPythonを使用するように修正
   * ローカルとCI環境で一貫したPythonインタープリター選択を実現
 
 ### 次に取り込むべきリビジョン（2025年12月29日時点の検討結果）

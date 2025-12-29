@@ -60,7 +60,7 @@ Set-Location $repoRoot
 # This allows scripts to get repo root without depending on miscDepsJp folder structure
 $env:REPO_ROOT = $repoRoot
 
-# Set UV_PYTHON_PREFERENCE to ensure uv uses managed Python (as specified in .python-version)
+# Set UV_PYTHON_PREFERENCE to ensure uv uses managed Python
 # This ensures consistent behavior between local and CI environments
 if (-not $env:UV_PYTHON_PREFERENCE) {
     $env:UV_PYTHON_PREFERENCE = "managed"
