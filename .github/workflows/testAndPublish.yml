@@ -590,12 +590,21 @@ jobs:
         architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
+    - name: Install Python 3.13 x86
+      run: |
+        # Install x86 Python 3.13 explicitly for smoke tests
+        # This ensures uv uses Python 3.13 x86 as specified in .python-version
+        uv python install cpython-3.13.6-windows-x86-none
+        uv python list
+      shell: powershell
     - name: Setup MSVC environment
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x86
     - name: Run JP smoke tests
       run: jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
+      env:
+        UV_PYTHON_PREFERENCE: managed
     - name: Upload artifact
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
