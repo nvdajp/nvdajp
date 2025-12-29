@@ -91,6 +91,12 @@
   * `jptools/checkJtalkArch.ps1`で`UV_PYTHON_PREFERENCE=managed`を設定して、uvが管理するPythonを使用するように修正
   * ローカルとCI環境で一貫したPythonインタープリター選択を実現
 
+* ✅ **`.python-version`ファイルの削除とMeCabログのログファイルへのリダイレクト完了**（2025年12月30日）
+  * `.python-version`ファイルを削除して本家版との差分を最小化
+  * `jptools/checkJtalkArch.ps1`から`.python-version`のリネーム処理を削除し、`UV_PYTHON_PREFERENCE=managed`を使用
+  * `mecabRunner.py`と`jtalkRunner.py`の`__print`関数を修正して、MeCabログを`mecab_debug.log`ファイルにのみ保存（コンソールには出力しない）
+  * `ensureuv.ps1`の仕組みを尊重し、`UV_PYTHON_PREFERENCE=managed`でPythonインタープリターを選択
+
 ### 次に取り込むべきリビジョン（2025年12月29日時点の検討結果）
 
 **現在の状態**:

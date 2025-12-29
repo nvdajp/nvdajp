@@ -201,6 +201,8 @@ code source/synthDrivers/jtalk/mecab.py
 
 NVDA のログは通常 `%APPDATA%\nvda\nvda.log` に出力されます。
 
+MeCab のログは `source/synthDrivers/jtalk/mecab_debug.log` にのみ保存されます（コンソールには出力されません）。これは `mecabRunner.py` と `jtalkRunner.py` の `__print` 関数がログファイルにのみ書き込むように実装されているためです。
+
 ### 注意事項
 
 - `mecab.py` は `source/synthDrivers/jtalk/mecab.py` に直接配置されているため、直接編集できます
