@@ -88,14 +88,8 @@ if (-not $SkipBuild) {
     Write-Host "Building jtalkSync for $Architecture ..."
     Push-Location $repoRoot
     $oldArch = $env:TARGET_ARCH
-    $oldPythonPreference = $env:UV_PYTHON_PREFERENCE
     try {
         $env:TARGET_ARCH = $Architecture
-        # For x64 builds, set UV_PYTHON_PREFERENCE=managed to allow uv to use managed Python
-        # instead of relying on .python-version which may specify x86 only
-        if ($Architecture -eq 'x64') {
-            $env:UV_PYTHON_PREFERENCE = "managed"
-        }
         & "$repoRoot\scons.bat" "jtalkSync"
         if (-not $?) {
             Write-Error "scons failed"
@@ -103,11 +97,6 @@ if (-not $SkipBuild) {
         }
     } finally {
         $env:TARGET_ARCH = $oldArch
-        if ($null -ne $oldPythonPreference) {
-            $env:UV_PYTHON_PREFERENCE = $oldPythonPreference
-        } else {
-            Remove-Item Env:UV_PYTHON_PREFERENCE -ErrorAction SilentlyContinue
-        }
         Pop-Location
     }
 }
