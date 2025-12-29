@@ -77,19 +77,36 @@
   * Push完了、CI実行中
   * 参照: `projectDocs/jp/merge-rehearsal-2025-12-30.md` の「マージ実行結果」
 
+* ✅ **JP smoke testのpytest→unittest移行完了**（2025年12月29日）
+  * pytest依存を削除し、Python標準ライブラリのunittestに統一
+  * `jptools/runJpSmokeTests.ps1`、`jptools/checkJtalkArch.ps1`、`jptools/findCrashingTests.ps1`を更新
+  * CIワークフローからpytestインストールを削除
+  * すべてのドキュメントを更新（`projectDocs/jp/troubleshooting_runjp_smoke_tests.md`など）
+  * NVDAの標準テストフレームワークに統一し、依存関係を削減
+
+* ✅ **UV_PYTHON_PREFERENCE設定の一貫化完了**（2025年12月29日）
+  * `jptools/runJpSmokeTests.ps1`で`UV_PYTHON_PREFERENCE=managed`を設定
+  * CIの`buildNVDA`ジョブと`jpSmokeTests`ジョブでPython 3.13 x86をインストール
+  * CIの`buildNVDA`ジョブと`jpSmokeTests`ジョブで`UV_PYTHON_PREFERENCE=managed`を設定
+  * `jptools/checkJtalkArch.ps1`でx64ビルド時に`.python-version`を一時的に無視する処理を追加
+  * ローカルとCI環境で一貫したPythonインタープリター選択を実現
+
 ### 次に取り込むべきリビジョン（2025年12月30日時点の検討結果）
 
 **現在の状態**:
+
 * ✅ ステージ3a完了: `9613ce6e3` (x86 Python 3.13段階) までマージ完了
 * ⏳ 次のステージ: ステージ3b（x64 Python 3.13への移行）
 
 **nvaccess/beta の最新状態**:
+
 * 最新コミット: `1cee6d93c` (2025年12月30日時点) - "Pass 0 instead of None to VBuf_getControlFieldNodeWithIdentifier (#19365)"
 * x64移行コミット: `58dd14767` (2025年9月15日) - "Only build 64bit"
   * このコミットで `.python-versions` が `cpython-3.13.x-windows-x86_64-none` に変更
   * x86 ビルドが削除され、x64 のみのビルドになる
 
 **コミット範囲の分析**:
+
 * `9613ce6e3` (x86 Python 3.13段階) から `58dd14767` (x64移行) まで: **85コミット**
   * x64移行前の変更（バグ修正、機能追加など）
   * 主な変更: UWP OCR on 64 bit対応、64-bit uninstaller修正、x64 identification修正など
@@ -117,6 +134,7 @@
    * 各PRで全テスト通過を確認
 
 **注意事項**:
+
 * x64移行は大きな変更のため、段階的に進めることを推奨
 * ローカル環境でのx64検証環境（`checkJtalkArch.ps1 -Architecture x64`）が整備済み ✅
 * CI環境でのx64検証（`.github/workflows/checkJtalkArch-x64.yml`）が整備済み ✅
@@ -408,6 +426,12 @@
   * Push: `betajp-251230` ブランチに push 完了 ✅
   * CI実行: 開始済み（実行ID: `20555439906`）✅
   * **コミット**: `d1792591a` - "Merge nvaccess/beta (x86 Python 3.13 stage, commit 9613ce6e3)"
+
+* [x] **タスク 3a.8: Python 3.13 x86環境でのJP smoke test対応** ✅ 完了（2025年12月29日）
+  * pytestからunittestへの移行完了 ✅
+  * `UV_PYTHON_PREFERENCE=managed`の一貫した設定完了 ✅
+  * CIでのPython 3.13 x86インストールと設定完了 ✅
+  * ローカルとCI環境での一貫した動作を確認 ✅
 
 ### ステージ3b: x64 Python 3.13への移行（優先度：高）
 
