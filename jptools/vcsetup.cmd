@@ -3,18 +3,19 @@ rem Setup MSVC build environment persistently. Usage: vcsetup.cmd [x64|x86]
 rem Defaults to x86.
 rem Currently supports Visual Studio 2022 only.
 
-rem Fast path: check if cl is already available
-cl >nul 2>&1
-if "%ERRORLEVEL%" neq "9009" (
-  rem cl is available, MSVC environment already configured
-  goto :done
-)
-
 set "ARCH=%~1"
 if /I "%ARCH%"=="x64" (
   set "SET_CL_ARCH="
+  rem For x64 builds, always set up environment to ensure x64 tools are used
+  rem (x86 cl might be available from previous x86 build)
 ) else (
   set "SET_CL_ARCH=1"
+  rem Fast path for x86: check if cl is already available
+  cl >nul 2>&1
+  if "%ERRORLEVEL%" neq "9009" (
+    rem cl is available, MSVC environment already configured
+    goto :done
+  )
 )
 
 rem Use shared Python module for VS path detection (jptools/vs_utils.py)
