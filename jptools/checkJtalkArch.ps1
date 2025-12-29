@@ -88,8 +88,17 @@ if (-not $SkipBuild) {
     Write-Host "Building jtalkSync for $Architecture ..."
     Push-Location $repoRoot
     $oldArch = $env:TARGET_ARCH
+    $pythonVersionFile = Join-Path $repoRoot ".python-version"
+    $pythonVersionBackup = $null
     try {
         $env:TARGET_ARCH = $Architecture
+        # For x64 builds, temporarily rename .python-version to avoid Python 3.13 x86 selection
+        # This ensures uv uses Python 3.13 x64 installed via uv python install
+        if ($Architecture -eq 'x64' -and (Test-Path $pythonVersionFile)) {
+            $pythonVersionBackup = "$pythonVersionFile.backup"
+            Move-Item $pythonVersionFile $pythonVersionBackup -Force
+            Write-Host "Temporarily renamed .python-version for x64 build"
+        }
         & "$repoRoot\scons.bat" "jtalkSync"
         if (-not $?) {
             Write-Error "scons failed"
@@ -97,6 +106,11 @@ if (-not $SkipBuild) {
         }
     } finally {
         $env:TARGET_ARCH = $oldArch
+        # Restore .python-version if it was renamed
+        if ($pythonVersionBackup -and (Test-Path $pythonVersionBackup)) {
+            Move-Item $pythonVersionBackup $pythonVersionFile -Force
+            Write-Host "Restored .python-version"
+        }
         Pop-Location
     }
 }
