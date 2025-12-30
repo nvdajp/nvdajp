@@ -266,6 +266,9 @@ freeze(
 		("images", glob("images/*.ico")),
 		("fonts", glob("fonts/*.ttf")),
 		("louis/tables", glob("louis/tables/*")),
+		# BEGIN JP PATCH (Japanese braille table: ja-jp-rokutenkanji.tbl)
+		("louis/tables", ["ja-jp-rokutenkanji.tbl"]),
+		# END JP PATCH
 		("COMRegistrationFixes", glob("COMRegistrationFixes/*.reg")),
 		("miscDeps/tools", ["../miscDeps/tools/msgfmt.exe"]),
 		(".", glob("../miscDeps/python/*.dll")),
