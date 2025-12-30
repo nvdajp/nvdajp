@@ -79,13 +79,6 @@ def _resolveTableInner(tables: list[str], base: str | None = None) -> Generator[
 				yield path
 				break
 		else:
-			# #region agent log
-			try:
-				with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-					import json
-					f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"H","location":"louisHelper.py:68","message":"table not found","data":{"table":table,"directoriesToSearch":directoriesToSearch},"timestamp":int(__import__("time").time()*1000)})+"\n")
-			except: pass
-			# #endregion agent log
 			raise LookupError(f"Could not resolve table {table!r}, looked in paths: {directoriesToSearch!r}")
 
 
@@ -174,81 +167,23 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 	"""
 	text = inbuf.replace("\0", "")
 	# nvdajp begin
-	# #region agent log
-	try:
-		with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-			import json
-			f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"A","location":"louisHelper.py:154","message":"translate called","data":{"tableList":tableList,"textLen":len(text) if text else 0},"timestamp":int(__import__("time").time()*1000)})+"\n")
-	except: pass
-	# #endregion agent log
 	try:
 		from synthDrivers.jtalk.translator2 import translate as jpTranslate
-		# #region agent log
-		try:
-			with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-				import json
-				f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"louisHelper.py:158","message":"jpTranslate imported","data":{"success":True},"timestamp":int(__import__("time").time()*1000)})+"\n")
-		except: pass
-		# #endregion agent log
 	except ModuleNotFoundError:
 		log.warning("Japanese translation module not found.")
 		jpTranslate = None
-		# #region agent log
-		try:
-			with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-				import json
-				f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"B","location":"louisHelper.py:162","message":"jpTranslate import failed","data":{"success":False},"timestamp":int(__import__("time").time()*1000)})+"\n")
-		except: pass
-		# #endregion agent log
-	# #region agent log
-	try:
-		with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-			import json
-			firstTable = tableList[0] if tableList and len(tableList) > 0 else None
-			matches = firstTable and firstTable.endswith("ja-jp-comp6.utb") if firstTable else False
-			f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"C","location":"louisHelper.py:164","message":"checking ja-jp-comp6.utb","data":{"firstTable":firstTable,"matches":matches,"jpTranslateAvailable":jpTranslate is not None},"timestamp":int(__import__("time").time()*1000)})+"\n")
-	except: pass
-	# #endregion agent log
 	if jpTranslate and tableList and len(tableList) > 0 and tableList[0].endswith("ja-jp-comp6.utb"):
 		log.debug(text)
 		nabcc = config.conf["braille"]["expandAtCursor"]
-		# #region agent log
-		try:
-			with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-				import json
-				f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"D","location":"louisHelper.py:168","message":"calling jpTranslate","data":{"textLen":len(text),"nabcc":nabcc,"cursorPos":cursorPos or 0},"timestamp":int(__import__("time").time()*1000)})+"\n")
-		except: pass
-		# #endregion agent log
 		try:
 			braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
 				text,
 				cursorPos=cursorPos or 0,
 				nabcc=nabcc,
 			)
-			# #region agent log
-			try:
-				with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-					import json
-					f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"E","location":"louisHelper.py:175","message":"jpTranslate succeeded","data":{"brailleLen":len(braille) if braille else 0,"brailleType":type(braille).__name__},"timestamp":int(__import__("time").time()*1000)})+"\n")
-			except: pass
-			# #endregion agent log
 		except Exception as e:
-			# #region agent log
-			try:
-				with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-					import json
-					f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"E","location":"louisHelper.py:178","message":"jpTranslate failed","data":{"error":str(e),"errorType":type(e).__name__},"timestamp":int(__import__("time").time()*1000)})+"\n")
-			except: pass
-			# #endregion agent log
 			raise
 	else:
-		# #region agent log
-		try:
-			with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-				import json
-				f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"F","location":"louisHelper.py:181","message":"using liblouis","data":{"reason":"jpTranslate not available or not ja-jp-comp6.utb"},"timestamp":int(__import__("time").time()*1000)})+"\n")
-		except: pass
-		# #endregion agent log
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
 			tableList,
 			text,
