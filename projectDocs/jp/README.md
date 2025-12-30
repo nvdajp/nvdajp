@@ -56,6 +56,7 @@
 * 本家版の開発環境ガイド: `projectDocs/dev/createDevEnvironment.md`
 * 本家版のプロダクトビジョン: `projectDocs/product_vision.md`
 * 日本語点字出力テーブル: `projectDocs/jp/braille-ja-jp-comp6.md`
+* **日本語入力メソッド（IME/TSF）の実装**: `projectDocs/jp/japanese-input-method-implementation.md`
 * 日本語版 CI/ビルド基盤: `projectDocs/jp/ci`
 * **miscDepsJp と JP overlay の現状と方針**: `projectDocs/jp/miscdepsjp-overlay-strategy.md`
 * **コード署名を考慮したビルド依存関係**: `projectDocs/jp/code-signing-dependencies.md`
