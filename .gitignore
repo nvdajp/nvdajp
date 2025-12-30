@@ -52,3 +52,13 @@ source/locale/*/cldr.dic
 nvdaHelper/docs/
 *.pfx
 *.egg-info
+# JP-specific build artifacts
+__*.txt
+sconstruct.ours
+sconstruct.theirs
+miscDepsJp/_state/
+miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp/
+miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-*.csv
+source/synthDrivers/jtalk/dic/*.bin
+source/synthDrivers/jtalk/dic/*.dic
+source/synthDrivers/jtalk/dic/DIC_VERSION
