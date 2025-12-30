@@ -210,7 +210,7 @@ class MecabMorph(object):
 				self.accent,
 				self.output,
 				self.sepflag,
-			)
+			),
 		)
 
 
@@ -347,7 +347,7 @@ def kansuji2arabic(text, logwrite=None):
 		if logwrite:
 			logwrite(
 				"kansuji2arabic c(%s) c1(%s) kanindex(%d) prevDigit(%d) digit(%d) result(%d) numgroup(%d)"
-				% (c, c1, kanindex, prevDigit, digit, result, numgroup)
+				% (c, c1, kanindex, prevDigit, digit, result, numgroup),
 			)
 		if prevDigit > digit:
 			return (2, None)  # およその数で数が重なる場合

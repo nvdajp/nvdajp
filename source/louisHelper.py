@@ -167,7 +167,7 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 				cursorPos=cursorPos or 0,
 				nabcc=nabcc,
 			)
-		except Exception as e:
+		except Exception:
 			raise
 	else:
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(

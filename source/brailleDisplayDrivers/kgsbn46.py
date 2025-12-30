@@ -174,8 +174,11 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 			continue
 		log.info(
 			"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(
-				_port=_port, hwID=hwID, btName=btName, frName=frName
-			)
+				_port=_port,
+				hwID=hwID,
+				btName=btName,
+				frName=frName,
+			),
 		)
 		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
 		if ret:
@@ -250,7 +253,11 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
 		self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
 		ret, self._portName = bmConnect(
-			self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection
+			self._directBM,
+			port,
+			self._keyCallbackInst,
+			self._statusCallbackInst,
+			execEndConnection,
 		)
 		if ret:
 			self.numCells = numCells
@@ -346,8 +353,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 				"kb:downArrow": ("br(kgsbn46):lf",),
 				"kb:leftArrow": ("br(kgsbn46):func3",),
 				"kb:rightArrow": ("br(kgsbn46):func4",),
-			}
-		}
+			},
+		},
 	)
 
 

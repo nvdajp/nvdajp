@@ -275,7 +275,7 @@ def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
 			pass
 
 	_write_debug_log(
-		f"Mecab_analysis: called with src type={type(src)}, len={len(src) if src else 0}{code_page_info}"
+		f"Mecab_analysis: called with src type={type(src)}, len={len(src) if src else 0}{code_page_info}",
 	)
 
 	if not src:
@@ -304,7 +304,7 @@ def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
 			null_byte = b"\0"
 			ends_with_null = src.endswith(null_byte)
 			logwrite_(
-				f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}"
+				f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}",
 			)
 		except Exception:
 			# Logging is best-effort only. Failures must not interfere
@@ -515,7 +515,13 @@ def _makeFeatureFromLatinWordAndPostfix(org, ar, symbol=""):
 	pron = _pron + postfix
 	mora = getMoraCount(ar[10]) + 1 if len(ar) > 10 else len(pron)
 	feature = "{h},{h1},{h2},{h3},*,*,*,{h},{y},{p},0/{m},C0".format(
-		h=hyoki, h1=hin1, h2=hin2, h3=hin3, y=yomi, p=pron, m=mora
+		h=hyoki,
+		h1=hin1,
+		h2=hin2,
+		h3=hin3,
+		y=yomi,
+		p=pron,
+		m=mora,
 	)
 	return feature
 
@@ -579,7 +585,12 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
 				pron = yomi
 				mora = len(yomi)
 				feature = "{h},{h1},{h2},*,*,*,*,{h},{y},{p},0/{m},C0".format(
-					h=hyoki, h1=hin1, h2=hin2, y=yomi, p=pron, m=mora
+					h=hyoki,
+					h1=hin1,
+					h2=hin2,
+					y=yomi,
+					p=pron,
+					m=mora,
 				)
 				Mecab_setFeature(mf, pos - 2, ",,,*,*,*,*", CODE_=CODE_)
 				Mecab_setFeature(mf, pos - 1, ",,,*,*,*,*", CODE_=CODE_)
@@ -635,7 +646,12 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
 				pron = ar2[9] + "ー"
 				mora = getMoraCount(ar2[10]) + 1
 				feature = "{h},{h1},{h2},*,*,*,*,{h},{y},{p},0/{m},C0".format(
-					h=hyoki, h1=hin1, h2=hin2, y=yomi, p=pron, m=mora
+					h=hyoki,
+					h1=hin1,
+					h2=hin2,
+					y=yomi,
+					p=pron,
+					m=mora,
 				)
 				Mecab_setFeature(mf, pos - 1, feature, CODE_=CODE_)
 			elif ar3 and ar2 and len(ar3) > 10 and ar3[1] != "記号":
@@ -646,7 +662,12 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
 				pron = ar3[9] + ar2[0] + "ー"
 				mora = getMoraCount(ar3[10]) + len(ar2[0]) + 1
 				feature = "{h},{h1},{h2},*,*,*,*,{h},{y},{p},0/{m},C0".format(
-					h=hyoki, h1=hin1, h2=hin2, y=yomi, p=pron, m=mora
+					h=hyoki,
+					h1=hin1,
+					h2=hin2,
+					y=yomi,
+					p=pron,
+					m=mora,
 				)
 				Mecab_setFeature(mf, pos - 2, feature, CODE_=CODE_)
 		elif _shouldWorkAroundLatinWordPostfix(ar3, ar2, ar):
@@ -699,7 +720,12 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
 				pron = yomi
 				mora = len(yomi)
 				feature = "{h},{h1},{h2},*,*,*,*,{h},{y},{p},0/{m},C0".format(
-					h=hyoki, h1=hin1, h2=hin2, y=yomi, p=pron, m=mora
+					h=hyoki,
+					h1=hin1,
+					h2=hin2,
+					y=yomi,
+					p=pron,
+					m=mora,
 				)
 				Mecab_setFeature(mf, pos - 1, ",,,*,*,*,*", CODE_=CODE_)
 				Mecab_setFeature(mf, pos, feature, CODE_=CODE_)

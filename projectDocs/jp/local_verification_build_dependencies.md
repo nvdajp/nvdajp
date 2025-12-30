@@ -13,8 +13,8 @@ ci/scripts/tests/typeCheck.ps1
 ```
 
 **確認事項**:
-- `jptools/scons_jp.py` の `register_jp_builders` 関数の型アノテーションが正しいか
-- `dist_target` パラメータの型が適切か（`Any | None`）
+* `jptools/scons_jp.py` の `register_jp_builders` 関数の型アノテーションが正しいか
+* `dist_target` パラメータの型が適切か（`Any | None`）
 
 ### 2. 非署名ビルドの動作確認
 
@@ -29,9 +29,9 @@ scons source dist launcher --all-cores
 ```
 
 **確認事項**:
-- `dist` が `source` と `user_docs` の後にビルドされる
-- `launcher` が `dist` の後にビルドされる
-- エラーなく完了する
+* `dist` が `source` と `user_docs` の後にビルドされる
+* `launcher` が `dist` の後にビルドされる
+* エラーなく完了する
 
 #### 2.2 並列ビルドでの依存関係の確認
 
@@ -44,9 +44,9 @@ scons source dist launcher --all-cores
 ```
 
 **確認事項**:
-- `jpCertExtras` が `dist` の完了後に実行される（並列ビルドでも）
-- ファイルロックエラー（`PermissionError`）が発生しない
-- ビルドが正常に完了する
+* `jpCertExtras` が `dist` の完了後に実行される（並列ビルドでも）
+* ファイルロックエラー（`PermissionError`）が発生しない
+* ビルドが正常に完了する
 
 #### 2.3 jpCertExtras の動作確認（非署名ビルド）
 
@@ -56,8 +56,8 @@ scons jpCertExtras
 ```
 
 **確認事項**:
-- `output/_jp_cert_extras.stamp` に `skip:no-sign-config` が書き込まれる
-- エラーなく完了する（exit code 0）
+* `output/_jp_cert_extras.stamp` に `skip:no-sign-config` が書き込まれる
+* エラーなく完了する（exit code 0）
 
 ### 3. 署名ビルドの動作確認
 
@@ -70,9 +70,9 @@ scons jpCertExtras
 ```
 
 **確認事項**:
-- signtool の事前チェックが実行される
-- 署名環境が正しく設定されている場合、テストが成功する
-- 署名環境が設定されていない場合、適切なエラーメッセージが表示される
+* signtool の事前チェックが実行される
+* 署名環境が正しく設定されている場合、テストが成功する
+* 署名環境が設定されていない場合、適切なエラーメッセージが表示される
 
 #### 3.2 署名ビルドでの依存関係の確認
 
@@ -88,10 +88,10 @@ scons source dist jpCertExtras launcher --all-cores
 ```
 
 **確認事項**:
-- `jpCertExtras` が `dist` の完了後に実行される
-- `dist/synthDrivers/jtalk/libopenjtalk.dll` と `libmecab.dll` が署名される
-- `launcher` が `jpCertExtras` の完了後にビルドされる
-- インストーラーに署名済み DLL が含まれる
+* `jpCertExtras` が `dist` の完了後に実行される
+* `dist/synthDrivers/jtalk/libopenjtalk.dll` と `libmecab.dll` が署名される
+* `launcher` が `jpCertExtras` の完了後にビルドされる
+* インストーラーに署名済み DLL が含まれる
 
 #### 3.3 certBuild2025.ps1 の並列ビルドオプション確認
 
@@ -104,8 +104,8 @@ scons source dist jpCertExtras launcher --all-cores
 ```
 
 **確認事項**:
-- 並列ビルドオプション未指定時、`-j1` が自動追加される
-- 明示的に並列ビルドオプションを指定した場合、`-j1` が追加されない
+* 並列ビルドオプション未指定時、`-j1` が自動追加される
+* 明示的に並列ビルドオプションを指定した場合、`-j1` が追加されない
 
 ### 4. 依存関係の詳細確認
 
@@ -117,8 +117,8 @@ scons --tree=all source dist jpCertExtras launcher 2>&1 | Select-String -Pattern
 ```
 
 **確認事項**:
-- `jpCertExtras` が `dist` に依存している
-- `launcher` が `dist` と `jpCertExtras`（署名設定がある場合）に依存している
+* `jpCertExtras` が `dist` に依存している
+* `launcher` が `dist` と `jpCertExtras`（署名設定がある場合）に依存している
 
 #### 4.2 ビルド順序のログ確認
 
@@ -128,8 +128,8 @@ scons source dist jpCertExtras launcher --all-cores 2>&1 | Tee-Object -FilePath 
 ```
 
 **確認事項**:
-- `dist` のビルドが完了してから `jpCertExtras` が実行される
-- `jpCertExtras` の完了後に `launcher` がビルドされる
+* `dist` のビルドが完了してから `jpCertExtras` が実行される
+* `jpCertExtras` の完了後に `launcher` がビルドされる
 
 ## オプショナルチェック
 
@@ -141,8 +141,8 @@ uv run ruff check
 ```
 
 **確認事項**:
-- コードフォーマットが正しい
-- リンターエラーがない
+* コードフォーマットが正しい
+* リンターエラーがない
 
 ### 6. ユニットテスト
 
@@ -151,8 +151,8 @@ uv run ruff check
 ```
 
 **確認事項**:
-- 既存のテストがすべてパスする
-- ビルド依存関係の変更が既存のテストに影響していない
+* 既存のテストがすべてパスする
+* ビルド依存関係の変更が既存のテストに影響していない
 
 ### 7. JP スモークテスト
 
@@ -166,8 +166,8 @@ uv run ruff check
 > PR #595 で `-SkipJtalkSync` へのリネームが提案されましたが、その PR は破棄されたため、`-SkipOverlay` を使用してください。
 
 **確認事項**:
-- JTalk と MeCab の基本動作が正常
-- ビルド依存関係の変更が JTalk 機能に影響していない
+* JTalk と MeCab の基本動作が正常
+* ビルド依存関係の変更が JTalk 機能に影響していない
 
 ## トラブルシューティング
 
@@ -176,27 +176,27 @@ uv run ruff check
 **症状**: `PermissionError` が発生する
 
 **確認**:
-- `jpCertExtras` が `dist` ターゲットノードに直接依存しているか
-- `sconstruct` で `register_jp_builders(env, dist_target=dist)` が正しく呼ばれているか
+* `jpCertExtras` が `dist` ターゲットノードに直接依存しているか
+* `sconstruct` で `register_jp_builders(env, dist_target=dist)` が正しく呼ばれているか
 
 ### jpCertExtras が実行されない場合
 
 **症状**: 署名設定があるのに `jpCertExtras` がスキップされる
 
 **確認**:
-- `env.get("signExec")` が `None` でないか
-- `certFile` または `apiSigningToken` が設定されているか
+* `env.get("signExec")` が `None` でないか
+* `certFile` または `apiSigningToken` が設定されているか
 
 ### dist/ ディレクトリが存在しないエラー
 
 **症状**: `jpCertExtras` で `dist/` が見つからない
 
 **確認**:
-- `scons dist` が正常に完了しているか
-- `dist` ターゲットが `source` と `user_docs` に依存しているか
+* `scons dist` が正常に完了しているか
+* `dist` ターゲットが `source` と `user_docs` に依存しているか
 
 ## 参考
 
-- `projectDocs/jp/code-signing-dependencies.md`: ビルド依存関係の詳細仕様
-- `AGENTS.md`: クイックコマンド一覧
-- `projectDocs/jp/troubleshooting_runjp_smoke_tests.md`: JP テストのトラブルシューティング
+* `projectDocs/jp/code-signing-dependencies.md`: ビルド依存関係の詳細仕様
+* `AGENTS.md`: クイックコマンド一覧
+* `projectDocs/jp/troubleshooting_runjp_smoke_tests.md`: JP テストのトラブルシューティング

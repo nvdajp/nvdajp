@@ -14,5 +14,5 @@ description = "KGS Driver, which supports BM Smart series, Braille Memo series, 
 url = https://www.nvda.jp/en/
 minimumNVDAVersion = 2019.3.0
 lastTestedNVDAVersion = 2024.4.0
-""".format(version=args.version)
+""".format(version=args.version),
 	)

@@ -10,7 +10,7 @@ if res != 0:
 clientLib.nvdaController_speakText(
 	"""This is test case.
 The case nvdaController_isSpeaking beep out when speaking with nvda!
-"""
+""",
 )
 while True:
 	time.sleep(0.5)

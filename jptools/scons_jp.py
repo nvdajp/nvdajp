@@ -32,6 +32,7 @@ from typing import Any
 # Import shared VS utilities
 # Note: We import directly since jptools is not a package
 import importlib.util
+
 _vs_utils_path = Path(__file__).parent / "vs_utils.py"
 _vs_utils_spec = importlib.util.spec_from_file_location("vs_utils", _vs_utils_path)
 if _vs_utils_spec and _vs_utils_spec.loader:
@@ -617,7 +618,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				return True, False
 			if "utf-8" not in version_text and "utf8" not in version_text:
 				print(
-					f"jtalkSync: dictionary at {dic_dir} not marked UTF-8 (version={version_text.strip()}); rebuilding."
+					f"jtalkSync: dictionary at {dic_dir} not marked UTF-8 (version={version_text.strip()}); rebuilding.",
 				)
 				return True, False
 			return True, True
@@ -699,7 +700,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						return rc_bin
 					if not mecab_dict_index_bin.exists():
 						print(
-							f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
+							f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}",
 						)
 						return 1
 					if not libmecab_dll.exists():
@@ -771,7 +772,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						f'"'
 					)
 					print(
-						"jtalkSync: building dictionary via vcvarsall (dicrc config-charset=sjis, chcp 932 as fallback)"
+						"jtalkSync: building dictionary via vcvarsall (dicrc config-charset=sjis, chcp 932 as fallback)",
 					)
 					result = run(cmd_script, cwd=str(base), shell=True)
 					return result.returncode
@@ -790,7 +791,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			machine = "x64" if arch in ("x64", "x86_64") else "x86"
 
 			print(
-				"jtalkSync: sys.dic missing or out of date; building python-jtalk (nmake all) and mecab dic"
+				"jtalkSync: sys.dic missing or out of date; building python-jtalk (nmake all) and mecab dic",
 			)
 			rc = _run_nmake(machine)
 			if rc != 0:
@@ -851,7 +852,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					print(f"jtalkSync: copied fallback libmecab.dll from {fallback_libmecab}")
 				else:
 					print(
-						f"jtalkSync: warning: libmecab.dll not found (expected at {built_libmecab} or {fallback_libmecab})"
+						f"jtalkSync: warning: libmecab.dll not found (expected at {built_libmecab} or {fallback_libmecab})",
 					)
 			# Copy arch-specific libopenjtalk.dll (x86 or x64)
 			if arch in ("x64", "x86_64"):
@@ -899,6 +900,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	# Clean up all .obj, .lib, and .exe files in mecab/src directory using glob
 	# This ensures that stale object files from previous builds (x86/x64) are removed
 	import glob
+
 	for pattern in ["*.obj", "*.lib", "*.exe"]:
 		for file_path in glob.glob(str(mecab_src_dir / pattern)):
 			env.Clean(jtalk_sync_stamp, file_path)
@@ -1068,10 +1070,11 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				print(f"  {dll_path}")
 			print("jpCertExtras: These files must be present in dist/ before signing.")
 			print(
-				"jpCertExtras: Build order: jtalkSync (copies to source/) -> dist (copies to dist/) -> jpCertExtras (signs dist/)"
+				"jpCertExtras: Build order: jtalkSync (copies to source/) -> dist (copies to dist/) -> jpCertExtras (signs dist/)",
 			)
 			stamp_path.write_text(
-				f"error:missing-dlls:{','.join(str(p.name) for p in missing_required)}", encoding="utf-8"
+				f"error:missing-dlls:{','.join(str(p.name) for p in missing_required)}",
+				encoding="utf-8",
 			)
 			return 1
 		# Perform signing via upstream signExec
@@ -1167,10 +1170,10 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		dist_dir = repo_root / "dist"
 
 		mode = str(
-			env.get("JP_VERIFY_SIGNATURES_MODE", os.environ.get("JP_VERIFY_SIGNATURES_MODE", "fast"))
+			env.get("JP_VERIFY_SIGNATURES_MODE", os.environ.get("JP_VERIFY_SIGNATURES_MODE", "fast")),
 		).lower()
 		verbose = str(
-			env.get("JP_VERIFY_SIGNATURES_VERBOSE", os.environ.get("JP_VERIFY_SIGNATURES_VERBOSE", "0"))
+			env.get("JP_VERIFY_SIGNATURES_VERBOSE", os.environ.get("JP_VERIFY_SIGNATURES_VERBOSE", "0")),
 		).lower() in (
 			"1",
 			"true",
@@ -1191,7 +1194,10 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		}
 
 		def _signtool_verify(
-			signtool_path: str, file_path: Path, *, quiet: bool
+			signtool_path: str,
+			file_path: Path,
+			*,
+			quiet: bool,
 		) -> subprocess.CompletedProcess[str]:
 			args = [signtool_path, "verify", "/pa"]
 			args.append("/q" if quiet else "/v")
@@ -1205,7 +1211,10 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			return out or err or ""
 
 		def _verify_one(
-			signtool_path: str, file_path: Path, *, allow_ignored: bool
+			signtool_path: str,
+			file_path: Path,
+			*,
+			allow_ignored: bool,
 		) -> tuple[bool, bool, str]:
 			result = _signtool_verify(signtool_path, file_path, quiet=True)
 			if result.returncode == 0:
@@ -1222,7 +1231,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			exe: Path | None = None
 			if out_dir.exists():
 				exe_candidates = sorted(
-					out_dir.glob("nvda_*.exe"), key=lambda p: p.stat().st_mtime, reverse=True
+					out_dir.glob("nvda_*.exe"),
+					key=lambda p: p.stat().st_mtime,
+					reverse=True,
 				)
 				if exe_candidates:
 					exe = exe_candidates[0]
@@ -1358,7 +1369,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			return 0
 		except FileNotFoundError:
 			print(
-				"jpVerifySignatures: skip (signtool not found). Ensure Windows SDK is installed or SIGNTOOL is set."
+				"jpVerifySignatures: skip (signtool not found). Ensure Windows SDK is installed or SIGNTOOL is set.",
 			)
 			stamp_path.write_text("skip:no-signtool", encoding="utf-8")
 			return 0

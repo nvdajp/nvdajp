@@ -14,5 +14,5 @@ description = "Japanese speech engine for NVDA, based on Open JTalk, MeCab and M
 url = http://www.nvda.jp/en/
 minimumNVDAVersion = 2014.1.0
 lastTestedNVDAVersion = 2024.4.0
-""".format(nowdate=args.nowdate)
+""".format(nowdate=args.nowdate),
 	)

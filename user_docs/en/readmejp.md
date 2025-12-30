@@ -19,9 +19,6 @@ NVDA Japanese is provided "as is", without warranty.
 
 * [NVDA Japanese www.nvda.jp/en](https://www.nvda.jp/en/)
 
-
-
-
 ### Contributors
 
 [Contributors for NVDA Japanese](https://github.com/nvdajp/nvdajp/wiki/contributors_ja)
@@ -30,7 +27,7 @@ NVDA Japanese is provided "as is", without warranty.
 
 NVDAJP requires 120MB storage space.
 
-Launcher package of stable version is available at http://i.nvda.jp
+Launcher package of stable version is available at <http://i.nvda.jp>
 
 Application icon is changed to the goldfish.
 
@@ -41,9 +38,6 @@ Windows shortcut for starting NVDA is CTRL+ALT+N, if installed.
 It may conflicts to other screen reader which is popular in Japan.
 
 This shortcut can be modified using the property (ALT+Enter) of NVDAJP icon of Windows desktop.
-
-
-
 
 ## Object Navigation
 
@@ -58,17 +52,6 @@ Pressing "Report current character in review" (numpad2 or NVDA+period) four-time
 |Move to previous character in review |numpad1 |NVDA+left arrow |flick left (text mode) |Moves the review cursor to the previous character on the current line in the text. If description mode is enabled, the character is described.|
 |Report current character in review |numpad2 |NVDA+period |none |Announces the current character on the line of text where the review cursor is positioned. If description mode is enabled, the character is described. Pressing twice reports the character with its attributes and description. Pressing three times reports the numeric value of the character in decimal and hexadecimal. Pressing four-times toggles the description mode.|
 |Move to next character in review |numpad3 |NVDA+right arrow |flick right (text mode) |Move the review cursor to the next character on the current line of text. If description mode is enabled, the character is described.|
-
-
-
-
-
-
-
-
-
-
-
 
 ## Configuration
 
@@ -196,12 +179,6 @@ Cursor position mapping is implemented for Japanese output table.
 
 Experimental braille input tables of "Japanese 6 dot computer braille" and "Japanese 6 dot kanji braille" are available. Their usages are similar to English grade 2 input table. However, they cover very limited charactors so far.
 
-
-
-
-
-
-
 ### Keyboard settings
 
 Caps Lock key of Japanese keyboard array cannot be used as NVDA modifier key.
@@ -230,158 +207,9 @@ JTalk driver is the default synthesizer of NVDAJP, which supports Japanese langu
 
 ### eSpeak NG
 
-
-
 eSpeak NG of NVDA cannot handle Japanese language.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Braille display
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ### KGS Braille Memo series
 
@@ -548,53 +376,6 @@ Symbols:
 |! (exclamation) |235|
 |' (apostrophe) |3|
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### KGS BrailleNote 46C/46D
 
 The driver for braille display "KGS BrailleNote 46C/46D" from [KGS Corporation](http://www.kgs-jpn.co.jp/) is added.
@@ -646,62 +427,11 @@ It translates spoken words to Japanese braille pattens, so it is not exactly sam
 
 For Windows XP or Vista, DejaVu Sans font must be installed to display braille patterns. If you install LibreOffice, DejaVu Sans font will be installed as well.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Applications
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ### Microsoft Word support
 
 Paragraph indent of Microsoft Word is now supported by NVDA. ([#4165](https://github.com/nvaccess/nvda/issues/4165))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Configurations
 
@@ -728,55 +458,21 @@ The file should be plain text with UTF-8 encoding. The lines should be tab-separ
 
 If the line starts with '#', it is ignored. If the line starts with '\#', the character is '#' itself.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Miscellaneous
 
 ### Source code and build server
 
 We use git hosting services as follows:
 
-* GitHub: https://github.com/nvdajp
+* GitHub: <https://github.com/nvdajp>
 
 We use AppVeyor as public build server:
 
 * [AppVeyor (public build server)](https://ci.appveyor.com/project/TakuyaNishimoto/nvdajp)
 
-
-
-
-
-
-
 ### Issues
 
-
 * [GitHub Issues (nvdajp)](https://github.com/nvdajp/nvdajp/issues)
-
-
-
-
-
-
 
 ### Controller Client API
 

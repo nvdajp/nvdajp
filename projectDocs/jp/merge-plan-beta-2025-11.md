@@ -247,16 +247,24 @@
   git show nvaccess/beta:source/locale/ja/LC_MESSAGES/nvda.po > nvda.po.upstream
   ```
 
-- [ ] msgmerge で上流 pot に追随
+* [ ] msgmerge で上流 pot に追随
 
   ```powershell
   msgmerge -U source/locale/ja/LC_MESSAGES/nvda.po nvda.pot
   ```
 
-- [ ] コンフリクト箇所を手動で解決
+* [ ] コンフリクト箇所を手動で解決
   * 上流の翻訳を優先
   * JP 固有の追加翻訳（IME 関連など）は維持
   * メタ情報（POT-Creation-Date など）は上流に合わせる
+
+
+
+
+
+
+
+
 * [ ] 翻訳チェック
 
   ```powershell

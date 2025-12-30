@@ -18,9 +18,9 @@ The process cannot access the file because it is being used by another process
 3. **辞書コンパイル**: 複数の辞書が並列でコンパイルされる（ただし辞書間の並列は`SideEffect`で防止済み）
 
 **競合シナリオ**:
-- プロセスA: `cleanFiles_preBuildAction`が`ru_listx`を削除中
-- プロセスB: 辞書コンパイルが`ru_listx`を読み取り中
-- プロセスC: `env.Install`が`dictsource/extra/ru_listx`を`dictsource/ru_listx`にコピー中
+* プロセスA: `cleanFiles_preBuildAction`が`ru_listx`を削除中
+* プロセスB: 辞書コンパイルが`ru_listx`を読み取り中
+* プロセスC: `env.Install`が`dictsource/extra/ru_listx`を`dictsource/ru_listx`にコピー中
 
 Windowsのファイルロック機構により、削除中のファイルにアクセスしようとするとエラーになる。
 
@@ -65,12 +65,12 @@ def cleanFiles_preBuildAction(target, source, env):
 ```
 
 **利点**:
-- 実装が簡単
-- 既存のコードへの影響が最小限
-- 一時的なファイルロックを許容
+* 実装が簡単
+* 既存のコードへの影響が最小限
+* 一時的なファイルロックを許容
 
 **欠点**:
-- 根本的な解決ではない（競合の可能性は残る）
+* 根本的な解決ではない（競合の可能性は残る）
 
 ### 対策2: 依存関係の明確化（根本的解決）✅ 実装済み
 
@@ -97,9 +97,9 @@ env.Depends(dictFile, [espeakLib, phonemeData, cleanup_stamp])
 ```
 
 **利点**:
-- 根本的な解決
-- SConsの依存関係管理を活用
-- マルチコアビルド時のファイルロック競合を完全に防止
+* 根本的な解決
+* SConsの依存関係管理を活用
+* マルチコアビルド時のファイルロック競合を完全に防止
 
 **実装状況**: ✅ 実装済み（`nvdaHelper/espeak/sconscript` 1136-1148行目、1172行目）
 
@@ -117,12 +117,12 @@ if os.getenv("GITHUB_ACTIONS"):
 ```
 
 **利点**:
-- 実装が簡単
-- CI環境でのみ適用可能
+* 実装が簡単
+* CI環境でのみ適用可能
 
 **欠点**:
-- ビルド時間が増加する可能性
-- 根本的な解決ではない
+* ビルド時間が増加する可能性
+* 根本的な解決ではない
 
 ### 対策4: ファイル削除を辞書コンパイル前に移動（推奨）
 
@@ -155,11 +155,11 @@ for dictFileName, (langCode, inputFiles) in espeakDictionaryCompileList.items():
 ```
 
 **利点**:
-- 辞書コンパイル開始前にクリーンアップが完了することを保証
-- 既存の依存関係を活用
+* 辞書コンパイル開始前にクリーンアップが完了することを保証
+* 既存の依存関係を活用
 
 **欠点**:
-- 実装がやや複雑
+* 実装がやや複雑
 
 ## 推奨実装順序
 
@@ -169,11 +169,11 @@ for dictFileName, (langCode, inputFiles) in espeakDictionaryCompileList.items():
 
 ## 関連ファイル
 
-- `nvdaHelper/espeak/sconscript`: 1136-1149行目
-- `.github/workflows/testAndPublish.yml`: ビルドジョブ設定
-- `jptools/nonCertBuild.py`: ローカルビルドスクリプト
+* `nvdaHelper/espeak/sconscript`: 1136-1149行目
+* `.github/workflows/testAndPublish.yml`: ビルドジョブ設定
+* `jptools/nonCertBuild.py`: ローカルビルドスクリプト
 
 ## 参考
 
-- SConsの依存関係管理: https://scons.org/doc/production/HTML/scons-user/ch10s05.html
-- Windowsファイルロック: https://docs.microsoft.com/en-us/windows/win32/fileio/file-security-and-access-rights
+* SConsの依存関係管理: <https://scons.org/doc/production/HTML/scons-user/ch10s05.html>l>l>l>l>l>l>l>
+* Windowsファイルロック: <https://docs.microsoft.com/en-us/windows/win32/fileio/file-security-and-access-rights>s>s>s>s>s>s>s>

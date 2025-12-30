@@ -2,10 +2,10 @@
 
 このファイルは `projectDocs/jp/merge-issues-beta-2025-11.md` の補足です。レポートの再現に必要な上流リビジョン、対象ブランチ、検出コマンド例をまとめます。
 
-- 対象 upstream: `nvaccess/beta @ ac309fe35f1a10cb2b9ec15ffa8a7d5a665d0102`
-- 取り込み先（base）: `betajp`
-- 検出日時（例）: 2025-11-05 (JST)
-- 参照ドキュメント: `projectDocs/jp/merge-issues-beta-2025-11.md`
+* 対象 upstream: `nvaccess/beta @ ac309fe35f1a10cb2b9ec15ffa8a7d5a665d0102`
+* 取り込み先（base）: `betajp`
+* 検出日時（例）: 2025-11-05 (JST)
+* 参照ドキュメント: `projectDocs/jp/merge-issues-beta-2025-11.md`
 
 ## 衝突検出コマンド例（PowerShell）
 
@@ -32,6 +32,6 @@ rg -n ">>>>>>> " -S
 
 ## 備考
 
-- `ac309fe3…` はコンフリクトマーカーに現れた上流側のコミット SHA を採用しています。
-- 実際の取り込み対象コミット/ブランチが変わる場合は、このファイルの upstream 記述を更新してください。
-- 再現確認は `rg`（ripgrep）が必要です。未導入の場合は `grep` でも代替可能です（ただし正規表現の互換に注意）。
+* `ac309fe3…` はコンフリクトマーカーに現れた上流側のコミット SHA を採用しています。
+* 実際の取り込み対象コミット/ブランチが変わる場合は、このファイルの upstream 記述を更新してください。
+* 再現確認は `rg`（ripgrep）が必要です。未導入の場合は `grep` でも代替可能です（ただし正規表現の互換に注意）。

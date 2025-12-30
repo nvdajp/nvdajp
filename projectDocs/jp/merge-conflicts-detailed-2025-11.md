@@ -4,13 +4,21 @@
 
 ## メタ情報
 
-- **マージ元**: nvaccess/beta
-- **マージ先（ベース）**: betajp
-- **記録日時**: 2025-11-06 00:01:02
-- **上流コミット**: ac309fe35f (Update user_docs/en/changes.xliff)
-- **ベースコミット**: 210eb36f50 (cherry certbuild refactor (#569))
+* **マージ元**: nvaccess/beta
+* **マージ先（ベース）**: betajp
+* **記録日時**: 2025-11-06 00:01:02
+* **上流コミット**: ac309fe35f (Update user_docs/en/changes.xliff)
+* **ベースコミット**: 210eb36f50 (cherry certbuild refactor (#569))
 
 ## コンフリクトファイル一覧
+
+
+
+
+
+
+
+
 ### 1. .github/ISSUE_TEMPLATE/bug_report.md
 
 **状態**: コンフリクトマーカーが見つかりません（未解決または自動マージ済み）

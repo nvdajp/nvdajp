@@ -95,5 +95,5 @@ if ($nvdaProcess) {
 
 ## 関連ドキュメント
 
-- `projectDocs/jp/local_verification_build_dependencies.md`: ビルド検証手順
-- `projectDocs/jp/code-signing-dependencies.md`: ビルド依存関係の詳細
+* `projectDocs/jp/local_verification_build_dependencies.md`: ビルド検証手順
+* `projectDocs/jp/code-signing-dependencies.md`: ビルド依存関係の詳細

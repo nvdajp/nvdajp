@@ -20,13 +20,13 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 en_symbols_dict = read_symbols_dic(pathlib.Path.cwd().parent / "source" / "locale" / "en" / "symbols.dic")
 ja_symbols_dict = read_symbols_dic(pathlib.Path.cwd().parent / "source" / "locale" / "ja" / "symbols.dic")
 ja_cldr_dict = read_symbols_dic(
-	pathlib.Path.cwd().parent / "include" / "nvda-cldr" / "locale" / "ja" / "cldr.dic"
+	pathlib.Path.cwd().parent / "include" / "nvda-cldr" / "locale" / "ja" / "cldr.dic",
 )
 ja_descs_dict = read_character_descriptions_dic(
-	pathlib.Path.cwd().parent / "source" / "locale" / "ja" / "characterDescriptions.dic"
+	pathlib.Path.cwd().parent / "source" / "locale" / "ja" / "characterDescriptions.dic",
 )
 characters_dict = read_characters_dic(
-	pathlib.Path.cwd().parent / "source" / "locale" / "ja" / "characters.dic"
+	pathlib.Path.cwd().parent / "source" / "locale" / "ja" / "characters.dic",
 )
 
 # en_symbols_dict にある文字が characters_dict に含まれていない場合を検出する

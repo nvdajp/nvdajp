@@ -16,7 +16,7 @@
 
 以下からダウンロードしてインストーラーを実行
 
-https://www.visualstudio.com/ja/downloads/
+<https://www.visualstudio.com/ja/downloads/>/>/>/>/>/>/>/>
 
 * Visual Studio 2022 でビルドできることを確認している
 
@@ -50,7 +50,7 @@ https://www.visualstudio.com/ja/downloads/
 
 Visual Studio と一緒にインストールしない場合は下記からダウンロードしてインストーラーを実行する。
 
-https://git-for-windows.github.io/
+<https://git-for-windows.github.io/>/>/>/>/>/>/>/>
 
 Git の設定
 
@@ -90,7 +90,7 @@ createDevEnvironment.md の内容だが、この手順書では使っていな�
 
 7-Zip サイトから 64bit Windows x64 (7z****-x64.exe) をダウンロードする。
 
-http://www.7-zip.org/download.html
+<http://www.7-zip.org/download.html>l>l>l>l>l>l>l>
 
 インストーラーを実行してデフォルトでインストールする。
 
@@ -105,7 +105,7 @@ C:\Program Files\7-Zip
 ダウンロードして実行し、インストールする。
 オプションはデフォルトでよい。
 
-https://www.python.org/downloads/release/python-3119/
+<https://www.python.org/downloads/release/python-3119/>/>/>/>/>/>/>/>
 
 Windows x86 executable installer (python-3.11.9.exe)
 
@@ -189,8 +189,8 @@ NVDA日本語版では、GitHub Actionsを使用してIssueやPull Requestにマ
 1. IssueまたはPull Requestがクローズされた時
 2. マイルストーンが未設定である
 3. 以下のいずれかの条件を満たす：
-   - Issueが「completed」としてクローズされた
-   - Pull Requestがマージされた
+   * Issueが「completed」としてクローズされた
+   * Pull Requestがマージされた
 
 ### 設定方法
 
@@ -353,9 +353,9 @@ NVDA日本語版のビルドで行っているシステムテスト
 jpcharディレクトリには、文字説明と記号の一貫性をチェックするスクリプトがあります。詳細は `jpchar/readme.txt` を参照してください。
 
 主なスクリプト：
-- checkCharDesc.py - 文字説明の一貫性チェック
-- checkSymbols.py - 記号の一貫性チェック
-- compareSymbolsDic.py - 記号辞書の比較
+* checkCharDesc.py - 文字説明の一貫性チェック
+* checkSymbols.py - 記号の一貫性チェック
+* compareSymbolsDic.py - 記号辞書の比較
 
 ## SCons ビルドターゲット
 
@@ -368,116 +368,156 @@ NVDA日本語版では、SConsを使用したビルドシステムが実装さ�
 JTalk DLLのビルドとペイロードへの配置を行います。
 
 **動作**：
-- DLLが存在する場合: 再ビルドをスキップ（高速）
-- DLLが存在しない場合: 自動的に `nmake /f all.mak` を実行してビルド
-- ビルド成功後、生成されたDLLをペイロード位置（`miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll`）に配置
+* DLLが存在する場合: 再ビルドをスキップ（高速）
+* DLLが存在しない場合: 自動的に `nmake /f all.mak` を実行してビルド
+* ビルド成功後、生成されたDLLをペイロード位置（`miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll`）に配置
 
 **実行例**：
+
+
+
+
+
+
+
+
 ```bash
 # JTalk DLLのビルドと配置
+
 scons jtalkPrep
 
+
+
 # x86 ビルドの場合（このブランチのデフォルト）
+
 scons jtalkPrep TARGET_ARCH=x86
+
+
 ```
+
+
+
+
 
 **ログ例（DLL存在時）**：
+
+
 ```
 jtalkPrep: using TARGET_ARCH=x86
+
 jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
 jtalkPrep: using existing DLL (build skipped)
-jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
-```
 
+*talkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+*``
+*
+*
 **ログ例（DLL不在時）**：
-```
-jtalkPrep: using TARGET_ARCH=x86
-jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
-jtalkPrep: DLL not found, attempting to build via nmake...
-jtalkPrep: running nmake via vcvarsall.bat with arch=x86
-[nmake の出力...]
-jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
-jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
-```
 
-#### `scons miscdepsjp`
+*
+*``
+*talkPrep: using TARGET_ARCH=x86
 
-日本語版固有のファイルを `source/` ディレクトリにオーバーレイします。
+*talkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+*talkPrep: DLL not found, attempting to build via nmake...
+*talkPrep: running nmake via vcvarsall.bat with arch=x86
+
+*nmake の出力...]
+*talkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+*talkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
+
+*``
+*
+*### `scons miscdepsjp`
+
+*
+*本語版固有のファイルを `source/` ディレクトリにオーバーレイします。
+*
+
 
 **動作**：
-- `miscDepsJp/source` 配下のファイルを `source/` にコピー
-- JTalkコアファイル（`jtalkCore.py`, `mecab.py`, `text2mecab.py`）を `source/synthDrivers/jtalk/` にコピー
-- `jtalkPrep` に依存しているため、JTalk DLLも自動的に準備される
+* `miscDepsJp/source` 配下のファイルを `source/` にコピー
+* JTalkコアファイル（`jtalkCore.py`, `mecab.py`, `text2mecab.py`）を `source/synthDrivers/jtalk/` にコピー
+
+
+* `jtalkPrep` に依存しているため、JTalk DLLも自動的に準備される
 
 **実行例**：
+
+
 ```bash
-# オーバーレイのみ実行（デバッグ用）
-scons miscdepsjp
-```
+* オーバーレイのみ実行（デバッグ用）
+*cons miscdepsjp
+*``
+*
 
 **注意**: `scons source` を実行すると、`miscdepsjp` が依存として自動実行されます。通常は明示的に実行する必要はありません。
+*
+*## 通常のビルドフロー
+*
 
-### 通常のビルドフロー
-
-開発者が通常実行するコマンド：
-
-```bash
-# これだけでビルド完結（ベンダービルド・overlay・dist 作成すべて自動）
-scons dist
-
-# または
-scons source user_docs launcher
-```
-
+*発者が通常実行するコマンド：
+*
+*``bash
+*
+* これだけでビルド完結（ベンダービルド・overlay・dist 作成すべて自動）
+*cons dist
+*
+* または
+*
+*cons source user_docs launcher
+*``
+*
 **内部で自動実行される**（開発者は意識不要）：
-1. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
-2. `jtalkSync`: 辞書ファイルのビルドとコピー
-3. `miscdepsjp`: overlayで `source/` に配置
-4. `source`, `dist` などのビルド
-
+*
+*. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
+*. `jtalkSync`: 辞書ファイルのビルドとコピー
+*. `miscdepsjp`: overlayで `source/` に配置
+*. `source`, `dist` などのビルド
+*
 **注意**: 詳細な処理内容や現状の問題点については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
-
-### ビルドシステムの改善
-
-従来は複数の `.cmd` スクリプトが相互に呼び出し合う複雑な構造でしたが、SConsターゲットの導入により以下の改善が実現されました：
-
-- **簡素化**: 開発者は `scons` コマンドのみを意識すればよい
-- **自動化**: 依存関係が自動的に解決される
-- **高速化**: DLLが存在する場合は再ビルドをスキップ
-- **透明性**: ビルドプロセスが明確になる
-
+*
+*## ビルドシステムの改善
+*
+*来は複数の `.cmd` スクリプトが相互に呼び出し合う複雑な構造でしたが、SConsターゲットの導入により以下の改善が実現されました：
+*
+* **簡素化**: 開発者は `scons` コマンドのみを意識すればよい
+* **自動化**: 依存関係が自動的に解決される
+* **高速化**: DLLが存在する場合は再ビルドをスキップ
+* **透明性**: ビルドプロセスが明確になる
+*
 **現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
-
-詳細は `projectDocs/jp/vendor-submodules.md` を参照してください。
-
-### CI/CD の現状
-
-現在、GitHub Actionsを使用したCI/CDパイプラインが実装されています（`.github/workflows/testAndPublish.yml`）：
-
-- **ビルド環境**: Windowsランナー、Python 3.11 (32bit)
-- **ビルドプロセス**: `jptools/nonCertBuild.py` を使用（Python版に移行済み）
-- **テスト**: ユニットテスト、システムテスト、日本語版固有のテストを実行
-- **自動化**: betajp、releasejpブランチへのpush時に自動ビルド
-
+*
+*細は `projectDocs/jp/vendor-submodules.md` を参照してください。
+*
+*## CI/CD の現状
+*
+*在、GitHub Actionsを使用したCI/CDパイプラインが実装されています（`.github/workflows/testAndPublish.yml`）：
+*
+* **ビルド環境**: Windowsランナー、Python 3.11 (32bit)
+* **ビルドプロセス**: `jptools/nonCertBuild.py` を使用（Python版に移行済み）
+* **テスト**: ユニットテスト、システムテスト、日本語版固有のテストを実行
+* **自動化**: betajp、releasejpブランチへのpush時に自動ビルド
+*
 **今後の改善予定**：
-- 本家のCI/CD改善の取り込み
-- テストジョブの分離（typeCheck, licenseCheck等）
-- SCons MSVC Cacheによる高速化
-- Python 3.13対応の検討
-
-### Python バージョンの対応状況
+* 本家のCI/CD改善の取り込み
+* テストジョブの分離（typeCheck, licenseCheck等）
+* SCons MSVC Cacheによる高速化
+* Python 3.13対応の検討
+*
+*## Python バージョンの対応状況
 
 #### 現在の状況（2025年12月）
-- Python 3.11 (32bit) を使用
-- CI/CDでは Python 3.11 を使用（`.github/workflows/testAndPublish.yml`）
-- 本家 NVDA は Python 3.11 と 3.13 のマトリックステストを実施
+* Python 3.11 (32bit) を使用
+* CI/CDでは Python 3.11 を使用（`.github/workflows/testAndPublish.yml`）
+* 本家 NVDA は Python 3.11 と 3.13 のマトリックステストを実施
 
 #### 今後の対応
-- Python 3.13 への対応は段階的に実施予定
-- まず本家 beta のマージと CI/CD の安定化を優先
-- その後、Python 3.13 対応を別 PR で実施
+* Python 3.13 への対応は段階的に実施予定
+* まず本家 beta のマージと CI/CD の安定化を優先
+* その後、Python 3.13 対応を別 PR で実施
 
 #### Python 3.13 対応時の注意点
-- 依存パッケージの互換性確認が必要
-- 日本語版固有のモジュール（jtalk等）の動作確認が必要
-- マトリックステストの導入を検討
+* 依存パッケージの互換性確認が必要
+* 日本語版固有のモジュール（jtalk等）の動作確認が必要
+* マトリックステスト�

@@ -23,8 +23,8 @@ def _find_vcvarsall() -> str | None:
 ```
 
 **アプローチ**:
-- `vs_utils.find_vcvarsall()`を呼び出し
-- `vs_utils.py`は**直接パス検索**（`vswhere`を使用しない）
+* `vs_utils.find_vcvarsall()`を呼び出し
+* `vs_utils.py`は**直接パス検索**（`vswhere`を使用しない）
 
 #### 使用箇所
 
@@ -35,6 +35,14 @@ def _find_vcvarsall() -> str | None:
 3. **`jtalkSync`**: 辞書のビルド時に`nmake`が必要な場合
 
 **使用パターン**:
+
+
+
+
+
+
+
+
 ```python
 vcvarsall = _find_vcvarsall()
 if not vcvarsall:
@@ -51,133 +59,149 @@ cmd_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={n
 ```python
 def _ensure_nmake_env() -> None:
     """Order of attempts:
-    1) If 'cl' seems callable, do nothing.
-    2) Use vswhere to locate Visual Studio and call vcvars32/VsDevCmd, import env.
-    3) Fallback to JP's jptools/vcsetup.cmd and import env.
-    """
-```
-
+*   1) If 'cl' seems callable, do nothing.
+*   2) Use vswhere to locate Visual Studio and call vcvars32/VsDevCmd, import env.
+*   3) Fallback to JP's jptools/vcsetup.cmd and import env.
+*   """
+*``
+*
 **アプローチ**:
-- **ステップ2**: `vswhere`を使用（本家のアプローチ）
-- **ステップ3**: フォールバックとして`vcsetup.cmd`を使用
-
-#### `vcsetup.cmd`（バッチスクリプト）
-
+* **ステップ2**: `vswhere`を使用（本家のアプローチ）
+* **ステップ3**: フォールバックとして`vcsetup.cmd`を使用
+*
+*### `vcsetup.cmd`（バッチスクリプト）
+*
 **アプローチ**:
-- `vs_utils.py`を使用（直接パス検索、`vswhere`を使用しない）
-
-#### `runJpSmokeTests.ps1`（PowerShellスクリプト）
-
+* `vs_utils.py`を使用（直接パス検索、`vswhere`を使用しない）
+*
+*### `runJpSmokeTests.ps1`（PowerShellスクリプト）
+*
 **アプローチ**:
-- 直接パス検索（`vswhere`を使用しない）
-
-### 3. 一貫性の問題
-
+* 直接パス検索（`vswhere`を使用しない）
+*
+*## 3. 一貫性の問題
+*
 **現状**:
-- `nonCertBuild.py`: `vswhere`を使用（本家のアプローチ）
-- `scons_jp.py`: `vs_utils.py`を使用（直接パス検索、`vswhere`を使用しない）
-- `vcsetup.cmd`: `vs_utils.py`を使用（直接パス検索、`vswhere`を使用しない）
-- `runJpSmokeTests.ps1`: 直接パス検索（`vswhere`を使用しない）
-
+* `nonCertBuild.py`: `vswhere`を使用（本家のアプローチ）
+* `scons_jp.py`: `vs_utils.py`を使用（直接パス検索、`vswhere`を使用しない）
+* `vcsetup.cmd`: `vs_utils.py`を使用（直接パス検索、`vswhere`を使用しない）
+* `runJpSmokeTests.ps1`: 直接パス検索（`vswhere`を使用しない）
+*
 **問題点**:
-- 異なる検出方法を使用している
-- `nonCertBuild.py`だけが`vswhere`を使用している
-- 他のスクリプトは直接パス検索を使用している
-
-## 検討事項
-
-### 1. `nonCertBuild.py`との一貫性
-
+* 異なる検出方法を使用している
+* `nonCertBuild.py`だけが`vswhere`を使用している
+* 他のスクリプトは直接パス検索を使用している
+*
+*# 検討事項
+*
+*## 1. `nonCertBuild.py`との一貫性
+*
 **現状**:
-- `nonCertBuild.py`: `vswhere`を使用
-- `scons_jp.py`: 直接パス検索を使用
-
+* `nonCertBuild.py`: `vswhere`を使用
+* `scons_jp.py`: 直接パス検索を使用
+*
 **一貫性の観点**:
-- `scons_jp.py`も`vswhere`を使用することで、`nonCertBuild.py`との一貫性が向上する
-- 同じ検出ロジックを使用することで、保守性が向上する
-
-### 2. 本家のアプローチとの整合性
-
+* `scons_jp.py`も`vswhere`を使用することで、`nonCertBuild.py`との一貫性が向上する
+* 同じ検出ロジックを使用することで、保守性が向上する
+*
+*## 2. 本家のアプローチとの整合性
+*
 **本家のアプローチ**:
-- `vswhere`を使用してVisual Studioを検出（推測）
-
+* `vswhere`を使用してVisual Studioを検出（推測）
+*
 **日本語版のアプローチ**:
-- `nonCertBuild.py`: `vswhere`を使用（本家と同じ）
-- `scons_jp.py`: 直接パス検索（本家と異なる）
-
+* `nonCertBuild.py`: `vswhere`を使用（本家と同じ）
+* `scons_jp.py`: 直接パス検索（本家と異なる）
+*
 **整合性の観点**:
-- `scons_jp.py`も`vswhere`を使用することで、本家のアプローチに近づく
-
-### 3. `vs_utils.py`の役割
-
+* `scons_jp.py`も`vswhere`を使用することで、本家のアプローチに近づく
+*
+*## 3. `vs_utils.py`の役割
+*
 **現状**:
-- `vs_utils.py`は直接パス検索のみを実装
-- `scons_jp.py`と`vcsetup.cmd`の両方で使用されている
-
+* `vs_utils.py`は直接パス検索のみを実装
+* `scons_jp.py`と`vcsetup.cmd`の両方で使用されている
+*
 **改善案**:
-- `vs_utils.py`に`vswhere`サポートを追加
-- `find_vcvarsall()`と`find_vcvars()`を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
-- これにより、`scons_jp.py`と`vcsetup.cmd`の両方が自動的に`vswhere`を使用するようになる
-
-### 4. 実装の複雑さ
-
+* `vs_utils.py`に`vswhere`サポートを追加
+* `find_vcvarsall()`と`find_vcvars()`を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
+* これにより、`scons_jp.py`と`vcsetup.cmd`の両方が自動的に`vswhere`を使用するようになる
+*
+*## 4. 実装の複雑さ
+*
 **現状**:
-- `scons_jp.py`は`vs_utils.find_vcvarsall()`を呼び出すだけ（シンプル）
-
+* `scons_jp.py`は`vs_utils.find_vcvarsall()`を呼び出すだけ（シンプル）
+*
 **`vswhere`を追加した場合**:
-- `vs_utils.py`の実装が複雑になる
-- ただし、`scons_jp.py`のコードは変更不要（`vs_utils.py`の内部実装の変更のみ）
+* `vs_utils.py`の実装が複雑になる
+
+* ただし、`scons_jp.py`のコードは変更不要（`vs_utils.py`の内部実装の変更のみ）
+
+
 
 ## 推奨アプローチ
-
-### 案1: `vs_utils.py`に`vswhere`サポートを追加（推奨）
-
+*
+*
+*
+*## 案1: `vs_utils.py`に`vswhere`サポートを追加（推奨）
+*
+*
+*
 **実装**:
-1. `vs_utils.py`に`find_vcvarsall_with_vswhere()`関数を追加
-2. `find_vcvarsall()`関数を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
-3. `find_vcvars()`関数も同様に修正
-
+*
+*. `vs_utils.py`に`find_vcvarsall_with_vswhere()`関数を追加
+*. `find_vcvarsall()`関数を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
+*. `find_vcvars()`関数も同様に修正
+*
 **利点**:
-- `scons_jp.py`のコード変更が不要（`vs_utils.py`の内部実装の変更のみ）
-- `vcsetup.cmd`も自動的に`vswhere`を使用するようになる
-- すべてのスクリプトが同じ検出ロジックを使用（一貫性）
-- `nonCertBuild.py`との一貫性が向上する
-- 本家のアプローチに近づく
+* `scons_jp.py`のコード変更が不要（`vs_utils.py`の内部実装の変更のみ）
 
+* `vcsetup.cmd`も自動的に`vswhere`を使用するようになる
+* すべてのスクリプトが同じ検出ロジックを使用（一貫性）
+
+* `nonCertBuild.py`との一貫性が向上する
+* 本家のアプローチに近づく
+
+*
 **欠点**:
-- `vs_utils.py`の実装が複雑になる
-- `vswhere`の呼び出しと結果の解析が必要
-
+*
+* `vs_utils.py`の実装が複雑になる
+* `vswhere`の呼び出しと結果の解析が必要
+*
+*
 **評価**: ⭐⭐⭐⭐⭐（推奨）
-
-### 案2: `scons_jp.py`に直接`vswhere`サポートを追加
-
+*
+*
+*## 案2: `scons_jp.py`に直接`vswhere`サポートを追加
+*
+*
 **実装**:
-1. `scons_jp.py`の`_find_vcvarsall()`関数を修正し、`vswhere`を優先、`vs_utils.find_vcvarsall()`をフォールバックとする
-
+*
+*. `scons_jp.py`の`_find_vcvarsall()`関数を修正し、`vswhere`を優先、`vs_utils.find_vcvarsall()`をフォールバックとする
+*
 **利点**:
-- `scons_jp.py`だけが`vswhere`を使用する
-- `vs_utils.py`の変更が不要
-
+* `scons_jp.py`だけが`vswhere`を使用する
+* `vs_utils.py`の変更が不要
+*
 **欠点**:
-- `vcsetup.cmd`は依然として直接パス検索を使用（一貫性が低い）
-- コードの重複（`nonCertBuild.py`と`scons_jp.py`で`vswhere`ロジックが重複）
-
+* `vcsetup.cmd`は依然として直接パス検索を使用（一貫性が低い）
+* コードの重複（`nonCertBuild.py`と`scons_jp.py`で`vswhere`ロジックが重複）
+*
 **評価**: ⭐⭐⭐（中程度）
-
-### 案3: 現状維持（直接パス検索のみ）
-
+*
+*## 案3: 現状維持（直接パス検索のみ）
+*
 **実装**:
-- 現在の実装を維持
-
+* 現在の実装を維持
+*
 **利点**:
-- 実装がシンプル
-- 追加の依存関係が不要
-
+* 実装がシンプル
+* 追加の依存関係が不要
+*
 **欠点**:
-- `nonCertBuild.py`との一貫性が低い
-- 本家のアプローチと異なる
-- 柔軟性が低い（Visual Studio 2022のみサポート）
+* `nonCertBuild.py`との一貫性が低い
+* 本家のアプローチと異なる
+* 柔軟性が低い（Visual Studio 2022のみサポート）
 
 **評価**: ⭐⭐⭐（中程度）
 
@@ -301,51 +325,67 @@ def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
     # Try vswhere first (preferred method, consistent with nonCertBuild.py)
     result = find_vcvars_with_vswhere(arch)
     if result:
+
         return result
 
     # Fallback to direct path search (for environments without vswhere)
+
     script_name = "vcvars32.bat" if arch == "x86" else "vcvars64.bat"
 
     for edition in VS2022_EDITIONS:
+
         path = VS2022_BASE_PATH / edition / "VC" / "Auxiliary" / "Build" / script_name
         if path.exists():
             return str(path)
+
+
     return None
 ```
 
+
+
 ### `scons_jp.py`の変更
-
+*
 **変更不要**: `scons_jp.py`は`vs_utils.find_vcvarsall()`を呼び出すだけなので、`vs_utils.py`の内部実装の変更により自動的に`vswhere`を使用するようになる。
+*
 
-## 結論
+
+*# 結論
+*
+*
 
 **推奨**: 案1（`vs_utils.py`に`vswhere`サポートを追加）
-
+*
 **理由**:
+*
+
 1. **`scons_jp.py`のコード変更が不要**: `vs_utils.py`の内部実装の変更のみ
-2. **すべてのスクリプトが同じ検出ロジックを使用**: `scons_jp.py`、`vcsetup.cmd`、`vcsetup.ps1`がすべて`vswhere`を使用
-3. **`nonCertBuild.py`との一貫性**: 同じ検出方法（`vswhere`）を使用
-4. **本家のアプローチに近い**: Microsoftが推奨する標準的な方法
+*. **すべてのスクリプトが同じ検出ロジックを使用**: `scons_jp.py`、`vcsetup.cmd`、`vcsetup.ps1`がすべて`vswhere`を使用
+*. **`nonCertBuild.py`との一貫性**: 同じ検出方法（`vswhere`）を使用
+*. **本家のアプローチに近い**: Microsoftが推奨する標準的な方法
+
 5. **柔軟性と将来の拡張性**: 様々なVisual Studioエディションに対応、将来のバージョンにも対応可能
-6. **フォールバック**: `vswhere`が存在しない環境でも動作（直接パス検索にフォールバック）
+*. **フォールバック**: `vswhere`が存在しない環境でも動作（直接パス検索にフォールバック）
+*
+*# 実装状況（2025年12月30日）
 
-## 実装状況（2025年12月30日）
 
-✅ **実装完了**
-
+* **実装完了**
+*
 **実装内容**:
+
 1. ✅ `vs_utils.py`に`find_vcvarsall_with_vswhere()`と`find_vcvars_with_vswhere()`関数を追加
-2. ✅ `find_vcvarsall()`と`find_vcvars()`関数を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
-3. ✅ Visual Studio 2022を優先的に使用（`-version [17.0,18.0)`）
-4. ✅ `scons_jp.py`のコード変更は不要（`vs_utils.py`の内部実装の変更により自動的に`vswhere`を使用）
+*. ✅ `find_vcvarsall()`と`find_vcvars()`関数を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
+*. ✅ Visual Studio 2022を優先的に使用（`-version [17.0,18.0)`）
+*. ✅ `scons_jp.py`のコード変更は不要（`vs_utils.py`の内部実装の変更により自動的に`vswhere`を使用）
 
 **検証結果**:
-- ✅ x86 JP smoke tests成功
-- ✅ `certBuild2025`が実行可能
-- ✅ Visual Studio 2022が優先的に検出される
+* ✅ x86 JP smoke tests成功
+* ✅ `certBuild2025`が実行可能
+* ✅ Visual Studio 2022が優先的に検出される
 
 **コミット**:
-- `e625d3c8b`: "Add vswhere support to vs_utils.py for stable Visual Studio detection"
-- `a9c1c471d`: "Prioritize Visual Studio 2022 over Visual Studio 2025 in vs_utils.py"
+* `e625d3c8b`: "Add vswhere support to vs_utils.py for stable Visual Studio detection"
+* `a9c1c471d`: "Prioritize Visual Studio 2022 over Visual Studio 2025 in vs_utils.py"
 
 詳細は`projectDocs/jp/vswhere-implementation-status.md`を参照。

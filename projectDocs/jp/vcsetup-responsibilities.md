@@ -8,41 +8,41 @@
 
 ### 1. Visual Studio vcvarsスクリプトの検索
 
-- **責務**: Visual Studio 2022の`vcvars32.bat`または`vcvars64.bat`を検索する
-- **実装**（2025年12月30日更新）:
-  - まず`jptools/find_vcvars.py`（`vs_utils.py`を使用）で検索
-    - `vs_utils.py`は`vswhere`を使用してVisual Studio 2022を優先検索
-    - Visual Studio 2022が見つからない場合のみ、すべてのバージョンを検索
-  - Pythonが失敗した場合、直接パス検索（BuildTools, Community, Professional, Enterpriseの順）
-- **現在の状態**:
-  - ✅ `vswhere`サポートが追加され、Visual Studio 2022が優先的に使用される
-  - ✅ Visual Studio 2025がインストールされていても、Visual Studio 2022が使用される
-  - ⚠️ Python依存がある（`find_vcvars.py`が失敗した場合のフォールバックが必要）
+* **責務**: Visual Studio 2022の`vcvars32.bat`または`vcvars64.bat`を検索する
+* **実装**（2025年12月30日更新）:
+  * まず`jptools/find_vcvars.py`（`vs_utils.py`を使用）で検索
+    * `vs_utils.py`は`vswhere`を使用してVisual Studio 2022を優先検索
+    * Visual Studio 2022が見つからない場合のみ、すべてのバージョンを検索
+  * Pythonが失敗した場合、直接パス検索（BuildTools, Community, Professional, Enterpriseの順）
+* **現在の状態**:
+  * ✅ `vswhere`サポートが追加され、Visual Studio 2022が優先的に使用される
+  * ✅ Visual Studio 2025がインストールされていても、Visual Studio 2022が使用される
+  * ⚠️ Python依存がある（`find_vcvars.py`が失敗した場合のフォールバックが必要）
 
 ### 2. MSVC環境変数の設定
 
-- **責務**: vcvarsスクリプトを実行して、MSVCビルドツール（`cl`, `nmake`, `link`など）をPATHに追加する
-- **実装**: `call "%FOUND%" >nul 2>&1`でvcvarsスクリプトを実行
-- **問題点**:
-  - エラー時の詳細情報が不足（`>nul 2>&1`で出力を抑制）
-  - vcvars実行失敗時の診断情報がない
+* **責務**: vcvarsスクリプトを実行して、MSVCビルドツール（`cl`, `nmake`, `link`など）をPATHに追加する
+* **実装**: `call "%FOUND%" >nul 2>&1`でvcvarsスクリプトを実行
+* **問題点**:
+  * エラー時の詳細情報が不足（`>nul 2>&1`で出力を抑制）
+  * vcvars実行失敗時の診断情報がない
 
 ### 3. アーキテクチャの選択と最適化
 
-- **責務**: x86またはx64のMSVC環境を選択し、必要に応じて最適化する
-- **実装**:
-  - x64ビルド: 常にvcvarsを実行（fast-pathなし）
-  - x86ビルド: fast-pathで`cl`と`nmake`が既に利用可能かチェック
-- **問題点**:
-  - fast-pathロジックが複雑（x86/x64で異なる動作）
-  - `cl`と`nmake`の存在確認がfast-path内に混在
+* **責務**: x86またはx64のMSVC環境を選択し、必要に応じて最適化する
+* **実装**:
+  * x64ビルド: 常にvcvarsを実行（fast-pathなし）
+  * x86ビルド: fast-pathで`cl`と`nmake`が既に利用可能かチェック
+* **問題点**:
+  * fast-pathロジックが複雑（x86/x64で異なる動作）
+  * `cl`と`nmake`の存在確認がfast-path内に混在
 
 ### 4. x86ビルド用のCL環境変数設定
 
-- **責務**: x86ビルドの場合、`CL`環境変数に`/arch:IA32`を設定する
-- **実装**: `SET CL=/arch:IA32`
-- **問題点**:
-  - 既存の`CL`環境変数の値を上書きする可能性がある
+* **責務**: x86ビルドの場合、`CL`環境変数に`/arch:IA32`を設定する
+* **実装**: `SET CL=/arch:IA32`
+* **問題点**:
+  * 既存の`CL`環境変数の値を上書きする可能性がある
 
 ## 責務の整理案
 
@@ -187,8 +187,8 @@ if defined SET_CL_ARCH (
 コミット`53fcb90b9`（2025-12-28）で、`vcsetup.cmd`にPython依存（`find_vcvars.py`）が導入されました。
 
 **導入理由**（コメントより）:
-- `scons_jp.py`と`runJpSmokeTests.ps1`との一貫性を保つため
-- `vs_utils.py`で共通ロジックを共有するため
+* `scons_jp.py`と`runJpSmokeTests.ps1`との一貫性を保つため
+* `vs_utils.py`で共通ロジックを共有するため
 
 ### 方針の評価
 
@@ -242,16 +242,16 @@ if defined SET_CL_ARCH (
 ### 主要責務
 
 1. **Visual Studio vcvarsスクリプトの検索と実行**
-   - `find_vcvars.py`を使用してvcvarsスクリプトを検索
-   - フォールバックとして直接パス検索
-   - vcvarsスクリプトを実行してMSVC環境変数を設定
+   * `find_vcvars.py`を使用してvcvarsスクリプトを検索
+   * フォールバックとして直接パス検索
+   * vcvarsスクリプトを実行してMSVC環境変数を設定
 
 2. **アーキテクチャに応じた最適化**
-   - x64ビルド: 常にvcvarsを実行（x86ツールの混入を防止）
-   - x86ビルド: fast-pathで既存ツールをチェック（パフォーマンス向上）
+   * x64ビルド: 常にvcvarsを実行（x86ツールの混入を防止）
+   * x86ビルド: fast-pathで既存ツールをチェック（パフォーマンス向上）
 
 3. **x86ビルド用のCL環境変数設定**
-   - x86ビルドの場合、`CL`環境変数に`/arch:IA32`を追加
+   * x86ビルドの場合、`CL`環境変数に`/arch:IA32`を追加
 
 ### 非責務（他のスクリプトに委譲すべき）
 
@@ -287,19 +287,19 @@ exit /b 1
 
 ## 実装チェックリスト
 
-- [x] enabledelayedexpansion問題の修正（2025年12月30日完了）
-- [ ] エラーハンドリングの強化（vcvars実行失敗時の詳細出力）
-- [ ] fast-pathロジックの明確化（コメントの追加）
-- [ ] CL環境変数の安全な設定（既存値の保持）
-- [ ] Visual Studio 2022以外のバージョン対応（将来の拡張性）
-- [ ] テストケースの追加（x86/x64、fast-path、エラーケース）
+* [x] enabledelayedexpansion問題の修正（2025年12月30日完了）
+* [ ] エラーハンドリングの強化（vcvars実行失敗時の詳細出力）
+* [ ] fast-pathロジックの明確化（コメントの追加）
+* [ ] CL環境変数の安全な設定（既存値の保持）
+* [ ] Visual Studio 2022以外のバージョン対応（将来の拡張性）
+* [ ] テストケースの追加（x86/x64、fast-path、エラーケース）
 
 ## 関連ドキュメント
 
-- `projectDocs/jp/build-architecture-environment-variables.md`: `BUILD_ARCH`と`TARGET_ARCH`の関係
-- `projectDocs/jp/certBuild2023_evaluation.md`: `certBuild2023.cmd`の評価
-- `projectDocs/jp/vswhere-implementation-status.md`: `vswhere`実装状況のまとめ（実装済み）
-- `projectDocs/jp/vcsetup-ps1-migration-proposal.md`: PowerShell移行案（将来の作業）
-- `projectDocs/jp/vcsetup-ps1-qa-evaluation.md`: PowerShell移行の品質保証評価（将来の作業）
-- `jptools/find_vcvars.py`: vcvarsスクリプト検索の実装
-- `jptools/vs_utils.py`: Visual Studio検索のユーティリティ（`vswhere`サポート追加済み）
+* `projectDocs/jp/build-architecture-environment-variables.md`: `BUILD_ARCH`と`TARGET_ARCH`の関係
+* `projectDocs/jp/certBuild2023_evaluation.md`: `certBuild2023.cmd`の評価
+* `projectDocs/jp/vswhere-implementation-status.md`: `vswhere`実装状況のまとめ（実装済み）
+* `projectDocs/jp/vcsetup-ps1-migration-proposal.md`: PowerShell移行案（将来の作業）
+* `projectDocs/jp/vcsetup-ps1-qa-evaluation.md`: PowerShell移行の品質保証評価（将来の作業）
+* `jptools/find_vcvars.py`: vcvarsスクリプト検索の実装
+* `jptools/vs_utils.py`: Visual Studio検索のユーティリティ（`vswhere`サポート追加済み）
