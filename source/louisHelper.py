@@ -207,7 +207,7 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 			firstTable = tableList[0] if tableList and len(tableList) > 0 else None
 			matches = firstTable and firstTable.endswith("ja-jp-comp6.utb") if firstTable else False
 			f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"C","location":"louisHelper.py:164","message":"checking ja-jp-comp6.utb","data":{"firstTable":firstTable,"matches":matches,"jpTranslateAvailable":jpTranslate is not None},"timestamp":int(__import__("time").time()*1000)})+"\n")
-		except: pass
+	except: pass
 	# #endregion agent log
 	if jpTranslate and tableList and len(tableList) > 0 and tableList[0].endswith("ja-jp-comp6.utb"):
 		log.debug(text)
