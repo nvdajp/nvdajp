@@ -4,7 +4,7 @@
 # https://mail.gnome.org/archives/kupfer-list/2010-June/msg00002.html
 *.po filter=cleanpo
 
-eol=crlf
+eol=lf
 *	text=auto
 
 # Files which should not be renormalized
