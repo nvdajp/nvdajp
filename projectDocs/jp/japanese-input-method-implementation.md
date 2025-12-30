@@ -146,12 +146,91 @@ if (hr == S_OK) {
    - `getDispAttrFromRange()` 関数が存在するか
    - `OnEndEdit()` 関数内で `jpAttrBuf` を使用しているか
 
+## ATOK 対応
+
+nvdajp では、ATOK（日本語入力システム）の UI コメント機能をサポートしています。
+
+### ファイル構成
+
+- **`source/NVDAObjects/IAccessible/atok.py`**: ATOK の UI コメントウィンドウを処理するクラス
+- **`source/NVDAObjects/IAccessible/__init__.py`**: ATOK の `findExtraOverlayClasses` を呼び出す処理
+
+### 実装内容
+
+#### `ATOKxxUIComment` クラス
+
+```python
+class ATOKxxUIComment(IAccessible):
+	role = controlTypes.Role.STATICTEXT
+
+	def _get_name(self):
+		name = self.displayText
+		return name
+
+	def event_show(self):
+		if not (
+			config.conf["keyboard"]["nvdajpEnableKeyEvents"]
+			and config.conf["inputComposition"]["announceSelectedCandidate"]
+		):
+			return
+		tones.beep(880, 20)
+		api.setNavigatorObject(self)
+		speech.cancelSpeech()
+		time.sleep(0.2)
+		speech.speakMessage(self.name)
+		(left, top, width, height) = self.location
+		x = left + (width // 2)
+		y = top + (height // 2)
+		winUser.setCursorPos(x, y)
+		mouseHandler.executeMouseMoveEvent(x, y)
+```
+
+**機能**: ATOK の UI コメントウィンドウ（候補コメント）を検出し、音声で読み上げます。
+
+**条件**: 
+- `nvdajpEnableKeyEvents` が有効
+- `announceSelectedCandidate` が有効
+
+**動作**: 
+- UI コメントが表示されたときにビープ音を鳴らす
+- コメントの内容を音声で読み上げる
+- マウスカーソルをコメントウィンドウの中央に移動
+
+#### `findExtraOverlayClasses` 関数
+
+```python
+def findExtraOverlayClasses(obj, clsList):
+	windowClassName = obj.windowClassName
+	if windowClassName.endswith("UIComment"):
+		clsList.append(ATOKxxUIComment)
+```
+
+**機能**: ウィンドウクラス名が `"UIComment"` で終わる場合に `ATOKxxUIComment` クラスを適用します。
+
+#### `IAccessible.__init__.py` での呼び出し
+
+```python
+elif windowClassName[:5] in ("ATOK2", "ATOK3"):
+	from . import atok
+	atok.findExtraOverlayClasses(self, clsList)
+```
+
+**機能**: ウィンドウクラス名が `"ATOK2"` または `"ATOK3"` で始まる場合に ATOK のオーバーレイクラスを検索します。
+
+### マージ時の注意事項
+
+マージ後は、以下の点を確認してください：
+
+1. **`source/NVDAObjects/IAccessible/atok.py`** が存在するか
+2. **`source/NVDAObjects/IAccessible/__init__.py`** で ATOK の `findExtraOverlayClasses` が呼び出されているか
+
 ## 関連ファイル
 
 - `nvdaHelper/remote/ime.h`: IME 関連のヘッダー
 - `nvdaHelper/remote/tsf.h`: TSF 関連のヘッダー
 - `source/inputComposition.py`: Python 側での入力変換処理
 - `source/languageHandler.py`: 言語処理（日本語固有の処理を含む）
+- `source/NVDAObjects/IAccessible/atok.py`: ATOK UI コメント対応
 
 ## 参考資料
 
@@ -162,4 +241,3 @@ if (hr == S_OK) {
 ## 変更履歴
 
 - 2025-12-30: x64 Python 3.13 移行時に、betajp ブランチから日本語版固有の変更を復元
-
