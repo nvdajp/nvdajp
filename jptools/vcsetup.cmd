@@ -52,8 +52,15 @@ if not defined FOUND (
 )
 
 echo [vcsetup] Using: "%FOUND%"
-call "%FOUND%" >nul 2>&1
-if "%ERRORLEVEL%" neq "0" (
+rem Use pushd to change to the directory containing vcvars script, then call it
+rem This avoids issues with spaces in paths when using call command
+for %%D in ("%FOUND%") do set "VCVARS_DIR=%%~dpD"
+for %%F in ("%FOUND%") do set "VCVARS_FILE=%%~nxF"
+pushd "%VCVARS_DIR%"
+call "%VCVARS_FILE%" >nul 2>&1
+set "VCVARS_EXIT=%ERRORLEVEL%"
+popd
+if "%VCVARS_EXIT%" neq "0" (
   echo [ERROR] Failed to execute vcvars script: "%FOUND%" >&2
   exit /b 1
 )
