@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2010-2024 NV Access Limited, James Teh, Michael Curran, Peter Vágner, Joseph Lee,
+# Copyright (C) 2010-2025 NV Access Limited, James Teh, Michael Curran, Peter Vágner, Joseph Lee,
 # Reef Turner, Babbage B.V., Leonard de Ruijter, Łukasz Golonka, Accessolutions, Julien Cochuyt,
 # Cyrille Bougot
 # This file may be used under the terms of the GNU General Public License, version 2 or later.
@@ -7,6 +7,7 @@
 
 import multiprocessing
 import os
+import platform
 import sys
 from pathlib import Path
 
@@ -45,6 +46,7 @@ import gettext  # noqa: E402
 
 gettext.install("nvda")
 sys.path.append("source")
+import buildVersion  # noqa: E402
 import versionInfo  # noqa: E402
 
 del sys.path[-1]
@@ -56,18 +58,23 @@ XGETTEXT = os.path.abspath(os.path.join("miscDeps", "tools", "xgettext.exe"))
 
 
 vars = Variables()
-vars.Add("version", "The version of this build", versionInfo.version)
+vars.Add("version", "The version of this build", buildVersion.version)
 vars.Add("version_build", "A unique number for this build.", "0")
 vars.Add(BoolVariable("release", "Whether this is a release version", False))
-vars.Add("publisher", "The publisher of this build", versionInfo.publisher)
+vars.Add("publisher", "The publisher of this build", buildVersion.publisher)
 vars.Add(
 	"updateVersionType",
 	"The version type for which to check for updates",
-	versionInfo.updateVersionType or "",
+	buildVersion.updateVersionType or "",
 )
-# vars.Add(PathVariable("certFile", "The certificate file with which to sign executables", "",
-# 	lambda key, val, env: not val or PathVariable.PathIsFile(key, val, env)))
-vars.Add("certFile", "The certificate file with which to sign executables", "")
+vars.Add(
+	PathVariable(
+		"certFile",
+		"The certificate file with which to sign executables",
+		"",
+		lambda key, val, env: not val or PathVariable.PathIsFile(key, val, env),
+	)
+)
 vars.Add("certPassword", "The password for the private key in the signing certificate", "")
 vars.Add(
 	"certTimestampServer",
@@ -113,6 +120,7 @@ env = Environment(
 	],
 )
 
+
 # speed up subsequent runs by checking timestamps of targets and dependencies, and only using md5 if timestamps differ.
 env.Decider("MD5-timestamp")
 
@@ -151,9 +159,9 @@ if len(unknown) > 0:
 	Exit(1)
 
 env["copyright"] = versionInfo.copyright
-env["version_year"] = versionInfo.version_year
-env["version_major"] = versionInfo.version_major
-env["version_minor"] = versionInfo.version_minor
+env["version_year"] = buildVersion.version_year
+env["version_major"] = buildVersion.version_major
+env["version_minor"] = buildVersion.version_minor
 version = env["version"]
 version_build = env["version_build"]
 release = env["release"]
@@ -167,14 +175,16 @@ sourceDir = env.Dir("source")
 Export("sourceDir")
 clientDir = Dir("extras/controllerClient")
 Export("clientDir")
-sourceLibDir = sourceDir.Dir("lib")
+sourceLibDir = sourceDir.Dir("lib/x86")
 Export("sourceLibDir")
 sourceTypelibDir = sourceDir.Dir("typelibs")
 Export("sourceTypelibDir")
-sourceLibDir64 = sourceDir.Dir("lib64")
+sourceLibDir64 = sourceDir.Dir("lib/x64")
 Export("sourceLibDir64")
-sourceLibDirArm64 = sourceDir.Dir("libArm64")
+sourceLibDirArm64 = sourceDir.Dir("lib/arm64")
 Export("sourceLibDirArm64")
+sourceLibDirArm64EC = sourceDir.Dir("lib/arm64ec")
+Export("sourceLibDirArm64EC")
 buildDir = Dir("build")
 outFilePrefix = "nvda{type}_{version}".format(type="" if release else "_snapshot", version=version)
 Export("outFilePrefix")
@@ -202,65 +212,23 @@ if apiSigningToken:
 	# Export via scons environment so other libraries can be signed
 	env["signExec"] = signExecApi
 elif certFile:
-	# Local code signing with a certificate in store or PFX file
+	# Local code signing with a certFile
 	def signExecCert(target, source, env):
-		# Build signtool path (allow override via SIGNTOOL env)
-		signToolPath = os.getenv("SIGNTOOL") or "signtool"
-
-		# Base args: enforce SHA256 digest and timestamp digest
-		baseArgs = [signToolPath, "sign", "/fd", "SHA256"]
+		# we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages
+		signExecCmd = ["signtool", "sign", "/fd", "SHA256", "/f", certFile]
+		if certPassword:
+			signExecCmd.extend(("/p", certPassword))
 		if certTimestampServer:
-			baseArgs.extend(("/tr", certTimestampServer, "/td", "SHA256"))
-
-		# Certificate selection
-		args = list(baseArgs)
-		# If certFile points to an existing file, use it with optional password
-		certFilePath = certFile if isinstance(certFile, str) else str(certFile)
-		try:
-			useCertFile = bool(certFilePath) and os.path.isfile(certFilePath)
-		except Exception:
-			useCertFile = False
-
-		if useCertFile:
-			args.extend(("/f", certFilePath))
-			if certPassword:
-				args.extend(("/p", certPassword))
-		else:
-			# Support store-based selection via environment variables
-			certStore = os.getenv("CERT_STORE") or "My"
-			certSha1 = os.getenv("CERT_SHA1")
-			certName = os.getenv("CERT_NAME")
-			certMachine = os.getenv("CERT_MACHINE_STORE")
-			if certSha1:
-				args.extend(("/s", certStore, "/sha1", certSha1))
-				if certMachine:
-					args.append("/sm")
-			elif certName:
-				args.extend(("/s", certStore, "/n", certName))
-				if certMachine:
-					args.append("/sm")
-			else:
-				# Fallback to automatic selection from store
-				args.append("/a")
-
-		# Sign each target that is a PE image, with retries
-		retval = 0
-		for t in target:
-			abspath = t.abspath
-			if not abspath.lower().endswith((".exe", ".dll")):
-				continue
-			attempt = 0
-			res = 1
-			while attempt < 3:
-				attempt += 1
-				res = env.Execute([args + [abspath]])
-				if res == 0:
-					break
-				time.sleep(1)
-			else:
-				print(f"Error signing file: {abspath}")
-				retval = res or 1
-		return retval
+			signExecCmd.extend(("/tr", certTimestampServer, "/td", "SHA256"))
+		print([str(x) for x in target])
+		# #3795: signtool can quite commonly fail with timestamping, so allow it to try up to 3 times with a 1 second delay between each try.
+		res = 0
+		for count in range(3):
+			res = env.Execute([signExecCmd + [target[0].abspath]])
+			if not res:
+				return 0  # success
+			time.sleep(1)
+		return res  # failed
 
 	# Export via scons environment so other libraries can be signed
 	env["signExec"] = signExecCert
@@ -270,12 +238,18 @@ archTools = ["default", "midl", "msrpc"]
 env32 = env.Clone(TARGET_ARCH="x86", tools=archTools)
 env64 = env.Clone(TARGET_ARCH="x86_64", tools=archTools)
 envArm64 = env.Clone(TARGET_ARCH="arm64", tools=archTools)
+envArm64EC = envArm64.Clone()
+envArm64EC["isArm64EC"] = True
 # Hack around odd bug where some tool [after] msvc states that static and shared objects are different
 env32["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
 env64["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
 envArm64["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
+envArm64EC["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"] = 1
 
-env = env32
+if platform.architecture()[0].startswith("64"):
+	env = env64
+else:
+	env = env32
 
 projectRCSubstDict = {
 	"%version_year%": env["version_year"],
@@ -285,7 +259,7 @@ projectRCSubstDict = {
 	"%copyright%": env["copyright"],
 	"%publisher%": env["publisher"],
 	"%version%": env["version"],
-	"%productName%": "%s (%s)" % (versionInfo.name, versionInfo.longName),
+	"%productName%": "%s (%s)" % (buildVersion.name, versionInfo.longName),
 }
 resFile = env.RES(
 	target="build/nvda.res",
@@ -296,14 +270,21 @@ resFile = env.RES(
 env32["projectResFile"] = resFile
 env64["projectResFile"] = resFile
 envArm64["projectResFile"] = resFile
+envArm64EC["projectResFile"] = resFile
 
 # Fill sourceDir with anything provided for it by miscDeps
 env.recursiveCopy(sourceDir, Dir("miscdeps/source"))
+
 # Copy in some other dependencies.
-jabDll = "windowsaccessbridge-32.dll"
-Command(
-	sourceLibDir.File(jabDll), env.Dir("#include/javaAccessBridge32").File(jabDll), Copy("$TARGET", "$SOURCE")
-)
+for targetDir, jabDll in (
+	(sourceLibDir, "windowsaccessbridge-32.dll"),
+	(sourceLibDir64, "windowsaccessbridge-64.dll"),
+):
+	Command(
+		targetDir.File("windowsaccessbridge.dll"),
+		env.Dir("#include/javaAccessBridge32").File(jabDll),
+		Copy("$TARGET", "$SOURCE"),
+	)
 
 env.SConscript("source/comInterfaces_sconscript", exports=["env"])
 
@@ -322,6 +303,11 @@ envArm64.SConscript(
 	"nvdaHelper/archBuild_sconscript",
 	exports={"env": envArm64, "clientInstallDir": clientDir.Dir("arm64"), "libInstallDir": sourceLibDirArm64},
 	variant_dir="build/arm64",
+)
+envArm64EC.SConscript(
+	"nvdaHelper/archBuild_sconscript",
+	exports={"env": envArm64EC, "clientInstallDir": clientDir.Dir("arm64ec"), "libInstallDir": sourceLibDirArm64EC},
+	variant_dir="build/arm64ec",
 )
 
 # Allow all NVDA's gettext po files to be compiled in source/locale
@@ -356,8 +342,8 @@ for mdFile in env.Glob(os.path.join(userDocsDir.path, "*", "*.md")):
 		source=mdFile,
 		SUBST_DICT={
 			"NVDA_VERSION": env["version"],
-			"NVDA_URL": versionInfo.url,
-			"NVDA_COPYRIGHT_YEARS": versionInfo.copyrightYears,
+			"NVDA_URL": buildVersion.url,
+			"NVDA_COPYRIGHT_YEARS": buildVersion.copyrightYears,
 		},
 	)
 	lang = os.path.split(os.path.dirname(mdFile.path))[-1]
@@ -389,13 +375,6 @@ for userGuideFileSub in env.Glob(os.path.join(userDocsDir.path, "*", "userGuide.
 
 # Build unicode CLDR dictionaries
 env.SConscript("cldrDict_sconscript", exports=["env", "sourceDir"])
-
-# BEGIN JP PATCH (build dependencies)
-# JP-specific helpers (isolated; add opt-in aliases only)
-# Note: jtalkSync dependency for sourceDir is set up in register_jp_builders
-# (after jtalkSync alias is created with correct TARGET_ARCH) to ensure
-# architecture-specific stamp files are used correctly.
-# END JP PATCH (build dependencies)
 
 
 # A builder to generate an NVDA distribution.
@@ -461,12 +440,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 				action.append(Copy(target[0], file.path))
 
 	if certFile or apiSigningToken:
-		for prog in (
-			"nvda_noUIAccess.exe",
-			"nvda_uiAccess.exe",
-			"nvda_slave.exe",
-			"l10nUtil.exe",
-		):
+		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
 			action.append(
 				lambda target, source, env, progByVal=prog: env["signExec"](
 					[target[0].File(progByVal)], source, env
@@ -665,7 +639,7 @@ def makePot(target, source, env):
 					"-o",
 					target[0].abspath,
 					"--package-name",
-					versionInfo.name,
+					buildVersion.name,
 					"--package-version",
 					version,
 					"--foreign-user",
@@ -769,12 +743,3 @@ env.Tool("listModules")
 source = env.Dir(os.path.join(os.getcwd(), "dist"))
 target = env.File(os.path.join(outputDir.abspath, "library_modules.txt"))
 env.Alias("moduleList", env.GenerateModuleList(target, source))
-
-# JP: Attach overlay clean-up to major default targets so that `scons -c`
-# also cleans miscDepsJp overlay artifacts.
-try:
-	_overlay_files = scons_jp._compute_overlay_targets(Path.cwd())  # type: ignore[attr-defined]
-	env.Clean(dist, _overlay_files)
-	env.Clean(launcher, _overlay_files)
-except Exception:
-	pass

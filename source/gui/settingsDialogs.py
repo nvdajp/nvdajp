@@ -41,6 +41,7 @@ from config.configFlags import (
 	TetherTo,
 	ParagraphStartMarker,
 	ReportLineIndentation,
+	ReportSpellingErrors,
 	ReportTableHeaders,
 	ReportCellBorders,
 	OutputMode,
@@ -947,9 +948,7 @@ class GeneralSettingsPanel(SettingsPanel):
 			item = self.allowUsageStatsCheckBox = wx.CheckBox(
 				self,
 				# Translators: The label of a checkbox in general settings to toggle allowing of usage stats gathering
-				label=_("Allow NV Access to gather NVDA usage statistics").replace(
-					"NV Access", _("NVDA Japanese Team")
-				),
+				label=_("Allow NV Access to gather NVDA usage statistics"),
 			)
 			self.bindHelpEvent("GeneralSettingsGatherUsageStats", self.allowUsageStatsCheckBox)
 			item.Value = config.conf["update"]["allowUsageStats"]
@@ -1179,124 +1178,6 @@ class LanguageRestartDialog(
 		self.Destroy()
 		config.conf.save()
 		queueHandler.queueFunction(queueHandler.eventQueue, core.restart)
-
-
-class LanguageSettingsPanel(SettingsPanel):
-	# Translators: This is the label for the language settings dialog.
-	title = _("Language Settings")
-
-	def makeSettings(self, settingsSizer):
-		settingsSizerHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
-		self.nconvAsNVDAModifierCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Use NonConvert as an NVDA modifier key"))
-		)
-		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
-
-		self.convAsNVDAModifierCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Use Convert as an NVDA modifier key"))
-		)
-		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
-
-		self.escAsNVDAModifierCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Use Escape as an NVDA modifier key"))
-		)
-		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
-
-		self.nvdajpImeBeepCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Beep for IME mode change"))
-		)
-		self.nvdajpImeBeepCheckBox.SetValue(config.conf["keyboard"]["nvdajpImeBeep"])
-
-		self.jpPhoneticReadingKanaCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Phonetic reading for Kana"))
-		)
-		self.jpPhoneticReadingKanaCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingKana"])
-
-		self.jpPhoneticReadingLatinCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Phonetic reading for Latin"))
-		)
-		self.jpPhoneticReadingLatinCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingLatin"])
-
-		self.jpKatakanaPitchChangeEdit = settingsSizerHelper.addLabeledControl(
-			# Translators: The label of a editbox in language settings
-			_("Katakana pitch change percentage"),
-			nvdaControls.SelectOnFocusSpinCtrl,
-			min=-100,
-			max=100,
-			initial=config.conf["language"]["jpKatakanaPitchChange"],
-		)
-
-		self.halfShapePitchChangeEdit = settingsSizerHelper.addLabeledControl(
-			# Translators: The label of a editbox in language settings
-			_("Half shape pitch change percentage"),
-			nvdaControls.SelectOnFocusSpinCtrl,
-			min=-100,
-			max=100,
-			initial=config.conf["language"]["halfShapePitchChange"],
-		)
-
-		self.announceCandidateNumberCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Announce candidate number"))
-		)
-		self.announceCandidateNumberCheckBox.SetValue(config.conf["language"]["announceCandidateNumber"])
-
-		self.nvdajpEnableKeyEventsCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Use IME support of nvdajp"))
-		)
-		self.nvdajpEnableKeyEventsCheckBox.SetValue(config.conf["keyboard"]["nvdajpEnableKeyEvents"])
-
-		self.jpAnsiEditCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Work around ANSI editbox"))
-		)
-		self.jpAnsiEditCheckBox.SetValue(config.conf["language"]["jpAnsiEditbox"])
-
-		self.jpAnnounceNewLineCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Announce new line in editable text"))
-		)
-		self.jpAnnounceNewLineCheckBox.SetValue(config.conf["language"]["jpAnnounceNewLine"])
-
-		self.openDocFileByMSHTACheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Open document file by MSHTA"))
-		)
-		self.openDocFileByMSHTACheckBox.SetValue(config.conf["language"]["openDocFileByMSHTA"])
-
-		self.alwaysSpeakMathInEnglishCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Always speak math in English"))
-		)
-		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
-
-	def onSave(self):
-		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = (
-			self.nconvAsNVDAModifierCheckBox.IsChecked()
-		)
-		config.conf["keyboard"]["useConvertAsNVDAModifierKey"] = self.convAsNVDAModifierCheckBox.IsChecked()
-		config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] = self.escAsNVDAModifierCheckBox.IsChecked()
-		config.conf["language"]["jpPhoneticReadingKana"] = self.jpPhoneticReadingKanaCheckBox.IsChecked()
-		config.conf["language"]["jpPhoneticReadingLatin"] = self.jpPhoneticReadingLatinCheckBox.IsChecked()
-		config.conf["keyboard"]["nvdajpEnableKeyEvents"] = self.nvdajpEnableKeyEventsCheckBox.IsChecked()
-		config.conf["keyboard"]["nvdajpImeBeep"] = self.nvdajpImeBeepCheckBox.IsChecked()
-		config.conf["language"]["announceCandidateNumber"] = self.announceCandidateNumberCheckBox.IsChecked()
-		config.conf["language"]["jpAnsiEditbox"] = self.jpAnsiEditCheckBox.IsChecked()
-		config.conf["language"]["jpAnnounceNewLine"] = self.jpAnnounceNewLineCheckBox.IsChecked()
-		config.conf["language"]["openDocFileByMSHTA"] = self.openDocFileByMSHTACheckBox.IsChecked()
-		config.conf["language"]["alwaysSpeakMathInEnglish"] = (
-			self.alwaysSpeakMathInEnglishCheckBox.IsChecked()
-		)
-
-		config.conf["language"]["jpKatakanaPitchChange"] = self.jpKatakanaPitchChangeEdit.Value
-		config.conf["language"]["halfShapePitchChange"] = self.halfShapePitchChangeEdit.Value
 
 
 class SpeechSettingsPanel(SettingsPanel):
@@ -2244,7 +2125,7 @@ class KeyboardSettingsPanel(SettingsPanel):
 		)
 		self.bindHelpEvent("KeyboardSettingsAlertForSpellingErrors", self.alertForSpellingErrorsCheckBox)
 		self.alertForSpellingErrorsCheckBox.SetValue(config.conf["keyboard"]["alertForSpellingErrors"])
-		if not config.conf["documentFormatting"]["reportSpellingErrors"]:
+		if not config.conf["documentFormatting"]["reportSpellingErrors2"]:
 			self.alertForSpellingErrorsCheckBox.Disable()
 
 		# Translators: This is the label for a checkbox in the
@@ -2600,6 +2481,15 @@ class ObjectPresentationPanel(SettingsPanel):
 
 		# Translators: This is the label for a checkbox in the
 		# object presentation settings panel.
+		reportMultiSelectText = _("Report when lists support &multiple selection")
+		self.reportMultiSelectCheckBox = sHelper.addItem(wx.CheckBox(self, label=reportMultiSelectText))
+		self.bindHelpEvent("ReportMultiSelect", self.reportMultiSelectCheckBox)
+		self.reportMultiSelectCheckBox.SetValue(
+			config.conf["presentation"]["reportMultiSelect"],
+		)
+
+		# Translators: This is the label for a checkbox in the
+		# object presentation settings panel.
 		descriptionText = _("Report object &descriptions")
 		self.descriptionCheckBox = sHelper.addItem(wx.CheckBox(self, label=descriptionText))
 		self.bindHelpEvent("ObjectPresentationReportDescriptions", self.descriptionCheckBox)
@@ -2662,6 +2552,7 @@ class ObjectPresentationPanel(SettingsPanel):
 		config.conf["presentation"]["guessObjectPositionInformationWhenUnavailable"] = (
 			self.guessPositionInfoCheckBox.IsChecked()
 		)
+		config.conf["presentation"]["reportMultiSelect"] = self.reportMultiSelectCheckBox.IsChecked()
 		config.conf["presentation"]["reportObjectDescriptions"] = self.descriptionCheckBox.IsChecked()
 		config.conf["presentation"]["progressBarUpdates"]["progressBarOutputMode"] = self.progressLabels[
 			self.progressList.GetSelection()
@@ -2920,11 +2811,23 @@ class DocumentFormattingPanel(SettingsPanel):
 		self.revisionsCheckBox = docInfoGroup.addItem(wx.CheckBox(docInfoBox, label=revisionsText))
 		self.revisionsCheckBox.SetValue(config.conf["documentFormatting"]["reportRevisions"])
 
-		# Translators: This is the label for a checkbox in the
-		# document formatting settings panel.
-		spellingErrorText = _("Spelling e&rrors")
-		self.spellingErrorsCheckBox = docInfoGroup.addItem(wx.CheckBox(docInfoBox, label=spellingErrorText))
-		self.spellingErrorsCheckBox.SetValue(config.conf["documentFormatting"]["reportSpellingErrors"])
+		self._spellingErrorsChecklist = docInfoGroup.addLabeledControl(
+			# Translators: This is the label for a checklist in the
+			# document formatting settings panel.
+			_("Spelling e&rrors"),
+			nvdaControls.CustomCheckListBox,
+			choices=[i.displayString for i in ReportSpellingErrors],
+		)
+		checkedItems = []
+		for i, mode in enumerate(ReportSpellingErrors):
+			if config.conf["documentFormatting"]["reportSpellingErrors2"] & mode.value:
+				checkedItems.append(i)
+		self._spellingErrorsChecklist.SetCheckedItems(checkedItems)
+		self._spellingErrorsChecklist.Select(0)
+		self.bindHelpEvent(
+			"reportSpellingErrors",
+			self._spellingErrorsChecklist,
+		)
 
 		# Translators: This is the label for a group of document formatting options in the
 		# document formatting settings panel
@@ -3147,7 +3050,11 @@ class DocumentFormattingPanel(SettingsPanel):
 		config.conf["documentFormatting"]["reportHighlight"] = self.highlightCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportAlignment"] = self.alignmentCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportStyle"] = self.styleCheckBox.IsChecked()
-		config.conf["documentFormatting"]["reportSpellingErrors"] = self.spellingErrorsCheckBox.IsChecked()
+		config.conf["documentFormatting"]["reportSpellingErrors2"] = sum(
+			mode.value
+			for (n, mode) in enumerate(ReportSpellingErrors)
+			if self._spellingErrorsChecklist.IsChecked(n)
+		)
 		config.conf["documentFormatting"]["reportPage"] = self.pageCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportLineNumber"] = self.lineNumberCheckBox.IsChecked()
 		config.conf["documentFormatting"]["reportLineIndentation"] = self.lineIndentationCombo.GetSelection()
@@ -4278,6 +4185,7 @@ class AdvancedPanelControls(
 			"garbageHandler",
 			"remoteClient",
 			"externalPythonDependencies",
+			"bdDetect",
 		]
 		# Translators: This is the label for a list in the
 		#  Advanced settings panel
@@ -4303,10 +4211,8 @@ class AdvancedPanelControls(
 		# Translators: Label for the Play a sound for logged errors combobox, in the Advanced settings panel.
 		label = _("Play a sound for logged e&rrors:")
 		playErrorSoundChoices = (
-			# # Translators: Label for a value in the Play a sound for logged errors combobox, in the Advanced settings.
-			# pgettext("advanced.playErrorSound", "Only in NVDA test versions"),
 			# Translators: Label for a value in the Play a sound for logged errors combobox, in the Advanced settings.
-			_("No"),
+			pgettext("advanced.playErrorSound", "Only in NVDA test versions"),
 			# Translators: Label for a value in the Play a sound for logged errors combobox, in the Advanced settings.
 			pgettext("advanced.playErrorSound", "Yes"),
 		)
@@ -5647,7 +5553,6 @@ class NVDASettingsDialog(MultiCategorySettingsDialog):
 	title = _("NVDA Settings")
 	categoryClasses = [
 		GeneralSettingsPanel,
-		LanguageSettingsPanel,
 		SpeechSettingsPanel,
 		BrailleSettingsPanel,
 		AudioPanel,

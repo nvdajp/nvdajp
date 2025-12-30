@@ -17,6 +17,7 @@ import languageHandler
 import config
 from config.registry import RegistryKey
 import versionInfo
+import buildVersion
 from logHandler import log
 import addonHandler
 import easeOfAccess
@@ -43,10 +44,10 @@ def _getWSH():
 	return _wsh
 
 
-defaultStartMenuFolder = versionInfo.name
+defaultStartMenuFolder = buildVersion.name
 with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, RegistryKey.CURRENT_VERSION.value) as k:
 	programFilesPath = winreg.QueryValueEx(k, "ProgramFilesDir")[0]
-defaultInstallPath = os.path.join(programFilesPath, versionInfo.name)
+defaultInstallPath = os.path.join(programFilesPath, buildVersion.name)
 
 
 def createShortcut(
@@ -183,7 +184,7 @@ def removeOldLibFiles(destPath, rebootOK=False):
 	@type rebootOK: boolean
 	"""
 	for topDir in ("lib", "lib64", "libArm64"):
-		currentLibPath = os.path.join(destPath, topDir, versionInfo.version)
+		currentLibPath = os.path.join(destPath, topDir, buildVersion.version)
 		for parent, subdirs, files in os.walk(os.path.join(destPath, topDir), topdown=False):
 			if os.path.commonpath(
 				[os.path.abspath(parent), os.path.abspath(currentLibPath)],
@@ -271,16 +272,16 @@ def getUninstallerRegInfo(installDir: str) -> Dict[str, Union[str, int]]:
 	in the Windows "Apps and Features" overview.
 	"""
 	return dict(
-		DisplayName=f"{versionInfo.name} {versionInfo.version}",
-		DisplayVersion=versionInfo.version_detailed,
-		DisplayIcon=os.path.join(installDir, "images", "nvdajp3.ico"),
+		DisplayName=f"{buildVersion.name} {buildVersion.version}",
+		DisplayVersion=buildVersion.version_detailed,
+		DisplayIcon=os.path.join(installDir, "images", "nvda.ico"),
 		# EstimatedSize is in KiB
 		EstimatedSize=getDirectorySize(installDir) // 1024,
 		InstallDir=installDir,
-		Publisher=versionInfo.publisher,
+		Publisher=buildVersion.publisher,
 		UninstallDirectory=installDir,
 		UninstallString=os.path.join(installDir, "uninstall.exe"),
-		URLInfoAbout=versionInfo.url,
+		URLInfoAbout=buildVersion.url,
 	)
 
 
@@ -460,20 +461,9 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
 	_createShortcutWithFallback(
 		path=os.path.join(startMenuFolder, webSiteTranslated + ".lnk"),
 		fallbackPath=os.path.join(startMenuFolder, "NVDA web site.lnk"),
-		targetPath=versionInfo.url,
+		targetPath=buildVersion.url,
 		prependSpecialFolder="AllUsersPrograms",
 	)
-
-	# nvdajp begin
-	# Translators: A label for a shortcut in start menu and a menu entry in NVDA menu (to go to NVDAJP website).
-	jpWebSiteTranslated = _("NVDAJP web site")
-	_createShortcutWithFallback(
-		path=os.path.join(startMenuFolder, jpWebSiteTranslated + ".lnk"),
-		fallbackPath=os.path.join(startMenuFolder, "NVDAJP web site.lnk"),
-		targetPath="https://www.nvda.jp/",
-		prependSpecialFolder="AllUsersPrograms",
-	)
-	# nvdajp end
 
 	# Translators: A label for a shortcut item in start menu to uninstall NVDA from the computer.
 	uninstallTranslated = _("Uninstall NVDA")
@@ -525,16 +515,6 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
 		targetPath=getDocFilePath("changes.html", installDir),
 		prependSpecialFolder="AllUsersPrograms",
 	)
-	# nvdajp begin
-	# Translators: A label for a shortcut in start menu to open NVDAJP readme
-	readmeJpTranslated = _("&Readme (nvdajp)")
-	_createShortcutWithFallback(
-		path=os.path.join(docFolder, readmeJpTranslated + ".lnk"),
-		fallbackPath=os.path.join(docFolder, "Readme (nvdajp).lnk"),
-		targetPath=getDocFilePath("readmejp.html", installDir),
-		prependSpecialFolder="AllUsersPrograms",
-	)
-	# nvdajp end
 
 
 def isDesktopShortcutInstalled():
@@ -736,6 +716,7 @@ _nvdaExes = {
 	"nvda.exe",
 	"nvda_noUIAccess.exe",
 	"nvda_uiAccess.exe",
+	"nvda_dmp.exe",
 	"nvda_slave.exe",
 }
 
@@ -891,7 +872,7 @@ def registerEaseOfAccess(installDir):
 			"ApplicationName",
 			None,
 			winreg.REG_SZ,
-			versionInfo.name,
+			buildVersion.name,
 		)
 		winreg.SetValueEx(
 			appKey,

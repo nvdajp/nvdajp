@@ -163,8 +163,7 @@ def main(source: str, dest: str, lang: str = "en", docType: str | None = None):
 	isDevGuide = docType == "developerGuide"
 	isChanges = docType == "changes"
 	isKeyCommands = docType == "keyCommands"
-	isReadmejp = docType == "readmejp"
-	if docType and not any([isUserGuide, isDevGuide, isChanges, isKeyCommands, isReadmejp]):
+	if docType and not any([isUserGuide, isDevGuide, isChanges, isKeyCommands]):
 		raise ValueError(f"Unknown docType {docType}")
 	with open(source, "r", encoding="utf-8") as mdFile:
 		mdStr = mdFile.read()
@@ -173,7 +172,7 @@ def main(source: str, dest: str, lang: str = "en", docType: str | None = None):
 		mdBuffer.write(mdStr)
 		title = _getTitle(mdBuffer, isKeyCommands)
 
-	if isUserGuide or isDevGuide or isReadmejp:
+	if isUserGuide or isDevGuide:
 		extraStylesheet = '<link rel="stylesheet" href="numberedHeadings.css">'
 	elif isChanges or isKeyCommands:
 		extraStylesheet = ""
@@ -215,7 +214,7 @@ if __name__ == "__main__":
 		"--docType",
 		help="Type of document",
 		action="store",
-		choices=["userGuide", "developerGuide", "changes", "keyCommands", "readmejp"],
+		choices=["userGuide", "developerGuide", "changes", "keyCommands"],
 	)
 	args.add_argument("source", help="Path to the markdown file")
 	args.add_argument("dest", help="Path to the resulting html file")

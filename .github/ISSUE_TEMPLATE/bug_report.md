@@ -1,51 +1,53 @@
 ---
-name: 不具合の報告
-about: NVDA日本語版の不具合を報告
+name: Bug report
+about: Create a report to help us improve
 type: Bug
 
 ---
 
-<!-- このテンプレートに記入する前に、この説明をお読みください。
-必要なファイルの提供方法を含め、このテンプレートの記入方法について詳しくは以下をご覧ください。
-必要な情報が提供されていない場合、issue がクローズされることがあります。
-https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/issues/githubIssueTemplateExplanationAndExamples.md
-また、NVDA プロジェクトには市民および貢献者の行動規範があります。詳細は以下をご覧ください。
-https://github.com/nvdajp/nvdajp/blob/betajp/CODE_OF_CONDUCT.md
-このプロジェクトに参加または貢献する際は、すべての貢献者およびコミュニティメンバーがこの規範を読み、遵守することが期待されています。これには issue の作成やコメント、プルリクエストの作成も含まれます。
+<!-- Please read the text in this edit field before filling it in.
+Please thoroughly read NVDA's wiki article on how to fill in this template, including how to provide the required files.
+Issues may be closed if the required information is not present.
+https://github.com/nvaccess/nvda/blob/master/projectDocs/issues/githubIssueTemplateExplanationAndExamples.md
+Please also note that the NVDA project has a Citizen and Contributor Code of Conduct which can be found at https://github.com/nvaccess/nvda/blob/master/CODE_OF_CONDUCT.md. NV Access expects that all contributors and other community members read and abide by the rules set out in this document while participating or contributing to this project. This includes creating or commenting on issues and pull requests.
 
+Each of the questions and sections below start with multiple hash symbols (#). Place your answers and information on the blank line below each question.
 -->
 
-### 問題の再現手順
+### Steps to reproduce:
 
-### 実際の動作:
+### Actual behavior:
 <!--
-「コマンドキーの読み上げ」（NVDA+4）とスピーチビューワーを使用して、実際の動作をここにコピー＆ペーストしてください。
-点字ビューワーを使用して、実際の点字表示をここにコピー＆ペーストしてください。
-必要に応じて追加の説明を含めてください。
+Use "Speak command keys" (NVDA+4) and speech viewer to copy and paste here.
+Use braille viewer to copy and paste here.
+You may additionally include an explanation.
 -->
 
-### 期待される動作:
+### Expected behavior:
 <!--
-「コマンドキーの読み上げ」（NVDA+4）とスピーチビューワーを使用して、期待される動作をここにコピー＆ペーストしてください。
-点字ビューワーを使用して、期待される点字表示をここにコピー＆ペーストしてください。
-必要に応じて追加の説明を含めてください。
+Use "Speak command keys" (NVDA+4) and speech viewer to copy and paste here.
+Use braille viewer to copy and paste here.
+You may additionally include an explanation.
 -->
 
+### NVDA logs, crash dumps and other attachments:
 
-### システム構成
+### System configuration
+#### NVDA installed/portable/running from source:
 
-例：NVDA 日本語版 2018.1.1jp インストール環境
+#### NVDA version:
 
-例：Windows 10 バージョン 1709 日本語環境
+#### Windows version:
 
-例：Microsoft Office 2016
+#### Name and version of other software in use when reproducing the issue:
 
-### その他の質問
+#### Other information about your system:
 
-#### PC を再起動してもこの問題は再発しますか？
+### Other questions
+#### Does the issue still occur after restarting your computer?
 
-#### 他のバージョンの NVDA と比較している場合はその結果
+#### Have you tried any other versions of NVDA? If so, please report their behaviors.
 
-#### アドオンを無効化するとこの問題は解決しますか？
+#### If NVDA add-ons are disabled, is your problem still occurring?
 
-#### NVDAメニュー / ツール / COM登録の修復ツールを使うとこの問題は解決しますか？
+#### Does the issue still occur after you run the COM Registration Fixing Tool in NVDA's tools menu?

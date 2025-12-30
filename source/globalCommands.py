@@ -7,7 +7,6 @@
 # Julien Cochuyt, Jakub Lukowicz, Bill Dengler, Cyrille Bougot, Rob Meredith, Luke Davis,
 # Burman's Computer and Education Ltd, Cary-rowen.
 
-import jpUtils
 import itertools
 from typing import (
 	Optional,
@@ -46,6 +45,7 @@ from config.configFlags import (
 	BrailleMode,
 	OutputMode,
 	TypingEcho,
+	ReportSpellingErrors,
 )
 from config.featureFlag import FeatureFlag
 from config.featureFlagEnums import BoolFlag
@@ -181,9 +181,6 @@ def toggleIntegerValue(
 	ui.message(msg)
 
 
-characterDescriptionMode = True
-
-
 class GlobalCommands(ScriptableObject):
 	"""Commands that are available at all times, regardless of the current focus."""
 
@@ -278,11 +275,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount == 0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			speech.spellTextInfo(
-				info,
-				useCharacterDescriptions=scriptCount > 1,
-				useDetails=characterDescriptionMode if scriptCount > 1 else False,
-			)
+			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
 
 	@script(
 		# Translators: Input help mode message for left mouse click command.
@@ -411,9 +404,7 @@ class GlobalCommands(ScriptableObject):
 				return
 
 			elif len(info.text) < speech.speech.MAX_LENGTH_FOR_SELECTION_REPORTING:
-				speech.speakSpelling(
-					info.text, useCharacterDescriptions=scriptCount > 1, useDetails=scriptCount > 1
-				)
+				speech.speakSpelling(info.text, useCharacterDescriptions=scriptCount > 1)
 			else:
 				speech.speakTextSelected(info.text)
 				braille.handler.message(selectMessage)
@@ -456,7 +447,6 @@ class GlobalCommands(ScriptableObject):
 					None,
 					None,
 				)
-				text = jpUtils.modifyTimeText(text)
 		else:
 			text = winKernel.GetDateFormatEx(
 				winKernel.LOCALE_NAME_USER_DEFAULT,
@@ -799,19 +789,18 @@ class GlobalCommands(ScriptableObject):
 
 	@script(
 		# Translators: Input help mode message for toggle report spelling errors command.
-		description=_("Toggles on and off the reporting of spelling errors"),
+		description=_("Cycles through options for how to report spelling errors"),
 		category=SCRCAT_DOCUMENTFORMATTING,
 	)
-	def script_toggleReportSpellingErrors(self, gesture):
-		if config.conf["documentFormatting"]["reportSpellingErrors"]:
-			# Translators: The message announced when toggling the report spelling errors document formatting setting.
-			state = _("report spelling errors off")
-			config.conf["documentFormatting"]["reportSpellingErrors"] = False
-		else:
-			# Translators: The message announced when toggling the report spelling errors document formatting setting.
-			state = _("report spelling errors on")
-			config.conf["documentFormatting"]["reportSpellingErrors"] = True
-		ui.message(state)
+	def script_toggleReportSpellingErrors(self, gesture: inputCore.InputGesture):
+		toggleIntegerValue(
+			configSection="documentFormatting",
+			configKey="reportSpellingErrors2",
+			enumClass=ReportSpellingErrors,
+			# Translators: Reported when the user cycles through the choices to report spelling errors.
+			# {mode} will be replaced with the mode; e.g. Off, Speech, Sound.
+			messageTemplate=_("Report spelling errors {mode}"),
+		)
 
 	@script(
 		# Translators: Input help mode message for toggle report pages command.
@@ -1422,11 +1411,7 @@ class GlobalCommands(ScriptableObject):
 			text = " ".join(textList)
 			if len(text) > 0 and not text.isspace():
 				if scriptHandler.getLastScriptRepeatCount() == 1:
-					speech.speakSpelling(
-						text,
-						useCharacterDescriptions=characterDescriptionMode,
-						useDetails=characterDescriptionMode,
-					)
+					speech.speakSpelling(text)
 				else:
 					api.copyToClip(text, notify=True)
 		else:
@@ -1861,11 +1846,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount == 0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			speech.spellTextInfo(
-				info,
-				useCharacterDescriptions=scriptCount > 1,
-				useDetails=characterDescriptionMode if scriptCount > 1 else False,
-			)
+			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
 
 	@script(
 		description=_(
@@ -2064,11 +2045,7 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount == 0:
 			speech.speakTextInfo(info, reason=controlTypes.OutputReason.CARET, unit=textInfos.UNIT_WORD)
 		else:
-			speech.spellTextInfo(
-				info,
-				useCharacterDescriptions=(scriptCount > 1),
-				useDetails=(scriptCount > 1 and characterDescriptionMode),
-			)
+			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
 
 	@script(
 		description=_(
@@ -2186,7 +2163,6 @@ class GlobalCommands(ScriptableObject):
 		speakOnDemand=True,
 	)
 	def script_review_currentCharacter(self, gesture: inputCore.InputGesture):
-		global characterDescriptionMode
 		info = api.getReviewPosition().copy()
 		# This script is available on the lock screen via getSafeScripts, as such
 		# ensure the review position does not contain secure information
@@ -2200,23 +2176,15 @@ class GlobalCommands(ScriptableObject):
 		braille.handler.handleReviewMove(shouldAutoTether=True)
 		scriptCount = scriptHandler.getLastScriptRepeatCount()
 		if scriptCount == 0:
-			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode)
-			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
+			speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
 		elif scriptCount == 1:
-			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
-			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
-		elif scriptCount == 2:
+			speech.spellTextInfo(info, useCharacterDescriptions=True)
+		else:
 			try:
 				cList = [ord(c) for c in info.text]
 			except TypeError:
-				cList = None
-			if cList and jpUtils.isJa():
-				for c in cList:
-					s = jpUtils.code2kana(c)
-					o = "%d u+%s" % (c, s)
-					speech.speakMessage(o)
-				braille.handler.message("  ".join("%d %s" % (c, jpUtils.code2hex(c)) for c in cList))
-			elif cList:
+				c = None
+			if cList:
 				for c in cList:
 					speech.speakMessage("%d," % c)
 					# Report hex along with decimal only when there is one character; else, it's confusing.
@@ -2230,15 +2198,6 @@ class GlobalCommands(ScriptableObject):
 					unit=textInfos.UNIT_CHARACTER,
 					reason=controlTypes.OutputReason.CARET,
 				)
-		else:
-			if characterDescriptionMode:
-				# Translators: character description mode
-				ui.message(_("Character description mode disabled"))
-				characterDescriptionMode = False
-			else:
-				# Translators: character description mode
-				ui.message(_("Character description mode enabled"))
-				characterDescriptionMode = True
 
 	@script(
 		description=_(
@@ -2530,7 +2489,6 @@ class GlobalCommands(ScriptableObject):
 	@script(
 		# Translators: Input help mode message for show NVDA menu command.
 		description=_("Shows the NVDA menu"),
-		allowInSleepMode=True,
 		gestures=("kb:NVDA+n", "ts:2finger_double_tap"),
 	)
 	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
@@ -2578,7 +2536,7 @@ class GlobalCommands(ScriptableObject):
 			"reportColor",
 			"reportStyle",
 			"reportAlignment",
-			"reportSpellingErrors",
+			"reportSpellingErrors2",
 			"reportLineIndentation",
 			"reportParagraphIndentation",
 			"reportLineSpacing",
@@ -2878,11 +2836,7 @@ class GlobalCommands(ScriptableObject):
 			text = " ".join(s for s in speechList if isinstance(s, str))
 			braille.handler.message(text)
 		else:
-			speech.speakSpelling(
-				focusObject.name,
-				useCharacterDescriptions=repeatCount > 1 and characterDescriptionMode,
-				useDetails=repeatCount > 1 and characterDescriptionMode,
-			)
+			speech.speakSpelling(focusObject.name, useCharacterDescriptions=repeatCount > 1)
 
 	@staticmethod
 	def _getStatusBarText(setReviewCursor: bool = False) -> Optional[str]:
@@ -2967,9 +2921,7 @@ class GlobalCommands(ScriptableObject):
 			# Translators: Reported when status line exist, but is empty.
 			ui.message(_("no status bar information"))
 		else:
-			speech.speakSpelling(
-				text, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode
-			)
+			speech.speakSpelling(text)
 
 	@script(
 		description=_(
@@ -3116,9 +3068,7 @@ class GlobalCommands(ScriptableObject):
 		if repeatCount == 0:
 			ui.message(title)
 		elif repeatCount == 1:
-			speech.speakSpelling(
-				title, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode
-			)
+			speech.speakSpelling(title)
 		else:
 			api.copyToClip(title, notify=True)
 
@@ -3983,9 +3933,7 @@ class GlobalCommands(ScriptableObject):
 			if repeatCount == 0:
 				ui.message(text)
 			else:
-				speech.speakSpelling(
-					text, useCharacterDescriptions=repeatCount > 1, useDetails=repeatCount > 1
-				)
+				speech.speakSpelling(text, useCharacterDescriptions=repeatCount > 1)
 		else:
 			ui.message(
 				ngettext(

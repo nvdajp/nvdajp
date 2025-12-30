@@ -1,6 +1,6 @@
 ---
-name: 機能のリクエスト
-about: このプロジェクトにアイディアを提供
+name: Feature request
+about: Suggest an idea for this project
 type: Feature
 
 ---
@@ -11,15 +11,13 @@ Issues may be closed if the required information is not present.
 https://github.com/nvaccess/nvda/blob/master/projectDocs/issues/githubIssueTemplateExplanationAndExamples.md
 Please also note that the NVDA project has a Citizen and Contributor Code of Conduct which can be found at https://github.com/nvaccess/nvda/blob/master/CODE_OF_CONDUCT.md. NV Access expects that all contributors and other community members read and abide by the rules set out in this document while participating or contributing to this project. This includes creating or commenting on issues and pull requests.
 
-NVDA の行動規範 https://github.com/nvdajp/nvdajp/wiki/CODE_OF_CONDUCT を確認してください。チケットの作成、コメント、プルリクエストの作成などにおいて遵守してください。
-
-以下の各質問とセクションは、複数のハッシュ記号（#）で始まります。「例」を削除してください。空白の行に回答と情報を記入してください。
+Each of the questions and sections below start with multiple hash symbols (#). Place your answers and information on the blank line below each question.
 -->
 
-### 背景（不満や不便なこと）
+### Is your feature request related to a problem? Please describe.
 
-### 提案したい機能や方法
+### Describe the solution you'd like
 
-### 考慮した代案があればお書きください
+### Describe alternatives you've considered
 
-### 関連する情報があればお書きください
+### Additional context

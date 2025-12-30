@@ -1,10 +1,8 @@
-# -*- coding: UTF-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2006-2025 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Mesar Hameed, Joseph Lee,
 # Thomas Stivers, Babbage B.V., Accessolutions, Julien Cochuyt, Cyrille Bougot, Luke Davis
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# nvdajp modification by Takuya Nishimoto, Masataka.Shinke
 
 from collections.abc import Callable
 import os
@@ -20,17 +18,16 @@ import ui
 from documentationUtils import getDocFilePath, displayLicense, reportNoDocumentation
 from logHandler import log
 import config
+import buildVersion
 import versionInfo
 import speech
 import queueHandler
 import core
-from typing import (
-	Any,
-	Optional,
-	Type,
-)
+from typing import Any
 import systemUtils
 from .message import (
+	Button,
+	Payload,
 	# messageBox is accessed through `gui.messageBox` as opposed to `gui.message.messageBox` throughout NVDA,
 	# be cautious when removing
 	messageBox,
@@ -57,7 +54,6 @@ from .settingsDialogs import (
 	BrowseModePanel,
 	DocumentFormattingPanel,
 	GeneralSettingsPanel,
-	LanguageSettingsPanel,
 	InputCompositionPanel,
 	KeyboardSettingsPanel,
 	MouseSettingsPanel,
@@ -98,26 +94,13 @@ try:
 except RuntimeError:
 	updateCheck = None
 
-from . import jpBrailleViewer  # nvdajp
-import subprocess  # nvdajp
-
-
-def run_hta(hta_file_path: str) -> None:
-	SYSTEM_ROOT = os.path.expandvars("%SYSTEMROOT%")
-	SYSTEM32 = os.path.join(SYSTEM_ROOT, "System32")
-	MSHTA_PATH = os.path.join(SYSTEM32, "mshta.exe")
-	subprocess.Popen([MSHTA_PATH, hta_file_path])
-
-
 ### Constants
 NVDA_PATH = globalVars.appDir
-# ICON_PATH=os.path.join(NVDA_PATH, "images", "nvda.ico")
-ICON_PATH = os.path.join(NVDA_PATH, "images", "nvdajp3.ico")
-# DONATE_URL = f"{versionInfo.url}/donate/"
-DONATE_URL = "https://www.nvda.jp/donate.html"
+ICON_PATH = os.path.join(NVDA_PATH, "images", "nvda.ico")
+DONATE_URL = f"{buildVersion.url}/donate/"
 
 ### Globals
-mainFrame: Optional["MainFrame"] = None
+mainFrame: "MainFrame | None" = None
 """Set by initialize. Should be used as the parent for "top level" dialogs.
 """
 
@@ -159,7 +142,7 @@ class MainFrame(wx.Frame):
 
 	def __init__(self):
 		style = wx.DEFAULT_FRAME_STYLE ^ wx.MAXIMIZE_BOX ^ wx.MINIMIZE_BOX | wx.FRAME_NO_TASKBAR
-		super(MainFrame, self).__init__(None, wx.ID_ANY, versionInfo.name, size=(1, 1), style=style)
+		super().__init__(None, wx.ID_ANY, buildVersion.name, size=(1, 1), style=style)
 		self.Bind(wx.EVT_CLOSE, self.onExitCommand)
 		self.sysTrayIcon = SysTrayIcon(self)
 		#: The focus before the last popup or C{None} if unknown.
@@ -264,7 +247,7 @@ class MainFrame(wx.Frame):
 			)
 
 	@blockAction.when(blockAction.Context.MODAL_DIALOG_OPEN)
-	def popupSettingsDialog(self, dialog: Type[SettingsDialog], *args, **kwargs):
+	def popupSettingsDialog(self, dialog: type[SettingsDialog], *args, **kwargs):
 		self.prePopup()
 		try:
 			dialog(self, *args, **kwargs).Show()
@@ -284,7 +267,7 @@ class MainFrame(wx.Frame):
 
 	if NVDAState._allowDeprecatedAPI():
 
-		def _popupSettingsDialog(self, dialog: Type[SettingsDialog], *args, **kwargs):
+		def _popupSettingsDialog(self, dialog: type[SettingsDialog], *args, **kwargs):
 			log.warning(
 				"_popupSettingsDialog is deprecated, use popupSettingsDialog instead.",
 				stack_info=True,
@@ -346,10 +329,6 @@ class MainFrame(wx.Frame):
 
 	def onGeneralSettingsCommand(self, evt):
 		self.popupSettingsDialog(NVDASettingsDialog, GeneralSettingsPanel)
-
-	# nvdajp
-	def onLanguageSettingsCommand(self, evt):
-		self._popupSettingsDialog(NVDASettingsDialog, LanguageSettingsPanel)
 
 	def onSelectSynthesizerCommand(self, evt):
 		self.popupSettingsDialog(SynthesizerSelectionDialog)
@@ -416,9 +395,26 @@ class MainFrame(wx.Frame):
 	def onInputGesturesCommand(self, evt):
 		self.popupSettingsDialog(InputGesturesDialog)
 
-	def onAboutCommand(self, evt):
+	@staticmethod
+	def _copyVersionToClipboard(p: Payload):
+		versionStr = f"{versionInfo.version} ({versionInfo.version_detailed})"
+		api.copyToClip(versionStr)
+		# Translators: A message when the version number is copied to clipboard
+		# from the about dialog
+		ui.message(_("Copied to clipboard"))
+
+	def onAboutCommand(self, evt: wx.CommandEvent):
+		copyButton = Button(
+			id=wx.ID_COPY,
+			# Translators: The label for a button to copy the NVDA version number from the about dialog.
+			label=_("&Copy version number"),
+			callback=self._copyVersionToClipboard,
+			closesDialog=False,
+		)
 		# Translators: The title of the dialog to show about info for NVDA.
-		MessageDialog(None, versionInfo.aboutMessage, _("About NVDA")).Show()
+		aboutDialog = MessageDialog(None, versionInfo.aboutMessage, _("About NVDA"))
+		aboutDialog.addButton(copyButton)
+		aboutDialog.Show()
 
 	@blockAction.when(blockAction.Context.SECURE_MODE)
 	def onCheckForUpdateCommand(self, evt):
@@ -509,18 +505,6 @@ class MainFrame(wx.Frame):
 		appModuleHandler.reloadAppModules()
 		globalPluginHandler.reloadGlobalPlugins()
 		NVDAObject.clearDynamicClassCache()
-
-	# nvdajp begin
-	@blockAction.when(blockAction.Context.SECURE_MODE)
-	def onToggleJpBrailleViewerCommand(self, evt):
-		if not jpBrailleViewer.isActive:
-			jpBrailleViewer.activate()
-			self.sysTrayIcon.menu_tools_toggleJpBrailleViewer.Check(True)
-		else:
-			jpBrailleViewer.deactivate()
-			self.sysTrayIcon.menu_tools_toggleJpBrailleViewer.Check(False)
-
-	# nvdajp end
 
 	@blockAction.when(
 		blockAction.Context.SECURE_MODE,
@@ -643,7 +627,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 	def __init__(self, frame: MainFrame):
 		super(SysTrayIcon, self).__init__()
 		icon = wx.Icon(ICON_PATH, wx.BITMAP_TYPE_ICO)
-		self.SetIcon(icon, versionInfo.name)
+		self.SetIcon(icon, buildVersion.name)
 
 		self.menu = wx.Menu()
 		menu_preferences = self.preferencesMenu = wx.Menu()
@@ -719,15 +703,6 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			# Translators: The label for the menu item to reload plugins.
 			item = menu_tools.Append(wx.ID_ANY, _("Reload plugins"))
 			self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
-		# nvdajp begin
-		if not globalVars.appArgs.secure:
-			item = self.menu_tools_toggleJpBrailleViewer = menu_tools.AppendCheckItem(
-				wx.ID_ANY,
-				# Translators: The label for the menu item to open jp braille viewer.
-				_("Japanese Braille viewer"),
-			)
-			self.Bind(wx.EVT_MENU, frame.onToggleJpBrailleViewerCommand, item)
-		# nvdajp end
 		# Translators: The label for the Tools submenu in NVDA menu.
 		self.menu.AppendSubMenu(menu_tools, _("&Tools"))
 
@@ -848,9 +823,6 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		self.helpMenu = wx.Menu()
 
 		if not globalVars.appArgs.secure:
-			# Translators: The label for the menu item to open jp readme.
-			item = self.helpMenu.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
-			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("readmejp.html"), item)
 			# Translators: The label of a menu item to open NVDA user guide.
 			item = self.helpMenu.Append(wx.ID_ANY, _("&User Guide"))
 			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("userGuide.html"), item)
@@ -863,18 +835,15 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 
 			self.helpMenu.AppendSeparator()
 
-			# Translators: The label for the menu item to view the NVDA Japanese Team
-			item = self.helpMenu.Append(wx.ID_ANY, _("NVDAJP web site"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("https://www.nvda.jp/"), item)
 			# Translators: The label for the menu item to view the NVDA website
 			item = self.helpMenu.Append(wx.ID_ANY, _("NV Access &web site"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(versionInfo.url), item)
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(buildVersion.url), item)
 			# Translators: The label for the menu item to view the NVDA website's get help section
 			item = self.helpMenu.Append(wx.ID_ANY, _("&Help, training and support"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{versionInfo.url}/get-help/"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{buildVersion.url}/get-help/"), item)
 			# Translators: The label for the menu item to view the NVDA website's get help section
 			item = self.helpMenu.Append(wx.ID_ANY, _("NV Access &shop"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{versionInfo.url}/shop/"), item)
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{buildVersion.url}/shop/"), item)
 
 			self.helpMenu.AppendSeparator()
 
@@ -902,9 +871,6 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		helpFile = getDocFilePath(fileName)
 		if helpFile is None:
 			reportNoDocumentation(fileName, useMsgBox=True)
-			return
-		if config.conf["language"]["openDocFileByMSHTA"]:
-			run_hta(helpFile)
 			return
 		os.startfile(helpFile)
 

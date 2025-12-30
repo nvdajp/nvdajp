@@ -18,7 +18,6 @@ from SystemTestSpy import (
 from ChromeLib import ChromeLib as _ChromeLib
 from AssertsLib import AssertsLib as _AssertsLib
 import NvdaLib as _NvdaLib
-from jpRobotUtil import press_numpad2_4_times
 
 _builtIn: BuiltIn = BuiltIn()
 _chrome: _ChromeLib = _getLib("ChromeLib")
@@ -251,38 +250,38 @@ def test_mark_aria_details_role():
 		expectedSpeech,
 		message="Browse mode speech: Read line with different aria details roles.",
 	)
-	# _asserts.braille_matches(
-	# 	message="Browse mode braille: Read line with different aria details roles.",
-	# 	actual=actualBraille,
-	# 	expected=" ".join(
-	# 		[
-	# 			"mln",
-	# 			"edt ",
-	# 			# the role doc-endnote is unsupported as an IA2 role
-	# 			# The role "ROLE_LIST_ITEM" is used instead
-	# 			"details",
-	# 			"doc-endnote,",
-	# 			" ",  # space between spans
-	# 			"has fnote",
-	# 			"doc-footnote,",
-	# 			" ",  # space between spans
-	# 			"has cmnt",
-	# 			"comment,",
-	# 			" ",  # space between spans
-	# 			# the role definition is unsupported as an IA2 role
-	# 			# The role "ROLE_PARAGRAPH" is used instead
-	# 			"details",
-	# 			"definition,",
-	# 			" ",  # space between spans
-	# 			"details",
-	# 			"definition,",
-	# 			" ",
-	# 			"details",
-	# 			"form",
-	# 			"edt end",
-	# 		],
-	# 	),
-	# )
+	_asserts.braille_matches(
+		message="Browse mode braille: Read line with different aria details roles.",
+		actual=actualBraille,
+		expected=" ".join(
+			[
+				"mln",
+				"edt ",
+				# the role doc-endnote is unsupported as an IA2 role
+				# The role "ROLE_LIST_ITEM" is used instead
+				"details",
+				"doc-endnote,",
+				" ",  # space between spans
+				"has fnote",
+				"doc-footnote,",
+				" ",  # space between spans
+				"has cmnt",
+				"comment,",
+				" ",  # space between spans
+				# the role definition is unsupported as an IA2 role
+				# The role "ROLE_PARAGRAPH" is used instead
+				"details",
+				"definition,",
+				" ",  # space between spans
+				"details",
+				"definition,",
+				" ",
+				"details",
+				"form",
+				"edt end",
+			],
+		),
+	)
 
 	# Reset caret
 	actualSpeech = _NvdaLib.getSpeechAfterKey("upArrow")
@@ -312,37 +311,37 @@ def test_mark_aria_details_role():
 		expectedSpeech,
 		message="Focus mode speech: Read line with different aria details roles",
 	)
-	# _asserts.braille_matches(
-	# 	message="Focus mode braille: Read line with different aria details roles",
-	# 	actual=actualBraille,
-	# 	expected=" ".join(
-	# 		[
-	# 			# no "mln edt"
-	# 			# the role doc-endnote is unsupported as an IA2 role
-	# 			# The role "ROLE_LIST_ITEM" is used instead
-	# 			"details",
-	# 			"doc-endnote,",
-	# 			" ",  # space between spans
-	# 			"has fnote",
-	# 			"doc-footnote,",
-	# 			" ",  # space between spans
-	# 			"has cmnt",
-	# 			"comment,",
-	# 			" ",  # space between spans
-	# 			# the role definition is unsupported as an IA2 role
-	# 			# The role "ROLE_PARAGRAPH" is used instead
-	# 			"details",
-	# 			"definition,",
-	# 			" ",  # space between spans
-	# 			"details",
-	# 			"definition,",
-	# 			" ",
-	# 			"details",
-	# 			"form",
-	# 			# "edt end",
-	# 		],
-	# 	),
-	# )
+	_asserts.braille_matches(
+		message="Focus mode braille: Read line with different aria details roles",
+		actual=actualBraille,
+		expected=" ".join(
+			[
+				# no "mln edt"
+				# the role doc-endnote is unsupported as an IA2 role
+				# The role "ROLE_LIST_ITEM" is used instead
+				"details",
+				"doc-endnote,",
+				" ",  # space between spans
+				"has fnote",
+				"doc-footnote,",
+				" ",  # space between spans
+				"has cmnt",
+				"comment,",
+				" ",  # space between spans
+				# the role definition is unsupported as an IA2 role
+				# The role "ROLE_PARAGRAPH" is used instead
+				"details",
+				"definition,",
+				" ",  # space between spans
+				"details",
+				"definition,",
+				" ",
+				"details",
+				"form",
+				# "edt end",
+			],
+		),
+	)
 
 
 def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
@@ -388,11 +387,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		),
 		message="Browse mode: Read line with details.",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"mln edt The word  hlght has cmnt cat hlght end  has a comment tied to it. edt end",
-	# 	message="Browse mode: Read line with details.",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"mln edt The word  hlght has cmnt cat hlght end  has a comment tied to it. edt end",
+		message="Browse mode: Read line with details.",
+	)
 	# this word has no details attached
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("control+rightArrow")
 	_asserts.speech_matches(
@@ -400,11 +399,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		"word",
 		message="Browse mode: Move by word to word without details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"mln edt The word  hlght has cmnt cat hlght end  has a comment tied to it. edt end",
-	# 	message="Browse mode: Move by word to word without details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"mln edt The word  hlght has cmnt cat hlght end  has a comment tied to it. edt end",
+		message="Browse mode: Move by word to word without details",
+	)
 
 	# check that there is no summary reported
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
@@ -413,11 +412,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		"No additional details",
 		message="Browse mode: Report details on word without details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"No additional details",
-	# 	message="Browse mode: Report details on word without details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"No additional details",
+		message="Browse mode: Report details on word without details",
+	)
 	# this word has a comment attached to it
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("control+rightArrow")
 	_asserts.speech_matches(
@@ -425,11 +424,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		"highlighted  has comment  cat  out of highlighted",
 		message="Browse mode: Move by word to word with details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"mln edt The word  hlght has cmnt cat hlght end  has a comment tied to it. edt end",
-	# 	message="Browse mode: Move by word to word with details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"mln edt The word  hlght has cmnt cat hlght end  has a comment tied to it. edt end",
+		message="Browse mode: Move by word to word with details",
+	)
 	# read the details summary
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
@@ -437,11 +436,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		"Cats go woof BTW —Jonathon Commentor No they don't —Zara",
 		message="Browse mode: Report details on word with details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"Cats go woof BTW\n—Jonathon CommentorNo they don't\n—Zara",
-	# 	message="Browse mode: Report details on word with details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"Cats go woof BTW\n—Jonathon CommentorNo they don't\n—Zara",
+		message="Browse mode: Report details on word with details",
+	)
 
 	# move down to the link nested in a container with details
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("downArrow")
@@ -450,11 +449,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		"out of edit  Hello  highlighted  has details  this is a  link  test",
 		message="Browse mode: Move by line to paragraph with link nested in a container with details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"Hello  hlght details this is a  lnk test hlght end",
-	# 	message="Browse mode: Move by line to paragraph with link nested in a container with details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"Hello  hlght details this is a  lnk test hlght end",
+		message="Browse mode: Move by line to paragraph with link nested in a container with details",
+	)
 	# Jump to the link from same line
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("k")
 	_asserts.speech_matches(
@@ -462,11 +461,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		"test  link",
 		message="Browse mode: From same line jump to link nested in a container with details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"Hello  hlght details this is a  lnk test hlght end",
-	# 	message="Browse mode: From same line jump to link nested in a container with details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"Hello  hlght details this is a  lnk test hlght end",
+		message="Browse mode: From same line jump to link nested in a container with details",
+	)
 
 	# reset to prior line before jump to the link from different line
 	actualSpeech = _NvdaLib.getSpeechAfterKey("upArrow")
@@ -493,11 +492,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		"highlighted  has details  test  link",
 		message="Browse mode: From prior line jump to link nested in a container with details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"Hello  hlght details this is a  lnk test hlght end",
-	# 	message="Browse mode: From prior line jump to link nested in a container with details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"Hello  hlght details this is a  lnk test hlght end",
+		message="Browse mode: From prior line jump to link nested in a container with details",
+	)
 	# read the details summary
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
@@ -505,11 +504,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		"No additional details",
 		message="Browse mode: Report details on nested link with details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"No additional details",
-	# 	message="Browse mode: Report details on nested link with details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"No additional details",
+		message="Browse mode: Report details on nested link with details",
+	)
 
 	# Reset caret
 	actualSpeech = _NvdaLib.getSpeechAfterKey("upArrow")
@@ -551,11 +550,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		),
 		message="Focus mode: report content editable with details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"The word  hlght has cmnt cat hlght end  has a comment tied to it.",
-	# 	message="Focus mode: report content editable with details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"The word  hlght has cmnt cat hlght end  has a comment tied to it.",
+		message="Focus mode: report content editable with details",
+	)
 
 	# Try to read the details
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
@@ -568,11 +567,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		),
 		message="Focus mode: Try to read details, caret not on details word.",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"No additional details",
-	# 	message="Focus mode: Try to read details, caret not on details word.",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"No additional details",
+		message="Focus mode: Try to read details, caret not on details word.",
+	)
 
 	# move to the word with details: "cat"
 	_NvdaLib.getSpeechAfterKey("control+rightArrow")
@@ -589,11 +588,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		),
 		message="Focus mode: Move by word to word with details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	expected="The word  hlght has cmnt cat hlght end  has a comment tied to it.",
-	# 	message="Focus mode: Move by word to word with details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		expected="The word  hlght has cmnt cat hlght end  has a comment tied to it.",
+		message="Focus mode: Move by word to word with details",
+	)
 
 	# Try to read the details
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
@@ -602,11 +601,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		"Cats go woof BTW —Jonathon Commentor No they don't —Zara",
 		message="Focus mode:  Report details on word with details.",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	expected="Cats go woof BTW\n—Jonathon CommentorNo they don't\n—Zara",
-	# 	message="Focus mode:  Report details on word with details.",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		expected="Cats go woof BTW\n—Jonathon CommentorNo they don't\n—Zara",
+		message="Focus mode:  Report details on word with details.",
+	)
 
 	# Tab to the link
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("tab")
@@ -630,11 +629,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		),
 		message="Focus mode: tab to link nested in container with details",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"hlght details test lnk",
-	# 	message="Focus mode: tab to link nested in container with details",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"hlght details test lnk",
+		message="Focus mode: tab to link nested in container with details",
+	)
 
 	# Try to read the details
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
@@ -647,11 +646,11 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		),
 		message="Focus mode: Try to read details, link nested in container with details.",
 	)
-	# _asserts.braille_matches(
-	# 	actualBraille,
-	# 	"No additional details",
-	# 	message="Focus mode: Try to read details, link nested in container with details.",
-	# )
+	_asserts.braille_matches(
+		actualBraille,
+		"No additional details",
+		message="Focus mode: Try to read details, link nested in container with details.",
+	)
 
 
 def test_annotations_multi_target():
@@ -764,7 +763,6 @@ def announce_list_item_when_moving_by_word_or_character():
 			</div>
 		""",
 	)
-	press_numpad2_4_times()
 	# Force focus mode
 	actualSpeech = _chrome.getSpeechAfterKey("NVDA+space")
 	_asserts.strings_match(
@@ -900,7 +898,6 @@ def test_pr11606():
 			</div>
 		""",
 	)
-	press_numpad2_4_times()
 	# Force focus mode
 	actualSpeech = _chrome.getSpeechAfterKey("NVDA+space")
 	_asserts.strings_match(
@@ -930,7 +927,7 @@ def test_pr11606():
 	actualSpeech = _chrome.getSpeechAfterKey("end")
 	_asserts.strings_match(
 		actualSpeech,
-		"link",
+		"blank",
 	)
 	# Read the current line.
 	# Before pr #11606 the next line ("C D")  would have been read.
@@ -3027,172 +3024,4 @@ def test_reportNotSupportedLanguageAndOtherLanguages():
 				"in the same sentence.",
 			),
 		),
-	)
-
-
-def test_waic_as_0029_01():
-	_chrome.prepareChrome("""
-	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-01.html"></iframe>
-	""")
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		"frame  link  メインページへ戻る",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"閉じる  button  このウィンドウを閉じると、入力された情報は破棄され、メインページに戻ります ideographic period",
-	)
-
-
-def test_waic_as_0029_02():
-	_chrome.prepareChrome("""
-	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-02.html"></iframe>
-	""")
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		"frame  link  メインページへ戻る",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"名前  edit  aria-describedbyでリンクされたこの分野のちょっとした指示です ideographic period  blank\nFocus mode",
-	)
-
-
-def test_waic_as_0029_03():
-	_chrome.prepareChrome("""
-	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-03.html"></iframe>
-	""")
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		"frame  このページで使用するフォントフェイスとサイズの選択  button  フォント",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"フォント  button  このページで使用するフォントフェイスとサイズの選択",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"色  button  このページで使用する色を選択",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"カスタマイズ  button  このページで使われているレイアウトやスタイルをカスタマイズ",
-	)
-
-
-def test_waic_as_0029_04():
-	_chrome.prepareChrome("""
-	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-04.html"></iframe>
-	""")
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		"frame  heading  level 1  ツールチップ 例 1",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"名前:  edit  名前は任意です ideographic period  blank\nFocus mode",
-	)
-
-
-def test_waic_as_0029_05():
-	_chrome.prepareChrome("""
-	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-05.html"></iframe>
-	""")
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		"frame  このページのボタンでは、Accessible Rich Internet",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"フォント  button  このページで使用するフォントフェイスとサイズの選択",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"色  button  このページで使用する色を選択",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"カスタマイズ  button  このページで使われているレイアウトやスタイルをカスタマイズ",
-	)
-
-
-def test_waic_as_0029_06():
-	_chrome.prepareChrome("""
-	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-06.html"></iframe>
-	""")
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		"frame  link  メインページへ戻る",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"閉じる  button  このウィンドウを閉じると、入力された情報は破棄され、メインページに戻ります ideographic period",
-	)
-
-
-def test_waic_as_0029_07():
-	_chrome.prepareChrome("""
-	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-07.html"></iframe>
-	""")
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		"frame  フォントの選択    このページで使用するフォントフェイスとサイズの選択  button  フォントの選択",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"フォントの選択  button  このページで使用するフォントフェイスとサイズの選択",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"色の選択  button  このページで使用する色を選択",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"その他のカスタマイズの選択  button  このページで使われているレイアウトやスタイルをカスタマイズ",
-	)
-
-
-def test_waic_as_0029_08():
-	_chrome.prepareChrome("""
-	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-08.html"></iframe>
-	""")
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		"frame  このページで使用するフォントフェイスとサイズの選択    ボタンを押下しフォントを選択してください  button  フォント",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"フォント  button  このページで使用するフォントフェイスとサイズの選択 ボタンを押下しフォントを選択してください",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"色  button  このページで使用する色を選択 ボタンを押下し色を選択してください",
-	)
-	actualSpeech = _chrome.getSpeechAfterTab()
-	_asserts.strings_match(
-		actualSpeech,
-		"カスタマイズ  button  このページで使われているレイアウトやスタイルをカスタマイズ ボタンを押下しレイアウトやスタイルを選択してください",
 	)

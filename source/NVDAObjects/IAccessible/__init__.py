@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2006-2024 NV Access Limited, Babbage B.V., Cyrille Bougot
+# Copyright (C) 2006-2025 NV Access Limited, Babbage B.V., Cyrille Bougot
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
@@ -40,6 +40,8 @@ import displayModel
 import IAccessibleHandler
 import oleacc
 import JABHandler
+from winBindings import user32
+import winBindings.ole32
 import winUser
 import globalVars  # noqa: F401
 from logHandler import log
@@ -298,12 +300,12 @@ class IA2TextTextInfo(textInfos.offsets.OffsetsTextInfo):
 			try:
 				# Shrink the start to the nearest embedded object before our origin.
 				self._startOffset = textStart + text.rindex(textUtils.OBJ_REPLACEMENT_CHAR, 0, relativeOrigin)
-			except (ValueError, AttributeError):
+			except ValueError:
 				pass
 			try:
 				# Shrink the end to the nearest embedded object after our origin.
 				self._endOffset = textStart + text.index(textUtils.OBJ_REPLACEMENT_CHAR, relativeOrigin)
-			except (ValueError, AttributeError):
+			except ValueError:
 				pass
 
 	def _getCaretOffset(self):
@@ -511,6 +513,10 @@ class IAccessible(Window):
 	@type IAccessibleChildID: int
 	"""
 
+	# For Windowless RichEdit.
+	# https://learn.microsoft.com/en-us/windows/win32/api/textserv/nl-textserv-itextservices
+	IID_ITextServices = GUID("{8D33F740-CF58-11CE-A89D-00AA006CADC5}")
+
 	IAccessibleTableUsesTableCellIndexAttrib = (
 		False  #: Should the table-cell-index IAccessible2 object attribute be used rather than indexInParent?
 	)
@@ -644,10 +650,6 @@ class IAccessible(Window):
 			from . import mscandui
 
 			mscandui.findExtraOverlayClasses(self, clsList)
-		elif windowClassName[:5] in ("ATOK2", "ATOK3"):
-			from . import atok
-
-			atok.findExtraOverlayClasses(self, clsList)
 		elif (
 			windowClassName == "GeckoPluginWindow"
 			and self.event_objectID == 0
@@ -714,6 +716,10 @@ class IAccessible(Window):
 			from . import webKit
 
 			webKit.findExtraOverlayClasses(self, clsList)
+		elif windowClassName == "wxWindowNR":
+			from . import wx as wxObjects
+
+			wxObjects.findExtraOverlayClasses(self, clsList)
 		elif windowClassName.startswith("Chrome_"):
 			from . import chromium
 
@@ -724,15 +730,6 @@ class IAccessible(Window):
 			winConsole.findExtraOverlayClasses(self, clsList)
 
 		# Support for Windowless richEdit
-		if not hasattr(IAccessible, "IID_ITextServices"):
-			try:
-				IAccessible.IID_ITextServices = ctypes.cast(
-					ctypes.windll.msftedit.IID_ITextServices,
-					ctypes.POINTER(GUID),
-				).contents
-			except WindowsError:
-				log.debugWarning("msftedit not available, couldn't retrieve IID_ITextServices")
-				IAccessible.IID_ITextServices = None
 		if IAccessible.IID_ITextServices:
 			try:
 				pDoc = self.IAccessibleObject.QueryInterface(IServiceProvider).QueryService(
@@ -813,7 +810,7 @@ class IAccessible(Window):
 			log.debugWarning("Resorting to WindowFromPoint on accLocation")
 			try:
 				left, top, width, height = IAccessibleObject.accLocation(0)
-				windowHandle = winUser.user32.WindowFromPoint(winUser.POINT(left, top))
+				windowHandle = user32.WindowFromPoint(winUser.POINT(left, top))
 			except COMError as e:
 				log.debugWarning("accLocation failed: %s" % e)
 		if not windowHandle:
@@ -1084,15 +1081,15 @@ class IAccessible(Window):
 			return 0
 		return res if isinstance(res, int) else 0
 
-	states: typing.Set[controlTypes.State]
+	states: set[controlTypes.State]
 	"""Type info for auto property: _get_states
 	"""
 
 	# C901 '_get_states' is too complex. Look for opportunities to break this method down.
-	def _get_states(self) -> typing.Set[controlTypes.State]:  # noqa: C901
+	def _get_states(self) -> set[controlTypes.State]:  # noqa: C901
 		states = set()
 		if self.event_objectID in (winUser.OBJID_CLIENT, winUser.OBJID_WINDOW) and self.event_childID == 0:
-			states.update(super(IAccessible, self).states)
+			states.update(super().states)
 		try:
 			IAccessibleStates = self.IAccessibleStates
 		except COMError:
@@ -1644,7 +1641,7 @@ class IAccessible(Window):
 				ret.append(text)
 			return "\n".join(ret)
 		finally:
-			ctypes.windll.ole32.CoTaskMemFree(headers)
+			winBindings.ole32.CoTaskMemFree(headers)
 
 	def _get_rowHeaderText(self):
 		return self._tableHeaderTextHelper("row")
@@ -2437,6 +2434,12 @@ class OutlineItem(IAccessible):
 class List(IAccessible):
 	def _get_role(self):
 		return controlTypes.Role.LIST
+
+	def _get_states(self) -> set[controlTypes.State]:
+		states = super().states
+		if self.windowStyle & winUser.LBS_EXTENDEDSEL:
+			states.add(controlTypes.State.MULTISELECTABLE)
+		return states
 
 
 class SysLinkClient(IAccessible):

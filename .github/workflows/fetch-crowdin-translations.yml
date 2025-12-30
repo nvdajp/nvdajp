@@ -1,18 +1,16 @@
-name: Fetch Crowdin Translations (DISABLED for nvdajp)
+name: Fetch Crowdin Translations
 
 # Note: This workflow only updates tracked languages from Crowdin.
 # If you want to add new languages, use the "Add new languages to track from Crowdin" workflow.
-#
-# DISABLED FOR NVDAJP: Translations are handled by upstream nvaccess repository
 
 on:
   workflow_dispatch:
-  # schedule:
-  #   # Every Monday at 00:00 UTC
-  #   # This is because the translation freeze should end at 11:59 UTC on a Sunday.
-  #   # And we want to perform beta/rc releases soon after 00:00 UTC on a Monday.
-  #   # Cron jobs are run from the master branch.
-  #   - cron: '0 0 * * 1'
+  schedule:
+    # Every Monday at 00:00 UTC
+    # This is because the translation freeze should end at 11:59 UTC on a Sunday.
+    # And we want to perform beta/rc releases soon after 00:00 UTC on a Monday.
+    # Cron jobs are run from the master branch.
+    - cron: '0 0 * * 1'
 
 jobs:
   download-from-crowdin:
@@ -34,7 +32,7 @@ jobs:
     - name: Set up python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11.9'
+        python-version: '3.13'
         architecture: 'x86'
 
     - name: setup uv
