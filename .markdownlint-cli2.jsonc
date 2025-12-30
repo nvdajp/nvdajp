@@ -26,6 +26,11 @@
 		".github/PULL_REQUEST_TEMPLATE.md",
 		"projectDocs/issues/securityAdvisoryTemplate.md",
 		// Old markdown files used for testing
-		"tests/markdownTranslate/"
+		"tests/markdownTranslate/",
+		// BEGIN JP PATCH: Exclude Japanese documentation to prevent accidental modification
+		"projectDocs/jp/**",
+		"readme-nvdajp.md",
+		"AGENTS.md"
+		// END JP PATCH
 	]
 }
