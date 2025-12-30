@@ -42,6 +42,40 @@
 - `checkJtalkArch.ps1`もPowerShellで実装されている
 - 同じ言語で統一することで、保守性が向上
 
+### 5. バッチスクリプトの複雑さの回避
+
+**問題例**: `enabledelayedexpansion`問題（2025年12月30日修正）
+
+`certBuild2023.cmd`が`setlocal enabledelayedexpansion`を使用しているため、`vcsetup.cmd`内の`if "%VCVARS_EXIT%" neq "0" (...)`構文で変数展開タイミングの問題が発生。`VCVARS_EXIT`=0でも条件が真と評価され、誤って終了コード1を返していた。
+
+**修正**: `if`文を`goto`ベースの条件分岐に変更する必要があった。
+
+```batch
+rem 修正前（問題のあるコード）
+if "%VCVARS_EXIT%" neq "0" (
+  echo [ERROR] ...
+  exit /b 1
+)
+
+rem 修正後（gotoベースの条件分岐）
+if "%VCVARS_EXIT%" equ "0" goto :vcvars_exit_ok
+echo [ERROR] ...
+exit /b 1
+:vcvars_exit_ok
+```
+
+**PowerShell移行の利点**: PowerShellでは`if`文の`()`ブロック内でも変数展開が正しく動作し、このような問題が発生しない。
+
+```powershell
+# PowerShellでは自然に動作
+if ($VCVARS_EXIT -ne 0) {
+    Write-Error "Failed to execute vcvars script: $FOUND (exit code: $VCVARS_EXIT)"
+    exit 1
+}
+```
+
+**関連ドキュメント**: `projectDocs/jp/vcsetup-responsibilities.md`の「既知の問題と修正履歴」セクション
+
 ## 呼び出し元への影響
 
 ### 1. `certBuild2023.cmd`（バッチスクリプト）

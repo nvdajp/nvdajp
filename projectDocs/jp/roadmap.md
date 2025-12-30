@@ -97,6 +97,12 @@
   * `mecabRunner.py`と`jtalkRunner.py`の`__print`関数を修正して、MeCabログを`mecab_debug.log`ファイルにのみ保存（コンソールには出力しない）
   * `ensureuv.ps1`の仕組みを尊重し、`UV_PYTHON_PREFERENCE=managed`でPythonインタープリターを選択
 
+* ✅ **`vcsetup.cmd`の`enabledelayedexpansion`問題修正完了**（2025年12月30日）
+  * `certBuild2023.cmd`の`setlocal enabledelayedexpansion`により、`vcsetup.cmd`内の`if "%VCVARS_EXIT%" neq "0" (...)`構文で変数展開タイミングの問題が発生
+  * `if`文を`goto`ベースの条件分岐に変更して問題を解決
+  * `betajp.ps1`実行時の`vcsetup.cmd`失敗問題を修正
+  * 関連ドキュメント: `projectDocs/jp/vcsetup-responsibilities.md`
+
 ### 次に取り込むべきリビジョン（2025年12月29日時点の検討結果）
 
 **現在の状態**:

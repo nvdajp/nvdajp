@@ -259,8 +259,35 @@ if defined SET_CL_ARCH (
 2. **Visual Studioバージョンの確認**: `check_vs_version.cmd`で確認
 3. **環境変数の検証**: 呼び出し元で検証
 
+## 既知の問題と修正履歴
+
+### enabledelayedexpansion問題の修正（2025年12月30日）
+
+**問題**: `certBuild2023.cmd`が`setlocal enabledelayedexpansion`を使用しているため、`vcsetup.cmd`内の`if "%VCVARS_EXIT%" neq "0" (...)`構文で変数展開タイミングの問題が発生。`VCVARS_EXIT`=0でも条件が真と評価され、`vcsetup.cmd`が誤って終了コード1を返していた。
+
+**修正**: `if ... (...)`構文を`if ... goto :label`構文に変更し、`()`ブロックを使用しないことで`enabledelayedexpansion`の影響を回避。
+
+```batch
+rem 修正前（問題のあるコード）
+if "%VCVARS_EXIT%" neq "0" (
+  echo [ERROR] Failed to execute vcvars script: "%FOUND%" (exit code: %VCVARS_EXIT%) >&2
+  exit /b 1
+)
+
+rem 修正後（gotoベースの条件分岐）
+if "%VCVARS_EXIT%" equ "0" goto :vcvars_exit_ok
+echo [ERROR] Failed to execute vcvars script: "%FOUND%" (exit code: %VCVARS_EXIT%) >&2
+exit /b 1
+:vcvars_exit_ok
+```
+
+**教訓**: バッチスクリプトで`setlocal enabledelayedexpansion`が有効な親プロセスから呼び出される場合、`if`文の`()`ブロック内での変数展開タイミングに注意が必要。`goto`ベースの条件分岐を使用することで、この問題を回避できる。
+
+**関連コミット**: `2051a0c3d` - "クリーンアップ: デバッグログを削除"（2025年12月30日）
+
 ## 実装チェックリスト
 
+- [x] enabledelayedexpansion問題の修正（2025年12月30日完了）
 - [ ] エラーハンドリングの強化（vcvars実行失敗時の詳細出力）
 - [ ] fast-pathロジックの明確化（コメントの追加）
 - [ ] CL環境変数の安全な設定（既存値の保持）
