@@ -42,3 +42,28 @@
 ## 今後の作業
 
 ### 優先度：高（完了済み）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* ✅ Visual Studio検出の`vswhere`移行
+
+* ✅ Visual Studio 2022の優先使用
+
+
+
+### 優先度：中（将来の作業）
+
+* [ ] `vcsetup.cmd` → `vcsetup.ps1`への移行（`vcsetup-ps1-migration-proposal.md`参照）

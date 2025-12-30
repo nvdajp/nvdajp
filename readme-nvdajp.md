@@ -357,6 +357,27 @@ jpcharディレクトリには、文字説明と記号の一貫性をチェッ�
 主なスクリプト：
 
 
+
+
+
+
+
+
+
+
+* checkCharDesc.py - 文字説明の一貫性チェック
+* checkSymbols.py - 記号の一貫性チェック
+* compareSymbolsDic.py - 記号辞書の比較
+
+## SCons ビルドターゲット
+
+
+NVDA日本語版では、SConsを使用したビルドシステムが実装されています。開発者は `scons` コマンドのみを意識すればよく、複雑なビルドスクリプトを直接呼び出す必要はありません。
+
+
+
+### 主要なターゲット
+
 * これだけでビルド完結（ベンダービルド・overlay・dist 作成すべて自動）
 *
 * または
@@ -364,58 +385,41 @@ jpcharディレクトリには、文字説明と記号の一貫性をチェッ�
 *
 *. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
 *. `miscdepsjp`: overlayで `source/` に配置
+*. `source`, `dist` などのビルド
+*
 *来は複数の `.cmd` スクリプトが相互に呼び出し合う複雑な構造でしたが、SConsターゲットの導入により以下の改善が実現されました：
 *
-
 * **自動化**: 依存関係が自動的に解決される
 * **高速化**: DLLが存在する場合は再ビルドをスキップ
 * **透明性**: ビルドプロセスが明確になる
 *
-
-
 *## CI/CD の現状
 *在、GitHub Actionsを使用したCI/CDパイプラインが実装されています（`.github/workflows/testAndPublish.yml`）：
 *
-
 * **ビルド環境**: Windowsランナー、Python 3.11 (32bit)
-
 * **ビルドプロセス**: `jptools/nonCertBuild.py` を使用（Python版に移行済み）
 * **テスト**: ユニットテスト、システムテスト、日本語版固有のテストを実行
 * **自動化**: betajp、releasejpブランチへのpush時に自動ビルド
 *
-
-
 **今後の改善予定**：
-
-
 * 本家のCI/CD改善の取り込み
 * テストジョブの分離（typeCheck, licenseCheck等）
 * SCons MSVC Cacheによる高速化
 * Python 3.13対応の検討
 *
-
-
-
 *## Python バージョンの対応状況
 
 #### 現在の状況（2025年12月）
-
 * Python 3.11 (32bit) を使用
-
 * CI/CDでは Python 3.11 を使用（`.github/workflows/testAndPublish.yml`）
 * 本家 NVDA は Python 3.11 と 3.13 のマトリックステストを実施
 
-
 #### 今後の対応
-
 * Python 3.13 への対応は段階的に実施予定
 * まず本家 beta のマージと CI/CD の安定化を優先
 * その後、Python 3.13 対応を別 PR で実施
 
-
 #### Python 3.13 対応時の注意点
-
 * 依存パッケージの互換性確認が必要
 * 日本語版固有のモジュール（jtalk等）の動作確認が必要
-
 * マトリックステスト�

@@ -21,13 +21,6 @@
 54:        architecture: 'x86'
 55:
 56:    - name: Install uv
-
-
-
-
-
-
-
 ````n
 ---
 
