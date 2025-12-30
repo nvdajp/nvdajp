@@ -1,16 +1,27 @@
 # 日本語版ロードマップ（2025-12更新）
 
-## 長期的な目標（このブランチ: betajp-251227）
+## 長期的な目標（このブランチ: betajp-251230）
 
 **このブランチの長期的な目標**:
 
-1. **nvaccess（本家）beta をマージする**
+1. **nvaccess（本家）beta をマージする**（段階的アプローチ）
+   * **第1段階**: x86 Python 3.13 の段階（コミット `9613ce6e3`）までマージ
+   * **第2段階**: x64 Python 3.13 への移行（コミット `58dd14767` 以降）
 2. **nvdajp を x64 移行する**
 3. **品質保証原則に従って作業する**（小さなPR単位、段階的検証、全テスト通過を必須とする）
 
-**基本方針**: 本家版との差分を最小化しながら、順序立てて基盤整合 → 言語/依存更新 → 64bit 対応を進める。
+**基本方針**: 本家版との差分を最小化しながら、順序立てて基盤整合 → x86 Python 3.13対応 → x64 Python 3.13対応を進める。
 
-## 現行マイルストン（このブランチ: betajp-251227）
+**マージ戦略の変更（2025年12月）**:
+
+* **251227での教訓**: 段階的に進めようとしたが、依存関係が複雑化してしまった
+* **新方針**: nvaccess/beta にも x86 Python 3.13 の段階があったため、そのリビジョン（`9613ce6e3`）までマージしてから、x64移行を実施
+* **利点**:
+  * 段階的アプローチで依存関係の複雑化を抑制
+  * x86環境での検証が容易
+  * 変更量を分割してリスクを低減
+
+## 現行マイルストン（このブランチ: betajp-251230）
 
 * **アーキテクチャ**: x86（32bit）
 * **Python バージョン**: 3.11
@@ -57,14 +68,101 @@
 
 ## 現在の作業キュー（2025年12月時点）
 
+### ステージ3a完了（2025年12月29日）✅
+
+* ✅ **nvaccess/beta (x86 Python 3.13段階) のマージ完了**
+  * コミット: `d1792591a` - "Merge nvaccess/beta (x86 Python 3.13 stage, commit 9613ce6e3)"
+  * すべてのコンフリクト解決完了
+  * ローカル検証完了（型チェック、ビルド、JP smoke test x86/x64、ランチャービルド）
+  * Push完了、CI実行中
+  * 参照: `projectDocs/jp/merge-rehearsal-2025-12-30.md` の「マージ実行結果」（注: ファイル名は12-30だが、実際の作業は12-29に完了）
+
+* ✅ **JP smoke testのpytest→unittest移行完了**（2025年12月29日）
+  * pytest依存を削除し、Python標準ライブラリのunittestに統一
+  * `jptools/runJpSmokeTests.ps1`、`jptools/checkJtalkArch.ps1`、`jptools/findCrashingTests.ps1`を更新
+  * CIワークフローからpytestインストールを削除
+  * すべてのドキュメントを更新（`projectDocs/jp/troubleshooting_runjp_smoke_tests.md`など）
+  * NVDAの標準テストフレームワークに統一し、依存関係を削減
+
+* ✅ **UV_PYTHON_PREFERENCE設定の一貫化完了**（2025年12月29日）
+  * `jptools/runJpSmokeTests.ps1`で`UV_PYTHON_PREFERENCE=managed`を設定
+  * CIの`buildNVDA`ジョブと`jpSmokeTests`ジョブでPython 3.13 x86をインストール
+  * CIの`buildNVDA`ジョブと`jpSmokeTests`ジョブで`UV_PYTHON_PREFERENCE=managed`を設定
+  * `jptools/checkJtalkArch.ps1`で`UV_PYTHON_PREFERENCE=managed`を設定して、uvが管理するPythonを使用するように修正
+  * ローカルとCI環境で一貫したPythonインタープリター選択を実現
+
+* ✅ **`.python-version`ファイルの削除とMeCabログのログファイルへのリダイレクト完了**（2025年12月30日）
+  * `.python-version`ファイルを削除して本家版との差分を最小化
+  * `jptools/checkJtalkArch.ps1`から`.python-version`のリネーム処理を削除し、`UV_PYTHON_PREFERENCE=managed`を使用
+  * `mecabRunner.py`と`jtalkRunner.py`の`__print`関数を修正して、MeCabログを`mecab_debug.log`ファイルにのみ保存（コンソールには出力しない）
+  * `ensureuv.ps1`の仕組みを尊重し、`UV_PYTHON_PREFERENCE=managed`でPythonインタープリターを選択
+
+* ✅ **`vcsetup.cmd`の`enabledelayedexpansion`問題修正完了**（2025年12月30日）
+  * `certBuild2023.cmd`の`setlocal enabledelayedexpansion`により、`vcsetup.cmd`内の`if "%VCVARS_EXIT%" neq "0" (...)`構文で変数展開タイミングの問題が発生
+  * `if`文を`goto`ベースの条件分岐に変更して問題を解決
+  * `betajp.ps1`実行時の`vcsetup.cmd`失敗問題を修正
+  * 関連ドキュメント: `projectDocs/jp/vcsetup-responsibilities.md`
+
+### 次に取り込むべきリビジョン（2025年12月29日時点の検討結果）
+
+**現在の状態**:
+
+* ✅ ステージ3a完了: `9613ce6e3` (x86 Python 3.13段階) までマージ完了
+* ⏳ 次のステージ: ステージ3b（x64 Python 3.13への移行）
+
+**nvaccess/beta の最新状態**:
+
+* 最新コミット: `1cee6d93c` (2025年12月29日時点) - "Pass 0 instead of None to VBuf_getControlFieldNodeWithIdentifier (#19365)"
+* x64移行コミット: `58dd14767` (2025年9月15日) - "Only build 64bit"
+  * このコミットで `.python-versions` が `cpython-3.13.x-windows-x86_64-none` に変更
+  * x86 ビルドが削除され、x64 のみのビルドになる
+
+**コミット範囲の分析**:
+
+* `9613ce6e3` (x86 Python 3.13段階) から `58dd14767` (x64移行) まで: **85コミット**
+  * x64移行前の変更（バグ修正、機能追加など）
+  * 主な変更: UWP OCR on 64 bit対応、64-bit uninstaller修正、x64 identification修正など
+* `58dd14767` (x64移行) から最新 (`1cee6d93c`) まで: **214コミット**
+  * x64移行後の変更（x64環境でのバグ修正、機能追加など）
+  * 主な変更: MathCAT改善、Screen Curtain修正、Python 3.13.11更新など
+
+**推奨される次のステップ**:
+
+1. **ステージ3b.1: x64移行前の変更の確認（優先度：高）**
+   * `9613ce6e3` から `58dd14767` までの85コミットを確認
+   * 重要な変更（x64移行に必要な変更）を特定
+   * コンフリクトの予測と優先順位付け
+   * **推奨**: マージリハーサルを実施してコンフリクト数を確認
+
+2. **ステージ3b.2: x64移行コミット（`58dd14767`）のマージ（優先度：高）**
+   * x64移行のタイミングまでマージ
+   * 衝突を修正し、ユニットテストとビルドが通る状態にする
+   * libopenjtalk.dllとlibmecab.dllのx64移行
+   * `.python-versions` を `cpython-3.13.x-windows-x86_64-none` に更新
+
+3. **ステージ3b.3: x64移行後の変更の取り込み（優先度：中）**
+   * x64移行完了後、最新のbeta（`1cee6d93c`）までの214コミットを段階的に取り込む
+   * 小さなPR単位で進める
+   * 各PRで全テスト通過を確認
+
+**注意事項**:
+
+* x64移行は大きな変更のため、段階的に進めることを推奨
+* ローカル環境でのx64検証環境（`checkJtalkArch.ps1 -Architecture x64`）が整備済み ✅
+* CI環境でのx64検証（`.github/workflows/checkJtalkArch-x64.yml`）が整備済み ✅
+
 ### 再開前の前提条件確認（優先度：最高）
 
-* ⚠️ **現在のbetajpブランチの状態確認**
-  * 現在のbetajpブランチが安定していることを確認
-  * 全テストが通過することを確認
-  * CIが安定して緑になることを確認
+* ✅ **現在のbetajpブランチの状態確認**（2025-12-29完了）
+  * 現在のbetajpブランチが安定していることを確認 ✅
+  * 全テストが通過することを確認 ✅（ローカル検証完了）
+  * CIが安定して緑になることを確認 ⏳（CI実行中）
 
-**注**: betajp-251206ブランチの失敗要因の詳細な分析は `projectDocs/jp/merge-plan-beta-2025-11.md` を参照してください。
+**注**:
+
+* betajp-251206ブランチの失敗要因の詳細な分析は `projectDocs/jp/merge-plan-beta-2025-11.md` を参照してください。
+* betajp-251227での教訓: 段階的に進めようとしたが、依存関係が複雑化。新方針として、nvaccess/beta の x86 Python 3.13 段階（コミット `9613ce6e3`）までマージしてから、x64移行を実施する方針に変更。
+* マージ計画の詳細は `projectDocs/jp/merge-plan-beta-2025-11.md` を参照。
 
 ### ステージ1: 基盤整備とリファクタリング（優先度：高）
 
@@ -83,6 +181,36 @@
 * [x] **ビルドシステムの検証と改善** ✅ 完了（.cmd依存削減）
   * `scons source` を前提にビルド手順を安定化し、主要 .cmd をPython呼び出しへ置換済み
   * `jptools/nonCertBuild.py` などに集約し、ばらつきを削減済み
+
+* [ ] **Visual Studio検出のvswhere移行（優先度：高）**
+  * **目的**: 環境ごとのテストで`nmake`や`link`の検出失敗を解消し、**x64/x86切り替え時の安定性を確保**してビルドシステムの安全性を向上させる
+  * **問題**:
+    * 現在の直接パス検索では、環境によってVisual Studioの検出に失敗し、`nmake`や`link`が見つからないことが多い
+    * **x64/x86切り替え時に、間違ったアーキテクチャのMSVCツールが使われるリスクがある**（例: x64ビルドでx86の`cl`や`link`が使われる）
+    * アーキテクチャ不一致のDLLがビルドされ、実行時に`OSError: [WinError 193]`エラーが発生する可能性がある
+  * **基本方針**: `vs_utils.py`に`vswhere`サポートを追加し、直接パス検索をフォールバックとする
+  * **影響範囲**:
+    * `vs_utils.py`: `find_vcvarsall_with_vswhere()`と`find_vcvars_with_vswhere()`関数を追加
+    * `find_vcvarsall()`と`find_vcvars()`関数を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
+    * `scons_jp.py`: コード変更不要（`vs_utils.py`の内部実装の変更により自動的に`vswhere`を使用）
+    * `vcsetup.cmd` / `vcsetup.ps1`: `vs_utils.py`を使用しているため、自動的に`vswhere`を使用
+    * `find_vcvars.py`: `vs_utils.py`を使用しているため、自動的に`vswhere`を使用
+  * **利点**:
+    * **安定性の向上**: 環境ごとのテストで`nmake`や`link`の検出失敗を解消（最重要）
+    * **x64/x86切り替え時の安全性**: 正しいアーキテクチャのMSVCツールを確実に検出し、アーキテクチャ不一致のDLLビルドを防止
+    * `nonCertBuild.py`との一貫性（同じ検出方法を使用）
+    * 本家のアプローチに近い（Microsoftが推奨する標準的な方法）
+    * 柔軟性と将来の拡張性（様々なVisual Studioエディション・バージョンに対応）
+    * フォールバック（`vswhere`が存在しない環境でも動作）
+  * **現状の問題**:
+    * `scons_jp.py`で`nmake not found and vcvarsall.bat not detected`エラーが複数箇所で発生
+    * 直接パス検索では、Visual Studioのインストールパスが環境によって異なる場合に検出に失敗
+    * CI環境や開発者環境での検出の不安定性がビルド失敗の原因となっている
+    * **x64/x86切り替え時の問題**:
+      * `vcsetup.cmd`がx64/x86の切り替え時に正しく動作しない可能性がある
+      * x64ビルドの後にx86ビルドを行う場合、x86の`cl`が残っていると、x64ビルドでx86ツールが使われる可能性がある
+      * アーキテクチャ不一致のDLLがビルドされ、実行時に`OSError: [WinError 193]`エラーが発生するリスクがある
+  * **参照**: `projectDocs/jp/scons-jp-vswhere-dependency-analysis.md`、`projectDocs/jp/vcsetup-vswhere-dependency-analysis.md`
 
 * [x] **DLLパス構造の統一（x86環境でのリファクタリング）** ✅ 完了
   * x86 DLL を `miscDepsJp/include/python-jtalk/x86/` へ統一し、`jtalkPrep`/`jtalkSync` を新パス対応済み
@@ -135,6 +263,13 @@
        * x86 DLL: `miscDepsJp/include/python-jtalk/x86/(libopenjtalk|libmecab).dll`
        * x64 DLL: `miscDepsJp/include/python-jtalk/x64/(libopenjtalk|libmecab).dll`
        * payload 側 (source/synthDrivers/jtalk/) は `scons.bat -c jtalkSync` で mecab/src の obj/lib/dll/dic をクリーンし、`scons.bat jtalkSync TARGET_ARCH=x86`（または x64）で再生成して切り替える。クリーンにアーキ指定は不要。並列は避け、逐次で安定化を確認。
+       * **クリーン処理の改善**（2025-12-30）: `scons -c jtalkSync` で以下のファイルが確実に削除されるよう改善：
+         * `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/*.obj`（`glob`で動的検索）
+         * `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/*.lib`（`glob`で動的検索）
+         * `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/*.exe`（`glob`で動的検索）
+         * `miscDepsJp/_state/prep/jtalkSync.x64.stamp` と `jtalkSync.x86.stamp`（両方のアーキテクチャのstampファイル）
+         * `miscDepsJp/_state/prep/jtalkPrep.x64.stamp` と `jtalkPrep.x86.stamp`（両方のアーキテクチャのstampファイル）
+         * これにより、x86/x64切り替え時に古いオブジェクトファイルやstampファイルが残らず、確実に再ビルドが行われる
        * **完了内容**:
          * `jptools/scons_jp.py` で `TARGET_ARCH` をコマンドライン/環境変数から読み取り可能に修正
          * `miscDepsJp/include/python-jtalk/lib/Makefile.mak` で `/MACHINE:$(MACHINE)` を正しく設定
@@ -143,8 +278,10 @@
     2. **タスク 2.2: ローカル環境でのx86/x64マトリクス実行の実現** ✅ 完了
        * **完了内容**: x64 での smoke テスト実行環境が整備済み ✅
          * `.\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 環境での smoke テストを実行可能
+         * `runJpSmokeTests.ps1`は`BUILD_ARCH`/`TARGET_ARCH`を読み取り、x64の場合は自動的にx64 Python 3.13と`.venv-x64`を使用
          * `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
-         * uv で Python 3.11.14 x64 を自動インストール・使用
+         * uv で Python 3.13 x64 を自動インストール・使用
+         * **注意**: `scons.bat`は常にx86 Python 3.13で実行されるが、`TARGET_ARCH=x64`によりx64 DLLがビルドされる
          * x64 DLL が x64 Python で正しくロードされることを確認（`OSError: [WinError 193]` エラーは発生せず）
          * x64 での `access violation` エラーを修正（ctypes のポインタ型指定）
        * **発見された問題**: x64 での smoke テスト実行時に `access violation` エラーが発生 ✅ 解決済み
@@ -265,27 +402,133 @@
   * 1つのPRで1つの変更のみ（例: Pythonバージョン更新、ランナー更新など）
   * **ローカル環境でテスト済みの変更のみをCIに反映**
 
-* [ ] **タスク 2.7: Python 3.13対応の準備**
-  * jp smoke test だけを Python 3.13 x64 と Python 3.11 x86 に対応させる
-  * 依存関係の互換性確認
+* [ ] **タスク 2.7: Python 3.13対応の準備（x86環境）**
+  * **注**: ステージ3a（x86 Python 3.13への移行）の準備として実施
+  * jp smoke test を Python 3.13 x86 と Python 3.11 x86 の両方に対応させる
+  * 依存関係の互換性確認（Python 3.13 x86環境）
   * 型チェックの通過確認
   * 単体テストの通過確認
-  * 完了条件：jp smoke testがPython 3.13 x64で成功する
+  * 完了条件：jp smoke testがPython 3.13 x86で成功する
 
-* [ ] **タスク 2.8: Python 3.13対応の実施**
-  * Python 3.11 x86 のまま Python 3.13 x64 で動かないと思われるコードを修正する
+* [ ] **タスク 2.8: Python 3.13対応の実施（x86環境）**
+  * **注**: ステージ3a（x86 Python 3.13への移行）の一部として実施
+  * Python 3.11 x86 から Python 3.13 x86 で動かないと思われるコードを修正する
   * 小さなPR単位で変更
   * 各PRで全テスト通過を確認
   * 問題があれば即座に修正
+  * **注意**: x64移行はステージ3bで実施
 
-### ステージ3: Python 3.13 x64対応（優先度：高）
+### ステージ3a: x86 Python 3.13への移行（優先度：高）
 
-**目標**: Python 3.13 x64対応を段階的に実施
+**目標**: nvaccess/beta の x86 Python 3.13 段階（コミット `9613ce6e3`）までマージして、x86環境でPython 3.13に対応する
 
-* [ ] **タスク 3.1: x64対応の実施**
-  * 本家 beta ブランチをマージして、衝突を修正し、ユニットテストとビルドが通る状態にする
-  * libopenjtalk.dllとlibmecab.dllのx64移行など
+**マージ戦略**:
+
+* **段階的アプローチ**: x86 Python 3.13の段階までマージし、依存関係の複雑化を避ける
+* **マージベース**: nvaccess/beta のコミット `9613ce6e3` (2025年8月15日) "Update to Python 3.13 for 2026.1 #18689"
+  * この時点では `.python-versions` が `cpython-3.13.6-windows-x86-none` (x86 Python 3.13)
+  * x64移行（コミット `58dd14767`）の299コミット分の変更は後回し
+* **参照**: `projectDocs/jp/merge-plan-beta-2025-11.md` の作業段階1-6に従って段階的に解決
+
+* [x] **タスク 3a.1: nvaccess/beta (x86 Python 3.13段階) のマージ準備** ✅ 完了（2025-12-29）
+  * 現在のbetajpブランチの状態確認（全テスト通過、CI安定）✅
+  * マージリハーサルの実施（`git merge --no-commit --no-ff --allow-unrelated-histories 9613ce6e3`）✅
+  * コンフリクトファイルの記録と優先順位付け ✅
+  * 参照: `projectDocs/jp/merge-rehearsal-2025-12-30.md`
+
+* [x] **タスク 3a.2: 基盤整備（依存関係の解決）** ✅ 完了（2025-12-29）
+  * サブモジュールとロックファイル（`miscDeps`, `.python-versions`, `uv.lock`）のコンフリクト解決 ✅
+  * 上流のコミットを採用 ✅
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 1」
+
+* [x] **タスク 3a.3: ビルドシステムの更新** ✅ 完了（2025-12-29）
+  * NVDAHelper パッケージ化の対応（`source/NVDAHelper.py` の typing import 修正）✅
+  * `nvdaHelper/archBuild_sconscript` の eSpeak ビルド条件の解決 ✅
+  * `sconstruct` の JP固有変更（`jtalkPrep`, `jtalkSync`, `nvdajp3.ico`）を維持 ✅
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 2」
+
+* [x] **タスク 3a.4: CI/ワークフローの更新** ✅ 完了（2025-12-29）
+  * `.github/workflows/testAndPublish.yml` の上流準拠化 ✅
+  * 上流ファイルをベースに、JP パッチを `# BEGIN JP PATCH`/`# END JP PATCH` で最小限に再適用 ✅
+  * Python/Arch を **3.13/x86** に更新（3.11/x86 から変更）✅
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 3」
+
+* [x] **タスク 3a.5: ソースコードの更新** ✅ 完了（2025-12-29）
+  * 構文・軽微な変更の解決 ✅
+  * Braille 表示ロジック（JP 拡張の再適用）✅
+    * `source/braille.py`: `_nvdajp()`, `rowHeaderText`, `columnHeaderText` を維持
+  * GUI・インストーラ（JP 固有の表示）✅
+    * `source/gui/__init__.py`: アイコンパス、ドネーションURL、jpBrailleViewer を維持
+    * `source/installer.py`: アイコンパスとショートカットを維持
+  * 合成音声ドライバ（jtalk の優先順位維持）✅
+    * `source/synthDriverHandler.py`: jtalk の優先順位を維持
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 4」
+
+* [x] **タスク 3a.6: テストの更新** ✅ 完了（2025-12-29）
+  * 翻訳ファイル（`.po`）を上流版で置き換え（生成ファイルのため）✅
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の「作業段階 6」
+
+* [x] **タスク 3a.7: 検証と完了確認** ✅ 完了（2025-12-29）
+  * 型チェック: `ci/scripts/tests/typeCheck.ps1` ✅ 成功
+  * ビルド: `scons source --all-cores` ✅ 成功
+  * JP smoke tests (x86): `jptools/checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` ✅ 成功
+  * JP smoke tests (x64): `jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` ✅ 成功
+  * ランチャービルド: `scons launcher --all-cores` ✅ 成功
+  * Push: `betajp-251230` ブランチに push 完了 ✅
+  * CI実行: 開始済み（実行ID: `20555439906`）✅
+  * **コミット**: `d1792591a` - "Merge nvaccess/beta (x86 Python 3.13 stage, commit 9613ce6e3)"
+
+* [x] **タスク 3a.8: Python 3.13 x86環境でのJP smoke test対応** ✅ 完了（2025年12月29日）
+  * pytestからunittestへの移行完了 ✅
+  * `UV_PYTHON_PREFERENCE=managed`の一貫した設定完了 ✅
+  * CIでのPython 3.13 x86インストールと設定完了 ✅
+  * ローカルとCI環境での一貫した動作を確認 ✅
+
+### ステージ3b: x64 Python 3.13への移行（優先度：高）
+
+**目標**: x86 Python 3.13対応完了後、x64 Python 3.13への移行を実施
+
+**マージ戦略**:
+
+* **段階的アプローチ**: x64移行は大きな変更のため、段階的に進める
+* **マージベース**: nvaccess/beta のコミット `58dd14767` (2025年9月15日) "Only build 64bit"
+  * この時点で `.python-versions` が `cpython-3.13.x-windows-x86_64-none` (x64 Python 3.13) に変更される
+  * x86 ビルドが削除され、x64 のみのビルドになる
+* **コミット範囲**:
+  * `9613ce6e3` (x86 Python 3.13段階) から `58dd14767` (x64移行) まで: **85コミット**（x64移行前の変更）
+  * `58dd14767` (x64移行) から最新 (`1cee6d93c`) まで: **214コミット**（x64移行後の変更）
+  * 合計: **299コミット**（ロードマップの記述と一致）
+* **推奨アプローチ**:
+  1. **オプション1（推奨）**: `58dd14767` までマージ（x64移行のタイミングまで）
+     * 利点: x64移行の変更を一度に取り込める
+     * 注意: 85コミット分の変更を確認・解決する必要がある
+  2. **オプション2**: 段階的に `9613ce6e3` から `58dd14767` までの重要なコミットを選択的にマージ
+     * 利点: 変更量を分割してリスクを低減
+     * 注意: 依存関係の確認が必要
+
+* [ ] **タスク 3b.1: x64移行前の変更の確認（`9613ce6e3` から `58dd14767` まで）**
+  * 85コミット分の変更を確認
+  * 重要な変更（x64移行に必要な変更）を特定
+  * コンフリクトの予測と優先順位付け
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の作業段階1-6に従って段階的に解決
+
+* [ ] **タスク 3b.2: x64移行コミット（`58dd14767`）のマージ準備**
+  * マージリハーサルの実施（`git merge --no-commit --no-ff --allow-unrelated-histories 58dd14767`）
+  * コンフリクトファイルの記録と優先順位付け
+  * 参照: `projectDocs/jp/merge-rehearsal-2025-12-30.md` の形式で記録
+
+* [ ] **タスク 3b.3: x64対応の実施**
+  * nvaccess/beta の x64移行コミット（`58dd14767`）をマージ
+  * 衝突を修正し、ユニットテストとビルドが通る状態にする
+  * libopenjtalk.dllとlibmecab.dllのx64移行
+  * `.python-versions` を `cpython-3.13.x-windows-x86_64-none` に更新
   * x86 対応コードは削除する
+  * 参照: `projectDocs/jp/merge-plan-beta-2025-11.md` の作業段階1-6に従って段階的に解決
+
+* [ ] **タスク 3b.4: x64移行後の変更の取り込み（`58dd14767` 以降）**
+  * x64移行完了後、最新のbeta（`1cee6d93c`）までの214コミットを段階的に取り込む
+  * 小さなPR単位で進める
+  * 各PRで全テスト通過を確認
 
 ### ステージ4: テスト修正（優先度：高）
 

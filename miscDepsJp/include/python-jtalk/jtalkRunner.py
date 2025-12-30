@@ -182,6 +182,23 @@ do_print = False
 
 
 def __print(s):
+    # Write to mecab_debug.log file only (not to console)
+    # This ensures MeCab logs are only stored in logfile, not printed to console
+    try:
+        # Calculate path to mecab_debug.log relative to repo root
+        if repo_root:
+            debug_log_path = Path(repo_root) / "source" / "synthDrivers" / "jtalk" / "mecab_debug.log"
+        else:
+            # Fallback: use current directory
+            debug_log_path = Path("source") / "synthDrivers" / "jtalk" / "mecab_debug.log"
+        debug_log_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(debug_log_path, "a", encoding="utf-8", errors="replace") as f:
+            f.write(str(s) + "\n")
+            f.flush()
+    except Exception:
+        # Logging is best-effort only. Failures must not interfere with normal operation.
+        pass
+    # Note: do_print flag is kept for backward compatibility, but MeCab logs are always written to file
     if do_print:
         print(s.encode("cp932", "ignore"))
 

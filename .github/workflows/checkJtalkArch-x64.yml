@@ -26,22 +26,16 @@ jobs:
         submodules: recursive
         fetch-depth: 1
 
-    - name: Setup Python 3.11 x86 (for scons.bat)
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-        architecture: 'x86'
-
     - name: Install uv
       uses: astral-sh/setup-uv@v6
       with:
         enable-cache: true
 
-    - name: Install Python 3.11 x64 (for smoke tests)
+    - name: Install Python 3.13 x64
       run: |
-        # Install x64 Python explicitly for smoke tests
-        # This ensures uv venv uses x64 Python instead of the x86 Python from setup-python
-        uv python install 3.11
+        # Install x64 Python explicitly for x64 builds
+        # This ensures uv venv uses x64 Python for both scons.bat and smoke tests
+        uv python install 3.13
         uv python list
       shell: powershell
 
@@ -83,7 +77,8 @@ jobs:
         cmd /c "chcp 932 >nul 2>&1 && powershell.exe -NoProfile -ExecutionPolicy Bypass -Command `".\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests`""
       shell: cmd
       env:
-        TARGET_ARCH: x64
+        BUILD_ARCH: x64
+        UV_PYTHON_PREFERENCE: managed
 
     - name: Upload artifact on failure
       if: ${{ failure() }}

@@ -1,65 +1,20 @@
 # runJpSmokeTests.ps1 のトラブルシューティング
 
-## 問題: `pytest` モジュールが見つからない
+## テストフレームワークについて
 
-### エラーメッセージ
+JP smoke tests は Python 標準ライブラリの `unittest` を使用しています。`pytest` などの追加の依存関係は不要です。
 
-```powershell
-.\jptools\runJpSmokeTests.ps1 -SkipInstall
-F:\nvda\gh\betajp\.venv\Scripts\python.exe: No module named pytest
-```
-
-### 原因
-
-`-SkipInstall` フラグを使用すると、スクリプトは `uv pip install scons pytest` をスキップします。しかし、`pytest` は `pyproject.toml` の依存関係グループに定義されていないため、`uv run python -m pytest` を実行しても `pytest` が見つかりません。
-
-**技術的な詳細:**
-- `uv run` は `pyproject.toml` の依存関係を解決してからコマンドを実行します
-- `pytest` が `pyproject.toml` の依存関係グループ（`unit-tests` など）に定義されていない場合、`uv run` は `pytest` を利用できません
-- `uv pip install` は現在の仮想環境（`.venv`）に直接パッケージをインストールしますが、`-SkipInstall` を使用するとこのステップがスキップされます
-
-### 解決策
-
-#### 方法 1: `-SkipInstall` フラグを外す（推奨）
-
-依存関係をインストールしてからテストを実行します：
+### テストの実行方法
 
 ```powershell
+# すべての準備を自動実行
 .\jptools\runJpSmokeTests.ps1
-```
 
-これにより、スクリプトは自動的に `uv pip install scons pytest` を実行します。
+# 準備済みの場合はスキップ
+.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
 
-#### 方法 2: 手動で `pytest` をインストール
-
-`-SkipInstall` を使いたい場合は、事前に手動でインストールします：
-
-```powershell
-uv pip install pytest
-.\jptools\runJpSmokeTests.ps1 -SkipInstall
-```
-
-#### 方法 3: `pyproject.toml` に `pytest` を追加（長期的な解決策）
-
-`pytest` を `pyproject.toml` の `unit-tests` 依存関係グループに追加することで、`uv sync --group unit-tests` や `uv run --group unit-tests` で `pytest` が利用可能になります。
-
-```toml
-[dependency-groups]
-unit-tests = [
-	# Creating XML unit test reports
-	"unittest-xml-reporting==3.2.0",
-	# Feed parameters to tests neatly
-	"parameterized==0.9.0",
-	# Testing framework for JP smoke tests
-	"pytest",
-]
-```
-
-その後、依存関係を同期します：
-
-```powershell
-uv sync --group unit-tests
-.\jptools\runJpSmokeTests.ps1 -SkipInstall
+# 特定のテストクラスのみ実行
+.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JtalkTests"
 ```
 
 ### CI での動作
@@ -67,21 +22,12 @@ uv sync --group unit-tests
 GitHub Actions の CI ワークフロー（`.github/workflows/testAndPublish.yml`）では、以下の手順で実行されています：
 
 ```yaml
-- name: Install tools for JP overlay
+- name: Run JP smoke tests
   shell: pwsh
-  run: uv pip install scons pytest
-- name: Run JP braille/JTalk smoke tests
-  shell: pwsh
-  run: uv run python -m pytest test.py -k "JpBrailleTests or JtalkTests"
+  run: jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
 ```
 
-CI では `uv pip install` で直接インストールしてから `uv run` で実行しているため、問題は発生しません。
-
-### 推奨される運用方法
-
-1. **初回実行時**: `-SkipInstall` を付けずに実行して、依存関係をインストール
-2. **2回目以降**: 依存関係が既にインストールされていることを確認した上で `-SkipInstall` を使用
-3. **依存関係が不明な場合**: `-SkipInstall` を外して実行（依存関係のインストールは比較的高速）
+`unittest` は Python 標準ライブラリのため、追加のインストールは不要です。
 
 ## 問題: CI環境で `jtalkRunner.py` の `__file__` 解決が失敗する
 
@@ -89,7 +35,7 @@ CI では `uv pip install` で直接インストールしてから `uv run` で�
 
 ```
 OSError: DLL directory does not exist: D:\a\miscDepsJp\source\synthDrivers\jtalk
-FAILED miscDepsJp/jptools/test.py::JtalkTests::test_jtalk - OSError: DLL directory does not exist: D:\a\miscDepsJp\source\synthDrivers\jtalk
+FAILED miscDepsJp.jptools.test.JtalkTests.test_jtalk - OSError: DLL directory does not exist: D:\a\miscDepsJp\source\synthDrivers\jtalk
 ```
 
 ### 原因
@@ -206,18 +152,29 @@ x64 環境で MeCab DLL を呼び出す際、`ctypes` のポインタ型指定�
 
 ### x64 環境での smoke テスト実行
 
-x64 環境での smoke テストは、専用のスクリプト `checkJtalkArch.ps1` を使用します：
+x64 環境での smoke テストは、以下の2つの方法があります：
 
-```powershell
-# x64 DLL をビルドして smoke テストを実行
-.\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
-```
+1. **`runJpSmokeTests.ps1`を使用（推奨）**:
+   - `certBuild2023.cmd`から自動的に呼び出される
+   - `BUILD_ARCH`または`TARGET_ARCH`環境変数が`x64`の場合、自動的にx64 Python 3.13と`.venv-x64`を使用
+   - `scons.bat`は常にx86 Python 3.13で実行されるが、`TARGET_ARCH=x64`によりx64 DLLがビルドされる
+   - smoke testは`TARGET_ARCH`に応じて適切なPythonアーキテクチャを使用
 
-このスクリプトは：
-- `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
-- `uv` で Python 3.11 x64 を自動インストール・使用
-- x64 DLL が正しくビルド・配置されることを確認
-- x64 Python で smoke テストを実行
+2. **`checkJtalkArch.ps1`を使用（手動実行時）**:
+   ```powershell
+   # x64 DLL をビルドして smoke テストを実行
+   .\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
+   ```
+   - `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
+   - `uv` で Python 3.13 x64 を自動インストール・使用
+   - x64 DLL が正しくビルド・配置されることを確認
+   - x64 Python で smoke テストを実行（unittest を使用）
+
+**重要な注意点**:
+- `scons.bat`は常にx86 Python 3.13で実行される（`.venv`はx86 Python 3.13を使用）
+- `TARGET_ARCH`環境変数により、ビルドされるDLLのアーキテクチャが決まる
+- **詳細**: `BUILD_ARCH`と`TARGET_ARCH`の関係と使用方法については、`projectDocs/jp/build-architecture-environment-variables.md`を参照してください
+- `runJpSmokeTests.ps1`は`BUILD_ARCH`/`TARGET_ARCH`を読み取り、x64の場合はx64 Python 3.13を使用
 
 ### CI での x64 検証
 
@@ -254,6 +211,8 @@ code source/synthDrivers/jtalk/mecab.py
 ### ログの確認
 
 NVDA のログは通常 `%APPDATA%\nvda\nvda.log` に出力されます。
+
+MeCab のログは `source/synthDrivers/jtalk/mecab_debug.log` にのみ保存されます（コンソールには出力されません）。これは `mecabRunner.py` と `jtalkRunner.py` の `__print` 関数がログファイルにのみ書き込むように実装されているためです。
 
 ### 注意事項
 

@@ -41,8 +41,8 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $repoRoot
 
 if (-not $SkipInstall) {
-    Write-Host "Installing uv dependencies (scons, pytest)..." -ForegroundColor Cyan
-    uv pip install scons pytest
+    Write-Host "Installing uv dependencies (scons)..." -ForegroundColor Cyan
+    uv pip install scons
 }
 
 if (-not $SkipOverlay) {
@@ -150,7 +150,10 @@ else:
     
     # Run the test using original index
     $env:JP_SMOKE_TEST_INDICES = $originalIdx.ToString()
-    $pytestOutput = uv run python -m pytest miscDepsJp/jptools/test.py -k "test_pass2_by_index" -v 2>&1
+    # The JpBrailleTests.test_pass2 unittest reads JP_SMOKE_TEST_INDICES to select
+    # which individual test case to run, replacing the old pytest-style
+    # test_pass2_by_index helper. No additional per-index test method is required.
+    $unittestOutput = uv run python -m unittest miscDepsJp.jptools.test.JpBrailleTests.test_pass2 -v 2>&1
     $exitCode = $LASTEXITCODE
     
     $result = [PSCustomObject]@{
@@ -164,7 +167,7 @@ else:
     }
     
     # Check for Windows fatal exception
-    $outputStr = $pytestOutput -join "`n"
+    $outputStr = $unittestOutput -join "`n"
     if ($outputStr -match "Windows fatal exception" -or $exitCode -ne 0) {
         if ($outputStr -match "Windows fatal exception") {
             $result.Status = "CRASH"

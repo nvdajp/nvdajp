@@ -25,7 +25,17 @@ user_dics = jtalkDir.user_dics
 
 
 def __print(s):
-    print(s)
+    # Write to mecab_debug.log file only (not to console)
+    # This ensures MeCab logs are only stored in logfile, not printed to console
+    try:
+        debug_log_path = Path(__file__).parent.parent.parent / "source" / "synthDrivers" / "jtalk" / "mecab_debug.log"
+        debug_log_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(debug_log_path, "a", encoding="utf-8", errors="replace") as f:
+            f.write(str(s) + "\n")
+            f.flush()
+    except Exception:
+        # Logging is best-effort only. Failures must not interfere with normal operation.
+        pass
 
 
 _buffer = ""
@@ -78,10 +88,11 @@ def get_reading(msg):
 
 def runTasks(enableUserDic=False):
     if enableUserDic:
-        print(jt_dir, dic, user_dics)
+        user_dics_str = ', '.join(map(str, user_dics)) if user_dics else 'None'
+        __print(f"Initializing MeCab with user dictionaries: {jt_dir}, {dic}, {user_dics_str}")
         Mecab_initialize(__print, str(jt_dir), str(dic), user_dics)
     else:
-        print(jt_dir, dic)
+        __print(f"Initializing MeCab: {jt_dir}, {dic}")
         Mecab_initialize(__print, str(jt_dir), str(dic))
     count = 0
     for i in tasks:
