@@ -276,7 +276,9 @@ freeze(
 		(".", [os.path.join(sys.base_prefix, "python3.dll")]),
 	]
 	# BEGIN JP PATCH (Japanese braille tables)
-	+ [(".", ["ja-jp-comp6.utb"]), ("louis/tables", ["ja-jp-rokutenkanji.tbl"])]
+	# ja-jp-comp6.utb: JP-specific table, installed to dist root (TABLES_DIR_JP)
+	# ja-jp-rokutenkanji.tbl: registered as ja-rokutenkanji.utb, installed to louis/tables
+	+ [(".", ["ja-jp-comp6.utb"]), ("louis/tables", [("ja-rokutenkanji.utb", "ja-jp-rokutenkanji.tbl")])]
 	# END JP PATCH
 	+ (
 		getLocaleDataFiles()
