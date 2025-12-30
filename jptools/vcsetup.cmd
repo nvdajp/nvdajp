@@ -15,13 +15,32 @@ if /I "%ARCH%"=="x64" (
 ) else (
   set "SET_CL_ARCH=1"
   rem Fast path for x86: check if both cl and nmake are already available
+  rem #region agent log
+  python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:13" "Before fast path check" "{\"arch\":\"%ARCH%\"}" >nul 2>&1
+  rem #endregion
   cl >nul 2>&1
-  if "%ERRORLEVEL%" neq "9009" (
+  set "CL_CHECK=%ERRORLEVEL%"
+  rem #region agent log
+  python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:15" "After cl check" "{\"exit_code\":\"%CL_CHECK%\"}" >nul 2>&1
+  rem #endregion
+  if "%CL_CHECK%" neq "9009" (
     rem cl is available, check if nmake is also available
     nmake /? >nul 2>&1
-    if "%ERRORLEVEL%" neq "9009" (
+    set "NMAKE_CHECK=%ERRORLEVEL%"
+    rem #region agent log
+    python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:18" "After nmake check in fast path" "{\"exit_code\":\"%NMAKE_CHECK%\"}" >nul 2>&1
+    rem #endregion
+    if "%NMAKE_CHECK%" neq "9009" (
       rem Both cl and nmake are available, MSVC environment already configured
+      rem #region agent log
+      python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:21" "Fast path: both cl and nmake available" "{}" >nul 2>&1
+      rem #endregion
       goto :done
+    ) else (
+      rem cl is available but nmake is not, need to run vcvars
+      rem #region agent log
+      python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:25" "Fast path failed: nmake not found" "{\"cl_check\":\"%CL_CHECK%\",\"nmake_check\":\"%NMAKE_CHECK%\"}" >nul 2>&1
+      rem #endregion
     )
   )
 )
