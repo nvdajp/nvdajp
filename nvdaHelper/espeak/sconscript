@@ -105,6 +105,8 @@ env.Append(
 	CCFLAGS=[
 		# Ignore all warnings as the code is not ours.
 		"/W0",
+		# UTF-8 source charset support (required for tr_languages.c with Arabic characters)
+		"/utf-8",
 		# Preprocessor definitions. Migrated from 'nvdaHelper/espeak/config.h'
 		'/DPACKAGE_VERSION=\\"1.52.0\\"',  # See 'include/espeak/src/windows/config.h'
 		"/DHAVE_STDINT_H=1",
