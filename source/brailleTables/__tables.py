@@ -7,8 +7,7 @@
 Note that importing this module for the first time will add all tables to the internal table store.
 """
 
-from . import addTable
-from . import TableSource
+from . import addTable, TableSource
 
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
@@ -327,15 +326,16 @@ addTable(
 	# braille settings dialog.
 	_("Japanese (Rokuten Kanji) Braille"),
 )
-# BEGIN JP PATCH (Japanese 6-dot computer braille table)
+# Translators: The name of a braille table displayed in the
+# braille settings dialog.
 addTable(
 	"ja-jp-comp6.utb",
 	# Translators: The name of a braille table displayed in the
 	# braille settings dialog.
-	_("Japanese 6-dot computer braille"),
+	_("Japanese 6 dot computer braille"),
+	contracted=True,
 	source=TableSource.BUILTIN_JP,
 )
-# END JP PATCH
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("ka-in-g1.utb", _("Kannada grade 1"), inputForLangs={"kn"}, outputForLangs={"kn"})
