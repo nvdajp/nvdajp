@@ -275,8 +275,8 @@ freeze(
 		(".", ["message.html"]),
 		(".", [os.path.join(sys.base_prefix, "python3.dll")]),
 	]
-	# BEGIN JP PATCH (Japanese braille table)
-	+ [(".", ["ja-jp-comp6.utb"])]
+	# BEGIN JP PATCH (Japanese braille tables)
+	+ [(".", ["ja-jp-comp6.utb"]), ("louis/tables", ["ja-jp-rokutenkanji.tbl"])]
 	# END JP PATCH
 	+ (
 		getLocaleDataFiles()
