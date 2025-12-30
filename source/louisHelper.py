@@ -155,10 +155,10 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 	# Check if ja-jp-comp6.utb is selected
 	if tableList and len(tableList) > 0 and tableList[0].endswith("ja-jp-comp6.utb"):
 		try:
-			from synthDrivers.jtalk.translator2 import translate
+			from synthDrivers.jtalk import translator2
 			nabcc = config.conf["braille"]["expandAtCursor"]
 			text = inbuf.replace("\0", "")
-			braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = translate(
+			braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = translator2.translate(
 				text, cursorPos=cursorPos or 0, nabcc=nabcc
 			)
 			# Convert braille string to list of integers (cell values)

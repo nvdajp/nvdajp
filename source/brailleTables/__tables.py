@@ -8,6 +8,7 @@ Note that importing this module for the first time will add all tables to the in
 """
 
 from . import addTable
+from . import TableSource
 
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
@@ -332,7 +333,7 @@ addTable(
 	# Translators: The name of a braille table displayed in the
 	# braille settings dialog.
 	_("Japanese 6-dot computer braille"),
-	source=brailleTables.TableSource.BUILTIN_JP,
+	source=TableSource.BUILTIN_JP,
 )
 # END JP PATCH
 # Translators: The name of a braille table displayed in the
