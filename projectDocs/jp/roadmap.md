@@ -178,7 +178,7 @@
 
 * [ ] **Visual Studio検出のvswhere移行（優先度：高）**
   * **目的**: 環境ごとのテストで`nmake`や`link`の検出失敗を解消し、**x64/x86切り替え時の安定性を確保**してビルドシステムの安全性を向上させる
-  * **問題**: 
+  * **問題**:
     * 現在の直接パス検索では、環境によってVisual Studioの検出に失敗し、`nmake`や`link`が見つからないことが多い
     * **x64/x86切り替え時に、間違ったアーキテクチャのMSVCツールが使われるリスクがある**（例: x64ビルドでx86の`cl`や`link`が使われる）
     * アーキテクチャ不一致のDLLがビルドされ、実行時に`OSError: [WinError 193]`エラーが発生する可能性がある
@@ -200,7 +200,7 @@
     * `scons_jp.py`で`nmake not found and vcvarsall.bat not detected`エラーが複数箇所で発生
     * 直接パス検索では、Visual Studioのインストールパスが環境によって異なる場合に検出に失敗
     * CI環境や開発者環境での検出の不安定性がビルド失敗の原因となっている
-    * **x64/x86切り替え時の問題**: 
+    * **x64/x86切り替え時の問題**:
       * `vcsetup.cmd`がx64/x86の切り替え時に正しく動作しない可能性がある
       * x64ビルドの後にx86ビルドを行う場合、x86の`cl`が残っていると、x64ビルドでx86ツールが使われる可能性がある
       * アーキテクチャ不一致のDLLがビルドされ、実行時に`OSError: [WinError 193]`エラーが発生するリスクがある
@@ -257,6 +257,13 @@
        * x86 DLL: `miscDepsJp/include/python-jtalk/x86/(libopenjtalk|libmecab).dll`
        * x64 DLL: `miscDepsJp/include/python-jtalk/x64/(libopenjtalk|libmecab).dll`
        * payload 側 (source/synthDrivers/jtalk/) は `scons.bat -c jtalkSync` で mecab/src の obj/lib/dll/dic をクリーンし、`scons.bat jtalkSync TARGET_ARCH=x86`（または x64）で再生成して切り替える。クリーンにアーキ指定は不要。並列は避け、逐次で安定化を確認。
+       * **クリーン処理の改善**（2025-12-30）: `scons -c jtalkSync` で以下のファイルが確実に削除されるよう改善：
+         * `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/*.obj`（`glob`で動的検索）
+         * `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/*.lib`（`glob`で動的検索）
+         * `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/*.exe`（`glob`で動的検索）
+         * `miscDepsJp/_state/prep/jtalkSync.x64.stamp` と `jtalkSync.x86.stamp`（両方のアーキテクチャのstampファイル）
+         * `miscDepsJp/_state/prep/jtalkPrep.x64.stamp` と `jtalkPrep.x86.stamp`（両方のアーキテクチャのstampファイル）
+         * これにより、x86/x64切り替え時に古いオブジェクトファイルやstampファイルが残らず、確実に再ビルドが行われる
        * **完了内容**:
          * `jptools/scons_jp.py` で `TARGET_ARCH` をコマンドライン/環境変数から読み取り可能に修正
          * `miscDepsJp/include/python-jtalk/lib/Makefile.mak` で `/MACHINE:$(MACHINE)` を正しく設定

@@ -265,6 +265,19 @@ call scons.bat jtalkSync
 - `TARGET_ARCH`: SCons環境変数として`x64`（`jptools/scons_jp.py`で設定）
 - Python: x86 Python 3.13（`.venv`）
 
+### `jtalkSync`のクリーン処理（`scons -c jtalkSync`）
+
+`jtalkSync`のクリーン処理は、x86/x64切り替え時に古いファイルが残らないよう、以下のファイルを確実に削除します（2025-12-30 改善）:
+
+- **オブジェクトファイル**: `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/*.obj`（`glob`で動的検索）
+- **ライブラリファイル**: `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/*.lib`（`glob`で動的検索）
+- **実行ファイル**: `miscDepsJp/include/python-jtalk/libopenjtalk/mecab/src/*.exe`（`glob`で動的検索）
+- **Stampファイル**:
+  - `miscDepsJp/_state/prep/jtalkSync.x64.stamp` と `jtalkSync.x86.stamp`（両方のアーキテクチャ）
+  - `miscDepsJp/_state/prep/jtalkPrep.x64.stamp` と `jtalkPrep.x86.stamp`（両方のアーキテクチャ）
+
+**重要**: クリーン処理はアーキテクチャ指定不要です。`scons -c jtalkSync`を実行すると、x86/x64の両方のstampファイルと、`mecab/src`ディレクトリ内のすべてのビルド成果物（`.obj`、`.lib`、`.exe`）が削除されます。これにより、x86/x64切り替え時に古いファイルが残らず、確実に再ビルドが行われます。
+
 ## まとめ表
 
 | シナリオ | `BUILD_ARCH` | `TARGET_ARCH` | Python | venv | DLLアーキテクチャ |
@@ -302,3 +315,4 @@ call scons.bat jtalkSync
 
 - 2025-12-30: 初版作成。`BUILD_ARCH`と`TARGET_ARCH`の関係と使用方法を明記
 - 2025-12-30: リファクタリング完了。`TARGET_ARCH`をOS環境変数として使用することを廃止し、SCons環境変数としてのみ使用するように変更。`BUILD_ARCH`をOS環境変数として使用し、`jptools/scons_jp.py`でSCons環境変数`TARGET_ARCH`に設定する方式に統一。
+- 2025-12-30: `jtalkSync`のクリーン処理を改善。`scons -c jtalkSync`で`mecab/src`ディレクトリ内の`*.obj`、`*.lib`、`*.exe`ファイルと、x86/x64の両方のstampファイルが確実に削除されるよう改善。x86/x64切り替え時の安定性を向上。
