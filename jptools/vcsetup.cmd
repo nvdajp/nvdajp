@@ -3,6 +3,10 @@ rem Setup MSVC build environment persistently. Usage: vcsetup.cmd [x64|x86]
 rem Defaults to x86.
 rem Currently supports Visual Studio 2022 only.
 
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:6" "vcsetup.cmd entry" "{\"arch\":\"%~1\"}" >nul 2>&1
+rem #endregion
+
 set "ARCH=%~1"
 if /I "%ARCH%"=="x64" (
   set "SET_CL_ARCH="
@@ -61,24 +65,46 @@ if not defined FOUND (
 )
 
 echo [vcsetup] Using: "%FOUND%"
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "A,B" "vcsetup.cmd:63" "Before vcvars call" "{\"found\":\"%FOUND%\",\"path\":\"%PATH%\"}" >nul 2>&1
+rem #endregion
 rem Call vcvars script with full path (call command handles spaces correctly)
 rem Show output for debugging (remove >nul 2>&1 to see errors)
 call "%FOUND%" 2>&1
 set "VCVARS_EXIT=%ERRORLEVEL%"
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "A,B" "vcsetup.cmd:67" "After vcvars call" "{\"exit_code\":\"%VCVARS_EXIT%\",\"path\":\"%PATH%\"}" >nul 2>&1
+rem #endregion
 if "%VCVARS_EXIT%" neq "0" (
   echo [ERROR] Failed to execute vcvars script: "%FOUND%" (exit code: %VCVARS_EXIT%) >&2
   exit /b 1
 )
 rem Verify nmake is available after vcvars
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "D" "vcsetup.cmd:73" "Before nmake check" "{\"path\":\"%PATH%\"}" >nul 2>&1
+rem #endregion
 nmake /? >nul 2>&1
-if "%ERRORLEVEL%" equ "9009" (
+set "NMAKE_CHECK=%ERRORLEVEL%"
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "D" "vcsetup.cmd:74" "After nmake check" "{\"exit_code\":\"%NMAKE_CHECK%\",\"path\":\"%PATH%\"}" >nul 2>&1
+rem #endregion
+if "%NMAKE_CHECK%" equ "9009" (
   echo [ERROR] nmake not found after vcvars execution. PATH may not be set correctly. >&2
+  rem #region agent log
+  python "%~dp0debug_log.py" "debug-session" "run1" "C,D,E" "vcsetup.cmd:75" "nmake not found error" "{\"path\":\"%PATH%\"}" >nul 2>&1
+  rem #endregion
   exit /b 1
 )
 if defined SET_CL_ARCH (
   SET CL=/arch:IA32
 )
 echo [vcsetup] after vcvars
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "C" "vcsetup.cmd:81" "vcsetup.cmd exit" "{\"path\":\"%PATH%\",\"cl\":\"%CL%\"}" >nul 2>&1
+rem #endregion
 
 :done
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:84" "vcsetup.cmd done (fast path)" "{\"path\":\"%PATH%\"}" >nul 2>&1
+rem #endregion
 exit /b 0
