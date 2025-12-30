@@ -55,13 +55,13 @@ repos:
     # Removes trailing whitespace.
     - id: trailing-whitespace
       types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-      # Exclude projectDocs/jp/ and readme-nvdajp.md to prevent accidental deletion of documentation content
-      exclude: ^(projectDocs/jp/|readme-nvdajp\.md$)
+      # Exclude projectDocs/jp/, readme-nvdajp.md, and AGENTS.md to prevent accidental deletion of documentation content
+      exclude: ^(projectDocs/jp/|readme-nvdajp\.md$|AGENTS\.md$)
     # Ensures all files end in 1 (and only 1) newline.
     - id: end-of-file-fixer
       types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-      # Exclude projectDocs/jp/ and readme-nvdajp.md to prevent accidental deletion of documentation content
-      exclude: ^(projectDocs/jp/|readme-nvdajp\.md$)
+      # Exclude projectDocs/jp/, readme-nvdajp.md, and AGENTS.md to prevent accidental deletion of documentation content
+      exclude: ^(projectDocs/jp/|readme-nvdajp\.md$|AGENTS\.md$)
     # Removes the UTF-8 BOM from files that have it.
     # See https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/codingStandards.md#encoding
     - id: fix-byte-order-marker

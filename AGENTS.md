@@ -4,10 +4,10 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 ## Scope
 
-* Target platform: Windows x86 with Python 3.11 (this branch: betajp-251206v4)
+* Target platform: Windows x64 with Python 3.13 (this branch: betajp-251231)
 * Out of scope: arm64, CI releases using secrets
 * Related issues: #539 (workflow alignment), #530 (2026.1 merge)
-* Note: Java Access Bridge 32-bit is supported
+* Note: x86 support has been dropped as part of the x64 migration
 
 ## Principles
 
@@ -16,6 +16,7 @@ This document summarizes the rules automation agents/scripts must obey when work
   * **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files (e.g., `jptools/*.ps1`, `jptools/runJpSmokeTests.ps1`) do not need these markers.
 * Prefer SCons/pure Python tooling; auxiliary `.cmd` or `nmake` usage should be limited to JP-specific overlays
 * Do not perform code-signing or releases in CI (no secrets). Official release builds happen locally.
+* **Pre-commit hooks**: `projectDocs/jp/`, `readme-nvdajp.md`, and `AGENTS.md` are excluded from `trailing-whitespace` and `end-of-file-fixer` to prevent accidental deletion of documentation content
 
 ## Quick commands
 
@@ -71,9 +72,9 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 ### スコープ
 
-* 対象: Windows x86 + Python 3.11（このブランチ: betajp-251206v4）
+* 対象: Windows x64 + Python 3.13（このブランチ: betajp-251231）
 * 除外: arm64、Secrets を使う配布系ジョブ
-* 注記: Java Access Bridge 32-bit は対応済み
+* 注記: x86 サポートは x64 移行の一環として廃止されました
 
 ### 禁則と優先
 
@@ -81,6 +82,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 * JP 固有差分は `# nvdajp`／`# BEGIN JP PATCH` で明示（**注**: 本家版ファイルを変更する場合のみ。日本語版固有の新規ファイルには不要）
 * ビルドは SCons／純 Python を優先。`.cmd` や `nmake` は JP 独自処理のみ
 * CI ではコードサインや Secrets 利用を行わない
+* **Pre-commit フック**: `projectDocs/jp/`、`readme-nvdajp.md`、`AGENTS.md` は `trailing-whitespace` と `end-of-file-fixer` から除外されており、ドキュメント内容の誤削除を防止
 
 ### 最短コマンド
 
