@@ -96,6 +96,9 @@ set "VCVARS_EXIT=%ERRORLEVEL%"
 rem #region agent log
 python "%~dp0debug_log.py" "debug-session" "run1" "A,B" "vcsetup.cmd:67" "After vcvars call" "{\"exit_code\":\"%VCVARS_EXIT%\",\"path\":\"%PATH%\"}" >nul 2>&1
 rem #endregion
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "F" "vcsetup.cmd:99" "Before VCVARS_EXIT check" "{\"vcvars_exit\":\"%VCVARS_EXIT%\"}" >nul 2>&1
+rem #endregion
 if "%VCVARS_EXIT%" neq "0" (
   echo [ERROR] Failed to execute vcvars script: "%FOUND%" (exit code: %VCVARS_EXIT%) >&2
   exit /b 1
