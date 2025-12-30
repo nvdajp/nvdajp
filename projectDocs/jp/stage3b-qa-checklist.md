@@ -27,14 +27,20 @@
 
 ### ⚠️ 確認が必要な項目
 
-#### 1. ローカル環境での検証確認（最優先）
+#### 1. ローカル環境での検証確認（最優先）✅ 完了（2025-12-30）
 
 **確認項目**:
-- [ ] 現在のブランチ（betajp-251231）でローカル検証が可能か
-- [ ] 型チェック: `ci/scripts/tests/typeCheck.ps1` が成功するか
-- [ ] ビルド: `scons source --all-cores` が成功するか
-- [ ] JP smoke test (x86): `jptools/checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` が成功するか
-- [ ] JP smoke test (x64): `jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` が成功するか
+- [x] 現在のブランチ（betajp-251231）でローカル検証が可能か ✅
+- [x] 型チェック: `ci/scripts/tests/typeCheck.ps1` が成功するか ✅
+- [x] ビルド: `.\scons.bat source --all-cores` が成功するか ✅
+- [x] JP smoke test (x86): `jptools/checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` が成功するか ✅
+- [x] JP smoke test (x64): `jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` が成功するか ✅
+
+**検証結果**:
+- **型チェック**: ✅ 成功（仮想環境作成完了）
+- **ビルド**: ✅ 成功（jtalkSync、jtalkPrep ビルド成功）
+- **JP smoke test (x86)**: ✅ 成功（2 tests passed (JpBrailleTests), 1 test passed (JtalkTests)）
+- **JP smoke test (x64)**: ✅ 成功（x64 DLL ビルド成功、3 tests passed）
 
 **理由**: 品質保証原則「段階的な検証を必須とする」に従い、各段階で検証を実施する必要がある。
 
@@ -91,7 +97,7 @@
 ### ✅ 必須条件
 
 - [x] **ベースコミットのCI状態が緑**: PR #607で`allTestsPass`が通過し、安全な状態でマージ済み ✅
-- [ ] **ローカル環境での検証が可能**: 現在のブランチで検証環境が整備されている
+- [x] **ローカル環境での検証が可能**: 現在のブランチで検証環境が整備されている ✅（2025-12-30完了）
 - [x] **マージ戦略が決定**: オプションA（一度にマージ）を採用することを決定 ✅
 
 ### ⚠️ リスク要因
@@ -107,7 +113,7 @@
 
 ## 推奨される次のステップ
 
-### ステップ1: ローカル環境での検証（最優先）
+### ステップ1: ローカル環境での検証（最優先）✅ 完了（2025-12-30）
 
 **前提**: PR #607が安全な状態でマージされており、ベースコミット `625691b11a` は既に検証済み ✅
 
@@ -116,7 +122,7 @@
 ci/scripts/tests/typeCheck.ps1
 
 # ビルド
-scons source --all-cores
+.\scons.bat source --all-cores
 
 # JP smoke test (x86)
 jptools/checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests
@@ -125,7 +131,13 @@ jptools/checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests
 jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
 ```
 
-**完了条件**: すべての検証が成功することを確認
+**完了条件**: すべての検証が成功することを確認 ✅
+
+**検証結果**:
+- ✅ 型チェック: 成功
+- ✅ ビルド: 成功
+- ✅ JP smoke test (x86): 成功（2 tests passed (JpBrailleTests), 1 test passed (JtalkTests)）
+- ✅ JP smoke test (x64): 成功（x64 DLL ビルド成功、3 tests passed）
 
 ### ステップ2: マージ実施の開始
 
