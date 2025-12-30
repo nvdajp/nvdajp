@@ -176,6 +176,36 @@
   * `scons source` を前提にビルド手順を安定化し、主要 .cmd をPython呼び出しへ置換済み
   * `jptools/nonCertBuild.py` などに集約し、ばらつきを削減済み
 
+* [ ] **Visual Studio検出のvswhere移行（優先度：高）**
+  * **目的**: 環境ごとのテストで`nmake`や`link`の検出失敗を解消し、**x64/x86切り替え時の安定性を確保**してビルドシステムの安全性を向上させる
+  * **問題**: 
+    * 現在の直接パス検索では、環境によってVisual Studioの検出に失敗し、`nmake`や`link`が見つからないことが多い
+    * **x64/x86切り替え時に、間違ったアーキテクチャのMSVCツールが使われるリスクがある**（例: x64ビルドでx86の`cl`や`link`が使われる）
+    * アーキテクチャ不一致のDLLがビルドされ、実行時に`OSError: [WinError 193]`エラーが発生する可能性がある
+  * **基本方針**: `vs_utils.py`に`vswhere`サポートを追加し、直接パス検索をフォールバックとする
+  * **影響範囲**:
+    * `vs_utils.py`: `find_vcvarsall_with_vswhere()`と`find_vcvars_with_vswhere()`関数を追加
+    * `find_vcvarsall()`と`find_vcvars()`関数を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
+    * `scons_jp.py`: コード変更不要（`vs_utils.py`の内部実装の変更により自動的に`vswhere`を使用）
+    * `vcsetup.cmd` / `vcsetup.ps1`: `vs_utils.py`を使用しているため、自動的に`vswhere`を使用
+    * `find_vcvars.py`: `vs_utils.py`を使用しているため、自動的に`vswhere`を使用
+  * **利点**:
+    * **安定性の向上**: 環境ごとのテストで`nmake`や`link`の検出失敗を解消（最重要）
+    * **x64/x86切り替え時の安全性**: 正しいアーキテクチャのMSVCツールを確実に検出し、アーキテクチャ不一致のDLLビルドを防止
+    * `nonCertBuild.py`との一貫性（同じ検出方法を使用）
+    * 本家のアプローチに近い（Microsoftが推奨する標準的な方法）
+    * 柔軟性と将来の拡張性（様々なVisual Studioエディション・バージョンに対応）
+    * フォールバック（`vswhere`が存在しない環境でも動作）
+  * **現状の問題**:
+    * `scons_jp.py`で`nmake not found and vcvarsall.bat not detected`エラーが複数箇所で発生
+    * 直接パス検索では、Visual Studioのインストールパスが環境によって異なる場合に検出に失敗
+    * CI環境や開発者環境での検出の不安定性がビルド失敗の原因となっている
+    * **x64/x86切り替え時の問題**: 
+      * `vcsetup.cmd`がx64/x86の切り替え時に正しく動作しない可能性がある
+      * x64ビルドの後にx86ビルドを行う場合、x86の`cl`が残っていると、x64ビルドでx86ツールが使われる可能性がある
+      * アーキテクチャ不一致のDLLがビルドされ、実行時に`OSError: [WinError 193]`エラーが発生するリスクがある
+  * **参照**: `projectDocs/jp/scons-jp-vswhere-dependency-analysis.md`、`projectDocs/jp/vcsetup-vswhere-dependency-analysis.md`
+
 * [x] **DLLパス構造の統一（x86環境でのリファクタリング）** ✅ 完了
   * x86 DLL を `miscDepsJp/include/python-jtalk/x86/` へ統一し、`jtalkPrep`/`jtalkSync` を新パス対応済み
   * jp smoke test / launcher / 署名ビルドで動作確認済み
