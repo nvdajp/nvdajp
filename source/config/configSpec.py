@@ -29,6 +29,19 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	showWelcomeDialogAtStartup = boolean(default=true)
 	preventDisplayTurningOff = boolean(default=true)
 
+# BEGIN JP PATCH (Japanese language settings)
+[language]
+	jpKatakanaPitchChange = integer(default=-20,min=-100,max=100)
+	halfShapePitchChange = integer(default=20,min=-100,max=100)
+	jpPhoneticReadingLatin = boolean(default=false)
+	jpPhoneticReadingKana = boolean(default=false)
+	announceCandidateNumber = boolean(default=false)
+	jpAnsiEditbox = boolean(default=true)
+	jpAnnounceNewLine = boolean(default=false)
+	openDocFileByMSHTA = boolean(default=false)
+	alwaysSpeakMathInEnglish = boolean(default=false)
+# END JP PATCH
+
 # Speech settings
 [speech]
 	# The synthesizer to use
