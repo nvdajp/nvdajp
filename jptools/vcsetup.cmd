@@ -99,13 +99,14 @@ rem #endregion
 rem #region agent log
 python "%~dp0debug_log.py" "debug-session" "run1" "F" "vcsetup.cmd:99" "Before VCVARS_EXIT check" "{\"vcvars_exit\":\"%VCVARS_EXIT%\"}" >nul 2>&1
 rem #endregion
-if "%VCVARS_EXIT%" neq "0" (
-  echo [ERROR] Failed to execute vcvars script: "%FOUND%" (exit code: %VCVARS_EXIT%) >&2
-  rem #region agent log
-  python "%~dp0debug_log.py" "debug-session" "run1" "F" "vcsetup.cmd:104" "VCVARS_EXIT neq 0, exiting with error" "{\"vcvars_exit\":\"%VCVARS_EXIT%\"}" >nul 2>&1
-  rem #endregion
-  exit /b 1
-)
+rem Use goto-based conditional to avoid () block variable expansion issues with enabledelayedexpansion
+if "%VCVARS_EXIT%" equ "0" goto :vcvars_exit_ok
+echo [ERROR] Failed to execute vcvars script: "%FOUND%" (exit code: %VCVARS_EXIT%) >&2
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "F" "vcsetup.cmd:104" "VCVARS_EXIT neq 0, exiting with error" "{\"vcvars_exit\":\"%VCVARS_EXIT%\"}" >nul 2>&1
+rem #endregion
+exit /b 1
+:vcvars_exit_ok
 rem #region agent log
 python "%~dp0debug_log.py" "debug-session" "run1" "F" "vcsetup.cmd:109" "VCVARS_EXIT check passed" "{\"vcvars_exit\":\"%VCVARS_EXIT%\"}" >nul 2>&1
 rem #endregion
@@ -118,13 +119,14 @@ set "NMAKE_CHECK=%ERRORLEVEL%"
 rem #region agent log
 python "%~dp0debug_log.py" "debug-session" "run1" "D" "vcsetup.cmd:74" "After nmake check" "{\"exit_code\":\"%NMAKE_CHECK%\",\"path\":\"%PATH%\"}" >nul 2>&1
 rem #endregion
-if "%NMAKE_CHECK%" equ "9009" (
-  echo [ERROR] nmake not found after vcvars execution. PATH may not be set correctly. >&2
-  rem #region agent log
-  python "%~dp0debug_log.py" "debug-session" "run1" "C,D,E" "vcsetup.cmd:75" "nmake not found error" "{\"path\":\"%PATH%\"}" >nul 2>&1
-  rem #endregion
-  exit /b 1
-)
+rem Use goto-based conditional to avoid () block variable expansion issues
+if "%NMAKE_CHECK%" neq "9009" goto :nmake_check_ok
+echo [ERROR] nmake not found after vcvars execution. PATH may not be set correctly. >&2
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "C,D,E" "vcsetup.cmd:75" "nmake not found error" "{\"path\":\"%PATH%\"}" >nul 2>&1
+rem #endregion
+exit /b 1
+:nmake_check_ok
 if defined SET_CL_ARCH (
   SET CL=/arch:IA32
 )
