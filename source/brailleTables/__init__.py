@@ -22,6 +22,9 @@ import languageHandler
 TABLES_DIR = os.path.join(globalVars.appDir, "louis", "tables")
 """The directory in which liblouis braille tables are located."""
 
+TABLES_DIR_JP = os.path.join(globalVars.appDir)
+"""The directory in which Japanese braille tables are located."""
+
 DEFAULT_TABLE = "en-ueb-g1.ctb"
 """The default braille table."""
 
@@ -29,6 +32,8 @@ DEFAULT_TABLE = "en-ueb-g1.ctb"
 class TableSource(StrEnum):
 	BUILTIN = "builtin"
 	"""The name of the builtin table source"""
+	BUILTIN_JP = "builtin_jp"
+	"""The name of the builtin Japanese table source"""
 	SCRATCHPAD = "scratchpad"
 	"""The name of the scratchpad table source"""
 
