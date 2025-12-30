@@ -355,145 +355,45 @@ NVDA日本語版のビルドで行っているシステムテスト
 jpcharディレクトリには、文字説明と記号の一貫性をチェックするスクリプトがあります。詳細は `jpchar/readme.txt` を参照してください。
 
 主なスクリプト：
+
+
+
+
+
+
+
+
+
+
 * checkCharDesc.py - 文字説明の一貫性チェック
 * checkSymbols.py - 記号の一貫性チェック
 * compareSymbolsDic.py - 記号辞書の比較
 
 ## SCons ビルドターゲット
 
+
 NVDA日本語版では、SConsを使用したビルドシステムが実装されています。開発者は `scons` コマンドのみを意識すればよく、複雑なビルドスクリプトを直接呼び出す必要はありません。
+
+
 
 ### 主要なターゲット
 
-#### `scons jtalkPrep`
-
-JTalk DLLのビルドとペイロードへの配置を行います。
-
-**動作**：
-* DLLが存在する場合: 再ビルドをスキップ（高速）
-* DLLが存在しない場合: 自動的に `nmake /f all.mak` を実行してビルド
-* ビルド成功後、生成されたDLLをペイロード位置（`miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll`）に配置
-
-**実行例**：
-
-
-
-
-
-
-
-
-```bash
-# JTalk DLLのビルドと配置
-
-scons jtalkPrep
-
-
-
-# x86 ビルドの場合（このブランチのデフォルト）
-
-scons jtalkPrep TARGET_ARCH=x86
-
-
-```
-
-
-
-
-
-**ログ例（DLL存在時）**：
-
-
-```
-jtalkPrep: using TARGET_ARCH=x86
-
-jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
-jtalkPrep: using existing DLL (build skipped)
-
-*talkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
-*``
-*
-*
-**ログ例（DLL不在時）**：
-
-*
-*``
-*talkPrep: using TARGET_ARCH=x86
-
-*talkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
-*talkPrep: DLL not found, attempting to build via nmake...
-*talkPrep: running nmake via vcvarsall.bat with arch=x86
-
-*nmake の出力...]
-*talkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
-*talkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
-
-*``
-*
-*### `scons miscdepsjp`
-
-*
-*本語版固有のファイルを `source/` ディレクトリにオーバーレイします。
-*
-
-
-**動作**：
-* `miscDepsJp/source` 配下のファイルを `source/` にコピー
-* JTalkコアファイル（`jtalkCore.py`, `mecab.py`, `text2mecab.py`）を `source/synthDrivers/jtalk/` にコピー
-
-
-* `jtalkPrep` に依存しているため、JTalk DLLも自動的に準備される
-
-**実行例**：
-
-
-```bash
-* オーバーレイのみ実行（デバッグ用）
-*cons miscdepsjp
-*``
-*
-
-**注意**: `scons source` を実行すると、`miscdepsjp` が依存として自動実行されます。通常は明示的に実行する必要はありません。
-*
-*## 通常のビルドフロー
-*
-
-*発者が通常実行するコマンド：
-*
-*``bash
-*
 * これだけでビルド完結（ベンダービルド・overlay・dist 作成すべて自動）
-*cons dist
 *
 * または
 *
-*cons source user_docs launcher
-*``
-*
-**内部で自動実行される**（開発者は意識不要）：
 *
 *. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
-*. `jtalkSync`: 辞書ファイルのビルドとコピー
 *. `miscdepsjp`: overlayで `source/` に配置
 *. `source`, `dist` などのビルド
 *
-**注意**: 詳細な処理内容や現状の問題点については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
-*
-*## ビルドシステムの改善
-*
 *来は複数の `.cmd` スクリプトが相互に呼び出し合う複雑な構造でしたが、SConsターゲットの導入により以下の改善が実現されました：
 *
-* **簡素化**: 開発者は `scons` コマンドのみを意識すればよい
 * **自動化**: 依存関係が自動的に解決される
 * **高速化**: DLLが存在する場合は再ビルドをスキップ
 * **透明性**: ビルドプロセスが明確になる
 *
-**現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
-*
-*細は `projectDocs/jp/vendor-submodules.md` を参照してください。
-*
 *## CI/CD の現状
-*
 *在、GitHub Actionsを使用したCI/CDパイプラインが実装されています（`.github/workflows/testAndPublish.yml`）：
 *
 * **ビルド環境**: Windowsランナー、Python 3.11 (32bit)

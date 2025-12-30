@@ -143,7 +143,8 @@ class BaseRemoteMachine(object):
 			return out.strip()
 		else:
 			rc, out, _ = self._session.run(
-				"python -c 'import platform;print(platform.uname()[0])'", retcode=None
+				"python -c 'import platform;print(platform.uname()[0])'",
+				retcode=None,
 			)
 			if rc == 0:
 				return out.strip()

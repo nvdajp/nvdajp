@@ -43,6 +43,15 @@ FAILED miscDepsJp.jptools.test.JtalkTests.test_jtalk - OSError: DLL directory do
 `jptools/runJpSmokeTests.ps1` で PYTHONPATH を相対パスで設定していたため、CI環境で `jtalkRunner.py` の `__file__` 解決が正しく動作していませんでした。
 
 **技術的な詳細:**
+
+
+
+
+
+
+
+
+
 * `jptools/runJpSmokeTests.ps1` で `$env:PYTHONPATH = "miscDepsJp\include\python-jtalk;miscDepsJp\source\synthDrivers\jtalk"` のように相対パスを設定
 * CI環境では、作業ディレクトリがリポジトリルートと異なる場合がある
 * `jtalkRunner.py` が `__file__` からリポジトリルートを計算する際、`__file__` が `D:\a\miscDepsJp\include\python-jtalk\jtalkRunner.py` として解決されていた（正しくは `D:\a\nvdajp\nvdajp\miscDepsJp\include\python-jtalk\jtalkRunner.py`）
@@ -116,152 +125,161 @@ Windows fatal exception: access violation reading 0x00000000BAAF17C0
 または
 
 ```
+
 OverflowError: int too long to convert
+
 ```
+
+
 
 ### 原因
 
-x64 環境で MeCab DLL を呼び出す際、`ctypes` のポインタ型指定が不足していたため、64ビットポインタ（8バイト）が32ビット整数（4バイト）として扱われていました。
-
-**技術的な詳細:**
-* x64 ではポインタが 8 バイトだが、`ctypes` のデフォルト型（`c_int` は 4 バイト）では正しく読み取れない
-* `mecab_new` の `restype` が明示的に設定されていなかったため、デフォルトの `c_int` が使用されていた
-* `mecab_strerror` と `mecab_sparse_tonode` の `argtypes` が明示的に設定されていなかった
-
-### 解決策
-
-`source/synthDrivers/jtalk/mecab.py` で以下の修正を実施：
-
-1. **`mecab_new` の `restype` を `c_void_p` に設定**
 
 
+ 
+* 64 のみを実行し、x86 の CI に影響を与えない
+ 
+ checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` を使用
+ 
 
 
+ 
+ 
+ 
+ 
+ jptools/checkJtalkArch.ps1` - x86/x64 の DLL 検証・smoke テストスクリプト
+ source/synthDrivers/jtalk/mecab.py` - MeCab DLL の `ctypes` インターフェース
 
 
-
-
-
-
-
-   ```python
-
-
-   libmc.mecab_new.restype = c_void_p  # x64 requires explicit pointer type (8 bytes)
-
-
-   ```
+ 
+  ojectDocs/jp/roadmap.md` - x64 対応の詳細な進捗状況
 
 
 
+ 
+* .github/workflows/checkJtalkArch-x64.yml` - x64 専用の CI workflow
+ 
+ 
 
 
-2. **`mecab_strerror` と `mecab_sparse_tonode` の `argtypes` を明示的に設定**
+
+ 
+  nnvda.bat を使ったテスト
+
+
+
+ 
+
+* 
+ 
+ ons launcher`を実行せずに、`runnvda.bat` を使って MeCab のデバッグを行うこともできます。
+
+
+
+
+ 
+
+
+ 
+
+*  基本的な使い方
+ 
+ 
+
+
+
+
+ powershell
+
+ 
+
+ 
+ 
+* 1. mecab.py を編（直接 source/synthDrivers/jtalk/mecab.py を編集）
+
+
+
+ e source/synthDrivers/jtalk/mecab.py
+
+
+
 
 *
-   *``python
-   *ibmc.mecab_strerror.argtypes = [c_void_p]
-**
-   *ibmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]
-   *``
-
-**
-*
-3. **NULL ポインタチェックを追加**
 
 
-***
-   *``python
-   *f not mecab:
-*
 
-   *   logwrite_("mecab_new failed.")
-*  *   return
-*  *``
-*
-*
-***
-*##*x64 環境での smoke テスト実行
-**
-*
-*
-*64*環境での smoke テストは、以下の2つの方法があります：
-**
-*. **`runJpSmokeTests.ps1`を使用（推奨）**:
-*
-*
-*  * `certBuild2023.cmd`から自動的に呼び出される
-*  * `BUILD_ARCH`または`TARGET_ARCH`環境変数が`x64`の場合、自動的にx64 Python 3.13と`.venv-x64`を使用
-*  * `scons.bat`は常にx86 Python 3.13で実行されるが、`TARGET_ARCH=x64`によりx64 DLLがビルドされる
-*
-*
-*  * smoke testは`TARGET_ARCH`に応じて適切なPythonアーキテクチャを使用
-*
-*. **`checkJtalkArch.ps1`を使用（手動実行時）**:
-*
-*
-*  *``powershell
-*  * x64 DLL をビルドして smoke テストを実行
-*  *\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
-*  *``
-*
-*  * `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
-*  * `uv` で Python 3.13 x64 を自動インストール・使用
-*  * x64 DLL が正しくビルド・配置されることを確認
-*  * x64 Python で smoke テストを実行（unittest を使用）
-*
-**重要な注意点**:
-* `scons.bat`は常にx86 Python 3.13で実行される（`.venv`はx86 Python 3.13を使用）
-* `TARGET_ARCH`環境変数により、ビルドされるDLLのアーキテクチャが決まる
-* **詳細**: `BUILD_ARCH`と`TARGET_ARCH`の関係と使用方法については、`projectDocs/jp/build-architecture-environment-variables.md`を参照してください
-* `runJpSmokeTests.ps1`は`BUILD_ARCH`/`TARGET_ARCH`を読み取り、x64の場合はx64 Python 3.13を使用
-*
-*## CI での x64 検証
-*
-*64 専用の GitHub Actions workflow（`.github/workflows/checkJtalkArch-x64.yml`）が作成されています：
-*
-* `testAndPublish.yml` とは別の独立した workflow
-* x64 のみを実行し、x86 の CI に影響を与えない
-* `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` を使用
-*
-*## 関連ドキュメント
-
-* `jptools/checkJtalkArch.ps1` - x86/x64 の DLL 検証・smoke テストスクリプト
-* `source/synthDrivers/jtalk/mecab.py` - MeCab DLL の `ctypes` インターフェース
-* `projectDocs/jp/roadmap.md` - x64 対応の詳細な進捗状況
-* `.github/workflows/checkJtalkArch-x64.yml` - x64 専用の CI workflow
-*
-*# runnvda.bat を使ったテスト
-*
-*scons launcher` を実行せずに、`runnvda.bat` を使って MeCab のデバッグを行うこともできます。
-*
-*## 基本的な使い方
-*
-*``powershell
-* 1. mecab.py を編集（直接 source/synthDrivers/jtalk/mecab.py を編集）
-*ode source/synthDrivers/jtalk/mecab.py
-*
 * 2. JTalk DLL と辞書を準備（必要に応じて）
-*\scons.bat jtalkSync
+
+
+*\scons.bat jtalSync
+
+
+
 *
-* 3. NVDA を起動してテスト
+
+* 3. NVDA を起動してテト
+
+
 *\runnvda.bat
+
 *``
+
 *
+
+
+
 *## ログの確認
+
+
 *
+
+
 *VDA のログは通常 `%APPDATA%\nvda\nvda.log` に出力されます。
+
+
 *
+
 *eCab のログは `source/synthDrivers/jtalk/mecab_debug.log` にのみ保存されます（コンソールには出力されません）。これは `mecabRunner.py` と `jtalkRunner.py` の `__print` 関数がログファイルにのみ書き込むように実装されているためです。
+
 *
+
 *## 注意事項
+
 *
+
+
+
+
+
+
+
+
+
+
 * `mecab.py` は `source/synthDrivers/jtalk/mecab.py` に直接配置されているため、直接編集できます
 * `scons jtalkSync` は JTalk DLL と辞書ファイルを準備します（必要に応じて実行）
 * overlay 処理は廃止済みのため、`scons miscdepsjp` は不要です
 *
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 *# 関連ドキュメント
+
 *
+
 * `jptools/runJpSmokeTests.ps1` - スクリプトの実装（x86 用）
 * `jptools/checkJtalkArch.ps1` - x86/x64 の DLL 検証・smoke テストスクリプト
 * `miscDepsJp/include/python-jtalk/jtalkRunner.py` - `repo_root` 計算ロジック

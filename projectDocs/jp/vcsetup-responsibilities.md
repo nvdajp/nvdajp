@@ -187,6 +187,16 @@ if defined SET_CL_ARCH (
 コミット`53fcb90b9`（2025-12-28）で、`vcsetup.cmd`にPython依存（`find_vcvars.py`）が導入されました。
 
 **導入理由**（コメントより）:
+
+
+
+
+
+
+
+
+
+
 * `scons_jp.py`と`runJpSmokeTests.ps1`との一貫性を保つため
 * `vs_utils.py`で共通ロジックを共有するため
 

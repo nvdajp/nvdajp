@@ -402,7 +402,7 @@ class LocalMachine(object):
 				self._as_user_stack.append(lambda argv: (["sudo"] + list(argv), self.which("sudo")))
 			else:
 				self._as_user_stack.append(
-					lambda argv: (["sudo", "-u", username] + list(argv), self.which("sudo"))
+					lambda argv: (["sudo", "-u", username] + list(argv), self.which("sudo")),
 				)
 		try:
 			yield

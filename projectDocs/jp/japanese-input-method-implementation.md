@@ -55,6 +55,16 @@ static WCHAR* getCompositionString(HIMC imc, DWORD index) {
 **理由**: 日本語 IME の変換状態（未変換、選択中、未選択など）を NVDA に通知するため。これにより、ユーザーは変換候補の状態を音声や点字で確認できます。
 
 **データ形式**:
+
+
+
+
+
+
+
+
+
+
 * 変換文字列と compAttr 文字列をタブ文字（`L'\t'`）で区切る
 * compAttr 文字列は各文字の変換状態を表す数字の文字列（例: `L"222221111000"`）
 
@@ -86,15 +96,25 @@ bool getDispAttrFromRangeWithShift(
 
 ```cpp
 HRESULT getDispAttrFromRange(ITfContext *pContext,
+
 							 ITfRange *pRange,
+
 							 TfEditCookie ec,
+
 							 wchar_t *jpAttrBuf,
+
 							 long jpAttrLen)
+
 ```
+
+
 
 **機能**: TSF の表示属性を文字列として取得する
 
+
+
 **データ形式**:
+
 * `jpAttrBuf` に各文字の変換状態を表す数字の文字列を格納
 * 例: `L"222221111000"`
 * 各数字の意味:
@@ -110,24 +130,34 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 ```cpp
 // BEGIN JP PATCH (Japanese TSF display attribute support)
 //nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
+
 constexpr long jpAttrLen = 256;
 wchar_t jpAttrBuf[jpAttrLen];
+
 HRESULT hr = getDispAttrFromRange(pCtx, pRange, cookie, jpAttrBuf, jpAttrLen);
 if (hr == S_OK) {
+
 	wchar_t jpBuf[513];
 	wcscpy(jpBuf, buf);
+
 	wcscat(jpBuf, L"\t");
 	wcscat(jpBuf, jpAttrBuf);
+
 	nvdaControllerInternal_inputCompositionUpdate(jpBuf,selStart,selEnd,0);
 } else {
+
 	nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
 }
+
 // END JP PATCH
 ```
 
+
 **変更内容**: TSF の変換文字列に表示属性情報を追加して通知
 
+
 **データ形式**:
+
 * 変換文字列と表示属性文字列をタブ文字（`L'\t'`）で区切る
 * 例: `L"変換文字列\t222221111000"`
 
@@ -161,37 +191,57 @@ nvdajp では、ATOK（日本語入力システム）の UI コメント機能�
 
 ```python
 class ATOKxxUIComment(IAccessible):
+
 	role = controlTypes.Role.STATICTEXT
 
 	def _get_name(self):
+
+
 		name = self.displayText
 		return name
+
+
 
 	def event_show(self):
 		if not (
 			config.conf["keyboard"]["nvdajpEnableKeyEvents"]
+
+
 			and config.conf["inputComposition"]["announceSelectedCandidate"]
 		):
 			return
+
+
 		tones.beep(880, 20)
 		api.setNavigatorObject(self)
 		speech.cancelSpeech()
+
+
 		time.sleep(0.2)
 		speech.speakMessage(self.name)
 		(left, top, width, height) = self.location
+
+
 		x = left + (width // 2)
 		y = top + (height // 2)
 		winUser.setCursorPos(x, y)
+
+
 		mouseHandler.executeMouseMoveEvent(x, y)
 ```
+
+
 
 **機能**: ATOK の UI コメントウィンドウ（候補コメント）を検出し、音声で読み上げます。
 
 **条件**:
+
+
 * `nvdajpEnableKeyEvents` が有効
 * `announceSelectedCandidate` が有効
 
 **動作**:
+
 * UI コメントが表示されたときにビープ音を鳴らす
 * コメントの内容を音声で読み上げる
 * マウスカーソルをコメントウィンドウの中央に移動

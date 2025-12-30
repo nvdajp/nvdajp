@@ -214,73 +214,103 @@ git merge --no-commit --no-ff --allow-unrelated-histories 58dd14767
 
 1. **ローカル検証**
 
+* 
+
+
+ 
+
+
+ 
+* 9613ce6e3` から `58dd14767` まで: **約77コミット**（マージコミットを除くと約85コミット）
+
+
+ 
+
+
+ 
+* な変更:
+
+
+ 
+
+
+ 
+
+ 
+*  UWP OCR on 64 bit対応
+
+
+ 
+
+
+ 
+ 
+*  64-bit uninstaller修正
+
+ 
 
 
 
-
-
-
-
-   ```powershell
-   # 型チェック
-   ci/scripts/tests/typeCheck.ps1
-
-   # ビルド
-   scons source --all-cores
-
-   # JP smoke tests (x64)
-   jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
-
-   # ランチャービルド
-   scons launcher --all-cores
-   ```
-
-
-
-2. **CI検証**
-
-   * PRを作成してCIを実行
-
-   * 全テストが通過することを確認
-
-   * `allTestsPass` 必須チェックが緑になることを確認
-*
-*
-*
-*. **コミットとPush**
-*
-*  ```powershell
-*  git commit -m "Merge nvaccess/beta (x64 Python 3.13 migration, commit 58dd14767)"
-*  git push origin betajp-251231
-*  ```
-*
-*#*重要な注意事項
-**
-*#* x86 を完全に捨てる
-***
-* *86 ビルド関連のコードをすべて削除する
-* *BUILD_ARCH`/`TARGET_ARCH` の条件分岐を削除できる可能性
-* *.venv` と `.venv-x64` の分離が不要になる
-* *ーキテクチャ条件分岐コードを削除できる
-* *ルドシステムとCIの簡素化
-***
-*#* コミット範囲の分析
-***
-* *9613ce6e3` から `58dd14767` まで: **約77コミット**（マージコミットを除くと約85コミット）
-* *な変更:
-* * UWP OCR on 64 bit対応
-* * 64-bit uninstaller修正
 * * x64 identification修正
+
+
+
 * * その他のバグ修正、機能追加
+
+
 *
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 *## 前回のマージリハーサルとの比較
 *
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 * 前回（x86 Python 3.13段階）: 242ファイルのコンフリクト
+
+
 * 今回（x64 Python 3.13移行）: 255ファイルのコンフリクト
+
+
 * 増加の理由: x64移行による追加の変更（x86 ビルドの削除、x64 ビルドへの移行など）
+
+
 *
+
+
 *# 参照
 *
+
 * **ロードマップ**: `projectDocs/jp/roadmap.md`
 * **詳細計画**: `projectDocs/jp/stage3b-x64-migration-plan.md`
 * **マージ計画**: `projectDocs/jp/merge-plan-beta-2025-11.md`

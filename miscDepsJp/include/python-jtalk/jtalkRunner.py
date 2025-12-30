@@ -47,7 +47,7 @@ if repo_root is None:
 				if path.is_dir():
 					# Check if this path contains miscDepsJp/include/python-jtalk
 					if path_str.endswith("miscDepsJp/include/python-jtalk") or path_str.endswith(
-						"miscDepsJp\\include\\python-jtalk"
+						"miscDepsJp\\include\\python-jtalk",
 					):
 						# Go up two levels: miscDepsJp/include/python-jtalk -> miscDepsJp -> repo root
 						candidate = path.parent.parent

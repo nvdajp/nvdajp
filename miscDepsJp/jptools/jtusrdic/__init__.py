@@ -48,7 +48,7 @@ def editUserDicSrc(self):
 		with open(fileName, "w", encoding="utf-8", errors="replace") as f:
 			f.writelines(
 				[
-					"足手纏い,,,,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n"
+					"足手纏い,,,,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n",
 				],
 			)
 		os.startfile(fileName)

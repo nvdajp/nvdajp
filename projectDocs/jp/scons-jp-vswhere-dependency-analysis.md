@@ -23,6 +23,8 @@ def _find_vcvarsall() -> str | None:
 ```
 
 **アプローチ**:
+
+
 * `vs_utils.find_vcvarsall()`を呼び出し
 * `vs_utils.py`は**直接パス検索**（`vswhere`を使用しない）
 
@@ -35,20 +37,6 @@ def _find_vcvarsall() -> str | None:
 3. **`jtalkSync`**: 辞書のビルド時に`nmake`が必要な場合
 
 **使用パターン**:
-
-
-
-
-
-
-
-
-```python
-vcvarsall = _find_vcvarsall()
-if not vcvarsall:
-    print("ERROR: nmake not found and vcvarsall.bat not detected")
-    return 1
-# Use vcvarsall to set up MSVC environment for nmake
 cmd_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
 ```
 
@@ -342,21 +330,19 @@ def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
     return None
 ```
 
-
-
 ### `scons_jp.py`の変更
+
 *
+
 **変更不要**: `scons_jp.py`は`vs_utils.find_vcvarsall()`を呼び出すだけなので、`vs_utils.py`の内部実装の変更により自動的に`vswhere`を使用するようになる。
 *
-
-
-*# 結論
 *
+
 *
+
 
 **推奨**: 案1（`vs_utils.py`に`vswhere`サポートを追加）
 *
-**理由**:
 *
 
 1. **`scons_jp.py`のコード変更が不要**: `vs_utils.py`の内部実装の変更のみ
@@ -366,26 +352,34 @@ def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
 
 5. **柔軟性と将来の拡張性**: 様々なVisual Studioエディションに対応、将来のバージョンにも対応可能
 *. **フォールバック**: `vswhere`が存在しない環境でも動作（直接パス検索にフォールバック）
-*
-*# 実装状況（2025年12月30日）
 
+*
+
+*# 実装状況（2025年12月30日）
 
 * **実装完了**
 *
+
+
+
 **実装内容**:
 
-1. ✅ `vs_utils.py`に`find_vcvarsall_with_vswhere()`と`find_vcvars_with_vswhere()`関数を追加
 *. ✅ `find_vcvarsall()`と`find_vcvars()`関数を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
 *. ✅ Visual Studio 2022を優先的に使用（`-version [17.0,18.0)`）
+
 *. ✅ `scons_jp.py`のコード変更は不要（`vs_utils.py`の内部実装の変更により自動的に`vswhere`を使用）
 
 **検証結果**:
+
 * ✅ x86 JP smoke tests成功
 * ✅ `certBuild2025`が実行可能
 * ✅ Visual Studio 2022が優先的に検出される
 
+
 **コミット**:
+
 * `e625d3c8b`: "Add vswhere support to vs_utils.py for stable Visual Studio detection"
 * `a9c1c471d`: "Prioritize Visual Studio 2022 over Visual Studio 2025 in vs_utils.py"
+
 
 詳細は`projectDocs/jp/vswhere-implementation-status.md`を参照。

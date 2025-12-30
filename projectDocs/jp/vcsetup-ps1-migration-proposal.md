@@ -12,48 +12,72 @@
 * **移行後**: PowerShellから直接`vs_utils.py`をインポート可能
 
 
-
-
-
-
-
-
-  ```powershell
-  # PowerShellから直接Pythonモジュールを使用
-* $vsUtilsPath = Join-Path $PSScriptRoot "vs_utils.py"
-* # または、Pythonスクリプトを呼び出す（より簡単）
-* $vcvarsPath = python "$PSScriptRoot\find_vcvars.py" $arch
-* ```
-*
-*## 2. エラーハンドリングの強化
 *
 
-* **現状**: バッチスクリプトのエラーハンドリングは限定的
 
-* **移行後**: PowerShellの`try-catch`、詳細なエラーメッセージ、ログ出力が可能
 
-*
 
-*## 3. 環境変数の設定
-
-*
-
-* **現状**: `call "%FOUND%"`でvcvarsを実行し、環境変数を設定
-
-* **移行後**: PowerShellで環境変数を直接設定・管理可能
-*
 * ```powershell
+
+
+
+
 * # vcvarsの出力をキャプチャして環境変数を設定
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 * $envOutput = cmd /c "`"$vcvarsPath`" $arch >nul 2>&1 && set"
 * foreach ($line in $envOutput) {
 *     if ($line -match '^([^=]+)=(.*)$') {
 *         [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process')
 *     }
 * }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 * ```
+
+
 *
+
+
 *## 4. 既存のPowerShellスクリプトとの一貫性
 *
+
 * `runJpSmokeTests.ps1`は既にPowerShellで実装されている
 * `checkJtalkArch.ps1`もPowerShellで実装されている
 * 同じ言語で統一することで、保守性が向上
@@ -73,180 +97,148 @@ if "%VCVARS_EXIT%" neq "0" (
   exit /b 1
 )
 
-rem 修正後（gotoベースの条件分岐）
-if "%VCVARS_EXIT%" equ "0" goto :vcvars_exit_ok
-echo [ERROR] ...
-exit /b 1
-:vcvars_exit_ok
-```
-
-**PowerShell移行の利点**: PowerShellでは`if`文の`()`ブロック内でも変数展開が正しく動作し、このような問題が発生しない。
-
-```powershell
-
-# PowerShellでは自然に動作
-if ($VCVARS_EXIT -ne 0) {
-
-    Write-Error "Failed to execute vcvars script: $FOUND (exit code: $VCVARS_EXIT)"
-    exit 1
-
-
-}
-```
-
-
-
-
 **関連ドキュメント**: `projectDocs/jp/vcsetup-responsibilities.md`の「既知の問題と修正履歴」セクション
 
 
 
 
-## 呼び出し元への影響
 
 
-
-
-
-### 1. `certBuild2023.cmd`（バッチスクリプト）
-
-
-
-
-
-
-**現状**:
-
-
-```batch
-
-
-
-call jptools\vcsetup.cmd %BUILD_ARCH%
-
-```
-
-
-
-
-
-**移行後（オプション1: ラッパーを残す）**:
-
-```batch
-rem vcsetup.cmdはvcsetup.ps1を呼び出すラッパーとして残す
-
-
-*
-*
-powershell -ExecutionPolicy Bypass -NoProfile -File jptools\vcsetup.ps1 %BUILD_ARCH%
-```
-
-**移行後（オプション2: 直接呼び出し）**:
-
-
-*
-*
-*``batch
-*owershell -ExecutionPolicy Bypass -NoProfile -File jptools\vcsetup.ps1 %BUILD_ARCH%
-if errorlevel 1 goto onerror
-```
-*
-*
-*
-*
-**推奨**: オプション1（後方互換性のため）
-*
-### 2. `nonCertBuild.py`（Pythonスクリプト）
-
-**現状**:
-*
-*
-*
-*``python
-*nvmap = _capture_env_via_cmd(f'call "{vcsetup}" >nul', cwd=repo_root)
-```
-
-
-**移行後**:
-*
-*
-*``python
-* PowerShellスクリプトを呼び出して環境変数をキャプチャ
-*nvmap = _capture_env_via_cmd(
-    f'powershell -ExecutionPolicy Bypass -NoProfile -File "{vcsetup}" >nul',
-    cwd=repo_root
-
-*
-*
-*``
-*
-**注意**: `nonCertBuild.py`は環境変数をキャプチャする必要があるため、PowerShellスクリプトも環境変数を設定する必要がある
-*
-### 3. `miscDepsJp/include/python-jtalk/vcsetup.cmd`（ラッパー）
-
-*
-**現状**:
-*
-*``batch
-*all "%~dp0..\..\..\jptools\vcsetup.cmd" x86
-*``
-*
-**移行後**: 変更不要（`vcsetup.cmd`がラッパーとして残る場合）
-
-*
-*## 4. その他の呼び出し元
-*
-* `miscDepsJp/jptools/clean.cmd`
-* `miscDepsJp/jptools/build-and-test.cmd`
-*
-*れらは`miscDepsJp/include/python-jtalk/vcsetup.cmd`経由で呼び出されるため、影響なし
-
-## 実装案
-*
-*
-*## 案1: 完全移行（`vcsetup.cmd`を削除）
-*
-**メリット**:
-* シンプルな実装
-* メンテナンス対象が1つに減る
 
 **デメリット**:
+
+
+
+
 *
+
 * すべての呼び出し元を更新する必要がある
-* 後方互換性がない
 *
+
+
+
+
 **推奨度**: ⭐⭐（後方互換性の問題）
+
+
+
+
 *
+
 *## 案2: 段階的移行（`vcsetup.cmd`をラッパーとして残す）
 
+
+
+
 **メリット**:
+
+
+
+
 *
+
+
+
+
+
+
 * 後方互換性を維持
+
+
 * 既存の呼び出し元を変更する必要がない
+
 * 段階的に移行可能
+
+
+
 *
+
+
+
+
+
+
+
+
+
 **デメリット**:
+
+
+
+
+
+
 * `vcsetup.cmd`と`vcsetup.ps1`の2つのファイルを維持する必要がある
 
+
+
+
+
+
+
+
+
+
+
+
+
 **実装**:
+
+
+
+
+
+
+
 *
+
+
+
 *``batch
+
+
+
+
+
 @echo off
+
+
 rem Wrapper for vcsetup.ps1 (backward compatibility)
+
+
+
 *em Usage: vcsetup.cmd [x64|x86]
+
+
 *
+
+
 set "ARCH=%~1"
+
 if "%ARCH%"=="" set "ARCH=x86"
 
+
+
+
 *owershell -ExecutionPolicy Bypass -NoProfile -File "%~dp0vcsetup.ps1" %ARCH%
+
 *xit /b %ERRORLEVEL%
+
+
 ```
 
+
+
 **推奨度**: ⭐⭐⭐⭐⭐（推奨）
+
 *
+
 ### 案3: ハイブリッド（`vcsetup.cmd`と`vcsetup.ps1`を並行運用）
 
+
+
 **メリット**:
+
 * 呼び出し元が選択可能
 * 段階的な移行が可能
 
@@ -465,19 +457,11 @@ nmake /?
 *
 バッチスクリプトからの呼び出しで、エラーコードが正しく返されることを確認する。
 
-
 **確認方法**:
-
 ```batch
-call jptools\vcsetup.cmd x86
 if errorlevel 1 (
-    echo Error occurred
     exit /b 1
 *
-*
-*``
-
-### 3. PowerShell実行ポリシー
 
 
 `-ExecutionPolicy Bypass`を使用することで、実行ポリシーの問題を回避する。

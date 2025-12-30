@@ -16,6 +16,16 @@ __詳細な問題の説明と解決策は `projectDocs/jp/troubleshooting_runjp_
 2. `miscDepsJp/include/python-jtalk/jtalkRunner.py`: PYTHONPATH から `repo_root` を推論する方法を優先
 
 ## 現在の状況
+
+
+
+
+
+
+
+
+
+
 * ✅ `uv` は利用可能
 * ✅ `scons.bat` はリポジトリ内に存在
 * ❌ DLL (`libopenjtalk.dll`) が存在しない（初回のみ）
@@ -81,52 +91,32 @@ Test-Path "miscDepsJp\source\synthDrivers\jtalk\libopenjtalk.dll"
 ### 準備済みの場合はスキップ
 
 ```powershell
-.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
-```
 
-## 検証内容
-
-修正の検証では、以下を確認します：
-
-1. __PYTHONPATHが絶対パスで設定されているか__
-
-
-
-
-
-
-*
-*
-*
-*____
 **
-*__*_
-   *``powershell
-*__*_
-   __実行中に表示される PYTHONPATH__確認
-*__*_
-   *_例: PYTHONPATH set to__:\nvda\gh\alphajp-251207\miscDepsJp\include\python-jtalk;F:\nvda\gh\alphajp-251207\miscDepsJp\source\synthDrivers\jtalk
-*__*_
-   *_`__
-*__*_
-   *_✅ 絶対パス（`F:\nvda\gh\.__` など）が表示されればOK
-   *_❌ 相対パス（`miscDepsJp\...` など）が表示されればN__
-**_*_
-2. *_`jtalkRunner.py`の`repo_root`計算が正しいか__
-   *_テストが成功すれば、`repo_root__正しく計算されている
-   * 失敗した場合は、エラーメッセージでパスを確認
-   *_エラー例: `OSError: DLL __rectory does not exist: D:\a\miscDepsJp\source\synthDrivers\jtalk`（間違ったパス）
-*
-3. *_DLLが正しいパスから読み込まれているか__
-   * テストが成功すれば、DLLが正しく読み込まれている
-   * 失敗した場合は、エラーメッセージでパスを確認
+**テストが成功すれば、DLLが正しく読み込*れている
 
-## 期待される結果
 
-検証が成功すると、以下のような出力が表示されます：
+**
+**失敗した場合は、エラーメッセージでパスを*認
 
-```
-*YTHONPATH set to F:\nvda\gh\alphajp-251207\miscDepsJp\include\python-jtalk;F:\nvda\gh\alphajp-251207\miscDepsJp\source\synthDrivers\jtalk
+**
+
+
+**
+期*される結果*
+
+
+
+
+
+成*すると、以下のような出力が表示されます：*
+
+
+
+
+```**
+
+*YTH*NPATH set to F:\nvda*gh\alphajp-251207\miscDepsJp\include\python-jtalk;F:\nvda\gh\alphajp-251207\miscDepsJp\source\synthDrivers\jtalk
 *unning JP braille/JTalk smoke tests (filter: JtalkTests)...
 *est_jtalk (miscDepsJp.jptools.test.JtalkTests) ... ok
 *
