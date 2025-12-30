@@ -26,8 +26,17 @@ rem Use shared Python module for VS path detection (jptools/vs_utils.py)
 rem This ensures consistency with scons_jp.py and runJpSmokeTests.ps1
 rem Note: %~dp0 is jptools/ directory, so find_vcvars.py is in the same directory
 set "FOUND="
-for /f "delims=" %%P in ('python "%~dp0find_vcvars.py" %ARCH% 2^>nul') do (
-  set "FOUND=%%P"
+rem Try to use Python from virtual environment if available (.venv\Scripts\python.exe)
+if exist "%~dp0..\.venv\Scripts\python.exe" (
+  for /f "delims=" %%P in ('"%~dp0..\.venv\Scripts\python.exe" "%~dp0find_vcvars.py" %ARCH% 2^>nul') do (
+    set "FOUND=%%P"
+  )
+)
+rem Fallback to system Python if virtual environment Python failed
+if not defined FOUND (
+  for /f "delims=" %%P in ('python "%~dp0find_vcvars.py" %ARCH% 2^>nul') do (
+    set "FOUND=%%P"
+  )
 )
 
 if not defined FOUND (
@@ -53,10 +62,17 @@ if not defined FOUND (
 
 echo [vcsetup] Using: "%FOUND%"
 rem Call vcvars script with full path (call command handles spaces correctly)
-call "%FOUND%" >nul 2>&1
+rem Show output for debugging (remove >nul 2>&1 to see errors)
+call "%FOUND%" 2>&1
 set "VCVARS_EXIT=%ERRORLEVEL%"
 if "%VCVARS_EXIT%" neq "0" (
-  echo [ERROR] Failed to execute vcvars script: "%FOUND%" >&2
+  echo [ERROR] Failed to execute vcvars script: "%FOUND%" (exit code: %VCVARS_EXIT%) >&2
+  exit /b 1
+)
+rem Verify nmake is available after vcvars
+nmake /? >nul 2>&1
+if "%ERRORLEVEL%" equ "9009" (
+  echo [ERROR] nmake not found after vcvars execution. PATH may not be set correctly. >&2
   exit /b 1
 )
 if defined SET_CL_ARCH (
