@@ -50,23 +50,9 @@ def _resolveTableInner(tables: list[str], base: str | None = None) -> Generator[
 			try:
 				registeredTable = brailleTables.getTable(table)
 				path = brailleTables._tablesDirs.get(registeredTable.source)
-				# #region agent log
-				try:
-					with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-						import json
-						f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"G","location":"louisHelper.py:52","message":"table resolved","data":{"table":table,"source":registeredTable.source,"path":path},"timestamp":int(__import__("time").time()*1000)})+"\n")
-				except: pass
-				# #endregion agent log
 			except LookupError:
 				if _isDebug():
 					log.debug(f"Table {table!r} not registered, falling back to built-in table lookup")
-				# #region agent log
-				try:
-					with open(r"f:\nvda\gh\betajp-251231\.cursor\debug.log", "a", encoding="utf-8") as f:
-						import json
-						f.write(json.dumps({"sessionId":"debug-session","runId":"run1","hypothesisId":"G","location":"louisHelper.py:57","message":"table not registered","data":{"table":table},"timestamp":int(__import__("time").time()*1000)})+"\n")
-				except: pass
-				# #endregion agent log
 		else:
 			path = os.path.dirname(base)
 		if path and path not in directoriesToSearch:
