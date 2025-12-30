@@ -191,6 +191,13 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	alertForSpellingErrors = boolean(default=True)
 	handleInjectedKeys= boolean(default=true)
 	multiPressTimeout = integer(default=500, min=100, max=20000)
+	# BEGIN JP PATCH (Japanese keyboard settings)
+	nvdajpEnableKeyEvents = boolean(default=true) #nvdajp
+	nvdajpImeBeep = boolean(default=false) #nvdajp
+	useNonConvertAsNVDAModifierKey = boolean(default=true) #nvdajp
+	useConvertAsNVDAModifierKey = boolean(default=false) #nvdajp
+	useEscapeAsNVDAModifierKey = boolean(default=false) #nvdajp
+	# END JP PATCH
 
 [virtualBuffers]
 	maxLineLength = integer(default=100)
