@@ -242,5 +242,3 @@ class PuttyMachine(SshMachine):
     @_setdoc(BaseRemoteMachine)
     def session(self, isatty = False):
         return ShellSession(self.popen((), ["-t"] if isatty else ["-T"]), self.encoding, isatty)
-
-

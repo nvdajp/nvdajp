@@ -34,7 +34,7 @@ if not hasattr(Popen, "kill"):
                 if rc == _subprocess.STILL_ACTIVE:
                     raise
                 self.returncode = rc
-        
+
         Popen.kill = _Popen_terminate
         Popen.terminate = _Popen_terminate
     else:
@@ -207,4 +207,3 @@ def run_proc(proc, retcode, timeout = None):
             raise ProcessExecutionError(getattr(proc, "argv", None), proc.returncode,
                 stdout, stderr)
     return proc.returncode, stdout, stderr
-

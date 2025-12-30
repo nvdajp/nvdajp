@@ -8,4 +8,3 @@
 int main(int argc, char **argv) {
   return mecab_dict_index(argc, argv);
 }
-

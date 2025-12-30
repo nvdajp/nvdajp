@@ -14,7 +14,7 @@
     - `vs_utils.py`は`vswhere`を使用してVisual Studio 2022を優先検索
     - Visual Studio 2022が見つからない場合のみ、すべてのバージョンを検索
   - Pythonが失敗した場合、直接パス検索（BuildTools, Community, Professional, Enterpriseの順）
-- **現在の状態**: 
+- **現在の状態**:
   - ✅ `vswhere`サポートが追加され、Visual Studio 2022が優先的に使用される
   - ✅ Visual Studio 2025がインストールされていても、Visual Studio 2022が使用される
   - ⚠️ Python依存がある（`find_vcvars.py`が失敗した場合のフォールバックが必要）
@@ -41,7 +41,7 @@
 
 - **責務**: x86ビルドの場合、`CL`環境変数に`/arch:IA32`を設定する
 - **実装**: `SET CL=/arch:IA32`
-- **問題点**: 
+- **問題点**:
   - 既存の`CL`環境変数の値を上書きする可能性がある
 
 ## 責務の整理案

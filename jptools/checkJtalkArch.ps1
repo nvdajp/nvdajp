@@ -105,7 +105,7 @@ function Initialize-MsvcEnvironment {
     # VS 2022: Search in BuildTools, Community, Professional, Enterprise order
     $editions = @("BuildTools", "Community", "Professional", "Enterprise")
     $vcvarsall = $null
-    
+
     foreach ($edition in $editions) {
         $path = "C:\Program Files\Microsoft Visual Studio\2022\$edition\VC\Auxiliary\Build\vcvarsall.bat"
         if (Test-Path $path) {
@@ -113,18 +113,18 @@ function Initialize-MsvcEnvironment {
             break
         }
     }
-    
+
     if (-not $vcvarsall) {
         Write-Warning "vcvarsall.bat not found. MSVC tools may not be available."
         return
     }
 
     Write-Host "Setting up MSVC environment for $Architecture using: $vcvarsall"
-    
+
     # Run vcvarsall.bat with the specified architecture and capture environment variables
     $vcvarsArch = if ($Architecture -eq 'x64') { 'x64' } else { 'x86' }
     $envOutput = cmd /c "`"$vcvarsall`" $vcvarsArch >nul 2>&1 && set"
-    
+
     # Parse environment variables and set them in current PowerShell session
     $envVarsSet = 0
     foreach ($line in $envOutput) {
@@ -138,7 +138,7 @@ function Initialize-MsvcEnvironment {
 
     if ($envVarsSet -gt 0) {
         Write-Host "MSVC environment configured ($envVarsSet environment variables set)"
-        
+
         # Verify dumpbin is available
         try {
             $null = Get-Command dumpbin -ErrorAction Stop
@@ -205,7 +205,7 @@ if ($allOk) {
                 # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
                 $venvX64 = "$repoRoot\.venv-x64"
                 $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk;$repoRoot\miscDepsJp\jptools"
-                
+
                 # Ensure JTalk dictionaries are present (required for smoke tests)
                 $jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
                 $charBin = Join-Path $jtalkSource "dic\char.bin"
@@ -217,7 +217,7 @@ if ($allOk) {
                         exit $LastExitCode
                     }
                 }
-                
+
                 # Ensure x64 Python 3.13 is available (uv will skip if already installed)
                 Write-Host "Ensuring Python 3.13 x64 is available..."
                 & uv python install 3.13
@@ -225,7 +225,7 @@ if ($allOk) {
                     Write-Error "uv python install failed"
                     exit 1
                 }
-                
+
                 # Create venv if it doesn't exist or is incomplete
                 $venvPython = "$venvX64\Scripts\python.exe"
                 $venvNeedsRecreate = $false
@@ -238,7 +238,7 @@ if ($allOk) {
                     Start-Sleep -Seconds 1
                     $venvNeedsRecreate = $true
                 }
-                
+
                 if ($venvNeedsRecreate) {
                     Write-Host "Creating x64 virtual environment with Python 3.13..."
                     # Use UV_PYTHON_PREFERENCE=only-managed to prefer uv-managed Python (x64)
@@ -261,7 +261,7 @@ if ($allOk) {
                         Write-Error "uv venv failed"
                         exit 1
                     }
-                    
+
                     # Verify venv Python is x64
                     $venvPython = "$venvX64\Scripts\python.exe"
                     $pythonArch = & $venvPython -c "import platform; print(platform.architecture()[0])"
@@ -269,10 +269,10 @@ if ($allOk) {
                         Write-Error "ERROR: venv Python is not x64 ($pythonArch). Ensure x64 Python is installed: uv python install 3.13"
                         exit 1
                     }
-                    
+
                     # unittest is part of Python standard library, no installation needed
                 }
-                
+
                 # Run unittest in the x64 venv with timeout to prevent hang on access violation
                 # Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
                 # Set code page to 932 (Japanese Shift-JIS) to match local environment behavior

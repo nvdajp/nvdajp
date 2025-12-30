@@ -78,7 +78,7 @@
    # nvaccess/beta のリモートを確認（必要に応じて追加）
    git remote add nvaccess https://github.com/nvaccess/nvda.git
    git fetch nvaccess beta
-   
+
    # コミット範囲の確認
    git log --oneline 9613ce6e3..58dd14767
    ```
@@ -121,7 +121,7 @@
    # 現在のブランチの状態を確認
    git status
    git log --oneline -5
-   
+
    # マージリハーサル（dry-run）
    git merge --no-commit --no-ff --allow-unrelated-histories 58dd14767
    ```
@@ -225,13 +225,13 @@
    ```powershell
    # 型チェック
    ci/scripts/tests/typeCheck.ps1
-   
+
    # ビルド
    scons source --all-cores
-   
+
    # JP smoke tests (x64)
    jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
-   
+
    # ランチャービルド
    scons launcher --all-cores
    ```

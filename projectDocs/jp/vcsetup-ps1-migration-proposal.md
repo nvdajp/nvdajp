@@ -258,7 +258,7 @@ if (-not $vcvarsPath) {
     Write-Host "[vcsetup] Falling back to direct search..."
     $scriptName = if ($Architecture -eq "x64") { "vcvars64.bat" } else { "vcvars32.bat" }
     $editions = @("BuildTools", "Community", "Professional", "Enterprise")
-    
+
     foreach ($edition in $editions) {
         $candidate = "C:\Program Files\Microsoft Visual Studio\2022\$edition\VC\Auxiliary\Build\$scriptName"
         if (Test-Path $candidate) {
@@ -279,7 +279,7 @@ Write-Host "[vcsetup] Using: $vcvarsPath"
 try {
     # Run vcvars and capture environment variables
     $envOutput = cmd /c "`"$vcvarsPath`" $Architecture >nul 2>&1 && set"
-    
+
     # Parse and set environment variables
     $envVarsSet = 0
     foreach ($line in $envOutput) {
@@ -290,13 +290,13 @@ try {
             $envVarsSet++
         }
     }
-    
+
     if ($envVarsSet -eq 0) {
         Write-Warning "No environment variables were set by vcvars script"
     } else {
         Write-Host "[vcsetup] Set $envVarsSet environment variables"
     }
-    
+
     # Verify nmake is available
     try {
         $null = Get-Command nmake -ErrorAction Stop
@@ -304,7 +304,7 @@ try {
     } catch {
         Write-Warning "nmake is still not available after vcvars execution"
     }
-    
+
     # Set CL environment variable for x86 builds
     if ($Architecture -eq "x86") {
         if (-not $env:CL) {
@@ -315,10 +315,10 @@ try {
             Write-Host "[vcsetup] Appended /arch:IA32 to CL=$env:CL"
         }
     }
-    
+
     Write-Host "[vcsetup] MSVC environment setup completed"
     exit 0
-    
+
 } catch {
     Write-Error "Failed to execute vcvars script: $_"
     exit 1
@@ -345,7 +345,7 @@ exit /b %ERRORLEVEL%
 
 1. **`vcsetup.ps1`を作成**: 上記の実装例をベースに作成
 2. **`vcsetup.cmd`をラッパーに変更**: 既存の実装をラッパーに置き換え
-3. **テスト**: 
+3. **テスト**:
    - `certBuild2023.cmd`からの呼び出し
    - `nonCertBuild.py`からの呼び出し
    - `miscDepsJp`からの呼び出し

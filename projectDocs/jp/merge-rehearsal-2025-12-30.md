@@ -198,7 +198,7 @@ git add miscDeps include/nvda-cldr include/javaAccessBridge32 include/espeak inc
 
 2. **Phase 2: CI/ワークフロー**（`merge-plan-beta-2025-11.md` の「作業段階 3」）
    - `testAndPublish.yml` の更新（上流ファイルをベースに、JP パッチを最小限に再適用）
-   - **参照**: `merge-issues-beta-2025-11.md` の「CI 上の具体対応（YAML 最小差分方針）」 
+   - **参照**: `merge-issues-beta-2025-11.md` の「CI 上の具体対応（YAML 最小差分方針）」
    - JP パッチ箇所:
      - トリガー: ブランチ名を `betajp`/`releasejp` に変更
      - Python/Arch: **3.13/x86** に更新（3.11/x86 から変更）

@@ -71,5 +71,3 @@ def _get_terminal_size_linux():
         except Exception:
             return None
     return cr[1], cr[0]
-
-

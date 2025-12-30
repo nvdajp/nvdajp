@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <dlfcn.h>
 #include <string.h>
- 
+
 int main(int argc, char **argv)
 {
     void *handle;

@@ -468,4 +468,3 @@ class Application(object):
         """Prints the program's version and quits"""
         ver = self._get_prog_version()
         print ("%s %s" % (self.PROGNAME, ver if ver is not None else "(no version set)"))
-

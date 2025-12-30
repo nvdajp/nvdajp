@@ -211,4 +211,3 @@ class ShellSession(object):
         :returns: A tuple of (return code, stdout, stderr)
         """
         return run_proc(self.popen(cmd), retcode)
-

@@ -310,6 +310,3 @@ class SocketCompatibleChannel(object):
         if self._chan.closed:
             raise socket.error(errno.EBADF, 'Bad file descriptor')
         return self._chan.recv(count)
-
-
-

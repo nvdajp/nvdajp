@@ -372,11 +372,3 @@ class ConcreteCommand(BaseCommand):
         # if self.encoding:
         #    argv = [a.encode(self.encoding) for a in argv if isinstance(a, six.string_types)]
         return argv
-
-
-
-
-
-
-
-

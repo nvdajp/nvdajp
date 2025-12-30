@@ -11,7 +11,7 @@
     Use -SkipInstall or -SkipOverlay if you already prepared the environment.
     Use -TestFilter to run specific tests (e.g., "JpBrailleTests.test_pass2" or "JtalkTests").
     Use -TestIndices to run specific test cases by index (e.g., "11" or "11,12,13").
-    
+
     In CI environments (detected via GITHUB_ACTIONS environment variable), additional CI-specific
     processing is performed (cache checking, GitHub Actions step summary, etc.).
 
@@ -175,7 +175,7 @@ function Initialize-MsvcEnvironment {
     param(
         [string]$Architecture = "x86"
     )
-    
+
     # For x64 builds, always set up environment to ensure x64 tools are used
     # For x86 builds, check if cl is already available (fast path)
     if ($Architecture -eq "x86") {
@@ -193,7 +193,7 @@ function Initialize-MsvcEnvironment {
     # For consistency, we use the same search order here
     $editions = @("BuildTools", "Community", "Professional", "Enterprise")
     $vcvarsall = $null
-    
+
     foreach ($edition in $editions) {
         $path = "C:\Program Files\Microsoft Visual Studio\2022\$edition\VC\Auxiliary\Build\vcvarsall.bat"
         if (Test-Path $path) {
@@ -209,10 +209,10 @@ function Initialize-MsvcEnvironment {
     }
 
     Write-Host "Setting up MSVC environment for $Architecture using: $vcvarsall"
-    
+
     # Run vcvarsall.bat with the specified architecture and capture environment variables
     $envOutput = cmd /c "`"$vcvarsall`" $Architecture >nul 2>&1 && set"
-    
+
     # Parse environment variables and set them in current PowerShell session
     $envVarsSet = 0
     foreach ($line in $envOutput) {
@@ -226,7 +226,7 @@ function Initialize-MsvcEnvironment {
 
     if ($envVarsSet -gt 0) {
         Write-Host "MSVC environment configured ($envVarsSet environment variables set)"
-        
+
         # Verify dumpbin is available
         try {
             $null = Get-Command dumpbin -ErrorAction Stop

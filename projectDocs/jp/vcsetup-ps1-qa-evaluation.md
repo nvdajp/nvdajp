@@ -91,11 +91,11 @@ Describe "vcsetup.ps1" {
     It "should find vcvars32.bat for x86" {
         # テスト実装
     }
-    
+
     It "should set CL environment variable for x86" {
         # テスト実装
     }
-    
+
     It "should handle Python failure gracefully" {
         # テスト実装
     }
@@ -267,7 +267,7 @@ Describe "vcsetup.ps1" {
 3. ローカル環境でテストを実行
 4. すべてのテストが通過することを確認
 
-**完了条件**: 
+**完了条件**:
 - `vcsetup.ps1`が完成
 - 単体テストがすべて通過
 - ドキュメントが更新されている

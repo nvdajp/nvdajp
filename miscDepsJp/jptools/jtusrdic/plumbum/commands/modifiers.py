@@ -133,8 +133,3 @@ use ``BG(retcode)``. Example::
 class Tee(object):
     def __init__(self, *streams):
         self.streams = streams
-
-
-
-
-

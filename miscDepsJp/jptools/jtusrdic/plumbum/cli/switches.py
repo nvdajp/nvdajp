@@ -322,6 +322,3 @@ class NonexistentPath(Predicate):
             raise ValueError("%r already exists" % (val,))
         return p
 NonexistentPath = NonexistentPath()
-
-
-

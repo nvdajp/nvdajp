@@ -229,6 +229,3 @@ class RemoteWorkdir(RemotePath):
             yield
         finally:
             self.chdir(prev)
-
-
-

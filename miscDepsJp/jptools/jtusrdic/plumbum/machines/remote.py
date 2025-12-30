@@ -246,7 +246,7 @@ class BaseRemoteMachine(object):
         for line in lines:
             parts = line.strip().split()
             yield ProcInfo(int(parts[0]), int(parts[1]), parts[2], " ".join(parts[3:]))
-    
+
     def pgrep(self, pattern):
         """
         Process grep: return information about all processes whose command-line args match the given regex pattern
@@ -254,7 +254,7 @@ class BaseRemoteMachine(object):
         pat = re.compile(pattern)
         for procinfo in self.list_processes():
             if pat.search(procinfo.args):
-                yield procinfo 
+                yield procinfo
 
     @contextmanager
     def tempdir(self):
@@ -332,5 +332,3 @@ class BaseRemoteMachine(object):
 
     def _path_link(self, src, dst, symlink):
         self._session.run("ln -s %s %s" % ("-s" if symlink else "", shquote(src), shquote(dst)))
-
-
