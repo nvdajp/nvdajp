@@ -10,7 +10,8 @@ ci:
   # Can't run licenseCheck as it relies on telemetry,
   # which CI blocks.
   # Pyright does not seem to work in pre-commit CI
-  skip: [checkPo, scons-source, checkPot, unitTest, licenseCheck, pyright]
+  # trailing-whitespace and end-of-file-fixer are skipped to prevent accidental deletion of documentation content
+  skip: [checkPo, scons-source, checkPot, unitTest, licenseCheck, pyright, trailing-whitespace, end-of-file-fixer]
   autoupdate_schedule: monthly
   autoupdate_commit_msg: "Pre-commit auto-update"
   autofix_commit_msg: "Pre-commit auto-fix"
