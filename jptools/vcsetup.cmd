@@ -101,8 +101,14 @@ python "%~dp0debug_log.py" "debug-session" "run1" "F" "vcsetup.cmd:99" "Before V
 rem #endregion
 if "%VCVARS_EXIT%" neq "0" (
   echo [ERROR] Failed to execute vcvars script: "%FOUND%" (exit code: %VCVARS_EXIT%) >&2
+  rem #region agent log
+  python "%~dp0debug_log.py" "debug-session" "run1" "F" "vcsetup.cmd:104" "VCVARS_EXIT neq 0, exiting with error" "{\"vcvars_exit\":\"%VCVARS_EXIT%\"}" >nul 2>&1
+  rem #endregion
   exit /b 1
 )
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "F" "vcsetup.cmd:109" "VCVARS_EXIT check passed" "{\"vcvars_exit\":\"%VCVARS_EXIT%\"}" >nul 2>&1
+rem #endregion
 rem Verify nmake is available after vcvars
 rem #region agent log
 python "%~dp0debug_log.py" "debug-session" "run1" "D" "vcsetup.cmd:73" "Before nmake check" "{\"path\":\"%PATH%\"}" >nul 2>&1
