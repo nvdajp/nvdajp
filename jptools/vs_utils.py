@@ -61,13 +61,13 @@ def find_vcvarsall_with_vswhere() -> str | None:
 	return None
 
 
-def find_vcvars_with_vswhere(arch: Literal["x86", "x64"] = "x86") -> str | None:
+def find_vcvars_with_vswhere(arch: Literal["x86", "x64"] = "x64") -> str | None:
 	"""Find vcvars script using vswhere (preferred method).
 
 	Prioritizes Visual Studio 2022 over Visual Studio 2025.
 
 	Args:
-		arch: Target architecture ("x86" or "x64"). Defaults to "x86".
+		arch: Target architecture ("x86" or "x64"). Defaults to "x64".
 
 	Returns:
 		Absolute path to vcvars script if found, None otherwise.
@@ -130,13 +130,13 @@ def find_vcvarsall() -> str | None:
 	return None
 
 
-def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
+def find_vcvars(arch: Literal["x86", "x64"] = "x64") -> str | None:
 	"""Find vcvars32.bat or vcvars64.bat in Visual Studio install locations.
 
 	First tries vswhere (preferred), then falls back to direct path search.
 
 	Args:
-		arch: Target architecture ("x86" or "x64"). Defaults to "x86".
+		arch: Target architecture ("x86" or "x64"). Defaults to "x64".
 
 	Returns:
 		Absolute path to vcvars script if found, None otherwise.

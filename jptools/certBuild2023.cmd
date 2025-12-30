@@ -2,10 +2,10 @@ setlocal enableextensions enabledelayedexpansion
 set SCONSOPTIONS=%*
 echo SCONSOPTIONS is %SCONSOPTIONS%
 
-rem Build architecture (default to x86)
+rem Build architecture (default to x64)
 rem BUILD_ARCH is JP-specific environment variable for smoke test environment switching and MSVC setup
 rem TARGET_ARCH is SCons environment variable and should not be set as OS environment variable
-if not defined BUILD_ARCH set BUILD_ARCH=x86
+if not defined BUILD_ARCH set BUILD_ARCH=x64
 echo BUILD_ARCH is %BUILD_ARCH%
 
 if "%NOWDATE%"=="" set NOWDATE=250101a

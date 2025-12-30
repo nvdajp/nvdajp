@@ -77,7 +77,7 @@ Write-Host "Log file: $logFile"
 # Determine build architecture from BUILD_ARCH environment variable
 # BUILD_ARCH is JP-specific for smoke test environment switching
 # TARGET_ARCH is SCons environment variable and should not be used as OS environment variable
-$buildArch = if ($env:BUILD_ARCH) { $env:BUILD_ARCH } else { "x86" }
+$buildArch = if ($env:BUILD_ARCH) { $env:BUILD_ARCH } else { "x64" }
 Write-Host "Build architecture: $buildArch"
 
 # For x64 builds, use x64 Python and separate venv (.venv-x64)
