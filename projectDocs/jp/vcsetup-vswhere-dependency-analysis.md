@@ -21,16 +21,6 @@ def _ensure_nmake_env() -> None:
 
 **アプローチ**:
 
-
-
-
-
-
-
-
-
-
-
 * **ステップ2**: `vswhere.exe`を使用してVisual Studioを検出（本家のアプローチ）
 * **ステップ3**: フォールバックとして`vcsetup.cmd`を使用
 
@@ -58,8 +48,6 @@ if not defined FOUND (
 
 ```
 
-
-
 **アプローチ**:
 
 * `vs_utils.py`（`find_vcvars.py`経由）を使用
@@ -67,10 +55,7 @@ if not defined FOUND (
 
 * フォールバックとして直接パス検索
 
-
 #### `vs_utils.py`（Pythonモジュール）
-
-
 
 ```python
 def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
@@ -118,278 +103,116 @@ def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
 
 ```
 
-
-
-
-
-
-
-
-
-
 **アプローチ**:
-
-
-
-
-
-
 
 * **直接パス検索**: `C:\Program Files\Microsoft Visual Studio\2022\{edition}\VC\Auxiliary\Build\vcvars32.bat`
 
-
 * `vswhere`を使用しない
-
-
-
-
-
-
 
 ### 2. `vswhere`の可用性
 
-
-
-
 **`vswhere.exe`の場所**:
-
-
-
-
 
 * `C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe`
 
-
 * Visual Studioインストーラーに含まれる
-
-
-
 
 **可用性**:
 
-
 * ✅ Visual Studioがインストールされている環境では利用可能
-
 
 * ❌ Visual Studioがインストールされていない環境では存在しない可能性がある
 
 * ✅ CI環境（GitHub Actions）では通常利用可能（Visual Studioがインストールされているため）
 
-
-
-
 ## 検討事項
 
-
-
 ### 1. `nonCertBuild.py`との一貫性
+
 **現状**:
 
 * `nonCertBuild.py`: `vswhere`を使用（本家のアプローチ）
 
 * `vcsetup.cmd`: `vs_utils.py`を使用（直接パス検索）
 
-
-
-
 * 異なる検出方法を使用している
 * `nonCertBuild.py`は`vswhere`を優先し、`vcsetup.cmd`をフォールバックとして使用
 * `vcsetup.cmd`は`vswhere`を使用しない
 
-
-
-
-
-
 **一貫性の観点**:
-
-
 
 ### 2. 本家のアプローチとの整合性
 
-
 **本家のアプローチ**:
 
-
-
-
-
-
-
 * `vswhere`を使用してVisual Studioを検出（推測）
-
-
-
 
 * `nonCertBuild.py`: `vswhere`を使用（本家と同じ）
 * `vcsetup.cmd`: 直接パス検索（本家と異なる）
 
-
-
 **整合性の観点**:
-
-
-
-
-
-
-
 
 * `vcsetup.cmd`も`vswhere`を使用することで、本家のアプローチに近づく
 
 * ただし、`vcsetup.cmd`は日本語版独自のスクリプトのため、本家には存在しない
 
-
-
-
-
-
-
 1. **柔軟性**:
    * Enterprise、Professional、BuildToolsなど、様々なVisual Studioエディションに対応
 
-
    * Visual Studioのバージョン（2019、2022など）にも対応可能
-
-
-
-
-
-
-
 
 2. **標準的な方法**:
 
    * Microsoftが推奨するVisual Studio検出方法
 
-
-
-
-
-
    * Visual Studioがインストールされている環境では`vswhere`が利用可能
 
 4. **将来の拡張性**:
 
-
    * Visual Studio 2025など、将来のバージョンにも対応可能
 
-
-
-
-
-
-
-
 #### 欠点
-
-
-
-
-
-
-
 
 2. **実装の複雑さ**:
    * `vswhere`の呼び出しと結果の解析が必要
    * エラーハンドリングが複雑になる可能性がある
 
-
-
-
-
 3. **パフォーマンス**:
-
-
-
-
 
    * `vswhere`の実行には時間がかかる可能性がある
 
    * 直接パス検索の方が高速な場合がある
 
-
-
-
-
-
-
 1. **シンプル**:
    * 実装が簡単
 
-
    * 追加の依存関係が不要
-
-
-
-
-
-
-
 
 2. **高速**:
 
    * ファイルシステムの直接検索のため、高速
 
-
-
-
-
-
 #### 欠点
 
 1. **柔軟性の欠如**:
 
-
    * Visual Studio 2022のみサポート（ハードコード）
-
 
    * エディションの検索順序が固定
 
-
-
-
-
-
-
 2. **将来の拡張性**:
-
-
-
-
-
-
 
 ## 推奨アプローチ
 
-
-
 ### 案1: `vswhere`を優先し、直接パス検索をフォールバックとする（推奨）
 
-
-
-
-
-
-
-
-
-
 *
 *
 *
-
 
 *. まず`vswhere`を使用してVisual Studioを検出
 
-
 *. `vswhere`が失敗した場合、直接パス検索にフォールバック
-
-
-
-
-
-
 
 * `nonCertBuild.py`との一貫性が向上する
 * 本家のアプローチに近づく
@@ -398,17 +221,9 @@ def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
 
 *
 
-
-
 **欠点**:
 
-
-
 *
-
-
-
-
 
 **評価**: ⭐⭐⭐⭐⭐（推奨）
 *
@@ -421,15 +236,7 @@ def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
 
 *
 
-
-
-
 *
-
-
-
-
-
 
 * `nonCertBuild.py`との一貫性が低い
 * 本家のアプローチと異なる
@@ -442,26 +249,21 @@ def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
 *## 案3: `vswhere`のみを使用（フォールバックなし）
 
 *
+
 **実装**:
 *
-
 
 * 本家のアプローチと同じ
 *
 * `vswhere`が存在しない環境では動作しない
 
-
-
-
 * リスクが高い
-
 
 **評価**: ⭐⭐（非推奨）
 
 ## 推奨される実装（案1）
 
 ### `vs_utils.py`の拡張
-
 
 ```python
 def find_vcvars_with_vswhere(arch: Literal["x86", "x64"] = "x86") -> str | None:
@@ -516,12 +318,7 @@ def find_vcvars_with_vswhere(arch: Literal["x86", "x64"] = "x86") -> str | None:
         path = VS2022_BASE_PATH / edition / "VC" / "Auxiliary" / "Build" / script_name
 ```
 
-
-
-
-
 ### `vcsetup.ps1`の実装
-
 
 ```powershell
 # Try vswhere first (preferred method, consistent with nonCertBuild.py)
@@ -577,18 +374,15 @@ if (-not $vcvarsPath) {
 
 ## 結論
 
-
 **推奨**: 案1（`vswhere`を優先し、直接パス検索をフォールバックとする）
 
 *
-
-
-
 
 **理由**:
 *
 
 *
+
 *. **`nonCertBuild.py`との一貫性**: 同じ検出方法（`vswhere`）を使用
 *
 *. **本家のアプローチに近い**: Microsoftが推奨する標準的な方法
@@ -603,7 +397,6 @@ if (-not $vcvarsPath) {
 *
 
 **実装方針**:
-
 
 *
 
@@ -625,7 +418,6 @@ if (-not $vcvarsPath) {
 * `find_vcvars.py`: `vs_utils.py`を使用しているため、自動的に`vswhere`を使用
 *
 *
-
 
 ## 実装状況（2025年12月30日）
 

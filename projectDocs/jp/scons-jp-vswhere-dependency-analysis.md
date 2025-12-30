@@ -24,20 +24,20 @@ def _find_vcvarsall() -> str | None:
 
 **アプローチ**:
 
-
-* `vs_utils.find_vcvarsall()`を呼び出し
-* `vs_utils.py`は**直接パス検索**（`vswhere`を使用しない）
-
-#### 使用箇所
-
-`scons_jp.py`では、以下の箇所で`_find_vcvarsall()`が呼び出されています：
-
 1. **`jtalkPrep`**: `libopenjtalk.dll`のビルド時に`nmake`が必要な場合
 2. **`jtalkSync`**: `libmecab.dll`のビルド時に`nmake`が必要な場合
 3. **`jtalkSync`**: 辞書のビルド時に`nmake`が必要な場合
 
 **使用パターン**:
 cmd_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
+
+
+
+
+
+
+
+
 ```
 
 ### 2. 他のスクリプトとの比較
@@ -340,14 +340,6 @@ def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
 
 *
 
-
-**推奨**: 案1（`vs_utils.py`に`vswhere`サポートを追加）
-*
-*
-
-1. **`scons_jp.py`のコード変更が不要**: `vs_utils.py`の内部実装の変更のみ
-*. **すべてのスクリプトが同じ検出ロジックを使用**: `scons_jp.py`、`vcsetup.cmd`、`vcsetup.ps1`がすべて`vswhere`を使用
-*. **`nonCertBuild.py`との一貫性**: 同じ検出方法（`vswhere`）を使用
 *. **本家のアプローチに近い**: Microsoftが推奨する標準的な方法
 
 5. **柔軟性と将来の拡張性**: 様々なVisual Studioエディションに対応、将来のバージョンにも対応可能
@@ -360,26 +352,9 @@ def find_vcvars(arch: Literal["x86", "x64"] = "x86") -> str | None:
 * **実装完了**
 *
 
-
-
 **実装内容**:
-
-*. ✅ `find_vcvarsall()`と`find_vcvars()`関数を修正し、`vswhere`を優先、直接パス検索をフォールバックとする
 *. ✅ Visual Studio 2022を優先的に使用（`-version [17.0,18.0)`）
 
-*. ✅ `scons_jp.py`のコード変更は不要（`vs_utils.py`の内部実装の変更により自動的に`vswhere`を使用）
-
-**検証結果**:
-
 * ✅ x86 JP smoke tests成功
-* ✅ `certBuild2025`が実行可能
-* ✅ Visual Studio 2022が優先的に検出される
-
-
-**コミット**:
 
 * `e625d3c8b`: "Add vswhere support to vs_utils.py for stable Visual Studio detection"
-* `a9c1c471d`: "Prioritize Visual Studio 2022 over Visual Studio 2025 in vs_utils.py"
-
-
-詳細は`projectDocs/jp/vswhere-implementation-status.md`を参照。

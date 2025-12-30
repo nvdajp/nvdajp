@@ -45,22 +45,6 @@ FAILED miscDepsJp.jptools.test.JtalkTests.test_jtalk - OSError: DLL directory do
 **技術的な詳細:**
 
 
-
-
-
-
-
-
-
-* `jptools/runJpSmokeTests.ps1` で `$env:PYTHONPATH = "miscDepsJp\include\python-jtalk;miscDepsJp\source\synthDrivers\jtalk"` のように相対パスを設定
-* CI環境では、作業ディレクトリがリポジトリルートと異なる場合がある
-* `jtalkRunner.py` が `__file__` からリポジトリルートを計算する際、`__file__` が `D:\a\miscDepsJp\include\python-jtalk\jtalkRunner.py` として解決されていた（正しくは `D:\a\nvdajp\nvdajp\miscDepsJp\include\python-jtalk\jtalkRunner.py`）
-* その結果、`repo_root` が `D:\a\miscDepsJp` として計算され、正しいパス `D:\a\nvdajp\nvdajp\miscDepsJp\source\synthDrivers\jtalk` を見つけられなかった
-
-### 解決策
-
-#### 修正 1: PYTHONPATH を絶対パスに変更
-
 `jptools/runJpSmokeTests.ps1` で PYTHONPATH を絶対パスに変更：
 
 ```powershell
@@ -130,161 +114,36 @@ OverflowError: int too long to convert
 
 ```
 
-
-
 ### 原因
 
-
-
- 
 * 64 のみを実行し、x86 の CI に影響を与えない
- 
+
  checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` を使用
- 
 
-
- 
- 
- 
- 
- jptools/checkJtalkArch.ps1` - x86/x64 の DLL 検証・smoke テストスクリプト
+ jptools/checkJtalkArch.ps1`- x86/x64 の DLL 検証・smoke テストスクリプト
  source/synthDrivers/jtalk/mecab.py` - MeCab DLL の `ctypes` インターフェース
 
-
- 
-  ojectDocs/jp/roadmap.md` - x64 対応の詳細な進捗状況
-
-
-
- 
 * .github/workflows/checkJtalkArch-x64.yml` - x64 専用の CI workflow
- 
- 
+*
 
-
-
- 
-  nnvda.bat を使ったテスト
-
-
-
- 
-
-* 
- 
  ons launcher`を実行せずに、`runnvda.bat` を使って MeCab のデバッグを行うこともできます。
 
-
-
-
- 
-
-
- 
-
-*  基本的な使い方
- 
- 
-
-
-
-
- powershell
-
- 
-
- 
- 
-* 1. mecab.py を編（直接 source/synthDrivers/jtalk/mecab.py を編集）
-
-
-
- e source/synthDrivers/jtalk/mecab.py
-
-
-
+ e source/synthDrivers/jtalkmecab.py
 
 *
-
-
-
-* 2. JTalk DLL と辞書を準備（必要に応じて）
-
 
 *\scons.bat jtalSync
-
-
-
-*
-
 * 3. NVDA を起動してテト
-
-
-*\runnvda.bat
-
-*``
-
-*
-
 
 
 *## ログの確認
 
-
-*
-
-
-*VDA のログは通常 `%APPDATA%\nvda\nvda.log` に出力されます。
-
-
 *
 
 *eCab のログは `source/synthDrivers/jtalk/mecab_debug.log` にのみ保存されます（コンソールには出力されません）。これは `mecabRunner.py` と `jtalkRunner.py` の `__print` 関数がログファイルにのみ書き込むように実装されているためです。
-
-*
-
-*## 注意事項
-
-*
-
-
-
-
-
-
-
-
-
-
-* `mecab.py` は `source/synthDrivers/jtalk/mecab.py` に直接配置されているため、直接編集できます
-* `scons jtalkSync` は JTalk DLL と辞書ファイルを準備します（必要に応じて実行）
+* scons jtalkSync` は JTalk DLL と辞書ファイルを準備します（必要に応じて実行）
 * overlay 処理は廃止済みのため、`scons miscdepsjp` は不要です
-*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*# 関連ドキュメント
-
-*
 
 * `jptools/runJpSmokeTests.ps1` - スクリプトの実装（x86 用）
-* `jptools/checkJtalkArch.ps1` - x86/x64 の DLL 検証・smoke テストスクリプト
-* `miscDepsJp/include/python-jtalk/jtalkRunner.py` - `repo_root` 計算ロジック
-* `projectDocs/jp/local_verification_jtalk_runner_fix.md` - ローカル環境での検証手順
-* `projectDocs/jp/roadmap.md` - x64 対応の詳細な進捗状況
 * `pyproject.toml` - 依存関係の定義
 * `.github/workflows/testAndPublish.yml` - CI での実行方法（x86）
-* `.github/workflows/checkJtalkArch-x64.yml` - CI での実行方法（x64）

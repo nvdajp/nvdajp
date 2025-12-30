@@ -214,104 +214,13 @@ git merge --no-commit --no-ff --allow-unrelated-histories 58dd14767
 
 1. **ローカル検証**
 
-* 
-
-
- 
-
-
- 
-* 9613ce6e3` から `58dd14767` まで: **約77コミット**（マージコミットを除くと約85コミット）
-
-
- 
-
-
- 
-* な変更:
-
-
- 
-
-
- 
-
- 
-*  UWP OCR on 64 bit対応
-
-
- 
-
-
- 
- 
-*  64-bit uninstaller修正
-
- 
-
-
-
-* * x64 identification修正
-
-
-
-* * その他のバグ修正、機能追加
-
-
 *
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-*## 前回のマージリハーサルとの比較
+* 64-bit uninstaller修正
 *
 
+* 加の理由: x64移行による追加の変更（x86 ビルドの削除、x64 ビルドへの移行など）
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-* 前回（x86 Python 3.13段階）: 242ファイルのコンフリクト
-
-
-* 今回（x64 Python 3.13移行）: 255ファイルのコンフリクト
-
-
-* 増加の理由: x64移行による追加の変更（x86 ビルドの削除、x64 ビルドへの移行など）
-
-
-*
-
-
-*# 参照
-*
-
-* **ロードマップ**: `projectDocs/jp/roadmap.md`
-* **詳細計画**: `projectDocs/jp/stage3b-x64-migration-plan.md`
+* *詳細計画**: `projectDocs/jp/stage3b-x64-migration-plan.md`
 * **マージ計画**: `projectDocs/jp/merge-plan-beta-2025-11.md`
-* **前回のマージリハーサル**: `projectDocs/jp/merge-rehearsal-2025-12-30.md`
