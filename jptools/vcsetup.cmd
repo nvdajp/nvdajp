@@ -12,38 +12,40 @@ if /I "%ARCH%"=="x64" (
   set "SET_CL_ARCH="
   rem For x64 builds, always set up environment to ensure x64 tools are used
   rem (x86 cl might be available from previous x86 build)
-) else (
-  set "SET_CL_ARCH=1"
-  rem Fast path for x86: check if both cl and nmake are already available
-  rem #region agent log
-  python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:13" "Before fast path check" "{\"arch\":\"%ARCH%\"}" >nul 2>&1
-  rem #endregion
-  cl >nul 2>&1
-  if "%ERRORLEVEL%" neq "9009" (
-    rem cl is available, check if nmake is also available
-    rem #region agent log
-    python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:17" "cl available, checking nmake" "{\"cl_errorlevel\":\"%ERRORLEVEL%\"}" >nul 2>&1
-    rem #endregion
-    nmake /? >nul 2>&1
-    if "%ERRORLEVEL%" neq "9009" (
-      rem Both cl and nmake are available, MSVC environment already configured
-      rem #region agent log
-      python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:21" "Fast path: both cl and nmake available" "{\"nmake_errorlevel\":\"%ERRORLEVEL%\"}" >nul 2>&1
-      rem #endregion
-      goto :done
-    ) else (
-      rem cl is available but nmake is not, need to run vcvars
-      rem #region agent log
-      python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:25" "Fast path failed: nmake not found" "{\"nmake_errorlevel\":\"%ERRORLEVEL%\"}" >nul 2>&1
-      rem #endregion
-    )
-  ) else (
-    rem cl is not available, need to run vcvars
-    rem #region agent log
-    python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:30" "Fast path failed: cl not found" "{\"cl_errorlevel\":\"%ERRORLEVEL%\"}" >nul 2>&1
-    rem #endregion
-  )
+  goto :setup_vcvars
 )
+
+set "SET_CL_ARCH=1"
+rem Fast path for x86: check if both cl and nmake are already available
+rem Note: Use "call :check_tool" pattern to correctly capture ERRORLEVEL
+rem because python logging calls reset ERRORLEVEL
+
+cl >nul 2>&1
+if ERRORLEVEL 9009 goto :cl_not_found
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:20" "cl found, checking nmake" "{}" >nul 2>&1
+rem #endregion
+
+nmake /? >nul 2>&1
+if ERRORLEVEL 9009 goto :nmake_not_found
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:25" "Fast path: both cl and nmake available" "{}" >nul 2>&1
+rem #endregion
+goto :done
+
+:cl_not_found
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:30" "Fast path failed: cl not found" "{}" >nul 2>&1
+rem #endregion
+goto :setup_vcvars
+
+:nmake_not_found
+rem #region agent log
+python "%~dp0debug_log.py" "debug-session" "run1" "A" "vcsetup.cmd:35" "Fast path failed: nmake not found" "{}" >nul 2>&1
+rem #endregion
+goto :setup_vcvars
+
+:setup_vcvars
 
 rem Use shared Python module for VS path detection (jptools/vs_utils.py)
 rem This ensures consistency with scons_jp.py and runJpSmokeTests.ps1
