@@ -326,6 +326,15 @@ addTable(
 	# braille settings dialog.
 	_("Japanese (Rokuten Kanji) Braille"),
 )
+# BEGIN JP PATCH (Japanese 6-dot computer braille table)
+addTable(
+	"ja-jp-comp6.utb",
+	# Translators: The name of a braille table displayed in the
+	# braille settings dialog.
+	_("Japanese 6-dot computer braille"),
+	source=brailleTables.TableSource.BUILTIN_JP,
+)
+# END JP PATCH
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("ka-in-g1.utb", _("Kannada grade 1"), inputForLangs={"kn"}, outputForLangs={"kn"})

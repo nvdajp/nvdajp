@@ -151,6 +151,26 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 	* returns a list of integers instead of a string with cells, and
 	* distinguishes between cursor position 0 (cursor at first character) and None (no cursor at all)
 	"""
+	# BEGIN JP PATCH (Japanese 6-dot computer braille: use translator2 instead of liblouis)
+	# Check if ja-jp-comp6.utb is selected
+	if tableList and len(tableList) > 0 and tableList[0].endswith("ja-jp-comp6.utb"):
+		try:
+			from synthDrivers.jtalk.translator2 import translate
+			nabcc = config.conf["braille"]["expandAtCursor"]
+			text = inbuf.replace("\0", "")
+			braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = translate(
+				text, cursorPos=cursorPos or 0, nabcc=nabcc
+			)
+			# Convert braille string to list of integers (cell values)
+			braille = [ord(cell) & 255 for cell in braille]
+			if cursorPos is None:
+				brailleCursorPos = None
+			return braille, brailleToRawPos, rawToBraillePos, brailleCursorPos
+		except ImportError:
+			log.warning("translator2 not available, falling back to liblouis")
+		except Exception:
+			log.exception("Error in translator2, falling back to liblouis")
+	# END JP PATCH
 	text = inbuf.replace("\0", "")
 	braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
 		tableList,
