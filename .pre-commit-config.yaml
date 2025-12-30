@@ -94,7 +94,8 @@ repos:
             objectProvider.py |
             test_speechManager/speechManagerTestHarness.py
           )
-        )
+        ) |
+        ^ci/scripts/tests/diagBrailleEnv\.py$  # Diagnostic script, not a test file
 
 - repo: https://github.com/asottile/add-trailing-comma
   rev: v3.2.0
