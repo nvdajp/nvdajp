@@ -316,7 +316,9 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	serverURL = string(default="")
 
 [inputComposition]
-	autoReportAllCandidates = boolean(default=True)
+	# BEGIN JP PATCH (Japanese input method default)
+	autoReportAllCandidates = boolean(default=False) # nvdajp
+	# END JP PATCH
 	announceSelectedCandidate = boolean(default=True)
 	alwaysIncludeShortCharacterDescriptionInCandidateName = boolean(default=True)
 	reportReadingStringChanges = boolean(default=True)
