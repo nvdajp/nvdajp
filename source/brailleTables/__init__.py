@@ -48,6 +48,7 @@ class TableType(Enum):
 _tablesDirs = collections.ChainMap(
 	{
 		TableSource.BUILTIN: TABLES_DIR,
+		TableSource.BUILTIN_JP: TABLES_DIR_JP,
 	},
 )
 """Chainmap of directories for braille tables lookup, including custom tables."""
