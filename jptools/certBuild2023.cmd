@@ -33,28 +33,14 @@ if not defined TIMESTAMP_URL set TIMESTAMP_URL=http://timestamp.digicert.com
 cd /d %~dp0
 cd ..
 
-rem #region agent log
-python jptools\debug_log.py "debug-session" "run1" "C" "certBuild2023.cmd:36" "Before vcsetup call" "{\"build_arch\":\"%BUILD_ARCH%\",\"path\":\"%PATH%\"}" >nul 2>&1
-rem #endregion
 call jptools\vcsetup.cmd %BUILD_ARCH%
-set "VCSETUP_EXIT=%ERRORLEVEL%"
-rem #region agent log
-python jptools\debug_log.py "debug-session" "run1" "C" "certBuild2023.cmd:37" "After vcsetup call" "{\"exit_code\":\"%VCSETUP_EXIT%\",\"path\":\"%PATH%\"}" >nul 2>&1
-rem #endregion
-@if not "%VCSETUP_EXIT%"=="0" goto onerror
+@if not "%ERRORLEVEL%"=="0" goto onerror
 
 call jptools\check_vs_version.cmd
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-rem #region agent log
-python jptools\debug_log.py "debug-session" "run1" "C" "certBuild2023.cmd:42" "Before nmake check in certBuild2023" "{\"path\":\"%PATH%\"}" >nul 2>&1
-rem #endregion
 nmake /?
-set "NMAKE_EXIT=%ERRORLEVEL%"
-rem #region agent log
-python jptools\debug_log.py "debug-session" "run1" "C" "certBuild2023.cmd:43" "After nmake check in certBuild2023" "{\"exit_code\":\"%NMAKE_EXIT%\",\"path\":\"%PATH%\"}" >nul 2>&1
-rem #endregion
-@if not "%NMAKE_EXIT%"=="0" goto onerror
+@if not "%ERRORLEVEL%"=="0" goto onerror
 
 patch -v
 @if not "%ERRORLEVEL%"=="0" goto onerror
