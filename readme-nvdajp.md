@@ -56,7 +56,8 @@ Git の設定
 
 * Adjusting your PATH environment : Use Git and optional Unix tools from the Windows Command Prompt
 
-* Configuring the line ending conversions : Chechout Windows-style, commit Unix-style line ending
+* Configuring the line ending conversions : Checkout Windows-style, commit Unix-style line ending
+  * リポジトリ内のファイルは LF で統一されているため、この設定により Windows での作業時は自動的に CRLF に変換され、commit 時に LF に戻される。
 
 設定し直す場合は
 
@@ -221,10 +222,11 @@ gh variable set MILESTONE_ID --body "71" --repo nvdajp/nvdajp
 
 ### ファイル改行コードと editorconfig
 
-* Windows で git clone した場合、改行コードが CRLF になり、git に commit すると LF になる。
-* 本家の .editorconfig は end_of_line = lf になっており、Windows の Visual Studio Code で editorconfig を有効にすると、新規作成したファイルは保存するときに改行コードが LF になる。
-* この挙動は Windows で作業する場合には不便なので、.editorconfig の end_of_line = crlf に変更している。
-* macOS や Linux で作業する場合は、.editorconfig の end_of_line = lf に戻すとよい。
+* リポジトリ内のファイルは LF（Unix形式）で統一されている。
+* `.editorconfig` は `end_of_line = lf` に設定されており、本家版（nvaccess/beta）と一致している。
+* `.gitattributes` は `eol=lf` に設定されており、Git がリポジトリ内で LF を強制する。
+* Windows で git clone した場合、`core.autocrlf = true` の設定により、checkout 時に CRLF に変換され、commit 時に LF に戻される。
+* この方針により、本家版との差分を最小化し、pre-commit での改行コードによる大量の変更を防止している。
 
 ### ファイルの不足やバージョンの不一致
 
