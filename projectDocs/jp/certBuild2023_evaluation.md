@@ -128,6 +128,7 @@ context_id.cpp(103) [it != right_.end()] cannot find RIGHT-ID  for 蜷崎ｩ・�
    - `BUILD_ARCH` を明示的に設定（デフォルトは `x86`）
    - **重要**: `scons.bat`は常にx86 Python 3.13で実行されるが、`TARGET_ARCH`環境変数によりビルドされるDLLのアーキテクチャが決まる
    - `runJpSmokeTests.ps1`は`BUILD_ARCH`/`TARGET_ARCH`を読み取り、x64の場合は自動的にx64 Python 3.13と`.venv-x64`を使用
+   - **詳細**: `BUILD_ARCH`と`TARGET_ARCH`の関係と使用方法については、`projectDocs/jp/build-architecture-environment-variables.md`を参照してください
 
 3. **エラーメッセージの確認**
    - ビルド失敗時は `PAUSE=1` を設定してエラーメッセージを確認可能

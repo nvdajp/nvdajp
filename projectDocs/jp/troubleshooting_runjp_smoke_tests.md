@@ -173,6 +173,7 @@ x64 環境での smoke テストは、以下の2つの方法があります：
 **重要な注意点**:
 - `scons.bat`は常にx86 Python 3.13で実行される（`.venv`はx86 Python 3.13を使用）
 - `TARGET_ARCH`環境変数により、ビルドされるDLLのアーキテクチャが決まる
+- **詳細**: `BUILD_ARCH`と`TARGET_ARCH`の関係と使用方法については、`projectDocs/jp/build-architecture-environment-variables.md`を参照してください
 - `runJpSmokeTests.ps1`は`BUILD_ARCH`/`TARGET_ARCH`を読み取り、x64の場合はx64 Python 3.13を使用
 
 ### CI での x64 検証

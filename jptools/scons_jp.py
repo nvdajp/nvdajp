@@ -362,9 +362,18 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	    source_dir: Optional source directory node from sconstruct. If provided, sourceDir will depend on
 	                jtalkSync with the current TARGET_ARCH to ensure correct architecture-specific builds.
 	"""
-	# Allow TARGET_ARCH override from environment (takes priority) or existing env (fallback).
-	# This enables `set TARGET_ARCH=x64` then `scons.bat jtalkSync` for x64 payload/DLL switching.
-	env["TARGET_ARCH"] = str(os.environ.get("TARGET_ARCH", env.get("TARGET_ARCH", "x86"))).lower()
+	# Use BUILD_ARCH (JP-specific) to set TARGET_ARCH (SCons environment variable).
+	# BUILD_ARCH is an OS environment variable for JP-specific purposes (mainly smoke test environment switching).
+	# TARGET_ARCH is a SCons environment variable and should only be set via SCons, not OS environment.
+	# This refactoring ensures TARGET_ARCH follows SCons conventions while BUILD_ARCH handles JP-specific needs.
+	build_arch = str(os.environ.get("BUILD_ARCH", "")).lower()
+	if build_arch in ("x64", "x86_64"):
+		env["TARGET_ARCH"] = "x64"
+	elif build_arch == "x86":
+		env["TARGET_ARCH"] = "x86"
+	else:
+		# Fallback to existing SCons TARGET_ARCH (defaults to x86 from sconstruct)
+		env["TARGET_ARCH"] = str(env.get("TARGET_ARCH", "x86")).lower()
 	# miscdepsjp alias removed in Phase 2 (miscDepsJp/source is empty, overlay is no-op)
 
 	# Alias: jp_tests (run JP dictionary tests and JP char description tests)

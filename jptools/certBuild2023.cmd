@@ -3,7 +3,8 @@ set SCONSOPTIONS=%*
 echo SCONSOPTIONS is %SCONSOPTIONS%
 
 rem Build architecture (default to x86)
-if not defined BUILD_ARCH if defined TARGET_ARCH set BUILD_ARCH=%TARGET_ARCH%
+rem BUILD_ARCH is JP-specific environment variable for smoke test environment switching and MSVC setup
+rem TARGET_ARCH is SCons environment variable and should not be set as OS environment variable
 if not defined BUILD_ARCH set BUILD_ARCH=x86
 echo BUILD_ARCH is %BUILD_ARCH%
 

@@ -77,7 +77,7 @@ jobs:
         cmd /c "chcp 932 >nul 2>&1 && powershell.exe -NoProfile -ExecutionPolicy Bypass -Command `".\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests`""
       shell: cmd
       env:
-        TARGET_ARCH: x64
+        BUILD_ARCH: x64
         UV_PYTHON_PREFERENCE: managed
 
     - name: Upload artifact on failure

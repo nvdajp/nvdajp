@@ -155,9 +155,9 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 if (-not $SkipBuild) {
     Write-Host "Building jtalkSync for $Architecture ..."
     Push-Location $repoRoot
-    $oldArch = $env:TARGET_ARCH
+    $oldBuildArch = $env:BUILD_ARCH
     try {
-        $env:TARGET_ARCH = $Architecture
+        $env:BUILD_ARCH = $Architecture
         # Initialize MSVC environment for the target architecture
         Initialize-MsvcEnvironment -Architecture $Architecture
         # Ensure UV_PYTHON_PREFERENCE is set to use managed Python
@@ -171,7 +171,11 @@ if (-not $SkipBuild) {
             exit 1
         }
     } finally {
-        $env:TARGET_ARCH = $oldArch
+        if ($oldBuildArch) {
+            $env:BUILD_ARCH = $oldBuildArch
+        } else {
+            Remove-Item env:BUILD_ARCH -ErrorAction SilentlyContinue
+        }
         Pop-Location
     }
 }
@@ -193,9 +197,9 @@ if ($allOk) {
     if ($RunSmokeTests) {
         Write-Host "Running jp smoke tests for $Architecture ..."
         Push-Location $repoRoot
-        $oldArch = $env:TARGET_ARCH
+        $oldBuildArch = $env:BUILD_ARCH
         try {
-            $env:TARGET_ARCH = $Architecture
+            $env:BUILD_ARCH = $Architecture
             if ($Architecture -eq 'x64') {
                 # Use uv to run unittest with Python 3.13 x64.
                 # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
@@ -318,7 +322,11 @@ exit /b %ERRORLEVEL%
                 }
             }
         } finally {
-            $env:TARGET_ARCH = $oldArch
+            if ($oldBuildArch) {
+                $env:BUILD_ARCH = $oldBuildArch
+            } else {
+                Remove-Item env:BUILD_ARCH -ErrorAction SilentlyContinue
+            }
             Pop-Location
         }
     }
