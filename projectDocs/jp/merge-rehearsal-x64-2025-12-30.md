@@ -1,4 +1,4 @@
-# nvaccess/beta (x64 Python 3.13移行) マージリハーサル記録（2025-12-31）
+# nvaccess/beta (x64 Python 3.13移行) マージリハーサル記録（2025-12-30）
 
 ## 概要
 
@@ -6,7 +6,7 @@
 
 ## 実行環境
 
-- **日時**: 2025年12月31日
+- **日時**: 2025年12月30日
 - **ベースブランチ**: betajp-251231
 - **ベースコミット**: `625691b11a` - "x86 + Python 3.13 (#607)"（`9613ce6e3` をマージ済み）
 - **マージ元**: nvaccess/beta のコミット `58dd14767` (2025年9月15日)
@@ -269,4 +269,3 @@ git merge --no-commit --no-ff --allow-unrelated-histories 58dd14767
 - **詳細計画**: `projectDocs/jp/stage3b-x64-migration-plan.md`
 - **マージ計画**: `projectDocs/jp/merge-plan-beta-2025-11.md`
 - **前回のマージリハーサル**: `projectDocs/jp/merge-rehearsal-2025-12-30.md`
-
