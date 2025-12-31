@@ -9,8 +9,9 @@ ci:
   # https://stackoverflow.com/questions/70778806/pre-commit-not-using-virtual-environment .
   # Can't run licenseCheck as it relies on telemetry,
   # which CI blocks.
-  # Pyright does not seem to work in pre-commit CI
-  skip: [checkPo, scons-source, checkPot, unitTest, licenseCheck, pyright]
+    # Pyright does not seem to work in pre-commit CI
+    # trailing-whitespace and end-of-file-fixer are skipped to prevent accidental deletion of documentation content
+    skip: [checkPo, scons-source, checkPot, unitTest, licenseCheck, pyright, trailing-whitespace, end-of-file-fixer, markdownlint-cli2]
   autoupdate_schedule: monthly
   autoupdate_commit_msg: "Pre-commit auto-update"
   autofix_commit_msg: "Pre-commit auto-fix"
@@ -54,14 +55,30 @@ repos:
     - id: debug-statements
     # Removes trailing whitespace.
     - id: trailing-whitespace
-      types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+      types_or: [python, c, c++, batch, toml, yaml, powershell]
+      files: \.(py|pyw|c|cpp|h|bat|ps1|toml|yml|yaml)$
+      # Exclude Japanese documentation to prevent accidental deletion of content
+      # Note: markdown is excluded from types_or and files to prevent processing Japanese documentation
+      exclude: ^(projectDocs/jp/|readme-nvdajp\.md$|AGENTS\.md$)
     # Ensures all files end in 1 (and only 1) newline.
     - id: end-of-file-fixer
-      types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+      types_or: [python, c, c++, batch, toml, yaml, powershell]
+      files: \.(py|pyw|c|cpp|h|bat|ps1|toml|yml|yaml)$
+      # Exclude Japanese documentation to prevent accidental deletion of content
+      # Note: markdown is excluded from types_or and files to prevent processing Japanese documentation
+      exclude: ^(projectDocs/jp/|readme-nvdajp\.md$|AGENTS\.md$)
     # Removes the UTF-8 BOM from files that have it.
     # See https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/codingStandards.md#encoding
     - id: fix-byte-order-marker
-      types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+      types_or: [python, c, c++, batch, toml, yaml, powershell]
+      files: \.(py|pyw|c|cpp|h|bat|ps1|toml|yml|yaml)$
+      # Exclude Japanese documentation to prevent accidental modification
+      exclude: |
+        (?x)^(
+          projectDocs/jp/.*|
+          readme-nvdajp\.md$|
+          AGENTS\.md$
+        )
     # Validates TOML files.
     - id: check-toml
     # Validates YAML files.
@@ -89,7 +106,8 @@ repos:
             objectProvider.py |
             test_speechManager/speechManagerTestHarness.py
           )
-        )
+        ) |
+        ^ci/scripts/tests/diagBrailleEnv\.py$  # Diagnostic script, not a test file
 
 - repo: https://github.com/asottile/add-trailing-comma
   rev: v3.2.0
@@ -106,6 +124,7 @@ repos:
     - id: ruff
       name: lint with ruff
       args: [ --fix ]
+      exclude: ^miscDepsJp/include/
     - id: ruff-format
       name: format with ruff
 
@@ -129,6 +148,8 @@ repos:
   - id: markdownlint-cli2
     name: Lint markdown files
     args: ["--fix"]
+    # Exclude Japanese documentation to prevent accidental modification
+    exclude: ^(projectDocs/jp/|readme-nvdajp\.md$|AGENTS\.md$)
 
 - repo: local
   hooks:

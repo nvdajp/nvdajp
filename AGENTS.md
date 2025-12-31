@@ -16,6 +16,7 @@ This document summarizes the rules automation agents/scripts must obey when work
   - **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files (e.g., `jptools/*.ps1`, `jptools/runJpSmokeTests.ps1`) do not need these markers.
 - Prefer SCons/pure Python tooling; auxiliary `.cmd` or `nmake` usage should be limited to JP-specific overlays
 - Do not perform code-signing or releases in CI (no secrets). Official release builds happen locally.
+- **Pre-commit hooks**: `projectDocs/jp/`, `readme-nvdajp.md`, and `AGENTS.md` are excluded from `trailing-whitespace` and `end-of-file-fixer` to prevent accidental deletion of documentation content
 
 ## Quick commands
 
@@ -81,6 +82,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 - JP 固有差分は `# nvdajp`／`# BEGIN JP PATCH` で明示（**注**: 本家版ファイルを変更する場合のみ。日本語版固有の新規ファイルには不要）
 - ビルドは SCons／純 Python を優先。`.cmd` や `nmake` は JP 独自処理のみ
 - CI ではコードサインや Secrets 利用を行わない
+- **Pre-commit フック**: `projectDocs/jp/`、`readme-nvdajp.md`、`AGENTS.md` は `trailing-whitespace` と `end-of-file-fixer` から除外されており、ドキュメント内容の誤削除を防止
 
 ### 最短コマンド
 
