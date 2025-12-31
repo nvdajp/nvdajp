@@ -198,6 +198,22 @@ if ($allOk) {
         Write-Host "Running jp smoke tests for $Architecture ..."
         Push-Location $repoRoot
         $oldBuildArch = $env:BUILD_ARCH
+        
+        # Setup log file for x64 smoke tests (same as runJpSmokeTests.ps1)
+        $logFile = Join-Path $repoRoot "jpSmokeTests.log"
+        $logStarted = $false
+        if ($Architecture -eq 'x64') {
+            try {
+                Start-Transcript -Path $logFile -Append | Out-Null
+                $logStarted = $true
+                Write-Host "REPO_ROOT set to $repoRoot"
+                Write-Host "Log file: $logFile"
+                Write-Host "Build architecture: $Architecture"
+            } catch {
+                Write-Warning "Failed to start transcript: $_"
+            }
+        }
+        
         try {
             $env:BUILD_ARCH = $Architecture
             if ($Architecture -eq 'x64') {
@@ -278,24 +294,29 @@ if ($allOk) {
                 # Set code page to 932 (Japanese Shift-JIS) to match local environment behavior
                 # This ensures consistent behavior for ctypes string handling and MeCab internal processing
                 $env:PYTHONUTF8 = "1"
+                Write-Host "Using Python: $venvX64\Scripts\python.exe"
+                Write-Host "PYTHONPATH set to $($env:PYTHONPATH)"
+                Write-Host "Running JP braille/JTalk smoke tests (filter: JpBrailleTests or JtalkTests)..."
+                
                 # Set code page in the process that will run unittest
                 # Note: Start-Process creates a new process, so we need to set code page via cmd /c
                 # Create a temporary batch file to ensure chcp 932 is executed before python
                 # This is more reliable than using && or & in cmd /c
+                # Use temporary output file to capture unittest output for logging
                 $batchFile = Join-Path $env:TEMP "run_unittest_x64_$(Get-Date -Format 'yyyyMMddHHmmss').bat"
+                $outputFile = Join-Path $env:TEMP "unittest_x64_output_$(Get-Date -Format 'yyyyMMddHHmmss').txt"
                 $batchContent = @"
 @echo off
 chcp 932 >nul 2>&1
 cd /d "$repoRoot"
-"$venvX64\Scripts\python.exe" -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests
+"$venvX64\Scripts\python.exe" -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests -v > "$outputFile" 2>&1
 exit /b %ERRORLEVEL%
 "@
                 try {
                     $batchContent | Out-File -FilePath $batchFile -Encoding ASCII -NoNewline
                     $process = Start-Process -FilePath $batchFile -PassThru -NoNewWindow -Wait:$false -UseNewEnvironment:$false -WorkingDirectory $repoRoot
                 } finally {
-                    # Clean up batch file after process completes
-                    # Wait for process to finish first, then clean up
+                    # Wait for process to finish with timeout
                     $process | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
                     if (-not $process.HasExited) {
                         Write-Warning "unittest timed out after 120 seconds, forcing termination"
@@ -303,11 +324,22 @@ exit /b %ERRORLEVEL%
                         Write-Error "jp smoke tests timed out"
                         exit 1
                     }
-                    # Clean up batch file after process exits
+                    
+                    # Read and display output from file
+                    if (Test-Path $outputFile) {
+                        $output = Get-Content $outputFile -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
+                        if ($output) {
+                            Write-Host $output
+                        }
+                        Remove-Item $outputFile -Force -ErrorAction SilentlyContinue
+                    }
+                    
+                    # Clean up batch file
                     Start-Sleep -Milliseconds 500
                     if (Test-Path $batchFile) {
                         Remove-Item $batchFile -Force -ErrorAction SilentlyContinue
                     }
+                    
                     # Check exit code after process completes
                     if ($process.ExitCode -ne 0) {
                         Write-Error "jp smoke tests failed (exit code: $($process.ExitCode))"
@@ -322,6 +354,15 @@ exit /b %ERRORLEVEL%
                 }
             }
         } finally {
+            # Stop transcript if it was started
+            if ($logStarted) {
+                try {
+                    Stop-Transcript | Out-Null
+                } catch {
+                    Write-Warning "Failed to stop transcript: $_"
+                }
+            }
+            
             if ($oldBuildArch) {
                 $env:BUILD_ARCH = $oldBuildArch
             } else {
