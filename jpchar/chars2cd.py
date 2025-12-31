@@ -11,7 +11,7 @@ from _jpchar import (
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 characters_dict = read_characters_dic(
-	pathlib.Path.cwd().parent / "source" / "locale" / "ja" / "characters.dic"
+	pathlib.Path.cwd().parent / "source" / "locale" / "ja" / "characters.dic",
 )
 
 # characters_dict を Unicode 番号順に並べて出力する

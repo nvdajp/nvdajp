@@ -35,12 +35,12 @@
 param(
     [Parameter(Position = 0)]
     [int]$VersionBuild = 0,
-    
+
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$SConsOptions = @(),
-    
+
     [string]$LogPath = "",
-    
+
     [switch]$SkipUnitTests,
     [switch]$SkipSystemTests
 )

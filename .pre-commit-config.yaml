@@ -9,9 +9,9 @@ ci:
   # https://stackoverflow.com/questions/70778806/pre-commit-not-using-virtual-environment .
   # Can't run licenseCheck as it relies on telemetry,
   # which CI blocks.
-    # Pyright does not seem to work in pre-commit CI
-    # trailing-whitespace and end-of-file-fixer are skipped to prevent accidental deletion of documentation content
-    skip: [checkPo, scons-source, checkPot, unitTest, licenseCheck, pyright, trailing-whitespace, end-of-file-fixer, markdownlint-cli2]
+  # Pyright does not seem to work in pre-commit CI
+  # trailing-whitespace and end-of-file-fixer are skipped to prevent accidental deletion of documentation content
+  skip: [checkPo, scons-source, checkPot, unitTest, licenseCheck, pyright, trailing-whitespace, end-of-file-fixer, markdownlint-cli2]
   autoupdate_schedule: monthly
   autoupdate_commit_msg: "Pre-commit auto-update"
   autofix_commit_msg: "Pre-commit auto-fix"
@@ -124,7 +124,6 @@ repos:
     - id: ruff
       name: lint with ruff
       args: [ --fix ]
-      exclude: ^miscDepsJp/include/
     - id: ruff-format
       name: format with ruff
 
