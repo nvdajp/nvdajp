@@ -32,12 +32,12 @@ nvdajp には、日本語点字に関連する3つの異なるテーブル/エ�
 - NABCC モード（`expandAtCursor`）に対応
 - 詳細は `projectDocs/jp/braille-ja-jp-comp6.md` を参照
 
-## 2. `ja-jp-rokutenkanji.tbl` - nvdajp 従来の六点漢字テーブル
+## 2. `ja-jp-rokutenkanji.tbl` - nvdajp 従来の六点漢字テーブル（非推奨・将来削除予定）
 
 ### 特徴
 
-- **ファイル**: `source/ja-jp-rokutenkanji.tbl`
-- **インストール先**: `dist/louis/tables/`（`TABLES_DIR`）
+- **ソースファイル**: `source/ja-jp-rokutenkanji.tbl`
+- **状態**: **非推奨**。上流版の`ja-rokutenkanji.utb`（liblouis 3.36.0以降）を使用すべき
 - **登録名**: `ja-rokutenkanji.utb`（`source/brailleTables/__tables.py` で登録）
 - **変換エンジン**: **liblouis を使用**
 - **用途**: 六点漢字（漢字の点字表現）
@@ -69,21 +69,36 @@ letter \x5516  6-1-245             	# 唖
 
 - `ja-jp-rokutenkanji.tbl` は `include ja-jp-comp6.utb` を含むが、`ja-jp-comp6.utb` は疑似テーブル（liblouis が処理できない）
 - liblouis が `ja-jp-comp6.utb` を解決できない場合、`ja-jp-rokutenkanji.tbl` は動作しない可能性がある
+- **上流版の`ja-rokutenkanji.utb`（liblouis 3.36.0以降）が利用可能になったため、このテーブルは不要**
 
-## 3. 上流版の `ja-rokutenkanji.utb` - liblouis 公式の六点漢字テーブル
+### 現在の対応（一時的）
+
+- **現在のブランチ（liblouis 3.34.0）**: `nvdaHelper/liblouis/sconscript`で`source/ja-jp-rokutenkanji.tbl`を`source/louis/tables/ja-rokutenkanji.utb`としてコピー（ユニットテストを通すため）
+- **将来（liblouis 3.36.0以降）**: 上流版の`ja-rokutenkanji.utb`を使用し、`ja-jp-rokutenkanji.tbl`とSConsビルドでのコピー処理を削除すべき
+
+## 3. 上流版の `ja-rokutenkanji.utb` - liblouis 公式の六点漢字テーブル（推奨）
 
 ### 特徴
 
-- **ファイル**: `include/liblouis/tables/ja-rokutenkanji.utb`（**現在存在しない**）
+- **ファイル**: `include/liblouis/tables/ja-rokutenkanji.utb`
 - **登録**: `source/brailleTables/__tables.py` で `ja-rokutenkanji.utb` として登録されている
 - **変換エンジン**: **liblouis を使用**
-- **状態**: 上流版の liblouis には**まだ含まれていない**（x64移行時点）
+- **状態**: liblouis 3.36.0以降に含まれている（2025年7月26日のコミット `23d2cbb1` で追加）
+- **メンテナンス**: liblouis公式でメンテナンスされている（Yoza Kensaku, Kiriake Masanori）
+- **推奨**: **このテーブルを使用すべき**。nvdajp独自の`ja-jp-rokutenkanji.tbl`は非推奨
 
-### 現状
+### 現状（2025年12月31日時点）
 
-- `source/brailleTables/__tables.py` では `ja-rokutenkanji.utb` が登録されている
-- しかし、`include/liblouis/tables/` には `ja-rokutenkanji.utb` が存在しない
-- これは、上流版の NVDA が将来の liblouis バージョンに含まれる予定のテーブルを先取りして登録している可能性がある
+- **上流（nvaccess/nvda beta）のliblouis 3.36.0**: `include/liblouis/tables/ja-rokutenkanji.utb`が存在する
+- **現在のブランチ（betajp-260102）のliblouis 3.34.0**: `include/liblouis/tables/ja-rokutenkanji.utb`が存在しない
+- **一時的な対応**: `source/ja-jp-rokutenkanji.tbl`を`source/louis/tables/ja-rokutenkanji.utb`としてコピーする実装を追加（`nvdaHelper/liblouis/sconscript`）
+- **将来の対応**: nvaccess/betaのマージでliblouisが3.36.0に更新された場合、上流版の`ja-rokutenkanji.utb`を使用し、`ja-jp-rokutenkanji.tbl`とSConsビルドでのコピー処理を削除すべき
+
+### 利点
+
+- liblouis公式でメンテナンスされているため、継続的に更新される
+- `include ja-jp-comp6.utb`を含まないため、liblouisが正常に処理できる
+- nvdajp独自のメンテナンスが不要
 
 ## 関係図
 
@@ -98,19 +113,22 @@ letter \x5516  6-1-245             	# 唖
                           │ include
                           │
 ┌─────────────────────────────────────────────────────────────┐
-│ ja-jp-rokutenkanji.tbl (nvdajp 従来)                        │
+│ ja-jp-rokutenkanji.tbl (nvdajp 従来・非推奨)                │
 │ - 登録名: ja-rokutenkanji.utb                               │
 │ - 変換エンジン: liblouis                                     │
-│ - インストール先: dist/louis/tables/ (TABLES_DIR)          │
+│ - 状態: 非推奨（上流版を使用すべき）                         │
 │ - 問題: include ja-jp-comp6.utb を含むが、                  │
 │   疑似テーブルなので liblouis が解決できない可能性          │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
-│ ja-rokutenkanji.utb (上流版・将来)                         │
+│ ja-rokutenkanji.utb (上流版・liblouis 3.36.0以降・推奨)    │
 │ - 変換エンジン: liblouis                                     │
 │ - インストール先: dist/louis/tables/ (TABLES_DIR)          │
-│ - 状態: 現在存在しない（将来の liblouis に含まれる予定？）  │
+│ - 状態: liblouis 3.36.0以降に含まれている                    │
+│ - メンテナンス: liblouis公式で継続的に更新される             │
+│ - 注意: 現在のブランチ（liblouis 3.34.0）には含まれていない │
+│   一時的にja-jp-rokutenkanji.tblをコピーして使用            │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -133,29 +151,29 @@ letter \x5516  6-1-245             	# 唖
 
 ## 推奨される対応
 
-### 短期的な対応
+### 短期的な対応（現在のブランチ）
 
-1. **`ja-jp-rokutenkanji.tbl` の修正**
-   - `include ja-jp-comp6.utb` を削除し、必要な定義を直接含める
-   - または、`ja-jp-comp6.utb` の内容を liblouis が処理できる形式に変換
+1. **一時的な対応**
+   - `nvdaHelper/liblouis/sconscript`で`source/ja-jp-rokutenkanji.tbl`を`source/louis/tables/ja-rokutenkanji.utb`としてコピー
+   - これにより、liblouis 3.34.0の環境でもユニットテストが正常に動作する
 
-2. **名前の変更**
-   - `ja-jp-rokutenkanji.tbl` を `ja-jp-rokutenkanji.utb` として登録（現在は `ja-rokutenkanji.utb`）
-   - 上流版の `ja-rokutenkanji.utb` との衝突を回避
+### 長期的な対応（liblouis 3.36.0以降）
 
-### 長期的な対応
+1. **上流版のテーブルを使用**
+   - nvaccess/betaのマージでliblouisが3.36.0に更新された場合、上流版の`ja-rokutenkanji.utb`を使用
+   - `source/ja-jp-rokutenkanji.tbl`を削除
+   - `nvdaHelper/liblouis/sconscript`でのコピー処理を削除
 
-1. **上流版との統合方針の決定**
-   - 上流版の `ja-rokutenkanji.utb` が追加された場合、nvdajp の `ja-jp-rokutenkanji.tbl` をどうするか
-   - 統合するか、別名で維持するか
-
-2. **ドキュメントの更新**
-   - 各テーブルの関係と用途を明確化
-   - ユーザー向けの説明を追加
+2. **理由**
+   - 上流版のテーブルはliblouis公式でメンテナンスされている
+   - `include ja-jp-comp6.utb`の問題がない
+   - nvdajp独自のメンテナンスが不要
 
 ## 参考資料
 
 - `projectDocs/jp/braille-ja-jp-comp6.md` - `ja-jp-comp6.utb` の詳細
+- `projectDocs/jp/ja-rokutenkanji-table-fix-plan.md` - `ja-rokutenkanji.utb` テーブル解決エラー修正方針
 - `source/ja-jp-rokutenkanji.tbl` - nvdajp 従来の六点漢字テーブル
 - `source/brailleTables/__tables.py` - テーブル登録
 - `source/louisHelper.py` - エンジン切り替えロジック
+- `nvdaHelper/liblouis/sconscript` - ビルドスクリプト（`ja-jp-rokutenkanji.tbl`を`source/louis/tables/ja-rokutenkanji.utb`としてコピー）

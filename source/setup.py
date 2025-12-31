@@ -266,9 +266,6 @@ freeze(
 		("images", glob("images/*.ico")),
 		("fonts", glob("fonts/*.ttf")),
 		("louis/tables", glob("louis/tables/*")),
-		# BEGIN JP PATCH (Japanese braille table: ja-jp-rokutenkanji.tbl)
-		("louis/tables", ["ja-jp-rokutenkanji.tbl"]),
-		# END JP PATCH
 		("COMRegistrationFixes", glob("COMRegistrationFixes/*.reg")),
 		("miscDeps/tools", ["../miscDeps/tools/msgfmt.exe"]),
 		(".", glob("../miscDeps/python/*.dll")),
@@ -277,10 +274,9 @@ freeze(
 	]
 	# BEGIN JP PATCH (Japanese braille tables)
 	# ja-jp-comp6.utb: JP-specific table, installed to dist root (TABLES_DIR_JP)
-	# ja-jp-rokutenkanji.tbl: registered as ja-rokutenkanji.utb, copy to ja-rokutenkanji.utb for installation
-	+ [(".", ["ja-jp-comp6.utb"]), ("louis/tables", ["ja-jp-rokutenkanji.tbl"])]
-	# Note: ja-jp-rokutenkanji.tbl is registered as ja-rokutenkanji.utb in brailleTables/__tables.py
-	# liblouis should accept .tbl files with .utb registration names
+	+ [(".", ["ja-jp-comp6.utb"])]
+	# Note: ja-rokutenkanji.utb is provided by liblouis 3.36.0+ (include/liblouis/tables/ja-rokutenkanji.utb)
+	# and is automatically copied to source/louis/tables/ by nvdaHelper/liblouis/sconscript
 	# END JP PATCH
 	+ (
 		getLocaleDataFiles()
