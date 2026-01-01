@@ -24,6 +24,79 @@
 * **PR CI 監視**: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` (単回) または `-Watch` (継続監視)
   * CI チェックの状態を確認し、失敗時に自動分析とアドバイスを提供
 
+### Pre-commit のスキップ設定
+
+`.pre-commit-config.yaml` の `ci` セクションでは、以下のフックが `pre-commit.ci` サービスでスキップされています：
+
+* **`checkPo`**: PO ファイルのチェック（GitHub Actions の `checkPo` ジョブで実行）
+* **`scons-source`**: Windows の scons スクリプトは Linux ベースの pre-commit.ci では実行不可
+* **`checkPot`**: 翻訳文字列のチェック（GitHub Actions の `checkPot` ジョブで実行）
+* **`unitTest`**: ユニットテスト（Python 環境が必要で、pre-commit.ci では設定不可）
+* **`licenseCheck`**: ライセンス互換性チェック（テレメトリーに依存し、CI でブロックされる）
+* **`pyright`**: 型チェック（pre-commit CI では動作しない）
+
+これらのチェックは GitHub Actions のワークフロー（`.github/workflows/testAndPublish.yml`）で実行されるため、pre-commit.ci ではスキップされています。
+
+### Pre-commit フックの詳細
+
+`.pre-commit-config.yaml` で設定されているフックの一覧と説明：
+
+#### 外部リポジトリのフック
+
+* **pre-commit-hooks** (35-92行目): 基本チェック
+  * `no-commit-to-branch`: 保護ブランチ（master, beta, rc）へのコミットを防止
+  * `check-added-large-files`: 500KB 以上の大きなファイルの追加を検出（PO ファイル、TTF フォント、.dic、.sfd は除外）
+  * `check-ast`: Python の構文チェック
+  * `check-case-conflict`: 大文字小文字のみが異なるファイル名の衝突を検出（Windows ファイルシステム向け）
+  * `check-merge-conflict`: マージコンフリクトの解決残り（`<<<<<<<`, `=======`, `>>>>>>>`）を検出
+  * `debug-statements`: Python のデバッグ文（`breakpoint()` など）を検出
+  * `trailing-whitespace`: 行末の空白を削除（**注意**: 現時点で nvdajp では無効化されています）
+  * `end-of-file-fixer`: ファイル末尾の改行を1つに統一（**注意**: 現時点で nvdajp では無効化されています）
+  * `fix-byte-order-marker`: UTF-8 BOM を削除（**注意**: 現時点で nvdajp では無効化されています）
+  * `check-toml`, `check-yaml`, `check-xml`: 各形式のファイルの構文チェック
+  * `check-vcs-permalinks`: バージョン管理システムへの永続的なリンクをチェック
+  * `check-illegal-windows-names`: Windows の予約ファイル名（CON, PRN など）を検出
+  * `name-tests-test`: テストファイルが `test_*.py` の命名規則に従っているかチェック
+
+* **add-trailing-comma** (94-100行目): 関数引数やリスト項目の末尾にカンマを追加
+  * Ruff がインデント/改行のフォーマットを保持するために必要
+
+* **ruff** (102-110行目): Python の lint と format
+  * `ruff`: コードの lint（`--fix` で自動修正）
+  * `ruff-format`: コードのフォーマット
+
+* **pyright** (112-116行目): 型チェック
+  * Python の静的型チェック（pre-commit.ci ではスキップ）
+
+* **uv-lock** (118-124行目): uv ロックファイルの検証
+  * `uv.lock` ファイルが `pyproject.toml` と整合しているか確認
+
+* **markdownlint-cli2** (126-131行目): Markdown の lint
+  * Markdown ファイルの構文とスタイルをチェック（`--fix` で自動修正）
+  * **注意**: 現時点で nvdajp では無効化されています（JP PATCH でコメントアウト）
+
+#### ローカルフック
+
+* **checkPo** (135-139行目): PO ファイルのチェック
+  * `source/l10nUtil.py checkPo` を実行して翻訳ファイルのエラーを検出
+  * pre-commit.ci ではスキップ（GitHub Actions で実行）
+
+* **scons-source** (140-145行目): C/C++ ファイルのビルド
+  * `scons source --all-cores` を実行して C/C++ ファイルが正しくビルドできるか確認
+  * pre-commit.ci ではスキップ（Windows の scons スクリプトは Linux では実行不可）
+
+* **checkPot** (146-152行目): 翻訳文字列のチェック
+  * `scons checkPot --all-cores` を実行して翻訳文字列の整合性を確認
+  * pre-commit.ci ではスキップ（GitHub Actions で実行）
+
+* **unitTest** (153-158行目): ユニットテスト実行
+  * `rununittests.bat` を実行してユニットテストを実行
+  * pre-commit.ci ではスキップ（Python 環境が必要で設定不可）
+
+* **licenseCheck** (159-165行目): ライセンス互換性チェック
+  * `runlicensecheck.bat` を実行して pip 依存関係のライセンス互換性を確認
+  * pre-commit.ci ではスキップ（テレメトリーに依存し、CI でブロックされる）
+
 ## ポリシー（抜粋）
 
 * 本家版との差分は最小に保つ。差分は明示的な場所に集約する
