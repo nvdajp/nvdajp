@@ -204,13 +204,18 @@ def pass2(verboseMode=False):
             "inpos_mismatch": 0,
             "outpos_mismatch": 0,
         }
-        for t in tests:
+        for idx, t in enumerate(tests):
             if "input" not in t:
                 continue
             nabcc = False
             if t.get("mode") == "NABCC":
                 nabcc = True
             if "text" in t:
+                # Log current test context before translation for crash forensics.
+                f.write(f"Running test index {idx}\n")
+                f.write(f"text: {t['text']!r}\n")
+                f.write(f"input: {t.get('input')!r}\n")
+                f.flush()
                 output = io.StringIO()
                 result, pat, inpos1, inpos2 = translator2.translateWithInPos2(
                     t["text"], logwrite=__print, nabcc=nabcc

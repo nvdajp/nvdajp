@@ -895,6 +895,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 	mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
 	jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
+	dic_dir = jtalk_dir / "dic"
 
 	# Clean up all .obj, .lib, and .exe files in mecab/src directory using glob
 	# This ensures that stale object files from previous builds (x86/x64) are removed
@@ -902,6 +903,14 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	for pattern in ["*.obj", "*.lib", "*.exe"]:
 		for file_path in glob.glob(str(mecab_src_dir / pattern)):
 			env.Clean(jtalk_sync_stamp, file_path)
+
+	# Clean dictionary outputs so `scons -c jtalkSync` forces a rebuild on next run.
+	# Preserve license/docs files that should remain in the tree.
+	keep_dic_files = {"COPYING", "COPYING-bep-eng.txt", "dicrc"}
+	if dic_dir.exists():
+		for file_path in dic_dir.glob("*"):
+			if file_path.is_file() and file_path.name not in keep_dic_files:
+				env.Clean(jtalk_sync_stamp, str(file_path))
 
 	# mecab-dict-index.exe (built by jtalkSync) - already covered by glob above, but keep for clarity
 	mecab_dict_index = str(mecab_src_dir / "mecab-dict-index.exe")

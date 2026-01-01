@@ -152,6 +152,31 @@ function Initialize-MsvcEnvironment {
 }
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
+
+function Stop-JpSmokeTestProcesses {
+    param(
+        [string]$RepoRoot
+    )
+    $venvX64 = Join-Path $RepoRoot ".venv-x64\Scripts\python.exe"
+    $patterns = @(
+        [regex]::Escape($venvX64),
+        "miscDepsJp\.jptools\.test",
+        "run_unittest_x64_"
+    )
+    $procs = Get-CimInstance Win32_Process | Where-Object {
+        $_.CommandLine -and $_.Name -in @("python.exe", "pythonw.exe", "venvlauncher.exe")
+    }
+    foreach ($p in $procs) {
+        foreach ($pat in $patterns) {
+            if ($p.CommandLine -match $pat) {
+                Write-Host "Stopping leftover smoke test process: $($p.Name) (PID $($p.ProcessId))"
+                Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue
+                break
+            }
+        }
+    }
+}
+
 if (-not $SkipBuild) {
     Write-Host "Building jtalkSync for $Architecture ..."
     Push-Location $repoRoot
@@ -217,6 +242,7 @@ if ($allOk) {
         try {
             $env:BUILD_ARCH = $Architecture
             if ($Architecture -eq 'x64') {
+                Stop-JpSmokeTestProcesses -RepoRoot $repoRoot
                 # Use uv to run unittest with Python 3.13 x64.
                 # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
                 $venvX64 = "$repoRoot\.venv-x64"

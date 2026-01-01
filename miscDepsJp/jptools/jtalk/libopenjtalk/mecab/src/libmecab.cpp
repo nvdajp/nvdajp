@@ -54,6 +54,9 @@
 #include "utils.h"
 #include "tokenizer.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -225,6 +228,9 @@ char* mecab_sparse_tostr3(mecab_t *c, const char *str, size_t len,
 
 const mecab_node_t* mecab_sparse_tonode(mecab_t *c, const char *str) {
   MECAB_CHECK_FIRST_ARG(c, t);
+  // BEGIN JP PATCH (native debug log for crash investigation)
+  // Logging disabled for release builds.
+  // END JP PATCH
   return reinterpret_cast<const mecab_node_t *>(t->parseToNode(str));
 }
 

@@ -35,8 +35,40 @@ class Connector {
   void set_left_size(size_t lsize)  { lsize_ = lsize; }
   void set_right_size(size_t rsize) { rsize_ = rsize; }
 
+  // BEGIN JP PATCH (debug: log connector cost bounds)
+  static inline void log_connector_cost_bounds(unsigned short rcAttr,
+                                               unsigned short lcAttr,
+                                               unsigned short lsize,
+                                               unsigned short rsize) {
+    // Logging disabled for release builds.
+    (void)rcAttr;
+    (void)lcAttr;
+    (void)lsize;
+    (void)rsize;
+  }
+  // END JP PATCH
+
   inline int cost(const Node *lNode, const Node *rNode) const {
-    return matrix_[ lNode->rcAttr + lsize_ * rNode->lcAttr ] + rNode->wcost;
+    // BEGIN JP PATCH (workaround: clamp out-of-range attrs to avoid crash)
+    const size_t lsize = static_cast<size_t>(lsize_);
+    const size_t rsize = static_cast<size_t>(rsize_);
+    size_t rcAttr = static_cast<size_t>(lNode->rcAttr);
+    size_t lcAttr = static_cast<size_t>(rNode->lcAttr);
+    if (lsize == 0 || rsize == 0) {
+      log_connector_cost_bounds(lNode->rcAttr, rNode->lcAttr, lsize_, rsize_);
+      return rNode->wcost;
+    }
+    if (rcAttr >= lsize || lcAttr >= rsize) {
+      log_connector_cost_bounds(lNode->rcAttr, rNode->lcAttr, lsize_, rsize_);
+      if (rcAttr >= lsize) {
+        rcAttr = lsize - 1;
+      }
+      if (lcAttr >= rsize) {
+        lcAttr = rsize - 1;
+      }
+    }
+    // END JP PATCH
+    return matrix_[rcAttr + lsize * lcAttr] + rNode->wcost;
   }
 
   // access to raw matrix

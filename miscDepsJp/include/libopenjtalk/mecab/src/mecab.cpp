@@ -102,10 +102,54 @@ BOOL Mecab_load(Mecab *m, const char *dicdir){
   return TRUE;
 }
 
+// BEGIN JP PATCH (workaround: sanitize ZWSP before calling MeCab)
+static const char *Mecab_sanitize_zwsp(const char *str, char **buf_out){
+  const unsigned char *s;
+  size_t len;
+  size_t i;
+  char *buf;
+
+  if (buf_out == NULL)
+    return str;
+  *buf_out = NULL;
+  if (str == NULL)
+    return str;
+
+  s = (const unsigned char *)str;
+  len = strlen(str);
+  for (i = 0; i + 2 < len; i++){
+    if (s[i] == 0xE2 && s[i + 1] == 0x80 && s[i + 2] == 0x8B){
+      buf = (char *)malloc(len + 1);
+      if (buf == NULL)
+        return str;
+      memcpy(buf, str, len + 1);
+      for (i = 0; i + 2 < len; i++){
+        if ((unsigned char)buf[i] == 0xE2 &&
+            (unsigned char)buf[i + 1] == 0x80 &&
+            (unsigned char)buf[i + 2] == 0x8B){
+          // Replace ZWSP with ideographic space (U+3000) to keep UTF-8 length.
+          buf[i] = (char)0xE3;
+          buf[i + 1] = (char)0x80;
+          buf[i + 2] = (char)0x80;
+        }
+      }
+      *buf_out = buf;
+      return buf;
+    }
+  }
+
+  return str;
+}
+// END JP PATCH
+
 BOOL Mecab_analysis(Mecab *m, const char *str){
   int i = 0;
   mecab_node_t *head;
   mecab_node_t *node;
+  // BEGIN JP PATCH (workaround: sanitize ZWSP before calling MeCab)
+  char *sanitized = NULL;
+  const char *safe_str = Mecab_sanitize_zwsp(str, &sanitized);
+  // END JP PATCH
 
   if(m->mecab == NULL)
     return FALSE;
@@ -113,7 +157,11 @@ BOOL Mecab_analysis(Mecab *m, const char *str){
   if(m->size > 0 || m->feature != NULL)
     Mecab_refresh(m);
 
-  head = (mecab_node_t *) mecab_sparse_tonode(m->mecab, str);
+  head = (mecab_node_t *) mecab_sparse_tonode(m->mecab, safe_str);
+  // BEGIN JP PATCH (workaround: free sanitized buffer if allocated)
+  if (sanitized != NULL)
+    free(sanitized);
+  // END JP PATCH
   if(head == NULL) return FALSE;
   for (node = head; node != NULL; node = node->next) {
     if(node->stat != MECAB_BOS_NODE && node->stat != MECAB_EOS_NODE)

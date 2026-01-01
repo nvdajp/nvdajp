@@ -1326,10 +1326,28 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 
 	# tab code
 	text = text.replace("\t", TAB_CODE)
+	# BEGIN JP PATCH (log tab replacement)
+	if TAB_CODE in text:
+		logwrite(f"translator2: TAB_CODE present after tab replace: {text!r}")
+	# END JP PATCH
 
 	# 'ふにゃ～'
 	text = text.replace("ゃ～", "ゃー")
 
+	# BEGIN JP PATCH (assert suspicious patterns before text2mecab)
+	assert "\t" not in text and "\r" not in text and "\n" not in text, "translator2: unexpected tab/CR/LF"
+	ascii_count = sum(1 for c in text if ord(c) < 0x80)
+	non_ascii_count = len(text) - ascii_count
+	if ascii_count and non_ascii_count:
+		mixed_alnum = any(c.isalnum() and ord(c) < 0x80 for c in text)
+		# Allow TAB_CODE (U+200B) in mixed text to continue investigation.
+		if mixed_alnum and TAB_CODE not in text:
+			if logwrite:
+				logwrite(f"translator2: mixed ASCII alnum and non-ASCII: {text!r}")
+	if "  " in text:
+		if logwrite:
+			logwrite("translator2: consecutive ASCII spaces detected")
+	# END JP PATCH
 	text = text2mecab(text)
 	mf = MecabFeatures()
 	Mecab_analysis(text, mf, logwrite_=logwrite)

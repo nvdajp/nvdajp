@@ -180,7 +180,7 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
 	if libmecab_dir is None or dic is None:
 		raise ValueError("libmecab_dir and dic must be provided")
 	mecab_dll = str(Path(libmecab_dir) / "libmecab.dll")
-	global libmc
+	global libmc, mecab
 	if libmc is None:
 		libmc = cdll.LoadLibrary(mecab_dll)
 		# Configure ctypes signatures. On 64-bit Python, we must explicitly
@@ -234,7 +234,24 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
 					ud.encode("utf-8"),
 				),
 			)
-		mecab = libmc.mecab_new(argc, args)
+		mecab_result = libmc.mecab_new(argc, args)
+		# CRITICAL FIX: On x64, mecab_new may return int despite restype=c_void_p
+		# Convert to c_void_p explicitly to ensure correct 8-byte pointer handling
+		if mecab_result:
+			if isinstance(mecab_result, int):
+				mecab = c_void_p(mecab_result)
+				if logwrite_:
+					logwrite_(f"Mecab_initialize: converted mecab from int to c_void_p: {mecab_result} -> {mecab.value}")
+			elif not isinstance(mecab_result, c_void_p):
+				mecab = cast(mecab_result, c_void_p)
+				if logwrite_:
+					logwrite_(f"Mecab_initialize: converted mecab to c_void_p: {type(mecab_result)} -> {mecab.value}")
+			else:
+				mecab = mecab_result
+				if logwrite_:
+					logwrite_(f"Mecab_initialize: mecab is already c_void_p: {mecab.value}")
+		else:
+			mecab = None
 		if not mecab:
 			# mecab_new failed - mecab_strerror should not be called with NULL pointer (causes access violation on x64)
 			error_msg = "mecab_new failed: failed to initialize MeCab"
@@ -249,6 +266,10 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
 
 
 def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
+	# CRITICAL: Declare global mecab at the start of the function
+	# This must be before any reference to mecab to avoid SyntaxError
+	global mecab
+	
 	# Helper function to write to debug log file (ensures logs are captured even on crash)
 	def _write_debug_log(msg):
 		try:
@@ -297,6 +318,17 @@ def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
 			logwrite_(f"src is not bytes: {type(src)}")
 		features.size = 0
 		return
+	# BEGIN JP PATCH (assert basic bytes invariants before calling MeCab)
+	assert isinstance(src, bytes), "mecab: src must be bytes"
+	assert len(src) > 0, "mecab: src is empty"
+	assert b"\0" not in src, "mecab: src contains NUL byte"
+	assert b"\n" not in src and b"\r" not in src, "mecab: src contains CR/LF bytes"
+	# Ensure UTF-8 decoding is possible for debug purposes (expected input encoding).
+	try:
+		src.decode(CODE)
+	except Exception as e:
+		assert False, f"mecab: src is not valid {CODE}: {e}"
+	# END JP PATCH
 	# Log src type and content for debugging (first 100 bytes)
 	if logwrite_:
 		try:
@@ -306,16 +338,48 @@ def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
 			logwrite_(
 				f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}"
 			)
+			# BEGIN JP PATCH (log full bytes for short inputs)
+			if len(src) <= 256:
+				logwrite_(f"Mecab_analysis: src_full_bytes={src!r}")
+			# END JP PATCH
 		except Exception:
 			# Logging is best-effort only. Failures must not interfere
 			# with normal Mecab operation, so we intentionally ignore exceptions.
 			pass
 	# Validate mecab pointer is not NULL (prevents access violation on x64)
-	# mecab is already c_void_p type from mecab_new, so check value directly
-	mecab_value = mecab.value if hasattr(mecab, "value") else mecab
-	if not mecab or mecab_value == 0:
+	# CRITICAL FIX: On x64, mecab may be stored as int (from previous code or ctypes behavior)
+	# Convert to c_void_p explicitly to ensure correct 8-byte pointer handling
+	if not mecab:
 		if logwrite_:
 			logwrite_("mecab pointer is NULL or invalid")
+		features.size = 0
+		return
+	# Ensure mecab is c_void_p type (required for x64)
+	mecab_original_type = type(mecab)
+	mecab_original_value = mecab.value if hasattr(mecab, "value") else mecab
+	if isinstance(mecab, int):
+		mecab = c_void_p(mecab) if mecab else None
+		_write_debug_log(
+			f"Mecab_analysis: converted mecab from int to c_void_p: {mecab_original_type} -> {type(mecab)}, value={mecab.value if mecab else None}"
+		)
+	elif not isinstance(mecab, c_void_p):
+		mecab = cast(mecab, c_void_p) if mecab else None
+		_write_debug_log(
+			f"Mecab_analysis: converted mecab to c_void_p: {mecab_original_type} -> {type(mecab)}, value={mecab.value if mecab else None}"
+		)
+	else:
+		_write_debug_log(
+			f"Mecab_analysis: mecab is already c_void_p: {mecab_original_type}, value={mecab_original_value}"
+		)
+	if not mecab:
+		if logwrite_:
+			logwrite_("mecab pointer is NULL or invalid after conversion")
+		features.size = 0
+		return
+	mecab_value = mecab.value if hasattr(mecab, "value") else (mecab if mecab else 0)
+	if mecab_value == 0:
+		if logwrite_:
+			logwrite_("mecab pointer value is 0")
 		features.size = 0
 		return
 	# Log debug info before calling mecab_sparse_tonode (for troubleshooting)
@@ -391,6 +455,10 @@ def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
 		if s != MECAB_BOS_NODE and s != MECAB_EOS_NODE:
 			c = node[0].length
 			s = string_at(node[0].surface, c) + b"," + string_at(node[0].feature)
+			# BEGIN JP PATCH (assert buffer bounds before memmove)
+			assert i < FECOUNT, "mecab node count exceeds FECOUNT"
+			assert len(s) < FELEN, "mecab feature buffer overflow risk"
+			# END JP PATCH
 			if logwrite_:
 				logwrite_(s.decode(CODE, "ignore"))
 			buf = create_string_buffer(s)
