@@ -198,6 +198,24 @@ read from `sys.dic`, suggesting a charset/format mismatch between dictionary and
 - Current build shows `CHARSET_SHIFT_JIS` in MeCab compilation flags, while the dictionary is
   UTF-8 (`DIC_VERSION`), which likely explains the out-of-range attributes.
 
+## Additional hypothesis (UTF-8 vs Shift-JIS build mismatch)
+
+Based on recent logs, the most consistent explanation is a charset mismatch:
+
+- `libmecab.dll` is built with `CHARSET_SHIFT_JIS` while the dictionary is UTF-8.
+- Abnormal tokens show `posid=65535` (0xFFFF) and out-of-range `lcAttr/rcAttr`, which
+  is consistent with incorrect decoding of dictionary fields.
+
+If correct, the root fix is to align MeCab and the dictionary on UTF-8:
+
+1. Switch MeCab build flags from `CHARSET_SHIFT_JIS` to UTF-8 (Makefile.mak and related settings).
+2. Rebuild `libmecab.dll` and `mecab-dict-index.exe` with UTF-8 flags.
+3. Regenerate the dictionary (make_jdic.py).
+4. Re-run smoke tests and confirm `lcAttr/rcAttr` are in range.
+
+The current clamp workaround can remain for diagnosis, but the goal is to remove it once
+UTF-8 builds are confirmed stable.
+
 ## Suggested direction (summary)
 
 - Short term: keep `betajp` as a stable line (Shift-JIS dependent).
