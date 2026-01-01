@@ -148,6 +148,29 @@ The issue appears related to MeCab processing in x64, potentially input encoding
 produced by `text2mecab`, but the precise trigger is still unclear. The crash site points to
 MeCab connector matrix access (`Connector::cost`), suggesting bad indices or corrupted node data.
 
+## Considerations
+
+- Crash site is inside MeCab (`Connector::cost`) and not at the Python/C boundary.
+- `rcAttr/lcAttr` being out of range is the most plausible direct cause of the access violation.
+- UTF-8 specific input patterns (e.g., U+200B or fullwidth ASCII sequences from `text2mecab`)
+  are likely to produce invalid context IDs or category mappings.
+- `betajp` (Shift-JIS dependent) was stable on x64, while `betajp-260102` (UTF-8 direction)
+  crashes in x64; the issue appears tied to UTF-8 input + 64-bit path rather than x64 alone.
+- Rolling back to Shift-JIS would remove the immediate failure, but increases long-term drift
+  from upstream (x64-only + Python 3.13 + UTF-8 direction).
+
+## Suggested direction (summary)
+
+- Short term: keep `betajp` as a stable line (Shift-JIS dependent).
+- Mid/long term: solve UTF-8 + x64 crash on `betajp-260102` (or a new branch) and carry
+  forward the investigation rather than reverting.
+
+## Related docs
+
+- `projectDocs/jp/tab_character_analysis.md` (TAB replacement and ZWSP crash context)
+- `projectDocs/jp/troubleshooting_runjp_smoke_tests.md` (x64 smoke test execution details)
+- `projectDocs/jp/roadmap.md` (stage 2/3 migration context)
+
 ## Next ideas (if continuing)
 
 ### 6) Explicit `c_void_p` conversion in `Mecab_initialize`

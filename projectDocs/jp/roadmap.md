@@ -384,6 +384,18 @@
           * `push` トリガーも有効化
           * 手動実行（`workflow_dispatch`）も引き続き有効
 
+* [ ] **タスク 2.9: x64 UTF-8クラッシュ調査とワークアラウンド（優先度：高）**
+  * **目的**: `betajp-260102` での `Connector::cost` アクセス違反を解消し、x64 smoke testを安定化
+  * **背景**: UTF-8入力（U+200Bや全角ASCII混在）で `rcAttr/lcAttr` が範囲外になる可能性
+  * **短期方針**: `betajp`（Shift-JIS依存）を安定版として維持
+  * **中長期方針**: `betajp-260102` または新ブランチでUTF-8 + x64の問題を解決
+  * **実施項目**:
+    * `Connector::cost` の `rcAttr/lcAttr/lsize/rsize` をログ出力して範囲外を確認
+    * C/C++ハーネスで最小再現を確認し、ctypes依存を除外
+    * `char.def`/`unk.def`/辞書の整合性を確認（DIC_VERSION、matrix.bin/char.bin）
+    * `text2mecab` のUTF-8入力系列（TAB_CODE/ZWSP）を重点調査
+  * **参照**: `projectDocs/jp/x64-jp-smoke-crash-investigation.md`
+
 * [ ] **タスク 2.5a: ruff/pyrightエラーの修正（優先度：高）**
   * JP固有コード（`source/synthDrivers/jtalk/`）のruffエラーを修正
   * `pyrightconfig.json`の除外設定を見直し、JP固有コードの型チェックを有効化
