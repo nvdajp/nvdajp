@@ -1,8 +1,15 @@
-name: Issue Duplication Check
+name: Issue Duplication Check (DISABLED for nvdajp)
+
+# DISABLED FOR NVDAJP: OpenAI API key (MCP_PAT_TOKEN) is not available in nvdajp repository
 
 on:
-  issues:
-    types: [opened]
+  # Disabled - this workflow requires OpenAI API key which is not available in nvdajp
+  # issues:
+  #   types: [opened]
+  push:
+    branches:
+      # This ensures the workflow never runs
+      - 'never-match-this-branch-name'
 
 permissions:
   contents: read

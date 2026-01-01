@@ -6,13 +6,18 @@ name: Fetch Crowdin Translations (DISABLED for nvdajp)
 # DISABLED FOR NVDAJP: Translations are handled by upstream nvaccess repository
 
 on:
-  workflow_dispatch:
+  # Disabled - this workflow should not be used in nvdajp repository
+  # workflow_dispatch:
   # schedule:
   #   # Every Monday at 00:00 UTC
   #   # This is because the translation freeze should end at 11:59 UTC on a Sunday.
   #   # And we want to perform beta/rc releases soon after 00:00 UTC on a Monday.
   #   # Cron jobs are run from the master branch.
   #   - cron: '0 0 * * 1'
+  push:
+    branches:
+      # This ensures the workflow never runs
+      - 'never-match-this-branch-name'
 
 jobs:
   download-from-crowdin:
