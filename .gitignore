@@ -9,6 +9,16 @@ dist
 *.dll
 !source/brailleDisplayDrivers/DirectBM.dll
 *.exe
+source/synthDrivers/jtalk/dic/sys.dic
+source/synthDrivers/jtalk/dic/unk.dic
+source/synthDrivers/jtalk/dic/DIC_VERSION
+source/synthDrivers/jtalk/dic/char.bin
+source/synthDrivers/jtalk/dic/left-id.def
+source/synthDrivers/jtalk/dic/pos-id.def
+source/synthDrivers/jtalk/dic/right-id.def
+source/synthDrivers/jtalk/dic/matrix.bin
+source/synthDrivers/jtalk/dic/rewrite.def
+source/synthDrivers/jtalk/dic/rewrite.bin
 *.manifest
 source/synthDrivers/espeak-ng-data
 source/lib
@@ -56,12 +66,8 @@ nvdaHelper/docs/
 *.pfx
 *.egg-info
 .claude/settings.local.json
-__h*output.txt
 *.stamp
-# JP-specific build artifacts
 __*.txt
-sconstruct.ours
-sconstruct.theirs
 miscDepsJp/_state/
 jptools/_state/
 jpchar/_state/
@@ -70,13 +76,3 @@ miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-eng-dic.csv
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-tankan-dic.csv
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic
-source/synthDrivers/jtalk/dic/sys.dic
-source/synthDrivers/jtalk/dic/unk.dic
-source/synthDrivers/jtalk/dic/DIC_VERSION
-source/synthDrivers/jtalk/dic/char.bin
-source/synthDrivers/jtalk/dic/left-id.def
-source/synthDrivers/jtalk/dic/pos-id.def
-source/synthDrivers/jtalk/dic/right-id.def
-source/synthDrivers/jtalk/dic/matrix.bin
-source/synthDrivers/jtalk/dic/rewrite.def
-source/synthDrivers/jtalk/dic/rewrite.bin
