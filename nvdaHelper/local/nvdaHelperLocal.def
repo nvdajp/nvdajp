@@ -1,8 +1,8 @@
 EXPORTS
 	createRemoteBindingHandle
 	cancellableSendMessageTimeout
-	cancelCallEvent
-	_notifySendMessageCancelled
+	cancelCallEvent DATA
+	_notifySendMessageCancelled DATA
 	nvdaHelperLocal_initialize
 	nvdaHelperLocal_terminate
 	generateBeep
@@ -48,10 +48,10 @@ EXPORTS
 	_nvdaControllerInternal_installAddonPackageFromPath
 	_nvdaControllerInternal_handleRemoteURL
 	_nvdaControllerInternal_drawFocusRectNotify
-	_nvdaController_brailleMessage
-	_nvdaController_cancelSpeech
-	_nvdaController_speakText
-	_nvdaController_speakSsml
+	_nvdaController_brailleMessage DATA
+	_nvdaController_cancelSpeech DATA
+	_nvdaController_speakText DATA
+	_nvdaController_speakSsml DATA
 	nvdaController_onSsmlMarkReached
 	_nvdaControllerInternal_vbufChangeNotify
 	displayModel_getWindowTextInRect

@@ -98,9 +98,11 @@ if defined CERT_SHA1 (
 )
 
 rem Build SCons args; enable signing only when a valid store cert is selected
+rem Note: Do not set certFile=1 for certificate store signing (JP-specific)
+rem SConstruct will detect CERT_SHA1/CERT_NAME from environment and use certificate store signing
 set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
-if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
-if defined CERT_NAME if not defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
+if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certTimestampServer=%TIMESTAMP_URL%
+if defined CERT_NAME if not defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certTimestampServer=%TIMESTAMP_URL%
 if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN (
     echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
     goto onerror
