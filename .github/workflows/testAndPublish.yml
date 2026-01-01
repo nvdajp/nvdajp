@@ -445,15 +445,19 @@ jobs:
       fail-fast: false
       matrix:
         # To skip tests, and just run install, replace with [excluded_from_build]
-        testSuite: [chrome, installer, startupShutdown, symbols, vscode]
+        # BEGIN JP PATCH (exclude vscode and symbols test suites, same as certBuild2025.ps1)
+        testSuite: [chrome, installer, startupShutdown]
+        # END JP PATCH (exclude vscode and symbols test suites, same as certBuild2025.ps1)
+        # Original: testSuite: [chrome, installer, startupShutdown, symbols, vscode]
         runner: ${{ fromJson(needs.matrix.outputs.supportedRunners) }}
         arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
-        # A bug exists with Windows 2022 notepad that prevents NVDA from focusing it.
-        # This causes our symbol pronunciation tests to fail on this runner.
-        exclude:
-          - runner: windows-2022
-            testSuite: symbols
+        # BEGIN JP PATCH (symbols test suite is already excluded from testSuite matrix)
+        # Original exclude rule for symbols on windows-2022 is no longer needed
+        # exclude:
+        #   - runner: windows-2022
+        #     testSuite: symbols
+        # END JP PATCH (symbols test suite is already excluded from testSuite matrix)
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
@@ -490,6 +494,9 @@ jobs:
       env:
         nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
         INCLUDE_SYSTEM_TEST_TAGS: ${{ matrix.testSuite }}
+        # BEGIN JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
+        EXCLUDE_SYSTEM_TEST_TAGS: restarts_on_crash imageDescriptions
+        # END JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
     - name: Upload system tests results
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4

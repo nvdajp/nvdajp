@@ -24,6 +24,20 @@
 * **PR CI 監視**: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` (単回) または `-Watch` (継続監視)
   * CI チェックの状態を確認し、失敗時に自動分析とアドバイスを提供
 
+### システムテストのスキップ設定
+
+GitHub Actions のワークフロー（`.github/workflows/testAndPublish.yml`）では、以下のシステムテストがスキップされています：
+
+* **テストスイートの除外**:
+  * `vscode`: VSCode 関連のテスト（`certBuild2025.ps1` と同様に除外）
+  * `symbols`: シンボル発音のテスト（`certBuild2025.ps1` と同様に除外）
+
+* **テストタグの除外**（`EXCLUDE_SYSTEM_TEST_TAGS` 環境変数で指定）:
+  * `restarts_on_crash`: クラッシュ時の再起動テスト（不安定なため除外）
+  * `imageDescriptions`: 画像説明のテスト（`certBuild2025.ps1` と同様に除外）
+
+これらの除外設定は `certBuild2025.ps1` の設定と一致しており、不安定なテストや環境依存のテストをスキップすることで CI の安定性を向上させています。
+
 ### Pre-commit のスキップ設定
 
 `.pre-commit-config.yaml` の `ci` セクションでは、以下のフックが `pre-commit.ci` サービスでスキップされています：
