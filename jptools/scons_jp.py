@@ -990,13 +990,24 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					shutil.copy2(src_doc, dst_doc)
 					print(f"jpStageControllerClient: copied {doc_file}")
 			# Copy examples directory if it exists
+			# Note: preserve existing files (e.g., JP-specific test_*.py) and only copy/update files from extras/controllerClient/examples
 			src_examples = extras_client_dir / "examples"
 			if src_examples.exists():
 				dst_examples = client_root / "examples"
-				if dst_examples.exists():
-					shutil.rmtree(dst_examples)
-				shutil.copytree(src_examples, dst_examples)
-				print("jpStageControllerClient: copied examples directory")
+				dst_examples.mkdir(parents=True, exist_ok=True)
+				# Copy files and subdirectories from src_examples, preserving existing files
+				for item in src_examples.iterdir():
+					src_item = item
+					dst_item = dst_examples / item.name
+					if src_item.is_dir():
+						if dst_item.exists():
+							shutil.rmtree(dst_item)
+						shutil.copytree(src_item, dst_item)
+						print(f"jpStageControllerClient: copied examples/{item.name}/")
+					else:
+						shutil.copy2(src_item, dst_item)
+						print(f"jpStageControllerClient: copied examples/{item.name}")
+				print("jpStageControllerClient: updated examples directory")
 		except Exception as e:
 			print(f"jpStageControllerClient: error: {e}")
 			return 1

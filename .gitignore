@@ -57,6 +57,8 @@ __*.txt
 sconstruct.ours
 sconstruct.theirs
 miscDepsJp/_state/
+jptools/_state/
+jpchar/_state/
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp/
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-*.csv
 source/synthDrivers/jtalk/dic/*.bin
