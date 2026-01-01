@@ -478,7 +478,9 @@ def NVDADistGenerator(target, source, env, for_signature):
 			if file.name.endswith(".dll") and file.is_file():
 				action.append(Copy(target[0], file.path))
 
-	if certFile or apiSigningToken:
+	# BEGIN JP PATCH (certificate store signing support)
+	if certFile or apiSigningToken or useCertStore:
+	# END JP PATCH (certificate store signing support)
 		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
 			action.append(
 				lambda target, source, env, progByVal=prog: env["signExec"](
@@ -563,13 +565,17 @@ uninstGen = env.Command(
 	],
 )
 uninstaller = env.Command(uninstFile, uninstGen, [uninstGen])
-if certFile or apiSigningToken:
+# BEGIN JP PATCH (certificate store signing support)
+if certFile or apiSigningToken or useCertStore:
+# END JP PATCH (certificate store signing support)
 	env.AddPostAction(uninstaller, [env["signExec"]])
 
 devDocTargets = env.SConscript(
 	"projectDocs/dev/developerGuide/sconscript", exports=["env", "outputDir", "sourceDir", "userDocsDir"]
 )
-dist = env.NVDADist("dist", [sourceDir, userDocsDir], uiAccess=bool(certFile) or bool(apiSigningToken))
+# BEGIN JP PATCH (certificate store signing support)
+dist = env.NVDADist("dist", [sourceDir, userDocsDir], uiAccess=bool(certFile) or bool(apiSigningToken) or useCertStore)
+# END JP PATCH (certificate store signing support)
 env.Depends(dist, uninstaller)
 env.Depends(dist, devDocTargets)
 # dist will always be considered obsolete
@@ -617,7 +623,9 @@ launcher = env.Command(
 		]
 	],
 )
-if certFile or apiSigningToken:
+# BEGIN JP PATCH (certificate store signing support)
+if certFile or apiSigningToken or useCertStore:
+# END JP PATCH (certificate store signing support)
 	env.AddPostAction(launcher, [env["signExec"]])
 env.Alias("launcher", launcher)
 
