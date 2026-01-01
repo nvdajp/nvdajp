@@ -93,7 +93,8 @@ liblouisH = env.Substfile(
 
 # Generate config.h with stdbool.h support for C99 bool type
 # nvdajp: サブモジュール内のファイルを編集せず、ビルドシステム側でconfig.hを生成
-configHDir = env.Dir(f"build/{env['TARGET_ARCH']}/liblouis")
+# Note: This script runs in variant_dir="build/{TARGET_ARCH}", so use relative path
+configHDir = env.Dir("liblouis")
 configHContent = f"""/* liblouis Braille Translation and Back-Translation  Library
 
 Copyright (C) 2004, 2005, 2006 ViewPlus Technologies, Inc. www.viewplus.com
@@ -120,14 +121,22 @@ License along with liblouis. If not, see <http://www.gnu.org/licenses/>.
 #define HAVE_STDBOOL_H 1
 #include <stdbool.h>
 """
+
+
+def buildConfigH(target, source, env):
+	"""Build config.h file, ensuring the directory exists first."""
+	targetPath = str(target[0])
+	dirPath = os.path.dirname(targetPath)
+	os.makedirs(dirPath, exist_ok=True)
+	with open(targetPath, "w", encoding="utf-8") as f:
+		f.write(configHContent)
+
+
 configH = configHDir.File("config.h")
 env.Command(
 	configH,
 	[],
-	lambda target, source, env: (
-		os.makedirs(os.path.dirname(str(target[0])), exist_ok=True),
-		open(str(target[0]), "w", encoding="utf-8").write(configHContent)
-	)[-1]
+	buildConfigH
 )
 # Prepend configH directory to CPPPATH so that "config.h" can be found
 env.Prepend(CPPPATH=[configHDir])
