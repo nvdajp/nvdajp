@@ -37,7 +37,6 @@ Makefile     text
 *.def text
 *.css text
 *.svg text
-*.json text eol=lf
 
 # Source files
 # ============
