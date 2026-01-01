@@ -194,6 +194,14 @@ Export("outputDir")
 assert not (apiSigningToken and certFile), (
 	"Cannot specify signing with both API token (cloud) and local certificate"
 )
+# BEGIN JP PATCH (certificate store signing support)
+# Check for Windows certificate store signing (CERT_SHA1 or CERT_NAME from environment)
+certSha1 = os.environ.get("CERT_SHA1", "")
+certName = os.environ.get("CERT_NAME", "")
+certStore = os.environ.get("CERT_STORE", "My")
+certMachineStore = os.environ.get("CERT_MACHINE_STORE", "")
+useCertStore = bool(certSha1 or certName)
+# END JP PATCH (certificate store signing support)
 if apiSigningToken:
 	# Code signing with SignPath HSM
 	def signExecApi(target, source, env):
@@ -232,6 +240,33 @@ elif certFile:
 
 	# Export via scons environment so other libraries can be signed
 	env["signExec"] = signExecCert
+# BEGIN JP PATCH (certificate store signing support)
+elif useCertStore:
+	# Code signing with Windows certificate store (JP-specific)
+	def signExecCertStore(target, source, env):
+		# we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages
+		signExecCmd = ["signtool", "sign", "/fd", "SHA256"]
+		if certSha1:
+			signExecCmd.extend(["/s", certStore, "/sha1", certSha1])
+		elif certName:
+			signExecCmd.extend(["/s", certStore, "/n", certName])
+		if certMachineStore:
+			signExecCmd.append("/sm")
+		if certTimestampServer:
+			signExecCmd.extend(("/tr", certTimestampServer, "/td", "SHA256"))
+		print([str(x) for x in target])
+		# #3795: signtool can quite commonly fail with timestamping, so allow it to try up to 3 times with a 1 second delay between each try.
+		res = 0
+		for count in range(3):
+			res = env.Execute([signExecCmd + [target[0].abspath]])
+			if not res:
+				return 0  # success
+			time.sleep(1)
+		return res  # failed
+
+	# Export via scons environment so other libraries can be signed
+	env["signExec"] = signExecCertStore
+# END JP PATCH (certificate store signing support)
 
 # architecture-specific environments
 archTools = ["default", "midl", "msrpc"]
@@ -304,11 +339,15 @@ envArm64.SConscript(
 	exports={"env": envArm64, "clientInstallDir": clientDir.Dir("arm64"), "libInstallDir": sourceLibDirArm64},
 	variant_dir="build/arm64",
 )
-envArm64EC.SConscript(
-	"nvdaHelper/archBuild_sconscript",
-	exports={"env": envArm64EC, "clientInstallDir": clientDir.Dir("arm64ec"), "libInstallDir": sourceLibDirArm64EC},
-	variant_dir="build/arm64ec",
-)
+# BEGIN JP PATCH (skip arm64ec build due to linker bug)
+# Skip arm64ec build to work around MSVC linker internal error LNK1000
+# in CImplib::IdentifyAssignedOrdinals when processing .def file with DATA exports
+# envArm64EC.SConscript(
+# 	"nvdaHelper/archBuild_sconscript",
+# 	exports={"env": envArm64EC, "clientInstallDir": clientDir.Dir("arm64ec"), "libInstallDir": sourceLibDirArm64EC},
+# 	variant_dir="build/arm64ec",
+# )
+# END JP PATCH (skip arm64ec build due to linker bug)
 
 # Allow all NVDA's gettext po files to be compiled in source/locale
 for po in env.Glob(sourceDir.path + "/locale/*/lc_messages/*.po"):
