@@ -1,28 +1,21 @@
-name: CI/CD
+name: CI/CD Japanese Version
 
 on:
   push:
     branches:
-      # BEGIN JP PATCH
+      # BEGIN JP PATCH (nvdajp-specific branches only)
       - betajp
       - releasejp
       # END JP PATCH
-      - master
-      - beta
-      - rc
-      - 'try-**'
-    tags:
-      - 'release-**'
+      # Original upstream branches (master, beta, rc, try-**, release-** tags) removed for nvdajp
 
   pull_request:
     branches:
-      # BEGIN JP PATCH
+      # BEGIN JP PATCH (nvdajp-specific branches only)
       - betajp
       - releasejp
       # END JP PATCH
-      - master
-      - beta
-      - rc
+      # Original upstream branches (master, beta, rc) removed for nvdajp
 
   workflow_dispatch:
 
@@ -33,7 +26,9 @@ concurrency:
 env:
   START_BUILD_NUMBER: ${{ vars.BUILD_NUMBER_OFFSET || 0 }}
   pullRequestNumber: ${{ github.event_name == 'pull_request' && github.event.number || 0 }}
-  scons_publisher: ${{ vars.PUBLISHER_NAME || github.repository_owner }}
+  # BEGIN JP PATCH (nvdajp-specific publisher)
+  scons_publisher: ${{ vars.PUBLISHER_NAME || 'nvdajp' }}
+  # END JP PATCH
   # Don't send telemetry to Microsoft when using MSVC tooling, avoiding an unnecessary PowerShell script invocation.
   VSCMD_SKIP_SENDTELEMETRY: 1
   # Cache details about available MSVC tooling for subsequent SCons invocations to the provided file.
