@@ -124,7 +124,10 @@ configH = configHDir.File("config.h")
 env.Command(
 	configH,
 	[],
-	lambda target, source, env: open(str(target[0]), "w", encoding="utf-8").write(configHContent)
+	lambda target, source, env: (
+		os.makedirs(os.path.dirname(str(target[0])), exist_ok=True),
+		open(str(target[0]), "w", encoding="utf-8").write(configHContent)
+	)[-1]
 )
 # Prepend configH directory to CPPPATH so that "config.h" can be found
 env.Prepend(CPPPATH=[configHDir])
