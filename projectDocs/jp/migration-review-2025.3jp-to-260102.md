@@ -70,9 +70,9 @@
 - `nvdaHelper/liblouis/sconscript` で `source/ja-jp-rokutenkanji.tbl` を `source/louis/tables/ja-rokutenkanji.utb` としてコピーする実装がある
 
 **確認事項**:
-- [ ] `source/ja-jp-rokutenkanji.tbl` が実際に存在するか、または削除されたか確認
-- [ ] `nvdaHelper/liblouis/sconscript` の実装が正しく動作するか確認
-- [ ] 上流版の `ja-rokutenkanji.utb` を使用する方針に変更されているか確認
+- [x] `source/ja-jp-rokutenkanji.tbl` が実際に存在するか、または削除されたか確認 → **削除済み（存在しない）**
+- [x] `nvdaHelper/liblouis/sconscript` の実装が正しく動作するか確認 → **上流版の `ja-rokutenkanji.utb` が自動的にコピーされる（166-179行目の `env.Install()` により）**
+- [x] 上流版の `ja-rokutenkanji.utb` を使用する方針に変更されているか確認 → **変更済み。`include/liblouis/tables/ja-rokutenkanji.utb` が存在し、`source/louis/tables/ja-rokutenkanji.utb` に自動コピーされる**
 
 **参考ドキュメント**:
 - `projectDocs/jp/ja-rokutenkanji-table-fix-plan.md` - テーブル解決エラー修正方針
@@ -102,8 +102,14 @@
 - 実際のコード（`source/config/configSpec.py`）にはこれらの設定項目が存在しない
 
 **確認事項**:
-- [ ] これらの設定項目が既に削除されたか確認
-- [ ] ドキュメントを更新して「削除済み」と明記する必要があるか確認
+- [x] これらの設定項目が既に削除されたか確認 → **削除済み（`source/config/configSpec.py` に存在しない）**
+- [x] ドキュメントを更新して「削除済み」と明記する必要があるか確認 → **`changes-nvdajp.md` に「削除済み」と記載済み**
+
+**マイグレーション処理について**:
+- NVDAの設定ファイルマイグレーション処理（`source/config/profileUpgrader.py`）により、バージョンアップ時に自動的に設定ファイルが更新される
+- `configSpec.py` から削除された設定項目は、バリデーション時に無視される
+- 既存の設定ファイルに残っている設定項目は、次回設定が保存される際に自動的に削除される（`configspec` に基づいて書き込まれるため）
+- 明示的なマイグレーションステップ（`profileUpgradeSteps.py`）を追加することで、より確実に削除できるが、現状の実装でも問題ない
 
 #### 4. ReviewCursorManagerRegion の実装
 

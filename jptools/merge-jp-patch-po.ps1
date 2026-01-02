@@ -135,9 +135,10 @@ if ($beginIndex -ge 0 -and $endIndex -ge 0 -and $endIndex -ge $beginIndex) {
     Write-Host "Appended $($jpSection.Count) lines to end of file" -ForegroundColor Green
 }
 
-# Write combined content
+# Write combined content (UTF-8 without BOM)
 $outputContent = $poLines -join "`n"
-[System.IO.File]::WriteAllText($poPath, $outputContent, [System.Text.Encoding]::UTF8)
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($poPath, $outputContent, $utf8NoBom)
 
 Write-Host "Merge completed successfully!" -ForegroundColor Green
 Write-Host "Updated file: $poPath" -ForegroundColor Cyan
