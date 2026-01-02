@@ -1748,7 +1748,37 @@ class ReviewTextInfoRegion(TextInfoRegion):
 		api.setReviewPosition(info)
 
 
-class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion): ...
+class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
+	"""A region for a CursorManager when in review mode.
+	This combines ReviewTextInfoRegion and CursorManagerRegion behavior.
+	For _getSelection, we prefer CursorManagerRegion's implementation
+	which returns self.obj.selection, as this is the actual CursorManager's selection.
+	"""
+	def _getSelection(self):
+		# Use CursorManagerRegion's implementation to get the actual CursorManager's selection
+		return CursorManagerRegion._getSelection(self)
+	
+	def _routeToTextInfo(self, info: textInfos.TextInfo):
+		# Call TextInfoRegion._routeToTextInfo directly to ensure activate() is called correctly
+		# when the cursor is already at the position. This ensures that CursorManager's
+		# TextInfo.activate() method is called, which updates lastActivateTime.
+		TextInfoRegion._routeToTextInfo(self, info)
+		# Then apply ReviewTextInfoRegion's additional behavior
+		if not _routingShouldMoveSystemCaret():
+			return
+		from displayModel import DisplayModelTextInfo, EditableTextDisplayModelTextInfo
+
+		if isinstance(info, DisplayModelTextInfo) and not isinstance(info, EditableTextDisplayModelTextInfo):
+			# This region either reviews the screen or an object that has
+			# DisplayModelTextInfo without a caret, e.g. IAccessible.ContentGenericClient.
+			# In this case, we can at least emulate a kind of caret
+			# by trying to focus the object at start of the range.
+			obj = info.NVDAObjectAtStart
+			if not objectBelowLockScreenAndWindowsIsLocked(obj) and obj.isFocusable and not obj.hasFocus:
+				obj.setFocus()
+		else:
+			# Update the physical caret using the super class.
+			CursorManagerRegion._setCursor(self, info)
 
 
 def _routingShouldMoveSystemCaret() -> bool:
