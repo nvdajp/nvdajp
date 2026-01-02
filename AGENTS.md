@@ -13,7 +13,15 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 - Avoid destructive operations (no history rewrites or force pushes unless explicitly requested)
 - Minimize diffs against upstream; mark JP-specific code with `# nvdajp` or `# BEGIN/END JP PATCH`
-  - **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files (e.g., `jptools/*.ps1`, `jptools/runJpSmokeTests.ps1`) do not need these markers.
+  - **Marking rules**:
+    - **`# BEGIN JP PATCH` / `# END JP PATCH`**: Use for multi-line changes (3+ lines), function/class additions or modifications, configuration section additions
+    - **`# nvdajp`**: Use for 1-2 line changes, import statements, single variable/constant additions, inline comments
+  - **When marking is NOT needed**:
+    - JP-specific new files (e.g., `jptools/*.ps1`, `jptools/runJpSmokeTests.ps1`, `jptools/scons_jp.py`)
+    - Files under `source/synthDrivers/jtalk/` and `source/synthDrivers/haruka/` (JP-specific synthesizer drivers)
+    - Files under `miscDepsJp/` (JP-specific overlay directory)
+    - Files under `jptools/` (JP-specific tools directory)
+  - **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files do not need these markers.
 - Prefer SCons/pure Python tooling; auxiliary `.cmd` or `nmake` usage should be limited to JP-specific overlays
 - Do not perform code-signing or releases in CI (no secrets). Official release builds happen locally.
 
@@ -78,7 +86,16 @@ This document summarizes the rules automation agents/scripts must obey when work
 ### 禁則と優先
 
 - 履歴書き換えや force push は指示が無い限り禁止
-- JP 固有差分は `# nvdajp`／`# BEGIN JP PATCH` で明示（**注**: 本家版ファイルを変更する場合のみ。日本語版固有の新規ファイルには不要）
+- JP 固有差分は `# nvdajp`／`# BEGIN JP PATCH` で明示
+  - **マーキングルール**:
+    - **`# BEGIN JP PATCH` / `# END JP PATCH`**: 複数行の変更（3行以上）、関数・クラスの追加・修正、設定セクションの追加に使用
+    - **`# nvdajp`**: 1-2行の変更、import文の追加、単一の変数・定数の追加、インラインコメントに使用
+  - **マーキング不要な場合**:
+    - 日本語版固有の新規ファイル（例: `jptools/*.ps1`, `jptools/runJpSmokeTests.ps1`, `jptools/scons_jp.py`）
+    - `source/synthDrivers/jtalk/` および `source/synthDrivers/haruka/` 配下のファイル（日本語版固有のシンセサイザードライバー）
+    - `miscDepsJp/` 配下のファイル（日本語版固有のオーバレイディレクトリ）
+    - `jptools/` 配下のファイル（日本語版固有のツールディレクトリ）
+  - **注**: 本家版ファイルを変更する場合のみマーキングが必要。日本語版固有の新規ファイルには不要
 - ビルドは SCons／純 Python を優先。`.cmd` や `nmake` は JP 独自処理のみ
 - CI ではコードサインや Secrets 利用を行わない
 

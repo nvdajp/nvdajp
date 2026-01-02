@@ -731,13 +731,12 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
 					return 1
 
-				# BEGIN JP PATCH: Create dicrc to set config-charset=sjis for .def files
+				# Create dicrc to set config-charset=sjis for .def files
 				dicrc = base / "dicrc"
 				if not dicrc.exists():
 					# Use same format as existing dicrc (with spaces around =)
 					dicrc.write_text("config-charset = sjis\n", encoding="utf-8")
 					print("jtalkSync: created dicrc with config-charset = sjis")
-				# END JP PATCH
 
 				try:
 					run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)

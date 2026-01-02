@@ -52,6 +52,7 @@
   - `[language]` セクション: `jpKatakanaPitchChange`, `halfShapePitchChange`, `jpPhoneticReadingLatin`, `jpPhoneticReadingKana`, `announceCandidateNumber`, `jpAnsiEditbox`, `jpAnnounceNewLine`, `openDocFileByMSHTA`, `alwaysSpeakMathInEnglish`
   - `[keyboard]` セクション: `nvdajpEnableKeyEvents`, `nvdajpImeBeep`, `useNonConvertAsNVDAModifierKey`, `useConvertAsNVDAModifierKey`, `useEscapeAsNVDAModifierKey`
   - `[braille]` セクション: `translationTable` のデフォルトが `ja-jp-comp6.utb` に設定
+  - `[inputComposition]` セクション: `autoReportAllCandidates` のデフォルトが `False` に変更（nvdajp固有の変更）
 
 #### 6. NVDAHelper の拡張
 
@@ -116,15 +117,15 @@
 - 既存の設定ファイルに残っている設定項目は、次回設定が保存される際に自動的に削除される（`configspec` に基づいて書き込まれるため）
 - 明示的なマイグレーションステップ（`profileUpgradeSteps.py`）を追加することで、より確実に削除できるが、現状の実装でも問題ない
 
-#### 4. ReviewCursorManagerRegion の実装
+#### 5. ReviewCursorManagerRegion の実装
 
 **状況**:
 - `source/braille.py` の `ReviewCursorManagerRegion` が upstream と同じ空クラス（`...`）になっている
 - これは意図的な変更（upstream との差分最小化）
 
 **確認事項**:
-- [ ] この変更が意図的なものであることを確認済み
-- [ ] 関連するテストがスキップされていることを確認済み（`tests/unit/test_braille/test_routing.py`）
+- [x] この変更が意図的なものであることを確認済み → **確認済み。upstream との差分最小化のため**
+- [x] 関連するテストがスキップされていることを確認済み（`tests/unit/test_braille/test_routing.py`） → **確認済み。4つのテストが `@unittest.skip()` でスキップされている**
 
 **参考ドキュメント**:
 - `projectDocs/jp/test-routing-failures.md` - テスト失敗の詳細分析
@@ -158,16 +159,21 @@
 
 ## 推奨される対応
 
-### 即座に対応すべき項目
+### ✅ 完了した項目
 
 1. **ドキュメントの更新**:
-   - `changes-nvdajp.md` の Windows 11 テキスト入力アプリ対応のファイル名を実際のファイル名に更新
-   - 廃止予定の設定項目について「削除済み」と明記
+   - ✅ `changes-nvdajp.md` の Windows 11 テキスト入力アプリ対応のファイル名を実際のファイル名に更新済み
+   - ✅ 廃止予定の設定項目について「削除済み」と明記済み
+   - ✅ `changes-nvdajp.md` に機能説明を追加（文字報告モード、Haruka、スピーチビューアー、ログビューアー、寄付メニュー、ATOK 候補コメント、スリープモードなど）
 
 2. **ja-jp-rokutenkanji.tbl の確認**:
-   - `source/ja-jp-rokutenkanji.tbl` の存在確認
-   - `nvdaHelper/liblouis/sconscript` の実装確認
-   - 上流版の `ja-rokutenkanji.utb` を使用する方針への移行状況確認
+   - ✅ `source/ja-jp-rokutenkanji.tbl` の存在確認済み（削除済み）
+   - ✅ `nvdaHelper/liblouis/sconscript` の実装確認済み（上流版の `ja-rokutenkanji.utb` が自動コピーされる）
+   - ✅ 上流版の `ja-rokutenkanji.utb` を使用する方針への移行確認済み
+
+3. **ReviewCursorManagerRegion の確認**:
+   - ✅ 意図的な変更であることを確認済み
+   - ✅ 関連するテストがスキップされていることを確認済み
 
 ### 追加確認が必要な項目
 
@@ -177,13 +183,16 @@
 
 ## 結論
 
-コードレビューレベルでの確認の結果、**重大な抜け漏れは見つかっていません**。ただし、以下の点について追加の確認とドキュメントの更新が必要です：
+コードレビューレベルでの確認の結果、**重大な抜け漏れは見つかっていません**。
 
-1. 点字テーブル `ja-jp-rokutenkanji.tbl` の扱い
-2. Windows 11 テキスト入力アプリ対応のファイル名不一致
-3. 廃止予定の設定項目の削除状況
+以下の項目について確認・更新を完了しました：
 
-これらの項目について、追加の確認とドキュメントの更新を推奨します。
+1. ✅ 点字テーブル `ja-jp-rokutenkanji.tbl` の扱い → **削除済み。上流版の `ja-rokutenkanji.utb` を使用する方針に変更済み**
+2. ✅ Windows 11 テキスト入力アプリ対応のファイル名不一致 → **upstream の変更に追従。ドキュメント更新済み**
+3. ✅ 廃止予定の設定項目の削除状況 → **削除済み。ドキュメント更新済み**
+4. ✅ ReviewCursorManagerRegion の実装 → **upstream と同じ空クラス。テストスキップ済み**
+
+現在のところ、追加の確認が必要な項目はありません。
 
 ## 参考資料
 

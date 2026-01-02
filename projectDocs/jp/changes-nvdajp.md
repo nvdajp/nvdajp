@@ -1,37 +1,21 @@
-# NVDA 日本語版 2025.3jp と 本家版 2025.3 の変更点のまとめ
+# NVDA 日本語版 2025.3jp と 本家版 2025.3 の機能差分
 
 ## 概要
 
-このドキュメントは、NVDA 日本語版 2025.3jp（`releasejp` ブランチ）と本家版 NVDA 2025.3（`nvaccess/nvda` の `rc` ブランチ）の差分をまとめたものです。
+このドキュメントは、NVDA 日本語版 2025.3jp（`releasejp` ブランチ）と本家版 NVDA 2025.3（`nvaccess/nvda` の `rc` ブランチ）の**機能的な差分**をまとめたものです。
+
+**注意**: このドキュメントは、ユーザーや開発者が認識できる機能の追加・変更・削除に焦点を当てています。ビルドシステムの内部的な変更（サブツリー変換など）については、別のドキュメント（`projectDocs/jp/miscdepsjp-overlay-strategy.md` など）を参照してください。
 
 ### 比較対象
 
 - 本家版: `nvaccess/nvda` リポジトリの `rc` ブランチ（コミット: d9e5e0515）
 - 日本語版: `nvdajp/nvdajp` リポジトリの `releasejp` ブランチ（コミット: 2c1aa3dc3）
 
-### 統計情報
+## 主な機能差分
 
-- 変更ファイル数: 717 ファイル
-- 追加行数: 5,317,749 行
-- 削除行数: 17,603 行
-- コミット数: 1 コミット
+### 1. 日本語特有の機能追加
 
-## 主な変更点
-
-### 1. 依存関係管理の変更
-
-#### miscDepsJp のサブモジュールからサブツリーへの変換
-
-主なコミット (#582) では、`miscDepsJp` のサブモジュールをサブツリーに変換しました。これにより、以下のライブラリがリポジトリに直接統合されました：
-
-- `miscDepsJp/include/htsengineapi/` - HTS音声合成エンジンAPI
-- `miscDepsJp/include/libkuraji/` - 日本語点字処理ライブラリ
-- `miscDepsJp/include/libopenjtalk/` - Open JTalk ライブラリ
-- `miscDepsJp/include/python-jtalk/` - Python JTalk バインディング
-
-### 2. 日本語特有の機能追加
-
-#### 2.1 音声合成（シンセサイザー）
+#### 1.1 音声合成（シンセサイザー）
 
 ##### JTalk シンセサイザードライバー
 
@@ -50,6 +34,13 @@
 - `miscDepsJp/source/synthDrivers/jtalk/translator1.py` (640行)
 - `miscDepsJp/source/synthDrivers/jtalk/translator2.py` (1,798行)
 - `miscDepsJp/source/synthDrivers/nvdajp_jtalk.py` (230行)
+
+##### Haruka 音声エンジン対応
+
+- `miscDepsJp/source/synthDrivers/haruka/` - Haruka (nvdajp) 日本語専用ドライバー
+  - Microsoft Speech Platform 用の日本語音声エンジン
+  - Windows 7 で利用可能（標準ではシステムに入っていない）
+  - 本家版の Microsoft Speech Platform ドライバーとは別の日本語専用実装
 
 #### 2.2 点字表示
 
@@ -76,7 +67,18 @@
 
 - `source/brailleTables.py` (935行) - 点字テーブル処理の拡張
 
-#### 2.3 日本語文字処理
+#### 1.3 日本語文字処理
+
+##### 文字報告モード
+
+NVDA日本語版は、文字単位の移動やレビューで、文字の説明や例を使うかどうかを切り替える「文字報告モード」を導入しています。
+
+- **説明モード**: 文字の説明や例を報告（例：「日」→「ニチヨウビノニチ」）
+- **読みかたモード**: 文字の読み方を報告（例：「日」→「ヒ」）
+- 切り替え方法: 「レビューカーソルの現在の文字を報告」を4回押す
+- 初期状態: 説明モード
+
+この機能により、文字単位のレビューや移動時に、文字の詳細な説明と読み方を使い分けることができます。
 
 ##### 文字処理ユーティリティ
 
@@ -97,7 +99,7 @@
   - `jpchar/updateCharDesc.py` (60行)
   - その他多数のツール
 
-#### 2.4 日本語入力メソッドエディタ（IME）サポート
+#### 1.4 日本語入力メソッドエディタ（IME）サポート
 
 ##### IME 関連の拡張
 
@@ -113,9 +115,22 @@
 
 **注**: ファイル名は upstream の変更に追従して `windowsimmersiveshell` から `windowsinternal_composableshell` に変更されています。
 
-### 3. 設定とユーザーインターフェース
+##### 日本語版の文字入力拡張
 
-#### 3.1 設定項目の追加
+- **Esc キーでの未確定文字列クリア**: 日本語入力中に Esc キーが押されて未確定文字列がクリアされると、「クリア」と報告します（本家版では消去された文字列を報告）
+- **改行位置の不具合対策**: 日本語版で独自に行ったエディットコントロールの仕様変更の影響で、改行位置が正しく処理されないアプリ（Winbiff など）に対応するための設定項目を追加
+
+##### ATOK 候補コメント対応
+
+ATOK の変換候補にコメントウィンドウがある場合の対応：
+
+- コメントウィンドウが表示されたらビープを鳴らし、ナビゲーターオブジェクトをコメントウィンドウに移動
+- コメントウィンドウの中央にマウスポインタを移動
+- コメントウィンドウの内容を読み上げ、コピー、確定などの操作が可能
+
+### 2. 設定とユーザーインターフェース
+
+#### 2.1 設定項目の追加
 
 `source/config/configSpec.py` に以下の日本語特有の設定項目が追加されました：
 
@@ -137,6 +152,7 @@
 - `nvdajpImeBeep` - IME のビープ音
 - `useNonConvertAsNVDAModifierKey` - 無変換キーをNVDA制御キーとして使用
 - `useConvertAsNVDAModifierKey` - 変換キーをNVDA制御キーとして使用
+- `useEscapeAsNVDAModifierKey` - Escape キーをNVDA制御キーとして使用
 
 ##### 点字設定 (`[braille]`)
 
@@ -147,15 +163,40 @@
 
 **注**: 上記3つの設定項目は betajp-260102 ブランチでは既に削除されています。
 
-#### 3.2 GUI の拡張
+##### 入力構成設定 (`[inputComposition]`)
+
+- `autoReportAllCandidates` - すべての変換候補を自動的に報告する（デフォルト: `False`、nvdajp固有の変更）
+  - 本家版ではデフォルトが `True` の可能性がありますが、日本語版では `False` に変更されています
+  - これは、日本語入力時に変換候補が多すぎる場合の読み上げを抑制するためです
+
+#### 2.2 GUI の拡張
 
 - `source/gui/settingsDialogs.py` (127行変更) - 設定ダイアログに日本語設定カテゴリを追加
 - `source/gui/startupDialogs.py` (25行追加) - 起動ダイアログの拡張
 - `source/gui/__init__.py` (53行変更) - GUI モジュールの拡張
 
-### 4. コア機能の拡張
+##### スピーチビューアーの拡張
 
-#### 4.1 NVDAHelper の拡張
+- Alt+Tab でスピーチビューアーを切り替え可能にする
+- 文字を大きめにしてウィンドウの不透明度を90パーセントに設定
+
+##### 日本語点字ビューアー
+
+- `source/gui/jpBrailleViewer.py` (71行) - 日本語点字ビューアーを追加
+- 音声出力される情報を点字に変換して表示
+- 点字ディスプレイへの実際の出力と内容が一致しない場合がある（音声出力ベースのため）
+
+##### ログビューアーの拡張
+
+- 日本語などのマルチバイト文字を文字コードではなく文字として出力する変更
+
+##### 寄付メニューの変更
+
+- 「寄付」メニューで開くサイトを NVDA 日本語版の寄付のご案内（https://www.nvda.jp/donate.html）に変更
+
+### 3. コア機能の拡張
+
+#### 3.1 NVDAHelper の拡張
 
 - `source/NVDAHelper.py` (324行変更) - NVDAHelper の機能拡張
 - `nvdaHelper/client/nvdaControllerClient.def` (7行追加) - クライアント定義の追加
@@ -163,20 +204,20 @@
 - `nvdaHelper/remote/ime.cpp` (32行変更) - IME 処理の拡張
 - `nvdaHelper/remote/tsf.cpp` (169行変更) - TSF 処理の拡張
 
-#### 4.2 API とコマンドの拡張
+#### 3.2 API とコマンドの拡張
 
 - `source/api.py` (26行変更) - API の拡張
 - `source/globalCommands.py` (80行変更) - グローバルコマンドの拡張
 - `source/inputCore.py` (6行追加) - 入力コアの拡張
 - `source/eventHandler.py` (3行追加) - イベントハンドラーの拡張
 
-#### 4.3 点字と音声の統合
+#### 3.3 点字と音声の統合
 
 - `source/braille.py` (128行変更) - 点字処理の拡張
 - `source/speech/speech.py` (33行変更) - 音声処理の拡張
 - `source/speech/__init__.py` (0行追加) - 音声モジュールの初期化
 
-### 5. アプリケーション固有のサポート
+### 4. アプリケーション固有のサポート
 
 #### 追加・拡張されたアプリモジュール
 
@@ -188,46 +229,37 @@
 - `source/appModules/sapisvr.py` (15行変更)
 - `source/appModules/winal.py` (14行変更)
 
-### 6. ビルドシステムと開発ツール
+#### スリープモード対応
 
-#### 6.1 ビルドツール（jptools）
+WinAltair などのアプリケーションでスリープモードに切り替える機能を追加：
 
-`jptools/` ディレクトリに日本語版専用のビルドツールが追加されました：
+- `nvdaController_setAppSleepMode` API によるアプリケーションスリープモード設定
+- スリープモードのアプリにおける IME の読み上げを抑止する設定オプション
+- スリープモードのアプリから NVDA+N で NVDA メニューが開く機能
 
-- `jptools/certBuild2023.cmd` (181行) - 証明書付きビルドスクリプト
-- `jptools/devbuild.cmd` (52行) - 開発ビルドスクリプト
-- `jptools/devbuild2024.cmd` (14行) - 2024年版開発ビルドスクリプト
-- `jptools/buildControllerClient.cmd` (28行) - コントローラークライアントビルド
-- `jptools/jpDicTest.py` (163行) - 日本語辞書テスト
-- `jptools/jtalk_manifest.py` (18行) - JTalk マニフェスト生成
-- `jptools/kgs_manifest.py` (18行) - KGS マニフェスト生成
-- `jptools/louisRunner.py` (64行) - LibLouis ランナー
-- `jptools/nabcc2dots.py` (121行) - NABCC から点字への変換
+### 5. 開発ツール（開発者向け）
 
-##### NVDAJP クライアント
+#### 5.1 ビルドツール（jptools）
 
-- `jptools/nvdajpClient/` - NVDAJP クライアントライブラリ
-  - サンプルコードとドキュメントを含む
+**注**: 以下のツールは開発者向けのもので、エンドユーザーには直接関係ありません。詳細は `readme-nvdajp.md` を参照してください。
 
-#### 6.2 文字処理ツール（jpchar）
+日本語版専用のビルドツールが `jptools/` ディレクトリに追加されています。主なツール：
 
-`jpchar/` ディレクトリに文字説明辞書の管理ツールが追加されました：
+- `jptools/certBuild2025.ps1` - 証明書付きビルドスクリプト
+- `jptools/runJpSmokeTests.ps1` - 日本語版スモークテスト
+- `jptools/jtalk_manifest.py` - JTalk マニフェスト生成
+- `jptools/kgs_manifest.py` - KGS マニフェスト生成
 
-- `jpchar/_jpchar.py` (137行) - 文字処理コア
-- `jpchar/_checkCharDesc.py` (223行) - 文字説明チェック
-- `jpchar/updateCharDesc.py` (60行) - 文字説明更新
-- `jpchar/emoji.txt` (972行) - 絵文字リスト
-- `jpchar/emoji2.dic` (166行) - 絵文字辞書
-- その他多数のツール
+#### 5.2 文字処理ツール（jpchar）
 
-#### 6.3 ビルド設定の変更
+**注**: 以下のツールは開発者向けのもので、エンドユーザーには直接関係ありません。
 
-- `sconstruct` (123行変更) - SCons ビルドスクリプトの拡張
-- `nvdaHelper/archBuild_sconscript` (5行変更) - アーキテクチャビルド設定
-- `nvdaHelper/espeak/sconscript` (8行変更) - eSpeak ビルド設定
-- `launcher/nvdaLauncher.nsi` (2行変更) - ランチャーインストーラー設定
+文字説明辞書の管理ツールが `jpchar/` ディレクトリに追加されています。主なツール：
 
-### 7. 翻訳とローカライゼーション
+- `jpchar/updateCharDesc.py` - 文字説明更新
+- `jpchar/checkCharDesc.py` - 文字説明チェック
+
+### 6. 翻訳とローカライゼーション
 
 #### 日本語翻訳ファイル
 
@@ -239,59 +271,13 @@
 - `user_docs/en/readmejp.md` (784行) - 英語版日本語ガイド
 - `readme-nvdajp.md` (619行) - 開発者向けREADME
 
-### 8. テスト
+### 7. その他の変更
 
-#### 追加されたテスト
-
-- `tests/system/robot/jpRobotUtil.py` (14行) - 日本語ロボットテストユーティリティ
-- `tests/unit/test_brailleTables.py` (10行変更) - 点字テーブルテスト
-- `tests/unit/test_louisHelper.py` (9行変更) - LibLouis ヘルパーテスト
-
-#### テスト設定
-
-- `tests/system/standard-dontShowWelcomeDialog.ini` (1行追加)
-
-### 9. その他の変更
-
-#### 9.1 アイコンとリソース
+#### 7.1 アイコンとリソース
 
 - `source/images/nvdajp.ico` - NVDAJP アイコン
 - `source/images/nvdajp2.ico` - NVDAJP アイコン2
 - `source/images/nvdajp3.ico` - NVDAJP アイコン3
-- `source/images/nvdajp_cd.png` - NVDAJP CD 画像
-
-#### 9.2 設定ファイル
-
-- `.editorconfig` (2行変更)
-- `.github/CODEOWNERS` (2行変更)
-- `.github/FUNDING.yml` (4行変更)
-- `.github/workflows/testAndPublish.yml` (538行変更) - CI/CD ワークフローの拡張
-- `.gitignore` (5行追加)
-- `pyproject.toml` (2行変更)
-- `pyrightconfig.json` (17行追加) - Pyright 設定
-
-#### 9.3 ドキュメント
-
-- `CLAUDE.md` (46行) - Claude AI 向けドキュメント
-- `security.md` (46行) - セキュリティポリシー
-- `copying.txt` (1,123行変更) - ライセンス情報の更新
-
-## 技術的な詳細
-
-### 依存関係
-
-日本語版では以下の追加依存関係が統合されています：
-
-1. **HTS Engine API** - 音声合成エンジン
-2. **Open JTalk** - 日本語テキスト音声合成システム
-3. **MeCab** - 形態素解析エンジン
-4. **LibKuraji** - 日本語点字処理ライブラリ
-5. **Python JTalk** - Python バインディング
-
-### アーキテクチャの変更
-
-- サブモジュールからサブツリーへの移行により、依存関係がリポジトリに直接統合されました
-- これにより、ビルドプロセスが簡素化され、依存関係の管理が容易になりました
 
 ## まとめ
 
@@ -302,9 +288,17 @@ NVDA 日本語版 2025.3jp は、本家版 2025.3 に対して以下の主要な
 3. **日本語文字処理** - 文字説明辞書とフォネティック読み機能
 4. **IME サポート** - 日本語入力メソッドエディタとの統合
 5. **設定の拡張** - 日本語環境に最適化された設定項目
-6. **開発ツール** - ビルドとテストのための専用ツール
 
 これらの変更により、NVDA は日本語環境でより使いやすく、機能豊富なスクリーンリーダーとなっています。
+
+## 補足情報
+
+### ビルドシステムと内部実装の変更
+
+このドキュメントでは、ユーザーや開発者が認識できる機能的な差分に焦点を当てています。ビルドシステムの内部的な変更（サブツリー変換、ビルドスクリプトの変更など）については、以下のドキュメントを参照してください：
+
+- `projectDocs/jp/miscdepsjp-overlay-strategy.md` - miscDepsJp のサブツリー変換戦略
+- `readme-nvdajp.md` - 開発者向けのビルド手順とツールの説明
 
 ---
 

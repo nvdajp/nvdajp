@@ -64,6 +64,7 @@ import inputCore
 import characterProcessing
 from baseObject import ScriptableObject
 import core
+import jpUtils  # nvdajp
 from winAPI._powerTracking import reportCurrentBatteryStatus
 import winVersion
 from base64 import b16encode
@@ -179,6 +180,11 @@ def toggleIntegerValue(
 	state = enumClass(newValue)
 	msg = messageTemplate.format(mode=state.displayString)
 	ui.message(msg)
+
+
+# BEGIN JP PATCH (character description mode)
+characterDescriptionMode = True
+# END JP PATCH
 
 
 class GlobalCommands(ScriptableObject):
@@ -1846,7 +1852,13 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount == 0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
+			# BEGIN JP PATCH (character description mode)
+			speech.spellTextInfo(
+				info,
+				useCharacterDescriptions=scriptCount > 1,
+				useDetails=characterDescriptionMode if scriptCount > 1 else False,
+			)
+			# END JP PATCH
 
 	@script(
 		description=_(
@@ -2045,7 +2057,11 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount == 0:
 			speech.speakTextInfo(info, reason=controlTypes.OutputReason.CARET, unit=textInfos.UNIT_WORD)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
+			speech.spellTextInfo(
+				info,
+				useCharacterDescriptions=(scriptCount > 1),
+				useDetails=(scriptCount > 1 and characterDescriptionMode),  # nvdajp
+			)
 
 	@script(
 		description=_(
@@ -2163,6 +2179,7 @@ class GlobalCommands(ScriptableObject):
 		speakOnDemand=True,
 	)
 	def script_review_currentCharacter(self, gesture: inputCore.InputGesture):
+		global characterDescriptionMode  # nvdajp
 		info = api.getReviewPosition().copy()
 		# This script is available on the lock screen via getSafeScripts, as such
 		# ensure the review position does not contain secure information
@@ -2176,15 +2193,28 @@ class GlobalCommands(ScriptableObject):
 		braille.handler.handleReviewMove(shouldAutoTether=True)
 		scriptCount = scriptHandler.getLastScriptRepeatCount()
 		if scriptCount == 0:
-			speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
+			# BEGIN JP PATCH (character description mode)
+			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode)
+			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
+			# END JP PATCH
 		elif scriptCount == 1:
-			speech.spellTextInfo(info, useCharacterDescriptions=True)
-		else:
+			# BEGIN JP PATCH (character description mode)
+			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
+			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
+			# END JP PATCH
+		elif scriptCount == 2:
+			# BEGIN JP PATCH (character description mode)
 			try:
 				cList = [ord(c) for c in info.text]
 			except TypeError:
-				c = None
-			if cList:
+				cList = None
+			if cList and jpUtils.isJa():
+				for c in cList:
+					s = jpUtils.code2kana(c)
+					o = "%d u+%s" % (c, s)
+					speech.speakMessage(o)
+				braille.handler.message("  ".join("%d %s" % (c, jpUtils.code2hex(c)) for c in cList))
+			elif cList:
 				for c in cList:
 					speech.speakMessage("%d," % c)
 					# Report hex along with decimal only when there is one character; else, it's confusing.
@@ -2198,6 +2228,18 @@ class GlobalCommands(ScriptableObject):
 					unit=textInfos.UNIT_CHARACTER,
 					reason=controlTypes.OutputReason.CARET,
 				)
+			# END JP PATCH
+		else:
+			# BEGIN JP PATCH (character description mode toggle)
+			if characterDescriptionMode:
+				# Translators: character description mode
+				ui.message(_("Character description mode disabled"))
+				characterDescriptionMode = False
+			else:
+				# Translators: character description mode
+				ui.message(_("Character description mode enabled"))
+				characterDescriptionMode = True
+			# END JP PATCH
 
 	@script(
 		description=_(
@@ -2836,7 +2878,13 @@ class GlobalCommands(ScriptableObject):
 			text = " ".join(s for s in speechList if isinstance(s, str))
 			braille.handler.message(text)
 		else:
-			speech.speakSpelling(focusObject.name, useCharacterDescriptions=repeatCount > 1)
+			# BEGIN JP PATCH (character description mode)
+			speech.speakSpelling(
+				focusObject.name,
+				useCharacterDescriptions=repeatCount > 1 and characterDescriptionMode,
+				useDetails=repeatCount > 1 and characterDescriptionMode,
+			)
+			# END JP PATCH
 
 	@staticmethod
 	def _getStatusBarText(setReviewCursor: bool = False) -> Optional[str]:
@@ -2921,7 +2969,11 @@ class GlobalCommands(ScriptableObject):
 			# Translators: Reported when status line exist, but is empty.
 			ui.message(_("no status bar information"))
 		else:
-			speech.speakSpelling(text)
+			# BEGIN JP PATCH (character description mode)
+			speech.speakSpelling(
+				text, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode
+			)
+			# END JP PATCH
 
 	@script(
 		description=_(
@@ -3068,7 +3120,11 @@ class GlobalCommands(ScriptableObject):
 		if repeatCount == 0:
 			ui.message(title)
 		elif repeatCount == 1:
-			speech.speakSpelling(title)
+			# BEGIN JP PATCH (character description mode)
+			speech.speakSpelling(
+				title, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode
+			)
+			# END JP PATCH
 		else:
 			api.copyToClip(title, notify=True)
 
