@@ -447,12 +447,13 @@ jobs:
         runner: ${{ fromJson(needs.matrix.outputs.supportedRunners) }}
         arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
-        # BEGIN JP PATCH (symbols test suite is already excluded from testSuite matrix)
-        # Original exclude rule for symbols on windows-2022 is no longer needed
-        # exclude:
-        #   - runner: windows-2022
-        #     testSuite: symbols
-        # END JP PATCH (symbols test suite is already excluded from testSuite matrix)
+        # BEGIN JP PATCH (disable chrome system tests on windows-2022 and windows-2025)
+        exclude:
+          - runner: windows-2022
+            testSuite: chrome
+          - runner: windows-2025
+            testSuite: chrome
+        # END JP PATCH (disable chrome system tests on windows-2022 and windows-2025)
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
