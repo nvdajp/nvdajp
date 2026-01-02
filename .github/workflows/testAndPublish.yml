@@ -37,8 +37,8 @@ env:
   supportedRunners: '["windows-2022", "windows-2025"]'
   defaultArch: x64
   supportedArchitectures: '["x64"]'
-  defaultPythonVersion: '3.13.7'
-  supportedPythonVersions: '["3.13.7"]'
+  defaultPythonVersion: '3.13.11'
+  supportedPythonVersions: '["3.13.11"]'
 
 jobs:
   matrix:
@@ -81,12 +81,12 @@ jobs:
       with:
         submodules: true
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.pythonVersion }}
         architecture: ${{ matrix.arch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Set version variables
@@ -139,12 +139,12 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
     - name: Static type analysis
       run: ci/scripts/tests/typeCheck.ps1
 
@@ -162,12 +162,12 @@ jobs:
         # Include gettext
         submodules: true
     - name: Set up python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
     - name: Run pre-commit
       run: |
         # Ensure uv environment is up to date.
@@ -194,12 +194,12 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
     - name: Check comments for translators
       run: ci/scripts/tests/translationCheck.ps1
     - name: Upload artifact
@@ -223,12 +223,12 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
     - name: License check
       run: ci/scripts/tests/licenseCheck.ps1
 
@@ -251,12 +251,12 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.pythonVersion }}
         architecture: ${{ matrix.arch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Run unit tests
@@ -302,12 +302,12 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.pythonVersion }}
         architecture: ${{ matrix.arch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Run JP smoke tests
@@ -336,12 +336,12 @@ jobs:
         name: makePot results
         path: output
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
     - name: Upload translations to Crowdin
       env:
         crowdinProjectID: ${{ vars.CROWDIN_PROJECT_ID }}
@@ -372,12 +372,12 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.pythonVersion }}
         architecture: ${{ matrix.arch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Set version variables
@@ -463,12 +463,12 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.pythonVersion }}
         architecture: ${{ matrix.arch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Get NVDA launcher
@@ -583,12 +583,12 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
     - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
     - name: Get symbols
       uses: actions/download-artifact@v4
       with:
