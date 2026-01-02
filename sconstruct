@@ -166,10 +166,13 @@ version = env["version"]
 version_build = env["version_build"]
 release = env["release"]
 publisher = env["publisher"]
-certFile = env["certFile"]
+# BEGIN JP PATCH (skip signing support)
+skipSigning = os.environ.get("SKIP_SIGNING", "")
+# END JP PATCH (skip signing support)
+certFile = env["certFile"] if not skipSigning else ""
 certPassword = env["certPassword"]
 certTimestampServer = env["certTimestampServer"]
-apiSigningToken = env["apiSigningToken"]
+apiSigningToken = env["apiSigningToken"] if not skipSigning else ""
 userDocsDir = Dir("user_docs")
 sourceDir = env.Dir("source")
 Export("sourceDir")
@@ -196,11 +199,12 @@ assert not (apiSigningToken and certFile), (
 )
 # BEGIN JP PATCH (certificate store signing support)
 # Check for Windows certificate store signing (CERT_SHA1 or CERT_NAME from environment)
-certSha1 = os.environ.get("CERT_SHA1", "")
-certName = os.environ.get("CERT_NAME", "")
+# skipSigning is already defined above
+certSha1 = os.environ.get("CERT_SHA1", "") if not skipSigning else ""
+certName = os.environ.get("CERT_NAME", "") if not skipSigning else ""
 certStore = os.environ.get("CERT_STORE", "My")
 certMachineStore = os.environ.get("CERT_MACHINE_STORE", "")
-useCertStore = bool(certSha1 or certName)
+useCertStore = bool(certSha1 or certName) and not skipSigning
 # END JP PATCH (certificate store signing support)
 if apiSigningToken:
 	# Code signing with SignPath HSM
