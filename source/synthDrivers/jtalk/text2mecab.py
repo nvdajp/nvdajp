@@ -46,7 +46,7 @@ def text2mecab_setup():
 			[re.compile("<"), "＜"],
 			[re.compile("="), "＝"],
 			[re.compile(">"), "＞"],
-			[re.compile("\?"), "？"],
+			[re.compile("\\?"), "？"],
 			[re.compile("@"), "＠"],
 			[re.compile("A"), "Ａ"],
 			[re.compile("B"), "Ｂ"],
@@ -130,7 +130,9 @@ def text2mecab(txt, CODE_=CODE):
 	# BEGIN JP PATCH (assert suspicious patterns before encoding)
 	# Detect mixed ASCII/non-ASCII or unusual whitespace patterns that may trigger crashes.
 	assert "\t" not in txt, "text2mecab: unexpected tab after conversion"
-	assert "\r" not in txt and "\n" not in txt, "text2mecab: unexpected newline after conversion"
+	assert "\r" not in txt and "\n" not in txt, (
+		"text2mecab: unexpected newline after conversion"
+	)
 	ascii_count = sum(1 for c in txt if ord(c) < 0x80)
 	non_ascii_count = len(txt) - ascii_count
 	if ascii_count and non_ascii_count:
