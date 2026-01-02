@@ -9,7 +9,7 @@ This document captures the reproduction, observed triggers, and attempts tried s
 
 - Branch: `betajp-260102` (after merging nvaccess beta x64-only changes)
 - Platform: Windows x64
-- Python: 3.13 x64 (`.venv-x64`)
+- Python: 3.13 x64 (`.venv`)
 - Test entry points:
   - `jptools/runJpSmokeTests.ps1`
   - `jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests`
@@ -91,7 +91,7 @@ Confirmed that `libmecab.dll` and `libopenjtalk.dll` are x64 and match vendor pa
 
 ### 6) PageHeap (gflags)
 
-- Enabled PageHeap for `.venv-x64\Scripts\python.exe` and re-ran `runJpSmokeTests.ps1`.
+- Enabled PageHeap for `.venv\Scripts\python.exe` and re-ran `runJpSmokeTests.ps1`.
 - Result: crash still occurs in `mecab_sparse_tonode`.
 - No new actionable stack info observed.
 - PageHeap was disabled after the run.

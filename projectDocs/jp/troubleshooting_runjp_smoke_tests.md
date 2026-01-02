@@ -156,23 +156,24 @@ x64 環境での smoke テストは、以下の2つの方法があります：
 
 1. **`runJpSmokeTests.ps1`を使用（推奨）**:
    - `certBuild2023.cmd`から自動的に呼び出される
-   - `BUILD_ARCH`または`TARGET_ARCH`環境変数が`x64`の場合、自動的にx64 Python 3.13と`.venv-x64`を使用
-   - `scons.bat`は常にx86 Python 3.13で実行されるが、`TARGET_ARCH=x64`によりx64 DLLがビルドされる
-   - smoke testは`TARGET_ARCH`に応じて適切なPythonアーキテクチャを使用
+   - 自動的にx64 Python 3.13と`.venv`を使用
+   - `scons.bat`は常にx64 Python 3.13で実行される（`.venv`はx64 Python 3.13を使用）
+   - `TARGET_ARCH=x64`によりx64 DLLがビルドされる
 
 2. **`checkJtalkArch.ps1`を使用（手動実行時）**:
    ```powershell
    # x64 DLL をビルドして smoke テストを実行
    .\jptools\checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
    ```
-   - `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
+   - `.venv` を使用（x64 Python 3.13）
    - `uv` で Python 3.13 x64 を自動インストール・使用
    - x64 DLL が正しくビルド・配置されることを確認
    - x64 Python で smoke テストを実行（unittest を使用）
 
 **重要な注意点**:
-- `scons.bat`は常にx86 Python 3.13で実行される（`.venv`はx86 Python 3.13を使用）
+- `scons.bat`は常にx64 Python 3.13で実行される（`.venv`はx64 Python 3.13を使用）
 - `TARGET_ARCH`環境変数により、ビルドされるDLLのアーキテクチャが決まる
+- **x86 ビルドはサポートされていません**
 - **詳細**: `BUILD_ARCH`と`TARGET_ARCH`の関係と使用方法については、`projectDocs/jp/build-architecture-environment-variables.md`を参照してください
 - `runJpSmokeTests.ps1`は`BUILD_ARCH`/`TARGET_ARCH`を読み取り、x64の場合はx64 Python 3.13を使用
 

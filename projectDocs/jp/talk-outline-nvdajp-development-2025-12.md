@@ -100,7 +100,7 @@
 - **成果**:
   - `checkJtalkArch.ps1 -Architecture x86 -RunSmokeTests` で x86 smoke テストが成功
   - `checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests` で x64 smoke テストが成功
-  - `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
+  - `.venv` を使用（x64 Python 3.13、x86 ビルドはサポートされていません）
 
 #### 2.2 x64でのaccess violationエラーの修正 ✅
 

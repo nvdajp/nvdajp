@@ -387,8 +387,9 @@ def register_jp_builders(
 	elif build_arch == "x86":
 		env["TARGET_ARCH"] = "x86"
 	else:
-		# Fallback to existing SCons TARGET_ARCH (defaults to x86 from sconstruct)
-		env["TARGET_ARCH"] = str(env.get("TARGET_ARCH", "x86")).lower()
+		# Fallback to existing SCons TARGET_ARCH (defaults to x64)
+		# Note: x86 builds are no longer supported
+		env["TARGET_ARCH"] = str(env.get("TARGET_ARCH", "x64")).lower()
 	# miscdepsjp alias removed in Phase 2 (miscDepsJp/source is empty, overlay is no-op)
 
 	# Alias: jp_tests (run JP dictionary tests and JP char description tests)
@@ -406,13 +407,13 @@ def register_jp_builders(
 	def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int:
 		"""Prepare JP jtalk payload for overlay with on-demand build.
 
-		- Resolve TARGET_ARCH (default x86)
+		- Resolve TARGET_ARCH (default x64, x86 builds are no longer supported)
 		- Locate vendor DLL under miscDepsJp/include/python-jtalk[/x86|x64]/libopenjtalk.dll
 		- If missing, attempt to build via nmake (requires MSVC environment)
 		- Write payload into source/synthDrivers/jtalk/libopenjtalk.dll (Phase 1: files moved)
 		"""
 		repo_root = Path.cwd()
-		arch = str(env.get("TARGET_ARCH", "x86")).lower()
+		arch = str(env.get("TARGET_ARCH", "x64")).lower()
 		vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 
 		if arch in ("x64", "x86_64"):
@@ -636,7 +637,7 @@ def register_jp_builders(
 
 	# Use TARGET_ARCH in stamp filename to ensure rebuild when architecture changes
 	# This prevents x86/x64 DLL mismatches when switching architectures
-	arch = str(env.get("TARGET_ARCH", "x86")).lower()
+	arch = str(env.get("TARGET_ARCH", "x64")).lower()
 	arch_suffix = "x64" if arch in ("x64", "x86_64") else "x86"
 	jtalk_prep_stamp = env.File(f"miscDepsJp/_state/prep/jtalkPrep.{arch_suffix}.stamp")
 	env.AlwaysBuild(jtalk_prep_stamp)
@@ -887,7 +888,7 @@ def register_jp_builders(
 				result = run(cmd, cwd=str(base))
 				return result.returncode
 
-			arch = str(env.get("TARGET_ARCH", "x86")).lower()
+			arch = str(env.get("TARGET_ARCH", "x64")).lower()
 			machine = "x64" if arch in ("x64", "x86_64") else "x86"
 
 			print(
@@ -936,7 +937,7 @@ def register_jp_builders(
 		# Copy core assets (DLLs only; Python files have been moved to source/synthDrivers/jtalk in Phase 1)
 		try:
 			# Copy libmecab.dll (built from source or fallback to existing)
-			arch = str(env.get("TARGET_ARCH", "x86")).lower()
+			arch = str(env.get("TARGET_ARCH", "x64")).lower()
 			machine = "x64" if arch in ("x64", "x86_64") else "x86"
 			# First, try to find built libmecab.dll from mecab/src directory
 			built_libmecab = (
@@ -1199,12 +1200,22 @@ def register_jp_builders(
 				candidates.append(dll_path)
 			else:
 				missing_required.append(dll_path)
+		# Sign files in dist/lib/<version>/ (nvdaHelper*.dll, etc.)
+		# These files are copied from source/ to dist/ during dist build, but may lose signatures
+		# during the copy process. We sign them here to ensure they are signed before launcher build.
+		build_version = str(env.get("version", ""))
+		if build_version:
+			lib_version_dir = dist_dir / "lib" / build_version
+			if lib_version_dir.exists():
+				for pattern in ("**/*.dll", "**/*.exe"):
+					for path in lib_version_dir.glob(pattern):
+						if path.is_file():
+							candidates.append(path)
 		# Note: nvdaHelper*.dll files (IAccessible2proxy.dll, ISimpleDOM.dll, nvdaHelperRemote.dll,
 		# nvdaHelperRemoteLoader.exe, UIARemote.dll, nvdaHelperLocal.dll, nvdaHelperLocalWin10.dll)
-		# are signed during source build (see nvdaHelper/archBuild_sconscript) and should remain
-		# signed when copied to dist/ during dist build. They are NOT signed by jpCertExtras.
-		# If any of these files are unsigned in dist/, that indicates a build problem that should
-		# be fixed at the source build level, not worked around here.
+		# are signed during source build (see nvdaHelper/archBuild_sconscript), but may lose signatures
+		# when copied to dist/ during dist build. We sign them here in jpCertExtras to ensure
+		# they are signed before launcher build.
 		# Report missing required DLLs (must be in dist/, not source/)
 		if missing_required:
 			print("jpCertExtras: ERROR - Required DLLs not found in dist/:")

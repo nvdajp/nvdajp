@@ -244,7 +244,7 @@ git merge --no-commit --no-ff --allow-unrelated-histories 58dd14767
 
 - x86 ビルド関連のコードをすべて削除する
 - `BUILD_ARCH`/`TARGET_ARCH` の条件分岐を削除できる可能性
-- `.venv` と `.venv-x64` の分離が不要になる
+- `.venv` と `.venv-x64` の分離が不要になる（✅ 完了: `.venv` に統一済み）
 - アーキテクチャ条件分岐コードを削除できる
 - ビルドシステムとCIの簡素化
 

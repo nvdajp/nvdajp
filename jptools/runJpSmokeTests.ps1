@@ -74,43 +74,26 @@ Start-Transcript -Path $logFile -Append | Out-Null
 Write-Host "REPO_ROOT set to $repoRoot"
 Write-Host "Log file: $logFile"
 
-# Determine build architecture from BUILD_ARCH environment variable
-# BUILD_ARCH is JP-specific for smoke test environment switching
-# TARGET_ARCH is SCons environment variable and should not be used as OS environment variable
-$buildArch = if ($env:BUILD_ARCH) { $env:BUILD_ARCH } else { "x64" }
-Write-Host "Build architecture: $buildArch"
-
-# For x64 builds, use x64 Python and separate venv (.venv-x64)
-# For x86 builds, use x86 Python and default venv (.venv)
-if ($buildArch -eq "x64") {
-    Write-Host "x64 build detected: using x64 Python and .venv-x64"
-    # Ensure x64 Python 3.13 is available
-    Write-Host "Ensuring Python 3.13 x64 is available..."
-    & uv python install 3.13
+# Ensure x64 Python 3.13 is available
+Write-Host "Ensuring Python 3.13 x64 is available..."
+& uv python install 3.13
+if (-not $?) {
+    Write-Error "uv python install failed"
+    Stop-Transcript | Out-Null
+    exit 1
+}
+# Use .venv (x64 Python 3.13)
+$venvPath = Join-Path $repoRoot ".venv"
+$pythonExe = Join-Path $venvPath "Scripts\python.exe"
+if (-not (Test-Path $pythonExe)) {
+    Write-Host "Creating virtual environment with x64 Python 3.13..."
+    & uv venv $venvPath --python 3.13
     if (-not $?) {
-        Write-Error "uv python install failed"
+        Write-Error "Failed to create virtual environment"
         Stop-Transcript | Out-Null
         exit 1
     }
-    # Use separate venv for x64 to avoid conflicts with x86 .venv
-    $venvX64 = Join-Path $repoRoot ".venv-x64"
-    $pythonExe = Join-Path $venvX64 "Scripts\python.exe"
-    if (-not (Test-Path $pythonExe)) {
-        Write-Host "Creating x64 virtual environment..."
-        & uv venv $venvX64 --python 3.13
-        if (-not $?) {
-            Write-Error "Failed to create x64 virtual environment"
-            Stop-Transcript | Out-Null
-            exit 1
-        }
-        $pythonExe = Join-Path $venvX64 "Scripts\python.exe"
-    }
-} else {
-    # x86 build: use default .venv
-    $pythonExe = Join-Path $repoRoot ".venv\Scripts\python.exe"
-    if (-not (Test-Path $pythonExe)) {
-        $pythonExe = "python"
-    }
+    $pythonExe = Join-Path $venvPath "Scripts\python.exe"
 }
 Write-Host "Using Python: $pythonExe"
 
@@ -246,14 +229,15 @@ if (-not $SkipInstall) {
 }
 
 if (-not $SkipInstall) {
-    $venvPath = if ($buildArch -eq "x64") { Join-Path $repoRoot ".venv-x64" } else { Join-Path $repoRoot ".venv" }
+    $venvPath = Join-Path $repoRoot ".venv"
     Install-Packages -Packages $packages -VenvPath $venvPath
 }
 
 # Initialize MSVC environment for local runs (needed for dumpbin, cl, nmake)
 # CI environments already have MSVC environment set up via ilammy/msvc-dev-cmd@v1
+# Always use x64 architecture (x86 builds are no longer supported)
 if (-not $isCI) {
-    Initialize-MsvcEnvironment -Architecture $buildArch
+    Initialize-MsvcEnvironment -Architecture "x64"
 }
 
 if (-not $SkipOverlay) {

@@ -157,9 +157,9 @@ function Stop-JpSmokeTestProcesses {
     param(
         [string]$RepoRoot
     )
-    $venvX64 = Join-Path $RepoRoot ".venv-x64\Scripts\python.exe"
+    $venvPython = Join-Path $RepoRoot ".venv\Scripts\python.exe"
     $patterns = @(
-        [regex]::Escape($venvX64),
+        [regex]::Escape($venvPython),
         "miscDepsJp\.jptools\.test",
         "run_unittest_x64_"
     )
@@ -244,8 +244,8 @@ if ($allOk) {
             if ($Architecture -eq 'x64') {
                 Stop-JpSmokeTestProcesses -RepoRoot $repoRoot
                 # Use uv to run unittest with Python 3.13 x64.
-                # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
-                $venvX64 = "$repoRoot\.venv-x64"
+                # Use .venv (x64 Python 3.13)
+                $venvPath = "$repoRoot\.venv"
                 $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk;$repoRoot\miscDepsJp\jptools"
                 
                 # Ensure JTalk dictionaries are present (required for smoke tests)
@@ -269,20 +269,20 @@ if ($allOk) {
                 }
                 
                 # Create venv if it doesn't exist or is incomplete
-                $venvPython = "$venvX64\Scripts\python.exe"
+                $venvPython = "$venvPath\Scripts\python.exe"
                 $venvNeedsRecreate = $false
                 if (-not (Test-Path $venvPython)) {
                     $venvNeedsRecreate = $true
-                } elseif (-not (Test-Path "$venvX64\pyvenv.cfg")) {
+                } elseif (-not (Test-Path "$venvPath\pyvenv.cfg")) {
                     # Incomplete venv (missing pyvenv.cfg), remove and recreate
                     Write-Host "Incomplete venv detected, removing and recreating..."
-                    Remove-Item -Recurse -Force $venvX64 -ErrorAction SilentlyContinue
+                    Remove-Item -Recurse -Force $venvPath -ErrorAction SilentlyContinue
                     Start-Sleep -Seconds 1
                     $venvNeedsRecreate = $true
                 }
                 
                 if ($venvNeedsRecreate) {
-                    Write-Host "Creating x64 virtual environment with Python 3.13..."
+                    Write-Host "Creating virtual environment with x64 Python 3.13..."
                     # Use UV_PYTHON_PREFERENCE=only-managed to prefer uv-managed Python (x64)
                     # This prevents uv from using the x86 Python from PATH
                     $oldPreference = $env:UV_PYTHON_PREFERENCE
@@ -290,7 +290,7 @@ if ($allOk) {
                     try {
                         # Use Python 3.13 explicitly (uv will select the latest 3.13.x x64 version)
                         # Use --clear flag to replace existing directory if it exists
-                        & uv venv --python 3.13 --clear $venvX64
+                        & uv venv --python 3.13 --clear $venvPath
                     } finally {
                         # Restore original UV_PYTHON_PREFERENCE value, or remove if it was not set
                         if ($null -ne $oldPreference -and $oldPreference -ne "") {
@@ -305,7 +305,7 @@ if ($allOk) {
                     }
                     
                     # Verify venv Python is x64
-                    $venvPython = "$venvX64\Scripts\python.exe"
+                    $venvPython = "$venvPath\Scripts\python.exe"
                     $pythonArch = & $venvPython -c "import platform; print(platform.architecture()[0])"
                     if ($pythonArch -ne "64bit") {
                         Write-Error "ERROR: venv Python is not x64 ($pythonArch). Ensure x64 Python is installed: uv python install 3.13"
@@ -315,12 +315,12 @@ if ($allOk) {
                     # unittest is part of Python standard library, no installation needed
                 }
                 
-                # Run unittest in the x64 venv with timeout to prevent hang on access violation
+                # Run unittest in the venv with timeout to prevent hang on access violation
                 # Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
                 # Set code page to 932 (Japanese Shift-JIS) to match local environment behavior
                 # This ensures consistent behavior for ctypes string handling and MeCab internal processing
                 $env:PYTHONUTF8 = "1"
-                Write-Host "Using Python: $venvX64\Scripts\python.exe"
+                Write-Host "Using Python: $venvPath\Scripts\python.exe"
                 Write-Host "PYTHONPATH set to $($env:PYTHONPATH)"
                 Write-Host "Running JP braille/JTalk smoke tests (filter: JpBrailleTests or JtalkTests)..."
                 
@@ -335,7 +335,7 @@ if ($allOk) {
 @echo off
 chcp 932 >nul 2>&1
 cd /d "$repoRoot"
-"$venvX64\Scripts\python.exe" -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests -v > "$outputFile" 2>&1
+"$venvPath\Scripts\python.exe" -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests -v > "$outputFile" 2>&1
 exit /b %ERRORLEVEL%
 "@
                 try {

@@ -26,7 +26,11 @@ louisSourceDir = louisRootDir.Dir("liblouis")
 louisTableDir = louisRootDir.Dir("tables")
 outDir = sourceDir.Dir("louis")
 unitTestTablesDir = env.Dir("#tests/unit/brailleTables")
-signExec = env["signExec"] if (bool(env["certFile"]) ^ bool(env["apiSigningToken"])) else None
+# BEGIN JP PATCH (certificate store signing support)
+# signExec is set in sconstruct when certFile, apiSigningToken, or useCertStore is configured
+# Check for signExec directly instead of checking certFile/apiSigningToken
+signExec = env.get("signExec") if env.get("signExec") else None
+# END JP PATCH (certificate store signing support)
 
 RE_AC_INIT = re.compile(
 	r"^AC_INIT\(\[(?P<package>.*)\], \[(?P<version>.*)\], \[(?P<bugReport>.*)\], \[(?P<tarName>.*)\], \[(?P<url>.*)\]\)"

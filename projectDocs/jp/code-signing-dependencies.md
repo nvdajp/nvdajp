@@ -139,14 +139,25 @@ except Exception:
 
 ### 署名方法の種類
 
-1. **ローカル証明書（`certFile`）**: Windows 証明書ストアまたは PFX ファイルから証明書を取得
-2. **API トークン（`apiSigningToken`）**: SignPath HSM などのクラウド署名サービスを使用
+1. **ローカル証明書（`certFile`）**: PFX ファイルから証明書を取得
+2. **証明書ストア署名（`useCertStore`）**: Windows 証明書ストアから証明書を取得（JP 固有）
+   * 環境変数 `CERT_SHA1` または `CERT_NAME` を設定することで有効化
+   * `CERT_STORE` で証明書ストアを指定（デフォルト: `My`）
+   * `CERT_MACHINE_STORE` を設定するとマシンストアを使用
+3. **API トークン（`apiSigningToken`）**: SignPath HSM などのクラウド署名サービスを使用
 
 ### 署名設定の条件
 
-* `certFile=1` が設定されている場合、`signExec` が `env` に設定される
+* `certFile` が設定されている場合、`signExec` が `env` に設定される
 * `apiSigningToken` が設定されている場合、`signExecApi` が `env` に設定される
+* `CERT_SHA1` または `CERT_NAME` が設定されている場合、`signExecCertStore` が `env` に設定される（`useCertStore`）
 * いずれも設定されていない場合、`jpCertExtras` はスキップされる（`signExec` が `None` の場合）
+
+### 証明書ストア署名の実装詳細
+
+* `sconstruct` で `CERT_SHA1` または `CERT_NAME` 環境変数が設定されている場合、`useCertStore` が `True` になり、`env["signExec"]` に `signExecCertStore` が設定される
+* `nvdaHelper/archBuild_sconscript` と `nvdaHelper/liblouis/sconscript` では、`signExec` の存在を直接チェックすることで、証明書ストア署名にも対応（JP PATCH）
+* betajp ブランチでは `certFile=1` を使用していたが、現在のブランチでは `useCertStore` を使用するより明確な実装に変更
 
 ## 並列ビルド（`--all-cores`）での動作
 

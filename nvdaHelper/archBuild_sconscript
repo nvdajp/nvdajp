@@ -88,7 +88,11 @@ isNVDAHelperLocalArch = isNVDACoreArch or (
 )
 debug = env["nvdaHelperDebugFlags"]
 release = env["release"]
-signExec = env["signExec"] if (bool(env["certFile"]) ^ bool(env["apiSigningToken"])) else None
+# BEGIN JP PATCH (certificate store signing support)
+# signExec is set in sconstruct when certFile, apiSigningToken, or useCertStore is configured
+# Check for signExec directly instead of checking certFile/apiSigningToken
+signExec = env.get("signExec") if env.get("signExec") else None
+# END JP PATCH (certificate store signing support)
 
 # Some defines and includes for the environment
 env.Append(
