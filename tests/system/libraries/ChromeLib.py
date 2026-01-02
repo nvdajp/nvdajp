@@ -178,7 +178,10 @@ class ChromeLib:
 		"""
 		spy = _NvdaLib.getSpyLib()
 		spy.wait_for_speech_to_finish()
-		expectedAddressBarSpeech = "Address and search bar"
+		# BEGIN JP PATCH (Japanese UI language)
+		expectedAddressBarSpeech = "アドレス検索バー"
+		# END JP PATCH
+		# Original: expectedAddressBarSpeech = "Address and search bar"
 		moveToAddressBarSpeech = _NvdaLib.getSpeechAfterKey("nvda+tab")  # report current focus.
 		if expectedAddressBarSpeech not in moveToAddressBarSpeech:
 			moveToAddressBarSpeech = _NvdaLib.getSpeechAfterKey(

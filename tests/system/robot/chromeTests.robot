@@ -11,6 +11,9 @@ Library	NvdaLib.py
 # for test cases
 Library	chromeTests.py
 Library	ScreenCapLibrary
+# BEGIN JP PATCH (Japanese character description mode support)
+Library	jpRobotUtil.py
+# END JP PATCH
 
 Test Setup	default setup
 Test Teardown	default teardown
