@@ -89,8 +89,13 @@
   - `source/appModules/windowsinternal_composableshell_experiences_textinput_inputapp_jp_win10.py`
 
 **確認事項**:
-- [ ] ファイル名が変更された理由を確認（upstream の変更に追従した可能性）
-- [ ] ドキュメントを実際のファイル名に更新する必要があるか確認
+- [x] ファイル名が変更された理由を確認（upstream の変更に追従した可能性） → **upstream の変更に追従。Windows のアプリ名が `windowsimmersiveshell` から `windowsinternal_composableshell` に変更されたため、ファイル名も変更された。`source/appModules/__init__.py` では `textinputhost` が `windowsinternal_composableshell_experiences_textinput_inputapp` にマッピングされている**
+- [x] ドキュメントを実際のファイル名に更新する必要があるか確認 → **`changes-nvdajp.md` は既に正しいファイル名で記載されており、注釈で「ファイル名は upstream の変更に追従して `windowsimmersiveshell` から `windowsinternal_composableshell` に変更されています」と説明されている。`migration-review-2025.3jp-to-260102.md` の記載が古いため、こちらを更新済み**
+
+**参考情報**:
+- `source/appModules/__init__.py` (52行目): `"textinputhost": "windowsinternal_composableshell_experiences_textinput_inputapp"`
+- `source/appModules/explorer.py` (537行目): `"windowsinternal_composableshell_experiences_textinput_inputapp"` への参照
+- `user_docs/en/changes.md` (1203行目): `textinputhost` が `windowsinternal_composableshell_experiences_textinput_inputapp` にマッピングされていることが記載されている
 
 #### 3. 廃止予定の設定項目
 
