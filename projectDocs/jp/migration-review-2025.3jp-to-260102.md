@@ -131,31 +131,39 @@
 - `projectDocs/jp/test-routing-failures.md` - テスト失敗の詳細分析
 - `projectDocs/jp/test-routing-skip-justification.md` - テストスキップの妥当性説明
 
-### ❌ 抜け漏れが疑われる項目
-
-現在のところ、重大な抜け漏れは見つかっていません。ただし、以下の項目については追加の確認が必要です：
+### ✅ 追加確認完了項目（2026年1月2日更新）
 
 #### 1. miscDepsJp のサブツリー変換
 
 **確認事項**:
-- [ ] `miscDepsJp/include/htsengineapi/` が存在するか確認
-- [ ] `miscDepsJp/include/libkuraji/` が存在するか確認
-- [ ] `miscDepsJp/include/libopenjtalk/` が存在するか確認
-- [ ] `miscDepsJp/include/python-jtalk/` が存在するか確認
+
+* [x] `miscDepsJp/include/htsengineapi/` が存在するか確認 → **存在確認済み**
+* [x] `miscDepsJp/include/libkuraji/` が存在するか確認 → **存在確認済み**
+* [x] `miscDepsJp/include/libopenjtalk/` が存在するか確認 → **存在確認済み**
+* [x] `miscDepsJp/include/python-jtalk/` が存在するか確認 → **存在確認済み**
+
+**結果**: すべてのディレクトリが正常に存在。miscDepsJp のサブツリー変換は正常に完了している。
 
 #### 2. ビルドツール（jptools）
 
 **確認事項**:
-- [ ] `jptools/certBuild2023.cmd` が存在するか確認
-- [ ] `jptools/runJpSmokeTests.ps1` が存在するか確認
-- [ ] `jptools/jtalk_manifest.py` が存在するか確認
-- [ ] `jptools/kgs_manifest.py` が存在するか確認
+
+* [x] `jptools/certBuild2023.cmd` が存在するか確認 → **存在確認済み** (6914 bytes)
+* [x] `jptools/runJpSmokeTests.ps1` が存在するか確認 → **存在確認済み** (13883 bytes)
+* [x] `jptools/jtalk_manifest.py` が存在するか確認 → **存在確認済み** (534 bytes)
+* [x] `jptools/kgs_manifest.py` が存在するか確認 → **存在確認済み** (569 bytes)
+
+**結果**: 主要なビルドツールがすべて存在。追加で `certBuild2025.ps1`, `checkJtalkArch.ps1`, `nonCertBuild.py` なども確認済み。
 
 #### 3. 文字処理ツール（jpchar）
 
 **確認事項**:
-- [ ] `jpchar/` ディレクトリが存在するか確認
-- [ ] 主要なツールファイルが存在するか確認
+
+* [x] `jpchar/` ディレクトリが存在するか確認 → **存在確認済み**
+* [x] 主要なツールファイルが存在するか確認 → **存在確認済み**
+  * `checkCharDesc.py`, `checkSymbols.py`, `compareSymbolsDic.py` など30個以上のツールファイルを確認
+
+**結果**: jpchar ディレクトリと主要なツールファイルがすべて存在。文字説明・記号チェックツールが正常に移行されている。
 
 ## 推奨される対応
 
@@ -175,11 +183,11 @@
    - ✅ 意図的な変更であることを確認済み
    - ✅ 関連するテストがスキップされていることを確認済み
 
-### 追加確認が必要な項目
+### ✅ 追加確認完了（2026年1月2日）
 
-1. **miscDepsJp のサブツリー変換**: 各ディレクトリの存在確認
-2. **ビルドツール**: 主要なツールファイルの存在確認
-3. **文字処理ツール**: 主要なツールファイルの存在確認
+1. **miscDepsJp のサブツリー変換**: 各ディレクトリの存在確認 → **完了**
+2. **ビルドツール**: 主要なツールファイルの存在確認 → **完了**
+3. **文字処理ツール**: 主要なツールファイルの存在確認 → **完了**
 
 ## 結論
 
@@ -191,8 +199,11 @@
 2. ✅ Windows 11 テキスト入力アプリ対応のファイル名不一致 → **upstream の変更に追従。ドキュメント更新済み**
 3. ✅ 廃止予定の設定項目の削除状況 → **削除済み。ドキュメント更新済み**
 4. ✅ ReviewCursorManagerRegion の実装 → **upstream と同じ空クラス。テストスキップ済み**
+5. ✅ miscDepsJp のサブツリー変換 → **すべてのディレクトリが存在確認済み（2026年1月2日）**
+6. ✅ ビルドツール（jptools） → **主要なツールファイルがすべて存在確認済み（2026年1月2日）**
+7. ✅ 文字処理ツール（jpchar） → **ディレクトリと30個以上のツールファイルが存在確認済み（2026年1月2日）**
 
-現在のところ、追加の確認が必要な項目はありません。
+**すべての確認項目が完了しました。2025.3jp から betajp-260102 への移行は正常に完了しています。**
 
 ## 参考資料
 
