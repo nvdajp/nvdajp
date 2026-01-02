@@ -1,4 +1,5 @@
 cd jpchar
+set PYTHONUTF8=1
 py checkCharDesc.py > __checkchardesc_log.txt
 cd ..
 

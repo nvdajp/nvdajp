@@ -156,7 +156,10 @@ def _run_jp_tests(target: list[Any], source: list[Any], env: Any) -> int:
 	# Run jpDicTest.py from jptools directory
 	test_script = repo_root / "jptools" / "jpDicTest.py"
 	if test_script.exists():
-		res = run([sys.executable, str(test_script)], cwd=str(test_script.parent))
+		# Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
+		env_vars = os.environ.copy()
+		env_vars.setdefault("PYTHONUTF8", "1")
+		res = run([sys.executable, str(test_script)], cwd=str(test_script.parent), env=env_vars)
 		if res.returncode != 0:
 			return res.returncode
 	# Stamp success
@@ -172,7 +175,10 @@ def _run_jpchar_tests(target: list[Any], source: list[Any], env: Any) -> int:
 	from subprocess import run
 
 	if script.exists():
-		res = run([sys.executable, str(script)], cwd=str(script.parent))
+		# Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
+		env_vars = os.environ.copy()
+		env_vars.setdefault("PYTHONUTF8", "1")
+		res = run([sys.executable, str(script)], cwd=str(script.parent), env=env_vars)
 		if res.returncode != 0:
 			return res.returncode
 	Path(str(target[0])).parent.mkdir(parents=True, exist_ok=True)
