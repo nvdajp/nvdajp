@@ -299,8 +299,9 @@
 ### ステージ6: 残作業（優先度：中～低）
 
 * [ ] **翻訳ファイル（nvda.po）のマージ**
-  * msgmerge で最新化
-  * JP固有翻訳の維持
+  * `jptools/nvda-jp-patch.po` から JP 固有翻訳を抽出
+  * `jptools/merge-jp-patch-po.ps1` を使用して `source/locale/ja/LC_MESSAGES/nvda.po` にマージ
+  * 詳細は `projectDocs/jp/po-merge-procedure.md` を参照
 
 * [ ] **ユーザー辞書テストの有効化**
   * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張

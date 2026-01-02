@@ -56,7 +56,9 @@
 ##### 日本語点字テーブル
 
 - `source/ja-jp-comp6.utb` - 日本語6点点字コンピュータ用テーブル（130行）
-- `source/ja-jp-rokutenkanji.tbl` - 日本語6点漢字点字テーブル（6,363行）
+- `include/liblouis/tables/ja-rokutenkanji.utb` - 日本語6点漢字点字テーブル（上流版、liblouis 3.36.0以降）
+
+**注**: `source/ja-jp-rokutenkanji.tbl` は betajp-260102 ブランチでは使用されていません。代わりに、上流版の `include/liblouis/tables/ja-rokutenkanji.utb` が使用されています。詳細は `projectDocs/jp/ja-rokutenkanji-table-fix-plan.md` を参照してください。
 
 ##### 点字表示ドライバー
 
@@ -106,8 +108,10 @@
 
 ##### Windows 11 テキスト入力アプリ対応
 
-- `source/appModules/windowsimmersiveshell_experiences_textinput_inputapp_jp.py` (441行)
-- `source/appModules/windowsimmersiveshell_experiences_textinput_inputapp_jp_win10.py` (347行)
+- `source/appModules/windowsinternal_composableshell_experiences_textinput_inputapp_jp.py` (441行)
+- `source/appModules/windowsinternal_composableshell_experiences_textinput_inputapp_jp_win10.py` (347行)
+
+**注**: ファイル名は upstream の変更に追従して `windowsimmersiveshell` から `windowsinternal_composableshell` に変更されています。
 
 ### 3. 設定とユーザーインターフェース
 
@@ -137,9 +141,11 @@
 ##### 点字設定 (`[braille]`)
 
 - `translationTable` - デフォルトが `ja-jp-comp6.utb` に変更
-- `nvdajpMessageTimeout` - メッセージタイムアウト（廃止予定）
-- `japaneseBrailleSupport` - 日本語点字サポート（廃止予定）
-- `nvdajpComPort` - COM ポート設定（廃止予定）
+- `nvdajpMessageTimeout` - メッセージタイムアウト（**削除済み**）
+- `japaneseBrailleSupport` - 日本語点字サポート（**削除済み**）
+- `nvdajpComPort` - COM ポート設定（**削除済み**）
+
+**注**: 上記3つの設定項目は betajp-260102 ブランチでは既に削除されています。
 
 #### 3.2 GUI の拡張
 
@@ -299,3 +305,207 @@ NVDA 日本語版 2025.3jp は、本家版 2025.3 に対して以下の主要な
 6. **開発ツール** - ビルドとテストのための専用ツール
 
 これらの変更により、NVDA は日本語環境でより使いやすく、機能豊富なスクリーンリーダーとなっています。
+
+---
+
+## betajp-260102 ブランチでの追加変更点（2025.3jp 以降）
+
+このセクションでは、2025.3jp（`releasejp` ブランチ）以降、現在の `betajp-260102` ブランチで行われた主な変更点をまとめます。
+
+### 1. Python 3.13 x64 への移行
+
+#### 1.1 アーキテクチャと Python バージョンの変更
+
+- **アーキテクチャ**: x86 (32bit) → x64 (64bit)
+- **Python バージョン**: 3.11 → 3.13.11
+- **移行完了日**: 2025年12月29日
+
+#### 1.2 CI/CD ワークフローの更新
+
+`.github/workflows/testAndPublish.yml` の更新：
+
+- **Python バージョン**: `3.13.7` → `3.13.11`
+- **GitHub Actions バージョン**:
+  - `actions/setup-python`: `v5` → `v6`
+  - `astral-sh/setup-uv`: `v6` → `v7`
+- **アーキテクチャ**: `x86` → `x64`
+- **目的**: upstream (`nvaccess/beta`) との整合性確保と `uv` インタープリター検出問題の解決
+
+### 2. ビルドシステムの修正
+
+#### 2.1 liblouis ビルドの修正
+
+`nvdaHelper/liblouis/sconscript` の変更：
+
+- **問題**: `config.h` 生成時にディレクトリが存在せず、エラー 948 が発生
+- **修正内容**:
+  - `configHDir` のパス修正（`variant_dir` 内での実行に対応）
+  - `buildConfigH` 関数でディレクトリを明示的に作成
+  - `stdbool.h` サポートの追加（C99 `bool` 型対応）
+
+```python
+def buildConfigH(target, source, env):
+    """Build config.h file, ensuring the directory exists first."""
+    targetPath = str(target[0])
+    dirPath = os.path.dirname(targetPath)
+    os.makedirs(dirPath, exist_ok=True)
+    with open(targetPath, "w", encoding="utf-8") as f:
+        f.write(configHContent)
+```
+
+### 3. NVDAHelper の機能復元
+
+#### 3.1 nvdaController 関数の復元
+
+`nvdaHelper/local/nvdaController.cpp` に以下の関数を復元：
+
+- `nvdaController_speakSpelling` - スペル読み上げ
+- `nvdaController_isSpeaking` - 読み上げ中かどうかの確認
+- `nvdaController_getPitch` - ピッチ取得
+- `nvdaController_setPitch` - ピッチ設定
+- `nvdaController_getRate` - 速度取得
+- `nvdaController_setRate` - 速度設定
+- `nvdaController_setAppSleepMode` - アプリケーションスリープモード設定
+
+**関連ファイル**:
+- `nvdaHelper/interfaces/nvdaController/nvdaController.idl` - インターフェース定義
+- `nvdaHelper/interfaces/nvdaController/nvdaController.acf` - 属性設定
+
+### 4. テストの修正とドキュメント化
+
+#### 4.1 点字ルーティングテストのスキップ
+
+`tests/unit/test_braille/test_routing.py` で4つのテストをスキップ：
+
+- `test_moveCaret_never_moveReviewAndActivate`
+- `test_moveCaret_never_instantActivate`
+- `test_moveCaret_always_moveReviewAndActivate`
+- `test_moveCaret_always_instantActivate`
+
+**理由**: 
+- `ReviewCursorManagerRegion` を upstream と同じ空クラスに戻しても、nvdajp ブランチではテストが失敗
+- 問題が日本語版独自の実装だけに起因するのではなく、テストの前提条件や環境差など、他の要因も関与している可能性
+- 詳細は `projectDocs/jp/test-routing-failures.md` を参照
+
+#### 4.2 ドキュメントの追加
+
+以下のドキュメントを追加：
+
+- `projectDocs/jp/test-routing-failures.md` - テスト失敗の詳細分析
+- `projectDocs/jp/test-routing-skip-justification.md` - テストスキップの妥当性説明
+- `projectDocs/jp/braille-routing-analysis.md` - 点字ルーティング問題の詳細分析
+
+### 5. 設定の復元と拡張
+
+#### 5.1 nvdajp 固有設定の復元
+
+`source/config/configSpec.py` で以下の設定を復元：
+
+- **言語設定** (`[language]`):
+  - `jpKatakanaPitchChange` - カタカナのピッチ変更率
+  - `halfShapePitchChange` - 半角文字のピッチ変更率
+  - `jpPhoneticReadingLatin` - アルファベットのフォネティック読み
+  - `jpPhoneticReadingKana` - かな文字のフォネティック読み
+  - `announceCandidateNumber` - 変換候補の番号の報告
+  - `jpAnsiEditbox` - ANSI エディットボックスの処理
+  - `jpAnnounceNewLine` - 改行の報告
+  - `openDocFileByMSHTA` - ドキュメントファイルを MSHTA で開く
+  - `alwaysSpeakMathInEnglish` - 数式を常に英語で読み上げ
+
+- **キーボード設定** (`[keyboard]`):
+  - `nvdajpEnableKeyEvents` - キーイベントの有効化
+  - `nvdajpImeBeep` - IME のビープ音
+  - `useNonConvertAsNVDAModifierKey` - 無変換キーをNVDA制御キーとして使用
+  - `useConvertAsNVDAModifierKey` - 変換キーをNVDA制御キーとして使用
+  - `useEscapeAsNVDAModifierKey` - Escape キーをNVDA制御キーとして使用
+
+- **点字設定** (`[braille]`):
+  - `translationTable` - デフォルトが `ja-jp-comp6.utb` に設定
+
+#### 5.2 キーコードマッピングの拡張
+
+`source/vkCodes.py` に IME 変更ステータスキーマッピングを追加。
+
+### 6. その他の変更
+
+#### 6.1 .gitignore の更新
+
+`.gitignore` を更新し、無視するファイルとディレクトリを精緻化。
+
+#### 6.2 ドキュメントの追加
+
+- `projectDocs/jp/changes-nvdajp.md` - このドキュメント（2025.3jp と本家版の差分まとめ）
+
+---
+
+## 2025.3jp からの移行で確認が必要な項目（TODO）
+
+以下の項目について、2025.3jp からの移行時に抜け漏れがないか確認が必要です：
+
+### ビルドシステム
+
+- [ ] **JTalk x64 ビルド対応**: x64 環境での JTalk ビルドが正常に動作するか確認
+- [ ] **MeCab x64 ビルド対応**: x64 環境での MeCab ビルドが正常に動作するか確認
+- [ ] **依存ライブラリの x64 対応**: すべての依存ライブラリが x64 で正常に動作するか確認
+- [ ] **証明書付きビルド**: `jptools/certBuild2025.ps1` が x64 環境で正常に動作するか確認
+
+### テスト
+
+- [ ] **JP Smoke Tests**: `jptools/runJpSmokeTests.ps1` が x64 環境で正常に実行されるか確認
+- [ ] **ユニットテスト**: すべてのユニットテストが x64 環境で通過するか確認
+- [ ] **システムテスト**: すべてのシステムテストが x64 環境で通過するか確認
+- [ ] **点字ルーティングテスト**: スキップされた4つのテストの根本原因を特定し、将来的に修正できるか検討
+
+### 機能
+
+- [ ] **JTalk シンセサイザー**: x64 環境で正常に動作するか確認
+- [ ] **日本語点字表示**: x64 環境で正常に動作するか確認
+- [ ] **IME サポート**: x64 環境で正常に動作するか確認
+- [ ] **文字説明辞書**: x64 環境で正常に読み込まれるか確認
+- [ ] **点字表示ドライバー**: KGS、BrailleMemo などのドライバーが x64 環境で正常に動作するか確認
+
+### 設定とユーザーインターフェース
+
+- [ ] **設定の移行**: 2025.3jp からの設定ファイルが正常に移行されるか確認
+- [ ] **GUI の互換性**: すべての GUI 要素が x64 環境で正常に表示されるか確認
+- [ ] **設定ダイアログ**: 日本語設定カテゴリが正常に表示されるか確認
+
+### ドキュメント
+
+- [ ] **ユーザーガイド**: x64 環境での動作に関する記述を更新
+- [ ] **開発者ガイド**: x64 環境でのビルド手順を更新
+- [ ] **README**: Python 3.13 x64 への移行に関する記述を追加
+
+### CI/CD
+
+- [ ] **GitHub Actions**: すべてのワークフローが正常に実行されるか確認
+- [ ] **必須チェック**: `allTestsPass` が正常に動作するか確認
+- [ ] **JP Smoke Tests の CI 統合**: CI で正常に実行されるか確認
+
+### 依存関係
+
+- [ ] **miscDepsJp**: すべての依存関係が x64 環境で正常にビルドされるか確認
+- [ ] **サブモジュール**: すべてのサブモジュールが x64 環境で正常にビルドされるか確認
+- [ ] **Python パッケージ**: すべての Python パッケージが Python 3.13 で正常に動作するか確認
+
+### パフォーマンス
+
+- [ ] **起動時間**: x64 環境での起動時間が許容範囲内か確認
+- [ ] **メモリ使用量**: x64 環境でのメモリ使用量が許容範囲内か確認
+- [ ] **応答性**: x64 環境での応答性が許容範囲内か確認
+
+### セキュリティ
+
+- [ ] **コード署名**: x64 環境でのコード署名が正常に動作するか確認
+- [ ] **証明書**: すべての証明書が x64 環境で正常に使用できるか確認
+
+---
+
+## 参考資料
+
+- [日本語版ロードマップ](roadmap.md) - 長期的な目標と現行マイルストーン
+- [nvaccess/beta からのマージ計画](merge-plan-beta-2025-11.md) - マージ戦略と実装状況
+- [点字ルーティングテスト失敗の詳細](test-routing-failures.md) - テスト失敗の分析
+- [テストスキップの妥当性説明](test-routing-skip-justification.md) - テストスキップの理由
+- [点字ルーティング問題の詳細分析](braille-routing-analysis.md) - 問題の詳細分析
+- [コードレビュー: 2025.3jp から betajp-260102 への移行の抜け漏れ確認](migration-review-2025.3jp-to-260102.md) - 移行時のコードレビュー結果

@@ -1,4 +1,4 @@
-msgid ""
+﻿msgid ""
 msgstr ""
 "Project-Id-Version: nvda\n"
 "Report-Msgid-Bugs-To: \n"
@@ -18945,3 +18945,194 @@ msgctxt "remote"
 msgid "Remote NVDA not connected"
 msgstr "リモートNVDAが接続されていません"
 
+# nvdajp from here
+
+#: source\gui\__init__.py
+msgid "NVDA Japanese Team"
+msgstr "NVDA日本語チーム"
+
+#: keyLabels.py:139
+msgid "IME non convert"
+msgstr "無変換"
+
+#: keyLabels.py:141
+msgid "IME convert"
+msgstr "変換"
+
+#: keyLabels.py:143
+msgid "pause"
+msgstr "ポーズ"
+
+#: gui\settingsDialogs.py:497
+msgid "Phonetic reading for Kana"
+msgstr "かな文字をフォネティック読み"
+
+#: gui\settingsDialogs.py:494
+msgid "Phonetic reading for Latin"
+msgstr "アルファベットをフォネティック読み"
+
+#: gui\settingsDialogs.py:549
+msgid "Use IME support of nvdajp"
+msgstr "日本語版の文字入力拡張"
+
+#: gui\settingsDialogs.py:552
+msgid "Beep for IME mode change"
+msgstr "半角全角キーが押されたらビープ音を鳴らす"
+
+#: gui\settingsDialogs.py:1758
+msgid "Work around ANSI editbox"
+msgstr "改行位置の不具合対策"
+
+#: gui\settingsDialogs.py:1768
+msgid "Enable UIA (requires restart)"
+msgstr "UIオートメーションの有効化(設定を有効にするには再起動が必要)"
+
+#: gui\settingsDialogs.py:1768
+msgid "Enable Braille message timeout"
+msgstr "点字メッセージの表示終了待ち時間の設定を有効化"
+
+#: gui\settingsDialogs.py:1768
+msgid "Announce new line in editable text"
+msgstr "テキスト編集で改行を報告"
+
+#: gui\settingsDialogs.py:1928
+msgid "Open document file by MSHTA"
+msgstr "ヘルプを独自のウィンドウで開く"
+
+#: gui\settingsDialogs.py:1938
+msgid "Always speak math in English"
+msgstr "数式を英語で読み上げる"
+
+#: gui\settingsDialogs.py
+msgid "Cell border"
+msgstr "セルの罫線の報告"
+
+#: gui\settingsDialogs.py
+msgid "Colors and styles"
+msgstr "色とスタイル"
+
+#: editableText.py:
+msgid "new line"
+msgstr "改行"
+
+#: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
+msgid "Use NonConvert as an NVDA modifier key"
+msgstr "無変換をNVDA制御キーとして使用"
+
+#: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
+msgid "Use Convert as an NVDA modifier key"
+msgstr "変換をNVDA制御キーとして使用"
+
+#: source\gui\__init__.py:416 source\gui\settingsDialogs.py:469
+msgid "Use Escape as an NVDA modifier key"
+msgstr "EscapeをNVDA制御キーとして使用"
+
+#: source\gui\__init__.py:416
+msgid "&Readme (nvdajp)"
+msgstr "NVDA日本語版の説明"
+
+#: keyLabels.py:177
+msgid "toggle input method"
+msgstr "半角全角"
+
+#: gui\settingsDialogs.py:302
+msgid "Japanese Braille viewer"
+msgstr "日本語点字ビューアー(&J)"
+
+#: gui\jpBrailleViewer.py:18
+msgid "NVDA Japanese Braille Viewer"
+msgstr "NVDA日本語点字ビューアー"
+
+#: brailleDisplayDrivers\kgs.py
+msgid "KGS BrailleMemo series"
+msgstr "KGS BrailleMemo シリーズ"
+
+#: gui\__init.py:315
+msgid "Language settings..."
+msgstr "日本語設定(&L)..."
+
+#: settingDialogs.py:637
+msgid "Language Settings"
+msgstr "日本語設定"
+
+#: globalCommands.py:587
+msgid "Character description mode disabled"
+msgstr "読みかたモード"
+
+#: globalCommands.py:590
+msgid "Character description mode enabled"
+msgstr "説明モード"
+
+#: NVDAHelper.py:163
+msgid "full shape space"
+msgstr "全角スペース"
+
+#: NVDAHelper.py:194
+msgid "Clear"
+msgstr "クリア"
+
+#: settingDialogs.py:1442
+msgid "Katakana pitch change percentage"
+msgstr "カタカナのピッチ変更率(-100から100)"
+
+#: settingDialogs.py:1442
+msgid "Half shape pitch change percentage"
+msgstr "半角のピッチ変更率(-100から100)"
+
+#: settingDialogs.py:1520
+msgid "Announce candidate number"
+msgstr "変換候補の番号の報告"
+
+#: installer.py:158
+msgid "NVDAJP web site"
+msgstr "NVDA日本語版 ウェブサイト"
+
+#: braille.py:142
+msgid "Japanese 6 dot computer braille"
+msgstr "日本語6点情報処理点字"
+
+#: braille.py:142
+msgid "Japanese 6 dot kanji braille"
+msgstr "日本語6点漢点字(入力用)"
+
+#: brailleTables.py:338
+msgid "Japanese 6 dot with UEB grade 2"
+msgstr "日本語6点・統一英語点字2級"
+
+#: brailleTables.py:341
+msgid "Japanese 6 dot with English (U.S.) grade 2"
+msgstr "日本語6点・アメリカ英語2級点字"
+
+#: globalCommands.py:150
+#, python-brace-format
+msgid "{hour}:{minute}"
+msgstr "{hour}時{minute}分"
+
+#: jpUtils.py
+msgid "half shape"
+msgstr "半角"
+
+#: jpUtils.py
+msgid "full shape"
+msgstr "全角"
+
+#: jpUtils.py
+msgid "latin"
+msgstr "英字"
+
+#: jpUtils.py
+msgctxt "character attribute name"
+msgid "cap"
+msgstr "大文字"
+
+#. Translators: The label for the Tools submenu in NVDA menu.
+msgctxt "nvdaMenu"
+msgid "Tools"
+msgstr "ツール(&T)"
+
+#. Translators: The label for the Tools submenu in NVDA menu.
+msgctxt "nvdaMenu"
+msgid "User Guide"
+msgstr "ユーザーガイド(&U)"
+
+# end of nvdajp
