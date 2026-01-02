@@ -85,15 +85,48 @@ if (-not $?) {
 # Use .venv (x64 Python 3.13)
 $venvPath = Join-Path $repoRoot ".venv"
 $pythonExe = Join-Path $venvPath "Scripts\python.exe"
+$venvNeedsRecreate = $false
 if (-not (Test-Path $pythonExe)) {
+    $venvNeedsRecreate = $true
+} elseif (-not (Test-Path "$venvPath\pyvenv.cfg")) {
+    Write-Host "Incomplete venv detected, removing and recreating..."
+    Remove-Item -Recurse -Force $venvPath -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 1
+    $venvNeedsRecreate = $true
+}
+
+if ($venvNeedsRecreate) {
     Write-Host "Creating virtual environment with x64 Python 3.13..."
-    & uv venv $venvPath --python 3.13
+    # Use UV_PYTHON_PREFERENCE=only-managed to prefer uv-managed Python (x64)
+    # This prevents uv from using the x86 Python from PATH
+    $oldPreference = $env:UV_PYTHON_PREFERENCE
+    $env:UV_PYTHON_PREFERENCE = "only-managed"
+    try {
+        # Use Python 3.13 explicitly (uv will select the latest 3.13.x x64 version)
+        & uv venv --python 3.13 $venvPath
+    } finally {
+        # Restore original UV_PYTHON_PREFERENCE value, or remove if it was not set
+        if ($null -ne $oldPreference -and $oldPreference -ne "") {
+            $env:UV_PYTHON_PREFERENCE = $oldPreference
+        } else {
+            Remove-Item Env:UV_PYTHON_PREFERENCE -ErrorAction SilentlyContinue
+        }
+    }
     if (-not $?) {
         Write-Error "Failed to create virtual environment"
         Stop-Transcript | Out-Null
         exit 1
     }
     $pythonExe = Join-Path $venvPath "Scripts\python.exe"
+    
+    # Verify venv Python is x64
+    $pythonArch = & $pythonExe -c "import platform; print(platform.architecture()[0])"
+    if ($pythonArch -ne "64bit") {
+        Write-Error "ERROR: venv Python is not x64 ($pythonArch). Ensure x64 Python is installed: uv python install 3.13"
+        Stop-Transcript | Out-Null
+        exit 1
+    }
+    Write-Host "Verified: venv Python is x64"
 }
 Write-Host "Using Python: $pythonExe"
 
