@@ -145,19 +145,24 @@ except Exception:
    * `CERT_STORE` で証明書ストアを指定（デフォルト: `My`）
    * `CERT_MACHINE_STORE` を設定するとマシンストアを使用
 3. **API トークン（`apiSigningToken`）**: SignPath HSM などのクラウド署名サービスを使用
+4. **署名スキップ（`SKIP_SIGNING`）**: コード署名を明示的にスキップ（JP 固有）
+   * 環境変数 `SKIP_SIGNING` を設定（値は任意、空でない文字列）することで有効化
+   * すべての署名設定（`certFile`、`apiSigningToken`、`CERT_SHA1`、`CERT_NAME`）が無効化される
+   * `jpCertExtras` はスキップされ、すべてのファイルは未署名のままビルドされる
 
 ### 署名設定の条件
 
 * `certFile` が設定されている場合、`signExec` が `env` に設定される
 * `apiSigningToken` が設定されている場合、`signExecApi` が `env` に設定される
 * `CERT_SHA1` または `CERT_NAME` が設定されている場合、`signExecCertStore` が `env` に設定される（`useCertStore`）
+* `SKIP_SIGNING` が設定されている場合、すべての署名設定が無効化され、`signExec` は `None` になる
 * いずれも設定されていない場合、`jpCertExtras` はスキップされる（`signExec` が `None` の場合）
 
 ### 証明書ストア署名の実装詳細
 
 * `sconstruct` で `CERT_SHA1` または `CERT_NAME` 環境変数が設定されている場合、`useCertStore` が `True` になり、`env["signExec"]` に `signExecCertStore` が設定される
 * `nvdaHelper/archBuild_sconscript` と `nvdaHelper/liblouis/sconscript` では、`signExec` の存在を直接チェックすることで、証明書ストア署名にも対応（JP PATCH）
-* betajp ブランチでは `certFile=1` を使用していたが、現在のブランチでは `useCertStore` を使用するより明確な実装に変更
+* 2025.3jp までは `certFile=1` を使用していたが、現在のブランチでは `useCertStore` を使用するより明確な実装に変更
 
 ## 並列ビルド（`--all-cores`）での動作
 
@@ -185,7 +190,7 @@ except Exception:
 
 ## ビルドスクリプトでの使用例
 
-### `certBuild2023.cmd` のビルド順序
+### `certBuild2023.cmd` のビルド順序（署名付きビルド）
 
 ```batch
 rem Build dist first (source and user_docs are prerequisites for dist)
@@ -201,6 +206,29 @@ call scons.bat launcher %SCONSARGS%
 
 **注意**: `certBuild2023.cmd` では明示的に `jpCertExtras` を呼び出していますが、SCons の依存関係により、`scons launcher` を実行するだけでも `jpCertExtras` が自動的に実行されます。
 
+### 署名なしビルド（`SKIP_SIGNING` を使用）
+
+#### PowerShell での実行例
+
+```powershell
+# 署名をスキップしてビルド
+$env:SKIP_SIGNING = "1"
+.\scons.bat launcher --all-cores
+```
+
+#### CMD での実行例
+
+```batch
+rem 署名をスキップしてビルド
+set SKIP_SIGNING=1
+call scons.bat launcher --all-cores
+```
+
+**動作**:
+* `SKIP_SIGNING` が設定されている場合、すべての署名設定（`certFile`、`apiSigningToken`、`CERT_SHA1`、`CERT_NAME`）が無効化される
+* `jpCertExtras` はスキップされ、`launcher` は `dist` にのみ依存
+* すべてのファイル（DLL、EXE）は未署名のままビルドされる
+
 ## 非署名ビルドとの違い
 
 ### 非署名ビルド
@@ -208,6 +236,10 @@ call scons.bat launcher %SCONSARGS%
 * `jpCertExtras` はスキップされる（`signExec` が `None` の場合）
 * `launcher` は `dist` にのみ依存
 * `dist/` 内の DLL は未署名のまま
+* **明示的な署名スキップ**: `SKIP_SIGNING` 環境変数を設定することで、署名を明示的にスキップできる
+  * 例: `$env:SKIP_SIGNING = "1"; .\scons.bat launcher --all-cores`
+  * すべての署名設定（`certFile`、`apiSigningToken`、`CERT_SHA1`、`CERT_NAME`）が無効化される
+  * 証明書ストアに証明書が存在していても、署名は実行されない
 
 ### 署名ビルド
 
@@ -219,9 +251,19 @@ call scons.bat launcher %SCONSARGS%
 
 ### `jpCertExtras` が実行されない
 
-* **原因**: 署名設定（`certFile`, `apiSigningToken`）が設定されていない
+* **原因**: 署名設定（`certFile`, `apiSigningToken`）が設定されていない、または `SKIP_SIGNING` が設定されている
 * **確認**: `env.get("signExec")` が `None` でないことを確認
-* **対処**: `certFile=1` または `apiSigningToken=<token>` を設定
+* **対処**: 
+  * 署名する場合: `certFile=1` または `apiSigningToken=<token>` を設定
+  * 署名をスキップする場合: `SKIP_SIGNING=1` を設定（または署名設定を削除）
+
+### 署名をスキップしたいが、証明書ストアの証明書が使用されてしまう
+
+* **原因**: `CERT_SHA1` または `CERT_NAME` 環境変数が設定されている
+* **確認**: `echo %CERT_SHA1%` または `echo %CERT_NAME%` で環境変数を確認
+* **対処**: `SKIP_SIGNING=1` 環境変数を設定することで、証明書ストア署名も含めてすべての署名をスキップできる
+  * PowerShell: `$env:SKIP_SIGNING = "1"; .\scons.bat launcher --all-cores`
+  * CMD: `set SKIP_SIGNING=1 && scons.bat launcher --all-cores`
 
 ### `dist/` ディレクトリが存在しないエラー
 
