@@ -1,6 +1,5 @@
-# -*- coding: UTF-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2006-2024 NV Access Limited, Aleksey Sadovoy, Babbage B.V., Joseph Lee, Łukasz Golonka,
+# Copyright (C) 2006-2025 NV Access Limited, Aleksey Sadovoy, Babbage B.V., Joseph Lee, Łukasz Golonka,
 # Cyrille Bougot
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -17,6 +16,7 @@ import os
 from pathlib import Path
 from typing import Any
 
+import winBindings.kernel32
 import globalVars
 from argsParsing import getParser
 import ctypes
@@ -25,6 +25,7 @@ import monkeyPatches
 
 import NVDAState
 import winUser
+from winBindings import user32
 
 monkeyPatches.applyMonkeyPatches()
 
@@ -40,7 +41,7 @@ if NVDAState.isRunningAsSource():
 	# Ensure we are inside the Python virtual environment
 	virtualEnv = os.getenv("VIRTUAL_ENV")
 	if not virtualEnv or Path(appDir).parent != Path(virtualEnv).parent:
-		ctypes.windll.user32.MessageBoxW(
+		user32.MessageBox(
 			0,
 			"NVDA cannot  detect the Python virtual environment. "
 			"To run NVDA from source, please use runnvda.bat in the root of this repository.",
@@ -294,7 +295,7 @@ if globalVars.appArgs.changeScreenReaderFlag:
 	winUser.setSystemScreenReaderFlag(True)
 
 # Accept WM_QUIT from other processes, even if running with higher privileges
-if not ctypes.windll.user32.ChangeWindowMessageFilter(winUser.WM_QUIT, winUser.MSGFLT.ALLOW):
+if not user32.ChangeWindowMessageFilter(winUser.WM_QUIT, winUser.MSGFLT.ALLOW):
 	log.error("Unable to set the NVDA process to receive WM_QUIT messages from other processes")
 	raise winUser.WinError()
 # Make this the last application to be shut down and don't display a retry dialog box.
@@ -321,11 +322,11 @@ finally:
 	# > The system closes the handle automatically when the process terminates.
 	# > The mutex object is destroyed when its last handle has been closed.
 	# https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-createmutexw
-	releaseResult = ctypes.windll.kernel32.ReleaseMutex(mutex)
+	releaseResult = winBindings.kernel32.ReleaseMutex(mutex)
 	if 0 == releaseResult:
 		releaseError = winUser.GetLastError()
 		log.debug(f"Failed to release mutex, error: {releaseError}")
-	res = ctypes.windll.kernel32.CloseHandle(mutex)
+	res = winBindings.kernel32.CloseHandle(mutex)
 	if 0 == res:
 		error = winUser.GetLastError()
 		log.error(f"Unable to close mutex handle, last error: {winUser.WinError(error)}")

@@ -82,7 +82,9 @@ typedef struct tagINPUTCONTEXT2 {
 
 HWND curIMEWindow=NULL;
 static HWND candidateIMEWindow=0;
+// BEGIN JP PATCH (Japanese IME open status tracking)
 static BOOL lastOpenStatus=false;
+// END JP PATCH
 static HMODULE gImm32Module = NULL;
 static DWORD lastConversionModeFlags=0;
 
@@ -390,6 +392,7 @@ static bool handleCandidates(HWND hwnd) {
 	return cand_updated;
 }
 
+// BEGIN JP PATCH (Japanese IME composition string with compAttr)
 #if 0
 static WCHAR* getCompositionString(HIMC imc, DWORD index) {
 	int len = ImmGetCompositionStringW(imc, index, 0, 0);
@@ -431,6 +434,7 @@ static WCHAR* getCompositionString(HIMC imc, DWORD index) {
 	return wstr;
 }
 #endif
+// END JP PATCH
 
 static bool handleComposition(HWND hwnd, WPARAM wParam, LPARAM lParam) {
 	/* Obtain IME context */

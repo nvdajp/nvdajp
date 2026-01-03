@@ -1,7 +1,3 @@
-
-# Ensure JP overlay is applied so that pot dependencies (e.g. jtalkCore.py) exist
-cmd.exe /c "scons miscdepsjp -j1"
-
 if ($env:RUNNER_DEBUG) {
 	cmd.exe /c "scons checkPot -j1 2> testOutput\translationCheckResults.log"
 } else {

@@ -74,43 +74,59 @@ Start-Transcript -Path $logFile -Append | Out-Null
 Write-Host "REPO_ROOT set to $repoRoot"
 Write-Host "Log file: $logFile"
 
-# Determine build architecture from BUILD_ARCH environment variable
-# BUILD_ARCH is JP-specific for smoke test environment switching
-# TARGET_ARCH is SCons environment variable and should not be used as OS environment variable
-$buildArch = if ($env:BUILD_ARCH) { $env:BUILD_ARCH } else { "x86" }
-Write-Host "Build architecture: $buildArch"
+# Ensure x64 Python 3.13 is available
+Write-Host "Ensuring Python 3.13 x64 is available..."
+& uv python install 3.13
+if (-not $?) {
+    Write-Error "uv python install failed"
+    Stop-Transcript | Out-Null
+    exit 1
+}
+# Use .venv (x64 Python 3.13)
+$venvPath = Join-Path $repoRoot ".venv"
+$pythonExe = Join-Path $venvPath "Scripts\python.exe"
+$venvNeedsRecreate = $false
+if (-not (Test-Path $pythonExe)) {
+    $venvNeedsRecreate = $true
+} elseif (-not (Test-Path "$venvPath\pyvenv.cfg")) {
+    Write-Host "Incomplete venv detected, removing and recreating..."
+    Remove-Item -Recurse -Force $venvPath -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 1
+    $venvNeedsRecreate = $true
+}
 
-# For x64 builds, use x64 Python and separate venv (.venv-x64)
-# For x86 builds, use x86 Python and default venv (.venv)
-if ($buildArch -eq "x64") {
-    Write-Host "x64 build detected: using x64 Python and .venv-x64"
-    # Ensure x64 Python 3.13 is available
-    Write-Host "Ensuring Python 3.13 x64 is available..."
-    & uv python install 3.13
+if ($venvNeedsRecreate) {
+    Write-Host "Creating virtual environment with x64 Python 3.13..."
+    # Use UV_PYTHON_PREFERENCE=only-managed to prefer uv-managed Python (x64)
+    # This prevents uv from using the x86 Python from PATH
+    $oldPreference = $env:UV_PYTHON_PREFERENCE
+    $env:UV_PYTHON_PREFERENCE = "only-managed"
+    try {
+        # Use Python 3.13 explicitly (uv will select the latest 3.13.x x64 version)
+        & uv venv --python 3.13 $venvPath
+    } finally {
+        # Restore original UV_PYTHON_PREFERENCE value, or remove if it was not set
+        if ($null -ne $oldPreference -and $oldPreference -ne "") {
+            $env:UV_PYTHON_PREFERENCE = $oldPreference
+        } else {
+            Remove-Item Env:UV_PYTHON_PREFERENCE -ErrorAction SilentlyContinue
+        }
+    }
     if (-not $?) {
-        Write-Error "uv python install failed"
+        Write-Error "Failed to create virtual environment"
         Stop-Transcript | Out-Null
         exit 1
     }
-    # Use separate venv for x64 to avoid conflicts with x86 .venv
-    $venvX64 = Join-Path $repoRoot ".venv-x64"
-    $pythonExe = Join-Path $venvX64 "Scripts\python.exe"
-    if (-not (Test-Path $pythonExe)) {
-        Write-Host "Creating x64 virtual environment..."
-        & uv venv $venvX64 --python 3.13
-        if (-not $?) {
-            Write-Error "Failed to create x64 virtual environment"
-            Stop-Transcript | Out-Null
-            exit 1
-        }
-        $pythonExe = Join-Path $venvX64 "Scripts\python.exe"
+    $pythonExe = Join-Path $venvPath "Scripts\python.exe"
+    
+    # Verify venv Python is x64
+    $pythonArch = & $pythonExe -c "import platform; print(platform.architecture()[0])"
+    if ($pythonArch -ne "64bit") {
+        Write-Error "ERROR: venv Python is not x64 ($pythonArch). Ensure x64 Python is installed: uv python install 3.13"
+        Stop-Transcript | Out-Null
+        exit 1
     }
-} else {
-    # x86 build: use default .venv
-    $pythonExe = Join-Path $repoRoot ".venv\Scripts\python.exe"
-    if (-not (Test-Path $pythonExe)) {
-        $pythonExe = "python"
-    }
+    Write-Host "Verified: venv Python is x64"
 }
 Write-Host "Using Python: $pythonExe"
 
@@ -136,16 +152,16 @@ function Install-Packages {
         } else {
             & uv pip install @Packages
         }
-        if ($LastExitCode -eq 0) { $installOk = $true }
+        if ($LASTEXITCODE -eq 0) { $installOk = $true }
     } catch {
         Write-Warning "uv is not available; falling back to python -m pip"
     }
     if (-not $installOk) {
         & $pythonExe -m pip install @Packages
     }
-    if ($LastExitCode -ne 0) {
-        Write-Error "Failed to install dependencies with exit code $LastExitCode"
-        exit $LastExitCode
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to install dependencies with exit code $LASTEXITCODE"
+        exit $LASTEXITCODE
     }
 }
 
@@ -158,9 +174,9 @@ function Ensure-JtalkDic {
     if (-not (Test-Path $charBin)) {
         Write-Host "JTalk dictionaries not found under $JtalkSource; running scons jtalkSync..."
         & "$RepoRoot\scons.bat" jtalkSync
-        if ($LastExitCode -ne 0) {
-            Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
-            exit $LastExitCode
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
         }
     }
 }
@@ -246,14 +262,15 @@ if (-not $SkipInstall) {
 }
 
 if (-not $SkipInstall) {
-    $venvPath = if ($buildArch -eq "x64") { Join-Path $repoRoot ".venv-x64" } else { Join-Path $repoRoot ".venv" }
+    $venvPath = Join-Path $repoRoot ".venv"
     Install-Packages -Packages $packages -VenvPath $venvPath
 }
 
 # Initialize MSVC environment for local runs (needed for dumpbin, cl, nmake)
 # CI environments already have MSVC environment set up via ilammy/msvc-dev-cmd@v1
+# Always use x64 architecture (x86 builds are no longer supported)
 if (-not $isCI) {
-    Initialize-MsvcEnvironment -Architecture $buildArch
+    Initialize-MsvcEnvironment -Architecture "x64"
 }
 
 if (-not $SkipOverlay) {
@@ -265,17 +282,17 @@ if (-not $SkipOverlay) {
         } else {
             Write-Host "JTalk DLL not found in cache, running jtalkSync..."
             & "$repoRoot\scons.bat" jtalkSync
-            if ($LastExitCode -ne 0) {
-                Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
-                exit $LastExitCode
-            }
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
+        }
         }
     } else {
         Write-Host "Preparing JTalk assets via scons jtalkSync..."
         & "$repoRoot\scons.bat" jtalkSync
-        if ($LastExitCode -ne 0) {
-            Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
-            exit $LastExitCode
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
         }
     }
 }
@@ -335,13 +352,13 @@ if ($TestFilter -and $TestFilter -ne "JpBrailleTests or JtalkTests") {
 $testExitCode = 0
 if ($unittestArgs.Count -eq 1) {
     & uv run --python $pythonExe python -m unittest $unittestArgs[0] -v
-    $testExitCode = $LastExitCode
+    $testExitCode = $LASTEXITCODE
 } else {
     # Multiple test classes: run each separately and combine exit codes
     $allPassed = $true
     foreach ($testArg in $unittestArgs) {
         & uv run --python $pythonExe python -m unittest $testArg -v
-        if ($LastExitCode -ne 0) {
+        if ($LASTEXITCODE -ne 0) {
             $allPassed = $false
         }
     }

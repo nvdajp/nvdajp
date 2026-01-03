@@ -13,7 +13,15 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 - Avoid destructive operations (no history rewrites or force pushes unless explicitly requested)
 - Minimize diffs against upstream; mark JP-specific code with `# nvdajp` or `# BEGIN/END JP PATCH`
-  - **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files (e.g., `jptools/*.ps1`, `jptools/runJpSmokeTests.ps1`) do not need these markers.
+  - **Marking rules**:
+    - **`# BEGIN JP PATCH` / `# END JP PATCH`**: Use for multi-line changes (3+ lines), function/class additions or modifications, configuration section additions
+    - **`# nvdajp`**: Use for 1-2 line changes, import statements, single variable/constant additions, inline comments
+  - **When marking is NOT needed**:
+    - JP-specific new files (e.g., `jptools/*.ps1`, `jptools/runJpSmokeTests.ps1`, `jptools/scons_jp.py`)
+    - Files under `source/synthDrivers/jtalk/` and `source/synthDrivers/haruka/` (JP-specific synthesizer drivers)
+    - Files under `miscDepsJp/` (JP-specific overlay directory)
+    - Files under `jptools/` (JP-specific tools directory)
+  - **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files do not need these markers.
 - Prefer SCons/pure Python tooling; auxiliary `.cmd` or `nmake` usage should be limited to JP-specific overlays
 - Do not perform code-signing or releases in CI (no secrets). Official release builds happen locally.
 
@@ -28,6 +36,18 @@ This document summarizes the rules automation agents/scripts must obey when work
 - Base branch for PRs: `betajp` (protected; direct pushes forbidden)
 - Required checks: `allTestsPass`, etc.
 - Release/snapshot jobs stay disabled unless explicitly requested; avoid secrets.
+
+## Commit & push policy
+
+To reduce CI load and wait for completion:
+
+1. **Group related changes into single commits**: 
+   - Include functional changes and their documentation updates in the same commit
+   - Combine multiple small fixes into one commit (e.g., multiple documentation updates)
+2. **Wait for CI completion**: Do not push until the previous push's CI has completed
+3. **Limit push frequency**: Avoid frequent pushes; group changes and push only when CI is ready
+4. **Clear commit messages**: When a commit includes multiple changes, describe all changes in the commit message
+5. **Avoid frequent commits**: Do not commit intermediate work states; commit only when a unit of work is complete
 
 ## Aligning `testAndPublish.yml`
 
@@ -78,7 +98,16 @@ This document summarizes the rules automation agents/scripts must obey when work
 ### 禁則と優先
 
 - 履歴書き換えや force push は指示が無い限り禁止
-- JP 固有差分は `# nvdajp`／`# BEGIN JP PATCH` で明示（**注**: 本家版ファイルを変更する場合のみ。日本語版固有の新規ファイルには不要）
+- JP 固有差分は `# nvdajp`／`# BEGIN JP PATCH` で明示
+  - **マーキングルール**:
+    - **`# BEGIN JP PATCH` / `# END JP PATCH`**: 複数行の変更（3行以上）、関数・クラスの追加・修正、設定セクションの追加に使用
+    - **`# nvdajp`**: 1-2行の変更、import文の追加、単一の変数・定数の追加、インラインコメントに使用
+  - **マーキング不要な場合**:
+    - 日本語版固有の新規ファイル（例: `jptools/*.ps1`, `jptools/runJpSmokeTests.ps1`, `jptools/scons_jp.py`）
+    - `source/synthDrivers/jtalk/` および `source/synthDrivers/haruka/` 配下のファイル（日本語版固有のシンセサイザードライバー）
+    - `miscDepsJp/` 配下のファイル（日本語版固有のオーバレイディレクトリ）
+    - `jptools/` 配下のファイル（日本語版固有のツールディレクトリ）
+  - **注**: 本家版ファイルを変更する場合のみマーキングが必要。日本語版固有の新規ファイルには不要
 - ビルドは SCons／純 Python を優先。`.cmd` や `nmake` は JP 独自処理のみ
 - CI ではコードサインや Secrets 利用を行わない
 
@@ -93,6 +122,18 @@ This document summarizes the rules automation agents/scripts must obey when work
 - PR は `betajp` を base（保護ブランチ）
 - 必須チェック: `allTestsPass` など
 - 配布系ジョブはデフォルト無効／Secrets 不使用
+
+### コミット・push 方針
+
+CI負荷軽減と完了待ちのため：
+
+1. **関連する変更を1つのコミットにまとめる**: 
+   - 機能的な変更とそのドキュメント更新を同じコミットに含める
+   - 複数の小さな修正を1つのコミットにまとめる（例: 複数のドキュメント更新）
+2. **CI完了を待つ**: 前回のpushのCIが完了するまで、次のpushを控える
+3. **push頻度を制限**: 頻繁なpushを避け、変更をまとめてからpushする
+4. **コミットメッセージを明確に**: 1つのコミットに複数の変更を含める場合は、コミットメッセージで全ての変更を説明する
+5. **頻繁なコミットを避ける**: 作業中の一時的な状態はコミットせず、完成した単位でコミットする
 
 ### `testAndPublish.yml`
 

@@ -158,14 +158,17 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
 	except ModuleNotFoundError:
 		log.warning("Japanese translation module not found.")
 		jpTranslate = None
-	if jpTranslate and tableList[0].endswith("ja-jp-comp6.utb"):
+	if jpTranslate and tableList and len(tableList) > 0 and tableList[0].endswith("ja-jp-comp6.utb"):
 		log.debug(text)
 		nabcc = config.conf["braille"]["expandAtCursor"]
-		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
-			text,
-			cursorPos=cursorPos or 0,
-			nabcc=nabcc,
-		)
+		try:
+			braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
+				text,
+				cursorPos=cursorPos or 0,
+				nabcc=nabcc,
+			)
+		except Exception as e:
+			raise
 	else:
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
 			tableList,

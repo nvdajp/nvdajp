@@ -7,6 +7,7 @@ miscDeps\tools\msgfmt.exe source\locale\ja\LC_MESSAGES\nvda.po -o source\locale\
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
 cd jptools
+set PYTHONUTF8=1
 py jpDicTest.py > __jpdictest_log.txt
 @if not "%ERRORLEVEL%"=="0" goto onerror
 cd ..

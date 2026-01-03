@@ -6,7 +6,6 @@
 
 """High-level functions to speak information."""
 
-import jpUtils
 import itertools
 import typing
 import weakref
@@ -40,6 +39,7 @@ from .commands import (
 	EndUtteranceCommand,
 	SuppressUnicodeNormalizationCommand,
 	CharacterModeCommand,
+	WaveFileCommand,
 )
 from .shortcutKeys import getKeyboardShortcutsSpeech
 
@@ -52,6 +52,7 @@ from .types import (
 	_flattenNestedSequences,
 )
 from typing import (
+	Final,
 	Iterable,
 	Optional,
 	Dict,
@@ -66,6 +67,7 @@ from logHandler import log
 import config
 from config.configFlags import (
 	ReportLineIndentation,
+	ReportSpellingErrors,
 	ReportTableHeaders,
 	ReportCellBorders,
 	OutputMode,
@@ -84,6 +86,7 @@ if typing.TYPE_CHECKING:
 
 _speechState: Optional["SpeechState"] = None
 _curWordChars: List[str] = []
+IDEOGRAPHIC_COMMA: Final[str] = "\u3001"
 
 
 class SpeechMode(DisplayStringIntEnum):
@@ -187,7 +190,6 @@ def processText(
 	text = speechDictHandler.processText(text)
 	text = characterProcessing.processSpeechSymbols(locale, text, symbolLevel)
 	text = RE_CONVERT_WHITESPACE.sub(" ", text)
-	text = jpUtils.processKangxiRadicals(text)
 	if normalize:
 		text = unicodeNormalize(text)
 		# keep leading space for normalization message
@@ -309,17 +311,11 @@ def getCurrentLanguage() -> str:
 def spellTextInfo(
 	info: textInfos.TextInfo,
 	useCharacterDescriptions: bool = False,
-	useDetails: bool = False,
 	priority: Optional[Spri] = None,
 ) -> None:
 	"""Spells the text from the given TextInfo, honouring any LangChangeCommand objects it finds if autoLanguageSwitching is enabled."""
 	if not languageHandling.shouldMakeLangChangeCommand():
-		speakSpelling(
-			info.text,
-			useCharacterDescriptions=useCharacterDescriptions,
-			useDetails=useDetails,
-			priority=priority,
-		)
+		speakSpelling(info.text, useCharacterDescriptions=useCharacterDescriptions)
 		return
 	curLanguage = None
 	for field in info.getTextWithFields({}):
@@ -328,7 +324,6 @@ def spellTextInfo(
 				field,
 				curLanguage,
 				useCharacterDescriptions=useCharacterDescriptions,
-				useDetails=useDetails,
 				priority=priority,
 			)
 		elif isinstance(field, textInfos.FieldCommand) and field.command == "formatChange":
@@ -339,7 +334,6 @@ def speakSpelling(
 	text: str,
 	locale: Optional[str] = None,
 	useCharacterDescriptions: bool = False,
-	useDetails: bool = False,
 	priority: Optional[Spri] = None,
 ) -> None:
 	# This could be a very large list. In future we could convert this into chunks.
@@ -348,8 +342,7 @@ def speakSpelling(
 			text,
 			locale=locale,
 			useCharacterDescriptions=useCharacterDescriptions,
-			useDetails=useDetails,
-		)
+		),
 	)
 	speak(seq, priority=priority)
 
@@ -497,29 +490,38 @@ def _getSpellingSpeechWithoutCharMode(
 		itemIsNormalized = textIsNormalized
 		uppercase = speakCharAs.isupper()
 		if useCharacterDescriptions and charDesc:
-			IDEOGRAPHIC_COMMA = "\u3001"
-			speakCharAs = charDesc[0] if textLength > 1 else IDEOGRAPHIC_COMMA.join(charDesc)
+			charList = [charDesc[0] if textLength > 1 else IDEOGRAPHIC_COMMA.join(charDesc)]
 		elif useCharacterDescriptions and not charDesc and not fallbackToCharIfNoDescription:
 			return None
 		else:
 			if (symbol := characterProcessing.processSpeechSymbol(locale, speakCharAs)) != speakCharAs:
-				speakCharAs = symbol
+				charList = [symbol]
 			elif not textIsNormalized and unicodeNormalization:
 				if (normalized := unicodeNormalize(speakCharAs)) != speakCharAs:
-					speakCharAs = " ".join(
-						characterProcessing.processSpeechSymbol(locale, normChar) for normChar in normalized
-					)
+					charList = [
+						" ".join(
+							characterProcessing.processSpeechSymbol(locale, normChar)
+							for normChar in normalized
+						),
+					]
 					itemIsNormalized = True
+				else:
+					# Tried to normalize, but it didn't result in normalization at all.
+					# We need to deal with the case where splitAtCharacterBoundaries might have merged characters we need to speak separately.
+					charList = [characterProcessing.processSpeechSymbol(locale, char) for char in speakCharAs]
+			else:
+				charList = [speakCharAs]
 		if languageHandling.shouldMakeLangChangeCommand():
 			yield LangChangeCommand(locale)
-		yield from _getSpellingCharAddCapNotification(
-			speakCharAs,
-			uppercase and sayCapForCapitals,
-			capPitchChange if uppercase else 0,
-			uppercase and beepForCapitals,
-			itemIsNormalized and reportNormalizedForCharacterNavigation,
-		)
-		yield EndUtteranceCommand()
+		for charToSpeak in charList:
+			yield from _getSpellingCharAddCapNotification(
+				charToSpeak,
+				uppercase and sayCapForCapitals,
+				capPitchChange if uppercase else 0,
+				uppercase and beepForCapitals,
+				itemIsNormalized and reportNormalizedForCharacterNavigation,
+			)
+			yield EndUtteranceCommand()
 
 
 def getSingleCharDescriptionDelayMS() -> int:
@@ -574,7 +576,6 @@ def getSpellingSpeech(
 	text: str,
 	locale: Optional[str] = None,
 	useCharacterDescriptions: bool = False,
-	useDetails: bool = False,
 ) -> Generator[SequenceItemT, None, None]:
 	synth = getSynth()
 	synthConfig = config.conf["speech"][synth.name]
@@ -586,11 +587,10 @@ def getSpellingSpeech(
 	unicodeNormalization = not useCharacterDescriptions and bool(
 		config.conf["speech"]["unicodeNormalization"],
 	)
-	seq = jpUtils.getSpellingSpeechWithoutCharMode(
+	seq = _getSpellingSpeechWithoutCharMode(
 		text,
 		locale,
 		useCharacterDescriptions,
-		useDetails,
 		sayCapForCapitals=synthConfig["sayCapForCapitals"],
 		capPitchChange=capPitchChange,
 		beepForCapitals=synthConfig["beepForCapitals"],
@@ -1102,15 +1102,6 @@ def speak(  # noqa: C901
 	if speechViewer.isActive:
 		speechViewer.appendSpeechSequence(speechSequence)
 	pre_speech.notify(speechSequence=speechSequence, symbolLevel=symbolLevel, priority=priority)
-	from gui import jpBrailleViewer
-
-	if jpBrailleViewer.isActive:
-		s = ""
-		for item in speechSequence:
-			if isinstance(item, str):
-				s += item
-		if s:
-			jpBrailleViewer.appendText(s)
 	if _speechState.speechMode == SpeechMode.off:
 		return
 	elif _speechState.speechMode == SpeechMode.beeps:
@@ -1489,11 +1480,6 @@ def speakTextInfo(
 	suppressBlanks: bool = False,
 	priority: Optional[Spri] = None,
 ) -> bool:
-	from globalCommands import characterDescriptionMode
-
-	if characterDescriptionMode and reason == OutputReason.CARET and unit == textInfos.UNIT_CHARACTER:
-		speakSpelling(info.text, useCharacterDescriptions=True)
-		return True
 	speechGen = getTextInfoSpeech(
 		info,
 		useCache,
@@ -1517,7 +1503,7 @@ def speakTextInfo(
 def getTextInfoSpeech(  # noqa: C901
 	info: textInfos.TextInfo,
 	useCache: Union[bool, SpeakTextInfoState] = True,
-	formatConfig: Dict[str, bool] = None,
+	formatConfig: dict[str, bool | int] | None = None,
 	unit: Optional[str] = None,
 	reason: OutputReason = OutputReason.QUERY,
 	_prefixSpeechCommand: Optional[SpeechCommand] = None,
@@ -1541,7 +1527,7 @@ def getTextInfoSpeech(  # noqa: C901
 	)
 	# For performance reasons, when navigating by paragraph or table cell, spelling errors will not be announced.
 	if unit in (textInfos.UNIT_PARAGRAPH, textInfos.UNIT_CELL) and reason == OutputReason.CARET:
-		formatConfig["reportSpellingErrors"] = False
+		formatConfig["reportSpellingErrors2"] = 0
 
 	# Fetch the last controlFieldStack, or make a blank one
 	controlFieldStackCache = speakTextInfoState.controlFieldStackCache if speakTextInfoState else []
@@ -1918,7 +1904,7 @@ def _getTextInfoSpeech_considerSpelling(
 	speechSequence: SpeechSequence,
 	language: str,
 ) -> Generator[SpeechSequence, None, None]:
-	if onlyInitialFields or any(isinstance(x, str) for x in speechSequence):
+	if onlyInitialFields or speechSequence:
 		yield speechSequence
 	if not onlyInitialFields:
 		spellingSequence = list(
@@ -3018,20 +3004,21 @@ def getFormatFieldSpeech(  # noqa: C901
 				# Translators: Reported when text no longer contains a bookmark
 				text = _("out of bookmark")
 				textList.append(text)
-	if formatConfig["reportSpellingErrors"]:
+	if formatConfig["reportSpellingErrors2"]:
 		invalidSpelling = attrs.get("invalid-spelling")
 		oldInvalidSpelling = attrsCache.get("invalid-spelling") if attrsCache is not None else None
 		if (invalidSpelling or oldInvalidSpelling is not None) and invalidSpelling != oldInvalidSpelling:
+			texts = []
 			if invalidSpelling:
-				# Translators: Reported when text contains a spelling error.
-				text = _("spelling error")
+				if formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.SOUND.value:
+					texts.append(WaveFileCommand(r"waves\textError.wav"))
+				if formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.SPEECH.value:
+					# Translators: Reported when text contains a spelling error.
+					texts.append(_("spelling error"))
 			elif extraDetail:
 				# Translators: Reported when moving out of text containing a spelling error.
-				text = _("out of spelling error")
-			else:
-				text = ""
-			if text:
-				textList.append(text)
+				texts.append(_("out of spelling error"))
+			textList.extend(texts)
 		invalidGrammar = attrs.get("invalid-grammar")
 		oldInvalidGrammar = attrsCache.get("invalid-grammar") if attrsCache is not None else None
 		if (invalidGrammar or oldInvalidGrammar is not None) and invalidGrammar != oldInvalidGrammar:

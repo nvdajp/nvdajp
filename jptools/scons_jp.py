@@ -32,6 +32,7 @@ from typing import Any
 # Import shared VS utilities
 # Note: We import directly since jptools is not a package
 import importlib.util
+
 _vs_utils_path = Path(__file__).parent / "vs_utils.py"
 _vs_utils_spec = importlib.util.spec_from_file_location("vs_utils", _vs_utils_path)
 if _vs_utils_spec and _vs_utils_spec.loader:
@@ -155,7 +156,10 @@ def _run_jp_tests(target: list[Any], source: list[Any], env: Any) -> int:
 	# Run jpDicTest.py from jptools directory
 	test_script = repo_root / "jptools" / "jpDicTest.py"
 	if test_script.exists():
-		res = run([sys.executable, str(test_script)], cwd=str(test_script.parent))
+		# Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
+		env_vars = os.environ.copy()
+		env_vars.setdefault("PYTHONUTF8", "1")
+		res = run([sys.executable, str(test_script)], cwd=str(test_script.parent), env=env_vars)
 		if res.returncode != 0:
 			return res.returncode
 	# Stamp success
@@ -171,7 +175,10 @@ def _run_jpchar_tests(target: list[Any], source: list[Any], env: Any) -> int:
 	from subprocess import run
 
 	if script.exists():
-		res = run([sys.executable, str(script)], cwd=str(script.parent))
+		# Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
+		env_vars = os.environ.copy()
+		env_vars.setdefault("PYTHONUTF8", "1")
+		res = run([sys.executable, str(script)], cwd=str(script.parent), env=env_vars)
 		if res.returncode != 0:
 			return res.returncode
 	Path(str(target[0])).parent.mkdir(parents=True, exist_ok=True)
@@ -190,7 +197,9 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
 	# Do not crash if signing is not configured; provide a helpful message.
 	signExec = env.get("signExec")
 	if not signExec:
-		print("JP certprep skipped: signing not configured (set certFile or apiSigningToken)")
+		print(
+			"JP certprep skipped: signing not configured (set certFile or apiSigningToken)"
+		)
 		return 0
 	src = source[0]
 	abspath = src.abspath
@@ -212,7 +221,9 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
 	return 0
 
 
-def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: str) -> int:
+def _sign_optional_path(
+	target: list[Any], source: list[Any], env: Any, path: str
+) -> int:
 	"""Sign file at `path` if it exists; otherwise skip and write a stamp.
 
 	This is tolerant of missing inputs so certprep can run before all payloads
@@ -222,7 +233,9 @@ def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: st
 	stamp_path = Path(str(target[0]))
 	stamp_path.parent.mkdir(parents=True, exist_ok=True)
 	if not signExec:
-		print("JP certprep skipped: signing not configured (set certFile or apiSigningToken)")
+		print(
+			"JP certprep skipped: signing not configured (set certFile or apiSigningToken)"
+		)
 		stamp_path.write_text("skip:no-sign-config", encoding="utf-8")
 		return 0
 	if not Path(path).is_file():
@@ -352,15 +365,17 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
 	return out
 
 
-def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: Any | None = None) -> None:
+def register_jp_builders(
+	env: Any, dist_target: Any | None = None, source_dir: Any | None = None
+) -> None:
 	"""Register JP-specific aliases without affecting upstream targets.
 
 	Args:
-	    env: SCons environment
-	    dist_target: Optional dist target node from sconstruct. If provided, jpCertExtras will depend on it
-	                to ensure correct ordering in parallel builds (--all-cores).
-	    source_dir: Optional source directory node from sconstruct. If provided, sourceDir will depend on
-	                jtalkSync with the current TARGET_ARCH to ensure correct architecture-specific builds.
+		env: SCons environment
+		dist_target: Optional dist target node from sconstruct. If provided, jpCertExtras will depend on it
+					to ensure correct ordering in parallel builds (--all-cores).
+		source_dir: Optional source directory node from sconstruct. If provided, sourceDir will depend on
+					jtalkSync with the current TARGET_ARCH to ensure correct architecture-specific builds.
 	"""
 	# Use BUILD_ARCH (JP-specific) to set TARGET_ARCH (SCons environment variable).
 	# BUILD_ARCH is an OS environment variable for JP-specific purposes (mainly smoke test environment switching).
@@ -372,8 +387,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	elif build_arch == "x86":
 		env["TARGET_ARCH"] = "x86"
 	else:
-		# Fallback to existing SCons TARGET_ARCH (defaults to x86 from sconstruct)
-		env["TARGET_ARCH"] = str(env.get("TARGET_ARCH", "x86")).lower()
+		# Fallback to existing SCons TARGET_ARCH (defaults to x64)
+		# Note: x86 builds are no longer supported
+		env["TARGET_ARCH"] = str(env.get("TARGET_ARCH", "x64")).lower()
 	# miscdepsjp alias removed in Phase 2 (miscDepsJp/source is empty, overlay is no-op)
 
 	# Alias: jp_tests (run JP dictionary tests and JP char description tests)
@@ -391,13 +407,13 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int:
 		"""Prepare JP jtalk payload for overlay with on-demand build.
 
-		- Resolve TARGET_ARCH (default x86)
+		- Resolve TARGET_ARCH (default x64, x86 builds are no longer supported)
 		- Locate vendor DLL under miscDepsJp/include/python-jtalk[/x86|x64]/libopenjtalk.dll
 		- If missing, attempt to build via nmake (requires MSVC environment)
 		- Write payload into source/synthDrivers/jtalk/libopenjtalk.dll (Phase 1: files moved)
 		"""
 		repo_root = Path.cwd()
-		arch = str(env.get("TARGET_ARCH", "x86")).lower()
+		arch = str(env.get("TARGET_ARCH", "x64")).lower()
 		vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 
 		if arch in ("x64", "x86_64"):
@@ -406,23 +422,29 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		else:
 			# x86 DLL is now in x86 subdirectory for consistency with x64
 			src_prebuilt = vendor_base / "x86" / "libopenjtalk.dll"
-			nmake_machine = (
-				"x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
-			)
+			nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
 
 		# all.mak builds DLL to vendor_base/libopenjtalk.dll, then we move it to arch-specific subdirectory
 		built_dll = vendor_base / "libopenjtalk.dll"
 
 		# Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
-		dst_payload = repo_root / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
+		dst_payload = (
+			repo_root / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
+		)
 
 		print(f"jtalkPrep: using TARGET_ARCH={arch}")
 		print(f"jtalkPrep: looking for vendor DLL: {src_prebuilt}")
 
 		# Migrate existing DLL from old location (vendor_base/libopenjtalk.dll) to new location (x86 subdirectory)
 		old_dll_location = vendor_base / "libopenjtalk.dll"
-		if arch not in ("x64", "x86_64") and old_dll_location.exists() and not src_prebuilt.exists():
-			print(f"jtalkPrep: migrating DLL from old location: {old_dll_location} -> {src_prebuilt}")
+		if (
+			arch not in ("x64", "x86_64")
+			and old_dll_location.exists()
+			and not src_prebuilt.exists()
+		):
+			print(
+				f"jtalkPrep: migrating DLL from old location: {old_dll_location} -> {src_prebuilt}"
+			)
 			try:
 				import shutil
 
@@ -455,7 +477,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				lib_dst = build_dir / "libopenjtalk"
 
 				if hts_src.exists():
-					print(f"jtalkPrep: copying htsengineapi from {hts_src} to {hts_dst}")
+					print(
+						f"jtalkPrep: copying htsengineapi from {hts_src} to {hts_dst}"
+					)
 					# Preserve .gitkeep if it exists (for Git tracking of empty directories)
 					gitkeep_path = hts_dst / ".gitkeep"
 					gitkeep_exists = gitkeep_path.exists()
@@ -467,12 +491,16 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						try:
 							gitkeep_path.touch()
 						except OSError as e:
-							print(f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}")
+							print(
+								f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}"
+							)
 				else:
 					print(f"Warning: htsengineapi source not found at {hts_src}")
 
 				if lib_src.exists():
-					print(f"jtalkPrep: copying libopenjtalk from {lib_src} to {lib_dst}")
+					print(
+						f"jtalkPrep: copying libopenjtalk from {lib_src} to {lib_dst}"
+					)
 					# Preserve .gitkeep if it exists (for Git tracking of empty directories)
 					gitkeep_path = lib_dst / ".gitkeep"
 					gitkeep_exists = gitkeep_path.exists()
@@ -484,7 +512,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						try:
 							gitkeep_path.touch()
 						except OSError as e:
-							print(f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}")
+							print(
+								f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}"
+							)
 				else:
 					print(f"Warning: libopenjtalk source not found at {lib_src}")
 
@@ -494,7 +524,12 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 
 				vcvarsall: str | None = None
 				try:
-					run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+					run(
+						["nmake", "/?"],
+						stdout=subprocess.DEVNULL,
+						stderr=subprocess.DEVNULL,
+						check=True,
+					)
 					print("jtalkPrep: nmake found in PATH")
 					use_vcvarsall = False
 				except (FileNotFoundError, subprocess.CalledProcessError):
@@ -502,7 +537,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					vcvarsall = _find_vcvarsall()
 					if not vcvarsall:
 						print("ERROR: nmake not found and vcvarsall.bat not detected")
-						print("  Install Visual Studio with C++ Desktop Development workload")
+						print(
+							"  Install Visual Studio with C++ Desktop Development workload"
+						)
 						print("  Or run from Visual Studio Developer Command Prompt")
 						return 1
 					print(f"jtalkPrep: found vcvarsall.bat: {vcvarsall}")
@@ -513,9 +550,20 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				if use_vcvarsall:
 					assert vcvarsall is not None  # Type narrowing for type checker
 					clean_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak clean MACHINE={nmake_machine}'
-					run(clean_script, cwd=str(build_dir), shell=True, capture_output=True)
+					run(
+						clean_script,
+						cwd=str(build_dir),
+						shell=True,
+						capture_output=True,
+					)
 				else:
-					clean_cmd = ["nmake", "/f", "all.mak", "clean", f"MACHINE={nmake_machine}"]
+					clean_cmd = [
+						"nmake",
+						"/f",
+						"all.mak",
+						"clean",
+						f"MACHINE={nmake_machine}",
+					]
 					run(clean_cmd, cwd=str(build_dir), capture_output=True)
 
 				# Build nmake command - if using vcvarsall, wrap it in cmd /c call
@@ -523,11 +571,11 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					# Run vcvarsall.bat and nmake in the same cmd.exe shell
 					# This ensures the environment variables are available to nmake
 					assert vcvarsall is not None  # Type narrowing for type checker
-					print(f"jtalkPrep: running nmake via vcvarsall.bat with arch={nmake_machine}")
-					# Use shell=True to avoid subprocess quote escaping issues
-					cmd_script = (
-						f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
+					print(
+						f"jtalkPrep: running nmake via vcvarsall.bat with arch={nmake_machine}"
 					)
+					# Use shell=True to avoid subprocess quote escaping issues
+					cmd_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
 					result = run(
 						cmd_script,
 						cwd=str(build_dir),
@@ -541,7 +589,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 
 				if result.returncode != 0:
 					print(f"ERROR: nmake failed with exit code {result.returncode}")
-					print("  Ensure MSVC environment is configured (ilammy/msvc-dev-cmd or vcvarsall.bat)")
+					print(
+						"  Ensure MSVC environment is configured (ilammy/msvc-dev-cmd or vcvarsall.bat)"
+					)
 					return 1
 
 				# Verify DLL was created by all.mak (it copies to vendor_base/libopenjtalk.dll)
@@ -560,7 +610,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				print(f"  {e}")
 				print("  Ensure MSVC environment is configured before running SCons:")
 				print("    - CI: use ilammy/msvc-dev-cmd action")
-				print("    - Local: run vcvarsall.bat or Visual Studio Developer Command Prompt")
+				print(
+					"    - Local: run vcvarsall.bat or Visual Studio Developer Command Prompt"
+				)
 				print("    - certBuild2023.cmd: add vcvarsall.bat call before SCons")
 				return 1
 			except Exception as e:
@@ -585,7 +637,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 
 	# Use TARGET_ARCH in stamp filename to ensure rebuild when architecture changes
 	# This prevents x86/x64 DLL mismatches when switching architectures
-	arch = str(env.get("TARGET_ARCH", "x86")).lower()
+	arch = str(env.get("TARGET_ARCH", "x64")).lower()
 	arch_suffix = "x64" if arch in ("x64", "x86_64") else "x86"
 	jtalk_prep_stamp = env.File(f"miscDepsJp/_state/prep/jtalkPrep.{arch_suffix}.stamp")
 	env.AlwaysBuild(jtalk_prep_stamp)
@@ -599,7 +651,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		# Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
 		jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
 		dic_dst = jtalk_dir / "dic"
-		builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
+		builder_script_path = (
+			repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
+		)
 
 		def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
 			"""Return (has_sys_dic, has_utf8_version)."""
@@ -608,7 +662,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				return False, False
 			version_file = dic_dir / "DIC_VERSION"
 			if not version_file.exists():
-				print(f"jtalkSync: DIC_VERSION missing for {dic_dir}; will rebuild as UTF-8.")
+				print(
+					f"jtalkSync: DIC_VERSION missing for {dic_dir}; will rebuild as UTF-8."
+				)
 				return True, False
 			try:
 				version_text = version_file.read_text(encoding="utf-8").lower()
@@ -634,7 +690,12 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			from subprocess import run
 
 			try:
-				run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+				run(
+					["nmake", "/?"],
+					stdout=subprocess.DEVNULL,
+					stderr=subprocess.DEVNULL,
+					check=True,
+				)
 				# nmake is available, use it directly
 				cmd = ["nmake", "/f", "all.mak", f"MACHINE={machine}"]
 				result = run(cmd, cwd=str(vendor_base))
@@ -652,20 +713,29 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		has_dic, is_utf8_dic = _dic_state(dic_dst)
 		should_rebuild_dic = not (has_dic and is_utf8_dic)
 		if should_rebuild_dic:
-			print("jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py.")
+			print(
+				"jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py."
+			)
 
 		def _build_mecab_bin(machine: str) -> int:
 			# Makefile.mak is in src subdirectory
 			base = vendor_base / "libopenjtalk" / "mecab" / "src"
 			makefile = base / "Makefile.mak"
 			if not makefile.exists():
-				print(f"jtalkSync: Makefile.mak not found for mecab bin build: {makefile}")
+				print(
+					f"jtalkSync: Makefile.mak not found for mecab bin build: {makefile}"
+				)
 				return 1
 			import subprocess
 			from subprocess import run
 
 			try:
-				run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+				run(
+					["nmake", "/?"],
+					stdout=subprocess.DEVNULL,
+					stderr=subprocess.DEVNULL,
+					check=True,
+				)
 				# nmake is available, use it directly
 				cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
 				result = run(cmd, cwd=str(base))
@@ -673,7 +743,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			except (FileNotFoundError, subprocess.CalledProcessError):
 				vcvarsall = _find_vcvarsall()
 				if not vcvarsall:
-					print("jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build")
+					print(
+						"jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build"
+					)
 					return 1
 				cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
 				result = run(cmd_script, cwd=str(base), shell=True)
@@ -685,7 +757,13 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			def _build_dic(machine: str) -> int:
 				base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
 				makefile = base / "Makefile.mak"
-				mecab_dict_index_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+				mecab_dict_index_bin = (
+					vendor_base
+					/ "libopenjtalk"
+					/ "mecab"
+					/ "src"
+					/ "mecab-dict-index.exe"
+				)
 				import subprocess
 				from subprocess import run
 
@@ -703,18 +781,30 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						)
 						return 1
 					if not libmecab_dll.exists():
-						print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
-						print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
+						print(
+							f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}"
+						)
+						print(
+							"jtalkSync: warning: libmecab.dll build may have failed, but continuing..."
+						)
 					# make_jdic.py expects mecab-dict-index.exe under jptools/jtalk/libopenjtalk/mecab/src
 					make_jdic_mecab_bin = (
-						builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+						builder_script_path.parent
+						/ "libopenjtalk"
+						/ "mecab"
+						/ "src"
+						/ "mecab-dict-index.exe"
 					)
 					try:
 						make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
 						shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
-						print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin}")
+						print(
+							f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin}"
+						)
 					except Exception as e:
-						print(f"jtalkSync: failed to copy mecab-dict-index.exe to make_jdic path: {e}")
+						print(
+							f"jtalkSync: failed to copy mecab-dict-index.exe to make_jdic path: {e}"
+						)
 						return 1
 					python_exe = sys.executable or "python"
 					env_vars = os.environ.copy()
@@ -728,19 +818,25 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					return result.returncode
 
 				if not makefile.exists():
-					print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
+					print(
+						f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}"
+					)
 					return 1
 
-				# BEGIN JP PATCH: Create dicrc to set config-charset=sjis for .def files
+				# Create dicrc to set config-charset=sjis for .def files
 				dicrc = base / "dicrc"
 				if not dicrc.exists():
 					# Use same format as existing dicrc (with spaces around =)
 					dicrc.write_text("config-charset = sjis\n", encoding="utf-8")
 					print("jtalkSync: created dicrc with config-charset = sjis")
-				# END JP PATCH
 
 				try:
-					run(["nmake", "/?"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+					run(
+						["nmake", "/?"],
+						stdout=subprocess.DEVNULL,
+						stderr=subprocess.DEVNULL,
+						check=True,
+					)
 					# nmake is available, use it directly
 					# Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
 					# chcp 932 is a fallback for environments where dicrc config might not be respected.
@@ -752,13 +848,17 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						f"nmake /f Makefile.mak MACHINE={machine}"
 						'"'
 					)
-					print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
+					print(
+						"jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)"
+					)
 					result = run(cmd_script, cwd=str(base), shell=True)
 					return result.returncode
 				except (FileNotFoundError, subprocess.CalledProcessError):
 					vcvarsall = _find_vcvarsall()
 					if not vcvarsall:
-						print("jtalkSync: nmake not found and vcvarsall.bat not detected for dic build")
+						print(
+							"jtalkSync: nmake not found and vcvarsall.bat not detected for dic build"
+						)
 						return 1
 					# Force CP932 for nmake path as well
 					# Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
@@ -782,11 +882,13 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					"/c",
 					f"chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && nmake /f Makefile.mak MACHINE={machine}",
 				]
-				print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
+				print(
+					"jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)"
+				)
 				result = run(cmd, cwd=str(base))
 				return result.returncode
 
-			arch = str(env.get("TARGET_ARCH", "x86")).lower()
+			arch = str(env.get("TARGET_ARCH", "x64")).lower()
 			machine = "x64" if arch in ("x64", "x86_64") else "x86"
 
 			print(
@@ -806,16 +908,24 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
 				return rc_bin
 			if not mecab_dict_index_bin.exists():
-				print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}")
+				print(
+					f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
+				)
 				return 1
 			if not libmecab_dll.exists():
-				print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
-				print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
+				print(
+					f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}"
+				)
+				print(
+					"jtalkSync: warning: libmecab.dll build may have failed, but continuing..."
+				)
 
 			# After all.mak and mecab bin, try explicit dic build if still missing or needs rebuild
 			rc_dic = _build_dic(machine)
 			if rc_dic != 0:
-				print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
+				print(
+					f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}"
+				)
 				return rc_dic
 			sys_dic = dic_dst / "sys.dic"
 
@@ -827,10 +937,12 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		# Copy core assets (DLLs only; Python files have been moved to source/synthDrivers/jtalk in Phase 1)
 		try:
 			# Copy libmecab.dll (built from source or fallback to existing)
-			arch = str(env.get("TARGET_ARCH", "x86")).lower()
+			arch = str(env.get("TARGET_ARCH", "x64")).lower()
 			machine = "x64" if arch in ("x64", "x86_64") else "x86"
 			# First, try to find built libmecab.dll from mecab/src directory
-			built_libmecab = vendor_base / "libopenjtalk" / "mecab" / "src" / "libmecab.dll"
+			built_libmecab = (
+				vendor_base / "libopenjtalk" / "mecab" / "src" / "libmecab.dll"
+			)
 			if not built_libmecab.exists():
 				# Build libmecab.dll if it doesn't exist
 				print("jtalkSync: libmecab.dll not found, building...")
@@ -839,7 +951,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
 					# Continue anyway, will try fallback
 				elif not built_libmecab.exists():
-					print(f"jtalkSync: libmecab.dll still missing after build: {built_libmecab}")
+					print(
+						f"jtalkSync: libmecab.dll still missing after build: {built_libmecab}"
+					)
 			if built_libmecab.exists():
 				shutil.copy2(built_libmecab, jtalk_dir / "libmecab.dll")
 				print(f"jtalkSync: copied built libmecab.dll from {built_libmecab}")
@@ -848,7 +962,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				fallback_libmecab = vendor_base / "libmecab.dll"
 				if fallback_libmecab.exists():
 					shutil.copy2(fallback_libmecab, jtalk_dir / "libmecab.dll")
-					print(f"jtalkSync: copied fallback libmecab.dll from {fallback_libmecab}")
+					print(
+						f"jtalkSync: copied fallback libmecab.dll from {fallback_libmecab}"
+					)
 				else:
 					print(
 						f"jtalkSync: warning: libmecab.dll not found (expected at {built_libmecab} or {fallback_libmecab})"
@@ -895,13 +1011,23 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 	mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
 	jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
+	dic_dir = jtalk_dir / "dic"
 
 	# Clean up all .obj, .lib, and .exe files in mecab/src directory using glob
 	# This ensures that stale object files from previous builds (x86/x64) are removed
 	import glob
+
 	for pattern in ["*.obj", "*.lib", "*.exe"]:
 		for file_path in glob.glob(str(mecab_src_dir / pattern)):
 			env.Clean(jtalk_sync_stamp, file_path)
+
+	# Clean dictionary outputs so `scons -c jtalkSync` forces a rebuild on next run.
+	# Preserve license/docs files that should remain in the tree.
+	keep_dic_files = {"COPYING", "COPYING-bep-eng.txt", "dicrc"}
+	if dic_dir.exists():
+		for file_path in dic_dir.glob("*"):
+			if file_path.is_file() and file_path.name not in keep_dic_files:
+				env.Clean(jtalk_sync_stamp, str(file_path))
 
 	# mecab-dict-index.exe (built by jtalkSync) - already covered by glob above, but keep for clarity
 	mecab_dict_index = str(mecab_src_dir / "mecab-dict-index.exe")
@@ -922,8 +1048,12 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	# This prevents stale stamp files from preventing rebuilds when switching architectures
 	prep_state_dir = repo_root / "miscDepsJp" / "_state" / "prep"
 	for arch_suffix_clean in ["x64", "x86"]:
-		jtalk_prep_stamp_clean = str(prep_state_dir / f"jtalkPrep.{arch_suffix_clean}.stamp")
-		jtalk_sync_stamp_clean = str(prep_state_dir / f"jtalkSync.{arch_suffix_clean}.stamp")
+		jtalk_prep_stamp_clean = str(
+			prep_state_dir / f"jtalkPrep.{arch_suffix_clean}.stamp"
+		)
+		jtalk_sync_stamp_clean = str(
+			prep_state_dir / f"jtalkSync.{arch_suffix_clean}.stamp"
+		)
 		env.Clean(jtalk_sync_stamp, jtalk_prep_stamp_clean)
 		env.Clean(jtalk_sync_stamp, jtalk_sync_stamp_clean)
 
@@ -972,7 +1102,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						for src_file in src_arch_dir.glob(pattern):
 							dst_file = dst_arch_dir / src_file.name
 							shutil.copy2(src_file, dst_file)
-							print(f"jpStageControllerClient: copied {src_file.name} to {dst_arch_dir}")
+							print(
+								f"jpStageControllerClient: copied {src_file.name} to {dst_arch_dir}"
+							)
 			# Copy documentation files if they exist
 			for doc_file in ["license.txt", "readme.html", "readmejp.txt"]:
 				src_doc = extras_client_dir / doc_file
@@ -981,13 +1113,24 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					shutil.copy2(src_doc, dst_doc)
 					print(f"jpStageControllerClient: copied {doc_file}")
 			# Copy examples directory if it exists
+			# Note: preserve existing files (e.g., JP-specific test_*.py) and only copy/update files from extras/controllerClient/examples
 			src_examples = extras_client_dir / "examples"
 			if src_examples.exists():
 				dst_examples = client_root / "examples"
-				if dst_examples.exists():
-					shutil.rmtree(dst_examples)
-				shutil.copytree(src_examples, dst_examples)
-				print("jpStageControllerClient: copied examples directory")
+				dst_examples.mkdir(parents=True, exist_ok=True)
+				# Copy files and subdirectories from src_examples, preserving existing files
+				for item in src_examples.iterdir():
+					src_item = item
+					dst_item = dst_examples / item.name
+					if src_item.is_dir():
+						if dst_item.exists():
+							shutil.rmtree(dst_item)
+						shutil.copytree(src_item, dst_item)
+						print(f"jpStageControllerClient: copied examples/{item.name}/")
+					else:
+						shutil.copy2(src_item, dst_item)
+						print(f"jpStageControllerClient: copied examples/{item.name}")
+				print("jpStageControllerClient: updated examples directory")
 		except Exception as e:
 			print(f"jpStageControllerClient: error: {e}")
 			return 1
@@ -1045,7 +1188,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		if not dist_dir.exists():
 			print("jpCertExtras: ERROR - dist/ directory does not exist")
 			print("jpCertExtras: dist/ must be built before jpCertExtras can sign DLLs")
-			print("jpCertExtras: Build order: jtalkSync -> dist -> jpCertExtras -> launcher")
+			print(
+				"jpCertExtras: Build order: jtalkSync -> dist -> jpCertExtras -> launcher"
+			)
 			stamp_path.write_text("error:dist-not-built", encoding="utf-8")
 			return 1
 		dist_jtalk_dir = dist_dir / "synthDrivers" / "jtalk"
@@ -1055,12 +1200,22 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				candidates.append(dll_path)
 			else:
 				missing_required.append(dll_path)
+		# Sign files in dist/lib/<version>/ (nvdaHelper*.dll, etc.)
+		# These files are copied from source/ to dist/ during dist build, but may lose signatures
+		# during the copy process. We sign them here to ensure they are signed before launcher build.
+		build_version = str(env.get("version", ""))
+		if build_version:
+			lib_version_dir = dist_dir / "lib" / build_version
+			if lib_version_dir.exists():
+				for pattern in ("**/*.dll", "**/*.exe"):
+					for path in lib_version_dir.glob(pattern):
+						if path.is_file():
+							candidates.append(path)
 		# Note: nvdaHelper*.dll files (IAccessible2proxy.dll, ISimpleDOM.dll, nvdaHelperRemote.dll,
 		# nvdaHelperRemoteLoader.exe, UIARemote.dll, nvdaHelperLocal.dll, nvdaHelperLocalWin10.dll)
-		# are signed during source build (see nvdaHelper/archBuild_sconscript) and should remain
-		# signed when copied to dist/ during dist build. They are NOT signed by jpCertExtras.
-		# If any of these files are unsigned in dist/, that indicates a build problem that should
-		# be fixed at the source build level, not worked around here.
+		# are signed during source build (see nvdaHelper/archBuild_sconscript), but may lose signatures
+		# when copied to dist/ during dist build. We sign them here in jpCertExtras to ensure
+		# they are signed before launcher build.
 		# Report missing required DLLs (must be in dist/, not source/)
 		if missing_required:
 			print("jpCertExtras: ERROR - Required DLLs not found in dist/:")
@@ -1071,7 +1226,8 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				"jpCertExtras: Build order: jtalkSync (copies to source/) -> dist (copies to dist/) -> jpCertExtras (signs dist/)"
 			)
 			stamp_path.write_text(
-				f"error:missing-dlls:{','.join(str(p.name) for p in missing_required)}", encoding="utf-8"
+				f"error:missing-dlls:{','.join(str(p.name) for p in missing_required)}",
+				encoding="utf-8",
 			)
 			return 1
 		# Perform signing via upstream signExec
@@ -1167,10 +1323,16 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		dist_dir = repo_root / "dist"
 
 		mode = str(
-			env.get("JP_VERIFY_SIGNATURES_MODE", os.environ.get("JP_VERIFY_SIGNATURES_MODE", "fast"))
+			env.get(
+				"JP_VERIFY_SIGNATURES_MODE",
+				os.environ.get("JP_VERIFY_SIGNATURES_MODE", "fast"),
+			)
 		).lower()
 		verbose = str(
-			env.get("JP_VERIFY_SIGNATURES_VERBOSE", os.environ.get("JP_VERIFY_SIGNATURES_VERBOSE", "0"))
+			env.get(
+				"JP_VERIFY_SIGNATURES_VERBOSE",
+				os.environ.get("JP_VERIFY_SIGNATURES_VERBOSE", "0"),
+			)
 		).lower() in (
 			"1",
 			"true",
@@ -1195,7 +1357,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		) -> subprocess.CompletedProcess[str]:
 			args = [signtool_path, "verify", "/pa"]
 			args.append("/q" if quiet else "/v")
-			return subprocess.run(args + [str(file_path)], capture_output=True, text=True)
+			return subprocess.run(
+				args + [str(file_path)], capture_output=True, text=True
+			)
 
 		def _format_signtool_output(result: subprocess.CompletedProcess[str]) -> str:
 			out = (result.stdout or "").strip()
@@ -1222,7 +1386,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			exe: Path | None = None
 			if out_dir.exists():
 				exe_candidates = sorted(
-					out_dir.glob("nvda_*.exe"), key=lambda p: p.stat().st_mtime, reverse=True
+					out_dir.glob("nvda_*.exe"),
+					key=lambda p: p.stat().st_mtime,
+					reverse=True,
 				)
 				if exe_candidates:
 					exe = exe_candidates[0]
@@ -1234,7 +1400,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			signtool = os.environ.get("SIGNTOOL", "signtool")
 
 			if mode not in ("fast", "all"):
-				print(f"jpVerifySignatures: unknown mode {mode!r}, falling back to 'fast'")
+				print(
+					f"jpVerifySignatures: unknown mode {mode!r}, falling back to 'fast'"
+				)
 				mode = "fast"
 
 			failures: list[str] = []
@@ -1248,7 +1416,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				if not path.exists():
 					failures.append(f"missing:{path}")
 					return
-				ok, is_ignored, detail = _verify_one(signtool, path, allow_ignored=allow_ignored)
+				ok, is_ignored, detail = _verify_one(
+					signtool, path, allow_ignored=allow_ignored
+				)
 				if ok:
 					verified += 1
 					return
@@ -1274,36 +1444,13 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					dist_dir / "uninstall.exe",
 				]
 				if build_version:
-					helper_files_by_root = {
-						# dist/lib/<version>/ contains x86 binaries, including local/UIA helpers.
-						"lib": (
-							"IAccessible2proxy.dll",
-							"ISimpleDOM.dll",
-							"UIARemote.dll",
-							"nvdaHelperLocal.dll",
-							"nvdaHelperLocalWin10.dll",
-							"nvdaHelperRemote.dll",
-							"windowsaccessbridge-32.dll",
-						),
-						# dist/lib64/<version>/ and dist/libArm64/<version>/ contain remote helpers only.
-						"lib64": (
-							"IAccessible2proxy.dll",
-							"ISimpleDOM.dll",
-							"nvdaHelperRemote.dll",
-							"nvdaHelperRemoteLoader.exe",
-						),
-						"libArm64": (
-							"IAccessible2proxy.dll",
-							"ISimpleDOM.dll",
-							"nvdaHelperRemote.dll",
-							"nvdaHelperRemoteLoader.exe",
-						),
-					}
-					for root_name, helper_names in helper_files_by_root.items():
-						version_dir = dist_dir / root_name / build_version
-						if version_dir.exists():
-							for helper_name in helper_names:
-								critical_paths.append(version_dir / helper_name)
+					# Checking dist/lib/<version> recursively for any DLLs/EXEs (handles x86/x64/arm64 subdirs automatically)
+					lib_version_dir = dist_dir / "lib" / build_version
+					if lib_version_dir.exists():
+						for pattern in ("**/*.dll", "**/*.exe"):
+							for path in lib_version_dir.glob(pattern):
+								if path.is_file():
+									critical_paths.append(path)
 				for path in critical_paths:
 					_check(path, allow_ignored=False)
 			else:
@@ -1349,10 +1496,14 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 
 			if failures:
 				print(f"jpVerifySignatures: FAILED ({mode})")
-				print("  See output/_jp_verify_signatures*.stamp or the *_verify.log for details.")
+				print(
+					"  See output/_jp_verify_signatures*.stamp or the *_verify.log for details."
+				)
 				return 1
 			if ignored_failures and not verbose:
-				print(f"jpVerifySignatures: OK ({mode}) with {len(ignored_failures)} ignored failure(s)")
+				print(
+					f"jpVerifySignatures: OK ({mode}) with {len(ignored_failures)} ignored failure(s)"
+				)
 			else:
 				print(f"jpVerifySignatures: OK ({mode})")
 			return 0

@@ -857,6 +857,36 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo, nabcc=False, logwrite=_logwr
 	if prev_mo.hinshi1 == "助動詞" and prev_mo.hyouki == "で" and mo.hinshi1 == "助動詞":
 		return True
 
+	# 「の」（名詞,非自立）の後に名詞が続く場合にスペースを挿入
+	# 例1: 映画「ラヂオの時間」 → エイガ 「ラジオノ ジカン」
+	#  ラヂオ,名詞,一般 → ラジオ
+	#  の,名詞,非自立 → ノ
+	#  時間,名詞,副詞可能 → ジカン
+	# 例2: 気を付けの姿勢 → キヲツケノ シセイ
+	#  気を付け,名詞,一般 → キヲツケ
+	#  の,名詞,非自立 → ノ
+	#  姿勢,名詞,一般 → シセイ
+	if (
+		prev_mo.hinshi1 == "名詞"
+		and prev_mo.hinshi2 == "非自立"
+		and prev_mo.hyouki == "の"
+		and mo.hinshi1 == "名詞"
+		and mo.hinshi2 in ("一般", "副詞可能")
+	):
+		return True
+
+	# 感動詞の後に助動詞「ござい」が続く場合にスペースを挿入
+	# 例: 有り難うございました → アリガトー ゴザイマシタ
+	#  有り難う,感動詞 → アリガトー
+	#  ござい,助動詞 → ゴザイ
+	if (
+		prev_mo.hinshi1 == "感動詞"
+		and prev_mo.hyouki == "有り難う"
+		and mo.hinshi1 == "助動詞"
+		and mo.hyouki == "ござい"
+	):
+		return True
+
 	# 仮名文字 カナモジ
 	# 仮名タイプ カナタイプ
 	# 仮名変換 カナ ヘンカン
@@ -1326,10 +1356,28 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 
 	# tab code
 	text = text.replace("\t", TAB_CODE)
+	# BEGIN JP PATCH (log tab replacement)
+	if TAB_CODE in text:
+		logwrite(f"translator2: TAB_CODE present after tab replace: {text!r}")
+	# END JP PATCH
 
 	# 'ふにゃ～'
 	text = text.replace("ゃ～", "ゃー")
 
+	# BEGIN JP PATCH (assert suspicious patterns before text2mecab)
+	assert "\t" not in text and "\r" not in text and "\n" not in text, "translator2: unexpected tab/CR/LF"
+	ascii_count = sum(1 for c in text if ord(c) < 0x80)
+	non_ascii_count = len(text) - ascii_count
+	if ascii_count and non_ascii_count:
+		mixed_alnum = any(c.isalnum() and ord(c) < 0x80 for c in text)
+		# Allow TAB_CODE (U+200B) in mixed text to continue investigation.
+		if mixed_alnum and TAB_CODE not in text:
+			if logwrite:
+				logwrite(f"translator2: mixed ASCII alnum and non-ASCII: {text!r}")
+	if "  " in text:
+		if logwrite:
+			logwrite("translator2: consecutive ASCII spaces detected")
+	# END JP PATCH
 	text = text2mecab(text)
 	mf = MecabFeatures()
 	Mecab_analysis(text, mf, logwrite_=logwrite)

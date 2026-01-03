@@ -148,7 +148,7 @@ x64 環境での smoke テストは、`checkJtalkArch.ps1` を使用します：
 ```
 
 このスクリプトは：
-- `.venv-x64` を使用して x86 の `.venv` と分離（競合回避）
+- `.venv` を使用（x64 Python 3.13、x86 ビルドはサポートされていません）
 - `uv` で Python 3.13 x64 を自動インストール・使用
 - x64 DLL が正しくビルド・配置されることを確認（dumpbin で検証）
 - x64 Python で smoke テストを実行
@@ -180,7 +180,7 @@ x64 環境での smoke テストは、`checkJtalkArch.ps1` を使用します：
 
 - x64 環境では、x64 用の DLL（`libopenjtalk.dll`、`libmecab.dll`）が必要
 - x64 Python で x64 DLL を読み込む必要がある（x86 Python では `OSError: [WinError 193]` が発生）
-- `.venv-x64` を使用して x86 の `.venv` と分離することで、リソース競合を回避
+- `.venv` を使用（x64 Python 3.13、x86 ビルドはサポートされていません）
 
 ### x64 環境でのトラブルシューティング
 

@@ -3,7 +3,9 @@
 !include "MUI2.nsh"
 
 !define launcher_appExe "nvdaLauncher.exe"
+# BEGIN JP PATCH (Use Japanese icon)
 !define MUI_ICON ..\source\images\nvdajp3.ico
+# END JP PATCH
 
 SetCompressor /SOLID LZMA
 SilentInstall silent

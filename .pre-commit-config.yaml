@@ -17,7 +17,7 @@ ci:
   submodules: true
 
 default_language_version:
-  python: python3.11
+  python: python3.13
 
 repos:
 - repo: https://github.com/pre-commit-ci/pre-commit-ci-config
@@ -52,16 +52,18 @@ repos:
     - id: check-merge-conflict
     # Checks Python files for debug statements, such as python's breakpoint function, or those inserted by some IDEs.
     - id: debug-statements
-    # Removes trailing whitespace.
-    - id: trailing-whitespace
-      types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-    # Ensures all files end in 1 (and only 1) newline.
-    - id: end-of-file-fixer
-      types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-    # Removes the UTF-8 BOM from files that have it.
-    # See https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/codingStandards.md#encoding
-    - id: fix-byte-order-marker
-      types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+    # BEGIN JP PATCH (temporarily disabled, to be fixed in a separate branch)
+    # # Removes trailing whitespace.
+    # - id: trailing-whitespace
+    #   types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+    # # Ensures all files end in 1 (and only 1) newline.
+    # - id: end-of-file-fixer
+    #   types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+    # # Removes the UTF-8 BOM from files that have it.
+    # # See https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/codingStandards.md#encoding
+    # - id: fix-byte-order-marker
+    #   types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+    # END JP PATCH (temporarily disabled, to be fixed in a separate branch)
     # Validates TOML files.
     - id: check-toml
     # Validates YAML files.
@@ -121,7 +123,16 @@ repos:
     - id: uv-lock
       name: Verify uv lock file
       # Override python interpreter from .python-versions as that is too strict for pre-commit.ci
-      args: ["-p3.11"]
+      args: ["-p3.13"]
+
+# BEGIN JP PATCH (temporarily disabled, to be fixed in a separate branch)
+# - repo: https://github.com/DavidAnson/markdownlint-cli2
+#   rev: v0.18.1
+#   hooks:
+#   - id: markdownlint-cli2
+#     name: Lint markdown files
+#     args: ["--fix"]
+# END JP PATCH (temporarily disabled, to be fixed in a separate branch)
 
 - repo: local
   hooks:

@@ -171,10 +171,7 @@ def listTables() -> list[BrailleTable]:
 	"""
 	return sorted(
 		_tables.values(),
-		key=lambda table: (
-			table.source not in (TableSource.BUILTIN, TableSource.BUILTIN_JP),
-			strxfrm(table.displayName),
-		),
+		key=lambda table: (table.source != TableSource.BUILTIN, strxfrm(table.displayName)),
 	)
 
 

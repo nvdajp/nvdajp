@@ -3179,7 +3179,7 @@ def test_waic_as_0029_08():
 	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
 	_asserts.strings_match(
 		actualSpeech,
-		"frame  このページで使用するフォントフェイスとサイズの選択    ボタンを押下しフォントを選択してください  button  フォント",
+		"frame  日本語 (not supported)  このページで使用するフォントフェイスとサイズの選択    ボタンを押下しフォントを選択してください  button  フォント",
 	)
 	actualSpeech = _chrome.getSpeechAfterTab()
 	_asserts.strings_match(

@@ -42,6 +42,7 @@ bool fetchRangeExtent(ITfRange* pRange, long* start, ULONG* length) {
 	return true?(res==S_OK):false;
 }
 
+// BEGIN JP PATCH (Japanese TSF display attribute support)
 bool getDispAttrFromRangeWithShift(
 	ITfProperty *pProp,
 	ITfCategoryMgr *pCategoryMgr,
@@ -111,6 +112,9 @@ bool getDispAttrFromRangeWithShift(
 		VariantClear(&var);
 	} else {
 		success = false;
+	}
+	if (pRangeNew) {
+		pRangeNew->Release();
 	}
 	return success;
 }
@@ -194,6 +198,7 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
     pDispMgr->Release();
     return hr;
 }
+// END JP PATCH
 
 class TsfSink;
 typedef map<DWORD,TsfSink*> sinkMap_t;
@@ -660,7 +665,6 @@ STDMETHODIMP TsfSink::OnEndEdit(
 	pRange->GetText(cookie, 0, buf, len, &len);
 	const ULONG strNullCharIndex = std::min(len, BUF_SIZE - 1);
 	buf[strNullCharIndex] = L'\0';
-	long jpAttrLen = static_cast<long>(std::min(len, BUF_SIZE - 1)); // nvdajp
 	long compStart=0;
 	fetchRangeExtent(pRange,&compStart,&len);
 	long selStart=compStart;
@@ -674,9 +678,10 @@ STDMETHODIMP TsfSink::OnEndEdit(
 	}
 	selStart = std::max(0l, selStart-compStart);
 	selEnd = std::max(0l, selEnd-compStart);
-	// nvdajp begin
+	// BEGIN JP PATCH (Japanese TSF display attribute support)
 	//nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
-	wchar_t jpAttrBuf[256];
+	constexpr long jpAttrLen = 256;
+	wchar_t jpAttrBuf[jpAttrLen];
 	HRESULT hr = getDispAttrFromRange(pCtx, pRange, cookie, jpAttrBuf, jpAttrLen);
 	if (hr == S_OK) {
 		wchar_t jpBuf[513];
@@ -687,7 +692,7 @@ STDMETHODIMP TsfSink::OnEndEdit(
 	} else {
 		nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
 	}
-	// nvdajp end
+	// END JP PATCH
 	return S_OK;
 }
 

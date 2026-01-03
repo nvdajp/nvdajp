@@ -152,6 +152,31 @@ function Initialize-MsvcEnvironment {
 }
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
+
+function Stop-JpSmokeTestProcesses {
+    param(
+        [string]$RepoRoot
+    )
+    $venvPython = Join-Path $RepoRoot ".venv\Scripts\python.exe"
+    $patterns = @(
+        [regex]::Escape($venvPython),
+        "miscDepsJp\.jptools\.test",
+        "run_unittest_x64_"
+    )
+    $procs = Get-CimInstance Win32_Process | Where-Object {
+        $_.CommandLine -and $_.Name -in @("python.exe", "pythonw.exe", "venvlauncher.exe")
+    }
+    foreach ($p in $procs) {
+        foreach ($pat in $patterns) {
+            if ($p.CommandLine -match $pat) {
+                Write-Host "Stopping leftover smoke test process: $($p.Name) (PID $($p.ProcessId))"
+                Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue
+                break
+            }
+        }
+    }
+}
+
 if (-not $SkipBuild) {
     Write-Host "Building jtalkSync for $Architecture ..."
     Push-Location $repoRoot
@@ -198,12 +223,29 @@ if ($allOk) {
         Write-Host "Running jp smoke tests for $Architecture ..."
         Push-Location $repoRoot
         $oldBuildArch = $env:BUILD_ARCH
+        
+        # Setup log file for x64 smoke tests (same as runJpSmokeTests.ps1)
+        $logFile = Join-Path $repoRoot "jpSmokeTests.log"
+        $logStarted = $false
+        if ($Architecture -eq 'x64') {
+            try {
+                Start-Transcript -Path $logFile -Append | Out-Null
+                $logStarted = $true
+                Write-Host "REPO_ROOT set to $repoRoot"
+                Write-Host "Log file: $logFile"
+                Write-Host "Build architecture: $Architecture"
+            } catch {
+                Write-Warning "Failed to start transcript: $_"
+            }
+        }
+        
         try {
             $env:BUILD_ARCH = $Architecture
             if ($Architecture -eq 'x64') {
+                Stop-JpSmokeTestProcesses -RepoRoot $repoRoot
                 # Use uv to run unittest with Python 3.13 x64.
-                # Use separate venv (.venv-x64) to avoid conflicts with x86 .venv.
-                $venvX64 = "$repoRoot\.venv-x64"
+                # Use .venv (x64 Python 3.13)
+                $venvPath = "$repoRoot\.venv"
                 $env:PYTHONPATH = "$repoRoot\source\synthDrivers\jtalk;$repoRoot\miscDepsJp\include\python-jtalk;$repoRoot\miscDepsJp\jptools"
                 
                 # Ensure JTalk dictionaries are present (required for smoke tests)
@@ -227,20 +269,20 @@ if ($allOk) {
                 }
                 
                 # Create venv if it doesn't exist or is incomplete
-                $venvPython = "$venvX64\Scripts\python.exe"
+                $venvPython = "$venvPath\Scripts\python.exe"
                 $venvNeedsRecreate = $false
                 if (-not (Test-Path $venvPython)) {
                     $venvNeedsRecreate = $true
-                } elseif (-not (Test-Path "$venvX64\pyvenv.cfg")) {
+                } elseif (-not (Test-Path "$venvPath\pyvenv.cfg")) {
                     # Incomplete venv (missing pyvenv.cfg), remove and recreate
                     Write-Host "Incomplete venv detected, removing and recreating..."
-                    Remove-Item -Recurse -Force $venvX64 -ErrorAction SilentlyContinue
+                    Remove-Item -Recurse -Force $venvPath -ErrorAction SilentlyContinue
                     Start-Sleep -Seconds 1
                     $venvNeedsRecreate = $true
                 }
                 
                 if ($venvNeedsRecreate) {
-                    Write-Host "Creating x64 virtual environment with Python 3.13..."
+                    Write-Host "Creating virtual environment with x64 Python 3.13..."
                     # Use UV_PYTHON_PREFERENCE=only-managed to prefer uv-managed Python (x64)
                     # This prevents uv from using the x86 Python from PATH
                     $oldPreference = $env:UV_PYTHON_PREFERENCE
@@ -248,7 +290,7 @@ if ($allOk) {
                     try {
                         # Use Python 3.13 explicitly (uv will select the latest 3.13.x x64 version)
                         # Use --clear flag to replace existing directory if it exists
-                        & uv venv --python 3.13 --clear $venvX64
+                        & uv venv --python 3.13 --clear $venvPath
                     } finally {
                         # Restore original UV_PYTHON_PREFERENCE value, or remove if it was not set
                         if ($null -ne $oldPreference -and $oldPreference -ne "") {
@@ -263,7 +305,7 @@ if ($allOk) {
                     }
                     
                     # Verify venv Python is x64
-                    $venvPython = "$venvX64\Scripts\python.exe"
+                    $venvPython = "$venvPath\Scripts\python.exe"
                     $pythonArch = & $venvPython -c "import platform; print(platform.architecture()[0])"
                     if ($pythonArch -ne "64bit") {
                         Write-Error "ERROR: venv Python is not x64 ($pythonArch). Ensure x64 Python is installed: uv python install 3.13"
@@ -273,29 +315,34 @@ if ($allOk) {
                     # unittest is part of Python standard library, no installation needed
                 }
                 
-                # Run unittest in the x64 venv with timeout to prevent hang on access violation
+                # Run unittest in the venv with timeout to prevent hang on access violation
                 # Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
                 # Set code page to 932 (Japanese Shift-JIS) to match local environment behavior
                 # This ensures consistent behavior for ctypes string handling and MeCab internal processing
                 $env:PYTHONUTF8 = "1"
+                Write-Host "Using Python: $venvPath\Scripts\python.exe"
+                Write-Host "PYTHONPATH set to $($env:PYTHONPATH)"
+                Write-Host "Running JP braille/JTalk smoke tests (filter: JpBrailleTests or JtalkTests)..."
+                
                 # Set code page in the process that will run unittest
                 # Note: Start-Process creates a new process, so we need to set code page via cmd /c
                 # Create a temporary batch file to ensure chcp 932 is executed before python
                 # This is more reliable than using && or & in cmd /c
+                # Use temporary output file to capture unittest output for logging
                 $batchFile = Join-Path $env:TEMP "run_unittest_x64_$(Get-Date -Format 'yyyyMMddHHmmss').bat"
+                $outputFile = Join-Path $env:TEMP "unittest_x64_output_$(Get-Date -Format 'yyyyMMddHHmmss').txt"
                 $batchContent = @"
 @echo off
 chcp 932 >nul 2>&1
 cd /d "$repoRoot"
-"$venvX64\Scripts\python.exe" -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests
+"$venvPath\Scripts\python.exe" -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests -v > "$outputFile" 2>&1
 exit /b %ERRORLEVEL%
 "@
                 try {
                     $batchContent | Out-File -FilePath $batchFile -Encoding ASCII -NoNewline
                     $process = Start-Process -FilePath $batchFile -PassThru -NoNewWindow -Wait:$false -UseNewEnvironment:$false -WorkingDirectory $repoRoot
                 } finally {
-                    # Clean up batch file after process completes
-                    # Wait for process to finish first, then clean up
+                    # Wait for process to finish with timeout
                     $process | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
                     if (-not $process.HasExited) {
                         Write-Warning "unittest timed out after 120 seconds, forcing termination"
@@ -303,11 +350,22 @@ exit /b %ERRORLEVEL%
                         Write-Error "jp smoke tests timed out"
                         exit 1
                     }
-                    # Clean up batch file after process exits
+                    
+                    # Read and display output from file
+                    if (Test-Path $outputFile) {
+                        $output = Get-Content $outputFile -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
+                        if ($output) {
+                            Write-Host $output
+                        }
+                        Remove-Item $outputFile -Force -ErrorAction SilentlyContinue
+                    }
+                    
+                    # Clean up batch file
                     Start-Sleep -Milliseconds 500
                     if (Test-Path $batchFile) {
                         Remove-Item $batchFile -Force -ErrorAction SilentlyContinue
                     }
+                    
                     # Check exit code after process completes
                     if ($process.ExitCode -ne 0) {
                         Write-Error "jp smoke tests failed (exit code: $($process.ExitCode))"
@@ -322,6 +380,15 @@ exit /b %ERRORLEVEL%
                 }
             }
         } finally {
+            # Stop transcript if it was started
+            if ($logStarted) {
+                try {
+                    Stop-Transcript | Out-Null
+                } catch {
+                    Write-Warning "Failed to stop transcript: $_"
+                }
+            }
+            
             if ($oldBuildArch) {
                 $env:BUILD_ARCH = $oldBuildArch
             } else {

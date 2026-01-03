@@ -19,6 +19,12 @@
 .PARAMETER SkipSystemTests
     Skip running system tests.
 
+.PARAMETER SkipSignTest
+    Skip signtool test (useful for RDP sessions where certificate access may be restricted).
+
+.PARAMETER SkipSigning
+    Skip code signing entirely (useful for RDP sessions where certificate access may be restricted).
+
 .EXAMPLE
     .\jptools\certBuild2025.ps1
     Builds with SCons default settings.
@@ -42,7 +48,9 @@ param(
     [string]$LogPath = "",
     
     [switch]$SkipUnitTests,
-    [switch]$SkipSystemTests
+    [switch]$SkipSystemTests,
+    [switch]$SkipSignTest,
+    [switch]$SkipSigning
 )
 
 Set-StrictMode -Version Latest
@@ -54,29 +62,42 @@ Set-Location $repoRoot
 
 # Set up environment variables
 # Load CERT_SHA1 from environment or optional env file to avoid committing secrets
-$envScript = Join-Path $PSScriptRoot "certBuild2025Env.ps1"
-if (-not $env:CERT_SHA1) {
-    if (Test-Path $envScript) {
-        . $envScript
-    } else {
-        Write-Error "CERT_SHA1 is not set. Set it in the environment or create certBuild2025Env.ps1 from certBuild2025Env.sample.ps1."
+# Skip if SkipSigning is specified
+if (-not $SkipSigning) {
+    $envScript = Join-Path $PSScriptRoot "certBuild2025Env.ps1"
+    if (-not $env:CERT_SHA1) {
+        if (Test-Path $envScript) {
+            . $envScript
+        } else {
+            Write-Error "CERT_SHA1 is not set. Set it in the environment or create certBuild2025Env.ps1 from certBuild2025Env.sample.ps1."
+            exit 1
+        }
+    }
+    if (-not $env:CERT_SHA1) {
+        Write-Error "CERT_SHA1 is empty after loading the environment. Aborting."
         exit 1
     }
-}
-if (-not $env:CERT_SHA1) {
-    Write-Error "CERT_SHA1 is empty after loading the environment. Aborting."
-    exit 1
+} else {
+    # Clear CERT_SHA1 and CERT_NAME to ensure signing is skipped
+    $env:CERT_SHA1 = ""
+    $env:CERT_NAME = ""
+    # Set SKIP_SIGNING to allow certBuild2023.cmd to skip certificate validation
+    $env:SKIP_SIGNING = "1"
+    Write-Host "Skipping code signing (SkipSigning specified)" -ForegroundColor Yellow
 }
 $env:PYTHONUTF8 = "1"
 $env:RELEASE = "1"
 
 # Test signtool with a dummy file before building
 # This ensures signing environment is properly configured
-Write-Host "Testing signtool with dummy file..." -ForegroundColor Cyan
-$msgfmtPath = Join-Path $repoRoot "miscDeps" "tools" "msgfmt.exe"
-if (-not (Test-Path $msgfmtPath)) {
-    Write-Warning "msgfmt.exe not found at $msgfmtPath, skipping signtool test"
+if ($SkipSignTest) {
+    Write-Host "Skipping signtool test (SkipSignTest specified)" -ForegroundColor Yellow
 } else {
+    Write-Host "Testing signtool with dummy file..." -ForegroundColor Cyan
+    $msgfmtPath = Join-Path $repoRoot "miscDeps" "tools" "msgfmt.exe"
+    if (-not (Test-Path $msgfmtPath)) {
+        Write-Warning "msgfmt.exe not found at $msgfmtPath, skipping signtool test"
+    } else {
     # Find signtool (similar to certBuild2023.cmd)
     $signtool = $env:SIGNTOOL
     if (-not $signtool) {
@@ -163,6 +184,7 @@ if (-not (Test-Path $msgfmtPath)) {
         }
     } else {
         Write-Warning "signtool not found, skipping test"
+    }
     }
 }
 

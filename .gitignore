@@ -66,8 +66,11 @@ nvdaHelper/docs/
 *.pfx
 *.egg-info
 .claude/settings.local.json
-__h*output.txt
 *.stamp
+__*.txt
+miscDepsJp/_state/
+jptools/_state/
+jpchar/_state/
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-custom-dic.csv
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-eng-dic.csv
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-tankan-dic.csv

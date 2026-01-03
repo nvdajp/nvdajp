@@ -40,6 +40,7 @@
 # Start of NVDA config
 
 # By default auto request review from NV Access developer team.
+# nvdajp: CODEOWNERS is disabled for nvdajp repository
 # * @nvaccess/developers
 
 # For changes to the userGuide auto request review from userDocs team

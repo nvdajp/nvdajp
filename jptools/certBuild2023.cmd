@@ -2,10 +2,10 @@ setlocal enableextensions enabledelayedexpansion
 set SCONSOPTIONS=%*
 echo SCONSOPTIONS is %SCONSOPTIONS%
 
-rem Build architecture (default to x86)
+rem Build architecture (default to x64)
 rem BUILD_ARCH is JP-specific environment variable for smoke test environment switching and MSVC setup
 rem TARGET_ARCH is SCons environment variable and should not be set as OS environment variable
-if not defined BUILD_ARCH set BUILD_ARCH=x86
+if not defined BUILD_ARCH set BUILD_ARCH=x64
 echo BUILD_ARCH is %BUILD_ARCH%
 
 if "%NOWDATE%"=="" set NOWDATE=250101a
@@ -58,7 +58,8 @@ if not defined SIGNTOOL (
 
 rem Auto-detect a valid code signing cert from Windows cert store when not explicitly specified
 rem Preference: CurrentUser\My, then LocalMachine\My. Exclude self-signed.
-if not defined CERT_SHA1 if not defined CERT_NAME (
+rem Skip certificate detection if SKIP_SIGNING is set
+if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME (
     for /f "usebackq tokens=1,2 delims=;" %%A in (`pwsh -NoProfile -Command ^
         "$now=Get-Date; "^ 
         "function FindCert([string]\$root){ "^ 
@@ -98,10 +99,12 @@ if defined CERT_SHA1 (
 )
 
 rem Build SCons args; enable signing only when a valid store cert is selected
+rem Note: Do not set certFile=1 for certificate store signing (JP-specific)
+rem SConstruct will detect CERT_SHA1/CERT_NAME from environment and use certificate store signing
 set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
-if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
-if defined CERT_NAME if not defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certFile=1 certTimestampServer=%TIMESTAMP_URL%
-if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN (
+if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certTimestampServer=%TIMESTAMP_URL%
+if defined CERT_NAME if not defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certTimestampServer=%TIMESTAMP_URL%
+if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN (
     echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
     goto onerror
 )
@@ -119,8 +122,12 @@ rem Note: the launcher build ensures jtalkSync runs via its dependency chain whe
 rem and dictionaries should be up to date
 powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
 @if not "%ERRORLEVEL%"=="0" goto onerror
-call scons.bat jpVerifySignatures %SCONSARGS%
-@if not "%ERRORLEVEL%"=="0" goto onerror
+if not defined SKIP_SIGNING (
+    call scons.bat jpVerifySignatures %SCONSARGS%
+    @if not "%ERRORLEVEL%"=="0" goto onerror
+) else (
+    echo [INFO] Skipping signature verification (SKIP_SIGNING is set)
+)
 rem Build JP addons and controller client (independent from launcher)
 call scons.bat jpAddons nvdaHelper\client jpStageControllerClient jpControllerClient %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
