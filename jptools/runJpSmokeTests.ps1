@@ -152,16 +152,16 @@ function Install-Packages {
         } else {
             & uv pip install @Packages
         }
-        if ($LastExitCode -eq 0) { $installOk = $true }
+        if ($LASTEXITCODE -eq 0) { $installOk = $true }
     } catch {
         Write-Warning "uv is not available; falling back to python -m pip"
     }
     if (-not $installOk) {
         & $pythonExe -m pip install @Packages
     }
-    if ($LastExitCode -ne 0) {
-        Write-Error "Failed to install dependencies with exit code $LastExitCode"
-        exit $LastExitCode
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to install dependencies with exit code $LASTEXITCODE"
+        exit $LASTEXITCODE
     }
 }
 
@@ -174,9 +174,9 @@ function Ensure-JtalkDic {
     if (-not (Test-Path $charBin)) {
         Write-Host "JTalk dictionaries not found under $JtalkSource; running scons jtalkSync..."
         & "$RepoRoot\scons.bat" jtalkSync
-        if ($LastExitCode -ne 0) {
-            Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
-            exit $LastExitCode
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
         }
     }
 }
@@ -282,17 +282,17 @@ if (-not $SkipOverlay) {
         } else {
             Write-Host "JTalk DLL not found in cache, running jtalkSync..."
             & "$repoRoot\scons.bat" jtalkSync
-            if ($LastExitCode -ne 0) {
-                Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
-                exit $LastExitCode
-            }
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
+        }
         }
     } else {
         Write-Host "Preparing JTalk assets via scons jtalkSync..."
         & "$repoRoot\scons.bat" jtalkSync
-        if ($LastExitCode -ne 0) {
-            Write-Error "Failed to run scons jtalkSync with exit code $LastExitCode"
-            exit $LastExitCode
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
         }
     }
 }
@@ -352,13 +352,13 @@ if ($TestFilter -and $TestFilter -ne "JpBrailleTests or JtalkTests") {
 $testExitCode = 0
 if ($unittestArgs.Count -eq 1) {
     & uv run --python $pythonExe python -m unittest $unittestArgs[0] -v
-    $testExitCode = $LastExitCode
+    $testExitCode = $LASTEXITCODE
 } else {
     # Multiple test classes: run each separately and combine exit codes
     $allPassed = $true
     foreach ($testArg in $unittestArgs) {
         & uv run --python $pythonExe python -m unittest $testArg -v
-        if ($LastExitCode -ne 0) {
+        if ($LASTEXITCODE -ne 0) {
             $allPassed = $false
         }
     }

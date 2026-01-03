@@ -501,9 +501,55 @@ MeCabの解析結果を確認（__h2output.txt）
 
 ---
 
+## GitHub Actions でのテスト失敗検出
+
+`test_pass2`が失敗した場合、GitHub Actionsが適切に失敗するようになっています。
+
+### 重要な修正（PR610対応）
+
+**問題**: `runJpSmokeTests.ps1`で`$LastExitCode`（小文字）を使用していたため、PowerShellの自動変数が正しく機能せず、テスト失敗時に終了コードが取得できていませんでした。
+
+**修正**: すべての`$LastExitCode`を`$LASTEXITCODE`（大文字）に修正しました。PowerShellの自動変数は`$LASTEXITCODE`（大文字）です。
+
+**影響**: この修正により、`test_pass2`が失敗した場合、GitHub Actionsが正しく失敗として検出できるようになりました。
+
+### 動作の流れ
+
+1. **`test_pass2`の実行**: `miscDepsJp/jptools/test.py`の`JpBrailleTests.test_pass2`メソッドが実行される
+2. **失敗の検出**: `self.assertEqual(count, 0)`が失敗すると、`AssertionError`が発生
+3. **unittestの終了コード**: unittestが終了コード1を返す
+4. **スクリプトの終了コード**: `jptools/runJpSmokeTests.ps1`が`$LASTEXITCODE`を取得し、`exit $testExitCode`で終了コード1を返す
+5. **GitHub Actionsの検出**: GitHub Actionsが終了コード1を検出し、`jpSmokeTests`ジョブを失敗としてマーク
+6. **allTestsPassジョブ**: `allTestsPass`ジョブが`jpSmokeTests`の失敗を検出し、全体のテストを失敗としてマーク
+
+### 確認方法
+
+以下のコマンドで、`test_pass2`が失敗した場合の動作を確認できます：
+
+```powershell
+# テストを実行して終了コードを確認
+cd miscDepsJp\jptools
+python -m unittest miscDepsJp.jptools.test.JpBrailleTests.test_pass2 -v
+echo "Exit code: $LASTEXITCODE"
+```
+
+終了コードが0でない場合、GitHub Actionsはジョブを失敗としてマークします。
+
+### 関連ファイル
+
+- **テスト定義**: `miscDepsJp/jptools/test.py` - `JpBrailleTests.test_pass2`
+- **テスト実行スクリプト**: `jptools/runJpSmokeTests.ps1` - unittestの実行と終了コードの処理
+- **GitHub Actionsワークフロー**: `.github/workflows/testAndPublish.yml` - `jpSmokeTests`ジョブと`allTestsPass`ジョブ
+
+---
+
 ## 更新履歴
 
 - 2026-01-03: 初版作成（9個のエラーをパターン化、対応方針を文書化）
 - 2026-01-03: 簡単なエラーを修正、難しいエラーをスキップ
   - 修正: 満遍無く、山や川等、一勝一敗、義理一遍、一念岩、一日増し（コスト-2000）
   - スキップ: 映画「ラヂオの時間」、気を付けの姿勢、有り難うございました
+- 2026-01-03: GitHub Actionsでのテスト失敗検出の動作を確認・文書化
+- 2026-01-03: PR610対応 - `runJpSmokeTests.ps1`の終了コード取得を修正
+  - 問題: `$LastExitCode`（小文字）を使用していたため、テスト失敗時に終了コードが取得できなかった
+  - 修正: すべての`$LastExitCode`を`$LASTEXITCODE`（大文字）に修正
