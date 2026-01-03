@@ -503,6 +503,7 @@ def _getSpellingSpeechWithoutCharMode(
 		if useCharacterDescriptions and charDesc:
 			IDEOGRAPHIC_COMMA = "\u3001"
 			speakCharAs = charDesc[0] if textLength > 1 else IDEOGRAPHIC_COMMA.join(charDesc)
+			charList = [speakCharAs]
 		elif useCharacterDescriptions and not charDesc and not fallbackToCharIfNoDescription:
 			return None
 		else:
