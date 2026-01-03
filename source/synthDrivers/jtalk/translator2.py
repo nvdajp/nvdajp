@@ -857,6 +857,51 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo, nabcc=False, logwrite=_logwr
 	if prev_mo.hinshi1 == "助動詞" and prev_mo.hyouki == "で" and mo.hinshi1 == "助動詞":
 		return True
 
+	# 括弧内の「の」（名詞,非自立）の後に名詞が続く場合にスペースを挿入
+	# 映画「ラヂオの時間」 → エイガ 「ラジオノ ジカン」
+	# ラヂオ,名詞,一般 → ラジオ
+	# の,名詞,非自立 → ノ
+	# 時間,名詞,副詞可能 → ジカン
+	# 注意: prev2_moは「ラヂオ」（名詞,一般）であり、括弧開はprev3_moになる
+	# そのため、prev2_moが名詞で、prev_moが「の」（名詞,非自立）、moが名詞の場合にスペースを挿入
+	if (
+		prev2_mo
+		and prev2_mo.hinshi1 == "名詞"
+		and prev_mo.hinshi1 == "名詞"
+		and prev_mo.hinshi2 == "非自立"
+		and prev_mo.hyouki == "の"
+		and mo.hinshi1 == "名詞"
+		and mo.hinshi2 in ("一般", "副詞可能")
+	):
+		return True
+
+	# 「の」（名詞,非自立）の後に「姿勢」（名詞,一般）が続く場合にスペースを挿入
+	# 気を付けの姿勢 → キヲツケノ シセイ
+	# 気を付け,名詞,一般 → キヲツケ
+	# の,名詞,非自立 → ノ
+	# 姿勢,名詞,一般 → シセイ
+	if (
+		prev_mo.hinshi1 == "名詞"
+		and prev_mo.hinshi2 == "非自立"
+		and prev_mo.hyouki == "の"
+		and mo.hinshi1 == "名詞"
+		and mo.hinshi2 == "一般"
+		and mo.hyouki == "姿勢"
+	):
+		return True
+
+	# 「有り難う」（感動詞）の後に「ござい」（助動詞）が続く場合にスペースを挿入
+	# 有り難うございました → アリガトー ゴザイマシタ
+	# 有り難う,感動詞 → アリガトー
+	# ござい,助動詞 → ゴザイ
+	if (
+		prev_mo.hinshi1 == "感動詞"
+		and prev_mo.hyouki == "有り難う"
+		and mo.hinshi1 == "助動詞"
+		and mo.hyouki == "ござい"
+	):
+		return True
+
 	# 仮名文字 カナモジ
 	# 仮名タイプ カナタイプ
 	# 仮名変換 カナ ヘンカン
