@@ -3,6 +3,7 @@
 # Thomas Stivers, Babbage B.V., Accessolutions, Julien Cochuyt, Cyrille Bougot, Luke Davis
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
+# nvdajp modification by Takuya Nishimoto, Masataka.Shinke
 
 from collections.abc import Callable
 import os
@@ -94,6 +95,7 @@ try:
 except RuntimeError:
 	updateCheck = None
 
+from . import jpBrailleViewer  # nvdajp
 ### Constants
 NVDA_PATH = globalVars.appDir
 ICON_PATH = os.path.join(NVDA_PATH, "images", "nvda.ico")
@@ -330,6 +332,10 @@ class MainFrame(wx.Frame):
 	def onGeneralSettingsCommand(self, evt):
 		self.popupSettingsDialog(NVDASettingsDialog, GeneralSettingsPanel)
 
+	# nvdajp
+	def onLanguageSettingsCommand(self, evt):
+		self._popupSettingsDialog(NVDASettingsDialog, LanguageSettingsPanel)
+
 	def onSelectSynthesizerCommand(self, evt):
 		self.popupSettingsDialog(SynthesizerSelectionDialog)
 
@@ -505,6 +511,18 @@ class MainFrame(wx.Frame):
 		appModuleHandler.reloadAppModules()
 		globalPluginHandler.reloadGlobalPlugins()
 		NVDAObject.clearDynamicClassCache()
+
+	# nvdajp begin
+	@blockAction.when(blockAction.Context.SECURE_MODE)
+	def onToggleJpBrailleViewerCommand(self, evt):
+		if not jpBrailleViewer.isActive:
+			jpBrailleViewer.activate()
+			self.sysTrayIcon.menu_tools_toggleJpBrailleViewer.Check(True)
+		else:
+			jpBrailleViewer.deactivate()
+			self.sysTrayIcon.menu_tools_toggleJpBrailleViewer.Check(False)
+
+	# nvdajp end
 
 	@blockAction.when(
 		blockAction.Context.SECURE_MODE,
@@ -703,6 +721,15 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			# Translators: The label for the menu item to reload plugins.
 			item = menu_tools.Append(wx.ID_ANY, _("Reload plugins"))
 			self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
+		# nvdajp begin
+		if not globalVars.appArgs.secure:
+			item = self.menu_tools_toggleJpBrailleViewer = menu_tools.AppendCheckItem(
+				wx.ID_ANY,
+				# Translators: The label for the menu item to open jp braille viewer.
+				_("Japanese Braille viewer"),
+			)
+			self.Bind(wx.EVT_MENU, frame.onToggleJpBrailleViewerCommand, item)
+		# nvdajp end
 		# Translators: The label for the Tools submenu in NVDA menu.
 		self.menu.AppendSubMenu(menu_tools, _("&Tools"))
 
@@ -823,6 +850,9 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		self.helpMenu = wx.Menu()
 
 		if not globalVars.appArgs.secure:
+			# Translators: The label for the menu item to open jp readme.
+			item = self.helpMenu.Append(wx.ID_ANY, _("&Readme (nvdajp)"))
+			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("readmejp.html"), item)
 			# Translators: The label of a menu item to open NVDA user guide.
 			item = self.helpMenu.Append(wx.ID_ANY, _("&User Guide"))
 			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("userGuide.html"), item)
@@ -835,9 +865,12 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 
 			self.helpMenu.AppendSeparator()
 
+			# Translators: The label for the menu item to view the NVDA Japanese Team
+			item = self.helpMenu.Append(wx.ID_ANY, _("NVDAJP web site"))
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("https://www.nvda.jp/"), item)
 			# Translators: The label for the menu item to view the NVDA website
 			item = self.helpMenu.Append(wx.ID_ANY, _("NV Access &web site"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(buildVersion.url), item)
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(versionInfo.url), item)
 			# Translators: The label for the menu item to view the NVDA website's get help section
 			item = self.helpMenu.Append(wx.ID_ANY, _("&Help, training and support"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{buildVersion.url}/get-help/"), item)
