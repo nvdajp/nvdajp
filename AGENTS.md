@@ -37,6 +37,18 @@ This document summarizes the rules automation agents/scripts must obey when work
 - Required checks: `allTestsPass`, etc.
 - Release/snapshot jobs stay disabled unless explicitly requested; avoid secrets.
 
+## Commit & push policy
+
+To reduce CI load and wait for completion:
+
+1. **Group related changes into single commits**: 
+   - Include functional changes and their documentation updates in the same commit
+   - Combine multiple small fixes into one commit (e.g., multiple documentation updates)
+2. **Wait for CI completion**: Do not push until the previous push's CI has completed
+3. **Limit push frequency**: Avoid frequent pushes; group changes and push only when CI is ready
+4. **Clear commit messages**: When a commit includes multiple changes, describe all changes in the commit message
+5. **Avoid frequent commits**: Do not commit intermediate work states; commit only when a unit of work is complete
+
 ## Aligning `testAndPublish.yml`
 
 - Use upstream `testAndPublish.yml` verbatim; JP additions must:
@@ -110,6 +122,18 @@ This document summarizes the rules automation agents/scripts must obey when work
 - PR は `betajp` を base（保護ブランチ）
 - 必須チェック: `allTestsPass` など
 - 配布系ジョブはデフォルト無効／Secrets 不使用
+
+### コミット・push 方針
+
+CI負荷軽減と完了待ちのため：
+
+1. **関連する変更を1つのコミットにまとめる**: 
+   - 機能的な変更とそのドキュメント更新を同じコミットに含める
+   - 複数の小さな修正を1つのコミットにまとめる（例: 複数のドキュメント更新）
+2. **CI完了を待つ**: 前回のpushのCIが完了するまで、次のpushを控える
+3. **push頻度を制限**: 頻繁なpushを避け、変更をまとめてからpushする
+4. **コミットメッセージを明確に**: 1つのコミットに複数の変更を含める場合は、コミットメッセージで全ての変更を説明する
+5. **頻繁なコミットを避ける**: 作業中の一時的な状態はコミットせず、完成した単位でコミットする
 
 ### `testAndPublish.yml`
 

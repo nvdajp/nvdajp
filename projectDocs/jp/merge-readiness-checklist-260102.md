@@ -257,6 +257,11 @@ scons launcher --all-cores
 * **jpSmokeTestエラーパターン**: `projectDocs/jp/jpSmokeTest-error-patterns.md`
 * **マージ計画**: `projectDocs/jp/merge-plan-beta-2025-11.md`
 
+## 作業方針
+
+コミット・push方針については、`AGENTS.md`の「コミット・push方針」セクションを参照してください。
+
 ## 更新履歴
 
 - 2026-01-03: 初版作成（betajp-260102ブランチのマージ準備チェックリスト）
+- 2026-01-03: CI負荷軽減のためのpush方針を追加
