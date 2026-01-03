@@ -313,6 +313,16 @@ jobs:
     - name: Run JP smoke tests
       shell: pwsh
       run: jptools/runJpSmokeTests.ps1
+    - name: Upload JP smoke test artifacts
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: JP smoke test results (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: |
+          miscDepsJp/jptools/__h1output.txt
+          miscDepsJp/jptools/__h2output.txt
+          miscDepsJp/jptools/jpSmokeTests.log
+          source/synthDrivers/jtalk/mecab_debug.log
   # END JP PATCH
 
   crowdinUpload:

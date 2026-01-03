@@ -535,6 +535,17 @@ echo "Exit code: $LASTEXITCODE"
 
 終了コードが0でない場合、GitHub Actionsはジョブを失敗としてマークします。
 
+### アーティファクトのアップロード
+
+テストが失敗した場合、以下のファイルがアーティファクトとしてアップロードされます：
+
+- `miscDepsJp/jptools/__h1output.txt` - pass1（カナと記号のテスト）のエラー出力
+- `miscDepsJp/jptools/__h2output.txt` - pass2（テキスト解析とマスあけのテスト）のエラー出力
+- `miscDepsJp/jptools/jpSmokeTests.log` - テスト実行ログ（x64環境の場合）
+- `source/synthDrivers/jtalk/mecab_debug.log` - MeCabのデバッグログ
+
+これらのアーティファクトは、GitHub Actionsのジョブページからダウンロードできます。
+
 ### 関連ファイル
 
 - **テスト定義**: `miscDepsJp/jptools/test.py` - `JpBrailleTests.test_pass2`
@@ -553,3 +564,6 @@ echo "Exit code: $LASTEXITCODE"
 - 2026-01-03: PR610対応 - `runJpSmokeTests.ps1`の終了コード取得を修正
   - 問題: `$LastExitCode`（小文字）を使用していたため、テスト失敗時に終了コードが取得できなかった
   - 修正: すべての`$LastExitCode`を`$LASTEXITCODE`（大文字）に修正
+- 2026-01-03: アーティファクトアップロードの追加（リグレッション修正）
+  - 問題: `jpSmokeTests`ジョブにアーティファクトのアップロード設定がなく、失敗時に`__h1output.txt`や`__h2output.txt`が取得できなかった
+  - 修正: 失敗時に`__h1output.txt`、`__h2output.txt`、`jpSmokeTests.log`、`mecab_debug.log`をアップロードする設定を追加
