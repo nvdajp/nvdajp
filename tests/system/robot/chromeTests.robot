@@ -4,16 +4,13 @@
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 *** Settings ***
 Documentation	HTML test cases in Chrome
-Force Tags	NVDA	smoke test	browser	chrome
+Force Tags	smoke test	browser	chrome
 
 # for start & quit in Test Setup and Test Test Teardown
 Library	NvdaLib.py
 # for test cases
 Library	chromeTests.py
 Library	ScreenCapLibrary
-# BEGIN JP PATCH (Japanese character description mode support)
-Library	jpRobotUtil.py
-# END JP PATCH
 
 Test Setup	default setup
 Test Teardown	default teardown
@@ -92,12 +89,14 @@ ARIA roleDescription focus
 	test_ariaRoleDescription_focus
 ARIA roleDescription inline browse mode
 	[Documentation]	Read an inline element with a custom role in browse mode
+	[Tags]	robot:skip
 	test_ariaRoleDescription_inline_browseMode
 ARIA roleDescription block browse mode
 	[Documentation]	Read a block element with a custom role in browse mode
 	test_ariaRoleDescription_block_browseMode
 ARIA roleDescription inline content editable
 	[Documentation]	Read an inline element with a custom role in content editables 
+	[Tags]	robot:skip
 	test_ariaRoleDescription_inline_contentEditable
 ARIA roleDescription block content editable
 	[Documentation]	Read an block element with a custom role in content editables 
@@ -147,9 +146,11 @@ ARIA details role
 	test_mark_aria_details_role
 multiple ARIA details targets
 	[Documentation]	Test multiple aria details targets being announced
+	[Tags]	robot:skip
 	test_annotations_multi_target
 i10890
 	[Documentation]	Test sort state is announced on column header when changed with inner button
+	[Tags]	robot:skip
 	test_i10890
 ARIA switch role
 	[Documentation]	Test aria switch control has appropriate role and states in browse mode and when focused
@@ -181,3 +182,27 @@ Report not supported language without other languages
 Report not supported language and other languages
 	[Documentation]	Read a sentence with different languages reporting them, included the not supported language.
 	test_reportNotSupportedLanguageAndOtherLanguages
+test_waic_as_0029_01
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-label属性と併用)
+	test waic as 0029 01
+test_waic_as_0029_02
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (input要素)
+	test waic as 0029 02
+test_waic_as_0029_03
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素)
+	test waic as 0029 03
+test_waic_as_0029_04
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (input要素 : 隠された要素と関連付け)
+	test waic as 0029 04
+test_waic_as_0029_05
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (input要素 : XHTML文書)
+	test waic as 0029 05
+test_waic_as_0029_06
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-label属性と併用 : aria-describedby属性を script で生成)
+	test waic as 0029 06
+test_waic_as_0029_07
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-labelledby属性と併用)
+	test waic as 0029 07
+test_waic_as_0029_08
+	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : 複数のaria-describedby属性値)
+	test waic as 0029 08

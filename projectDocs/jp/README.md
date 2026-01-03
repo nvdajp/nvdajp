@@ -148,6 +148,7 @@ GitHub Actions のワークフロー（`.github/workflows/testAndPublish.yml`）
 * **miscDepsJp と JP overlay の現状と方針**: `projectDocs/jp/miscdepsjp-overlay-strategy.md`
 * **コード署名を考慮したビルド依存関係**: `projectDocs/jp/code-signing-dependencies.md`
 * **ビルドアーキテクチャ環境変数の方針**: `projectDocs/jp/build-architecture-environment-variables.md`
+* **WAIC テスト（Web アクセシビリティテスト）**: `projectDocs/jp/waic-tests.md`
 * TODO: **署名ビルドの冗長実行とログ運用**: `projectDocs/jp/todo_build_script_redundancy_and_logging.md`
 * エージェント／自動化向けの運用ルール: `AGENTS.md`
 
