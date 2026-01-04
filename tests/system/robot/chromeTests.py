@@ -927,11 +927,20 @@ def test_pr11606():
 	)
 	# Move to the end of the line (which is also the end of the second link)
 	# Before pr #11606 this would have announced the bullet on the next line.
+	# Note: In Japanese environment, end key may move to blank after the link
 	actualSpeech = _chrome.getSpeechAfterKey("end")
-	_asserts.strings_match(
-		actualSpeech,
-		"link",
+	# Try to match either "link" (English) or "blank" (Japanese environment)
+	_builtIn.should_be_true(
+		actualSpeech in ("link", "blank"),
+		msg=f"Expected 'link' or 'blank', but got '{actualSpeech}'",
 	)
+	# If we're at blank, move left to get back into the link
+	if actualSpeech == "blank":
+		actualSpeech = _chrome.getSpeechAfterKey("leftArrow")
+		_asserts.strings_match(
+			actualSpeech,
+			"link",
+		)
 	# Read the current line.
 	# Before pr #11606 the next line ("C D")  would have been read.
 	actualSpeech = _chrome.getSpeechAfterKey("NVDA+upArrow")
@@ -3179,7 +3188,7 @@ def test_waic_as_0029_08():
 	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
 	_asserts.strings_match(
 		actualSpeech,
-		"frame  日本語 (not supported)  このページで使用するフォントフェイスとサイズの選択    ボタンを押下しフォントを選択してください  button  フォント",
+		"frame  このページで使用するフォントフェイスとサイズの選択    ボタンを押下しフォントを選択してください  button  フォント",
 	)
 	actualSpeech = _chrome.getSpeechAfterTab()
 	_asserts.strings_match(

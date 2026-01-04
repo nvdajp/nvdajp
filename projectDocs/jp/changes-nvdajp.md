@@ -432,53 +432,53 @@ def buildConfigH(target, source, env):
 
 ### 7. 「エラーを音で報告」機能の動作の違い
 
-#### 7.1 本家版と betajp ブランチの動作の違い
+#### 7.1 nvdajp での仕様変更
 
-「エラーを音で報告」機能（`featureFlag.playErrorSound`）は、本家版と betajp ブランチで**コード実装は同じ**ですが、**実際の動作が異なる**可能性があります。
+「エラーを音で報告」機能（`featureFlag.playErrorSound`）は、nvdajp では本家版と**異なる仕様**で実装されています。
 
-##### 実装の確認
+##### 実装の違い
 
-- `source/logHandler.py` の `shouldPlayErrorSound()` 関数は本家版と betajp ブランチで同じ
-- `source/gui/settingsDialogs.py` の設定UIも同じ
-- `source/config/configSpec.py` の設定定義も同じ
+- `source/logHandler.py` の `shouldPlayErrorSound()` 関数は nvdajp で変更されています
+- `source/gui/settingsDialogs.py` の設定UIは本家版と同じです
+- `source/config/configSpec.py` の設定定義も本家版と同じです
 
-##### 動作の違い
+##### nvdajp での動作
 
-**本家版 beta（リリース版）の場合:**
-- `buildVersion.isTestVersion = False`（リリース版の場合）
+**nvdajp の仕様:**
+- すべてのバージョンをリリース版として扱います（`buildVersion.isTestVersion` のチェックを無効化）
 - 設定値が `0`（「NVDA のテストバージョンのみ」）の場合: **エラー音は鳴らない**
 - 設定値が `1`（「する」）の場合: **エラー音が鳴る**
 
-**betajp-260102 ブランチ（開発版）の場合:**
-- `buildVersion.isTestVersion = True`（`version` に `"dev"` が含まれるため）
-- 設定値が `0`（「NVDA のテストバージョンのみ」）の場合: **エラー音が鳴る**（`isTestVersion = True` のため）
-- 設定値が `1`（「する」）の場合: **エラー音が鳴る**
+**本家版の動作（参考）:**
+- 設定値が `0`（「NVDA のテストバージョンのみ」）の場合: テストバージョンならエラー音が鳴る
+- 設定値が `1`（「する」）の場合: 常にエラー音が鳴る
 
-##### 理由
+##### 実装の詳細
 
-`shouldPlayErrorSound()` の実装:
+nvdajp での `shouldPlayErrorSound()` の実装:
 
 ```python
 def shouldPlayErrorSound() -> bool:
-    return (
-        buildVersion.isTestVersion  # betajp では常に True
-        or (config.conf is not None and config.conf["featureFlag"]["playErrorSound"] == 1)
-    )
+	"""Indicates if an error sound should be played when an error is logged."""
+	import config
+
+	# BEGIN JP PATCH
+	# nvdajp: Only play the error sound if the config explicitly states it (Yes = 1).
+	# All versions are treated as release versions, so buildVersion.isTestVersion is not checked.
+	# END JP PATCH
+	return (
+		# BEGIN JP PATCH
+		# buildVersion.isTestVersion  # nvdajp: disabled - all versions treated as release
+		# END JP PATCH
+		config.conf is not None and config.conf["featureFlag"]["playErrorSound"] == 1
+	)
 ```
 
-`buildVersion.isTestVersion` の判定:
+##### 変更理由
 
-```python
-isTestVersion = not version[0].isdigit() or "alpha" in version or "beta" in version or "dev" in version
-```
-
-betajp ブランチは開発版として動作するため、`version = "2026.1.0dev"` のような形式になり、`isTestVersion = True` になります。そのため、設定値が `0` でもエラー音が鳴ります。
-
-##### 注意
-
-- これは「仕様の違い」というより、「動作環境の違い」（開発版かリリース版か）によるものです
-- 本家版の beta ブランチでも開発版としてビルドされた場合は同じ動作になります
-- コードの実装は同じですが、実際の動作環境によって動作が異なります
+- nvdajp では、開発版でもリリース版でも同じ動作を提供するため、すべてのバージョンをリリース版として扱います
+- ユーザーが明示的に「する」を選択した場合のみエラー音が鳴るようにしています
+- これにより、開発版でもエラー音が意図せず鳴ることを防ぎます
 
 ---
 

@@ -121,7 +121,7 @@ _py2ExeWindows = [
 	{
 		"script": "nvda.pyw",
 		"dest_base": "nvda_noUIAccess",
-		"icon_resources": [(1, "images/nvda.ico")],
+		"icon_resources": [(1, "images/nvdajp3.ico")],
 		"other_resources": [_genManifestTemplate(shouldHaveUIAccess=False)],
 		"version_info": {
 			"version": formatBuildVersionString(),
@@ -135,7 +135,7 @@ _py2ExeWindows = [
 	# The nvda_uiAccess target will be added at runtime if required.
 	{
 		"script": "nvda_slave.pyw",
-		"icon_resources": [(1, "images/nvda.ico")],
+		"icon_resources": [(1, "images/nvdajp3.ico")],
 		"other_resources": [_genManifestTemplate(shouldHaveUIAccess=False)],
 		"version_info": {
 			"version": formatBuildVersionString(),
@@ -153,7 +153,7 @@ if _partialArgs.uiAccess:
 		{
 			"script": "nvda.pyw",
 			"dest_base": "nvda_uiAccess",
-			"icon_resources": [(1, "images/nvda.ico")],
+			"icon_resources": [(1, "images/nvdajp3.ico")],
 			"other_resources": [_genManifestTemplate(shouldHaveUIAccess=True)],
 			"version_info": {
 				"version": formatBuildVersionString(),
