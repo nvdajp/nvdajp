@@ -1,186 +1,62 @@
-# Chrome System Test の日本語環境での動作の違い
+# Chrome system test: 本家版と日本語版の違いの説明
 
-## 概要
+このドキュメントは、Chrome system test における**本家版（nvaccess/nvda `beta`）**と
+**日本語版（nvdajp）**の違いを、読み手向けに整理して説明するものです。
+差分の背景を理解し、テスト結果の読み方を共有することが目的です。
+差分は**必ずしもバグではない**点を前提に扱います。
 
-Chrome system test の `pr11606` テストケースにおいて、日本語環境では `end` キーを押した後に "B"（リンク内の文字）が読み上げられることがあります。これは、英語環境では "link" または "blank" が読み上げられるのとは異なる動作です。
+## 対象範囲
 
-この動作の違いは、Chrome の IAccessible2 実装と NVDA のテキスト情報処理の相互作用によるもので、バグではなく環境による動作の違いです。
+- 対象: Chrome system test（テストケース・設定・共通ロジック）
+- テストケース: `tests/system/robot/chromeTests.py`
+- 共通ロジック/設定: `tests/system/libraries/_chromeArgs.py`, `tests/system/libraries/ChromeLib.py`
+- 比較対象: nvaccess/nvda `beta` と nvdajp
+- OS/環境: Windows x64 / Python 3.13
 
-## 問題の詳細
+## 何が違うのか（全体像）
 
-### テストケース: `pr11606`
+Chrome system test では、**Chrome の UI 言語**と**NVDA の読み上げ設定**が
+テスト結果に直接影響します。本家版は英語 UI を前提に安定化されていますが、
+日本語版は日本語 UI を前提としているため、主に次の違いが生じます。
 
-```html
-<div contenteditable="true">
-  <ul>
-    <li><a href="#">A</a> <a href="#">B</a></li>
-    <li>C D</li>
-  </ul>
-</div>
-```
+### 1. Chrome 起動引数の違い（共通ロジック）
 
-このテストでは、フォーカスモードで以下の操作を行います：
+- 本家版: `--lang=en-US`（英語 UI を強制）
+- 日本語版: `--lang=ja-JP`（日本語 UI を強制）と `--guest`（初回 UI を抑止）
 
-1. 最初のリンク "A" の後に移動（`rightArrow`）
-2. 行の終端に移動（`end` キー）
-3. カーソル位置の音声を確認
+**結果**として、Chrome 側の UI ラベルが日本語化され、英語の期待値と一致しない
+ケースが発生します。これはテスト安定化のための設計差分です。
 
-**期待される動作**:
-- 英語環境: "link" または "blank" が読み上げられる
-- 日本語環境: "link"、"blank"、または "B" が読み上げられる
+### 2. 文字説明モードの違い（読み上げ設定）
 
-## 技術的な原因
+日本語版は既定で「文字説明モード」が有効です。
+リンク内の移動や文字単位の読み上げで、英語版と異なる発話が起こり得ます。
 
-### 1. `end` キーの処理フロー
+### 3. IA2/UIA 実装差分（ブラウザ側）
 
-`end` キーはシステムキーであり、NVDA のスクリプトではなく直接 OS に送られます：
+Chrome の IAccessible2 実装はロケールによりオフセット境界の解釈が異なる可能性があります。
+同じ操作でも NVDA が「リンクの外」ではなく「リンク内」と判定することがあります。
 
-1. ユーザーが `end` キーを押す
-2. Chrome がカーソルを行の終端に移動
-3. Chrome が IAccessible2 の `caret` イベントを発火
-4. NVDA が `event_caret` イベントを受け取る
-5. NVDA がカーソル位置の `TextInfo` を取得して読み上げ
+## 代表例: pr11606（リンク末尾の読み上げ）
 
-### 2. カーソル位置の判定ロジック
+`test_pr11606` では、`end` キー後の読み上げが本家版では **"blank" 固定**です。
+日本語版では、Chrome の IA2 実装差分と文字説明モードの影響により
+**"link" / "blank" / "B"** が発話される可能性があります。
 
-`source/NVDAObjects/IAccessible/ia2TextMozilla.py` の `MozillaCompoundTextInfo.__init__` メソッド（147-169行目）で、カーソル位置がインラインオブジェクト（リンク）の終端にある場合の処理が行われます：
+この差分は**環境による発話の違い**であり、動作のバグではありません。
+JP 版のテストでは許容値を広げ、結果を安定化させています。
 
-```python
-if (
-    caretObj is not obj
-    and caretObj.IA2Attributes.get("display") == "inline"
-    and caretTi.compareEndPoints(
-        self._makeRawTextInfo(caretObj, textInfos.POSITION_ALL),
-        "startToEnd",
-    )
-    == 0
-):
-    # The caret is at the end of an inline object.
-    # This will report "blank", but we want to report the character just after the caret.
-    try:
-        caretTi, caretObj = self._findNextContent(caretTi, limitToInline=True)
-    except LookupError:
-        pass
-```
+## テスト結果の読み方
 
-このコードは、カーソルがインラインオブジェクト（リンク）の終端にある場合、次のコンテンツに移動しようとします。
+- 英語 UI を前提にした期待値は、日本語 UI では一致しないことがある
+- 文字説明モードの影響で、同じカーソル位置でも発話が異なることがある
 
-### 3. 日本語環境での動作の違い
+これらは**仕様・環境差による変化**として扱い、テストの目的（正しい行の読み上げ）
+を満たしているかで判断します。
 
-#### A. IAccessible2 のテキストオフセットの扱い
+## 関連ファイル（読み手向け）
 
-Chrome の IAccessible2 実装では、日本語環境でテキストオフセットの境界判定が異なる場合があります：
-
-- **英語環境**: リンク終端のオフセットが明確に「リンクの後」として扱われる
-- **日本語環境**: リンク終端のオフセットが「リンク内の最後の文字（"B"）」として扱われる可能性がある
-
-#### B. `_findNextContent` の失敗
-
-上記のコードで、`_findNextContent` が `LookupError` を投げた場合、元の位置（リンク内の "B"）のままになります：
-
-```python
-try:
-    caretTi, caretObj = self._findNextContent(caretTi, limitToInline=True)
-except LookupError:
-    pass  # 元の位置のまま
-```
-
-日本語環境では、次のコンテンツが見つからない（または判定が異なる）ため、この例外が発生し、カーソル位置がリンク内の "B" として扱われます。
-
-#### C. `_isCaretAtEndOfLine` の判定
-
-`_isCaretAtEndOfLine` メソッド（77-104行目）は、`IA2_TEXT_OFFSET_CARET` を使って行末の挿入ポイントを判定します：
-
-```python
-def _isCaretAtEndOfLine(self, caretObj: IAccessible) -> bool:
-    try:
-        start, end, text = caretObj.IAccessibleTextObject.textAtOffset(
-            IA2.IA2_TEXT_OFFSET_CARET,
-            IA2.IA2_TEXT_BOUNDARY_CHAR,
-        )
-        # If the offsets are different, this means there is a character, which
-        # means this is not the insertion point at the end of a line.
-        if start != end:
-            return False
-        # ...
-    except COMError:
-        # ...
-    return False
-```
-
-日本語環境では、`textAtOffset` が返す `start` と `end` が異なる（文字 "B" が存在する）ため、`_isCaretAtEndOfLine` が `False` を返し、行末の挿入ポイントとして扱われません。
-
-#### D. 文字説明モードの影響（日本語版の既定）
-
-日本語版では「文字説明モード」が既定で有効なため、リンクに戻る操作（`leftArrow`）時に
-「link」ではなくリンク内の文字（例: "B"）が読み上げられることがあります。
-この挙動は NVDA の既定設定によるもので、Chrome の IAccessible2 差分とは独立して発生し得ます。
-
-### 4. 読み上げ処理
-
-カーソル位置が確定すると、`speech.speakTextInfo` が呼ばれます。この時点で：
-
-- **英語環境**: カーソル位置が「リンクの後」として扱われ、"link" または "blank" が読み上げられる
-- **日本語環境**: カーソル位置が「リンク内の最後の文字（"B"）」として扱われ、"B" が読み上げられる
-
-## テストでの対応
-
-`tests/system/robot/chromeTests.py` の `test_pr11606` 関数（932-951行目）で、この動作の違いを許容するように修正しました：
-
-```python
-# Move to the end of the line (which is also the end of the second link)
-# Note: In Japanese environment, end key may move to blank after the link
-# or may read the link content (e.g., "B") when at the end of the link
-actualSpeech = _chrome.getSpeechAfterKey("end")
-# Try to match either "link" (English), "blank" (Japanese environment),
-# or "B" (when the link content is read at the end position)
-_builtIn.should_be_true(
-    actualSpeech in ("link", "blank", "B"),
-    msg=f"Expected 'link', 'blank', or 'B', but got '{actualSpeech}'",
-)
-# If we're at blank, move left to get back into the link
-if actualSpeech == "blank":
-    actualSpeech = _chrome.getSpeechAfterKey("leftArrow")
-    _asserts.strings_match(
-        actualSpeech,
-        "link",
-    )
-# If we got "B" (link content), we're already at the end of the link
-# No additional movement needed
-elif actualSpeech == "B":
-    # Verify we're in the link by checking the current line
-    # This will be verified in the next assertion
-    pass
-```
-
-この修正により、日本語環境で "B" が読み上げられても、テストは正しく通過します。カーソルはリンクの終端にあり、次のアサーション（現在の行の読み上げ）で正しい行が読み上げられることを確認できます。
-
-## まとめ
-
-日本語環境で "B" が読み上げられる理由：
-
-1. **Chrome の IAccessible2 実装**: リンク終端のテキストオフセットが日本語環境で異なる扱いになる
-2. **`_findNextContent` の失敗**: 次のコンテンツを見つけられず、元の位置（リンク内の "B"）のままになる
-3. **`_isCaretAtEndOfLine` の判定**: `False` を返し、行末の挿入ポイントとして扱われない
-4. **結果**: カーソル位置がリンク内の "B" として扱われ、その文字が読み上げられる
-
-これはバグではなく、日本語環境での Chrome の IAccessible2 実装と NVDA のテキスト情報処理の相互作用による動作の違いです。
-
-## 関連ファイル
-
-- `tests/system/robot/chromeTests.py` - テストケースの実装
-- `source/NVDAObjects/IAccessible/ia2TextMozilla.py` - カーソル位置の判定ロジック
-- `source/compoundDocuments.py` - 複合ドキュメントのテキスト情報処理
-- `source/editableText.py` - 編集可能テキストのカーソル移動処理
-
-## 今後の検討事項
-
-- Chrome の IAccessible2 実装の改善により、この動作の違いが解消される可能性がある
-- NVDA 側での対応が必要な場合は、日本語環境でのテキストオフセットの扱いを改善する必要がある
-- 他のテストケースでも同様の動作の違いが発生する可能性があるため、注意が必要
-
-## 参考
-
-- [IAccessible2 Specification](https://www.linuxfoundation.org/en/accessibility/iaccessible2/)
-- [NVDA TextInfo Documentation](https://github.com/nvaccess/nvda/blob/master/source/textInfos/__init__.py)
-- Issue/PR: #11606 (Announce the correct line when placed at the end of a link at the end of a list item in a contenteditable)
+- `tests/system/robot/chromeTests.py`（テストケース本体）
+- `tests/system/libraries/_chromeArgs.py`（Chrome 起動引数）
+- `tests/system/libraries/ChromeLib.py`（共通ヘルパ）
+- `source/NVDAObjects/IAccessible/ia2TextMozilla.py`（TextInfo の境界判定）
