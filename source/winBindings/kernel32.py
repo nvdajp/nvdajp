@@ -28,6 +28,7 @@ __all__ = (
 	"GetModuleHandle",
 	"GetModuleFileName",
 	"CopyFile",
+	"OpenThread",
 )
 
 
@@ -120,6 +121,19 @@ OpenProcess.argtypes = (
 	DWORD,  # dwProcessId
 )
 OpenProcess.restype = HANDLE
+
+OpenThread = dll.OpenThread
+"""
+Opens an existing thread object.
+.. seealso::
+	https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openthread
+"""
+OpenThread.argtypes = (
+	DWORD,  # dwDesiredAccess
+	BOOL,  # bInheritHandle
+	DWORD,  # dwThreadId
+)
+OpenThread.restype = HANDLE
 
 VirtualAllocEx = dll.VirtualAllocEx
 """

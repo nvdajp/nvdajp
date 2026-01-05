@@ -233,7 +233,7 @@ class ExecAndPump(threading.Thread, Generic[_execAndPumpResT]):
 		time.sleep(0.1)
 		# BEGIN JP PATCH
 		threadHandle = ctypes.wintypes.HANDLE()
-		threadHandle.value = winKernel.kernel32.OpenThread(0x100000, False, self.ident)
+		threadHandle.value = winBindings.kernel32.OpenThread(0x100000, False, self.ident)
 		if not threadHandle.value:
 			raise ctypes.WinError()
 		msg = ctypes.wintypes.MSG()
