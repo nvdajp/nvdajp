@@ -534,7 +534,7 @@ class MainFrame(wx.Frame):
 		self.prePopup()
 		from . import installerGui
 
-		d = installerGui.PortableCreaterDialog(mainFrame)
+		d = installerGui.PortableCreaterDialog(self)
 		d.Show()
 		self.postPopup()
 

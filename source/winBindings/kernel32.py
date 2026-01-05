@@ -27,6 +27,7 @@ from ctypes.wintypes import (
 __all__ = (
 	"GetModuleHandle",
 	"GetModuleFileName",
+	"CopyFile",
 )
 
 
@@ -266,3 +267,17 @@ SetUnhandledExceptionFilter.argtypes = (
 	UnhandledExceptionFilter,  # lpTopLevelExceptionFilter: A pointer to the new unhandled exception filter function.
 )
 SetUnhandledExceptionFilter.restype = UnhandledExceptionFilter
+
+CopyFile = dll.CopyFileW
+"""
+Copies an existing file to a new file.
+
+.. seealso::
+	https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-copyfilew
+"""
+CopyFile.argtypes = (
+	LPCWSTR,  # lpExistingFileName
+	LPCWSTR,  # lpNewFileName
+	BOOL,  # bFailIfExists
+)
+CopyFile.restype = BOOL
