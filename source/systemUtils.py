@@ -231,13 +231,17 @@ class ExecAndPump(threading.Thread, Generic[_execAndPumpResT]):
 		self.threadExc: Exception | None = None
 		self.start()
 		time.sleep(0.1)
-		threadHandle = ctypes.c_int()
-		threadHandle.value = winKernel.kernel32.OpenThread(0x100000, False, self.ident)
+		# BEGIN JP PATCH
+		threadHandle = ctypes.wintypes.HANDLE()
+		threadHandle.value = winBindings.kernel32.OpenThread(0x100000, False, self.ident)
+		if not threadHandle.value:
+			raise ctypes.WinError()
 		msg = ctypes.wintypes.MSG()
 		while user32.MsgWaitForMultipleObjects(1, ctypes.byref(threadHandle), False, -1, 255) == 1:
 			while user32.PeekMessage(ctypes.byref(msg), None, 0, 0, 1):
 				user32.TranslateMessage(ctypes.byref(msg))
 				user32.DispatchMessage(ctypes.byref(msg))
+		# END JP PATCH
 		if self.threadExc:
 			raise self.threadExc
 
