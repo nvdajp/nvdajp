@@ -1,0 +1,23 @@
+﻿# Diff for: `miscDepsJp\include\python-jtalk\jtalkPrepare.py`
+
+**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\miscDepsJp\include\python-jtalk\jtalkPrepare.py`  
+**Current**: `F:\nvda\gh\alphajp\miscDepsJp\include\python-jtalk\jtalkPrepare.py`
+
+## Diff
+
+```diff
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\miscDepsJp\\include\\python-jtalk\\jtalkPrepare.py" "b/F:\\nvda\\gh\\alphajp\\miscDepsJp\\include\\python-jtalk\\jtalkPrepare.py"
+index 8741eb96b9..6113f06230 100644
+--- "a/F:\\nvda\\gh\\alphajp-251219\\miscDepsJp\\include\\python-jtalk\\jtalkPrepare.py"
++++ "b/F:\\nvda\\gh\\alphajp\\miscDepsJp\\include\\python-jtalk\\jtalkPrepare.py"
+@@ -23,7 +23,7 @@ def convert(msg):
+     for p in predic:
+         try:
+             msg = re.sub(p[0], p[1], msg)
+-        except:
++        except Exception:
+             pass
+     msg = msg.lower()
+     return msg
+
+```

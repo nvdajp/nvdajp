@@ -1,0 +1,52 @@
+﻿# Diff for: `source\eventHandler.py`
+
+**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\eventHandler.py`  
+**Current**: `F:\nvda\gh\alphajp\source\eventHandler.py`
+
+## Diff
+
+```diff
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\eventHandler.py" "b/F:\\nvda\\gh\\alphajp\\source\\eventHandler.py"
+index fc9ce92f5f..39e29456d8 100644
+--- "a/F:\\nvda\\gh\\alphajp-251219\\source\\eventHandler.py"
++++ "b/F:\\nvda\\gh\\alphajp\\source\\eventHandler.py"
+@@ -1,7 +1,7 @@
+ # A part of NonVisual Desktop Access (NVDA)
+ # This file is covered by the GNU General Public License.
+ # See the file COPYING for more details.
+-# Copyright (C) 2007-2023 NV Access Limited, Babbage B.V., Joseph Lee
++# Copyright (C) 2007-2025 NV Access Limited, Babbage B.V., Joseph Lee
+ 
+ import threading
+ import typing
+@@ -18,6 +18,7 @@
+ from logHandler import log
+ import globalPluginHandler
+ import config
++from winBindings import user32
+ import winUser
+ import extensionPoints
+ import oleacc
+@@ -500,9 +501,6 @@ def shouldAcceptEvent(eventName, windowHandle=None):
+ 	if eventName == "hide":
+ 		return False
+ 	if eventName == "show":
+-		# ATOKxxUIComment
+-		if wClass.startswith("ATOK") and wClass.endswith("UIComment"):
+-			return True
+ 		# Only accept 'show' events for specific cases, as otherwise we get flooded.
+ 		return wClass in (
+ 			"Frame Notification Bar",  # notification bars
+@@ -553,8 +551,8 @@ def shouldAcceptEvent(eventName, windowHandle=None):
+ 		# This is for the foreground application.
+ 		return True
+ 	if (
+-		winUser.user32.GetWindowLongW(windowHandle, winUser.GWL_EXSTYLE) & winUser.WS_EX_TOPMOST
+-		or winUser.user32.GetWindowLongW(
++		user32.GetWindowLong(windowHandle, winUser.GWL_EXSTYLE) & winUser.WS_EX_TOPMOST
++		or user32.GetWindowLong(
+ 			winUser.getAncestor(windowHandle, winUser.GA_ROOT),
+ 			winUser.GWL_EXSTYLE,
+ 		)
+
+```
