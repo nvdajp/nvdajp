@@ -130,7 +130,16 @@ def setFocusObject(obj: NVDAObjects.NVDAObject) -> bool:  # noqa: C901
 				origAncestors = oldFocusLine[0 : index + 1]
 				# make sure to cache the last old ancestor as a parent on the first new ancestor so as not to leave a broken parent cache
 				if ancestors and origAncestors:
-					ancestors[0].container = origAncestors[-1]
+					# BEGIN JP PATCH
+					# nvdajp ti33778 ti35974
+					# work around ATOK and braille display
+					# reverting nvaccess ticket 3873 4145
+					if braille.handler.display.name == "noBraille":
+						# merged nvaccess master
+						ancestors[0].container = origAncestors[-1]
+					else:
+						ancestors[0].parent = origAncestors[-1]
+					# END JP PATCH
 				origAncestors.extend(ancestors)
 				ancestors = origAncestors
 				focusDifferenceLevel = index + 1

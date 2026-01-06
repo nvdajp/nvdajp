@@ -1181,6 +1181,11 @@ class ExcelWorksheet(ExcelBase):
 			"kb:control+shift+8",
 			"kb:control+pageUp",
 			"kb:control+pageDown",
+			# BEGIN JP PATCH
+			# nvdajp: restore Shift+Control+PageUp/Down key bindings for Excel cell navigation
+			"kb:shift+control+pageUp",
+			"kb:shift+control+pageDown",
+			# END JP PATCH
 			"kb:control+a",
 			"kb:control+v",
 			"kb:shift+f11",

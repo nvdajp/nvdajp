@@ -447,3 +447,12 @@ class AppModule(appModuleHandler.AppModule):
 			controlTypes.Role.LIST,  # Clipboard history item actions list
 		):
 			obj._shouldAllowUIALiveRegionChangeEvent = False
+
+
+# BEGIN JP PATCH
+if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+	if winVersion.getWinVer() >= winVersion.WIN11:
+		from .windowsinternal_composableshell_experiences_textinput_inputapp_jp import AppModule  # noqa: F401
+	else:
+		from .windowsinternal_composableshell_experiences_textinput_inputapp_jp_win10 import AppModule  # noqa: F401
+# END JP PATCH

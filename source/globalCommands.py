@@ -281,7 +281,13 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount == 0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
+			# BEGIN JP PATCH (character description mode)
+			speech.spellTextInfo(
+				info,
+				useCharacterDescriptions=scriptCount > 1,
+				useDetails=characterDescriptionMode if scriptCount > 1 else False,
+			)
+			# END JP PATCH
 
 	@script(
 		# Translators: Input help mode message for left mouse click command.
@@ -410,7 +416,11 @@ class GlobalCommands(ScriptableObject):
 				return
 
 			elif len(info.text) < speech.speech.MAX_LENGTH_FOR_SELECTION_REPORTING:
-				speech.speakSpelling(info.text, useCharacterDescriptions=scriptCount > 1)
+				# BEGIN JP PATCH (character description mode)
+				speech.speakSpelling(
+					info.text, useCharacterDescriptions=scriptCount > 1, useDetails=scriptCount > 1
+				)
+				# END JP PATCH
 			else:
 				speech.speakTextSelected(info.text)
 				braille.handler.message(selectMessage)
@@ -1417,7 +1427,13 @@ class GlobalCommands(ScriptableObject):
 			text = " ".join(textList)
 			if len(text) > 0 and not text.isspace():
 				if scriptHandler.getLastScriptRepeatCount() == 1:
-					speech.speakSpelling(text)
+					# BEGIN JP PATCH (character description mode)
+					speech.speakSpelling(
+						text,
+						useCharacterDescriptions=characterDescriptionMode,
+						useDetails=characterDescriptionMode,
+					)
+					# END JP PATCH
 				else:
 					api.copyToClip(text, notify=True)
 		else:
@@ -2531,6 +2547,9 @@ class GlobalCommands(ScriptableObject):
 	@script(
 		# Translators: Input help mode message for show NVDA menu command.
 		description=_("Shows the NVDA menu"),
+		# BEGIN JP PATCH
+		allowInSleepMode=True,
+		# END JP PATCH
 		gestures=("kb:NVDA+n", "ts:2finger_double_tap"),
 	)
 	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
@@ -3989,7 +4008,11 @@ class GlobalCommands(ScriptableObject):
 			if repeatCount == 0:
 				ui.message(text)
 			else:
-				speech.speakSpelling(text, useCharacterDescriptions=repeatCount > 1)
+				# BEGIN JP PATCH (character description mode)
+				speech.speakSpelling(
+					text, useCharacterDescriptions=repeatCount > 1, useDetails=repeatCount > 1
+				)
+				# END JP PATCH
 		else:
 			ui.message(
 				ngettext(

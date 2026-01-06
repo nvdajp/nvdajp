@@ -79,4 +79,6 @@ except ImportError:
 
 version_detailed = formatBuildVersionString()
 # A test version is anything other than a final or rc release.
+# nvdajp: defensive programming to ensure version is never None or empty
+version = version or "dev"
 isTestVersion = not version[0].isdigit() or "alpha" in version or "beta" in version or "dev" in version

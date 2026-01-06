@@ -4,6 +4,8 @@
 
 このドキュメントは、NVDA 日本語版 2025.3jp（`releasejp` ブランチ）と本家版 NVDA 2025.3（`nvaccess/nvda` の `rc` ブランチ）の**機能的な差分**をまとめたものです。
 
+2026.1jp に向けた日本語アルファ版に再移植された JP 固有コードについても説明します。
+
 **注意**: このドキュメントは、ユーザーや開発者が認識できる機能の追加・変更・削除に焦点を当てています。ビルドシステムの内部的な変更（サブツリー変換など）については、別のドキュメント（`projectDocs/jp/miscdepsjp-overlay-strategy.md` など）を参照してください。
 
 ### 比較対象
@@ -16,6 +18,41 @@
 ### 1. 日本語特有の機能追加
 
 #### 1.1 音声合成（シンセサイザー）
+
+##### デフォルトシンセサイザーの優先順位
+
+`source/synthDriverHandler.py` で、デフォルトシンセサイザーの優先順位を日本語版向けに変更しました。
+
+- **目的**: 日本語環境では JTalk シンセサイザーを優先的に使用する
+- **実装**: `defaultSynthPriorityList` を `["oneCore", "nvdajp_jtalk", "silence"]` に設定
+- **動作**: 新規インストール時や設定が "auto" の場合、最初に `oneCore`、次に `nvdajp_jtalk`、最後に `silence` の順で初期化を試みます
+
+##### OneCore シンセサイザーの isSpeaking() メソッド
+
+`source/synthDrivers/oneCore.py` で、OneCore シンセサイザーに `isSpeaking()` メソッドを追加しました。
+
+- **目的**: シンセサイザーが現在読み上げ中かどうかを確認する機能を提供
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**: 
+  - `__init__()` メソッドで `self._isSpeaking = False` を初期化
+  - `speak()` メソッドで `self._isSpeaking = True` を設定
+  - `_processQueue()` メソッドで、読み上げが完了した際に `self._isSpeaking = False` を設定
+  - `isSpeaking()` メソッドで `self._isSpeaking` の値を返す
+- **動作**: シンセサイザーが読み上げ中かどうかを `isSpeaking()` メソッドで確認できます
+
+##### SAPI4 シンセサイザーの拡張機能
+
+`source/synthDrivers/sapi4.py` で、SAPI4 シンセサイザーに複数の拡張機能を追加しました。
+
+- **目的**: SAPI4 シンセサイザーの動作を改善し、互換性を向上させる
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**:
+  - **`isSpeaking()` と `setSpeaking()` メソッド**: シンセサイザーが読み上げ中かどうかを追跡。`SynthDriverBufSink.ITTSBufNotifySink_TextDataDone()` で読み上げ完了時に自動的に `False` に設定
+  - **`lastIndex` のクリア**: `cancel()` メソッドで `self.lastIndex = None` を設定して、キャンセル時にインデックスをクリア
+  - **`_rate` キャッシュ**: `_get_rate()` と `_set_rate()` で速度設定をキャッシュし、API 呼び出しを削減。また、`_get_rate()` の戻り値を最大 100% に制限
+  - **Bullet 文字の削除**: `speak()` メソッドで、一部の SAPI4 音声で問題を引き起こす bullet 文字（`\u2022` と `\uf0b7`）を削除
+  - **`CharacterModeCommand` の無効化**: `elif False and isinstance(item, CharacterModeCommand):` により、文字モードコマンドの処理を無効化（互換性の問題を回避）
+- **動作**: これらの拡張により、SAPI4 シンセサイザーの動作がより安定し、互換性が向上します
 
 ##### JTalk シンセサイザードライバー
 
@@ -67,6 +104,16 @@
 
 - `source/brailleTables.py` (935行) - 点字テーブル処理の拡張
 
+##### 点字処理の JP 固有コード
+
+- `source/braille.py` - JP 固有の点字処理コードを実装
+  - `jpBrailleUtils` からのインポートと関数群（`useRawLabels()`, `_nvdajp()`, `getRoleLabel()` など）により、生ラベルと翻訳済みラベルの切り替えが可能
+  - `getPropertiesBraille()` 関数内で Composition の名前表示制御、EDITABLETEXT ロールの処理、テーブルヘッダー処理などの JP 固有処理を実装
+  - 他の関数（`_getAnnotationProperty()`, `getControlFieldBraille()`, `getFormatFieldBraille()`, `_addTextWithFields()`）でも JP 固有関数を使用
+  - `NVDAObjectRegion.update()` 内でテーブルヘッダー処理を実装
+  - `config.conf["braille"]["expandAtCursor"]` が `True` の場合、生ラベル（翻訳なし）を使用し、`False` の場合は翻訳済みラベルを使用します
+- `source/NVDAObjects/__init__.py` - `_get_roleTextBraille()` メソッドで、JP 固有の `getRoleLabel()` と `getLandmarkLabel()` 関数を使用してランドマークの点字ラベルを生成
+
 #### 1.3 日本語文字処理
 
 ##### 文字報告モード
@@ -112,6 +159,7 @@ NVDA日本語版は、文字単位の移動やレビューで、文字の説明�
 
 - `source/appModules/windowsinternal_composableshell_experiences_textinput_inputapp_jp.py` (441行)
 - `source/appModules/windowsinternal_composableshell_experiences_textinput_inputapp_jp_win10.py` (347行)
+- `source/appModules/windowsinternal_composableshell_experiences_textinput_inputapp.py` - JP 固有の AppModule を条件付きでインポート。`nvdajpEnableKeyEvents` 設定が有効な場合のみ、Windows 11 以上では `_jp.py`、Windows 10 では `_jp_win10.py` をインポートします
 
 **注**: ファイル名は upstream の変更に追従して `windowsimmersiveshell` から `windowsinternal_composableshell` に変更されています。
 
@@ -120,6 +168,20 @@ NVDA日本語版は、文字単位の移動やレビューで、文字の説明�
 - **Esc キーでの未確定文字列クリア**: 日本語入力中に Esc キーが押されて未確定文字列がクリアされると、「クリア」と報告します（本家版では消去された文字列を報告）
 - **改行位置の不具合対策**: 日本語版で独自に行ったエディットコントロールの仕様変更の影響で、改行位置が正しく処理されないアプリ（Winbiff など）に対応するための設定項目を追加
 
+##### ANSI エディットボックスのワークアラウンド
+
+`source/NVDAObjects/window/edit.py` で、ANSI ビルドされたレガシーアプリケーションのエディットコントロールに対応するワークアラウンドを実装しています。
+
+- **目的**: ANSI アプリケーション（Shift-JIS エンコーディングを使用）で、エディットコントロールの行位置計算を正しく行う
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**: 
+  - `_needsWorkAroundEncoding()` メソッド: `jpAnsiEditbox` 設定が有効で、かつウィンドウが Unicode でない場合に `True` を返す
+  - `_startEndInBytesToStartEndInUnicodeChars()` メソッド: バイト位置を Unicode 文字位置に変換
+  - `_getLineOffsets()` メソッド内で、Unicode 文字位置をバイト位置に変換してから Windows API を呼び出し、結果を再び Unicode 文字位置に変換
+- **設定**: `config.conf["language"]["jpAnsiEditbox"]` で有効/無効を切り替え可能（デフォルト: `true`）
+- **既知の問題**: Winbiff などの一部のアプリケーションで改行位置が正しく処理されない場合がある。その場合は設定を無効にすることで回避可能
+- **注意**: レガシー機能のため、将来的に削除される可能性があります。現在の Windows ではほとんどのアプリが Unicode ビルドのため、通常は不要です
+
 ##### ATOK 候補コメント対応
 
 ATOK の変換候補にコメントウィンドウがある場合の対応：
@@ -127,6 +189,27 @@ ATOK の変換候補にコメントウィンドウがある場合の対応：
 - コメントウィンドウが表示されたらビープを鳴らし、ナビゲーターオブジェクトをコメントウィンドウに移動
 - コメントウィンドウの中央にマウスポインタを移動
 - コメントウィンドウの内容を読み上げ、コピー、確定などの操作が可能
+
+##### Microsoft IME 候補コメント対応
+
+`source/NVDAObjects/IAccessible/mscandui.py` で、Microsoft IME の変換候補にコメントがある場合の対応を実装しています。
+
+- **目的**: Microsoft IME の候補コメントを自動的に読み上げる
+- **実装**: 
+  - `MSCandUI40_candidateMenuItem.event_stateChange()` メソッドで、候補が選択された際に `announceSelectedCandidate` 設定が有効な場合、1秒後に `notifyCandidateComment()` 関数を呼び出す
+  - `notifyCandidateComment()` 関数で、`mscandui40.comment` クラス名のウィンドウを検索し、現在選択されている候補の識別読みと一致するコメントを読み上げる
+- **動作**: 候補が選択されてから1秒後に、該当する候補のコメントが自動的に読み上げられます
+
+##### 変換候補の識別読みの使用
+
+`source/NVDAObjects/behaviors.py` の `CandidateItem.getFormattedCandidateName()` メソッドで、`nvdajpEnableKeyEvents` 設定が有効な場合、変換候補の識別読み（区別読み）を使用して候補名を生成します。
+
+- **目的**: 同音異義語を区別するための識別読みを提供
+- **実装**: `jpUtils.getDiscriminantReading()` を使用して候補の識別読みを取得
+- **動作**: 
+  - ブライル表示がある場合は `forBraille=True` で識別読みを取得
+  - `announceCandidateNumber` 設定が有効な場合は「{番号} {識別読み}」の形式で返す
+  - 無効な場合は識別読みのみを返す
 
 ### 2. 設定とユーザーインターフェース
 
@@ -190,6 +273,15 @@ ATOK の変換候補にコメントウィンドウがある場合の対応：
 
 - 日本語などのマルチバイト文字を文字コードではなく文字として出力する変更
 
+##### 音声ビューアーの透明度設定
+
+`source/speechViewer.py` で、音声ビューアーウィンドウに透明度を設定する処理を追加しました。
+
+- **目的**: 音声ビューアーウィンドウを半透明にして、背景の内容が見えるようにする
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**: `__init__()` メソッドと `_createControls()` メソッドで `SetTransparent(229)` を呼び出し（90% の不透明度、`int(255.0 * 0.90)`）
+- **動作**: 音声ビューアーウィンドウが開かれた際に、自動的に90%の不透明度が設定されます
+
 ##### 寄付メニューの変更
 
 - 「寄付」メニューで開くサイトを NVDA 日本語版の寄付のご案内（https://www.nvda.jp/donate.html）に変更
@@ -207,6 +299,7 @@ ATOK の変換候補にコメントウィンドウがある場合の対応：
 #### 3.2 API とコマンドの拡張
 
 - `source/api.py` (26行変更) - API の拡張
+  - `setFocusObject()` 関数で、ATOK とブライル表示の組み合わせでの問題を回避するためのコードを実装。ブライル表示がない場合は上流の実装に合わせて `container` を使用し、ブライル表示がある場合は `parent` を直接設定します（関連チケット: ti33778, ti35974、nvaccess ticket 3873, 4145 を revert）
 - `source/globalCommands.py` (80行変更) - グローバルコマンドの拡張
 - `source/inputCore.py` (6行追加) - 入力コアの拡張
 - `source/eventHandler.py` (3行追加) - イベントハンドラーの拡張
@@ -236,6 +329,15 @@ WinAltair などのアプリケーションでスリープモードに切り替�
 - `nvdaController_setAppSleepMode` API によるアプリケーションスリープモード設定
 - スリープモードのアプリにおける IME の読み上げを抑止する設定オプション
 - スリープモードのアプリから NVDA+N で NVDA メニューが開く機能
+
+#### Excel のキーバインド拡張
+
+`source/NVDAObjects/window/excel.py` の `script_changeSelection()` メソッドに、Shift+Control+PageUp と Shift+Control+PageDown のキーバインドを追加しました。
+
+- **目的**: Excel のセル選択変更時に、Shift+Control+PageUp/Down キーでも操作できるようにする
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**: `script_changeSelection()` の `@script` デコレータの `gestures` リストに `"kb:shift+control+pageUp"` と `"kb:shift+control+pageDown"` を追加
+- **動作**: Control+PageUp/Down と同様に、ワークシート間の移動が可能になります
 
 ### 5. 開発ツール（開発者向け）
 
@@ -429,6 +531,186 @@ def buildConfigH(target, source, env):
 #### 6.2 ドキュメントの追加
 
 - `projectDocs/jp/changes-nvdajp.md` - このドキュメント（2025.3jp と本家版の差分まとめ）
+
+#### 6.3 buildVersion.py の防御的プログラミング
+
+`source/buildVersion.py` に `version = version or "dev"` の行を追加しました。
+
+- **目的**: `version` 変数が `None` や空文字列になった場合に `"dev"` にフォールバックし、82行目の `version[0]` アクセスでのクラッシュを防ぐ
+- **背景**: 2025.3jp では存在していた独自のワークアラウンドで、2026.1 のマージ時に削除されていたものを追加
+- **実装**: `version_detailed` の設定後、`isTestVersion` の判定前に配置
+
+#### 6.4 点字テーブルのソート順の修正
+
+`source/brailleTables/__init__.py` の `listTables()` 関数で、`TableSource.BUILTIN_JP` をソートキーに含めるように修正しました。
+
+- **目的**: 日本語版の組み込み点字テーブル（`ja-jp-comp6.utb` など）が、他の組み込みテーブルと同様に優先順位でソートされるようにする
+- **背景**: 2025.3jp では `BUILTIN_JP` がソートキーに含まれていたが、2026.1 のマージ時に削除されていたものを追加
+- **実装**: `listTables()` 関数の `key` ラムダ関数で、`TableSource.BUILTIN_JP` を `TableSource.BUILTIN` と同様に扱うように修正
+
+#### 6.5 文字処理の拡張機能
+
+`source/characterProcessing.py` の `CharacterDescriptions` クラスに、JP固有の文字処理機能を追加しました。
+
+- **目的**: 日本語版の文字説明辞書（`characters.dic`）と文字読み方辞書のサポート、ユーザー定義辞書の読み込み、CLDR emoji の処理
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**:
+  - `CharacterDescriptions.__init__()` に以下を追加:
+    - `characters.dic` の読み込み処理（読み方情報 `_readings` の管理）
+    - CLDR emoji の処理（`symbolDictionaries` 設定で "cldr" が有効な場合）
+    - ユーザーの `characterDescriptions-{locale}.dic` の読み込み
+    - ユーザーの `characters-{locale}.dic` の読み込み
+  - `CharacterDescriptions.getCharacterReading()` メソッドを追加（文字の読み方を取得）
+  - グローバル関数 `getCharacterReading(locale, character)` を追加
+
+#### 6.6 設定デフォルト値の修正
+
+`source/config/configDefaults.py` の `DEFAULT_TEXT_PARAGRAPH_REGEX` で、CJK 句読点の正規表現に日本語の句点（「。」）を追加しました。
+
+- **目的**: 日本語の句点（「。」）を段落区切りの判定に含めることで、日本語テキストの段落読み上げを改善
+- **背景**: 2025.3jp では `cjk` 正規表現に「。」が含まれていたが、2026.1 のマージ時に削除されていたものを追加
+- **実装**: `cjk` 正規表現を `r"[．！？：；]"` から `r"[．。！？：；]"` に変更
+
+#### 6.7 コンテンツ認識の日本語文字処理
+
+`source/contentRecog/__init__.py` に、東アジア幅（East Asian Width）が狭い文字（Narrow）の処理を追加しました。
+
+- **目的**: OCR などのコンテンツ認識結果で、東アジア幅が狭い文字（半角文字など）の間に不要なスペースを挿入しないようにする
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**:
+  - `unicodedata.east_asian_width` のインポートを追加
+  - `isEastAsianNarrow(c)`、`startsWithEastAsianNarrow(s)`、`endsWithEastAsianNarrow(s)` 関数を追加
+  - `LinesWordsResult._parseData()` メソッドで、前の単語の末尾と次の単語の先頭がともに東アジア幅が狭い文字の場合、スペースを挿入しないように条件分岐を追加
+
+#### 6.8 編集可能テキストでの改行報告
+
+`source/editableText.py` の `script_caret_newLine()` メソッドに、改行時の報告機能を追加しました。
+
+- **目的**: 編集可能テキストで改行が発生した際に、「new line」と報告する機能を提供
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**:
+  - 改行が発生し、未確定の入力がなく、入力文字の読み上げが有効で、`jpAnnounceNewLine` 設定が有効な場合に「new line」と報告
+  - `queueHandler.queueFunction()` を使用して非同期に報告
+
+#### 6.9 イベントハンドラーでの ATOK UIComment の処理
+
+`source/eventHandler.py` の `shouldAcceptEvent()` 関数に、ATOK UIComment ウィンドウの `show` イベントを受け入れる処理を追加しました。
+
+- **目的**: ATOK（日本語入力システム）の UIComment ウィンドウの `show` イベントを受け入れることで、ATOK のコメント表示を適切に処理
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**: `eventName == "show"` の場合に、ウィンドウクラス名が "ATOK" で始まり "UIComment" で終わる場合に `True` を返すように条件分岐を追加
+
+#### 6.10 グローバルコマンドでの文字説明モードの処理
+
+`source/globalCommands.py` で、`speakSpelling` や `spellTextInfo` の呼び出しに `useCharacterDescriptions` と `useDetails` パラメータを追加しました。
+
+- **目的**: 文字説明モード（`characterDescriptionMode`）の状態に応じて、文字の説明や詳細情報を読み上げる機能を提供
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に一部の箇所で削除されていたものを追加
+- **実装**:
+  - `script_reportCurrentLine()`: `useDetails=characterDescriptionMode if scriptCount > 1 else False` を追加
+  - `script_reportCurrentSelection()`: `useDetails=scriptCount > 1` を追加
+  - `script_navigatorObject_current()`: `useCharacterDescriptions=characterDescriptionMode` と `useDetails=characterDescriptionMode` を追加
+  - `script_reportClipboardText()`: `useDetails=repeatCount > 1` を追加
+  - `script_showGui()`: `allowInSleepMode=True` を追加（スリープモードでも NVDA メニューを表示可能にする）
+
+#### 6.11 廃止された機能
+
+##### 6.11.1 MSHTA を使用したドキュメントファイルの表示
+
+`source/gui/__init__.py` の `run_hta()` 関数と、それを使用したドキュメントファイルの表示機能を廃止しました。
+
+- **背景**: 2025.3jp では `config.conf["language"]["openDocFileByMSHTA"]` 設定により、MSHTA（Microsoft HTML Application Host）を使用してドキュメントファイルを表示する機能が存在していました
+- **廃止理由**:
+  - MSHTA は Windows 11 で非推奨化されており、将来の Windows バージョンでは動作しない可能性が高い
+  - 標準的な `os.startfile()` で HTML ファイルは通常のブラウザで開けるため、特別な理由がない限り MSHTA は不要
+  - 本家版 2026.1 でも同様に削除されている
+- **影響**: ドキュメントファイルは従来通り `os.startfile()` で開かれます（通常はデフォルトブラウザで表示）
+
+##### 6.11.2 UIA ModeTile と Input Flyout のワークアラウンド
+
+`source/NVDAObjects/UIA/__init__.py` の `findOverlayClasses()` メソッドで、`ModeTile` と `Input Flyout` のワークアラウンドを廃止しました。
+
+- **背景**: 2025.3jp では Windows 8 対応の試行錯誤として、`UIAClassName == "ModeTile"` と `UIAClassName == "Input Flyout"` の場合にそれぞれ `ModeTile` と `InputFlyout` クラスを追加するワークアラウンドが存在していました
+- **廃止理由**:
+  - Windows 8 は既にサポート終了しており、現在の Windows バージョンでは不要
+  - 本家版 2026.1 でも同様に削除されている
+  - レガシーなワークアラウンドを維持する必要がない
+- **影響**: Windows 8 環境での動作に影響する可能性がありますが、現在サポート対象外のため問題ありません
+
+#### 6.12 移植しないと判断した機能
+
+##### 6.12.1 inputCore.py での Enter キー処理時の Backspace キー状態取得
+
+`source/inputCore.py` の `executeGesture()` 関数で、Enter キー（`VK_RETURN`）が押された際に `getAsyncKeyState(VK_BACK)` を呼び出すコードが存在していましたが、移植しないと判断しました。
+
+- **背景**: 2025.3jp では存在していた機能で、Enter キー処理時に Backspace キーの状態を取得していた
+- **コード内容**:
+
+  ```python
+  if hasattr(gesture, "vkCode") and gesture.vkCode == winUser.VK_RETURN:
+      _ = winUser.getAsyncKeyState(winUser.VK_BACK)  # noqa: F841
+  ```
+
+- **移植しない理由**:
+  - 目的が不明確（戻り値を使用していない）
+  - 副作用を期待している可能性があるが、その意図が不明
+  - コメントがなく、実装の意図が推測できない
+  - 本家版 2026.1 でも削除されている
+  - 現在のコードベースでは `NVDAHelper.py` で IME のキャンセル状態をチェックする処理があるため、このワークアラウンドが現在も必要かどうか不明
+- **推測される副作用**:
+  - IME の確定処理のタイミング調整の可能性
+  - Windows のキー状態キャッシュの更新
+  - キーイベントの処理順序の調整
+- **今後の対応**: IME 関連の問題が再発した場合、目的を明確にしたコメントとともに再検討する
+
+##### 6.12.2 logHandler.py での Unicode エスケープシーケンス処理
+
+`source/logHandler.py` の `Logger._log()` メソッドで、ログメッセージ内の `\uXXXX` 形式の Unicode エスケープシーケンスを実際の文字に変換する処理が存在していましたが、移植しないと判断しました。
+
+- **背景**: 2025.3jp では存在していた機能で、ログメッセージ内の `\uXXXX` 形式のエスケープシーケンスを実際の Unicode 文字に変換していた
+- **コード内容**:
+  ```python
+  from six import unichr, text_type
+  import re
+  try:
+      msg = re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x" + x.group(1), 16)), text_type(msg))
+  except:  # noqa: E722
+      pass
+  ```
+- **移植しない理由**:
+  - Python 3 では文字列は既に Unicode なので、通常はこの処理は不要
+  - `six` モジュールへの依存を避けられる（Python 3.13 では `text_type` は `str`、`unichr` は `chr` と同じ）
+  - 本家版 2026.1 でも削除されている
+  - 日本語環境でこの処理が必要だった明確な記録が見つからない
+- **今後の対応**: 外部ライブラリやエラーメッセージで `\uXXXX` 形式のエスケープシーケンスが問題になる場合は、`six` を使わない形で再検討する
+
+##### 6.12.3 mathPlayer.py での常に英語で数式を読み上げる設定
+
+`source/mathPres/mathPlayer.py` の `_setSpeechLanguage()` メソッドで、`config.conf["language"]["alwaysSpeakMathInEnglish"]` 設定により常に英語で数式を読み上げる機能が存在していましたが、移植しないと判断しました。
+
+- **背景**: 2025.3jp では存在していた機能で、設定により数式を常に英語で読み上げることができた
+- **コード内容**:
+  ```python
+  if config.conf["language"]["alwaysSpeakMathInEnglish"]:
+      lang = "en"
+  ```
+- **移植しない理由**:
+  - MathPlayer はレガシーな数式読み上げエンジンであり、現在は MathCAT が推奨されている
+  - 本家版 2026.1 でも削除されている
+  - MathCAT では同様の機能が提供されている可能性がある
+- **今後の対応**: MathCAT で同様の機能が必要な場合は、MathCAT 側で実装を検討する
+
+#### 6.13 キーラベルの追加
+
+`source/keyLabels.py` に、JP固有のキーラベルを追加しました。
+
+- **目的**: IME（日本語入力システム）関連のキーと、Pause キーのラベルを提供
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**: 以下のキーラベルを追加:
+  - `"imenonconvert"`: "IME non convert"（無変換キー）
+  - `"imeconvert"`: "IME convert"（変換キー）
+  - `"imechangestatus1"`, `"imechangestatus2"`, `"imechangestatus3"`: "toggle input method"（IME 切り替えキー）
+  - `"pause"`: "pause"（Pause キー）
 
 ### 7. 「エラーを音で報告」機能の動作の違い
 

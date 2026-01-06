@@ -28,7 +28,6 @@ class BgThread(threading.Thread):
 
 	def run(self):
 		global isSpeaking
-		assert bgQueue is not None  # Type narrowing for type checkers
 		while True:
 			func, args, kwargs = bgQueue.get()
 			if not func:
@@ -44,7 +43,6 @@ class BgThread(threading.Thread):
 
 def execWhenDone(func, *args, **kwargs):
 	global bgQueue
-	assert bgQueue is not None  # Type narrowing for type checkers
 	# This can't be a kwarg in the function definition because it will consume the first non-keywor dargument which is meant for func.
 	mustBeAsync = kwargs.pop("mustBeAsync", False)
 	if mustBeAsync or bgQueue.unfinished_tasks != 0:
@@ -64,8 +62,6 @@ def initialize():
 
 def terminate():
 	global bgThread, bgQueue
-	assert bgQueue is not None  # Type narrowing for type checkers
-	assert bgThread is not None  # Type narrowing for type checkers
 	bgQueue.put((None, None, None))
 	bgThread.join()
 	bgThread = None
