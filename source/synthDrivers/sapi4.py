@@ -113,6 +113,14 @@ class SynthDriverBufSink(COMObject):
 			if synth._bookmarks.popleft() == dwMarkNum:
 				break
 
+	# BEGIN JP PATCH
+	# nvdajp: notify when text data is done
+	def ITTSBufNotifySink_TextDataDone(self, this, qTimeStamp, dwMarkNum):
+		synth = self.synthRef()
+		if synth and hasattr(synth, "setSpeaking"):
+			synth.setSpeaking(False)
+	# END JP PATCH
+
 	def IUnknown_Release(self, this: int, *args, **kwargs):
 		if not self._allowDelete and self._refcnt.value == 1:
 			log.debugWarning("ITTSBufNotifySink::Release called too many times by engine")
@@ -918,6 +926,11 @@ class SynthDriver(SynthDriver):
 		self._volume = 100
 		self._paused = False
 		self.voice = str(self._enginesList[0].gModeID)
+		# BEGIN JP PATCH
+		# nvdajp: initialize rate cache and speaking state
+		self._rate = None
+		self._isSpeaking = False
+		# END JP PATCH
 
 	def terminate(self):
 		self._bufSink._allowDelete = True
@@ -953,12 +966,19 @@ class SynthDriver(SynthDriver):
 		lastHandledIndexInSequence = 0
 		for item in speechSequence:
 			if isinstance(item, str):
+				# BEGIN JP PATCH
+				# nvdajp: remove bullet characters that may cause issues with some SAPI4 voices
+				item = item.replace("\u2022", "").replace("\uf0b7", "")  # bullet
+				# END JP PATCH
 				textList.append(item.replace("\\", "\\\\"))
 			elif isinstance(item, IndexCommand):
 				textList.append("\\mrk=%d\\" % item.index)
 				bookmarks.append(item.index)
 				lastHandledIndexInSequence = item.index
-			elif isinstance(item, CharacterModeCommand):
+			# BEGIN JP PATCH
+			# nvdajp: disable CharacterModeCommand handling (False and ...)
+			elif False and isinstance(item, CharacterModeCommand):  # nvdajp
+			# END JP PATCH
 				textList.append("\\RmS=1\\" if item.state else "\\RmS=0\\")
 				charMode = item.state
 			elif isinstance(item, BreakCommand):
@@ -1001,10 +1021,18 @@ class SynthDriver(SynthDriver):
 			self._bufSinkPtr,
 			ITTSBufNotifySink._iid_,
 		)
+		# BEGIN JP PATCH
+		# nvdajp: mark as speaking when speech is queued
+		self._isSpeaking = True
+		# END JP PATCH
 
 	def cancel(self):
 		if isDebugForSynthDriver():
 			log.debug("SAPI4: Cancelling")
+		# BEGIN JP PATCH
+		# nvdajp: mark as speaking during cancel and clear lastIndex
+		self._isSpeaking = True
+		# END JP PATCH
 		try:
 			# cancel all pending bookmarks
 			self._bookmarkLists.clear()
@@ -1020,6 +1048,10 @@ class SynthDriver(SynthDriver):
 			log.debugWarning("Error cancelling speech", exc_info=True)
 		finally:
 			self._finalIndex = None
+			# BEGIN JP PATCH
+			# nvdajp: clear lastIndex on cancel
+			self.lastIndex = None
+			# END JP PATCH
 
 	def pause(self, switch: bool):
 		if isDebugForSynthDriver():
@@ -1035,6 +1067,15 @@ class SynthDriver(SynthDriver):
 		else:
 			self._ttsCentral.AudioResume()
 		self._paused = switch
+
+	# BEGIN JP PATCH
+	# nvdajp: provide setSpeaking and isSpeaking methods
+	def setSpeaking(self, switch):
+		self._isSpeaking = switch
+
+	def isSpeaking(self):
+		return self._isSpeaking
+	# END JP PATCH
 
 	def removeSetting(self, name):
 		# Putting it here because currently no other synths make use of it. OrderedDict, where you are?
@@ -1181,12 +1222,26 @@ class SynthDriver(SynthDriver):
 		return voices
 
 	def _get_rate(self) -> int:
+		# BEGIN JP PATCH
+		# nvdajp: use cached rate value if available
+		if self._rate is not None:
+			return self._rate
+		# END JP PATCH
 		val = DWORD()
 		self._ttsAttrs.SpeedGet(byref(val))
-		return self._paramToPercent(val.value, self._minRate, self._maxRate)
+		# BEGIN JP PATCH
+		# nvdajp: clamp rate to maximum 100%
+		ret = self._paramToPercent(val.value, self._minRate, self._maxRate)
+		return min(100, ret)
+		# END JP PATCH
 
 	def _set_rate(self, val: int):
+		# BEGIN JP PATCH
+		# nvdajp: cache rate value
+		self._rate = val
+		# END JP PATCH
 		val = self._percentToParam(val, self._minRate, self._maxRate)
+		val = min(self._maxRate, val)
 		self._ttsAttrs.SpeedSet(val)
 		self._rateDelta = val - self._defaultRate
 

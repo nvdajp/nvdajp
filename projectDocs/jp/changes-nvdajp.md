@@ -19,6 +19,41 @@
 
 #### 1.1 音声合成（シンセサイザー）
 
+##### デフォルトシンセサイザーの優先順位
+
+`source/synthDriverHandler.py` で、デフォルトシンセサイザーの優先順位を日本語版向けに変更しました。
+
+- **目的**: 日本語環境では JTalk シンセサイザーを優先的に使用する
+- **実装**: `defaultSynthPriorityList` を `["oneCore", "nvdajp_jtalk", "silence"]` に設定
+- **動作**: 新規インストール時や設定が "auto" の場合、最初に `oneCore`、次に `nvdajp_jtalk`、最後に `silence` の順で初期化を試みます
+
+##### OneCore シンセサイザーの isSpeaking() メソッド
+
+`source/synthDrivers/oneCore.py` で、OneCore シンセサイザーに `isSpeaking()` メソッドを追加しました。
+
+- **目的**: シンセサイザーが現在読み上げ中かどうかを確認する機能を提供
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**: 
+  - `__init__()` メソッドで `self._isSpeaking = False` を初期化
+  - `speak()` メソッドで `self._isSpeaking = True` を設定
+  - `_processQueue()` メソッドで、読み上げが完了した際に `self._isSpeaking = False` を設定
+  - `isSpeaking()` メソッドで `self._isSpeaking` の値を返す
+- **動作**: シンセサイザーが読み上げ中かどうかを `isSpeaking()` メソッドで確認できます
+
+##### SAPI4 シンセサイザーの拡張機能
+
+`source/synthDrivers/sapi4.py` で、SAPI4 シンセサイザーに複数の拡張機能を追加しました。
+
+- **目的**: SAPI4 シンセサイザーの動作を改善し、互換性を向上させる
+- **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
+- **実装**:
+  - **`isSpeaking()` と `setSpeaking()` メソッド**: シンセサイザーが読み上げ中かどうかを追跡。`SynthDriverBufSink.ITTSBufNotifySink_TextDataDone()` で読み上げ完了時に自動的に `False` に設定
+  - **`lastIndex` のクリア**: `cancel()` メソッドで `self.lastIndex = None` を設定して、キャンセル時にインデックスをクリア
+  - **`_rate` キャッシュ**: `_get_rate()` と `_set_rate()` で速度設定をキャッシュし、API 呼び出しを削減。また、`_get_rate()` の戻り値を最大 100% に制限
+  - **Bullet 文字の削除**: `speak()` メソッドで、一部の SAPI4 音声で問題を引き起こす bullet 文字（`\u2022` と `\uf0b7`）を削除
+  - **`CharacterModeCommand` の無効化**: `elif False and isinstance(item, CharacterModeCommand):` により、文字モードコマンドの処理を無効化（互換性の問題を回避）
+- **動作**: これらの拡張により、SAPI4 シンセサイザーの動作がより安定し、互換性が向上します
+
 ##### JTalk シンセサイザードライバー
 
 - `miscDepsJp/source/synthDrivers/jtalk/` - 日本語音声合成ドライバー
