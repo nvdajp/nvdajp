@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\oneCore.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\oneCore.py"
-index 2d346ef6bf..0b00add00f 100644
+index 2d346ef6bf..15bf5c7b11 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\oneCore.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\oneCore.py"
 @@ -1,5 +1,5 @@
@@ -65,7 +65,14 @@ index 2d346ef6bf..0b00add00f 100644
  		self._dll.ocSpeech_getCurrentVoiceId.restype = ctypes.c_wchar_p
  		self._player = None
  		# Initialize state.
-@@ -247,7 +250,6 @@ def __init__(self):
+@@ -244,10 +247,13 @@ def __init__(self):
+ 
+ 		self._wasCancelled = False
+ 		self._isProcessing = False
++		# BEGIN JP PATCH
++		# nvdajp: track speaking state for isSpeaking() method
++		self._isSpeaking = False
++		# END JP PATCH
  		# Initialize the voice to a sane default
  		self.voice = self._getDefaultVoice()
  		self._consecutiveSpeechFailures = 0
@@ -73,23 +80,29 @@ index 2d346ef6bf..0b00add00f 100644
  
  	def _maybeInitPlayer(self, wav):
  		"""Initialize audio playback based on the wave header provided by the synthesizer.
-@@ -313,7 +315,6 @@ def speak(self, speechSequence: SpeechSequence) -> None:
+@@ -313,7 +319,10 @@ def speak(self, speechSequence: SpeechSequence) -> None:
  		if self._player:
  			self._player.open()
  		self._queueSpeech(text)
--		self._isSpeaking = True
++		# BEGIN JP PATCH
++		# nvdajp: mark as speaking when speech is queued
+ 		self._isSpeaking = True
++		# END JP PATCH
  
  	def _queueSpeech(self, item: str) -> None:
  		self._queuedSpeech.append(item)
-@@ -406,7 +407,6 @@ def _processQueue(self):
+@@ -406,7 +415,10 @@ def _processQueue(self):
  				log.debug("Calling idle on audio player")
  			self._player.idle()
  			synthDoneSpeaking.notify(synth=self)
--			self._isSpeaking = False
++			# BEGIN JP PATCH
++			# nvdajp: mark as not speaking when speech is done
+ 			self._isSpeaking = False
++			# END JP PATCH
  		while self._queuedSpeech:
  			item = self._queuedSpeech.pop(0)
  			if isinstance(item, tuple):
-@@ -519,8 +519,8 @@ def _isVoiceValid(self, ID: str) -> bool:
+@@ -519,8 +531,8 @@ def _isVoiceValid(self, ID: str) -> bool:
  		r"""
  		Checks that the given voice actually exists and is valid.
  		It checks the Registry, and also ensures that its data files actually exist on this machine.
@@ -100,15 +113,17 @@ index 2d346ef6bf..0b00add00f 100644
  
  		OneCore keeps specific registry caches of OneCore for AT applications.
  		Installed copies of NVDA have a OneCore cache in:
-@@ -627,9 +627,6 @@ def pause(self, switch):
+@@ -627,8 +639,11 @@ def pause(self, switch):
  		if self._player:
  			self._player.pause(switch)
  
--	def isSpeaking(self):
--		return self._isSpeaking
--
++	# BEGIN JP PATCH
++	# nvdajp: provide isSpeaking() method to check if synthesizer is currently speaking
+ 	def isSpeaking(self):
+ 		return self._isSpeaking
++	# END JP PATCH
+ 
  
  # Alias to allow look up by name "SynthDriver"
- SynthDriver = OneCoreSynthDriver
 
 ```

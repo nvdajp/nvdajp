@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\behaviors.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\behaviors.py"
-index 0aa6eea738..c92ec76137 100644
+index 0aa6eea738..a360793f70 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\behaviors.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\behaviors.py"
 @@ -2,7 +2,7 @@
@@ -42,21 +42,22 @@ index 0aa6eea738..c92ec76137 100644
  			and config.conf["keyboard"]["alertForSpellingErrors"]
  			and (
  				# Not alpha, apostrophe or control.
-@@ -632,17 +635,6 @@ class KeyboardHandlerBasedTypedCharSupport(EnhancedTermTypedCharSupport):
+@@ -632,7 +635,8 @@ class KeyboardHandlerBasedTypedCharSupport(EnhancedTermTypedCharSupport):
  
  class CandidateItem(NVDAObject):
  	def getFormattedCandidateName(self, number, candidate):
 -		# nvdajp begin
--		import jpUtils
--
--		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
--			fb = braille.handler.displaySize > 0
--			c = jpUtils.getDiscriminantReading(candidate, forBraille=fb)
--			log.debug("{number} {candidate} {c}".format(number=number, candidate=candidate, c=c))
--			if config.conf["language"]["announceCandidateNumber"]:
--				return _("{number} {candidate}").format(number=number, candidate=c)
--			return c
++		# BEGIN JP PATCH
++		# nvdajp: use discriminant reading for candidate names when nvdajpEnableKeyEvents is enabled
+ 		import jpUtils
+ 
+ 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+@@ -642,7 +646,7 @@ def getFormattedCandidateName(self, number, candidate):
+ 			if config.conf["language"]["announceCandidateNumber"]:
+ 				return _("{number} {candidate}").format(number=number, candidate=c)
+ 			return c
 -		# nvdajp end
++		# END JP PATCH
  		if config.conf["inputComposition"]["alwaysIncludeShortCharacterDescriptionInCandidateName"]:
  			describedSymbols = []
  			for symbol in candidate:

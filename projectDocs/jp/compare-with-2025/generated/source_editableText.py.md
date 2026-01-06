@@ -9,27 +9,29 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\editableText.py" "b/F:\\nvda\\gh\\alphajp\\source\\editableText.py"
-index fbccf79ec8..3ca47189cc 100644
+index fbccf79ec8..b246e38dc7 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\editableText.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\editableText.py"
-@@ -214,20 +214,6 @@ def script_caret_newLine(self, gesture):
+@@ -214,7 +214,8 @@ def script_caret_newLine(self, gesture):
  		bookmark = info.bookmark
  		gesture.send()
  		caretMoved, newInfo = self._hasCaretMoved(bookmark)
 -		# nvdajp begin
--		from NVDAHelper import lastCompAttr
--
--		if (
--			caretMoved
--			and (not lastCompAttr)
--			and config.conf["keyboard"]["speakTypedCharacters"]
--			and config.conf["language"]["jpAnnounceNewLine"]
--		):
--			import queueHandler
--
--			# Translators: new line of editable text
--			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, _("new line"))
++		# BEGIN JP PATCH
++		# nvdajp: announce new line
+ 		from NVDAHelper import lastCompAttr
+ 
+ 		if (
+@@ -224,10 +225,11 @@ def script_caret_newLine(self, gesture):
+ 			and config.conf["language"]["jpAnnounceNewLine"]
+ 		):
+ 			import queueHandler
++			from gui import _
+ 
+ 			# Translators: new line of editable text
+ 			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, _("new line"))
 -		# nvdajp end
++		# END JP PATCH
  		if not caretMoved or not newInfo:
  			return
  		# newInfo.copy should be good enough here, but in MS Word we get strange results.

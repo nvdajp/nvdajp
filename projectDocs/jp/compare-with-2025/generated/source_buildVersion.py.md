@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\buildVersion.py" "b/F:\\nvda\\gh\\alphajp\\source\\buildVersion.py"
-index 26f303d92c..75922dbba1 100644
+index 26f303d92c..ca8fd957c7 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\buildVersion.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\buildVersion.py"
 @@ -1,5 +1,5 @@
@@ -37,11 +37,12 @@ index 26f303d92c..75922dbba1 100644
  updateVersionType = None
  try:
  	from _buildVersion import version, publisher, updateVersionType, version_build  # type: ignore[reportMissingModuleSource] # noqa: F401
-@@ -77,5 +79,4 @@ def formatVersionForGUI(year, major, minor):
+@@ -77,5 +79,6 @@ def formatVersionForGUI(year, major, minor):
  
  version_detailed = formatBuildVersionString()
  # A test version is anything other than a final or rc release.
--version = version or "dev"
++# nvdajp: defensive programming to ensure version is never None or empty
+ version = version or "dev"
  isTestVersion = not version[0].isdigit() or "alpha" in version or "beta" in version or "dev" in version
 
 ```

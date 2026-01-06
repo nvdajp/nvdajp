@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\installer.py" "b/F:\\nvda\\gh\\alphajp\\source\\installer.py"
-index 2ed16054dc..f2f2b72869 100644
+index 2ed16054dc..4e6780c7a3 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\installer.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\installer.py"
 @@ -17,11 +17,13 @@
@@ -96,15 +96,7 @@ index 2ed16054dc..f2f2b72869 100644
  			errorCode = ctypes.GetLastError()
  			raise OSError(
  				"Unable to copy file %s to %s, error %d" % (sourceFilePath, destFilePath, errorCode),
-@@ -736,6 +738,7 @@ def tryCopyFile(sourceFilePath, destFilePath):
- 	"nvda.exe",
- 	"nvda_noUIAccess.exe",
- 	"nvda_uiAccess.exe",
-+	"nvda_dmp.exe",
- 	"nvda_slave.exe",
- }
- 
-@@ -891,7 +894,7 @@ def registerEaseOfAccess(installDir):
+@@ -891,7 +893,7 @@ def registerEaseOfAccess(installDir):
  			"ApplicationName",
  			None,
  			winreg.REG_SZ,

@@ -9,15 +9,17 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\config\\configDefaults.py" "b/F:\\nvda\\gh\\alphajp\\source\\config\\configDefaults.py"
-index bdd782da45..400f387a6a 100644
+index bdd782da45..613e9e8f9a 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\config\\configDefaults.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\config\\configDefaults.py"
-@@ -27,5 +27,5 @@
+@@ -27,5 +27,8 @@
  	# since they don't trigger as many false positives.
  	punc2=r"[?!]",
  	# We also check for CJK full-width punctuation marks without any extra rules.
--	cjk=r"[．。！？：；]",
-+	cjk=r"[．！？：；]",
++	# BEGIN JP PATCH
++	# nvdajp: include Japanese period (。) in CJK punctuation marks
+ 	cjk=r"[．。！？：；]",
++	# END JP PATCH
  )
 
 ```

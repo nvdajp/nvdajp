@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDriverHandler.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDriverHandler.py"
-index 351086fc4d..5f38b3ccfb 100644
+index 351086fc4d..34c02ed962 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDriverHandler.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDriverHandler.py"
 @@ -1,7 +1,7 @@
@@ -29,7 +29,7 @@ index 351086fc4d..5f38b3ccfb 100644
  import globalVars
  from logHandler import log
  from synthSettingsRing import SynthSettingsRing
-@@ -484,10 +483,7 @@ def getSynthInstance(name, asDefault=False):
+@@ -484,10 +483,10 @@ def getSynthInstance(name, asDefault=False):
  
  # The synthDrivers that should be used by default.
  # The first that successfully initializes will be used when config is set to auto (I.e. new installs of NVDA).
@@ -37,7 +37,10 @@ index 351086fc4d..5f38b3ccfb 100644
 -if winVersion.getWinVer() >= winVersion.WIN10:
 -	# Default to OneCore on Windows 10 and above
 -	defaultSynthPriorityList.insert(0, "oneCore")
-+defaultSynthPriorityList = ["oneCore", "espeak", "silence"]
++# BEGIN JP PATCH
++# nvdajp: use nvdajp_jtalk as the default Japanese synthesizer instead of espeak
++defaultSynthPriorityList = ["oneCore", "nvdajp_jtalk", "silence"]
++# END JP PATCH
  
  
  def setSynth(name: Optional[str], isFallback: bool = False):

@@ -9,22 +9,28 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\speechViewer.py" "b/F:\\nvda\\gh\\alphajp\\source\\speechViewer.py"
-index f746e40896..e4a6286043 100644
+index f746e40896..38c0d1aec2 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\speechViewer.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\speechViewer.py"
-@@ -63,7 +63,6 @@ def __init__(self, onDestroyCallBack: Callable[[], None]):
+@@ -63,7 +63,10 @@ def __init__(self, onDestroyCallBack: Callable[[], None]):
  
  		self._createControls(sizer=self.panelContentsSizer, parent=self.panel)
  
--		self.SetTransparent(229)  # int(255.0 * 0.90)
++		# BEGIN JP PATCH
++		# nvdajp: set window transparency (90% opacity)
+ 		self.SetTransparent(229)  # int(255.0 * 0.90)
++		# END JP PATCH
  		# Don't let speech viewer to steal keyboard focus when opened
  		self.ShowWithoutActivating()
  
-@@ -106,7 +105,6 @@ def _createControls(self, sizer, parent):
+@@ -106,7 +109,10 @@ def _createControls(self, sizer, parent):
  		)
  		if isLockScreenModeActive():
  			self.shouldShowOnStartupCheckBox.Disable()
--		self.SetTransparent(229)  # int(255.0 * 0.90)
++		# BEGIN JP PATCH
++		# nvdajp: set window transparency (90% opacity)
+ 		self.SetTransparent(229)  # int(255.0 * 0.90)
++		# END JP PATCH
  
  	def _onDialogActivated(self, evt):
  		# Check for destruction, if the speechviewer window has focus when we exit NVDA it regains focus briefly

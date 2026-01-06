@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\eventHandler.py" "b/F:\\nvda\\gh\\alphajp\\source\\eventHandler.py"
-index fc9ce92f5f..39e29456d8 100644
+index fc9ce92f5f..127a777e71 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\eventHandler.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\eventHandler.py"
 @@ -1,7 +1,7 @@
@@ -29,17 +29,20 @@ index fc9ce92f5f..39e29456d8 100644
  import winUser
  import extensionPoints
  import oleacc
-@@ -500,9 +501,6 @@ def shouldAcceptEvent(eventName, windowHandle=None):
+@@ -500,9 +501,11 @@ def shouldAcceptEvent(eventName, windowHandle=None):
  	if eventName == "hide":
  		return False
  	if eventName == "show":
 -		# ATOKxxUIComment
--		if wClass.startswith("ATOK") and wClass.endswith("UIComment"):
--			return True
++		# BEGIN JP PATCH
++		# nvdajp: ATOKxxUIComment
+ 		if wClass.startswith("ATOK") and wClass.endswith("UIComment"):
+ 			return True
++		# END JP PATCH
  		# Only accept 'show' events for specific cases, as otherwise we get flooded.
  		return wClass in (
  			"Frame Notification Bar",  # notification bars
-@@ -553,8 +551,8 @@ def shouldAcceptEvent(eventName, windowHandle=None):
+@@ -553,8 +556,8 @@ def shouldAcceptEvent(eventName, windowHandle=None):
  		# This is for the foreground application.
  		return True
  	if (

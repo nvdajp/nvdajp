@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\sapi4.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\sapi4.py"
-index 9c3a63e716..5bb68ae33e 100644
+index 9c3a63e716..994abf620f 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\sapi4.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\sapi4.py"
 @@ -12,6 +12,10 @@
@@ -41,19 +41,21 @@ index 9c3a63e716..5bb68ae33e 100644
  class SynthDriverBufSink(COMObject):
  	_com_interfaces_ = [ITTSBufNotifySink]
  
-@@ -113,11 +113,6 @@ def ITTSBufNotifySink_BookMark(self, this: int, qTimeStamp: int, dwMarkNum: int)
+@@ -113,10 +113,13 @@ def ITTSBufNotifySink_BookMark(self, this: int, qTimeStamp: int, dwMarkNum: int)
  			if synth._bookmarks.popleft() == dwMarkNum:
  				break
  
--	def ITTSBufNotifySink_TextDataDone(self, this, qTimeStamp, dwMarkNum):
--		synth = self.synthRef()
--		if synth and hasattr(synth, "setSpeaking"):
--			synth.setSpeaking(False)
--
++	# BEGIN JP PATCH
++	# nvdajp: notify when text data is done
+ 	def ITTSBufNotifySink_TextDataDone(self, this, qTimeStamp, dwMarkNum):
+ 		synth = self.synthRef()
+ 		if synth and hasattr(synth, "setSpeaking"):
+ 			synth.setSpeaking(False)
++	# END JP PATCH
+ 
  	def IUnknown_Release(self, this: int, *args, **kwargs):
  		if not self._allowDelete and self._refcnt.value == 1:
- 			log.debugWarning("ITTSBufNotifySink::Release called too many times by engine")
-@@ -217,15 +212,15 @@ def run(self):
+@@ -217,15 +220,15 @@ def run(self):
  		msg = MSG()
  		# Force the message queue to be created first
  		PM_NOREMOVE = 0
@@ -73,7 +75,7 @@ index 9c3a63e716..5bb68ae33e 100644
  			# Process queued tasks outside window procedures
  			# to avoid COM error RPC_E_CANTCALLOUT_INEXTERNALCALL
  			# (-2147418107, 0x80010005).
-@@ -245,7 +240,7 @@ def run(self):
+@@ -245,7 +248,7 @@ def run(self):
  
  	def stop(self):
  		WM_QUIT = 18
@@ -82,7 +84,7 @@ index 9c3a63e716..5bb68ae33e 100644
  		self.join()
  
  	def submit(self, func: Callable, *args, **kwargs) -> _ComThreadTask:
-@@ -255,7 +250,7 @@ def submit(self, func: Callable, *args, **kwargs) -> _ComThreadTask:
+@@ -255,7 +258,7 @@ def submit(self, func: Callable, *args, **kwargs) -> _ComThreadTask:
  		task = _ComThreadTask(func, *args, **kwargs)
  		self._tasks.put(task)
  		# post a message to wake up the thread
@@ -91,7 +93,7 @@ index 9c3a63e716..5bb68ae33e 100644
  		return task
  
  	def invoke(self, func: Callable, *args, **kwargs):
-@@ -342,7 +337,7 @@ def __init__(self, comThread: _ComThread):
+@@ -342,7 +345,7 @@ def __init__(self, comThread: _ComThread):
  		self._allowDelete = False
  		self._notifySink: LP_IAudioDestNotifySink | None = None
  		self._deviceState = _AudioState.INVALID
@@ -100,7 +102,7 @@ index 9c3a63e716..5bb68ae33e 100644
  		self._player: nvwave.WavePlayer | None = None
  		self._writtenBytes = 0
  		self._playedBytes = 0
-@@ -581,8 +576,8 @@ def IAudio_WaveFormatGet(self) -> SDATA:
+@@ -581,8 +584,8 @@ def IAudio_WaveFormatGet(self) -> SDATA:
  			Should be freed by the caller using CoTaskMemFree."""
  		if self._deviceState == _AudioState.INVALID:
  			raise ReturnHRESULT(AudioError.NEED_WAVE_FORMAT, None)
@@ -111,7 +113,7 @@ index 9c3a63e716..5bb68ae33e 100644
  		if not ptr:
  			raise COMError(hresult.E_OUTOFMEMORY, "CoTaskMemAlloc failed", (None, None, None, None, None))
  		memmove(ptr, addressof(self._waveFormat), size)
-@@ -594,7 +589,7 @@ def IAudio_WaveFormatSet(self, dWFEX: SDATA) -> None:
+@@ -594,7 +597,7 @@ def IAudio_WaveFormatSet(self, dWFEX: SDATA) -> None:
  		size = 18  # SAPI4 uses 18 bytes without the final padding
  		if not dWFEX.pData or dWFEX.dwSize < size:
  			raise ReturnHRESULT(hresult.E_INVALIDARG, None)
@@ -120,31 +122,40 @@ index 9c3a63e716..5bb68ae33e 100644
  		memmove(addressof(wfx), dWFEX.pData, size)
  		if self._deviceState != _AudioState.INVALID:
  			# Setting wave format more than once is not allowed.
-@@ -923,8 +918,6 @@ def __init__(self):
+@@ -923,8 +926,11 @@ def __init__(self):
  		self._volume = 100
  		self._paused = False
  		self.voice = str(self._enginesList[0].gModeID)
--		self._rate = None
--		self._isSpeaking = False
++		# BEGIN JP PATCH
++		# nvdajp: initialize rate cache and speaking state
+ 		self._rate = None
+ 		self._isSpeaking = False
++		# END JP PATCH
  
  	def terminate(self):
  		self._bufSink._allowDelete = True
-@@ -960,13 +953,12 @@ def speak(self, speechSequence: SpeechSequence):
+@@ -960,13 +966,19 @@ def speak(self, speechSequence: SpeechSequence):
  		lastHandledIndexInSequence = 0
  		for item in speechSequence:
  			if isinstance(item, str):
 -				item = item.replace("\u2022", "").replace("\uf0b7", "")  # nvdajp (bullet)
++				# BEGIN JP PATCH
++				# nvdajp: remove bullet characters that may cause issues with some SAPI4 voices
++				item = item.replace("\u2022", "").replace("\uf0b7", "")  # bullet
++				# END JP PATCH
  				textList.append(item.replace("\\", "\\\\"))
  			elif isinstance(item, IndexCommand):
  				textList.append("\\mrk=%d\\" % item.index)
  				bookmarks.append(item.index)
  				lastHandledIndexInSequence = item.index
--			elif False and isinstance(item, CharacterModeCommand):  # nvdajp
-+			elif isinstance(item, CharacterModeCommand):
++			# BEGIN JP PATCH
++			# nvdajp: disable CharacterModeCommand handling (False and ...)
+ 			elif False and isinstance(item, CharacterModeCommand):  # nvdajp
++			# END JP PATCH
  				textList.append("\\RmS=1\\" if item.state else "\\RmS=0\\")
  				charMode = item.state
  			elif isinstance(item, BreakCommand):
-@@ -982,7 +974,8 @@ def speak(self, speechSequence: SpeechSequence):
+@@ -982,7 +994,8 @@ def speak(self, speechSequence: SpeechSequence):
  				# If you specify a value greater than 65535, the engine assumes that you want to set the
  				# left and right channels separately and converts the value to a double word,
  				# using the low word for the left channel and the high word for the right channel.
@@ -154,60 +165,77 @@ index 9c3a63e716..5bb68ae33e 100644
  				textList.append(f"\\Vol={val}\\")
  			elif isinstance(item, SpeechCommand):
  				log.debugWarning("Unsupported speech command: %s" % item)
-@@ -1008,12 +1001,10 @@ def speak(self, speechSequence: SpeechSequence):
+@@ -1008,12 +1021,18 @@ def speak(self, speechSequence: SpeechSequence):
  			self._bufSinkPtr,
  			ITTSBufNotifySink._iid_,
  		)
--		self._isSpeaking = True
++		# BEGIN JP PATCH
++		# nvdajp: mark as speaking when speech is queued
+ 		self._isSpeaking = True
++		# END JP PATCH
  
  	def cancel(self):
  		if isDebugForSynthDriver():
  			log.debug("SAPI4: Cancelling")
--		self._isSpeaking = True
++		# BEGIN JP PATCH
++		# nvdajp: mark as speaking during cancel and clear lastIndex
+ 		self._isSpeaking = True
++		# END JP PATCH
  		try:
  			# cancel all pending bookmarks
  			self._bookmarkLists.clear()
-@@ -1029,7 +1020,6 @@ def cancel(self):
+@@ -1029,7 +1048,10 @@ def cancel(self):
  			log.debugWarning("Error cancelling speech", exc_info=True)
  		finally:
  			self._finalIndex = None
--		self.lastIndex = None
++			# BEGIN JP PATCH
++			# nvdajp: clear lastIndex on cancel
+ 			self.lastIndex = None
++			# END JP PATCH
  
  	def pause(self, switch: bool):
  		if isDebugForSynthDriver():
-@@ -1046,12 +1036,6 @@ def pause(self, switch: bool):
+@@ -1046,11 +1068,14 @@ def pause(self, switch: bool):
  			self._ttsCentral.AudioResume()
  		self._paused = switch
  
--	def setSpeaking(self, switch):
--		self._isSpeaking = switch
--
--	def isSpeaking(self):
--		return self._isSpeaking
--
++	# BEGIN JP PATCH
++	# nvdajp: provide setSpeaking and isSpeaking methods
+ 	def setSpeaking(self, switch):
+ 		self._isSpeaking = switch
+ 
+ 	def isSpeaking(self):
+ 		return self._isSpeaking
++	# END JP PATCH
+ 
  	def removeSetting(self, name):
  		# Putting it here because currently no other synths make use of it. OrderedDict, where you are?
- 		for i, s in enumerate(self.supportedSettings):
-@@ -1197,17 +1181,12 @@ def _getAvailableVoices(self):
+@@ -1197,15 +1222,24 @@ def _getAvailableVoices(self):
  		return voices
  
  	def _get_rate(self) -> int:
--		if self._rate is not None:
--			return self._rate
++		# BEGIN JP PATCH
++		# nvdajp: use cached rate value if available
+ 		if self._rate is not None:
+ 			return self._rate
++		# END JP PATCH
  		val = DWORD()
  		self._ttsAttrs.SpeedGet(byref(val))
--		ret = self._paramToPercent(val.value, self._minRate, self._maxRate)
--		return min(100, ret)
-+		return self._paramToPercent(val.value, self._minRate, self._maxRate)
++		# BEGIN JP PATCH
++		# nvdajp: clamp rate to maximum 100%
+ 		ret = self._paramToPercent(val.value, self._minRate, self._maxRate)
+ 		return min(100, ret)
++		# END JP PATCH
  
  	def _set_rate(self, val: int):
--		self._rate = val
++		# BEGIN JP PATCH
++		# nvdajp: cache rate value
+ 		self._rate = val
++		# END JP PATCH
  		val = self._percentToParam(val, self._minRate, self._maxRate)
--		val = min(self._maxRate, val)
+ 		val = min(self._maxRate, val)
  		self._ttsAttrs.SpeedSet(val)
- 		self._rateDelta = val - self._defaultRate
- 
-@@ -1248,9 +1227,8 @@ def _mmDeviceEndpointIdToWaveOutId(targetEndpointId: str) -> int:
+@@ -1248,9 +1282,8 @@ def _mmDeviceEndpointIdToWaveOutId(targetEndpointId: str) -> int:
  		currEndpointId = create_string_buffer(targetEndpointIdByteCount)
  		currEndpointIdByteCount = DWORD()
  		# Defined in mmeapi.h

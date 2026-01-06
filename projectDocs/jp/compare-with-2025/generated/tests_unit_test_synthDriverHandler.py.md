@@ -9,15 +9,17 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_synthDriverHandler.py" "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_synthDriverHandler.py"
-index c313d00056..e345672fcd 100644
+index c313d00056..1e58c8ae23 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_synthDriverHandler.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_synthDriverHandler.py"
-@@ -117,7 +117,7 @@ def test_setSynth_auto_fallback_ifOneCoreDoesntSupportDefaultLanguage(self):
+@@ -117,7 +117,10 @@ def test_setSynth_auto_fallback_ifOneCoreDoesntSupportDefaultLanguage(self):
  		self.assertEqual(synthDriverHandler.getSynth().name, FAKE_DEFAULT_SYNTH_NAME)
  		synthDriverHandler.setSynth(None)  # reset the synth so there is no fallback
  		synthDriverHandler.setSynth("auto")
--		self.assertEqual(synthDriverHandler.getSynth().name, "nvdajp_jtalk")
-+		self.assertEqual(synthDriverHandler.getSynth().name, "espeak")
++		# BEGIN JP PATCH
++		# nvdajp: defaultSynthPriorityList includes nvdajp_jtalk instead of espeak
+ 		self.assertEqual(synthDriverHandler.getSynth().name, "nvdajp_jtalk")
++		# END JP PATCH
  
  	def test_synthChangedExtensionPoint(self):
  		expectedKwargs = dict(

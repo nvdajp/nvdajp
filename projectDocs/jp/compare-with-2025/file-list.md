@@ -1,6 +1,6 @@
 # 変更されたファイル一覧
 
-**生成日時**: 2026-01-06 15:25:29
+**生成日時**: 2026-01-07 07:43:39
 
 ## カテゴリ別ファイル一覧
 
@@ -43,7 +43,7 @@
 - `miscDepsJp\jptools\md2html.py`
 - `miscDepsJp\jptools\mecabRunner.py`
 
-### その他 (353 ファイル)
+### その他 (354 ファイル)
 
 - `.github\CODEOWNERS`
 - `.gitignore`
@@ -385,6 +385,7 @@
 - `tests\system\robot\symbolPronunciationTests.py`
 - `tests\system\robot\symbolPronunciationTests.robot`
 - `tests\unit\__init__.py`
+- `tests\unit\contentRecog\test_contentRecog.py`
 - `tests\unit\objectProvider.py`
 - `tests\unit\test_baseObject.py`
 - `tests\unit\test_braille\test_brailleDisplayDrivers.py`

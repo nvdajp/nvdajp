@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\edit.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\edit.py"
-index 6029f5b384..a334597133 100644
+index 6029f5b384..2761fd4839 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\edit.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\edit.py"
 @@ -1,5 +1,5 @@
@@ -78,50 +78,58 @@ index 6029f5b384..a334597133 100644
  
  	def _getLineCount(self):
  		return self.obj.windowTextLineCount
-@@ -624,42 +618,11 @@ def _getLineNumFromOffset(self, offset):
+@@ -624,10 +618,19 @@ def _getLineNumFromOffset(self, offset):
  		else:
  			return watchdog.cancellableSendMessage(self.obj.windowHandle, winUser.EM_LINEFROMCHAR, offset, 0)
  
--	def _needsWorkAroundEncoding(self):
--		return config.conf["language"]["jpAnsiEditbox"] and (not self.obj.isWindowUnicode)
--
--	def _startEndInBytesToStartEndInUnicodeChars(self, start, end):
--		# start/end in bytes to start/end in unicode chars
--		story_text = self._getStoryText()
--		start_new = end_new = -1
--		bytepos = 0
--		for charpos, ch in enumerate(story_text):
--			cb = len(ch.encode("mbcs", "replace"))
--			if bytepos == start:
--				start_new = charpos
--			if bytepos == end:
--				end_new = charpos
--				break
--			bytepos += cb
--		if end_new == -1:
--			end_new = len(story_text)
--		return (start_new, end_new)
--
++	# BEGIN JP PATCH
++	# nvdajp: workaround for ANSI edit controls (legacy applications)
+ 	def _needsWorkAroundEncoding(self):
++		"""Check if ANSI encoding workaround is needed for this edit control.
++		This is for legacy ANSI applications that use Shift-JIS encoding.
++		"""
+ 		return config.conf["language"]["jpAnsiEditbox"] and (not self.obj.isWindowUnicode)
+ 
+ 	def _startEndInBytesToStartEndInUnicodeChars(self, start, end):
++		"""Convert byte positions to Unicode character positions for ANSI edit controls.
++		This is needed because ANSI edit controls work with byte positions,
++		but NVDA works with Unicode character positions.
++		"""
+ 		# start/end in bytes to start/end in unicode chars
+ 		story_text = self._getStoryText()
+ 		start_new = end_new = -1
+@@ -643,16 +646,22 @@ def _startEndInBytesToStartEndInUnicodeChars(self, start, end):
+ 		if end_new == -1:
+ 			end_new = len(story_text)
+ 		return (start_new, end_new)
++	# END JP PATCH
+ 
  	def _getLineOffsets(self, offset):
--		if self._needsWorkAroundEncoding():
--			# offset in unicode chars to offset in bytes
--			s = self._getStoryText()[0:offset]
--			offset = len(s.encode("mbcs", "replace"))
++		# BEGIN JP PATCH
++		# nvdajp: workaround for ANSI edit controls
+ 		if self._needsWorkAroundEncoding():
+ 			# offset in unicode chars to offset in bytes
+ 			s = self._getStoryText()[0:offset]
+ 			offset = len(s.encode("mbcs", "replace"))
++		# END JP PATCH
  		lineNum = self._getLineNumFromOffset(offset)
  		start = watchdog.cancellableSendMessage(self.obj.windowHandle, winUser.EM_LINEINDEX, lineNum, 0)
  		length = watchdog.cancellableSendMessage(self.obj.windowHandle, winUser.EM_LINELENGTH, offset, 0)
  		end = start + length
--		if self._needsWorkAroundEncoding():
--			start_new, end_new = self._startEndInBytesToStartEndInUnicodeChars(start, end)
--			log.debug(
--				"offset %d lineNum %d start %d length %d end %d start_new %d end_new %d"
--				% (offset, lineNum, start, length, end, start_new, end_new)
--			)
--			return (start_new, end_new)
++		# BEGIN JP PATCH
++		# nvdajp: convert byte positions back to Unicode character positions
+ 		if self._needsWorkAroundEncoding():
+ 			start_new, end_new = self._startEndInBytesToStartEndInUnicodeChars(start, end)
+ 			log.debug(
+@@ -660,6 +669,7 @@ def _getLineOffsets(self, offset):
+ 				% (offset, lineNum, start, length, end, start_new, end_new)
+ 			)
+ 			return (start_new, end_new)
++		# END JP PATCH
  		# If we just seem to get invalid line info, calculate manually
  		if (
  			start <= 0
-@@ -833,7 +796,7 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
+@@ -833,7 +843,7 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
  		label = None
  		try:
  			o = embedRangeObj.GetEmbeddedObject()
@@ -130,7 +138,7 @@ index 6029f5b384..a334597133 100644
  			o = None
  		if not o:
  			return None
-@@ -842,7 +805,7 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
+@@ -842,7 +852,7 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
  
  		try:
  			label = o.QueryInterface(oleacc.IAccessible).accName(0)
@@ -139,7 +147,7 @@ index 6029f5b384..a334597133 100644
  			pass
  		if label:
  			return label
-@@ -865,22 +828,24 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
+@@ -865,22 +875,24 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
  		if label and not label.isspace():
  			return label
  		# Windows Live Mail exposes the label via the embedded object's data (IDataObject)
@@ -173,7 +181,7 @@ index 6029f5b384..a334597133 100644
  			return label
  
  	def _getTextAtRange(self, rangeObj):
-@@ -1087,7 +1052,7 @@ def _get_ITextDocumentObject(self):
+@@ -1087,7 +1099,7 @@ def _get_ITextDocumentObject(self):
  		if not hasattr(self, "_ITextDocumentObject"):
  			try:
  				ptr = ctypes.POINTER(comInterfaces.tom.ITextDocument)()

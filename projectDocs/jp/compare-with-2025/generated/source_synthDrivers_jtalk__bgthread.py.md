@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\_bgthread.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\_bgthread.py"
-index 89cc4dd6c9..ee865ac6a2 100644
+index 89cc4dd6c9..0d10c395aa 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\_bgthread.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\_bgthread.py"
 @@ -16,7 +16,6 @@
@@ -20,14 +20,7 @@ index 89cc4dd6c9..ee865ac6a2 100644
  bgThread = None
  bgQueue = None
  isSpeaking = False
-@@ -29,13 +28,14 @@ def __init__(self):
- 
- 	def run(self):
- 		global isSpeaking
-+		assert bgQueue is not None  # Type narrowing for type checkers
- 		while True:
- 			func, args, kwargs = bgQueue.get()
- 			if not func:
+@@ -35,7 +34,7 @@ def run(self):
  				break
  			try:
  				func(*args, **kwargs)
@@ -36,22 +29,5 @@ index 89cc4dd6c9..ee865ac6a2 100644
  				log.error("Error running function from queue", exc_info=True)
  			finally:
  				isSpeaking = False
-@@ -44,6 +44,7 @@ def run(self):
- 
- def execWhenDone(func, *args, **kwargs):
- 	global bgQueue
-+	assert bgQueue is not None  # Type narrowing for type checkers
- 	# This can't be a kwarg in the function definition because it will consume the first non-keywor dargument which is meant for func.
- 	mustBeAsync = kwargs.pop("mustBeAsync", False)
- 	if mustBeAsync or bgQueue.unfinished_tasks != 0:
-@@ -63,6 +64,8 @@ def initialize():
- 
- def terminate():
- 	global bgThread, bgQueue
-+	assert bgQueue is not None  # Type narrowing for type checkers
-+	assert bgThread is not None  # Type narrowing for type checkers
- 	bgQueue.put((None, None, None))
- 	bgThread.join()
- 	bgThread = None
 
 ```

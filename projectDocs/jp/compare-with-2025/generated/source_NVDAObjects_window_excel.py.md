@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\excel.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\excel.py"
-index f177ea6af7..77c3d135a3 100644
+index f177ea6af7..d05ed8b42c 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\excel.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\excel.py"
 @@ -8,11 +8,12 @@
@@ -62,16 +62,19 @@ index f177ea6af7..77c3d135a3 100644
  	raise AttributeError(f"module {repr(__name__)} has no attribute {repr(attrName)}")
  
  
-@@ -1171,8 +1181,6 @@ def script_changeActiveCell(self, gesture: inputCore.InputGesture) -> None:
+@@ -1171,8 +1181,11 @@ def script_changeActiveCell(self, gesture: inputCore.InputGesture) -> None:
  			"kb:control+shift+8",
  			"kb:control+pageUp",
  			"kb:control+pageDown",
--			"kb:shift+control+pageUp",
--			"kb:shift+control+pageDown",
++			# BEGIN JP PATCH
++			# nvdajp: restore Shift+Control+PageUp/Down key bindings for Excel cell navigation
+ 			"kb:shift+control+pageUp",
+ 			"kb:shift+control+pageDown",
++			# END JP PATCH
  			"kb:control+a",
  			"kb:control+v",
  			"kb:shift+f11",
-@@ -1461,23 +1469,6 @@ class NvCellState(enum.IntEnum):
+@@ -1461,23 +1474,6 @@ class NvCellState(enum.IntEnum):
  }
  
  
@@ -95,7 +98,7 @@ index f177ea6af7..77c3d135a3 100644
  class ExcelCellInfoQuickNavItem(browseMode.QuickNavItem):
  	def __init__(self, parentIterator, cellInfo):
  		self.excelCellInfo = cellInfo
-@@ -1576,7 +1567,7 @@ def iterate(self):
+@@ -1576,7 +1572,7 @@ def iterate(self):
  		if not collectionObject:
  			return
  		count = collectionObject.count
@@ -104,7 +107,7 @@ index f177ea6af7..77c3d135a3 100644
  		numCellsFetched = ctypes.c_long()
  		address = collectionObject.address(True, True, xlA1, True)
  		NVDAHelper.localLib.nvdaInProcUtils_excel_getCellInfos(
-@@ -1613,13 +1604,13 @@ def collectionFromWorksheet(self, worksheetObject):
+@@ -1613,13 +1609,13 @@ def collectionFromWorksheet(self, worksheetObject):
  
  
  class ExcelCell(ExcelBase):
@@ -121,7 +124,7 @@ index f177ea6af7..77c3d135a3 100644
  		numCellsFetched = ctypes.c_long()
  		address = self.excelCellObject.address(True, True, xlA1, True)
  		res = NVDAHelper.localLib.nvdaInProcUtils_excel_getCellInfos(
-@@ -2254,12 +2245,12 @@ def _getFormControlScreenCoordinates(self):
+@@ -2254,12 +2250,12 @@ def _getFormControlScreenCoordinates(self):
  		# bottom right cell's height in points
  		bottomRightCellHeight = bottomRightAddress.Height
  		self.excelApplicationObject = self.parent.excelWorksheetObject.Application

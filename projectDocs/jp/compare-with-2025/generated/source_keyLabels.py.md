@@ -9,25 +9,23 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\keyLabels.py" "b/F:\\nvda\\gh\\alphajp\\source\\keyLabels.py"
-index 1ea4912357..15e310762a 100644
+index 1ea4912357..56bc16de92 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\keyLabels.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\keyLabels.py"
-@@ -167,18 +167,6 @@
+@@ -167,6 +167,8 @@
  	"break": _("break"),
  	# Translators: This is the name of a key on the keyboard.
  	"tab": pgettext("keyLabel", "tab"),
--	# Translators: This is the name of a key on the keyboard.
--	"imenonconvert": _("IME non convert"),
--	# Translators: This is the name of a key on the keyboard.
--	"imeconvert": _("IME convert"),
--	# Translators: This is the name of a key on the keyboard.
--	"imechangestatus1": _("toggle input method"),
--	# Translators: This is the name of a key on the keyboard.
--	"imechangestatus2": _("toggle input method"),
--	# Translators: This is the name of a key on the keyboard.
--	"imechangestatus3": _("toggle input method"),
--	# Translators: This is the name of a key on the keyboard.
--	"pause": _("pause"),
++	# BEGIN JP PATCH
++	# nvdajp: IME key labels
+ 	# Translators: This is the name of a key on the keyboard.
+ 	"imenonconvert": _("IME non convert"),
+ 	# Translators: This is the name of a key on the keyboard.
+@@ -179,6 +181,7 @@
+ 	"imechangestatus3": _("toggle input method"),
+ 	# Translators: This is the name of a key on the keyboard.
+ 	"pause": _("pause"),
++	# END JP PATCH
  }
  
  
