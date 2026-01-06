@@ -4,6 +4,8 @@
 
 このドキュメントは、NVDA 日本語版 2025.3jp（`releasejp` ブランチ）と本家版 NVDA 2025.3（`nvaccess/nvda` の `rc` ブランチ）の**機能的な差分**をまとめたものです。
 
+2026.1jp に向けた日本語アルファ版に再移植された JP 固有コードについても説明します。
+
 **注意**: このドキュメントは、ユーザーや開発者が認識できる機能の追加・変更・削除に焦点を当てています。ビルドシステムの内部的な変更（サブツリー変換など）については、別のドキュメント（`projectDocs/jp/miscdepsjp-overlay-strategy.md` など）を参照してください。
 
 ### 比較対象
@@ -67,6 +69,15 @@
 
 - `source/brailleTables.py` (935行) - 点字テーブル処理の拡張
 
+##### 点字処理の JP 固有コード
+
+- `source/braille.py` - JP 固有の点字処理コードを実装
+  - `jpBrailleUtils` からのインポートと関数群（`useRawLabels()`, `_nvdajp()`, `getRoleLabel()` など）により、生ラベルと翻訳済みラベルの切り替えが可能
+  - `getPropertiesBraille()` 関数内で Composition の名前表示制御、EDITABLETEXT ロールの処理、テーブルヘッダー処理などの JP 固有処理を実装
+  - 他の関数（`_getAnnotationProperty()`, `getControlFieldBraille()`, `getFormatFieldBraille()`, `_addTextWithFields()`）でも JP 固有関数を使用
+  - `NVDAObjectRegion.update()` 内でテーブルヘッダー処理を実装
+  - `config.conf["braille"]["expandAtCursor"]` が `True` の場合、生ラベル（翻訳なし）を使用し、`False` の場合は翻訳済みラベルを使用します
+
 #### 1.3 日本語文字処理
 
 ##### 文字報告モード
@@ -112,6 +123,7 @@ NVDA日本語版は、文字単位の移動やレビューで、文字の説明�
 
 - `source/appModules/windowsinternal_composableshell_experiences_textinput_inputapp_jp.py` (441行)
 - `source/appModules/windowsinternal_composableshell_experiences_textinput_inputapp_jp_win10.py` (347行)
+- `source/appModules/windowsinternal_composableshell_experiences_textinput_inputapp.py` - JP 固有の AppModule を条件付きでインポート。`nvdajpEnableKeyEvents` 設定が有効な場合のみ、Windows 11 以上では `_jp.py`、Windows 10 では `_jp_win10.py` をインポートします
 
 **注**: ファイル名は upstream の変更に追従して `windowsimmersiveshell` から `windowsinternal_composableshell` に変更されています。
 
@@ -207,6 +219,7 @@ ATOK の変換候補にコメントウィンドウがある場合の対応：
 #### 3.2 API とコマンドの拡張
 
 - `source/api.py` (26行変更) - API の拡張
+  - `setFocusObject()` 関数で、ATOK とブライル表示の組み合わせでの問題を回避するためのコードを実装。ブライル表示がない場合は上流の実装に合わせて `container` を使用し、ブライル表示がある場合は `parent` を直接設定します（関連チケット: ti33778, ti35974、nvaccess ticket 3873, 4145 を revert）
 - `source/globalCommands.py` (80行変更) - グローバルコマンドの拡張
 - `source/inputCore.py` (6行追加) - 入力コアの拡張
 - `source/eventHandler.py` (3行追加) - イベントハンドラーの拡張
