@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\_remoteClient\client.py`  
 **Current**: `F:\nvda\gh\alphajp\source\_remoteClient\client.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -27,55 +29,36 @@ index 8d377f6c76..4691a226fa 100644
  
  	def __init__(
  		self,
-@@ -72,20 +71,14 @@ def __init__(
+@@ -72,13 +71,7 @@ def __init__(
  		self.followerTransport = None
  		self.localControlServer = None
  		self.sendingKeys = False
 -		self._wasSendingKeysBeforeLock: bool = False
 -		try:
--			self.sdHandler = SecureDesktopHandler()
+ 		self.sdHandler = SecureDesktopHandler()
 -		except RuntimeError:
 -			log.error("Failed to initialise the secure desktop handler.", exc_info=True)
 -			self.sdHandler = None
 -		else:
--			if isRunningOnSecureDesktop():
--				connection = self.sdHandler.initializeSecureDesktop()
--				if connection:
--					self.connectAsFollower(connection)
--					self.followerSession.transport.connectedEvent.wait(
--						self.sdHandler.SD_CONNECT_BLOCK_TIMEOUT,
--					)
-+		self.sdHandler = SecureDesktopHandler()
-+		if isRunningOnSecureDesktop():
-+			connection = self.sdHandler.initializeSecureDesktop()
-+			if connection:
-+				self.connectAsFollower(connection)
-+				self.followerSession.transport.connectedEvent.wait(
-+					self.sdHandler.SD_CONNECT_BLOCK_TIMEOUT,
-+				)
- 		core.postNvdaStartup.register(self.performAutoconnect)
- 		inputCore.decide_handleRawKey.register(self.processKeyInput)
- 
-@@ -109,8 +102,7 @@ def performAutoconnect(self):
+ 		if isRunningOnSecureDesktop():
+ 			connection = self.sdHandler.initializeSecureDesktop()
+ 			if connection:
+@@ -109,7 +102,6 @@ def performAutoconnect(self):
  		self.connect(conInfo)
  
  	def terminate(self):
 -		if self.sdHandler is not None:
--			self.sdHandler.terminate()
-+		self.sdHandler.terminate()
+ 		self.sdHandler.terminate()
  		self.disconnect()
  		self.localMachine.terminate()
- 		self.localMachine = None
-@@ -284,8 +276,7 @@ def disconnectAsFollower(self):
+@@ -284,7 +276,6 @@ def disconnectAsFollower(self):
  		self.followerSession.close()
  		self.followerSession = None
  		self.followerTransport = None
 -		if self.sdHandler is not None:
--			self.sdHandler.followerSession = None
-+		self.sdHandler.followerSession = None
+ 		self.sdHandler.followerSession = None
  		if self.menu:
  			self.menu.handleConnected(ConnectionMode.FOLLOWER, False)
- 		self._connecting = False
 @@ -382,7 +373,6 @@ def onConnectedAsLeader(self):
  		configuration.writeConnectionToConfig(self.leaderSession.getConnectionInfo())
  		if self.menu:
@@ -92,16 +75,14 @@ index 8d377f6c76..4691a226fa 100644
  
  	@alwaysCallAfter
  	def onDisconnectedAsLeader(self):
-@@ -413,8 +402,7 @@ def connectAsFollower(self, connectionInfo: ConnectionInfo):
+@@ -413,7 +402,6 @@ def connectAsFollower(self, connectionInfo: ConnectionInfo):
  			transport=transport,
  			localMachine=self.localMachine,
  		)
 -		if self.sdHandler is not None:
--			self.sdHandler.followerSession = self.followerSession
-+		self.sdHandler.followerSession = self.followerSession
+ 		self.sdHandler.followerSession = self.followerSession
  		self.followerTransport = transport
  		transport.transportCertificateAuthenticationFailed.register(
- 			self.onFollowerCertificateFailed,
 @@ -583,28 +571,17 @@ def _switchToLocalControl(self) -> None:
  		if configuration.getRemoteConfig()["ui"]["muteOnLocalControl"] and not self.localMachine.isMuted:
  			self.toggleMute()
@@ -113,10 +94,9 @@ index 8d377f6c76..4691a226fa 100644
  		log.info("Remote key control enabled")
  		self.setReceivingBraille(self.sendingKeys)
 -		if gesture is not None:
--			self.hostPendingModifiers = gesture.modifiers
+ 		self.hostPendingModifiers = gesture.modifiers
 -		else:
 -			self.hostPendingModifiers = set()
-+		self.hostPendingModifiers = gesture.modifiers
  		# Translators: Presented when sending keyboard keys from the controlling computer to the controlled computer.
  		ui.message(pgettext("remote", "Controlling remote computer"))
  		if self.localMachine.isMuted:

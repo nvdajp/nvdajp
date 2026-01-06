@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\miscDepsJp\include\python-jtalk\jtalkRunner.py`  
 **Current**: `F:\nvda\gh\alphajp\miscDepsJp\include\python-jtalk\jtalkRunner.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -28,21 +30,20 @@ index 4adb48c1fe..bf4bb86578 100644
  repo_root = os.environ.get('REPO_ROOT')
 -if repo_root and os.path.isdir(repo_root):
 -    repo_root = os.path.abspath(repo_root)
--    # Verify repo_root contains miscDepsJp (sanity check)
--    if not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
 +if repo_root:
 +    repo_root_path = Path(repo_root)
 +    if repo_root_path.is_dir():
 +        repo_root_path = repo_root_path.resolve()
-+        # Verify repo_root contains miscDepsJp (sanity check)
+         # Verify repo_root contains miscDepsJp (sanity check)
+-    if not os.path.exists(os.path.join(repo_root, "miscDepsJp")):
 +        if not (repo_root_path / "miscDepsJp").exists():
 +            repo_root = None
 +        else:
 +            repo_root = str(repo_root_path)
 +    else:
-         repo_root = None
++        repo_root = None
 +else:
-+    repo_root = None
+     repo_root = None
  
  # Fallback 1: Try to get repo root from PYTHONPATH environment variable
  if repo_root is None:
@@ -50,24 +51,21 @@ index 4adb48c1fe..bf4bb86578 100644
      if pythonpath:
 -        for path in pythonpath.split(os.pathsep):
 -            if path and os.path.isdir(path):
--                # Check if this path contains miscDepsJp/include/python-jtalk
--                if path.endswith("miscDepsJp/include/python-jtalk") or path.endswith("miscDepsJp\\include\\python-jtalk"):
--                    # Go up two levels: miscDepsJp/include/python-jtalk -> miscDepsJp -> repo root
--                    candidate = os.path.dirname(os.path.dirname(path))
--                    if os.path.exists(os.path.join(candidate, "miscDepsJp")):
--                        repo_root = os.path.dirname(candidate)
--                        break
 +        for path_str in pythonpath.split(os.pathsep):
 +            if path_str:
 +                path = Path(path_str)
 +                if path.is_dir():
-+                    # Check if this path contains miscDepsJp/include/python-jtalk
+                     # Check if this path contains miscDepsJp/include/python-jtalk
+-                if path.endswith("miscDepsJp/include/python-jtalk") or path.endswith("miscDepsJp\\include\\python-jtalk"):
 +                    if path_str.endswith("miscDepsJp/include/python-jtalk") or path_str.endswith("miscDepsJp\\include\\python-jtalk"):
-+                        # Go up two levels: miscDepsJp/include/python-jtalk -> miscDepsJp -> repo root
+                         # Go up two levels: miscDepsJp/include/python-jtalk -> miscDepsJp -> repo root
+-                    candidate = os.path.dirname(os.path.dirname(path))
+-                    if os.path.exists(os.path.join(candidate, "miscDepsJp")):
+-                        repo_root = os.path.dirname(candidate)
 +                        candidate = path.parent.parent
 +                        if (candidate / "miscDepsJp").exists():
 +                            repo_root = str(candidate.parent)
-+                            break
+                             break
  
  # Fallback 2: Use __file__-based calculation (depends on miscDepsJp folder structure)
 -if repo_root is None or not os.path.exists(os.path.join(repo_root, "miscDepsJp")):

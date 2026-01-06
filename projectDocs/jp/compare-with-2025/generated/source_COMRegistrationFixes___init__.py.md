@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\COMRegistrationFixes\__init__.py`  
 **Current**: `F:\nvda\gh\alphajp\source\COMRegistrationFixes\__init__.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -83,13 +85,12 @@ index 429213a4e1..8bb504ff7c 100644
  	if not os.path.isfile(fileName):
  		raise FileNotFoundError(f"Cannot apply 32-bit registry patch: {fileName} not found.")
 -	# On 32-bit systems, reg.exe is in System32. On 64-bit systems, SysWOW64 will redirect to 32-bit version.
--	regExe = os.path.join(SYSTEM_ROOT, "System32", "reg.exe")
 +	if sysconfig.get_platform() == "win32":
 +		# NVDA is 32 bit.
 +		# On 32-bit systems, the 32-bit version of reg.exe is in System32.
 +		# On 64-bit systems, the 32-bit version of reg.exe is in SysWOW64,
 +		# but system32 is automatically redirected to SysWOW64 for 32-bit applications.
-+		regExe = os.path.join(SYSTEM_ROOT, "System32", "reg.exe")
+ 		regExe = os.path.join(SYSTEM_ROOT, "System32", "reg.exe")
 +	else:
 +		# NVDA is 64 bit, and therefore the OS is also 64 bit.
 +		# On 64-bit systems, the 32-bit version of reg.exe is in SysWOW64.

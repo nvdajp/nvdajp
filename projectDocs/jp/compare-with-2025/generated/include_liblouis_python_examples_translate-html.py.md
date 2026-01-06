@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\include\liblouis\python\examples\translate-html.py`  
 **Current**: `F:\nvda\gh\alphajp\include\liblouis\python\examples\translate-html.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -18,11 +20,5 @@ index 307b74297b..2d57252fb8 100644
  import louis
  from lxml import html
  
-@@ -37,4 +38,4 @@
-                 outputFile.write(textwrap.fill(translation, lineLength))
-                 outputFile.write("\n")
- 
--print ("Done.")
-+print("Done.")
 
 ```

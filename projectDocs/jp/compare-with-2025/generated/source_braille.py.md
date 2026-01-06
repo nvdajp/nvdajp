@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\braille.py`  
 **Current**: `F:\nvda\gh\alphajp\source\braille.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -138,11 +140,9 @@ index f3296cb19b..2c4322a4fb 100644
 -			isComposition = False
 -			textList.append(name)
 -	else:
--		if name:
--			textList.append(name)
+ 	if name:
+ 		textList.append(name)
 -	# nvdajp end
-+	if name:
-+		textList.append(name)
  	role: Optional[Union[controlTypes.Role, int]] = propertyValues.get("role")
  	roleText = propertyValues.get("roleText")
  	states = propertyValues.get("states")

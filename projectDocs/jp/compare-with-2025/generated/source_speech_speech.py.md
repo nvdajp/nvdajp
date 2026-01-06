@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\speech\speech.py`  
 **Current**: `F:\nvda\gh\alphajp\source\speech\speech.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -42,7 +44,7 @@ index 38d121177a..02545fbd92 100644
  
  
  class SpeechMode(DisplayStringIntEnum):
-@@ -499,27 +503,38 @@ def _getSpellingSpeechWithoutCharMode(
+@@ -499,21 +503,32 @@ def _getSpellingSpeechWithoutCharMode(
  		if useCharacterDescriptions and charDesc:
  			IDEOGRAPHIC_COMMA = "\u3001"
  			speakCharAs = charDesc[0] if textLength > 1 else IDEOGRAPHIC_COMMA.join(charDesc)
@@ -73,26 +75,13 @@ index 38d121177a..02545fbd92 100644
 +				charList = [speakCharAs]
  		if languageHandling.shouldMakeLangChangeCommand():
  			yield LangChangeCommand(locale)
--		yield from _getSpellingCharAddCapNotification(
--			speakCharAs,
--			uppercase and sayCapForCapitals,
--			capPitchChange if uppercase else 0,
--			uppercase and beepForCapitals,
--			itemIsNormalized and reportNormalizedForCharacterNavigation,
--		)
--		yield EndUtteranceCommand()
 +		for charToSpeak in charList:
-+			yield from _getSpellingCharAddCapNotification(
+ 			yield from _getSpellingCharAddCapNotification(
+-			speakCharAs,
 +				charToSpeak,
-+				uppercase and sayCapForCapitals,
-+				capPitchChange if uppercase else 0,
-+				uppercase and beepForCapitals,
-+				itemIsNormalized and reportNormalizedForCharacterNavigation,
-+			)
-+			yield EndUtteranceCommand()
- 
- 
- def getSingleCharDescriptionDelayMS() -> int:
+ 				uppercase and sayCapForCapitals,
+ 				capPitchChange if uppercase else 0,
+ 				uppercase and beepForCapitals,
 @@ -1517,7 +1532,7 @@ def speakTextInfo(
  def getTextInfoSpeech(  # noqa: C901
  	info: textInfos.TextInfo,
@@ -131,12 +120,11 @@ index 38d121177a..02545fbd92 100644
  		if (invalidSpelling or oldInvalidSpelling is not None) and invalidSpelling != oldInvalidSpelling:
 +			texts = []
  			if invalidSpelling:
--				# Translators: Reported when text contains a spelling error.
--				text = _("spelling error")
 +				if formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.SOUND.value:
 +					texts.append(WaveFileCommand(r"waves\textError.wav"))
 +				if formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.SPEECH.value:
-+					# Translators: Reported when text contains a spelling error.
+ 					# Translators: Reported when text contains a spelling error.
+-				text = _("spelling error")
 +					texts.append(_("spelling error"))
  			elif extraDetail:
  				# Translators: Reported when moving out of text containing a spelling error.

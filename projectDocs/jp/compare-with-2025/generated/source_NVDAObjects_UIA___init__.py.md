@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\UIA\__init__.py`  
 **Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\UIA\__init__.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -62,10 +64,9 @@ index e06d16ce61..8d1e4a4b43 100644
  			elif UIAClassName == "WpfTextView":
  				clsList.append(WpfTextView)
 -			if UIAHandler.autoSelectDetectionAvailable:
--				clsList.append(EditableTextWithAutoSelectDetection)
+ 			clsList.append(EditableTextWithAutoSelectDetection)
 -			else:
 -				clsList.append(EditableTextWithoutAutoSelectDetection)
-+			clsList.append(EditableTextWithAutoSelectDetection)
  
  		clsList.append(UIA)
  

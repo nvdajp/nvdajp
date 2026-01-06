@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winKernel.py`  
 **Current**: `F:\nvda\gh\alphajp\source\winKernel.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -46,9 +48,6 @@ index 96d574d37c..ca4cb09784 100644
 -		log.warning(
 -			"winKernel.SYSTEM_POWER_STATUS is deprecated, "
 -			"use winAPI._powerTracking.SystemPowerStatus instead.",
--		)
--		return SystemPowerStatus
--	raise AttributeError(f"module {repr(__name__)} has no attribute {repr(attrName)}")
 +import winBindings.advapi32
 +import winBindings.kernel32
 +from utils import _deprecate
@@ -73,7 +72,9 @@ index 96d574d37c..ca4cb09784 100644
 +		"winBindings.advapi32",
 +	),
 +	_deprecate.MovedSymbol("advapi32", "winBindings.advapi32", "dll"),
-+)
+ )
+-		return SystemPowerStatus
+-	raise AttributeError(f"module {repr(__name__)} has no attribute {repr(attrName)}")
  
  
  kernel32 = ctypes.windll.kernel32

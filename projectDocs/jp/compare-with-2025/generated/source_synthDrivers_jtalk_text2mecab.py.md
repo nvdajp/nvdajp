@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\text2mecab.py`  
 **Current**: `F:\nvda\gh\alphajp\source\synthDrivers\jtalk\text2mecab.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -10,239 +12,28 @@ diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\text2me
 index ca07e0a31a..29fe1a5cbf 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\text2mecab.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\text2mecab.py"
-@@ -10,121 +10,139 @@
- 
- 
- def text2mecab_setup():
--    global predic
--    if predic is None:
--        predic = [
--            [re.compile("\r"), ""],
--            [re.compile("\n"), ""],
--            [re.compile(" "), "　"],
--            [re.compile("!"), "！"],
--            [re.compile('"'), "”"],
--            [re.compile("#"), "＃"],
--            [re.compile("\\$"), "＄"],
--            [re.compile("%"), "％"],
--            [re.compile("&"), "＆"],
--            [re.compile("'"), "’"],
--            [re.compile("\\("), "（"],
--            [re.compile("\\)"), "）"],
--            [re.compile("\\*"), "＊"],
--            [re.compile("\\+"), "＋"],
--            [re.compile(","), "，"],
--            [re.compile("\\-"), "−"],
--            [re.compile("\\."), "．"],
--            [re.compile("\\/"), "／"],
--            [re.compile("0"), "０"],
--            [re.compile("1"), "１"],
--            [re.compile("2"), "２"],
--            [re.compile("3"), "３"],
--            [re.compile("4"), "４"],
--            [re.compile("5"), "５"],
--            [re.compile("6"), "６"],
--            [re.compile("7"), "７"],
--            [re.compile("8"), "８"],
--            [re.compile("9"), "９"],
--            [re.compile(":"), "："],
--            [re.compile(";"), "；"],
--            [re.compile("<"), "＜"],
--            [re.compile("="), "＝"],
--            [re.compile(">"), "＞"],
+@@ -46,7 +46,7 @@ def text2mecab_setup():
+ 			[re.compile("<"), "＜"],
+ 			[re.compile("="), "＝"],
+ 			[re.compile(">"), "＞"],
 -            [re.compile("\?"), "？"],
--            [re.compile("@"), "＠"],
--            [re.compile("A"), "Ａ"],
--            [re.compile("B"), "Ｂ"],
--            [re.compile("C"), "Ｃ"],
--            [re.compile("D"), "Ｄ"],
--            [re.compile("E"), "Ｅ"],
--            [re.compile("F"), "Ｆ"],
--            [re.compile("G"), "Ｇ"],
--            [re.compile("H"), "Ｈ"],
--            [re.compile("I"), "Ｉ"],
--            [re.compile("J"), "Ｊ"],
--            [re.compile("K"), "Ｋ"],
--            [re.compile("L"), "Ｌ"],
--            [re.compile("M"), "Ｍ"],
--            [re.compile("N"), "Ｎ"],
--            [re.compile("O"), "Ｏ"],
--            [re.compile("P"), "Ｐ"],
--            [re.compile("Q"), "Ｑ"],
--            [re.compile("R"), "Ｒ"],
--            [re.compile("S"), "Ｓ"],
--            [re.compile("T"), "Ｔ"],
--            [re.compile("U"), "Ｕ"],
--            [re.compile("V"), "Ｖ"],
--            [re.compile("W"), "Ｗ"],
--            [re.compile("X"), "Ｘ"],
--            [re.compile("Y"), "Ｙ"],
--            [re.compile("Z"), "Ｚ"],
--            [re.compile("\\["), "［"],
--            [re.compile("\\\\"), "￥"],
--            [re.compile("\\]"), "］"],
--            [re.compile("\\^"), "＾"],
--            [re.compile("_"), "＿"],
--            [re.compile("`"), "‘"],
--            [re.compile("a"), "ａ"],
--            [re.compile("b"), "ｂ"],
--            [re.compile("c"), "ｃ"],
--            [re.compile("d"), "ｄ"],
--            [re.compile("e"), "ｅ"],
--            [re.compile("f"), "ｆ"],
--            [re.compile("g"), "ｇ"],
--            [re.compile("h"), "ｈ"],
--            [re.compile("i"), "ｉ"],
--            [re.compile("j"), "ｊ"],
--            [re.compile("k"), "ｋ"],
--            [re.compile("l"), "ｌ"],
--            [re.compile("m"), "ｍ"],
--            [re.compile("n"), "ｎ"],
--            [re.compile("o"), "ｏ"],
--            [re.compile("p"), "ｐ"],
--            [re.compile("q"), "ｑ"],
--            [re.compile("r"), "ｒ"],
--            [re.compile("s"), "ｓ"],
--            [re.compile("t"), "ｔ"],
--            [re.compile("u"), "ｕ"],
--            [re.compile("v"), "ｖ"],
--            [re.compile("w"), "ｗ"],
--            [re.compile("x"), "ｘ"],
--            [re.compile("y"), "ｙ"],
--            [re.compile("z"), "ｚ"],
--            [re.compile("{"), "｛"],
--            [re.compile("\\|"), "｜"],
--            [re.compile("}"), "｝"],
--            [re.compile("~"), "〜"],
--            [re.compile("�"), "？"],  # u+fffd
--        ]
-+	global predic
-+	if predic is None:
-+		predic = [
-+			[re.compile("\r"), ""],
-+			[re.compile("\n"), ""],
-+			[re.compile(" "), "　"],
-+			[re.compile("!"), "！"],
-+			[re.compile('"'), "”"],
-+			[re.compile("#"), "＃"],
-+			[re.compile("\\$"), "＄"],
-+			[re.compile("%"), "％"],
-+			[re.compile("&"), "＆"],
-+			[re.compile("'"), "’"],
-+			[re.compile("\\("), "（"],
-+			[re.compile("\\)"), "）"],
-+			[re.compile("\\*"), "＊"],
-+			[re.compile("\\+"), "＋"],
-+			[re.compile(","), "，"],
-+			[re.compile("\\-"), "−"],
-+			[re.compile("\\."), "．"],
-+			[re.compile("\\/"), "／"],
-+			[re.compile("0"), "０"],
-+			[re.compile("1"), "１"],
-+			[re.compile("2"), "２"],
-+			[re.compile("3"), "３"],
-+			[re.compile("4"), "４"],
-+			[re.compile("5"), "５"],
-+			[re.compile("6"), "６"],
-+			[re.compile("7"), "７"],
-+			[re.compile("8"), "８"],
-+			[re.compile("9"), "９"],
-+			[re.compile(":"), "："],
-+			[re.compile(";"), "；"],
-+			[re.compile("<"), "＜"],
-+			[re.compile("="), "＝"],
-+			[re.compile(">"), "＞"],
 +			[re.compile("\\?"), "？"],
-+			[re.compile("@"), "＠"],
-+			[re.compile("A"), "Ａ"],
-+			[re.compile("B"), "Ｂ"],
-+			[re.compile("C"), "Ｃ"],
-+			[re.compile("D"), "Ｄ"],
-+			[re.compile("E"), "Ｅ"],
-+			[re.compile("F"), "Ｆ"],
-+			[re.compile("G"), "Ｇ"],
-+			[re.compile("H"), "Ｈ"],
-+			[re.compile("I"), "Ｉ"],
-+			[re.compile("J"), "Ｊ"],
-+			[re.compile("K"), "Ｋ"],
-+			[re.compile("L"), "Ｌ"],
-+			[re.compile("M"), "Ｍ"],
-+			[re.compile("N"), "Ｎ"],
-+			[re.compile("O"), "Ｏ"],
-+			[re.compile("P"), "Ｐ"],
-+			[re.compile("Q"), "Ｑ"],
-+			[re.compile("R"), "Ｒ"],
-+			[re.compile("S"), "Ｓ"],
-+			[re.compile("T"), "Ｔ"],
-+			[re.compile("U"), "Ｕ"],
-+			[re.compile("V"), "Ｖ"],
-+			[re.compile("W"), "Ｗ"],
-+			[re.compile("X"), "Ｘ"],
-+			[re.compile("Y"), "Ｙ"],
-+			[re.compile("Z"), "Ｚ"],
-+			[re.compile("\\["), "［"],
-+			[re.compile("\\\\"), "￥"],
-+			[re.compile("\\]"), "］"],
-+			[re.compile("\\^"), "＾"],
-+			[re.compile("_"), "＿"],
-+			[re.compile("`"), "‘"],
-+			[re.compile("a"), "ａ"],
-+			[re.compile("b"), "ｂ"],
-+			[re.compile("c"), "ｃ"],
-+			[re.compile("d"), "ｄ"],
-+			[re.compile("e"), "ｅ"],
-+			[re.compile("f"), "ｆ"],
-+			[re.compile("g"), "ｇ"],
-+			[re.compile("h"), "ｈ"],
-+			[re.compile("i"), "ｉ"],
-+			[re.compile("j"), "ｊ"],
-+			[re.compile("k"), "ｋ"],
-+			[re.compile("l"), "ｌ"],
-+			[re.compile("m"), "ｍ"],
-+			[re.compile("n"), "ｎ"],
-+			[re.compile("o"), "ｏ"],
-+			[re.compile("p"), "ｐ"],
-+			[re.compile("q"), "ｑ"],
-+			[re.compile("r"), "ｒ"],
-+			[re.compile("s"), "ｓ"],
-+			[re.compile("t"), "ｔ"],
-+			[re.compile("u"), "ｕ"],
-+			[re.compile("v"), "ｖ"],
-+			[re.compile("w"), "ｗ"],
-+			[re.compile("x"), "ｘ"],
-+			[re.compile("y"), "ｙ"],
-+			[re.compile("z"), "ｚ"],
-+			[re.compile("{"), "｛"],
-+			[re.compile("\\|"), "｜"],
-+			[re.compile("}"), "｝"],
-+			[re.compile("~"), "〜"],
-+			[re.compile("�"), "？"],  # u+fffd
-+		]
- 
- 
- def text2mecab_convert(s):
--    for p in predic:
--        try:
--            s = re.sub(p[0], p[1], s)
+ 			[re.compile("@"), "＠"],
+ 			[re.compile("A"), "Ａ"],
+ 			[re.compile("B"), "Ｂ"],
+@@ -118,7 +118,7 @@ def text2mecab_convert(s):
+ 	for p in predic:
+ 		try:
+ 			s = re.sub(p[0], p[1], s)
 -        except:
--            pass
--    return s
-+	for p in predic:
-+		try:
-+			s = re.sub(p[0], p[1], s)
 +		except Exception:
-+			pass
-+	return s
+ 			pass
+ 	return s
  
- 
- def text2mecab(txt, CODE_=CODE):
--    text2mecab_setup()
--    txt = unicodedata.normalize("NFKC", txt)
--    txt = text2mecab_convert(txt)
--    return txt.encode(CODE_, "ignore")
-+	text2mecab_setup()
-+	txt = unicodedata.normalize("NFKC", txt)
-+	txt = text2mecab_convert(txt)
+@@ -127,4 +127,22 @@ def text2mecab(txt, CODE_=CODE):
+ 	text2mecab_setup()
+ 	txt = unicodedata.normalize("NFKC", txt)
+ 	txt = text2mecab_convert(txt)
 +	# BEGIN JP PATCH (assert suspicious patterns before encoding)
 +	# Detect mixed ASCII/non-ASCII or unusual whitespace patterns that may trigger crashes.
 +	assert "\t" not in txt, "text2mecab: unexpected tab after conversion"
@@ -261,6 +52,6 @@ index ca07e0a31a..29fe1a5cbf 100644
 +	ctrl_chars = [c for c in txt if ord(c) < 0x20 and c != " "]
 +	assert not ctrl_chars, f"text2mecab: ASCII control chars detected: {ctrl_chars!r}"
 +	# END JP PATCH
-+	return txt.encode(CODE_, "ignore")
+ 	return txt.encode(CODE_, "ignore")
 
 ```

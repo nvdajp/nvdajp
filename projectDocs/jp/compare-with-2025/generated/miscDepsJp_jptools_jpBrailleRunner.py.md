@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\miscDepsJp\jptools\jpBrailleRunner.py`  
 **Current**: `F:\nvda\gh\alphajp\miscDepsJp\jptools\jpBrailleRunner.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -103,9 +105,8 @@ index ec73b788e9..e5c5d04e67 100644
                          f.write("correct_inpos1: " + correct_inpos1 + "\n")
                      f.write("result_inpos1: " + result_inpos1 + "\n")
                      if "comment" in t:
--                        f.write("comment: " + t["comment"] + "\n")
 +                        if isinstance(t["comment"], str):
-+                            f.write("comment: " + t["comment"] + "\n")
+                             f.write("comment: " + t["comment"] + "\n")
 +                        else:
 +                            f.write("comment: " + ", ".join(t["comment"]) + "\n")
                      f.write("\n")
@@ -188,11 +189,11 @@ index ec73b788e9..e5c5d04e67 100644
 +                    error_types.append("inpos2_mismatch")
 +                    error_summary["inpos2_mismatch"] += 1
 +                if correct_inpos and result_inpos != correct_inpos:
-+                    isError = True
+                     isError = True
 +                    error_types.append("inpos_mismatch")
 +                    error_summary["inpos_mismatch"] += 1
 +                if correct_outpos and result_outpos != correct_outpos:
-                     isError = True
++                    isError = True
 +                    error_types.append("outpos_mismatch")
 +                    error_summary["outpos_mismatch"] += 1
 +                if isError:
@@ -207,9 +208,8 @@ index ec73b788e9..e5c5d04e67 100644
                      f.write("res_in : " + result_inpos + "\n")
                      f.write("res_out: " + result_outpos + "\n")
                      if "comment" in t and t["comment"]:
--                        f.write("comment: " + t["comment"] + "\n")
 +                        if isinstance(t["comment"], str):
-+                            f.write("comment: " + t["comment"] + "\n")
+                             f.write("comment: " + t["comment"] + "\n")
 +                        else:
 +                            f.write("comment: " + ", ".join(t["comment"]) + "\n")
                      f.write("\n")

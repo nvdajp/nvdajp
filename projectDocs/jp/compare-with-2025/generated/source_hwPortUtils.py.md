@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\hwPortUtils.py`  
 **Current**: `F:\nvda\gh\alphajp\source\hwPortUtils.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -10,7 +12,7 @@ diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\hwPortUtils.py" "b/F:\\nvda\
 index 7a040404c2..83a84f2aa3 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\hwPortUtils.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\hwPortUtils.py"
-@@ -9,154 +9,59 @@
+@@ -9,152 +9,57 @@
  import math
  import typing
  import winreg
@@ -27,11 +29,42 @@ index 7a040404c2..83a84f2aa3 100644
  from logHandler import log
  from winAPI.constants import SystemErrorCodes
 -from winKernel import SYSTEMTIME
+-
+-
+-def ValidHandle(value):
+-	if value == 0:
+-		raise ctypes.WinError()
+-	return value
+-
+-
+-HDEVINFO = ctypes.c_void_p
+-
+-
+-class SP_DEVINFO_DATA(ctypes.Structure):
+-	_fields_ = (
+-		("cbSize", DWORD),
+-		("ClassGuid", GUID),
+-		("DevInst", DWORD),
+-		("Reserved", ctypes.POINTER(ULONG)),
 +from winBindings.advapi32 import RegCloseKey as _RegCloseKey
 +from winBindings.bthprops import (
 +	BLUETOOTH_DEVICE_INFO as _BLUETOOTH_DEVICE_INFO,
 +	BluetoothGetDeviceInfo as _BluetoothGetDeviceInfo,
-+)
+ )
+-
+-	def __str__(self):
+-		return f"ClassGuid:{self.ClassGuid} DevInst:{self.DevInst}"
+-
+-
+-PSP_DEVINFO_DATA = ctypes.POINTER(SP_DEVINFO_DATA)
+-
+-
+-class SP_DEVICE_INTERFACE_DATA(ctypes.Structure):
+-	_fields_ = (
+-		("cbSize", DWORD),
+-		("InterfaceClassGuid", GUID),
+-		("Flags", DWORD),
+-		("Reserved", ctypes.POINTER(ULONG)),
 +from winBindings.hid import (
 +	HIDD_ATTRIBUTES as _HIDD_ATTRIBUTES,
 +	HidD_FreePreparsedData as _HidD_FreePreparsedData,
@@ -41,7 +74,21 @@ index 7a040404c2..83a84f2aa3 100644
 +	HidD_GetPreparsedData as _HidD_GetPreparsedData,
 +	HidD_GetProductString as _HidD_GetProductString,
 +	HidP_GetCaps as _HidP_GetCaps,
-+)
+ )
+-
+-	def __str__(self):
+-		return f"InterfaceClassGuid:{self.InterfaceClassGuid} Flags:{self.Flags}"
+-
+-
+-PSP_DEVICE_INTERFACE_DATA = ctypes.POINTER(SP_DEVICE_INTERFACE_DATA)
+-
+-PSP_DEVICE_INTERFACE_DETAIL_DATA = ctypes.c_void_p
+-
+-
+-class DEVPROPKEY(ctypes.Structure):
+-	_fields_ = (
+-		("DEVPROPGUID", GUID),
+-		("DEVPROPID", ULONG),
 +from winBindings.setupapi import (
 +	DICS_FLAG,
 +	DIGCF,
@@ -62,58 +109,9 @@ index 7a040404c2..83a84f2aa3 100644
 +	SetupDiGetDeviceRegistryProperty as _SetupDiGetDeviceRegistryProperty,
 +	SetupDiOpenDevRegKey as _SetupDiOpenDevRegKey,
 +	_Dummy,
-+)
+ )
  
  
--def ValidHandle(value):
-+def _ValidHandle(value):
- 	if value == 0:
- 		raise ctypes.WinError()
- 	return value
- 
- 
--HDEVINFO = ctypes.c_void_p
--
--
--class SP_DEVINFO_DATA(ctypes.Structure):
--	_fields_ = (
--		("cbSize", DWORD),
--		("ClassGuid", GUID),
--		("DevInst", DWORD),
--		("Reserved", ctypes.POINTER(ULONG)),
--	)
--
--	def __str__(self):
--		return f"ClassGuid:{self.ClassGuid} DevInst:{self.DevInst}"
--
--
--PSP_DEVINFO_DATA = ctypes.POINTER(SP_DEVINFO_DATA)
--
--
--class SP_DEVICE_INTERFACE_DATA(ctypes.Structure):
--	_fields_ = (
--		("cbSize", DWORD),
--		("InterfaceClassGuid", GUID),
--		("Flags", DWORD),
--		("Reserved", ctypes.POINTER(ULONG)),
--	)
--
--	def __str__(self):
--		return f"InterfaceClassGuid:{self.InterfaceClassGuid} Flags:{self.Flags}"
--
--
--PSP_DEVICE_INTERFACE_DATA = ctypes.POINTER(SP_DEVICE_INTERFACE_DATA)
--
--PSP_DEVICE_INTERFACE_DETAIL_DATA = ctypes.c_void_p
--
--
--class DEVPROPKEY(ctypes.Structure):
--	_fields_ = (
--		("DEVPROPGUID", GUID),
--		("DEVPROPID", ULONG),
--	)
--
--
 -class dummy(ctypes.Structure):
 -	_fields_ = (("d1", DWORD), ("d2", WCHAR))
 -	# SetupAPI.h in the Windows headers includes pshpack8.h when 64 bit, pshpack1.h otherwise
@@ -200,11 +198,13 @@ index 7a040404c2..83a84f2aa3 100644
 -ERROR_NO_MORE_ITEMS = 259
 -DICS_FLAG_GLOBAL = 0x00000001
 -DIREG_DEV = 0x00000001
--
--
- def _isDebug():
- 	return config.conf["debugLog"]["hwIo"]
++def _ValidHandle(value):
++	if value == 0:
++		raise ctypes.WinError()
++	return value
  
+ 
+ def _isDebug():
 @@ -219,31 +124,31 @@ def listComPorts(onlyAvailable: bool = True) -> typing.Iterator[dict]:
  	:param onlyAvailable: Only return ports that are currently available.
  	:return: Dicts including keys of port, friendlyName and hardwareID.

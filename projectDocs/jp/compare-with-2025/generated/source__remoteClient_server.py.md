@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\_remoteClient\server.py`  
 **Current**: `F:\nvda\gh\alphajp\source\_remoteClient\server.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -146,21 +148,17 @@ index 3a9b296e72..aa6fdb0c0f 100644
  		fingerprint = cert.fingerprint(hashes.SHA256()).hex()
 -		# Calculate private key data
 -		keyData = privateKey.private_bytes(
--			encoding=serialization.Encoding.PEM,
--			format=serialization.PrivateFormat.PKCS8,
--			encryption_algorithm=serialization.NoEncryption(),
--		)
--		# Calculate certificate data
--		certData = cert.public_bytes(serialization.Encoding.PEM)
 +		# Write private key
 +		with open(self.keyPath, "wb") as f:
 +			f.write(
 +				privateKey.private_bytes(
-+					encoding=serialization.Encoding.PEM,
-+					format=serialization.PrivateFormat.PKCS8,
-+					encryption_algorithm=serialization.NoEncryption(),
+ 					encoding=serialization.Encoding.PEM,
+ 					format=serialization.PrivateFormat.PKCS8,
+ 					encryption_algorithm=serialization.NoEncryption(),
 +				),
-+			)
+ 			)
+-		# Calculate certificate data
+-		certData = cert.public_bytes(serialization.Encoding.PEM)
  
 -		# Store data on self
 -		self.__key = keyData
@@ -238,16 +236,15 @@ index 3a9b296e72..aa6fdb0c0f 100644
 -			# We don't exit the context manager, as that would (potentially) delete the file
 -			f.close()
 -			context.load_cert_chain(f.name)
--			# Trust our own CA for server verification
--			context.load_verify_locations(cafile=f.name)
--			# Explicitly delete the file, just to be sure
--			# Exiting the context manager should do this, but it may be left up to the OS to decide when to delete it
--			os.unlink(f.name)
 +		context.load_cert_chain(
 +			certfile=str(self.certPath),
 +			keyfile=str(self.keyPath),
 +		)
-+		# Trust our own CA for server verification
+ 		# Trust our own CA for server verification
+-			context.load_verify_locations(cafile=f.name)
+-			# Explicitly delete the file, just to be sure
+-			# Exiting the context manager should do this, but it may be left up to the OS to decide when to delete it
+-			os.unlink(f.name)
 +		context.load_verify_locations(cafile=str(self.certPath))
  		# Require client cert verification
  		context.verify_mode = ssl.CERT_NONE  # Don't require client certificates

@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\include\liblouis\python\examples\liblouisxslt.py`  
 **Current**: `F:\nvda\gh\alphajp\include\liblouis\python\examples\liblouisxslt.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -10,7 +12,7 @@ diff --git "a/F:\\nvda\\gh\\alphajp-251219\\include\\liblouis\\python\\examples\
 index 2f1267b57c..5a1ec2b180 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\include\\liblouis\\python\\examples\\liblouisxslt.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\include\\liblouis\\python\\examples\\liblouisxslt.py"
-@@ -14,25 +14,26 @@
+@@ -14,21 +14,22 @@
  # dtbook2brldtbook.xsl in the same directory which simpy copies a dtbook
  # xml and translates all the text node into Braille.
  
@@ -42,19 +44,12 @@ index 2f1267b57c..5a1ec2b180 100644
  
  def translate(ctx, str, translation_table, emphasis=None):
      global nodeName
--    
-+
-     try:
-         pctxt = libxslt.xpathParserContext(_obj=ctx)
-         ctxt = pctxt.context()
-@@ -41,9 +42,12 @@ def translate(ctx, str, translation_table, emphasis=None):
-     except:
+@@ -42,8 +43,11 @@ def translate(ctx, str, translation_table, emphasis=None):
          pass
  
--    typeform = len(str)*[emphasisMap[emphasis]] if emphasis else None
+     typeform = len(str) * [emphasisMap[emphasis]] if emphasis else None
 -    braille = louis.translate([translation_table], str.decode('utf-8'), typeform=typeform)[0]
 -    return braille.encode('utf-8')
-+    typeform = len(str) * [emphasisMap[emphasis]] if emphasis else None
 +    braille = louis.translate(
 +        [translation_table], str.decode("utf-8"), typeform=typeform
 +    )[0]

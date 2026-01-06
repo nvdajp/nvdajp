@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\UIAHandler\__init__.py`  
 **Current**: `F:\nvda\gh\alphajp\source\UIAHandler\__init__.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -38,33 +40,20 @@ index 3cd2567881..e1ddc3507f 100644
  from . import utils
  from comInterfaces import UIAutomationClient as UIA
  
-@@ -250,19 +252,16 @@
+@@ -250,8 +252,6 @@
  
  localEventHandlerGroupUIAEventIds = set()
  
 -autoSelectDetectionAvailable = False
 -if winVersion.getWinVer() >= winVersion.WIN10:
--	UIAEventIdsToNVDAEventNames.update(
--		{
--			UIA.UIA_Text_TextSelectionChangedEventId: "caret",
--		},
--	)
--	localEventHandlerGroupUIAEventIds.update(
--		{
--			UIA.UIA_Text_TextSelectionChangedEventId,
--		},
--	)
+ UIAEventIdsToNVDAEventNames.update(
+ 	{
+ 		UIA.UIA_Text_TextSelectionChangedEventId: "caret",
+@@ -262,7 +262,6 @@
+ 		UIA.UIA_Text_TextSelectionChangedEventId,
+ 	},
+ )
 -	autoSelectDetectionAvailable = True
-+UIAEventIdsToNVDAEventNames.update(
-+	{
-+		UIA.UIA_Text_TextSelectionChangedEventId: "caret",
-+	},
-+)
-+localEventHandlerGroupUIAEventIds.update(
-+	{
-+		UIA.UIA_Text_TextSelectionChangedEventId,
-+	},
-+)
  
  globalEventHandlerGroupUIAEventIds = set(UIAEventIdsToNVDAEventNames) - localEventHandlerGroupUIAEventIds
  

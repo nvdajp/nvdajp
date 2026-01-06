@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\shellapi.py`  
 **Current**: `F:\nvda\gh\alphajp\source\shellapi.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -10,7 +12,7 @@ diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\shellapi.py" "b/F:\\nvda\\gh
 index 9b3de6ff03..1660e6b949 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\shellapi.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\shellapi.py"
-@@ -6,35 +6,15 @@
+@@ -6,36 +6,16 @@
  from ctypes import *  # noqa: F403
  from ctypes.wintypes import *  # noqa: F403
  from typing import Optional
@@ -38,20 +40,20 @@ index 9b3de6ff03..1660e6b949 100644
 -		("dwHotKey", DWORD),  # noqa: F405
 -		("hIconOrMonitor", HANDLE),  # noqa: F405
 -		("hProcess", HANDLE),  # noqa: F405
--	)
--
++__getattr__ = _deprecate.handleDeprecations(
++	_deprecate.MovedSymbol("SHELLEXECUTEINFO", "winBindings.shell32"),
++	_deprecate.MovedSymbol("SHELLEXECUTEINFOW", "winBindings.shell32"),
++	_deprecate.MovedSymbol("shell32", "winBindings.shell32", "dll"),
+ )
+ 
 -	def __init__(self, **kwargs):
 -		super(SHELLEXECUTEINFOW, self).__init__(cbSize=sizeof(self), **kwargs)  # noqa: F405
 -
 -
 -SHELLEXECUTEINFO = SHELLEXECUTEINFOW
-+__getattr__ = _deprecate.handleDeprecations(
-+	_deprecate.MovedSymbol("SHELLEXECUTEINFO", "winBindings.shell32"),
-+	_deprecate.MovedSymbol("SHELLEXECUTEINFOW", "winBindings.shell32"),
-+	_deprecate.MovedSymbol("shell32", "winBindings.shell32", "dll"),
-+)
- 
+-
  SEE_MASK_NOCLOSEPROCESS = 0x00000040
+ 
  
 @@ -49,12 +29,12 @@ def ShellExecute(
  ) -> None:

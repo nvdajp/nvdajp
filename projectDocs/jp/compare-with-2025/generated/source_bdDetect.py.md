@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\bdDetect.py`  
 **Current**: `F:\nvda\gh\alphajp\source\bdDetect.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -97,14 +99,11 @@ index 7da4fc6a3e..50c112ee63 100644
  	# device matches), if one is found early the iteration can stop.
  	usbHidDeviceMatches, usbHidDeviceMatchesForCustom = itertools.tee(
 -		(
--			DeviceMatch(ProtocolType.HID, port["usbID"], port["devicePath"], port)
--			for port in deviceInfoFetcher.hidDevices
--			if port["provider"] == CommunicationType.USB
--		)
-+		DeviceMatch(ProtocolType.HID, port["usbID"], port["devicePath"], port)
-+		for port in deviceInfoFetcher.hidDevices
-+		if port["provider"] == CommunicationType.USB
+ 		DeviceMatch(ProtocolType.HID, port["usbID"], port["devicePath"], port)
+ 		for port in deviceInfoFetcher.hidDevices
+ 		if port["provider"] == CommunicationType.USB
  	)
+-	)
  
 -	fallbackDriversAndMatches: list[tuple[str, DeviceMatch]] = []
 +	fallbackDriversAndMatches: list[DriverAndDeviceMatch] = []
@@ -146,22 +145,19 @@ index 7da4fc6a3e..50c112ee63 100644
  	btSerialMatchesForCustom = (
  		DeviceMatch(ProtocolType.SERIAL, port["bluetoothName"], port["port"], port)
  		for port in deviceInfoFetcher.comPorts
-@@ -291,11 +290,9 @@ def getDriversForPossibleBluetoothDevices(
+@@ -291,18 +290,22 @@ def getDriversForPossibleBluetoothDevices(
  	# The corollary is that clients of this method don't have to process all devices (and create all
  	# device matches), if one is found early the iteration can stop.
  	btHidDevMatchesForHid, btHidDevMatchesForCustom = itertools.tee(
 -		(
--			DeviceMatch(ProtocolType.HID, port["hardwareID"], port["devicePath"], port)
--			for port in deviceInfoFetcher.hidDevices
--			if port["provider"] == CommunicationType.BLUETOOTH
--		)
-+		DeviceMatch(ProtocolType.HID, port["hardwareID"], port["devicePath"], port)
-+		for port in deviceInfoFetcher.hidDevices
-+		if port["provider"] == CommunicationType.BLUETOOTH
+ 		DeviceMatch(ProtocolType.HID, port["hardwareID"], port["devicePath"], port)
+ 		for port in deviceInfoFetcher.hidDevices
+ 		if port["provider"] == CommunicationType.BLUETOOTH
  	)
+-	)
  	for match in itertools.chain(btSerialMatchesForCustom, btHidDevMatchesForCustom):
  		for driver, devs in _driverDevices.items():
-@@ -303,6 +300,12 @@ def getDriversForPossibleBluetoothDevices(
+ 			if limitToDevices and driver not in limitToDevices:
  				continue
  			matchFunc = devs[CommunicationType.BLUETOOTH]
  			if not callable(matchFunc):
@@ -451,19 +447,18 @@ index 7da4fc6a3e..50c112ee63 100644
  	return braille.getDisplayDrivers(
  		lambda d: (
  			d.isThreadSafe
-@@ -776,10 +847,8 @@ def addUsbDevices(
+@@ -776,11 +847,9 @@ def addUsbDevices(
  		devs = self._getDriverDict()
  		driverUsb = devs[CommunicationType.USB]
  		driverUsb.update(
 -			(
--				_UsbDeviceRegistryEntry(id=id, type=type, useAsFallback=useAsFallback, matchFunc=matchFunc)
--				for id in ids
--			)
-+			_UsbDeviceRegistryEntry(id=id, type=type, useAsFallback=useAsFallback, matchFunc=matchFunc)
-+			for id in ids
+ 			_UsbDeviceRegistryEntry(id=id, type=type, useAsFallback=useAsFallback, matchFunc=matchFunc)
+ 			for id in ids
  		)
+-		)
  
  	def addBluetoothDevices(self, matchFunc: MatchFuncT):
+ 		"""Associate Bluetooth HID or COM ports with the driver on this instance.
 @@ -793,7 +862,7 @@ def addBluetoothDevices(self, matchFunc: MatchFuncT):
  
  	def addDeviceScanner(

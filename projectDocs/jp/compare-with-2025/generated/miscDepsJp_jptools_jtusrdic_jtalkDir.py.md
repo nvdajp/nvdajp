@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\miscDepsJp\jptools\jtusrdic\jtalkDir.py`  
 **Current**: `F:\nvda\gh\alphajp\miscDepsJp\jptools\jtusrdic\jtalkDir.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -66,17 +68,15 @@ index 1221e50001..0f10ed05e6 100644
 -        d = os.path.join(tempDir, os.path.basename(u))
 -        file_reader = codecs.open(u, "r", "utf-8-sig")
 -        file_writer = codecs.open(d, "w", "utf-8")
--        for line in file_reader:
--            file_writer.write(line)
--        file_writer.close()
--        file_reader.close()
--        user_dics.append(d)
 +    for u in [Path(d).resolve() for d in glob(str(configDir / "jtusr*.txt"))]:
 +        d = tempDir / u.name
 +        with open(str(u), "r", encoding="utf-8-sig") as file_reader:
 +            with open(str(d), "w", encoding="utf-8") as file_writer:
-+                for line in file_reader:
-+                    file_writer.write(line)
+                 for line in file_reader:
+                     file_writer.write(line)
+-        file_writer.close()
+-        file_reader.close()
+-        user_dics.append(d)
 +        user_dics.append(str(d))
      return user_dics
 

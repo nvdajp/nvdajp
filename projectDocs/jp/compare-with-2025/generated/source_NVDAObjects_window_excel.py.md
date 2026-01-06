@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\window\excel.py`  
 **Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\window\excel.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -36,27 +38,20 @@ index f177ea6af7..77c3d135a3 100644
  from . import Window
  from .. import NVDAObjectTextInfo
  import scriptHandler
-@@ -136,14 +138,22 @@ def __getattr__(attrName: str) -> Any:
+@@ -136,7 +138,8 @@ def __getattr__(attrName: str) -> Any:
  			1: "default",
  		},
  	}
 -	if attrName in _deprecatedConstantsMap and NVDAState._allowDeprecatedAPI():
--		replacementSymbol = _deprecatedConstantsMap[attrName]
--		log.warning(
--			f"Importing {attrName} from here is deprecated. "
--			f"Import XlVAlign or XlHAlign enumerations instead.",
--			stack_info=True,
--		)
--		return replacementSymbol
 +	if NVDAState._allowDeprecatedAPI():
 +		if attrName in _deprecatedConstantsMap:
-+			replacementSymbol = _deprecatedConstantsMap[attrName]
-+			log.warning(
-+				f"Importing {attrName} from here is deprecated. "
-+				f"Import XlVAlign or XlHAlign enumerations instead.",
-+				stack_info=True,
-+			)
-+			return replacementSymbol
+ 			replacementSymbol = _deprecatedConstantsMap[attrName]
+ 			log.warning(
+ 				f"Importing {attrName} from here is deprecated. "
+@@ -144,6 +147,13 @@ def __getattr__(attrName: str) -> Any:
+ 				stack_info=True,
+ 			)
+ 			return replacementSymbol
 +		elif attrName == "ExcelCellInfo":
 +			warnings.warn(
 +				"NVDAObjects.window.excel.ExcelCellInfo is deprecated. Use NVDAHelper.localLib.EXCEL_CELLINFO instead.",

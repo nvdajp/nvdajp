@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\unit\test_remote\test_remoteClient.py`  
 **Current**: `F:\nvda\gh\alphajp\tests\unit\test_remote\test_remoteClient.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff

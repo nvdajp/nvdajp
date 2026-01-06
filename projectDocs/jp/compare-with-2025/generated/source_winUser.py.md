@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winUser.py`  
 **Current**: `F:\nvda\gh\alphajp\source\winUser.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -699,12 +701,11 @@ index b257590e2c..b13e989af1 100644
  		self.hwnd = hwnd
  		self.idEvent = idEvent
  		self.elapse = elapse
--		self.timerFunc = timerFunc
--		self.ident = user32.SetTimer(hwnd, idEvent, elapse, timerFunc)
 +		# ensure timerFunc is a TIMERPROC, or is converted to a TIMERPROC,
 +		# and ensuring that None is handled as the correctly typed null function pointer.
 +		if isinstance(timerFunc, winBindings.user32.TIMERPROC):
-+			self.timerFunc = timerFunc
+ 			self.timerFunc = timerFunc
+-		self.ident = user32.SetTimer(hwnd, idEvent, elapse, timerFunc)
 +		elif timerFunc is None:
 +			self.timerFunc = winBindings.user32.TIMERPROC(0)
 +		else:

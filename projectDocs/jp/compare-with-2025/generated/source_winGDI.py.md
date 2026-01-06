@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winGDI.py`  
 **Current**: `F:\nvda\gh\alphajp\source\winGDI.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -58,12 +60,6 @@ index ddb3d0a13e..8c7e51bcfd 100644
 -		("biClrImportant", DWORD),
 -	]
 -
--
--class BITMAPINFO(Structure):
--	_fields_ = [
--		("bmiHeader", BITMAPINFOHEADER),
--		("bmiColors", (RGBQUAD * 1)),
--	]
 +from utils import _deprecate
 +from winBindings.gdiplus import (
 +	ULONG_PTR,
@@ -82,7 +78,12 @@ index ddb3d0a13e..8c7e51bcfd 100644
 +	GdiplusStartupInput as _GdiplusStartupInput,
 +	GdiplusStartupOutput as _GdiplusStartupOutput,
 +)
-+
+ 
+-class BITMAPINFO(Structure):
+-	_fields_ = [
+-		("bmiHeader", BITMAPINFOHEADER),
+-		("bmiColors", (RGBQUAD * 1)),
+-	]
 +__getattr__ = _deprecate.handleDeprecations(
 +	_deprecate.MovedSymbol("gdiplus", "winBindings.gdiplus", "dll"),
 +	_deprecate.MovedSymbol(

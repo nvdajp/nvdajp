@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\unit\test_baseObject.py`  
 **Current**: `F:\nvda\gh\alphajp\tests\unit\test_baseObject.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -23,14 +25,13 @@ index 764a2302d0..2af2892ea2 100644
  	@staticmethod
  	def _get_regex(className: str) -> str:
 -		if sys.version_info.major == 3 and sys.version_info.minor == 13:
--			return rf"^Can't instantiate abstract class {className} without an implementation for abstract method 'x'"
+ 		return rf"^Can't instantiate abstract class {className} without an implementation for abstract method 'x'"
 -		elif sys.version_info.major == 3 and sys.version_info.minor == 11:
 -			return rf"^Can't instantiate abstract class {className} with abstract method x"
 -		else:
 -			raise RuntimeError(
 -				f"Unsupported Python version for abstract property tests: {sys.version_info.major}.{sys.version_info.minor}",
 -			)
-+		return rf"^Can't instantiate abstract class {className} without an implementation for abstract method 'x'"
  
  	def test_abstractProperty(self):
  		self.assertRaisesRegex(

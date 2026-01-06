@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\jtalkDir.py`  
 **Current**: `F:\nvda\gh\alphajp\source\synthDrivers\jtalk\jtalkDir.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -28,33 +30,28 @@ index e967022ec3..f035ba7b45 100644
  if hasattr(sys, "frozen"):
 -    d = os.path.join(getcwd(), "synthDrivers", "jtalk")
 -    if os.path.isdir(d):
--        jtalk_dir = d
 +	d = Path.cwd() / "synthDrivers" / "jtalk"
 +	if d.is_dir():
-+		jtalk_dir = d
+ 		jtalk_dir = d
  
 -configDir = getcwd()
 +configDir = Path.cwd()
  try:
--    import globalVars  # type: ignore
-+	import globalVars  # type: ignore
+ 	import globalVars  # type: ignore
  
--    if globalVars.appArgs.configPath:
+ 	if globalVars.appArgs.configPath:
 -        configDir = globalVars.appArgs.configPath
 -    d = os.path.join(
 -        globalVars.appArgs.configPath, "addons", "nvdajp_jtalk", "synthDrivers", "jtalk"
 -    )
 -    if os.path.isdir(d):
--        jtalk_dir = d
--except:
--    pass
-+	if globalVars.appArgs.configPath:
 +		configDir = Path(globalVars.appArgs.configPath)
 +		d = Path(globalVars.appArgs.configPath) / "addons" / "nvdajp_jtalk" / "synthDrivers" / "jtalk"
 +		if d.is_dir():
-+			jtalk_dir = d
+ 			jtalk_dir = d
+-except:
 +except Exception:
-+	pass
+ 	pass
  
 -dic_dir = os.path.join(jtalk_dir, "dic")
 +dic_dir = jtalk_dir / "dic"

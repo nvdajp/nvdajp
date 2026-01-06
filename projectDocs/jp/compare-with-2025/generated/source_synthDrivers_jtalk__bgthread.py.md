@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\_bgthread.py`  
 **Current**: `F:\nvda\gh\alphajp\source\synthDrivers\jtalk\_bgthread.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -10,7 +12,7 @@ diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\_bgthre
 index 89cc4dd6c9..ee865ac6a2 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\_bgthread.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\_bgthread.py"
-@@ -16,54 +16,57 @@
+@@ -16,7 +16,6 @@
  import queue as Queue
  
  
@@ -18,90 +20,38 @@ index 89cc4dd6c9..ee865ac6a2 100644
  bgThread = None
  bgQueue = None
  isSpeaking = False
+@@ -29,13 +28,14 @@ def __init__(self):
  
- 
- class BgThread(threading.Thread):
--    def __init__(self):
--        threading.Thread.__init__(self)
--        self.setDaemon(True)
-+	def __init__(self):
-+		threading.Thread.__init__(self)
-+		self.setDaemon(True)
- 
--    def run(self):
--        global isSpeaking
--        while True:
--            func, args, kwargs = bgQueue.get()
--            if not func:
--                break
--            try:
--                func(*args, **kwargs)
--            except:
--                log.error("Error running function from queue", exc_info=True)
--            finally:
--                isSpeaking = False
--                bgQueue.task_done()
-+	def run(self):
-+		global isSpeaking
+ 	def run(self):
+ 		global isSpeaking
 +		assert bgQueue is not None  # Type narrowing for type checkers
-+		while True:
-+			func, args, kwargs = bgQueue.get()
-+			if not func:
-+				break
-+			try:
-+				func(*args, **kwargs)
+ 		while True:
+ 			func, args, kwargs = bgQueue.get()
+ 			if not func:
+ 				break
+ 			try:
+ 				func(*args, **kwargs)
+-            except:
 +			except Exception:
-+				log.error("Error running function from queue", exc_info=True)
-+			finally:
-+				isSpeaking = False
-+				bgQueue.task_done()
- 
+ 				log.error("Error running function from queue", exc_info=True)
+ 			finally:
+ 				isSpeaking = False
+@@ -44,6 +44,7 @@ def run(self):
  
  def execWhenDone(func, *args, **kwargs):
--    global bgQueue
--    # This can't be a kwarg in the function definition because it will consume the first non-keywor dargument which is meant for func.
--    mustBeAsync = kwargs.pop("mustBeAsync", False)
--    if mustBeAsync or bgQueue.unfinished_tasks != 0:
--        # Either this operation must be asynchronous or There is still an operation in progress.
--        # Therefore, run this asynchronously in the background thread.
--        bgQueue.put((func, args, kwargs))
--    else:
--        func(*args, **kwargs)
-+	global bgQueue
+ 	global bgQueue
 +	assert bgQueue is not None  # Type narrowing for type checkers
-+	# This can't be a kwarg in the function definition because it will consume the first non-keywor dargument which is meant for func.
-+	mustBeAsync = kwargs.pop("mustBeAsync", False)
-+	if mustBeAsync or bgQueue.unfinished_tasks != 0:
-+		# Either this operation must be asynchronous or There is still an operation in progress.
-+		# Therefore, run this asynchronously in the background thread.
-+		bgQueue.put((func, args, kwargs))
-+	else:
-+		func(*args, **kwargs)
- 
- 
- def initialize():
--    global bgThread, bgQueue
--    bgQueue = Queue.Queue()
--    bgThread = BgThread()
--    bgThread.start()
-+	global bgThread, bgQueue
-+	bgQueue = Queue.Queue()
-+	bgThread = BgThread()
-+	bgThread.start()
- 
+ 	# This can't be a kwarg in the function definition because it will consume the first non-keywor dargument which is meant for func.
+ 	mustBeAsync = kwargs.pop("mustBeAsync", False)
+ 	if mustBeAsync or bgQueue.unfinished_tasks != 0:
+@@ -63,6 +64,8 @@ def initialize():
  
  def terminate():
--    global bgThread, bgQueue
--    bgQueue.put((None, None, None))
--    bgThread.join()
--    bgThread = None
--    bgQueue = None
-+	global bgThread, bgQueue
+ 	global bgThread, bgQueue
 +	assert bgQueue is not None  # Type narrowing for type checkers
 +	assert bgThread is not None  # Type narrowing for type checkers
-+	bgQueue.put((None, None, None))
-+	bgThread.join()
-+	bgThread = None
-+	bgQueue = None
+ 	bgQueue.put((None, None, None))
+ 	bgThread.join()
+ 	bgThread = None
 
 ```

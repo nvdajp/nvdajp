@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\nvdajp_jtalk.py`  
 **Current**: `F:\nvda\gh\alphajp\source\synthDrivers\nvdajp_jtalk.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -10,7 +12,7 @@ diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\nvdajp_jtalk.p
 index e9ea687ccf..604691b9c7 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\nvdajp_jtalk.py"
 +++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\nvdajp_jtalk.py"
-@@ -9,222 +9,203 @@
+@@ -9,11 +9,11 @@
  # Copyright (C) 2010-2021 Takuya Nishimoto (nishimotz.com)
  # Released under GPL 2
  
@@ -18,15 +20,16 @@ index e9ea687ccf..604691b9c7 100644
 +from synthDriverHandler import SynthDriver as BaseSynthDriver, VoiceInfo
  from collections import OrderedDict
  from logHandler import log
--
++from autoSettingsUtils.driverSetting import BooleanDriverSetting
+ 
 -try:
--    from speech.commands import (
--        IndexCommand,
--        CharacterModeCommand,
--        LangChangeCommand,
--        PitchCommand,
--        SpeechCommand,
--    )
+ from speech.commands import (
+ 	IndexCommand,
+ 	CharacterModeCommand,
+@@ -21,43 +21,27 @@
+ 	PitchCommand,
+ 	SpeechCommand,
+ )
 -except:
 -    from speech import (
 -        IndexCommand,
@@ -36,35 +39,27 @@ index e9ea687ccf..604691b9c7 100644
 -        SpeechCommand,
 -    )
 -import synthDriverHandler
-+from autoSettingsUtils.driverSetting import BooleanDriverSetting
-+
-+from speech.commands import (
-+	IndexCommand,
-+	CharacterModeCommand,
-+	LangChangeCommand,
-+	PitchCommand,
-+	SpeechCommand,
-+)
  import languageHandler
  from .jtalk import jtalkDriver
  from .jtalk.jtalkDriver import VoiceProperty
  from .jtalk._nvdajp_espeak import isJapaneseLang
 -
 -try:
--    from synthDriverHandler import synthIndexReached, synthDoneSpeaking
+ from synthDriverHandler import synthIndexReached, synthDoneSpeaking
 -except:
 -    synthIndexReached = synthDoneSpeaking = None
--
+ 
 -unicode = str
 -basestring = str
--
+ 
 -
 -class SynthDriver(SynthDriver):
--    """A Japanese synth driver for NVDAjp."""
--
--    name = "nvdajp_jtalk"
--    description = "JTalk"
--    supportedSettings = (
++class SynthDriver(BaseSynthDriver):
+ 	"""A Japanese synth driver for NVDAjp."""
+ 
+ 	name = "nvdajp_jtalk"
+ 	description = "JTalk"
+ 	supportedSettings = (
 -        SynthDriver.VoiceSetting(),
 -        SynthDriver.RateSetting(),
 -        SynthDriver.RateBoostSetting()
@@ -73,185 +68,6 @@ index e9ea687ccf..604691b9c7 100644
 -        SynthDriver.PitchSetting(),
 -        SynthDriver.InflectionSetting(),
 -        SynthDriver.VolumeSetting(),
--    )
--    supportedCommands = {
--        IndexCommand,
--        CharacterModeCommand,
--        LangChangeCommand,
--        PitchCommand,
--    }
--    supportedNotifications = {synthIndexReached, synthDoneSpeaking}
--
--    @classmethod
--    def check(cls):
--        return True
--
--    def __init__(self):
--        self.voice_id = "V4"
--        self._volume = 100
--        self._pitch = 50
--        self._pitchOffset = 0
--        self._inflection = 50
--        self._rateBoost = False
--        jtalkDriver.initialize(onIndexReached=self._onIndexReached)
--        self.rate = 50
--        self.speakingIndex = None
--        self.finishedIndex = None
--
--    def speak(self, speechSequence):
--        spellState = False
--        defaultLanguage = languageHandler.getLanguage()
--        if defaultLanguage[:2] == "ja":
--            defaultLanguage = "ja"
--        lang = defaultLanguage
--        currentLang = lang
--        for item in speechSequence:
--            if isinstance(item, basestring):
--                p = VoiceProperty()
--                p.pitch = min(max(self._pitch + self._pitchOffset, 0), 100)
--                p.inflection = self._inflection
--                p.characterMode = spellState
--                msg = str(item)
--                isMsgJp = isJapaneseLang(msg)
--                lang = currentLang
--                if isMsgJp:
--                    lang = "ja"
--                elif defaultLanguage != "ja" and not isMsgJp:
--                    lang = defaultLanguage
--                log.debug(
--                    "lang:%s idx:%r pit:%d inf:%d chr:%d (%s)"
--                    % (
--                        lang,
--                        self.speakingIndex,
--                        p.pitch,
--                        p.inflection,
--                        p.characterMode,
--                        msg,
--                    )
--                )
--                jtalkDriver.speak(msg, lang, index=self.speakingIndex, voiceProperty_=p)
--            elif isinstance(item, IndexCommand):
--                # log.info("IndexCommand %r" % self.speakingIndex)
--                jtalkDriver.updateIndex(item.index)
--                self.speakingIndex = item.index
--            elif isinstance(item, CharacterModeCommand):
--                if item.state:
--                    spellState = True
--                else:
--                    spellState = True
--            elif isinstance(item, LangChangeCommand):
--                lang = (item.lang if item.lang else defaultLanguage).replace("_", "-")
--                if lang[:2] == "ja":
--                    lang = "ja"
--                currentLang = lang
--            elif isinstance(item, PitchCommand):
--                self._pitchOffset = item.offset
--            elif isinstance(item, SpeechCommand):
--                log.debugWarning("Unsupported speech command: %s" % item)
--            else:
--                log.error("Unknown speech: %s" % item)
--        jtalkDriver.updateSpeakIndexWhenDone(self.speakingIndex)
--
--    def cancel(self):
--        jtalkDriver.stop()
--
--    def pause(self, switch):
--        jtalkDriver.pause(switch)
--
--    def isSpeaking(self):
--        return jtalkDriver.isSpeaking()
--
--    def _get_rateBoost(self):
--        return self._rateBoost
--
--    def _set_rateBoost(self, enable):
--        if enable == self._rateBoost:
--            return
--        rate = self.rate
--        self._rateBoost = enable
--        self.rate = rate
--
--    def terminate(self):
--        jtalkDriver.terminate()
--
--    # The current rate; ranges between 0 and 100
--    def _get_rate(self):
--        return jtalkDriver.get_rate(self._rateBoost)
--
--    def _set_rate(self, rate):
--        jtalkDriver.set_rate(int(rate), self._rateBoost)
--
--    def _get_pitch(self):
--        return self._pitch
--
--    def _set_pitch(self, pitch):
--        self._pitch = int(pitch)
--
--    def _get_volume(self):
--        return self._volume
--
--    def _set_volume(self, volume_):
--        self._volume = int(volume_)
--        jtalkDriver.set_volume(self._volume)
--        return
--
--    def _get_inflection(self):
--        return self._inflection
--
--    def _set_inflection(self, val):
--        self._inflection = int(val)
--
--    def _getAvailableVoices(self):
--        log.debug("_getAvailableVoices called")
--        voices = OrderedDict()
--        for v in jtalkDriver._jtalk_voices:
--            voices[v["id"]] = VoiceInfo(v["id"], v["name"], v["lang"])
--        return voices
--
--    def _get_voice(self):
--        log.debug("_get_voice called")
--        return self.voice_id
--
--    def _set_voice(self, identifier):
--        log.debug("_set_voice %s" % (identifier))
--        rate = jtalkDriver.get_rate(self._rateBoost)
--        for v in jtalkDriver._jtalk_voices:
--            if v["id"] == identifier:
--                if self.voice_id != identifier:
--                    self.voice_id = identifier
--                    jtalkDriver.terminate()
--                    jtalkDriver.initialize(v, onIndexReached=self._onIndexReached)
--                    jtalkDriver.set_rate(rate, self._rateBoost)
--                    jtalkDriver.set_volume(self._volume)
--                    return
--        return
--
--    def _get_lastIndex(self):
--        if jtalkDriver.lastIndex is None:
--            # log.debug("_get_lastIndex returns None")
--            return None
--        # log.debug("_get_lastIndex returns %d" % jtalkDriver.lastIndex)
--        return jtalkDriver.lastIndex
--
--    def _onIndexReached(self, index):
--        self.finishedIndex = index
--        if self.finishedIndex is None:
--            # log.info("synthDoneSpeaking")
--            if synthDoneSpeaking:
--                synthDoneSpeaking.notify(synth=self)
--        else:
--            # log.info("synthIndexReached %r" % self.finishedIndex)
--            if synthIndexReached:
--                synthIndexReached.notify(synth=self, index=self.finishedIndex)
-+from synthDriverHandler import synthIndexReached, synthDoneSpeaking
-+
-+
-+class SynthDriver(BaseSynthDriver):
-+	"""A Japanese synth driver for NVDAjp."""
-+
-+	name = "nvdajp_jtalk"
-+	description = "JTalk"
-+	supportedSettings = (
 +		BaseSynthDriver.VoiceSetting(),
 +		BaseSynthDriver.RateSetting(),
 +		BaseSynthDriver.RateBoostSetting()
@@ -260,172 +76,115 @@ index e9ea687ccf..604691b9c7 100644
 +		BaseSynthDriver.PitchSetting(),
 +		BaseSynthDriver.InflectionSetting(),
 +		BaseSynthDriver.VolumeSetting(),
-+	)
-+	supportedCommands = {
-+		IndexCommand,
-+		CharacterModeCommand,
-+		LangChangeCommand,
-+		PitchCommand,
-+	}
-+	supportedNotifications = {synthIndexReached, synthDoneSpeaking}
-+
-+	@classmethod
+ 	)
+ 	supportedCommands = {
+ 		IndexCommand,
+@@ -68,7 +52,7 @@ class SynthDriver(SynthDriver):
+ 	supportedNotifications = {synthIndexReached, synthDoneSpeaking}
+ 
+ 	@classmethod
+-    def check(cls):
 +	def check(cls) -> bool:  # type: ignore[override]
-+		return True
-+
-+	def __init__(self):
-+		self.voice_id = "V4"
-+		self._volume = 100
-+		self._pitch = 50
-+		self._pitchOffset = 0
-+		self._inflection = 50
-+		self._rateBoost = False
-+		jtalkDriver.initialize(onIndexReached=self._onIndexReached)
-+		self.rate = 50
-+		self.speakingIndex = None
-+		self.finishedIndex = None
-+
-+	def speak(self, speechSequence):
-+		spellState = False
-+		defaultLanguage = languageHandler.getLanguage()
-+		if defaultLanguage[:2] == "ja":
-+			defaultLanguage = "ja"
-+		lang = defaultLanguage
-+		currentLang = lang
-+		for item in speechSequence:
+ 		return True
+ 
+ 	def __init__(self):
+@@ -91,11 +75,11 @@ def speak(self, speechSequence):
+ 		lang = defaultLanguage
+ 		currentLang = lang
+ 		for item in speechSequence:
+-            if isinstance(item, basestring):
 +			if isinstance(item, str):
-+				p = VoiceProperty()
+ 				p = VoiceProperty()
+-                p.pitch = min(max(self._pitch + self._pitchOffset, 0), 100)
+-                p.inflection = self._inflection
+-                p.characterMode = spellState
 +				p.pitch = min(max(self._pitch + self._pitchOffset, 0), 100)  # type: ignore[attr-defined]
 +				p.inflection = self._inflection  # type: ignore[attr-defined]
 +				p.characterMode = spellState  # type: ignore[attr-defined]
-+				msg = str(item)
-+				isMsgJp = isJapaneseLang(msg)
-+				lang = currentLang
-+				if isMsgJp:
-+					lang = "ja"
-+				elif defaultLanguage != "ja" and not isMsgJp:
-+					lang = defaultLanguage
-+				log.debug(
-+					"lang:%s idx:%r pit:%d inf:%d chr:%d (%s)"
-+					% (
-+						lang,
-+						self.speakingIndex,
+ 				msg = str(item)
+ 				isMsgJp = isJapaneseLang(msg)
+ 				lang = currentLang
+@@ -108,9 +92,9 @@ def speak(self, speechSequence):
+ 					% (
+ 						lang,
+ 						self.speakingIndex,
+-                        p.pitch,
+-                        p.inflection,
+-                        p.characterMode,
 +						p.pitch,  # type: ignore[attr-defined]
 +						p.inflection,  # type: ignore[attr-defined]
 +						p.characterMode,  # type: ignore[attr-defined]
-+						msg,
-+					)
-+				)
-+				jtalkDriver.speak(msg, lang, index=self.speakingIndex, voiceProperty_=p)
-+			elif isinstance(item, IndexCommand):
-+				# log.info("IndexCommand %r" % self.speakingIndex)
-+				jtalkDriver.updateIndex(item.index)
-+				self.speakingIndex = item.index
-+			elif isinstance(item, CharacterModeCommand):
+ 						msg,
+ 					)
+ 				)
+@@ -120,10 +104,7 @@ def speak(self, speechSequence):
+ 				jtalkDriver.updateIndex(item.index)
+ 				self.speakingIndex = item.index
+ 			elif isinstance(item, CharacterModeCommand):
+-                if item.state:
+-                    spellState = True
+-                else:
+-                    spellState = True
 +				spellState = item.state
-+			elif isinstance(item, LangChangeCommand):
-+				lang = (item.lang if item.lang else defaultLanguage).replace("_", "-")
-+				if lang[:2] == "ja":
-+					lang = "ja"
-+				currentLang = lang
-+			elif isinstance(item, PitchCommand):
-+				self._pitchOffset = item.offset
-+			elif isinstance(item, SpeechCommand):
-+				log.debugWarning("Unsupported speech command: %s" % item)
-+			else:
-+				log.error("Unknown speech: %s" % item)
-+		jtalkDriver.updateSpeakIndexWhenDone(self.speakingIndex)
-+
-+	def cancel(self):
-+		jtalkDriver.stop()
-+
-+	def pause(self, switch):
-+		jtalkDriver.pause(switch)
-+
-+	def isSpeaking(self):
-+		return jtalkDriver.isSpeaking()
-+
-+	def _get_rateBoost(self):
-+		return self._rateBoost
-+
-+	def _set_rateBoost(self, enable):
-+		if enable == self._rateBoost:
-+			return
-+		rate = self.rate
-+		self._rateBoost = enable
-+		self.rate = rate
-+
-+	def terminate(self):
-+		jtalkDriver.terminate()
-+
-+	# The current rate; ranges between 0 and 100
-+	def _get_rate(self):
-+		return jtalkDriver.get_rate(self._rateBoost)
-+
+ 			elif isinstance(item, LangChangeCommand):
+ 				lang = (item.lang if item.lang else defaultLanguage).replace("_", "-")
+ 				if lang[:2] == "ja":
+@@ -163,28 +144,28 @@ def terminate(self):
+ 	def _get_rate(self):
+ 		return jtalkDriver.get_rate(self._rateBoost)
+ 
+-    def _set_rate(self, rate):
+-        jtalkDriver.set_rate(int(rate), self._rateBoost)
 +	def _set_rate(self, value):
 +		jtalkDriver.set_rate(int(value), self._rateBoost)
-+
-+	def _get_pitch(self):
-+		return self._pitch
-+
+ 
+ 	def _get_pitch(self):
+ 		return self._pitch
+ 
+-    def _set_pitch(self, pitch):
+-        self._pitch = int(pitch)
 +	def _set_pitch(self, value):
 +		self._pitch = int(value)
-+
-+	def _get_volume(self):
-+		return self._volume
-+
+ 
+ 	def _get_volume(self):
+ 		return self._volume
+ 
+-    def _set_volume(self, volume_):
+-        self._volume = int(volume_)
 +	def _set_volume(self, value):
 +		self._volume = int(value)
-+		jtalkDriver.set_volume(self._volume)
-+		return
-+
+ 		jtalkDriver.set_volume(self._volume)
+ 		return
+ 
+-    def _get_inflection(self):
 +	def _get_inflection(self) -> int:  # type: ignore[override]
-+		return self._inflection
-+
+ 		return self._inflection
+ 
+-    def _set_inflection(self, val):
+-        self._inflection = int(val)
 +	def _set_inflection(self, value):
 +		self._inflection = int(value)
-+
-+	def _getAvailableVoices(self):
-+		log.debug("_getAvailableVoices called")
-+		voices = OrderedDict()
-+		for v in jtalkDriver._jtalk_voices:
-+			voices[v["id"]] = VoiceInfo(v["id"], v["name"], v["lang"])
-+		return voices
-+
-+	def _get_voice(self):
-+		log.debug("_get_voice called")
-+		return self.voice_id
-+
+ 
+ 	def _getAvailableVoices(self):
+ 		log.debug("_getAvailableVoices called")
+@@ -197,13 +178,13 @@ def _get_voice(self):
+ 		log.debug("_get_voice called")
+ 		return self.voice_id
+ 
+-    def _set_voice(self, identifier):
+-        log.debug("_set_voice %s" % (identifier))
 +	def _set_voice(self, value):
 +		log.debug("_set_voice %s" % (value))
-+		rate = jtalkDriver.get_rate(self._rateBoost)
-+		for v in jtalkDriver._jtalk_voices:
+ 		rate = jtalkDriver.get_rate(self._rateBoost)
+ 		for v in jtalkDriver._jtalk_voices:
+-            if v["id"] == identifier:
+-                if self.voice_id != identifier:
+-                    self.voice_id = identifier
 +			if v["id"] == value:
 +				if self.voice_id != value:
 +					self.voice_id = value
-+					jtalkDriver.terminate()
-+					jtalkDriver.initialize(v, onIndexReached=self._onIndexReached)
-+					jtalkDriver.set_rate(rate, self._rateBoost)
-+					jtalkDriver.set_volume(self._volume)
-+					return
-+		return
-+
-+	def _get_lastIndex(self):
-+		if jtalkDriver.lastIndex is None:
-+			# log.debug("_get_lastIndex returns None")
-+			return None
-+		# log.debug("_get_lastIndex returns %d" % jtalkDriver.lastIndex)
-+		return jtalkDriver.lastIndex
-+
-+	def _onIndexReached(self, index):
-+		self.finishedIndex = index
-+		if self.finishedIndex is None:
-+			# log.info("synthDoneSpeaking")
-+			if synthDoneSpeaking:
-+				synthDoneSpeaking.notify(synth=self)
-+		else:
-+			# log.info("synthIndexReached %r" % self.finishedIndex)
-+			if synthIndexReached:
-+				synthIndexReached.notify(synth=self, index=self.finishedIndex)
+ 					jtalkDriver.terminate()
+ 					jtalkDriver.initialize(v, onIndexReached=self._onIndexReached)
+ 					jtalkDriver.set_rate(rate, self._rateBoost)
 
 ```

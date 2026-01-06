@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\gui\settingsDialogs.py`  
 **Current**: `F:\nvda\gh\alphajp\source\gui\settingsDialogs.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -88,13 +90,12 @@ index 73559b08b1..c36aacc009 100644
  		self.revisionsCheckBox.SetValue(config.conf["documentFormatting"]["reportRevisions"])
  
 -		# Translators: This is the label for a checkbox in the
--		# document formatting settings panel.
++		self._spellingErrorsChecklist = docInfoGroup.addLabeledControl(
++			# Translators: This is the label for a checklist in the
+ 			# document formatting settings panel.
 -		spellingErrorText = _("Spelling e&rrors")
 -		self.spellingErrorsCheckBox = docInfoGroup.addItem(wx.CheckBox(docInfoBox, label=spellingErrorText))
 -		self.spellingErrorsCheckBox.SetValue(config.conf["documentFormatting"]["reportSpellingErrors"])
-+		self._spellingErrorsChecklist = docInfoGroup.addLabeledControl(
-+			# Translators: This is the label for a checklist in the
-+			# document formatting settings panel.
 +			_("Spelling e&rrors"),
 +			nvdaControls.CustomCheckListBox,
 +			choices=[i.displayString for i in ReportSpellingErrors],

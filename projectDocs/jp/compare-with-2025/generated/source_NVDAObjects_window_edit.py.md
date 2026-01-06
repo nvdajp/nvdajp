@@ -3,6 +3,8 @@
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\window\edit.py`  
 **Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\window\edit.py`
 
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
+
 ## Diff
 
 ```diff
@@ -137,7 +139,7 @@ index 6029f5b384..a334597133 100644
  			pass
  		if label:
  			return label
-@@ -865,23 +828,25 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
+@@ -865,22 +828,24 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
  		if label and not label.isspace():
  			return label
  		# Windows Live Mail exposes the label via the embedded object's data (IDataObject)
@@ -156,8 +158,7 @@ index 6029f5b384..a334597133 100644
  			label = text.value
  		if label:
  			return label
--		# As a final fallback (e.g. could not get display  model text for Outlook Express), use the embedded object's user type (e.g. "recipient").
-+		# As a final fallback (e.g. could not get display model text for Outlook Express), use the embedded object's user type (e.g. "recipient").
+ 		# As a final fallback (e.g. could not get display model text for Outlook Express), use the embedded object's user type (e.g. "recipient").
 +		userType = BSTR()
  		try:
 -			oleObj = o.QueryInterface(oleTypes.IOleObject)
@@ -166,14 +167,12 @@ index 6029f5b384..a334597133 100644
 +			NVDAHelper.localLib.getOleUserType(o, 0, ctypes.byref(userType))
 +		except WindowsError:
  			pass
--		return label
 +		else:
 +			label = userType.value
 +		if label:
-+			return label
+ 			return label
  
  	def _getTextAtRange(self, rangeObj):
- 		embedRangeObj = None
 @@ -1087,7 +1052,7 @@ def _get_ITextDocumentObject(self):
  		if not hasattr(self, "_ITextDocumentObject"):
  			try:

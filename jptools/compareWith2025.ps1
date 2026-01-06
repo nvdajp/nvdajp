@@ -317,7 +317,19 @@ switch ($Output) {
         if ($jpFiles.Count -gt 0) {
             foreach ($file in $jpFiles | Sort-Object Path) {
                 $importantContent += "`n### ``$($file.Path)```n`n"
-                $importantContent += "**差分を確認**: ``git diff --no-index `"$($file.Source2025)`" `"$($file.Current)`"``\n`n"
+                
+                # Check if this is a Python file and has a generated diff
+                $safePath = $file.Path -replace '[\\/:*?"<>|]', '_'
+                $generatedDiffFile = Join-Path $generatedDir "$safePath.md"
+                
+                if ($file.Path -like "*.py" -and (Test-Path $generatedDiffFile)) {
+                    # Python file with generated diff - add link to generated file
+                    $importantContent += "- **差分ファイル**: [``$safePath.md``](./generated/$safePath.md)`n"
+                } else {
+                    # Non-Python file or no generated diff - show git diff command
+                    $importantContent += "- **差分を確認**: ``git diff --no-index `"$($file.Source2025)`" `"$($file.Current)`"``"
+                }
+                $importantContent += "`n`n"
             }
         } else {
             $importantContent += "`nJP固有コードの変更はありません。`n"
@@ -327,10 +339,8 @@ switch ($Output) {
         
         # Generate diff files for Python files in generated/ folder
         Write-Host "Generating diff files for Python files..." -ForegroundColor Cyan
-        $diffOptions = ""
-        if ($IgnoreWhitespace) {
-            $diffOptions = "-w"
-        }
+        # Always use -w to ignore whitespace differences (indentation changes)
+        $diffOptions = "-w"
         
         $pythonFiles = $changedFiles | Where-Object { $_.Path -like "*.py" }
         $generatedCount = 0
@@ -366,6 +376,13 @@ switch ($Output) {
                 # git diff returns 0 (no diff) or 1 (diff found), both are valid
                 # Exit code 129+ indicates an error
                 if ($exitCode -le 1) {
+                    # Skip if diff is empty (only whitespace differences)
+                    $diffOutputTrimmed = $diffOutput.Trim()
+                    if ([string]::IsNullOrWhiteSpace($diffOutputTrimmed)) {
+                        # Only whitespace differences, skip this file
+                        continue
+                    }
+                    
                     $safePath = $file.Path -replace '[\\/:*?"<>|]', '_'
                     $diffFile = Join-Path $generatedDir "$safePath.md"
                     
@@ -375,6 +392,8 @@ switch ($Output) {
 
 **Source 2025.3.x jp**: ``$($file.Source2025)``  
 **Current**: ``$($file.Current)``
+
+**注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
