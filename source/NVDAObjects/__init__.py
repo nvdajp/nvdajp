@@ -514,8 +514,11 @@ class NVDAObject(
 		which will override the standard label for this object's role property as well as the value of roleText.
 		By default, NVDA falls back to using roleText.
 		"""
-		if self.landmark and self.landmark in braille.landmarkLabels:
-			return f"{braille.roleLabels[controlTypes.Role.LANDMARK]} {braille.landmarkLabels[self.landmark]}"
+		# BEGIN JP PATCH
+		# nvdajp: use getRoleLabel and getLandmarkLabel functions for JP-specific braille processing
+		if self.landmark and self.landmark in braille.getLandmarkLabels():
+			return f"{braille.getRoleLabel(controlTypes.Role.LANDMARK)} {braille.getLandmarkLabel(self.landmark)}"
+		# END JP PATCH
 		return self.roleText
 
 	#: Typing information for auto property _get_value

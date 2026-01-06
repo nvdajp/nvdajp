@@ -167,6 +167,21 @@ localizedKeyLabels = {
 	"break": _("break"),
 	# Translators: This is the name of a key on the keyboard.
 	"tab": pgettext("keyLabel", "tab"),
+	# BEGIN JP PATCH
+	# nvdajp: IME key labels
+	# Translators: This is the name of a key on the keyboard.
+	"imenonconvert": _("IME non convert"),
+	# Translators: This is the name of a key on the keyboard.
+	"imeconvert": _("IME convert"),
+	# Translators: This is the name of a key on the keyboard.
+	"imechangestatus1": _("toggle input method"),
+	# Translators: This is the name of a key on the keyboard.
+	"imechangestatus2": _("toggle input method"),
+	# Translators: This is the name of a key on the keyboard.
+	"imechangestatus3": _("toggle input method"),
+	# Translators: This is the name of a key on the keyboard.
+	"pause": _("pause"),
+	# END JP PATCH
 }
 
 
