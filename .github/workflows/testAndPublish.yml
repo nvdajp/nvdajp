@@ -651,7 +651,10 @@ jobs:
       deployments: write
     runs-on: ubuntu-latest
     needs: [buildNVDA, createLauncher, createSymbols, allTestsPass]
-    if: ${{ github.event_name == 'push' && !startsWith(github.ref_name, 'release-') }}
+    # BEGIN JP PATCH (nvdajp: snapshot deployment disabled - no secrets in CI)
+    if: false
+    # END JP PATCH
+    # Original upstream condition: ${{ github.event_name == 'push' && !startsWith(github.ref_name, 'release-') }}
     concurrency:
       group: snapshot-${{ github.ref_name }}
       cancel-in-progress: true
@@ -699,7 +702,10 @@ jobs:
       discussions: write
     runs-on: ubuntu-latest
     needs: [buildNVDA, createLauncher, createSymbols, allTestsPass]
-    if: startsWith(github.ref_name, 'release-')
+    # BEGIN JP PATCH (nvdajp: release deployment disabled - no secrets in CI)
+    if: false
+    # END JP PATCH
+    # Original upstream condition: startsWith(github.ref_name, 'release-')
     concurrency:
       group: release
       cancel-in-progress: true
