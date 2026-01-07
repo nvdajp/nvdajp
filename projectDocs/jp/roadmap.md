@@ -107,6 +107,23 @@
 * ✅ **JP固有コード（`source/synthDrivers/jtalk/`）のruffエラー修正完了** - すべてのruffチェックが通過（`All checks passed!`）
 * ✅ **Visual Studio検出のvswhere移行完了** - `vs_utils.py`に`vswhere`サポートを追加し、環境ごとのテストで`nmake`や`link`の検出失敗を解消（詳細は `projectDocs/jp/vswhere-implementation-status.md` を参照）
 
+### ステージ4: リグレッション対策と機能復元 ✅（進行中）
+
+* ✅ **2025.3.x jp との機能比較の実施**（2026-01-07）
+  * `compareWith2025.ps1`を使用して2025.3.x jp (alphajp-251219) との差分を生成
+  * `projectDocs/jp/compare-with-2025/` ディレクトリに調査結果を記録
+  * `source-files-investigation.md` を作成し、141ファイルの調査結果をまとめ
+* ✅ **JP固有機能の復元（コード比較で判断可能な範囲）**（2026-01-07）
+  * `source_NVDAObjects_window_scintilla.py`: `collapse`メソッドを復元（Notepad++点字表示のバグ修正）
+  * `source_api.py`: `getattr`/`hasattr`チェックを復元（安全性の考慮、3箇所）
+  * `source_baseObject.py`: `hasattr`チェックを復元（安全性の考慮、1箇所）
+  * すべての変更にJP PATCHマーカーを追加し、差分最小化の原則に従う
+  * ユニットテストはすべて通過（951テスト、5スキップ）
+* ⏳ **動作確認**（未実施、後でまとめて実施予定）
+  * Notepad++での点字表示の動作確認
+  * ATOKと点字ディスプレイの組み合わせでの動作確認
+  * JP smoke testsの実行
+
 ## 現在の作業キュー（2026年1月時点）
 
 ### 次に取り込むべきリビジョン
@@ -141,6 +158,13 @@
   * 参照: `projectDocs/jp/stage3b-x64-migration-plan.md`
 
 #### 優先度：高（リリース品質に影響）
+
+* [ ] **タスク 4.0: リグレッション対策の継続（動作確認）**
+  * **理由**: 2025.3.x jp で提供している仕様や機能からのリグレッションをなくすため
+  * Notepad++での点字表示の動作確認（`source_NVDAObjects_window_scintilla.py`の復元が有効か確認）
+  * ATOKと点字ディスプレイの組み合わせでの動作確認（`source_api.py`の変更が影響していないか確認）
+  * JP smoke testsの実行（すべてのJP固有機能が正常に動作するか確認）
+  * 参照: `projectDocs/jp/compare-with-2025/recommended-actions.md`
 
 * [ ] **タスク 4.1: 無効化されたユニットテストやシステムテストを通す**
   * **理由**: リリース品質を保証するため、テストの有効化は重要
