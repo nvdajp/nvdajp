@@ -643,6 +643,7 @@ class OneCoreSynthDriver(SynthDriver):
 	# nvdajp: provide isSpeaking() method to check if synthesizer is currently speaking
 	def isSpeaking(self):
 		return self._isSpeaking
+
 	# END JP PATCH
 
 

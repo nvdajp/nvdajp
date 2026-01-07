@@ -21,13 +21,16 @@ import cursorManager
 import textInfos.offsets
 from abc import ABCMeta, abstractmethod
 from locationHelper import RectLTWH
+
 # BEGIN JP PATCH
 # nvdajp: import for East Asian width checking
 from unicodedata import east_asian_width
+
 # END JP PATCH
 from NVDAObjects import NVDAObject
 
 onRecognizeResultCallbackT = Callable[[Union["RecognitionResult", Exception]], None]
+
 
 # BEGIN JP PATCH
 # nvdajp: functions for checking East Asian narrow characters

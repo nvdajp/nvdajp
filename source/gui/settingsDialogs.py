@@ -1301,6 +1301,8 @@ class LanguageSettingsPanel(SettingsPanel):
 
 		config.conf["language"]["jpKatakanaPitchChange"] = self.jpKatakanaPitchChangeEdit.Value
 		config.conf["language"]["halfShapePitchChange"] = self.halfShapePitchChangeEdit.Value
+
+
 # END JP PATCH
 
 
