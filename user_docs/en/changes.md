@@ -37,6 +37,18 @@ We recommend using Windows 11, or if that is not possible, the latest Windows 10
 * When reporting the location of the caret in classic versions of Notepad and other Win32 edit controls, text position is now more accurate. (#18767, @LeonarddeR)
 * Fixed a problem where some SAPI 4 voices (e.g. IBM ViaVoice) start speaking in the maximum volume instead of the current volume when speaking capital letters. (#18866, @gexgd0419)
 * NVDA no longer fails to read the contents of wx Web View controls. (#17273, @LeonarddeR)
+* When NVDA is configured to update add-ons automatically in the background, add-ons can be properly updated. (#18965, @nvdaes)
+* Fixed a case where braille output would fail with an error. (#19025, @LeonarddeR)
+* Battery time announcements now skip redundant "0 hours" and "0 minutes" and use proper singular/plural forms. (#9003, @hdzrvcc0X74)
+* When a synthesizer has a fallback language for the current dialect, the language of the text being read will no longer be reported as unsupported. (#18876, @nvdaes)
+* Certain settings will no longer erroneously be saved to disk when running NVDA from the launcher. (#18171)
+* Incorrect information is no longer displayed in braille when navigating the list of messages in Outlook Classic. (#18993, @nvdaes)
+* NVDA now detects and stops repeated crash loops to prevent system lockups when startup failures occur. (#19133, @derekriemer)
+* When moving Braille to the next line in LibreOffice Writer when the caret is at the start of the last line, it will now consistently move to the end of the document. (#19152, @LeonarddeR, @nvdaes)
+* The browse mode cursor highlighter now appears on content recognition results, such as when using Windows OCR. (#19168, @hwf1324)
+* In the Input Gestures dialog, gestures including an operator while Num Lock is on will now be correctly displayed. (#19214, @CyrilleB79)
+* In Chromium browsers, if a document contains links with a malformed URL, reading the document will be possible again. (#19125, @nvdaes)
+* NVDA no longer plays a sound for spelling errors while typing if speech mode is set to on-demand or off. (#19323, @CyrilleB79)
 
 ### Changes for Developers
 

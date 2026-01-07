@@ -921,76 +921,78 @@ class GeneralSettingsPanel(SettingsPanel):
 			self.copySettingsButton.Disable()
 		settingsSizerHelper.addItem(self.copySettingsButton)
 
-		if updateCheck:
-			item = self.autoCheckForUpdatesCheckBox = wx.CheckBox(
-				self,
-				# Translators: The label of a checkbox in general settings to toggle automatic checking for updated versions of NVDA.
-				# If not checked, user must check for updates manually.
-				label=_("Automatically check for &updates to NVDA"),
-			)
-			self.bindHelpEvent("GeneralSettingsCheckForUpdates", self.autoCheckForUpdatesCheckBox)
-			item.Value = config.conf["update"]["autoCheck"]
-			if globalVars.appArgs.secure:
-				item.Disable()
-			settingsSizerHelper.addItem(item)
+		item = self.autoCheckForUpdatesCheckBox = wx.CheckBox(
+			self,
+			# Translators: The label of a checkbox in general settings to toggle automatic checking for updated versions of NVDA.
+			# If not checked, user must check for updates manually.
+			label=_("Automatically check for &updates to NVDA"),
+		)
+		self.bindHelpEvent("GeneralSettingsCheckForUpdates", self.autoCheckForUpdatesCheckBox)
+		item.Value = config.conf["update"]["autoCheck"]
+		if not updateCheck:
+			item.Value = False
+			item.Disable()
+		settingsSizerHelper.addItem(item)
 
-			item = self.notifyForPendingUpdateCheckBox = wx.CheckBox(
-				self,
-				# Translators: The label of a checkbox in general settings to toggle startup notifications
-				# for a pending NVDA update.
-				label=_("Notify for &pending update on startup"),
-			)
-			self.bindHelpEvent("GeneralSettingsNotifyPendingUpdates", self.notifyForPendingUpdateCheckBox)
-			item.Value = config.conf["update"]["startupNotification"]
-			if globalVars.appArgs.secure:
-				item.Disable()
-			settingsSizerHelper.addItem(item)
-			# BEGIN JP PATCH (Replace "NV Access" with "NVDA Japanese Team")
-			item = self.allowUsageStatsCheckBox = wx.CheckBox(
-				self,
-				# Translators: The label of a checkbox in general settings to toggle allowing of usage stats gathering
-				label=_("Allow NV Access to gather NVDA usage statistics").replace(
-					"NV Access", _("NVDA Japanese Team")
-				),
-			)
-			# END JP PATCH
-			self.bindHelpEvent("GeneralSettingsGatherUsageStats", self.allowUsageStatsCheckBox)
-			item.Value = config.conf["update"]["allowUsageStats"]
-			if globalVars.appArgs.secure:
-				item.Disable()
-			settingsSizerHelper.addItem(item)
+		item = self.notifyForPendingUpdateCheckBox = wx.CheckBox(
+			self,
+			# Translators: The label of a checkbox in general settings to toggle startup notifications
+			# for a pending NVDA update.
+			label=_("Notify for &pending update on startup"),
+		)
+		self.bindHelpEvent("GeneralSettingsNotifyPendingUpdates", self.notifyForPendingUpdateCheckBox)
+		item.Value = config.conf["update"]["startupNotification"]
+		if not updateCheck:
+			item.Value = False
+			item.Disable()
+		settingsSizerHelper.addItem(item)
+		# BEGIN JP PATCH (Replace "NV Access" with "NVDA Japanese Team")
+		item = self.allowUsageStatsCheckBox = wx.CheckBox(
+			self,
+			# Translators: The label of a checkbox in general settings to toggle allowing of usage stats gathering
+			label=_("Allow NV Access to gather NVDA usage statistics").replace(
+				"NV Access", _("NVDA Japanese Team")
+			),
+		)
+		# END JP PATCH
+		self.bindHelpEvent("GeneralSettingsGatherUsageStats", self.allowUsageStatsCheckBox)
+		item.Value = config.conf["update"]["allowUsageStats"]
+		if not updateCheck:
+			item.Value = False
+			item.Disable()
+		settingsSizerHelper.addItem(item)
 
-			# Translators: The label for the update mirror on the General Settings panel.
-			mirrorBoxSizer = wx.StaticBoxSizer(wx.HORIZONTAL, self, label=_("Update mirror"))
-			mirrorBox = mirrorBoxSizer.GetStaticBox()
-			mirrorBoxSizerHelper = guiHelper.BoxSizerHelper(self, sizer=mirrorBoxSizer)
-			settingsSizerHelper.addItem(mirrorBoxSizerHelper)
+		# Translators: The label for the update mirror on the General Settings panel.
+		mirrorBoxSizer = wx.StaticBoxSizer(wx.HORIZONTAL, self, label=_("Update mirror"))
+		mirrorBox = mirrorBoxSizer.GetStaticBox()
+		mirrorBoxSizerHelper = guiHelper.BoxSizerHelper(self, sizer=mirrorBoxSizer)
+		settingsSizerHelper.addItem(mirrorBoxSizerHelper)
 
-			# Use an ExpandoTextCtrl because even when read-only it accepts focus from keyboard, which
-			# standard read-only TextCtrl does not. ExpandoTextCtrl is a TE_MULTILINE control, however
-			# by default it renders as a single line. Standard TextCtrl with TE_MULTILINE has two lines,
-			# and a vertical scroll bar. This is not neccessary for the single line of text we wish to
-			# display here.
-			# Note: To avoid code duplication, the value of this text box will be set in `onPanelActivated`.
-			self.mirrorURLTextBox = ExpandoTextCtrl(
-				mirrorBox,
-				size=(self.scaleSize(250), -1),
-				style=wx.TE_READONLY,
-			)
-			# Translators: This is the label for the button used to change the NVDA update mirror URL,
-			# it appears in the context of the update mirror group on the General page of NVDA's settings.
-			changeMirrorBtn = wx.Button(mirrorBox, label=_("Change..."))
-			mirrorBoxSizerHelper.addItem(
-				guiHelper.associateElements(
-					self.mirrorURLTextBox,
-					changeMirrorBtn,
-				),
-			)
-			self.bindHelpEvent("UpdateMirror", mirrorBox)
-			self.mirrorURLTextBox.Bind(wx.EVT_CHAR_HOOK, self._enterTriggersOnChangeMirrorURL)
-			changeMirrorBtn.Bind(wx.EVT_BUTTON, self.onChangeMirrorURL)
-			if globalVars.appArgs.secure:
-				mirrorBox.Disable()
+		# Use an ExpandoTextCtrl because even when read-only it accepts focus from keyboard, which
+		# standard read-only TextCtrl does not. ExpandoTextCtrl is a TE_MULTILINE control, however
+		# by default it renders as a single line. Standard TextCtrl with TE_MULTILINE has two lines,
+		# and a vertical scroll bar. This is not neccessary for the single line of text we wish to
+		# display here.
+		# Note: To avoid code duplication, the value of this text box will be set in `onPanelActivated`.
+		self.mirrorURLTextBox = ExpandoTextCtrl(
+			mirrorBox,
+			size=(self.scaleSize(250), -1),
+			style=wx.TE_READONLY,
+		)
+		# Translators: This is the label for the button used to change the NVDA update mirror URL,
+		# it appears in the context of the update mirror group on the General page of NVDA's settings.
+		changeMirrorBtn = wx.Button(mirrorBox, label=_("Change..."))
+		mirrorBoxSizerHelper.addItem(
+			guiHelper.associateElements(
+				self.mirrorURLTextBox,
+				changeMirrorBtn,
+			),
+		)
+		self.bindHelpEvent("UpdateMirror", mirrorBox)
+		self.mirrorURLTextBox.Bind(wx.EVT_CHAR_HOOK, self._enterTriggersOnChangeMirrorURL)
+		changeMirrorBtn.Bind(wx.EVT_BUTTON, self.onChangeMirrorURL)
+		if not updateCheck:
+			mirrorBox.Disable()
 
 		item = self.preventDisplayTurningOffCheckBox = wx.CheckBox(
 			self,
@@ -5664,6 +5666,163 @@ class VisionProviderSubPanel_Wrapper(
 		log.debug("calling VisionProviderSubPanel_Wrapper")
 		if self._providerSettings:
 			self._providerSettings.onSave()
+
+
+class PrivacyAndSecuritySettingsPanel(SettingsPanel):
+	# Translators: The title of the privacy and security category in NVDA's settings.
+	title = _("Privacy and Security")
+	helpId = "PrivacyAndSecuritySettings"
+
+	def makeSettings(self, sizer: wx.BoxSizer):
+		sHelper = guiHelper.BoxSizerHelper(self, sizer=sizer)
+
+		self._screenCurtainConfig = config.conf["screenCurtain"]
+		# Translators: Name for a feature that disables output to the screen,
+		# making it black.
+		screenCurtainSizer = wx.StaticBoxSizer(wx.VERTICAL, self, label=_("Screen Curtain"))
+		screenCurtainBox = screenCurtainSizer.GetStaticBox()
+		screenCurtainGroup = guiHelper.BoxSizerHelper(self, sizer=screenCurtainSizer)
+		sHelper.addItem(screenCurtainGroup)
+
+		self._screenCurtainEnabledCheckbox = screenCurtainGroup.addItem(
+			wx.CheckBox(
+				screenCurtainBox,
+				#  Translators: option to enable screen curtain in the privacy and security settings panel
+				label=_("Make screen black (immediate effect)"),
+			),
+		)
+		self._screenCurtainEnabledCheckbox.SetValue(
+			screenCurtain.screenCurtain is not None and screenCurtain.screenCurtain.enabled,
+		)
+		self._screenCurtainEnabledCheckbox.Bind(wx.EVT_CHECKBOX, self._ensureScreenCurtainEnableState)
+		self._screenCurtainEnabledCheckbox.Enable(screenCurtain.screenCurtain is not None)
+		self.bindHelpEvent("ScreenCurtainEnable", self._screenCurtainEnabledCheckbox)
+
+		self._screenCurtainWarnOnLoadCheckbox = screenCurtainGroup.addItem(
+			wx.CheckBox(
+				screenCurtainBox,
+				label=screenCurtain._screenCurtain.WARN_ON_LOAD_CHECKBOX_TEXT,
+			),
+		)
+		self._screenCurtainWarnOnLoadCheckbox.SetValue(self._screenCurtainConfig["warnOnLoad"])
+		self.bindHelpEvent("ScreenCurtainWarnOnLoad", self._screenCurtainWarnOnLoadCheckbox)
+
+		self._screenCurtainPlayToggleSoundsCheckbox = screenCurtainGroup.addItem(
+			wx.CheckBox(
+				screenCurtainBox,
+				# Translators: Description for a screen curtain setting to play sounds when enabling/disabling the curtain
+				label=_("&Play sound when toggling Screen Curtain"),
+			),
+		)
+		self._screenCurtainPlayToggleSoundsCheckbox.SetValue(self._screenCurtainConfig["playToggleSounds"])
+		self.bindHelpEvent("ScreenCurtainPlayToggleSounds", self._screenCurtainPlayToggleSoundsCheckbox)
+
+		# Translators: name of a grouping in Privacy and Security settings
+		# which contains miscellaneous settings.
+		generalSizer = wx.StaticBoxSizer(wx.VERTICAL, self, label=_("General"))
+		generalBox = generalSizer.GetStaticBox()
+		generalGroup = guiHelper.BoxSizerHelper(self, sizer=generalSizer)
+		sHelper.addItem(generalGroup)
+
+		self._logLevelCombo: wx.Choice = generalGroup.addLabeledControl(
+			# Translators: The label for a setting in privacy and security settings to select NVDA's logging level
+			_("L&ogging level:"),
+			wx.Choice,
+			choices=[level.displayString for level in LoggingLevel],
+		)
+		self.bindHelpEvent("GeneralSettingsLogLevel", self._logLevelCombo)
+		if logHandler.isLogLevelForced():
+			self._logLevelCombo.Disable()
+		curLevel = log.getEffectiveLevel()
+		try:
+			self._logLevelCombo.SetSelection(
+				next(
+					filter(
+						lambda indexAndLevel: indexAndLevel[1] == curLevel,
+						enumerate(LoggingLevel.__members__.values()),
+					),
+				)[0],
+			)
+		except StopIteration:
+			log.debugWarning("Could not set log level list to current log level")
+
+		self._allowUsageStatsCheckBox: wx.CheckBox = generalGroup.addItem(
+			# Translators: The label of a checkbox in privacy and security settings to toggle allowing of usage stats gathering
+			wx.CheckBox(generalBox, label=_("Allow NV Access to gather NVDA usage statistics")),
+		)
+		self.bindHelpEvent("GeneralSettingsGatherUsageStats", self._allowUsageStatsCheckBox)
+		self._allowUsageStatsCheckBox.Value = config.conf["update"]["allowUsageStats"]
+		if not updateCheck:
+			self._allowUsageStatsCheckBox.Value = False
+			self._allowUsageStatsCheckBox.Disable()
+
+	def onSave(self):
+		# We intentionally don't save whether the screen curtain is enabled here,
+		# so we don't unintentionally persist a temporary screen curtain to config.
+		self._screenCurtainConfig["warnOnLoad"] = self._screenCurtainWarnOnLoadCheckbox.IsChecked()
+		self._screenCurtainConfig["playToggleSounds"] = (
+			self._screenCurtainPlayToggleSoundsCheckbox.IsChecked()
+		)
+
+		if not logHandler.isLogLevelForced():
+			config.conf["general"]["loggingLevel"] = logging.getLevelName(
+				list(LoggingLevel)[self._logLevelCombo.GetSelection()],
+			)
+			logHandler.setLogLevelFromConfig()
+
+		if updateCheck:
+			config.conf["update"]["allowUsageStats"] = self._allowUsageStatsCheckBox.IsChecked()
+			# updateCheck queries this value whenever checking for updates, so there's no need to restart it
+
+	def _ocrActive(self) -> bool:
+		"""
+		Outputs a message when trying to activate screen curtain when OCR is active.
+
+		:return: ``True`` when OCR is active, ``False`` otherwise.
+		"""
+		# Import late to avoid circular import
+		from contentRecog.recogUi import RefreshableRecogResultNVDAObject
+
+		focusObj = api.getFocusObject()
+		if isinstance(focusObj, RefreshableRecogResultNVDAObject) and focusObj.recognizer.allowAutoRefresh:
+			ui.message(
+				screenCurtain._screenCurtain.UNAVAILABLE_WHEN_RECOGNISING_CONTENT_MESSAGE,
+				speechPriority=speech.priorities.Spri.NOW,
+			)
+			return True
+		return False
+
+	def _ensureScreenCurtainEnableState(self, evt: wx.CommandEvent):
+		"""Ensures that toggling the Screen Curtain checkbox toggles the Screen Curtain."""
+		shouldBeEnabled = evt.IsChecked()
+		if screenCurtain.screenCurtain is None:
+			self._screenCurtainEnabledCheckbox.SetValue(False)
+			return
+		currentlyEnabled = screenCurtain.screenCurtain.enabled
+		if shouldBeEnabled and not currentlyEnabled:
+			confirmed = self._confirmEnableScreenCurtainWithUser()
+			if not confirmed or self._ocrActive():
+				self._screenCurtainEnabledCheckbox.SetValue(False)
+			else:
+				screenCurtain.screenCurtain.enable()
+		elif not shouldBeEnabled and currentlyEnabled:
+			screenCurtain.screenCurtain.disable()
+
+	def _confirmEnableScreenCurtainWithUser(self) -> bool:
+		"""Confirm with the user before enabling Screen Curtain, if configured to do so.
+
+		:return: ``True`` if the Screen Curtain should be enabled; ``False`` otherwise.
+		"""
+		if not self._screenCurtainConfig["warnOnLoad"]:
+			return True
+		with screenCurtain._screenCurtain.WarnOnLoadDialog(
+			screenCurtainSettingsStorage=self._screenCurtainConfig,
+			parent=self,
+		) as dlg:
+			res = dlg.ShowModal()
+			# WarnOnLoadDialog can change settings, reload them
+			self._screenCurtainWarnOnLoadCheckbox.SetValue(self._screenCurtainConfig["warnOnLoad"])
+			return res == wx.YES
 
 
 """ The name of the config profile currently being edited, if any.
