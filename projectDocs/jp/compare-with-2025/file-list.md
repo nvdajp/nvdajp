@@ -1,6 +1,6 @@
 # 変更されたファイル一覧
 
-**生成日時**: 2026-01-07 07:43:39
+**生成日時**: 2026-01-07 14:07:27
 
 ## カテゴリ別ファイル一覧
 
@@ -525,7 +525,7 @@
 
 - `source\locale\ja\LC_MESSAGES\nvda.po`
 
-## 追加されたファイル (359 ファイル)
+## 追加されたファイル (364 ファイル)
 
 - `.github\workflows\clearCaches.yml`
 - `.github\workflows\issueDuplication.yml`
@@ -812,6 +812,7 @@
 - `projectDocs\jp\compare-with-2025\generated\tests_system_robot_chromeTests.py.md`
 - `projectDocs\jp\compare-with-2025\generated\tests_system_robot_symbolPronunciationTests.py.md`
 - `projectDocs\jp\compare-with-2025\generated\tests_unit___init__.py.md`
+- `projectDocs\jp\compare-with-2025\generated\tests_unit_contentRecog_test_contentRecog.py.md`
 - `projectDocs\jp\compare-with-2025\generated\tests_unit_objectProvider.py.md`
 - `projectDocs\jp\compare-with-2025\generated\tests_unit_test_baseObject.py.md`
 - `projectDocs\jp\compare-with-2025\generated\tests_unit_test_braille_test_brailleDisplayDrivers.py.md`
@@ -826,8 +827,10 @@
 - `projectDocs\jp\compare-with-2025\generated\tests_unit_test_textUtils.py.md`
 - `projectDocs\jp\compare-with-2025\important-changes.md`
 - `projectDocs\jp\compare-with-2025\README.md`
+- `projectDocs\jp\compare-with-2025\recommended-actions.md`
 - `projectDocs\jp\compare-with-2025\regression-analysis-details.md`
 - `projectDocs\jp\compare-with-2025\regression-risks.md`
+- `projectDocs\jp\compare-with-2025\source-files-investigation.md`
 - `projectDocs\jp\compare-with-2025\summary.md`
 - `projectDocs\jp\ja-rokutenkanji-table-fix-plan.md`
 - `projectDocs\jp\japanese-input-method-implementation.md`
@@ -850,6 +853,8 @@
 - `projectDocs\jp\stage3b-qa-checklist.md`
 - `projectDocs\jp\stage3b-x64-migration-plan.md`
 - `projectDocs\jp\talk-outline-nvdajp-development-2025-12.md`
+- `projectDocs\jp\task3b4-commits-to-merge.md`
+- `projectDocs\jp\task3b4-implementation-plan.md`
 - `projectDocs\jp\test-routing-failures.md`
 - `projectDocs\jp\test-routing-skip-justification.md`
 - `projectDocs\jp\vcsetup-ps1-migration-proposal.md`
