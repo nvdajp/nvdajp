@@ -53,7 +53,11 @@
 
 ### カテゴリ2: バグ修正・機能改善（優先度: 高）
 
-- `1cee6d93c` - Pass 0 instead of None to VBuf_getControlFieldNodeWithIdentifier (#19365)
+- ✅ `1cee6d93c` - Pass 0 instead of None to VBuf_getControlFieldNodeWithIdentifier (#19365) - **コミット完了（2026-01-08）**
+- ✅ `eeb6143aae` - Correctly register .nvda-addon file association on installation (#19419) - **コミット完了（2026-01-08）**
+- ✅ `00a42a406d` - Don't play spelling error reporting sounds when typing if speech mode is on-demand or off (#19348) - **コミット完了（2026-01-08）**
+- ✅ `3f4294979` - Fix starting NVDA with --no-logging flag (#19350) - **コミット完了（2026-01-08）**
+- ✅ `fdbfb017c` - When update is not available, do not remove corresponding GUI controls but disable them (#19332) - **コミット完了（2026-01-08）**
 - `abdbd025a` - Improve language handling for MathCAT braille (#19375)
 - `cadb496e5` - Move mathCATDir to ReadPaths (#19370)
 - `00a42a406` - Don't play spelling error reporting sounds when typing if speech mode is on-demand or off (#19348)
@@ -189,8 +193,24 @@
 3. **日本語ドキュメントの保護**: pre-commitフォーマット修正のコミットを取り込む際は、特に注意
 4. **JP固有コードの維持**: JP PATCHマーカーを追加し、差分最小化の原則に従う
 
-## 次のステップ
+## 進捗状況（2026-01-08更新）
 
-1. **フェーズ1の実施**: pre-commit設定の確認
-2. **フェーズ2の実施**: 小さな変更から段階的に取り込み
-3. **各フェーズでの検証**: ビルド・型チェック・単体テストを実行
+### 完了した作業
+
+- ✅ **フェーズ0**: pre-commit設定の確認と更新完了
+  - `.pre-commit-config.yaml`に日本語ドキュメントとサードパーティライブラリの除外設定を追加
+- ✅ **フェーズ1**: 最初のバグ修正の取り込み完了（5コミット）
+  - ✅ `1cee6d93cf` - コミット完了、検証通過
+  - ✅ `eeb6143aae` - コミット完了、検証通過（コンフリクト解決）
+  - ✅ `00a42a406d` - コミット完了、検証通過（コンフリクト解決）
+  - ✅ `3f4294979` - コミット完了、検証通過（コンフリクト解決）
+  - ✅ `fdbfb017c` - コミット完了、検証通過（コンフリクト解決、JP PATCHマーカー保持）
+  - すべてのテスト通過（951テスト、5スキップ）
+
+### 次のステップ
+
+1. **フェーズ1の継続**: 次のバグ修正コミットを取り込む
+   - `02f3919e21` - Fix Screen Curtain (#19305)（コンフリクトが多いため後回し）
+   - `46afad646` - Fix settings dialog title for 2 base-only panels (#19342)
+   - `79a07dc10` - Report grammar errors according to configuration (#19257)
+2. **各変更後の検証**: ビルド・型チェック・単体テストを実行
