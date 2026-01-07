@@ -135,15 +135,29 @@
 
 **次のステップ**:
 
-* **タスク 3b.4: x64移行後の変更の取り込み（`58dd14767` 以降）**
+* **タスク 3b.4: x64移行後の変更の取り込み（`58dd14767` 以降）** ⏳（準備完了）
   * x64移行完了後、最新のbetaまでの変更を段階的に取り込む
   * 小さなPR単位で進める
   * 各PRで全テスト通過を確認
+  * **進捗状況**（2026-01-07）:
+    * ✅ 取り込むべきコミットの特定完了（約50コミット、72c211456..nvaccess/beta）
+    * ✅ 実施計画の作成完了（`projectDocs/jp/task3b4-implementation-plan.md`）
+    * ✅ コミット分類と優先順位付け完了（`projectDocs/jp/task3b4-commits-to-merge.md`）
+    * ⏳ 準備作業（pre-commit設定の確認）を実施予定
+  * **取り込み順序**:
+    1. **フェーズ0**: pre-commit設定の確認（日本語ドキュメントの保護）
+    2. **フェーズ1**: 最初のバグ修正・機能改善（58dd14767直後のコミット群）
+    3. **フェーズ2**: 依存関係・ビルドシステムの更新
+    4. **フェーズ3**: バグ修正・機能改善の継続
+    5. **フェーズ4**: 機能追加
+    6. **フェーズ5**: pre-commit関連（最後に）
   * **注意**: 本家（nvaccess/beta）に pre-commit による大規模なファイルフォーマット自動整形のコミットが含まれる場合がある
     * 取り込む前に、日本語ドキュメント（`projectDocs/jp/`、`readme-nvdajp.md`、`AGENTS.md`）が pre-commit フックから除外されていることを確認
     * フォーマット修正は1つのコミットにまとめる
     * 各変更後にビルド・型チェック・単体テストを実行して検証
     * **参照ドキュメント**:
+      * `projectDocs/jp/task3b4-implementation-plan.md` - タスク3b.4の実施計画（フェーズ0-5の詳細手順）
+      * `projectDocs/jp/task3b4-commits-to-merge.md` - 取り込むべきコミットの分類と優先順位
       * `projectDocs/jp/period2-qa-evaluation.md` - 期間2の品質保証評価とやり直し計画（pre-commit フォーマット修正の評価）
       * `projectDocs/jp/period2-scope-separation-plan.md` - 期間2のスコープ分割計画（pre-commit設定とフォーマット修正の分離）
       * `projectDocs/jp/period2-implementation-strategy.md` - 期間2の実装戦略（pre-commit設定の除外とフォーマット修正の実装手順）
