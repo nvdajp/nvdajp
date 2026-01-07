@@ -53,26 +53,27 @@
 
 ### カテゴリ2: バグ修正・機能改善（優先度: 高）
 
-- ✅ `1cee6d93c` - Pass 0 instead of None to VBuf_getControlFieldNodeWithIdentifier (#19365) - **コミット完了（2026-01-08）**
-- ✅ `eeb6143aae` - Correctly register .nvda-addon file association on installation (#19419) - **コミット完了（2026-01-08）**
-- ✅ `00a42a406d` - Don't play spelling error reporting sounds when typing if speech mode is on-demand or off (#19348) - **コミット完了（2026-01-08）**
-- ✅ `3f4294979` - Fix starting NVDA with --no-logging flag (#19350) - **コミット完了（2026-01-08）**
-- ✅ `fdbfb017c` - When update is not available, do not remove corresponding GUI controls but disable them (#19332) - **コミット完了（2026-01-08）**
-- `abdbd025a` - Improve language handling for MathCAT braille (#19375)
-- `cadb496e5` - Move mathCATDir to ReadPaths (#19370)
-- `00a42a406` - Don't play spelling error reporting sounds when typing if speech mode is on-demand or off (#19348)
-- `02f3919e2` - Fix Screen Curtain (#19305)
-- `3f4294979` - Fix starting NVDA with `--no-logging` flag (#19350)
-- `fdbfb017c` - When update is not available, do not remove corresponding GUI controls but disable them (#19332)
-- `46afad646` - Fix settings dialog title for 2 base-only panels (#19342)
-- `79a07dc10` - Report grammar errors according to configuration (#19257)
-- `137f6be53` - Fix script to toggle mouse audio coordinates announcement (#19339)
-- `b3fe5799d` - Add script to toggle mouse audio coordinates (#19026) (#19282)
-- `e29ed1dca` - Fix errors in linker output when building ARM64EC (#19331)
-- `7ba333a81` - Add support for Word footnote and endnote reference navigation (#19310)
-- `bc2647d0f` - Fix error when trying to read documents with malformed URL in links (#19289)
-- `f97aa7b95` - Fix disabling then enabling touch support (#19280)
-- `2af478d2e` - Fix an error message in speech manager (#19275)
+- ✅ `1cee6d93c` - Pass 0 instead of None to VBuf_getControlFieldNodeWithIdentifier (#19365) - **コミット完了（2026-01-07）**
+- ✅ `eeb6143aae` - Correctly register .nvda-addon file association on installation (#19419) - **コミット完了（2026-01-07）**
+- ✅ `00a42a406d` - Don't play spelling error reporting sounds when typing if speech mode is on-demand or off (#19348) - **コミット完了（2026-01-07）**
+- ✅ `3f4294979` - Fix starting NVDA with --no-logging flag (#19350) - **コミット完了（2026-01-07）**
+- ✅ `fdbfb017c` - When update is not available, do not remove corresponding GUI controls but disable them (#19332) - **コミット完了（2026-01-07）**
+- ✅ `46afad646` - Fix settings dialog title for 2 base-only panels (#19342) - **コミット完了（2026-01-07）**
+- ✅ `137f6be53` - Fix script to toggle mouse audio coordinates announcement (#19339) - **コミット完了（2026-01-07）**
+- ✅ `2af478d2e` - Fix an error message in speech manager (#19275) - **コミット完了（2026-01-07）**
+- ✅ `bc2647d0f` - Fix error when trying to read documents with malformed URL in links (#19289) - **コミット完了（2026-01-07）**
+- ✅ `f97aa7b95` - Fix disabling then enabling touch support (#19280) - **コミット完了（2026-01-07）**
+- ✅ `e29ed1dca` - Fix errors in linker output when building ARM64EC (#19331) - **コミット完了（2026-01-07）**
+- ✅ `79a07dc10` - Report grammar errors according to configuration (#19257) - **コミット完了（2026-01-07）**
+- ✅ `7ba333a81` - Add support for Word footnote and endnote reference navigation (#19310) - **コミット完了（2026-01-07）**
+- ✅ `b3fe5799d` - Add script to toggle mouse audio coordinates (#19026) (#19282) - **コミット完了（2026-01-07）**
+- ✅ `02f3919e2` - Fix Screen Curtain (#19305) - **コミット完了（2026-01-07）**
+- ⏭️ `abdbd025a` - Improve language handling for MathCAT braille (#19375) - **スキップ（MathCAT未統合）**
+  - **注意**: このコミットを適用するには、まずMathCAT統合（`2037d74cb`）が必要
+  - `Update dependencies for 2026.1 (#19196)`は前提条件ではない
+- ⏭️ `cadb496e5` - Move mathCATDir to ReadPaths (#19370) - **スキップ（MathCAT未統合）**
+  - **注意**: このコミットを適用するには、まずMathCAT統合（`2037d74cb`）が必要
+  - `Update dependencies for 2026.1 (#19196)`は前提条件ではない
 
 ### カテゴリ3: 機能追加（優先度: 中）
 
@@ -114,6 +115,8 @@
   - MathCATの統合（大規模な変更）
   - コンフリクトが発生する可能性が高い
   - 別途検討が必要
+  - **注意**: MathCAT関連の改善コミット（`abdbd025a`、`cadb496e5`）を適用するには、この統合コミットが先に必要
+  - `Update dependencies for 2026.1 (#19196)`は前提条件ではない
 
 - `504e95624` - 2026.1 final master to beta merge (#19355)
   - 2026.1のマスターブランチからbetaへのマージ
@@ -201,7 +204,7 @@
 3. **日本語ドキュメントの保護**: pre-commitフォーマット修正のコミットを取り込む際は、特に注意
 4. **JP固有コードの維持**: JP PATCHマーカーを追加し、差分最小化の原則に従う
 
-## 進捗状況（2026-01-08更新）
+## 進捗状況（2026-01-07更新）
 
 ### 完了した作業
 
@@ -214,11 +217,25 @@
   - ✅ `3f4294979` - コミット完了、検証通過（コンフリクト解決）
   - ✅ `fdbfb017c` - コミット完了、検証通過（コンフリクト解決、JP PATCHマーカー保持）
   - すべてのテスト通過（951テスト、5スキップ）
+- ✅ **フェーズ1**: 次のバグ修正の取り込み完了（5コミット、2026-01-07）
+  - ✅ `46afad646` - コミット完了、検証通過（コンフリクト解決）
+  - ✅ `137f6be53` - コミット完了、検証通過（コンフリクト解決）
+  - ✅ `2af478d2e` - コミット完了、検証通過
+  - ✅ `bc2647d0f` - コミット完了、検証通過（コンフリクト解決）
+  - ✅ `f97aa7b95` - コミット完了、検証通過
+  - すべてのテスト通過（951テスト、5スキップ）
+- ✅ **フェーズ1**: カテゴリ2の残りのバグ修正の取り込み完了（5コミット、2026-01-07）
+  - ✅ `e29ed1dca` - コミット完了、検証通過（コンフリクト解決）
+  - ✅ `79a07dc10` - コミット完了、検証通過（コンフリクト解決、複数ファイル）
+  - ✅ `7ba333a81` - コミット完了、検証通過（コンフリクト解決）
+  - ✅ `b3fe5799d` - コミット完了、検証通過（コンフリクト解決）
+  - ✅ `02f3919e2` - コミット完了、検証通過（ファイル復元）
+  - ⏭️ `abdbd025a` - スキップ（MathCAT未統合）
+  - ⏭️ `cadb496e5` - スキップ（MathCAT未統合）
+  - すべてのテスト通過（951テスト、5スキップ）
 
 ### 次のステップ
 
-1. **フェーズ1の継続**: 次のバグ修正コミットを取り込む
-   - `02f3919e21` - Fix Screen Curtain (#19305)（コンフリクトが多いため後回し）
-   - `46afad646` - Fix settings dialog title for 2 base-only panels (#19342)
-   - `79a07dc10` - Report grammar errors according to configuration (#19257)
-2. **各変更後の検証**: ビルド・型チェック・単体テストを実行
+1. **カテゴリ2完了**: カテゴリ2のバグ修正・機能改善はすべて取り込み完了（MathCAT関連を除く）
+2. **カテゴリ3以降の検討**: 機能追加、依存関係更新、pre-commit関連などの取り込みを検討
+3. **各変更後の検証**: ビルド・型チェック・単体テストを実行
