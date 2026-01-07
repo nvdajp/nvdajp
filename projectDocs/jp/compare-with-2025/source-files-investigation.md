@@ -21,9 +21,11 @@
 
 ## 重大な問題: JP固有機能の完全削除
 
-### 1. `source_inputCore.py`
+**注**: 以下のファイルのうち、一部は意図的に移植しないと判断された機能です。`changes-nvdajp.md` の「6.12 移植しないと判断した機能」セクションを参照してください。
 
-**問題**: JP固有のコードが完全に削除されている
+### 1. `source_inputCore.py`（意図的な削除）
+
+**状況**: **意図的に移植しないと判断された機能**（`changes-nvdajp.md` 6.12.1 参照）
 
 **削除されたコード**:
 ```python
@@ -35,17 +37,57 @@ if hasattr(gesture, "vkCode") and gesture.vkCode == winUser.VK_RETURN:
 # nvdajp end
 ```
 
-**影響**: 
-- VK_RETURN キーの処理に関するJP固有のワークアラウンドが失われている
-- このコードが何を解決していたのか不明だが、完全に削除されている
+**移植しない理由**（`changes-nvdajp.md`より）:
+- 目的が不明確（戻り値を使用していない）
+- 副作用を期待している可能性があるが、その意図が不明
+- コメントがなく、実装の意図が推測できない
+- 本家版 2026.1 でも削除されている
+- 現在のコードベースでは `NVDAHelper.py` で IME のキャンセル状態をチェックする処理があるため、このワークアラウンドが現在も必要かどうか不明
 
-**推奨対応**:
-- 元のコードの目的を確認
-- 必要に応じて復元し、JP PATCHマーカーで囲む
+**今後の対応**: IME 関連の問題が再発した場合、目的を明確にしたコメントとともに再検討する
 
-### 2. `source_NVDAObjects_window_scintilla.py`
+### 2. `source_logHandler.py`（意図的な削除）
 
-**問題**: JP固有のメソッドが完全に削除されている
+**状況**: **意図的に移植しないと判断された機能**（`changes-nvdajp.md` 6.12.2 参照）
+
+**削除されたコード**:
+```python
+from six import unichr, text_type
+import re
+try:
+    msg = re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x" + x.group(1), 16)), text_type(msg))
+except:  # noqa: E722
+    pass
+```
+
+**移植しない理由**（`changes-nvdajp.md`より）:
+- Python 3 では文字列は既に Unicode なので、通常はこの処理は不要
+- `six` モジュールへの依存を避けられる（Python 3.13 では `text_type` は `str`、`unichr` は `chr` と同じ）
+- 本家版 2026.1 でも削除されている
+- 日本語環境でこの処理が必要だった明確な記録が見つからない
+
+**今後の対応**: 外部ライブラリやエラーメッセージで `\uXXXX` 形式のエスケープシーケンスが問題になる場合は、`six` を使わない形で再検討する
+
+### 3. `source_mathPres_mathPlayer.py`（意図的な削除）
+
+**状況**: **意図的に移植しないと判断された機能**（`changes-nvdajp.md` 6.12.3 参照）
+
+**削除されたコード**:
+```python
+if config.conf["language"]["alwaysSpeakMathInEnglish"]:
+    lang = "en"
+```
+
+**移植しない理由**（`changes-nvdajp.md`より）:
+- MathPlayer はレガシーな数式読み上げエンジンであり、現在は MathCAT が推奨されている
+- 本家版 2026.1 でも削除されている
+- MathCAT では同様の機能が提供されている可能性がある
+
+**今後の対応**: MathCAT で同様の機能が必要な場合は、MathCAT 側で実装を検討する
+
+### 4. `source_NVDAObjects_window_scintilla.py`
+
+**問題**: JP固有のメソッドが完全に削除されている（意図的な削除かどうか不明）
 
 **削除されたコード**:
 ```python
@@ -64,9 +106,12 @@ def collapse(self, end: bool = False):
 - Notepad++ での点字表示に関するバグ修正が失われている
 - 本家の issue #17430 への参照があるが、JP固有の修正として実装されていた
 
+**注意**: `changes-nvdajp.md` にはこの削除についての記載がないため、意図的な削除かどうか不明です。
+
 **推奨対応**:
 - このメソッドを復元し、JP PATCHマーカーで囲む
 - または、本家で修正されているか確認
+- 意図的な削除である場合は、`changes-nvdajp.md` に記載を追加することを検討
 
 ## 差分最小化の原則に反する可能性があるファイル
 
@@ -135,10 +180,26 @@ def collapse(self, end: bool = False):
 
 ## カテゴリ別分類
 
-### カテゴリ1: JP固有機能が完全に削除されたファイル（要復元）
+### カテゴリ1: JP固有機能が完全に削除されたファイル
 
-1. `source_inputCore.py` - VK_RETURN処理のワークアラウンド
-2. `source_NVDAObjects_window_scintilla.py` - collapseメソッドのJP固有実装
+#### 1.1 意図的に移植しないと判断されたファイル（`changes-nvdajp.md` 6.12 参照）
+
+1. `source_inputCore.py` - VK_RETURN処理のワークアラウンド（6.12.1）
+   - Enter キー処理時の Backspace キー状態取得
+   - 目的が不明確で、現在のコードベースでは不要と判断
+2. `source_logHandler.py` - Unicodeエスケープシーケンス処理（6.12.2）
+   - ログメッセージ内の `\uXXXX` 形式のエスケープシーケンス変換
+   - Python 3 では不要で、`six` モジュールへの依存を避けるため
+3. `source_mathPres_mathPlayer.py` - 常に英語で数式を読み上げる設定（6.12.3）
+   - MathPlayer はレガシーで、MathCAT が推奨されているため
+
+**注**: これらのファイルは意図的に移植しないと判断されています。詳細は `changes-nvdajp.md` の「6.12 移植しないと判断した機能」セクションを参照してください。
+
+#### 1.2 意図的な削除かどうか不明なファイル（要確認）
+
+1. `source_NVDAObjects_window_scintilla.py` - collapseメソッドのJP固有実装
+   - `changes-nvdajp.md` に記載がないため、意図的な削除かどうか不明
+   - 本家の issue #17430 への参照があるため、復元を検討する必要がある可能性
 
 ### カテゴリ2: 元の実装が保持されていないファイル（要確認）
 
@@ -161,10 +222,13 @@ def collapse(self, end: bool = False):
 
 ### 優先度1: 重大な問題の対応
 
-1. **`source_inputCore.py`の復元**
-   - 削除されたVK_RETURN処理のコードを復元
-   - JP PATCHマーカーで囲む
-   - 元のコードの目的を確認
+1. **`source_NVDAObjects_window_scintilla.py`の確認と復元**
+   - 削除された`collapse`メソッドの目的を確認
+   - 本家の issue #17430 で修正されているか確認
+   - 必要に応じて復元し、JP PATCHマーカーで囲む
+   - 意図的な削除である場合は、`changes-nvdajp.md` に記載を追加
+
+**注**: `source_inputCore.py`、`source_logHandler.py`、`source_mathPres_mathPlayer.py` は意図的に移植しないと判断されているため、復元の必要はありません（`changes-nvdajp.md` 6.12 参照）。
 
 2. **`source_NVDAObjects_window_scintilla.py`の復元**
    - 削除された`collapse`メソッドを復元
