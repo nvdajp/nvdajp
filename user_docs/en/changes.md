@@ -12,11 +12,19 @@ We recommend updating to Windows 11, or when that's not possible, to the latest 
 
 ### New Features
 
+* AI Image Descriptions:
+  * Press `NVDA+g` to get an AI generated image description. (#18475, @tianzeshi-study)
+  * This is generated locally on the device - no information is sent to the internet.
+  * A new unassigned command is available for quickly opening the settings dialog for local image description. (#18475)
+  * Another new unassigned command is available to toggle image captioning. (#18475)
 * Added the possibility to report when multiple items can be selected in a list control.
 This can be enabled using the "Report when lists support multiple selection" setting in NVDA's object presentation settings. (#18365 @LeonarddeR)
 * In Visual Studio Code, the status bar is now reported when using the standard `NVDA+end` (desktop) / `NVDA+shift+end` (laptop) gesture. (#11064, @codeofdusk)
 * Performance improvements on ARM64 systems, such as with Qualcomm processors. (#18570, @leonarddeR)
-* While reading text, spelling errors can now be reported with a sound instead of speech. (#4233, @jcsteh, @CyrilleB79)
+* While reading text, spelling and grammar errors can now be reported with a sound instead of speech. (#4233, @jcsteh, @CyrilleB79, @nvdaes)
+* Spelling and grammar errors can be reported in braille. (#7608, @nvdaes)
+* Added references (e.g. to footnotes and endnotes) to the Microsoft Word elements list.
+This includes unassigned Quick Navigation commands that can be used to jump to the next/previous reference. (#19300, @LeonarddeR)
 
 ### Changes
 
@@ -171,6 +179,7 @@ Localisation data for emojis has been added for Belarusian and Bosnian.
   * Installation date will now be also shown in the details area for external add-ons. (#18560, @CyrilleB79)
 * A new unassigned command has been added to send `control+alt+delete` when controlling another computer via NVDA Remote Access. (#18105)
 * A new setting has been added to automatically mute Remote Access when controlling the local computer. (#18630)
+* A new unassigned global command has been added to toggle the "Play audio coordinates when mouse moves" option. (#19026, @rlawnsrl123)
 
 ### Changes
 
