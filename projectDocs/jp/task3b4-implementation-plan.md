@@ -121,9 +121,27 @@
 
 **作業内容**:
 1. 小さなグループ（5-10コミット）に分ける
-2. 各グループをマージ
+2. 各グループを取り込む（方法は柔軟に判断）
+   - **cherry-pick**: 選択的にコミットを取り込む場合
+     ```powershell
+     git cherry-pick --no-commit <commit-hash1> <commit-hash2> ...
+     ```
+   - **まとめてマージ**: 範囲をまとめて取り込む場合
+     ```powershell
+     git merge --no-ff <latest-commit-hash>
+     # または、unrelated historiesの場合
+     git merge --no-ff --allow-unrelated-histories <latest-commit-hash>
+     ```
+   - **判断基準**:
+     - コンフリクトが少ない場合 → まとめてマージ
+     - 選択的に取り込みたい場合（翻訳関連をスキップなど） → cherry-pick
+     - コンフリクトが多すぎる場合 → まとめてマージ（一度に解決）
 3. コンフリクトの解決
 4. 検証（ビルド・型チェック・単体テスト）
+
+**注意**: 
+- `--allow-unrelated-histories`が必要な場合がある（履歴が分岐している場合）
+- 日本語版独自のコミット（`72c211456`など）が含まれている場合、unrelated historiesとして扱われる可能性がある
 
 ### フェーズ2: 依存関係・ビルドシステムの更新
 
@@ -137,11 +155,21 @@
    - バグ修正や軽微な変更から開始
    - pre-commitフォーマット修正は除外
 
-2. **マージの実施**
+2. **マージの実施**（方法は柔軟に判断）
    ```powershell
-   # 特定のコミットをマージ
-   git merge --no-ff <commit-hash>
+   # 方法1: まとめてマージ（推奨：コンフリクトを一度に解決）
+   git merge --no-ff <latest-commit-hash>
+   # unrelated historiesの場合
+   git merge --no-ff --allow-unrelated-histories <latest-commit-hash>
+   
+   # 方法2: cherry-pick（選択的に取り込む場合）
+   git cherry-pick --no-commit <commit-hash1> <commit-hash2> ...
    ```
+   
+   **判断基準**:
+   - コンフリクトが少ない場合 → まとめてマージ
+   - 選択的に取り込みたい場合（翻訳関連をスキップなど） → cherry-pick
+   - コンフリクトが多すぎる場合 → まとめてマージ（一度に解決）
 
 3. **検証**
    - ビルド: `scons source --all-cores`
@@ -286,6 +314,22 @@
 - 1つのPRで5-10コミット程度を目安
 - 関連する変更をまとめる
 - 各PRで全テスト通過を確認
+
+### 取り込み方法の柔軟な判断
+
+- **cherry-pick**: 選択的にコミットを取り込む場合
+  - 翻訳関連をスキップしたい場合
+  - 特定のコミットのみを取り込みたい場合
+  - コンフリクトが少ない場合
+- **まとめてマージ**: 範囲をまとめて取り込む場合
+  - コンフリクトを一度に解決したい場合
+  - 本家の履歴構造を保持したい場合
+  - 作業効率を優先したい場合
+- **判断基準**: コンフリクトの多寡、選択性の必要性、作業効率を総合的に考慮
+
+**注意**: 
+- `--allow-unrelated-histories`が必要な場合がある（履歴が分岐している場合）
+- 日本語版独自のコミット（`72c211456`など）が含まれている場合、unrelated historiesとして扱われる可能性がある
 
 ### 段階的な検証を必須とする
 

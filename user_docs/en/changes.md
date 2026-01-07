@@ -12,11 +12,19 @@ We recommend updating to Windows 11, or when that's not possible, to the latest 
 
 ### New Features
 
+* AI Image Descriptions:
+  * Press `NVDA+g` to get an AI generated image description. (#18475, @tianzeshi-study)
+  * This is generated locally on the device - no information is sent to the internet.
+  * A new unassigned command is available for quickly opening the settings dialog for local image description. (#18475)
+  * Another new unassigned command is available to toggle image captioning. (#18475)
 * Added the possibility to report when multiple items can be selected in a list control.
 This can be enabled using the "Report when lists support multiple selection" setting in NVDA's object presentation settings. (#18365 @LeonarddeR)
 * In Visual Studio Code, the status bar is now reported when using the standard `NVDA+end` (desktop) / `NVDA+shift+end` (laptop) gesture. (#11064, @codeofdusk)
 * Performance improvements on ARM64 systems, such as with Qualcomm processors. (#18570, @leonarddeR)
-* While reading text, spelling errors can now be reported with a sound instead of speech. (#4233, @jcsteh, @CyrilleB79)
+* While reading text, spelling and grammar errors can now be reported with a sound instead of speech. (#4233, @jcsteh, @CyrilleB79, @nvdaes)
+* Spelling and grammar errors can be reported in braille. (#7608, @nvdaes)
+* Added references (e.g. to footnotes and endnotes) to the Microsoft Word elements list.
+This includes unassigned Quick Navigation commands that can be used to jump to the next/previous reference. (#19300, @LeonarddeR)
 
 ### Changes
 
@@ -29,6 +37,15 @@ We recommend using Windows 11, or if that is not possible, the latest Windows 10
   * Updated LibLouis Braille translator to [3.35.0](https://github.com/liblouis/liblouis/releases/tag/v3.35.0). (#18848, @LeonarddeR)
     * Added Japanese (Rokuten Kanji) Braille.
     * Improvements to Portuguese 8-dot, Greek International, Biblical Hebrew, Norwegian 8-dot and Unified English Braille.
+  * Updated BrlAPI for BRLTTY to version 0.8.7, and its corresponding python module to a Python 3.13 compatible build. (#18657, @LeonarddeR)
+  * Updated Unicode CLDR to [version 48](https://cldr.unicode.org/downloads/cldr-48).
+  Also added emoji localizations for Luxembourgish. (#19293, @OzancanKaratas)
+  * Updated eSpeak NG to [commit `b0b605c8`](https://github.com/espeak-ng/espeak-ng/commit/b0b605c8a80f76c4c19e18033c6780c3cc4afc5b). (#19293)
+* In browse mode in web browsers, NVDA no longer sometimes treats controls with 0 visual width or height as invisible. This technique is sometimes used to make content accessible to screen readers without it being visible visually. Such controls will now be accessible in browse mode where they weren't before. (#13897, @jcsteh)
+* The state of the Screen Curtain is no longer dependent on the configuration profile in use. (#10476)
+* Screen Curtain settings have been moved to the new Privacy and Security category of NVDA's settings. (#19177)
+* Support for the MathPlayer software from Wiris has been removed. (#19239)
+* Support for Microsoft Speech API version 4 (SAPI 4) speech synthesizers has been removed. (#19290)
 
 ### Bug Fixes
 
@@ -37,6 +54,18 @@ We recommend using Windows 11, or if that is not possible, the latest Windows 10
 * When reporting the location of the caret in classic versions of Notepad and other Win32 edit controls, text position is now more accurate. (#18767, @LeonarddeR)
 * Fixed a problem where some SAPI 4 voices (e.g. IBM ViaVoice) start speaking in the maximum volume instead of the current volume when speaking capital letters. (#18866, @gexgd0419)
 * NVDA no longer fails to read the contents of wx Web View controls. (#17273, @LeonarddeR)
+* When NVDA is configured to update add-ons automatically in the background, add-ons can be properly updated. (#18965, @nvdaes)
+* Fixed a case where braille output would fail with an error. (#19025, @LeonarddeR)
+* Battery time announcements now skip redundant "0 hours" and "0 minutes" and use proper singular/plural forms. (#9003, @hdzrvcc0X74)
+* When a synthesizer has a fallback language for the current dialect, the language of the text being read will no longer be reported as unsupported. (#18876, @nvdaes)
+* Certain settings will no longer erroneously be saved to disk when running NVDA from the launcher. (#18171)
+* Incorrect information is no longer displayed in braille when navigating the list of messages in Outlook Classic. (#18993, @nvdaes)
+* NVDA now detects and stops repeated crash loops to prevent system lockups when startup failures occur. (#19133, @derekriemer)
+* When moving Braille to the next line in LibreOffice Writer when the caret is at the start of the last line, it will now consistently move to the end of the document. (#19152, @LeonarddeR, @nvdaes)
+* The browse mode cursor highlighter now appears on content recognition results, such as when using Windows OCR. (#19168, @hwf1324)
+ * In the Input Gestures dialog, gestures including an operator while Num Lock is on will now be correctly displayed. (#19214, @CyrilleB79)
+ * In Chromium browsers, if a document contains links with a malformed URL, reading the document will be possible again. (#19125, @nvdaes)
+ * NVDA no longer plays a sound for spelling errors while typing if speech mode is set to on-demand or off. (#19323, @CyrilleB79)
 
 ### Changes for Developers
 
@@ -48,6 +77,30 @@ Add-ons will need to be re-tested and have their manifest updated.
   * The changelog should document changes between previous and latest add-on versions.
 * Updated components
   * Licensecheck has been updated to 2025.1 (#18728, @bramd)
+  * Updated sphinx to 8.1.3. (#18475)
+  * Introduced onnxruntime 1.23.2 for model inference. (#18475, #19196)
+  * Introduced onnx 1.19.1 to generate mock models for system test. (#18475, #19196)
+  * Updated pyright to 1.1.403. (#17749, #19162)
+  * Updated wxPython to 4.2.4. (#19080, #19196)
+  * Updated uv to 0.9.11 (#19162)
+  * Updated ruff to 0.12.7 (#19162)
+  * Updated comtypes to 1.4.13. (#19196)
+  * Updated Cryptography to 46.0.3. (#19196)
+  * Updated configobj to commit `9c8a0a80`. (#19196)
+  * Updated Requests to 2.32.5. (#19196)
+  * Updated url-normalize to 2.2.1. (#19196)
+  * Updated pycaw to 20251023. (#19196)
+  * Updated nh3 to 0.3.2. (#19196)
+  * Updated crowdin-api-client to 1.24.1. (#19196)
+  * Updated Markdown to 3.10. (#19196)
+  * Updated lxml to 6.0.2. (#19196)
+  * Updated pymdown-extensions to 10.17.1. (#19196)
+  * Updated setuptools to 80.9. (#19196)
+  * Updated robotframework to 7.3.2. (#19196)
+  * Updated ia2 to commit `c9ae003`. (#19196)
+  * Updated sonic to commit `d2cdb40`. (#19196)
+  * Updated w3c-aria-practices to commit `84b921a0`. (#19196)
+  * Updated wil to commit `7cf4193`. (#19196)
 * X64 NVDAHelper libraries are now also build for the [ARM64EC architecture](https://learn.microsoft.com/en-us/windows/arm/arm64ec).
 On ARM64 machines with Windows 11, these ARM64EC libraries are loaded instead of their X64 equivalents. (#18570, @leonarddeR)
 
@@ -159,6 +212,7 @@ Localisation data for emojis has been added for Belarusian and Bosnian.
   * Installation date will now be also shown in the details area for external add-ons. (#18560, @CyrilleB79)
 * A new unassigned command has been added to send `control+alt+delete` when controlling another computer via NVDA Remote Access. (#18105)
 * A new setting has been added to automatically mute Remote Access when controlling the local computer. (#18630)
+* A new unassigned global command has been added to toggle the "Play audio coordinates when mouse moves" option. (#19026, @rlawnsrl123)
 
 ### Changes
 

@@ -907,8 +907,8 @@ class VirtualBuffer(browseMode.BrowseModeDocumentTreeInterceptor):
 		try:
 			NVDAHelper.localLib.VBuf_getControlFieldNodeWithIdentifier(
 				self.VBufHandle,
-				docHandle,
-				objId,
+				docHandle if docHandle is not None else 0,
+				objId if objId is not None else 0,
 				ctypes.byref(node),
 			)
 		except WindowsError:

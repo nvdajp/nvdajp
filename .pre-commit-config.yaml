@@ -108,8 +108,28 @@ repos:
     - id: ruff
       name: lint with ruff
       args: [ --fix ]
+      # nvdajp: Exclude Japanese documentation and third-party libraries
+      exclude: |
+        (?x)^(
+          miscDepsJp/include/ |
+          miscDepsJp/jptools/jtusrdic/plumbum |
+          miscDepsJp/jptools/jtusrdic/six\.py |
+          projectDocs/jp/ |
+          readme-nvdajp\.md |
+          AGENTS\.md
+        )
     - id: ruff-format
       name: format with ruff
+      # nvdajp: Exclude Japanese documentation and third-party libraries
+      exclude: |
+        (?x)^(
+          miscDepsJp/include/ |
+          miscDepsJp/jptools/jtusrdic/plumbum |
+          miscDepsJp/jptools/jtusrdic/six\.py |
+          projectDocs/jp/ |
+          readme-nvdajp\.md |
+          AGENTS\.md
+        )
 
 - repo: https://github.com/RobertCraigie/pyright-python
   rev: v1.1.403

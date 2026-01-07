@@ -10,6 +10,7 @@
 
 import json
 from pathlib import Path
+
 path = Path(__file__).parent.parent / "include" / "libkuraji" / "tests" / "mecabHarness.json"
 data = open(path, encoding="utf-8").read()
 tasks = json.loads(data)

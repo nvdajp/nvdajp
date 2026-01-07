@@ -241,11 +241,15 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
 			if isinstance(mecab_result, int):
 				mecab = c_void_p(mecab_result)
 				if logwrite_:
-					logwrite_(f"Mecab_initialize: converted mecab from int to c_void_p: {mecab_result} -> {mecab.value}")
+					logwrite_(
+						f"Mecab_initialize: converted mecab from int to c_void_p: {mecab_result} -> {mecab.value}"
+					)
 			elif not isinstance(mecab_result, c_void_p):
 				mecab = cast(mecab_result, c_void_p)
 				if logwrite_:
-					logwrite_(f"Mecab_initialize: converted mecab to c_void_p: {type(mecab_result)} -> {mecab.value}")
+					logwrite_(
+						f"Mecab_initialize: converted mecab to c_void_p: {type(mecab_result)} -> {mecab.value}"
+					)
 			else:
 				mecab = mecab_result
 				if logwrite_:
@@ -269,7 +273,7 @@ def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
 	# CRITICAL: Declare global mecab at the start of the function
 	# This must be before any reference to mecab to avoid SyntaxError
 	global mecab
-	
+
 	# Helper function to write to debug log file (ensures logs are captured even on crash)
 	def _write_debug_log(msg):
 		try:

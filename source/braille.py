@@ -466,6 +466,15 @@ class FormattingMarker(NamedTuple):
 	start: str
 	end: str
 
+	def shouldBeUsed(self, key) -> bool:
+		"""Determines if the formatting marker should be reported in braille.
+		:param key: A key which represents an element that may be reported in braille.
+		:return: `True` if the element should be reported, `False` otherwise.
+		"""
+		formatConfig = config.conf["documentFormatting"]
+		if key in ("invalid-spelling", "invalid-grammar"):
+			return bool(formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.BRAILLE)
+		return formatConfig["fontAttributeReporting"] & OutputMode.BRAILLE
 
 fontAttributeFormattingMarkers: dict[str, FormattingMarker] = {
 	"bold": FormattingMarker(
@@ -499,6 +508,22 @@ fontAttributeFormattingMarkers: dict[str, FormattingMarker] = {
 		# Translators: Brailled at the end of strikethrough text.
 		# This is the English letter "s" plus dot 7 in braille.
 		end=pgettext("braille formatting symbol", "⡎"),
+	),
+	"invalid-spelling": FormattingMarker(
+		# Translators: Brailled at the start of invalid spelling text.
+		# This is the English letter "e" in braille.
+		start=pgettext("braille formatting symbol", "⠑"),
+		# Translators: Brailled at the end of invalid spelling text.
+		# This is the English letter "e" plus dot 7 in braille.
+		end=pgettext("braille formatting symbol", "⡑"),
+	),
+	"invalid-grammar": FormattingMarker(
+		# Translators: Brailled at the start of invalid grammar text.
+		# This is the English letter "g" in braille.
+		start=pgettext("braille formatting symbol", "⠛"),
+		# Translators: Brailled at the end of invalid grammar text.
+		# This is the English letter "g" plus dot 7 in braille.
+		end=pgettext("braille formatting symbol", "⡛"),
 	),
 }
 

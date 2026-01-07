@@ -192,14 +192,14 @@ class InputComposition(EditableTextWithAutoSelectDetection, Window):
 		if (
 			config.conf["keyboard"]["speakTypedCharacters"] != TypingEcho.OFF.value
 			or config.conf["keyboard"]["speakTypedWords"] != TypingEcho.OFF.value
-				or isCandidate
+			or isCandidate
 		):
-				queueHandler.queueFunction(
-					queueHandler.eventQueue,
-					speech.speakText,
-					newText,
-					symbolLevel=characterProcessing.SymbolLevel.ALL,
-				)
+			queueHandler.queueFunction(
+				queueHandler.eventQueue,
+				speech.speakText,
+				newText,
+				symbolLevel=characterProcessing.SymbolLevel.ALL,
+			)
 		# nvdajp end
 
 	def compositionUpdate(

@@ -17,7 +17,7 @@ if __name__ == "__main__":
 		arch = "x86"
 	else:
 		arch = sys.argv[1]
-	
+
 	result = find_vcvars(arch)
 	if result:
 		print(result)

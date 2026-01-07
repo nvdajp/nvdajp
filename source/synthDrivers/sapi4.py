@@ -119,6 +119,7 @@ class SynthDriverBufSink(COMObject):
 		synth = self.synthRef()
 		if synth and hasattr(synth, "setSpeaking"):
 			synth.setSpeaking(False)
+
 	# END JP PATCH
 
 	def IUnknown_Release(self, this: int, *args, **kwargs):
@@ -978,7 +979,7 @@ class SynthDriver(SynthDriver):
 			# BEGIN JP PATCH
 			# nvdajp: disable CharacterModeCommand handling (False and ...)
 			elif False and isinstance(item, CharacterModeCommand):  # nvdajp
-			# END JP PATCH
+				# END JP PATCH
 				textList.append("\\RmS=1\\" if item.state else "\\RmS=0\\")
 				charMode = item.state
 			elif isinstance(item, BreakCommand):
@@ -1075,6 +1076,7 @@ class SynthDriver(SynthDriver):
 
 	def isSpeaking(self):
 		return self._isSpeaking
+
 	# END JP PATCH
 
 	def removeSetting(self, name):

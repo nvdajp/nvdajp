@@ -325,6 +325,7 @@ class ScintillaTextInfo(textInfos.offsets.OffsetsTextInfo):
 		if end and self.obj.makeTextInfo(textInfos.POSITION_SELECTION).isCollapsed:
 			self.expand(textInfos.UNIT_LINE)
 		super().collapse(end=end)
+
 	# END JP PATCH
 
 

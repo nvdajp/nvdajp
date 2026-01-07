@@ -5,16 +5,17 @@
 import sys
 import markdown
 
+
 def convert_md_to_html(md_file, html_file):
-    """Convert Markdown file to HTML file."""
-    with open(md_file, 'r', encoding='utf-8') as f:
-        md_text = f.read()
+	"""Convert Markdown file to HTML file."""
+	with open(md_file, "r", encoding="utf-8") as f:
+		md_text = f.read()
 
-    # Convert Markdown to HTML with TOC extension
-    html = markdown.markdown(md_text, extensions=['toc'])
+	# Convert Markdown to HTML with TOC extension
+	html = markdown.markdown(md_text, extensions=["toc"])
 
-    # Add HTML header and footer
-    html_doc = f"""<!DOCTYPE html>
+	# Add HTML header and footer
+	html_doc = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -31,15 +32,16 @@ def convert_md_to_html(md_file, html_file):
 </html>
 """
 
-    with open(html_file, 'w', encoding='utf-8') as f:
-        f.write(html_doc)
+	with open(html_file, "w", encoding="utf-8") as f:
+		f.write(html_doc)
+
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python md2html.py input.md output.html")
-        sys.exit(1)
+	if len(sys.argv) < 3:
+		print("Usage: python md2html.py input.md output.html")
+		sys.exit(1)
 
-    md_file = sys.argv[1]
-    html_file = sys.argv[2]
-    convert_md_to_html(md_file, html_file)
-    print(f"Converted {md_file} to {html_file}")
+	md_file = sys.argv[1]
+	html_file = sys.argv[2]
+	convert_md_to_html(md_file, html_file)
+	print(f"Converted {md_file} to {html_file}")

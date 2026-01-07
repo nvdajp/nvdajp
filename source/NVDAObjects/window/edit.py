@@ -646,6 +646,7 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		if end_new == -1:
 			end_new = len(story_text)
 		return (start_new, end_new)
+
 	# END JP PATCH
 
 	def _getLineOffsets(self, offset):

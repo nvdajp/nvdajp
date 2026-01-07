@@ -97,6 +97,7 @@ except RuntimeError:
 	updateCheck = None
 
 from . import jpBrailleViewer  # nvdajp
+
 ### Constants
 NVDA_PATH = globalVars.appDir
 # ICON_PATH=os.path.join(NVDA_PATH, "images", "nvda.ico")
