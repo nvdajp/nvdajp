@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\gui\__init__.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\source\gui\__init__.py`  
+**Source**: `F:\nvda\gh\beta\source\gui\__init__.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\gui\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\beta\\source\\gui\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\__init__.py"
-index 5391ccc..4882b02 100644
+index 5391ccc..9a91800 100644
 --- "a/F:\\nvda\\gh\\beta\\source\\gui\\__init__.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\__init__.py"
 @@ -3,6 +3,7 @@
@@ -20,7 +20,7 @@ index 5391ccc..4882b02 100644
  
  from collections.abc import Callable
  import os
-@@ -56,12 +57,12 @@
+@@ -56,6 +57,7 @@
  	GeneralSettingsPanel,
  	InputCompositionPanel,
  	KeyboardSettingsPanel,
@@ -28,13 +28,7 @@ index 5391ccc..4882b02 100644
  	LocalCaptionerSettingsPanel,
  	MouseSettingsPanel,
  	MultiCategorySettingsDialog,
- 	NVDASettingsDialog,
- 	ObjectPresentationPanel,
--	PrivacyAndSecuritySettingsPanel,
- 	RemoteSettingsPanel,
- 	ReviewCursorPanel,
- 	SettingsDialog,
-@@ -96,10 +97,14 @@ def quit():
+@@ -96,10 +98,14 @@ def quit():
  except RuntimeError:
  	updateCheck = None
  
@@ -51,7 +45,7 @@ index 5391ccc..4882b02 100644
  
  ### Globals
  mainFrame: "MainFrame | None" = None
-@@ -332,6 +337,10 @@ def onNVDASettingsCommand(self, evt):
+@@ -332,6 +338,10 @@ def onNVDASettingsCommand(self, evt):
  	def onGeneralSettingsCommand(self, evt):
  		self.popupSettingsDialog(NVDASettingsDialog, GeneralSettingsPanel)
  
@@ -62,17 +56,7 @@ index 5391ccc..4882b02 100644
  	def onSelectSynthesizerCommand(self, evt):
  		self.popupSettingsDialog(SynthesizerSelectionDialog)
  
-@@ -347,9 +356,6 @@ def onBrailleSettingsCommand(self, evt):
- 	def onAudioSettingsCommand(self, evt: wx.CommandEvent):
- 		self.popupSettingsDialog(NVDASettingsDialog, AudioPanel)
- 
--	def onPrivacyAndSecuritySettingsCommand(self, evt: wx.CommandEvent):
--		self.popupSettingsDialog(NVDASettingsDialog, PrivacyAndSecuritySettingsPanel)
--
- 	def onVisionSettingsCommand(self, evt: wx.CommandEvent):
- 		self.popupSettingsDialog(NVDASettingsDialog, VisionSettingsPanel)
- 
-@@ -515,6 +521,18 @@ def onReloadPluginsCommand(self, evt):
+@@ -515,6 +525,18 @@ def onReloadPluginsCommand(self, evt):
  		globalPluginHandler.reloadGlobalPlugins()
  		NVDAObject.clearDynamicClassCache()
  
@@ -91,7 +75,7 @@ index 5391ccc..4882b02 100644
  	@blockAction.when(
  		blockAction.Context.SECURE_MODE,
  		blockAction.Context.MODAL_DIALOG_OPEN,
-@@ -523,7 +541,7 @@ def onCreatePortableCopyCommand(self, evt):
+@@ -523,7 +545,7 @@ def onCreatePortableCopyCommand(self, evt):
  		self.prePopup()
  		from . import installerGui
  
@@ -100,7 +84,7 @@ index 5391ccc..4882b02 100644
  		d.Show()
  		self.postPopup()
  
-@@ -712,6 +730,15 @@ def __init__(self, frame: MainFrame):
+@@ -712,6 +734,15 @@ def __init__(self, frame: MainFrame):
  			# Translators: The label for the menu item to reload plugins.
  			item = menu_tools.Append(wx.ID_ANY, _("Reload plugins"))
  			self.Bind(wx.EVT_MENU, frame.onReloadPluginsCommand, item)
@@ -116,7 +100,7 @@ index 5391ccc..4882b02 100644
  		# Translators: The label for the Tools submenu in NVDA menu.
  		self.menu.AppendSubMenu(menu_tools, _("&Tools"))
  
-@@ -832,6 +859,9 @@ def _appendHelpSubMenu(self, frame: MainFrame) -> None:
+@@ -832,6 +863,9 @@ def _appendHelpSubMenu(self, frame: MainFrame) -> None:
  		self.helpMenu = wx.Menu()
  
  		if not globalVars.appArgs.secure:
@@ -126,7 +110,7 @@ index 5391ccc..4882b02 100644
  			# Translators: The label of a menu item to open NVDA user guide.
  			item = self.helpMenu.Append(wx.ID_ANY, _("&User Guide"))
  			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("userGuide.html"), item)
-@@ -844,9 +874,12 @@ def _appendHelpSubMenu(self, frame: MainFrame) -> None:
+@@ -844,9 +878,12 @@ def _appendHelpSubMenu(self, frame: MainFrame) -> None:
  
  			self.helpMenu.AppendSeparator()
  

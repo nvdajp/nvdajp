@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\winAPI\winUser\constants.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winAPI\winUser\constants.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\winAPI\winUser\constants.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\winAPI\winUser\constants.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

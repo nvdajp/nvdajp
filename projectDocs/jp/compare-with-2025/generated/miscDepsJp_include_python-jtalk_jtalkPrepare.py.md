@@ -1,6 +1,6 @@
 ﻿# Diff for: `miscDepsJp\include\python-jtalk\jtalkPrepare.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\miscDepsJp\include\python-jtalk\jtalkPrepare.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\miscDepsJp\include\python-jtalk\jtalkPrepare.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\miscDepsJp\include\python-jtalk\jtalkPrepare.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

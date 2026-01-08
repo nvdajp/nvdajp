@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\gui\__init__.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\gui\__init__.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\gui\__init__.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\gui\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\__init__.py"
-index 3ba58a5..4882b02 100644
+index 3ba58a5..9a91800 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\__init__.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\__init__.py"
 @@ -1,4 +1,3 @@
@@ -52,7 +52,7 @@ index 3ba58a5..4882b02 100644
  	# messageBox is accessed through `gui.messageBox` as opposed to `gui.message.messageBox` throughout NVDA,
  	# be cautious when removing
  	messageBox,
-@@ -57,9 +55,10 @@
+@@ -57,13 +55,15 @@
  	BrowseModePanel,
  	DocumentFormattingPanel,
  	GeneralSettingsPanel,
@@ -64,7 +64,12 @@ index 3ba58a5..4882b02 100644
  	MouseSettingsPanel,
  	MultiCategorySettingsDialog,
  	NVDASettingsDialog,
-@@ -99,15 +98,6 @@ def quit():
+ 	ObjectPresentationPanel,
++	PrivacyAndSecuritySettingsPanel,
+ 	RemoteSettingsPanel,
+ 	ReviewCursorPanel,
+ 	SettingsDialog,
+@@ -99,15 +99,6 @@ def quit():
  	updateCheck = None
  
  from . import jpBrailleViewer  # nvdajp
@@ -80,7 +85,7 @@ index 3ba58a5..4882b02 100644
  
  ### Constants
  NVDA_PATH = globalVars.appDir
-@@ -117,7 +107,7 @@ def run_hta(hta_file_path: str) -> None:
+@@ -117,7 +108,7 @@ def run_hta(hta_file_path: str) -> None:
  DONATE_URL = "https://www.nvda.jp/donate.html"
  
  ### Globals
@@ -89,7 +94,7 @@ index 3ba58a5..4882b02 100644
  """Set by initialize. Should be used as the parent for "top level" dialogs.
  """
  
-@@ -159,7 +149,7 @@ class MainFrame(wx.Frame):
+@@ -159,7 +150,7 @@ class MainFrame(wx.Frame):
  
  	def __init__(self):
  		style = wx.DEFAULT_FRAME_STYLE ^ wx.MAXIMIZE_BOX ^ wx.MINIMIZE_BOX | wx.FRAME_NO_TASKBAR
@@ -98,7 +103,7 @@ index 3ba58a5..4882b02 100644
  		self.Bind(wx.EVT_CLOSE, self.onExitCommand)
  		self.sysTrayIcon = SysTrayIcon(self)
  		#: The focus before the last popup or C{None} if unknown.
-@@ -264,7 +254,7 @@ def onSaveConfigurationCommand(self, evt):
+@@ -264,7 +255,7 @@ def onSaveConfigurationCommand(self, evt):
  			)
  
  	@blockAction.when(blockAction.Context.MODAL_DIALOG_OPEN)
@@ -107,7 +112,7 @@ index 3ba58a5..4882b02 100644
  		self.prePopup()
  		try:
  			dialog(self, *args, **kwargs).Show()
-@@ -284,7 +274,7 @@ def popupSettingsDialog(self, dialog: Type[SettingsDialog], *args, **kwargs):
+@@ -284,7 +275,7 @@ def popupSettingsDialog(self, dialog: Type[SettingsDialog], *args, **kwargs):
  
  	if NVDAState._allowDeprecatedAPI():
  
@@ -116,7 +121,17 @@ index 3ba58a5..4882b02 100644
  			log.warning(
  				"_popupSettingsDialog is deprecated, use popupSettingsDialog instead.",
  				stack_info=True,
-@@ -404,6 +394,10 @@ def onUwpOcrCommand(self, evt):
+@@ -366,6 +357,9 @@ def onBrailleSettingsCommand(self, evt):
+ 	def onAudioSettingsCommand(self, evt: wx.CommandEvent):
+ 		self.popupSettingsDialog(NVDASettingsDialog, AudioPanel)
+ 
++	def onPrivacyAndSecuritySettingsCommand(self, evt: wx.CommandEvent):
++		self.popupSettingsDialog(NVDASettingsDialog, PrivacyAndSecuritySettingsPanel)
++
+ 	def onVisionSettingsCommand(self, evt: wx.CommandEvent):
+ 		self.popupSettingsDialog(NVDASettingsDialog, VisionSettingsPanel)
+ 
+@@ -404,6 +398,10 @@ def onUwpOcrCommand(self, evt):
  	def onRemoteAccessSettingsCommand(self, evt):
  		self.popupSettingsDialog(NVDASettingsDialog, RemoteSettingsPanel)
  
@@ -127,7 +142,7 @@ index 3ba58a5..4882b02 100644
  	@blockAction.when(blockAction.Context.SECURE_MODE)
  	def onAdvancedSettingsCommand(self, evt: wx.CommandEvent):
  		self.popupSettingsDialog(NVDASettingsDialog, AdvancedPanel)
-@@ -416,9 +410,26 @@ def onSpeechSymbolsCommand(self, evt):
+@@ -416,9 +414,26 @@ def onSpeechSymbolsCommand(self, evt):
  	def onInputGesturesCommand(self, evt):
  		self.popupSettingsDialog(InputGesturesDialog)
  
@@ -156,7 +171,7 @@ index 3ba58a5..4882b02 100644
  
  	@blockAction.when(blockAction.Context.SECURE_MODE)
  	def onCheckForUpdateCommand(self, evt):
-@@ -530,7 +541,7 @@ def onCreatePortableCopyCommand(self, evt):
+@@ -530,7 +545,7 @@ def onCreatePortableCopyCommand(self, evt):
  		self.prePopup()
  		from . import installerGui
  
@@ -165,7 +180,7 @@ index 3ba58a5..4882b02 100644
  		d.Show()
  		self.postPopup()
  
-@@ -643,7 +654,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
+@@ -643,7 +658,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
  	def __init__(self, frame: MainFrame):
  		super(SysTrayIcon, self).__init__()
  		icon = wx.Icon(ICON_PATH, wx.BITMAP_TYPE_ICO)
@@ -174,7 +189,7 @@ index 3ba58a5..4882b02 100644
  
  		self.menu = wx.Menu()
  		menu_preferences = self.preferencesMenu = wx.Menu()
-@@ -871,10 +882,10 @@ def _appendHelpSubMenu(self, frame: MainFrame) -> None:
+@@ -871,10 +886,10 @@ def _appendHelpSubMenu(self, frame: MainFrame) -> None:
  			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(versionInfo.url), item)
  			# Translators: The label for the menu item to view the NVDA website's get help section
  			item = self.helpMenu.Append(wx.ID_ANY, _("&Help, training and support"))
@@ -187,7 +202,7 @@ index 3ba58a5..4882b02 100644
  
  			self.helpMenu.AppendSeparator()
  
-@@ -903,9 +914,6 @@ def _openDocumentationFile(self, fileName: str) -> None:
+@@ -903,9 +918,6 @@ def _openDocumentationFile(self, fileName: str) -> None:
  		if helpFile is None:
  			reportNoDocumentation(fileName, useMsgBox=True)
  			return
@@ -197,7 +212,7 @@ index 3ba58a5..4882b02 100644
  		os.startfile(helpFile)
  
  	def _appendPendingUpdateSection(self, frame: MainFrame) -> None:
-@@ -1025,7 +1033,7 @@ def shouldConfigProfileTriggersBeSuspended():
+@@ -1025,7 +1037,7 @@ def shouldConfigProfileTriggersBeSuspended():
  	Top-level windows that require this behavior should have a C{shouldSuspendConfigProfileTriggers} attribute set to C{True}.
  	Because these dialogs are often opened via the NVDA menu, this applies to the NVDA menu as well.
  	"""

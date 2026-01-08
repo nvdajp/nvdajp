@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\mathPres\mathPlayer.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\mathPres\mathPlayer.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\mathPres\mathPlayer.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\mathPres\mathPlayer.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

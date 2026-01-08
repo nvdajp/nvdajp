@@ -1,6 +1,6 @@
 ﻿# Diff for: `ci\scripts\mozillaSyms.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\ci\scripts\mozillaSyms.py`  
+**Source**: `F:\nvda\gh\beta\ci\scripts\mozillaSyms.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\ci\scripts\mozillaSyms.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

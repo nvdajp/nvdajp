@@ -1,6 +1,6 @@
 ﻿# Diff for: `tests\system\robot\automatedImageDescriptions.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\tests\system\robot\automatedImageDescriptions.py`  
+**Source**: `F:\nvda\gh\beta\tests\system\robot\automatedImageDescriptions.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\tests\system\robot\automatedImageDescriptions.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

@@ -1,6 +1,6 @@
 ﻿# Diff for: `miscDepsJp\jptools\mecabRunner.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\miscDepsJp\jptools\mecabRunner.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\miscDepsJp\jptools\mecabRunner.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\miscDepsJp\jptools\mecabRunner.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

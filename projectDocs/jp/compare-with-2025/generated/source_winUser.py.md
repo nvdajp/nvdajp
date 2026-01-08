@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\winUser.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winUser.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\winUser.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\winUser.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

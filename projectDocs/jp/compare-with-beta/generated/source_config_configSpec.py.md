@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\config\configSpec.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\source\config\configSpec.py`  
+**Source**: `F:\nvda\gh\beta\source\config\configSpec.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\config\configSpec.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

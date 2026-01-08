@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\brailleDisplayDrivers\dotPad\driver.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\brailleDisplayDrivers\dotPad\driver.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\brailleDisplayDrivers\dotPad\driver.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\brailleDisplayDrivers\dotPad\driver.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

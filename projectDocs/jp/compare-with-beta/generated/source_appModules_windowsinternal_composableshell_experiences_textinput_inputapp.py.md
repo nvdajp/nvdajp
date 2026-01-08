@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\appModules\windowsinternal_composableshell_experiences_textinput_inputapp.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\source\appModules\windowsinternal_composableshell_experiences_textinput_inputapp.py`  
+**Source**: `F:\nvda\gh\beta\source\appModules\windowsinternal_composableshell_experiences_textinput_inputapp.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\appModules\windowsinternal_composableshell_experiences_textinput_inputapp.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\synthDrivers\jtalk\text2mecab.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\text2mecab.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\text2mecab.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\synthDrivers\jtalk\text2mecab.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

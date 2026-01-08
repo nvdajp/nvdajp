@@ -1,6 +1,6 @@
 ﻿# Diff for: `tests\system\libraries\NvdaLib.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\tests\system\libraries\NvdaLib.py`  
+**Source**: `F:\nvda\gh\beta\tests\system\libraries\NvdaLib.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\tests\system\libraries\NvdaLib.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\characterProcessing.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\characterProcessing.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\characterProcessing.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\characterProcessing.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

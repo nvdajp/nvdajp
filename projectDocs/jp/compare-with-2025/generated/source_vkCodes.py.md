@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\vkCodes.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\vkCodes.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\vkCodes.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\vkCodes.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

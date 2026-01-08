@@ -1,6 +1,6 @@
 ﻿# Diff for: `include\liblouis\python\tests\test_louis.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\include\liblouis\python\tests\test_louis.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\include\liblouis\python\tests\test_louis.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\include\liblouis\python\tests\test_louis.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\globalCommands.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\globalCommands.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\globalCommands.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\globalCommands.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\globalCommands.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\globalCommands.py"
-index 2aa2cab..1ee38cd 100644
+index 2aa2cab..4f6be3e 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\globalCommands.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\globalCommands.py"
 @@ -7,7 +7,6 @@
@@ -104,13 +104,8 @@ index 2aa2cab..1ee38cd 100644
  		# Translators: Input help mode message for toggle report spelling errors command.
 -		description=_("Toggles on and off the reporting of spelling errors"),
 +		description=_("Cycles through options for how to report spelling or grammar errors"),
- 		category=SCRCAT_DOCUMENTFORMATTING,
- 	)
--	def script_toggleReportSpellingErrors(self, gesture):
--		if config.conf["documentFormatting"]["reportSpellingErrors"]:
--			# Translators: The message announced when toggling the report spelling errors document formatting setting.
--			state = _("report spelling errors off")
--			config.conf["documentFormatting"]["reportSpellingErrors"] = False
++		category=SCRCAT_DOCUMENTFORMATTING,
++	)
 +	def script_toggleReportSpellingErrors(self, gesture: inputCore.InputGesture):
 +		currentValue = config.conf["documentFormatting"]["reportSpellingErrors2"]
 +		newValue = ((currentValue + 1) % ReportSpellingErrors.BRAILLE) | (
@@ -128,8 +123,13 @@ index 2aa2cab..1ee38cd 100644
 +	@script(
 +		# Translators: Input help mode message for command to toggle report spelling or grammar errors in braille.
 +		description=_("Toggles reporting spelling or grammar errors in braille"),
-+		category=SCRCAT_DOCUMENTFORMATTING,
-+	)
+ 		category=SCRCAT_DOCUMENTFORMATTING,
+ 	)
+-	def script_toggleReportSpellingErrors(self, gesture):
+-		if config.conf["documentFormatting"]["reportSpellingErrors"]:
+-			# Translators: The message announced when toggling the report spelling errors document formatting setting.
+-			state = _("report spelling errors off")
+-			config.conf["documentFormatting"]["reportSpellingErrors"] = False
 +	def script_toggleReportSpellingErrorsInBraille(self, gesture: inputCore.InputGesture):
 +		formatConfig = config.conf["documentFormatting"]["reportSpellingErrors2"]
 +		config.conf["documentFormatting"]["reportSpellingErrors2"] = (
@@ -311,7 +311,23 @@ index 2aa2cab..1ee38cd 100644
  		else:
  			api.copyToClip(title, notify=True)
  
-@@ -3498,6 +3565,15 @@ def script_activateDocumentFormattingDialog(self, gesture):
+@@ -3412,6 +3479,15 @@ def script_activateBrailleSettingsDialog(self, gesture):
+ 	def script_activateAudioSettingsDialog(self, gesture):
+ 		wx.CallAfter(gui.mainFrame.onAudioSettingsCommand, None)
+ 
++	@script(
++		# Translators: Input help mode message for go to privacy and security settings command.
++		description=_("Shows NVDA's privacy and security settings"),
++		category=SCRCAT_CONFIG,
++	)
++	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
++	def script_activatePrivacyAndSecuritySettings(self, gesture: inputCore.InputGesture) -> None:
++		wx.CallAfter(gui.mainFrame.onPrivacyAndSecuritySettingsCommand, None)
++
+ 	@script(
+ 		# Translators: Input help mode message for go to vision settings command.
+ 		description=_("Shows NVDA's vision settings"),
+@@ -3498,6 +3574,15 @@ def script_activateDocumentFormattingDialog(self, gesture):
  	def script_activateRemoteAccessSettings(self, gesture: "inputCore.InputGesture"):
  		wx.CallAfter(gui.mainFrame.onRemoteAccessSettingsCommand, None)
  
@@ -327,7 +343,7 @@ index 2aa2cab..1ee38cd 100644
  	@script(
  		# Translators: Input help mode message for go to Add-on Store settings command.
  		description=_("Shows NVDA's Add-on Store settings"),
-@@ -3983,9 +4059,11 @@ def script_reportClipboardText(self, gesture):
+@@ -3983,9 +4068,11 @@ def script_reportClipboardText(self, gesture):
  			if repeatCount == 0:
  				ui.message(text)
  			else:
@@ -339,7 +355,7 @@ index 2aa2cab..1ee38cd 100644
  		else:
  			ui.message(
  				ngettext(
-@@ -4915,8 +4993,7 @@ def _enableScreenCurtain(doEnable: bool = True):
+@@ -4915,8 +5002,7 @@ def _enableScreenCurtain(doEnable: bool = True):
  						)
  				except Exception:
  					log.error("Screen curtain initialization error", exc_info=True)
@@ -349,7 +365,7 @@ index 2aa2cab..1ee38cd 100644
  				finally:
  					self._toggleScreenCurtainMessage = enableMessage
  					ui.message(enableMessage, speechPriority=speech.priorities.Spri.NOW)
-@@ -5116,6 +5193,25 @@ def script_sendKeys(self, gesture: "inputCore.InputGesture"):
+@@ -5116,6 +5202,25 @@ def script_sendKeys(self, gesture: "inputCore.InputGesture"):
  	def script_sendSAS(self, gesture: "inputCore.InputGesture"):
  		_remoteClient._remoteClient.sendSAS()
  

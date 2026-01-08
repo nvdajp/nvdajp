@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\globalCommands.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\source\globalCommands.py`  
+**Source**: `F:\nvda\gh\beta\source\globalCommands.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\globalCommands.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\beta\\source\\globalCommands.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\globalCommands.py"
-index 432b35c..1ee38cd 100644
+index 432b35c..4f6be3e 100644
 --- "a/F:\\nvda\\gh\\beta\\source\\globalCommands.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\globalCommands.py"
 @@ -64,9 +64,11 @@
@@ -219,23 +219,7 @@ index 432b35c..1ee38cd 100644
  		else:
  			api.copyToClip(title, notify=True)
  
-@@ -3403,15 +3479,6 @@ def script_activateBrailleSettingsDialog(self, gesture):
- 	def script_activateAudioSettingsDialog(self, gesture):
- 		wx.CallAfter(gui.mainFrame.onAudioSettingsCommand, None)
- 
--	@script(
--		# Translators: Input help mode message for go to privacy and security settings command.
--		description=_("Shows NVDA's privacy and security settings"),
--		category=SCRCAT_CONFIG,
--	)
--	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
--	def script_activatePrivacyAndSecuritySettings(self, gesture: inputCore.InputGesture) -> None:
--		wx.CallAfter(gui.mainFrame.onPrivacyAndSecuritySettingsCommand, None)
--
- 	@script(
- 		# Translators: Input help mode message for go to vision settings command.
- 		description=_("Shows NVDA's vision settings"),
-@@ -3992,7 +4059,11 @@ def script_reportClipboardText(self, gesture):
+@@ -3992,7 +4068,11 @@ def script_reportClipboardText(self, gesture):
  			if repeatCount == 0:
  				ui.message(text)
  			else:
@@ -248,7 +232,7 @@ index 432b35c..1ee38cd 100644
  		else:
  			ui.message(
  				ngettext(
-@@ -4704,9 +4775,11 @@ def script_recognizeWithUwpOcr(self, gesture):
+@@ -4704,9 +4784,11 @@ def script_recognizeWithUwpOcr(self, gesture):
  			# Translators: Reported when Windows OCR is not available.
  			ui.message(_("Windows OCR not available"))
  			return
@@ -262,7 +246,7 @@ index 432b35c..1ee38cd 100644
  		if isScreenCurtainRunning:
  			# Translators: Reported when screen curtain is enabled.
  			ui.message(_("Please disable screen curtain before using Windows OCR."))
-@@ -4810,8 +4883,8 @@ def script_speech_cycleUnicodeNormalization(self, gesture: inputCore.InputGestur
+@@ -4810,8 +4892,8 @@ def script_speech_cycleUnicodeNormalization(self, gesture: inputCore.InputGestur
  		ui.message(msg)
  
  	_tempEnableScreenCurtain = True
@@ -273,7 +257,7 @@ index 432b35c..1ee38cd 100644
  
  	@script(
  		description=_(
-@@ -4824,20 +4897,19 @@ def script_speech_cycleUnicodeNormalization(self, gesture: inputCore.InputGestur
+@@ -4824,20 +4906,19 @@ def script_speech_cycleUnicodeNormalization(self, gesture: inputCore.InputGestur
  		category=SCRCAT_VISION,
  		gesture="kb:NVDA+control+escape",
  	)
@@ -303,7 +287,7 @@ index 432b35c..1ee38cd 100644
  		if self._waitingOnScreenCurtainWarningDialog:
  			# Already in the process of enabling the screen curtain, exit early.
  			# Ensure that the dialog is in the foreground, and read it again.
-@@ -4878,7 +4950,7 @@ def script_toggleScreenCurtain(self, gesture: inputCore.InputGesture) -> None:
+@@ -4878,7 +4959,7 @@ def script_toggleScreenCurtain(self, gesture: inputCore.InputGesture) -> None:
  			# Translators: Reported when the screen curtain is disabled.
  			message = _("Screen curtain disabled")
  			try:
@@ -312,7 +296,7 @@ index 432b35c..1ee38cd 100644
  			except Exception:
  				# If the screen curtain was enabled, we do not expect exceptions.
  				log.error("Screen curtain termination error", exc_info=True)
-@@ -4891,6 +4963,13 @@ def script_toggleScreenCurtain(self, gesture: inputCore.InputGesture) -> None:
+@@ -4891,6 +4972,13 @@ def script_toggleScreenCurtain(self, gesture: inputCore.InputGesture) -> None:
  		elif (  # enable it
  			scriptCount in (0, 1)  # 1 press (temp enable) or 2 presses (enable)
  		):
@@ -326,7 +310,7 @@ index 432b35c..1ee38cd 100644
  
  			def _enableScreenCurtain(doEnable: bool = True):
  				self._waitingOnScreenCurtainWarningDialog = None
-@@ -4906,9 +4985,12 @@ def _enableScreenCurtain(doEnable: bool = True):
+@@ -4906,9 +4994,12 @@ def _enableScreenCurtain(doEnable: bool = True):
  
  				try:
  					if alreadyRunning:
@@ -341,7 +325,7 @@ index 432b35c..1ee38cd 100644
  				except Exception:
  					log.error("Screen curtain initialization error", exc_info=True)
  					enableMessage = screenCurtain._screenCurtain.ERROR_ENABLING_MESSAGE
-@@ -4917,11 +4999,14 @@ def _enableScreenCurtain(doEnable: bool = True):
+@@ -4917,11 +5008,14 @@ def _enableScreenCurtain(doEnable: bool = True):
  					ui.message(enableMessage, speechPriority=speech.priorities.Spri.NOW)
  
  			#  Show warning if necessary and do enable.
@@ -360,7 +344,7 @@ index 432b35c..1ee38cd 100644
  				)
  				self._waitingOnScreenCurtainWarningDialog = dlg
  				gui.runScriptModalDialog(
-@@ -4940,10 +5025,9 @@ def _enableScreenCurtain(doEnable: bool = True):
+@@ -4940,10 +5034,9 @@ def _enableScreenCurtain(doEnable: bool = True):
  					isinstance(focusObj, RefreshableRecogResultNVDAObject)
  					and focusObj.recognizer.allowAutoRefresh
  				):
@@ -374,7 +358,7 @@ index 432b35c..1ee38cd 100644
  					return
  				_enableScreenCurtain()
  
-@@ -5110,26 +5194,21 @@ def script_sendSAS(self, gesture: "inputCore.InputGesture"):
+@@ -5110,26 +5203,21 @@ def script_sendSAS(self, gesture: "inputCore.InputGesture"):
  		_remoteClient._remoteClient.sendSAS()
  
  	@script(

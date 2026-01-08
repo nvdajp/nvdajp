@@ -1,6 +1,6 @@
 ﻿# Diff for: `tests\system\libraries\_chromeArgs.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\tests\system\libraries\_chromeArgs.py`  
+**Source**: `F:\nvda\gh\beta\tests\system\libraries\_chromeArgs.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\tests\system\libraries\_chromeArgs.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

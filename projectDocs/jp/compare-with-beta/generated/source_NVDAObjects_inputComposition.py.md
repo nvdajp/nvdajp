@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\NVDAObjects\inputComposition.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\source\NVDAObjects\inputComposition.py`  
+**Source**: `F:\nvda\gh\beta\source\NVDAObjects\inputComposition.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\NVDAObjects\inputComposition.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

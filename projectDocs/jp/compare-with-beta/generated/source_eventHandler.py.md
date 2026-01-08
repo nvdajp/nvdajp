@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\eventHandler.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\source\eventHandler.py`  
+**Source**: `F:\nvda\gh\beta\source\eventHandler.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\eventHandler.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

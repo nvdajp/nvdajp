@@ -1,6 +1,6 @@
 ﻿# Diff for: `jptools\pack_controller_client.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\jptools\pack_controller_client.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\jptools\pack_controller_client.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\jptools\pack_controller_client.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

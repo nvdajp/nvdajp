@@ -1,6 +1,6 @@
 ﻿# Diff for: `tests\checkPot.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\beta\tests\checkPot.py`  
+**Source**: `F:\nvda\gh\beta\tests\checkPot.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\tests\checkPot.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。

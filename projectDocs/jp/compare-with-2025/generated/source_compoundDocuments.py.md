@@ -1,6 +1,6 @@
 ﻿# Diff for: `source\compoundDocuments.py`
 
-**Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\compoundDocuments.py`  
+**Source**: `F:\nvda\gh\alphajp-251219\source\compoundDocuments.py`  
 **Current**: `F:\nvda\gh\alphajp-260109\source\compoundDocuments.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
