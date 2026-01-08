@@ -77,10 +77,15 @@
 
 ### カテゴリ3: 機能追加（優先度: 中）
 
-- `20e5b8118` - Add warnings to AI image descriptions (#19327)
+- ✅ `6172254f5` - Move settings to Privacy and Security category (#19296) - **既にマージ済み**（2026-01-08確認）
+- ⏳ `b8ba7413c` - Update to liblouis 3.36 (#19316) - **進行中**
+  - ✅ サブモジュールは既に更新済み（`include/liblouis`は3.36.0）
+  - ⏳ コード側の変更が未適用:
+    - `nvdaHelper/liblouis/config.h`: `#include <stdbool.h>`の追加が必要
+    - `source/brailleTables/__tables.py`: 新しいテーブル（`en-g3.ctb`、`mk-g1.utb`）の追加が必要
+    - ドキュメント更新が必要
 - `9935428ec` - Added ability to report spelling errors in braille (#18641)
-- `b8ba7413c` - Update to liblouis 3.36 (#19316)
-- `6172254f5` - Move settings to Privacy and Security category (#19296)
+- `20e5b8118` - Add warnings to AI image descriptions (#19327)
 - `728530020` - Parse LaTeX in the user guide to MathML (#19304)
 
 ### カテゴリ4: ドキュメント・設定変更（優先度: 低）
@@ -237,10 +242,21 @@
 - ✅ **カテゴリ4**: ドキュメント更新の取り込み（2コミット、2026-01-08）
   - ✅ `43b8a9bf3` - 手動適用完了（Python 3.13, 64-bit をchangelogに記載）
   - ✅ `e168626c9` - コミット完了（32-bit Windows参照を削除）
+- ✅ **マージ後のバグ修正**（2026-01-08）
+  - Privacy and Security設定パネルのスクリーンカーテン設定エラー修正
+  - `config.conf["screenCurtain"]`の`KeyError`を解消
 
 ### 次のステップ
 
 1. **カテゴリ2完了**: カテゴリ2のバグ修正・機能改善はすべて取り込み完了（MathCAT関連を除く）
 2. **カテゴリ4一部完了**: ドキュメント更新の一部を取り込み完了
-3. **カテゴリ3の検討**: 機能追加はコンフリクトが多いため、MathCAT統合後に再検討
+3. **カテゴリ3の取り込み開始**（2026-01-08）:
+   - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
+   - ⏳ `b8ba7413c` - Update to liblouis 3.36: 進行中
+     - ✅ サブモジュールは既に更新済み（`include/liblouis`は3.36.0）
+     - ⏳ コード側の変更が未適用:
+       - `nvdaHelper/liblouis/config.h`: `#include <stdbool.h>`の追加が必要
+       - `source/brailleTables/__tables.py`: 新しいテーブル（`en-g3.ctb`、`mk-g1.utb`）の追加が必要
+       - ドキュメント更新が必要
+   - 残りの機能追加は小さなグループに分けて取り込む
 4. **各変更後の検証**: ビルド・型チェック・単体テストを実行
