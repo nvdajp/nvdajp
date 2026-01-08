@@ -215,9 +215,18 @@
   - ✅ ビルド・テスト・検証完了
 
 **次のステップ**:
-1. 残りの機能追加を小さなグループに分けて取り込む
-   - `20e5b8118` - Add warnings to AI image descriptions (#19327)
-   - `728530020` - Parse LaTeX in the user guide to MathML (#19304)
+1. ⏳ `20e5b8118` - Add warnings to AI image descriptions (#19327)
+   - **依存関係**: このコミットを適用するには、以下のAI image description機能の基本実装を先にマージする必要がある
+     - `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
+     - `121c221` - Improve image captioner (#19024) - 改善
+     - `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
+     - `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
+   - **注意**: 衝突が大きいと予想されるため、コツコツと段階的に取り込む必要がある
+   - **実施手順**:
+     1. 依存関係のコミット（`e1cef07`、`121c221`、`c9b9d02`、`61ffb2f`）を順にマージ
+     2. 各コミット後にビルド・テストを実行して検証
+     3. `20e5b8118`を適用
+2. `728530020` - Parse LaTeX in the user guide to MathML (#19304)
 
 ### フェーズ5: pre-commit関連（最後に）
 

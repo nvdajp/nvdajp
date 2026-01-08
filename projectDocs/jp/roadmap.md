@@ -177,6 +177,13 @@
       - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
       - ✅ `b8ba7413c` - Update to liblouis 3.36: 完了（2026-01-08コミット: e5a9b2e）
       - ✅ `9935428ec` - Added ability to report spelling errors in braille: 完了（2026-01-08コミット: 2a7f0be）
+      - ⏳ `20e5b8118` - Add warnings to AI image descriptions (#19327)
+        - **依存関係**: このコミットを適用するには、以下のAI image description機能の基本実装を先にマージする必要がある
+          - `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
+          - `121c221` - Improve image captioner (#19024) - 改善
+          - `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
+          - `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
+        - **注意**: 衝突が大きいと予想されるため、コツコツと段階的に取り込む必要がある
   * **取り込み順序**:
     1. **フェーズ0**: pre-commit設定の確認（日本語ドキュメントの保護）
     2. **フェーズ1**: 最初のバグ修正・機能改善（58dd14767直後のコミット群）

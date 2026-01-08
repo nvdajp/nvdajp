@@ -82,7 +82,13 @@
   - ✅ サブモジュールは既に更新済み（`include/liblouis`は3.36.0）
   - ✅ コード側の変更を適用完了
 - ✅ `9935428ec` - Added ability to report spelling errors in braille (#18641) - **完了（2026-01-08コミット: 2a7f0be）**
-- `20e5b8118` - Add warnings to AI image descriptions (#19327)
+- ⏳ `20e5b8118` - Add warnings to AI image descriptions (#19327)
+  - **依存関係**: このコミットを適用するには、以下のAI image description機能の基本実装を先にマージする必要がある
+    - `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
+    - `121c221` - Improve image captioner (#19024) - 改善
+    - `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
+    - `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
+  - **注意**: 衝突が大きいと予想されるため、コツコツと段階的に取り込む必要がある
 - `728530020` - Parse LaTeX in the user guide to MathML (#19304)
 
 ### カテゴリ4: ドキュメント・設定変更（優先度: 低）
