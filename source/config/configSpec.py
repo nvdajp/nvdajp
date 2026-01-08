@@ -13,7 +13,7 @@ from . import configDefaults
 #: provide an upgrade step (@see profileUpgradeSteps.py). An upgrade step does not need to be added when
 #: just adding a new element to (or removing from) the schema, only when old versions of the config
 #: (conforming to old schema versions) will not work correctly with the new schema.
-latestSchemaVersion = 19
+latestSchemaVersion = 20
 
 #: The configuration specification string
 #: @type: String
@@ -62,7 +62,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	trimLeadingSilence = boolean(default=true)
 
 	[[__many__]]
-		capPitchChange = integer(default=0,min=-100,max=100)
+		capPitchChange = integer(default=30,min=-100,max=100)
 		sayCapForCapitals = boolean(default=false)
 		beepForCapitals = boolean(default=false)
 		useSpellingFunctionality = boolean(default=true)
@@ -254,6 +254,8 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	# 0: Off, 1: Speech, 2: Tones, 3: Both Speech and Tones
 	reportLineIndentation = integer(0, 3, default=0)
 	ignoreBlankLinesForRLI = boolean(default=False)
+	# Duration of indentation beeps, in milliseconds
+	indentToneDuration = integer(min=10, max=2000, default=40)
 	reportParagraphIndentation = boolean(default=False)
 	reportTables = boolean(default=true)
 	includeLayoutTables = boolean(default=False)
@@ -347,6 +349,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	language = string(default="")
 	autoRefresh = boolean(default=false)
 	autoRefreshInterval = integer(default=1500, min=100)
+	autoSayAllOnResult = boolean(default=false)
 
 [editableText]
 	caretMoveTimeoutMs = integer(min=0, max=2000, default=100)
@@ -488,8 +491,8 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 		copyAs = string(default="MathML")
 
 	[[braille]]
-		# Any supported braille code (currently Nemeth, UEB)
-		brailleCode = string(default="Nemeth")
+		# Any supported Braille code (such as UEB) or "Auto"
+		brailleCode = string(default="Auto")
 		# Highlight with dots 7 & 8 the current nav node -- values are Off, FirstChar, EndPoints, All
 		brailleNavHighlight = string(default="EndPoints")
 		# true/false
