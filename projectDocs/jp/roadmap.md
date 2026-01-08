@@ -112,6 +112,12 @@
   * `vision.handler`からプロバイダーインスタンスを取得するように変更
   * `onSave`で`ScreenCurtainSettings`の`AutoSettings`を使用するように変更
   * エラー解消により、設定ダイアログで「Privacy and Security」カテゴリを開けるようになった
+* ✅ **AI画像説明機能のマージ完了**（2026-01-08）
+  * 5つのコミットを順にマージ完了（`e1cef07`、`121c221`、`c9b9d02`、`61ffb2f`、`20e5b8118`）
+  * ダウンロードエラー処理の改善（失敗ファイルの詳細表示）
+  * デバッグログの削除と未使用インポートの削除（コミット: 4fb194d）
+  * システムテスト確認完了（imageDescriptionsテスト: PASS）
+  * 機能動作確認完了（画像説明の生成が正常に動作）
 
 ### ステージ4: リグレッション対策と機能復元 ✅（進行中）
 
@@ -173,17 +179,18 @@
     * ✅ マージ後のバグ修正（2026-01-08）
       - Privacy and Security設定パネルのスクリーンカーテン設定エラー修正
       - `config.conf["screenCurtain"]`の`KeyError`を解消
-    * ⏳ カテゴリ3: 機能追加の取り込み開始（2026-01-08）
+    * ✅ カテゴリ3: 機能追加の取り込み完了（2026-01-08）
       - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
       - ✅ `b8ba7413c` - Update to liblouis 3.36: 完了（2026-01-08コミット: e5a9b2e）
       - ✅ `9935428ec` - Added ability to report spelling errors in braille: 完了（2026-01-08コミット: 2a7f0be）
-      - ⏳ `20e5b8118` - Add warnings to AI image descriptions (#19327)
-        - **依存関係**: このコミットを適用するには、以下のAI image description機能の基本実装を先にマージする必要がある
-          - `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
-          - `121c221` - Improve image captioner (#19024) - 改善
-          - `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
-          - `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
-        - **注意**: 衝突が大きいと予想されるため、コツコツと段階的に取り込む必要がある
+      - ✅ AI画像説明機能のマージ完了（2026-01-08）
+        - ✅ `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
+        - ✅ `121c221` - Improve image captioner (#19024) - 改善
+        - ✅ `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
+        - ✅ `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
+        - ✅ `20e5b8118` - Add warnings to AI image descriptions (#19327) - 警告追加
+        - ✅ デバッグログの削除とエラー処理の改善完了（2026-01-08コミット: 4fb194d）
+        - ✅ システムテスト確認完了（imageDescriptionsテスト: PASS）
   * **取り込み順序**:
     1. **フェーズ0**: pre-commit設定の確認（日本語ドキュメントの保護）
     2. **フェーズ1**: 最初のバグ修正・機能改善（58dd14767直後のコミット群）

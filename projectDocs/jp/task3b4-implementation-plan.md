@@ -215,17 +215,19 @@
   - ✅ ビルド・テスト・検証完了
 
 **次のステップ**:
-1. ⏳ `20e5b8118` - Add warnings to AI image descriptions (#19327)
-   - **依存関係**: このコミットを適用するには、以下のAI image description機能の基本実装を先にマージする必要がある
-     - `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
-     - `121c221` - Improve image captioner (#19024) - 改善
-     - `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
-     - `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
-   - **注意**: 衝突が大きいと予想されるため、コツコツと段階的に取り込む必要がある
-   - **実施手順**:
-     1. 依存関係のコミット（`e1cef07`、`121c221`、`c9b9d02`、`61ffb2f`）を順にマージ
-     2. 各コミット後にビルド・テストを実行して検証
-     3. `20e5b8118`を適用
+1. ✅ AI画像説明機能のマージ完了（2026-01-08）
+   - ✅ `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
+   - ✅ `121c221` - Improve image captioner (#19024) - 改善
+   - ✅ `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
+   - ✅ `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
+   - ✅ `20e5b8118` - Add warnings to AI image descriptions (#19327) - 警告追加
+   - ✅ デバッグログの削除とエラー処理の改善完了（2026-01-08コミット: 4fb194d）
+   - ✅ システムテスト確認完了（imageDescriptionsテスト: PASS）
+   - **実施内容**:
+     - 5つのコミットを順にマージ（コンフリクト解決含む）
+     - 各コミット後にビルド・テストを実行して検証
+     - ダウンロードエラー処理の改善（失敗ファイルの詳細表示）
+     - デバッグログの削除（未使用インポートも削除）
 2. `728530020` - Parse LaTeX in the user guide to MathML (#19304)
 
 ### フェーズ5: pre-commit関連（最後に）
@@ -417,6 +419,29 @@
 - リンターエラーなし
 
 **参照**: roadmap.md の「完了した追加作業」セクション
+
+### 2026-01-08: AI画像説明機能のマージ完了
+
+**実施内容**: AI画像説明機能の5つのコミットを順にマージ完了
+
+**マージしたコミット**:
+1. ✅ `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
+2. ✅ `121c221` - Improve image captioner (#19024) - 改善
+3. ✅ `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
+4. ✅ `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
+5. ✅ `20e5b8118` - Add warnings to AI image descriptions (#19327) - 警告追加
+
+**追加作業**:
+- ✅ ダウンロードエラー処理の改善（失敗ファイルの詳細表示）
+- ✅ デバッグログの削除と未使用インポートの削除（2026-01-08コミット: 4fb194d）
+
+**検証結果**:
+- ✅ ビルド成功
+- ✅ ユニットテスト成功（951テスト、5スキップ）
+- ✅ システムテスト成功（imageDescriptionsテスト: PASS）
+- ✅ 機能動作確認完了（画像説明の生成が正常に動作）
+
+**参照**: roadmap.md の「タスク 3b.4: x64移行後の変更の取り込み」セクション
 
 ## 次のステップ
 
