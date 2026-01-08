@@ -541,9 +541,9 @@ class MathCATUserPreferences:
 			BrailleNavHighlightOption.ENDPOINTS.value,
 		)
 		# Braille.BrailleCode
-		# Default value: "Nemeth"
-		# Valid values: Any supported braille code (currently Nemeth, UEB, CMU, Vietnam)
-		self._validate("Braille", "BrailleCode", [], "Nemeth")
+		# Default value: Auto
+		# Valid values: Any supported braille code (for example Nemeth, UEB, CMU, Vietnam) or Auto
+		self._validate("Braille", "BrailleCode", [], "Auto")
 
 	def _validate(
 		self,
