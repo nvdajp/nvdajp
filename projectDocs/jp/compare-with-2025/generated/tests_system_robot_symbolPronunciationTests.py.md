@@ -1,17 +1,17 @@
 ﻿# Diff for: `tests\system\robot\symbolPronunciationTests.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\system\robot\symbolPronunciationTests.py`  
-**Current**: `F:\nvda\gh\alphajp\tests\system\robot\symbolPronunciationTests.py`
+**Current**: `F:\nvda\gh\alphajp-260109\tests\system\robot\symbolPronunciationTests.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\robot\\symbolPronunciationTests.py" "b/F:\\nvda\\gh\\alphajp\\tests\\system\\robot\\symbolPronunciationTests.py"
-index eb57cf5453..960164099f 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\robot\\symbolPronunciationTests.py" "b/F:\\nvda\\gh\\alphajp-260109\\tests\\system\\robot\\symbolPronunciationTests.py"
+index eb57cf5..9601640 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\robot\\symbolPronunciationTests.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\tests\\system\\robot\\symbolPronunciationTests.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\system\\robot\\symbolPronunciationTests.py"
 @@ -42,7 +42,6 @@
  from AssertsLib import AssertsLib as _AssertsLib
  import NvdaLib as _NvdaLib

@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\gui\addonStoreGui\viewModels\addonList.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\gui\addonStoreGui\viewModels\addonList.py`  
-**Current**: `F:\nvda\gh\alphajp\source\gui\addonStoreGui\viewModels\addonList.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\gui\addonStoreGui\viewModels\addonList.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\addonStoreGui\\viewModels\\addonList.py" "b/F:\\nvda\\gh\\alphajp\\source\\gui\\addonStoreGui\\viewModels\\addonList.py"
-index 375ddff476..df16cc8b52 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\addonStoreGui\\viewModels\\addonList.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\addonStoreGui\\viewModels\\addonList.py"
+index 375ddff..df16cc8 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\addonStoreGui\\viewModels\\addonList.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\gui\\addonStoreGui\\viewModels\\addonList.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\addonStoreGui\\viewModels\\addonList.py"
 @@ -3,17 +3,21 @@
  # This file is covered by the GNU General Public License.
  # See the file COPYING for more details.

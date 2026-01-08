@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\synthDrivers\nvdajp_jtalk.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\nvdajp_jtalk.py`  
-**Current**: `F:\nvda\gh\alphajp\source\synthDrivers\nvdajp_jtalk.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\synthDrivers\nvdajp_jtalk.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\nvdajp_jtalk.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\nvdajp_jtalk.py"
-index e9ea687ccf..604691b9c7 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\nvdajp_jtalk.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\nvdajp_jtalk.py"
+index e9ea687..604691b 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\nvdajp_jtalk.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\nvdajp_jtalk.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\nvdajp_jtalk.py"
 @@ -9,11 +9,11 @@
  # Copyright (C) 2010-2021 Takuya Nishimoto (nishimotz.com)
  # Released under GPL 2

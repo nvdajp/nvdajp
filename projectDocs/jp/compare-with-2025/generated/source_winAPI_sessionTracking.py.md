@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\winAPI\sessionTracking.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winAPI\sessionTracking.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winAPI\sessionTracking.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winAPI\sessionTracking.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\sessionTracking.py" "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\sessionTracking.py"
-index f7b767a97e..aaa691a9fb 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\sessionTracking.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\sessionTracking.py"
+index f7b767a..aaa691a 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\sessionTracking.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\sessionTracking.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\sessionTracking.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2022 NV Access Limited

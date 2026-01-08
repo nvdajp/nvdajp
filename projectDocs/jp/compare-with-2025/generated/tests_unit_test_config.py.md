@@ -1,17 +1,17 @@
 ﻿# Diff for: `tests\unit\test_config.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\unit\test_config.py`  
-**Current**: `F:\nvda\gh\alphajp\tests\unit\test_config.py`
+**Current**: `F:\nvda\gh\alphajp-260109\tests\unit\test_config.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_config.py" "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_config.py"
-index 723ca4d789..2912e5445d 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_config.py" "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_config.py"
+index 723ca4d..2912e54 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_config.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_config.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_config.py"
 @@ -32,11 +32,12 @@
  	_upgradeConfigFrom_8_to_9_cellBorders,
  	_upgradeConfigFrom_8_to_9_showMessages,

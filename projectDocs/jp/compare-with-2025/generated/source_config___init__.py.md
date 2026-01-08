@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\config\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\config\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\config\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\config\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\config\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\config\\__init__.py"
-index 8e674888d4..2eadd6b186 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\config\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\config\\__init__.py"
+index 8e67488..0fbd3cd 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\config\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\config\\__init__.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\config\\__init__.py"
 @@ -13,7 +13,6 @@
  from enum import Enum
  import globalVars
@@ -28,6 +28,15 @@ index 8e674888d4..2eadd6b186 100644
  from shlobj import FolderId, SHGetKnownFolderPath
  import baseObject
  import easeOfAccess
+@@ -154,7 +154,7 @@ def isInstalledCopy() -> bool:
+ 		log.error("Unable to query isInstalledCopy registry key", exc_info=True)
+ 		return False
+ 
+-	winreg.CloseKey(k)
++	k.Close()
+ 	try:
+ 		return os.stat(instDir) == os.stat(globalVars.appDir)
+ 	except (WindowsError, FileNotFoundError):
 @@ -269,59 +269,9 @@ def getStartAfterLogon() -> bool:
  	"""Not to be confused with getStartOnLogonScreen.
  
@@ -162,6 +171,19 @@ index 8e674888d4..2eadd6b186 100644
  		_setSystemConfig(fromPath)
  	else:
  		import systemUtils
+@@ -410,10 +318,10 @@ def setSystemConfigToCurrentConfig():
+ 			raise RuntimeError("Slave failure")
+ 
+ 
+-def _setSystemConfig(fromPath):
++def _setSystemConfig(fromPath, *, prefix=sys.prefix):
+ 	import installer
+ 
+-	toPath = os.path.join(sys.prefix, "systemConfig")
++	toPath = os.path.join(prefix, "systemConfig")
+ 	log.debug("Copying config to systemconfig dir: %s", toPath)
+ 	if os.path.isdir(toPath):
+ 		installer.tryRemoveFile(toPath)
 @@ -458,7 +366,10 @@ def setStartOnLogonScreen(enable: bool) -> None:
  		# Try setting it directly.
  		_setStartOnLogonScreen(enable)
@@ -174,7 +196,58 @@ index 8e674888d4..2eadd6b186 100644
  		# We probably don't have admin privs, so we need to elevate to do this using the slave.
  		import systemUtils
  
-@@ -1286,7 +1197,7 @@ def __setitem__(
+@@ -505,6 +416,9 @@ class ConfigManager(object):
+ 		"development",
+ 		"addonStore",
+ 		"remote",
++		"automatedImageDescriptions",
++		"math",
++		"screenCurtain",
+ 	}
+ 	"""
+ 	Sections that only apply to the base configuration;
+@@ -754,7 +668,8 @@ def createProfile(self, name):
+ 		@type name: str
+ 		@raise ValueError: If a profile with this name already exists.
+ 		"""
+-		if globalVars.appArgs.secure:
++		if not NVDAState.shouldWriteToDisk():
++			log.debug("Not creating configuration profile, as shouldWriteToDisk returned False.")
+ 			return
+ 		if not name:
+ 			raise ValueError("Missing name.")
+@@ -775,7 +690,8 @@ def deleteProfile(self, name):
+ 		@type name: str
+ 		@raise LookupError: If the profile doesn't exist.
+ 		"""
+-		if globalVars.appArgs.secure:
++		if not NVDAState.shouldWriteToDisk():
++			log.debug("Not deleting profile, as shouldSaveToDisk returned False.")
+ 			return
+ 		fn = self._getProfileFn(name)
+ 		if not os.path.isfile(fn):
+@@ -831,7 +747,8 @@ def renameProfile(self, oldName, newName):
+ 		@raise LookupError: If the profile doesn't exist.
+ 		@raise ValueError: If a profile with the new name already exists.
+ 		"""
+-		if globalVars.appArgs.secure:
++		if not NVDAState.shouldWriteToDisk():
++			log.debug("Not renaming profile, as shouldWriteToDisk returned False.")
+ 			return
+ 		if newName == oldName:
+ 			return
+@@ -1008,8 +925,9 @@ def saveProfileTriggers(self):
+ 		"""Save profile trigger information to disk.
+ 		This should be called whenever L{profilesToTriggers} is modified.
+ 		"""
+-		if globalVars.appArgs.secure:
++		if not NVDAState.shouldWriteToDisk():
+ 			# Never save if running securely.
++			log.debug("Not saving profile triggers, as shouldWriteToDisk returned False.")
+ 			return
+ 		self.triggersToProfiles.parent.write()
+ 		log.info("Profile triggers saved")
+@@ -1286,7 +1204,7 @@ def __setitem__(
  
  		# Alias old config items to their new counterparts for backwards compatibility.
  		# Uncomment when there are new links that need to be made.

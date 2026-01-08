@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\synthDrivers\jtalk\text2mecab.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\text2mecab.py`  
-**Current**: `F:\nvda\gh\alphajp\source\synthDrivers\jtalk\text2mecab.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\synthDrivers\jtalk\text2mecab.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\text2mecab.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\text2mecab.py"
-index ca07e0a31a..29fe1a5cbf 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\text2mecab.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\text2mecab.py"
+index ca07e0a..8c5babf 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\text2mecab.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\text2mecab.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\text2mecab.py"
 @@ -46,7 +46,7 @@ def text2mecab_setup():
  			[re.compile("<"), "＜"],
  			[re.compile("="), "＝"],
@@ -30,16 +30,14 @@ index ca07e0a31a..29fe1a5cbf 100644
  			pass
  	return s
  
-@@ -127,4 +127,22 @@ def text2mecab(txt, CODE_=CODE):
+@@ -127,4 +127,20 @@ def text2mecab(txt, CODE_=CODE):
  	text2mecab_setup()
  	txt = unicodedata.normalize("NFKC", txt)
  	txt = text2mecab_convert(txt)
 +	# BEGIN JP PATCH (assert suspicious patterns before encoding)
 +	# Detect mixed ASCII/non-ASCII or unusual whitespace patterns that may trigger crashes.
 +	assert "\t" not in txt, "text2mecab: unexpected tab after conversion"
-+	assert "\r" not in txt and "\n" not in txt, (
-+		"text2mecab: unexpected newline after conversion"
-+	)
++	assert "\r" not in txt and "\n" not in txt, "text2mecab: unexpected newline after conversion"
 +	ascii_count = sum(1 for c in txt if ord(c) < 0x80)
 +	non_ascii_count = len(txt) - ascii_count
 +	if ascii_count and non_ascii_count:

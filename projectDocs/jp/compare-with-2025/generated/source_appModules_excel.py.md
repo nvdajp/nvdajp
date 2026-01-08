@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\appModules\excel.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\appModules\excel.py`  
-**Current**: `F:\nvda\gh\alphajp\source\appModules\excel.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\appModules\excel.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\appModules\\excel.py" "b/F:\\nvda\\gh\\alphajp\\source\\appModules\\excel.py"
-index fa8430afc6..150a4f1c24 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\appModules\\excel.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\appModules\\excel.py"
+index fa8430a..150a4f1 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\appModules\\excel.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\appModules\\excel.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\appModules\\excel.py"
 @@ -1,6 +1,6 @@
  # -*- coding: UTF-8 -*-
  # A part of NonVisual Desktop Access (NVDA)

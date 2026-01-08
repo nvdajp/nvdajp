@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\IAccessibleHandler\internalWinEventHandler.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\IAccessibleHandler\internalWinEventHandler.py`  
-**Current**: `F:\nvda\gh\alphajp\source\IAccessibleHandler\internalWinEventHandler.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\IAccessibleHandler\internalWinEventHandler.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\IAccessibleHandler\\internalWinEventHandler.py" "b/F:\\nvda\\gh\\alphajp\\source\\IAccessibleHandler\\internalWinEventHandler.py"
-index 4243d40c13..e2b17d4be6 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\IAccessibleHandler\\internalWinEventHandler.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\IAccessibleHandler\\internalWinEventHandler.py"
+index 4243d40..4669248 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\IAccessibleHandler\\internalWinEventHandler.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\IAccessibleHandler\\internalWinEventHandler.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\IAccessibleHandler\\internalWinEventHandler.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2020 NV Access Limited
@@ -33,7 +33,26 @@ index 4243d40c13..e2b17d4be6 100644
  import winUser
  from .utils import getWinEventLogInfo, isMSAADebugLoggingEnabled
  
-@@ -185,7 +186,7 @@ def winEventCallback(handle, eventID, window, objectID, childID, threadID, times
+@@ -65,7 +66,17 @@
+ 
+ 
+ # C901: winEventCallback is too complex
+-def winEventCallback(handle, eventID, window, objectID, childID, threadID, timestamp):  # noqa: C901
++def winEventCallback(
++	handle: int | None,
++	eventID: int,
++	window: int | None,
++	objectID: int,
++	childID: int,
++	threadID: int,
++	timestamp: int,
++) -> None:  # noqa: C901
++	if window is None:
++		window = 0
+ 	if isMSAADebugLoggingEnabled():
+ 		log.debug(
+ 			f"Hook received winEvent: {getWinEventLogInfo(window, objectID, childID, eventID, threadID)}",
+@@ -185,7 +196,7 @@ def winEventCallback(handle, eventID, window, objectID, childID, threadID, times
  
  
  # Register internal object event with IAccessible

@@ -1,21 +1,22 @@
 ﻿# Diff for: `source\winBindings\oleacc.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winBindings\oleacc.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winBindings\oleacc.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winBindings\oleacc.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winBindings\\oleacc.py" "b/F:\\nvda\\gh\\alphajp\\source\\winBindings\\oleacc.py"
-index b6836f9ec1..38372caf77 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winBindings\\oleacc.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winBindings\\oleacc.py"
+index b6836f9..3259f54 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winBindings\\oleacc.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winBindings\\oleacc.py"
-@@ -6,12 +6,25 @@
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winBindings\\oleacc.py"
+@@ -6,17 +6,31 @@
  """Functions exported by oleacc.dll, and supporting data structures and enumerations."""
  
  from ctypes import (
++	WINFUNCTYPE,
 +	HRESULT,
  	windll,
 +	POINTER,
@@ -38,12 +39,18 @@ index b6836f9ec1..38372caf77 100644
  
  
  dll = windll.oleacc
-@@ -26,3 +39,180 @@
+ 
+-GetProcessHandleFromHwnd = dll.GetProcessHandleFromHwnd
++GetProcessHandleFromHwnd = WINFUNCTYPE(None)(("GetProcessHandleFromHwnd", dll))
+ """
+ Retrieves a process handle from a window handle.
+ .. seealso::
+@@ -26,3 +40,180 @@
  	HWND,  # windowHandle
  )
  GetProcessHandleFromHwnd.restype = HANDLE
 +
-+AccNotifyTouchInteraction = dll.AccNotifyTouchInteraction
++AccNotifyTouchInteraction = WINFUNCTYPE(None)(("AccNotifyTouchInteraction", dll))
 +"""
 +Notifies the system that a touch interaction has occurred.
 +.. seealso::
@@ -56,7 +63,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +AccNotifyTouchInteraction.restype = HRESULT
 +
-+AccSetRunningUtilityState = dll.AccSetRunningUtilityState
++AccSetRunningUtilityState = WINFUNCTYPE(None)(("AccSetRunningUtilityState", dll))
 +"""
 +Sets the running utility state for accessibility.
 +.. seealso::
@@ -69,7 +76,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +AccSetRunningUtilityState.restype = HRESULT
 +
-+AccessibleChildren = dll.AccessibleChildren
++AccessibleChildren = WINFUNCTYPE(None)(("AccessibleChildren", dll))
 +"""
 +Retrieves the specified children of an accessible object.
 +.. seealso::
@@ -84,7 +91,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +AccessibleChildren.restype = HRESULT
 +
-+AccessibleObjectFromEvent = dll.AccessibleObjectFromEvent
++AccessibleObjectFromEvent = WINFUNCTYPE(None)(("AccessibleObjectFromEvent", dll))
 +"""
 +Retrieves the address of the IAccessible interface for the object that generated the event and the child ID.
 +.. seealso::
@@ -99,7 +106,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +AccessibleObjectFromEvent.restype = HRESULT
 +
-+AccessibleObjectFromPoint = dll.AccessibleObjectFromPoint
++AccessibleObjectFromPoint = WINFUNCTYPE(None)(("AccessibleObjectFromPoint", dll))
 +"""
 +Retrieves the address of the IAccessible interface pointer for the object displayed at a specified point on the screen.
 +.. seealso::
@@ -112,7 +119,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +AccessibleObjectFromPoint.restype = HRESULT
 +
-+AccessibleObjectFromWindow = dll.AccessibleObjectFromWindow
++AccessibleObjectFromWindow = WINFUNCTYPE(None)(("AccessibleObjectFromWindow", dll))
 +"""
 +Retrieves the address of the IAccessible interface for the object associated with the specified window.
 +.. seealso::
@@ -126,7 +133,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +AccessibleObjectFromWindow.restype = HRESULT
 +
-+CreateStdAccessibleObject = dll.CreateStdAccessibleObject
++CreateStdAccessibleObject = WINFUNCTYPE(None)(("CreateStdAccessibleObject", dll))
 +"""
 +Creates a standard object that exposes an IAccessible interface.
 +.. seealso::
@@ -140,7 +147,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +CreateStdAccessibleObject.restype = HRESULT
 +
-+CreateStdAccessibleProxy = dll.CreateStdAccessibleProxyW
++CreateStdAccessibleProxy = WINFUNCTYPE(None)(("CreateStdAccessibleProxyW", dll))
 +"""
 +Creates a proxy accessible object for a window.
 +.. seealso::
@@ -155,7 +162,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +CreateStdAccessibleProxy.restype = HRESULT
 +
-+GetRoleText = dll.GetRoleTextW
++GetRoleText = WINFUNCTYPE(None)(("GetRoleTextW", dll))
 +"""
 +Retrieves a localized string that describes an object's role for the specified role value.
 +.. seealso::
@@ -168,7 +175,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +GetRoleText.restype = c_uint
 +
-+GetStateText = dll.GetStateTextW
++GetStateText = WINFUNCTYPE(None)(("GetStateTextW", dll))
 +"""
 +Retrieves a localized string that describes an object's state for the specified state value.
 +.. seealso::
@@ -181,7 +188,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +GetStateText.restype = c_uint
 +
-+LresultFromObject = dll.LresultFromObject
++LresultFromObject = WINFUNCTYPE(None)(("LresultFromObject", dll))
 +"""
 +Creates an LRESULT value containing a pointer to a COM interface.
 +.. seealso::
@@ -194,7 +201,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +LresultFromObject.restype = LRESULT
 +
-+ObjectFromLresult = dll.ObjectFromLresult
++ObjectFromLresult = WINFUNCTYPE(None)(("ObjectFromLresult", dll))
 +"""
 +Retrieves a COM interface pointer from an LRESULT value.
 +.. seealso::
@@ -208,7 +215,7 @@ index b6836f9ec1..38372caf77 100644
 +)
 +ObjectFromLresult.restype = HRESULT
 +
-+WindowFromAccessibleObject = dll.WindowFromAccessibleObject
++WindowFromAccessibleObject = WINFUNCTYPE(None)(("WindowFromAccessibleObject", dll))
 +"""
 +Retrieves the window handle for the window that contains the specified accessible object.
 +.. seealso::

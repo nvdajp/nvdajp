@@ -1,18 +1,25 @@
 ﻿# Diff for: `source\installer.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\installer.py`  
-**Current**: `F:\nvda\gh\alphajp\source\installer.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\installer.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\installer.py" "b/F:\\nvda\\gh\\alphajp\\source\\installer.py"
-index 2ed16054dc..4e6780c7a3 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\installer.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\installer.py"
+index 2ed1605..a552ccc 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\installer.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\installer.py"
-@@ -17,11 +17,13 @@
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\installer.py"
+@@ -11,17 +11,20 @@
+ import tempfile
+ import shutil
+ import itertools
++import winBindings.kernel32
+ import shellapi
+ import globalVars
+ import languageHandler
  import config
  from config.registry import RegistryKey
  import versionInfo
@@ -26,7 +33,7 @@ index 2ed16054dc..4e6780c7a3 100644
  from typing import (
  	Dict,
  	Iterable,
-@@ -43,10 +45,10 @@ def _getWSH():
+@@ -43,10 +46,10 @@ def _getWSH():
  	return _wsh
  
  
@@ -39,7 +46,7 @@ index 2ed16054dc..4e6780c7a3 100644
  
  
  def createShortcut(
-@@ -183,7 +185,7 @@ def removeOldLibFiles(destPath, rebootOK=False):
+@@ -183,7 +186,7 @@ def removeOldLibFiles(destPath, rebootOK=False):
  	@type rebootOK: boolean
  	"""
  	for topDir in ("lib", "lib64", "libArm64"):
@@ -48,7 +55,7 @@ index 2ed16054dc..4e6780c7a3 100644
  		for parent, subdirs, files in os.walk(os.path.join(destPath, topDir), topdown=False):
  			if os.path.commonpath(
  				[os.path.abspath(parent), os.path.abspath(currentLibPath)],
-@@ -271,16 +273,16 @@ def getUninstallerRegInfo(installDir: str) -> Dict[str, Union[str, int]]:
+@@ -271,16 +274,16 @@ def getUninstallerRegInfo(installDir: str) -> Dict[str, Union[str, int]]:
  	in the Windows "Apps and Features" overview.
  	"""
  	return dict(
@@ -69,7 +76,7 @@ index 2ed16054dc..4e6780c7a3 100644
  	)
  
  
-@@ -460,7 +462,7 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
+@@ -460,7 +463,7 @@ def _updateShortcuts(NVDAExe, installDir, shouldCreateDesktopShortcut, slaveExe,
  	_createShortcutWithFallback(
  		path=os.path.join(startMenuFolder, webSiteTranslated + ".lnk"),
  		fallbackPath=os.path.join(startMenuFolder, "NVDA web site.lnk"),
@@ -78,7 +85,7 @@ index 2ed16054dc..4e6780c7a3 100644
  		prependSpecialFolder="AllUsersPrograms",
  	)
  
-@@ -713,7 +715,7 @@ def tryCopyFile(sourceFilePath, destFilePath):
+@@ -713,7 +716,7 @@ def tryCopyFile(sourceFilePath, destFilePath):
  		sourceFilePath = "\\\\?\\" + sourceFilePath
  	if not destFilePath.startswith("\\\\"):
  		destFilePath = "\\\\?\\" + destFilePath
@@ -87,7 +94,7 @@ index 2ed16054dc..4e6780c7a3 100644
  		errorCode = ctypes.GetLastError()
  		log.debugWarning("Unable to copy %s, error %d" % (sourceFilePath, errorCode))
  		if not os.path.exists(destFilePath):
-@@ -725,7 +727,7 @@ def tryCopyFile(sourceFilePath, destFilePath):
+@@ -725,7 +728,7 @@ def tryCopyFile(sourceFilePath, destFilePath):
  			log.error("Failed to rename %s after failed overwrite" % destFilePath, exc_info=True)
  			raise RetriableFailure("Failed to rename %s after failed overwrite" % destFilePath)
  		winKernel.moveFileEx(tempPath, None, winKernel.MOVEFILE_DELAY_UNTIL_REBOOT)
@@ -96,7 +103,7 @@ index 2ed16054dc..4e6780c7a3 100644
  			errorCode = ctypes.GetLastError()
  			raise OSError(
  				"Unable to copy file %s to %s, error %d" % (sourceFilePath, destFilePath, errorCode),
-@@ -891,7 +893,7 @@ def registerEaseOfAccess(installDir):
+@@ -891,7 +894,7 @@ def registerEaseOfAccess(installDir):
  			"ApplicationName",
  			None,
  			winreg.REG_SZ,

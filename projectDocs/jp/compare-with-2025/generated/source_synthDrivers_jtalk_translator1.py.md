@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\synthDrivers\jtalk\translator1.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\translator1.py`  
-**Current**: `F:\nvda\gh\alphajp\source\synthDrivers\jtalk\translator1.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\synthDrivers\jtalk\translator1.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\translator1.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\translator1.py"
-index 935a0ccd4f..0dfdde641f 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\translator1.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\translator1.py"
+index 935a0cc..0dfdde6 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\translator1.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\translator1.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\translator1.py"
 @@ -475,10 +475,7 @@ def translateWithInPos(text, nabcc=False):
  		elif (
  			num

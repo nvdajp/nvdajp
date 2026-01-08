@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\synthDrivers\oneCore.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\oneCore.py`  
-**Current**: `F:\nvda\gh\alphajp\source\synthDrivers\oneCore.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\synthDrivers\oneCore.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\oneCore.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\oneCore.py"
-index 2d346ef6bf..15bf5c7b11 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\oneCore.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\oneCore.py"
+index 2d346ef..e7f2323 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\oneCore.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\oneCore.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\oneCore.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2016-2024 Tyler Spivey, NV Access Limited, James Teh, Leonard de Ruijter
@@ -113,7 +113,7 @@ index 2d346ef6bf..15bf5c7b11 100644
  
  		OneCore keeps specific registry caches of OneCore for AT applications.
  		Installed copies of NVDA have a OneCore cache in:
-@@ -627,8 +639,11 @@ def pause(self, switch):
+@@ -627,9 +639,13 @@ def pause(self, switch):
  		if self._player:
  			self._player.pause(switch)
  
@@ -121,9 +121,11 @@ index 2d346ef6bf..15bf5c7b11 100644
 +	# nvdajp: provide isSpeaking() method to check if synthesizer is currently speaking
  	def isSpeaking(self):
  		return self._isSpeaking
-+	# END JP PATCH
  
++	# END JP PATCH
++
  
  # Alias to allow look up by name "SynthDriver"
+ SynthDriver = OneCoreSynthDriver
 
 ```

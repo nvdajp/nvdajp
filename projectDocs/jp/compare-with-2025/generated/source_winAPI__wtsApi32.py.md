@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\winAPI\_wtsApi32.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winAPI\_wtsApi32.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winAPI\_wtsApi32.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winAPI\_wtsApi32.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\_wtsApi32.py" "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\_wtsApi32.py"
-index 2dbe73dd3f..775931618c 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\_wtsApi32.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\_wtsApi32.py"
+index 2dbe73d..7759316 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\_wtsApi32.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\_wtsApi32.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\_wtsApi32.py"
 @@ -16,7 +16,6 @@
  from typing import Callable
  import ctypes  # Use for ctypes.Union to prevent name collision with typing.Union

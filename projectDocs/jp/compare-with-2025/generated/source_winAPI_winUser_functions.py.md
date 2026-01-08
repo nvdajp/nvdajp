@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\winAPI\winUser\functions.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winAPI\winUser\functions.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winAPI\winUser\functions.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winAPI\winUser\functions.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\winUser\\functions.py" "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\winUser\\functions.py"
-index 94d3a8ae12..b849507fcf 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\winUser\\functions.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\winUser\\functions.py"
+index 94d3a8a..b849507 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\winUser\\functions.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\winUser\\functions.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\winUser\\functions.py"
 @@ -1,15 +1,17 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2022 NV Access Limited, Cyrille Bougot

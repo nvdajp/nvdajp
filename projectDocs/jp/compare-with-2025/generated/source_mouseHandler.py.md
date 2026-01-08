@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\mouseHandler.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\mouseHandler.py`  
-**Current**: `F:\nvda\gh\alphajp\source\mouseHandler.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\mouseHandler.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\mouseHandler.py" "b/F:\\nvda\\gh\\alphajp\\source\\mouseHandler.py"
-index 0564d27809..69e1c81e09 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\mouseHandler.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\mouseHandler.py"
+index 0564d27..69e1c81 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\mouseHandler.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\mouseHandler.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\mouseHandler.py"
 @@ -1,15 +1,13 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2016-2023 NV Access Limited

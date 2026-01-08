@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\objbase.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\objbase.py`  
-**Current**: `F:\nvda\gh\alphajp\source\objbase.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\objbase.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\objbase.py" "b/F:\\nvda\\gh\\alphajp\\source\\objbase.py"
-index 2e7c4ea6c3..6643505116 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\objbase.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\objbase.py"
+index 2e7c4ea..6643505 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\objbase.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\objbase.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\objbase.py"
 @@ -4,16 +4,18 @@
  # See the file COPYING for more details.
  

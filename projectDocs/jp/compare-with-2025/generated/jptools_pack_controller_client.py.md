@@ -1,17 +1,17 @@
 ﻿# Diff for: `jptools\pack_controller_client.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\jptools\pack_controller_client.py`  
-**Current**: `F:\nvda\gh\alphajp\jptools\pack_controller_client.py`
+**Current**: `F:\nvda\gh\alphajp-260109\jptools\pack_controller_client.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\pack_controller_client.py" "b/F:\\nvda\\gh\\alphajp\\jptools\\pack_controller_client.py"
-index 42609de42d..d885b2925c 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\pack_controller_client.py" "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\pack_controller_client.py"
+index 42609de..d885b29 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\pack_controller_client.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\jptools\\pack_controller_client.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\pack_controller_client.py"
 @@ -6,7 +6,7 @@
  
  def add_path(zipf: ZipFile, base_dir: Path, path: Path) -> None:

@@ -1,17 +1,17 @@
 ﻿# Diff for: `include\liblouis\python\examples\liblouisxslt.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\include\liblouis\python\examples\liblouisxslt.py`  
-**Current**: `F:\nvda\gh\alphajp\include\liblouis\python\examples\liblouisxslt.py`
+**Current**: `F:\nvda\gh\alphajp-260109\include\liblouis\python\examples\liblouisxslt.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\include\\liblouis\\python\\examples\\liblouisxslt.py" "b/F:\\nvda\\gh\\alphajp\\include\\liblouis\\python\\examples\\liblouisxslt.py"
-index 2f1267b57c..5a1ec2b180 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\include\\liblouis\\python\\examples\\liblouisxslt.py" "b/F:\\nvda\\gh\\alphajp-260109\\include\\liblouis\\python\\examples\\liblouisxslt.py"
+index 2f1267b..5a1ec2b 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\include\\liblouis\\python\\examples\\liblouisxslt.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\include\\liblouis\\python\\examples\\liblouisxslt.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\include\\liblouis\\python\\examples\\liblouisxslt.py"
 @@ -14,21 +14,22 @@
  # dtbook2brldtbook.xsl in the same directory which simpy copies a dtbook
  # xml and translates all the text node into Braille.

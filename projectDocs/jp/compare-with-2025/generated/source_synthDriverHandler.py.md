@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\synthDriverHandler.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDriverHandler.py`  
-**Current**: `F:\nvda\gh\alphajp\source\synthDriverHandler.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\synthDriverHandler.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDriverHandler.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDriverHandler.py"
-index 351086fc4d..34c02ed962 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDriverHandler.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDriverHandler.py"
+index 351086f..34c02ed 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDriverHandler.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDriverHandler.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDriverHandler.py"
 @@ -1,7 +1,7 @@
  # A part of NonVisual Desktop Access (NVDA)
  # This file is covered by the GNU General Public License.

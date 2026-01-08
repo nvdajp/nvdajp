@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\NVDAObjects\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\NVDAObjects\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\__init__.py"
-index 4a974e6eb0..c4a89f587d 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\__init__.py"
+index 4a974e6..c4a89f5 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\__init__.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\__init__.py"
 @@ -514,8 +514,11 @@ def _get_roleTextBraille(self):
  		which will override the standard label for this object's role property as well as the value of roleText.
  		By default, NVDA falls back to using roleText.

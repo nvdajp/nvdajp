@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\screenBitmap.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\screenBitmap.py`  
-**Current**: `F:\nvda\gh\alphajp\source\screenBitmap.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\screenBitmap.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\screenBitmap.py" "b/F:\\nvda\\gh\\alphajp\\source\\screenBitmap.py"
-index b2da0cbff0..54ad64b0e6 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\screenBitmap.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\screenBitmap.py"
+index b2da0cb..da079b2 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\screenBitmap.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\screenBitmap.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\screenBitmap.py"
 @@ -1,16 +1,15 @@
 -# screenBitmap.py
  # A part of NonVisual Desktop Access (NVDA)
@@ -84,7 +84,7 @@ index b2da0cbff0..54ad64b0e6 100644
  		# Fetch the pixels from our memory bitmap and store them in a buffer to be returned
 -		buffer = (winGDI.RGBQUAD * self.width * self.height)()
 -		gdi32.GetDIBits(
-+		buffer = (winBindings.gdi32.RGBQUAD * (self.width * self.height))()
++		buffer = (winBindings.gdi32.RGBQUAD * self.width * self.height)()
 +		winBindings.gdi32.GetDIBits(
  			self._memDC,
  			self._memBitmap,

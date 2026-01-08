@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\textUtils\uniscribe.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\textUtils\uniscribe.py`  
-**Current**: `F:\nvda\gh\alphajp\source\textUtils\uniscribe.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\textUtils\uniscribe.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\textUtils\\uniscribe.py" "b/F:\\nvda\\gh\\alphajp\\source\\textUtils\\uniscribe.py"
-index f6b1ed5376..9080849992 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\textUtils\\uniscribe.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\textUtils\\uniscribe.py"
+index f6b1ed5..9080849 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\textUtils\\uniscribe.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\textUtils\\uniscribe.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\textUtils\\uniscribe.py"
 @@ -1,7 +1,7 @@
  # A part of NonVisual Desktop Access (NVDA)
  # This file is covered by the GNU General Public License.

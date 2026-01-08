@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\shlobj.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\shlobj.py`  
-**Current**: `F:\nvda\gh\alphajp\source\shlobj.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\shlobj.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\shlobj.py" "b/F:\\nvda\\gh\\alphajp\\source\\shlobj.py"
-index b27adb1375..b3cffc64a3 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\shlobj.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\shlobj.py"
+index b27adb1..b3cffc6 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\shlobj.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\shlobj.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\shlobj.py"
 @@ -18,6 +18,10 @@
  from typing import Optional, Union
  

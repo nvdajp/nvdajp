@@ -1,17 +1,17 @@
 ﻿# Diff for: `tests\unit\test_brailleTables.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\unit\test_brailleTables.py`  
-**Current**: `F:\nvda\gh\alphajp\tests\unit\test_brailleTables.py`
+**Current**: `F:\nvda\gh\alphajp-260109\tests\unit\test_brailleTables.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_brailleTables.py" "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_brailleTables.py"
-index abb7be4ceb..2a687265b5 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_brailleTables.py" "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_brailleTables.py"
+index abb7be4..2a68726 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_brailleTables.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_brailleTables.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_brailleTables.py"
 @@ -18,17 +18,15 @@ def test_tableExistence(self):
  		"""Tests whether all defined tables exist."""
  		tables = brailleTables.listTables()

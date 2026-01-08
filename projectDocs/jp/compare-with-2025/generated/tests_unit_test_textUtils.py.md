@@ -1,17 +1,17 @@
 ﻿# Diff for: `tests\unit\test_textUtils.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\unit\test_textUtils.py`  
-**Current**: `F:\nvda\gh\alphajp\tests\unit\test_textUtils.py`
+**Current**: `F:\nvda\gh\alphajp-260109\tests\unit\test_textUtils.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_textUtils.py" "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_textUtils.py"
-index 3229be415d..6993ac7d96 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_textUtils.py" "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_textUtils.py"
+index 3229be4..6993ac7 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_textUtils.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_textUtils.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_textUtils.py"
 @@ -1,13 +1,14 @@
  # A part of NonVisual Desktop Access (NVDA)
  # This file is covered by the GNU General Public License.

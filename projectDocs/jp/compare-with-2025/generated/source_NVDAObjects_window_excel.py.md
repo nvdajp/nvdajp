@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\NVDAObjects\window\excel.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\window\excel.py`  
-**Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\window\excel.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\NVDAObjects\window\excel.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\excel.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\excel.py"
-index f177ea6af7..d05ed8b42c 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\excel.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\window\\excel.py"
+index f177ea6..d05ed8b 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\excel.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\excel.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\window\\excel.py"
 @@ -8,11 +8,12 @@
  import abc
  import ctypes

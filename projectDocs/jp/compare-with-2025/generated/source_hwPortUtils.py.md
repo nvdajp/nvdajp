@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\hwPortUtils.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\hwPortUtils.py`  
-**Current**: `F:\nvda\gh\alphajp\source\hwPortUtils.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\hwPortUtils.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\hwPortUtils.py" "b/F:\\nvda\\gh\\alphajp\\source\\hwPortUtils.py"
-index 7a040404c2..83a84f2aa3 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\hwPortUtils.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\hwPortUtils.py"
+index 7a04040..83a84f2 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\hwPortUtils.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\hwPortUtils.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\hwPortUtils.py"
 @@ -9,152 +9,57 @@
  import math
  import typing

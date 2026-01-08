@@ -1,17 +1,17 @@
 ﻿# Diff for: `tests\system\libraries\SystemTestSpy\windows.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\system\libraries\SystemTestSpy\windows.py`  
-**Current**: `F:\nvda\gh\alphajp\tests\system\libraries\SystemTestSpy\windows.py`
+**Current**: `F:\nvda\gh\alphajp-260109\tests\system\libraries\SystemTestSpy\windows.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\libraries\\SystemTestSpy\\windows.py" "b/F:\\nvda\\gh\\alphajp\\tests\\system\\libraries\\SystemTestSpy\\windows.py"
-index df2bd485d4..57270e0c9f 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\libraries\\SystemTestSpy\\windows.py" "b/F:\\nvda\\gh\\alphajp-260109\\tests\\system\\libraries\\SystemTestSpy\\windows.py"
+index df2bd48..57270e0 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\libraries\\SystemTestSpy\\windows.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\tests\\system\\libraries\\SystemTestSpy\\windows.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\system\\libraries\\SystemTestSpy\\windows.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2021-2025 NV Access Limited, Łukasz Golonka

@@ -1,17 +1,17 @@
 ﻿# Diff for: `miscDepsJp\include\python-jtalk\jtalkRunner.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\miscDepsJp\include\python-jtalk\jtalkRunner.py`  
-**Current**: `F:\nvda\gh\alphajp\miscDepsJp\include\python-jtalk\jtalkRunner.py`
+**Current**: `F:\nvda\gh\alphajp-260109\miscDepsJp\include\python-jtalk\jtalkRunner.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\miscDepsJp\\include\\python-jtalk\\jtalkRunner.py" "b/F:\\nvda\\gh\\alphajp\\miscDepsJp\\include\\python-jtalk\\jtalkRunner.py"
-index 4adb48c1fe..bf4bb86578 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\miscDepsJp\\include\\python-jtalk\\jtalkRunner.py" "b/F:\\nvda\\gh\\alphajp-260109\\miscDepsJp\\include\\python-jtalk\\jtalkRunner.py"
+index 4adb48c..bf4bb86 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\miscDepsJp\\include\\python-jtalk\\jtalkRunner.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\miscDepsJp\\include\\python-jtalk\\jtalkRunner.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\miscDepsJp\\include\\python-jtalk\\jtalkRunner.py"
 @@ -13,57 +13,87 @@
  import time
  import wave

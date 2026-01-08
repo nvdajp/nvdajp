@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\synthDrivers\jtalk\jtalkDriver.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\jtalkDriver.py`  
-**Current**: `F:\nvda\gh\alphajp\source\synthDrivers\jtalk\jtalkDriver.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\synthDrivers\jtalk\jtalkDriver.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\jtalkDriver.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\jtalkDriver.py"
-index d626c1ef66..2610359b7d 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\jtalkDriver.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\jtalkDriver.py"
+index d626c1e..2610359 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\jtalkDriver.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\jtalkDriver.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\jtalkDriver.py"
 @@ -6,24 +6,44 @@
  
  from logHandler import log

@@ -1,23 +1,33 @@
 ﻿# Diff for: `source\contentRecog\uwpOcr.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\contentRecog\uwpOcr.py`  
-**Current**: `F:\nvda\gh\alphajp\source\contentRecog\uwpOcr.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\contentRecog\uwpOcr.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\contentRecog\\uwpOcr.py" "b/F:\\nvda\\gh\\alphajp\\source\\contentRecog\\uwpOcr.py"
-index 45f2e010d4..76b1f16ecb 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\contentRecog\\uwpOcr.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\contentRecog\\uwpOcr.py"
+index 45f2e01..0610d5f 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\contentRecog\\uwpOcr.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\contentRecog\\uwpOcr.py"
-@@ -5,14 +5,23 @@
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\contentRecog\\uwpOcr.py"
+@@ -1,18 +1,32 @@
+ # A part of NonVisual Desktop Access (NVDA)
+-# Copyright (C) 2017-2021 NV Access Limited
++# Copyright (C) 2017-2025 NV Access Limited, Cary-rowen
+ # This file is covered by the GNU General Public License.
+ # See the file COPYING for more details.
  
  """Recognition of text using the UWP OCR engine included in Windows 10 and later."""
  
 -import ctypes
++from ctypes import (
++	cast,
++	POINTER,
++)
  import json
++from winBindings.gdi32 import RGBQUAD
  import NVDAHelper
 +from NVDAHelper.localWin10 import (
 +	uwpOcr_getLanguages,
@@ -38,7 +48,7 @@ index 45f2e010d4..76b1f16ecb 100644
  
  
  def getLanguages():
-@@ -22,9 +31,7 @@ def getLanguages():
+@@ -22,9 +36,7 @@ def getLanguages():
  		for use as NVDA language codes.
  	@rtype: list of str
  	"""
@@ -49,7 +59,18 @@ index 45f2e010d4..76b1f16ecb 100644
  	return langs.split(";")[:-1]
  
  
-@@ -99,7 +106,7 @@ def __init__(self, language=None):
+@@ -79,6 +91,10 @@ def _get_allowAutoRefresh(cls) -> bool:
+ 	def _get_autoRefreshInterval(cls) -> int:
+ 		return config.conf["uwpOcr"]["autoRefreshInterval"]
+ 
++	@classmethod
++	def _get_autoSayAllOnResult(cls) -> bool:
++		return config.conf["uwpOcr"]["autoSayAllOnResult"]
++
+ 	def getResizeFactor(self, width, height):
+ 		# UWP OCR performs poorly with small images, so increase their size.
+ 		if width < 100 or height < 100:
+@@ -99,7 +115,7 @@ def __init__(self, language=None):
  	def recognize(self, pixels, imgInfo, onResult):
  		self._onResult = onResult
  
@@ -58,7 +79,7 @@ index 45f2e010d4..76b1f16ecb 100644
  		def callback(result):
  			# If self._onResult is None, recognition was cancelled.
  			if self._onResult:
-@@ -108,16 +115,16 @@ def callback(result):
+@@ -108,16 +124,24 @@ def callback(result):
  					self._onResult(LinesWordsResult(data, imgInfo))
  				else:
  					self._onResult(RuntimeError("UWP OCR failed"))
@@ -74,7 +95,15 @@ index 45f2e010d4..76b1f16ecb 100644
  			onResult(RuntimeError("UWP OCR initialization failed"))
  			return
 -		self._dll.uwpOcr_recognize(self._handle, pixels, imgInfo.recogWidth, imgInfo.recogHeight)
-+		uwpOcr_recognize(self._handle, pixels, imgInfo.recogWidth, imgInfo.recogHeight)
++		uwpOcr_recognize(
++			self._handle,
++			# pixels, as fetched from screenBitmap.captureImage is a 2d array of RGBQUAD values.
++			# However uwpOcr_recognize expects a 1d array (pointer).
++			# These are identical in memory, so we can just cast.
++			cast(pixels, POINTER(RGBQUAD)),
++			imgInfo.recogWidth,
++			imgInfo.recogHeight,
++		)
  
  	def cancel(self):
  		self._onResult = None

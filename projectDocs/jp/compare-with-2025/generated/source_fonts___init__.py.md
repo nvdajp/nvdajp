@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\fonts\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\fonts\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\fonts\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\fonts\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\fonts\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\fonts\\__init__.py"
-index ab38fa927b..1511e2f78a 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\fonts\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\fonts\\__init__.py"
+index ab38fa9..1511e2f 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\fonts\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\fonts\\__init__.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\fonts\\__init__.py"
 @@ -3,13 +3,14 @@
  # This file is covered by the GNU General Public License.
  # See the file COPYING for more details.

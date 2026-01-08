@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\winVersion.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winVersion.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winVersion.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winVersion.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winVersion.py" "b/F:\\nvda\\gh\\alphajp\\source\\winVersion.py"
-index 7adf44087d..797da4109e 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winVersion.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winVersion.py"
+index 7adf440..140f0d6 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winVersion.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winVersion.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winVersion.py"
 @@ -105,15 +105,12 @@ def __init__(
  
  	def _getWindowsReleaseName(self) -> str:
@@ -47,7 +47,7 @@ index 7adf44087d..797da4109e 100644
  	"""Returns a record of current Windows version NVDA is running on."""
  	winVer = sys.getwindowsversion()
  	# #12509: on Windows 10, fetch whatever Windows Registry says for the current build.
-@@ -215,15 +211,15 @@ def getWinVer():
+@@ -215,34 +211,18 @@ def getWinVer():
  	)
  
  
@@ -67,7 +67,26 @@ index 7adf44087d..797da4109e 100644
  	return os.path.isdir(UWP_OCR_DATA_PATH)
  
  
-@@ -254,4 +250,7 @@ def __getattr__(attrName: str) -> Any:
+-if NVDAState._allowDeprecatedAPI():
+-
+-	def isFullScreenMagnificationAvailable() -> bool:
+-		"""
+-		Technically this is always False. The Magnification API has been marked by MS as unsupported for
+-		WOW64 applications such as NVDA. For our usages, support has been added since Windows 8, relying on our
+-		testing our specific usage of the API with each Windows version since Windows 8
+-		"""
+-		log.debugWarning(
+-			"Deprecated function called: winVersion.isFullScreenMagnificationAvailable, "
+-			"use visionEnhancementProviders.screenCurtain.ScreenCurtainProvider.canStart instead.",
+-			stack_info=True,
+-		)
+-		return True
+-
+-
+ def __getattr__(attrName: str) -> Any:
+ 	"""Module level `__getattr__` used to preserve backward compatibility."""
+ 	if attrName == "WIN7" and NVDAState._allowDeprecatedAPI():
+@@ -254,4 +234,7 @@ def __getattr__(attrName: str) -> Any:
  	if attrName == "WIN8" and NVDAState._allowDeprecatedAPI():
  		log.warning("WIN8 is deprecated.")
  		return WinVersion(major=6, minor=2, build=9200, releaseName="Windows 8")

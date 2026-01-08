@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\winAPI\dpiAwareness.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winAPI\dpiAwareness.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winAPI\dpiAwareness.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winAPI\dpiAwareness.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\dpiAwareness.py" "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\dpiAwareness.py"
-index fa1feedf4d..74e7b45905 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\dpiAwareness.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\dpiAwareness.py"
+index fa1feed..74e7b45 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\dpiAwareness.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\dpiAwareness.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\dpiAwareness.py"
 @@ -1,11 +1,13 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2022 NV Access Limited

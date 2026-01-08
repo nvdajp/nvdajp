@@ -1,20 +1,22 @@
 ﻿# Diff for: `source\winBindings\ole32.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winBindings\ole32.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winBindings\ole32.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winBindings\ole32.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winBindings\\ole32.py" "b/F:\\nvda\\gh\\alphajp\\source\\winBindings\\ole32.py"
-index 02a0592ac3..0beb1fbc58 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winBindings\\ole32.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winBindings\\ole32.py"
+index 02a0592..5409dc9 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winBindings\\ole32.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winBindings\\ole32.py"
-@@ -7,11 +7,24 @@
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winBindings\\ole32.py"
+@@ -6,18 +6,32 @@
+ """Functions exported by ole32.dll, and supporting data structures and enumerations."""
  
  from ctypes import (
++	WINFUNCTYPE,
  	c_voidp,
 +	POINTER,
  	windll,
@@ -37,12 +39,19 @@ index 02a0592ac3..0beb1fbc58 100644
  
  
  dll = windll.ole32
-@@ -28,3 +41,111 @@
+ 
+ 
+-CoTaskMemFree = dll.CoTaskMemFree
++CoTaskMemFree = WINFUNCTYPE(None)(("CoTaskMemFree", dll))
+ """
+ Frees a block of task memory previously allocated through a call to the CoTaskMemAlloc or CoTaskMemRealloc function.
+ 
+@@ -28,3 +42,111 @@
  CoTaskMemFree.argtypes = (
  	LPVOID,  # pv: A pointer to the memory block to be freed.
  )
 +
-+CoCancelCall = dll.CoCancelCall
++CoCancelCall = WINFUNCTYPE(None)(("CoCancelCall", dll))
 +"""
 +Requests that a call be canceled.
 +
@@ -55,7 +64,7 @@ index 02a0592ac3..0beb1fbc58 100644
 +	ULONG,  # ulTimeout: The number of milliseconds to wait for the call cancellation.
 +)
 +
-+CoDisableCallCancellation = dll.CoDisableCallCancellation
++CoDisableCallCancellation = WINFUNCTYPE(None)(("CoDisableCallCancellation", dll))
 +"""
 +Undoes the action of a call to CoEnableCallCancellation. Disables cancellation of synchronous calls on the calling thread when all calls to CoEnableCallCancellation are balanced by calls to CoDisableCallCancellation.
 +
@@ -67,7 +76,7 @@ index 02a0592ac3..0beb1fbc58 100644
 +	LPVOID,  # pReserved: This parameter is reserved and must be NULL.
 +)
 +
-+CoEnableCallCancellation = dll.CoEnableCallCancellation
++CoEnableCallCancellation = WINFUNCTYPE(None)(("CoEnableCallCancellation", dll))
 +"""
 +Enables cancellation of synchronous calls on the calling thread.
 +
@@ -79,7 +88,7 @@ index 02a0592ac3..0beb1fbc58 100644
 +	LPVOID,  # pReserved: This parameter is reserved and must be NULL.
 +)
 +
-+CoInitializeEx = dll.CoInitializeEx
++CoInitializeEx = WINFUNCTYPE(None)(("CoInitializeEx", dll))
 +"""
 +Initializes the COM library for use by the calling thread, sets the thread's concurrency model, and creates a new apartment for the thread if one is required.
 +
@@ -92,7 +101,7 @@ index 02a0592ac3..0beb1fbc58 100644
 +	DWORD,  # dwCoInit: The concurrency model and initialization options for the thread.
 +)
 +
-+CoTaskMemAlloc = dll.CoTaskMemAlloc
++CoTaskMemAlloc = WINFUNCTYPE(None)(("CoTaskMemAlloc", dll))
 +"""
 +Allocates a block of task memory in the same way as if IMalloc::Alloc was called.
 +
@@ -104,7 +113,7 @@ index 02a0592ac3..0beb1fbc58 100644
 +	c_size_t,  # cb: The size of the memory block to be allocated, in bytes.
 +)
 +
-+CoWaitForMultipleHandles = dll.CoWaitForMultipleHandles
++CoWaitForMultipleHandles = WINFUNCTYPE(None)(("CoWaitForMultipleHandles", dll))
 +"""
 +Waits for specified handles to be signaled or for a specified timeout period to elapse.
 +
@@ -120,7 +129,7 @@ index 02a0592ac3..0beb1fbc58 100644
 +	LPDWORD,  # lpdwindex: A pointer to a variable that receives the zero-based index of the signaled handle.
 +)
 +
-+CreateBindCtx = dll.CreateBindCtx
++CreateBindCtx = WINFUNCTYPE(None)(("CreateBindCtx", dll))
 +"""
 +Creates a new bind context object.
 +
@@ -135,7 +144,7 @@ index 02a0592ac3..0beb1fbc58 100644
 +	),  # ppbc: The address of a pointer variable that receives the interface pointer to the new bind context object.
 +)
 +
-+GetRunningObjectTable = dll.GetRunningObjectTable
++GetRunningObjectTable = WINFUNCTYPE(None)(("GetRunningObjectTable", dll))
 +"""
 +Retrieves a pointer to the running object table (ROT) for the current context.
 +

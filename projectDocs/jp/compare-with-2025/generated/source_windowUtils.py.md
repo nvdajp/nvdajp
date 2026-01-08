@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\windowUtils.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\windowUtils.py`  
-**Current**: `F:\nvda\gh\alphajp\source\windowUtils.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\windowUtils.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\windowUtils.py" "b/F:\\nvda\\gh\\alphajp\\source\\windowUtils.py"
-index f1776cbb63..31f7e6ea57 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\windowUtils.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\windowUtils.py"
+index f1776cb..59f5cd5 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\windowUtils.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\windowUtils.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\windowUtils.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2013-2023 NV Access Limited, Bill Dengler
@@ -29,7 +29,8 @@ index f1776cbb63..31f7e6ea57 100644
 +import winBindings.user32
 +import winBindings.gdi32
  import winUser
- from winUser import WNDCLASSEXW, WNDPROC
+-from winUser import WNDCLASSEXW, WNDPROC
++from winBindings.user32 import WNDCLASSEXW, WNDPROC
  from logHandler import log
  from abc import abstractmethod
  from baseObject import AutoPropertyObject

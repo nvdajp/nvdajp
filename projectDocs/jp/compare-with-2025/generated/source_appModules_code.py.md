@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\appModules\code.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\appModules\code.py`  
-**Current**: `F:\nvda\gh\alphajp\source\appModules\code.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\appModules\code.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\appModules\\code.py" "b/F:\\nvda\\gh\\alphajp\\source\\appModules\\code.py"
-index de7f71fc23..c9e967fc5b 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\appModules\\code.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\appModules\\code.py"
+index de7f71f..c9e967f 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\appModules\\code.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\appModules\\code.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\appModules\\code.py"
 @@ -1,12 +1,16 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2020-2025 NV Access Limited, Leonard de Ruijter, Cary-Rowen

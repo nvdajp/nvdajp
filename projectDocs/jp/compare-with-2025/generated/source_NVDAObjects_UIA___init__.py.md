@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\NVDAObjects\UIA\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\UIA\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\UIA\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\NVDAObjects\UIA\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\UIA\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\UIA\\__init__.py"
-index e06d16ce61..8d1e4a4b43 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\UIA\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\UIA\\__init__.py"
+index e06d16c..8d1e4a4 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\UIA\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\UIA\\__init__.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\UIA\\__init__.py"
 @@ -30,6 +30,7 @@
  import controlTypes
  from controlTypes import TextPosition, TextAlign

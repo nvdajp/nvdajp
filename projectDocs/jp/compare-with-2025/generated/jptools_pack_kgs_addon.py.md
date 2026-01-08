@@ -1,17 +1,17 @@
 ﻿# Diff for: `jptools\pack_kgs_addon.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\jptools\pack_kgs_addon.py`  
-**Current**: `F:\nvda\gh\alphajp\jptools\pack_kgs_addon.py`
+**Current**: `F:\nvda\gh\alphajp-260109\jptools\pack_kgs_addon.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\pack_kgs_addon.py" "b/F:\\nvda\\gh\\alphajp\\jptools\\pack_kgs_addon.py"
-index f4887ef6b3..4872200c21 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\pack_kgs_addon.py" "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\pack_kgs_addon.py"
+index f4887ef..4872200 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\pack_kgs_addon.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\jptools\\pack_kgs_addon.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\pack_kgs_addon.py"
 @@ -36,12 +36,14 @@ def main() -> int:
  
  	# Generate manifest.ini using the existing helper to stay consistent

@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\ui.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\ui.py`  
-**Current**: `F:\nvda\gh\alphajp\source\ui.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\ui.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\ui.py" "b/F:\\nvda\\gh\\alphajp\\source\\ui.py"
-index 91526cdc16..7ee9f3b5f2 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\ui.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\ui.py"
+index 91526cd..7ee9f3b 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\ui.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\ui.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\ui.py"
 @@ -12,15 +12,16 @@
  
  import os

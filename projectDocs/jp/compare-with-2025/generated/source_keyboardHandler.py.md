@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\keyboardHandler.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\keyboardHandler.py`  
-**Current**: `F:\nvda\gh\alphajp\source\keyboardHandler.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\keyboardHandler.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\keyboardHandler.py" "b/F:\\nvda\\gh\\alphajp\\source\\keyboardHandler.py"
-index 2d075a41b1..342a7230eb 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\keyboardHandler.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\keyboardHandler.py"
+index 2d075a4..a52ae1f 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\keyboardHandler.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\keyboardHandler.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\keyboardHandler.py"
 @@ -1,4 +1,3 @@
 -# -*- coding: UTF-8 -*-
  # A part of NonVisual Desktop Access (NVDA)
@@ -25,15 +25,17 @@ index 2d075a41b1..342a7230eb 100644
  )
  
  import winVersion
-@@ -37,6 +35,7 @@
+@@ -36,7 +34,9 @@
+ import NVDAState
  from contextlib import contextmanager
  import threading
++import winBindings.kernel32
  import winKernel
 +from winBindings import user32
  
  if typing.TYPE_CHECKING:
  	from NVDAObjects import NVDAObject  # noqa: F401
-@@ -46,7 +45,7 @@
+@@ -46,7 +46,7 @@
  ignoreInjected = False
  _lastInjectedKeyUp: tuple[int, int] | None = None
  _injectionDoneEvent: int | None = None
@@ -42,7 +44,7 @@ index 2d075a41b1..342a7230eb 100644
  
  # Fake vk codes.
  # These constants should be assigned to the name that NVDA will use for the key.
-@@ -308,14 +307,14 @@ def internal_keyDownEvent(vkCode, scanCode, extended, injected):
+@@ -308,14 +308,14 @@ def internal_keyDownEvent(vkCode, scanCode, extended, injected):
  			and not isNVDAModifierKey(vkCode, extended)
  			and vkCode not in KeyboardInputGesture.NORMAL_MODIFIER_KEYS
  		):
@@ -61,7 +63,16 @@ index 2d075a41b1..342a7230eb 100644
  				vkCode,
  				scanCode,
  				keyStates,
-@@ -418,7 +417,7 @@ def getInputHkl():
+@@ -360,7 +360,7 @@ def internal_keyUpEvent(vkCode, scanCode, extended, injected):
+ 				return True
+ 			if ignoreInjected:
+ 				if keyCode == _lastInjectedKeyUp:
+-					winKernel.kernel32.SetEvent(_injectionDoneEvent)
++					winBindings.kernel32.SetEvent(_injectionDoneEvent)
+ 				return True
+ 
+ 		if passKeyThroughCount >= 1:
+@@ -418,7 +418,7 @@ def getInputHkl():
  		thread = focus.windowThreadID
  	else:
  		thread = 0
@@ -70,7 +81,7 @@ index 2d075a41b1..342a7230eb 100644
  
  
  def canModifiersPerformAction(modifiers):
-@@ -544,7 +543,7 @@ def _get_mainKeyName(self):
+@@ -544,7 +544,7 @@ def _get_mainKeyName(self):
  		if self.vkCode == vkCodes.VK_PACKET:
  			# Unicode character from non-keyboard input.
  			return chr(self.scanCode)
@@ -79,7 +90,16 @@ index 2d075a41b1..342a7230eb 100644
  		if vkChar > 0:
  			if vkChar == 43:  # "+"
  				# A gesture identifier can't include "+" except as a separator.
-@@ -817,7 +816,7 @@ def injectRawKeyboardInput(isPress, code, isExtended):
+@@ -661,7 +661,7 @@ def executeScript(self, script):
+ 			# it is already too late.
+ 			with ignoreInjection():
+ 				winUser.keybd_event(winUser.VK_NONE, 0, 0, 0)
+-				winUser.keybd_event(winUser.VK_NONE, 0, winUser.KEYEVENTF_KEYUP, 0)
++				winUser.keybd_event(winUser.VK_NONE, 0, winBindings.user32.KEYEVENTF.KEYUP, 0)
+ 		# Now actually execute the script.
+ 		super().executeScript(script)
+ 
+@@ -817,7 +817,7 @@ def injectRawKeyboardInput(isPress, code, isExtended):
  	if isExtended:
  		# Change what we pass to MapVirtualKeyEx, but don't change what NVDA gets.
  		mapScan |= 0xE000

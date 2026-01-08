@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\visionEnhancementProviders\NVDAHighlighter.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\visionEnhancementProviders\NVDAHighlighter.py`  
-**Current**: `F:\nvda\gh\alphajp\source\visionEnhancementProviders\NVDAHighlighter.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\visionEnhancementProviders\NVDAHighlighter.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\visionEnhancementProviders\\NVDAHighlighter.py" "b/F:\\nvda\\gh\\alphajp\\source\\visionEnhancementProviders\\NVDAHighlighter.py"
-index 64e73b91d9..e8e5f4e23b 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\visionEnhancementProviders\\NVDAHighlighter.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\visionEnhancementProviders\\NVDAHighlighter.py"
+index 64e73b9..ea881f6 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\visionEnhancementProviders\\NVDAHighlighter.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\visionEnhancementProviders\\NVDAHighlighter.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\visionEnhancementProviders\\NVDAHighlighter.py"
 @@ -14,6 +14,7 @@
  from vision.util import getContextRect
  from vision.visionHandlerExtensionPoints import EventExtensionPoints
@@ -20,7 +20,33 @@ index 64e73b91d9..e8e5f4e23b 100644
  from windowUtils import CustomWindow
  import wx
  from gui.settingsDialogs import (
-@@ -109,8 +110,8 @@ def updateLocationForDisplays(self):
+@@ -23,7 +24,7 @@
+ )
+ import api
+ from ctypes import byref, WinError
+-from ctypes.wintypes import COLORREF, MSG
++from ctypes.wintypes import MSG
+ import winUser
+ from logHandler import log
+ from mouseHandler import getTotalWidthAndHeightAndMinimumPosition
+@@ -31,6 +32,7 @@
+ from collections import namedtuple
+ import threading
+ from winAPI.messageWindow import WindowMessage
++import winBindings.gdi32
+ import winGDI
+ import weakref
+ from colors import RGB
+@@ -93,7 +95,7 @@ class HighlightWindow(CustomWindow):
+ 	def _get__wClass(cls):
+ 		wClass = super()._wClass
+ 		wClass.style = winUser.CS_HREDRAW | winUser.CS_VREDRAW
+-		wClass.hbrBackground = winGDI.gdi32.CreateSolidBrush(COLORREF(cls.transparentColor))
++		wClass.hbrBackground = winBindings.gdi32.CreateSolidBrush(cls.transparentColor)
+ 		return wClass
+ 
+ 	def updateLocationForDisplays(self):
+@@ -109,8 +111,8 @@ def updateLocationForDisplays(self):
  		width = screenWidth
  		height = screenHeight - 1
  		self.location = RectLTWH(left, top, width, height)
@@ -31,7 +57,7 @@ index 64e73b91d9..e8e5f4e23b 100644
  			self.handle,
  			winUser.HWND_TOPMOST,
  			left,
-@@ -120,7 +121,7 @@ def updateLocationForDisplays(self):
+@@ -120,7 +122,7 @@ def updateLocationForDisplays(self):
  			winUser.SWP_NOACTIVATE,
  		):
  			raise WinError()
@@ -40,7 +66,7 @@ index 64e73b91d9..e8e5f4e23b 100644
  
  	def __init__(self, highlighter):
  		if vision._isDebug():
-@@ -139,14 +140,14 @@ def __init__(self, highlighter):
+@@ -139,14 +141,14 @@ def __init__(self, highlighter):
  			winUser.LWA_ALPHA | winUser.LWA_COLORKEY,
  		)
  		self.updateLocationForDisplays()
@@ -57,7 +83,7 @@ index 64e73b91d9..e8e5f4e23b 100644
  				self.handle,
  				winUser.HWND_TOPMOST,
  				0,
-@@ -156,7 +157,7 @@ def windowProc(self, hwnd, msg, wParam, lParam):
+@@ -156,7 +158,7 @@ def windowProc(self, hwnd, msg, wParam, lParam):
  				winUser.SWP_NOACTIVATE | winUser.SWP_NOMOVE | winUser.SWP_NOSIZE,
  			)
  		elif msg == winUser.WM_DESTROY:
@@ -66,7 +92,7 @@ index 64e73b91d9..e8e5f4e23b 100644
  		elif msg == winUser.WM_TIMER:
  			self.refresh()
  		elif msg == WindowMessage.DISPLAY_CHANGE:
-@@ -167,7 +168,7 @@ def _paint(self):
+@@ -167,7 +169,7 @@ def _paint(self):
  		highlighter = self.highlighterRef()
  		if not highlighter:
  			# The highlighter instance died unexpectedly, kill the window as well
@@ -75,7 +101,7 @@ index 64e73b91d9..e8e5f4e23b 100644
  			return
  		contextRects = {}
  		for context in highlighter.enabledContexts:
-@@ -209,7 +210,7 @@ def _paint(self):
+@@ -209,7 +211,7 @@ def _paint(self):
  						winGDI.gdiPlusDrawRectangle(graphicsContext, pen, *rect.toLTWH())
  
  	def refresh(self):
@@ -84,7 +110,7 @@ index 64e73b91d9..e8e5f4e23b 100644
  
  
  _contextOptionLabelsWithAccelerators = {
-@@ -440,7 +441,7 @@ def __init__(self):
+@@ -440,7 +442,7 @@ def __init__(self):
  	def terminate(self):
  		log.debug("Terminating NVDAHighlighter")
  		if self._highlighterThread and self._window and self._window.handle:
@@ -93,7 +119,7 @@ index 64e73b91d9..e8e5f4e23b 100644
  				raise WinError()
  			else:
  				self._highlighterThread.join()
-@@ -459,8 +460,8 @@ def _run(self):
+@@ -459,8 +461,8 @@ def _run(self):
  			self._highlighterRunningEvent.set()  # notify main thread that initialisation was successful
  			msg = MSG()
  			while (res := winUser.getMessage(byref(msg), None, 0, 0)) > 0:

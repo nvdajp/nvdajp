@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\config\profileUpgradeSteps.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\config\profileUpgradeSteps.py`  
-**Current**: `F:\nvda\gh\alphajp\source\config\profileUpgradeSteps.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\config\profileUpgradeSteps.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\config\\profileUpgradeSteps.py" "b/F:\\nvda\\gh\\alphajp\\source\\config\\profileUpgradeSteps.py"
-index fbc35e379b..d19a848a1f 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\config\\profileUpgradeSteps.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\config\\profileUpgradeSteps.py"
+index fbc35e3..8c4a22e 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\config\\profileUpgradeSteps.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\config\\profileUpgradeSteps.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\config\\profileUpgradeSteps.py"
 @@ -24,6 +24,7 @@
  	OutputMode,
  	ReportCellBorders,
@@ -20,7 +20,7 @@ index fbc35e379b..d19a848a1f 100644
  	ReportTableHeaders,
  	ShowMessages,
  	TetherTo,
-@@ -597,3 +598,27 @@ def upgradeConfigFrom_17_to_18(profile: ConfigObj) -> None:
+@@ -597,3 +598,40 @@ def upgradeConfigFrom_17_to_18(profile: ConfigObj) -> None:
  			"dotPad added to braille display auto detection excluded displays due to generic USB PID/VID. "
  			f"List is now: {excludedDisplays}",
  		)
@@ -48,5 +48,18 @@ index fbc35e379b..d19a848a1f 100644
 +		f"Converted '{key}' with value {oldValue} to '{newKey}' with value {newValue}"
 +		f" ({ReportSpellingErrors(newValue).name}). The old key '{key}' has been deleted.",
 +	)
++
++
++def upgradeConfigFrom_19_to_20(profile: ConfigObj):
++	"""Move Screen Curtain settings from vision to root."""
++	try:
++		# We must copy the old settings,
++		# otherwise configobj will write the new settings as a subsection of the last root section in the config
++		profile["screenCurtain"] = profile["vision"]["screenCurtain"].copy()
++	except KeyError:
++		log.debug("No vision enhancement provider-based Screen Curtain settings exist. No action taken.")
++		return
++	del profile["vision"]["screenCurtain"]
++	log.debug("Moved Screen Curtain settings from ['vision']['screenCurtain'] to ['screenCurtain'].")
 
 ```

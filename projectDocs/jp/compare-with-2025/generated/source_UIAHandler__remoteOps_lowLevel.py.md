@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\UIAHandler\_remoteOps\lowLevel.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\UIAHandler\_remoteOps\lowLevel.py`  
-**Current**: `F:\nvda\gh\alphajp\source\UIAHandler\_remoteOps\lowLevel.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\UIAHandler\_remoteOps\lowLevel.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\UIAHandler\\_remoteOps\\lowLevel.py" "b/F:\\nvda\\gh\\alphajp\\source\\UIAHandler\\_remoteOps\\lowLevel.py"
-index 3cdca39617..6e45f4e082 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\UIAHandler\\_remoteOps\\lowLevel.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\UIAHandler\\_remoteOps\\lowLevel.py"
+index 3cdca39..6e45f4e 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\UIAHandler\\_remoteOps\\lowLevel.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\UIAHandler\\_remoteOps\\lowLevel.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\UIAHandler\\_remoteOps\\lowLevel.py"
 @@ -1,7 +1,7 @@
  # A part of NonVisual Desktop Access (NVDA)
  # This file is covered by the GNU General Public License.

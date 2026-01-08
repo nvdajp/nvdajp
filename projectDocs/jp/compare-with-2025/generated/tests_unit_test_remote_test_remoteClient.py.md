@@ -1,17 +1,17 @@
 ﻿# Diff for: `tests\unit\test_remote\test_remoteClient.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\unit\test_remote\test_remoteClient.py`  
-**Current**: `F:\nvda\gh\alphajp\tests\unit\test_remote\test_remoteClient.py`
+**Current**: `F:\nvda\gh\alphajp-260109\tests\unit\test_remote\test_remoteClient.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_remote\\test_remoteClient.py" "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_remote\\test_remoteClient.py"
-index e5df9c4717..ce524b7b62 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_remote\\test_remoteClient.py" "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_remote\\test_remoteClient.py"
+index e5df9c4..ce524b7 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\test_remote\\test_remoteClient.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\test_remote\\test_remoteClient.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_remote\\test_remoteClient.py"
 @@ -9,8 +9,6 @@
  from _remoteClient.connectionInfo import ConnectionInfo, ConnectionMode
  from _remoteClient.protocol import RemoteMessageType

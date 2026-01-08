@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\gui\guiHelper.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\gui\guiHelper.py`  
-**Current**: `F:\nvda\gh\alphajp\source\gui\guiHelper.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\gui\guiHelper.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\guiHelper.py" "b/F:\\nvda\\gh\\alphajp\\source\\gui\\guiHelper.py"
-index c7a603f194..ef1636cbb1 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\guiHelper.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\guiHelper.py"
+index c7a603f..ef1636c 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\guiHelper.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\gui\\guiHelper.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\guiHelper.py"
 @@ -53,7 +53,6 @@ def __init__(self, parent):
  	Any,
  	Generic,

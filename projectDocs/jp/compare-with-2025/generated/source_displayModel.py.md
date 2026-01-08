@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\displayModel.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\displayModel.py`  
-**Current**: `F:\nvda\gh\alphajp\source\displayModel.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\displayModel.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\displayModel.py" "b/F:\\nvda\\gh\\alphajp\\source\\displayModel.py"
-index d81d878f03..fde2cb0110 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\displayModel.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\displayModel.py"
+index d81d878..fde2cb0 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\displayModel.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\displayModel.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\displayModel.py"
 @@ -1,13 +1,12 @@
  # A part of NonVisual Desktop Access (NVDA)
  # This file is covered by the GNU General Public License.

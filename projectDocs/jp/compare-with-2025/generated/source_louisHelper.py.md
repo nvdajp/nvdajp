@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\louisHelper.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\louisHelper.py`  
-**Current**: `F:\nvda\gh\alphajp\source\louisHelper.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\louisHelper.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\louisHelper.py" "b/F:\\nvda\\gh\\alphajp\\source\\louisHelper.py"
-index 8edbc02901..a90d6b4299 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\louisHelper.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\louisHelper.py"
+index 8edbc02..a90d6b4 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\louisHelper.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\louisHelper.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\louisHelper.py"
 @@ -158,14 +158,17 @@ def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
  	except ModuleNotFoundError:
  		log.warning("Japanese translation module not found.")

@@ -1,24 +1,26 @@
 ﻿# Diff for: `source\virtualBuffers\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\virtualBuffers\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\virtualBuffers\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\virtualBuffers\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\virtualBuffers\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\virtualBuffers\\__init__.py"
-index fc6b20cf4e..f9efc93b9a 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\virtualBuffers\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\virtualBuffers\\__init__.py"
+index fc6b20c..74e8f7c 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\virtualBuffers\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\virtualBuffers\\__init__.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\virtualBuffers\\__init__.py"
 @@ -1,41 +1,30 @@
 -# -*- coding: UTF-8 -*-
  # A part of NonVisual Desktop Access (NVDA)
- # This file is covered by the GNU General Public License.
- # See the file COPYING for more details.
+-# This file is covered by the GNU General Public License.
+-# See the file COPYING for more details.
 -# Copyright (C) 2007-2023 NV Access Limited, Peter Vágner, Cyrille Bougot
-+# Copyright (C) 2007-2025 NV Access Limited, Peter Vágner, Cyrille Bougot
++# Copyright (C) 2007-2025 NV Access Limited, Peter Vágner, Cyrille Bougot, Leonard de Ruijter
++# This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
++# For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
  
  import time
  import threading
@@ -55,7 +57,18 @@ index fc6b20cf4e..f9efc93b9a 100644
  import watchdog
  from abc import abstractmethod
  import documentBase
-@@ -284,7 +273,7 @@ def _getStoryLength(self):
+@@ -160,7 +149,9 @@ def isChild(self, parent):
+ 
+ 
+ class VirtualBufferTextInfo(browseMode.BrowseModeDocumentTextInfo, textInfos.offsets.OffsetsTextInfo):
+-	allowMoveToOffsetPastEnd = False  #: no need for end insertion point as vbuf is not editable.
++	def allowMoveToUnitOffsetPastEnd(self, unit: str) -> bool:
++		"""Virtual buffers have no insertion point, so no need to move past the end of text."""
++		return False
+ 
+ 	def _getControlFieldAttribs(self, docHandle, id):
+ 		info = self.copy()
+@@ -284,7 +275,7 @@ def _getStoryLength(self):
  	def _getTextRange(self, start, end):
  		if start == end:
  			return ""
@@ -64,7 +77,7 @@ index fc6b20cf4e..f9efc93b9a 100644
  
  	def _getPlaceholderAttribute(self, attrs, placeholderAttrsKey):
  		"""Gets the placeholder attribute to be used.
-@@ -336,7 +325,7 @@ def _normalizeCommand(self, command: XMLFormatting.CommandsT) -> XMLFormatting.C
+@@ -336,7 +327,7 @@ def _normalizeCommand(self, command: XMLFormatting.CommandsT) -> XMLFormatting.C
  		return command
  
  	def _getFieldsInRange(self, start: int, end: int) -> textInfos.TextInfo.TextWithFieldsT:
@@ -73,7 +86,7 @@ index fc6b20cf4e..f9efc93b9a 100644
  		if not text:
  			return [""]
  		commandList = XMLFormatting.XMLTextParser().parse(text)
-@@ -570,7 +559,8 @@ def _loadBuffer(self):
+@@ -570,7 +561,8 @@ def _loadBuffer(self):
  		try:
  			if log.isEnabledFor(log.DEBUG):
  				startTime = time.time()
@@ -83,7 +96,7 @@ index fc6b20cf4e..f9efc93b9a 100644
  				self.rootNVDAObject.appModule.helperLocalBindingHandle,
  				self.rootDocHandle,
  				self.rootID,
-@@ -631,7 +621,7 @@ def unloadBuffer(self):
+@@ -631,7 +623,7 @@ def unloadBuffer(self):
  			try:
  				watchdog.cancellableExecute(
  					NVDAHelper.localLib.VBuf_destroyBuffer,
@@ -92,5 +105,16 @@ index fc6b20cf4e..f9efc93b9a 100644
  				)
  			except WindowsError:
  				pass
+@@ -917,8 +909,8 @@ def _isNVDAObjectInApplication_noWalk(self, obj):
+ 		try:
+ 			NVDAHelper.localLib.VBuf_getControlFieldNodeWithIdentifier(
+ 				self.VBufHandle,
+-				docHandle,
+-				objId,
++				docHandle if docHandle is not None else 0,
++				objId if objId is not None else 0,
+ 				ctypes.byref(node),
+ 			)
+ 		except WindowsError:
 
 ```

@@ -1,21 +1,22 @@
 ﻿# Diff for: `source\winBindings\advapi32.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winBindings\advapi32.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winBindings\advapi32.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winBindings\advapi32.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winBindings\\advapi32.py" "b/F:\\nvda\\gh\\alphajp\\source\\winBindings\\advapi32.py"
-index b4b1a8420e..20a60928b1 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winBindings\\advapi32.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winBindings\\advapi32.py"
+index b4b1a84..383b27b 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winBindings\\advapi32.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winBindings\\advapi32.py"
-@@ -6,19 +6,38 @@
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winBindings\\advapi32.py"
+@@ -6,20 +6,41 @@
  """Functions exported by advapi32.dll, and supporting data structures and enumerations."""
  
  from ctypes import (
++	WINFUNCTYPE,
 +	sizeof,
 +	Structure,
  	POINTER,
@@ -39,6 +40,7 @@ index b4b1a8420e..20a60928b1 100644
 +__all__ = (
 +	"OpenProcessToken",
 +	"RegCloseKey",
++	"RegDeleteTree",
 +	"RegOpenKeyEx",
 +	"RegQueryValueEx",
 +	"CreateProcessAsUser",
@@ -47,17 +49,19 @@ index b4b1a8420e..20a60928b1 100644
  
  
  dll = windll.advapi32
+-OpenProcessToken = dll.OpenProcessToken
 +
 +
- OpenProcessToken = dll.OpenProcessToken
++OpenProcessToken = WINFUNCTYPE(None)(("OpenProcessToken", dll))
  """
  Opens the access token associated with a process.
-@@ -31,3 +50,150 @@
+ .. seealso::
+@@ -31,3 +52,166 @@
  	POINTER(HANDLE),  # TokenHandle
  )
  OpenProcessToken.restype = BOOL
 +
-+RegCloseKey = dll.RegCloseKey
++RegCloseKey = WINFUNCTYPE(None)(("RegCloseKey", dll))
 +"""
 +Closes a handle to the specified registry key.
 +
@@ -69,7 +73,23 @@ index b4b1a8420e..20a60928b1 100644
 +)
 +RegCloseKey.restype = LONG
 +
-+RegOpenKeyEx = dll.RegOpenKeyExW
++RegDeleteTree = WINFUNCTYPE(None)(("RegDeleteTreeW", dll))
++"""
++Deletes a subkey and all its descendants.
++.. seealso::
++	https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-RegDeleteTree
++
++.. note::
++	This function can be replaced with ``winreg.DeleteTree`` in python 3.14.
++	https://github.com/python/cpython/pull/138388
++"""
++RegDeleteTree.argtypes = (
++	HKEY,  # hKey
++	LPCWSTR,  # lpSubKey
++)
++RegDeleteTree.restype = LONG
++
++RegOpenKeyEx = WINFUNCTYPE(None)(("RegOpenKeyExW", dll))
 +"""
 +Opens the specified registry key.
 +.. seealso::
@@ -84,7 +104,7 @@ index b4b1a8420e..20a60928b1 100644
 +)
 +RegOpenKeyEx.restype = LONG
 +
-+RegQueryValueEx = dll.RegQueryValueExW
++RegQueryValueEx = WINFUNCTYPE(None)(("RegQueryValueExW", dll))
 +"""
 +Retrieves the type and data for a specified value name associated with an open registry key.
 +.. seealso::
@@ -168,7 +188,7 @@ index b4b1a8420e..20a60928b1 100644
 +	)
 +
 +
-+CreateProcessAsUser = dll.CreateProcessAsUserW
++CreateProcessAsUser = WINFUNCTYPE(None)(("CreateProcessAsUserW", dll))
 +"""
 +Creates a new process and its primary thread. The new process runs in the security context of the user represented by the specified token.
 +.. seealso::
@@ -189,7 +209,7 @@ index b4b1a8420e..20a60928b1 100644
 +)
 +CreateProcessAsUser.restype = BOOL
 +
-+GetTokenInformation = dll.GetTokenInformation
++GetTokenInformation = WINFUNCTYPE(None)(("GetTokenInformation", dll))
 +"""
 +Retrieves a specified type of information about an access token.
 +.. seealso::

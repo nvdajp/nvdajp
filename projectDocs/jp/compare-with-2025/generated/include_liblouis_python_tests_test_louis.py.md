@@ -1,17 +1,17 @@
 ﻿# Diff for: `include\liblouis\python\tests\test_louis.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\include\liblouis\python\tests\test_louis.py`  
-**Current**: `F:\nvda\gh\alphajp\include\liblouis\python\tests\test_louis.py`
+**Current**: `F:\nvda\gh\alphajp-260109\include\liblouis\python\tests\test_louis.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\include\\liblouis\\python\\tests\\test_louis.py" "b/F:\\nvda\\gh\\alphajp\\include\\liblouis\\python\\tests\\test_louis.py"
-index 83ea0d5132..5a815f5e10 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\include\\liblouis\\python\\tests\\test_louis.py" "b/F:\\nvda\\gh\\alphajp-260109\\include\\liblouis\\python\\tests\\test_louis.py"
+index 83ea0d5..5a815f5 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\include\\liblouis\\python\\tests\\test_louis.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\include\\liblouis\\python\\tests\\test_louis.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\include\\liblouis\\python\\tests\\test_louis.py"
 @@ -1,116 +1,191 @@
  import unittest
 +

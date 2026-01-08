@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\NVDAObjects\window\edit.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\window\edit.py`  
-**Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\window\edit.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\NVDAObjects\window\edit.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\edit.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\edit.py"
-index 6029f5b384..2761fd4839 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\edit.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\window\\edit.py"
+index 6029f5b..143f49e 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\edit.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\edit.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\window\\edit.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2006-2023 NV Access Limited, Babbage B.V., Cyrille Bougot, Leonard de Ruijter
@@ -98,12 +98,12 @@ index 6029f5b384..2761fd4839 100644
  		# start/end in bytes to start/end in unicode chars
  		story_text = self._getStoryText()
  		start_new = end_new = -1
-@@ -643,16 +646,22 @@ def _startEndInBytesToStartEndInUnicodeChars(self, start, end):
- 		if end_new == -1:
+@@ -644,15 +647,22 @@ def _startEndInBytesToStartEndInUnicodeChars(self, start, end):
  			end_new = len(story_text)
  		return (start_new, end_new)
-+	# END JP PATCH
  
++	# END JP PATCH
++
  	def _getLineOffsets(self, offset):
 +		# BEGIN JP PATCH
 +		# nvdajp: workaround for ANSI edit controls
@@ -121,7 +121,7 @@ index 6029f5b384..2761fd4839 100644
  		if self._needsWorkAroundEncoding():
  			start_new, end_new = self._startEndInBytesToStartEndInUnicodeChars(start, end)
  			log.debug(
-@@ -660,6 +669,7 @@ def _getLineOffsets(self, offset):
+@@ -660,6 +670,7 @@ def _getLineOffsets(self, offset):
  				% (offset, lineNum, start, length, end, start_new, end_new)
  			)
  			return (start_new, end_new)
@@ -129,7 +129,7 @@ index 6029f5b384..2761fd4839 100644
  		# If we just seem to get invalid line info, calculate manually
  		if (
  			start <= 0
-@@ -833,7 +843,7 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
+@@ -833,7 +844,7 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
  		label = None
  		try:
  			o = embedRangeObj.GetEmbeddedObject()
@@ -138,7 +138,7 @@ index 6029f5b384..2761fd4839 100644
  			o = None
  		if not o:
  			return None
-@@ -842,7 +852,7 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
+@@ -842,7 +853,7 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
  
  		try:
  			label = o.QueryInterface(oleacc.IAccessible).accName(0)
@@ -147,7 +147,7 @@ index 6029f5b384..2761fd4839 100644
  			pass
  		if label:
  			return label
-@@ -865,22 +875,24 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
+@@ -865,22 +876,24 @@ def _getEmbeddedObjectLabel(self, embedRangeObj):
  		if label and not label.isspace():
  			return label
  		# Windows Live Mail exposes the label via the embedded object's data (IDataObject)
@@ -181,7 +181,7 @@ index 6029f5b384..2761fd4839 100644
  			return label
  
  	def _getTextAtRange(self, rangeObj):
-@@ -1087,7 +1099,7 @@ def _get_ITextDocumentObject(self):
+@@ -1087,7 +1100,7 @@ def _get_ITextDocumentObject(self):
  		if not hasattr(self, "_ITextDocumentObject"):
  			try:
  				ptr = ctypes.POINTER(comInterfaces.tom.ITextDocument)()

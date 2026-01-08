@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\winAPI\_displayTracking.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winAPI\_displayTracking.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winAPI\_displayTracking.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winAPI\_displayTracking.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\_displayTracking.py" "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\_displayTracking.py"
-index cb03dcf5df..4c1776347d 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\_displayTracking.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\_displayTracking.py"
+index cb03dcf..4c17763 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\_displayTracking.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\_displayTracking.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\_displayTracking.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2022–2024 NV Access Limited, Bill Dengler

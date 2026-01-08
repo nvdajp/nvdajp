@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\NVDAObjects\IAccessible\mscandui.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\IAccessible\mscandui.py`  
-**Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\IAccessible\mscandui.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\NVDAObjects\IAccessible\mscandui.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\IAccessible\\mscandui.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\IAccessible\\mscandui.py"
-index b711251954..51a3981439 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\IAccessible\\mscandui.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\IAccessible\\mscandui.py"
+index b711251..51a3981 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\IAccessible\\mscandui.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\IAccessible\\mscandui.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\IAccessible\\mscandui.py"
 @@ -78,15 +78,19 @@ def _get_states(self):
  	def event_stateChange(self):
  		if controlTypes.State.SELECTED in self.states:

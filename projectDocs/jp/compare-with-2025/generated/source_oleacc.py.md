@@ -1,18 +1,22 @@
 ﻿# Diff for: `source\oleacc.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\oleacc.py`  
-**Current**: `F:\nvda\gh\alphajp\source\oleacc.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\oleacc.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\oleacc.py" "b/F:\\nvda\\gh\\alphajp\\source\\oleacc.py"
-index 7b9a8d7620..c1457e9d6b 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\oleacc.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\oleacc.py"
+index 7b9a8d7..1c6168d 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\oleacc.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\oleacc.py"
-@@ -8,9 +8,13 @@
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\oleacc.py"
+@@ -5,12 +5,17 @@
+ 
+ from ctypes import *  # noqa: F403
+ from ctypes.wintypes import *  # noqa: F403
++from ctypes.wintypes import HWND
  from comtypes import *  # noqa: F403
  from comtypes.automation import *  # noqa: F403
  import comtypes.client
@@ -26,7 +30,7 @@ index 7b9a8d7620..c1457e9d6b 100644
  # Include functions from oleacc.dll in the module namespace.
  m = comtypes.client.GetModule("oleacc.dll")
  globals().update((key, val) for key, val in m.__dict__.items() if not key.startswith("_"))
-@@ -174,7 +178,7 @@ def LresultFromObject(wParam, obj):
+@@ -174,7 +179,7 @@ def LresultFromObject(wParam, obj):
  	@rtype: int
  	"""
  	objIID = obj._iid_
@@ -35,7 +39,7 @@ index 7b9a8d7620..c1457e9d6b 100644
  
  
  def ObjectFromLresult(res, wParam, interface):
-@@ -191,7 +195,7 @@ def ObjectFromLresult(res, wParam, interface):
+@@ -191,7 +196,7 @@ def ObjectFromLresult(res, wParam, interface):
  	@rtype: COMObject
  	"""
  	p = POINTER(interface)()  # noqa: F405
@@ -44,7 +48,7 @@ index 7b9a8d7620..c1457e9d6b 100644
  	return p
  
  
-@@ -211,7 +215,7 @@ def CreateStdAccessibleProxy(hwnd, className, objectID, interface=IAccessible):
+@@ -211,7 +216,7 @@ def CreateStdAccessibleProxy(hwnd, className, objectID, interface=IAccessible):
  	@rtype: COMObject
  	"""
  	p = POINTER(interface)()  # noqa: F405
@@ -53,7 +57,7 @@ index 7b9a8d7620..c1457e9d6b 100644
  	return p
  
  
-@@ -229,7 +233,7 @@ def CreateStdAccessibleObject(hwnd, objectID, interface=IAccessible):  # noqa: F
+@@ -229,7 +234,7 @@ def CreateStdAccessibleObject(hwnd, objectID, interface=IAccessible):  # noqa: F
  	@rtype: COMObject
  	"""
  	p = POINTER(interface)()  # noqa: F405
@@ -62,7 +66,7 @@ index 7b9a8d7620..c1457e9d6b 100644
  	return p
  
  
-@@ -246,7 +250,7 @@ def AccessibleObjectFromWindow(hwnd, objectID, interface=IAccessible):  # noqa:
+@@ -246,7 +251,7 @@ def AccessibleObjectFromWindow(hwnd, objectID, interface=IAccessible):  # noqa:
  	@rtype: COMObject
  	"""
  	p = POINTER(interface)()  # noqa: F405
@@ -71,7 +75,7 @@ index 7b9a8d7620..c1457e9d6b 100644
  	return p
  
  
-@@ -255,7 +259,7 @@ def AccessibleObjectFromWindow_safe(hwnd, objectID, interface=IAccessible, timeo
+@@ -255,7 +260,7 @@ def AccessibleObjectFromWindow_safe(hwnd, objectID, interface=IAccessible, timeo
  		raise ValueError("Invalid window")
  	wmResult = c_long()  # noqa: F405
  	res = (
@@ -80,7 +84,7 @@ index 7b9a8d7620..c1457e9d6b 100644
  			hwnd,
  			winUser.WM_GETOBJECT,
  			0,
-@@ -287,7 +291,7 @@ def AccessibleObjectFromEvent(hwnd, objectID, childID):
+@@ -287,7 +292,7 @@ def AccessibleObjectFromEvent(hwnd, objectID, childID):
  	"""
  	p = POINTER(IAccessible)()  # noqa: F405
  	varChild = VARIANT()  # noqa: F405
@@ -89,16 +93,32 @@ index 7b9a8d7620..c1457e9d6b 100644
  	if varChild.vt == VT_I4:  # noqa: F405
  		childID = varChild.value
  	return (p, childID)
-@@ -317,7 +321,7 @@ def WindowFromAccessibleObject(pacc):
- 	@rtype: int
+@@ -308,24 +313,23 @@ def AccessibleObjectFromEvent_safe(hwnd, objectID, childID, timeout=2):
+ 	return (obj, childID)
+ 
+ 
+-def WindowFromAccessibleObject(pacc):
++def WindowFromAccessibleObject(pacc) -> int:
  	"""
- 	hwnd = c_int()  # noqa: F405
+-	Retreaves the handle of the window this IAccessible object belongs to.
+-	@param pacc: the IAccessible object who's window you want to fetch.
+-	@type pacc: POINTER(IAccessible)
+-	@return: the window handle.
+-	@rtype: int
++	Retrieves the handle of the window this IAccessible object belongs to.
++	:param pacc: the IAccessible object who's window you want to fetch.
++	:type pacc: POINTER(IAccessible)
++	:return: the window handle.
+ 	"""
+-	hwnd = c_int()  # noqa: F405
 -	oledll.oleacc.WindowFromAccessibleObject(pacc, byref(hwnd))  # noqa: F405
+-	return hwnd.value
++	hwnd = HWND()
 +	winBindings.oleacc.WindowFromAccessibleObject(pacc, byref(hwnd))  # noqa: F405
- 	return hwnd.value
++	return hwnd.value or 0
  
  
-@@ -325,7 +329,7 @@ def AccessibleObjectFromPoint(x, y):
+ def AccessibleObjectFromPoint(x, y):
  	point = POINT(x, y)  # noqa: F405
  	pacc = POINTER(IAccessible)()  # noqa: F405
  	varChild = VARIANT()  # noqa: F405

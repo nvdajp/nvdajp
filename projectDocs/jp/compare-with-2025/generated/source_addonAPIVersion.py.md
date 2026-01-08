@@ -1,18 +1,18 @@
 ﻿# Diff for: `source\addonAPIVersion.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\addonAPIVersion.py`  
-**Current**: `F:\nvda\gh\alphajp\source\addonAPIVersion.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\addonAPIVersion.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\addonAPIVersion.py" "b/F:\\nvda\\gh\\alphajp\\source\\addonAPIVersion.py"
-index 678e70861f..805644bbdb 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\addonAPIVersion.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\addonAPIVersion.py"
+index 678e708..b300dc8 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\addonAPIVersion.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\addonAPIVersion.py"
-@@ -1,14 +1,11 @@
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\addonAPIVersion.py"
+@@ -1,22 +1,19 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2018-2023 NV Access Limited
 +# Copyright (C) 2018-2025 NV Access Limited
@@ -25,10 +25,11 @@ index 678e70861f..805644bbdb 100644
 -from typing import (
 -	Tuple,
 -)
- from logHandler import log
+-from logHandler import log
++
  
  """
-@@ -16,7 +13,7 @@
+ This module contains add-on API version information for this build of NVDA. This file provides information on
  how the API has changed as well as the range of API versions supported by this build of NVDA
  """
  
@@ -52,5 +53,13 @@ index 678e70861f..805644bbdb 100644
  (2025, 1, 0): HTML passed to browsableMessage is now sanitised, and various changes to the settings schema
  (2024, 1, 0): upgrade to python 3.11
  (2023, 1, 0): speech as str was dropped in favor of only SpeechCommand, and security changes.
+@@ -85,5 +83,7 @@ def formatForGUI(versionTuple: AddonApiVersionT) -> str:
+ 		# than an exception and unusable dialog.
+ 		# Translators: shown when an addon API version string is unknown
+ 		default = _("unknown")
++		from logHandler import log
++
+ 		log.error("Unable to format versionTuple: {}".format(repr(versionTuple)), exc_info=True)
+ 		return default
 
 ```

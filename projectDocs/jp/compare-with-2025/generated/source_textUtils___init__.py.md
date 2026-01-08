@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\textUtils\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\textUtils\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\textUtils\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\textUtils\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\textUtils\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\textUtils\\__init__.py"
-index 0f11c45722..d88ef05557 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\textUtils\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\textUtils\\__init__.py"
+index 0f11c45..d88ef05 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\textUtils\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\textUtils\\__init__.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\textUtils\\__init__.py"
 @@ -105,7 +105,7 @@ def encodedToStrOffsets(
  
  

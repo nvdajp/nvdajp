@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\synthDrivers\jtalk\mecab.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\mecab.py`  
-**Current**: `F:\nvda\gh\alphajp\source\synthDrivers\jtalk\mecab.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\synthDrivers\jtalk\mecab.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\mecab.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\mecab.py"
-index c637fad81b..407a23a27e 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\mecab.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\mecab.py"
+index c637fad..80fa9ff 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\mecab.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\mecab.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\mecab.py"
 @@ -3,15 +3,43 @@
  
  CODE = "utf-8"
@@ -86,7 +86,7 @@ index c637fad81b..407a23a27e 100644
  	if libmc is None:
  		libmc = cdll.LoadLibrary(mecab_dll)
  		# Configure ctypes signatures. On 64-bit Python, we must explicitly
-@@ -163,39 +193,65 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
+@@ -163,39 +193,69 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
  		libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]
  		libmc.mecab_new.argtypes = [c_int, c_char_p_p]
  		libmc.mecab_new.restype = c_void_p
@@ -139,8 +139,7 @@ index c637fad81b..407a23a27e 100644
  					b"-u",
  					ud.encode("utf-8"),
 +				),
- 			)
--        mecab = libmc.mecab_new(argc, args)
++			)
 +		mecab_result = libmc.mecab_new(argc, args)
 +		# CRITICAL FIX: On x64, mecab_new may return int despite restype=c_void_p
 +		# Convert to c_void_p explicitly to ensure correct 8-byte pointer handling
@@ -148,11 +147,16 @@ index c637fad81b..407a23a27e 100644
 +			if isinstance(mecab_result, int):
 +				mecab = c_void_p(mecab_result)
 +				if logwrite_:
-+					logwrite_(f"Mecab_initialize: converted mecab from int to c_void_p: {mecab_result} -> {mecab.value}")
++					logwrite_(
++						f"Mecab_initialize: converted mecab from int to c_void_p: {mecab_result} -> {mecab.value}"
++					)
 +			elif not isinstance(mecab_result, c_void_p):
 +				mecab = cast(mecab_result, c_void_p)
 +				if logwrite_:
-+					logwrite_(f"Mecab_initialize: converted mecab to c_void_p: {type(mecab_result)} -> {mecab.value}")
++					logwrite_(
++						f"Mecab_initialize: converted mecab to c_void_p: {type(mecab_result)} -> {mecab.value}"
+ 					)
+-        mecab = libmc.mecab_new(argc, args)
 +			else:
 +				mecab = mecab_result
 +				if logwrite_:
@@ -162,7 +166,7 @@ index c637fad81b..407a23a27e 100644
  		if not mecab:
  			# mecab_new failed - mecab_strerror should not be called with NULL pointer (causes access violation on x64)
  			error_msg = "mecab_new failed: failed to initialize MeCab"
-@@ -209,11 +265,15 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
+@@ -209,11 +269,15 @@ def Mecab_initialize(logwrite_=None, libmecab_dir=None, dic=None, user_dics=None
  				logwrite_(s)
  
  
@@ -171,7 +175,7 @@ index c637fad81b..407a23a27e 100644
 +	# CRITICAL: Declare global mecab at the start of the function
 +	# This must be before any reference to mecab to avoid SyntaxError
 +	global mecab
-+	
++
  	# Helper function to write to debug log file (ensures logs are captured even on crash)
  	def _write_debug_log(msg):
  		try:
@@ -180,7 +184,7 @@ index c637fad81b..407a23a27e 100644
  			with open(debug_log_path, "a", encoding="utf-8", errors="replace") as f:
  				f.write(msg + "\n")
  				f.flush()
-@@ -235,7 +295,9 @@ def _write_debug_log(msg):
+@@ -235,7 +299,9 @@ def _write_debug_log(msg):
  			# with normal Mecab operation, so we intentionally ignore exceptions.
  			pass
  
@@ -191,7 +195,7 @@ index c637fad81b..407a23a27e 100644
  
  	if not src:
  		msg = "src empty"
-@@ -256,29 +318,73 @@ def _write_debug_log(msg):
+@@ -256,29 +322,73 @@ def _write_debug_log(msg):
  			logwrite_(f"src is not bytes: {type(src)}")
  		features.size = 0
  		return
@@ -272,7 +276,7 @@ index c637fad81b..407a23a27e 100644
  	# 2. logwrite_ (may be io.StringIO() buffer, can be lost on crash)
  	# 3. Try to write to file if possible (most reliable for crash debugging)
  	# Note: ctypes automatically null-terminates bytes when converting to c_char_p,
-@@ -286,6 +392,21 @@ def _write_debug_log(msg):
+@@ -286,6 +396,21 @@ def _write_debug_log(msg):
  	log_msg = f"Mecab_analysis: calling mecab_sparse_tonode with mecab={mecab_value}, src_len={len(src)}"
  
  	# Method 1: Write to stderr first (unbuffered, captured by CI)
@@ -294,7 +298,7 @@ index c637fad81b..407a23a27e 100644
  		try:
  			sys.stderr.write(log_msg + "\n")
  			sys.stderr.flush()
-@@ -319,7 +440,7 @@ def _write_debug_log(msg):
+@@ -319,7 +444,7 @@ def _write_debug_log(msg):
  		return
  	# Validate head pointer is not NULL (prevents access violation on x64)
  	# head is mecab_node_t_ptr type, check if it's a valid pointer
@@ -303,7 +307,7 @@ index c637fad81b..407a23a27e 100644
  		if logwrite_:
  			logwrite_("mecab_sparse_tonode returned NULL pointer")
  		features.size = 0
-@@ -334,6 +455,10 @@ def _write_debug_log(msg):
+@@ -334,6 +459,10 @@ def _write_debug_log(msg):
  		if s != MECAB_BOS_NODE and s != MECAB_EOS_NODE:
  			c = node[0].length
  			s = string_at(node[0].surface, c) + b"," + string_at(node[0].feature)
@@ -314,7 +318,7 @@ index c637fad81b..407a23a27e 100644
  			if logwrite_:
  				logwrite_(s.decode(CODE, "ignore"))
  			buf = create_string_buffer(s)
-@@ -527,9 +652,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
+@@ -527,9 +656,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
  				Mecab_setFeature(mf, pos - 2, ",,,*,*,*,*", CODE_=CODE_)
  				Mecab_setFeature(mf, pos - 1, ",,,*,*,*,*", CODE_=CODE_)
  				Mecab_setFeature(mf, pos, feature, CODE_=CODE_)
@@ -325,7 +329,7 @@ index c637fad81b..407a23a27e 100644
  			# PATTERN 1
  			# before:
  			# 1 五絡脈病証,名詞,数,*,*,*,*,*
-@@ -560,9 +683,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
+@@ -560,9 +687,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
  						pron += ar2[9]
  						mora += getMoraCount(ar2[10])
  			nbmf = None
@@ -336,7 +340,7 @@ index c637fad81b..407a23a27e 100644
  			Mecab_setFeature(mf, pos, feature, CODE_=CODE_)
  		elif ar2 and ar[0] == "ー" and ar[1] == "名詞" and ar[2] == "一般":
  			# PATTERN 3
-@@ -585,7 +706,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
+@@ -585,7 +710,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
  					h=hyoki, h1=hin1, h2=hin2, y=yomi, p=pron, m=mora
  				)
  				Mecab_setFeature(mf, pos - 1, feature, CODE_=CODE_)
@@ -345,7 +349,7 @@ index c637fad81b..407a23a27e 100644
  				hyoki = ar3[0] + ar2[0] + "ー"
  				hin1 = ar3[1]
  				hin2 = ar3[2]
-@@ -600,7 +721,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
+@@ -600,7 +725,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
  			# https://github.com/nvdajp/nvdajpmiscdep/issues/42
  			# print ((unicode(ar3[0]) if ar3 else '*') + '/' + (unicode(ar2[0]) if ar2 else '*') + '/' + (unicode(ar[0]) if ar else '*')).encode('utf-8')
  			# pattern 5
@@ -354,7 +358,7 @@ index c637fad81b..407a23a27e 100644
  				# PATTERN 5 "author's"
  				# before:
  				# 0 ａｕｔｈｏｒ,名詞,一般,*,*,*,*,ａｕｔｈｏｒ,オーサー,オーサー,1/4,C0
-@@ -615,7 +736,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
+@@ -615,7 +740,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
  				Mecab_setFeature(mf, pos - 1, ",,,*,*,*,*", CODE_=CODE_)
  				f = _makeFeatureFromLatinWordAndPostfix(ar[0], ar3, symbol="'")
  				Mecab_setFeature(mf, pos, f, CODE_=CODE_)
@@ -363,7 +367,7 @@ index c637fad81b..407a23a27e 100644
  				# PATTERN 4
  				# before:
  				# 0 ｔａｋｅ,名詞,一般,*,*,*,*,ｔａｋｅ,テイク,テイク,1/3,C0
-@@ -627,9 +748,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
+@@ -627,9 +752,7 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
  				Mecab_setFeature(mf, pos - 1, ",,,*,*,*,*", CODE_=CODE_)
  				f = _makeFeatureFromLatinWordAndPostfix(ar[0], ar2)
  				Mecab_setFeature(mf, pos, f, CODE_=CODE_)

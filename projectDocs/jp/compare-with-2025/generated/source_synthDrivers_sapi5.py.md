@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\synthDrivers\sapi5.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\sapi5.py`  
-**Current**: `F:\nvda\gh\alphajp\source\synthDrivers\sapi5.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\synthDrivers\sapi5.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\sapi5.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\sapi5.py"
-index e9a08546f9..5430a899b4 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\sapi5.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\sapi5.py"
+index e9a0854..5430a89 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\sapi5.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\sapi5.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\sapi5.py"
 @@ -18,13 +18,13 @@
  	memmove,
  	memset,

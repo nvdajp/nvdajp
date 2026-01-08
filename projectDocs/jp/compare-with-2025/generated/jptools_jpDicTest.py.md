@@ -1,17 +1,17 @@
 ﻿# Diff for: `jptools\jpDicTest.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\jptools\jpDicTest.py`  
-**Current**: `F:\nvda\gh\alphajp\jptools\jpDicTest.py`
+**Current**: `F:\nvda\gh\alphajp-260109\jptools\jpDicTest.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\jpDicTest.py" "b/F:\\nvda\\gh\\alphajp\\jptools\\jpDicTest.py"
-index c6d7f69120..c0a4de3c65 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\jpDicTest.py" "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\jpDicTest.py"
+index c6d7f69..c0a4de3 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\jpDicTest.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\jptools\\jpDicTest.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\jpDicTest.py"
 @@ -10,17 +10,18 @@
  
  import unittest

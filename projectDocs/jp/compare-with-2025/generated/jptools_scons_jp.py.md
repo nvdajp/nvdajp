@@ -1,17 +1,17 @@
 ﻿# Diff for: `jptools\scons_jp.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\jptools\scons_jp.py`  
-**Current**: `F:\nvda\gh\alphajp\jptools\scons_jp.py`
+**Current**: `F:\nvda\gh\alphajp-260109\jptools\scons_jp.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\scons_jp.py" "b/F:\\nvda\\gh\\alphajp\\jptools\\scons_jp.py"
-index e85826e0fe..5f1189f443 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\scons_jp.py" "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\scons_jp.py"
+index e85826e..2360488 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\scons_jp.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\jptools\\scons_jp.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\scons_jp.py"
 @@ -20,6 +20,7 @@
  These are intentionally light-weight and safe; wiring them into other
  targets can be done in later phases when stable.
@@ -98,18 +98,7 @@ index e85826e0fe..5f1189f443 100644
  		if res.returncode != 0:
  			return res.returncode
  	Path(str(target[0])).parent.mkdir(parents=True, exist_ok=True)
-@@ -166,7 +197,9 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
- 	# Do not crash if signing is not configured; provide a helpful message.
- 	signExec = env.get("signExec")
- 	if not signExec:
--        print("JP certprep skipped: signing not configured (set certFile or apiSigningToken)")
-+		print(
-+			"JP certprep skipped: signing not configured (set certFile or apiSigningToken)"
-+		)
- 		return 0
- 	src = source[0]
- 	abspath = src.abspath
-@@ -174,7 +207,7 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
+@@ -174,7 +205,7 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
  	if not abspath.lower().endswith((".dll", ".exe")):
  		print(f"JP certprep skipped non-PE file: {abspath}")
  		return 0
@@ -118,25 +107,8 @@ index e85826e0fe..5f1189f443 100644
  		print(f"Warning: file not found for signing, skipping: {abspath}")
  		return 0
  	# Delegate to upstream signing action
-@@ -188,7 +221,9 @@ def _sign_in_place(target: list[Any], source: list[Any], env: Any) -> int:
- 	return 0
- 
- 
--def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: str) -> int:
-+def _sign_optional_path(
-+	target: list[Any], source: list[Any], env: Any, path: str
-+) -> int:
- 	"""Sign file at `path` if it exists; otherwise skip and write a stamp.
- 
- 	This is tolerant of missing inputs so certprep can run before all payloads
-@@ -198,10 +233,12 @@ def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: st
- 	stamp_path = Path(str(target[0]))
- 	stamp_path.parent.mkdir(parents=True, exist_ok=True)
- 	if not signExec:
--        print("JP certprep skipped: signing not configured (set certFile or apiSigningToken)")
-+		print(
-+			"JP certprep skipped: signing not configured (set certFile or apiSigningToken)"
-+		)
+@@ -201,7 +232,7 @@ def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: st
+ 		print("JP certprep skipped: signing not configured (set certFile or apiSigningToken)")
  		stamp_path.write_text("skip:no-sign-config", encoding="utf-8")
  		return 0
 -    if not os.path.isfile(path):
@@ -144,7 +116,7 @@ index e85826e0fe..5f1189f443 100644
  		print(f"Warning: file not found for signing, skipping: {path}")
  		stamp_path.write_text("skip:not-found", encoding="utf-8")
  		return 0
-@@ -216,22 +253,16 @@ def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: st
+@@ -216,22 +247,16 @@ def _sign_optional_path(target: list[Any], source: list[Any], env: Any, path: st
  	stamp_path.write_text("ok", encoding="utf-8")
  	return 0
  
@@ -173,7 +145,7 @@ index e85826e0fe..5f1189f443 100644
  
  
  def _get_vcvarsall_env(vcvarsall_path: str, arch: str) -> dict[str, str] | None:
-@@ -289,8 +320,6 @@ def _get_vcvarsall_env(vcvarsall_path: str, arch: str) -> dict[str, str] | None:
+@@ -289,8 +314,6 @@ def _get_vcvarsall_env(vcvarsall_path: str, arch: str) -> dict[str, str] | None:
  	return env
  
  
@@ -182,7 +154,7 @@ index e85826e0fe..5f1189f443 100644
  def _compute_overlay_targets(repo_root: Path) -> list[str]:
  	"""Return absolute paths for files overlaid from miscDepsJp/source -> source.
  	Used to attach Clean so that `scons -c` can remove overlay artifacts.
-@@ -316,6 +345,7 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
+@@ -316,6 +339,7 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
  	"""
  	# Lazy import to avoid unnecessary overhead when not cleaning
  	import subprocess
@@ -190,14 +162,12 @@ index e85826e0fe..5f1189f443 100644
  	out: list[str] = []
  	for p in paths:
  		try:
-@@ -335,20 +365,33 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
+@@ -335,20 +359,31 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
  	return out
  
  
 -def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
-+def register_jp_builders(
-+	env: Any, dist_target: Any | None = None, source_dir: Any | None = None
-+) -> None:
++def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: Any | None = None) -> None:
  	"""Register JP-specific aliases without affecting upstream targets.
  
  	Args:
@@ -229,7 +199,7 @@ index e85826e0fe..5f1189f443 100644
  	# Alias: jp_tests (run JP dictionary tests and JP char description tests)
  	jp_tests_stamp = env.File("jptools/_state/jp_tests.stamp")
  	env.AlwaysBuild(jp_tests_stamp)
-@@ -364,13 +407,13 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
+@@ -364,13 +399,13 @@ def register_jp_builders(env: Any, dist_target: Any | None = None) -> None:
  	def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int:
  		"""Prepare JP jtalk payload for overlay with on-demand build.
  
@@ -245,80 +215,39 @@ index e85826e0fe..5f1189f443 100644
  		vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
  
  		if arch in ("x64", "x86_64"):
-@@ -386,11 +429,7 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
+@@ -379,19 +414,15 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
+ 		else:
+ 			# x86 DLL is now in x86 subdirectory for consistency with x64
+ 			src_prebuilt = vendor_base / "x86" / "libopenjtalk.dll"
+-            nmake_machine = "x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
++			nmake_machine = (
++				"x86"  # Must pass explicitly (all.mak passes MACHINE=$(MACHINE) to lib/Makefile.mak)
++			)
+ 
+ 		# all.mak builds DLL to vendor_base/libopenjtalk.dll, then we move it to arch-specific subdirectory
+ 		built_dll = vendor_base / "libopenjtalk.dll"
  
  		# Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
- 		dst_payload = (
+-        dst_payload = (
 -            repo_root
 -            / "source"
 -            / "synthDrivers"
 -            / "jtalk"
 -            / "libopenjtalk.dll"
-+			repo_root / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
- 		)
+-        )
++		dst_payload = repo_root / "source" / "synthDrivers" / "jtalk" / "libopenjtalk.dll"
  
  		print(f"jtalkPrep: using TARGET_ARCH={arch}")
-@@ -398,10 +437,17 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
- 
- 		# Migrate existing DLL from old location (vendor_base/libopenjtalk.dll) to new location (x86 subdirectory)
- 		old_dll_location = vendor_base / "libopenjtalk.dll"
--        if arch not in ("x64", "x86_64") and old_dll_location.exists() and not src_prebuilt.exists():
--            print(f"jtalkPrep: migrating DLL from old location: {old_dll_location} -> {src_prebuilt}")
-+		if (
-+			arch not in ("x64", "x86_64")
-+			and old_dll_location.exists()
-+			and not src_prebuilt.exists()
-+		):
-+			print(
-+				f"jtalkPrep: migrating DLL from old location: {old_dll_location} -> {src_prebuilt}"
-+			)
+ 		print(f"jtalkPrep: looking for vendor DLL: {src_prebuilt}")
+@@ -402,6 +433,7 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
+ 			print(f"jtalkPrep: migrating DLL from old location: {old_dll_location} -> {src_prebuilt}")
  			try:
  				import shutil
 +
  				src_prebuilt.parent.mkdir(parents=True, exist_ok=True)
  				shutil.move(str(old_dll_location), str(src_prebuilt))
  				print("jtalkPrep: DLL migrated successfully")
-@@ -431,7 +477,9 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
- 				lib_dst = build_dir / "libopenjtalk"
- 
- 				if hts_src.exists():
--                    print(f"jtalkPrep: copying htsengineapi from {hts_src} to {hts_dst}")
-+					print(
-+						f"jtalkPrep: copying htsengineapi from {hts_src} to {hts_dst}"
-+					)
- 					# Preserve .gitkeep if it exists (for Git tracking of empty directories)
- 					gitkeep_path = hts_dst / ".gitkeep"
- 					gitkeep_exists = gitkeep_path.exists()
-@@ -443,12 +491,16 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
- 						try:
- 							gitkeep_path.touch()
- 						except OSError as e:
--                            print(f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}")
-+							print(
-+								f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}"
-+							)
- 				else:
- 					print(f"Warning: htsengineapi source not found at {hts_src}")
- 
- 				if lib_src.exists():
--                    print(f"jtalkPrep: copying libopenjtalk from {lib_src} to {lib_dst}")
-+					print(
-+						f"jtalkPrep: copying libopenjtalk from {lib_src} to {lib_dst}"
-+					)
- 					# Preserve .gitkeep if it exists (for Git tracking of empty directories)
- 					gitkeep_path = lib_dst / ".gitkeep"
- 					gitkeep_exists = gitkeep_path.exists()
-@@ -460,16 +512,24 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
- 						try:
- 							gitkeep_path.touch()
- 						except OSError as e:
--                            print(f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}")
-+							print(
-+								f"Warning: Could not restore .gitkeep at {gitkeep_path}: {e}"
-+							)
- 				else:
- 					print(f"Warning: libopenjtalk source not found at {lib_src}")
- 
+@@ -467,9 +499,15 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
  				# Check if nmake is available in PATH
  				# If not, we'll run nmake via vcvarsall.bat in the same shell
  				import subprocess
@@ -335,18 +264,7 @@ index e85826e0fe..5f1189f443 100644
  					print("jtalkPrep: nmake found in PATH")
  					use_vcvarsall = False
  				except (FileNotFoundError, subprocess.CalledProcessError):
-@@ -477,7 +537,9 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
- 					vcvarsall = _find_vcvarsall()
- 					if not vcvarsall:
- 						print("ERROR: nmake not found and vcvarsall.bat not detected")
--                        print("  Install Visual Studio with C++ Desktop Development workload")
-+						print(
-+							"  Install Visual Studio with C++ Desktop Development workload"
-+						)
- 						print("  Or run from Visual Studio Developer Command Prompt")
- 						return 1
- 					print(f"jtalkPrep: found vcvarsall.bat: {vcvarsall}")
-@@ -488,9 +550,20 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
+@@ -488,9 +526,20 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
  				if use_vcvarsall:
  					assert vcvarsall is not None  # Type narrowing for type checker
  					clean_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak clean MACHINE={nmake_machine}'
@@ -369,40 +287,18 @@ index e85826e0fe..5f1189f443 100644
  					run(clean_cmd, cwd=str(build_dir), capture_output=True)
  
  				# Build nmake command - if using vcvarsall, wrap it in cmd /c call
-@@ -498,7 +571,9 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
- 					# Run vcvarsall.bat and nmake in the same cmd.exe shell
- 					# This ensures the environment variables are available to nmake
+@@ -500,7 +549,9 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
  					assert vcvarsall is not None  # Type narrowing for type checker
--                    print(f"jtalkPrep: running nmake via vcvarsall.bat with arch={nmake_machine}")
-+					print(
-+						f"jtalkPrep: running nmake via vcvarsall.bat with arch={nmake_machine}"
-+					)
+ 					print(f"jtalkPrep: running nmake via vcvarsall.bat with arch={nmake_machine}")
  					# Use shell=True to avoid subprocess quote escaping issues
- 					cmd_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
- 					result = run(
-@@ -514,7 +589,9 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
- 
- 				if result.returncode != 0:
- 					print(f"ERROR: nmake failed with exit code {result.returncode}")
--                    print("  Ensure MSVC environment is configured (ilammy/msvc-dev-cmd or vcvarsall.bat)")
-+					print(
-+						"  Ensure MSVC environment is configured (ilammy/msvc-dev-cmd or vcvarsall.bat)"
+-                    cmd_script = f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
++					cmd_script = (
++						f'call "{vcvarsall}" {nmake_machine} && nmake /f all.mak MACHINE={nmake_machine}'
 +					)
- 					return 1
- 
- 				# Verify DLL was created by all.mak (it copies to vendor_base/libopenjtalk.dll)
-@@ -533,7 +610,9 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
- 				print(f"  {e}")
- 				print("  Ensure MSVC environment is configured before running SCons:")
- 				print("    - CI: use ilammy/msvc-dev-cmd action")
--                print("    - Local: run vcvarsall.bat or Visual Studio Developer Command Prompt")
-+				print(
-+					"    - Local: run vcvarsall.bat or Visual Studio Developer Command Prompt"
-+				)
- 				print("    - certBuild2023.cmd: add vcvarsall.bat call before SCons")
- 				return 1
- 			except Exception as e:
-@@ -556,7 +635,11 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
+ 					result = run(
+ 						cmd_script,
+ 						cwd=str(build_dir),
+@@ -556,7 +607,11 @@ def _ensure_jtalk_payload(target: list[Any], source: list[Any], env: Any) -> int
  		Path(str(target[0])).write_text("ok", encoding="utf-8")
  		return 0
  
@@ -415,29 +311,7 @@ index e85826e0fe..5f1189f443 100644
  	env.AlwaysBuild(jtalk_prep_stamp)
  	env.Command(jtalk_prep_stamp, [], _ensure_jtalk_payload)
  	env.Alias("jtalkPrep", jtalk_prep_stamp)
-@@ -568,7 +651,9 @@ def _sync_jtalk_assets(target: list[Any], source: list[Any], env: Any) -> int:
- 		# Copy directly to source/synthDrivers/jtalk (Phase 1: files moved, no intermediate copy needed)
- 		jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
- 		dic_dst = jtalk_dir / "dic"
--        builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
-+		builder_script_path = (
-+			repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
-+		)
- 
- 		def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
- 			"""Return (has_sys_dic, has_utf8_version)."""
-@@ -577,7 +662,9 @@ def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
- 				return False, False
- 			version_file = dic_dir / "DIC_VERSION"
- 			if not version_file.exists():
--                print(f"jtalkSync: DIC_VERSION missing for {dic_dir}; will rebuild as UTF-8.")
-+				print(
-+					f"jtalkSync: DIC_VERSION missing for {dic_dir}; will rebuild as UTF-8."
-+				)
- 				return True, False
- 			try:
- 				version_text = version_file.read_text(encoding="utf-8").lower()
-@@ -603,7 +690,12 @@ def _run_nmake(machine: str) -> int:
+@@ -603,7 +658,12 @@ def _run_nmake(machine: str) -> int:
  			from subprocess import run
  
  			try:
@@ -451,24 +325,7 @@ index e85826e0fe..5f1189f443 100644
  				# nmake is available, use it directly
  				cmd = ["nmake", "/f", "all.mak", f"MACHINE={machine}"]
  				result = run(cmd, cwd=str(vendor_base))
-@@ -621,19 +713,29 @@ def _run_nmake(machine: str) -> int:
- 		has_dic, is_utf8_dic = _dic_state(dic_dst)
- 		should_rebuild_dic = not (has_dic and is_utf8_dic)
- 		if should_rebuild_dic:
--            print("jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py.")
-+			print(
-+				"jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py."
-+			)
- 
- 		def _build_mecab_bin(machine: str) -> int:
- 			# Makefile.mak is in src subdirectory
- 			base = vendor_base / "libopenjtalk" / "mecab" / "src"
- 			makefile = base / "Makefile.mak"
- 			if not makefile.exists():
--                print(f"jtalkSync: Makefile.mak not found for mecab bin build: {makefile}")
-+				print(
-+					f"jtalkSync: Makefile.mak not found for mecab bin build: {makefile}"
-+				)
+@@ -632,8 +692,14 @@ def _build_mecab_bin(machine: str) -> int:
  				return 1
  			import subprocess
  			from subprocess import run
@@ -484,18 +341,7 @@ index e85826e0fe..5f1189f443 100644
  				# nmake is available, use it directly
  				cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
  				result = run(cmd, cwd=str(base))
-@@ -641,7 +743,9 @@ def _build_mecab_bin(machine: str) -> int:
- 			except (FileNotFoundError, subprocess.CalledProcessError):
- 				vcvarsall = _find_vcvarsall()
- 				if not vcvarsall:
--                    print("jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build")
-+					print(
-+						"jtalkSync: nmake not found and vcvarsall.bat not detected for mecab bin build"
-+					)
- 					return 1
- 				cmd_script = f'call "{vcvarsall}" {machine} && nmake /f Makefile.mak MACHINE={machine}'
- 				result = run(cmd_script, cwd=str(base), shell=True)
-@@ -649,10 +753,17 @@ def _build_mecab_bin(machine: str) -> int:
+@@ -649,6 +715,7 @@ def _build_mecab_bin(machine: str) -> int:
  
  		# If dictionary is missing or invalid, build it directly into source/synthDrivers/jtalk/dic
  		if should_rebuild_dic or not sys_dic.exists():
@@ -503,52 +349,18 @@ index e85826e0fe..5f1189f443 100644
  			def _build_dic(machine: str) -> int:
  				base = vendor_base / "libopenjtalk" / "mecab-naist-jdic"
  				makefile = base / "Makefile.mak"
--                mecab_dict_index_bin = vendor_base / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
-+				mecab_dict_index_bin = (
-+					vendor_base
-+					/ "libopenjtalk"
-+					/ "mecab"
-+					/ "src"
-+					/ "mecab-dict-index.exe"
-+				)
- 				import subprocess
- 				from subprocess import run
- 
-@@ -670,38 +781,62 @@ def _build_dic(machine: str) -> int:
- 						)
- 						return 1
- 					if not libmecab_dll.exists():
--                        print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
--                        print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
-+						print(
-+							f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}"
-+						)
-+						print(
-+							"jtalkSync: warning: libmecab.dll build may have failed, but continuing..."
-+						)
+@@ -673,7 +740,9 @@ def _build_dic(machine: str) -> int:
+ 						print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
+ 						print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
  					# make_jdic.py expects mecab-dict-index.exe under jptools/jtalk/libopenjtalk/mecab/src
 -                    make_jdic_mecab_bin = builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
 +					make_jdic_mecab_bin = (
-+						builder_script_path.parent
-+						/ "libopenjtalk"
-+						/ "mecab"
-+						/ "src"
-+						/ "mecab-dict-index.exe"
++						builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
 +					)
  					try:
  						make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
  						shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
--                        print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin}")
-+						print(
-+							f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin}"
-+						)
- 					except Exception as e:
--                        print(f"jtalkSync: failed to copy mecab-dict-index.exe to make_jdic path: {e}")
-+						print(
-+							f"jtalkSync: failed to copy mecab-dict-index.exe to make_jdic path: {e}"
-+						)
- 						return 1
- 					python_exe = sys.executable or "python"
+@@ -685,23 +754,31 @@ def _build_dic(machine: str) -> int:
  					env_vars = os.environ.copy()
  					env_vars.setdefault("PYTHONUTF8", "1")
  					print("jtalkSync: building dictionary with make_jdic.py (UTF-8).")
@@ -561,10 +373,7 @@ index e85826e0fe..5f1189f443 100644
  					return result.returncode
  
  				if not makefile.exists():
--                    print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
-+					print(
-+						f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}"
-+					)
+ 					print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
  					return 1
  
 -                # BEGIN JP PATCH: Create dicrc to set config-charset=sjis for .def files
@@ -587,7 +396,7 @@ index e85826e0fe..5f1189f443 100644
  					# nmake is available, use it directly
  					# Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
  					# chcp 932 is a fallback for environments where dicrc config might not be respected.
-@@ -709,17 +844,21 @@ def _build_dic(machine: str) -> int:
+@@ -709,8 +786,8 @@ def _build_dic(machine: str) -> int:
  					# If chcp fails, continue anyway (dicrc config should handle it)
  					cmd_script = (
  						'cmd /c "'
@@ -597,23 +406,8 @@ index e85826e0fe..5f1189f443 100644
 +						f"nmake /f Makefile.mak MACHINE={machine}"
  						'"'
  					)
--                    print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
-+					print(
-+						"jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)"
-+					)
- 					result = run(cmd_script, cwd=str(base), shell=True)
- 					return result.returncode
- 				except (FileNotFoundError, subprocess.CalledProcessError):
- 					vcvarsall = _find_vcvarsall()
- 					if not vcvarsall:
--                        print("jtalkSync: nmake not found and vcvarsall.bat not detected for dic build")
-+						print(
-+							"jtalkSync: nmake not found and vcvarsall.bat not detected for dic build"
-+						)
- 						return 1
- 					# Force CP932 for nmake path as well
- 					# Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
-@@ -727,11 +866,13 @@ def _build_dic(machine: str) -> int:
+ 					print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
+@@ -727,11 +804,13 @@ def _build_dic(machine: str) -> int:
  					cmd_script = (
  						f'cmd /c "'
  						f'call "{vcvarsall}" {machine} && '
@@ -630,14 +424,7 @@ index e85826e0fe..5f1189f443 100644
  					result = run(cmd_script, cwd=str(base), shell=True)
  					return result.returncode
  				# This code path should not be reached, but kept for safety
-@@ -741,14 +882,18 @@ def _build_dic(machine: str) -> int:
- 					"/c",
- 					f"chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && nmake /f Makefile.mak MACHINE={machine}",
- 				]
--                print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
-+				print(
-+					"jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)"
-+				)
+@@ -745,10 +824,12 @@ def _build_dic(machine: str) -> int:
  				result = run(cmd, cwd=str(base))
  				return result.returncode
  
@@ -652,36 +439,7 @@ index e85826e0fe..5f1189f443 100644
  			rc = _run_nmake(machine)
  			if rc != 0:
  				print(f"jtalkSync: nmake (all.mak) failed with rc={rc}")
-@@ -763,16 +908,24 @@ def _build_dic(machine: str) -> int:
- 				print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
- 				return rc_bin
- 			if not mecab_dict_index_bin.exists():
--                print(f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}")
-+				print(
-+					f"jtalkSync: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}"
-+				)
- 				return 1
- 			if not libmecab_dll.exists():
--                print(f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}")
--                print("jtalkSync: warning: libmecab.dll build may have failed, but continuing...")
-+				print(
-+					f"jtalkSync: libmecab.dll still missing after build: {libmecab_dll}"
-+				)
-+				print(
-+					"jtalkSync: warning: libmecab.dll build may have failed, but continuing..."
-+				)
- 
- 			# After all.mak and mecab bin, try explicit dic build if still missing or needs rebuild
- 			rc_dic = _build_dic(machine)
- 			if rc_dic != 0:
--                print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
-+				print(
-+					f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}"
-+				)
- 				return rc_dic
- 			sys_dic = dic_dst / "sys.dic"
- 
-@@ -784,10 +937,12 @@ def _build_dic(machine: str) -> int:
+@@ -784,7 +865,7 @@ def _build_dic(machine: str) -> int:
  		# Copy core assets (DLLs only; Python files have been moved to source/synthDrivers/jtalk in Phase 1)
  		try:
  			# Copy libmecab.dll (built from source or fallback to existing)
@@ -689,32 +447,10 @@ index e85826e0fe..5f1189f443 100644
 +			arch = str(env.get("TARGET_ARCH", "x64")).lower()
  			machine = "x64" if arch in ("x64", "x86_64") else "x86"
  			# First, try to find built libmecab.dll from mecab/src directory
--            built_libmecab = vendor_base / "libopenjtalk" / "mecab" / "src" / "libmecab.dll"
-+			built_libmecab = (
-+				vendor_base / "libopenjtalk" / "mecab" / "src" / "libmecab.dll"
-+			)
- 			if not built_libmecab.exists():
- 				# Build libmecab.dll if it doesn't exist
- 				print("jtalkSync: libmecab.dll not found, building...")
-@@ -796,7 +951,9 @@ def _build_dic(machine: str) -> int:
- 					print(f"jtalkSync: nmake (mecab) failed with rc={rc_bin}")
- 					# Continue anyway, will try fallback
- 				elif not built_libmecab.exists():
--                    print(f"jtalkSync: libmecab.dll still missing after build: {built_libmecab}")
-+					print(
-+						f"jtalkSync: libmecab.dll still missing after build: {built_libmecab}"
-+					)
- 			if built_libmecab.exists():
- 				shutil.copy2(built_libmecab, jtalk_dir / "libmecab.dll")
- 				print(f"jtalkSync: copied built libmecab.dll from {built_libmecab}")
-@@ -805,9 +962,13 @@ def _build_dic(machine: str) -> int:
- 				fallback_libmecab = vendor_base / "libmecab.dll"
- 				if fallback_libmecab.exists():
+ 			built_libmecab = vendor_base / "libopenjtalk" / "mecab" / "src" / "libmecab.dll"
+@@ -807,7 +888,9 @@ def _build_dic(machine: str) -> int:
  					shutil.copy2(fallback_libmecab, jtalk_dir / "libmecab.dll")
--                    print(f"jtalkSync: copied fallback libmecab.dll from {fallback_libmecab}")
-+					print(
-+						f"jtalkSync: copied fallback libmecab.dll from {fallback_libmecab}"
-+					)
+ 					print(f"jtalkSync: copied fallback libmecab.dll from {fallback_libmecab}")
  				else:
 -                    print(f"jtalkSync: warning: libmecab.dll not found (expected at {built_libmecab} or {fallback_libmecab})")
 +					print(
@@ -723,7 +459,7 @@ index e85826e0fe..5f1189f443 100644
  			# Copy arch-specific libopenjtalk.dll (x86 or x64)
  			if arch in ("x64", "x86_64"):
  				src_dll = vendor_base / "x64" / "libopenjtalk.dll"
-@@ -825,18 +986,50 @@ def _build_dic(machine: str) -> int:
+@@ -825,18 +908,50 @@ def _build_dic(machine: str) -> int:
  		stamp_path.write_text("ok", encoding="utf-8")
  		return 0
  
@@ -777,7 +513,7 @@ index e85826e0fe..5f1189f443 100644
  	mecab_dict_index = str(mecab_src_dir / "mecab-dict-index.exe")
  	env.Clean(jtalk_sync_stamp, mecab_dict_index)
  	# libmecab.dll (built by jtalkSync, then copied to source/synthDrivers/jtalk)
-@@ -847,63 +1040,22 @@ def _build_dic(machine: str) -> int:
+@@ -847,63 +962,18 @@ def _build_dic(machine: str) -> int:
  	# libopenjtalk.dll (copied to source/synthDrivers/jtalk by jtalkSync)
  	libopenjtalk_dll = str(jtalk_dir / "libopenjtalk.dll")
  	env.Clean(jtalk_sync_stamp, libopenjtalk_dll)
@@ -844,18 +580,14 @@ index e85826e0fe..5f1189f443 100644
 +	# This prevents stale stamp files from preventing rebuilds when switching architectures
 +	prep_state_dir = repo_root / "miscDepsJp" / "_state" / "prep"
 +	for arch_suffix_clean in ["x64", "x86"]:
-+		jtalk_prep_stamp_clean = str(
-+			prep_state_dir / f"jtalkPrep.{arch_suffix_clean}.stamp"
-+		)
-+		jtalk_sync_stamp_clean = str(
-+			prep_state_dir / f"jtalkSync.{arch_suffix_clean}.stamp"
-+		)
++		jtalk_prep_stamp_clean = str(prep_state_dir / f"jtalkPrep.{arch_suffix_clean}.stamp")
++		jtalk_sync_stamp_clean = str(prep_state_dir / f"jtalkSync.{arch_suffix_clean}.stamp")
 +		env.Clean(jtalk_sync_stamp, jtalk_prep_stamp_clean)
 +		env.Clean(jtalk_sync_stamp, jtalk_sync_stamp_clean)
  
  	# Note: Dependencies are already established in sconstruct:
  	#   - sourceDir -> jtalkSync (L401)
-@@ -912,12 +1064,10 @@ def _build_dic(machine: str) -> int:
+@@ -912,12 +982,10 @@ def _build_dic(machine: str) -> int:
  	# This creates the dependency chain: dist -> sourceDir -> jtalkSync -> jtalkPrep
  	# No additional wiring needed here; using Dir/target objects (not Alias) is more robust.
  
@@ -869,18 +601,7 @@ index e85826e0fe..5f1189f443 100644
  	env.Command(cc_zip, [], _pack_controller_client)
  	env.Alias("controllerClient", cc_zip)
  
-@@ -952,7 +1102,9 @@ def _stage_controller_client(target: list[Any], source: list[Any], env: Any) ->
- 						for src_file in src_arch_dir.glob(pattern):
- 							dst_file = dst_arch_dir / src_file.name
- 							shutil.copy2(src_file, dst_file)
--                            print(f"jpStageControllerClient: copied {src_file.name} to {dst_arch_dir}")
-+							print(
-+								f"jpStageControllerClient: copied {src_file.name} to {dst_arch_dir}"
-+							)
- 			# Copy documentation files if they exist
- 			for doc_file in ["license.txt", "readme.html", "readmejp.txt"]:
- 				src_doc = extras_client_dir / doc_file
-@@ -961,13 +1113,24 @@ def _stage_controller_client(target: list[Any], source: list[Any], env: Any) ->
+@@ -961,13 +1029,24 @@ def _stage_controller_client(target: list[Any], source: list[Any], env: Any) ->
  					shutil.copy2(src_doc, dst_doc)
  					print(f"jpStageControllerClient: copied {doc_file}")
  			# Copy examples directory if it exists
@@ -909,7 +630,7 @@ index e85826e0fe..5f1189f443 100644
  		except Exception as e:
  			print(f"jpStageControllerClient: error: {e}")
  			return 1
-@@ -984,7 +1147,9 @@ def _stage_controller_client(target: list[Any], source: list[Any], env: Any) ->
+@@ -984,7 +1063,9 @@ def _stage_controller_client(target: list[Any], source: list[Any], env: Any) ->
  	for arch in ["x86", "x64", "arm64"]:
  		# Add DLL as dependency (main artifact)
  		dll_path = extras_client_dir / arch / "nvdaControllerClient.dll"
@@ -920,18 +641,7 @@ index e85826e0fe..5f1189f443 100644
  			source_files.append(env.File(str(dll_path)))
  	# If no files exist yet, use empty list (will be created on first run)
  	if not source_files:
-@@ -1023,7 +1188,9 @@ def _cert_extras(target: list[Any], source: list[Any], env: Any) -> int:
- 		if not dist_dir.exists():
- 			print("jpCertExtras: ERROR - dist/ directory does not exist")
- 			print("jpCertExtras: dist/ must be built before jpCertExtras can sign DLLs")
--            print("jpCertExtras: Build order: jtalkSync -> dist -> jpCertExtras -> launcher")
-+			print(
-+				"jpCertExtras: Build order: jtalkSync -> dist -> jpCertExtras -> launcher"
-+			)
- 			stamp_path.write_text("error:dist-not-built", encoding="utf-8")
- 			return 1
- 		dist_jtalk_dir = dist_dir / "synthDrivers" / "jtalk"
-@@ -1033,20 +1200,35 @@ def _cert_extras(target: list[Any], source: list[Any], env: Any) -> int:
+@@ -1033,20 +1114,35 @@ def _cert_extras(target: list[Any], source: list[Any], env: Any) -> int:
  				candidates.append(dll_path)
  			else:
  				missing_required.append(dll_path)
@@ -973,7 +683,7 @@ index e85826e0fe..5f1189f443 100644
  			return 1
  		# Perform signing via upstream signExec
  		signed_count = 0
-@@ -1140,8 +1322,18 @@ def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
+@@ -1140,8 +1236,18 @@ def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
  		out_dir = repo_root / "output"
  		dist_dir = repo_root / "dist"
  
@@ -994,7 +704,7 @@ index e85826e0fe..5f1189f443 100644
  			"1",
  			"true",
  			"yes",
-@@ -1160,10 +1352,14 @@ def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
+@@ -1160,7 +1266,9 @@ def _verify_signatures(target: list[Any], source: list[Any], env: Any) -> int:
  			"wxmsw32u_stc_vc140.dll",
  		}
  
@@ -1004,14 +714,8 @@ index e85826e0fe..5f1189f443 100644
 +		) -> subprocess.CompletedProcess[str]:
  			args = [signtool_path, "verify", "/pa"]
  			args.append("/q" if quiet else "/v")
--            return subprocess.run(args + [str(file_path)], capture_output=True, text=True)
-+			return subprocess.run(
-+				args + [str(file_path)], capture_output=True, text=True
-+			)
- 
- 		def _format_signtool_output(result: subprocess.CompletedProcess[str]) -> str:
- 			out = (result.stdout or "").strip()
-@@ -1172,7 +1368,9 @@ def _format_signtool_output(result: subprocess.CompletedProcess[str]) -> str:
+ 			return subprocess.run(args + [str(file_path)], capture_output=True, text=True)
+@@ -1172,7 +1280,9 @@ def _format_signtool_output(result: subprocess.CompletedProcess[str]) -> str:
  				return f"{out}\n{err}"
  			return out or err or ""
  
@@ -1022,7 +726,7 @@ index e85826e0fe..5f1189f443 100644
  			result = _signtool_verify(signtool_path, file_path, quiet=True)
  			if result.returncode == 0:
  				return True, False, ""
-@@ -1187,7 +1385,11 @@ def _verify_one(signtool_path: str, file_path: Path, *, allow_ignored: bool) ->
+@@ -1187,7 +1297,11 @@ def _verify_one(signtool_path: str, file_path: Path, *, allow_ignored: bool) ->
  		try:
  			exe: Path | None = None
  			if out_dir.exists():
@@ -1035,29 +739,7 @@ index e85826e0fe..5f1189f443 100644
  				if exe_candidates:
  					exe = exe_candidates[0]
  			if not exe:
-@@ -1198,7 +1400,9 @@ def _verify_one(signtool_path: str, file_path: Path, *, allow_ignored: bool) ->
- 			signtool = os.environ.get("SIGNTOOL", "signtool")
- 
- 			if mode not in ("fast", "all"):
--                print(f"jpVerifySignatures: unknown mode {mode!r}, falling back to 'fast'")
-+				print(
-+					f"jpVerifySignatures: unknown mode {mode!r}, falling back to 'fast'"
-+				)
- 				mode = "fast"
- 
- 			failures: list[str] = []
-@@ -1212,7 +1416,9 @@ def _check(path: Path, *, allow_ignored: bool) -> None:
- 				if not path.exists():
- 					failures.append(f"missing:{path}")
- 					return
--                ok, is_ignored, detail = _verify_one(signtool, path, allow_ignored=allow_ignored)
-+				ok, is_ignored, detail = _verify_one(
-+					signtool, path, allow_ignored=allow_ignored
-+				)
- 				if ok:
- 					verified += 1
- 					return
-@@ -1238,36 +1444,13 @@ def _check(path: Path, *, allow_ignored: bool) -> None:
+@@ -1238,36 +1352,13 @@ def _check(path: Path, *, allow_ignored: bool) -> None:
  					dist_dir / "uninstall.exe",
  				]
  				if build_version:
@@ -1101,21 +783,7 @@ index e85826e0fe..5f1189f443 100644
  				for path in critical_paths:
  					_check(path, allow_ignored=False)
  			else:
-@@ -1313,15 +1496,21 @@ def _check(path: Path, *, allow_ignored: bool) -> None:
- 
- 			if failures:
- 				print(f"jpVerifySignatures: FAILED ({mode})")
--                print("  See output/_jp_verify_signatures*.stamp or the *_verify.log for details.")
-+				print(
-+					"  See output/_jp_verify_signatures*.stamp or the *_verify.log for details."
-+				)
- 				return 1
- 			if ignored_failures and not verbose:
--                print(f"jpVerifySignatures: OK ({mode}) with {len(ignored_failures)} ignored failure(s)")
-+				print(
-+					f"jpVerifySignatures: OK ({mode}) with {len(ignored_failures)} ignored failure(s)"
-+				)
- 			else:
+@@ -1321,7 +1412,9 @@ def _check(path: Path, *, allow_ignored: bool) -> None:
  				print(f"jpVerifySignatures: OK ({mode})")
  			return 0
  		except FileNotFoundError:

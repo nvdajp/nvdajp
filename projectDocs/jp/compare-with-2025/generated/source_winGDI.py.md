@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\winGDI.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winGDI.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winGDI.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winGDI.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winGDI.py" "b/F:\\nvda\\gh\\alphajp\\source\\winGDI.py"
-index ddb3d0a13e..8c7e51bcfd 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winGDI.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winGDI.py"
+index ddb3d0a..8c7e51b 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winGDI.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winGDI.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winGDI.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2011-2022 NV Access Limited

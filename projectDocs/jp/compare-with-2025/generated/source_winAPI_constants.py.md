@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\winAPI\constants.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\winAPI\constants.py`  
-**Current**: `F:\nvda\gh\alphajp\source\winAPI\constants.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\winAPI\constants.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\constants.py" "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\constants.py"
-index 41e60a3562..e748a49428 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\constants.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\constants.py"
+index 41e60a3..e748a49 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\winAPI\\constants.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\winAPI\\constants.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\winAPI\\constants.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2022-2024 NV Access Limited

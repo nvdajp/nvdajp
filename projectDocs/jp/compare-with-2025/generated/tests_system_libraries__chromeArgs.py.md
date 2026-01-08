@@ -1,17 +1,17 @@
 ﻿# Diff for: `tests\system\libraries\_chromeArgs.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\system\libraries\_chromeArgs.py`  
-**Current**: `F:\nvda\gh\alphajp\tests\system\libraries\_chromeArgs.py`
+**Current**: `F:\nvda\gh\alphajp-260109\tests\system\libraries\_chromeArgs.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\libraries\\_chromeArgs.py" "b/F:\\nvda\\gh\\alphajp\\tests\\system\\libraries\\_chromeArgs.py"
-index e815f739c5..d7abff538e 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\libraries\\_chromeArgs.py" "b/F:\\nvda\\gh\\alphajp-260109\\tests\\system\\libraries\\_chromeArgs.py"
+index e815f73..d7abff5 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\libraries\\_chromeArgs.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\tests\\system\\libraries\\_chromeArgs.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\system\\libraries\\_chromeArgs.py"
 @@ -23,8 +23,11 @@ def getChromeArgs() -> str:
  		" --disable-notifications"  # prevent notifications that may interfere with automated tests.
  		" --no-experiments"  # Stable behavior is preferred.

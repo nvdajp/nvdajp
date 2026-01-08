@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\setup.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\setup.py`  
-**Current**: `F:\nvda\gh\alphajp\source\setup.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\setup.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\setup.py" "b/F:\\nvda\\gh\\alphajp\\source\\setup.py"
-index 531153b8ad..fca1239758 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\setup.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\setup.py"
+index 531153b..a4ffdd1 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\setup.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\setup.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\setup.py"
 @@ -1,4 +1,3 @@
 -# -*- coding: UTF-8 -*-
  # A part of NonVisual Desktop Access (NVDA)
@@ -52,7 +52,12 @@ index 531153b8ad..fca1239758 100644
  		"optimize": 1,
  		"bundle_files": 3,
  		"dist_dir": "../dist",
-@@ -217,7 +218,7 @@ def _genManifestTemplate(shouldHaveUIAccess: bool) -> tuple[int, int, bytes]:
+@@ -212,12 +213,10 @@ def _genManifestTemplate(shouldHaveUIAccess: bool) -> tuple[int, int, bytes]:
+ 			# winxptheme is optionally used by wx.lib.agw.aui.
+ 			# We don't need this.
+ 			"winxptheme",
+-			# numpy is an optional dependency of comtypes but we don't require it.
+-			"numpy",
  			# multiprocessing isn't going to work in a frozen environment
  			"multiprocessing",
  			"concurrent.futures.process",
@@ -61,7 +66,22 @@ index 531153b8ad..fca1239758 100644
  			"tomli",
  		],
  		"packages": [
-@@ -255,12 +256,12 @@ def _genManifestTemplate(shouldHaveUIAccess: bool) -> tuple[int, int, bytes]:
+@@ -245,6 +244,8 @@ def _genManifestTemplate(shouldHaveUIAccess: bool) -> tuple[int, int, bytes]:
+ 			"mdx_truly_sane_lists",
+ 			"mdx_gh_links",
+ 			"pymdownx",
++			# Required for local image captioning
++			"numpy",
+ 		],
+ 		"includes": [
+ 			"nvdaBuiltin",
+@@ -252,15 +253,18 @@ def _genManifestTemplate(shouldHaveUIAccess: bool) -> tuple[int, int, bytes]:
+ 			"bisect",
+ 			# robotremoteserver (for system tests) depends on xmlrpc.server
+ 			"xmlrpc.server",
++			# required for import numpy without error
++			"numpy._core._exceptions",
++			"numpy._core._multiarray_umath",
  		],
  	},
  	data_files=[
@@ -78,7 +98,7 @@ index 531153b8ad..fca1239758 100644
  		("waves", glob("waves/*.wav")),
  		("images", glob("images/*.ico")),
  		("fonts", glob("fonts/*.ttf")),
-@@ -271,6 +272,12 @@ def _genManifestTemplate(shouldHaveUIAccess: bool) -> tuple[int, int, bytes]:
+@@ -271,8 +275,18 @@ def _genManifestTemplate(shouldHaveUIAccess: bool) -> tuple[int, int, bytes]:
  		(".", ["message.html"]),
  		(".", [os.path.join(sys.base_prefix, "python3.dll")]),
  	]
@@ -90,6 +110,12 @@ index 531153b8ad..fca1239758 100644
 +	# END JP PATCH
  	+ (
  		getLocaleDataFiles()
++		+ getRecursiveDataFiles(
++			"include/nvda-mathcat/assets",
++			"../include/nvda-mathcat/assets",
++		)
  		+ getRecursiveDataFiles(
+ 			"synthDrivers",
+ 			"synthDrivers",
 
 ```

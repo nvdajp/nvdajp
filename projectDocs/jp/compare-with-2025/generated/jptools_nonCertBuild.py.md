@@ -1,17 +1,17 @@
 ﻿# Diff for: `jptools\nonCertBuild.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\jptools\nonCertBuild.py`  
-**Current**: `F:\nvda\gh\alphajp\jptools\nonCertBuild.py`
+**Current**: `F:\nvda\gh\alphajp-260109\jptools\nonCertBuild.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\nonCertBuild.py" "b/F:\\nvda\\gh\\alphajp\\jptools\\nonCertBuild.py"
-index 50a76ffe0b..33bef55863 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\nonCertBuild.py" "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\nonCertBuild.py"
+index 50a76ff..33bef55 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\jptools\\nonCertBuild.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\jptools\\nonCertBuild.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\jptools\\nonCertBuild.py"
 @@ -17,6 +17,7 @@ def run_cmd(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | No
  		print(f"::error::Command not found: {cmd[0]} ({e})")
  		sys.exit(127)

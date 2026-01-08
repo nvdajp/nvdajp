@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\shellapi.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\shellapi.py`  
-**Current**: `F:\nvda\gh\alphajp\source\shellapi.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\shellapi.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\shellapi.py" "b/F:\\nvda\\gh\\alphajp\\source\\shellapi.py"
-index 9b3de6ff03..1660e6b949 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\shellapi.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\shellapi.py"
+index 9b3de6f..1660e6b 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\shellapi.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\shellapi.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\shellapi.py"
 @@ -6,36 +6,16 @@
  from ctypes import *  # noqa: F403
  from ctypes.wintypes import *  # noqa: F403

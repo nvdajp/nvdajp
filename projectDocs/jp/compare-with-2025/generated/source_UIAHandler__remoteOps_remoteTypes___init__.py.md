@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\UIAHandler\_remoteOps\remoteTypes\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\UIAHandler\_remoteOps\remoteTypes\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\UIAHandler\_remoteOps\remoteTypes\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\UIAHandler\_remoteOps\remoteTypes\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\UIAHandler\\_remoteOps\\remoteTypes\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\UIAHandler\\_remoteOps\\remoteTypes\\__init__.py"
-index c5aa47a6f2..09354934e3 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\UIAHandler\\_remoteOps\\remoteTypes\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\UIAHandler\\_remoteOps\\remoteTypes\\__init__.py"
+index c5aa47a..0935493 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\UIAHandler\\_remoteOps\\remoteTypes\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\UIAHandler\\_remoteOps\\remoteTypes\\__init__.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\UIAHandler\\_remoteOps\\remoteTypes\\__init__.py"
 @@ -1,15 +1,13 @@
  # A part of NonVisual Desktop Access (NVDA)
  # This file is covered by the GNU General Public License.

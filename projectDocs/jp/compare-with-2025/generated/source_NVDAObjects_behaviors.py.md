@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\NVDAObjects\behaviors.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\behaviors.py`  
-**Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\behaviors.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\NVDAObjects\behaviors.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\behaviors.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\behaviors.py"
-index 0aa6eea738..a360793f70 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\behaviors.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\behaviors.py"
+index 0aa6eea..74ccab1 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\behaviors.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\behaviors.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\behaviors.py"
 @@ -2,7 +2,7 @@
  # This file is covered by the GNU General Public License.
  # See the file COPYING for more details.
@@ -33,7 +33,14 @@ index 0aa6eea738..a360793f70 100644
  
  
  class ProgressBar(NVDAObject):
-@@ -297,7 +300,7 @@ def _delayedDetection():
+@@ -291,13 +294,14 @@ def _delayedDetection():
+ 			else:
+ 				# No error.
+ 				return
++			if speech.getState().speechMode not in [speech.SpeechMode.off, speech.SpeechMode.onDemand]:
+ 				nvwave.playWaveFile(os.path.join(globalVars.appDir, "waves", "textError.wav"))
+ 
+ 		core.callLater(50, _delayedDetection)
  
  	def event_typedCharacter(self, ch: str):
  		if (
@@ -42,7 +49,7 @@ index 0aa6eea738..a360793f70 100644
  			and config.conf["keyboard"]["alertForSpellingErrors"]
  			and (
  				# Not alpha, apostrophe or control.
-@@ -632,7 +635,8 @@ class KeyboardHandlerBasedTypedCharSupport(EnhancedTermTypedCharSupport):
+@@ -632,7 +636,8 @@ class KeyboardHandlerBasedTypedCharSupport(EnhancedTermTypedCharSupport):
  
  class CandidateItem(NVDAObject):
  	def getFormattedCandidateName(self, number, candidate):
@@ -52,7 +59,7 @@ index 0aa6eea738..a360793f70 100644
  		import jpUtils
  
  		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-@@ -642,7 +646,7 @@ def getFormattedCandidateName(self, number, candidate):
+@@ -642,7 +647,7 @@ def getFormattedCandidateName(self, number, candidate):
  			if config.conf["language"]["announceCandidateNumber"]:
  				return _("{number} {candidate}").format(number=number, candidate=c)
  			return c

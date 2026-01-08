@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\nvwave.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\nvwave.py`  
-**Current**: `F:\nvda\gh\alphajp\source\nvwave.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\nvwave.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\nvwave.py" "b/F:\\nvda\\gh\\alphajp\\source\\nvwave.py"
-index 637af932e1..15f0bde4a1 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\nvwave.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\nvwave.py"
+index 637af93..15f0bde 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\nvwave.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\nvwave.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\nvwave.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2007-2024 NV Access Limited, Aleksey Sadovoy, Cyrille Bougot, Peter Vágner, Babbage B.V.,

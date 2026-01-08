@@ -1,30 +1,32 @@
 ﻿# Diff for: `source\contentRecog\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\contentRecog\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\contentRecog\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\contentRecog\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\contentRecog\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\contentRecog\\__init__.py"
-index f0825aa276..4bfb5b4f43 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\contentRecog\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\contentRecog\\__init__.py"
+index f0825aa..6cb6803 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\contentRecog\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\contentRecog\\__init__.py"
-@@ -21,16 +21,18 @@
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\contentRecog\\__init__.py"
+@@ -21,16 +21,21 @@
  import textInfos.offsets
  from abc import ABCMeta, abstractmethod
  from locationHelper import RectLTWH
++
 +# BEGIN JP PATCH
 +# nvdajp: import for East Asian width checking
  from unicodedata import east_asian_width
++
 +# END JP PATCH
  from NVDAObjects import NVDAObject
  
  onRecognizeResultCallbackT = Callable[[Union["RecognitionResult", Exception]], None]
  
--
+ 
 +# BEGIN JP PATCH
 +# nvdajp: functions for checking East Asian narrow characters
  def isEastAsianNarrow(c):
@@ -35,7 +37,7 @@ index f0825aa276..4bfb5b4f43 100644
  
  
  def startsWithEastAsianNarrow(s):
-@@ -41,6 +43,10 @@ def endsWithEastAsianNarrow(s):
+@@ -41,6 +46,10 @@ def endsWithEastAsianNarrow(s):
  	return s and isEastAsianNarrow(s[-1])
  
  
@@ -46,7 +48,7 @@ index f0825aa276..4bfb5b4f43 100644
  class BaseContentRecogTextInfo(cursorManager._ReviewCursorManagerTextInfo):
  	"""
  	The TextInfo class that all TextInfos emitted by implementations of RecognitionResult must inherit from.
-@@ -251,11 +257,17 @@ def _parseData(self):
+@@ -251,11 +260,17 @@ def _parseData(self):
  			for word in line:
  				if firstWordOfLine:
  					firstWordOfLine = False

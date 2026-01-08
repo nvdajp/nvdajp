@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\gui\message.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\gui\message.py`  
-**Current**: `F:\nvda\gh\alphajp\source\gui\message.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\gui\message.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\message.py" "b/F:\\nvda\\gh\\alphajp\\source\\gui\\message.py"
-index 30d036e207..3c3e58470d 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\message.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\message.py"
+index 30d036e..3c3e584 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\message.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\gui\\message.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\message.py"
 @@ -1,4 +1,3 @@
 -# -*- coding: UTF-8 -*-
  # A part of NonVisual Desktop Access (NVDA)

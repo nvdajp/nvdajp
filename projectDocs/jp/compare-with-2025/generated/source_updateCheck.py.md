@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\updateCheck.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\updateCheck.py`  
-**Current**: `F:\nvda\gh\alphajp\source\updateCheck.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\updateCheck.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\updateCheck.py" "b/F:\\nvda\\gh\\alphajp\\source\\updateCheck.py"
-index 9dfabc3f3f..0bf98787d4 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\updateCheck.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\updateCheck.py"
+index 9dfabc3..0bf9878 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\updateCheck.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\updateCheck.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\updateCheck.py"
 @@ -29,9 +29,9 @@
  	raise RuntimeError("updates disabled in secure mode")
  elif config.isAppX:

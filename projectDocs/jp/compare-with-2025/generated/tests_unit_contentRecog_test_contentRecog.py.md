@@ -1,17 +1,17 @@
 ﻿# Diff for: `tests\unit\contentRecog\test_contentRecog.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\unit\contentRecog\test_contentRecog.py`  
-**Current**: `F:\nvda\gh\alphajp\tests\unit\contentRecog\test_contentRecog.py`
+**Current**: `F:\nvda\gh\alphajp-260109\tests\unit\contentRecog\test_contentRecog.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\contentRecog\\test_contentRecog.py" "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\contentRecog\\test_contentRecog.py"
-index b62ac1407d..3f355efbd0 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\contentRecog\\test_contentRecog.py" "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\contentRecog\\test_contentRecog.py"
+index b62ac14..3f355ef 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\unit\\contentRecog\\test_contentRecog.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\tests\\unit\\contentRecog\\test_contentRecog.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\contentRecog\\test_contentRecog.py"
 @@ -70,24 +70,27 @@ class TestLinesWordsResult(unittest.TestCase):
  		],
  	]

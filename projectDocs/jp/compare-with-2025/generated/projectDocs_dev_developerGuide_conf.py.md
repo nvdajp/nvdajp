@@ -1,17 +1,17 @@
 ﻿# Diff for: `projectDocs\dev\developerGuide\conf.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\projectDocs\dev\developerGuide\conf.py`  
-**Current**: `F:\nvda\gh\alphajp\projectDocs\dev\developerGuide\conf.py`
+**Current**: `F:\nvda\gh\alphajp-260109\projectDocs\dev\developerGuide\conf.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\projectDocs\\dev\\developerGuide\\conf.py" "b/F:\\nvda\\gh\\alphajp\\projectDocs\\dev\\developerGuide\\conf.py"
-index e35104d115..898a9f4924 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\projectDocs\\dev\\developerGuide\\conf.py" "b/F:\\nvda\\gh\\alphajp-260109\\projectDocs\\dev\\developerGuide\\conf.py"
+index e35104d..898a9f4 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\projectDocs\\dev\\developerGuide\\conf.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\projectDocs\\dev\\developerGuide\\conf.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\projectDocs\\dev\\developerGuide\\conf.py"
 @@ -44,26 +44,27 @@
  
  

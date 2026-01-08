@@ -1,17 +1,17 @@
 ﻿# Diff for: `tests\system\robot\chromeTests.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\tests\system\robot\chromeTests.py`  
-**Current**: `F:\nvda\gh\alphajp\tests\system\robot\chromeTests.py`
+**Current**: `F:\nvda\gh\alphajp-260109\tests\system\robot\chromeTests.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\robot\\chromeTests.py" "b/F:\\nvda\\gh\\alphajp\\tests\\system\\robot\\chromeTests.py"
-index 42d9487030..fba405c866 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\robot\\chromeTests.py" "b/F:\\nvda\\gh\\alphajp-260109\\tests\\system\\robot\\chromeTests.py"
+index 42d9487..fba405c 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\tests\\system\\robot\\chromeTests.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\tests\\system\\robot\\chromeTests.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\system\\robot\\chromeTests.py"
 @@ -927,11 +927,28 @@ def test_pr11606():
  	)
  	# Move to the end of the line (which is also the end of the second link)

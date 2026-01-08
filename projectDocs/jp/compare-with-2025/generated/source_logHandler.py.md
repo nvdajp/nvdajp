@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\logHandler.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\logHandler.py`  
-**Current**: `F:\nvda\gh\alphajp\source\logHandler.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\logHandler.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\logHandler.py" "b/F:\\nvda\\gh\\alphajp\\source\\logHandler.py"
-index 985f611cc7..f4f630fc33 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\logHandler.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\logHandler.py"
+index 985f611..6a33bb2 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\logHandler.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\logHandler.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\logHandler.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2007-2024 NV Access Limited, Rui Batista, Joseph Lee, Leonard de Ruijter, Babbage B.V.,
@@ -19,7 +19,13 @@ index 985f611cc7..f4f630fc33 100644
  # Accessolutions, Julien Cochuyt, Cyrille Bougot, Łukasz Golonka
  # This file is covered by the GNU General Public License.
  # See the file COPYING for more details.
-@@ -22,7 +22,6 @@
+@@ -17,12 +17,12 @@
+ import traceback
+ from types import FunctionType, TracebackType
+ import globalVars
++import winBindings.kernel32
+ import winKernel
+ import buildVersion
  from typing import (
  	Literal,
  	NamedTuple,
@@ -27,7 +33,7 @@ index 985f611cc7..f4f630fc33 100644
  	Protocol,
  	TYPE_CHECKING,
  )
-@@ -159,7 +158,7 @@ def getCodePath(f):
+@@ -159,7 +159,7 @@ def getCodePath(f):
  	return ".".join(x for x in (path, className, funcName) if x)
  
  
@@ -36,7 +42,7 @@ index 985f611cc7..f4f630fc33 100644
  """
  Triggered every time an error sound needs to be played.
  When nvwave is initialized, it registers the handler responsible for playing the error sound.
-@@ -184,11 +183,16 @@ def shouldPlayErrorSound() -> bool:
+@@ -184,11 +184,16 @@ def shouldPlayErrorSound() -> bool:
  	"""Indicates if an error sound should be played when an error is logged."""
  	import config
  
@@ -56,7 +62,7 @@ index 985f611cc7..f4f630fc33 100644
  		config.conf is not None and config.conf["featureFlag"]["playErrorSound"] == 1
  	)
  
-@@ -266,13 +270,6 @@ def _log(
+@@ -266,13 +271,6 @@ def _log(
  				"".join(traceback.format_list(stack_info)).rstrip(),
  			)
  
@@ -70,7 +76,7 @@ index 985f611cc7..f4f630fc33 100644
  		res = super()._log(level, msg, args, exc_info, extra)
  
  		if activateLogViewer:
-@@ -388,12 +385,17 @@ def getFragment(self):
+@@ -388,12 +386,17 @@ def getFragment(self):
  
  class RemoteHandler(logging.Handler):
  	def __init__(self):
@@ -94,7 +100,7 @@ index 985f611cc7..f4f630fc33 100644
  		logging.Handler.__init__(self)
  
  	def emit(self, record):
-@@ -431,7 +433,7 @@ def format(self, record: logging.LogRecord) -> str:
+@@ -431,15 +434,15 @@ def format(self, record: logging.LogRecord) -> str:
  			record.codepath = "{name}.{funcName}".format(**record.__dict__)
  		return super().format(record)
  
@@ -103,7 +109,17 @@ index 985f611cc7..f4f630fc33 100644
  		"""Custom implementation of `formatTime` which avoids `time.localtime`
  		since it causes a crash under some versions of Universal CRT when Python locale
  		is set to a Unicode one (#12160, Python issue 36792)
-@@ -485,7 +487,7 @@ def redirectStdout(logger):
+ 		"""
+ 		timeAsFileTime = winKernel.time_tToFileTime(record.created)
+-		timeAsSystemTime = winKernel.SYSTEMTIME()
++		timeAsSystemTime = winBindings.kernel32.SYSTEMTIME()
+ 		winKernel.FileTimeToSystemTime(timeAsFileTime, timeAsSystemTime)
+-		timeAsLocalTime = winKernel.SYSTEMTIME()
++		timeAsLocalTime = winBindings.kernel32.SYSTEMTIME()
+ 		winKernel.SystemTimeToTzSpecificLocalTime(None, timeAsSystemTime, timeAsLocalTime)
+ 		res = f"{timeAsLocalTime.wHour:02d}:{timeAsLocalTime.wMinute:02d}:{timeAsLocalTime.wSecond:02d}"
+ 		return self.default_msec_format % (res, record.msecs)
+@@ -485,7 +488,7 @@ def redirectStdout(logger):
  #: The singleton logger instance.
  log: Logger = logging.getLogger(NVDA_LOGGER_NAME)
  #: The singleton log handler instance.

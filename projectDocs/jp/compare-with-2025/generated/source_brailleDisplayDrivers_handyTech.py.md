@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\brailleDisplayDrivers\handyTech.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\brailleDisplayDrivers\handyTech.py`  
-**Current**: `F:\nvda\gh\alphajp\source\brailleDisplayDrivers\handyTech.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\brailleDisplayDrivers\handyTech.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\brailleDisplayDrivers\\handyTech.py" "b/F:\\nvda\\gh\\alphajp\\source\\brailleDisplayDrivers\\handyTech.py"
-index e68555bf72..ecba0ec644 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\brailleDisplayDrivers\\handyTech.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\brailleDisplayDrivers\\handyTech.py"
+index e68555b..ecba0ec 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\brailleDisplayDrivers\\handyTech.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\brailleDisplayDrivers\\handyTech.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\brailleDisplayDrivers\\handyTech.py"
 @@ -1,7 +1,7 @@
  # A part of NonVisual Desktop Access (NVDA)
  # This file is covered by the GNU General Public License.

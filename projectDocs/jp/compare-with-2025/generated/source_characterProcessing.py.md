@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\characterProcessing.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\characterProcessing.py`  
-**Current**: `F:\nvda\gh\alphajp\source\characterProcessing.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\characterProcessing.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\characterProcessing.py" "b/F:\\nvda\\gh\\alphajp\\source\\characterProcessing.py"
-index eb86df37c5..93e928d665 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\characterProcessing.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\characterProcessing.py"
+index eb86df3..93e928d 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\characterProcessing.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\characterProcessing.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\characterProcessing.py"
 @@ -122,9 +122,10 @@ def __init__(self, locale: str):
  		log.debug("Loaded %d entries." % len(self._entries))
  		f.close()

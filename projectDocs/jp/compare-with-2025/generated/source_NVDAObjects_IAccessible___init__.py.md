@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\NVDAObjects\IAccessible\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\IAccessible\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\IAccessible\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\NVDAObjects\IAccessible\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\IAccessible\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\IAccessible\\__init__.py"
-index 50b2d0d545..827371345c 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\IAccessible\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\IAccessible\\__init__.py"
+index 50b2d0d..57728ac 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\IAccessible\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\IAccessible\\__init__.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\IAccessible\\__init__.py"
 @@ -1,5 +1,5 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2006-2024 NV Access Limited, Babbage B.V., Cyrille Bougot
@@ -54,7 +54,21 @@ index 50b2d0d545..827371345c 100644
  	IAccessibleTableUsesTableCellIndexAttrib = (
  		False  #: Should the table-cell-index IAccessible2 object attribute be used rather than indexInParent?
  	)
-@@ -714,6 +720,10 @@ def findOverlayClasses(self, clsList):
+@@ -644,10 +650,13 @@ def findOverlayClasses(self, clsList):
+ 			from . import mscandui
+ 
+ 			mscandui.findExtraOverlayClasses(self, clsList)
++		# BEGIN JP PATCH
++		# nvdajp: ATOK support
+ 		elif windowClassName[:5] in ("ATOK2", "ATOK3"):
+ 			from . import atok
+ 
+ 			atok.findExtraOverlayClasses(self, clsList)
++		# END JP PATCH
+ 		elif (
+ 			windowClassName == "GeckoPluginWindow"
+ 			and self.event_objectID == 0
+@@ -714,6 +723,10 @@ def findOverlayClasses(self, clsList):
  			from . import webKit
  
  			webKit.findExtraOverlayClasses(self, clsList)
@@ -65,7 +79,7 @@ index 50b2d0d545..827371345c 100644
  		elif windowClassName.startswith("Chrome_"):
  			from . import chromium
  
-@@ -724,15 +734,6 @@ def findOverlayClasses(self, clsList):
+@@ -724,15 +737,6 @@ def findOverlayClasses(self, clsList):
  			winConsole.findExtraOverlayClasses(self, clsList)
  
  		# Support for Windowless richEdit
@@ -81,7 +95,7 @@ index 50b2d0d545..827371345c 100644
  		if IAccessible.IID_ITextServices:
  			try:
  				pDoc = self.IAccessibleObject.QueryInterface(IServiceProvider).QueryService(
-@@ -813,7 +814,7 @@ def __init__(  # noqa: C901
+@@ -813,7 +817,7 @@ def __init__(  # noqa: C901
  			log.debugWarning("Resorting to WindowFromPoint on accLocation")
  			try:
  				left, top, width, height = IAccessibleObject.accLocation(0)
@@ -90,7 +104,7 @@ index 50b2d0d545..827371345c 100644
  			except COMError as e:
  				log.debugWarning("accLocation failed: %s" % e)
  		if not windowHandle:
-@@ -1084,15 +1085,15 @@ def _get_IAccessibleStates(self) -> int:
+@@ -1084,15 +1088,15 @@ def _get_IAccessibleStates(self) -> int:
  			return 0
  		return res if isinstance(res, int) else 0
  
@@ -109,7 +123,7 @@ index 50b2d0d545..827371345c 100644
  		try:
  			IAccessibleStates = self.IAccessibleStates
  		except COMError:
-@@ -1644,7 +1645,7 @@ def _tableHeaderTextHelper(self, axis):
+@@ -1644,7 +1648,7 @@ def _tableHeaderTextHelper(self, axis):
  				ret.append(text)
  			return "\n".join(ret)
  		finally:
@@ -118,7 +132,7 @@ index 50b2d0d545..827371345c 100644
  
  	def _get_rowHeaderText(self):
  		return self._tableHeaderTextHelper("row")
-@@ -2438,6 +2439,12 @@ class List(IAccessible):
+@@ -2438,6 +2442,12 @@ class List(IAccessible):
  	def _get_role(self):
  		return controlTypes.Role.LIST
  

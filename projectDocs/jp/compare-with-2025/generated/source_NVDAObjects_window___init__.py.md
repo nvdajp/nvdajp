@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\NVDAObjects\window\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\NVDAObjects\window\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\source\NVDAObjects\window\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\NVDAObjects\window\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\__init__.py"
-index 222281f2e3..9cb10ead33 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\window\\__init__.py"
+index 222281f..9cb10ea 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\NVDAObjects\\window\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\NVDAObjects\\window\\__init__.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\NVDAObjects\\window\\__init__.py"
 @@ -1,11 +1,13 @@
  # A part of NonVisual Desktop Access (NVDA)
 -# Copyright (C) 2006-2023 NV Access Limited, Babbage B.V., Bill Dengler, Cyrille Bougot

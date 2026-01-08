@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\JABHandler.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\JABHandler.py`  
-**Current**: `F:\nvda\gh\alphajp\source\JABHandler.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\JABHandler.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\JABHandler.py" "b/F:\\nvda\\gh\\alphajp\\source\\JABHandler.py"
-index 93dd36bfbf..a2f74d652d 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\JABHandler.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\JABHandler.py"
+index 93dd36b..a2f74d6 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\JABHandler.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\JABHandler.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\JABHandler.py"
 @@ -1,6 +1,5 @@
 -# -*- coding: UTF-8 -*-
  # A part of NonVisual Desktop Access (NVDA)

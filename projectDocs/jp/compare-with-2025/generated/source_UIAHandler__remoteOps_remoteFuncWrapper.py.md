@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\UIAHandler\_remoteOps\remoteFuncWrapper.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\UIAHandler\_remoteOps\remoteFuncWrapper.py`  
-**Current**: `F:\nvda\gh\alphajp\source\UIAHandler\_remoteOps\remoteFuncWrapper.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\UIAHandler\_remoteOps\remoteFuncWrapper.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\UIAHandler\\_remoteOps\\remoteFuncWrapper.py" "b/F:\\nvda\\gh\\alphajp\\source\\UIAHandler\\_remoteOps\\remoteFuncWrapper.py"
-index f747511e99..da3dadab2b 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\UIAHandler\\_remoteOps\\remoteFuncWrapper.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\UIAHandler\\_remoteOps\\remoteFuncWrapper.py"
+index f747511..da3dada 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\UIAHandler\\_remoteOps\\remoteFuncWrapper.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\UIAHandler\\_remoteOps\\remoteFuncWrapper.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\UIAHandler\\_remoteOps\\remoteFuncWrapper.py"
 @@ -1,26 +1,20 @@
  # A part of NonVisual Desktop Access (NVDA)
  # This file is covered by the GNU General Public License.

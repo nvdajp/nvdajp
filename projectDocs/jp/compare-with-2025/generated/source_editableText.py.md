@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\editableText.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\editableText.py`  
-**Current**: `F:\nvda\gh\alphajp\source\editableText.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\editableText.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\editableText.py" "b/F:\\nvda\\gh\\alphajp\\source\\editableText.py"
-index fbccf79ec8..b246e38dc7 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\editableText.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\editableText.py"
+index fbccf79..b246e38 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\editableText.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\editableText.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\editableText.py"
 @@ -214,7 +214,8 @@ def script_caret_newLine(self, gesture):
  		bookmark = info.bookmark
  		gesture.send()

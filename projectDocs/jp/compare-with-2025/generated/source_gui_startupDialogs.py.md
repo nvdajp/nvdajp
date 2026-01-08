@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\gui\startupDialogs.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\gui\startupDialogs.py`  
-**Current**: `F:\nvda\gh\alphajp\source\gui\startupDialogs.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\gui\startupDialogs.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\startupDialogs.py" "b/F:\\nvda\\gh\\alphajp\\source\\gui\\startupDialogs.py"
-index 47f6c782d6..39145bf642 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\startupDialogs.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\startupDialogs.py"
+index 47f6c78..39145bf 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\gui\\startupDialogs.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\gui\\startupDialogs.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\startupDialogs.py"
 @@ -1,4 +1,3 @@
 -# -*- coding: UTF-8 -*-
  # A part of NonVisual Desktop Access (NVDA)

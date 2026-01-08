@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\synthDrivers\jtalk\translator2.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\synthDrivers\jtalk\translator2.py`  
-**Current**: `F:\nvda\gh\alphajp\source\synthDrivers\jtalk\translator2.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\synthDrivers\jtalk\translator2.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\translator2.py" "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\translator2.py"
-index 3a6dbe5f96..ca9f39f7c4 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\translator2.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\translator2.py"
+index 3a6dbe5..ca9f39f 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\synthDrivers\\jtalk\\translator2.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\synthDrivers\\jtalk\\translator2.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\synthDrivers\\jtalk\\translator2.py"
 @@ -7,16 +7,33 @@
  
  import copy

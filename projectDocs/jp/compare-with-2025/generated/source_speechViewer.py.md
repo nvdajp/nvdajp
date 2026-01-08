@@ -1,17 +1,17 @@
 ﻿# Diff for: `source\speechViewer.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\source\speechViewer.py`  
-**Current**: `F:\nvda\gh\alphajp\source\speechViewer.py`
+**Current**: `F:\nvda\gh\alphajp-260109\source\speechViewer.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\speechViewer.py" "b/F:\\nvda\\gh\\alphajp\\source\\speechViewer.py"
-index f746e40896..38c0d1aec2 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\source\\speechViewer.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\speechViewer.py"
+index f746e40..38c0d1a 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\source\\speechViewer.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\source\\speechViewer.py"
++++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\speechViewer.py"
 @@ -63,7 +63,10 @@ def __init__(self, onDestroyCallBack: Callable[[], None]):
  
  		self._createControls(sizer=self.panelContentsSizer, parent=self.panel)

@@ -1,18 +1,18 @@
 ﻿# Diff for: `miscDepsJp\jptools\jtusrdic\__init__.py`
 
 **Source 2025.3.x jp**: `F:\nvda\gh\alphajp-251219\miscDepsJp\jptools\jtusrdic\__init__.py`  
-**Current**: `F:\nvda\gh\alphajp\miscDepsJp\jptools\jtusrdic\__init__.py`
+**Current**: `F:\nvda\gh\alphajp-260109\miscDepsJp\jptools\jtusrdic\__init__.py`
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 
 ## Diff
 
 ```diff
-diff --git "a/F:\\nvda\\gh\\alphajp-251219\\miscDepsJp\\jptools\\jtusrdic\\__init__.py" "b/F:\\nvda\\gh\\alphajp\\miscDepsJp\\jptools\\jtusrdic\\__init__.py"
-index b4625ee78d..8232dcbf37 100644
+diff --git "a/F:\\nvda\\gh\\alphajp-251219\\miscDepsJp\\jptools\\jtusrdic\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\miscDepsJp\\jptools\\jtusrdic\\__init__.py"
+index b4625ee..9bf926e 100644
 --- "a/F:\\nvda\\gh\\alphajp-251219\\miscDepsJp\\jptools\\jtusrdic\\__init__.py"
-+++ "b/F:\\nvda\\gh\\alphajp\\miscDepsJp\\jptools\\jtusrdic\\__init__.py"
-@@ -10,35 +10,33 @@
++++ "b/F:\\nvda\\gh\\alphajp-260109\\miscDepsJp\\jptools\\jtusrdic\\__init__.py"
+@@ -10,36 +10,32 @@
  import addonHandler
  import globalVars
  from logHandler import log
@@ -33,7 +33,7 @@ index b4625ee78d..8232dcbf37 100644
 +jtalk_dir = repo_root / "source" / "synthDrivers" / "jtalk"
 +jtalk_dir_str = str(jtalk_dir)
 +if jtalk_dir_str not in sys.path:
-+    sys.path.insert(0, jtalk_dir_str)
++	sys.path.insert(0, jtalk_dir_str)
  import jtalkDir
 -import codecs
 -import sys
@@ -54,33 +54,45 @@ index b4625ee78d..8232dcbf37 100644
  _addonSummary = _curAddon.manifest["summary"]
  addonHandler.initTranslation()
  
- mecabDictIndex = plumbum.local[
+-mecabDictIndex = plumbum.local[
 -    os.path.join(os.path.dirname(__file__), "mecab-dict-index.exe")
-+    str(Path(__file__).parent / "mecab-dict-index.exe")
- ]
+-]
++mecabDictIndex = plumbum.local[str(Path(__file__).parent / "mecab-dict-index.exe")]
  
  
-@@ -48,8 +46,8 @@ def editUserDicSrc(self):
-         for s in srcs:
-             os.startfile(s)
-     else:
+ def editUserDicSrc(self):
+@@ -48,10 +44,12 @@ def editUserDicSrc(self):
+ 		for s in srcs:
+ 			os.startfile(s)
+ 	else:
 -        fileName = os.path.join(jtalkDir.configDir, "jtusr.txt")
 -        with codecs.open(fileName, "w", "utf_8", errors="replace") as f:
-+        fileName = str(Path(jtalkDir.configDir) / "jtusr.txt")
-+        with open(fileName, "w", encoding="utf-8", errors="replace") as f:
-             f.writelines(
-                 ["足手纏い,,,,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n"]
-             )
-@@ -64,9 +62,7 @@ def compileUserDic(self):
-         gui.messageBox(_("No source found."), _("Done"), wx.OK)
-         return
-     for s in srcs:
++		fileName = str(Path(jtalkDir.configDir) / "jtusr.txt")
++		with open(fileName, "w", encoding="utf-8", errors="replace") as f:
+ 			f.writelines(
+-                ["足手纏い,,,,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n"]
++				[
++					"足手纏い,,,,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n"
++				]
+ 			)
+ 		os.startfile(fileName)
+ 
+@@ -64,14 +62,10 @@ def compileUserDic(self):
+ 		gui.messageBox(_("No source found."), _("Done"), wx.OK)
+ 		return
+ 	for s in srcs:
 -        u = os.path.join(
 -            jtalkDir.configDir, os.path.basename(s).replace(".txt", ".dic")
 -        )
-+        u = str(Path(jtalkDir.configDir) / Path(s).name.replace(".txt", ".dic"))
-         log.info("user_dic %s to %s" % (s, u))
-         # mecab-dict-index.exe -d ..\source\synthDrivers\jtalk\dic -u jtusr.dic -f utf-8 -t utf-8 jtusr.txt
-         ret = mecabDictIndex[
++		u = str(Path(jtalkDir.configDir) / Path(s).name.replace(".txt", ".dic"))
+ 		log.info("user_dic %s to %s" % (s, u))
+ 		# mecab-dict-index.exe -d ..\source\synthDrivers\jtalk\dic -u jtusr.dic -f utf-8 -t utf-8 jtusr.txt
+-        ret = mecabDictIndex[
+-            "-d", jtalkDir.dic_dir, "-u", u, "-f", "utf-8", "-t", "utf-8", s
+-        ]()
++		ret = mecabDictIndex["-d", jtalkDir.dic_dir, "-u", u, "-f", "utf-8", "-t", "utf-8", s]()
+ 		log.info(ret)
+ 	gui.messageBox(_("Compile done."), _("Done"), wx.OK)
+ 
 
 ```
