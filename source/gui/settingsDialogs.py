@@ -6207,7 +6207,19 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 			if not confirmed or self._ocrActive():
 				self._screenCurtainEnabledCheckbox.SetValue(False)
 			else:
-				vision.handler.initializeProvider(self._screenCurtainProviderInfo)
+				try:
+					vision.handler.initializeProvider(self._screenCurtainProviderInfo)
+				except Exception:
+					# BEGIN JP PATCH (Fix screenCurtain._screenCurtain reference)
+					from screenCurtain._screenCurtain import ERROR_ENABLING_MESSAGE
+					# END JP PATCH
+					import logHandler
+					logHandler.log.error("Error enabling Screen Curtain.", exc_info=True)
+					ui.message(
+						ERROR_ENABLING_MESSAGE,
+						speechPriority=speech.priorities.Spri.NOW,
+					)
+					self._screenCurtainEnabledCheckbox.SetValue(False)
 		elif not shouldBeEnabled and currentlyEnabled:
 			vision.handler.terminateProvider(self._screenCurtainProviderInfo)
 

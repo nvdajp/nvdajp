@@ -415,6 +415,9 @@ class MathCATUserPreferences:
 			log.exception(
 				f'Error in trying to set MathCAT "Language" preference to "{self._prefs["Speech"]["Language"]}": {e}',
 			)
+
+		setEffectiveBrailleCode()
+
 		if not os.path.exists(pathToUserPreferencesFolder()):
 			# create a folder for the user preferences
 			os.mkdir(pathToUserPreferencesFolder())
