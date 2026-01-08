@@ -275,9 +275,15 @@ VK_CONTROL = 17
 VK_MENU = 18
 VK_PAUSE = 19
 VK_CAPITAL = 20
+# BEGIN JP PATCH
+# nvdajp: IME ON/OFF virtual key codes for Japanese IME support
 VK_IME_ON = 0x16
+# END JP PATCH
 VK_FINAL = 0x18
+# BEGIN JP PATCH
+# nvdajp: IME OFF virtual key code
 VK_IME_OFF = 0x1A
+# END JP PATCH
 VK_ESCAPE = 0x1B
 VK_CONVERT = 0x1C
 VK_NONCONVERT = 0x1D
