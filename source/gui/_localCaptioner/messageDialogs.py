@@ -4,11 +4,13 @@
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
 from gui.message import MessageDialog, DefaultButton, ReturnCode, DialogType
+from languageHandler import pgettext
 from _localCaptioner.modelDownloader import ModelDownloader
 import threading
 from threading import Thread
 import wx
 import ui
+import _localCaptioner
 
 _downloadThread: Thread | None = None
 
@@ -48,18 +50,18 @@ def openFailDialog() -> None:
 		DefaultButton.NO,
 	)
 
-	dialog = MessageDialog(
-		parent=None,
-		# Translators: title of dialog when fail to download
-		title=pgettext("imageDesc", "Download failed"),
-		message=pgettext(
-			"imageDesc",
-			# Translators: label of dialog when fail to download image captioning
-			"Image captioning download failed. Would you like to retry?",
-		),
-		dialogType=DialogType.WARNING,
-		buttons=confirmationButtons,
-	)
+		dialog = MessageDialog(
+			parent=None,
+			# Translators: title of dialog when fail to download
+			title=pgettext("imageDesc", "Download failed"),
+			message=pgettext(
+				"imageDesc",
+				# Translators: label of dialog when fail to download image captioning
+				"Image captioning download failed. Would you like to retry?",
+			),
+			dialogType=DialogType.WARNING,
+			buttons=confirmationButtons,
+		)
 
 	if dialog.ShowModal() == ReturnCode.YES:
 		global _downloadThread
@@ -95,3 +97,33 @@ def openDownloadDialog() -> None:
 	if dialog.ShowModal() == ReturnCode.YES:
 		_downloadThread = threading.Thread(target=onDownload, name="ModelDownloadMainThread", daemon=False)
 		_downloadThread.start()
+
+
+def openEnableOnceDialog() -> None:
+	confirmationButtons = (
+		DefaultButton.YES.value._replace(defaultFocus=True, fallbackAction=False),
+		DefaultButton.NO.value._replace(defaultFocus=False, fallbackAction=True),
+	)
+
+	dialog = MessageDialog(
+		parent=None,
+		# Translators: title of dialog when enable image desc
+		title=pgettext("imageDesc", "Enable AI image descriptions"),
+		message=pgettext(
+			"imageDesc",
+			# Translators: label of dialog when enable image desc
+			"AI image descriptions are currently disabled."
+			"\n\n"
+			"Warning: AI image descriptions are experimental. "
+			"Do not use this feature in circumstances where inaccurate descriptions could cause harm."
+			"\n\n"
+			"Would you like to temporarily enable AI image descriptions now?",
+		),
+		dialogType=DialogType.STANDARD,
+		buttons=confirmationButtons,
+	)
+
+	if dialog.ShowModal() == ReturnCode.YES:
+		# load image desc in this session
+		if not _localCaptioner.isModelLoaded():
+			_localCaptioner.toggleImageCaptioning()
