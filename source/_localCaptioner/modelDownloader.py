@@ -136,8 +136,8 @@ class ModelDownloader:
 		model = modelName.strip("/")
 		ref = resolvePath.strip("/")
 		filePath = filePath.lstrip("/")
-
-		return f"{base}/{model}/{ref}/{filePath}"
+		url = f"{base}/{model}/{ref}/{filePath}"
+		return url
 
 	def _getRemoteFileSize(self, url: str) -> int:
 		"""
@@ -419,7 +419,6 @@ class ModelDownloader:
 		try:
 			# Determine total file size
 			total = self._calculateTotalSize(response, resumePos)
-
 			if total > 0:
 				log.debug(f"Total file size: {total:,} bytes")
 
@@ -437,7 +436,8 @@ class ModelDownloader:
 				return False, message
 
 			# Verify download integrity
-			return self._verifyDownloadIntegrity(localPath, fileName, total, progressCallback, threadId)
+			result = self._verifyDownloadIntegrity(localPath, fileName, total, progressCallback, threadId)
+			return result
 
 		finally:
 			response.close()
@@ -739,10 +739,10 @@ class ModelDownloader:
 						log.debug(f"successful {filePath=}")
 					else:
 						failed.append(filePath)
-						log.debug(f"failed: {filePath} - {msg}")
+						log.warning(f"Download failed: {filePath} - {msg}")
 				except Exception as err:
 					failed.append(filePath)
-					log.debug(f"failed: {filePath} – {err}")
+					log.error(f"Download exception: {filePath} – {err}", exc_info=True)
 
 		# Summary
 		if not self.cancelRequested:

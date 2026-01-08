@@ -12,14 +12,18 @@ import ui
 import _localCaptioner
 
 _downloadThread: Thread | None = None
+_failedFiles: list[str] = []
 
 
 def onDownload() -> None:
 	modelDownloader = ModelDownloader()
-	(success, fail) = modelDownloader.downloadModelsMultithreaded()
-	if success:
+	(successful, failed) = modelDownloader.downloadModelsMultithreaded()
+	if len(failed) == 0:
 		wx.CallAfter(openSuccessDialog)
 	else:
+		# Store failed files for error message
+		global _failedFiles
+		_failedFiles = failed
 		wx.CallAfter(openFailDialog)
 
 
@@ -44,20 +48,27 @@ def openSuccessDialog() -> None:
 
 
 def openFailDialog() -> None:
+	global _failedFiles
 	confirmationButtons = (
 		DefaultButton.YES.value._replace(defaultFocus=True, fallbackAction=True),
 		DefaultButton.NO,
 	)
 
+	# Build error message with failed files
+	failedFilesStr = ", ".join(_failedFiles) if _failedFiles else "unknown files"
+	message = pgettext(
+		"imageDesc",
+		# Translators: label of dialog when fail to download image captioning
+		"Image captioning download failed. Would you like to retry?",
+	)
+	if _failedFiles:
+		message += f"\n\nFailed files: {failedFilesStr}"
+
 	dialog = MessageDialog(
 		parent=None,
 		# Translators: title of dialog when fail to download
 		title=pgettext("imageDesc", "Download failed"),
-		message=pgettext(
-			"imageDesc",
-			# Translators: label of dialog when fail to download image captioning
-			"Image captioning download failed. Would you like to retry?",
-		),
+		message=message,
 		dialogType=DialogType.WARNING,
 		buttons=confirmationButtons,
 	)
