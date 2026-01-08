@@ -100,12 +100,15 @@ class _NvdaLocationData:
 		NVDAFilePath = _pJoin(_expandvars("%PROGRAMFILES%"), "nvda", "nvda.exe")
 		legacyNVDAFilePath = _pJoin(_expandvars("%PROGRAMFILES%"), "NVDA", "nvda.exe")
 		exeErrorMsg = f"Unable to find installed NVDA exe. Paths tried: {NVDAFilePath}, {legacyNVDAFilePath}"
-		try:
-			opSys.file_should_exist(NVDAFilePath)
+		# Check if file exists before using file_should_exist to avoid early failure during import
+		import os
+		if os.path.isfile(NVDAFilePath):
 			return NVDAFilePath
-		except AssertionError:
-			# Older versions of NVDA (<=2020.4) install the exe in NVDA\nvda.exe
-			opSys.file_should_exist(legacyNVDAFilePath, exeErrorMsg)
+		elif os.path.isfile(legacyNVDAFilePath):
+			return legacyNVDAFilePath
+		else:
+			# If neither file exists, raise error with helpful message
+			opSys.file_should_exist(NVDAFilePath, exeErrorMsg)
 			return legacyNVDAFilePath
 
 	def ensureInstallerPathsExist(self):
