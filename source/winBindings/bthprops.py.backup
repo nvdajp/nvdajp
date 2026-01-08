@@ -14,7 +14,7 @@ from ctypes import (
 )
 from ctypes.wintypes import BOOL, DWORD, HANDLE, ULONG, WCHAR
 
-from winBindings.kernel32 import SYSTEMTIME
+from winKernel import SYSTEMTIME
 
 cpl = windll["bthprops.cpl"]
 

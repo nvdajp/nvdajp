@@ -222,6 +222,19 @@ OpenProcess.argtypes = (
 )
 OpenProcess.restype = HANDLE
 
+OpenThread = WINFUNCTYPE(None)(("OpenThread", dll))
+"""
+Opens an existing thread object.
+.. seealso::
+	https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openthread
+"""
+OpenThread.argtypes = (
+	DWORD,  # dwDesiredAccess
+	BOOL,  # bInheritHandle
+	DWORD,  # dwThreadId
+)
+OpenThread.restype = HANDLE
+
 VirtualAllocEx = WINFUNCTYPE(None)(("VirtualAllocEx", dll))
 """
 Allocates memory in the virtual address space of a specified process.
@@ -368,7 +381,6 @@ SetUnhandledExceptionFilter.argtypes = (
 	UnhandledExceptionFilter,  # lpTopLevelExceptionFilter: A pointer to the new unhandled exception filter function.
 )
 SetUnhandledExceptionFilter.restype = UnhandledExceptionFilter
-
 
 GetCurrentThreadId = WINFUNCTYPE(None)(("GetCurrentThreadId", dll))
 """
