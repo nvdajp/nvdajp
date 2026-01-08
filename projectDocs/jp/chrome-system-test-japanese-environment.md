@@ -37,6 +37,29 @@ Chrome system test では、**Chrome の UI 言語**と**NVDA の読み上げ設
 Chrome の IAccessible2 実装はロケールによりオフセット境界の解釈が異なる可能性があります。
 同じ操作でも NVDA が「リンクの外」ではなく「リンク内」と判定することがあります。
 
+### 4. マーカー検出の改善（2026-01-08）
+
+`ChromeLib.py`の`_waitForStartMarker()`メソッドでは、テスト開始時にChromeのアドレスバーを検出する必要があります。
+以前の日本語版では、日本語UIの「アドレス検索バー」のみをチェックしていましたが、
+これによりCI環境（英語UI）でテストが失敗していました。
+
+**改善内容**:
+- 英語UI（"Address and search bar"）と日本語UI（"アドレス検索バー"）の両方に対応
+- `expectedAddressBarSpeechOptions`リストを使用し、`any()`でOR条件判定
+- これにより、英語環境と日本語環境のどちらでもテストが動作するようになった
+
+**実装**:
+```python
+# BEGIN JP PATCH (Support both English and Japanese UI language)
+expectedAddressBarSpeechOptions = ["Address and search bar", "アドレス検索バー"]
+# END JP PATCH
+if not any(option in moveToAddressBarSpeech for option in expectedAddressBarSpeechOptions):
+    # エラーハンドリング
+```
+
+この改善により、`imageDescriptions`テストなど、Chromeマーカー検出に依存するテストが
+CI環境（英語）でも日本語環境でも正常に動作するようになりました。
+
 ## 代表例: pr11606（リンク末尾の読み上げ）
 
 `test_pr11606` では、`end` キー後の読み上げが本家版では **"blank" 固定**です。
