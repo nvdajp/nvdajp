@@ -90,7 +90,7 @@
   - ✅ `20e5b8118` - Add warnings to AI image descriptions (#19327) - 警告追加
       - ✅ デバッグログの削除とエラー処理の改善完了（2026-01-08コミット: 4fb194d）
       - ✅ システムテスト確認完了（imageDescriptionsテスト: PASS）
-- ✅ `728530020` - Parse LaTeX in the user guide to MathML (#19304) - **完了（2026-01-09コミット: 135a296）**
+- ✅ `728530020` - Parse LaTeX in the user guide to MathML (#19304) - **完了（2026-01-08コミット: 135a296）**
 
 ### カテゴリ4: ドキュメント・設定変更（優先度: 低）
 
@@ -103,7 +103,7 @@
 ### カテゴリ5: 依存関係・ビルドシステム（優先度: 高）
 
 - ✅ `17ed5ef7c` - Updated Python 3.13.9 to 3.13.11 (#19352) - **コミット完了（2026-01-07）**
-- ✅ `250802a27` - Update dependencies for 2026.1 (#19196) - **コミット完了（2026-01-09、nvda-mathcatサブモジュール更新含む）**
+- ✅ `250802a27` - Update dependencies for 2026.1 (#19196) - **コミット完了（2026-01-08、nvda-mathcatサブモジュール更新含む）**
   - ✅ `nvda-mathcat`サブモジュールを`nvaccess/beta`のリビジョン（`ef03379`）に更新
   - ✅ Python要件の競合を解決（`requires-python = ">=3.11,<3.14"`に更新）
   - ✅ `uv.lock`を更新

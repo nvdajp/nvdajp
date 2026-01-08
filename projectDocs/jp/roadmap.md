@@ -167,9 +167,9 @@
       - 最後の5コミット: `e29ed1dca`, `79a07dc10`, `7ba333a81`, `b3fe5799d`, `02f3919e2`
       - スキップ（MathCAT未統合）: `abdbd025a`, `cadb496e5`
       - すべてのテスト通過（951テスト、5スキップ）
-    * ✅ フェーズ2: カテゴリ5の依存関係・ビルドシステムの更新完了（3コミット、2026-01-07、2026-01-09更新）
+    * ✅ フェーズ2: カテゴリ5の依存関係・ビルドシステムの更新完了（3コミット、2026-01-07、2026-01-08更新）
       - `ca0f57d953` - Updated Python 3.13.9 to 3.13.11 (#19352)
-      - `f5acf672e8` - Update dependencies for 2026.1 (#19196)（2026-01-09: nvda-mathcatサブモジュール更新含む）
+      - `f5acf672e8` - Update dependencies for 2026.1 (#19196)（2026-01-08: nvda-mathcatサブモジュール更新含む）
         - ✅ `nvda-mathcat`サブモジュールを`nvaccess/beta`のリビジョン（`ef03379`）に更新
         - ✅ Python要件の競合を解決（`requires-python = ">=3.11,<3.14"`に更新）
         - ✅ `uv.lock`を更新
@@ -179,19 +179,19 @@
     * ✅ カテゴリ4: ドキュメント更新の取り込み（2コミット、2026-01-08）
       - `43b8a9bf3` - Mention that Python is now 64 bits in change log (#19360)（手動適用）
       - `e168626c9` - Remove references to 32-bit Windows from the user guide (#19297)
-    * ✅ マージ後のバグ修正（2026-01-08、2026-01-09）
+    * ✅ マージ後のバグ修正（2026-01-08）
       - Privacy and Security設定パネルのスクリーンカーテン設定エラー修正（2026-01-08）
         - `config.conf["screenCurtain"]`の`KeyError`を解消
-      - `nvda-mathcat`サブモジュールのリビジョン不一致によるPython要件競合の解決（2026-01-09）
+      - `nvda-mathcat`サブモジュールのリビジョン不一致によるPython要件競合の解決（2026-01-08）
         - サブモジュールを`nvaccess/beta`のリビジョン（`ef03379`）に更新
         - `requires-python = ">=3.11,<3.14"`に更新してPython 3.13と互換性を確保
         - `uv.lock`を更新して`uv lock`と`scons.bat source`が正常に動作することを確認
-    * ✅ カテゴリ3: 機能追加の取り込み完了（2026-01-08、2026-01-09）
+    * ✅ カテゴリ3: 機能追加の取り込み完了（2026-01-08）
       - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
       - ✅ `b8ba7413c` - Update to liblouis 3.36: 完了（2026-01-08コミット: e5a9b2e）
       - ✅ `9935428ec` - Added ability to report spelling errors in braille: 完了（2026-01-08コミット: 2a7f0be）
       - ✅ AI画像説明機能のマージ完了（2026-01-08）
-      - ✅ `728530020` - Parse LaTeX in the user guide to MathML (#19304): 完了（2026-01-09コミット: 135a296）
+      - ✅ `728530020` - Parse LaTeX in the user guide to MathML (#19304): 完了（2026-01-08コミット: 135a296）
         - ✅ `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
         - ✅ `121c221` - Improve image captioner (#19024) - 改善
         - ✅ `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
