@@ -503,7 +503,7 @@ jobs:
         nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
         INCLUDE_SYSTEM_TEST_TAGS: ${{ matrix.testSuite }}
         # BEGIN JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
-        EXCLUDE_SYSTEM_TEST_TAGS: restarts_on_crash imageDescriptions
+        EXCLUDE_SYSTEM_TEST_TAGS: restarts_on_crash
         # END JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
     - name: Upload system tests results
       if: ${{ failure() }}
