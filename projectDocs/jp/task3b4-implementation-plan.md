@@ -370,6 +370,28 @@
 - JP PATCHマーカーを追加
 - 差分最小化の原則に従う
 
+## マージ後のバグ修正
+
+### 2026-01-08: Privacy and Security設定パネルのスクリーンカーテン設定エラー修正
+
+**問題**: 設定ダイアログで「Privacy and Security」カテゴリを開いた際に`KeyError: 'screenCurtain'`が発生
+
+**原因**: 
+- `config.conf["screenCurtain"]`に直接アクセスしていたが、正しくは`config.conf["vision"]["screenCurtain"]`である必要がある
+- `screenCurtain`モジュールのインポートが不足していた
+
+**修正内容**:
+1. `config.conf["screenCurtain"]`を`config.conf["vision"]["screenCurtain"]`に修正
+2. `visionEnhancementProviders.screenCurtain`から必要なクラスと関数をインポート
+3. `vision.handler`からプロバイダーインスタンスを取得するように変更
+4. `onSave`で`ScreenCurtainSettings`の`AutoSettings`を使用するように変更
+
+**検証**:
+- エラーが解消され、設定ダイアログで「Privacy and Security」カテゴリを開けるようになった
+- リンターエラーなし
+
+**参照**: roadmap.md の「完了した追加作業」セクション
+
 ## 次のステップ
 
 1. **フェーズ1の実施**: pre-commit設定の確認と本家の最新状態の確認

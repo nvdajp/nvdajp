@@ -107,6 +107,11 @@
 * ✅ **タスク 5.1: 手作業での確認で支障がない状態を作る（日本語アルファ版）** - ローカル環境での署名なしビルド、CI環境でのビルド、ローカル環境での署名ビルド、JTalk動作確認、日本語点訳エンジン動作確認、点字ディスプレイ動作確認、日本語IME対応動作確認
 * ✅ **JP固有コード（`source/synthDrivers/jtalk/`）のruffエラー修正完了** - すべてのruffチェックが通過（`All checks passed!`）
 * ✅ **Visual Studio検出のvswhere移行完了** - `vs_utils.py`に`vswhere`サポートを追加し、環境ごとのテストで`nmake`や`link`の検出失敗を解消（詳細は `projectDocs/jp/vswhere-implementation-status.md` を参照）
+* ✅ **Privacy and Security設定パネルのスクリーンカーテン設定エラー修正完了**（2026-01-08）
+  * `config.conf["screenCurtain"]`を`config.conf["vision"]["screenCurtain"]`に修正
+  * `vision.handler`からプロバイダーインスタンスを取得するように変更
+  * `onSave`で`ScreenCurtainSettings`の`AutoSettings`を使用するように変更
+  * エラー解消により、設定ダイアログで「Privacy and Security」カテゴリを開けるようになった
 
 ### ステージ4: リグレッション対策と機能復元 ✅（進行中）
 
@@ -165,6 +170,9 @@
     * ✅ カテゴリ4: ドキュメント更新の取り込み（2コミット、2026-01-08）
       - `43b8a9bf3` - Mention that Python is now 64 bits in change log (#19360)（手動適用）
       - `e168626c9` - Remove references to 32-bit Windows from the user guide (#19297)
+    * ✅ マージ後のバグ修正（2026-01-08）
+      - Privacy and Security設定パネルのスクリーンカーテン設定エラー修正
+      - `config.conf["screenCurtain"]`の`KeyError`を解消
   * **取り込み順序**:
     1. **フェーズ0**: pre-commit設定の確認（日本語ドキュメントの保護）
     2. **フェーズ1**: 最初のバグ修正・機能改善（58dd14767直後のコミット群）

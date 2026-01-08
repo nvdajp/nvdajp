@@ -47,6 +47,7 @@ from config.configFlags import (
 	OutputMode,
 	TypingEcho,
 	ReportNotSupportedLanguage,
+	LoggingLevel,
 )
 import languageHandler
 import speech
@@ -790,18 +791,6 @@ class GeneralSettingsPanel(SettingsPanel):
 	# Translators: This is the label for the general settings panel.
 	title = _("General")
 	helpId = "GeneralSettings"
-	LOG_LEVELS = (
-		# Translators: One of the log levels of NVDA (the disabled mode turns off logging completely).
-		(log.OFF, _("disabled")),
-		# Translators: One of the log levels of NVDA (the info mode shows info as NVDA runs).
-		(log.INFO, _("info")),
-		# Translators: One of the log levels of NVDA (the debug warning shows debugging messages and warnings as NVDA runs).
-		(log.DEBUGWARNING, _("debug warning")),
-		# Translators: One of the log levels of NVDA (the input/output shows keyboard commands and/or braille commands as well as speech and/or braille output of NVDA).
-		(log.IO, _("input/output")),
-		# Translators: One of the log levels of NVDA (the debug mode shows debug messages as NVDA runs).
-		(log.DEBUG, _("debug")),
-	)
 
 	def makeSettings(self, settingsSizer):
 		settingsSizerHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
@@ -859,27 +848,6 @@ class GeneralSettingsPanel(SettingsPanel):
 		self.bindHelpEvent("GeneralSettingsPlaySounds", self.playStartAndExitSoundsCheckBox)
 		self.playStartAndExitSoundsCheckBox.SetValue(config.conf["general"]["playStartAndExitSounds"])
 		settingsSizerHelper.addItem(self.playStartAndExitSoundsCheckBox)
-
-		# Translators: The label for a setting in general settings to select logging level of NVDA as it runs
-		# (available options and what they are logging are found under comments for the logging level messages
-		# themselves).
-		logLevelLabelText = _("L&ogging level:")
-		logLevelChoices = [name for level, name in self.LOG_LEVELS]
-		self.logLevelList = settingsSizerHelper.addLabeledControl(
-			logLevelLabelText,
-			wx.Choice,
-			choices=logLevelChoices,
-		)
-		self.bindHelpEvent("GeneralSettingsLogLevel", self.logLevelList)
-		curLevel = log.getEffectiveLevel()
-		if logHandler.isLogLevelForced():
-			self.logLevelList.Disable()
-		for index, (level, name) in enumerate(self.LOG_LEVELS):
-			if level == curLevel:
-				self.logLevelList.SetSelection(index)
-				break
-		else:
-			log.debugWarning("Could not set log level list to current log level")
 
 		# Translators: The label for a setting in general settings to allow NVDA to start after logging onto
 		# Windows (if checked, NVDA will start automatically after logging into Windows; if not, user must
@@ -942,21 +910,6 @@ class GeneralSettingsPanel(SettingsPanel):
 		)
 		self.bindHelpEvent("GeneralSettingsNotifyPendingUpdates", self.notifyForPendingUpdateCheckBox)
 		item.Value = config.conf["update"]["startupNotification"]
-		if not updateCheck:
-			item.Value = False
-			item.Disable()
-		settingsSizerHelper.addItem(item)
-		# BEGIN JP PATCH (Replace "NV Access" with "NVDA Japanese Team")
-		item = self.allowUsageStatsCheckBox = wx.CheckBox(
-			self,
-			# Translators: The label of a checkbox in general settings to toggle allowing of usage stats gathering
-			label=_("Allow NV Access to gather NVDA usage statistics").replace(
-				"NV Access", _("NVDA Japanese Team")
-			),
-		)
-		# END JP PATCH
-		self.bindHelpEvent("GeneralSettingsGatherUsageStats", self.allowUsageStatsCheckBox)
-		item.Value = config.conf["update"]["allowUsageStats"]
 		if not updateCheck:
 			item.Value = False
 			item.Disable()
@@ -1102,10 +1055,6 @@ class GeneralSettingsPanel(SettingsPanel):
 		config.conf["general"]["saveConfigurationOnExit"] = self.saveOnExitCheckBox.IsChecked()
 		config.conf["general"]["askToExit"] = self.askToExitCheckBox.IsChecked()
 		config.conf["general"]["playStartAndExitSounds"] = self.playStartAndExitSoundsCheckBox.IsChecked()
-		logLevel = self.LOG_LEVELS[self.logLevelList.GetSelection()][0]
-		if not logHandler.isLogLevelForced():
-			config.conf["general"]["loggingLevel"] = logging.getLevelName(logLevel)
-			logHandler.setLogLevelFromConfig()
 		if self.startAfterLogonCheckBox.IsEnabled():
 			config.setStartAfterLogon(self.startAfterLogonCheckBox.GetValue())
 		if self.startOnLogonScreenCheckBox.IsEnabled():
@@ -1120,7 +1069,6 @@ class GeneralSettingsPanel(SettingsPanel):
 				)
 		if updateCheck:
 			config.conf["update"]["autoCheck"] = self.autoCheckForUpdatesCheckBox.IsChecked()
-			config.conf["update"]["allowUsageStats"] = self.allowUsageStatsCheckBox.IsChecked()
 			config.conf["update"]["startupNotification"] = self.notifyForPendingUpdateCheckBox.IsChecked()
 			updateCheck.terminate()
 			updateCheck.initialize()
@@ -5676,7 +5624,14 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 	def makeSettings(self, sizer: wx.BoxSizer):
 		sHelper = guiHelper.BoxSizerHelper(self, sizer=sizer)
 
-		self._screenCurtainConfig = config.conf["screenCurtain"]
+		# Import late to avoid circular import
+		from visionEnhancementProviders.screenCurtain import ScreenCurtainProvider, WarnOnLoadDialog, warnOnLoadCheckBoxText
+
+		self._screenCurtainConfig = config.conf["vision"]["screenCurtain"]
+		screenCurtainId = ScreenCurtainProvider.getSettings().getId()
+		screenCurtainProviderInfo = vision.handler.getProviderInfo(screenCurtainId)
+		screenCurtainInstance = vision.handler.getProviderInstance(screenCurtainProviderInfo)
+
 		# Translators: Name for a feature that disables output to the screen,
 		# making it black.
 		screenCurtainSizer = wx.StaticBoxSizer(wx.VERTICAL, self, label=_("Screen Curtain"))
@@ -5692,16 +5647,18 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 			),
 		)
 		self._screenCurtainEnabledCheckbox.SetValue(
-			screenCurtain.screenCurtain is not None and screenCurtain.screenCurtain.enabled,
+			screenCurtainInstance is not None and screenCurtainInstance.enabled,
 		)
 		self._screenCurtainEnabledCheckbox.Bind(wx.EVT_CHECKBOX, self._ensureScreenCurtainEnableState)
-		self._screenCurtainEnabledCheckbox.Enable(screenCurtain.screenCurtain is not None)
+		self._screenCurtainEnabledCheckbox.Enable(screenCurtainInstance is not None)
 		self.bindHelpEvent("ScreenCurtainEnable", self._screenCurtainEnabledCheckbox)
+		self._screenCurtainProviderInfo = screenCurtainProviderInfo
+		self._screenCurtainInstance = screenCurtainInstance
 
 		self._screenCurtainWarnOnLoadCheckbox = screenCurtainGroup.addItem(
 			wx.CheckBox(
 				screenCurtainBox,
-				label=screenCurtain._screenCurtain.WARN_ON_LOAD_CHECKBOX_TEXT,
+				label=warnOnLoadCheckBoxText,
 			),
 		)
 		self._screenCurtainWarnOnLoadCheckbox.SetValue(self._screenCurtainConfig["warnOnLoad"])
@@ -5746,10 +5703,17 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 		except StopIteration:
 			log.debugWarning("Could not set log level list to current log level")
 
+		# BEGIN JP PATCH (Replace "NV Access" with "NVDA Japanese Team")
 		self._allowUsageStatsCheckBox: wx.CheckBox = generalGroup.addItem(
 			# Translators: The label of a checkbox in privacy and security settings to toggle allowing of usage stats gathering
-			wx.CheckBox(generalBox, label=_("Allow NV Access to gather NVDA usage statistics")),
+			wx.CheckBox(
+				generalBox,
+				label=_("Allow NV Access to gather NVDA usage statistics").replace(
+					"NV Access", _("NVDA Japanese Team")
+				),
+			),
 		)
+		# END JP PATCH
 		self.bindHelpEvent("GeneralSettingsGatherUsageStats", self._allowUsageStatsCheckBox)
 		self._allowUsageStatsCheckBox.Value = config.conf["update"]["allowUsageStats"]
 		if not updateCheck:
@@ -5759,10 +5723,13 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 	def onSave(self):
 		# We intentionally don't save whether the screen curtain is enabled here,
 		# so we don't unintentionally persist a temporary screen curtain to config.
-		self._screenCurtainConfig["warnOnLoad"] = self._screenCurtainWarnOnLoadCheckbox.IsChecked()
-		self._screenCurtainConfig["playToggleSounds"] = (
-			self._screenCurtainPlayToggleSoundsCheckbox.IsChecked()
-		)
+		# Import late to avoid circular import
+		from visionEnhancementProviders.screenCurtain import ScreenCurtainProvider
+
+		screenCurtainSettings = ScreenCurtainProvider.getSettings()
+		screenCurtainSettings.warnOnLoad = self._screenCurtainWarnOnLoadCheckbox.IsChecked()
+		screenCurtainSettings.playToggleSounds = self._screenCurtainPlayToggleSoundsCheckbox.IsChecked()
+		screenCurtainSettings.saveSettings()
 
 		if not logHandler.isLogLevelForced():
 			config.conf["general"]["loggingLevel"] = logging.getLevelName(
@@ -5782,54 +5749,72 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 		"""
 		# Import late to avoid circular import
 		from contentRecog.recogUi import RefreshableRecogResultNVDAObject
+		import api
+		import speech
+		import ui
 
 		focusObj = api.getFocusObject()
 		if isinstance(focusObj, RefreshableRecogResultNVDAObject) and focusObj.recognizer.allowAutoRefresh:
-			ui.message(
-				screenCurtain._screenCurtain.UNAVAILABLE_WHEN_RECOGNISING_CONTENT_MESSAGE,
-				speechPriority=speech.priorities.Spri.NOW,
-			)
+			# Translators: Warning message when trying to enable the screen curtain when OCR is active.
+			warningMessage = _("Could not enable screen curtain when performing content recognition")
+			ui.message(warningMessage, speechPriority=speech.priorities.Spri.NOW)
 			return True
 		return False
 
 	def _ensureScreenCurtainEnableState(self, evt: wx.CommandEvent):
 		"""Ensures that toggling the Screen Curtain checkbox toggles the Screen Curtain."""
+		# Import late to avoid circular import
+		from visionEnhancementProviders.screenCurtain import ScreenCurtainProvider
+		import speech
+		import ui
+
 		shouldBeEnabled = evt.IsChecked()
-		if screenCurtain.screenCurtain is None:
+		screenCurtainInstance = vision.handler.getProviderInstance(self._screenCurtainProviderInfo)
+		if screenCurtainInstance is None:
 			self._screenCurtainEnabledCheckbox.SetValue(False)
 			return
-		currentlyEnabled = screenCurtain.screenCurtain.enabled
+		currentlyEnabled = screenCurtainInstance.enabled
 		if shouldBeEnabled and not currentlyEnabled:
 			confirmed = self._confirmEnableScreenCurtainWithUser()
 			if not confirmed or self._ocrActive():
 				self._screenCurtainEnabledCheckbox.SetValue(False)
 			else:
 				try:
-					screenCurtain.screenCurtain.enable()
+					vision.handler.initializeProvider(
+						self._screenCurtainProviderInfo,
+						temporary=False,
+					)
+					# Update instance reference
+					self._screenCurtainInstance = vision.handler.getProviderInstance(self._screenCurtainProviderInfo)
 				except Exception:
 					log.error("Error enabling Screen Curtain.", exc_info=True)
-					ui.message(
-						screenCurtain._screenCurtain.ERROR_ENABLING_MESSAGE,
-						speechPriority=speech.priorities.Spri.NOW,
-					)
+					# Translators: Reported when the screen curtain could not be enabled.
+					errorMessage = _("Error enabling screen curtain")
+					ui.message(errorMessage, speechPriority=speech.priorities.Spri.NOW)
 					self._screenCurtainEnabledCheckbox.SetValue(False)
 		elif not shouldBeEnabled and currentlyEnabled:
-			screenCurtain.screenCurtain.disable()
+			vision.handler.terminateProvider(self._screenCurtainProviderInfo)
+			# Update instance reference
+			self._screenCurtainInstance = vision.handler.getProviderInstance(self._screenCurtainProviderInfo)
 
 	def _confirmEnableScreenCurtainWithUser(self) -> bool:
 		"""Confirm with the user before enabling Screen Curtain, if configured to do so.
 
 		:return: ``True`` if the Screen Curtain should be enabled; ``False`` otherwise.
 		"""
-		if not self._screenCurtainConfig["warnOnLoad"]:
+		# Import late to avoid circular import
+		from visionEnhancementProviders.screenCurtain import WarnOnLoadDialog, ScreenCurtainProvider
+
+		screenCurtainSettings = ScreenCurtainProvider.getSettings()
+		if not screenCurtainSettings.warnOnLoad:
 			return True
-		with screenCurtain._screenCurtain.WarnOnLoadDialog(
-			screenCurtainSettingsStorage=self._screenCurtainConfig,
+		with WarnOnLoadDialog(
+			screenCurtainSettingsStorage=screenCurtainSettings,
 			parent=self,
 		) as dlg:
 			res = dlg.ShowModal()
 			# WarnOnLoadDialog can change settings, reload them
-			self._screenCurtainWarnOnLoadCheckbox.SetValue(self._screenCurtainConfig["warnOnLoad"])
+			self._screenCurtainWarnOnLoadCheckbox.SetValue(screenCurtainSettings.warnOnLoad)
 			return res == wx.YES
 
 
@@ -5852,6 +5837,7 @@ class NVDASettingsDialog(MultiCategorySettingsDialog):
 		SpeechSettingsPanel,
 		BrailleSettingsPanel,
 		AudioPanel,
+		PrivacyAndSecuritySettingsPanel,
 		VisionSettingsPanel,
 		KeyboardSettingsPanel,
 		MouseSettingsPanel,
