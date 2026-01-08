@@ -186,11 +186,12 @@
         - サブモジュールを`nvaccess/beta`のリビジョン（`ef03379`）に更新
         - `requires-python = ">=3.11,<3.14"`に更新してPython 3.13と互換性を確保
         - `uv.lock`を更新して`uv lock`と`scons.bat source`が正常に動作することを確認
-    * ✅ カテゴリ3: 機能追加の取り込み完了（2026-01-08）
+    * ✅ カテゴリ3: 機能追加の取り込み完了（2026-01-08、2026-01-09）
       - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
       - ✅ `b8ba7413c` - Update to liblouis 3.36: 完了（2026-01-08コミット: e5a9b2e）
       - ✅ `9935428ec` - Added ability to report spelling errors in braille: 完了（2026-01-08コミット: 2a7f0be）
       - ✅ AI画像説明機能のマージ完了（2026-01-08）
+      - ✅ `728530020` - Parse LaTeX in the user guide to MathML (#19304): 完了（2026-01-09コミット: 135a296）
         - ✅ `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
         - ✅ `121c221` - Improve image captioner (#19024) - 改善
         - ✅ `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み

@@ -88,9 +88,9 @@
   - ✅ `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
   - ✅ `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
   - ✅ `20e5b8118` - Add warnings to AI image descriptions (#19327) - 警告追加
-  - ✅ デバッグログの削除とエラー処理の改善完了（2026-01-08コミット: 4fb194d）
-  - ✅ システムテスト確認完了（imageDescriptionsテスト: PASS）
-- `728530020` - Parse LaTeX in the user guide to MathML (#19304)
+      - ✅ デバッグログの削除とエラー処理の改善完了（2026-01-08コミット: 4fb194d）
+      - ✅ システムテスト確認完了（imageDescriptionsテスト: PASS）
+- ✅ `728530020` - Parse LaTeX in the user guide to MathML (#19304) - **完了（2026-01-09コミット: 135a296）**
 
 ### カテゴリ4: ドキュメント・設定変更（優先度: 低）
 

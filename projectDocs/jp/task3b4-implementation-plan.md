@@ -237,7 +237,11 @@
      - 各コミット後にビルド・テストを実行して検証
      - ダウンロードエラー処理の改善（失敗ファイルの詳細表示）
      - デバッグログの削除（未使用インポートも削除）
-2. `728530020` - Parse LaTeX in the user guide to MathML (#19304)
+2. ✅ `728530020` - Parse LaTeX in the user guide to MathML (#19304) - 完了（2026-01-09コミット: 135a296）
+   - ✅ `l2m4m==1.0.4`を依存関係に追加
+   - ✅ `source/md2html.py`に`LaTeX2MathMLExtension`を追加
+   - ✅ MathMLタグのホワイトリストと属性フィルタリングを追加
+   - ✅ ビルド・テスト・検証完了
 
 ### フェーズ5: pre-commit関連（最後に）
 
