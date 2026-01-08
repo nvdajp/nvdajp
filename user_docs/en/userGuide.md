@@ -3023,7 +3023,7 @@ You can configure reporting of:
   * Comments
   * Bookmarks
   * Editor revisions
-  * Spelling errors [(Off, Speech, Sound)](#reportSpellingErrors)
+  * Spelling errors [(Off, Speech, Sound, braille)](#ReportSpellingErrors)
 * Pages and spacing
   * Page numbers
   * Line numbers

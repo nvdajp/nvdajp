@@ -204,17 +204,18 @@
 
 **進捗状況**（2026-01-08更新）:
 - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
-- ⏳ `b8ba7413c` - Update to liblouis 3.36: 進行中
+- ✅ `b8ba7413c` - Update to liblouis 3.36: 完了（2026-01-08コミット: e5a9b2e）
   - ✅ サブモジュールは既に更新済み（`include/liblouis`は3.36.0）
-  - ⏳ コード側の変更が未適用:
-    - `nvdaHelper/liblouis/config.h`: `#include <stdbool.h>`の追加が必要
-    - `source/brailleTables/__tables.py`: 新しいテーブル（`en-g3.ctb`、`mk-g1.utb`）の追加が必要
-    - ドキュメント更新が必要
+  - ✅ コード側の変更を適用完了
+  - ✅ ビルド・テスト・検証完了
 
 **次のステップ**:
-1. `b8ba7413c`のコード側の変更を適用
-2. ビルド・テストを実行して検証
-3. 残りの機能追加を小さなグループに分けて取り込む
+1. ⏳ `9935428ec` - Added ability to report spelling errors in braille (#18641)
+   - 点字スペルエラー報告機能の追加
+   - コンフリクトの有無を確認
+   - JP固有の点字機能との整合性を確認
+   - ビルド・テストを実行して検証
+2. 残りの機能追加を小さなグループに分けて取り込む
 
 ### フェーズ5: pre-commit関連（最後に）
 

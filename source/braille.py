@@ -49,6 +49,7 @@ from config.configFlags import (
 	BrailleMode,
 	ReportTableHeaders,
 	OutputMode,
+	ReportSpellingErrors,
 )
 from config.featureFlagEnums import ReviewRoutingMovesSystemCaretFlag, FontFormattingBrailleModeFlag
 from logHandler import log
@@ -472,7 +473,7 @@ class FormattingMarker(NamedTuple):
 		:return: `True` if the element should be reported, `False` otherwise.
 		"""
 		formatConfig = config.conf["documentFormatting"]
-		if key in ("invalid-spelling", "invalid-grammar"):
+		if key == "invalid-spelling":
 			return bool(formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.BRAILLE)
 		return formatConfig["fontAttributeReporting"] & OutputMode.BRAILLE
 
@@ -1354,7 +1355,7 @@ def getFormatFieldBraille(field, fieldCache, isAtStart, formatConfig):
 
 	if (
 		config.conf["braille"]["fontFormattingDisplay"].calculated() == FontFormattingBrailleModeFlag.TAGS
-		and (formattingTags := _getFormattingTags(field, fieldCache, formatConfig)) is not None
+		and (formattingTags := _getFormattingTags(field, fieldCache)) is not None
 	):
 		textList.append(formattingTags)
 
@@ -1385,21 +1386,16 @@ def getParagraphStartMarker() -> str | None:
 def _getFormattingTags(
 	field: dict[str, str],
 	fieldCache: dict[str, str],
-	formatConfig: dict[str, bool],
 ) -> str | None:
 	"""Get the formatting tags for the given field and cache.
 
-	Formatting tags are calculated according to the preferences passed in formatConfig.
-
 	:param field: The format current field.
 	:param fieldCache: The previous format field.
-	:param formatConfig: The user's formatting preferences.
 	:return: The braille formatting tag as a string, or None if no pertinant formatting is applied.
 	"""
 	textList: list[str] = []
-	if formatConfig["fontAttributeReporting"] & OutputMode.BRAILLE:
-		# Only calculate font attribute tags if the user has enabled font attribute reporting in braille.
-		for fontAttribute, formattingMarker in fontAttributeFormattingMarkers.items():
+	for fontAttribute, formattingMarker in fontAttributeFormattingMarkers.items():
+		if formattingMarker.shouldBeUsed(fontAttribute):
 			_appendFormattingMarker(fontAttribute, formattingMarker, textList, field, fieldCache)
 	if len(textList) > 0:
 		return f"{FormatTagDelimiter.START}{''.join(textList)}{FormatTagDelimiter.END}"

@@ -21,7 +21,8 @@ We recommend updating to Windows 11, or when that's not possible, to the latest 
 This can be enabled using the "Report when lists support multiple selection" setting in NVDA's object presentation settings. (#18365 @LeonarddeR)
 * In Visual Studio Code, the status bar is now reported when using the standard `NVDA+end` (desktop) / `NVDA+shift+end` (laptop) gesture. (#11064, @codeofdusk)
 * Performance improvements on ARM64 systems, such as with Qualcomm processors. (#18570, @leonarddeR)
-* While reading text, spelling and grammar errors can now be reported with a sound instead of speech. (#4233, @jcsteh, @CyrilleB79, @nvdaes)
+* While reading text, spelling errors can now be reported with a sound instead of speech. (#4233, @jcsteh, @CyrilleB79)
+* Spelling errors can be reported in braille. (#7608, @nvdaes)
 * Spelling and grammar errors can be reported in braille. (#7608, @nvdaes)
 * Added references (e.g. to footnotes and endnotes) to the Microsoft Word elements list.
 This includes unassigned Quick Navigation commands that can be used to jump to the next/previous reference. (#19300, @LeonarddeR)
@@ -91,6 +92,7 @@ Add-ons will need to be re-tested and have their manifest updated.
   * Updated url-normalize to 2.2.1. (#19196)
   * Updated pycaw to 20251023. (#19196)
   * Updated nh3 to 0.3.2. (#19196)
+* In `braille.py`, the `FormattingMarker` class has a new `shouldBeUsed` method, to determine if the formatting marker key should be reported (#7608, @nvdaes)
   * Updated crowdin-api-client to 1.24.1. (#19196)
   * Updated Markdown to 3.10. (#19196)
   * Updated lxml to 6.0.2. (#19196)

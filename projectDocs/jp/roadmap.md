@@ -175,7 +175,7 @@
       - `config.conf["screenCurtain"]`の`KeyError`を解消
     * ⏳ カテゴリ3: 機能追加の取り込み開始（2026-01-08）
       - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
-      - ⏳ `b8ba7413c` - Update to liblouis 3.36: サブモジュールは更新済み、コード側の変更を適用する必要がある
+      - ✅ `b8ba7413c` - Update to liblouis 3.36: 完了（2026-01-08コミット: e5a9b2e）
   * **取り込み順序**:
     1. **フェーズ0**: pre-commit設定の確認（日本語ドキュメントの保護）
     2. **フェーズ1**: 最初のバグ修正・機能改善（58dd14767直後のコミット群）
