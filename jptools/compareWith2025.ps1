@@ -29,7 +29,7 @@ if (-not (Test-Path "$CurrentRoot\.git")) {
 
 Write-Host "Comparing:" -ForegroundColor Cyan
 Write-Host "  Current: $CurrentRoot" -ForegroundColor Gray
-Write-Host "  Source 2025.3.x jp: $Source2025Path" -ForegroundColor Gray
+Write-Host "  Source: $Source2025Path" -ForegroundColor Gray
 Write-Host ""
 
 # Get all files in current directory (excluding .git, node_modules, etc.)
@@ -399,7 +399,7 @@ switch ($Output) {
                     $diffContent = @"
 # Diff for: ``$($file.Path)``
 
-**Source 2025.3.x jp**: ``$($file.Source2025)``  
+**Source**: ``$($file.Source2025)``  
 **Current**: ``$($file.Current)``
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
