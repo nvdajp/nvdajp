@@ -6058,7 +6058,7 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 
 		# BEGIN JP PATCH (Fix KeyError: 'screenCurtain')
 		from visionEnhancementProviders.screenCurtain import ScreenCurtainProvider, WarnOnLoadDialog, warnOnLoadCheckBoxText
-		self._screenCurtainConfig = config.conf["vision"]["screenCurtain"]
+		self._screenCurtainConfig = config.conf["screenCurtain"]
 		screenCurtainId = ScreenCurtainProvider.getSettings().getId()
 		screenCurtainProviderInfo = vision.handler.getProviderInfo(screenCurtainId)
 		screenCurtainInstance = vision.handler.getProviderInstance(screenCurtainProviderInfo)
