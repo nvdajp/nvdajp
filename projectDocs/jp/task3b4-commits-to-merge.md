@@ -68,12 +68,10 @@
 - ✅ `7ba333a81` - Add support for Word footnote and endnote reference navigation (#19310) - **コミット完了（2026-01-07）**
 - ✅ `b3fe5799d` - Add script to toggle mouse audio coordinates (#19026) (#19282) - **コミット完了（2026-01-07）**
 - ✅ `02f3919e2` - Fix Screen Curtain (#19305) - **コミット完了（2026-01-07）**
-- ⏭️ `abdbd025a` - Improve language handling for MathCAT braille (#19375) - **スキップ（MathCAT未統合）**
-  - **注意**: このコミットを適用するには、まずMathCAT統合（`2037d74cb`）が必要
-  - `Update dependencies for 2026.1 (#19196)`は前提条件ではない
-- ⏭️ `cadb496e5` - Move mathCATDir to ReadPaths (#19370) - **スキップ（MathCAT未統合）**
-  - **注意**: このコミットを適用するには、まずMathCAT統合（`2037d74cb`）が必要
-  - `Update dependencies for 2026.1 (#19196)`は前提条件ではない
+- ✅ `abdbd025a` - Improve language handling for MathCAT braille (#19375) - **完了（2026-01-08コミット: aa34365）**
+- ✅ `cadb496e5` - Move mathCATDir to ReadPaths (#19370) - **完了（2026-01-08コミット: 8a95559）**
+- ✅ `ba0f22b` - MathCAT: Use CMU in Portuguese (#19371) - **完了（2026-01-08）**
+- ✅ `6155d1d` - Set the MathCAT output code automatically by NVDA language (#19368) - **完了（2026-01-08）**
 
 ### カテゴリ3: 機能追加（優先度: 中）
 
@@ -95,9 +93,9 @@
 ### カテゴリ4: ドキュメント・設定変更（優先度: 低）
 
 - ✅ `43b8a9bf3` - Mention that Python is now 64 bits in change log (#19360) - **手動適用完了（2026-01-08）**
-- `481ecbed7` - Update user_docs/en/userGuide.xliff
-- `7243bc238` - Update user_docs/en/changes.xliff
-- `837319788` - Review 2026.1 changelog/documentation changes (#19319)
+- ✅ `481ecbed7` - Update user_docs/en/userGuide.xliff - **完了（2026-01-08コミット: a4cd4d1）**
+- ✅ `7243bc238` - Update user_docs/en/changes.xliff - **完了（2026-01-08コミット: c46bae9）**
+- ✅ `837319788` - Review 2026.1 changelog/documentation changes (#19319) - **完了（2026-01-08コミット: 5e086dc）**
 - ✅ `e168626c9` - Remove references to 32-bit Windows from the user guide (#19297) - **コミット完了（2026-01-08）**
 
 ### カテゴリ5: 依存関係・ビルドシステム（優先度: 高）
@@ -108,6 +106,8 @@
   - ✅ Python要件の競合を解決（`requires-python = ">=3.11,<3.14"`に更新）
   - ✅ `uv.lock`を更新
 - ✅ `e6a466a5a` - Update eSpeak NG and Unicode CLDR (#19293) - **コミット完了（2026-01-07）**
+- ✅ `5093ac0` - Add crash stats output to git ignore (#19369) - **完了（2026-01-08コミット: 2271be2）**
+- ✅ `39e499b` - Update Arabic symbols in symbols.dic (#19321) - **完了（2026-01-08コミット: bd2b6fd）**
 - 🚫 `33cf7ad75` - Remove SAPI4 (#19290) - **スキップ（しばらく実施しない）**
 
 ### カテゴリ6: pre-commit関連（注意が必要）
@@ -123,16 +123,14 @@
 
 ### カテゴリ7: 大規模な変更（注意が必要）
 
-- `2037d74cb` - Integrate MathCAT into NVDA (#18323)
+- ✅ `2037d74cb` - Integrate MathCAT into NVDA (#18323) - **完了（2026-01-08コミット: 6f4e173）**
   - MathCATの統合（大規模な変更）
-  - コンフリクトが発生する可能性が高い
-  - 別途検討が必要
-  - **注意**: MathCAT関連の改善コミット（`abdbd025a`、`cadb496e5`）を適用するには、この統合コミットが先に必要
-  - `Update dependencies for 2026.1 (#19196)`は前提条件ではない
+  - コンフリクト解決完了
+  - MathCAT関連の改善コミット（`abdbd025a`、`cadb496e5`、`ba0f22b`、`6155d1d`）も適用完了
 
-- `504e95624` - 2026.1 final master to beta merge (#19355)
+- ✅ `504e95624` - 2026.1 final master to beta merge (#19355) - **完了（2026-01-08コミット: 600b134）**
   - 2026.1のマスターブランチからbetaへのマージ
-  - 複数の変更が含まれる可能性がある
+  - コンフリクト解決完了（magnification.py追加、LanguageSettingsPanel復元、.gitignore修正含む）
 
 ## 推奨される取り込み順序
 
@@ -253,15 +251,34 @@
   - Privacy and Security設定パネルのスクリーンカーテン設定エラー修正
   - `config.conf["screenCurtain"]`の`KeyError`を解消
 
+### 完了状況（2026-01-08更新）
+
+**✅ 完了したカテゴリ**:
+- ✅ **カテゴリ1**: 翻訳関連 - スキップ予定（日本語版では独自の翻訳ファイルを使用）
+- ✅ **カテゴリ2**: バグ修正・機能改善 - **すべて完了**（MathCAT関連の改善コミット含む）
+- ✅ **カテゴリ3**: 機能追加 - **すべて完了**（liblouis 3.36、点字スペルエラー、AI画像説明、LaTeX統合、MathCAT統合）
+- ✅ **カテゴリ4**: ドキュメント・設定変更 - **すべて完了**（xliff更新、changelog review含む）
+- ✅ **カテゴリ5**: 依存関係・ビルドシステム - **すべて完了**（Python 3.13.11、依存関係更新、nvda-mathcatサブモジュール更新）
+- ✅ **カテゴリ7**: 大規模な変更 - **すべて完了**（MathCAT統合、2026.1 final master to beta merge）
+
+**⏳ 残っているカテゴリ**:
+- ⏳ **カテゴリ6**: pre-commit関連（注意が必要）
+  - `d5558c902` - Pre-commit auto-update (#19162)
+  - `9616ef6b1` - Pre-commit auto-fix
+  - `ac00ae465` - minor format fixups
+  - `f08092d` - Pre-commit auto-update (#18424)
+  - `85f0b96` - Merge pull request #17671 from nvaccess/pre-commit-ci-update-config
+- ⏳ **pyright関連**（ドキュメント未記載だが存在）
+  - `282a5cd` - fix crowdin sync to beta by running pyright locally (#19252)
+  - `2d6aff1` - Update pyright to use [nodejs] (#19078)
+  - `28b5d04` - Add Pyright to GitHub Actions CI (#18345)
+  - `1b806b4` - add admin notes for crowdin administration (#19255)
+
 ### 次のステップ
 
-1. **カテゴリ2完了**: カテゴリ2のバグ修正・機能改善はすべて取り込み完了（MathCAT関連を除く）
-2. **カテゴリ4一部完了**: ドキュメント更新の一部を取り込み完了
-3. **カテゴリ3の取り込み開始**（2026-01-08）:
-   - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
-   - ✅ `b8ba7413c` - Update to liblouis 3.36: 完了（2026-01-08コミット: e5a9b2e）
-   - ✅ `9935428ec` - Added ability to report spelling errors in braille: 完了（2026-01-08コミット: 2a7f0be）
-   - ⏳ **次のタスク**: 残りの機能追加を小さなグループに分けて取り込む
-     - `20e5b8118` - Add warnings to AI image descriptions (#19327)
-     - `728530020` - Parse LaTeX in the user guide to MathML (#19304)
-4. **各変更後の検証**: ビルド・型チェック・単体テストを実行
+1. **pre-commit関連の取り込み**（カテゴリ6）
+   - `.pre-commit-config.yaml`で日本語ドキュメントの除外設定を確認
+   - フォーマット修正のコミットを取り込んだ後、日本語ドキュメントが変更されていないか確認
+2. **pyright関連の取り込み**
+   - CI設定の更新が必要な可能性がある
+3. **各変更後の検証**: ビルド・型チェック・単体テストを実行

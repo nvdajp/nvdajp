@@ -199,14 +199,34 @@
         - ✅ `20e5b8118` - Add warnings to AI image descriptions (#19327) - 警告追加
         - ✅ デバッグログの削除とエラー処理の改善完了（2026-01-08コミット: 4fb194d）
         - ✅ システムテスト確認完了（imageDescriptionsテスト: PASS）
+    * ✅ カテゴリ7: 大規模な変更の取り込み完了（2026-01-08）
+      - ✅ `2037d74cb` - Integrate MathCAT into NVDA (#18323): 完了（2026-01-08コミット: 6f4e173）
+        - ✅ MathCAT統合、コンフリクト解決完了
+        - ✅ MathCAT関連の改善コミットも適用完了（`abdbd025a`, `cadb496e5`, `ba0f22b`, `6155d1d`）
+      - ✅ `504e95624` - 2026.1 final master to beta merge (#19355): 完了（2026-01-08コミット: 600b134）
+        - ✅ コンフリクト解決完了（magnification.py追加、LanguageSettingsPanel復元、.gitignore修正含む）
+    * ✅ カテゴリ4: ドキュメント更新の取り込み完了（2026-01-08）
+      - ✅ `481ecbed7` - Update user_docs/en/userGuide.xliff: 完了（2026-01-08コミット: a4cd4d1）
+      - ✅ `7243bc238` - Update user_docs/en/changes.xliff: 完了（2026-01-08コミット: c46bae9）
+      - ✅ `837319788` - Review 2026.1 changelog/documentation changes (#19319): 完了（2026-01-08コミット: 5e086dc）
+      - ✅ `5093ac0` - Add crash stats output to git ignore (#19369): 完了（2026-01-08コミット: 2271be2）
+      - ✅ `39e499b` - Update Arabic symbols in symbols.dic (#19321): 完了（2026-01-08コミット: bd2b6fd）
+    * ✅ Chrome system test改善（2026-01-08）
+      - ✅ 英語と日本語の両方のUI環境に対応するように修正
+      - ✅ `ChromeLib._waitForStartMarker()`でアドレスバー検出を改善
+      - ✅ CI環境（英語UI）でも日本語環境でも動作するように
   * **取り込み順序**:
     1. **フェーズ0**: pre-commit設定の確認（日本語ドキュメントの保護）
     2. **フェーズ1**: 最初のバグ修正・機能改善（58dd14767直後のコミット群）
     3. **フェーズ2**: 依存関係・ビルドシステムの更新
     4. **フェーズ3**: バグ修正・機能改善の継続
     5. **フェーズ4**: 機能追加
-    6. **フェーズ5**: pre-commit関連（最後に）
+    6. **フェーズ5**: pre-commit関連（最後に） - **⏳ 残り作業**
+    7. **フェーズ6**: pyright関連 - **⏳ 残り作業**
   * **注意**: 本家（nvaccess/beta）に pre-commit による大規模なファイルフォーマット自動整形のコミットが含まれる場合がある
+  * **進捗状況（2026-01-08）**: 
+    - ✅ カテゴリ1-5, 7はすべて完了（翻訳関連はスキップ予定）
+    - ⏳ カテゴリ6（pre-commit関連）とpyright関連のみ残り
     * 取り込む前に、日本語ドキュメント（`projectDocs/jp/`、`readme-nvdajp.md`、`AGENTS.md`）が pre-commit フックから除外されていることを確認
     * フォーマット修正は1つのコミットにまとめる
     * 各変更後にビルド・型チェック・単体テストを実行して検証
