@@ -208,14 +208,16 @@
   - ✅ サブモジュールは既に更新済み（`include/liblouis`は3.36.0）
   - ✅ コード側の変更を適用完了
   - ✅ ビルド・テスト・検証完了
+- ✅ `9935428ec` - Added ability to report spelling errors in braille: 完了（2026-01-08コミット: 2a7f0be）
+  - ✅ 点字スペルエラー報告機能の追加完了
+  - ✅ コンフリクトなし
+  - ✅ JP固有の点字機能との整合性確認済み
+  - ✅ ビルド・テスト・検証完了
 
 **次のステップ**:
-1. ⏳ `9935428ec` - Added ability to report spelling errors in braille (#18641)
-   - 点字スペルエラー報告機能の追加
-   - コンフリクトの有無を確認
-   - JP固有の点字機能との整合性を確認
-   - ビルド・テストを実行して検証
-2. 残りの機能追加を小さなグループに分けて取り込む
+1. 残りの機能追加を小さなグループに分けて取り込む
+   - `20e5b8118` - Add warnings to AI image descriptions (#19327)
+   - `728530020` - Parse LaTeX in the user guide to MathML (#19304)
 
 ### フェーズ5: pre-commit関連（最後に）
 

@@ -81,7 +81,7 @@
 - ✅ `b8ba7413c` - Update to liblouis 3.36 (#19316) - **完了（2026-01-08コミット: e5a9b2e）**
   - ✅ サブモジュールは既に更新済み（`include/liblouis`は3.36.0）
   - ✅ コード側の変更を適用完了
-- `9935428ec` - Added ability to report spelling errors in braille (#18641)
+- ✅ `9935428ec` - Added ability to report spelling errors in braille (#18641) - **完了（2026-01-08コミット: 2a7f0be）**
 - `20e5b8118` - Add warnings to AI image descriptions (#19327)
 - `728530020` - Parse LaTeX in the user guide to MathML (#19304)
 
@@ -250,9 +250,8 @@
 3. **カテゴリ3の取り込み開始**（2026-01-08）:
    - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
    - ✅ `b8ba7413c` - Update to liblouis 3.36: 完了（2026-01-08コミット: e5a9b2e）
-   - ⏳ **次のタスク**: `9935428ec` - Added ability to report spelling errors in braille (#18641)
-     - 点字スペルエラー報告機能の追加
-     - コンフリクトの有無を確認
-     - JP固有の点字機能との整合性を確認
-   - 残りの機能追加は小さなグループに分けて取り込む
+   - ✅ `9935428ec` - Added ability to report spelling errors in braille: 完了（2026-01-08コミット: 2a7f0be）
+   - ⏳ **次のタスク**: 残りの機能追加を小さなグループに分けて取り込む
+     - `20e5b8118` - Add warnings to AI image descriptions (#19327)
+     - `728530020` - Parse LaTeX in the user guide to MathML (#19304)
 4. **各変更後の検証**: ビルド・型チェック・単体テストを実行
