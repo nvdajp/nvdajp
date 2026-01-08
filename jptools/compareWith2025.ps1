@@ -206,6 +206,15 @@ switch ($Output) {
             $currentBranch = "unknown"
         }
         
+        # Determine source description based on path
+        $sourceDescription = if ($Source2025Path -like "*alphajp-251219*") {
+            "2025.3.x jp (alphajp-251219 PR #600) - x86 Python 3.11 の最後の状態"
+        } elseif ($Source2025Path -like "*\beta*" -or $Source2025Path -like "*beta*") {
+            "nvaccess/beta ($Source2025Path)"
+        } else {
+            $Source2025Path
+        }
+        
         # Generate summary.md
         $summaryContent = @"
 # 比較結果サマリー
@@ -214,7 +223,7 @@ switch ($Output) {
 
 ## 比較対象
 
-- **ベース**: 2025.3.x jp (alphajp-251219 PR #600) - x86 Python 3.11 の最後の状態
+- **ベース**: $sourceDescription
 - **比較先**: 現在の $currentBranch ブランチ（x64 Python 3.13）
 
 ## 統計情報
