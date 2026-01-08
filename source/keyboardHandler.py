@@ -661,7 +661,7 @@ class KeyboardInputGesture(inputCore.InputGesture):
 			# it is already too late.
 			with ignoreInjection():
 				winUser.keybd_event(winUser.VK_NONE, 0, 0, 0)
-				winUser.keybd_event(winUser.VK_NONE, 0, winUser.KEYEVENTF_KEYUP, 0)
+				winUser.keybd_event(winUser.VK_NONE, 0, winBindings.user32.KEYEVENTF.KEYUP, 0)
 		# Now actually execute the script.
 		super().executeScript(script)
 
