@@ -123,8 +123,10 @@ class ImageDescriber:
 		imageData = _screenshotNavigator()
 
 		if not self.isModelLoaded:
-			# Translators: Message when image description is not enabled
-			ui.message(pgettext("imageDesc", "image description is not enabled"))
+			from gui._localCaptioner.messageDialogs import openEnableOnceDialog
+
+			# Ask to enable image desc only in this session, No configuration modifications
+			wx.CallAfter(openEnableOnceDialog)
 			return
 
 		if self.captionThread is not None and self.captionThread.is_alive():
@@ -163,9 +165,10 @@ class ImageDescriber:
 			)
 		except FileNotFoundError:
 			self.isModelLoaded = False
-			from gui._localCaptioner.messageDialogs import openDownloadDialog
+			from gui._localCaptioner.messageDialogs import ImageDescDownloader
 
-			wx.CallAfter(openDownloadDialog)
+			descDownloader = ImageDescDownloader()
+			wx.CallAfter(descDownloader.openDownloadDialog)
 		except Exception:
 			self.isModelLoaded = False
 			# Translators: error message when fail to load model

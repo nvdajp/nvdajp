@@ -136,8 +136,8 @@ class ModelDownloader:
 		model = modelName.strip("/")
 		ref = resolvePath.strip("/")
 		filePath = filePath.lstrip("/")
-		url = f"{base}/{model}/{ref}/{filePath}"
-		return url
+
+		return f"{base}/{model}/{ref}/{filePath}"
 
 	def _getRemoteFileSize(self, url: str) -> int:
 		"""
@@ -151,7 +151,7 @@ class ModelDownloader:
 
 		try:
 			# Use HEAD request with automatic redirect following
-			response = self.session.head(url, timeout=30, allow_redirects=True)
+			response = self.session.head(url, timeout=10, allow_redirects=True)
 			response.raise_for_status()
 		except Exception as e:
 			if not self.cancelRequested:
@@ -163,7 +163,7 @@ class ModelDownloader:
 
 		try:
 			# If HEAD doesn't work, try GET with range header to get just 1 byte
-			response = self.session.get(url, headers={"Range": "bytes=0-0"}, timeout=30, allow_redirects=True)
+			response = self.session.get(url, headers={"Range": "bytes=0-0"}, timeout=10, allow_redirects=True)
 		except Exception as e:
 			if not self.cancelRequested:
 				log.warning(f"Failed to get remote file size (GET) for {url}: {e}")
@@ -419,6 +419,7 @@ class ModelDownloader:
 		try:
 			# Determine total file size
 			total = self._calculateTotalSize(response, resumePos)
+
 			if total > 0:
 				log.debug(f"Total file size: {total:,} bytes")
 
@@ -436,8 +437,7 @@ class ModelDownloader:
 				return False, message
 
 			# Verify download integrity
-			result = self._verifyDownloadIntegrity(localPath, fileName, total, progressCallback, threadId)
-			return result
+			return self._verifyDownloadIntegrity(localPath, fileName, total, progressCallback, threadId)
 
 		finally:
 			response.close()
@@ -480,7 +480,7 @@ class ModelDownloader:
 			url,
 			headers=headers,
 			stream=True,
-			timeout=30,
+			timeout=10,
 			allow_redirects=True,
 		)
 
@@ -499,7 +499,7 @@ class ModelDownloader:
 
 			# Make new request without range header
 			response.close()
-			response = self.session.get(url, stream=True, timeout=30, allow_redirects=True)
+			response = self.session.get(url, stream=True, timeout=10, allow_redirects=True)
 
 		response.raise_for_status()
 		return response
@@ -732,17 +732,16 @@ class ModelDownloader:
 					self.activeFutures.discard(future)
 
 				try:
-					# Use a short timeout to avoid blocking indefinitely
-					ok, msg = future.result(timeout=1.0)
+					ok, msg = future.result()
 					if ok:
 						successful.append(filePath)
 						log.debug(f"successful {filePath=}")
 					else:
 						failed.append(filePath)
-						log.warning(f"Download failed: {filePath} - {msg}")
+						log.debug(f"failed: {filePath} - {msg}")
 				except Exception as err:
 					failed.append(filePath)
-					log.error(f"Download exception: {filePath} – {err}", exc_info=True)
+					log.debug(f"failed: {filePath} – {err}")
 
 		# Summary
 		if not self.cancelRequested:

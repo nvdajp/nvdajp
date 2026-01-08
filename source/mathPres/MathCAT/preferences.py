@@ -7,8 +7,8 @@ from enum import Enum
 import os
 
 import config
+import languageHandler
 import yaml
-from languageHandler import getLanguage
 from logHandler import log
 from NVDAState import ReadPaths
 from utils.displayString import DisplayStringStrEnum
@@ -241,7 +241,7 @@ def getAutoBrailleCode(
 	if not availableCodes:
 		availableCodes = getBrailleCodes()
 	if languageCode is None:
-		languageCode = getLanguage()
+		languageCode = languageHandler.getLanguage()
 
 	# de, nb, and nn should probably use Marburg when implemented upstream
 	languagesToBrailleCodes: dict[str, str] = {
@@ -284,6 +284,7 @@ def setEffectiveBrailleCode() -> None:
 			f"MathCAT: failed to set BrailleCode preference: {e}",
 			exc_info=True,
 		)
+
 
 def toNVDAConfigKey(key: str) -> str:
 	"""Converts a key for MathCAT's preferences (UpperCamelCase) to a
