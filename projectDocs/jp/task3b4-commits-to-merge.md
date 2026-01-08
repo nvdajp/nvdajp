@@ -93,10 +93,10 @@
 
 ### カテゴリ5: 依存関係・ビルドシステム（優先度: 高）
 
-- `17ed5ef7c` - Updated Python 3.13.9 to 3.13.11 (#19352)
-- `250802a27` - Update dependencies for 2026.1 (#19196)
-- `e6a466a5a` - Update eSpeak NG and Unicode CLDR (#19293)
-- `33cf7ad75` - Remove SAPI4 (#19290)
+- ✅ `17ed5ef7c` - Updated Python 3.13.9 to 3.13.11 (#19352) - **コミット完了（2026-01-07）**
+- ✅ `250802a27` - Update dependencies for 2026.1 (#19196) - **コミット完了（2026-01-07）**
+- ✅ `e6a466a5a` - Update eSpeak NG and Unicode CLDR (#19293) - **コミット完了（2026-01-07）**
+- 🚫 `33cf7ad75` - Remove SAPI4 (#19290) - **スキップ（しばらく実施しない）**
 
 ### カテゴリ6: pre-commit関連（注意が必要）
 
