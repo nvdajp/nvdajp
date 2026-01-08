@@ -103,7 +103,10 @@
 ### カテゴリ5: 依存関係・ビルドシステム（優先度: 高）
 
 - ✅ `17ed5ef7c` - Updated Python 3.13.9 to 3.13.11 (#19352) - **コミット完了（2026-01-07）**
-- ✅ `250802a27` - Update dependencies for 2026.1 (#19196) - **コミット完了（2026-01-07）**
+- ✅ `250802a27` - Update dependencies for 2026.1 (#19196) - **コミット完了（2026-01-09、nvda-mathcatサブモジュール更新含む）**
+  - ✅ `nvda-mathcat`サブモジュールを`nvaccess/beta`のリビジョン（`ef03379`）に更新
+  - ✅ Python要件の競合を解決（`requires-python = ">=3.11,<3.14"`に更新）
+  - ✅ `uv.lock`を更新
 - ✅ `e6a466a5a` - Update eSpeak NG and Unicode CLDR (#19293) - **コミット完了（2026-01-07）**
 - 🚫 `33cf7ad75` - Remove SAPI4 (#19290) - **スキップ（しばらく実施しない）**
 
