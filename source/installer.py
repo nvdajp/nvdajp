@@ -93,17 +93,6 @@ def createShortcut(
 		short.Save()
 
 
-def getInstallPath(noDefault: bool = False) -> str | None:
-	try:
-		k = winreg.OpenKey(
-			winreg.HKEY_LOCAL_MACHINE,
-			RegistryKey.INSTALLED_COPY.value,
-		)
-		return winreg.QueryValueEx(k, "UninstallDirectory")[0]
-	except WindowsError:
-		return defaultInstallPath if not noDefault else None
-
-
 def comparePreviousInstall() -> int | None:
 	"""Returns 1 if the existing installation is newer than this running version,
 	0 if it is the same, -1 if it is older,
