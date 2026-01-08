@@ -513,6 +513,20 @@ def isNVDAObject(obj: Any) -> bool:
 	return isinstance(obj, NVDAObjects.NVDAObject)
 
 
+fakeNVDAObjectClasses: set[type[NVDAObjects.NVDAObject]] = set()
+"""
+A collection used to register fake NVDAObject classes.
+
+These classes are treated as virtual NVDAObjects, and may not correspond to actual controls.
+For instance, content recognition results.
+"""
+
+
+def isFakeNVDAObject(obj: Any) -> bool:
+	"""Returns whether the supplied object is a fake :class:`NVDAObjects.NVDAObject`."""
+	return isinstance(obj, tuple(fakeNVDAObjectClasses))
+
+
 def isCursorManager(obj: Any) -> bool:
 	"""Returns whether the supplied object is a L{cursorManager.CursorManager}"""
 	return isinstance(obj, cursorManager.CursorManager)
