@@ -625,7 +625,7 @@ def mouse_event(*args):
 	return _user32.mouse_event(*args)
 
 
-def getAncestor(hwnd, flags):
+def getAncestor(hwnd: HWNDVal, flags: int) -> HWNDVal:
 	return _user32.GetAncestor(hwnd, flags)
 
 
@@ -645,7 +645,7 @@ def getCaretPos():
 	return [point.x, point.y]
 
 
-def getTopWindow(hwnd):
+def getTopWindow(hwnd: HWNDVal) -> HWNDVal:
 	return _user32.GetTopWindow(hwnd)
 
 
@@ -655,7 +655,7 @@ def getWindowText(hwnd):
 	return buf.value
 
 
-def getWindow(window, relation):
+def getWindow(window: HWNDVal, relation: int) -> HWNDVal:
 	return _user32.GetWindow(window, relation)
 
 
@@ -689,7 +689,7 @@ def SetLayeredWindowAttributes(hwnd, key, alpha, flags):
 	return _user32.SetLayeredWindowAttributes(hwnd, key, alpha, flags)
 
 
-def getPreviousWindow(hwnd):
+def getPreviousWindow(hwnd: HWNDVal) -> HWNDVal:
 	try:
 		return _user32.GetWindow(hwnd, GW_HWNDPREV)
 	except WindowsError:
