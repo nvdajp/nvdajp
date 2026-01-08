@@ -3480,6 +3480,15 @@ class GlobalCommands(ScriptableObject):
 		wx.CallAfter(gui.mainFrame.onAudioSettingsCommand, None)
 
 	@script(
+		# Translators: Input help mode message for go to privacy and security settings command.
+		description=_("Shows NVDA's privacy and security settings"),
+		category=SCRCAT_CONFIG,
+	)
+	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
+	def script_activatePrivacyAndSecuritySettings(self, gesture: inputCore.InputGesture) -> None:
+		wx.CallAfter(gui.mainFrame.onPrivacyAndSecuritySettingsCommand, None)
+
+	@script(
 		# Translators: Input help mode message for go to vision settings command.
 		description=_("Shows NVDA's vision settings"),
 		category=SCRCAT_CONFIG,
