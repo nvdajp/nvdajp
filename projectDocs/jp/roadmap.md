@@ -145,7 +145,7 @@
     - **まとめてマージ**: 範囲をまとめて取り込む場合（コンフリクトを一度に解決）
     - **判断基準**: コンフリクトの多寡、選択性の必要性、作業効率を考慮
   * **注意**: `--allow-unrelated-histories`が必要な場合がある（履歴が分岐している場合）
-  * **進捗状況**（2026-01-07更新）:
+  * **進捗状況**（2026-01-08更新）:
     * ✅ 取り込むべきコミットの特定完了（約50コミット、72c211456..nvaccess/beta）
     * ✅ 実施計画の作成完了（`projectDocs/jp/task3b4-implementation-plan.md`）
     * ✅ コミット分類と優先順位付け完了（`projectDocs/jp/task3b4-commits-to-merge.md`）
@@ -162,6 +162,9 @@
       - `40c5c10998` - Update eSpeak NG and Unicode CLDR (#19293)
       - スキップ: `33cf7ad75` - Remove SAPI4 (#19290)（しばらく実施しない）
       - ビルド成功、JP smoke test成功、ユニットテスト成功（951テスト、5スキップ）
+    * ✅ カテゴリ4: ドキュメント更新の取り込み（2コミット、2026-01-08）
+      - `43b8a9bf3` - Mention that Python is now 64 bits in change log (#19360)（手動適用）
+      - `e168626c9` - Remove references to 32-bit Windows from the user guide (#19297)
   * **取り込み順序**:
     1. **フェーズ0**: pre-commit設定の確認（日本語ドキュメントの保護）
     2. **フェーズ1**: 最初のバグ修正・機能改善（58dd14767直後のコミット群）

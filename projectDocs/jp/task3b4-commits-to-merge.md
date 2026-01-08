@@ -85,11 +85,11 @@
 
 ### カテゴリ4: ドキュメント・設定変更（優先度: 低）
 
-- `43b8a9bf3` - Mention that Python is now 64 bits in change log (#19360)
+- ✅ `43b8a9bf3` - Mention that Python is now 64 bits in change log (#19360) - **手動適用完了（2026-01-08）**
 - `481ecbed7` - Update user_docs/en/userGuide.xliff
 - `7243bc238` - Update user_docs/en/changes.xliff
 - `837319788` - Review 2026.1 changelog/documentation changes (#19319)
-- `e168626c9` - Remove references to 32-bit Windows from the user guide (#19297)
+- ✅ `e168626c9` - Remove references to 32-bit Windows from the user guide (#19297) - **コミット完了（2026-01-08）**
 
 ### カテゴリ5: 依存関係・ビルドシステム（優先度: 高）
 
@@ -204,7 +204,7 @@
 3. **日本語ドキュメントの保護**: pre-commitフォーマット修正のコミットを取り込む際は、特に注意
 4. **JP固有コードの維持**: JP PATCHマーカーを追加し、差分最小化の原則に従う
 
-## 進捗状況（2026-01-07更新）
+## 進捗状況（2026-01-08更新）
 
 ### 完了した作業
 
@@ -234,8 +234,13 @@
   - ⏭️ `cadb496e5` - スキップ（MathCAT未統合）
   - すべてのテスト通過（951テスト、5スキップ）
 
+- ✅ **カテゴリ4**: ドキュメント更新の取り込み（2コミット、2026-01-08）
+  - ✅ `43b8a9bf3` - 手動適用完了（Python 3.13, 64-bit をchangelogに記載）
+  - ✅ `e168626c9` - コミット完了（32-bit Windows参照を削除）
+
 ### 次のステップ
 
 1. **カテゴリ2完了**: カテゴリ2のバグ修正・機能改善はすべて取り込み完了（MathCAT関連を除く）
-2. **カテゴリ3以降の検討**: 機能追加、依存関係更新、pre-commit関連などの取り込みを検討
-3. **各変更後の検証**: ビルド・型チェック・単体テストを実行
+2. **カテゴリ4一部完了**: ドキュメント更新の一部を取り込み完了
+3. **カテゴリ3の検討**: 機能追加はコンフリクトが多いため、MathCAT統合後に再検討
+4. **各変更後の検証**: ビルド・型チェック・単体テストを実行
