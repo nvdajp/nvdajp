@@ -100,22 +100,22 @@ http://www.7-zip.org/download.html
 C:\Program Files\7-Zip
 ```
 
-### (5) Python 3.11 (Windows 32bit)
+### (5) Python 3.13 (Windows 64bit)
 
 ダウンロードして実行し、インストールする。
 オプションはデフォルトでよい。
 
-https://www.python.org/downloads/release/python-3119/
+https://www.python.org/downloads/release/python-31311/
 
-Windows x86 executable installer (python-3.11.9.exe)
+Windows x86-64 executable installer (python-3.13.11-amd64.exe)
 
 ### (6) 確認すること
 
-PowerShell またはコマンドプロンプトで Python 3.11 (32bit) が起動する。
+PowerShell またはコマンドプロンプトで Python 3.13 (64bit) が起動する。
 
 ```text
-> py -3.11-32 -V
-Python 3.11.9
+> py -3.13 -V
+Python 3.13.11
 ```
 
 PowerShell で git, patch, 7z がそれぞれ実行できる。
@@ -160,12 +160,30 @@ NVDA 本体を実行するには
 
 現在は `signtool sign /a` を使えることが前提。
 
-```text
-> cd betajp-dev
-> set VERSION=2025.3.2jp
-> .\jptools\certBuild2023.cmd version_build=99999
-> .\rununittests.bat
+#### 事前準備
+
+`jptools\certBuild2025Env.sample.ps1` をコピーして `jptools\certBuild2025Env.ps1` を作成し、証明書のSHA-1 thumbprintを設定する。
+
+```powershell
+> Copy-Item .\jptools\certBuild2025Env.sample.ps1 .\jptools\certBuild2025Env.ps1
+# certBuild2025Env.ps1 を編集して $env:CERT_SHA1 を設定
 ```
+
+**注意**: `certBuild2025Env.ps1` はリポジトリにコミットしないこと。
+
+#### ビルド実行
+
+```powershell
+> cd betajp-dev
+> $env:VERSION = "2026.1jp"
+> .\jptools\certBuild2025.ps1 -VersionBuild 99999
+```
+
+主なオプション：
+- `-VersionBuild` : ビルド番号を指定
+- `-SkipUnitTests` : ユニットテストをスキップ
+- `-SkipSystemTests` : システムテストをスキップ
+- `-SkipSigning` : コード署名をスキップ（RDPセッション等で証明書にアクセスできない場合）
 
 ### (9) NVDA本家版のソースコード取得とビルド
 
@@ -374,48 +392,45 @@ JTalk DLLのビルドとペイロードへの配置を行います。
 
 **実行例**：
 ```bash
-# JTalk DLLのビルドと配置
+# JTalk DLLのビルドと配置（x86_64がデフォルト）
 scons jtalkPrep
-
-# x86 ビルドの場合（このブランチのデフォルト）
-scons jtalkPrep TARGET_ARCH=x86
 ```
 
 **ログ例（DLL存在時）**：
 ```
-jtalkPrep: using TARGET_ARCH=x86
-jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+jtalkPrep: using TARGET_ARCH=x86_64
+jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86_64/libopenjtalk.dll
 jtalkPrep: using existing DLL (build skipped)
 jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 ```
 
 **ログ例（DLL不在時）**：
 ```
-jtalkPrep: using TARGET_ARCH=x86
-jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+jtalkPrep: using TARGET_ARCH=x86_64
+jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86_64/libopenjtalk.dll
 jtalkPrep: DLL not found, attempting to build via nmake...
-jtalkPrep: running nmake via vcvarsall.bat with arch=x86
+jtalkPrep: running nmake via vcvarsall.bat with arch=amd64
 [nmake の出力...]
-jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86/libopenjtalk.dll
+jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86_64/libopenjtalk.dll
 jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 ```
 
-#### `scons miscdepsjp`
+#### `scons jtalkSync`
 
-日本語版固有のファイルを `source/` ディレクトリにオーバーレイします。
+JTalk辞書ファイルのビルドと `source/` ディレクトリへのコピーを行います。
 
 **動作**：
-- `miscDepsJp/source` 配下のファイルを `source/` にコピー
-- JTalkコアファイル（`jtalkCore.py`, `mecab.py`, `text2mecab.py`）を `source/synthDrivers/jtalk/` にコピー
+- JTalk辞書ファイル（`*.dic`, `*.bin`）をビルド
+- 日本語版固有のファイルを `source/` にオーバーレイ
 - `jtalkPrep` に依存しているため、JTalk DLLも自動的に準備される
 
 **実行例**：
 ```bash
-# オーバーレイのみ実行（デバッグ用）
-scons miscdepsjp
+# 辞書ビルドとオーバーレイ
+scons jtalkSync
 ```
 
-**注意**: `scons source` を実行すると、`miscdepsjp` が依存として自動実行されます。通常は明示的に実行する必要はありません。
+**注意**: `scons source` を実行すると、`jtalkSync` が依存として自動実行されます。通常は明示的に実行する必要はありません。
 
 ### 通常のビルドフロー
 
@@ -431,9 +446,8 @@ scons source user_docs launcher
 
 **内部で自動実行される**（開発者は意識不要）：
 1. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
-2. `jtalkSync`: 辞書ファイルのビルドとコピー
-3. `miscdepsjp`: overlayで `source/` に配置
-4. `source`, `dist` などのビルド
+2. `jtalkSync`: 辞書ファイルのビルドとオーバーレイで `source/` に配置
+3. `source`, `dist` などのビルド
 
 **注意**: 詳細な処理内容や現状の問題点については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
 
@@ -454,7 +468,7 @@ scons source user_docs launcher
 
 現在、GitHub Actionsを使用したCI/CDパイプラインが実装されています（`.github/workflows/testAndPublish.yml`）：
 
-- **ビルド環境**: Windowsランナー、Python 3.11 (32bit)
+- **ビルド環境**: Windowsランナー、Python 3.13 (64bit)
 - **ビルドプロセス**: `jptools/nonCertBuild.py` を使用（Python版に移行済み）
 - **テスト**: ユニットテスト、システムテスト、日本語版固有のテストを実行
 - **自動化**: betajp、releasejpブランチへのpush時に自動ビルド
@@ -463,21 +477,14 @@ scons source user_docs launcher
 - 本家のCI/CD改善の取り込み
 - テストジョブの分離（typeCheck, licenseCheck等）
 - SCons MSVC Cacheによる高速化
-- Python 3.13対応の検討
 
 ### Python バージョンの対応状況
 
-#### 現在の状況（2025年12月）
-- Python 3.11 (32bit) を使用
-- CI/CDでは Python 3.11 を使用（`.github/workflows/testAndPublish.yml`）
-- 本家 NVDA は Python 3.11 と 3.13 のマトリックステストを実施
+#### 現在の状況（2026年1月）
+- Python 3.13 (64bit) を使用
+- CI/CDでは Python 3.13 を使用（`.github/workflows/testAndPublish.yml`）
+- 本家 NVDA と同じく Python 3.13 に対応済み
 
-#### 今後の対応
-- Python 3.13 への対応は段階的に実施予定
-- まず本家 beta のマージと CI/CD の安定化を優先
-- その後、Python 3.13 対応を別 PR で実施
-
-#### Python 3.13 対応時の注意点
-- 依存パッケージの互換性確認が必要
-- 日本語版固有のモジュール（jtalk等）の動作確認が必要
-- マトリックステストの導入を検討
+#### 備考
+- 日本語版固有のモジュール（jtalk等）も Python 3.13 に対応済み
+- `pyproject.toml` で `requires-python = ">=3.13,<3.14"` を指定
