@@ -63,6 +63,7 @@ from .settingsDialogs import (
 	MultiCategorySettingsDialog,
 	NVDASettingsDialog,
 	ObjectPresentationPanel,
+	PrivacyAndSecuritySettingsPanel,
 	RemoteSettingsPanel,
 	ReviewCursorPanel,
 	SettingsDialog,
@@ -355,6 +356,9 @@ class MainFrame(wx.Frame):
 
 	def onAudioSettingsCommand(self, evt: wx.CommandEvent):
 		self.popupSettingsDialog(NVDASettingsDialog, AudioPanel)
+
+	def onPrivacyAndSecuritySettingsCommand(self, evt: wx.CommandEvent):
+		self.popupSettingsDialog(NVDASettingsDialog, PrivacyAndSecuritySettingsPanel)
 
 	def onVisionSettingsCommand(self, evt: wx.CommandEvent):
 		self.popupSettingsDialog(NVDASettingsDialog, VisionSettingsPanel)
