@@ -9,18 +9,10 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\beta\\source\\braille.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\braille.py"
-index c1c0abd..dda62b7 100644
+index c1c0abd..88426a0 100644
 --- "a/F:\\nvda\\gh\\beta\\source\\braille.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\braille.py"
-@@ -74,7 +74,6 @@
- from textUtils import isUnicodeNormalized, UnicodeNormalizationOffsetConverter
- import hwIo
- from editableText import EditableText
--from gui.guiHelper import wxCallOnMain
- 
- if TYPE_CHECKING:
- 	from NVDAObjects import NVDAObject
-@@ -316,6 +315,63 @@
+@@ -316,6 +316,63 @@
  	"form": pgettext("braille landmark abbreviation", "form"),
  }
  
@@ -84,7 +76,7 @@ index c1c0abd..dda62b7 100644
  #: Cursor shapes
  CURSOR_SHAPES = (
  	# Translators: The description of a braille cursor shape.
-@@ -422,7 +478,6 @@ def shouldBeUsed(self, key) -> bool:
+@@ -422,7 +479,6 @@ def shouldBeUsed(self, key) -> bool:
  			return bool(formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.BRAILLE)
  		return formatConfig["fontAttributeReporting"] & OutputMode.BRAILLE
  
@@ -92,7 +84,7 @@ index c1c0abd..dda62b7 100644
  fontAttributeFormattingMarkers: dict[str, FormattingMarker] = {
  	"bold": FormattingMarker(
  		# Translators: Brailled at the start of bold text.
-@@ -696,7 +751,9 @@ def _getAnnotationProperty(
+@@ -696,7 +752,9 @@ def _getAnnotationProperty(
  		hasDetailsRoleTemplate = _("has %s")
  		rolesLabels = list(
  			(
@@ -103,7 +95,7 @@ index c1c0abd..dda62b7 100644
  				for role in detailsRoles
  				if role  # handle None case without the "has X" grammar.
  			)
-@@ -712,14 +769,23 @@ def _getAnnotationProperty(
+@@ -712,14 +770,23 @@ def _getAnnotationProperty(
  def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  	textList = []
  	name = propertyValues.get("name")
@@ -128,7 +120,7 @@ index c1c0abd..dda62b7 100644
  	cellCoordsText = propertyValues.get("cellCoordsText")
  	rowNumber = propertyValues.get("rowNumber")
  	columnNumber = propertyValues.get("columnNumber")
-@@ -734,16 +800,20 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+@@ -734,16 +801,20 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  		if role == controlTypes.Role.HEADING and level:
  			# Translators: Displayed in braille for a heading with a level.
  			# %s is replaced with the level.
@@ -154,7 +146,7 @@ index c1c0abd..dda62b7 100644
  			and controlTypes.State.MULTISELECTABLE in states
  			and config.conf["presentation"]["reportMultiSelect"]
  		):
-@@ -754,20 +824,24 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+@@ -754,20 +825,24 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  			states.discard(controlTypes.State.MULTISELECTABLE)
  			# Translators: Displayed in braille for a multi select list.
  			roleText = _("mslst")
@@ -186,7 +178,7 @@ index c1c0abd..dda62b7 100644
  	value = propertyValues.get("value")
  	if value and role not in controlTypes.silentValuesForRoles:
  		textList.append(value)
-@@ -779,8 +853,10 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+@@ -779,8 +854,10 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  				controlTypes.OutputReason.FOCUS,
  				states,
  				None,
@@ -199,7 +191,7 @@ index c1c0abd..dda62b7 100644
  			),
  		)
  	if roleText:
-@@ -807,12 +883,18 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+@@ -807,12 +884,18 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  			# {number} is replaced with the number of the item in the group.
  			# {total} is replaced with the total number of items in the group.
  			textList.append(_("{number} of {total}").format(number=indexInGroup, total=similarItemsInGroup))
@@ -220,7 +212,7 @@ index c1c0abd..dda62b7 100644
  	if rowNumber:
  		if includeTableCellCoords and not cellCoordsText:
  			if rowSpan > 1:
-@@ -828,9 +910,11 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+@@ -828,9 +911,11 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  				rowStr = _("r{rowNumber}").format(rowNumber=rowNumber)
  			textList.append(rowStr)
  	if columnNumber:
@@ -235,7 +227,7 @@ index c1c0abd..dda62b7 100644
  		if includeTableCellCoords and not cellCoordsText:
  			if columnSpan > 1:
  				# Translators: Displayed in braille for the table cell column numbers when a cell spans multiple columns.
-@@ -902,6 +986,20 @@ def update(self):
+@@ -902,6 +987,20 @@ def update(self):
  		)
  		description = obj.description if _shouldUseDescription else None
  		detailsRoles = obj.annotations.roles if obj.annotations else None
@@ -256,7 +248,7 @@ index c1c0abd..dda62b7 100644
  		text = getPropertiesBraille(
  			name=name,
  			role=role,
-@@ -918,6 +1016,10 @@ def update(self):
+@@ -918,6 +1017,10 @@ def update(self):
  			cellCoordsText=obj.cellCoordsText
  			if config.conf["documentFormatting"]["reportTableCellCoords"]
  			else None,
@@ -267,7 +259,7 @@ index c1c0abd..dda62b7 100644
  			errorMessage=errorMessage,
  		)
  		if role == controlTypes.Role.MATH:
-@@ -1010,7 +1112,9 @@ def getControlFieldBraille(
+@@ -1010,7 +1113,9 @@ def getControlFieldBraille(
  	roleText = field.get("roleTextBraille", field.get("roleText"))
  	landmark = field.get("landmark")
  	if not roleText and role == controlTypes.Role.LANDMARK and landmark:
@@ -278,7 +270,7 @@ index c1c0abd..dda62b7 100644
  
  	content = field.get("content")
  
-@@ -1164,8 +1268,6 @@ def _getControlFieldForReportStart(
+@@ -1164,8 +1269,6 @@ def _getControlFieldForReportStart(
  	level = field.get("level")
  	if level:
  		props["positionInfo"] = {"level": level}
@@ -287,7 +279,7 @@ index c1c0abd..dda62b7 100644
  
  	text = getPropertiesBraille(**props)
  	if content:
-@@ -1225,7 +1327,9 @@ def getFormatFieldBraille(field, fieldCache, isAtStart, formatConfig):
+@@ -1225,7 +1328,9 @@ def getFormatFieldBraille(field, fieldCache, isAtStart, formatConfig):
  		link = field.get("link")
  		oldLink = fieldCache.get("link")
  		if link and link != oldLink:
@@ -298,7 +290,7 @@ index c1c0abd..dda62b7 100644
  	if formatConfig["reportComments"]:
  		comment = field.get("comment")
  		oldComment = fieldCache.get("comment") if fieldCache is not None else None
-@@ -1286,11 +1390,8 @@ def _getFormattingTags(
+@@ -1286,11 +1391,8 @@ def _getFormattingTags(
  ) -> str | None:
  	"""Get the formatting tags for the given field and cache.
  
@@ -310,7 +302,7 @@ index c1c0abd..dda62b7 100644
  	:return: The braille formatting tag as a string, or None if no pertinant formatting is applied.
  	"""
  	textList: list[str] = []
-@@ -1468,7 +1569,9 @@ def _addTextWithFields(self, info, formatConfig, isSelection=False):
+@@ -1468,7 +1570,9 @@ def _addTextWithFields(self, info, formatConfig, isSelection=False):
  									formatConfig,
  								)
  								if not presCat or presCat is field.PRESCAT_LAYOUT:
@@ -321,63 +313,7 @@ index c1c0abd..dda62b7 100644
  								inClickable = True
  						text = info.getControlFieldBraille(field, ctrlFields, True, formatConfig)
  						if text:
-@@ -2416,26 +2519,6 @@ def displaySize(self) -> int:
- Handlers are called without arguments.
- """
- 
--_decide_disabledIncludesMessages = extensionPoints.Decider()
--"""
--Allows Remote Access to decide whether an exception should be made for showing ui.message.
--Handlers are called without arguments.
--"""
--
--_pre_showBrailleMessage = extensionPoints.Action()
--"""
--Called before a `ui.message` is shown,
--to allow Remote Access to show local messages to users who are controlling a remote computer.
--Handlers are called without arguments.
--"""
--
--_post_dismissBrailleMessage = extensionPoints.Action()
--"""
--Called after a `ui.message` is dismissed,
--to allow Remote Access to show local messages to users who are controlling a remote computer.
--Handlers are called without arguments.
--"""
--
- 
- class BrailleHandler(baseObject.AutoPropertyObject):
- 	# TETHER_AUTO, TETHER_FOCUS, TETHER_REVIEW and tetherValues
-@@ -2722,27 +2805,12 @@ def _get_enabled(self):
- 		and thus is C{True} when the display size is greater than 0.
- 		This is a read only property and can't be set.
- 		"""
--		self._refreshEnabled()
--		return self._enabled
--
--	def _refreshEnabled(self, *, block: bool = False) -> None:
--		"""Refresh the state of the enabled property.
--
--		If it has gone from ``True`` to ``False``,
--		actions such as dismissing the current message (if any),
--		and clearing the cursor blink interval are performed.
--		These actions are performed synchronously or asynchronously depending on the value of :param:`block`.
--
--		:param block: Whether this operation should be blocking, defaults to False
--		"""
- 		currentEnabled = bool(self.displaySize) and decide_enabled.decide()
- 		if self._enabled != currentEnabled:
- 			self._enabled = currentEnabled
- 			if currentEnabled is False:
--				if block:
--					wxCallOnMain(self._handleEnabledDecisionFalse)
--				else:
- 				wx.CallAfter(self._handleEnabledDecisionFalse)
-+		return currentEnabled
- 
- 	def _set_enabled(self, value):
- 		raise AttributeError(
-@@ -3016,13 +3084,12 @@ def message(self, text):
+@@ -3016,7 +3120,7 @@ def message(self, text):
  		@postcondition: The message is displayed.
  		"""
  		if (
@@ -386,19 +322,5 @@ index c1c0abd..dda62b7 100644
  			or config.conf["braille"]["showMessages"] == ShowMessages.DISABLED
  			or text is None
  			or config.conf["braille"]["mode"] == BrailleMode.SPEECH_OUTPUT.value
- 		):
- 			return
--		_pre_showBrailleMessage.notify()
- 		if self.buffer is self.messageBuffer:
- 			self.buffer.clear()
- 		else:
-@@ -3061,7 +3128,6 @@ def _dismissMessage(self, shouldUpdate: bool = True):
- 			self._messageCallLater = None
- 		if shouldUpdate:
- 			self.update()
--		_post_dismissBrailleMessage.notify()
- 
- 	def handleGainFocus(self, obj: "NVDAObject", shouldAutoTether: bool = True) -> None:
- 		if not self.enabled or config.conf["braille"]["mode"] == BrailleMode.SPEECH_OUTPUT.value:
 
 ```
