@@ -351,7 +351,9 @@ def getSpeechStyles(languageCode: str) -> list[str]:
 					name.split("/")[-1] for name in zipFile.namelist() if name.endswith("_Rules.yaml")
 				]
 			except Exception as e:
-				log.debugWarning(f"MathCAT: didn't find zip file {zipFile}. Error: {e}")
+				# BEGIN JP PATCH (Fix UnboundLocalError: use zipFilePath instead of zipFile)
+				log.debugWarning(f"MathCAT: didn't find zip file {zipFilePath}. Error: {e}")
+				# END JP PATCH
 		allStyleFiles.sort()
 		return allStyleFiles
 
