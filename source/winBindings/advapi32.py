@@ -29,6 +29,7 @@ from ctypes.wintypes import (
 __all__ = (
 	"OpenProcessToken",
 	"RegCloseKey",
+	"RegDeleteTree",
 	"RegOpenKeyEx",
 	"RegQueryValueEx",
 	"CreateProcessAsUser",
