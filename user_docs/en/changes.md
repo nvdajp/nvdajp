@@ -2,6 +2,9 @@
 
 ## 2026.1
 
+This release introduces on-device automatic image descriptions.
+You can now use `NVDA+Windows+,` to describe images you encounter.
+
 ### Important notes
 
 * This release breaks compatibility with existing add-ons.
@@ -13,7 +16,7 @@ We recommend updating to Windows 11, or when that's not possible, to the latest 
 ### New Features
 
 * AI Image Descriptions:
-  * Press `NVDA+g` to get an AI generated image description. (#18475, @tianzeshi-study)
+  * Press `NVDA+Windows+,` to get an AI generated image description. (#18475, @tianzeshi-study)
   * This is generated locally on the device - no information is sent to the internet.
   * A new unassigned command is available for quickly opening the settings dialog for local image description. (#18475)
   * Another new unassigned command is available to toggle image captioning. (#18475)
