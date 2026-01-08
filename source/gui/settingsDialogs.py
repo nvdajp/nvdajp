@@ -3070,14 +3070,27 @@ class MathSettingsPanel(SettingsPanel):
 
 		# Translators: label for combobox to specify which braille code to use
 		brailleMathCodeText = pgettext("math", "Braille math code for refreshable displays")
-		brailleMathCodeOptions: list[str] = preferences.getBrailleCodes()
+		availableBrailleCodes: list[str] = preferences.getBrailleCodes()
+		autoBrailleCode = preferences.getAutoBrailleCode(availableBrailleCodes)
+		# Translators: An option in Math settings to select a braille code automatically,
+		# according to NVDA's language.
+		autoDisplay = pgettext("math", "Automatic ({name})").format(name=autoBrailleCode)
+		self._brailleCodeIds: list[str] = ["Auto"]
+		brailleMathCodeOptions: list[str] = [autoDisplay]
+		self._brailleCodeIds.extend(availableBrailleCodes)
+		brailleMathCodeOptions.extend(availableBrailleCodes)
 		self.brailleMathCodeList = navGroup.addLabeledControl(
 			brailleMathCodeText,
 			wx.Choice,
 			choices=brailleMathCodeOptions,
 		)
 		self.bindHelpEvent("MathBrailleCode", self.brailleMathCodeList)
-		self.brailleMathCodeList.SetStringSelection(config.conf["math"]["braille"]["brailleCode"])
+		currentBrailleCode = config.conf["math"]["braille"]["brailleCode"]
+		try:
+			selectionIndex = self._brailleCodeIds.index(currentBrailleCode)
+		except ValueError:
+			selectionIndex = 0
+		self.brailleMathCodeList.SetSelection(selectionIndex)
 
 		# Translators: label for combobox to specify how braille dots should be modified when navigating/selecting subexprs
 		brailleHighlightsText = pgettext("math", "Highlight the current navigation node with dots 7 and 8")
@@ -3165,7 +3178,8 @@ class MathSettingsPanel(SettingsPanel):
 			BrailleNavHighlightOption,
 			self.brailleHighlightsList.GetSelection(),
 		)
-		mathConf["braille"]["brailleCode"] = self.brailleMathCodeList.GetStringSelection()
+		selectedBrailleIndex = self.brailleMathCodeList.GetSelection()
+		mathConf["braille"]["brailleCode"] = self._brailleCodeIds[selectedBrailleIndex]
 		mcPrefs: MathCATUserPreferences = MathCATUserPreferences.fromNVDAConfig()
 		mcPrefs.save()
 
@@ -6056,13 +6070,7 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 	def makeSettings(self, sizer: wx.BoxSizer):
 		sHelper = guiHelper.BoxSizerHelper(self, sizer=sizer)
 
-		# BEGIN JP PATCH (Fix KeyError: 'screenCurtain')
-		from visionEnhancementProviders.screenCurtain import ScreenCurtainProvider, WarnOnLoadDialog, warnOnLoadCheckBoxText
 		self._screenCurtainConfig = config.conf["screenCurtain"]
-		screenCurtainId = ScreenCurtainProvider.getSettings().getId()
-		screenCurtainProviderInfo = vision.handler.getProviderInfo(screenCurtainId)
-		screenCurtainInstance = vision.handler.getProviderInstance(screenCurtainProviderInfo)
-		# END JP PATCH
 		# Translators: Name for a feature that disables output to the screen,
 		# making it black.
 		screenCurtainSizer = wx.StaticBoxSizer(wx.VERTICAL, self, label=_("Screen Curtain"))
@@ -6077,30 +6085,21 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 				label=_("Make screen black (immediate effect)"),
 			),
 		)
-		# BEGIN JP PATCH (Fix screenCurtain.screenCurtain reference)
 		self._screenCurtainEnabledCheckbox.SetValue(
-			screenCurtainInstance is not None and screenCurtainInstance.enabled,
+			screenCurtain.screenCurtain is not None and screenCurtain.screenCurtain.enabled,
 		)
 		self._screenCurtainEnabledCheckbox.Bind(wx.EVT_CHECKBOX, self._ensureScreenCurtainEnableState)
-		self._screenCurtainEnabledCheckbox.Enable(screenCurtainInstance is not None)
-		# END JP PATCH
+		self._screenCurtainEnabledCheckbox.Enable(screenCurtain.screenCurtain is not None)
 		self.bindHelpEvent("ScreenCurtainEnable", self._screenCurtainEnabledCheckbox)
 
 		self._screenCurtainWarnOnLoadCheckbox = screenCurtainGroup.addItem(
 			wx.CheckBox(
 				screenCurtainBox,
-				# BEGIN JP PATCH (Fix screenCurtain._screenCurtain reference)
-				label=warnOnLoadCheckBoxText,
-				# END JP PATCH
+				label=screenCurtain._screenCurtain.WARN_ON_LOAD_CHECKBOX_TEXT,
 			),
 		)
 		self._screenCurtainWarnOnLoadCheckbox.SetValue(self._screenCurtainConfig["warnOnLoad"])
 		self.bindHelpEvent("ScreenCurtainWarnOnLoad", self._screenCurtainWarnOnLoadCheckbox)
-
-		# BEGIN JP PATCH (Store provider info and instance for later use)
-		self._screenCurtainProviderInfo = screenCurtainProviderInfo
-		self._screenCurtainInstance = screenCurtainInstance
-		# END JP PATCH
 
 		self._screenCurtainPlayToggleSoundsCheckbox = screenCurtainGroup.addItem(
 			wx.CheckBox(
@@ -6177,14 +6176,11 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 		"""
 		# Import late to avoid circular import
 		from contentRecog.recogUi import RefreshableRecogResultNVDAObject
-		# BEGIN JP PATCH (Fix screenCurtain._screenCurtain reference)
-		from screenCurtain._screenCurtain import UNAVAILABLE_WHEN_RECOGNISING_CONTENT_MESSAGE
-		# END JP PATCH
 
 		focusObj = api.getFocusObject()
 		if isinstance(focusObj, RefreshableRecogResultNVDAObject) and focusObj.recognizer.allowAutoRefresh:
 			ui.message(
-				UNAVAILABLE_WHEN_RECOGNISING_CONTENT_MESSAGE,
+				screenCurtain._screenCurtain.UNAVAILABLE_WHEN_RECOGNISING_CONTENT_MESSAGE,
 				speechPriority=speech.priorities.Spri.NOW,
 			)
 			return True
@@ -6192,48 +6188,36 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 
 	def _ensureScreenCurtainEnableState(self, evt: wx.CommandEvent):
 		"""Ensures that toggling the Screen Curtain checkbox toggles the Screen Curtain."""
-		# BEGIN JP PATCH (Fix screenCurtain.screenCurtain reference)
-		import speech
-		import ui
-		screenCurtainInstance = vision.handler.getProviderInstance(self._screenCurtainProviderInfo)
-		# END JP PATCH
 		shouldBeEnabled = evt.IsChecked()
-		if screenCurtainInstance is None:
+		if screenCurtain.screenCurtain is None:
 			self._screenCurtainEnabledCheckbox.SetValue(False)
 			return
-		currentlyEnabled = screenCurtainInstance.enabled
+		currentlyEnabled = screenCurtain.screenCurtain.enabled
 		if shouldBeEnabled and not currentlyEnabled:
 			confirmed = self._confirmEnableScreenCurtainWithUser()
 			if not confirmed or self._ocrActive():
 				self._screenCurtainEnabledCheckbox.SetValue(False)
 			else:
 				try:
-					vision.handler.initializeProvider(self._screenCurtainProviderInfo)
+					screenCurtain.screenCurtain.enable()
 				except Exception:
-					# BEGIN JP PATCH (Fix screenCurtain._screenCurtain reference)
-					from screenCurtain._screenCurtain import ERROR_ENABLING_MESSAGE
-					# END JP PATCH
-					import logHandler
-					logHandler.log.error("Error enabling Screen Curtain.", exc_info=True)
+					log.error("Error enabling Screen Curtain.", exc_info=True)
 					ui.message(
-						ERROR_ENABLING_MESSAGE,
+						screenCurtain._screenCurtain.ERROR_ENABLING_MESSAGE,
 						speechPriority=speech.priorities.Spri.NOW,
 					)
 					self._screenCurtainEnabledCheckbox.SetValue(False)
 		elif not shouldBeEnabled and currentlyEnabled:
-			vision.handler.terminateProvider(self._screenCurtainProviderInfo)
+			screenCurtain.screenCurtain.disable()
 
 	def _confirmEnableScreenCurtainWithUser(self) -> bool:
 		"""Confirm with the user before enabling Screen Curtain, if configured to do so.
 
 		:return: ``True`` if the Screen Curtain should be enabled; ``False`` otherwise.
 		"""
-		# BEGIN JP PATCH (Fix screenCurtain._screenCurtain reference)
-		from visionEnhancementProviders.screenCurtain import ScreenCurtainProvider, WarnOnLoadDialog
-		# END JP PATCH
 		if not self._screenCurtainConfig["warnOnLoad"]:
 			return True
-		with WarnOnLoadDialog(
+		with screenCurtain._screenCurtain.WarnOnLoadDialog(
 			screenCurtainSettingsStorage=self._screenCurtainConfig,
 			parent=self,
 		) as dlg:
