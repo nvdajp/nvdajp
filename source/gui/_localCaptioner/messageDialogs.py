@@ -4,7 +4,6 @@
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
 from gui.message import MessageDialog, DefaultButton, ReturnCode, DialogType
-from languageHandler import pgettext
 from _localCaptioner.modelDownloader import ModelDownloader
 import threading
 from threading import Thread
@@ -50,18 +49,18 @@ def openFailDialog() -> None:
 		DefaultButton.NO,
 	)
 
-		dialog = MessageDialog(
-			parent=None,
-			# Translators: title of dialog when fail to download
-			title=pgettext("imageDesc", "Download failed"),
-			message=pgettext(
-				"imageDesc",
-				# Translators: label of dialog when fail to download image captioning
-				"Image captioning download failed. Would you like to retry?",
-			),
-			dialogType=DialogType.WARNING,
-			buttons=confirmationButtons,
-		)
+	dialog = MessageDialog(
+		parent=None,
+		# Translators: title of dialog when fail to download
+		title=pgettext("imageDesc", "Download failed"),
+		message=pgettext(
+			"imageDesc",
+			# Translators: label of dialog when fail to download image captioning
+			"Image captioning download failed. Would you like to retry?",
+		),
+		dialogType=DialogType.WARNING,
+		buttons=confirmationButtons,
+	)
 
 	if dialog.ShowModal() == ReturnCode.YES:
 		global _downloadThread
