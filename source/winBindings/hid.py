@@ -23,7 +23,15 @@ from ctypes.wintypes import (
 	PUSHORT,
 )
 from comtypes import GUID
-from hidpi import HIDP_CAPS, NTSTATUS
+from hidpi import (
+	HIDP_CAPS,
+	NTSTATUS,
+	HIDP_REPORT_TYPE,
+	USAGE,
+	HIDP_DATA,
+	HIDP_VALUE_CAPS,
+	HIDP_BUTTON_CAPS,
+)
 
 dll = windll.hid
 
