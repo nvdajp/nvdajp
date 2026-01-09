@@ -143,4 +143,3 @@ $output += @"
 $output | Out-File -FilePath $OutputFile -Encoding UTF8
 Write-Host "`n詳細記録を $OutputFile に保存しました。" -ForegroundColor Green
 Write-Host "コンフリクトファイル数: $fileCount" -ForegroundColor Green
-
