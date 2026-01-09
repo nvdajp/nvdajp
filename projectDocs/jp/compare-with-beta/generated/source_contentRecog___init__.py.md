@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\beta\\source\\contentRecog\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\contentRecog\\__init__.py"
-index 39975b1..6cb6803 100644
+index 39975b1..bb63381 100644
 --- "a/F:\\nvda\\gh\\beta\\source\\contentRecog\\__init__.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\contentRecog\\__init__.py"
 @@ -1,5 +1,5 @@
@@ -55,20 +55,7 @@ index 39975b1..6cb6803 100644
  class BaseContentRecogTextInfo(cursorManager._ReviewCursorManagerTextInfo):
  	"""
  	The TextInfo class that all TextInfos emitted by implementations of RecognitionResult must inherit from.
-@@ -44,12 +68,6 @@ class ContentRecognizer(AutoPropertyObject):
- 	"""
- 	autoRefreshInterval: int = 1500
- 	"""How often (in ms) to perform recognition."""
--	autoSayAllOnResult: bool = False
--	"""
--	Whether to automatically start reading the entire result after a successful recognition.
--	This is useful for users who want to hear the full content immediately
--	without needing to press additional keys.
--	"""
- 
- 	def getResizeFactor(self, width: int, height: int) -> Union[int, float]:
- 		"""Return the factor by which an image must be resized
-@@ -242,6 +260,16 @@ def _parseData(self):
+@@ -242,6 +266,16 @@ def _parseData(self):
  			for word in line:
  				if firstWordOfLine:
  					firstWordOfLine = False

@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\beta\\source\\gui\\__init__.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\__init__.py"
-index 5391ccc..9a91800 100644
+index 5391ccc..3438a6c 100644
 --- "a/F:\\nvda\\gh\\beta\\source\\gui\\__init__.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\gui\\__init__.py"
 @@ -3,6 +3,7 @@
@@ -110,7 +110,7 @@ index 5391ccc..9a91800 100644
  			# Translators: The label of a menu item to open NVDA user guide.
  			item = self.helpMenu.Append(wx.ID_ANY, _("&User Guide"))
  			self.Bind(wx.EVT_MENU, lambda evt: self._openDocumentationFile("userGuide.html"), item)
-@@ -844,9 +878,12 @@ def _appendHelpSubMenu(self, frame: MainFrame) -> None:
+@@ -844,6 +878,9 @@ def _appendHelpSubMenu(self, frame: MainFrame) -> None:
  
  			self.helpMenu.AppendSeparator()
  
@@ -119,10 +119,6 @@ index 5391ccc..9a91800 100644
 +			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("https://www.nvda.jp/"), item)
  			# Translators: The label for the menu item to view the NVDA website
  			item = self.helpMenu.Append(wx.ID_ANY, _("NV Access &web site"))
--			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(buildVersion.url), item)
-+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(versionInfo.url), item)
- 			# Translators: The label for the menu item to view the NVDA website's get help section
- 			item = self.helpMenu.Append(wx.ID_ANY, _("&Help, training and support"))
- 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{buildVersion.url}/get-help/"), item)
+ 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(buildVersion.url), item)
 
 ```

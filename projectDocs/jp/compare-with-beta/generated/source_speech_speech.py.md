@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\beta\\source\\speech\\speech.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\speech\\speech.py"
-index bb6b873..95d9c1b 100644
+index bb6b873..1f5cf10 100644
 --- "a/F:\\nvda\\gh\\beta\\source\\speech\\speech.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\speech\\speech.py"
 @@ -6,6 +6,7 @@
@@ -130,40 +130,7 @@ index bb6b873..95d9c1b 100644
  	if synthConfig["useSpellingFunctionality"]:
  		seq = _getSpellingSpeechAddCharMode(seq)
  	# This function applies Unicode normalization as appropriate.
-@@ -1014,13 +1047,10 @@ def splitTextIndentation(text):
- 
- RE_INDENTATION_CONVERT = re.compile(r"(?P<char>\s)(?P=char)*", re.UNICODE)
- IDT_BASE_FREQUENCY = 220  # One octave below middle A.
-+IDT_TONE_DURATION = 80  # Milleseconds
- IDT_MAX_SPACES = 72
- 
- 
--def getIndentToneDuration() -> int:
--	return config.conf["documentFormatting"]["indentToneDuration"]
--
--
- def getIndentationSpeech(indentation: str, formatConfig: Dict[str, bool]) -> SpeechSequence:
- 	"""Retrieves the indentation speech sequence for a given string of indentation.
- 	@param indentation: The string of indentation.
-@@ -1041,7 +1071,7 @@ def getIndentationSpeech(indentation: str, formatConfig: Dict[str, bool]) -> Spe
- 	indentSequence: SpeechSequence = []
- 	if not indentation:
- 		if toneIndentConfig:
--			indentSequence.append(BeepCommand(IDT_BASE_FREQUENCY, getIndentToneDuration()))
-+			indentSequence.append(BeepCommand(IDT_BASE_FREQUENCY, IDT_TONE_DURATION))
- 		if speechIndentConfig:
- 			indentSequence.append(
- 				# Translators: This is spoken when the given line has no indentation.
-@@ -1071,7 +1101,7 @@ def getIndentationSpeech(indentation: str, formatConfig: Dict[str, bool]) -> Spe
- 	if toneIndentConfig:
- 		if quarterTones <= IDT_MAX_SPACES:
- 			pitch = IDT_BASE_FREQUENCY * 2 ** (quarterTones / 24.0)  # 24 quarter tones per octave.
--			indentSequence.append(BeepCommand(pitch, getIndentToneDuration()))
-+			indentSequence.append(BeepCommand(pitch, IDT_TONE_DURATION))
- 		else:
- 			# we have more than 72 spaces (18 tabs), and must speak it since we don't want to hurt the users ears.
- 			speak = True
-@@ -1105,6 +1135,18 @@ def speak(  # noqa: C901
+@@ -1105,6 +1138,18 @@ def speak(  # noqa: C901
  	if speechViewer.isActive:
  		speechViewer.appendSpeechSequence(speechSequence)
  	pre_speech.notify(speechSequence=speechSequence, symbolLevel=symbolLevel, priority=priority)
@@ -182,7 +149,7 @@ index bb6b873..95d9c1b 100644
  	if _speechState.speechMode == SpeechMode.off:
  		return
  	elif _speechState.speechMode == SpeechMode.beeps:
-@@ -1483,6 +1525,14 @@ def speakTextInfo(
+@@ -1483,6 +1528,14 @@ def speakTextInfo(
  	suppressBlanks: bool = False,
  	priority: Optional[Spri] = None,
  ) -> bool:

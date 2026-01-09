@@ -4,6 +4,7 @@
 param(
     [string]$Source2025Path = "F:\nvda\gh\alphajp-251219",
     [string]$Directory = "",
+    [string]$File = "",
     [string[]]$FileType = @(),
     [ValidateSet("list", "diff", "vscode", "git", "markdown")]
     [string]$Output = "list",
@@ -33,22 +34,37 @@ Write-Host "  Source: $Source2025Path" -ForegroundColor Gray
 Write-Host ""
 
 # Get all files in current directory (excluding .git, node_modules, etc.)
-$currentFiles = Get-ChildItem -Path $CurrentRoot -Recurse -File `
-    | Where-Object { 
-        $_.FullName -notlike "*\.git\*" -and
-        $_.FullName -notlike "*\node_modules\*" -and
-        $_.FullName -notlike "*\__pycache__\*" -and
-        $_.FullName -notlike "*\.venv\*" -and
-        $_.FullName -notlike "*\build\*" -and
-        $_.FullName -notlike "*\dist\*"
+if ($File -ne "") {
+    # Single file mode
+    $filePath = if ([System.IO.Path]::IsPathRooted($File)) {
+        $File
+    } else {
+        Join-Path $CurrentRoot $File
     }
-
-# Filter by directory and file type
-if ($Directory -ne "") {
-    $currentFiles = $currentFiles | Where-Object { $_.FullName -like "*$Directory*" }
-}
-if ($FileType.Count -gt 0) {
-    $currentFiles = $currentFiles | Where-Object { $_.Extension -in $FileType }
+    if (-not (Test-Path $filePath)) {
+        Write-Host "Error: File not found: $filePath" -ForegroundColor Red
+        exit 1
+    }
+    $fileInfo = Get-Item $filePath
+    $currentFiles = @($fileInfo)
+} else {
+    $currentFiles = Get-ChildItem -Path $CurrentRoot -Recurse -File `
+        | Where-Object { 
+            $_.FullName -notlike "*\.git\*" -and
+            $_.FullName -notlike "*\node_modules\*" -and
+            $_.FullName -notlike "*\__pycache__\*" -and
+            $_.FullName -notlike "*\.venv\*" -and
+            $_.FullName -notlike "*\build\*" -and
+            $_.FullName -notlike "*\dist\*"
+        }
+    
+    # Filter by directory and file type
+    if ($Directory -ne "") {
+        $currentFiles = $currentFiles | Where-Object { $_.FullName -like "*$Directory*" }
+    }
+    if ($FileType.Count -gt 0) {
+        $currentFiles = $currentFiles | Where-Object { $_.Extension -in $FileType }
+    }
 }
 
 # Compare files
@@ -58,18 +74,33 @@ $removedFiles = @()
 $identicalFiles = 0
 
 foreach ($file in $currentFiles) {
-    $relativePath = $file.FullName.Substring($CurrentRoot.Length + 1)
+    if ($null -eq $file) {
+        continue
+    }
+    $fileFullName = if ($file -is [System.IO.FileInfo]) {
+        $file.FullName
+    } elseif ($file -is [string]) {
+        $file
+    } else {
+        continue
+    }
+    $relativePath = if ($File -ne "") {
+        # Single file mode: use the provided file path as-is
+        $File -replace [regex]::Escape($CurrentRoot + "\"), "" -replace [regex]::Escape($CurrentRoot + "/"), ""
+    } else {
+        $fileFullName.Substring($CurrentRoot.Length + 1)
+    }
     $source2025File = Join-Path $Source2025Path $relativePath
     
     if (Test-Path $source2025File) {
         # Compare file content
-        $currentHash = (Get-FileHash $file.FullName -Algorithm SHA256).Hash
+        $currentHash = (Get-FileHash $fileFullName -Algorithm SHA256).Hash
         $source2025Hash = (Get-FileHash $source2025File -Algorithm SHA256).Hash
         
         if ($currentHash -ne $source2025Hash) {
             $changedFiles += [PSCustomObject]@{
                 Path = $relativePath
-                Current = $file.FullName
+                Current = $fileFullName
                 Source2025 = $source2025File
             }
         } else {
@@ -80,30 +111,32 @@ foreach ($file in $currentFiles) {
     }
 }
 
-# Check for removed files
-$source2025Files = Get-ChildItem -Path $Source2025Path -Recurse -File `
-    | Where-Object { 
-        $_.FullName -notlike "*\.git\*" -and
-        $_.FullName -notlike "*\node_modules\*" -and
-        $_.FullName -notlike "*\__pycache__\*" -and
-        $_.FullName -notlike "*\.venv\*" -and
-        $_.FullName -notlike "*\build\*" -and
-        $_.FullName -notlike "*\dist\*"
-    }
-
-if ($Directory -ne "") {
-    $source2025Files = $source2025Files | Where-Object { $_.FullName -like "*$Directory*" }
-}
-if ($FileType.Count -gt 0) {
-    $source2025Files = $source2025Files | Where-Object { $_.Extension -in $FileType }
-}
-
-foreach ($file in $source2025Files) {
-    $relativePath = $file.FullName.Substring($Source2025Path.Length + 1)
-    $currentFile = Join-Path $CurrentRoot $relativePath
+# Check for removed files (skip in single file mode)
+if ($File -eq "") {
+    $source2025Files = Get-ChildItem -Path $Source2025Path -Recurse -File `
+        | Where-Object { 
+            $_.FullName -notlike "*\.git\*" -and
+            $_.FullName -notlike "*\node_modules\*" -and
+            $_.FullName -notlike "*\__pycache__\*" -and
+            $_.FullName -notlike "*\.venv\*" -and
+            $_.FullName -notlike "*\build\*" -and
+            $_.FullName -notlike "*\dist\*"
+        }
     
-    if (-not (Test-Path $currentFile)) {
-        $removedFiles += $relativePath
+    if ($Directory -ne "") {
+        $source2025Files = $source2025Files | Where-Object { $_.FullName -like "*$Directory*" }
+    }
+    if ($FileType.Count -gt 0) {
+        $source2025Files = $source2025Files | Where-Object { $_.Extension -in $FileType }
+    }
+    
+    foreach ($file in $source2025Files) {
+        $relativePath = $file.FullName.Substring($Source2025Path.Length + 1)
+        $currentFile = Join-Path $CurrentRoot $relativePath
+        
+        if (-not (Test-Path $currentFile)) {
+            $removedFiles += $relativePath
+        }
     }
 }
 
@@ -385,22 +418,32 @@ switch ($Output) {
                 # git diff returns 0 (no diff) or 1 (diff found), both are valid
                 # Exit code 129+ indicates an error
                 if ($exitCode -le 1) {
-                    # Skip if diff is empty (only whitespace differences)
+                    # Skip if diff is empty (files are identical)
                     $diffOutputTrimmed = $diffOutput.Trim()
                     if ([string]::IsNullOrWhiteSpace($diffOutputTrimmed)) {
-                        # Only whitespace differences, skip this file
+                        # Files are identical, skip creating diff file
                         continue
                     }
                     
                     $safePath = $file.Path -replace '[\\/:*?"<>|]', '_'
                     $diffFile = Join-Path $generatedDir "$safePath.md"
                     
+                    # Check if diff file already exists and remove it if it contains "ファイルは同一です"
+                    if (Test-Path $diffFile) {
+                        $existingContent = Get-Content $diffFile -Raw -ErrorAction SilentlyContinue
+                        if ($existingContent -match "ファイルは同一です（差分なし）") {
+                            Remove-Item $diffFile -Force
+                        }
+                    }
+                    
                     # Format as Markdown code block for better readability
+                    $sourcePath = $file.Source2025
+                    $currentPath = $file.Current
                     $diffContent = @"
 # Diff for: ``$($file.Path)``
 
-**Source**: ``$($file.Source2025)``  
-**Current**: ``$($file.Current)``
+**Source**: ``$sourcePath``  
+**Current**: ``$currentPath``
 
 **注**: このdiffは空白文字（インデントなど）の違いを無視して表示されています。
 

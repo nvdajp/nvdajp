@@ -787,6 +787,7 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 	states = propertyValues.get("states")
 	positionInfo = propertyValues.get("positionInfo")
 	level = positionInfo.get("level") if positionInfo else None
+	childControlCount = positionInfo.get("childControlCount") if positionInfo else None
 	cellCoordsText = propertyValues.get("cellCoordsText")
 	rowNumber = propertyValues.get("rowNumber")
 	columnNumber = propertyValues.get("columnNumber")
@@ -812,19 +813,24 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 			# BEGIN JP PATCH
 			roleText = _nvdajp("vlnk")
 			# END JP PATCH
-		elif (
-			role == controlTypes.Role.LIST
-			and states
-			and controlTypes.State.MULTISELECTABLE in states
-			and config.conf["presentation"]["reportMultiSelect"]
-		):
-			# Collapse the list role and multiselectable state into a single role text.
-			# Note that for other cases where this state is found, regular processing with
-			# controlTypes.processAndLabelStates will discard the state if necessary.
-			states = states.copy()
-			states.discard(controlTypes.State.MULTISELECTABLE)
-			# Translators: Displayed in braille for a multi select list.
-			roleText = _("mslst")
+		elif role == controlTypes.Role.LIST:
+			if (
+				states
+				and controlTypes.State.MULTISELECTABLE in states
+				and config.conf["presentation"]["reportMultiSelect"]
+			):
+				# Collapse the list role and multiselectable state into a single role text.
+				# Note that for other cases where this state is found, regular processing with
+				# controlTypes.processAndLabelStates will discard the state if necessary.
+				states = states.copy()
+				states.discard(controlTypes.State.MULTISELECTABLE)
+				# Translators: Displayed in braille for a multi select list.
+				roleText = _("mslst")
+			else:
+				roleText = roleLabels.get(role, role.displayString)
+			if childControlCount:
+				roleText += childControlCount
+				childControlCount = None
 		elif (
 			name or cellCoordsText or rowNumber or columnNumber
 		) and role in controlTypes.silentRolesOnFocus:
@@ -1269,6 +1275,8 @@ def _getControlFieldForReportStart(
 	level = field.get("level")
 	if level:
 		props["positionInfo"] = {"level": level}
+	if role == controlTypes.Role.LIST and (int(childControlCount := field.get("_childcontrolcount", 0))) > 0:
+		props["positionInfo"] = {"childControlCount": childControlCount}
 
 	text = getPropertiesBraille(**props)
 	if content:
@@ -1391,8 +1399,11 @@ def _getFormattingTags(
 ) -> str | None:
 	"""Get the formatting tags for the given field and cache.
 
+	Formatting tags are calculated according to the preferences passed in formatConfig.
+
 	:param field: The format current field.
 	:param fieldCache: The previous format field.
+	:param formatConfig: The user's formatting preferences.
 	:return: The braille formatting tag as a string, or None if no pertinant formatting is applied.
 	"""
 	textList: list[str] = []
@@ -3120,7 +3131,7 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		@postcondition: The message is displayed.
 		"""
 		if (
-			not self.enabled
+			(not self.enabled and _decide_disabledIncludesMessages.decide())
 			or config.conf["braille"]["showMessages"] == ShowMessages.DISABLED
 			or text is None
 			or config.conf["braille"]["mode"] == BrailleMode.SPEECH_OUTPUT.value

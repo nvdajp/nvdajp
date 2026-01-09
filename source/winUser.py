@@ -562,7 +562,8 @@ def isDescendantWindow(parentHwnd, childHwnd):
 
 
 def getForegroundWindow() -> HWNDVal:
-	return _user32.GetForegroundWindow()
+	hwnd = _user32.GetForegroundWindow()
+	return hwnd or 0
 
 
 def setForegroundWindow(hwnd):
@@ -574,7 +575,8 @@ def setFocus(hwnd):
 
 
 def getDesktopWindow() -> HWNDVal:
-	return _user32.GetDesktopWindow()
+	hwnd = _user32.GetDesktopWindow()
+	return hwnd or 0
 
 
 def getControlID(hwnd):
@@ -626,7 +628,8 @@ def mouse_event(*args):
 
 
 def getAncestor(hwnd: HWNDVal, flags: int) -> HWNDVal:
-	return _user32.GetAncestor(hwnd, flags)
+	hwnd = _user32.GetAncestor(hwnd, flags)
+	return hwnd or 0
 
 
 def setCursorPos(x, y):
@@ -646,7 +649,8 @@ def getCaretPos():
 
 
 def getTopWindow(hwnd: HWNDVal) -> HWNDVal:
-	return _user32.GetTopWindow(hwnd)
+	hwnd = _user32.GetTopWindow(hwnd)
+	return hwnd or 0
 
 
 def getWindowText(hwnd):
@@ -656,7 +660,8 @@ def getWindowText(hwnd):
 
 
 def getWindow(window: HWNDVal, relation: int) -> HWNDVal:
-	return _user32.GetWindow(window, relation)
+	hwnd = _user32.GetWindow(window, relation)
+	return hwnd or 0
 
 
 def isWindowVisible(window):
@@ -691,9 +696,10 @@ def SetLayeredWindowAttributes(hwnd, key, alpha, flags):
 
 def getPreviousWindow(hwnd: HWNDVal) -> HWNDVal:
 	try:
-		return _user32.GetWindow(hwnd, GW_HWNDPREV)
+		hwnd = _user32.GetWindow(hwnd, GW_HWNDPREV)
 	except WindowsError:
 		return 0
+	return hwnd or 0
 
 
 def getKeyboardLayout(idThread=0):

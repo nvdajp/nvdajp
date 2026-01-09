@@ -9,47 +9,10 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\beta\\source\\louisHelper.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\louisHelper.py"
-index d59b673..a90d6b4 100644
+index d59b673..f0a1b56 100644
 --- "a/F:\\nvda\\gh\\beta\\source\\louisHelper.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\louisHelper.py"
-@@ -1,7 +1,7 @@
- # A part of NonVisual Desktop Access (NVDA)
- # This file is covered by the GNU General Public License.
- # See the file COPYING for more details.
--# Copyright (C) 2018-2025 NV Access Limited, Babbage B.V., Julien Cochuyt, Leonard de Ruijter
-+# Copyright (C) 2018-2024 NV Access Limited, Babbage B.V., Julien Cochuyt, Leonard de Ruijter
- 
- """Helper module to ease communication to and from liblouis."""
- 
-@@ -94,12 +94,8 @@ def _resolveTable(tablesList: bytes, base: bytes | None) -> int | None:
- 	except LookupError:
- 		log.exception()
- 		return None
--	# Terminate the list of paths
--	paths.append(None)
- 	if _isDebug():
--		log.debug(
--			f"Storing paths in a null terminated array of length {len(paths)} with null terminated strings",
--		)
-+		log.debug(f"Storing paths in an array of {len(paths)} null terminated strings")
- 	# Keeping a reference to the last returned value to ensure the returned
- 	# value is not GC'ed before it is copied on liblouis' side.
- 	_resolveTable._lastRes = arr = (c_char_p * len(paths))(*paths)
-@@ -149,19 +145,31 @@ def terminate():
- 	louis.liblouis.lou_free()
- 
- 
--def translate(
--	tableList: list[str],
--	inbuf: str,
--	typeform: list[int] | None = None,
--	cursorPos: int | None = None,
--	mode: int = 0,
--) -> tuple[list[int], list[int], list[int], int | None]:
-+def translate(tableList, inbuf, typeform=None, cursorPos=None, mode=0):
- 	"""
- 	Convenience wrapper for louis.translate that:
- 	* returns a list of integers instead of a string with cells, and
+@@ -162,6 +162,24 @@ def translate(
  	* distinguishes between cursor position 0 (cursor at first character) and None (no cursor at all)
  	"""
  	text = inbuf.replace("\0", "")
@@ -74,7 +37,7 @@ index d59b673..a90d6b4 100644
  		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
  			tableList,
  			text,
-@@ -170,6 +178,7 @@ def translate(
+@@ -170,6 +188,7 @@ def translate(
  			cursorPos=cursorPos or 0,
  			mode=mode,
  		)

@@ -9,7 +9,7 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\beta\\source\\braille.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\braille.py"
-index c1c0abd..88426a0 100644
+index c1c0abd..5936994 100644
 --- "a/F:\\nvda\\gh\\beta\\source\\braille.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\braille.py"
 @@ -316,6 +316,63 @@
@@ -95,7 +95,7 @@ index c1c0abd..88426a0 100644
  				for role in detailsRoles
  				if role  # handle None case without the "has X" grammar.
  			)
-@@ -712,14 +770,23 @@ def _getAnnotationProperty(
+@@ -712,8 +770,18 @@ def _getAnnotationProperty(
  def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  	textList = []
  	name = propertyValues.get("name")
@@ -114,13 +114,7 @@ index c1c0abd..88426a0 100644
  	role: Optional[Union[controlTypes.Role, int]] = propertyValues.get("role")
  	roleText = propertyValues.get("roleText")
  	states = propertyValues.get("states")
- 	positionInfo = propertyValues.get("positionInfo")
- 	level = positionInfo.get("level") if positionInfo else None
--	childControlCount = positionInfo.get("childControlCount") if positionInfo else None
- 	cellCoordsText = propertyValues.get("cellCoordsText")
- 	rowNumber = propertyValues.get("rowNumber")
- 	columnNumber = propertyValues.get("columnNumber")
-@@ -734,16 +801,20 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+@@ -734,13 +802,17 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  		if role == controlTypes.Role.HEADING and level:
  			# Translators: Displayed in braille for a heading with a level.
  			# %s is replaced with the level.
@@ -134,27 +128,16 @@ index c1c0abd..88426a0 100644
  			states.discard(controlTypes.State.VISITED)
  			# Translators: Displayed in braille for a link which has been visited.
 -			roleText = _("vlnk")
--		elif role == controlTypes.Role.LIST:
--			if (
--				states
 +			# BEGIN JP PATCH
 +			roleText = _nvdajp("vlnk")
 +			# END JP PATCH
-+		elif (
-+			role == controlTypes.Role.LIST
-+			and states
- 			and controlTypes.State.MULTISELECTABLE in states
- 			and config.conf["presentation"]["reportMultiSelect"]
- 		):
-@@ -754,20 +825,24 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
- 			states.discard(controlTypes.State.MULTISELECTABLE)
- 			# Translators: Displayed in braille for a multi select list.
- 			roleText = _("mslst")
--			else:
--				roleText = roleLabels.get(role, role.displayString)
--			if childControlCount:
--				roleText += childControlCount
--				childControlCount = None
+ 		elif role == controlTypes.Role.LIST:
+ 			if (
+ 				states
+@@ -759,15 +831,24 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+ 			if childControlCount:
+ 				roleText += childControlCount
+ 				childControlCount = None
 -
  		elif (
  			name or cellCoordsText or rowNumber or columnNumber
@@ -178,7 +161,7 @@ index c1c0abd..88426a0 100644
  	value = propertyValues.get("value")
  	if value and role not in controlTypes.silentValuesForRoles:
  		textList.append(value)
-@@ -779,8 +854,10 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+@@ -779,8 +860,10 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  				controlTypes.OutputReason.FOCUS,
  				states,
  				None,
@@ -191,7 +174,7 @@ index c1c0abd..88426a0 100644
  			),
  		)
  	if roleText:
-@@ -807,12 +884,18 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+@@ -807,12 +890,18 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  			# {number} is replaced with the number of the item in the group.
  			# {total} is replaced with the total number of items in the group.
  			textList.append(_("{number} of {total}").format(number=indexInGroup, total=similarItemsInGroup))
@@ -212,7 +195,7 @@ index c1c0abd..88426a0 100644
  	if rowNumber:
  		if includeTableCellCoords and not cellCoordsText:
  			if rowSpan > 1:
-@@ -828,9 +911,11 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
+@@ -828,9 +917,11 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
  				rowStr = _("r{rowNumber}").format(rowNumber=rowNumber)
  			textList.append(rowStr)
  	if columnNumber:
@@ -227,7 +210,7 @@ index c1c0abd..88426a0 100644
  		if includeTableCellCoords and not cellCoordsText:
  			if columnSpan > 1:
  				# Translators: Displayed in braille for the table cell column numbers when a cell spans multiple columns.
-@@ -902,6 +987,20 @@ def update(self):
+@@ -902,6 +993,20 @@ def update(self):
  		)
  		description = obj.description if _shouldUseDescription else None
  		detailsRoles = obj.annotations.roles if obj.annotations else None
@@ -248,7 +231,7 @@ index c1c0abd..88426a0 100644
  		text = getPropertiesBraille(
  			name=name,
  			role=role,
-@@ -918,6 +1017,10 @@ def update(self):
+@@ -918,6 +1023,10 @@ def update(self):
  			cellCoordsText=obj.cellCoordsText
  			if config.conf["documentFormatting"]["reportTableCellCoords"]
  			else None,
@@ -259,7 +242,7 @@ index c1c0abd..88426a0 100644
  			errorMessage=errorMessage,
  		)
  		if role == controlTypes.Role.MATH:
-@@ -1010,7 +1113,9 @@ def getControlFieldBraille(
+@@ -1010,7 +1119,9 @@ def getControlFieldBraille(
  	roleText = field.get("roleTextBraille", field.get("roleText"))
  	landmark = field.get("landmark")
  	if not roleText and role == controlTypes.Role.LANDMARK and landmark:
@@ -270,16 +253,7 @@ index c1c0abd..88426a0 100644
  
  	content = field.get("content")
  
-@@ -1164,8 +1269,6 @@ def _getControlFieldForReportStart(
- 	level = field.get("level")
- 	if level:
- 		props["positionInfo"] = {"level": level}
--	if role == controlTypes.Role.LIST and (int(childControlCount := field.get("_childcontrolcount", 0))) > 0:
--		props["positionInfo"] = {"childControlCount": childControlCount}
- 
- 	text = getPropertiesBraille(**props)
- 	if content:
-@@ -1225,7 +1328,9 @@ def getFormatFieldBraille(field, fieldCache, isAtStart, formatConfig):
+@@ -1225,7 +1336,9 @@ def getFormatFieldBraille(field, fieldCache, isAtStart, formatConfig):
  		link = field.get("link")
  		oldLink = fieldCache.get("link")
  		if link and link != oldLink:
@@ -290,19 +264,7 @@ index c1c0abd..88426a0 100644
  	if formatConfig["reportComments"]:
  		comment = field.get("comment")
  		oldComment = fieldCache.get("comment") if fieldCache is not None else None
-@@ -1286,11 +1391,8 @@ def _getFormattingTags(
- ) -> str | None:
- 	"""Get the formatting tags for the given field and cache.
- 
--	Formatting tags are calculated according to the preferences passed in formatConfig.
--
- 	:param field: The format current field.
- 	:param fieldCache: The previous format field.
--	:param formatConfig: The user's formatting preferences.
- 	:return: The braille formatting tag as a string, or None if no pertinant formatting is applied.
- 	"""
- 	textList: list[str] = []
-@@ -1468,7 +1570,9 @@ def _addTextWithFields(self, info, formatConfig, isSelection=False):
+@@ -1468,7 +1581,9 @@ def _addTextWithFields(self, info, formatConfig, isSelection=False):
  									formatConfig,
  								)
  								if not presCat or presCat is field.PRESCAT_LAYOUT:
@@ -313,14 +275,5 @@ index c1c0abd..88426a0 100644
  								inClickable = True
  						text = info.getControlFieldBraille(field, ctrlFields, True, formatConfig)
  						if text:
-@@ -3016,7 +3120,7 @@ def message(self, text):
- 		@postcondition: The message is displayed.
- 		"""
- 		if (
--			(not self.enabled and _decide_disabledIncludesMessages.decide())
-+			not self.enabled
- 			or config.conf["braille"]["showMessages"] == ShowMessages.DISABLED
- 			or text is None
- 			or config.conf["braille"]["mode"] == BrailleMode.SPEECH_OUTPUT.value
 
 ```

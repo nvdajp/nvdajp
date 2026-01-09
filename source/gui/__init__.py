@@ -545,7 +545,7 @@ class MainFrame(wx.Frame):
 		self.prePopup()
 		from . import installerGui
 
-		d = installerGui.PortableCreaterDialog(self)
+		d = installerGui.PortableCreaterDialog(mainFrame)
 		d.Show()
 		self.postPopup()
 
@@ -883,7 +883,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("https://www.nvda.jp/"), item)
 			# Translators: The label for the menu item to view the NVDA website
 			item = self.helpMenu.Append(wx.ID_ANY, _("NV Access &web site"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(versionInfo.url), item)
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(buildVersion.url), item)
 			# Translators: The label for the menu item to view the NVDA website's get help section
 			item = self.helpMenu.Append(wx.ID_ANY, _("&Help, training and support"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{buildVersion.url}/get-help/"), item)

@@ -9,18 +9,10 @@
 
 ```diff
 diff --git "a/F:\\nvda\\gh\\beta\\source\\characterProcessing.py" "b/F:\\nvda\\gh\\alphajp-260109\\source\\characterProcessing.py"
-index 238c4da..93e928d 100644
+index 238c4da..03c1d41 100644
 --- "a/F:\\nvda\\gh\\beta\\source\\characterProcessing.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\source\\characterProcessing.py"
-@@ -22,7 +22,6 @@
- 	TypeVar,
- )
- 
--import NVDAState
- from logHandler import log
- import globalVars
- import config
-@@ -123,12 +122,108 @@ def __init__(self, locale: str):
+@@ -123,12 +123,108 @@ def __init__(self, locale: str):
  		log.debug("Loaded %d entries." % len(self._entries))
  		f.close()
  
@@ -129,7 +121,7 @@ index 238c4da..93e928d 100644
  
  _charDescLocaleDataMap: LocaleDataMap[CharacterDescriptions] = LocaleDataMap(CharacterDescriptions)
  
-@@ -152,6 +247,20 @@ def getCharacterDescription(locale: str, character: str) -> Optional[List[str]]:
+@@ -152,6 +248,20 @@ def getCharacterDescription(locale: str, character: str) -> Optional[List[str]]:
  	return desc
  
  
@@ -150,15 +142,5 @@ index 238c4da..93e928d 100644
  # Speech symbol levels
  class SymbolLevel(IntEnum):
  	"""The desired symbol level in a speech sequence or in configuration.
-@@ -357,9 +466,6 @@ def save(self, fileName=None):
- 		@raise ValueError: If C{fileName} is C{None}
- 			and L{load} or L{save} has not been called.
- 		"""
--		if not NVDAState.shouldWriteToDisk():
--			log.debugWarning("Not saving speech symbols, as shouldWriteToDisk returned False.")
--			return
- 		if fileName:
- 			self.fileName = fileName
- 		elif self.fileName:
 
 ```

@@ -1,74 +1,61 @@
 # 変更されたファイル一覧
 
-**生成日時**: 2026-01-08 23:45:42
+**生成日時**: 2026-01-09 11:16:48
 
 ## カテゴリ別ファイル一覧
 
-### その他 (63 ファイル)
+### その他 (50 ファイル)
 
-- `ci\scripts\mozillaSyms.py`
-- `source\_remoteClient\localMachine.py`
-- `source\api.py`
-- `source\appModules\windowsinternal_composableshell_experiences_textinput_inputapp.py`
-- `source\baseObject.py`
-- `source\braille.py`
-- `source\brailleTables\__init__.py`
-- `source\brailleTables\__tables.py`
-- `source\buildVersion.py`
-- `source\characterProcessing.py`
-- `source\config\configDefaults.py`
-- `source\config\configSpec.py`
-- `source\contentRecog\__init__.py`
-- `source\editableText.py`
-- `source\eventHandler.py`
-- `source\globalCommands.py`
-- `source\gui\__init__.py`
-- `source\gui\settingsDialogs.py`
-- `source\gui\startupDialogs.py`
-- `source\installer.py`
-- `source\keyboardHandler.py`
-- `source\keyLabels.py`
-- `source\logHandler.py`
-- `source\louisHelper.py`
-- `source\md2html.py`
-- `source\NVDAHelper\__init__.py`
-- `source\NVDAObjects\__init__.py`
-- `source\NVDAObjects\behaviors.py`
-- `source\NVDAObjects\IAccessible\__init__.py`
-- `source\NVDAObjects\IAccessible\mscandui.py`
-- `source\NVDAObjects\inputComposition.py`
-- `source\NVDAObjects\window\edit.py`
-- `source\NVDAObjects\window\excel.py`
-- `source\NVDAObjects\window\scintilla.py`
-- `source\setup.py`
-- `source\speech\__init__.py`
-- `source\speech\speech.py`
-- `source\speechViewer.py`
-- `source\synthDriverHandler.py`
-- `source\synthDrivers\oneCore.py`
-- `source\systemUtils.py`
-- `source\updateCheck.py`
-- `source\vkCodes.py`
-- `source\winBindings\magnification.py`
-- `source\winUser.py`
-- `tests\checkPot.py`
-- `tests\system\libraries\_chromeArgs.py`
-- `tests\system\libraries\ChromeLib.py`
-- `tests\system\libraries\NvdaLib.py`
-- `tests\system\libraries\VSCodeLib.py`
-- `tests\system\robot\automatedImageDescriptions.py`
-- `tests\system\robot\chromeTests.py`
-- `tests\system\robot\vscodeTests.py`
-- `tests\unit\contentRecog\test_contentRecog.py`
-- `tests\unit\objectProvider.py`
-- `tests\unit\test_braille\test_brailleDisplayDrivers.py`
-- `tests\unit\test_braille\test_routing.py`
-- `tests\unit\test_brailleTables.py`
-- `tests\unit\test_louisHelper.py`
-- `tests\unit\test_remote\test_remoteClient.py`
-- `tests\unit\test_synthDriverHandler.py`
-- `tests\unit\test_visionEnhancementProviders\test_magnificationAPI.py`
-- `tests\unit\test_winVersion.py`
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
+- ``
 
 ## 追加されたファイル (165 ファイル)
 
@@ -237,14 +224,4 @@
 - `source\synthDrivers\nvdajp_jtalk.py`
 - `source\visionEnhancementProviders\screenCurtain.py`
 - `tests\system\robot\jpRobotUtil.py`
-
-## 削除されたファイル (7 ファイル)
-
-- `source\addonStore\models\scanResults.py`
-- `source\appModules\csrss.py`
-- `source\ftdi2\__init__.py`
-- `source\ftdi2\ftd2xx.py`
-- `source\screenCurtain\__init__.py`
-- `source\winBindings\crypt32.py`
-- `tests\unit\test_compoundDocuments.py`
 
