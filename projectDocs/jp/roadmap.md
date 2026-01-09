@@ -334,6 +334,8 @@
   * `pyrightconfig.json`の除外設定を見直し、JP固有コード（`source/synthDrivers/jtalk/`）の型チェックを有効化
   * 型ヒントの追加（重要な関数から段階的に）
   * 小さなPR単位で実施し、各PRで全テスト通過を確認
+  * **推奨**: 別ブランチ/PRで段階的に実施（機能実装とは分離）
+  * **参照**: `projectDocs/jp/pyright-enablement-summary.md`
 
 #### 優先度：中（継続的な改善）
 
