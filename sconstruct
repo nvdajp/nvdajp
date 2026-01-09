@@ -343,15 +343,11 @@ envArm64.SConscript(
 	exports={"env": envArm64, "clientInstallDir": clientDir.Dir("arm64"), "libInstallDir": sourceLibDirArm64},
 	variant_dir="build/arm64",
 )
-# BEGIN JP PATCH (skip arm64ec build due to linker bug)
-# Skip arm64ec build to work around MSVC linker internal error LNK1000
-# in CImplib::IdentifyAssignedOrdinals when processing .def file with DATA exports
-# envArm64EC.SConscript(
-# 	"nvdaHelper/archBuild_sconscript",
-# 	exports={"env": envArm64EC, "clientInstallDir": clientDir.Dir("arm64ec"), "libInstallDir": sourceLibDirArm64EC},
-# 	variant_dir="build/arm64ec",
-# )
-# END JP PATCH (skip arm64ec build due to linker bug)
+envArm64EC.SConscript(
+	"nvdaHelper/archBuild_sconscript",
+	exports={"env": envArm64EC, "clientInstallDir": clientDir.Dir("arm64ec"), "libInstallDir": sourceLibDirArm64EC},
+	variant_dir="build/arm64ec",
+)
 
 # Allow all NVDA's gettext po files to be compiled in source/locale
 for po in env.Glob(sourceDir.path + "/locale/*/lc_messages/*.po"):
