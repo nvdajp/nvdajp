@@ -76,8 +76,8 @@
 - [x] 上流版の `ja-rokutenkanji.utb` を使用する方針に変更されているか確認 → **変更済み。`include/liblouis/tables/ja-rokutenkanji.utb` が存在し、`source/louis/tables/ja-rokutenkanji.utb` に自動コピーされる**
 
 **参考ドキュメント**:
-- `projectDocs/jp/ja-rokutenkanji-table-fix-plan.md` - テーブル解決エラー修正方針
 - `projectDocs/jp/braille-tables-relationship.md` - 点字テーブルの関係性
+- 注: `ja-rokutenkanji-table-fix-plan.md`は完了済みのため削除（liblouis 3.36更新完了）
 
 #### 2. Windows 11 テキスト入力アプリ対応のファイル名不一致
 
@@ -208,6 +208,6 @@
 ## 参考資料
 
 - `projectDocs/jp/changes-nvdajp.md` - 2025.3jp と本家版の変更点まとめ
-- `projectDocs/jp/ja-rokutenkanji-table-fix-plan.md` - ja-rokutenkanji テーブル修正方針
 - `projectDocs/jp/braille-tables-relationship.md` - 点字テーブルの関係性
+- 注: `ja-rokutenkanji-table-fix-plan.md`は完了済みのため削除（liblouis 3.36更新完了）
 - `projectDocs/jp/test-routing-failures.md` - 点字ルーティングテスト失敗の詳細分析

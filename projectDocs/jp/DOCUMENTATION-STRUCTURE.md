@@ -124,10 +124,8 @@ projectDocs/jp/
 │   ├── test-routing-*.md
 │   └── jpSmokeTest-error-patterns.md
 │
-├── plans/                       # 計画・提案
-│   ├── ja-rokutenkanji-table-fix-plan.md
-│   ├── todo_build_script_redundancy_and_logging.md
-│   └── talk-outline-nvdajp-development-2025-12.md
+├── plans/                       # 計画・提案（削除済み）
+│   └── （完了済み・不要な計画ファイルは削除済み）
 │
 ├── compare-with-2025/          # 比較結果（既存）
 ├── compare-with-beta/          # 比較結果（既存）

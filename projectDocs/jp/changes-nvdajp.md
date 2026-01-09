@@ -86,7 +86,7 @@
 - `source/ja-jp-comp6.utb` - 日本語6点点字コンピュータ用テーブル（130行）
 - `include/liblouis/tables/ja-rokutenkanji.utb` - 日本語6点漢字点字テーブル（上流版、liblouis 3.36.0以降）
 
-**注**: `source/ja-jp-rokutenkanji.tbl` は betajp-260102 ブランチでは使用されていません。代わりに、上流版の `include/liblouis/tables/ja-rokutenkanji.utb` が使用されています。詳細は `projectDocs/jp/ja-rokutenkanji-table-fix-plan.md` を参照してください。
+**注**: `source/ja-jp-rokutenkanji.tbl` は betajp-260102 ブランチでは使用されていません。代わりに、上流版の `include/liblouis/tables/ja-rokutenkanji.utb` が使用されています。liblouis 3.36への更新により、`ja-rokutenkanji.utb`が含まれるようになりました（コミット `e5a9b2e`）。
 
 ##### 点字表示ドライバー
 
