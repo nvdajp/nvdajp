@@ -135,7 +135,13 @@
 
 ## 参照
 
-- `projectDocs/jp/period2-qa-evaluation.md` - 過去の改行コード変更の問題
-- `projectDocs/jp/period2-implementation-strategy.md` - 改行コード統一の別ブランチ/PR実施方針
-- `projectDocs/jp/period2-scope-separation-plan.md` - 改行コード変更のスコープ分離計画
-- `projectDocs/jp/pr608-vs-pr609-explanation.md` - PR #608とPR #609の違い（改行コード変更の除外）
+### 現在の状況
+- `line-endings-summary.md` - 改行コードの扱いに関するまとめ（このドキュメントの要約）
+
+### 過去の作業記録（参考）
+- `period2-qa-evaluation.md` - 期間2の品質保証評価（改行コードの変更が何度も繰り返された問題）
+- `period2-implementation-strategy.md` - 期間2の実装戦略（改行コード統一の別ブランチ/PR実施方針）
+- `period2-scope-separation-plan.md` - 期間2のスコープ分割計画（改行コード変更のスコープ分離）
+- `pr608-vs-pr609-explanation.md` - PR #608とPR #609の違い（改行コード変更の除外）
+
+**注意**: 過去のドキュメントは参考情報として保持していますが、現在の状況と対応方針はこのドキュメントと `line-endings-summary.md` を参照してください。
