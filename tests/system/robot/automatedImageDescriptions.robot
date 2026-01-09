@@ -4,7 +4,7 @@
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 *** Settings ***
 Documentation	Local captioner tests
-Force Tags	NVDA	smoke test	imageDescriptions	fakeTagToEnforceUsageOfInclude
+Force Tags	NVDA	smoke test	imageDescriptions
 
 Library	NvdaLib.py
 Library	automatedImageDescriptions.py
@@ -23,3 +23,4 @@ default teardown
 automatedImageDescriptions
 	[Documentation]	Ensure that local captioner work
 	NVDA_Caption	# run test
+
