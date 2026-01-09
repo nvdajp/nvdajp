@@ -26,6 +26,20 @@ _nvdaProcessAlias = _nvdaRobotLib.nvdaProcessAlias
 _builtIn: BuiltIn = BuiltIn()
 _process: _ProcessLib = _getLib("Process")
 _asserts: _AssertsLib = _getLib("AssertsLib")
+_nvdaLibInstance: _nvdaRobotLib = _getLib("NvdaLib")
+
+# Export keywords from NvdaLib for Robot Framework
+def start_NVDAInstaller(settingsFileName):
+	"""Start NVDA Installer with the specified settings file."""
+	return _nvdaLibInstance.start_NVDAInstaller(settingsFileName)
+
+def quit_NVDAInstaller():
+	"""Quit NVDA Installer."""
+	return _nvdaLibInstance.quit_NVDAInstaller()
+
+def create_preserved_test_output_filename(fileName):
+	"""Create a preserved test output filename."""
+	return _nvdaLibInstance.create_preserved_test_output_filename(fileName)
 
 
 def read_install_dialog():
