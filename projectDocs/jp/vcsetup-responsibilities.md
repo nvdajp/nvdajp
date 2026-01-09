@@ -297,7 +297,6 @@ exit /b 1
 ## 関連ドキュメント
 
 - `projectDocs/jp/build-architecture-environment-variables.md`: `BUILD_ARCH`と`TARGET_ARCH`の関係
-- `projectDocs/jp/certBuild2023_evaluation.md`: `certBuild2023.cmd`の評価
 - `projectDocs/jp/vswhere-implementation-status.md`: `vswhere`実装状況のまとめ（実装済み）
 - `projectDocs/jp/vcsetup-ps1-migration-proposal.md`: PowerShell移行案（将来の作業）
 - `projectDocs/jp/vcsetup-ps1-qa-evaluation.md`: PowerShell移行の品質保証評価（将来の作業）

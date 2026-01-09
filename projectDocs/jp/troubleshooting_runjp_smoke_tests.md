@@ -92,7 +92,7 @@ if repo_root is None or not os.path.exists(os.path.join(repo_root, "miscDepsJp")
 
 ### 検証方法
 
-ローカル環境での詳細な検証手順は、`projectDocs/jp/local_verification_jtalk_runner_fix.md` を参照してください。
+注: この問題は修正済みです。詳細は上記の「解決策」セクションを参照してください。
 
 簡単な検証：
 
@@ -226,7 +226,6 @@ MeCab のログは `source/synthDrivers/jtalk/mecab_debug.log` にのみ保存�
 - `jptools/runJpSmokeTests.ps1` - スクリプトの実装（x86 用）
 - `jptools/checkJtalkArch.ps1` - x86/x64 の DLL 検証・smoke テストスクリプト
 - `miscDepsJp/include/python-jtalk/jtalkRunner.py` - `repo_root` 計算ロジック
-- `projectDocs/jp/local_verification_jtalk_runner_fix.md` - ローカル環境での検証手順
 - `projectDocs/jp/roadmap.md` - x64 対応の詳細な進捗状況
 - `pyproject.toml` - 依存関係の定義
 - `.github/workflows/testAndPublish.yml` - CI での実行方法（x86）

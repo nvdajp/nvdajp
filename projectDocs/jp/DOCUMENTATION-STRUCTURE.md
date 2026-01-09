@@ -58,14 +58,11 @@
 
 #### 4. **トラブルシューティング**（`troubleshooting/`に移動候補）
 - `troubleshooting_runjp_smoke_tests.md`
-- `x64-jp-smoke-crash-investigation.md`
 - `build_file_lock_troubleshooting.md`
 - `local_verification_*` - ローカル検証関連
   - `local_verification_build_dependencies.md`
-  - `local_verification_jtalk_runner_fix.md`
 
 #### 5. **評価・分析**（`evaluation/`に移動候補）
-- `certBuild2023_evaluation.md`
 - `vcsetup-ps1-qa-evaluation.md`
 - `vcsetup-ps1-migration-proposal.md`
 - `vcsetup-responsibilities.md`
@@ -112,12 +109,10 @@ projectDocs/jp/
 │
 ├── troubleshooting/             # トラブルシューティング
 │   ├── troubleshooting_*.md
-│   ├── x64-jp-smoke-crash-investigation.md
 │   ├── build_file_lock_troubleshooting.md
 │   └── local_verification_*.md
 │
 ├── evaluation/                  # 評価・分析
-│   ├── certBuild2023_evaluation.md
 │   ├── vcsetup-*.md
 │   ├── scons-jp-vswhere-dependency-analysis.md
 │   ├── skip-test-decision-analysis.md
