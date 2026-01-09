@@ -75,3 +75,4 @@ miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-tankan-dic.csv
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic
 source/nvda_crash_stats.txt
+*.backup
