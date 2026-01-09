@@ -73,12 +73,7 @@ class _NvdaLocationData:
 			self.baseNVDACommandline = self._runNVDAFilePath
 		elif self.whichNVDA == "installed":
 			self._runNVDAFilePath = self.findInstalledNVDAPath()
-			if self._runNVDAFilePath is None:
-				# File not found, will raise error later when ensurePathsExist() is called
-				exeErrorMsg = f"Unable to find installed NVDA exe. Paths tried: {_pJoin(_expandvars('%PROGRAMFILES%'), 'nvda', 'nvda.exe')}, {_pJoin(_expandvars('%PROGRAMFILES%'), 'NVDA', 'nvda.exe')}"
-				self._runNVDAFilePath = exeErrorMsg  # Store error message temporarily
-			else:
-				self.baseNVDACommandline = f'"{str(self._runNVDAFilePath)}"'
+			self.baseNVDACommandline = f'"{str(self._runNVDAFilePath)}"'
 			if self._installFilePath is not None:
 				self.NVDAInstallerCommandline = f'"{str(self._installFilePath)}"'
 		else:
@@ -95,9 +90,7 @@ class _NvdaLocationData:
 
 	def getPy2exeBootLogPath(self) -> _Optional[str]:
 		if self.whichNVDA == "installed":
-			executablePath = self.findInstalledNVDAPath()
-			if executablePath is None:
-				return None
+			executablePath = _locations.findInstalledNVDAPath()
 			# py2exe names this log file after the executable, see py2exe/boot_common.py
 			return _splitext(executablePath)[0] + ".log"
 		elif self.whichNVDA == "source":
@@ -106,16 +99,14 @@ class _NvdaLocationData:
 	def findInstalledNVDAPath(self) -> _Optional[str]:
 		NVDAFilePath = _pJoin(_expandvars("%PROGRAMFILES%"), "nvda", "nvda.exe")
 		legacyNVDAFilePath = _pJoin(_expandvars("%PROGRAMFILES%"), "NVDA", "nvda.exe")
-		# Check if file exists before using file_should_exist to avoid early failure during import
-		import os
-		if os.path.isfile(NVDAFilePath):
+		exeErrorMsg = f"Unable to find installed NVDA exe. Paths tried: {NVDAFilePath}, {legacyNVDAFilePath}"
+		try:
+			opSys.file_should_exist(NVDAFilePath)
 			return NVDAFilePath
-		elif os.path.isfile(legacyNVDAFilePath):
+		except AssertionError:
+			# Older versions of NVDA (<=2020.4) install the exe in NVDA\nvda.exe
+			opSys.file_should_exist(legacyNVDAFilePath, exeErrorMsg)
 			return legacyNVDAFilePath
-		else:
-			# If neither file exists, return None to allow lazy initialization
-			# The error will be raised later when ensurePathsExist() is called
-			return None
 
 	def ensureInstallerPathsExist(self):
 		fileWarnMsg = f"Unable to run NVDA installer unless path exists. Path given: {self._installFilePath}"
@@ -124,9 +115,6 @@ class _NvdaLocationData:
 		opSys.create_directory(self.preservedLogsDir)
 
 	def ensurePathsExist(self):
-		if isinstance(self._runNVDAFilePath, str) and self._runNVDAFilePath.startswith("Unable to find"):
-			# Error message stored in _runNVDAFilePath
-			raise AssertionError(self._runNVDAFilePath)
 		fileWarnMsg = f"Unable to run NVDA installer unless path exists. Path given: {self._runNVDAFilePath}"
 		opSys.file_should_exist(self._runNVDAFilePath, fileWarnMsg)
 		opSys.create_directory(self.profileDir)
