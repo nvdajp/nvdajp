@@ -19,8 +19,8 @@ import winVersion
 import threading
 import os
 import time
-import ctypes
 from enum import Enum
+import winBindings.kernel32
 import logHandler
 import languageHandler
 import globalVars
@@ -322,9 +322,12 @@ def resetConfiguration(factoryDefaults=False):
 	import hwIo
 	import tones
 	import audio
+	import screenCurtain
 
 	log.debug("Terminating vision")
 	vision.terminate()
+	log.debug("Terminating Screen Curtain")
+	screenCurtain.terminate()
 	log.debug("Terminating braille")
 	braille.terminate()
 	log.debug("Terminating brailleInput")
@@ -388,6 +391,8 @@ def resetConfiguration(factoryDefaults=False):
 	# Vision
 	log.debug("initializing vision")
 	vision.initialize()
+	log.debug("initializing Screen Curtain")
+	screenCurtain.initialize()
 	log.debug("Reloading user and locale input gesture maps")
 	inputCore.manager.loadUserGestureMap()
 	inputCore.manager.loadLocaleGestureMap()
@@ -550,6 +555,7 @@ def _handleNVDAModuleCleanupBeforeGUIExit():
 	import globalPluginHandler
 	import watchdog
 	import _remoteClient
+	import _localCaptioner
 
 	try:
 		import updateCheck
@@ -567,6 +573,8 @@ def _handleNVDAModuleCleanupBeforeGUIExit():
 	brailleViewer.destroyBrailleViewer()
 	# Terminating remoteClient causes it to clean up its menus, so do it here while they still exist
 	_terminate(_remoteClient)
+
+	_terminate(_localCaptioner)
 
 
 def _initializeObjectCaches():
@@ -641,7 +649,7 @@ def _setUpWxApp() -> "wx.App":
 	def onQueryEndSession(evt):
 		if config.isAppX:
 			# Automatically restart NVDA on Windows Store update
-			ctypes.windll.kernel32.RegisterApplicationRestart(None, 0)
+			winBindings.kernel32.RegisterApplicationRestart(None, 0)
 
 	app.Bind(wx.EVT_QUERY_END_SESSION, onQueryEndSession)
 
@@ -783,7 +791,7 @@ def main():
 	speech.initialize()
 	import mathPres
 
-	log.debug("Initializing MathPlayer")
+	log.debug("Initializing math presentation")
 	mathPres.initialize()
 	timeSinceStart = time.time() - NVDAState.getStartTime()
 	if not globalVars.appArgs.minimal and timeSinceStart > 5:
@@ -807,6 +815,12 @@ def main():
 
 	log.debug("Initializing braille")
 	braille.initialize()
+
+	import screenCurtain
+
+	log.debug("Initializing Screen Curtain")
+	screenCurtain.initialize()
+
 	import vision
 
 	log.debug("Initializing vision")
@@ -904,6 +918,10 @@ def main():
 	import _remoteClient
 
 	_remoteClient.initialize()
+
+	import _localCaptioner
+
+	_localCaptioner.initialize()
 
 	if globalVars.appArgs.install or globalVars.appArgs.installSilent:
 		import gui.installerGui
@@ -1080,6 +1098,7 @@ def main():
 	_terminate(keyboardHandler, name="keyboard handler")
 	_terminate(mouseHandler)
 	_terminate(inputCore)
+	_terminate(screenCurtain)
 	_terminate(vision)
 	_terminate(brailleInput)
 	_terminate(braille)

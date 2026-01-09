@@ -1,11 +1,16 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2017-2021 NV Access Limited
+# Copyright (C) 2017-2025 NV Access Limited, Cary-rowen
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
 """Recognition of text using the UWP OCR engine included in Windows 10 and later."""
 
+from ctypes import (
+	cast,
+	POINTER,
+)
 import json
+from winBindings.gdi32 import RGBQUAD
 import NVDAHelper
 from NVDAHelper.localWin10 import (
 	uwpOcr_getLanguages,
@@ -86,6 +91,10 @@ class UwpOcr(ContentRecognizer):
 	def _get_autoRefreshInterval(cls) -> int:
 		return config.conf["uwpOcr"]["autoRefreshInterval"]
 
+	@classmethod
+	def _get_autoSayAllOnResult(cls) -> bool:
+		return config.conf["uwpOcr"]["autoSayAllOnResult"]
+
 	def getResizeFactor(self, width, height):
 		# UWP OCR performs poorly with small images, so increase their size.
 		if width < 100 or height < 100:
@@ -124,7 +133,15 @@ class UwpOcr(ContentRecognizer):
 		if not self._handle:
 			onResult(RuntimeError("UWP OCR initialization failed"))
 			return
-		uwpOcr_recognize(self._handle, pixels, imgInfo.recogWidth, imgInfo.recogHeight)
+		uwpOcr_recognize(
+			self._handle,
+			# pixels, as fetched from screenBitmap.captureImage is a 2d array of RGBQUAD values.
+			# However uwpOcr_recognize expects a 1d array (pointer).
+			# These are identical in memory, so we can just cast.
+			cast(pixels, POINTER(RGBQUAD)),
+			imgInfo.recogWidth,
+			imgInfo.recogHeight,
+		)
 
 	def cancel(self):
 		self._onResult = None

@@ -116,6 +116,10 @@ __getattr__ = _deprecate.handleDeprecations(
 	_deprecate.MovedSymbol("KeyBdInput", "winBindings.user32", "KEYBDINPUT"),
 	_deprecate.MovedSymbol("HardwareInput", "winBindings.user32", "HARDWAREINPUT"),
 	_deprecate.MovedSymbol("MouseInput", "winBindings.user32", "MOUSEINPUT"),
+	_deprecate.MovedSymbol("INPUT_MOUSE", "winBindings.user32", "INPUT_TYPE", "MOUSE"),
+	_deprecate.MovedSymbol("INPUT_KEYBOARD", "winBindings.user32", "INPUT_TYPE", "KEYBOARD"),
+	_deprecate.MovedSymbol("KEYEVENTF_KEYUP", "winBindings.user32", "KEYEVENTF", "KEYUP"),
+	_deprecate.MovedSymbol("KEYEVENTF_UNICODE", "winBindings.user32", "KEYEVENTF", "UNICODE"),
 )
 """Module __getattr__ to handle backward compatibility."""
 
@@ -271,9 +275,15 @@ VK_CONTROL = 17
 VK_MENU = 18
 VK_PAUSE = 19
 VK_CAPITAL = 20
+# BEGIN JP PATCH
+# nvdajp: IME ON/OFF virtual key codes for Japanese IME support
 VK_IME_ON = 0x16
+# END JP PATCH
 VK_FINAL = 0x18
+# BEGIN JP PATCH
+# nvdajp: IME OFF virtual key code
 VK_IME_OFF = 0x1A
+# END JP PATCH
 VK_ESCAPE = 0x1B
 VK_CONVERT = 0x1C
 VK_NONCONVERT = 0x1D
@@ -552,7 +562,8 @@ def isDescendantWindow(parentHwnd, childHwnd):
 
 
 def getForegroundWindow() -> HWNDVal:
-	return _user32.GetForegroundWindow()
+	hwnd = _user32.GetForegroundWindow()
+	return hwnd or 0
 
 
 def setForegroundWindow(hwnd):
@@ -564,7 +575,8 @@ def setFocus(hwnd):
 
 
 def getDesktopWindow() -> HWNDVal:
-	return _user32.GetDesktopWindow()
+	hwnd = _user32.GetDesktopWindow()
+	return hwnd or 0
 
 
 def getControlID(hwnd):
@@ -615,8 +627,9 @@ def mouse_event(*args):
 	return _user32.mouse_event(*args)
 
 
-def getAncestor(hwnd, flags):
-	return _user32.GetAncestor(hwnd, flags)
+def getAncestor(hwnd: HWNDVal, flags: int) -> HWNDVal:
+	hwnd = _user32.GetAncestor(hwnd, flags)
+	return hwnd or 0
 
 
 def setCursorPos(x, y):
@@ -635,8 +648,9 @@ def getCaretPos():
 	return [point.x, point.y]
 
 
-def getTopWindow(hwnd):
-	return _user32.GetTopWindow(hwnd)
+def getTopWindow(hwnd: HWNDVal) -> HWNDVal:
+	hwnd = _user32.GetTopWindow(hwnd)
+	return hwnd or 0
 
 
 def getWindowText(hwnd):
@@ -645,8 +659,9 @@ def getWindowText(hwnd):
 	return buf.value
 
 
-def getWindow(window, relation):
-	return _user32.GetWindow(window, relation)
+def getWindow(window: HWNDVal, relation: int) -> HWNDVal:
+	hwnd = _user32.GetWindow(window, relation)
+	return hwnd or 0
 
 
 def isWindowVisible(window):
@@ -679,11 +694,12 @@ def SetLayeredWindowAttributes(hwnd, key, alpha, flags):
 	return _user32.SetLayeredWindowAttributes(hwnd, key, alpha, flags)
 
 
-def getPreviousWindow(hwnd):
+def getPreviousWindow(hwnd: HWNDVal) -> HWNDVal:
 	try:
-		return _user32.GetWindow(hwnd, GW_HWNDPREV)
+		hwnd = _user32.GetWindow(hwnd, GW_HWNDPREV)
 	except WindowsError:
 		return 0
+	return hwnd or 0
 
 
 def getKeyboardLayout(idThread=0):
@@ -770,14 +786,6 @@ def getSystemStickyKeys():
 	sk = STICKYKEYS()
 	_user32.SystemParametersInfo(SPI_GETSTICKYKEYS, 0, byref(sk), 0)
 	return sk
-
-
-# START SENDINPUT TYPE DECLARATIONS
-INPUT_MOUSE = 0  # The event is a mouse event. Use the mi structure of the union.
-INPUT_KEYBOARD = 1  # The event is a keyboard event. Use the ki structure of the union.
-KEYEVENTF_KEYUP = 0x0002
-KEYEVENTF_UNICODE = 0x04
-# END SENDINPUT TYPE DECLARATIONS
 
 
 def SendInput(inputs):

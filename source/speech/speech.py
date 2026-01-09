@@ -6,7 +6,7 @@
 
 """High-level functions to speak information."""
 
-import jpUtils
+import jpUtils  # nvdajp
 import itertools
 import typing
 import weakref
@@ -191,7 +191,10 @@ def processText(
 	text = speechDictHandler.processText(text)
 	text = characterProcessing.processSpeechSymbols(locale, text, symbolLevel)
 	text = RE_CONVERT_WHITESPACE.sub(" ", text)
+	# BEGIN JP PATCH
+	# nvdajp: Process Kangxi radicals for Japanese character descriptions
 	text = jpUtils.processKangxiRadicals(text)
+	# END JP PATCH
 	if normalize:
 		text = unicodeNormalize(text)
 		# keep leading space for normalization message
@@ -313,7 +316,10 @@ def getCurrentLanguage() -> str:
 def spellTextInfo(
 	info: textInfos.TextInfo,
 	useCharacterDescriptions: bool = False,
+	# BEGIN JP PATCH
+	# nvdajp: useDetails parameter for detailed character descriptions
 	useDetails: bool = False,
+	# END JP PATCH
 	priority: Optional[Spri] = None,
 ) -> None:
 	"""Spells the text from the given TextInfo, honouring any LangChangeCommand objects it finds if autoLanguageSwitching is enabled."""
@@ -343,7 +349,10 @@ def speakSpelling(
 	text: str,
 	locale: Optional[str] = None,
 	useCharacterDescriptions: bool = False,
+	# BEGIN JP PATCH
+	# nvdajp: useDetails parameter for detailed character descriptions
 	useDetails: bool = False,
+	# END JP PATCH
 	priority: Optional[Spri] = None,
 ) -> None:
 	# This could be a very large list. In future we could convert this into chunks.
@@ -501,8 +510,11 @@ def _getSpellingSpeechWithoutCharMode(
 		itemIsNormalized = textIsNormalized
 		uppercase = speakCharAs.isupper()
 		if useCharacterDescriptions and charDesc:
+			# BEGIN JP PATCH
+			# nvdajp: Use ideographic comma for joining character descriptions
 			IDEOGRAPHIC_COMMA = "\u3001"
 			speakCharAs = charDesc[0] if textLength > 1 else IDEOGRAPHIC_COMMA.join(charDesc)
+			# END JP PATCH
 			charList = [speakCharAs]
 		elif useCharacterDescriptions and not charDesc and not fallbackToCharIfNoDescription:
 			return None
@@ -589,7 +601,10 @@ def getSpellingSpeech(
 	text: str,
 	locale: Optional[str] = None,
 	useCharacterDescriptions: bool = False,
+	# BEGIN JP PATCH
+	# nvdajp: useDetails parameter for detailed character descriptions
 	useDetails: bool = False,
+	# END JP PATCH
 ) -> Generator[SequenceItemT, None, None]:
 	synth = getSynth()
 	synthConfig = config.conf["speech"][synth.name]
@@ -601,6 +616,8 @@ def getSpellingSpeech(
 	unicodeNormalization = not useCharacterDescriptions and bool(
 		config.conf["speech"]["unicodeNormalization"],
 	)
+	# BEGIN JP PATCH
+	# nvdajp: Use JP-specific spelling speech function
 	seq = jpUtils.getSpellingSpeechWithoutCharMode(
 		text,
 		locale,
@@ -614,6 +631,7 @@ def getSpellingSpeech(
 			"reportNormalizedForCharacterNavigation"
 		],
 	)
+	# END JP PATCH
 	if synthConfig["useSpellingFunctionality"]:
 		seq = _getSpellingSpeechAddCharMode(seq)
 	# This function applies Unicode normalization as appropriate.
@@ -1029,8 +1047,11 @@ def splitTextIndentation(text):
 
 RE_INDENTATION_CONVERT = re.compile(r"(?P<char>\s)(?P=char)*", re.UNICODE)
 IDT_BASE_FREQUENCY = 220  # One octave below middle A.
-IDT_TONE_DURATION = 80  # Milleseconds
 IDT_MAX_SPACES = 72
+
+
+def getIndentToneDuration() -> int:
+	return config.conf["documentFormatting"]["indentToneDuration"]
 
 
 def getIndentationSpeech(indentation: str, formatConfig: Dict[str, bool]) -> SpeechSequence:
@@ -1053,7 +1074,7 @@ def getIndentationSpeech(indentation: str, formatConfig: Dict[str, bool]) -> Spe
 	indentSequence: SpeechSequence = []
 	if not indentation:
 		if toneIndentConfig:
-			indentSequence.append(BeepCommand(IDT_BASE_FREQUENCY, IDT_TONE_DURATION))
+			indentSequence.append(BeepCommand(IDT_BASE_FREQUENCY, getIndentToneDuration()))
 		if speechIndentConfig:
 			indentSequence.append(
 				# Translators: This is spoken when the given line has no indentation.
@@ -1083,7 +1104,7 @@ def getIndentationSpeech(indentation: str, formatConfig: Dict[str, bool]) -> Spe
 	if toneIndentConfig:
 		if quarterTones <= IDT_MAX_SPACES:
 			pitch = IDT_BASE_FREQUENCY * 2 ** (quarterTones / 24.0)  # 24 quarter tones per octave.
-			indentSequence.append(BeepCommand(pitch, IDT_TONE_DURATION))
+			indentSequence.append(BeepCommand(pitch, getIndentToneDuration()))
 		else:
 			# we have more than 72 spaces (18 tabs), and must speak it since we don't want to hurt the users ears.
 			speak = True
@@ -1117,6 +1138,8 @@ def speak(  # noqa: C901
 	if speechViewer.isActive:
 		speechViewer.appendSpeechSequence(speechSequence)
 	pre_speech.notify(speechSequence=speechSequence, symbolLevel=symbolLevel, priority=priority)
+	# BEGIN JP PATCH
+	# nvdajp: Send speech to JP braille viewer
 	from gui import jpBrailleViewer
 
 	if jpBrailleViewer.isActive:
@@ -1126,6 +1149,7 @@ def speak(  # noqa: C901
 				s += item
 		if s:
 			jpBrailleViewer.appendText(s)
+	# END JP PATCH
 	if _speechState.speechMode == SpeechMode.off:
 		return
 	elif _speechState.speechMode == SpeechMode.beeps:
@@ -1504,11 +1528,14 @@ def speakTextInfo(
 	suppressBlanks: bool = False,
 	priority: Optional[Spri] = None,
 ) -> bool:
+	# BEGIN JP PATCH
+	# nvdajp: Character description mode support
 	from globalCommands import characterDescriptionMode
 
 	if characterDescriptionMode and reason == OutputReason.CARET and unit == textInfos.UNIT_CHARACTER:
 		speakSpelling(info.text, useCharacterDescriptions=True)
 		return True
+	# END JP PATCH
 	speechGen = getTextInfoSpeech(
 		info,
 		useCache,

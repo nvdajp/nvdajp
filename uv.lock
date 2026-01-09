@@ -11,6 +11,7 @@ supported-markers = [
 [manifest]
 members = [
     "nvda",
+    "nvda-mathcat",
     "nvda-misc-deps",
 ]
 
@@ -321,6 +322,28 @@ wheels = [
 ]
 
 [[package]]
+name = "l2m4m"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "latex2mathml", marker = "sys_platform == 'win32'" },
+    { name = "markdown", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1d/71/2548c288ef1b27f3419285e45430b8f10b9be8f4c34b4d2ecec2d34baf42/l2m4m-1.0.4.tar.gz", hash = "sha256:7fc451edb281604c1eb9d6fa626a8cce874e8a0d3641cca581c20b7544f51396", size = 16567, upload-time = "2024-06-15T16:49:04.798Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f6/8a/500639fe4b0b1dfc7775633b9173d96a474bbc0811578e916595c9b323f0/L2M4M-1.0.4-py3-none-any.whl", hash = "sha256:766e232b28cfdc6397e9c47162a938dba26e5ab90bddec8d82eccb7896ab46d1", size = 14985, upload-time = "2024-06-15T16:49:03.88Z" },
+]
+
+[[package]]
+name = "latex2mathml"
+version = "3.78.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1a/26/57b1034c08922d0aefea79430a5e0006ffaee4f0ec59d566613f667ab2f7/latex2mathml-3.78.1.tar.gz", hash = "sha256:f941db80bf41db33f31df87b304e8b588f8166b813b0257c11c98f7a9d0aac71", size = 74030, upload-time = "2025-08-29T23:34:23.178Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3e/76/d661ea2e529c3d464f9efd73f9ac31626b45279eb4306e684054ea20e3d4/latex2mathml-3.78.1-py3-none-any.whl", hash = "sha256:f089b6d75e85b937f99693c93e8c16c0804008672c3dd2a3d25affd36f238100", size = 73892, upload-time = "2025-08-29T23:34:21.98Z" },
+]
+
+[[package]]
 name = "license-expression"
 version = "30.4.4"
 source = { registry = "https://pypi.org/simple" }
@@ -544,6 +567,7 @@ dependencies = [
     { name = "crowdin-api-client", marker = "sys_platform == 'win32'" },
     { name = "cryptography", marker = "sys_platform == 'win32'" },
     { name = "fast-diff-match-patch", marker = "sys_platform == 'win32'" },
+    { name = "l2m4m", marker = "sys_platform == 'win32'" },
     { name = "lxml", marker = "sys_platform == 'win32'" },
     { name = "markdown", marker = "sys_platform == 'win32'" },
     { name = "markdown-link-attr-modifier", marker = "sys_platform == 'win32'" },
@@ -564,6 +588,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "nvda-mathcat", marker = "sys_platform == 'win32'" },
     { name = "nvda-misc-deps", marker = "sys_platform == 'win32'" },
     { name = "py2exe", marker = "sys_platform == 'win32'" },
     { name = "scons", marker = "sys_platform == 'win32'" },
@@ -600,6 +625,7 @@ requires-dist = [
     { name = "crowdin-api-client", specifier = "==1.24.1" },
     { name = "cryptography", specifier = "==46.0.3" },
     { name = "fast-diff-match-patch", specifier = "==2.1.0" },
+    { name = "l2m4m", specifier = "==1.0.4" },
     { name = "lxml", specifier = "==6.0.2" },
     { name = "markdown", specifier = "==3.10" },
     { name = "markdown-link-attr-modifier", specifier = "==0.2.1" },
@@ -620,14 +646,15 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "nvda-mathcat", editable = "include/nvda-mathcat" },
     { name = "nvda-misc-deps", editable = "miscDeps" },
     { name = "py2exe", specifier = "==0.14.0.0" },
-    { name = "scons", specifier = "==4.9.1" },
+    { name = "scons", specifier = "==4.10.1" },
     { name = "setuptools", specifier = "~=80.9" },
     { name = "uv", specifier = "==0.9.11" },
 ]
 dev-docs = [
-    { name = "sphinx", specifier = "==8.1.2" },
+    { name = "sphinx", specifier = "==8.1.3" },
     { name = "sphinx-rtd-theme", specifier = "==3.0.1" },
 ]
 license-check = [{ name = "licensecheck", specifier = "==2025.1" }]
@@ -646,6 +673,11 @@ unit-tests = [
     { name = "parameterized", specifier = "==0.9.0" },
     { name = "unittest-xml-reporting", specifier = "==3.2.0" },
 ]
+
+[[package]]
+name = "nvda-mathcat"
+version = "20250714"
+source = { editable = "include/nvda-mathcat" }
 
 [[package]]
 name = "nvda-misc-deps"
@@ -1059,11 +1091,11 @@ wheels = [
 
 [[package]]
 name = "scons"
-version = "4.9.1"
+version = "4.10.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c8/c1/30176c76c1ef723fab62e5cdb15d3c972427a146cb6f868748613d7b25af/scons-4.9.1.tar.gz", hash = "sha256:bacac880ba2e86d6a156c116e2f8f2bfa82b257046f3ac2666c85c53c615c338", size = 3252106, upload-time = "2025-03-27T20:42:19.765Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/c9/2f430bb39e4eccba32ce8008df4a3206df651276422204e177a09e12b30b/scons-4.10.1.tar.gz", hash = "sha256:99c0e94a42a2c1182fa6859b0be697953db07ba936ecc9817ae0d218ced20b15", size = 3258403, upload-time = "2025-11-16T22:43:39.258Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/45/92/50b739021983b131dcacd57aa8b04d31c5acc2e7e0eb4ed4a362f438c6b7/scons-4.9.1-py3-none-any.whl", hash = "sha256:d2db1a22eb6039e97cbbb0106f18f435af033d0aad190299c9688378e2810a5e", size = 4131331, upload-time = "2025-03-27T20:42:16.665Z" },
+    { url = "https://files.pythonhosted.org/packages/ce/bf/931fb9fbb87234c32b8b1b1c15fba23472a10777c12043336675633809a7/scons-4.10.1-py3-none-any.whl", hash = "sha256:bd9d1c52f908d874eba92a8c0c0a8dcf2ed9f3b88ab956d0fce1da479c4e7126", size = 4136069, upload-time = "2025-11-16T22:43:35.933Z" },
 ]
 
 [[package]]
@@ -1086,7 +1118,7 @@ wheels = [
 
 [[package]]
 name = "sphinx"
-version = "8.1.2"
+version = "8.1.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "alabaster", marker = "sys_platform == 'win32'" },
@@ -1106,9 +1138,9 @@ dependencies = [
     { name = "sphinxcontrib-qthelp", marker = "sys_platform == 'win32'" },
     { name = "sphinxcontrib-serializinghtml", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4c/a4/fca423c01a257a56cbd99b8cf2a0e11e065c2e8988b7da603f79b60ca454/sphinx-8.1.2.tar.gz", hash = "sha256:b19e24b51d1926567e0bb8f4fbd372e40cb19f1f62bcba91b45c9ee0cdd8874e", size = 8184540, upload-time = "2024-10-12T18:44:37.462Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6f/6d/be0b61178fe2cdcb67e2a92fc9ebb488e3c51c4f74a36a7824c0adf23425/sphinx-8.1.3.tar.gz", hash = "sha256:43c1911eecb0d3e161ad78611bc905d1ad0e523e4ddc202a58a821773dc4c927", size = 8184611, upload-time = "2024-10-13T20:27:13.93Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bb/5d/61ffd806913ab2cbfde9a350a5bfd1cbb4c81dd1f510482f7e8b2104289a/sphinx-8.1.2-py3-none-any.whl", hash = "sha256:5e96eb11b5cf7bb2d3f32326c579c3db2a4b7fe1207e84126d57185194988716", size = 3487081, upload-time = "2024-10-12T18:44:34.175Z" },
+    { url = "https://files.pythonhosted.org/packages/26/60/1ddff83a56d33aaf6f10ec8ce84b4c007d9368b21008876fceda7e7381ef/sphinx-8.1.3-py3-none-any.whl", hash = "sha256:09719015511837b76bf6e03e42eb7595ac8c2e41eeb9c29c5b755c6b677992a2", size = 3487125, upload-time = "2024-10-13T20:27:10.448Z" },
 ]
 
 [[package]]

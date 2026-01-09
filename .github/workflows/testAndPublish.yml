@@ -453,9 +453,9 @@ jobs:
       matrix:
         # To skip tests, and just run install, replace with [excluded_from_build]
         # BEGIN JP PATCH (exclude vscode and symbols test suites, same as certBuild2025.ps1)
-        testSuite: [chrome, installer, startupShutdown]
+        testSuite: [chrome, installer, startupShutdown, imageDescriptions]
         # END JP PATCH (exclude vscode and symbols test suites, same as certBuild2025.ps1)
-        # Original: testSuite: [chrome, installer, startupShutdown, symbols, vscode]
+        # Original: testSuite: [chrome, installer, startupShutdown, symbols, vscode, imageDescriptions]
         runner: ${{ fromJson(needs.matrix.outputs.supportedRunners) }}
         arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
@@ -503,7 +503,7 @@ jobs:
         nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
         INCLUDE_SYSTEM_TEST_TAGS: ${{ matrix.testSuite }}
         # BEGIN JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
-        EXCLUDE_SYSTEM_TEST_TAGS: restarts_on_crash imageDescriptions
+        EXCLUDE_SYSTEM_TEST_TAGS: restarts_on_crash
         # END JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
     - name: Upload system tests results
       if: ${{ failure() }}

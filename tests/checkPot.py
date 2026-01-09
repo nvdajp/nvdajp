@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2017-2023 NV Access Limited, Ethan Holliger, Dinesh Kaushal, Leonard de Ruijter,
+# Copyright (C) 2017-2025 NV Access Limited, Ethan Holliger, Dinesh Kaushal, Leonard de Ruijter,
 # Joseph Lee, Julien Cochuyt, Łukasz Golonka, Cyrille Bougot
 # This file may be used under the terms of the GNU General Public License, version 2 or later.
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
@@ -136,8 +136,8 @@ def checkPot(fileName):
 					# 	"keys are passed to the application"
 					msgid = ""
 					for line in pot:
-						if line.startswith("msgstr "):
-							# This begins the translated message, so msgid has ended.
+						if line.startswith("msgstr ") or line.startswith("msgid_plural"):
+							# This begins the translated or plural message, so msgid has ended.
 							break
 						msgid += getStringFromLine(line)
 				else:
@@ -198,7 +198,11 @@ def getStringFromLine(line):
 	else:
 		# The quoted string starts after a command.
 		# Example: msgid "Secure Desktop"
-		quoted = line.split(" ", 1)[1]
+		parts = line.split(" ", 1)
+		if len(parts) < 2:
+			# No space found, return empty string
+			return ""
+		quoted = parts[1]
 	# Strip the quotes.
 	return quoted[1:-1]
 

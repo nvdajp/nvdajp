@@ -103,7 +103,7 @@ git merge nvaccess/beta
 ## 参考資料
 
 - `projectDocs/jp/po-file-status.md` - JP 固有翻訳の現状
-- `projectDocs/jp/merge-plan-beta-2025-11.md` - マージ計画（翻訳ファイルのセクション）
+- `projectDocs/jp/archive/merge-plan-beta-2025-11.md` - マージ計画（翻訳ファイルのセクション）
 - `projectDocs/jp/roadmap.md` - ロードマップ（ステージ6: 残作業）
 
 ## 関連 Issue/PR

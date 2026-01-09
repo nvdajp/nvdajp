@@ -3,7 +3,7 @@
 # Usage: .\ci\scripts\tests\recordMergeConflicts.ps1
 
 param(
-    [string]$OutputFile = "projectDocs/jp/merge-conflicts-detailed-2025-11.md",
+    [string]$OutputFile = "projectDocs/jp/archive/merge-conflicts-detailed-2025-11.md",
     [string]$BaseBranch = "betajp",
     [string]$MergeBranch = "nvaccess/beta"
 )
@@ -128,11 +128,11 @@ $output += @"
 
 ## 解決方針メモ
 
-各ファイルの解決方針は `projectDocs/jp/merge-issues-beta-2025-11.md` を参照してください。
+各ファイルの解決方針は `projectDocs/jp/archive/merge-issues-beta-2025-11.md` を参照してください。
 
 ## 次のステップ
 
-1. 各コンフリクトを projectDocs/jp/merge-issues-beta-2025-11.md の解決方針に従って解決
+1. 各コンフリクトを projectDocs/jp/archive/merge-issues-beta-2025-11.md の解決方針に従って解決
 2. uv.lock はコンフリクト解決後に 'uv lock --upgrade' で再生成
 3. source/locale/ja/LC_MESSAGES/nvda.po は msgmerge で上流 pot に追随
 4. 解決後、ビルドとテストを実行して確認
@@ -143,4 +143,3 @@ $output += @"
 $output | Out-File -FilePath $OutputFile -Encoding UTF8
 Write-Host "`n詳細記録を $OutputFile に保存しました。" -ForegroundColor Green
 Write-Host "コンフリクトファイル数: $fileCount" -ForegroundColor Green
-

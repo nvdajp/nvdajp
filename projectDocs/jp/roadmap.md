@@ -1,4 +1,4 @@
-# 日本語版ロードマップ（2026-01更新）
+# 日本語版ロードマップ（2026-01更新、本家ベータ版の機能的な取り込み完了）
 
 ## 長期的な目標（このブランチ: betajp）
 
@@ -7,7 +7,10 @@
 1. **nvaccess（本家）2026.1 をマージする**（段階的アプローチ）
    * ✅ **第1段階**: x86 Python 3.13 の段階（コミット `9613ce6e3`）までマージ完了
    * ✅ **第2段階**: x64 Python 3.13 への移行（コミット `58dd14767`）完了（日本語アルファ版の更新を再開）
-   * **第3段階**: 本家 2026.1（または本家 beta の最新版）のマージ
+   * ✅ **第3段階**: 本家 2026.1（または本家 beta の最新版）のマージ完了（2026-01-09）
+     * 本家ベータ版の機能的な取り込み完了
+     * 従来の日本語版のパッチの移植完了
+     * すべてのテスト通過確認完了
 2. **品質保証原則に従って作業する**（小さなPR単位、段階的検証、全テスト通過を必須とする）
 3. **基本方針**: 本家版との差分を最小化しながら、順序立てて基盤整合
 
@@ -57,6 +60,25 @@
 
 ## 完了したタスク（2026年1月時点）
 
+### ステージ3b完了後の追加作業 ✅（2026-01-09完了）
+
+* ✅ **本家ベータ版の機能的な取り込み完了**
+  * 主要コミットの取り込み完了（カテゴリ1-5, 7）
+  * 不足ファイルの追加完了（`crypt32.py`、`scanResults.py`、`screenCurtain/__init__.py`）
+  * 不要ファイルの削除完了（`screenCurtain.py`、`NVDAHelper.py`）
+* ✅ **従来の日本語版のパッチの移植完了**
+  * JP PATCHマーカーを適切に配置してJP固有の変更を保持
+  * 本家版との差分を最小化しながらJP固有機能を維持
+* ✅ **すべてのテスト通過確認完了**
+  * 型チェック: 通過
+  * ビルド: 成功
+  * JP smoke test: 成功
+  * ユニットテスト: 974テスト、5スキップ、すべて通過
+  * システムテスト: imageDescriptionsテスト通過
+* ✅ **マージ準備完了**
+  * compare-with-betaの個別ファイルを削除（284ファイル）
+  * マージに備えたクリーンアップ完了
+
 ### ステージ1: 基盤整備とリファクタリング ✅
 
 * ✅ **開発環境の整備（最優先）** - Python 3.11 x86 で MeCab / JP Braille を `jptools/runJpSmokeTests.ps1` から実行できるローカル環境を整備済み
@@ -91,7 +113,15 @@
 * ✅ **タスク 3b.1: x64移行前の変更の確認** - 85コミット分の変更を確認・解決完了
 * ✅ **タスク 3b.2: x64移行コミットのマージ準備** - マージリハーサル実施、コンフリクトファイルの記録と優先順位付け完了
 * ✅ **タスク 3b.3: x64対応の実施** - x64移行コミット（`58dd14767`）をマージ完了、x86対応コードを削除完了
-* ⏳ **タスク 3b.4: x64移行後の変更の取り込み** - 進行中（2026-01-07時点で15コミット取り込み完了、カテゴリ2完了）
+* ✅ **タスク 3b.4: x64移行後の変更の取り込み** - 完了（2026-01-09）
+  * ✅ 主要コミットの取り込み完了（カテゴリ1-5, 7）
+  * ✅ 不足ファイルの追加完了（`crypt32.py`、`scanResults.py`、`screenCurtain/__init__.py`）
+  * ✅ 不要ファイルの削除完了（`screenCurtain.py`、`NVDAHelper.py`）
+  * ✅ すべてのテスト通過確認（型チェック、ビルド、JP smoke test、ユニットテスト、システムテスト）
+* ✅ **タスク 3b.5: 差分最小化** - 完了（2026-01-09）
+  * ✅ `compare-with-beta`ベースでJP固有でない差分を順次適用完了
+  * ✅ 主要なマージ漏れの修正完了（`gui/__init__.py`、`NVDAHelper/__init__.py`、`synthDriverHandler.py`、`systemUtils.py`、`winUser.py`、各種テストファイル）
+  * ✅ compare-with-betaの個別ファイルを削除してマージ準備完了
 
 **完了した追加作業**:
 
@@ -107,6 +137,17 @@
 * ✅ **タスク 5.1: 手作業での確認で支障がない状態を作る（日本語アルファ版）** - ローカル環境での署名なしビルド、CI環境でのビルド、ローカル環境での署名ビルド、JTalk動作確認、日本語点訳エンジン動作確認、点字ディスプレイ動作確認、日本語IME対応動作確認
 * ✅ **JP固有コード（`source/synthDrivers/jtalk/`）のruffエラー修正完了** - すべてのruffチェックが通過（`All checks passed!`）
 * ✅ **Visual Studio検出のvswhere移行完了** - `vs_utils.py`に`vswhere`サポートを追加し、環境ごとのテストで`nmake`や`link`の検出失敗を解消（詳細は `projectDocs/jp/vswhere-implementation-status.md` を参照）
+* ✅ **Privacy and Security設定パネルのスクリーンカーテン設定エラー修正完了**（2026-01-08）
+  * `config.conf["screenCurtain"]`を`config.conf["vision"]["screenCurtain"]`に修正
+  * `vision.handler`からプロバイダーインスタンスを取得するように変更
+  * `onSave`で`ScreenCurtainSettings`の`AutoSettings`を使用するように変更
+  * エラー解消により、設定ダイアログで「Privacy and Security」カテゴリを開けるようになった
+* ✅ **AI画像説明機能のマージ完了**（2026-01-08）
+  * 5つのコミットを順にマージ完了（`e1cef07`、`121c221`、`c9b9d02`、`61ffb2f`、`20e5b8118`）
+  * ダウンロードエラー処理の改善（失敗ファイルの詳細表示）
+  * デバッグログの削除と未使用インポートの削除（コミット: 4fb194d）
+  * システムテスト確認完了（imageDescriptionsテスト: PASS）
+  * 機能動作確認完了（画像説明の生成が正常に動作）
 
 ### ステージ4: リグレッション対策と機能復元 ✅（進行中）
 
@@ -127,7 +168,16 @@
 
 ## 現在の作業キュー（2026年1月時点）
 
-### 次に取り込むべきリビジョン
+### ✅ 完了した作業（2026-01-09）
+
+**本家ベータ版の機能的な取り込みと従来の日本語版のパッチの移植**:
+
+* ✅ **x64移行後の変更の取り込み完了** - 主要コミットの取り込み完了
+* ✅ **差分最小化完了** - JP固有でない差分を順次適用完了
+* ✅ **不足ファイルの追加完了** - `crypt32.py`、`scanResults.py`、`screenCurtain/__init__.py`
+* ✅ **不要ファイルの削除完了** - `screenCurtain.py`、`NVDAHelper.py`
+* ✅ **すべてのテスト通過確認** - 型チェック、ビルド、JP smoke test、ユニットテスト、システムテスト
+* ✅ **マージ準備完了** - compare-with-betaの個別ファイルを削除
 
 **nvaccess/beta の最新状態**:
 
@@ -136,7 +186,7 @@
 
 **次のステップ**:
 
-* **タスク 3b.4: x64移行後の変更の取り込み（`58dd14767` 以降）** ⏳（進行中）
+* **タスク 3b.4: x64移行後の変更の取り込み（`58dd14767` 以降）** ✅ 完了（2026-01-09）
   * x64移行完了後、最新のbetaまでの変更を段階的に取り込む
   * 小さなPR単位で進める
   * 各PRで全テスト通過を確認
@@ -145,10 +195,10 @@
     - **まとめてマージ**: 範囲をまとめて取り込む場合（コンフリクトを一度に解決）
     - **判断基準**: コンフリクトの多寡、選択性の必要性、作業効率を考慮
   * **注意**: `--allow-unrelated-histories`が必要な場合がある（履歴が分岐している場合）
-  * **進捗状況**（2026-01-07更新）:
+  * **進捗状況**（2026-01-08更新）:
     * ✅ 取り込むべきコミットの特定完了（約50コミット、72c211456..nvaccess/beta）
-    * ✅ 実施計画の作成完了（`projectDocs/jp/task3b4-implementation-plan.md`）
-    * ✅ コミット分類と優先順位付け完了（`projectDocs/jp/task3b4-commits-to-merge.md`）
+    * ✅ 実施計画の作成完了（`projectDocs/jp/archive/task3b4-implementation-plan.md`）
+    * ✅ コミット分類と優先順位付け完了（`projectDocs/jp/archive/task3b4-commits-to-merge.md`）
     * ✅ フェーズ0: pre-commit設定の確認と更新完了（日本語ドキュメントとサードパーティライブラリの除外設定を追加）
     * ✅ フェーズ1: カテゴリ2のバグ修正・機能改善の取り込み完了（15コミット、2026-01-07）
       - 最初の5コミット: `1cee6d93cf`, `eeb6143aae`, `00a42a406d`, `3f4294979`, `fdbfb017c`
@@ -156,40 +206,116 @@
       - 最後の5コミット: `e29ed1dca`, `79a07dc10`, `7ba333a81`, `b3fe5799d`, `02f3919e2`
       - スキップ（MathCAT未統合）: `abdbd025a`, `cadb496e5`
       - すべてのテスト通過（951テスト、5スキップ）
-    * ✅ フェーズ2: カテゴリ5の依存関係・ビルドシステムの更新完了（3コミット、2026-01-07）
+    * ✅ フェーズ2: カテゴリ5の依存関係・ビルドシステムの更新完了（3コミット、2026-01-07、2026-01-08更新）
       - `ca0f57d953` - Updated Python 3.13.9 to 3.13.11 (#19352)
-      - `f5acf672e8` - Update dependencies for 2026.1 (#19196)
+      - `f5acf672e8` - Update dependencies for 2026.1 (#19196)（2026-01-08: nvda-mathcatサブモジュール更新含む）
+        - ✅ `nvda-mathcat`サブモジュールを`nvaccess/beta`のリビジョン（`ef03379`）に更新
+        - ✅ Python要件の競合を解決（`requires-python = ">=3.11,<3.14"`に更新）
+        - ✅ `uv.lock`を更新
       - `40c5c10998` - Update eSpeak NG and Unicode CLDR (#19293)
       - スキップ: `33cf7ad75` - Remove SAPI4 (#19290)（しばらく実施しない）
       - ビルド成功、JP smoke test成功、ユニットテスト成功（951テスト、5スキップ）
+    * ✅ カテゴリ4: ドキュメント更新の取り込み（2コミット、2026-01-08）
+      - `43b8a9bf3` - Mention that Python is now 64 bits in change log (#19360)（手動適用）
+      - `e168626c9` - Remove references to 32-bit Windows from the user guide (#19297)
+    * ✅ マージ後のバグ修正（2026-01-08）
+      - Privacy and Security設定パネルのスクリーンカーテン設定エラー修正（2026-01-08）
+        - `config.conf["screenCurtain"]`の`KeyError`を解消
+      - `nvda-mathcat`サブモジュールのリビジョン不一致によるPython要件競合の解決（2026-01-08）
+        - サブモジュールを`nvaccess/beta`のリビジョン（`ef03379`）に更新
+        - `requires-python = ">=3.11,<3.14"`に更新してPython 3.13と互換性を確保
+        - `uv.lock`を更新して`uv lock`と`scons.bat source`が正常に動作することを確認
+    * ✅ カテゴリ3: 機能追加の取り込み完了（2026-01-08）
+      - ✅ `6172254f5` - Move settings to Privacy and Security category: 既にマージ済み
+      - ✅ `b8ba7413c` - Update to liblouis 3.36: 完了（2026-01-08コミット: e5a9b2e）
+      - ✅ `9935428ec` - Added ability to report spelling errors in braille: 完了（2026-01-08コミット: 2a7f0be）
+      - ✅ AI画像説明機能のマージ完了（2026-01-08）
+      - ✅ `728530020` - Parse LaTeX in the user guide to MathML (#19304): 完了（2026-01-08コミット: 135a296）
+        - ✅ `e1cef07` - Support image descriptions using local AI model (#18475) - 基本機能
+        - ✅ `121c221` - Improve image captioner (#19024) - 改善
+        - ✅ `c9b9d02` - Lazy load heavy deps for AI image descriptions (#19055) - 依存関係の遅延読み込み
+        - ✅ `61ffb2f` - Avoid running AI image descriptions while screen curtain is enabled (#19057) - スクリーンカーテン対応
+        - ✅ `20e5b8118` - Add warnings to AI image descriptions (#19327) - 警告追加
+        - ✅ デバッグログの削除とエラー処理の改善完了（2026-01-08コミット: 4fb194d）
+        - ✅ システムテスト確認完了（imageDescriptionsテスト: PASS）
+    * ✅ カテゴリ7: 大規模な変更の取り込み完了（2026-01-08）
+      - ✅ `2037d74cb` - Integrate MathCAT into NVDA (#18323): 完了（2026-01-08コミット: 6f4e173）
+        - ✅ MathCAT統合、コンフリクト解決完了
+        - ✅ MathCAT関連の改善コミットも適用完了（`abdbd025a`, `cadb496e5`, `ba0f22b`, `6155d1d`）
+      - ✅ `504e95624` - 2026.1 final master to beta merge (#19355): 完了（2026-01-08コミット: 600b134）
+        - ✅ コンフリクト解決完了（magnification.py追加、LanguageSettingsPanel復元、.gitignore修正含む）
+    * ✅ カテゴリ4: ドキュメント更新の取り込み完了（2026-01-08）
+      - ✅ `481ecbed7` - Update user_docs/en/userGuide.xliff: 完了（2026-01-08コミット: a4cd4d1）
+      - ✅ `7243bc238` - Update user_docs/en/changes.xliff: 完了（2026-01-08コミット: c46bae9）
+      - ✅ `837319788` - Review 2026.1 changelog/documentation changes (#19319): 完了（2026-01-08コミット: 5e086dc）
+      - ✅ `5093ac0` - Add crash stats output to git ignore (#19369): 完了（2026-01-08コミット: 2271be2）
+      - ✅ `39e499b` - Update Arabic symbols in symbols.dic (#19321): 完了（2026-01-08コミット: bd2b6fd）
+    * ✅ Chrome system test改善（2026-01-08）
+      - ✅ 英語と日本語の両方のUI環境に対応するように修正
+      - ✅ `ChromeLib._waitForStartMarker()`でアドレスバー検出を改善
+      - ✅ CI環境（英語UI）でも日本語環境でも動作するように
+    * ✅ マージ漏れの修正（2026-01-08）
+      - ✅ `47e6cf5da6` - Move all remaining kernel32 ctypes calls to winBindings (#18896): 完了（2026-01-08コミット: b54cea7）
+        - ✅ `windll.kernel32`から`winBindings.kernel32`への移行完了
+        - ✅ 32ファイル変更、+1545行、-311行
+        - ✅ コンフリクト解決完了（systemUtils.py、winBindings/kernel32.py、user_docs/en/changes.md）
+        - ✅ ユニットテスト成功（971テスト、5スキップ）
+      - ✅ `source/api.py`のマージ漏れ修正（2026-01-08コミット: 79000c8, de510d8）
+        - ✅ コピーライトヘッダーを2022→2025に更新、`hwf1324`を追加
+        - ✅ `fakeNVDAObjectClasses`と`isFakeNVDAObject`を復元（OCR認識結果のハイライト機能に必要）
+        - ✅ `504e956`のマージ時に失われた変更を復元
   * **取り込み順序**:
     1. **フェーズ0**: pre-commit設定の確認（日本語ドキュメントの保護）
     2. **フェーズ1**: 最初のバグ修正・機能改善（58dd14767直後のコミット群）
     3. **フェーズ2**: 依存関係・ビルドシステムの更新
     4. **フェーズ3**: バグ修正・機能改善の継続
     5. **フェーズ4**: 機能追加
-    6. **フェーズ5**: pre-commit関連（最後に）
+    6. **フェーズ5**: pre-commit関連（最後に） - **⏳ 残り作業**
+    7. **フェーズ6**: pyright関連 - **⏳ 残り作業**
   * **注意**: 本家（nvaccess/beta）に pre-commit による大規模なファイルフォーマット自動整形のコミットが含まれる場合がある
+  * **進捗状況（2026-01-08）**: 
+    - ✅ カテゴリ1-5, 7はすべて完了（翻訳関連はスキップ予定）
+    - ✅ 大きなマージ漏れの修正完了（`47e6cf5da6`、`source/api.py`）
+    - ⏳ **差分最小化フェーズ開始**: `compare-with-beta`ベースでJP固有でない差分を順次適用
+    - ⏳ カテゴリ6（pre-commit関連）とpyright関連のみ残り
     * 取り込む前に、日本語ドキュメント（`projectDocs/jp/`、`readme-nvdajp.md`、`AGENTS.md`）が pre-commit フックから除外されていることを確認
     * フォーマット修正は1つのコミットにまとめる
     * 各変更後にビルド・型チェック・単体テストを実行して検証
     * **参照ドキュメント**:
-      * `projectDocs/jp/task3b4-implementation-plan.md` - タスク3b.4の実施計画（フェーズ0-5の詳細手順）
-      * `projectDocs/jp/task3b4-commits-to-merge.md` - 取り込むべきコミットの分類と優先順位
-      * `projectDocs/jp/period2-qa-evaluation.md` - 期間2の品質保証評価とやり直し計画（pre-commit フォーマット修正の評価）
-      * `projectDocs/jp/period2-scope-separation-plan.md` - 期間2のスコープ分割計画（pre-commit設定とフォーマット修正の分離）
-      * `projectDocs/jp/period2-implementation-strategy.md` - 期間2の実装戦略（pre-commit設定の除外とフォーマット修正の実装手順）
+      * `projectDocs/jp/archive/task3b4-implementation-plan.md` - タスク3b.4の実施計画（フェーズ0-5の詳細手順）
+      * `projectDocs/jp/archive/task3b4-commits-to-merge.md` - 取り込むべきコミットの分類と優先順位
+      * `projectDocs/jp/archive/period2-qa-evaluation.md` - 期間2の品質保証評価とやり直し計画（pre-commit フォーマット修正の評価）
+      * `projectDocs/jp/archive/period2-scope-separation-plan.md` - 期間2のスコープ分割計画（pre-commit設定とフォーマット修正の分離）
+      * `projectDocs/jp/archive/period2-implementation-strategy.md` - 期間2の実装戦略（pre-commit設定の除外とフォーマット修正の実装手順）
 
 ### 未完了のタスク（優先度順）
 
 #### 優先度：最高（最優先目標に直結）
 
-* [ ] **タスク 3b.4: x64移行後の変更の取り込み（`58dd14767` 以降）**
+* [x] **タスク 3b.4: x64移行後の変更の取り込み（`58dd14767` 以降）** ✅ 完了（2026-01-09）
   * **理由**: 本家 2026.1 の段階的取り込みは最優先目標の一つ
-  * **詳細**: 「次に取り込むべきリビジョン」セクションを参照
-  * 参照: `projectDocs/jp/stage3b-x64-migration-plan.md`
+  * **完了内容**:
+    - ✅ フェーズ0-2完了: pre-commit設定、カテゴリ2のバグ修正、カテゴリ5の依存関係更新
+    - ✅ カテゴリ3, 4, 7完了: 機能追加、ドキュメント更新、大規模変更
+    - ✅ マージ漏れの修正完了: `47e6cf5da6`（winBindings移行）、`source/api.py`の修正
+    - ✅ 不足ファイルの追加完了: `crypt32.py`、`scanResults.py`、`screenCurtain/__init__.py`
+    - ✅ 不要ファイルの削除完了: `screenCurtain.py`、`NVDAHelper.py`
+    - ✅ すべてのテスト通過確認: 型チェック、ビルド、JP smoke test、ユニットテスト、システムテスト
+  * 参照: `projectDocs/jp/archive/stage3b-x64-migration-plan.md`
 
 #### 優先度：高（リリース品質に影響）
+
+* [x] **タスク 3b.5: 差分最小化（`compare-with-beta`ベース）** ✅ 完了（2026-01-09）
+  * **理由**: 本家版との差分を最小化しながら、順序立てて基盤整合を進めるため
+  * **完了内容**:
+    - ✅ `compare-with-beta`ベースでJP固有でない差分を順次適用完了
+    - ✅ 主要なマージ漏れの修正完了（`gui/__init__.py`、`NVDAHelper/__init__.py`、`synthDriverHandler.py`、`systemUtils.py`、`winUser.py`、各種テストファイル）
+    - ✅ compare-with-betaの個別ファイルを削除してマージ準備完了
+  * **実施方法**:
+    - 小さな単位で順次適用
+    - 各変更後にビルド・型チェック・単体テストを実行
+    - 問題があれば即座にロールバック
+  * **参照**: `projectDocs/jp/compare-with-beta/`ディレクトリ
 
 * [ ] **タスク 4.0: リグレッション対策の継続（動作確認）**
   * **理由**: 2025.3.x jp で提供している仕様や機能からのリグレッションをなくすため
@@ -208,6 +334,8 @@
   * `pyrightconfig.json`の除外設定を見直し、JP固有コード（`source/synthDrivers/jtalk/`）の型チェックを有効化
   * 型ヒントの追加（重要な関数から段階的に）
   * 小さなPR単位で実施し、各PRで全テスト通過を確認
+  * **推奨**: 別ブランチ/PRで段階的に実施（機能実装とは分離）
+  * **参照**: `projectDocs/jp/pyright-enablement-summary.md`
 
 #### 優先度：中（継続的な改善）
 
@@ -245,4 +373,4 @@
   * 本家版開発環境: `projectDocs/dev/createDevEnvironment.md`
   * エージェント向け: `AGENTS.md`（運用ルール、コマンド一覧）
 * **過去の作業記録**:
-  * betajp-251206ブランチの失敗分析: `projectDocs/jp/merge-plan-beta-2025-11.md`
+  * betajp-251206ブランチの失敗分析: `projectDocs/jp/archive/merge-plan-beta-2025-11.md`

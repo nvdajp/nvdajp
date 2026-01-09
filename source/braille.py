@@ -38,6 +38,7 @@ import louisHelper
 import louis
 import gui
 from controlTypes.state import State
+import winBindings.kernel32
 import winKernel
 import keyboardHandler
 import baseObject
@@ -49,6 +50,7 @@ from config.configFlags import (
 	BrailleMode,
 	ReportTableHeaders,
 	OutputMode,
+	ReportSpellingErrors,
 )
 from config.featureFlagEnums import ReviewRoutingMovesSystemCaretFlag, FontFormattingBrailleModeFlag
 from logHandler import log
@@ -72,6 +74,7 @@ from winAPI.secureDesktop import post_secureDesktopStateChange
 from textUtils import isUnicodeNormalized, UnicodeNormalizationOffsetConverter
 import hwIo
 from editableText import EditableText
+from gui.guiHelper import wxCallOnMain
 
 if TYPE_CHECKING:
 	from NVDAObjects import NVDAObject
@@ -784,6 +787,7 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 	states = propertyValues.get("states")
 	positionInfo = propertyValues.get("positionInfo")
 	level = positionInfo.get("level") if positionInfo else None
+	childControlCount = positionInfo.get("childControlCount") if positionInfo else None
 	cellCoordsText = propertyValues.get("cellCoordsText")
 	rowNumber = propertyValues.get("rowNumber")
 	columnNumber = propertyValues.get("columnNumber")
@@ -809,19 +813,24 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 			# BEGIN JP PATCH
 			roleText = _nvdajp("vlnk")
 			# END JP PATCH
-		elif (
-			role == controlTypes.Role.LIST
-			and states
-			and controlTypes.State.MULTISELECTABLE in states
-			and config.conf["presentation"]["reportMultiSelect"]
-		):
-			# Collapse the list role and multiselectable state into a single role text.
-			# Note that for other cases where this state is found, regular processing with
-			# controlTypes.processAndLabelStates will discard the state if necessary.
-			states = states.copy()
-			states.discard(controlTypes.State.MULTISELECTABLE)
-			# Translators: Displayed in braille for a multi select list.
-			roleText = _("mslst")
+		elif role == controlTypes.Role.LIST:
+			if (
+				states
+				and controlTypes.State.MULTISELECTABLE in states
+				and config.conf["presentation"]["reportMultiSelect"]
+			):
+				# Collapse the list role and multiselectable state into a single role text.
+				# Note that for other cases where this state is found, regular processing with
+				# controlTypes.processAndLabelStates will discard the state if necessary.
+				states = states.copy()
+				states.discard(controlTypes.State.MULTISELECTABLE)
+				# Translators: Displayed in braille for a multi select list.
+				roleText = _("mslst")
+			else:
+				roleText = roleLabels.get(role, role.displayString)
+			if childControlCount:
+				roleText += childControlCount
+				childControlCount = None
 		elif (
 			name or cellCoordsText or rowNumber or columnNumber
 		) and role in controlTypes.silentRolesOnFocus:
@@ -1266,6 +1275,8 @@ def _getControlFieldForReportStart(
 	level = field.get("level")
 	if level:
 		props["positionInfo"] = {"level": level}
+	if role == controlTypes.Role.LIST and (int(childControlCount := field.get("_childcontrolcount", 0))) > 0:
+		props["positionInfo"] = {"childControlCount": childControlCount}
 
 	text = getPropertiesBraille(**props)
 	if content:
@@ -1354,7 +1365,7 @@ def getFormatFieldBraille(field, fieldCache, isAtStart, formatConfig):
 
 	if (
 		config.conf["braille"]["fontFormattingDisplay"].calculated() == FontFormattingBrailleModeFlag.TAGS
-		and (formattingTags := _getFormattingTags(field, fieldCache, formatConfig)) is not None
+		and (formattingTags := _getFormattingTags(field, fieldCache)) is not None
 	):
 		textList.append(formattingTags)
 
@@ -1385,7 +1396,6 @@ def getParagraphStartMarker() -> str | None:
 def _getFormattingTags(
 	field: dict[str, str],
 	fieldCache: dict[str, str],
-	formatConfig: dict[str, bool],
 ) -> str | None:
 	"""Get the formatting tags for the given field and cache.
 
@@ -1397,9 +1407,8 @@ def _getFormattingTags(
 	:return: The braille formatting tag as a string, or None if no pertinant formatting is applied.
 	"""
 	textList: list[str] = []
-	if formatConfig["fontAttributeReporting"] & OutputMode.BRAILLE:
-		# Only calculate font attribute tags if the user has enabled font attribute reporting in braille.
-		for fontAttribute, formattingMarker in fontAttributeFormattingMarkers.items():
+	for fontAttribute, formattingMarker in fontAttributeFormattingMarkers.items():
+		if formattingMarker.shouldBeUsed(fontAttribute):
 			_appendFormattingMarker(fontAttribute, formattingMarker, textList, field, fieldCache)
 	if len(textList) > 0:
 		return f"{FormatTagDelimiter.START}{''.join(textList)}{FormatTagDelimiter.END}"
@@ -2522,6 +2531,26 @@ the local braille handler should be disabled as long as the system is in control
 Handlers are called without arguments.
 """
 
+_decide_disabledIncludesMessages = extensionPoints.Decider()
+"""
+Allows Remote Access to decide whether an exception should be made for showing ui.message.
+Handlers are called without arguments.
+"""
+
+_pre_showBrailleMessage = extensionPoints.Action()
+"""
+Called before a `ui.message` is shown,
+to allow Remote Access to show local messages to users who are controlling a remote computer.
+Handlers are called without arguments.
+"""
+
+_post_dismissBrailleMessage = extensionPoints.Action()
+"""
+Called after a `ui.message` is dismissed,
+to allow Remote Access to show local messages to users who are controlling a remote computer.
+Handlers are called without arguments.
+"""
+
 
 class BrailleHandler(baseObject.AutoPropertyObject):
 	# TETHER_AUTO, TETHER_FOCUS, TETHER_REVIEW and tetherValues
@@ -2611,7 +2640,7 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 			self.display.terminate()
 			self.display = None
 		if self.ackTimerHandle:
-			if not ctypes.windll.kernel32.CancelWaitableTimer(self.ackTimerHandle):
+			if not winBindings.kernel32.CancelWaitableTimer(self.ackTimerHandle):
 				raise ctypes.WinError()
 			winKernel.closeHandle(self.ackTimerHandle)
 			self.ackTimerHandle = None
@@ -2808,12 +2837,27 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		and thus is C{True} when the display size is greater than 0.
 		This is a read only property and can't be set.
 		"""
+		self._refreshEnabled()
+		return self._enabled
+
+	def _refreshEnabled(self, *, block: bool = False) -> None:
+		"""Refresh the state of the enabled property.
+
+		If it has gone from ``True`` to ``False``,
+		actions such as dismissing the current message (if any),
+		and clearing the cursor blink interval are performed.
+		These actions are performed synchronously or asynchronously depending on the value of :param:`block`.
+
+		:param block: Whether this operation should be blocking, defaults to False
+		"""
 		currentEnabled = bool(self.displaySize) and decide_enabled.decide()
 		if self._enabled != currentEnabled:
 			self._enabled = currentEnabled
 			if currentEnabled is False:
-				wx.CallAfter(self._handleEnabledDecisionFalse)
-		return currentEnabled
+				if block:
+					wxCallOnMain(self._handleEnabledDecisionFalse)
+				else:
+					wx.CallAfter(self._handleEnabledDecisionFalse)
 
 	def _set_enabled(self, value):
 		raise AttributeError(
@@ -3087,12 +3131,13 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		@postcondition: The message is displayed.
 		"""
 		if (
-			not self.enabled
+			(not self.enabled and _decide_disabledIncludesMessages.decide())
 			or config.conf["braille"]["showMessages"] == ShowMessages.DISABLED
 			or text is None
 			or config.conf["braille"]["mode"] == BrailleMode.SPEECH_OUTPUT.value
 		):
 			return
+		_pre_showBrailleMessage.notify()
 		if self.buffer is self.messageBuffer:
 			self.buffer.clear()
 		else:
@@ -3131,6 +3176,7 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 			self._messageCallLater = None
 		if shouldUpdate:
 			self.update()
+		_post_dismissBrailleMessage.notify()
 
 	def handleGainFocus(self, obj: "NVDAObject", shouldAutoTether: bool = True) -> None:
 		if not self.enabled or config.conf["braille"]["mode"] == BrailleMode.SPEECH_OUTPUT.value:
@@ -3814,7 +3860,7 @@ class BrailleDisplayDriver(driverHandler.Driver):
 		"""Base implementation to handle acknowledgement packets."""
 		if not self.receivesAckPackets:
 			raise NotImplementedError("This display driver does not support ACK packet handling")
-		if not ctypes.windll.kernel32.CancelWaitableTimer(handler.ackTimerHandle):
+		if not winBindings.kernel32.CancelWaitableTimer(handler.ackTimerHandle):
 			raise ctypes.WinError()
 		self._awaitingAck = False
 		handler._writeCellsInBackground()

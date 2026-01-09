@@ -7,12 +7,12 @@
 
 from collections.abc import Callable
 import os
-import ctypes
 import warnings
 import wx
 import wx.adv
 import wx.lib.agw.persist
 
+import winBindings.kernel32
 import globalVars
 import tones
 import ui
@@ -58,10 +58,12 @@ from .settingsDialogs import (
 	InputCompositionPanel,
 	KeyboardSettingsPanel,
 	LanguageSettingsPanel,  # nvdajp
+	LocalCaptionerSettingsPanel,
 	MouseSettingsPanel,
 	MultiCategorySettingsDialog,
 	NVDASettingsDialog,
 	ObjectPresentationPanel,
+	PrivacyAndSecuritySettingsPanel,
 	RemoteSettingsPanel,
 	ReviewCursorPanel,
 	SettingsDialog,
@@ -355,6 +357,9 @@ class MainFrame(wx.Frame):
 	def onAudioSettingsCommand(self, evt: wx.CommandEvent):
 		self.popupSettingsDialog(NVDASettingsDialog, AudioPanel)
 
+	def onPrivacyAndSecuritySettingsCommand(self, evt: wx.CommandEvent):
+		self.popupSettingsDialog(NVDASettingsDialog, PrivacyAndSecuritySettingsPanel)
+
 	def onVisionSettingsCommand(self, evt: wx.CommandEvent):
 		self.popupSettingsDialog(NVDASettingsDialog, VisionSettingsPanel)
 
@@ -392,6 +397,10 @@ class MainFrame(wx.Frame):
 	@blockAction.when(blockAction.Context.SECURE_MODE)
 	def onRemoteAccessSettingsCommand(self, evt):
 		self.popupSettingsDialog(NVDASettingsDialog, RemoteSettingsPanel)
+
+	@blockAction.when(blockAction.Context.SECURE_MODE)
+	def onLocalCaptionerSettingsCommand(self, evt):
+		self.popupSettingsDialog(NVDASettingsDialog, LocalCaptionerSettingsPanel)
 
 	@blockAction.when(blockAction.Context.SECURE_MODE)
 	def onAdvancedSettingsCommand(self, evt: wx.CommandEvent):
@@ -536,7 +545,7 @@ class MainFrame(wx.Frame):
 		self.prePopup()
 		from . import installerGui
 
-		d = installerGui.PortableCreaterDialog(self)
+		d = installerGui.PortableCreaterDialog(mainFrame)
 		d.Show()
 		self.postPopup()
 
@@ -874,7 +883,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile("https://www.nvda.jp/"), item)
 			# Translators: The label for the menu item to view the NVDA website
 			item = self.helpMenu.Append(wx.ID_ANY, _("NV Access &web site"))
-			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(versionInfo.url), item)
+			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(buildVersion.url), item)
 			# Translators: The label for the menu item to view the NVDA website's get help section
 			item = self.helpMenu.Append(wx.ID_ANY, _("&Help, training and support"))
 			self.Bind(wx.EVT_MENU, lambda evt: os.startfile(f"{buildVersion.url}/get-help/"), item)
@@ -1028,7 +1037,7 @@ def shouldConfigProfileTriggersBeSuspended():
 	Top-level windows that require this behavior should have a C{shouldSuspendConfigProfileTriggers} attribute set to C{True}.
 	Because these dialogs are often opened via the NVDA menu, this applies to the NVDA menu as well.
 	"""
-	if winUser.getGUIThreadInfo(ctypes.windll.kernel32.GetCurrentThreadId()).flags & 0x00000010:
+	if winUser.getGUIThreadInfo(winBindings.kernel32.GetCurrentThreadId()).flags & 0x00000010:
 		# The NVDA menu is active.
 		return True
 	for window in wx.GetTopLevelWindows():

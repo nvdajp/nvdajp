@@ -172,8 +172,8 @@ letter \x5516  6-1-245             	# 唖
 ## 参考資料
 
 - `projectDocs/jp/braille-ja-jp-comp6.md` - `ja-jp-comp6.utb` の詳細
-- `projectDocs/jp/ja-rokutenkanji-table-fix-plan.md` - `ja-rokutenkanji.utb` テーブル解決エラー修正方針
 - `source/ja-jp-rokutenkanji.tbl` - nvdajp 従来の六点漢字テーブル
+- 注: `ja-rokutenkanji-table-fix-plan.md`は完了済みのため削除（liblouis 3.36更新完了、コミット `e5a9b2e`）
 - `source/brailleTables/__tables.py` - テーブル登録
 - `source/louisHelper.py` - エンジン切り替えロジック
 - `nvdaHelper/liblouis/sconscript` - ビルドスクリプト（`ja-jp-rokutenkanji.tbl`を`source/louis/tables/ja-rokutenkanji.utb`としてコピー）

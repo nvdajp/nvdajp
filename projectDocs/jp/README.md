@@ -10,8 +10,11 @@
 
 ## ロードマップ（要約）
 
-* CI/ビルド基盤を整合（Refs: `#539`, Part of `#530`）
-* Python 3.13 x64 対応は別ブランチ（x64実験系）で管理。現ブランチは x86 を維持。
+* ✅ CI/ビルド基盤を整合完了（Refs: `#539`, Part of `#530`)
+* ✅ Python 3.13 x64 対応完了（2026-01-09）
+* ✅ 本家ベータ版の機能的な取り込み完了（2026-01-09）
+* ✅ 従来の日本語版のパッチの移植完了（2026-01-09）
+* 詳細は `projectDocs/jp/roadmap.md` を参照
 
 ## CI/ビルド クイックスタート
 
@@ -150,7 +153,6 @@ GitHub Actions のワークフロー（`.github/workflows/testAndPublish.yml`）
 * **ビルドアーキテクチャ環境変数の方針**: `projectDocs/jp/build-architecture-environment-variables.md`
 * **WAIC テスト（Web アクセシビリティテスト）**: `projectDocs/jp/waic-tests.md`
 * **Chrome System Test の日本語環境での動作の違い**: `projectDocs/jp/chrome-system-test-japanese-environment.md`
-* TODO: **署名ビルドの冗長実行とログ運用**: `projectDocs/jp/todo_build_script_redundancy_and_logging.md`
 * エージェント／自動化向けの運用ルール: `AGENTS.md`
 
 ## 用語集
@@ -189,7 +191,8 @@ GitHub Actions のワークフロー（`.github/workflows/testAndPublish.yml`）
 
 ## 進行中タスク
 
-* `#530`: 本家 2026.1 の日本語版へのマージ
-* `#539`: merge nvaccess beta（注: 3.13 x64 対応は別ブランチで実施）
+* ✅ `#530`: 本家 2026.1 の日本語版へのマージ完了（2026-01-09）
+* ✅ `#539`: merge nvaccess beta完了（2026-01-09）
+* 次のステップ: リリース準備と継続的な改善
 
 本READMEは短い要約とリンク集を維持し、詳細は各ファイルと Issue/PR 側で管理します。

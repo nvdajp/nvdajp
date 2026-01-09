@@ -86,7 +86,7 @@
 - `source/ja-jp-comp6.utb` - 日本語6点点字コンピュータ用テーブル（130行）
 - `include/liblouis/tables/ja-rokutenkanji.utb` - 日本語6点漢字点字テーブル（上流版、liblouis 3.36.0以降）
 
-**注**: `source/ja-jp-rokutenkanji.tbl` は betajp-260102 ブランチでは使用されていません。代わりに、上流版の `include/liblouis/tables/ja-rokutenkanji.utb` が使用されています。詳細は `projectDocs/jp/ja-rokutenkanji-table-fix-plan.md` を参照してください。
+**注**: `source/ja-jp-rokutenkanji.tbl` は betajp-260102 ブランチでは使用されていません。代わりに、上流版の `include/liblouis/tables/ja-rokutenkanji.utb` が使用されています。liblouis 3.36への更新により、`ja-rokutenkanji.utb`が含まれるようになりました（コミット `e5a9b2e`）。
 
 ##### 点字表示ドライバー
 
@@ -481,14 +481,14 @@ def buildConfigH(target, source, env):
 **理由**: 
 - `ReviewCursorManagerRegion` を upstream と同じ空クラスに戻しても、nvdajp ブランチではテストが失敗
 - 問題が日本語版独自の実装だけに起因するのではなく、テストの前提条件や環境差など、他の要因も関与している可能性
-- 詳細は `projectDocs/jp/test-routing-failures.md` を参照
+- 詳細は `projectDocs/jp/archive/test-routing-failures.md` を参照
 
 #### 4.2 ドキュメントの追加
 
 以下のドキュメントを追加：
 
-- `projectDocs/jp/test-routing-failures.md` - テスト失敗の詳細分析
-- `projectDocs/jp/test-routing-skip-justification.md` - テストスキップの妥当性説明
+- `projectDocs/jp/archive/test-routing-failures.md` - テスト失敗の詳細分析
+- `projectDocs/jp/archive/test-routing-skip-justification.md` - テストスキップの妥当性説明
 - `projectDocs/jp/braille-routing-analysis.md` - 点字ルーティング問題の詳細分析
 
 ### 5. 設定の復元と拡張
