@@ -33,11 +33,11 @@
 
 ## 関連ドキュメント
 
-- `projectDocs/jp/scons-jp-vswhere-dependency-analysis.md`: `scons_jp.py`の`vswhere`依存に関する分析（実装済み）
-- `projectDocs/jp/vcsetup-vswhere-dependency-analysis.md`: `vcsetup.cmd`の`vswhere`依存に関する分析（実装済み）
-- `projectDocs/jp/vcsetup-responsibilities.md`: `vcsetup.cmd`の責務整理
-- `projectDocs/jp/vcsetup-ps1-migration-proposal.md`: PowerShell移行案（将来の作業）
-- `projectDocs/jp/vcsetup-ps1-qa-evaluation.md`: PowerShell移行の品質保証評価（将来の作業）
+- `projectDocs/jp/archive/scons-jp-vswhere-dependency-analysis.md`: `scons_jp.py`の`vswhere`依存に関する分析（実装済み）
+- `projectDocs/jp/archive/vcsetup-vswhere-dependency-analysis.md`: `vcsetup.cmd`の`vswhere`依存に関する分析（実装済み）
+- `projectDocs/jp/archive/vcsetup-responsibilities.md`: `vcsetup.cmd`の責務整理
+- `projectDocs/jp/archive/vcsetup-ps1-migration-proposal.md`: PowerShell移行案（将来の作業）
+- `projectDocs/jp/archive/vcsetup-ps1-qa-evaluation.md`: PowerShell移行の品質保証評価（将来の作業）
 
 ## 今後の作業
 

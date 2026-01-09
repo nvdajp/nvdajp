@@ -197,8 +197,8 @@
   * **注意**: `--allow-unrelated-histories`が必要な場合がある（履歴が分岐している場合）
   * **進捗状況**（2026-01-08更新）:
     * ✅ 取り込むべきコミットの特定完了（約50コミット、72c211456..nvaccess/beta）
-    * ✅ 実施計画の作成完了（`projectDocs/jp/task3b4-implementation-plan.md`）
-    * ✅ コミット分類と優先順位付け完了（`projectDocs/jp/task3b4-commits-to-merge.md`）
+    * ✅ 実施計画の作成完了（`projectDocs/jp/archive/task3b4-implementation-plan.md`）
+    * ✅ コミット分類と優先順位付け完了（`projectDocs/jp/archive/task3b4-commits-to-merge.md`）
     * ✅ フェーズ0: pre-commit設定の確認と更新完了（日本語ドキュメントとサードパーティライブラリの除外設定を追加）
     * ✅ フェーズ1: カテゴリ2のバグ修正・機能改善の取り込み完了（15コミット、2026-01-07）
       - 最初の5コミット: `1cee6d93cf`, `eeb6143aae`, `00a42a406d`, `3f4294979`, `fdbfb017c`
@@ -282,11 +282,11 @@
     * フォーマット修正は1つのコミットにまとめる
     * 各変更後にビルド・型チェック・単体テストを実行して検証
     * **参照ドキュメント**:
-      * `projectDocs/jp/task3b4-implementation-plan.md` - タスク3b.4の実施計画（フェーズ0-5の詳細手順）
-      * `projectDocs/jp/task3b4-commits-to-merge.md` - 取り込むべきコミットの分類と優先順位
-      * `projectDocs/jp/period2-qa-evaluation.md` - 期間2の品質保証評価とやり直し計画（pre-commit フォーマット修正の評価）
-      * `projectDocs/jp/period2-scope-separation-plan.md` - 期間2のスコープ分割計画（pre-commit設定とフォーマット修正の分離）
-      * `projectDocs/jp/period2-implementation-strategy.md` - 期間2の実装戦略（pre-commit設定の除外とフォーマット修正の実装手順）
+      * `projectDocs/jp/archive/task3b4-implementation-plan.md` - タスク3b.4の実施計画（フェーズ0-5の詳細手順）
+      * `projectDocs/jp/archive/task3b4-commits-to-merge.md` - 取り込むべきコミットの分類と優先順位
+      * `projectDocs/jp/archive/period2-qa-evaluation.md` - 期間2の品質保証評価とやり直し計画（pre-commit フォーマット修正の評価）
+      * `projectDocs/jp/archive/period2-scope-separation-plan.md` - 期間2のスコープ分割計画（pre-commit設定とフォーマット修正の分離）
+      * `projectDocs/jp/archive/period2-implementation-strategy.md` - 期間2の実装戦略（pre-commit設定の除外とフォーマット修正の実装手順）
 
 ### 未完了のタスク（優先度順）
 
@@ -301,7 +301,7 @@
     - ✅ 不足ファイルの追加完了: `crypt32.py`、`scanResults.py`、`screenCurtain/__init__.py`
     - ✅ 不要ファイルの削除完了: `screenCurtain.py`、`NVDAHelper.py`
     - ✅ すべてのテスト通過確認: 型チェック、ビルド、JP smoke test、ユニットテスト、システムテスト
-  * 参照: `projectDocs/jp/stage3b-x64-migration-plan.md`
+  * 参照: `projectDocs/jp/archive/stage3b-x64-migration-plan.md`
 
 #### 優先度：高（リリース品質に影響）
 
@@ -373,4 +373,4 @@
   * 本家版開発環境: `projectDocs/dev/createDevEnvironment.md`
   * エージェント向け: `AGENTS.md`（運用ルール、コマンド一覧）
 * **過去の作業記録**:
-  * betajp-251206ブランチの失敗分析: `projectDocs/jp/merge-plan-beta-2025-11.md`
+  * betajp-251206ブランチの失敗分析: `projectDocs/jp/archive/merge-plan-beta-2025-11.md`

@@ -56,27 +56,13 @@
 - `chrome-system-test-japanese-environment.md` - Chrome system test
 - その他の技術ドキュメント
 
-#### 4. **トラブルシューティング**（`troubleshooting/`に移動候補）
-- `troubleshooting_runjp_smoke_tests.md`
-- `build_file_lock_troubleshooting.md`
-- `local_verification_*` - ローカル検証関連
-  - `local_verification_build_dependencies.md`
-
-#### 5. **評価・分析**（`evaluation/`に移動候補）
-- `vcsetup-ps1-qa-evaluation.md`
-- `vcsetup-ps1-migration-proposal.md`
-- `vcsetup-responsibilities.md`
-- `vcsetup-vswhere-dependency-analysis.md`
-- `scons-jp-vswhere-dependency-analysis.md`
-- `skip-test-decision-analysis.md`
-- `test-routing-skip-justification.md`
-- `test-routing-failures.md`
-- `jpSmokeTest-error-patterns.md`
-
-#### 6. **計画・提案**（`plans/`に移動候補、または削除候補）
-- `ja-rokutenkanji-table-fix-plan.md` - **完了済み**（liblouis 3.36更新完了、コミット `e5a9b2e`）→ **削除候補**
-- `todo_build_script_redundancy_and_logging.md` - TODO（優先度低、実装済みの可能性）→ **削除候補またはarchive/に移動**
-- `talk-outline-nvdajp-development-2025-12.md` - 過去のイベント資料（2025年12月）→ **削除候補またはarchive/に移動**
+#### 4. **過去の作業記録・分析・トラブルシューティング**（`archive/`に統合）
+- マージ関連: `merge-*.md`
+- 期間2関連: `period2-*.md`
+- タスク関連: `task3b4-*.md`、`stage3b-*.md`
+- トラブルシューティング: `troubleshooting_*.md`、`build_file_lock_troubleshooting.md`、`local_verification_*.md`
+- 評価・分析: `vcsetup-*.md`、`scons-jp-vswhere-dependency-analysis.md`、`skip-test-decision-analysis.md`、`test-routing-*.md`、`jpSmokeTest-error-patterns.md`
+- その他: `pr608-vs-pr609-explanation.md`、`migration-review-*.md`
 
 #### 7. **比較結果**（既にサブディレクトリ、そのまま）
 - `compare-with-2025/`
@@ -99,28 +85,21 @@ projectDocs/jp/
 ├── line-endings-summary.md      # 改行コード対応のまとめ
 ├── pyright-enablement-summary.md # pyright対応のまとめ
 │
-├── archive/                     # 過去の作業記録
+├── archive/                     # 過去の作業記録など
 │   ├── merge-*.md
 │   ├── period2-*.md
 │   ├── pr608-vs-pr609-explanation.md
 │   ├── task3b4-*.md
 │   ├── stage3b-*.md
 │   └── migration-review-*.md
-│
-├── troubleshooting/             # トラブルシューティング
 │   ├── troubleshooting_*.md
 │   ├── build_file_lock_troubleshooting.md
 │   └── local_verification_*.md
-│
-├── evaluation/                  # 評価・分析
 │   ├── vcsetup-*.md
 │   ├── scons-jp-vswhere-dependency-analysis.md
 │   ├── skip-test-decision-analysis.md
 │   ├── test-routing-*.md
 │   └── jpSmokeTest-error-patterns.md
-│
-├── plans/                       # 計画・提案（削除済み）
-│   └── （完了済み・不要な計画ファイルは削除済み）
 │
 ├── compare-with-2025/          # 比較結果（既存）
 ├── compare-with-beta/          # 比較結果（既存）
@@ -155,43 +134,23 @@ projectDocs/jp/
 
 ## 実施手順（推奨）
 
-### フェーズ1: サブディレクトリの作成とREADME更新
-1. `archive/`、`troubleshooting/`、`evaluation/`、`plans/`ディレクトリを作成
+### フェーズ1: `archive/`ディレクトリの作成とREADME更新
+1. `archive/`ディレクトリを作成
 2. README.mdに新しい構造を説明するセクションを追加
 
-### フェーズ2: 過去の作業記録の移動
-1. `archive/`に過去の作業記録を移動
-2. 参照を更新
+### フェーズ2: 過去の作業記録・分析・トラブルシューティングの移動
+1. `archive/`に以下を移動:
+   - マージ関連: `merge-*.md`
+   - 期間2関連: `period2-*.md`
+   - タスク関連: `task3b4-*.md`、`stage3b-*.md`
+   - トラブルシューティング: `troubleshooting_*.md`、`build_file_lock_troubleshooting.md`、`local_verification_*.md`
+   - 評価・分析: `vcsetup-*.md`、`scons-jp-vswhere-dependency-analysis.md`、`skip-test-decision-analysis.md`、`test-routing-*.md`、`jpSmokeTest-error-patterns.md`
+   - その他: `pr608-vs-pr609-explanation.md`、`migration-review-*.md`
+2. 参照を更新（特に`troubleshooting_runjp_smoke_tests.md`など、現在も参照されているファイル）
 
-### フェーズ3: トラブルシューティングの移動
-1. `troubleshooting/`にトラブルシューティング関連を移動
-2. 参照を更新
+## 注意事項
 
-### フェーズ4: 評価・分析の移動
-1. `evaluation/`に評価・分析関連を移動
-2. 参照を更新
-
-### フェーズ5: 計画・提案の整理
-1. 完了済み・不要な計画ファイルを削除
-   - `ja-rokutenkanji-table-fix-plan.md` - 完了済み（liblouis 3.36更新完了）
-   - `talk-outline-nvdajp-development-2025-12.md` - 過去のイベント資料
-2. 残りの計画ファイルを`archive/`に移動または削除
-   - `todo_build_script_redundancy_and_logging.md` - TODO（優先度低、実装済みの可能性）
-
-## 代替案: 最小限の整理
-
-すべてを移動するのが大変な場合は、以下の最小限の整理も検討できます：
-
-1. **完了済み・不要なファイルを削除**
-   - `ja-rokutenkanji-table-fix-plan.md` - 完了済み（liblouis 3.36更新完了）
-   - `talk-outline-nvdajp-development-2025-12.md` - 過去のイベント資料
-   - `todo_build_script_redundancy_and_logging.md` - TODO（優先度低、実装済みの可能性）
-   - これだけで約3ファイルが削除される
-
-2. **過去の作業記録のみ`archive/`に移動**
-   - `merge-*`、`period2-*`、`pr608-*`、`task3b4-*`、`stage3b-*`、`migration-review-*`
-   - これだけで約15ファイルが整理される
-
-3. **README.mdの改善**
-   - カテゴリごとのセクションを追加
-   - 主要なドキュメントへのリンクを整理
+1. **参照の更新**: ファイルを`archive/`に移動する場合、すべての参照を更新する必要があります
+2. **段階的な実施**: 一度にすべてを移動せず、段階的に実施することを推奨します
+3. **README.mdの更新**: 移動後、README.mdのリンクを更新する必要があります
+4. **現在も参照されているファイル**: `troubleshooting_runjp_smoke_tests.md`など、現在も参照されているファイルを移動する場合は、参照元を更新してください
