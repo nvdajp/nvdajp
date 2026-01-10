@@ -361,9 +361,10 @@
     * `projectDocs/jp/line-endings-summary.md` - 改行コードのまとめ
     * `projectDocs/jp/line-endings-investigation.md` - 詳細な調査結果と推奨対応手順
   * **実施手順（3フェーズ）**:
-    * **フェーズ1: 設定ファイルの更新（低リスク）**
-      * `.editorconfig`を`end_of_line = lf`に変更（現在は`crlf`）
-      * `.pre-commit-config.yaml`のJP PATCHを確認
+    * **フェーズ1: 設定ファイルの更新（低リスク）** ✅ 完了（2026-01-10）
+      * ✅ `.editorconfig`を`end_of_line = lf`に変更（`crlf`から変更）
+      * ✅ `.pre-commit-config.yaml`のJP PATCHコメントを更新（フェーズ3で有効化することを明記）
+      * ✅ 型チェックとjp smoke testを通過確認
     * **フェーズ2: 改行コードの正規化（中リスク）**
       * 全ファイルをLFに正規化（`git add --renormalize .`）
       * ビルド・型チェック・JP smoke test・ユニットテストを通過確認
