@@ -6,7 +6,7 @@
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は2025年12月6日時点での betajp ブランチの状況
+以下は2026年1月10日時点での betajp ブランチの状況
 
 ### (1) Windows 10/11 64ビット
 
