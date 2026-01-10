@@ -330,13 +330,19 @@
   * ローカル環境
   * CI環境
 
-* [ ] **タスク 2.5a: pyrightの型チェック有効化と型ヒントの追加**
+* [x] **タスク 2.5a: pyrightの型チェック有効化と型ヒントの追加** ✅ 完了（2026-01-10）
   * **理由**: コード品質向上により、リグレッション防止と保守性向上に寄与
-  * `pyrightconfig.json`の除外設定を見直し、JP固有コード（`source/synthDrivers/jtalk/`）の型チェックを有効化
-  * 型ヒントの追加（重要な関数から段階的に）
-  * 小さなPR単位で実施し、各PRで全テスト通過を確認
+  * ✅ `pyrightconfig.json`の除外設定を見直し、JP固有コード（`source/synthDrivers/jtalk/`）の型チェックを有効化
+  * ✅ 型ヒントの追加（重要な関数から段階的に）
+    * ✅ `source/synthDrivers/jtalk/`配下のすべてのファイルに型ヒントを追加
+    * ✅ `nvdajp_jtalk.py`に型ヒントを追加
+    * ✅ `jpDicUtils.py`に型ヒントを追加
+    * ✅ `jpUtils.py`に型ヒントを追加
+  * ✅ すべての変更で型チェック（pyright）とjp smoke testを通過
   * **推奨**: 別ブランチ/PRで段階的に実施（機能実装とは分離）
-  * **参照**: `projectDocs/jp/pyright-enablement-summary.md`
+  * **参照**: 
+    * `projectDocs/jp/pyright-enablement-summary.md`
+    * `projectDocs/jp/pyright-phase1-summary.md` - フェーズ1完了報告
 
 #### 優先度：中（継続的な改善）
 

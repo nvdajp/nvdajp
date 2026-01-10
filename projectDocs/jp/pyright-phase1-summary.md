@@ -92,12 +92,36 @@
 
 しかし、`pyrightconfig.json`で`include`を指定した場合、これらの設定が適用されるかどうかは、pyrightの設定の優先順位に依存します。
 
-### 次のステップ（フェーズ2）
+### フェーズ2完了（2026-01-10）
 
-フェーズ2では、検出された8個のエラーを修正します：
-1. 型ヒントの追加（重要な関数から段階的に）
-2. Noneチェックの追加または型アノテーションの改善
-3. 各変更後にビルド・型チェック・テストを実行
+フェーズ2では、検出された8個のエラーを修正し、主要なJP固有ファイルに型ヒントを追加しました：
+
+#### 完了した作業
+
+1. ✅ **型ヒントの追加（重要な関数から段階的に）**
+   - ✅ `source/synthDrivers/jtalk/`配下のすべてのファイルに型ヒントを追加
+     - `jtalkDriver.py`, `jtalkCore.py`, `mecab.py`, `text2mecab.py`
+     - `translator1.py`, `translator2.py`, `roma2kana.py`
+     - `_nvdajp_unicode.py`, `__init__.py`
+   - ✅ `nvdajp_jtalk.py`に型ヒントを追加
+   - ✅ `jpDicUtils.py`に型ヒントを追加
+   - ✅ `jpUtils.py`に型ヒントを追加
+
+2. ✅ **Noneチェックの追加または型アノテーションの改善**
+   - `config.conf`の型推論を改善（`type: ignore`コメントを追加）
+   - `charDesc`の型を適切に調整（`tuple[str, ...] | list[str] | None`）
+
+3. ✅ **各変更後にビルド・型チェック・テストを実行**
+   - すべての変更で型チェック（pyright）を通過
+   - すべての変更でjp smoke testを通過
+   - 型チェックスクリプト（`ci/scripts/tests/typeCheck.ps1`）も通過
+
+#### 次のステップ（フェーズ3 - オプション）
+
+他のJP固有ファイルや重要なファイルにも型ヒントを追加できます：
+- `source/gui/jpBrailleViewer.py`
+- `source/jpBrailleUtils.py`
+- その他のJP固有ファイル
 
 ## 関連ドキュメント
 
