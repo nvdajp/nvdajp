@@ -9,6 +9,7 @@ import config
 import re
 import collections
 from dataclasses import dataclass
+from typing import Optional, Any
 
 RE_HIRAGANA = re.compile("^[\u3041-\u309e]+$")
 
@@ -20,62 +21,62 @@ SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + "をヲｦはへー"
 FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + "ー"
 
 
-def isJa(locale=None):
+def isJa(locale: str | None = None) -> bool:
 	if locale is None:
 		return languageHandler.getLanguage()[:2] == "ja"
 	return locale[:2] == "ja"
 
 
-def isZenkakuHiragana(c):
+def isZenkakuHiragana(c: str) -> bool:
 	return re.search("[ぁ-ゞ]", c) is not None
 
 
-def isZenkakuKatakana(c):
+def isZenkakuKatakana(c: str) -> bool:
 	if c == "ー":
 		return False
 	return re.search("[ァ-ヾ]", c) is not None
 
 
-def isHankakuKatakana(c):
+def isHankakuKatakana(c: str) -> bool:
 	return re.search("[ｦ-ﾝ｢｣､｡ｰ]", c) is not None
 
 
-def isHalfShape(c):
+def isHalfShape(c: str) -> bool:
 	return len(c) == 1 and (32 < ord(c)) and (ord(c) < 128)
 
 
-def isFullShapeAlphabet(c):
+def isFullShapeAlphabet(c: str) -> bool:
 	return re.search("[ａ-ｚＡ-Ｚ]", c) is not None
 
 
-def isHalfShapeAlphabet(c):
+def isHalfShapeAlphabet(c: str) -> bool:
 	return re.search("[a-zA-Z]", c) is not None
 
 
-def isFullShapeNumber(c):
+def isFullShapeNumber(c: str) -> bool:
 	return re.search("[０-９]", c) is not None
 
 
-def isHalfShapeNumber(c):
+def isHalfShapeNumber(c: str) -> bool:
 	return re.search("[0-9]", c) is not None
 
 
-def isKanaCharacter(c):
+def isKanaCharacter(c: str) -> bool:
 	return isZenkakuHiragana(c) or isZenkakuKatakana(c) or isHankakuKatakana(c)
 
 
-def isLatinCharacter(c):
+def isLatinCharacter(c: str) -> bool:
 	return isFullShapeAlphabet(c) or isHalfShapeAlphabet(c)
 
 
-def isFullShapeSymbol(c):
+def isFullShapeSymbol(c: str) -> bool:
 	return (
 		c
-		in "　、。，．・：；？！´｀¨＾￣＿ー―／＼～〜∥｜‘’“”（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜"
+		in "　、。，．・：；？！´｀¨＾￣＿ー―／＼～〜∥｜''""（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜"
 	)
 
 
-def isUpper(c):
+def isUpper(c: str) -> bool:
 	return (len(c) == 1) and (re.search("[A-ZＡ-Ｚ]", c) is not None)
 
 
@@ -123,7 +124,7 @@ class JpAttr:
 	usePhoneticReadingKana: bool
 
 
-def getJpAttr(locale, char, useDetails):
+def getJpAttr(locale: str, char: str, useDetails: bool) -> JpAttr:
 	""" """
 	_isJa = isJa(locale)
 	jpZenkakuHiragana = _isJa and isZenkakuHiragana(char)
@@ -136,8 +137,9 @@ def getJpAttr(locale, char, useDetails):
 	jpFullShapeSymbol = _isJa and isFullShapeSymbol(char)
 	jpFullShape = jpFullShapeAlphabet or jpFullShapeSymbol
 	halfShape = _isJa and isHalfShape(char)
-	usePhoneticReadingLatin = useDetails and config.conf["language"]["jpPhoneticReadingLatin"]
-	usePhoneticReadingKana = useDetails and config.conf["language"]["jpPhoneticReadingKana"]
+	lang_conf: dict[str, Any] = config.conf["language"]  # type: ignore[assignment]
+	usePhoneticReadingLatin = useDetails and lang_conf["jpPhoneticReadingLatin"]
+	usePhoneticReadingKana = useDetails and lang_conf["jpPhoneticReadingKana"]
 	jpAttr = JpAttr(
 		jpZenkakuHiragana,
 		jpZenkakuKatakana,
@@ -155,11 +157,11 @@ def getJpAttr(locale, char, useDetails):
 	return jpAttr
 
 
-def getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange):
+def getPitchChangeForCharAttr(uppercase: bool, jpAttr: JpAttr, capPitchChange: int) -> int:
 	""" """
 	if uppercase and capPitchChange:
 		return capPitchChange
-	conf = config.conf["language"]
+	conf: dict[str, Any] = config.conf["language"]  # type: ignore[assignment]
 	if jpAttr.jpZenkakuKatakana and conf["jpKatakanaPitchChange"]:
 		return conf["jpKatakanaPitchChange"]
 	elif jpAttr.jpHankakuKatakana and conf["halfShapePitchChange"]:
@@ -169,7 +171,7 @@ def getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange):
 	return 0
 
 
-def code2hex(code):
+def code2hex(code: int) -> str:
 	"""
 	input 0x123a
 	output 'u+0123a'
@@ -226,7 +228,7 @@ def splitChars(name):
 	return nameChars
 
 
-def modifyTimeText(text):
+def modifyTimeText(text: str) -> str:
 	mo = re.match("(\\d{1,2}):(\\d{2})", text)
 	if mo:
 		hour, minute = mo.group(1), mo.group(2)
@@ -252,7 +254,7 @@ def modifyTimeText(text):
 kangxiRadicalsTable = None
 
 
-def processKangxiRadicals(source):
+def processKangxiRadicals(source: str) -> str:
 	global kangxiRadicalsTable
 	if not kangxiRadicalsTable:
 		items = [
