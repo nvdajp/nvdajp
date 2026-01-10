@@ -188,7 +188,7 @@ SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + "をヲｦはへー"
 FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + "ー"
 
 
-def getLongDesc(s):
+def getLongDesc(s: str) -> str:
 	try:
 		lang = languageHandler.getLanguage()[:2]
 		if len(s) == 1 and ord(s) < 128 and lang != "ja":
@@ -208,7 +208,7 @@ def getLongDesc(s):
 	return s
 
 
-def getShortDesc(s):
+def getShortDesc(s: str) -> str:
 	lang = languageHandler.getLanguage()[:2]
 	if len(s) == 1 and ord(s) < 128 and lang != "ja":
 		return characterProcessing.processSpeechSymbol(lang, s)
@@ -218,13 +218,13 @@ def getShortDesc(s):
 	return characterProcessing.getCharacterReading("ja", s.lower())
 
 
-def replaceSpecialKanaCharacter(c):
+def replaceSpecialKanaCharacter(c: str) -> str:
 	if c in SPECIAL_KANA_CHARACTERS:
 		c = getShortDesc(c)
 	return c
 
 
-def getCharDesc(locale, char, jpAttr):
+def getCharDesc(locale: str, char: str, jpAttr: JpAttr) -> tuple[str, ...]:
 	""" """
 	if jpAttr.jpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
 		charDesc = (getShortDesc(char.lower()),)
@@ -246,7 +246,7 @@ def getCharDesc(locale, char, jpAttr):
 	return charDesc
 
 
-def code2kana(code):
+def code2kana(code: int) -> str:
 	"""
 	input 0x123a
 	output 'イチニーサンエー'
@@ -309,12 +309,12 @@ def getCandidateCharDesc(c, a, forBraille=False):
 
 
 def getDiscriminantReading(
-	name, attrOnly=False, sayCapForCapitals=False, forBraille=False, sayCharTypes=True
-):
+	name: str, attrOnly: bool = False, sayCapForCapitals: bool = False, forBraille: bool = False, sayCharTypes: bool = True
+) -> str:
 	if not name:
 		return ""  # noqa: E701
 	nameChars = splitChars(name)
-	attrs = []
+	attrs: list[tuple[str, CharAttr]] = []
 	for uc in nameChars:
 		c = uc[0]
 		ca = CharAttr(
@@ -355,7 +355,7 @@ def getDiscriminantReading(
 	return r
 
 
-def getJaCharAttrDetails(char, sayCapForCapitals, sayCharTypes):
+def getJaCharAttrDetails(char: str, sayCapForCapitals: bool, sayCharTypes: bool) -> str:
 	r = getDiscriminantReading(
 		char, attrOnly=True, sayCapForCapitals=sayCapForCapitals, sayCharTypes=sayCharTypes
 	).rstrip()
@@ -363,13 +363,13 @@ def getJaCharAttrDetails(char, sayCapForCapitals, sayCharTypes):
 	return r
 
 
-def getDescriptionForBraille(name, attrOnly=False, sayCapForCapitals=False):
+def getDescriptionForBraille(name: str, attrOnly: bool = False, sayCapForCapitals: bool = False) -> str:
 	return getDiscriminantReading(
 		name, attrOnly=attrOnly, sayCapForCapitals=sayCapForCapitals, forBraille=True
 	)
 
 
-def processHexCode(locale, msg):
+def processHexCode(locale: str, msg: str) -> str:
 	if isJa(locale):
 		try:
 			msg = re.sub(
@@ -381,7 +381,7 @@ def processHexCode(locale, msg):
 	return msg
 
 
-def fixNewText(newText, isCandidate=False):
+def fixNewText(newText: str, isCandidate: bool = False) -> str:
 	log.debug(newText)
 	if RE_HIRAGANA.match(newText):
 		newText = "".join([chr(ord(c) + 0x60) for c in newText])
