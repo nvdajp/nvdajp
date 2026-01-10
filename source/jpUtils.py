@@ -138,7 +138,7 @@ def getSpellingSpeechWithoutCharMode(
 	localeHasConjuncts = True if locale.split("_", 1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
 	charDescList = getCharDescListFromText(text, locale) if localeHasConjuncts else text
 	for item in charDescList:
-		charDesc: tuple[str, ...] | str | None = None
+		charDesc: tuple[str, ...] | list[str] | str | None = None
 		if localeHasConjuncts:
 			# item is a tuple containing character and its description
 			speakCharOrg = item[0]
