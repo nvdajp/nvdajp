@@ -1,15 +1,16 @@
 # coding: UTF-8
 # text2mecab.py for python-jtalk
 
+from typing import Any
 import re
 import unicodedata
 
 CODE = "utf-8"
 
-predic = None
+predic: list[list[Any]] | None = None
 
 
-def text2mecab_setup():
+def text2mecab_setup() -> None:
 	global predic
 	if predic is None:
 		predic = [
@@ -114,7 +115,10 @@ def text2mecab_setup():
 		]
 
 
-def text2mecab_convert(s):
+def text2mecab_convert(s: str) -> str:
+	if predic is None:
+		text2mecab_setup()
+	assert predic is not None  # type: ignore[unreachable]
 	for p in predic:
 		try:
 			s = re.sub(p[0], p[1], s)

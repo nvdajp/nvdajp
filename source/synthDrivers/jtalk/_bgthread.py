@@ -9,6 +9,7 @@
 #
 # based on NVDA (synthDrivers/_espeak.py)
 
+from typing import Callable, Any
 from logHandler import log
 import threading
 
@@ -16,9 +17,9 @@ import threading
 import queue as Queue
 
 
-bgThread = None
-bgQueue = None
-isSpeaking = False
+bgThread: threading.Thread | None = None
+bgQueue: Queue.Queue[tuple[Callable[..., Any] | None, tuple[Any, ...] | None, dict[str, Any] | None]] | None = None
+isSpeaking: bool = False
 
 
 class BgThread(threading.Thread):
@@ -26,12 +27,19 @@ class BgThread(threading.Thread):
 		threading.Thread.__init__(self)
 		self.setDaemon(True)
 
-	def run(self):
-		global isSpeaking
+	def run(self) -> None:
+		global isSpeaking, bgQueue
+		if bgQueue is None:
+			return
 		while True:
-			func, args, kwargs = bgQueue.get()
-			if not func:
+			item = bgQueue.get()
+			func, args, kwargs = item
+			if func is None:
 				break
+			if args is None:
+				args = ()
+			if kwargs is None:
+				kwargs = {}
 			try:
 				func(*args, **kwargs)
 			except Exception:
@@ -41,10 +49,13 @@ class BgThread(threading.Thread):
 				bgQueue.task_done()
 
 
-def execWhenDone(func, *args, **kwargs):
+def execWhenDone(func: Callable[..., Any], *args: Any, **kwargs: Any) -> None:
 	global bgQueue
 	# This can't be a kwarg in the function definition because it will consume the first non-keywor dargument which is meant for func.
 	mustBeAsync = kwargs.pop("mustBeAsync", False)
+	if bgQueue is None:
+		func(*args, **kwargs)
+		return
 	if mustBeAsync or bgQueue.unfinished_tasks != 0:
 		# Either this operation must be asynchronous or There is still an operation in progress.
 		# Therefore, run this asynchronously in the background thread.
@@ -53,16 +64,18 @@ def execWhenDone(func, *args, **kwargs):
 		func(*args, **kwargs)
 
 
-def initialize():
+def initialize() -> None:
 	global bgThread, bgQueue
 	bgQueue = Queue.Queue()
 	bgThread = BgThread()
 	bgThread.start()
 
 
-def terminate():
+def terminate() -> None:
 	global bgThread, bgQueue
-	bgQueue.put((None, None, None))
-	bgThread.join()
+	if bgQueue is not None:
+		bgQueue.put((None, None, None))
+	if bgThread is not None:
+		bgThread.join()
 	bgThread = None
 	bgQueue = None

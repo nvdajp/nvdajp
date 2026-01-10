@@ -7,14 +7,15 @@
 
 # workaround for msspeech Haruka with "Use spelling functionality"
 
+from typing import Any
 import re
 
-_dic = None
+_dic: list[list[Any]] | None = None
 
 
-def init():
+def init() -> None:
 	global _dic
-	if _dic:
+	if _dic is not None:
 		return
 	_dic = [
 		### zenkaku alphabet convert
@@ -120,10 +121,11 @@ def init():
 	]
 
 
-def convert(msg):
+def convert(msg: str) -> str:
 	global _dic
 	if _dic is None:
 		init()
+	assert _dic is not None  # type: ignore[unreachable]
 	for p in _dic:
 		try:
 			msg = re.sub(p[0], p[1], msg)
