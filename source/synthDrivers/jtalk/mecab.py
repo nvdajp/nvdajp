@@ -176,7 +176,7 @@ class MecabFeatures(NonblockingMecabFeatures):
 		lock.release()
 
 
-def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None, user_dics=None):
+def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir: str | Path | None = None, dic: str | Path | None = None, user_dics: list[str] | None = None) -> None:
 	if libmecab_dir is None or dic is None:
 		raise ValueError("libmecab_dir and dic must be provided")
 	mecab_dll = str(Path(libmecab_dir) / "libmecab.dll")
@@ -269,7 +269,7 @@ def Mecab_initialize(logwrite_: LogWriteFunc = None, libmecab_dir=None, dic=None
 				logwrite_(s)
 
 
-def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
+def Mecab_analysis(src: bytes, features: MecabFeatures | NonblockingMecabFeatures, logwrite_: LogWriteFunc = None) -> None:
 	# CRITICAL: Declare global mecab at the start of the function
 	# This must be before any reference to mecab to avoid SyntaxError
 	global mecab
@@ -480,7 +480,7 @@ def Mecab_analysis(src, features, logwrite_: LogWriteFunc = None):
 
 
 # for debug
-def Mecab_print(mf, logwrite_=None, CODE_=CODE, output_header=True):
+def Mecab_print(mf: MecabFeatures | NonblockingMecabFeatures, logwrite_: LogWriteFunc = None, CODE_: str = CODE, output_header: bool = True) -> None:
 	if logwrite_ is None:
 		return
 	feature = mf.feature
@@ -504,20 +504,20 @@ def Mecab_print(mf, logwrite_=None, CODE_=CODE, output_header=True):
 	logwrite_(s2)
 
 
-def Mecab_getFeature(mf, pos, CODE_=CODE):
+def Mecab_getFeature(mf: MecabFeatures | NonblockingMecabFeatures, pos: int, CODE_: str = CODE) -> str:
 	s = string_at(mf.feature[pos])
 	return s.decode(CODE_, "ignore")
 
 
-def Mecab_setFeature(mf, pos, s, CODE_=CODE):
-	s = s.encode(CODE_, "ignore")
-	buf = create_string_buffer(s)
+def Mecab_setFeature(mf: MecabFeatures | NonblockingMecabFeatures, pos: int, s: str, CODE_: str = CODE) -> None:
+	s_encoded = s.encode(CODE_, "ignore")
+	buf = create_string_buffer(s_encoded)
 	dst_ptr = mf.feature[pos]
 	src_ptr = byref(buf)
-	memmove(dst_ptr, src_ptr, len(s) + 1)
+	memmove(dst_ptr, src_ptr, len(s_encoded) + 1)
 
 
-def getMoraCount(s):
+def getMoraCount(s: str) -> int:
 	# 1/3 => 3
 	# */* => 0
 	m = s.split("/")
@@ -791,13 +791,13 @@ def Mecab_correctFeatures(mf, CODE_=CODE):
 			Mecab_setFeature(mf, pos, ",".join(ar), CODE_=CODE_)
 
 
-def Mecab_utf8_to_cp932(mf):
+def Mecab_utf8_to_cp932(mf: MecabFeatures | NonblockingMecabFeatures) -> None:
 	for pos in range(0, mf.size):
 		s = Mecab_getFeature(mf, pos, CODE_="utf-8")
 		Mecab_setFeature(mf, pos, s, CODE_="cp932")
 
 
-def Mecab_duplicateFeatures(mf, startPos=0, stopPos=None, CODE_="utf-8"):
+def Mecab_duplicateFeatures(mf: MecabFeatures | NonblockingMecabFeatures, startPos: int = 0, stopPos: int | None = None, CODE_: str = "utf-8") -> NonblockingMecabFeatures:
 	if not stopPos:
 		stopPos = mf.size
 	nbmf = NonblockingMecabFeatures()
@@ -810,7 +810,7 @@ def Mecab_duplicateFeatures(mf, startPos=0, stopPos=None, CODE_="utf-8"):
 	return nbmf
 
 
-def Mecab_splitFeatures(mf, CODE_="utf-8"):
+def Mecab_splitFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: str = "utf-8") -> list[NonblockingMecabFeatures]:
 	ar = []
 	startPos = 0
 	for pos in range(mf.size):

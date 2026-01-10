@@ -127,7 +127,7 @@ def text2mecab_convert(s: str) -> str:
 	return s
 
 
-def text2mecab(txt, CODE_=CODE):
+def text2mecab(txt: str, CODE_: str = CODE) -> bytes:
 	text2mecab_setup()
 	txt = unicodedata.normalize("NFKC", txt)
 	txt = text2mecab_convert(txt)
