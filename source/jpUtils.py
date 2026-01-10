@@ -228,8 +228,9 @@ def replaceSpecialKanaCharacter(c: str) -> str:
 	return c
 
 
-def getCharDesc(locale: str, char: str, jpAttr: JpAttr) -> tuple[str, ...]:
+def getCharDesc(locale: str, char: str, jpAttr: JpAttr) -> tuple[str, ...] | list[str] | None:
 	""" """
+	charDesc: tuple[str, ...] | list[str] | None = None
 	if jpAttr.jpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
 		charDesc = (getShortDesc(char.lower()),)
 	elif jpAttr.nonJpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
