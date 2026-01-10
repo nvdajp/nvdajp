@@ -137,15 +137,15 @@ currentEngine: int = 0  # 1:espeak 2:jtalk
 indexReachedFunc: Optional[Callable[[Optional[int]], None]] = None
 
 
-def isSpeaking():
+def isSpeaking() -> bool:
 	return _bgthread.isSpeaking
 
 
-def setSpeaking(b):
+def setSpeaking(b: bool) -> None:
 	_bgthread.isSpeaking = b
 
 
-def _jtalk_speak(msg, index=None, prop=None):
+def _jtalk_speak(msg: str, index: int | None = None, prop: Any = None) -> None:
 	global currIndex
 	global currentEngine
 	global lastIndex
@@ -229,7 +229,7 @@ def _jtalk_speak(msg, index=None, prop=None):
 espeakMark: int = 10000
 
 
-def _espeak_speak(msg, lang, index=None, prop=None):
+def _espeak_speak(msg: str, lang: str, index: int | None = None, prop: Any = None) -> None:
 	global currentEngine, lastIndex, espeakMark
 	assert _espeak is not None  # Type narrowing for type checkers
 	assert lastIndex is not None  # Type narrowing for type checkers
@@ -251,24 +251,24 @@ def _espeak_speak(msg, lang, index=None, prop=None):
 
 
 # call from BgThread
-def _speak(arg):
+def _speak(arg: tuple[str, str, int | None, Any]) -> None:
 	msg, lang, index, prop = arg
 	if DEBUG:
-		logwrite("[" + lang + "]" + msg)
+		logwrite("[" + lang + "]" + str(msg))
 	if DEBUG:
-		logwrite("_speak(%s)" % msg)
+		logwrite("_speak(%s)" % str(msg))
 	if _espeak is None or lang == "ja":
 		# log.info("_jtalk_speak")
-		_jtalk_speak(msg, index, prop)
+		_jtalk_speak(str(msg), index, prop)
 	else:
-		_espeak_speak(msg, lang, index, prop)
+		_espeak_speak(str(msg), lang, index, prop)
 
 
 indexCommands: list[int] = []
 lastIndexCommand: Optional[int] = None
 
 
-def _processIndexReached():
+def _processIndexReached() -> None:
 	global indexCommands
 	flag = False
 	indexCommandsNew = []
@@ -284,7 +284,7 @@ def _processIndexReached():
 
 
 # call from BgThread
-def _updateSpeakIndex(index):
+def _updateSpeakIndex(index: int) -> None:
 	global currIndex
 	global lastIndex
 	assert indexReachedFunc is not None  # Type narrowing for type checkers
@@ -296,24 +296,24 @@ def _updateSpeakIndex(index):
 
 
 # call from nvdajp_jtalk.py
-def updateIndex(index):
+def updateIndex(index: int) -> None:
 	global lastIndex, indexCommands
 	lastIndex = index
 	indexCommands.append(index)
 	# log.info("index %r indexCommands %r" % (index, indexCommands))
 
 
-def onJtalkDone():
+def onJtalkDone() -> None:
 	# log.info("onJtalkDone")
 	_processIndexReached()
 
 
-def onEspeakDone(index):
+def onEspeakDone(index: int) -> None:
 	# log.info("onEspeakDone %r" % index)
 	_processIndexReached()
 
 
-def speak(msg, lang, index=None, voiceProperty_=None):
+def speak(msg: str, lang: str, index: int | None = None, voiceProperty_: Any = None) -> None:
 	# log.info("index(%r) msg(%s) lang(%s)" % (index, msg, lang))
 	# if msg is None and lang is None:
 	# 	import tones
@@ -329,13 +329,13 @@ def speak(msg, lang, index=None, voiceProperty_=None):
 	_bgthread.execWhenDone(_speak, arg, mustBeAsync=True)
 
 
-def updateSpeakIndexWhenDone(index):
+def updateSpeakIndexWhenDone(index: int) -> None:
 	# import tones
 	# tones.beep(440, 10)
 	_bgthread.execWhenDone(_updateSpeakIndex, index, mustBeAsync=True)
 
 
-def stop():
+def stop() -> None:
 	global currentEngine, indexCommands, lastIndex
 	assert _espeak is not None  # Type narrowing for type checkers
 	assert _bgthread.bgQueue is not None  # Type narrowing for type checkers
@@ -375,7 +375,7 @@ def stop():
 	lastIndex = None
 
 
-def pause(switch):
+def pause(switch: bool) -> None:
 	assert _espeak is not None  # Type narrowing for type checkers
 	assert player is not None  # Type narrowing for type checkers
 	if currentEngine == 1:
@@ -384,7 +384,7 @@ def pause(switch):
 		player.pause(switch)
 
 
-def initialize(voice=default_jtalk_voice, onIndexReached=None):
+def initialize(voice: dict[str, Any] = default_jtalk_voice, onIndexReached: Callable[[int | None], None] | None = None) -> None:
 	global player, voice_args
 	global speaker_attenuation
 	global indexReachedFunc
@@ -431,7 +431,7 @@ def initialize(voice=default_jtalk_voice, onIndexReached=None):
 	libjt_set_beta(voice_args["beta"])
 
 
-def terminate():
+def terminate() -> None:
 	global player
 	stop()
 	_bgthread.terminate()
@@ -445,11 +445,11 @@ def terminate():
 rate_percent: int = 50
 
 
-def get_rate(rateBoost):
+def get_rate(rateBoost: bool) -> int:
 	return rate_percent
 
 
-def set_rate(rate, rateBoost):
+def set_rate(rate: int, rateBoost: bool) -> None:
 	global fperiod, rate_percent
 	global voice_args
 	assert voice_args is not None  # Type narrowing for type checkers
@@ -463,7 +463,7 @@ def set_rate(rate, rateBoost):
 	fperiod = int(fperiod * voice_args.get("fperiod_bias", 1))
 
 
-def set_volume(vol):
+def set_volume(vol: int) -> None:
 	global max_level, thres_level, thres2_level
 	max_level = int(326.67 * int(vol) + 100)  # 100..32767
 	thres_level = 128

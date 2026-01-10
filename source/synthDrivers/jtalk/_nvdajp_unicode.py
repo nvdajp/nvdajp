@@ -4,7 +4,7 @@
 import unicodedata
 
 
-def unicode_normalize(s):
+def unicode_normalize(s: str) -> str:
 	s = s.replace("\u00a0", " ")  # Unicode no break space
 	s = s.replace("\u2002", " ")  # Unicode en space
 	s = s.replace("\u2003", " ")  # Unicode em space
