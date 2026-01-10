@@ -354,6 +354,25 @@
   * 1つのPRで1つの変更のみ（例: Pythonバージョン更新、ランナー更新など）
   * **ローカル環境でテスト済みの変更のみをCIに反映**
 
+* [ ] **タスク 2.7: UTF-8 BOMと改行コードの統一（本家との整合性）**
+  * **理由**: 本家（nvaccess/beta）との整合性を保つため、改行コードとUTF-8 BOMの扱いを統一する必要がある
+  * **推奨**: 別ブランチ/PRで段階的に実施（機能実装とは分離）
+  * **参照**: 
+    * `projectDocs/jp/line-endings-summary.md` - 改行コードのまとめ
+    * `projectDocs/jp/line-endings-investigation.md` - 詳細な調査結果と推奨対応手順
+  * **実施手順（3フェーズ）**:
+    * **フェーズ1: 設定ファイルの更新（低リスク）**
+      * `.editorconfig`を`end_of_line = lf`に変更（現在は`crlf`）
+      * `.pre-commit-config.yaml`のJP PATCHを確認
+    * **フェーズ2: 改行コードの正規化（中リスク）**
+      * 全ファイルをLFに正規化（`git add --renormalize .`）
+      * ビルド・型チェック・JP smoke test・ユニットテストを通過確認
+    * **フェーズ3: pre-commitフックの有効化（高リスク）**
+      * `trailing-whitespace`、`end-of-file-fixer`、`fix-byte-order-marker`を有効化
+      * 全ファイルを修正してコミット
+      * 各フェーズで全テスト通過を確認
+  * **注意**: 過去に改行コードの変更が何度も繰り返された問題があったため、段階的な検証を必須とする
+
 * [ ] **タスク 2.5b: コード品質の改善（残り）**
   * **理由**: コード品質向上は継続的な改善として実施
   * ログの改善: `print` の代わりに `logHandler.log` を使用
