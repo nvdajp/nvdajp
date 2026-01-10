@@ -385,12 +385,12 @@ alpha_cap_dic = {
 }
 
 
-def is_ara(c):
+def is_ara(c: str) -> bool:
 	# 数字の後につなぎ符が必要
 	return c in "アイウエオラリルレロ"
 
 
-def make_nabcc_dic():
+def make_nabcc_dic() -> dict[str, str]:
 	dic = {}
 	for c in alpha_dic:
 		dic[c] = alpha_dic[c]
@@ -404,7 +404,7 @@ def make_nabcc_dic():
 nabcc_dic = make_nabcc_dic()
 
 
-def translateWithInPos(text, nabcc=False):
+def translateWithInPos(text: str, nabcc: bool = False) -> tuple[str, list[int]]:
 	retval = ""
 	pos = 0
 	latin = False  # 外字符モード
@@ -414,7 +414,7 @@ def translateWithInPos(text, nabcc=False):
 	quote_mode = False  # 外国語引用符モード
 	info_mode = False  # 情報処理点字モード
 	text = unicodedata.normalize("NFKC", text)
-	inPos = []
+	inPos: list[int] = []
 
 	while pos < len(text):
 		# space

@@ -236,7 +236,7 @@ romadic = [
 ]
 
 
-def getKanaFromRoma(roma):
+def getKanaFromRoma(roma: str) -> str | None:
 	kana = unicode_normalize(roma)
 	if kana in ("youtube",):
 		return None
