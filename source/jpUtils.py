@@ -35,7 +35,7 @@ from jpDicUtils import (  # noqa: E402
 )
 
 
-from typing import Generator  # noqa: E402
+from typing import Generator, Any  # noqa: E402
 import config  # noqa: E402
 import characterProcessing  # noqa: E402
 from speech.types import SequenceItemT  # noqa: E402
