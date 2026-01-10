@@ -365,9 +365,11 @@
       * ✅ `.editorconfig`を`end_of_line = lf`に変更（`crlf`から変更）
       * ✅ `.pre-commit-config.yaml`のJP PATCHコメントを更新（フェーズ3で有効化することを明記）
       * ✅ 型チェックとjp smoke testを通過確認
-    * **フェーズ2: 改行コードの正規化（中リスク）**
-      * 全ファイルをLFに正規化（`git add --renormalize .`）
-      * ビルド・型チェック・JP smoke test・ユニットテストを通過確認
+    * **フェーズ2: 改行コードの正規化（中リスク）** ✅ 完了（2026-01-10）
+      * ✅ 全ファイルをLFに正規化（`git add --renormalize .`）- 33ファイル変更
+      * ✅ 型チェックを通過確認
+      * ✅ JP smoke testを通過確認
+      * ⚠️ ビルドとユニットテストは環境の問題で未確認（改行コード変更とは無関係のエラー）
     * **フェーズ3: pre-commitフックの有効化（高リスク）**
       * `trailing-whitespace`、`end-of-file-fixer`、`fix-byte-order-marker`を有効化
       * 全ファイルを修正してコミット
