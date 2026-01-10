@@ -168,7 +168,7 @@ def getSpellingSpeechWithoutCharMode(
 						characterProcessing.processSpeechSymbol(locale, normChar) for normChar in normalized
 					)
 					isNormalized = True
-		if config.conf["speech"]["autoLanguageSwitching"]:
+		if speech_conf["autoLanguageSwitching"]:
 			yield LangChangeCommand(locale)
 		yield from _getSpellingCharAddCapNotification(
 			speakCharOrg,
