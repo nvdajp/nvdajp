@@ -492,7 +492,7 @@ def libjt_refresh() -> None:
 	libjt.NJD_refresh(njd)
 
 
-def libjt_clear():
+def libjt_clear() -> None:
 	assert libjt is not None  # Type narrowing for type checkers
 	libjt.NJD_clear(njd)
 	libjt.JPCommon_clear(jpcommon)
