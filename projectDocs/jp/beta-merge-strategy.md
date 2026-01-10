@@ -44,6 +44,11 @@ nvaccess/beta: 別の履歴で進化（nvaccess/nvdaリポジトリ）
    - `8fa9bb6d9`が`grafted`として表示されるのは、Gitが履歴を「接ぎ木」したことを示す
    - これは`.git/info/grafts`ファイルや`git replace`によって、履歴が人工的に接続された可能性を示す
    - しかし、これは表示上の接続であり、実際の共通の祖先は存在しない
+   - **なぜ`grafted`が再度表示されないのか**:
+     - `grafted`マークは、Gitが履歴グラフを表示する際に、人工的な接続を検出した場合に一時的に表示される
+     - しかし、これはローカルの表示のみで、実際のコミット履歴には影響しない
+     - `.git/info/grafts`ファイルや`git replace`が存在しない場合、`grafted`マークは表示されない
+     - つまり、`grafted`マークは「表示上の接続」であり、実際の共通の祖先を作るものではない
 
 3. **上流（upstream）のforce pushとの関係**
    - 上流（`nvaccess/beta`）でのforce pushは、unrelated historiesの直接の原因ではない
@@ -67,6 +72,12 @@ nvaccess/beta: 別の履歴で進化（nvaccess/nvdaリポジトリ）
    - 本家（`nvaccess/nvda`）とは独立したリポジトリとして進化してきた
    - 後から共通の祖先を作ることは不可能
    - `8fa9bb6d9`が`grafted`として表示されるのは、Gitが履歴を「接ぎ木」したことを示す（人工的な接続）
+   - **`grafted`を使っても解決できない理由**:
+     - `grafted`は表示上の接続であり、実際の共通の祖先を作るものではない
+     - `.git/info/grafts`ファイルはローカルのみで、他のリポジトリには共有されない
+     - `git replace`も同様に、ローカルのみの設定
+     - マージ時には、`grafted`の設定があっても、Gitは依然として共通の祖先を見つけられない
+     - そのため、`--allow-unrelated-histories`が必要で、大量のコンフリクトが発生する
 
 #### この問題の影響
 
