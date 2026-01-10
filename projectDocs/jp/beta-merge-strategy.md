@@ -33,6 +33,23 @@ nvaccess/beta: 別の履歴で進化（nvaccess/nvdaリポジトリ）
 → 共通の祖先（merge-base）が存在しない
 ```
 
+#### なぜ発生したのか
+
+1. **別のリポジトリとして開始**
+   - 日本語版は`nvdajp/nvdajp`リポジトリとして、本家（`nvaccess/nvda`）とは独立して開始された
+   - 本家をforkしたのではなく、別のリポジトリとして作成された可能性が高い
+   - そのため、最初から共通の祖先が存在しない
+
+2. **`grafted`マークの意味**
+   - `8fa9bb6d9`が`grafted`として表示されるのは、Gitが履歴を「接ぎ木」したことを示す
+   - これは`.git/info/grafts`ファイルや`git replace`によって、履歴が人工的に接続された可能性を示す
+   - しかし、これは表示上の接続であり、実際の共通の祖先は存在しない
+
+3. **上流（upstream）のforce pushとの関係**
+   - 上流（`nvaccess/beta`）でのforce pushは、unrelated historiesの直接の原因ではない
+   - 問題の本質は、**最初から別のリポジトリとして開始された**ことにある
+   - 上流のforce pushがあってもなくても、別リポジトリとして開始された時点でunrelated historiesは確定している
+
 #### なぜ解決できないのか
 
 1. **Gitの構造的制約**
