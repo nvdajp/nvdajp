@@ -153,6 +153,7 @@ GitHub Actions のワークフロー（`.github/workflows/testAndPublish.yml`）
 * **ビルドアーキテクチャ環境変数の方針**: `projectDocs/jp/build-architecture-environment-variables.md`
 * **WAIC テスト（Web アクセシビリティテスト）**: `projectDocs/jp/waic-tests.md`
 * **Chrome System Test の日本語環境での動作の違い**: `projectDocs/jp/chrome-system-test-japanese-environment.md`
+* **nvaccess/beta 持続的マージ戦略**: `projectDocs/jp/beta-merge-strategy.md`
 * エージェント／自動化向けの運用ルール: `AGENTS.md`
 
 ## 用語集

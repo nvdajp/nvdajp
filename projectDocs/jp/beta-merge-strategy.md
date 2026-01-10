@@ -1,0 +1,197 @@
+# nvaccess/beta 持続的マージ戦略
+
+**最終更新**: 2026-01-10
+
+## 概要
+
+このドキュメントは、nvaccess/nvda の beta ブランチを持続的にマージ可能な状態にするための戦略と評価結果をまとめたものです。
+
+## 現在の状況
+
+### リモート設定
+
+- `nvaccess` リモートを追加済み: `https://github.com/nvaccess/nvda.git`
+- `nvaccess/beta` ブランチを fetch 済み
+
+### 履歴の状態
+
+- **現在のブランチ**: `alphajp-260110`
+- **nvaccess/beta の最新コミット**: `eeb6143aa` (Correctly register .nvda-addon file association on installation #19419)
+- **履歴の関係**: **unrelated histories**（分岐した履歴）
+  - `merge-base` が見つからない
+  - グラフでは `8fa9bb6d9` が `eeb6143aa` の上に `grafted` として表示（履歴書き換えの可能性）
+
+### マージ可能性の評価
+
+#### 直接マージの試行結果
+
+```powershell
+git merge --no-commit --no-ff --allow-unrelated-histories nvaccess/beta
+```
+
+**結果**: 大量のコンフリクトが発生
+
+- コンフリクトファイル数: 多数（過去のマージリハーサルでは 242-436 ファイル）
+- 主なコンフリクトカテゴリ:
+  - CI/ワークフロー関連（約 10-15 ファイル）
+  - サブモジュール関連（約 10 ファイル）
+  - ソースコード関連（約 100-250 ファイル）
+  - 翻訳ファイル関連（約 100-150 ファイル）
+
+#### 過去のマージリハーサル結果
+
+- **2025-12-27**: 436 ファイルのコンフリクト
+- **2025-12-30 (x86 Python 3.13)**: 242 ファイルのコンフリクト
+- **2025-12-30 (x64 Python 3.13)**: 255 ファイルのコンフリクト
+
+詳細は `projectDocs/jp/archive/merge-rehearsal-*.md` を参照。
+
+## 判断結果：持続的なマージ戦略
+
+### 推奨アプローチ：cherry-pick ベースの段階的取り込み（現行方式を継続）
+
+#### 理由
+
+1. **履歴の分岐**: 直接マージは非効率で、大量のコンフリクトが発生
+2. **過去の実績**: ステージ 3b.4 で cherry-pick による段階的取り込みが成功
+3. **コンフリクト管理**: 小さな単位で対応可能
+4. **選択的取り込み**: 翻訳関連をスキップできる柔軟性
+
+### 実施方法
+
+#### 1. 定期的な fetch
+
+```powershell
+# nvaccess リモートを追加（初回のみ）
+git remote add nvaccess https://github.com/nvaccess/nvda.git
+
+# beta ブランチを fetch
+git fetch nvaccess beta
+```
+
+#### 2. 新しいコミットの確認
+
+```powershell
+# nvaccess/beta にあって、現在のブランチにないコミットを確認
+git log --oneline --first-parent nvaccess/beta ^HEAD -n 20
+```
+
+#### 3. 段階的な cherry-pick
+
+- **カテゴリ別に分類**: バグ修正、機能追加、ドキュメントなど
+- **小さな PR 単位で実施**: 各 PR で全テスト通過を確認
+- **優先順位付け**: 重要なバグ修正から順に取り込み
+
+#### 4. マージコミットの扱い
+
+- マージコミットは個別のコミットとして cherry-pick
+- コンフリクトが多い場合は、まとめてマージ（`--allow-unrelated-histories` 使用）
+
+### 過去の成功例：ステージ 3b.4
+
+**実施期間**: 2026-01-07 ～ 2026-01-09
+
+**取り込み方法**:
+- カテゴリ別に分類（カテゴリ 1-5, 7）
+- 小さな PR 単位で実施
+- 各 PR で全テスト通過を確認
+
+**取り込んだコミット数**: 約 50 コミット
+
+**結果**: すべてのテスト通過（型チェック、ビルド、JP smoke test、ユニットテスト、システムテスト）
+
+詳細は `projectDocs/jp/roadmap.md` の「タスク 3b.4: x64移行後の変更の取り込み」を参照。
+
+## 注意点
+
+### 1. サブモジュールのエラー
+
+fetch 時にサブモジュールのエラーが発生する場合があります：
+
+```
+Could not access submodule 'include/cldr' at commit 33596643f
+Could not access submodule 'include/cldr-emoji-annotation' at commit d52071321
+...
+```
+
+**対処方法**: 必要に応じて個別に対応。通常は無視しても問題ありません。
+
+### 2. 履歴の整合性
+
+- `grafted` マークは履歴書き換えの可能性を示す
+- 直接マージは避け、cherry-pick を継続
+
+### 3. ドキュメント更新
+
+- `roadmap.md` の「nvaccess/beta の最新状態」を定期的に更新
+- 取り込み済みコミットを記録
+
+## ワークフロー例
+
+### 新しいコミットの取り込み
+
+1. **fetch と確認**
+   ```powershell
+   git fetch nvaccess beta
+   git log --oneline --first-parent nvaccess/beta ^HEAD -n 20
+   ```
+
+2. **コミットの分類と優先順位付け**
+   - バグ修正: 最優先
+   - 機能追加: 次優先
+   - ドキュメント: 低優先度（必要に応じて）
+   - 翻訳: スキップ（JP 固有翻訳を維持）
+
+3. **cherry-pick の実施**
+   ```powershell
+   # 個別のコミットを cherry-pick
+   git cherry-pick <commit-hash>
+   
+   # コンフリクト解決
+   # ... コンフリクト解決 ...
+   
+   # テスト実行
+   ci/scripts/tests/typeCheck.ps1
+   scons source dist launcher --all-cores
+   ci/scripts/tests/unitTests.ps1
+   ```
+
+4. **PR の作成とマージ**
+   - 小さな PR 単位で作成
+   - CI で全テスト通過を確認
+   - マージ後、roadmap.md を更新
+
+### 大規模な変更の取り込み
+
+コンフリクトが多い場合や、まとめて取り込む方が効率的な場合：
+
+```powershell
+# マージコミットを作成
+git merge --no-commit --no-ff --allow-unrelated-histories nvaccess/beta
+
+# コンフリクト解決
+# ... コンフリクト解決 ...
+
+# テスト実行
+ci/scripts/tests/typeCheck.ps1
+scons source dist launcher --all-cores
+ci/scripts/tests/unitTests.ps1
+```
+
+## 結論
+
+現在の状態では、**cherry-pick ベースの段階的取り込み**が現実的です。直接マージは大量のコンフリクトが発生するため、継続的な運用には不向きです。
+
+### 次のステップ
+
+1. 定期的に `git fetch nvaccess beta` を実行
+2. 新しいコミットを確認し、優先順位付け
+3. 小さな PR 単位で cherry-pick を実施
+4. roadmap.md を更新して進捗を記録
+
+## 関連ドキュメント
+
+- `projectDocs/jp/roadmap.md` - ロードマップとタスク管理
+- `projectDocs/jp/archive/merge-rehearsal-*.md` - 過去のマージリハーサル記録
+- `projectDocs/jp/archive/task3b4-commits-to-merge.md` - ステージ 3b.4 の取り込みコミット一覧
+- `projectDocs/jp/archive/task3b4-implementation-plan.md` - ステージ 3b.4 の実施計画

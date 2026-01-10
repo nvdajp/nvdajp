@@ -181,8 +181,9 @@
 
 **nvaccess/beta の最新状態**:
 
-* 最新コミット: `1cee6d93c` (2025年12月29日時点) - "Pass 0 instead of None to VBuf_getControlFieldNodeWithIdentifier (#19365)"
+* 最新コミット: `eeb6143aa` (2026年1月10日時点) - "Correctly register .nvda-addon file association on installation (#19419)"
 * x64移行コミット: `58dd14767` (2025年9月15日) - "Only build 64bit" ✅ マージ完了
+* **持続的マージ戦略**: `projectDocs/jp/beta-merge-strategy.md` を参照
 
 **次のステップ**:
 
