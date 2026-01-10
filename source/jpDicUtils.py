@@ -9,7 +9,7 @@ import config
 import re
 import collections
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any
 
 RE_HIRAGANA = re.compile("^[\u3041-\u309e]+$")
 
@@ -71,8 +71,8 @@ def isLatinCharacter(c: str) -> bool:
 
 def isFullShapeSymbol(c: str) -> bool:
 	return (
-		c
-		in "　、。，．・：；？！´｀¨＾￣＿ー―／＼～〜∥｜''""（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜"
+		c in "　、。，．・：；？！´｀¨＾￣＿ー―／＼～〜∥｜''"
+		"（）〔〕［］「」｛｝〈〉＋－＝＜＞￥＄％＃＆＊＠＇＂゙゚゛゜"
 	)
 
 

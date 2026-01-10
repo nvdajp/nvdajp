@@ -224,4 +224,3 @@
 - `source\synthDrivers\nvdajp_jtalk.py`
 - `source\visionEnhancementProviders\screenCurtain.py`
 - `tests\system\robot\jpRobotUtil.py`
-

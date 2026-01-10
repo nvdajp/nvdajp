@@ -139,8 +139,10 @@ class RemotePath(Path):
             if dst.remote is not self.remote:
                 raise TypeError("dst points to a different remote machine")
         elif not isinstance(dst, six.string_types):
-            raise TypeError("dst must be a string or a RemotePath (to the same remote machine), "
-                "got %r" % (dst,))
+            raise TypeError(
+                "dst must be a string or a RemotePath (to the same remote machine), "
+                "got %r" % (dst,),
+            )
         self.remote._path_move(self, dst)
 
     @_setdoc(Path)
@@ -149,8 +151,10 @@ class RemotePath(Path):
             if dst.remote is not self.remote:
                 raise TypeError("dst points to a different remote machine")
         elif not isinstance(dst, six.string_types):
-            raise TypeError("dst must be a string or a RemotePath (to the same remote machine), "
-                "got %r" % (dst,))
+            raise TypeError(
+                "dst must be a string or a RemotePath (to the same remote machine), "
+                "got %r" % (dst,),
+            )
         if override:
             if isinstance(dst, six.string_types):
                 dst = RemotePath(self.remote, dst)
@@ -181,8 +185,10 @@ class RemotePath(Path):
             if dst.remote is not self.remote:
                 raise TypeError("dst points to a different remote machine")
         elif not isinstance(dst, six.string_types):
-            raise TypeError("dst must be a string or a RemotePath (to the same remote machine), "
-                "got %r" % (dst,))
+            raise TypeError(
+                "dst must be a string or a RemotePath (to the same remote machine), "
+                "got %r" % (dst,),
+            )
         self.remote._path_link(self, dst, False)
 
     @_setdoc(Path)
@@ -191,8 +197,10 @@ class RemotePath(Path):
             if dst.remote is not self.remote:
                 raise TypeError("dst points to a different remote machine")
         elif not isinstance(dst, six.string_types):
-            raise TypeError("dst must be a string or a RemotePath (to the same remote machine), "
-                "got %r" % (dst,))
+            raise TypeError(
+                "dst must be a string or a RemotePath (to the same remote machine), "
+                "got %r" % (dst,),
+            )
         self.remote._path_link(self, dst, True)
 
 
@@ -229,6 +237,3 @@ class RemoteWorkdir(RemotePath):
             yield
         finally:
             self.chdir(prev)
-
-
-

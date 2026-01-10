@@ -140,7 +140,7 @@ def _ensure_nmake_env() -> None:
 						else:
 							os.environ["CL"] = current_cl
 						print(
-							f"[nonCertBuild] MSVC env imported via vswhere from {script.name} ({updated} vars)"
+							f"[nonCertBuild] MSVC env imported via vswhere from {script.name} ({updated} vars)",
 						)
 						return
 

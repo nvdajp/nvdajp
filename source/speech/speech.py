@@ -362,7 +362,7 @@ def speakSpelling(
 			locale=locale,
 			useCharacterDescriptions=useCharacterDescriptions,
 			useDetails=useDetails,
-		)
+		),
 	)
 	speak(seq, priority=priority)
 

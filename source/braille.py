@@ -479,6 +479,7 @@ class FormattingMarker(NamedTuple):
 			return bool(formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.BRAILLE)
 		return formatConfig["fontAttributeReporting"] & OutputMode.BRAILLE
 
+
 fontAttributeFormattingMarkers: dict[str, FormattingMarker] = {
 	"bold": FormattingMarker(
 		# Translators: Brailled at the start of bold text.

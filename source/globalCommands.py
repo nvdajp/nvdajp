@@ -421,7 +421,9 @@ class GlobalCommands(ScriptableObject):
 			elif len(info.text) < speech.speech.MAX_LENGTH_FOR_SELECTION_REPORTING:
 				# BEGIN JP PATCH (character description mode)
 				speech.speakSpelling(
-					info.text, useCharacterDescriptions=scriptCount > 1, useDetails=scriptCount > 1
+					info.text,
+					useCharacterDescriptions=scriptCount > 1,
+					useDetails=scriptCount > 1,
 				)
 				# END JP PATCH
 			else:
@@ -3014,7 +3016,9 @@ class GlobalCommands(ScriptableObject):
 		else:
 			# BEGIN JP PATCH (character description mode)
 			speech.speakSpelling(
-				text, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode
+				text,
+				useCharacterDescriptions=characterDescriptionMode,
+				useDetails=characterDescriptionMode,
 			)
 			# END JP PATCH
 
@@ -3182,7 +3186,9 @@ class GlobalCommands(ScriptableObject):
 		elif repeatCount == 1:
 			# BEGIN JP PATCH (character description mode)
 			speech.speakSpelling(
-				title, useCharacterDescriptions=characterDescriptionMode, useDetails=characterDescriptionMode
+				title,
+				useCharacterDescriptions=characterDescriptionMode,
+				useDetails=characterDescriptionMode,
 			)
 			# END JP PATCH
 		else:
@@ -4069,7 +4075,9 @@ class GlobalCommands(ScriptableObject):
 			else:
 				# BEGIN JP PATCH (character description mode)
 				speech.speakSpelling(
-					text, useCharacterDescriptions=repeatCount > 1, useDetails=repeatCount > 1
+					text,
+					useCharacterDescriptions=repeatCount > 1,
+					useDetails=repeatCount > 1,
 				)
 				# END JP PATCH
 		else:

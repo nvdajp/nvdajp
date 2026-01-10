@@ -146,10 +146,10 @@ Could not access submodule 'include/cldr-emoji-annotation' at commit d52071321
    ```powershell
    # 個別のコミットを cherry-pick
    git cherry-pick <commit-hash>
-   
+
    # コンフリクト解決
    # ... コンフリクト解決 ...
-   
+
    # テスト実行
    ci/scripts/tests/typeCheck.ps1
    scons source dist launcher --all-cores

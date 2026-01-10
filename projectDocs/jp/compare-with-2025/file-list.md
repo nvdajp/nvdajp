@@ -785,4 +785,3 @@
 - `miscDepsJp\include\python-jtalk\lib\test_jtalk.py`
 - `source\synthDrivers\_sapi4.py`
 - `source\synthDrivers\sapi4.py`
-

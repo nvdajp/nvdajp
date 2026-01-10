@@ -24,8 +24,10 @@ def posix_daemonize(command, cwd):
             stdout = open(os.devnull, "w")
             stderr = open(os.devnull, "w")
             signal.signal(signal.SIGHUP, signal.SIG_IGN)
-            proc = command.popen(cwd = cwd, close_fds = True, stdin = stdin.fileno(), 
-                stdout = stdout.fileno(), stderr = stderr.fileno())
+            proc = command.popen(
+                cwd = cwd, close_fds = True, stdin = stdin.fileno(),
+                stdout = stdout.fileno(), stderr = stderr.fileno(),
+            )
             os.write(wfd, str(proc.pid).encode("utf8"))
         except Exception:
             rc = 1
@@ -59,7 +61,7 @@ def posix_daemonize(command, cwd):
         proc._communication_started = False
         proc.args = argv
         proc.argv = argv
-        
+
         def poll(self = proc):
             if self.returncode is None:
                 try:
@@ -72,13 +74,13 @@ def posix_daemonize(command, cwd):
                     else:
                         raise
             return self.returncode
-        
+
         def wait(self = proc):
             while self.returncode is None:
                 if self.poll() is None:
                     time.sleep(0.5)
-            return proc.returncode                
-        
+            return proc.returncode
+
         proc.poll = poll
         proc.wait = wait
         return proc
@@ -89,11 +91,7 @@ def win32_daemonize(command, cwd):
     stdin = open(os.devnull, "r")
     stdout = open(os.devnull, "w")
     stderr = open(os.devnull, "w")
-    return command.popen(cwd = cwd, stdin = stdin.fileno(), stdout = stdout.fileno(), stderr = stderr.fileno(), 
-        creationflags = subprocess.CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
-
-
-
-
-
-
+    return command.popen(
+        cwd = cwd, stdin = stdin.fileno(), stdout = stdout.fileno(), stderr = stderr.fileno(),
+        creationflags = subprocess.CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS,
+    )

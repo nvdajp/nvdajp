@@ -35,6 +35,3 @@ def mounted(fs):
         if fs == entry.dev or fs == entry.point:
             return True
     return False
-
-
-

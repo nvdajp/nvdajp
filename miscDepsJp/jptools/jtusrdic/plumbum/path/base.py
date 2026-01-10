@@ -168,6 +168,3 @@ class Path(object):
         :param dst: the destination path
         """
         raise NotImplementedError()
-
-
-

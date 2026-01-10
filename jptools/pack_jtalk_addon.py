@@ -43,7 +43,7 @@ def main() -> int:
 				str(jptools_dir / "jtalk_manifest.py"),
 				nowdate,
 				str(manifest_path),
-			]
+			],
 		)
 	except subprocess.CalledProcessError as e:
 		print(f"Failed to generate manifest.ini: {e}", file=sys.stderr)

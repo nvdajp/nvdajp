@@ -106,7 +106,7 @@
 
 **コンフリクト数**: 1
 
-**コンフリクト開始行**: 
+**コンフリクト開始行**:
 
 ---
 
@@ -852,4 +852,3 @@
 2. uv.lock はコンフリクト解決後に 'uv lock --upgrade' で再生成
 3. source/locale/ja/LC_MESSAGES/nvda.po は msgmerge で上流 pot に追随
 4. 解決後、ビルドとテストを実行して確認
-

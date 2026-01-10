@@ -39,28 +39,28 @@ index ec86c75..fe46b23 100644
 --- "a/F:\\nvda\\gh\\beta\\tests\\unit\\test_visionEnhancementProviders\\test_magnificationAPI.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_visionEnhancementProviders\\test_magnificationAPI.py"
 @@ -7,17 +7,15 @@
- 
+
  import unittest
- 
+
 -from screenCurtain._screenCurtain import TRANSFORM_BLACK
 -from winBindings import magnification
 -from winBindings.magnification import MAGCOLOREFFECT
 +from visionEnhancementProviders.screenCurtain import Magnification, TRANSFORM_BLACK, MAGCOLOREFFECT
- 
- 
+
+
  class _Test_MagnificationAPI(unittest.TestCase):
  	def setUp(self):
 -		self.assertTrue(magnification.MagInitialize())
 +		self.assertTrue(Magnification.MagInitialize())
- 
+
  	def tearDown(self):
 -		self.assertTrue(magnification.MagUninitialize())
 +		self.assertTrue(Magnification.MagUninitialize())
- 
- 
+
+
  class Test_ScreenCurtain(_Test_MagnificationAPI):
 @@ -34,7 +32,7 @@ def _isIdentityMatrix(self, magTransformMatrix: MAGCOLOREFFECT) -> bool:
- 
+
  	def setUp(self):
  		super().setUp()
 -		resultEffect = magnification.MagGetFullscreenColorEffect()
@@ -70,7 +70,7 @@ index ec86c75..fe46b23 100644
  			# This is because a full screen colour effect is already set external to testing.
 @@ -45,9 +43,9 @@ def setUp(self):
  		return
- 
+
  	def test_setAndConfirmBlackFullscreenColorEffect(self):
 -		result = magnification.MagSetFullscreenColorEffect(TRANSFORM_BLACK)
 +		result = Magnification.MagSetFullscreenColorEffect(TRANSFORM_BLACK)
@@ -81,7 +81,7 @@ index ec86c75..fe46b23 100644
  			for j in range(5):
  				with self.subTest(i=i, j=j):
 @@ -60,9 +58,9 @@ def test_setAndConfirmBlackFullscreenColorEffect(self):
- 
+
  class Test_Mouse(_Test_MagnificationAPI):
  	def test_MagShowSystemCursor(self):
 ... (残り 8 行)
@@ -130,7 +130,7 @@ index 7bae843..5d2697d 100644
 +			# If neither file exists, raise error with helpful message
 +			opSys.file_should_exist(NVDAFilePath, exeErrorMsg)
  			return legacyNVDAFilePath
- 
+
  	def ensureInstallerPathsExist(self):
 ```
 
@@ -159,9 +159,9 @@ index 2e2a9f8..eafe5b1 100644
 --- "a/F:\\nvda\\gh\\beta\\tests\\unit\\test_braille\\test_brailleDisplayDrivers.py"
 +++ "b/F:\\nvda\\gh\\alphajp-260109\\tests\\unit\\test_braille\\test_brailleDisplayDrivers.py"
 @@ -5,6 +5,8 @@
- 
+
  """Unit tests for braille display drivers."""
- 
+
 +import sysconfig
 +import sys
  from brailleDisplayDrivers import seikantk
@@ -169,8 +169,8 @@ index 2e2a9f8..eafe5b1 100644
  import braille
 @@ -178,6 +180,14 @@ def test_identifiers(self):
  					self.assertRegex(gesture, braille.BrailleDisplayGesture.ID_PARTS_REGEX)
- 
- 
+
+
 +@unittest.skipUnless(
 +	sysconfig.get_platform() == "win32",
 +	"BRLTTY is only supported on 32-bit Windows",
@@ -210,7 +210,7 @@ index 32fff42..6f38237 100644
 @@ -48,6 +48,14 @@ def setUp(self):
  		api.setReviewPosition(caret)
  		braille.handler.handleReviewMove()
- 
+
 +	@unittest.skip(
 +		"See projectDocs/jp/test-routing-failures.md for details. "
 +		"Investigation revealed that even when ReviewCursorManagerRegion is reverted to upstream's "
@@ -225,7 +225,7 @@ index 32fff42..6f38237 100644
 @@ -78,6 +86,14 @@ def test_moveCaret_never_moveReviewAndActivate(self):
  		caret = self.cm.makeTextInfo(textInfos.POSITION_CARET)
  		self.assertEqual(caret, self.caret)
- 
+
 +	@unittest.skip(
 +		"See projectDocs/jp/test-routing-failures.md for details. "
 +		"Investigation revealed that even when ReviewCursorManagerRegion is reverted to upstream's "
@@ -240,7 +240,7 @@ index 32fff42..6f38237 100644
 @@ -97,6 +113,14 @@ def test_moveCaret_never_instantActivate(self):
  		caret = self.cm.makeTextInfo(textInfos.POSITION_CARET)
  		self.assertEqual(caret, self.caret)
- 
+
 +	@unittest.skip(
 +		"See projectDocs/jp/test-routing-failures.md for details. "
 +		"Investigation revealed that even when ReviewCursorManagerRegion is reverted to upstream's "
@@ -286,13 +286,13 @@ index e5df9c4..ce524b7 100644
  from gui.message import ReturnCode
 -from keyboardHandler import KeyboardInputGesture
 -from utils.security import post_sessionLockStateChanged
- 
- 
+
+
  # Fake implementations for testing
 @@ -21,14 +19,6 @@ def __init__(self):
  	def terminate(self):
  		pass
- 
+
 -	def setClipboardText(self, *a, **k): ...
 -	def speak(self, *a, **k): ...
 -	def cancelSpeech(self, *a, **k): ...
@@ -301,21 +301,21 @@ index e5df9c4..ce524b7 100644
 -	def playWave(self, *a, **k): ...
 -	def display(self, *a, **k): ...
 -
- 
+
  class FakeMenu:
  	def __init__(self):
 @@ -42,7 +32,6 @@ def Check(self, value):
  			self.checked = value
- 
+
  	def handleConnected(self, *args, **kwargs): ...
 -	def handleConnecting(self, *a, **k): ...
- 
- 
+
+
  class FakeTransport:
 @@ -242,60 +231,6 @@ def test_disconnect(self):
  			self.client.disconnect()
  		fakeControl.close.assert_called_once()
- 
+
 -	def test_lockWhileSendingKeys(self):
 -		# the `onConnectedAsLeader` method is decorated with `alwaysCallAfter`.
 -		# This causes issues here, so unwrap it.
@@ -360,7 +360,7 @@ index 4dbe9e9..47e80ce 100644
 -		actualArchitecture = os.environ["PROCESSOR_ARCHITECTURE"]
 +		actualArchitecture = os.environ.get("PROCESSOR_ARCHITEW6432", os.environ["PROCESSOR_ARCHITECTURE"])
  		self.assertEqual(winVersion.getWinVer().processorArchitecture, actualArchitecture)
- 
+
  	def test_winVerUnknownWin11BuildToReleaseName(self):
 ```
 

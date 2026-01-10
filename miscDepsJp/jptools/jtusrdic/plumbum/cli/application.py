@@ -4,9 +4,11 @@ import six
 import inspect
 from textwrap import TextWrapper
 from plumbum.cli.terminal import get_terminal_size
-from plumbum.cli.switches import (SwitchError, UnknownSwitch, MissingArgument, WrongArgumentType,
+from plumbum.cli.switches import (
+    SwitchError, UnknownSwitch, MissingArgument, WrongArgumentType,
     MissingMandatorySwitch, SwitchCombinationError, PositionalArgumentsError, switch,
-    SubcommandError)
+    SubcommandError,
+)
 
 
 class ShowHelp(SwitchError):
@@ -226,8 +228,11 @@ class Application(object):
                     val = swinfo.argtype(val)
                 except (TypeError, ValueError):
                     ex = sys.exc_info()[1]  # compat
-                    raise WrongArgumentType("Argument of %s expected to be %r, not %r:\n    %r" % (
-                        swname, swinfo.argtype, val, ex))
+                    raise WrongArgumentType(
+                        "Argument of %s expected to be %r, not %r:\n    %r" % (
+                        swname, swinfo.argtype, val, ex,
+                        ),
+                    )
             else:
                 val = NotImplemented
 
@@ -238,8 +243,11 @@ class Application(object):
                     if swfuncs[swinfo.func].swname == swname:
                         raise SwitchError("Switch %r already given" % (swname,))
                     else:
-                        raise SwitchError("Switch %r already given (%r is equivalent)" % (
-                            swfuncs[swinfo.func].swname, swname))
+                        raise SwitchError(
+                            "Switch %r already given (%r is equivalent)" % (
+                            swfuncs[swinfo.func].swname, swname,
+                            ),
+                        )
             else:
                 if swinfo.list:
                     swfuncs[swinfo.func] = SwitchParseInfo(swname, ([val],), index)
@@ -260,8 +268,10 @@ class Application(object):
         exclusions = {}
         for swinfo in self._switches_by_func.values():
             if swinfo.mandatory and not swinfo.func in swfuncs:
-                raise MissingMandatorySwitch("Switch %s is mandatory" %
-                    ("/".join(("-" if len(n) == 1 else "--") + n for n in swinfo.names),))
+                raise MissingMandatorySwitch(
+                    "Switch %s is mandatory" %
+                    ("/".join(("-" if len(n) == 1 else "--") + n for n in swinfo.names),),
+                )
             requirements[swinfo.func] = set(self._switches_by_name[req] for req in swinfo.requires)
             exclusions[swinfo.func] = set(self._switches_by_name[exc] for exc in swinfo.excludes)
 
@@ -271,25 +281,35 @@ class Application(object):
         for func in gotten:
             missing = set(f.func for f in requirements[func]) - gotten
             if missing:
-                raise SwitchCombinationError("Given %s, the following are missing %r" %
-                    (swfuncs[func].swname, [self._switches_by_func[f].names[0] for f in missing]))
+                raise SwitchCombinationError(
+                    "Given %s, the following are missing %r" %
+                    (swfuncs[func].swname, [self._switches_by_func[f].names[0] for f in missing]),
+                )
             invalid = set(f.func for f in exclusions[func]) & gotten
             if invalid:
-                raise SwitchCombinationError("Given %s, the following are invalid %r" %
-                    (swfuncs[func].swname, [swfuncs[f].swname for f in invalid]))
+                raise SwitchCombinationError(
+                    "Given %s, the following are invalid %r" %
+                    (swfuncs[func].swname, [swfuncs[f].swname for f in invalid]),
+                )
 
         m_args, m_varargs, _, m_defaults = inspect.getargspec(self.main)
         max_args = six.MAXSIZE if m_varargs else len(m_args) - 1
         min_args = len(m_args) - 1 - (len(m_defaults) if m_defaults else 0)
         if len(tailargs) < min_args:
-            raise PositionalArgumentsError("Expected at least %d positional arguments, got %r" %
-                (min_args, tailargs))
+            raise PositionalArgumentsError(
+                "Expected at least %d positional arguments, got %r" %
+                (min_args, tailargs),
+            )
         elif len(tailargs) > max_args:
-            raise PositionalArgumentsError("Expected at most %d positional arguments, got %r" %
-                (max_args, tailargs))
+            raise PositionalArgumentsError(
+                "Expected at most %d positional arguments, got %r" %
+                (max_args, tailargs),
+            )
 
-        ordered = [(f, a) for _, f, a in
-            sorted([(sf.index, f, sf.val) for f, sf in swfuncs.items()])]
+        ordered = [
+            (f, a) for _, f, a in
+            sorted([(sf.index, f, sf.val) for f, sf in swfuncs.items()])
+        ]
         return ordered, tailargs
 
     @classmethod
@@ -391,8 +411,10 @@ class Application(object):
                     print("%s:" % (grp,))
 
                 for si in sorted(swinfos, key = lambda si: si.names):
-                    swnames = ", ".join(("-" if len(n) == 1 else "--") + n for n in si.names
-                        if n in self._switches_by_name and self._switches_by_name[n] == si)
+                    swnames = ", ".join(
+                        ("-" if len(n) == 1 else "--") + n for n in si.names
+                        if n in self._switches_by_name and self._switches_by_name[n] == si
+                    )
                     if si.argtype:
                         if isinstance(si.argtype, type):
                             typename = si.argtype.__name__
@@ -468,4 +490,3 @@ class Application(object):
         """Prints the program's version and quits"""
         ver = self._get_prog_version()
         print ("%s %s" % (self.PROGNAME, ver if ver is not None else "(no version set)"))
-

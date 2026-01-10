@@ -1,7 +1,7 @@
 # タスク 3b.4: x64移行後の変更の取り込み実施計画
 
-**作成日時**: 2026-01-07  
-**対象ブランチ**: `alphajp-260107`  
+**作成日時**: 2026-01-07
+**対象ブランチ**: `alphajp-260107`
 **参照**: `projectDocs/jp/roadmap.md:137-150`
 
 ## 目的
@@ -92,7 +92,7 @@
    ```powershell
    # x64移行後のコミット数を確認
    git log --oneline nvaccess/beta --not 58dd14767 | Measure-Object -Line
-   
+
    # 最新のコミットを確認
    git log --oneline nvaccess/beta -1
    ```
@@ -139,7 +139,7 @@
 3. コンフリクトの解決
 4. 検証（ビルド・型チェック・単体テスト）
 
-**注意**: 
+**注意**:
 - `--allow-unrelated-histories`が必要な場合がある（履歴が分岐している場合）
 - 日本語版独自のコミット（`72c211456`など）が含まれている場合、unrelated historiesとして扱われる可能性がある
 
@@ -170,11 +170,11 @@
    git merge --no-ff <latest-commit-hash>
    # unrelated historiesの場合
    git merge --no-ff --allow-unrelated-histories <latest-commit-hash>
-   
+
    # 方法2: cherry-pick（選択的に取り込む場合）
    git cherry-pick --no-commit <commit-hash1> <commit-hash2> ...
    ```
-   
+
    **判断基準**:
    - コンフリクトが少ない場合 → まとめてマージ
    - 選択的に取り込みたい場合（翻訳関連をスキップなど） → cherry-pick
@@ -368,7 +368,7 @@
   - 作業効率を優先したい場合
 - **判断基準**: コンフリクトの多寡、選択性の必要性、作業効率を総合的に考慮
 
-**注意**: 
+**注意**:
 - `--allow-unrelated-histories`が必要な場合がある（履歴が分岐している場合）
 - 日本語版独自のコミット（`72c211456`など）が含まれている場合、unrelated historiesとして扱われる可能性がある
 
@@ -417,7 +417,7 @@
 
 **問題**: 設定ダイアログで「Privacy and Security」カテゴリを開いた際に`KeyError: 'screenCurtain'`が発生
 
-**原因**: 
+**原因**:
 - `config.conf["screenCurtain"]`に直接アクセスしていたが、正しくは`config.conf["vision"]["screenCurtain"]`である必要がある
 - `screenCurtain`モジュールのインポートが不足していた
 

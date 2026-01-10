@@ -177,7 +177,7 @@ def translate(
 				cursorPos=cursorPos or 0,
 				nabcc=nabcc,
 			)
-		except Exception as e:
+		except Exception:
 			raise
 	else:
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(

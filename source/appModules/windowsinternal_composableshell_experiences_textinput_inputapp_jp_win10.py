@@ -172,7 +172,7 @@ class AppModule(appModuleHandler.AppModule):
 			if api.setNavigatorObject(obj):
 				obj.reportFocus()
 				braille.handler.message(
-					braille.getPropertiesBraille(name=obj.name, role=obj.role, positionInfo=obj.positionInfo)
+					braille.getPropertiesBraille(name=obj.name, role=obj.role, positionInfo=obj.positionInfo),
 				)
 				# Cache selected item.
 				self._recentlySelected = obj.name

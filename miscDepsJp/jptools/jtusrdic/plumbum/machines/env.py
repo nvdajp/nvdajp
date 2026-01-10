@@ -160,4 +160,3 @@ class BaseEnv(object):
             return None
         else:
             return pwd.getpwuid(os.getuid())[0]  # @UndefinedVariable
-

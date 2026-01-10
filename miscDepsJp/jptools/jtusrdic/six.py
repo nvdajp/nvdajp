@@ -170,15 +170,21 @@ _moved_attributes = [
     MovedModule("tkinter_tix", "Tix", "tkinter.tix"),
     MovedModule("tkinter_constants", "Tkconstants", "tkinter.constants"),
     MovedModule("tkinter_dnd", "Tkdnd", "tkinter.dnd"),
-    MovedModule("tkinter_colorchooser", "tkColorChooser",
-                "tkinter.colorchooser"),
-    MovedModule("tkinter_commondialog", "tkCommonDialog",
-                "tkinter.commondialog"),
+    MovedModule(
+        "tkinter_colorchooser", "tkColorChooser",
+        "tkinter.colorchooser",
+    ),
+    MovedModule(
+        "tkinter_commondialog", "tkCommonDialog",
+        "tkinter.commondialog",
+    ),
     MovedModule("tkinter_tkfiledialog", "tkFileDialog", "tkinter.filedialog"),
     MovedModule("tkinter_font", "tkFont", "tkinter.font"),
     MovedModule("tkinter_messagebox", "tkMessageBox", "tkinter.messagebox"),
-    MovedModule("tkinter_tksimpledialog", "tkSimpleDialog",
-                "tkinter.simpledialog"),
+    MovedModule(
+        "tkinter_tksimpledialog", "tkSimpleDialog",
+        "tkinter.simpledialog",
+    ),
     MovedModule("urllib_robotparser", "robotparser", "urllib.robotparser"),
     MovedModule("winreg", "_winreg"),
 ]
@@ -263,8 +269,10 @@ else:
             return type(self).__next__(self)
 
     callable = callable
-_add_doc(get_unbound_function,
-         """Get the function out of a possibly unbound function""")
+_add_doc(
+    get_unbound_function,
+    """Get the function out of a possibly unbound function""",
+)
 
 
 get_method_function = operator.attrgetter(_meth_func)

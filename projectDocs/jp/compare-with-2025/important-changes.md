@@ -149,5 +149,3 @@
 ### `miscDepsJp\jptools\test.py`
 
 - **差分を確認**: `git diff --no-index "F:\nvda\gh\alphajp-251219\miscDepsJp\jptools\test.py" "F:\nvda\gh\alphajp-260109\miscDepsJp\jptools\test.py"`
-
-

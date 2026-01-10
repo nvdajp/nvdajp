@@ -28,5 +28,3 @@ class ProcInfo(object):
         self.args = args
     def __repr__(self):
         return "ProcInfo(%r, %r, %r, %r)" % (self.pid, self.uid, self.stat, self.args)
-
-

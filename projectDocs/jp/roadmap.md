@@ -274,7 +274,7 @@
     6. **フェーズ5**: pre-commit関連（最後に） - **⏳ 残り作業**
     7. **フェーズ6**: pyright関連 - **⏳ 残り作業**
   * **注意**: 本家（nvaccess/beta）に pre-commit による大規模なファイルフォーマット自動整形のコミットが含まれる場合がある
-  * **進捗状況（2026-01-08）**: 
+  * **進捗状況（2026-01-08）**:
     - ✅ カテゴリ1-5, 7はすべて完了（翻訳関連はスキップ予定）
     - ✅ 大きなマージ漏れの修正完了（`47e6cf5da6`、`source/api.py`）
     - ⏳ **差分最小化フェーズ開始**: `compare-with-beta`ベースでJP固有でない差分を順次適用
@@ -340,7 +340,7 @@
     * ✅ `jpUtils.py`に型ヒントを追加
   * ✅ すべての変更で型チェック（pyright）とjp smoke testを通過
   * **推奨**: 別ブランチ/PRで段階的に実施（機能実装とは分離）
-  * **参照**: 
+  * **参照**:
     * `projectDocs/jp/pyright-enablement-summary.md`
     * `projectDocs/jp/pyright-phase1-summary.md` - フェーズ1完了報告
 
@@ -357,7 +357,7 @@
 * [ ] **タスク 2.7: UTF-8 BOMと改行コードの統一（本家との整合性）**
   * **理由**: 本家（nvaccess/beta）との整合性を保つため、改行コードとUTF-8 BOMの扱いを統一する必要がある
   * **推奨**: 別ブランチ/PRで段階的に実施（機能実装とは分離）
-  * **参照**: 
+  * **参照**:
     * `projectDocs/jp/line-endings-summary.md` - 改行コードのまとめ
     * `projectDocs/jp/line-endings-investigation.md` - 詳細な調査結果と推奨対応手順
   * **実施手順（3フェーズ）**:

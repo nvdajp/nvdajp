@@ -384,7 +384,9 @@ def pause(switch: bool) -> None:
 		player.pause(switch)
 
 
-def initialize(voice: dict[str, Any] = default_jtalk_voice, onIndexReached: Callable[[int | None], None] | None = None) -> None:
+def initialize(
+	voice: dict[str, Any] = default_jtalk_voice, onIndexReached: Callable[[int | None], None] | None = None
+) -> None:
 	global player, voice_args
 	global speaker_attenuation
 	global indexReachedFunc

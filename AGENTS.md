@@ -41,7 +41,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 To reduce CI load and wait for completion:
 
-1. **Group related changes into single commits**: 
+1. **Group related changes into single commits**:
    - Include functional changes and their documentation updates in the same commit
    - Combine multiple small fixes into one commit (e.g., multiple documentation updates)
 2. **Wait for CI completion**: Do not push until the previous push's CI has completed
@@ -127,7 +127,7 @@ To reduce CI load and wait for completion:
 
 CI負荷軽減と完了待ちのため：
 
-1. **関連する変更を1つのコミットにまとめる**: 
+1. **関連する変更を1つのコミットにまとめる**:
    - 機能的な変更とそのドキュメント更新を同じコミットに含める
    - 複数の小さな修正を1つのコミットにまとめる（例: 複数のドキュメント更新）
 2. **CI完了を待つ**: 前回のpushのCIが完了するまで、次のpushを控える

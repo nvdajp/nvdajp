@@ -18,7 +18,9 @@ import queue as Queue
 
 
 bgThread: threading.Thread | None = None
-bgQueue: Queue.Queue[tuple[Callable[..., Any] | None, tuple[Any, ...] | None, dict[str, Any] | None]] | None = None
+bgQueue: (
+	Queue.Queue[tuple[Callable[..., Any] | None, tuple[Any, ...] | None, dict[str, Any] | None]] | None
+) = None
 isSpeaking: bool = False
 
 

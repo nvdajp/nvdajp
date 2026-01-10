@@ -114,8 +114,7 @@ def getSpellingSpeechWithoutCharMode(
 	defaultLanguage = getCurrentLanguage()
 	speech_conf: dict[str, Any] = config.conf["speech"]  # type: ignore[assignment]
 	if not locale or (
-		not speech_conf["autoDialectSwitching"]
-		and locale.split("_")[0] == defaultLanguage.split("_")[0]
+		not speech_conf["autoDialectSwitching"] and locale.split("_")[0] == defaultLanguage.split("_")[0]
 	):
 		locale = defaultLanguage
 
@@ -239,7 +238,8 @@ def getCharDesc(locale: str, char: str, jpAttr: JpAttr) -> tuple[str, ...] | lis
 		charDesc = (unicodedata.normalize("NFKC", char.lower()),)
 	elif jpAttr.nonJpFullShapeAlphabet and jpAttr.usePhoneticReadingLatin:
 		charDesc = characterProcessing.getCharacterDescription(
-			locale, unicodedata.normalize("NFKC", char.lower())
+			locale,
+			unicodedata.normalize("NFKC", char.lower()),
 		)
 	elif (
 		jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana
@@ -314,7 +314,11 @@ def getCandidateCharDesc(c, a, forBraille=False):
 
 
 def getDiscriminantReading(
-	name: str, attrOnly: bool = False, sayCapForCapitals: bool = False, forBraille: bool = False, sayCharTypes: bool = True
+	name: str,
+	attrOnly: bool = False,
+	sayCapForCapitals: bool = False,
+	forBraille: bool = False,
+	sayCharTypes: bool = True,
 ) -> str:
 	if not name:
 		return ""  # noqa: E701
@@ -362,7 +366,10 @@ def getDiscriminantReading(
 
 def getJaCharAttrDetails(char: str, sayCapForCapitals: bool, sayCharTypes: bool) -> str:
 	r = getDiscriminantReading(
-		char, attrOnly=True, sayCapForCapitals=sayCapForCapitals, sayCharTypes=sayCharTypes
+		char,
+		attrOnly=True,
+		sayCapForCapitals=sayCapForCapitals,
+		sayCharTypes=sayCharTypes,
 	).rstrip()
 	log.debug(repr(r))
 	return r
@@ -370,7 +377,10 @@ def getJaCharAttrDetails(char: str, sayCapForCapitals: bool, sayCharTypes: bool)
 
 def getDescriptionForBraille(name: str, attrOnly: bool = False, sayCapForCapitals: bool = False) -> str:
 	return getDiscriminantReading(
-		name, attrOnly=attrOnly, sayCapForCapitals=sayCapForCapitals, forBraille=True
+		name,
+		attrOnly=attrOnly,
+		sayCapForCapitals=sayCapForCapitals,
+		forBraille=True,
 	)
 
 
@@ -378,7 +388,9 @@ def processHexCode(locale: str, msg: str) -> str:
 	if isJa(locale):
 		try:
 			msg = re.sub(
-				r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x" + x.group(1), 16)), str(msg)
+				r"u\+([0-9a-f]{4})",
+				lambda x: "u+" + code2kana(int("0x" + x.group(1), 16)),
+				str(msg),
 			)
 		except Exception as e:
 			log.debug(e)

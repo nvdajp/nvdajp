@@ -42,7 +42,7 @@ def main() -> int:
 				str(jptools_dir / "kgs_manifest.py"),
 				version,
 				str(manifest_path),
-			]
+			],
 		)
 	except subprocess.CalledProcessError as e:
 		print(f"Failed to generate manifest.ini: {e}", file=sys.stderr)
@@ -60,7 +60,8 @@ def main() -> int:
 				"brailleDisplayDrivers/brailleMemo.py",
 			)
 			zf.write(
-				source_dir / "brailleDisplayDrivers" / "DirectBM.dll", "brailleDisplayDrivers/DirectBM.dll"
+				source_dir / "brailleDisplayDrivers" / "DirectBM.dll",
+				"brailleDisplayDrivers/DirectBM.dll",
 			)
 	finally:
 		# Clean up the generated manifest

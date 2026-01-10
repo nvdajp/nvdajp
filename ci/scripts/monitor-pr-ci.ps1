@@ -4,7 +4,7 @@
 param(
     [Parameter(Mandatory=$true)]
     [int]$PrNumber,
-    
+
     [switch]$Watch
 )
 
@@ -12,9 +12,9 @@ $ErrorActionPreference = "Stop"
 
 function Get-PrCiStatus {
     param([int]$Number)
-    
+
     Write-Host "`n=== PR #$Number CI Status ===" -ForegroundColor Cyan
-    
+
     # Get PR info (extract title separately to avoid JSON parse issues with special characters)
     try {
         # Get basic PR info without title first (title may contain problematic characters)
@@ -23,9 +23,9 @@ function Get-PrCiStatus {
             Write-Host "Error: Could not fetch PR #$Number" -ForegroundColor Red
             return $null
         }
-        
+
         $prObj = $prJson.Trim() | ConvertFrom-Json
-        
+
         # Extract title from full JSON using regex (more robust for special characters)
         $fullJson = gh pr view $Number --json number,title,state,url,headRefName,baseRefName 2>&1 | Out-String
         $title = "N/A"
@@ -55,7 +55,7 @@ function Get-PrCiStatus {
     $mergeStatus = if ($prObj.mergeStateStatus) { $prObj.mergeStateStatus } else { "unknown" }
     Write-Host "Mergeable: $($prObj.mergeable) ($mergeStatus)" -ForegroundColor $(if ($prObj.mergeable -and $mergeStatus -eq "CLEAN") { "Green" } else { "Yellow" })
     Write-Host "URL: $($prObj.url)" -ForegroundColor Gray
-    
+
     # Get check status
     Write-Host "`n--- CI Checks ---" -ForegroundColor Cyan
     $checks = gh pr checks $Number
@@ -65,21 +65,21 @@ function Get-PrCiStatus {
         $inProgress = @()
         $passed = @()
         $skipped = @()
-        
+
         foreach ($line in $checkLines) {
             if ($line -match '^([^\t]+)\t+(\w+)\t+(\d+[smh]?)\t+(.+)$') {
                 $name = $matches[1].Trim()
                 $state = $matches[2].Trim()
                 $duration = $matches[3].Trim()
                 $url = $matches[4].Trim()
-                
+
                 $checkObj = @{
                     name = $name
                     state = $state
                     duration = $duration
                     url = $url
                 }
-                
+
                 if ($state -eq "pending" -or $state -eq "in_progress") {
                     $inProgress += $checkObj
                     Write-Host "  [$state] $name" -ForegroundColor Yellow
@@ -100,35 +100,35 @@ function Get-PrCiStatus {
                 }
             }
         }
-        
+
         Write-Host "`nSummary:" -ForegroundColor Cyan
         Write-Host "  Passed: $($passed.Count)" -ForegroundColor Green
         Write-Host "  Failed: $($failed.Count)" -ForegroundColor $(if ($failed.Count -gt 0) { "Red" } else { "Gray" })
         Write-Host "  In Progress: $($inProgress.Count)" -ForegroundColor $(if ($inProgress.Count -gt 0) { "Yellow" } else { "Gray" })
         Write-Host "  Skipped: $($skipped.Count)" -ForegroundColor Gray
-        
+
         # Analyze failures and provide advice
         if ($failed.Count -gt 0) {
             Write-Host "`n=== Failure Analysis ===" -ForegroundColor Red
             foreach ($fail in $failed) {
                 Write-Host "`n[$($fail.name)]" -ForegroundColor Red
-                
+
                     # Get run details
                     if ($fail.url) {
                         $urlParts = $fail.url -split '/'
                         $runId = $urlParts[-2]
                         $jobId = $urlParts[-1]
-                    
+
                     Write-Host "  Analyzing logs..." -ForegroundColor Yellow
                     $logOutput = gh run view $runId --log --job $jobId 2>&1 | Select-String -Pattern "error|Error|ERROR|fail|Fail|FAIL|fatal|Fatal|FATAL" -Context 1,1 | Select-Object -First 20
-                    
+
                     if ($logOutput) {
                         Write-Host "  Key errors found:" -ForegroundColor Yellow
                         foreach ($line in $logOutput) {
                             Write-Host "    $line" -ForegroundColor Gray
                         }
                     }
-                    
+
                     # Provide specific advice based on error patterns
                     if ($fail.name -like "*Build NVDA*" -or $fail.name -like "*Build*") {
                         Write-Host "`n  [ADVICE] Build failures:" -ForegroundColor Cyan
@@ -136,7 +136,7 @@ function Get-PrCiStatus {
                         Write-Host "    - Verify MSVC environment is correctly configured" -ForegroundColor White
                         Write-Host "    - Ensure all dependencies are built for the correct architecture" -ForegroundColor White
                         Write-Host "    - For JTalk builds, check MACHINE parameter matches TARGET_ARCH" -ForegroundColor White
-                        
+
                         # Check for specific JTalk build errors
                         if ($logOutput -match "libopenjtalk|jtalkPrep|MACHINE|LNK1112") {
                             Write-Host "`n  [JTalk Build Issue] Detected:" -ForegroundColor Yellow
@@ -153,7 +153,7 @@ function Get-PrCiStatus {
                         Write-Host "    - Review test output for specific assertion failures" -ForegroundColor White
                         Write-Host "    - Check if tests are environment-dependent" -ForegroundColor White
                         Write-Host "    - Verify test data and fixtures are up to date" -ForegroundColor White
-                        
+
                         # If "all tests pass" failed, check if it's due to buildNVDA failure
                         if ($fail.name -like "*all tests*" -and $logOutput -match "buildNVDA.*failure") {
                             Write-Host "`n  [WARNING] Root Cause: buildNVDA job failed" -ForegroundColor Yellow
@@ -173,7 +173,7 @@ function Get-PrCiStatus {
                 }
             }
         }
-        
+
         return @{
             Pr = $prObj
             Checks = $checkObj
@@ -183,7 +183,7 @@ function Get-PrCiStatus {
             Skipped = $skipped
         }
     }
-    
+
     return @{
         Pr = $prObj
         Checks = @()
@@ -200,11 +200,11 @@ $status = Get-PrCiStatus -Number $PrNumber
 if ($Watch) {
     Write-Host "`n=== Watching for changes (Ctrl+C to stop) ===" -ForegroundColor Cyan
     $lastState = $status
-    
+
     while ($true) {
         Start-Sleep -Seconds 30
         $currentState = Get-PrCiStatus -Number $PrNumber
-        
+
         # Check for changes
         $changed = $false
         if ($currentState.Failed.Count -ne $lastState.Failed.Count) {
@@ -214,11 +214,11 @@ if ($Watch) {
         if ($currentState.InProgress.Count -ne $lastState.InProgress.Count) {
             $changed = $true
         }
-        
+
         if ($changed) {
             Write-Host "`n[UPDATE] Status changed - refreshing..." -ForegroundColor Cyan
         }
-        
+
         $lastState = $currentState
     }
 } else {

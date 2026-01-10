@@ -8,7 +8,7 @@
 import copy
 import re
 from ctypes import string_at
-from typing import Any, Callable
+from typing import Callable
 
 
 try:
@@ -211,7 +211,7 @@ class MecabMorph(object):
 				self.accent,
 				self.output,
 				self.sepflag,
-			)
+			),
 		)
 
 
@@ -348,7 +348,7 @@ def kansuji2arabic(text: str, logwrite: Callable[[str], None] | None = None) -> 
 		if logwrite:
 			logwrite(
 				"kansuji2arabic c(%s) c1(%s) kanindex(%d) prevDigit(%d) digit(%d) result(%d) numgroup(%d)"
-				% (c, c1, kanindex, prevDigit, digit, result, numgroup)
+				% (c, c1, kanindex, prevDigit, digit, result, numgroup),
 			)
 		if prevDigit > digit:
 			return (2, None)  # およその数で数が重なる場合

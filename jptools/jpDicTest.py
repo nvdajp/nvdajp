@@ -82,7 +82,9 @@ from jpDicUtils import (  # noqa: E402
 languageHandler.setLanguage("ja")
 
 gettext.translation(
-	"nvda", localedir=str(script_dir.parent / "source" / "locale"), languages=["ja"]
+	"nvda",
+	localedir=str(script_dir.parent / "source" / "locale"),
+	languages=["ja"],
 ).install()
 
 

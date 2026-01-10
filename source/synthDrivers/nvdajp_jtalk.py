@@ -97,7 +97,7 @@ class SynthDriver(BaseSynthDriver):
 						p.inflection,  # type: ignore[attr-defined]
 						p.characterMode,  # type: ignore[attr-defined]
 						msg,
-					)
+					),
 				)
 				jtalkDriver.speak(msg, lang, index=self.speakingIndex, voiceProperty_=p)
 			elif isinstance(item, IndexCommand):

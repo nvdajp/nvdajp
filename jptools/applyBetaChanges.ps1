@@ -44,11 +44,11 @@
 param(
     [Parameter(Mandatory=$true)]
     [string[]]$Files,
-    
+
     [string]$SourceBetaPath = "F:\nvda\gh\beta",
-    
+
     [switch]$DryRun,
-    
+
     [switch]$SkipConfirmation
 )
 
@@ -78,32 +78,32 @@ $errorFiles = @()
 foreach ($file in $Files) {
     $currentPath = Join-Path $repoRoot $file
     $betaPath = Join-Path $SourceBetaPath $file
-    
+
     Write-Host "処理中: $file" -ForegroundColor Cyan
-    
+
     # ファイルの存在確認
     if (-not (Test-Path $currentPath)) {
         Write-Warning "  現在のファイルが見つかりません: $currentPath"
         $errorFiles += $file
         continue
     }
-    
+
     if (-not (Test-Path $betaPath)) {
         Write-Warning "  本家版のファイルが見つかりません: $betaPath"
         $errorFiles += $file
         continue
     }
-    
+
     # ファイルの内容を比較
     $currentContent = Get-Content $currentPath -Raw -Encoding UTF8
     $betaContent = Get-Content $betaPath -Raw -Encoding UTF8
-    
+
     if ($currentContent -eq $betaContent) {
         Write-Host "  差分なし（既に同じ内容）" -ForegroundColor Green
         $appliedFiles += $file
         continue
     }
-    
+
     # 差分を取得（簡易版）
     try {
         $diff = git diff --no-index -- "$currentPath" "$betaPath" 2>&1 | Out-String
@@ -120,7 +120,7 @@ foreach ($file in $Files) {
         $betaLines = (Get-Content $betaPath).Count
         $diff = "ファイルサイズの違い: 現在=$currentLines行, 本家版=$betaLines行`n(詳細な差分は表示できません)"
     }
-    
+
     # 差分を表示
     Write-Host "  差分:" -ForegroundColor Yellow
     $diffLines = $diff -split "`n"
@@ -130,12 +130,12 @@ foreach ($file in $Files) {
         Write-Host "  ... (残り $($diffLines.Count - 30) 行)" -ForegroundColor Gray
     }
     Write-Host ""
-    
+
     if ($DryRun) {
         Write-Host "  [DRY RUN] 適用をスキップ" -ForegroundColor Yellow
         continue
     }
-    
+
     # 確認
     if (-not $SkipConfirmation) {
         $response = Read-Host "  この変更を適用しますか? (Y/N)"
@@ -145,15 +145,15 @@ foreach ($file in $Files) {
             continue
         }
     }
-    
+
     # バックアップを作成（念のため）
     $backupPath = "$currentPath.backup"
     Copy-Item -Path $currentPath -Destination $backupPath -Force
-    
+
     try {
         # 本家版のファイルをコピー
         Copy-Item -Path $betaPath -Destination $currentPath -Force
-        
+
         Write-Host "  適用完了" -ForegroundColor Green
         Write-Host "  バックアップ: $backupPath" -ForegroundColor Gray
         $appliedFiles += $file
@@ -167,7 +167,7 @@ foreach ($file in $Files) {
         }
         $errorFiles += $file
     }
-    
+
     Write-Host ""
 }
 

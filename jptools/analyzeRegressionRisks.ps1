@@ -69,11 +69,11 @@ Write-Host "Found $($diffFiles.Count) diff files to analyze" -ForegroundColor Gr
 foreach ($diffFile in $diffFiles) {
     $content = Get-Content -Path $diffFile.FullName -Raw -Encoding UTF8
     $fileName = $diffFile.BaseName -replace '\.md$', ''
-    
+
     # Check each risk pattern
     foreach ($category in $riskPatterns.Keys) {
         $patterns = $riskPatterns[$category]
-        
+
         foreach ($pattern in $patterns) {
             # Look for deletions (lines starting with -)
             if ($category -match "削除") {
@@ -137,18 +137,18 @@ foreach ($category in $regressionRisks.Keys) {
     $risks = $regressionRisks[$category]
     if ($risks.Count -gt 0) {
         $reportContent += "`n## $category`n`n"
-        
+
         # Group by file
         $grouped = $risks | Group-Object -Property File
-        
+
         foreach ($group in $grouped) {
             $file = $group.Name
             $items = $group.Group
-            
+
             # Check if this is a JP-specific file
             $isJpSpecific = $file -like "*jptools*" -or $file -like "*miscDepsJp*" -or $file -like "*jtalk*" -or $file -like "*mecab*" -or $file -like "*haruka*"
             $priority = if ($isJpSpecific) { "🔴 **高優先度**" } else { "🟡 中優先度" }
-            
+
             $reportContent += "### ``$file`` $priority`n`n"
             $reportContent += "- **検出パターン**: $($items[0].Pattern)`n"
             $reportContent += "- **差分ファイル**: [``$($items[0].DiffFile)``](./generated/$($items[0].DiffFile))`n"
