@@ -1714,12 +1714,28 @@ mecab_initialized = False
 
 def initialize(logwrite=_logwrite, mecab_dir_=None, dic_dir_=None, user_dics_=None):
 	global mecab_initialized
+	# Set flag to False first to prevent race conditions
+	mecab_initialized = False
 	if mecab_dir_ and dic_dir_ and user_dics_:
 		Mecab_initialize(logwrite, mecab_dir_, dic_dir_, user_dics_)
 	else:
 		Mecab_initialize(logwrite, jtalk_dir, dic_dir, user_dics)
+	# Verify MeCab is actually initialized before setting flag
+	try:
+		from . import mecab as mecab_module
+	except (ImportError, ValueError):
+		import mecab as mecab_module  # type: ignore
+	if mecab_module.libmc is None or mecab_module.mecab is None:
+		msg = "MeCab initialization failed: libmc=%s, mecab=%s" % (
+			mecab_module.libmc,
+			mecab_module.mecab,
+		)
+		if logwrite:
+			logwrite(msg)
+		raise RuntimeError(msg)
 	if logwrite:
 		logwrite("initialize() done.")
+	# Set flag only after MeCab is fully initialized
 	mecab_initialized = True
 
 
@@ -1732,8 +1748,20 @@ def terminate():
 
 
 def translateWithInPos2(inbuf, logwrite=_logwrite, nabcc=False):
+	global mecab_initialized
 	if not mecab_initialized:
-		initialize()
+		initialize(logwrite=logwrite)
+	# Double-check MeCab is actually ready (defense against timing issues)
+	try:
+		from . import mecab as mecab_module
+	except (ImportError, ValueError):
+		import mecab as mecab_module  # type: ignore
+	if mecab_module.libmc is None or mecab_module.mecab is None:
+		# MeCab was marked as initialized but isn't actually ready - reinitialize
+		if logwrite:
+			logwrite("Warning: mecab_initialized=True but MeCab not ready, reinitializing...")
+		mecab_initialized = False
+		initialize(logwrite=logwrite)
 	# do not translate if string is unicode braille
 	if all((0x2800 <= ord(c) <= 0x28FF or c == " ") for c in inbuf):
 		outbuf = inbuf
