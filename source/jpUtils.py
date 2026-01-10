@@ -112,8 +112,9 @@ def getSpellingSpeechWithoutCharMode(
 	from textUtils import unicodeNormalize
 
 	defaultLanguage = getCurrentLanguage()
+	speech_conf: dict[str, Any] = config.conf["speech"]  # type: ignore[assignment]
 	if not locale or (
-		not config.conf["speech"]["autoDialectSwitching"]
+		not speech_conf["autoDialectSwitching"]
 		and locale.split("_")[0] == defaultLanguage.split("_")[0]
 	):
 		locale = defaultLanguage
