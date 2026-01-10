@@ -34,7 +34,9 @@ class VirusTotalScanResults:
 				confirmedTimeout=analysisStats["confirmed-timeout"],
 				typeUnsupported=analysisStats["type-unsupported"],
 			)
-		except KeyError:
+		except (KeyError, IndexError, TypeError):
+			# nvdajp: Guard against empty VirusTotal results to avoid crashes
+			# Handle KeyError (missing keys), IndexError (empty list), and TypeError (non-list value)
 			return None
 
 	@property
