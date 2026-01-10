@@ -239,10 +239,11 @@ gh variable set MILESTONE_ID --body "71" --repo nvdajp/nvdajp
 
 ### ファイル改行コードと editorconfig
 
-* Windows で git clone した場合、改行コードが CRLF になり、git に commit すると LF になる。
-* 本家の .editorconfig は end_of_line = lf になっており、Windows の Visual Studio Code で editorconfig を有効にすると、新規作成したファイルは保存するときに改行コードが LF になる。
-* この挙動は Windows で作業する場合には不便なので、.editorconfig の end_of_line = crlf に変更している。
-* macOS や Linux で作業する場合は、.editorconfig の end_of_line = lf に戻すとよい。
+* Windows で git clone した場合、`.gitattributes`の設定により、git に commit すると改行コードが LF になる。
+* `.editorconfig`は本家（nvaccess/beta）に合わせて `end_of_line = lf` に設定されている（2026-01-10更新）。
+* Windows の Visual Studio Code で editorconfig を有効にすると、新規作成したファイルは保存するときに改行コードが LF になる。
+* 本家との整合性を保つため、改行コードは LF に統一する方針（タスク 2.7: UTF-8 BOMと改行コードの統一）。
+* 詳細は `projectDocs/jp/line-endings-summary.md` を参照。
 
 ### ファイルの不足やバージョンの不一致
 
