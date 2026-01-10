@@ -151,6 +151,7 @@ def getSpellingSpeechWithoutCharMode(
 		jpAttr = getJpAttr(locale, speakCharOrg, useDetails)
 		speakCharAs = speakCharOrg
 		pitchChange = getPitchChangeForCharAttr(uppercase, jpAttr, capPitchChange)
+		charDesc: tuple[str, ...] | None = None
 		if isJa(locale) and useCharacterDescriptions:
 			charDesc = getCharDesc(locale, speakCharOrg, jpAttr)
 		if useCharacterDescriptions and charDesc:
