@@ -306,13 +306,13 @@ jpcommon: JPCommon = JPCommon()
 engine: HTS_Engine = HTS_Engine()
 
 
-def libjt_version():
+def libjt_version() -> str:
 	if libjt is None:
 		return "libjt version none"
 	return libjt.jt_version()
 
 
-def libjt_initialize(JT_DLL):
+def libjt_initialize(JT_DLL: str | Path) -> None:
 	global libjt, njd, jpcommon, engine
 
 	if libjt is None:
@@ -476,16 +476,16 @@ def libjt_initialize(JT_DLL):
 	libjt.HTS_Engine_initialize(engine)
 
 
-def libjt_load(VOICE):
+def libjt_load(VOICE: str | Path) -> None:
 	global libjt, engine
 	assert libjt is not None  # Type narrowing for type checkers
-	fn_buf = create_string_buffer(VOICE.encode("mbcs"))
+	fn_buf = create_string_buffer(str(VOICE).encode("mbcs"))
 	fn_buf_ptr = cast(byref(fn_buf), FILENAME_ptr)
 	fn_buf_ptr_ptr = cast(byref(fn_buf_ptr), FILENAME_ptr_ptr)
 	libjt.HTS_Engine_load(engine, fn_buf_ptr_ptr, 1)
 
 
-def libjt_refresh():
+def libjt_refresh() -> None:
 	assert libjt is not None  # Type narrowing for type checkers
 	libjt.HTS_Engine_refresh(engine)
 	libjt.JPCommon_refresh(jpcommon)
@@ -573,37 +573,37 @@ def libjt_synthesis(
 	return buf
 
 
-def libjt_set_alpha(d):
+def libjt_set_alpha(d: float) -> None:
 	global libjt, engine
 	assert libjt is not None  # Type narrowing for type checkers
 	libjt.HTS_Engine_set_alpha(engine, d)
 
 
-def libjt_get_alpha():
+def libjt_get_alpha() -> float:
 	global libjt, engine
 	assert libjt is not None  # Type narrowing for type checkers
 	return libjt.HTS_Engine_get_alpha(engine)
 
 
-def libjt_set_beta(d):
+def libjt_set_beta(d: float) -> None:
 	global libjt, engine
 	assert libjt is not None  # Type narrowing for type checkers
 	libjt.HTS_Engine_set_beta(engine, d)
 
 
-def libjt_get_beta():
+def libjt_get_beta() -> float:
 	global libjt, engine
 	assert libjt is not None  # Type narrowing for type checkers
 	return libjt.HTS_Engine_get_beta(engine)
 
 
-def libjt_set_gv_interpolation_weight(a, b, d):
+def libjt_set_gv_interpolation_weight(a: int, b: int, d: float) -> None:
 	global libjt, engine
 	assert libjt is not None  # Type narrowing for type checkers
 	libjt.HTS_Engine_set_gv_interpolation_weight(engine, a, b, d)
 
 
-def libjt_get_gv_interpolation_weight(a, b):
+def libjt_get_gv_interpolation_weight(a: int, b: int) -> float:
 	global libjt, engine
 	assert libjt is not None  # Type narrowing for type checkers
 	return libjt.HTS_Engine_get_gv_interpolation_weight(engine, a, b)
