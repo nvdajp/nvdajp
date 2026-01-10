@@ -616,7 +616,7 @@ def _makeBraillePatternReading(s):
 	return "".join(ar) + "ノテン"
 
 
-def Mecab_correctFeatures(mf, CODE_=CODE):
+def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: str = CODE) -> None:
 	for pos in range(0, mf.size):
 		ar = Mecab_getFeature(mf, pos, CODE_=CODE_).split(",")
 		if pos >= 1:
