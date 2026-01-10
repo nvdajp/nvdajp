@@ -213,11 +213,13 @@ def getLongDesc(s: str) -> str:
 def getShortDesc(s: str) -> str:
 	lang = languageHandler.getLanguage()[:2]
 	if len(s) == 1 and ord(s) < 128 and lang != "ja":
-		return characterProcessing.processSpeechSymbol(lang, s)
+		result = characterProcessing.processSpeechSymbol(lang, s)
+		return result if result is not None else s
 	s2 = characterProcessing.processSpeechSymbol("ja", s)
-	if s != s2:
+	if s != s2 and s2 is not None:
 		return s2
-	return characterProcessing.getCharacterReading("ja", s.lower())
+	result = characterProcessing.getCharacterReading("ja", s.lower())
+	return result if result is not None else s
 
 
 def replaceSpecialKanaCharacter(c: str) -> str:
