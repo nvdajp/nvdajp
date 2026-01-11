@@ -268,9 +268,12 @@ env.Command(
 if isNVDACoreArch:
 	env.Install(sourceTypelibDir, iSimpleDomRPCStubs[1])  # typelib
 
-mathPlayerRPCStubs = env.SConscript("mathPlayer_sconscript")
-if isNVDACoreArch:
-	env.Install(sourceTypelibDir, mathPlayerRPCStubs[0])  # typelib
+# BEGIN JP PATCH
+# mathPlayer support removed in nvaccess/beta (miscDeps no longer includes mathPlayer)
+# mathPlayerRPCStubs = env.SConscript("mathPlayer_sconscript")
+# if isNVDACoreArch:
+# 	env.Install(sourceTypelibDir, mathPlayerRPCStubs[0])  # typelib
+# END JP PATCH
 
 detoursLib = env.SConscript("detours/sconscript")
 Export("detoursLib")
