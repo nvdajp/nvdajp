@@ -2,8 +2,8 @@
 
 ## PR #608: x64 Python 3.13への移行
 
-**タイトル**: x64 Python 3.13への移行  
-**ブランチ**: `betajp-251231`  
+**タイトル**: x64 Python 3.13への移行
+**ブランチ**: `betajp-251231`
 **目的**: nvaccess/beta のコミット `58dd14767` (2025年9月15日) "Only build 64bit" をマージする
 
 ### 内容
@@ -47,8 +47,8 @@ PR #608に含まれていた**期間2の作業**（コミット `0e59f42031` の
 
 ## PR #609: 期間2の作業をやり直し
 
-**タイトル**: fix: redo period 2 work (pre-commit configuration and formatting fixes)  
-**ブランチ**: `betajp-260101`  
+**タイトル**: fix: redo period 2 work (pre-commit configuration and formatting fixes)
+**ブランチ**: `betajp-260101`
 **目的**: PR #608に含まれていた期間2の作業を、品質保証原則に基づいてやり直す
 
 ### 内容

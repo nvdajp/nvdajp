@@ -19,7 +19,6 @@ from types import FunctionType, TracebackType
 import globalVars
 import winBindings.kernel32
 import winKernel
-import buildVersion
 from typing import (
 	Literal,
 	NamedTuple,

@@ -21,6 +21,7 @@ from speech.commands import (
 	PitchCommand,
 	SpeechCommand,
 )
+from speech.types import SpeechSequence
 import languageHandler
 from .jtalk import jtalkDriver
 from .jtalk.jtalkDriver import VoiceProperty
@@ -55,7 +56,7 @@ class SynthDriver(BaseSynthDriver):
 	def check(cls) -> bool:  # type: ignore[override]
 		return True
 
-	def __init__(self):
+	def __init__(self) -> None:
 		self.voice_id = "V4"
 		self._volume = 100
 		self._pitch = 50
@@ -64,10 +65,10 @@ class SynthDriver(BaseSynthDriver):
 		self._rateBoost = False
 		jtalkDriver.initialize(onIndexReached=self._onIndexReached)
 		self.rate = 50
-		self.speakingIndex = None
-		self.finishedIndex = None
+		self.speakingIndex: int | None = None
+		self.finishedIndex: int | None = None
 
-	def speak(self, speechSequence):
+	def speak(self, speechSequence: SpeechSequence) -> None:
 		spellState = False
 		defaultLanguage = languageHandler.getLanguage()
 		if defaultLanguage[:2] == "ja":
@@ -96,7 +97,7 @@ class SynthDriver(BaseSynthDriver):
 						p.inflection,  # type: ignore[attr-defined]
 						p.characterMode,  # type: ignore[attr-defined]
 						msg,
-					)
+					),
 				)
 				jtalkDriver.speak(msg, lang, index=self.speakingIndex, voiceProperty_=p)
 			elif isinstance(item, IndexCommand):
@@ -116,69 +117,69 @@ class SynthDriver(BaseSynthDriver):
 				log.debugWarning("Unsupported speech command: %s" % item)
 			else:
 				log.error("Unknown speech: %s" % item)
-		jtalkDriver.updateSpeakIndexWhenDone(self.speakingIndex)
+		if self.speakingIndex is not None:
+			jtalkDriver.updateSpeakIndexWhenDone(self.speakingIndex)
 
-	def cancel(self):
+	def cancel(self) -> None:
 		jtalkDriver.stop()
 
-	def pause(self, switch):
+	def pause(self, switch: bool) -> None:
 		jtalkDriver.pause(switch)
 
-	def isSpeaking(self):
+	def isSpeaking(self) -> bool:
 		return jtalkDriver.isSpeaking()
 
-	def _get_rateBoost(self):
+	def _get_rateBoost(self) -> bool:
 		return self._rateBoost
 
-	def _set_rateBoost(self, enable):
+	def _set_rateBoost(self, enable: bool) -> None:
 		if enable == self._rateBoost:
 			return
 		rate = self.rate
 		self._rateBoost = enable
 		self.rate = rate
 
-	def terminate(self):
+	def terminate(self) -> None:
 		jtalkDriver.terminate()
 
 	# The current rate; ranges between 0 and 100
-	def _get_rate(self):
+	def _get_rate(self) -> int:
 		return jtalkDriver.get_rate(self._rateBoost)
 
-	def _set_rate(self, value):
+	def _set_rate(self, value: int) -> None:
 		jtalkDriver.set_rate(int(value), self._rateBoost)
 
-	def _get_pitch(self):
+	def _get_pitch(self) -> int:
 		return self._pitch
 
-	def _set_pitch(self, value):
+	def _set_pitch(self, value: int) -> None:
 		self._pitch = int(value)
 
-	def _get_volume(self):
+	def _get_volume(self) -> int:
 		return self._volume
 
-	def _set_volume(self, value):
+	def _set_volume(self, value: int) -> None:
 		self._volume = int(value)
 		jtalkDriver.set_volume(self._volume)
-		return
 
 	def _get_inflection(self) -> int:  # type: ignore[override]
 		return self._inflection
 
-	def _set_inflection(self, value):
+	def _set_inflection(self, value: int) -> None:
 		self._inflection = int(value)
 
-	def _getAvailableVoices(self):
+	def _getAvailableVoices(self) -> OrderedDict[str, VoiceInfo]:
 		log.debug("_getAvailableVoices called")
-		voices = OrderedDict()
+		voices: OrderedDict[str, VoiceInfo] = OrderedDict()
 		for v in jtalkDriver._jtalk_voices:
 			voices[v["id"]] = VoiceInfo(v["id"], v["name"], v["lang"])
 		return voices
 
-	def _get_voice(self):
+	def _get_voice(self) -> str:
 		log.debug("_get_voice called")
 		return self.voice_id
 
-	def _set_voice(self, value):
+	def _set_voice(self, value: str) -> None:
 		log.debug("_set_voice %s" % (value))
 		rate = jtalkDriver.get_rate(self._rateBoost)
 		for v in jtalkDriver._jtalk_voices:
@@ -192,14 +193,14 @@ class SynthDriver(BaseSynthDriver):
 					return
 		return
 
-	def _get_lastIndex(self):
+	def _get_lastIndex(self) -> int | None:
 		if jtalkDriver.lastIndex is None:
 			# log.debug("_get_lastIndex returns None")
 			return None
 		# log.debug("_get_lastIndex returns %d" % jtalkDriver.lastIndex)
 		return jtalkDriver.lastIndex
 
-	def _onIndexReached(self, index):
+	def _onIndexReached(self, index: int | None) -> None:
 		self.finishedIndex = index
 		if self.finishedIndex is None:
 			# log.info("synthDoneSpeaking")

@@ -34,8 +34,10 @@ class RemoteEnv(BaseEnv):
     @_setdoc(BaseEnv)
     def update(self, *args, **kwargs):
         BaseEnv.update(self, *args, **kwargs)
-        self.remote._session.run("export " +
-            " ".join("%s=%s" % (k, shquote(v)) for k, v in self.getdict().items()))
+        self.remote._session.run(
+            "export " +
+            " ".join("%s=%s" % (k, shquote(v)) for k, v in self.getdict().items()),
+        )
 
     def expand(self, expr):
         """Expands any environment variables and home shortcuts found in ``expr``
@@ -82,8 +84,10 @@ class RemoteCommand(ConcreteCommand):
 
     def __init__(self, remote, executable, encoding = "auto"):
         self.remote = remote
-        ConcreteCommand.__init__(self, executable,
-            remote.encoding if encoding == "auto" else encoding)
+        ConcreteCommand.__init__(
+            self, executable,
+            remote.encoding if encoding == "auto" else encoding,
+        )
     def __repr__(self):
         return "RemoteCommand(%r, %r)" % (self.remote, self.executable)
     def popen(self, args = (), **kwargs):
@@ -246,7 +250,7 @@ class BaseRemoteMachine(object):
         for line in lines:
             parts = line.strip().split()
             yield ProcInfo(int(parts[0]), int(parts[1]), parts[2], " ".join(parts[3:]))
-    
+
     def pgrep(self, pattern):
         """
         Process grep: return information about all processes whose command-line args match the given regex pattern
@@ -254,7 +258,7 @@ class BaseRemoteMachine(object):
         pat = re.compile(pattern)
         for procinfo in self.list_processes():
             if pat.search(procinfo.args):
-                yield procinfo 
+                yield procinfo
 
     @contextmanager
     def tempdir(self):
@@ -286,8 +290,10 @@ class BaseRemoteMachine(object):
     def _path_getgid(self, fn):
         return self._session.run("stat -c '%g,%G' " + shquote(fn))[1].strip().split(",")
     def _path_stat(self, fn):
-        rc, out, _ = self._session.run("stat -c '%F,%f,%i,%d,%h,%u,%g,%s,%X,%Y,%Z' " + shquote(fn),
-            retcode = None)
+        rc, out, _ = self._session.run(
+            "stat -c '%F,%f,%i,%d,%h,%u,%g,%s,%X,%Y,%Z' " + shquote(fn),
+            retcode = None,
+        )
         if rc != 0:
             return None
         statres = out.strip().split(",")
@@ -332,5 +338,3 @@ class BaseRemoteMachine(object):
 
     def _path_link(self, src, dst, symlink):
         self._session.run("ln -s %s %s" % ("-s" if symlink else "", shquote(src), shquote(dst)))
-
-

@@ -167,13 +167,13 @@
    ```powershell
    # 型チェック
    ci/scripts/tests/typeCheck.ps1
-   
+
    # ビルド
    .\scons.bat source --all-cores
-   
+
    # JP smoke test (x64)
    jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
-   
+
    # ランチャービルド
    scons launcher --all-cores
    ```

@@ -23,8 +23,10 @@ except ImportError:
 logger = logging.getLogger("plumbum.paramiko")
 
 class ParamikoPopen(object):
-    def __init__(self, argv, stdin, stdout, stderr, encoding, stdin_file = None,
-            stdout_file = None, stderr_file = None):
+    def __init__(
+        self, argv, stdin, stdout, stderr, encoding, stdin_file = None,
+        stdout_file = None, stderr_file = None,
+    ):
         self.argv = argv
         self.channel = stdout.channel
         self.stdin = stdin
@@ -136,9 +138,11 @@ class ParamikoMachine(BaseRemoteMachine):
 
     :param timeout: timout for the TCP connect
     """
-    def __init__(self, host, user = None, port = None, password = None, keyfile = None,
-            load_system_host_keys = True, missing_host_policy = None, encoding = "utf8",
-            look_for_keys = None, timeout = None):
+    def __init__(
+        self, host, user = None, port = None, password = None, keyfile = None,
+        load_system_host_keys = True, missing_host_policy = None, encoding = "utf8",
+        look_for_keys = None, timeout = None,
+    ):
         self.host = host
         kwargs = {}
         if user:
@@ -207,8 +211,10 @@ class ParamikoMachine(BaseRemoteMachine):
         cmdline = " ".join(argv)
         logger.debug(cmdline)
         si, so, se = self._client.exec_command(cmdline, 1)
-        return ParamikoPopen(argv, si, so, se, self.encoding, stdin_file = stdin,
-            stdout_file = stdout, stderr_file = stderr)
+        return ParamikoPopen(
+            argv, si, so, se, self.encoding, stdin_file = stdin,
+            stdout_file = stdout, stderr_file = stderr,
+        )
 
     @_setdoc(BaseRemoteMachine)
     def download(self, src, dst):
@@ -218,8 +224,10 @@ class ParamikoMachine(BaseRemoteMachine):
             raise TypeError("src %r points to a different remote machine" % (src,))
         if isinstance(dst, RemotePath):
             raise TypeError("dst of download cannot be %r" % (dst,))
-        return self._download(src if isinstance(src, RemotePath) else self.path(src),
-            dst if isinstance(dst, LocalPath) else LocalPath(dst))
+        return self._download(
+            src if isinstance(src, RemotePath) else self.path(src),
+            dst if isinstance(dst, LocalPath) else LocalPath(dst),
+        )
 
     def _download(self, src, dst):
         if src.isdir():
@@ -240,8 +248,10 @@ class ParamikoMachine(BaseRemoteMachine):
             raise TypeError("dst of upload cannot be %r" % (dst,))
         if isinstance(dst, RemotePath) and dst.remote != self:
             raise TypeError("dst %r points to a different remote machine" % (dst,))
-        return self._upload(src if isinstance(src, LocalPath) else LocalPath(src),
-            dst if isinstance(dst, RemotePath) else self.path(dst))
+        return self._upload(
+            src if isinstance(src, LocalPath) else LocalPath(src),
+            dst if isinstance(dst, RemotePath) else self.path(dst),
+        )
 
     def _upload(self, src, dst):
         if src.isdir():
@@ -310,6 +320,3 @@ class SocketCompatibleChannel(object):
         if self._chan.closed:
             raise socket.error(errno.EBADF, 'Bad file descriptor')
         return self._chan.recv(count)
-
-
-

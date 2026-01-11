@@ -86,8 +86,10 @@ class LocalCommand(ConcreteCommand):
     QUOTE_LEVEL = 2
 
     def __init__(self, executable, encoding = "auto"):
-        ConcreteCommand.__init__(self, executable,
-            local.encoding if encoding == "auto" else encoding)
+        ConcreteCommand.__init__(
+            self, executable,
+            local.encoding if encoding == "auto" else encoding,
+        )
 
     def __repr__(self):
         return "LocalCommand(%r)" % (self.executable,)
@@ -95,9 +97,11 @@ class LocalCommand(ConcreteCommand):
     def popen(self, args = (), cwd = None, env = None, **kwargs):
         if isinstance(args, six.string_types):
             args = (args,)
-        return local._popen(self.executable, self.formulate(0, args),
+        return local._popen(
+            self.executable, self.formulate(0, args),
             cwd = self.cwd if cwd is None else cwd, env = self.env if env is None else env,
-            **kwargs)
+            **kwargs,
+        )
 
 #===================================================================================================
 # Local Machine
@@ -202,13 +206,15 @@ class LocalMachine(object):
         else:
             raise TypeError("cmd must not be a RemotePath: %r" % (cmd,))
 
-    def _popen(self, executable, argv, stdin = PIPE, stdout = PIPE, stderr = PIPE,
-            cwd = None, env = None, new_session = False, **kwargs):
+    def _popen(
+        self, executable, argv, stdin = PIPE, stdout = PIPE, stderr = PIPE,
+        cwd = None, env = None, new_session = False, **kwargs,
+    ):
         if new_session:
             if has_new_subprocess:
                 kwargs["start_new_session"] = True
             elif subprocess.mswindows:
-                kwargs["creationflags"] = kwargs.get("creationflags", 0) | subprocess.CREATE_NEW_PROCESS_GROUP 
+                kwargs["creationflags"] = kwargs.get("creationflags", 0) | subprocess.CREATE_NEW_PROCESS_GROUP
             else:
                 def preexec_fn(prev_fn = kwargs.get("preexec_fn", lambda: None)):
                     os.setsid()
@@ -223,7 +229,7 @@ class LocalMachine(object):
             else:
                 sui.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # @UndefinedVariable
                 sui.wShowWindow = subprocess.SW_HIDE  # @UndefinedVariable
-        
+
         if not has_new_subprocess and "close_fds" not in kwargs:
             if subprocess.mswindows and (stdin is not None or stdout is not None or stderr is not None):
                 # we can't close fds if we're on windows and we want to redirect any std handle
@@ -242,8 +248,10 @@ class LocalMachine(object):
             argv, executable = self._as_user_stack[-1](argv)
 
         logger.debug("Running %r", argv)
-        proc = Popen(argv, executable = str(executable), stdin = stdin, stdout = stdout,
-            stderr = stderr, cwd = str(cwd), env = env, **kwargs)  # bufsize = 4096
+        proc = Popen(
+            argv, executable = str(executable), stdin = stdin, stdout = stdout,
+            stderr = stderr, cwd = str(cwd), env = env, **kwargs,
+        )  # bufsize = 4096
         proc._start_time = time.time()
         proc.encoding = self.encoding
         proc.argv = argv
@@ -289,8 +297,10 @@ class LocalMachine(object):
             statidx = header.index('Status')
             useridx = header.index('User Name')
             for row in rows:
-                yield ProcInfo(int(row[pididx]), row[useridx].decode("utf8"), 
-                    row[statidx].decode("utf8"), row[imgidx].decode("utf8"))
+                yield ProcInfo(
+                    int(row[pididx]), row[useridx].decode("utf8"),
+                    row[statidx].decode("utf8"), row[imgidx].decode("utf8"),
+                )
     else:
         def list_processes(self):
             """
@@ -312,7 +322,7 @@ class LocalMachine(object):
         pat = re.compile(pattern)
         for procinfo in self.list_processes():
             if pat.search(procinfo.args):
-                yield procinfo 
+                yield procinfo
 
     def session(self):
         """Creates a new :class:`ShellSession <plumbum.session.ShellSession>` object; this
@@ -343,8 +353,14 @@ class LocalMachine(object):
         if IS_WIN32:
             if username is None:
                 username = "Administrator"
-            self._as_user_stack.append(lambda argv: (["runas", "/savecred", "/user:%s" % (username,),
-                '"' + " ".join(str(a) for a in argv) + '"'], self.which("runas")))
+            self._as_user_stack.append(
+                lambda argv: (
+                    [
+                        "runas", "/savecred", "/user:%s" % (username,),
+                        '"' + " ".join(str(a) for a in argv) + '"',
+                    ], self.which("runas"),
+                ),
+            )
         else:
             if username is None:
                 self._as_user_stack.append(lambda argv: (["sudo"] + list(argv), self.which("sudo")))

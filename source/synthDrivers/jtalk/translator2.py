@@ -8,6 +8,7 @@
 import copy
 import re
 from ctypes import string_at
+from typing import Callable
 
 
 try:
@@ -169,7 +170,7 @@ class MecabMorph(object):
 		self.sepflag = False  # この後でマスアケをするか？
 
 	# 付属語
-	def is_substantive_word(self):
+	def is_substantive_word(self) -> bool:
 		if self.hinshi1 == "記号":
 			return False
 		if self.hinshi2 == "接頭":
@@ -187,12 +188,12 @@ class MecabMorph(object):
 		return False
 
 	# 自立語
-	def is_independent_word(self):
+	def is_independent_word(self) -> bool:
 		if self.hinshi1 == "記号":
 			return False
 		return not self.is_substantive_word()
 
-	def write(self, logwrite):
+	def write(self, logwrite: Callable[[str], None]) -> None:
 		logwrite(
 			"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d"
 			% (
@@ -210,11 +211,11 @@ class MecabMorph(object):
 				self.accent,
 				self.output,
 				self.sepflag,
-			)
+			),
 		)
 
 
-def update_phonetic_symbols(mo):
+def update_phonetic_symbols(mo: MecabMorph) -> None:
 	for p in range(0, len(mo.yomi)):
 		# 点訳のてびき第3版 第2章 その1 1 5
 		# ５、長音の書き表し方 (1), (2)
@@ -231,8 +232,8 @@ def update_phonetic_symbols(mo):
 			mo.output = mo.output[:p] + mo.kana[p] + mo.output[p + 1 :]
 
 
-def mecab_to_morphs(mf):
-	li = []
+def mecab_to_morphs(mf: MecabFeatures | None) -> list[MecabMorph]:
+	li: list[MecabMorph] = []
 	if mf is None or mf.feature is None or mf.size is None:
 		return li
 	for i in range(0, mf.size):
@@ -298,7 +299,7 @@ RE_KANSUJI = re.compile("^[一二三四五六七八九〇零十拾百千壱二�
 
 
 # http://programminblog.blogspot.jp/2010/11/python.html
-def kansuji2arabic(text, logwrite=None):
+def kansuji2arabic(text: str, logwrite: Callable[[str], None] | None = None) -> tuple[int, str | None]:
 	if not RE_KANSUJI.match(text):
 		return (0, None)  # 漢数字ではない場合
 	result = 0
@@ -347,7 +348,7 @@ def kansuji2arabic(text, logwrite=None):
 		if logwrite:
 			logwrite(
 				"kansuji2arabic c(%s) c1(%s) kanindex(%d) prevDigit(%d) digit(%d) result(%d) numgroup(%d)"
-				% (c, c1, kanindex, prevDigit, digit, result, numgroup)
+				% (c, c1, kanindex, prevDigit, digit, result, numgroup),
 			)
 		if prevDigit > digit:
 			return (2, None)  # およその数で数が重なる場合
@@ -362,8 +363,8 @@ def kansuji2arabic(text, logwrite=None):
 	return (1, text)  # 漢数字の場合
 
 
-def rewrite_number(li, logwrite=None):
-	new_li = []
+def rewrite_number(li: list[MecabMorph], logwrite: Callable[[str], None] | None = None) -> list[MecabMorph]:
+	new_li: list[MecabMorph] = []
 	for mo in li:
 		m = copy.deepcopy(mo)
 		if m.hinshi2 != "固有名詞":
@@ -382,7 +383,7 @@ def rewrite_number(li, logwrite=None):
 	return new_li
 
 
-def concatinate_morphs(li):
+def concatinate_morphs(li: list[MecabMorph]) -> MecabMorph:
 	mo = copy.deepcopy(li[0])
 	s = ""
 	y = ""
@@ -395,7 +396,7 @@ def concatinate_morphs(li):
 	return mo
 
 
-def replace_digit_morphs(li):
+def replace_digit_morphs(li: list[MecabMorph]) -> list[MecabMorph]:
 	# handle digit number kanji characters
 	# input:
 	#  十,名詞,数
@@ -458,14 +459,14 @@ def replace_digit_morphs(li):
 RE_ALPHA_OR_SINGLE = re.compile("^[A-Za-z']+$")
 
 
-def is_alpha_or_single(s):
-	return RE_ALPHA_OR_SINGLE.match(s)
+def is_alpha_or_single(s: str) -> bool:
+	return RE_ALPHA_OR_SINGLE.match(s) is not None
 
 
 RE_ASCII_SYMBOLS = re.compile(r"^[\,\.\:\;\!\?\@\#\\\$\%\&\*\|\+\-\/\=\<\>\"'\^\`\_\~]+$")
 
 
-def replace_alphabet_morphs(li, nabcc=False):
+def replace_alphabet_morphs(li: list[MecabMorph], nabcc: bool = False) -> list[MecabMorph]:
 	# アルファベットまたは記号だけで表記されている語を結合する
 	# 情報処理点字の部分文字列になる記号を前後にまとめる
 	# input:
@@ -474,8 +475,8 @@ def replace_alphabet_morphs(li, nabcc=False):
 	#  ｃ,c,記号,アルファベット,*,*,シー,シー,1/2,c
 	# output:
 	#  Ｂａｓｉｃ,Basic,名詞,アルファベット,*,*,ビーアシーシー,ビーアシーシー,1/2,Basic
-	new_li = []
-	alp_morphs = []
+	new_li: list[MecabMorph] = []
+	alp_morphs: list[MecabMorph] = []
 	for pos in range(len(li)):
 		mo = li[pos]
 		if pos < len(li) - 1:
@@ -1713,12 +1714,28 @@ mecab_initialized = False
 
 def initialize(logwrite=_logwrite, mecab_dir_=None, dic_dir_=None, user_dics_=None):
 	global mecab_initialized
+	# Set flag to False first to prevent race conditions
+	mecab_initialized = False
 	if mecab_dir_ and dic_dir_ and user_dics_:
 		Mecab_initialize(logwrite, mecab_dir_, dic_dir_, user_dics_)
 	else:
 		Mecab_initialize(logwrite, jtalk_dir, dic_dir, user_dics)
+	# Verify MeCab is actually initialized before setting flag
+	try:
+		from . import mecab as mecab_module
+	except (ImportError, ValueError):
+		import mecab as mecab_module  # type: ignore
+	if mecab_module.libmc is None or mecab_module.mecab is None:
+		msg = "MeCab initialization failed: libmc=%s, mecab=%s" % (
+			mecab_module.libmc,
+			mecab_module.mecab,
+		)
+		if logwrite:
+			logwrite(msg)
+		raise RuntimeError(msg)
 	if logwrite:
 		logwrite("initialize() done.")
+	# Set flag only after MeCab is fully initialized
 	mecab_initialized = True
 
 
@@ -1731,8 +1748,20 @@ def terminate():
 
 
 def translateWithInPos2(inbuf, logwrite=_logwrite, nabcc=False):
+	global mecab_initialized
 	if not mecab_initialized:
-		initialize()
+		initialize(logwrite=logwrite)
+	# Double-check MeCab is actually ready (defense against timing issues)
+	try:
+		from . import mecab as mecab_module
+	except (ImportError, ValueError):
+		import mecab as mecab_module  # type: ignore
+	if mecab_module.libmc is None or mecab_module.mecab is None:
+		# MeCab was marked as initialized but isn't actually ready - reinitialize
+		if logwrite:
+			logwrite("Warning: mecab_initialized=True but MeCab not ready, reinitializing...")
+		mecab_initialized = False
+		initialize(logwrite=logwrite)
 	# do not translate if string is unicode braille
 	if all((0x2800 <= ord(c) <= 0x28FF or c == " ") for c in inbuf):
 		outbuf = inbuf

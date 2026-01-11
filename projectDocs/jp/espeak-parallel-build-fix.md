@@ -5,7 +5,7 @@
 マルチコアビルド（`--all-cores`）時に、espeakのビルドが以下のエラーで失敗することがある：
 
 ```
-Error: D:\a\nvdajp\nvdajp\include\espeak\dictsource\ru_listx: 
+Error: D:\a\nvdajp\nvdajp\include\espeak\dictsource\ru_listx:
 The process cannot access the file because it is being used by another process
 ```
 
@@ -87,7 +87,7 @@ env.Command(
 
 # Ensure Install happens after cleanup
 install_targets = env.Install(
-    espeakRepo.Dir("dictsource"), 
+    espeakRepo.Dir("dictsource"),
     env.Glob(os.path.join(espeakRepo.abspath, "dictsource", "extra", "*_*"))
 )
 env.Depends(install_targets, cleanup_stamp)
@@ -137,19 +137,19 @@ first_dict = None
 for dictFileName, (langCode, inputFiles) in espeakDictionaryCompileList.items():
     if langCode in excludeLangs:
         continue
-    
+
     dictFilePath = espeakRepo.Dir("espeak-ng-data").File(dictFileName)
     dictFile = env.Command(
         target=dictFilePath,
         source=list((dictSourcePath.File(f) for f in inputFiles)),
         action=espeak_compileDict_buildAction,
     )
-    
+
     if first_dict is None:
         # Clean files before first dictionary compilation
         env.AddPreAction(dictFile, env.Action(cleanFiles_preBuildAction))
         first_dict = dictFile
-    
+
     env.Depends(dictFile, [espeakLib, phonemeData])
     env.SideEffect("_espeak_compileDict", dictFile)
 ```

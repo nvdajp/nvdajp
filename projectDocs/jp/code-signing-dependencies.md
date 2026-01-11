@@ -253,7 +253,7 @@ call scons.bat launcher --all-cores
 
 * **原因**: 署名設定（`certFile`, `apiSigningToken`）が設定されていない、または `SKIP_SIGNING` が設定されている
 * **確認**: `env.get("signExec")` が `None` でないことを確認
-* **対処**: 
+* **対処**:
   * 署名する場合: `certFile=1` または `apiSigningToken=<token>` を設定
   * 署名をスキップする場合: `SKIP_SIGNING=1` を設定（または署名設定を削除）
 

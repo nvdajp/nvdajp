@@ -667,7 +667,7 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 			start_new, end_new = self._startEndInBytesToStartEndInUnicodeChars(start, end)
 			log.debug(
 				"offset %d lineNum %d start %d length %d end %d start_new %d end_new %d"
-				% (offset, lineNum, start, length, end, start_new, end_new)
+				% (offset, lineNum, start, length, end, start_new, end_new),
 			)
 			return (start_new, end_new)
 		# END JP PATCH

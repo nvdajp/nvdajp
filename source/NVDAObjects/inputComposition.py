@@ -161,7 +161,8 @@ class InputComposition(EditableTextWithAutoSelectDetection, Window):
 		global lastCompositionText, lastCompositionTime  # nvdajp
 		# nvdajp begin
 		newTextForBraille = newText = calculateInsertedChars(
-			oldString.strip("\u3000"), newString.strip("\u3000")
+			oldString.strip("\u3000"),
+			newString.strip("\u3000"),
 		)
 		if forceNewText:
 			newText = newString.strip("\u3000")
@@ -187,7 +188,9 @@ class InputComposition(EditableTextWithAutoSelectDetection, Window):
 				lastCompositionTime = time.time()
 				lastCompositionText = newText
 				queueHandler.queueFunction(
-					queueHandler.eventQueue, braille.handler.message, newTextForBraille
+					queueHandler.eventQueue,
+					braille.handler.message,
+					newTextForBraille,
 				)
 		if (
 			config.conf["keyboard"]["speakTypedCharacters"] != TypingEcho.OFF.value
@@ -203,7 +206,13 @@ class InputComposition(EditableTextWithAutoSelectDetection, Window):
 		# nvdajp end
 
 	def compositionUpdate(
-		self, compositionString, selectionStart, selectionEnd, isReading, announce=True, forceNewText=False
+		self,
+		compositionString,
+		selectionStart,
+		selectionEnd,
+		isReading,
+		announce=True,
+		forceNewText=False,
 	):
 		if isReading and not config.conf["inputComposition"]["reportReadingStringChanges"]:
 			return

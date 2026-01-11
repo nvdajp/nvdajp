@@ -27,7 +27,7 @@ class Future(object):
         self._stdout = None
         self._stderr = None
     def __repr__(self):
-        return "<Future %r (%s)>" % (self.proc.argv, self._returncode if self.ready() else "running",)
+        return "<Future %r (%s)>" % (self.proc.argv, self._returncode if self.ready() else "running")
     def poll(self):
         """Polls the underlying process for termination; returns ``None`` if still running,
         or the process' returncode if terminated"""
@@ -40,8 +40,10 @@ class Future(object):
         :class:`plumbum.commands.ProcessExecutionError` in case of failure"""
         if self._returncode is not None:
             return
-        self._returncode, self._stdout, self._stderr = run_proc(self.proc,
-            self._expected_retcode, self._timeout)
+        self._returncode, self._stdout, self._stderr = run_proc(
+            self.proc,
+            self._expected_retcode, self._timeout,
+        )
     @property
     def stdout(self):
         """The process' stdout; accessing this property will wait for the process to finish"""
@@ -133,8 +135,3 @@ use ``BG(retcode)``. Example::
 class Tee(object):
     def __init__(self, *streams):
         self.streams = streams
-
-
-
-
-

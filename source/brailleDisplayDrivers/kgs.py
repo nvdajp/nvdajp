@@ -221,7 +221,8 @@ def kgsListComPorts(preferSerial=False):
 	# BM-SMART USB
 	try:
 		rootKey = winreg.OpenKey(
-			winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0301"
+			winreg.HKEY_LOCAL_MACHINE,
+			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0301",
 		)
 	except WindowsError:
 		pass
@@ -240,7 +241,7 @@ def kgsListComPorts(preferSerial=False):
 								"friendlyName": "USB: KGS BM-SMART USB Serial (%s)" % portName,
 								"hardwareID": "USB\\VID_1148&PID_0301",
 								"port": str(portName),
-							}
+							},
 						)
 						usbPorts[portName] = True
 				except WindowsError:
@@ -249,7 +250,8 @@ def kgsListComPorts(preferSerial=False):
 	# KGS USB for BM46
 	try:
 		rootKey = winreg.OpenKey(
-			winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0001"
+			winreg.HKEY_LOCAL_MACHINE,
+			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0001",
 		)
 	except WindowsError:
 		pass
@@ -268,7 +270,7 @@ def kgsListComPorts(preferSerial=False):
 								"friendlyName": "USB: KGS USB To Serial Com Port (%s)" % portName,
 								"hardwareID": "USB\\VID_1148&PID_0001",
 								"port": str(portName),
-							}
+							},
 						)
 						usbPorts[portName] = True
 				except WindowsError:
@@ -419,7 +421,11 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 				self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
 				self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
 			ret, self._portName = bmConnect(
-				self._directBM, port, self._keyCallbackInst, self._statusCallbackInst, execEndConnection
+				self._directBM,
+				port,
+				self._keyCallbackInst,
+				self._statusCallbackInst,
+				execEndConnection,
 			)
 			if ret:
 				self.numCells = numCells
@@ -629,8 +635,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 				"kb:?": ("br(kgs):dot2+dot3+dot6",),
 				"kb:!": ("br(kgs):dot2+dot3+dot5",),
 				"kb:'": ("br(kgs):dot3",),
-			}
-		}
+			},
+		},
 	)
 
 

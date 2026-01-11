@@ -59,8 +59,10 @@ class SshMachine(BaseRemoteMachine):
     :param encoding: the remote machine's encoding (defaults to UTF8)
     """
 
-    def __init__(self, host, user = None, port = None, keyfile = None, ssh_command = None,
-            scp_command = None, ssh_opts = (), scp_opts = (), encoding = "utf8"):
+    def __init__(
+        self, host, user = None, port = None, keyfile = None, ssh_command = None,
+        scp_command = None, ssh_opts = (), scp_opts = (), encoding = "utf8",
+    ):
         if ssh_command is None:
             ssh_command = local["ssh"]
         if scp_command is None:
@@ -219,8 +221,10 @@ class PuttyMachine(SshMachine):
 
     Arguments are the same as for :class:`plumbum.machines.remote.SshMachine`
     """
-    def __init__(self, host, user = None, port = None, keyfile = None, ssh_command = None,
-            scp_command = None, ssh_opts = (), scp_opts = (), encoding = "utf8"):
+    def __init__(
+        self, host, user = None, port = None, keyfile = None, ssh_command = None,
+        scp_command = None, ssh_opts = (), scp_opts = (), encoding = "utf8",
+    ):
         if ssh_command is None:
             ssh_command = local["plink"]
         if scp_command is None:
@@ -229,8 +233,10 @@ class PuttyMachine(SshMachine):
             ssh_opts = ["-ssh"]
         if user is None:
             user = local.env.user
-        SshMachine.__init__(self, host, user, port, keyfile, ssh_command, scp_command,
-            ssh_opts, scp_opts)
+        SshMachine.__init__(
+            self, host, user, port, keyfile, ssh_command, scp_command,
+            ssh_opts, scp_opts,
+        )
 
     def __str__(self):
         return "putty-ssh://%s" % (self._fqhost,)
@@ -242,5 +248,3 @@ class PuttyMachine(SshMachine):
     @_setdoc(BaseRemoteMachine)
     def session(self, isatty = False):
         return ShellSession(self.popen((), ["-t"] if isatty else ["-T"]), self.encoding, isatty)
-
-

@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <dlfcn.h>
 #include <string.h>
- 
+
 int main(int argc, char **argv)
 {
     void *handle;
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 	}
 	FreeLibrary(hModule);
     }
-    
+
     printf("HTS_Global %d\n", sizeof(HTS_Global));
     printf("HTS_ModelSet %d\n", sizeof(HTS_ModelSet));
     printf("HTS_Label %d\n", sizeof(HTS_Label));

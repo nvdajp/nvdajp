@@ -5,7 +5,7 @@
 .DESCRIPTION
     This script merges JP-specific translations from jptools/nvda-jp-patch.po
     into source/locale/ja/LC_MESSAGES/nvda.po.
-    
+
     The script:
     1. Validates that both files exist
     2. Extracts the JP section from nvda-jp-patch.po (including "# nvdajp from here" to "# end of nvdajp")
@@ -100,38 +100,38 @@ for ($i = 0; $i -lt $poLines.Count; $i++) {
 if ($beginIndex -ge 0 -and $endIndex -ge 0 -and $endIndex -ge $beginIndex) {
     # Replace existing JP section
     Write-Host "Found existing JP section at lines $($beginIndex + 1)-$($endIndex + 1), replacing..." -ForegroundColor Yellow
-    
+
     # Remove trailing empty lines before begin marker if any
     while ($beginIndex -gt 0 -and $poLines[$beginIndex - 1] -match '^\s*$') {
         $beginIndex--
     }
-    
+
     # Build new content: lines before JP section + JP section + lines after JP section
     $beforeSection = if ($beginIndex -gt 0) { $poLines[0..($beginIndex - 1)] } else { @() }
     $afterSection = if ($endIndex -lt $poLines.Count - 1) { $poLines[($endIndex + 1)..($poLines.Count - 1)] } else { @() }
-    
+
     # Remove trailing empty lines from before section
     while ($beforeSection.Count -gt 0 -and $beforeSection[-1] -match '^\s*$') {
         $beforeSection = $beforeSection[0..($beforeSection.Count - 2)]
     }
-    
+
     # Combine: before + empty line + JP section + after
     $poLines = $beforeSection + @("") + $jpSection + $afterSection
-    
+
     Write-Host "Replaced existing JP section with $($jpSection.Count) lines" -ForegroundColor Green
 } else {
     # Append JP section to the end
     Write-Host "No existing JP section found, appending to end..." -ForegroundColor Yellow
-    
+
     # Remove trailing empty lines from PO file
     while ($poLines.Count -gt 0 -and $poLines[-1] -match '^\s*$') {
         $poLines = $poLines[0..($poLines.Count - 2)]
     }
-    
+
     # Append JP section
     $poLines += ""
     $poLines += $jpSection
-    
+
     Write-Host "Appended $($jpSection.Count) lines to end of file" -ForegroundColor Green
 }
 

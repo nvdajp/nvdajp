@@ -237,5 +237,3 @@ class LocalWorkdir(LocalPath):
             yield
         finally:
             self.chdir(prev)
-
-

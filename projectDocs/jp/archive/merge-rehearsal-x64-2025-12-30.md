@@ -216,13 +216,13 @@ git merge --no-commit --no-ff --allow-unrelated-histories 58dd14767
    ```powershell
    # 型チェック
    ci/scripts/tests/typeCheck.ps1
-   
+
    # ビルド
    scons source --all-cores
-   
+
    # JP smoke tests (x64)
    jptools/checkJtalkArch.ps1 -Architecture x64 -RunSmokeTests
-   
+
    # ランチャービルド
    scons launcher --all-cores
    ```

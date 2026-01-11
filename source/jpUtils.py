@@ -35,7 +35,7 @@ from jpDicUtils import (  # noqa: E402
 )
 
 
-from typing import Generator  # noqa: E402
+from typing import Generator, Any  # noqa: E402
 import config  # noqa: E402
 import characterProcessing  # noqa: E402
 from speech.types import SequenceItemT  # noqa: E402
@@ -112,9 +112,9 @@ def getSpellingSpeechWithoutCharMode(
 	from textUtils import unicodeNormalize
 
 	defaultLanguage = getCurrentLanguage()
+	speech_conf: dict[str, Any] = config.conf["speech"]  # type: ignore[assignment]
 	if not locale or (
-		not config.conf["speech"]["autoDialectSwitching"]
-		and locale.split("_")[0] == defaultLanguage.split("_")[0]
+		not speech_conf["autoDialectSwitching"] and locale.split("_")[0] == defaultLanguage.split("_")[0]
 	):
 		locale = defaultLanguage
 
@@ -137,6 +137,7 @@ def getSpellingSpeechWithoutCharMode(
 	localeHasConjuncts = True if locale.split("_", 1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
 	charDescList = getCharDescListFromText(text, locale) if localeHasConjuncts else text
 	for item in charDescList:
+		charDesc: tuple[str, ...] | list[str] | str | None = None
 		if localeHasConjuncts:
 			# item is a tuple containing character and its description
 			speakCharOrg = item[0]
@@ -166,7 +167,7 @@ def getSpellingSpeechWithoutCharMode(
 						characterProcessing.processSpeechSymbol(locale, normChar) for normChar in normalized
 					)
 					isNormalized = True
-		if config.conf["speech"]["autoLanguageSwitching"]:
+		if speech_conf["autoLanguageSwitching"]:
 			yield LangChangeCommand(locale)
 		yield from _getSpellingCharAddCapNotification(
 			speakCharOrg,
@@ -188,7 +189,7 @@ SPECIAL_KANA_CHARACTERS = SMALL_KANA_CHARACTERS + "をヲｦはへー"
 FIX_NEW_TEXT_CHARS = SMALL_ZEN_KATAKANA + "ー"
 
 
-def getLongDesc(s):
+def getLongDesc(s: str) -> str:
 	try:
 		lang = languageHandler.getLanguage()[:2]
 		if len(s) == 1 and ord(s) < 128 and lang != "ja":
@@ -208,24 +209,27 @@ def getLongDesc(s):
 	return s
 
 
-def getShortDesc(s):
+def getShortDesc(s: str) -> str:
 	lang = languageHandler.getLanguage()[:2]
 	if len(s) == 1 and ord(s) < 128 and lang != "ja":
-		return characterProcessing.processSpeechSymbol(lang, s)
+		result = characterProcessing.processSpeechSymbol(lang, s)
+		return result if result is not None else s
 	s2 = characterProcessing.processSpeechSymbol("ja", s)
-	if s != s2:
+	if s != s2 and s2 is not None:
 		return s2
-	return characterProcessing.getCharacterReading("ja", s.lower())
+	result = characterProcessing.getCharacterReading("ja", s.lower())
+	return result if result is not None else s
 
 
-def replaceSpecialKanaCharacter(c):
+def replaceSpecialKanaCharacter(c: str) -> str:
 	if c in SPECIAL_KANA_CHARACTERS:
 		c = getShortDesc(c)
 	return c
 
 
-def getCharDesc(locale, char, jpAttr):
+def getCharDesc(locale: str, char: str, jpAttr: JpAttr) -> tuple[str, ...] | list[str] | None:
 	""" """
+	charDesc: tuple[str, ...] | list[str] | None = None
 	if jpAttr.jpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
 		charDesc = (getShortDesc(char.lower()),)
 	elif jpAttr.nonJpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
@@ -234,7 +238,8 @@ def getCharDesc(locale, char, jpAttr):
 		charDesc = (unicodedata.normalize("NFKC", char.lower()),)
 	elif jpAttr.nonJpFullShapeAlphabet and jpAttr.usePhoneticReadingLatin:
 		charDesc = characterProcessing.getCharacterDescription(
-			locale, unicodedata.normalize("NFKC", char.lower())
+			locale,
+			unicodedata.normalize("NFKC", char.lower()),
 		)
 	elif (
 		jpAttr.jpZenkakuHiragana or jpAttr.jpZenkakuKatakana or jpAttr.jpHankakuKatakana
@@ -246,7 +251,7 @@ def getCharDesc(locale, char, jpAttr):
 	return charDesc
 
 
-def code2kana(code):
+def code2kana(code: int) -> str:
 	"""
 	input 0x123a
 	output 'イチニーサンエー'
@@ -309,12 +314,16 @@ def getCandidateCharDesc(c, a, forBraille=False):
 
 
 def getDiscriminantReading(
-	name, attrOnly=False, sayCapForCapitals=False, forBraille=False, sayCharTypes=True
-):
+	name: str,
+	attrOnly: bool = False,
+	sayCapForCapitals: bool = False,
+	forBraille: bool = False,
+	sayCharTypes: bool = True,
+) -> str:
 	if not name:
 		return ""  # noqa: E701
 	nameChars = splitChars(name)
-	attrs = []
+	attrs: list[tuple[str, CharAttr]] = []
 	for uc in nameChars:
 		c = uc[0]
 		ca = CharAttr(
@@ -355,25 +364,33 @@ def getDiscriminantReading(
 	return r
 
 
-def getJaCharAttrDetails(char, sayCapForCapitals, sayCharTypes):
+def getJaCharAttrDetails(char: str, sayCapForCapitals: bool, sayCharTypes: bool) -> str:
 	r = getDiscriminantReading(
-		char, attrOnly=True, sayCapForCapitals=sayCapForCapitals, sayCharTypes=sayCharTypes
+		char,
+		attrOnly=True,
+		sayCapForCapitals=sayCapForCapitals,
+		sayCharTypes=sayCharTypes,
 	).rstrip()
 	log.debug(repr(r))
 	return r
 
 
-def getDescriptionForBraille(name, attrOnly=False, sayCapForCapitals=False):
+def getDescriptionForBraille(name: str, attrOnly: bool = False, sayCapForCapitals: bool = False) -> str:
 	return getDiscriminantReading(
-		name, attrOnly=attrOnly, sayCapForCapitals=sayCapForCapitals, forBraille=True
+		name,
+		attrOnly=attrOnly,
+		sayCapForCapitals=sayCapForCapitals,
+		forBraille=True,
 	)
 
 
-def processHexCode(locale, msg):
+def processHexCode(locale: str, msg: str) -> str:
 	if isJa(locale):
 		try:
 			msg = re.sub(
-				r"u\+([0-9a-f]{4})", lambda x: "u+" + code2kana(int("0x" + x.group(1), 16)), str(msg)
+				r"u\+([0-9a-f]{4})",
+				lambda x: "u+" + code2kana(int("0x" + x.group(1), 16)),
+				str(msg),
 			)
 		except Exception as e:
 			log.debug(e)
@@ -381,7 +398,7 @@ def processHexCode(locale, msg):
 	return msg
 
 
-def fixNewText(newText, isCandidate=False):
+def fixNewText(newText: str, isCandidate: bool = False) -> str:
 	log.debug(newText)
 	if RE_HIRAGANA.match(newText):
 		newText = "".join([chr(ord(c) + 0x60) for c in newText])

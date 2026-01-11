@@ -24,7 +24,7 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion): ...
 class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
     def _getSelection(self):
         return CursorManagerRegion._getSelection(self)  # self.obj.selection を返す
-    
+
     def _routeToTextInfo(self, info: textInfos.TextInfo):
         TextInfoRegion._routeToTextInfo(self, info)  # 直接呼び出し
         # ... ReviewTextInfoRegion の追加処理
@@ -94,12 +94,12 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
     def _getSelection(self):
         # Use CursorManagerRegion's implementation to get the actual CursorManager's selection
         return CursorManagerRegion._getSelection(self)
-    
+
     def _routeToTextInfo(self, info: textInfos.TextInfo):
         # Call ReviewTextInfoRegion._routeToTextInfo to maintain upstream behavior
         # This ensures ReviewTextInfoRegion._setCursor() is called, which updates api.setReviewPosition()
         super()._routeToTextInfo(info)  # ReviewTextInfoRegion._routeToTextInfo() を呼ぶ
-        
+
         # Then apply ReviewTextInfoRegion's additional behavior for system caret movement
         if not _routingShouldMoveSystemCaret():
             return
@@ -124,7 +124,7 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
 
 - **問題の種類**: 日本語版独自コードの実装バグ
 - **解決方法**: 選択肢 C（バグ修正）を推奨
-- **理由**: 
+- **理由**:
   - テストは汎用的な routing 動作を検証しており、JP 固有ではない
   - upstream の動作を維持しつつ、JP 固有の拡張も可能
   - `_getSelection()` のオーバーライドは正しいが、`_routeToTextInfo()` の実装が不適切

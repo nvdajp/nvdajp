@@ -442,7 +442,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 			)
 		):
 			log.debug(
-				f"ignored ({compositionString=}) ({compAttr=}) ({selectionStart=}) ({selectionEnd=}) ({lastCompString=}) ({lastCompAttr=}) ({lastSelectionStart=}) ({lastSelectionEnd=})"
+				f"ignored ({compositionString=}) ({compAttr=}) ({selectionStart=}) ({selectionEnd=}) ({lastCompString=}) ({lastCompAttr=}) ({lastSelectionStart=}) ({lastSelectionEnd=})",
 			)
 			return 0
 		log.debug(f"({lastCompString=}) ({compositionString=})")
@@ -464,7 +464,11 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 				return 0
 			log.debug(f"({compositionString=}) ({compAttr=}) ({selectionStart=}) ({selectionEnd=})")
 			extractedString, endIndex = extractCompositionString(
-				compAttr, compositionString, selectionStart, selectionEnd, _lastCompAttr
+				compAttr,
+				compositionString,
+				selectionStart,
+				selectionEnd,
+				_lastCompAttr,
 			)
 			log.debug(f"({extractedString=}) ({endIndex=}) ({deletedString=})")
 			if extractedString:
@@ -897,7 +901,11 @@ def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
 
 
 def extractCompositionString(
-	compAttr: str, compositionString: str, selectionStart: int, selectionEnd: int, lastCompAttr: str
+	compAttr: str,
+	compositionString: str,
+	selectionStart: int,
+	selectionEnd: int,
+	lastCompAttr: str,
 ) -> tuple[str, int]:
 	"""
 	This function extracts a part of the composition string based on the attribute values.

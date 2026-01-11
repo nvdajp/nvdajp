@@ -164,7 +164,7 @@ def pa_play(data, samp_rate=16000):
         return
     p = pyaudio.PyAudio()
     stream = p.open(
-        format=p.get_format_from_width(2), channels=1, rate=samp_rate, output=True
+        format=p.get_format_from_width(2), channels=1, rate=samp_rate, output=True,
     )
     size = len(data)
     pos = 0  # byte count
@@ -214,7 +214,7 @@ count = 0
 
 
 def do_synthesis(
-    msg, voice_args, do_play, do_write, do_log, fperiod, pitch=50, inflection=50, vol=50
+    msg, voice_args, do_play, do_write, do_log, fperiod, pitch=50, inflection=50, vol=50,
 ):
     global count
     msg = jtalkPrepare.convert(msg)
@@ -271,7 +271,7 @@ def do_synthesis(
                         len(data) / 2,
                         "NONE",
                         "not compressed",
-                    )
+                    ),
                 )
                 w.writeframes(data)
                 w.close()

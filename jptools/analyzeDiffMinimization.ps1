@@ -60,40 +60,40 @@ $unknown = @()
 
 foreach ($mdFile in $mdFiles) {
     $content = Get-Content $mdFile.FullName -Raw -Encoding UTF8
-    
+
     # ファイルパスを抽出（最初の行から）
     $filePath = $null
     if ($content -match '`([^`]+)`') {
         $filePath = $matches[1]
     }
-    
+
     if (-not $filePath) {
         continue
     }
-    
+
     # 実際のファイルが存在するか確認
     $actualPath = Join-Path $repoRoot $filePath
     if (-not (Test-Path $actualPath)) {
         Write-Warning "ファイルが見つかりません: $filePath"
         continue
     }
-    
+
     # 実際のファイルにJP PATCHマーカーがあるか確認
     $fileContent = Get-Content $actualPath -Raw -Encoding UTF8
     $hasJpMarker = $fileContent -match '(?i)(BEGIN JP PATCH|END JP PATCH|# nvdajp)'
-    
+
     # diffセクションを抽出
     $diffMatch = $content -match '(?s)```diff\s+(.*?)\s+```'
     if (-not $diffMatch) {
         continue
     }
-    
+
     $diffContent = $matches[1]
-    
+
     # 差分の行数をカウント（追加/削除）
     $addedLines = ([regex]::Matches($diffContent, '^\+(?!\+)')).Count
     $removedLines = ([regex]::Matches($diffContent, '^-(?!-)')).Count
-    
+
     # 差分の種類を判定
     $diffType = "unknown"
     if ($diffContent -match 'screenCurtain') {
@@ -117,7 +117,7 @@ foreach ($mdFile in $mdFiles) {
     elseif ($addedLines -gt 0) {
         $diffType = "code_addition"
     }
-    
+
     $candidate = [PSCustomObject]@{
         File = $filePath
         HasJpMarker = $hasJpMarker
@@ -128,7 +128,7 @@ foreach ($mdFile in $mdFiles) {
         Reason = ""
         DiffPreview = ""
     }
-    
+
     # 優先順位を決定
     if (-not $hasJpMarker) {
         # JP PATCHマーカーがない = 本家版の変更を適用する候補
@@ -158,7 +158,7 @@ foreach ($mdFile in $mdFiles) {
                 $candidate.Reason = "その他の変更（要確認）"
             }
         }
-        
+
         # 差分のプレビューを生成（最初の50行）
         $diffLines = $diffContent -split "`n"
         $previewLines = $diffLines | Select-Object -First 50
@@ -166,7 +166,7 @@ foreach ($mdFile in $mdFiles) {
         if ($diffLines.Count -gt 50) {
             $candidate.DiffPreview += "`n... (残り $($diffLines.Count - 50) 行)"
         }
-        
+
         $candidates += $candidate
     }
     else {
@@ -221,7 +221,7 @@ foreach ($candidate in $candidates) {
         5 { "⚪ **低優先度**" }
         default { "⚫ **要確認**" }
     }
-    
+
     $filePathEscaped = $candidate.File -replace '`', '``'
     $report += "`n"
     $report += "### ${priorityBadge}: ``${filePathEscaped}```n"

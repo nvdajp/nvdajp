@@ -197,12 +197,12 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
     def _getSelection(self):
         # Use CursorManagerRegion's implementation to get the actual CursorManager's selection
         return CursorManagerRegion._getSelection(self)
-    
+
     def _routeToTextInfo(self, info: textInfos.TextInfo):
         # Call ReviewTextInfoRegion._routeToTextInfo to maintain upstream behavior
         # This ensures ReviewTextInfoRegion._setCursor() is called, which updates api.setReviewPosition()
         super()._routeToTextInfo(info)  # ReviewTextInfoRegion._routeToTextInfo() を呼ぶ
-        
+
         # Then apply ReviewTextInfoRegion's additional behavior for system caret movement
         if not _routingShouldMoveSystemCaret():
             return

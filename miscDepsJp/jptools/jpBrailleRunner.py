@@ -221,7 +221,9 @@ def pass2(verboseMode=False):
 				f.flush()
 				output = io.StringIO()
 				result, pat, inpos1, inpos2 = translator2.translateWithInPos2(
-					t["text"], logwrite=__print, nabcc=nabcc
+					t["text"],
+					logwrite=__print,
+					nabcc=nabcc,
 				)
 				log = output.getvalue()
 				output.close()

@@ -153,7 +153,7 @@ namespace MeCab {
 
   struct whatlog {
     std::ostringstream stream_;
-    std::string str_;     
+    std::string str_;
     const char *str() {
       str_ = stream_.str();
       return str_.c_str();

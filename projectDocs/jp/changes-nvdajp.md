@@ -33,7 +33,7 @@
 
 - **目的**: シンセサイザーが現在読み上げ中かどうかを確認する機能を提供
 - **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
-- **実装**: 
+- **実装**:
   - `__init__()` メソッドで `self._isSpeaking = False` を初期化
   - `speak()` メソッドで `self._isSpeaking = True` を設定
   - `_processQueue()` メソッドで、読み上げが完了した際に `self._isSpeaking = False` を設定
@@ -174,7 +174,7 @@ NVDA日本語版は、文字単位の移動やレビューで、文字の説明�
 
 - **目的**: ANSI アプリケーション（Shift-JIS エンコーディングを使用）で、エディットコントロールの行位置計算を正しく行う
 - **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
-- **実装**: 
+- **実装**:
   - `_needsWorkAroundEncoding()` メソッド: `jpAnsiEditbox` 設定が有効で、かつウィンドウが Unicode でない場合に `True` を返す
   - `_startEndInBytesToStartEndInUnicodeChars()` メソッド: バイト位置を Unicode 文字位置に変換
   - `_getLineOffsets()` メソッド内で、Unicode 文字位置をバイト位置に変換してから Windows API を呼び出し、結果を再び Unicode 文字位置に変換
@@ -195,7 +195,7 @@ ATOK の変換候補にコメントウィンドウがある場合の対応：
 `source/NVDAObjects/IAccessible/mscandui.py` で、Microsoft IME の変換候補にコメントがある場合の対応を実装しています。
 
 - **目的**: Microsoft IME の候補コメントを自動的に読み上げる
-- **実装**: 
+- **実装**:
   - `MSCandUI40_candidateMenuItem.event_stateChange()` メソッドで、候補が選択された際に `announceSelectedCandidate` 設定が有効な場合、1秒後に `notifyCandidateComment()` 関数を呼び出す
   - `notifyCandidateComment()` 関数で、`mscandui40.comment` クラス名のウィンドウを検索し、現在選択されている候補の識別読みと一致するコメントを読み上げる
 - **動作**: 候補が選択されてから1秒後に、該当する候補のコメントが自動的に読み上げられます
@@ -206,7 +206,7 @@ ATOK の変換候補にコメントウィンドウがある場合の対応：
 
 - **目的**: 同音異義語を区別するための識別読みを提供
 - **実装**: `jpUtils.getDiscriminantReading()` を使用して候補の識別読みを取得
-- **動作**: 
+- **動作**:
   - ブライル表示がある場合は `forBraille=True` で識別読みを取得
   - `announceCandidateNumber` 設定が有効な場合は「{番号} {識別読み}」の形式で返す
   - 無効な場合は識別読みのみを返す
@@ -478,7 +478,7 @@ def buildConfigH(target, source, env):
 - `test_moveCaret_always_moveReviewAndActivate`
 - `test_moveCaret_always_instantActivate`
 
-**理由**: 
+**理由**:
 - `ReviewCursorManagerRegion` を upstream と同じ空クラスに戻しても、nvdajp ブランチではテストが失敗
 - 問題が日本語版独自の実装だけに起因するのではなく、テストの前提条件や環境差など、他の要因も関与している可能性
 - 詳細は `projectDocs/jp/archive/test-routing-failures.md` を参照

@@ -79,13 +79,13 @@ class WelcomeDialog(
 		# Translators: The label of a checkbox in the Welcome dialog.
 		nconvAsNVDAModifierText = _("Use NonConvert as an NVDA modifier key")
 		self.nconvAsNVDAModifierCheckBox = sHelper.addItem(
-			wx.CheckBox(optionsBox, label=nconvAsNVDAModifierText)
+			wx.CheckBox(optionsBox, label=nconvAsNVDAModifierText),
 		)
 		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
 		# Translators: The label of a checkbox in the Welcome dialog.
 		convAsNVDAModifierText = _("Use Convert as an NVDA modifier key")
 		self.convAsNVDAModifierCheckBox = sHelper.addItem(
-			wx.CheckBox(optionsBox, label=convAsNVDAModifierText)
+			wx.CheckBox(optionsBox, label=convAsNVDAModifierText),
 		)
 		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
 		# Translators: The label of a checkbox in the Welcome dialog.

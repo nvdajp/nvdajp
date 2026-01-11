@@ -1,6 +1,6 @@
 # source_* ファイルの調査結果
 
-**調査日時**: 2026-01-07  
+**調査日時**: 2026-01-07
 **調査対象**: `projectDocs/jp/compare-with-2025/generated/source_*.md` (141ファイル)
 
 ## 調査の目的

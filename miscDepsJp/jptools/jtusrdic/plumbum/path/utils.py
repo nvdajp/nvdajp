@@ -29,8 +29,8 @@ def move(src, dst):
     """Moves the source path onto the destination path; ``src`` and ``dst`` can be either
     strings, :class:`LocalPaths <plumbum.path.local.LocalPath>` or
     :class:`RemotePath <plumbum.path.remote.RemotePath>`; any combination of the three will
-    work. 
-    
+    work.
+
     .. versionadded:: 1.3
         ``src`` can also be a list of strings/paths, in which case ``dst`` must not exist or be a directory.
     """
@@ -100,5 +100,3 @@ def copy(src, dst):
                 copy(src, tmp)
                 copy(tmp / src.basename, dst)
             return dst
-
-

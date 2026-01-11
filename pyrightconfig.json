@@ -9,9 +9,11 @@
 		"source/NVDAObjects/UIA/__init__.py",
 		"include",
 		"source/comInterfaces",
-		"source",
 		"tests",
 		"site_scons",
 		"projectDocs"
+	],
+	"include": [
+		"source/synthDrivers/jtalk/**/*.py"
 	]
 }

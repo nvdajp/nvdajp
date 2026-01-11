@@ -121,7 +121,8 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 		# therefore ignore this event for now.
 		# #16283: do handle hardware keyboard input suggestions.
 		if winVersion.getWinVer() >= winVersion.WIN11 and isinstance(
-			api.getFocusObject().parent, ImeCandidateUI
+			api.getFocusObject().parent,
+			ImeCandidateUI,
 		):
 			return
 		# Now just report the currently selected candidate item.
@@ -220,7 +221,7 @@ class AppModule(appModuleHandler.AppModule):
 		if obj is not None and api.setNavigatorObject(obj):
 			obj.reportFocus()
 			braille.handler.message(
-				braille.getPropertiesBraille(name=obj.name, role=obj.role, positionInfo=obj.positionInfo)
+				braille.getPropertiesBraille(name=obj.name, role=obj.role, positionInfo=obj.positionInfo),
 			)
 			# Cache selected item.
 			self._recentlySelected = obj.name

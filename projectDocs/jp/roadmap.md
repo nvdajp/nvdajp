@@ -181,8 +181,9 @@
 
 **nvaccess/beta の最新状態**:
 
-* 最新コミット: `1cee6d93c` (2025年12月29日時点) - "Pass 0 instead of None to VBuf_getControlFieldNodeWithIdentifier (#19365)"
+* 最新コミット: `eeb6143aa` (2026年1月10日時点) - "Correctly register .nvda-addon file association on installation (#19419)"
 * x64移行コミット: `58dd14767` (2025年9月15日) - "Only build 64bit" ✅ マージ完了
+* **持続的マージ戦略**: `projectDocs/jp/beta-merge-strategy.md` を参照
 
 **次のステップ**:
 
@@ -273,7 +274,7 @@
     6. **フェーズ5**: pre-commit関連（最後に） - **⏳ 残り作業**
     7. **フェーズ6**: pyright関連 - **⏳ 残り作業**
   * **注意**: 本家（nvaccess/beta）に pre-commit による大規模なファイルフォーマット自動整形のコミットが含まれる場合がある
-  * **進捗状況（2026-01-08）**: 
+  * **進捗状況（2026-01-08）**:
     - ✅ カテゴリ1-5, 7はすべて完了（翻訳関連はスキップ予定）
     - ✅ 大きなマージ漏れの修正完了（`47e6cf5da6`、`source/api.py`）
     - ⏳ **差分最小化フェーズ開始**: `compare-with-beta`ベースでJP固有でない差分を順次適用
@@ -329,13 +330,19 @@
   * ローカル環境
   * CI環境
 
-* [ ] **タスク 2.5a: pyrightの型チェック有効化と型ヒントの追加**
+* [x] **タスク 2.5a: pyrightの型チェック有効化と型ヒントの追加** ✅ 完了（2026-01-10）
   * **理由**: コード品質向上により、リグレッション防止と保守性向上に寄与
-  * `pyrightconfig.json`の除外設定を見直し、JP固有コード（`source/synthDrivers/jtalk/`）の型チェックを有効化
-  * 型ヒントの追加（重要な関数から段階的に）
-  * 小さなPR単位で実施し、各PRで全テスト通過を確認
+  * ✅ `pyrightconfig.json`の除外設定を見直し、JP固有コード（`source/synthDrivers/jtalk/`）の型チェックを有効化
+  * ✅ 型ヒントの追加（重要な関数から段階的に）
+    * ✅ `source/synthDrivers/jtalk/`配下のすべてのファイルに型ヒントを追加
+    * ✅ `nvdajp_jtalk.py`に型ヒントを追加
+    * ✅ `jpDicUtils.py`に型ヒントを追加
+    * ✅ `jpUtils.py`に型ヒントを追加
+  * ✅ すべての変更で型チェック（pyright）とjp smoke testを通過
   * **推奨**: 別ブランチ/PRで段階的に実施（機能実装とは分離）
-  * **参照**: `projectDocs/jp/pyright-enablement-summary.md`
+  * **参照**:
+    * `projectDocs/jp/pyright-enablement-summary.md`
+    * `projectDocs/jp/pyright-phase1-summary.md` - フェーズ1完了報告
 
 #### 優先度：中（継続的な改善）
 
@@ -346,6 +353,30 @@
   * 各変更ごとにPRを作成し、全テスト通過を確認
   * 1つのPRで1つの変更のみ（例: Pythonバージョン更新、ランナー更新など）
   * **ローカル環境でテスト済みの変更のみをCIに反映**
+
+* [ ] **タスク 2.7: UTF-8 BOMと改行コードの統一（本家との整合性）**
+  * **理由**: 本家（nvaccess/beta）との整合性を保つため、改行コードとUTF-8 BOMの扱いを統一する必要がある
+  * **推奨**: 別ブランチ/PRで段階的に実施（機能実装とは分離）
+  * **参照**:
+    * `projectDocs/jp/line-endings-summary.md` - 改行コードのまとめ
+    * `projectDocs/jp/line-endings-investigation.md` - 詳細な調査結果と推奨対応手順
+  * **実施手順（3フェーズ）**:
+    * **フェーズ1: 設定ファイルの更新（低リスク）** ✅ 完了（2026-01-10）
+      * ✅ `.editorconfig`を`end_of_line = lf`に変更（`crlf`から変更）
+      * ✅ `.pre-commit-config.yaml`のJP PATCHコメントを更新（フェーズ3で有効化することを明記）
+      * ✅ 型チェックとjp smoke testを通過確認
+    * **フェーズ2: 改行コードの正規化（中リスク）** ✅ 完了（2026-01-10）
+      * ✅ 全ファイルをLFに正規化（`git add --renormalize .`）- 33ファイル変更
+      * ✅ 型チェックを通過確認
+      * ✅ JP smoke testを通過確認
+      * ⚠️ ビルドとユニットテストは環境の問題で未確認（改行コード変更とは無関係のエラー）
+    * **フェーズ3: pre-commitフックの有効化（高リスク）** ✅ 完了（2026-01-10）
+      * ✅ `trailing-whitespace`、`end-of-file-fixer`、`fix-byte-order-marker`を有効化
+      * ✅ サブモジュールを除外する`exclude`パターンを追加
+      * ✅ 全ファイルを修正（125ファイル変更）
+      * ✅ ビルド・型チェック・JP smoke testを通過確認
+      * ⚠️ ユニットテストは環境の問題で未確認（改行コード変更とは無関係のエラー）
+  * **注意**: 過去に改行コードの変更が何度も繰り返された問題があったため、段階的な検証を必須とする
 
 * [ ] **タスク 2.5b: コード品質の改善（残り）**
   * **理由**: コード品質向上は継続的な改善として実施
