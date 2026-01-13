@@ -14038,8 +14038,618 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 1241</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>This is only referring to using MathPlayer to display mathematical content visually, and can be ignored by those using it to read or navigate math with NVDA.</source>
         <target>Это относится только к использованию MathPlayer для визуального отображения математического контента, и может быть проигнорировано теми, кто использует его для чтения или навигации по математическому содержимому с помощью NVDA.</target>
+=======
+        <source>To start navigation: press `NVDA+alt+m` or `space` to enter math navigation mode, press `esc` to exit.</source>
+        <target>Для начала навигации: нажмите `NVDA+alt+m` или `пробел` для входа в режим математической навигации, для выхода нажмите `esc`.</target>
+      </segment>
+    </unit>
+    <unit id="b54b2175-0b47-4e68-b909-b2f176d1a6f0">
+      <notes>
+        <note appliesTo="source">line: 1244</note>
+      </notes>
+      <segment state="final">
+        <source>MathCAT's navigation is the same in Microsoft Word and in a web browser.</source>
+        <target>Навигация в MathCat такая же как в Microsoft Word и в веб-браузере.</target>
+      </segment>
+    </unit>
+    <unit id="79335c85-92da-42f2-b69b-034444122d24">
+      <notes>
+        <note appliesTo="source">line: 1246</note>
+      </notes>
+      <segment state="final">
+        <source>While navigating an expression, `control+c` copies the math content of the current node in NVDA.</source>
+        <target>При навигации по выражению `control+c` копирует математическое содержимое текущего узла в NVDA.</target>
+      </segment>
+    </unit>
+    <unit id="2be65653-29b7-4194-96f7-9a3fb778c48e">
+      <notes>
+        <note appliesTo="source">line: 1247</note>
+      </notes>
+      <segment state="final">
+        <source>The format of the math copied to the clipboard can be adjusted through the [math settings panel](#MathSettings).</source>
+        <target>Формат математических данных, скопированных в буфер обмена, можно настроить с помощью [панели математических настроек](#MathSettings).</target>
+      </segment>
+    </unit>
+    <unit id="9d8f3560-08c4-490b-9d78-4040311d66f2">
+      <notes>
+        <note appliesTo="source">line: 1249</note>
+        <note appliesTo="source">prefix: #### </note>
+        <note appliesTo="source">suffix:  {#MathNavigationModes}</note>
+      </notes>
+      <segment state="final">
+        <source>Navigation Modes</source>
+        <target>Режимы Навигации</target>
+      </segment>
+    </unit>
+    <unit id="fce76eb3-adb9-4abe-8bd5-d651548de82c">
+      <notes>
+        <note appliesTo="source">line: 1251</note>
+      </notes>
+      <segment state="final">
+        <source>MathCAT supports the following navigation modes:</source>
+        <target>MathCAT поддерживает следующие режимы навигации:</target>
+      </segment>
+    </unit>
+    <unit id="09e3c626-6fa2-467b-9057-90d5626cba0b">
+      <notes>
+        <note appliesTo="source">line: 1253</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Enhanced Mode: navigation is by mathematically meaningful pieces (operators, delimiters, and operands).</source>
+        <target>Улучшенный режим: навигация осуществляется по математически значимым элементам (операторам, разделителям и операндам).</target>
+      </segment>
+    </unit>
+    <unit id="c901b5c9-90a8-4c02-b295-b45c82e8a257">
+      <notes>
+        <note appliesTo="source">line: 1254</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Simple mode: moves by words except when you get to a 2D notation (fractions, roots, ...), then it speaks the entire notation.</source>
+        <target>Простой режим: перемещается по словам, за исключением случаев, когда вы переходите к двумерной записи (дроби, корни, ...), тогда произносится вся запись целиком.</target>
+      </segment>
+    </unit>
+    <unit id="e06ec1ed-c058-4bd4-8f09-84700412284b">
+      <notes>
+        <note appliesTo="source">line: 1255</note>
+      </notes>
+      <segment state="final">
+        <source>Zooming in lets you explore the 2D notation in the same mode.</source>
+        <target>Увеличение масштаба позволяет вам изучать двумерную запись в том же режиме.</target>
+      </segment>
+    </unit>
+    <unit id="6285475d-d68d-4e46-bcec-314ff3e806e5">
+      <notes>
+        <note appliesTo="source">line: 1256</note>
+      </notes>
+      <segment state="final">
+        <source>Zooming out or moving out of the 2D notation brings you back to the outer/higher level of navigation.</source>
+        <target>Уменьшение масштаба или перемещение за пределы 2D-обозначения возвращает вас на внешний/более высокий уровень навигации.</target>
+      </segment>
+    </unit>
+    <unit id="79974742-797f-4b6e-b09a-a935ff814964">
+      <notes>
+        <note appliesTo="source">line: 1257</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Character Mode: this is actually two modes - word mode and character mode (zoom in to get "real" character mode).</source>
+        <target>Символьный режим: на самом деле это два режима - режим слов и режим символов (увеличьте масштаб, чтобы получить "реальный" символьный режим).</target>
+      </segment>
+    </unit>
+    <unit id="165131fa-51e9-4f41-b9af-084d4acd2b13">
+      <notes>
+        <note appliesTo="source">line: 1258</note>
+      </notes>
+      <segment state="final">
+        <source>Moves by words/characters.</source>
+        <target>Перемещает по словам/символам.</target>
+      </segment>
+    </unit>
+    <unit id="3713de28-4f5a-4962-9132-0a51445cb476">
+      <notes>
+        <note appliesTo="source">line: 1259</note>
+      </notes>
+      <segment state="final">
+        <source>This differs for numbers of more than one digit and function names such as "sin" that are multiple characters.</source>
+        <target>Это отличается для чисел, состоящих более чем из одной цифры, и имен функций, таких как "sin", состоящих из нескольких символов.</target>
+      </segment>
+    </unit>
+    <unit id="7fafa029-a164-460b-b9af-839b391ad791">
+      <notes>
+        <note appliesTo="source">line: 1260</note>
+      </notes>
+      <segment state="final">
+        <source>Otherwise, word and character navigation is the same.</source>
+        <target>В остальном навигация по словам и символам остаётся прежней.</target>
+      </segment>
+    </unit>
+    <unit id="419dbc53-63fe-4ba8-ab41-5f551fa88969">
+      <notes>
+        <note appliesTo="source">line: 1262</note>
+      </notes>
+      <segment state="final">
+        <source>The following are key commands used to navigate math:</source>
+        <target>Ниже приведены клавишные команды, используемые для навигации по математике:</target>
+      </segment>
+    </unit>
+    <unit id="edcbbf86-ad5a-47ec-8868-3434bc7435ec">
+      <notes>
+        <note appliesTo="source">line: 1265</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Name | Key </source>
+        <target> Название | Комбинация клавиш </target>
+      </segment>
+    </unit>
+    <unit id="4871a4ce-838a-47f7-a512-3908d4d55269">
+      <notes>
+        <note appliesTo="source">line: 1267</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to previous | `leftArrow` </source>
+        <target> Перейти к предыдущему | `стрелкаВлево` </target>
+      </segment>
+    </unit>
+    <unit id="16e7200f-c983-4495-a026-1b1e93ff1042">
+      <notes>
+        <note appliesTo="source">line: 1268</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to previous cell in a table, or previous digit if in columnar math | `control+leftArrow` or `control+alt+leftArrow` </source>
+        <target> Перейти к предыдущей ячейке таблицы или предыдущей цифре, если используется столбчатая математика | `control+стрелкаВлево` или `control+alt+стрелкаВлево` </target>
+      </segment>
+    </unit>
+    <unit id="afc7638a-2df3-4f22-aa06-712680badcfc">
+      <notes>
+        <note appliesTo="source">line: 1269</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Read previous | `shift+leftArrow` </source>
+        <target> Читать предыдущее | `shift+стрелкаВлево` </target>
+      </segment>
+    </unit>
+    <unit id="94c30109-30c4-4e3f-948a-0db75b8cf27f">
+      <notes>
+        <note appliesTo="source">line: 1270</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Describe previous | `control+shift+leftArrow` </source>
+        <target> Описать предыдущее | `control+shift+стрелкаВлево` </target>
+      </segment>
+    </unit>
+    <unit id="ac6c7881-fea6-4062-945b-d2190fd827dc">
+      <notes>
+        <note appliesTo="source">line: 1271</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to next | `rightArrow` </source>
+        <target> Перейти к следующему | `стрелкаВправо` </target>
+      </segment>
+    </unit>
+    <unit id="70a45f4b-ad78-4312-b915-6925e8446310">
+      <notes>
+        <note appliesTo="source">line: 1272</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to next cell in a table, or next digit if in columnar math | `control+rightArrow` or `control+alt+rightArrow` </source>
+        <target> Перейти к следующей ячейке таблицы или следующей цифре, если используется столбчатая математика | `control+стрелкаВправо` или `control+alt+стрелкаВправо` </target>
+      </segment>
+    </unit>
+    <unit id="8cfb899d-ccf0-4b71-889a-a26c4ae27b75">
+      <notes>
+        <note appliesTo="source">line: 1273</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Read next | `shift+rightArrow` </source>
+        <target> Читать следующее | `shift+стрелкаВправо` </target>
+      </segment>
+    </unit>
+    <unit id="91809748-80bb-4c9b-aa86-90e009b3c00e">
+      <notes>
+        <note appliesTo="source">line: 1274</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Describe next | `control+shift+rightArrow` </source>
+        <target> Описать следующее | `control+shift+стрелкаВправо` </target>
+      </segment>
+    </unit>
+    <unit id="05e87a38-6df2-4c25-8e1b-e0608bf4b981">
+      <notes>
+        <note appliesTo="source">line: 1275</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Zoom out | `upArrow` </source>
+        <target> Уменьшить масштаб | `стрелкаВверх` </target>
+      </segment>
+    </unit>
+    <unit id="a510ff80-97d3-4b3d-bf93-338170d24283">
+      <notes>
+        <note appliesTo="source">line: 1276</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to cell above in a table, or digit above in columnar math. | `control+upArrow` or `control+alt+upArrow` </source>
+        <target> Перейти к ячейке выше в таблице или к цифре выше в столбчатой математике. | `control+стрелка Вверх` или `control+alt+стрелкаВверх` </target>
+      </segment>
+    </unit>
+    <unit id="0be7a18b-4ccd-4c3b-94c6-64e8a55cdbd8">
+      <notes>
+        <note appliesTo="source">line: 1277</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Change Navigation Mode (Enhanced/Simple/Character) to larger | `shift+upArrow` </source>
+        <target> Изменить режим навигации (Улучшенный/Простой/Символ) к большему | `shift+стрелкаВверх` </target>
+      </segment>
+    </unit>
+    <unit id="fbbd6c80-dc64-45ac-a54b-9ac607fadbce">
+      <notes>
+        <note appliesTo="source">line: 1278</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Zoom out all the way | `control+shift+upArrow` </source>
+        <target> Уменьшить масштаб до конца | `control+shift+стрелкаВверх` </target>
+      </segment>
+    </unit>
+    <unit id="328ca18e-1751-4915-9ca6-f57d2c89b04d">
+      <notes>
+        <note appliesTo="source">line: 1279</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Zoom in | `downArrow` </source>
+        <target> Увеличить масштаб | `стрелкаВниз` </target>
+      </segment>
+    </unit>
+    <unit id="24c76c91-ae34-4bc9-9e20-2962a467db2f">
+      <notes>
+        <note appliesTo="source">line: 1280</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to cell below in a table, or digit below in columnar math | `control+downArrow` or `control+alt+downArrow` </source>
+        <target> Перейти к ячейке ниже в таблице или к цифре ниже в столбчатой математике | `control+стрелкаВниз` или `control+alt+стрелкаВниз` </target>
+      </segment>
+    </unit>
+    <unit id="5f876e86-46e7-481d-9765-0a5f711e1c80">
+      <notes>
+        <note appliesTo="source">line: 1281</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Change Navigation Mode (Enhanced/Simple/Character) to smaller | `shift+downArrow` </source>
+        <target> Изменить режим навигации (Улучшенный/Простой/Символ) к меньшему | `shift+стрелкаВниз` </target>
+      </segment>
+    </unit>
+    <unit id="83530780-0811-42eb-9ae5-1ee3cc56196c">
+      <notes>
+        <note appliesTo="source">line: 1282</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Zoom in all the way | `control+shift+downArrow` </source>
+        <target> Увеличить масштаб до конца | `control+shift+стрелкаВниз` </target>
+      </segment>
+    </unit>
+    <unit id="4236bfeb-e54e-42c9-bd64-86cee076a1f1">
+      <notes>
+        <note appliesTo="source">line: 1283</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Where am I | `enter` </source>
+        <target> Где я нахожусь | `enter` </target>
+      </segment>
+    </unit>
+    <unit id="85698060-2cd7-4326-825a-20e12942ce04">
+      <notes>
+        <note appliesTo="source">line: 1284</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Global Where am I | `control+enter` </source>
+        <target> Глобальная Где я нахожусь | `control+enter` </target>
+      </segment>
+    </unit>
+    <unit id="827bd1c0-2d35-40a3-b858-f3e10f14f4ee">
+      <notes>
+        <note appliesTo="source">line: 1285</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Jump to placemarker | `1` through `0` (`0` is 10) </source>
+        <target> Перейти к метке | от `1` до `0` (`0` - это 10) </target>
+      </segment>
+    </unit>
+    <unit id="1c03f58f-65d6-43d3-9283-601540ac9330">
+      <notes>
+        <note appliesTo="source">line: 1286</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Set placemarker | `control+1` through `control+0` </source>
+        <target> Установить метку | от `control+1` до `control+0` </target>
+      </segment>
+    </unit>
+    <unit id="9912ae2b-cb52-493c-9501-ed8eaa711909">
+      <notes>
+        <note appliesTo="source">line: 1287</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Read placemarker | `shift+1` through `shift+0` </source>
+        <target> Прочитать метку | от `shift+1` до `shift+0` </target>
+      </segment>
+    </unit>
+    <unit id="a7916d61-97b7-4648-919d-58389f958573">
+      <notes>
+        <note appliesTo="source">line: 1288</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Describe placemarker | `control+shift+1` through `shift+0` </source>
+        <target> Описать метку | от `control+shift+1` до `shift+0` </target>
+      </segment>
+    </unit>
+    <unit id="be12d844-810c-4dd9-a4f1-90919b0a41c2">
+      <notes>
+        <note appliesTo="source">line: 1289</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Read current | `space` </source>
+        <target> Читать текущее | `пробел` </target>
+      </segment>
+    </unit>
+    <unit id="66af7d50-76c1-4be1-9910-d94663353bbe">
+      <notes>
+        <note appliesTo="source">line: 1290</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Read current cell | `control+space` </source>
+        <target> Читать текущую ячейку | `control+пробел` </target>
+      </segment>
+    </unit>
+    <unit id="62bedbf1-e433-44fa-8a0f-14ff03addfcd">
+      <notes>
+        <note appliesTo="source">line: 1291</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Toggle "speech mode" to Read or Describe | `shift+space` </source>
+        <target> Переключить "речевой режим" на Чтение или Описание | `shift+пробел` </target>
+      </segment>
+    </unit>
+    <unit id="77dbf92d-f0bd-4066-89ff-ebb23b3e58e8">
+      <notes>
+        <note appliesTo="source">line: 1292</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Describe current | `control+shift+space` </source>
+        <target> Описать текущее | `control+shift+пробел` </target>
+      </segment>
+    </unit>
+    <unit id="b4f76a95-5800-40f2-86cd-8b6593121425">
+      <notes>
+        <note appliesTo="source">line: 1293</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to start of expression | `home` </source>
+        <target> Перейти к началу выражения | `начало` </target>
+      </segment>
+    </unit>
+    <unit id="fbd5428a-ee30-41d3-ab5c-15f68d856580">
+      <notes>
+        <note appliesTo="source">line: 1294</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to start of line | `control+home` </source>
+        <target> Перейти к началу строки | `control+начало` </target>
+      </segment>
+    </unit>
+    <unit id="3a7b99d2-4c93-45a5-b3d5-834fb85a507c">
+      <notes>
+        <note appliesTo="source">line: 1295</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to start of column in table, or move to digit at top in columnar math | `shift+home` </source>
+        <target> Перейти в начало столбца в таблице или перейти к цифре вверху в столбчатой математике | `shift+начало` </target>
+      </segment>
+    </unit>
+    <unit id="fadf7bd0-0879-45ed-b5be-dc0988a36f42">
+      <notes>
+        <note appliesTo="source">line: 1296</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to end of expression | `end` </source>
+        <target> Перейти к концу выражения | `конец` </target>
+      </segment>
+    </unit>
+    <unit id="1f549a93-ce8e-4cef-86dd-e60d54b2755e">
+      <notes>
+        <note appliesTo="source">line: 1297</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to end of line | `control+end` </source>
+        <target> Перейти к концу строки | `control+конец` </target>
+      </segment>
+    </unit>
+    <unit id="fa80a97e-221e-4af8-9f3f-d88089504c79">
+      <notes>
+        <note appliesTo="source">line: 1298</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move to end of column in table, or move to digit at bottom in columnar math | `shift+end` </source>
+        <target> Переместиться в конец столбца таблицы или перейти к нижней цифре в столбчатой ​​математике | `shift+конец` </target>
+      </segment>
+    </unit>
+    <unit id="673a174f-b93d-49c4-939e-433a58ae70d0">
+      <notes>
+        <note appliesTo="source">line: 1299</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Move back to last position | `backspace` </source>
+        <target> Вернуться в исходное положение | `backspace` </target>
+      </segment>
+    </unit>
+    <unit id="65fff510-9a3a-47ca-81ca-23d9bee4ff27">
+      <notes>
+        <note appliesTo="source">line: 1302</note>
+        <note appliesTo="source">prefix: #### </note>
+      </notes>
+      <segment state="final">
+        <source>Typical Use</source>
+        <target>Типичное Использование</target>
+      </segment>
+    </unit>
+    <unit id="18c3b342-7c70-43f7-90ed-2d58515bc63f">
+      <notes>
+        <note appliesTo="source">line: 1304</note>
+      </notes>
+      <segment state="final">
+        <source>Typically, you will start at the first term of an expression and move right as needed.</source>
+        <target>Как правило, вы начинаете с первого члена выражения и перемещаетесь вправо по мере необходимости.</target>
+      </segment>
+    </unit>
+    <unit id="492eeed0-10b5-468e-a55b-250865d430fd">
+      <notes>
+        <note appliesTo="source">line: 1305</note>
+      </notes>
+      <segment state="final">
+        <source>You might move up and down levels if needed.</source>
+        <target>При необходимости вы можете перемещаться вверх и вниз по уровням.</target>
+      </segment>
+    </unit>
+    <unit id="9fe7ce44-81eb-4c16-92d5-9f0738156165">
+      <notes>
+        <note appliesTo="source">line: 1306</note>
+      </notes>
+      <segment state="final">
+        <source>This is done with the arrow keys.</source>
+        <target>Это делается с помощью курсорных стрелок.</target>
+      </segment>
+    </unit>
+    <unit id="00ca5128-00c7-4301-b8d4-664a1883e5fc">
+      <notes>
+        <note appliesTo="source">line: 1307</note>
+      </notes>
+      <segment state="final">
+        <source>`control+alt+arrow` is used to move around tabular entries.</source>
+        <target>`control+alt+стрелка` используется для перемещения по записям в таблице.</target>
+      </segment>
+    </unit>
+    <unit id="490f33d8-383f-4ccd-8fe7-279c39f78bf9">
+      <notes>
+        <note appliesTo="source">line: 1309</note>
+      </notes>
+      <segment state="final">
+        <source>Backspace will take you back to where you were, which is not always the same as moving to the left.</source>
+        <target>Backspace вернёт вас туда, где вы были, а это не всегда то же самое, что двигаться влево.</target>
+      </segment>
+    </unit>
+    <unit id="046670df-b519-427c-b76b-000103de1188">
+      <notes>
+        <note appliesTo="source">line: 1310</note>
+      </notes>
+      <segment state="final">
+        <source>For example, if right arrow moved you out of a fraction, backspace will take you back to where you were in the denominator and left arrow will land on the entire fraction.</source>
+        <target>Например, если стрелка вправо переместила вас из дроби, backspace вернет вас туда, где вы были в знаменателе, а стрелка влево переместит на всю дробь целиком.</target>
+      </segment>
+    </unit>
+    <unit id="ac76b8ee-e783-48dc-8abc-0544cdcc9a55">
+      <notes>
+        <note appliesTo="source">line: 1312</note>
+      </notes>
+      <segment state="final">
+        <source>You will likely find one mode of navigation the most natural for you most of the time.</source>
+        <target>Скорее всего, в большинстве случаев вы найдёте один из способов навигации наиболее естественным для себя.</target>
+      </segment>
+    </unit>
+    <unit id="cd67b20e-71f7-4c26-8dc8-711c27b9175f">
+      <notes>
+        <note appliesTo="source">line: 1313</note>
+      </notes>
+      <segment state="final">
+        <source>This can be set in the MathCAT settings.</source>
+        <target>Это можно установить в настройках MathCat.</target>
+      </segment>
+    </unit>
+    <unit id="0d2e792e-8788-463e-b0de-b2bf25dfb3c0">
+      <notes>
+        <note appliesTo="source">line: 1314</note>
+      </notes>
+      <segment state="final">
+        <source>However, at any time during navigation, you can switch the navigation modes using `shift+up/down arrow`.</source>
+        <target>Однако в любой момент во время навигации вы можете переключать режимы навигации, используя "shift+стрелки вверх/вниз`.</target>
+      </segment>
+    </unit>
+    <unit id="0c27a270-d7ed-4711-a63a-b710ca9a2b5c">
+      <notes>
+        <note appliesTo="source">line: 1315</note>
+      </notes>
+      <segment state="final">
+        <source>This is useful because each mode of navigation has its strengths and weaknesses.</source>
+        <target>Это полезно, поскольку каждый режим навигации имеет свои сильные и слабые стороны.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="8fbc04ab-c5bf-4d7d-a0b8-2b1ab7d15e9b">
@@ -25803,7 +26413,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>When unchecked, Remote Access sessions start unmuted, and must be muted explicitly.</source>
-        <target>Если флажок снят, сеансы удаленного доступа начинаются без отключения звука, речь и звуки управляемого компьютера нужно отключать вручную.</target>
+        <target>Если флажок снят, то речь и звуки управляемого компьютера будут воспроизводиться сразу после подключения к сеансу удалённого доступа, в этом случае их нужно отключать вручную.</target>
       </segment>
     </unit>
     <unit id="c6638271-ce78-4e38-908d-71a0ba152e85">
@@ -25812,7 +26422,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>You can still manually mute or unmute Remote Access when controlling the local computer [via the Remote Access menu](#RemoteAccessUsage), or by assigning a custom gesture using the [Input Gestures dialog](#InputGestures).</source>
-        <target>Вы также можете вручную отключать или включать речь и звуки управляемого компьютера при управлении локальным компьютером [в меню удаленного доступа](#RemoteAccessUsage) или назначив сочетание клавиш в [диалоге жесты ввода](#InputGestures).</target>
+        <target>Вы также можете вручную отключать или включать речь и звуки управляемого компьютера при управлении локальным компьютером в [меню удалённого доступа](#RemoteAccessUsage) или назначив сочетание клавиш в диалоге [жесты ввода](#InputGestures).</target>
       </segment>
     </unit>
     <unit id="4b142507-9401-4d1f-b8da-cb443c3cb501">
@@ -25921,7 +26531,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>Control another computer |Use this computer as the "controlling" computer. This allows you to execute commands on the remote computer. </source>
-        <target>Управлять другим компьютером |используйте этот компьютер в качестве "управляющего". Это позволяет выполнять команды на удаленном компьютере. </target>
+        <target>Управлять другим компьютером |используйте этот компьютер в качестве "управляющего". Это позволяет выполнять команды на удалённом компьютере. </target>
       </segment>
     </unit>
     <unit id="af02981e-74c9-4832-be1a-9596b2b1ad2a">
@@ -25972,7 +26582,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>Use existing |Use an existing Remote Access server to mediate the connection (recommended). </source>
-        <target>Использовать существующий |Использовать существующий сервер удаленного доступа, чтобы опосредовать соединение (рекомендуется). </target>
+        <target>Использовать существующий |Использовать существующий сервер удалённого доступа для установки соединения (рекомендуется). </target>
       </segment>
     </unit>
     <unit id="c4229ecd-8563-4a67-8ed6-823b2f8f890b">
@@ -29452,7 +30062,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>If NVDA is running in [secure mode](#SecureMode), you cannot manually initiate a new Remote Access session.</source>
-        <target>Если NVDA запущена в [безопасном режиме](#SecureMode), вы не сможете вручную инициировать новый сеанс удаленного доступа.</target>
+        <target>Если NVDA запущена в [безопасном режиме](#SecureMode), вы не сможете вручную запустить новый сеанс удалённого доступа.</target>
       </segment>
     </unit>
     <unit id="b98ba472-736b-4064-a635-a06206770515">
@@ -29966,7 +30576,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>Once a Remote Access session is active, you can switch between controlling the remote computer and your own, share your clipboard, and mute the remote session:</source>
-        <target>Когда сеанс удалённого доступа активен, вы можете переключаться между управлением удаленным компьютером и своим собственным, предоставлять общий доступ к буферу обмена и отключать звук удаленного сеанса:</target>
+        <target>После запуска сеанса удалённого доступа вы можете переключать управление между своим и удалённым компьютером, отправлять и передавать текст между буферами обмена и отключать речь и звуки удалённого компьютера:</target>
       </segment>
     </unit>
     <unit id="3825cc2f-df6e-40ea-b0d9-8235c199d8e1">
@@ -29996,7 +30606,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>If connected as the controlling computer, mute the remote computer's speech output on your local computer by opening the NVDA menu, then selecting Tools, then "Remote Access", then "Mute remote".</source>
-        <target>Если вы подключены в качестве управляющего компьютера, то вы можете отключить речь удаленного компьютера на вашем компьютере. Для этого откройте меню NVDA, Сервис подменю, "Удалённый доступ подменю" и выберите  пункт "Отключить удалённую речь и звуки".</target>
+        <target>Если вы подключены в качестве управляющего компьютера, вы можете отключать речь и звуки удалённого компьютера на вашем компьютере. Для этого откройте меню NVDA, Сервис подменю, "Удалённый доступ подменю" и выберите пункт "Отключить речь и звуки удалённого компьютера".</target>
       </segment>
     </unit>
     <unit id="277e28c8-561a-46b5-85d5-752e8abf5766">

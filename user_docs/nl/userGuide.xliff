@@ -5837,8 +5837,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: * </note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Translated into 54 languages</source>
         <target>In 54 talen beschikbaar</target>
+=======
+        <source>Translated into 55 languages</source>
+        <target>In 55 talen vertaald</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="e2cfcace-4626-4392-9c2a-c5ffd9315f3b">
@@ -5847,8 +5852,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: * </note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Support for modern Windows Operating Systems including both 32 and 64 bit variants</source>
         <target>Ondersteuning van moderne Windows besturingssystemen met inbegrip van 32- en 64-bit versies</target>
+=======
+        <source>Support for [modern Windows Operating Systems](#MinimumSystemRequirements)</source>
+        <target>Ondersteuning voor [moderne Windows besturingssystemen](#MinimumSystemRequirements)</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="feb4bf8e-636e-485d-a629-f9ee30d4c787">
@@ -5923,14 +5933,42 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <target>Minimumsysteemvereisten</target>
       </segment>
     </unit>
+<<<<<<< HEAD
     <unit id="becfe653-e084-45ef-a7cd-8c42a552b711">
+=======
+    <unit id="a9139c03-af6a-45e3-a630-b083671c5f48">
+      <notes>
+        <note appliesTo="source">line: 44</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Operating Systems: 64-bit editions of Windows 10 and Windows 11.</source>
+        <target>Besturingssysteem: 64-bit edities van Windows 10 en Windows 11.</target>
+      </segment>
+    </unit>
+    <unit id="a7145881-2918-42e5-84b8-8e7d8da20683">
+      <notes>
+        <note appliesTo="source">line: 45</note>
+      </notes>
+      <segment state="final">
+        <source>Windows Server 2016, 2019, 2022 and 2025.</source>
+        <target>Windows Server 2016, 2019, 2022 en 2025.</target>
+      </segment>
+    </unit>
+    <unit id="04dcadf0-4d16-4cc7-a2f4-436102a943d0">
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       <notes>
         <note appliesTo="source">line: 46</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Operating Systems: all 32-bit and 64-bit editions of Windows 8.1, Windows 10, Windows 11, and all Server Operating Systems starting from Windows Server 2012 R2.</source>
         <target>Besturingssystemen: alle 32-bit en 64-bit edities van Windows 8.1, Windows 10, Windows 11, en alle Server Besturingssystemen beginnend bij Windows Server 2012 R2.</target>
+=======
+        <source>both AMD64 and ARM64 variants of Windows 11 are supported, including Copilot+ PCs.</source>
+        <target>zowel AMD64 en ARM64 varianten van Windows 11 worden ondersteund, inclusief Copilot+ PCs.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="08991789-8f1d-48b6-92b6-c6411058f3b4">
@@ -5939,8 +5977,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix:   * </note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>both AMD64 and ARM64 variants of Windows are supported, including Copilot+ PCs.</source>
         <target>Zowel AMD64 als ARM64 varianten van Windows worden ondersteund, inclusief Copilot+ PCs.</target>
+=======
+        <source>Note that ARM64 Windows 10 is not supported.</source>
+        <target>Merk op dat ARM64 Windows 10 niet wordt ondersteund.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="fe98f99a-734e-4cbf-8b83-01cde553520f">
@@ -5949,6 +5992,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix:   * </note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Note that 32-bit operating systems are no longer under active support.</source>
         <target>Merk op dat 32-bit besturingssystemen niet langer actief ondersteund worden.</target>
       </segment>
@@ -5961,6 +6005,10 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       <segment state="final">
         <source>Note that Windows 8.1 and Windows Server versions older than 2022 are no longer under active support.</source>
         <target>Merk op dat Windows 8.1 en Windows Server versies die ouder zijn dan 2022 niet langer actief ondersteund worden.</target>
+=======
+        <source>Note that Windows 10 versions older than 22H2 and Windows Server versions older than 2022 are no longer under active support by NV Access.</source>
+        <target>Merk op dat  versies van Windows 10 die ouder zijn dan 22H2 en Windows Server versies ouder dan 2022 niet langer actief door NV Access worden ondersteund.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="e24c9ba8-0668-4378-82a9-3a170ed73b7f">
@@ -5984,14 +6032,33 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <target>Aanbevolen Systeemvereisten</target>
       </segment>
     </unit>
+<<<<<<< HEAD
     <unit id="89b78f2e-a71c-46f5-949a-c542801a68bd">
+=======
+    <unit id="12eea369-1faa-4589-8aa6-d3c97f713cd8">
+      <notes>
+        <note appliesTo="source">line: 53</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Operating Systems: Windows 11 or Windows 10 (Version 22H2), and Windows Server 2025 or 2022.</source>
+        <target>Besturingssystemen: Windows 11 of Windows 10 (Versie 22H2), en Windows Server 2025 of 2022.</target>
+      </segment>
+    </unit>
+    <unit id="9c59451a-72f5-4ab8-88f0-987d9c5be5fa">
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       <notes>
         <note appliesTo="source">line: 54</note>
         <note appliesTo="source">prefix: * </note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Operating Systems: 64-bit editions of Windows 10, Windows 11, and Windows Server 2022.</source>
         <target>Besturingssystemen: 64-bit edities van Windows 10, Windows 11, en Windows Server 2022.</target>
+=======
+        <source>both AMD64 and ARM64 variants of Windows 11 are supported, including Copilot+ PCs.</source>
+        <target>zowel AMD64 en ARM64 varianten van Windows 11 worden ondersteund, inclusief Copilot+ PCs.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="e3671a7c-b915-4a70-a90b-91dd98c51a74">
@@ -6000,8 +6067,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix:   * </note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>both AMD64 and ARM64 variants of Windows are supported, including Copilot+ PCs.</source>
         <target>Zowel AMD64 alsmede ARM64 varianten van Windows worden ondersteund, inclusief Copilot+ PCs.</target>
+=======
+        <source>Note that ARM64 Windows 10 is not supported.</source>
+        <target>Merk op dat ARM64 Windows 10 niet wordt ondersteund.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="40475f3b-9146-4909-8c10-e8e1c5bd89a0">
@@ -6426,8 +6498,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 123</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>https://www.nvaccess.org/download</source>
         <target>https://www.nvaccess.org/download:</target>
+=======
+        <source>&lt;https://www.nvaccess.org/download&gt;</source>
+        <target>&lt;https://www.nvaccess.org/download&gt;</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="68718298-61fc-4ac1-bc68-ea388cea534b">
@@ -14410,7 +14487,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>lnk |link</source>
-        <target>kN |kop op niveau (N), bijv. k1, k2.</target>
+        <target>lnk|link</target>
       </segment>
     </unit>
     <unit id="9842069c-6f52-423a-9e2b-6291338e5b19">
@@ -14435,6 +14512,20 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <target>lst |lijst</target>
       </segment>
     </unit>
+<<<<<<< HEAD
+=======
+    <unit id="c58683f9-aca5-4b75-9fd2-1b339d359645">
+      <notes>
+        <note appliesTo="source">line: 1360</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source>mslst |multiselect list</source>
+        <target>mslst |multiselectielijst</target>
+      </segment>
+    </unit>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
     <unit id="0d3d2461-ce9b-43ec-bb01-7aee7eed5da4">
       <notes>
         <note appliesTo="source">line: 1286</note>
@@ -14443,7 +14534,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>mnu |menu</source>
-        <target>blnk |bezochte link</target>
+        <target>mnu |menu</target>
       </segment>
     </unit>
     <unit id="90ced55d-07a5-41f4-92d5-529f43087276">
@@ -14564,7 +14655,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>tabctl |tab control</source>
-        <target>sect |sectie</target>
+        <target>tabctl |tab-besturingselement</target>
       </segment>
     </unit>
     <unit id="c29ef98a-10ef-43a5-a8e9-77f06fc7f9ee">
@@ -14608,7 +14699,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>term |terminal</source>
-        <target>tbl |tabel</target>
+        <target>term |terminal</target>
       </segment>
     </unit>
     <unit id="afda8e1c-4b9d-4523-81a2-1ee94262ecbc">
@@ -14895,6 +14986,20 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <target>mrg |wordt weergegeven wanneer meer regels kunnen worden ingevoerd in een tekstvak bijv. velden voor opmerkingen op websites</target>
       </segment>
     </unit>
+<<<<<<< HEAD
+=======
+    <unit id="5cad64af-3a2a-4f42-bc87-355094650c73">
+      <notes>
+        <note appliesTo="source">line: 1406</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source>msel |displayed when an object allows selecting multiple items</source>
+        <target>msel |wordt getoond waneer een objectde moglijkheid biedt meerdere items te selecteren</target>
+      </segment>
+    </unit>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
     <unit id="c14870bf-6f04-44b2-b699-0a7b21454719">
       <notes>
         <note appliesTo="source">line: 1331</note>
@@ -16174,8 +16279,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix: * </note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Comments: This lists all cells in the active worksheet containing comments.</source>
         <target>Opmerkingen: Voor het weergeven van cellen op het actieve werkblad dat opmerkingen bevat.</target>
+=======
+        <source>Notes: This lists all cells in the active worksheet containing notes.</source>
+        <target>Annotaties: Hierin staan alle cellen van het actieve werkblad dat annotaties bevat.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="12e6ddb6-c13d-41a7-a0b1-24d1f50c4939">
@@ -16183,8 +16293,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 1546</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>The cell address along with its comments are shown for each cell.</source>
         <target>Het cel-adres samen met de opmerkingen erin worden voor elke cel weergegeven.</target>
+=======
+        <source>The cell address along with its note are shown for each cell.</source>
+        <target>Het cel-adres samen met bijbehorende annotatie wordt voor iedere cel getoond.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="2f361cc3-6311-4950-a336-cfa3401e8aec">
@@ -16192,8 +16307,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 1547</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Pressing enter or the Move To button when on a listed comment will move directly to that cell.</source>
         <target>Door op Enter of de knop Ga Naar te drukken wanneer u op een weergegeven opmerking staat, gaat u direct naar die cel.</target>
+=======
+        <source>Pressing enter or the Move To button when on a listed note will move directly to that cell.</source>
+        <target>Met een druk op enter of de Ga naar-knop als je op een in de lijst opgenomen annotatie staat, kom je meteen bij die cel.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="513f368c-edad-4ff7-bccc-00b241290946">
@@ -18830,8 +18950,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 1999</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>For example, the character "ü" (u with umlaut/diaeresis), a common character in languages like German and Turkish can be represented in two forms:</source>
         <target>Het letterteken "ü" (u with umlaut/diaeresis) bijvoorbeeld, een veelvoorkomend letterteken in talen zoals Duits en Turks kan op twee manieren worden weergegeven:</target>
+=======
+        <source>   For example, the character "ü" (u with umlaut/diaeresis), a common character in languages like German and Turkish can be represented in two forms:</source>
+        <target>   Neem bijvoorbeeld , het letterteken "ü" (u met umlaut/diaeresis), een algemeen voorkomend letterteken in talen zoals Duits en Turks kan op twee verschillende manieren worden weergegeven:</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="a6165ff0-8964-4202-9c03-1b1663b1cd96">
@@ -19087,8 +19212,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 2041</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>In case pitch change for capitals is not supported, consider [Say "cap" before capitals](#SpeechSettingsSayCapBefore) and/or [ Beep for capitals](#SpeechSettingsBeepForCaps) instead.</source>
         <target>Indien hoofdletters zonder verhoging van toon worden uitgesproken, kunt u overwegen om in plaats hiervan [ "hoofdletter"zeggen voor een hoofdletter](#SpeechSettingsSayCapBefore) en/of [ pieptoon bij hoofdletters](#SpeechSettingsBeepForCaps) te gebruiken.</target>
+=======
+        <source>In case pitch change for capitals is not supported, consider [Say "cap" before capitals](#SpeechSettingsSayCapBefore) and/or [Beep for capitals](#SpeechSettingsBeepForCaps) instead.</source>
+        <target>In geval dat toonhoogteverandering voor hoofdletters niet wordt ondersteund, kun je overwegen in plaats daarvan [Het woord "hoofdletter" uitspreken](#SpeechSettingsSayCapBefore) en/of [Pieptoon voor hoofletters](#SpeechSettingsBeepForCaps) te gebruiken.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="cfa5037d-a54d-4b90-b2b0-0c666f74453a">
@@ -20838,6 +20968,53 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <target> ⡎ ("s" met punt 7) | Einde doorstrepen </target>
       </segment>
     </unit>
+<<<<<<< HEAD
+=======
+    <unit id="785b161a-a8e2-484e-9ce5-75f9f315c78b">
+      <notes>
+        <note appliesTo="source">line: 2383</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> ⠑ ("e")| Start spelling error </source>
+        <target> ⠑ ("e")| Start spelfout </target>
+      </segment>
+    </unit>
+    <unit id="b2c02b43-b1a5-4a3b-ba2a-2db57ced89c7">
+      <notes>
+        <note appliesTo="source">line: 2384</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> ⡑ ("e" with dot 7) | End spelling error </source>
+        <target> ⡑ ("e" met punt 7) | Einde spelfout </target>
+      </segment>
+    </unit>
+    <unit id="7c33180a-4ea4-4852-91e3-7965f7281931">
+      <notes>
+        <note appliesTo="source">line: 2385</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="initial">
+        <source> ⠛ ("g")| Start grammar error </source>
+        <target> ⠛ ("g")| Start grammar error </target>
+      </segment>
+    </unit>
+    <unit id="a1c01d7d-bfd3-4e8a-adbb-836fc219b51f">
+      <notes>
+        <note appliesTo="source">line: 2386</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="initial">
+        <source> ⡛ ("g" with dot 7) | End grammar error </source>
+        <target> ⡛ ("g" with dot 7) | End grammar error </target>
+      </segment>
+    </unit>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
     <unit id="d3e37afb-f884-4413-98a7-d9195d313527">
       <notes>
         <note appliesTo="source">line: 2337</note>
@@ -22634,8 +22811,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">line: 2660</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>This option is only available if reporting of spelling errors is enabled in NVDA's [Document Formatting Settings](#DocumentFormattingSettings), found in the NVDA Settings dialog.</source>
         <target>Deze optie is alleen beschikbaar indien "Spelfouten melden" is ingeschakeld in het dialoogvenster [Documentopmaakinstellingen](#DocumentFormattingSettings) dat u vindt in de dialoog Instellingen NVDA.</target>
+=======
+        <source>This option is only available if [reporting of spelling errors](#reportSpellingErrors) is enabled in NVDA's Document Formatting Settings.</source>
+        <target>Deze optie is alleen dan beschikbaar als [Spelfouten melden](#reportSpellingErrors) ingeschakeld wordt in  de Documentopmaakinstellingen van NVDA.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="c6c0276b-40ff-437e-a935-b4c145f14cb4">
@@ -23484,6 +23666,38 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <target>Als deze optie is ingeschakeld, zal positie-informatie voor meer objecten (zoals menu's en werkbalken) beschikbaar zijn, maar deze informatie is mogelijk niet geheel nauwkeurig.</target>
       </segment>
     </unit>
+<<<<<<< HEAD
+=======
+    <unit id="43767466-2f65-4ee9-ab7c-44878328b94f">
+      <notes>
+        <note appliesTo="source">line: 2919</note>
+        <note appliesTo="source">prefix: ##### </note>
+        <note appliesTo="source">suffix:  {#ReportMultiSelect}</note>
+      </notes>
+      <segment state="initial">
+        <source>Report when objects support multiple selection</source>
+        <target>Report when objects support multiple selection</target>
+      </segment>
+    </unit>
+    <unit id="da9f4ea0-1ca6-49c7-9381-b05d2825c9b3">
+      <notes>
+        <note appliesTo="source">line: 2921</note>
+      </notes>
+      <segment state="initial">
+        <source>When this option is enabled, NVDA will report when an object, such as a list box, supports selecting multiple items.</source>
+        <target>When this option is enabled, NVDA will report when an object, such as a list box, supports selecting multiple items.</target>
+      </segment>
+    </unit>
+    <unit id="aba743e9-539a-4778-8acd-13fa6d73be77">
+      <notes>
+        <note appliesTo="source">line: 2922</note>
+      </notes>
+      <segment state="final">
+        <source>As it is usually possible to infer multiple selection support from the context of a list box, this option is disabled by default.</source>
+        <target>Aangezien het gewoonlijk mogelijk is ondersteuning voor meervoudige selectie uit de lijstweergavecontext af te leiden, is deze optie standaard uitgeschakeld.</target>
+      </segment>
+    </unit>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
     <unit id="9516f4a2-a0f3-462b-aa6e-d277f555aaa2">
       <notes>
         <note appliesTo="source">line: 2819</note>
@@ -24594,8 +24808,13 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <note appliesTo="source">prefix:   * </note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Spelling errors</source>
         <target>Spelfouten</target>
+=======
+        <source>Spelling errors [(Off, Speech, Sound, braille)](#reportSpellingErrors)</source>
+        <target>Spelfouten [(Uit, Spraak, Geluid, braille)](#reportSpellingErrors)</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="97d0bcd4-9d76-4196-851a-d147426e4b36">
@@ -24983,6 +25202,140 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
         <target>Vink dit selectievakje aan bij het corrigeren van documenten in toepassingen zoals WordPad waar opmaak van belang is.</target>
       </segment>
     </unit>
+<<<<<<< HEAD
+=======
+    <unit id="b440b61e-e0e1-410c-96e6-a60e9e00cc75">
+      <notes>
+        <note appliesTo="source">line: 3157</note>
+        <note appliesTo="source">prefix: ##### </note>
+        <note appliesTo="source">suffix:  {#ReportSpellingErrors}</note>
+      </notes>
+      <segment state="initial">
+        <source>Spelling and grammar error reporting</source>
+        <target>Spelling and grammar error reporting</target>
+      </segment>
+    </unit>
+    <unit id="a7337c81-25c0-42e0-9e18-5ee7dc312542">
+      <notes>
+        <note appliesTo="source">line: 3159</note>
+      </notes>
+      <segment state="initial">
+        <source>This option allows you to configure how spelling and grammar errors are reported while reading text.</source>
+        <target>This option allows you to configure how spelling and grammar errors are reported while reading text.</target>
+      </segment>
+    </unit>
+    <unit id="e4c4fd97-f5e3-4283-816c-88c317b4a2ed">
+      <notes>
+        <note appliesTo="source">line: 3160</note>
+      </notes>
+      <segment state="final">
+        <source>This checklist box has three options:</source>
+        <target>Dit keuzevak heeft drie selectieopties:</target>
+      </segment>
+    </unit>
+    <unit id="e9540d45-afd0-4812-b25a-789844024e5e">
+      <notes>
+        <note appliesTo="source">line: 3162</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="initial">
+        <source>Speech: NVDA will say "spelling error" or "grammar error" when an error is encountered while reading text</source>
+        <target>Speech: NVDA will say "spelling error" or "grammar error" when an error is encountered while reading text</target>
+      </segment>
+    </unit>
+    <unit id="9d51dc42-0da3-4b8e-958d-69b1b4b1e0b9">
+      <notes>
+        <note appliesTo="source">line: 3163</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="initial">
+        <source>Sound: NVDA will play a short buzzer sound when a spelling or grammar error is encountered while reading text</source>
+        <target>Sound: NVDA will play a short buzzer sound when a spelling or grammar error is encountered while reading text</target>
+      </segment>
+    </unit>
+    <unit id="68732419-ae34-4e51-abd6-3085509d8caa">
+      <notes>
+        <note appliesTo="source">line: 3164</note>
+      </notes>
+      <segment state="initial">
+        <source>When navigating word by word or character by character, "out of spelling error" or "out of grammar error" is also reported if the "Speech" or "Sound" option is selected.</source>
+        <target>When navigating word by word or character by character, "out of spelling error" or "out of grammar error" is also reported if the "Speech" or "Sound" option is selected.</target>
+      </segment>
+    </unit>
+    <unit id="3ef70923-ce01-4c34-9d5b-c76b743df126">
+      <notes>
+        <note appliesTo="source">line: 3165</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="initial">
+        <source>Braille: NVDA will indicate spelling or grammar errors in braille.</source>
+        <target>Braille: NVDA will indicate spelling or grammar errors in braille.</target>
+      </segment>
+    </unit>
+    <unit id="3fb1eed2-fc0c-4c9b-a098-46830e902e52">
+      <notes>
+        <note appliesTo="source">line: 3166</note>
+      </notes>
+      <segment state="initial">
+        <source>To have spelling or grammar errors reported in braille, [formatting display with tags](#BrailleFormattingDisplayTags) must be enabled.</source>
+        <target>To have spelling or grammar errors reported in braille, [formatting display with tags](#BrailleFormattingDisplayTags) must be enabled.</target>
+      </segment>
+    </unit>
+    <unit id="3ccedadc-b07c-49bd-b781-99fe14ddd2e9">
+      <notes>
+        <note appliesTo="source">line: 3168</note>
+      </notes>
+      <segment state="initial">
+        <source>Due to performance limitations, errors are not reported with speech or sounds when navigating by paragraph or by cell in tables, no matter the choice selected in this checklist box.</source>
+        <target>Due to performance limitations, errors are not reported with speech or sounds when navigating by paragraph or by cell in tables, no matter the choice selected in this checklist box.</target>
+      </segment>
+    </unit>
+    <unit id="f452d8aa-6d2e-4f94-ae8d-5d0f9a86c897">
+      <notes>
+        <note appliesTo="source">line: 3169</note>
+      </notes>
+      <segment state="initial">
+        <source>In these cases, errors can be reported just in braille.</source>
+        <target>In these cases, errors can be reported just in braille.</target>
+      </segment>
+    </unit>
+    <unit id="5d30b890-5603-4f83-b0df-77dc7a184239">
+      <notes>
+        <note appliesTo="source">line: 3171</note>
+      </notes>
+      <segment state="initial">
+        <source>By default, errors will be reported with speech.</source>
+        <target>By default, errors will be reported with speech.</target>
+      </segment>
+    </unit>
+    <unit id="914693e0-a079-4efa-a7ea-411cad608437">
+      <notes>
+        <note appliesTo="source">line: 3173</note>
+      </notes>
+      <segment state="initial">
+        <source>To cycle through available options to report errors via audio, please assign a custom gesture using the [Input Gestures dialog](#InputGestures).</source>
+        <target>To cycle through available options to report errors via audio, please assign a custom gesture using the [Input Gestures dialog](#InputGestures).</target>
+      </segment>
+    </unit>
+    <unit id="d0515726-f915-4e7e-a146-b271ec54ebc6">
+      <notes>
+        <note appliesTo="source">line: 3174</note>
+      </notes>
+      <segment state="final">
+        <source>The available options are: Off, Speech, Sound, Speech and sound.</source>
+        <target>De beschikbare opties zijn: Uit, Spraak, Geluid, Spraak en geluid.</target>
+      </segment>
+    </unit>
+    <unit id="cafe3ced-2974-4a1d-9cd0-4c09bce07a1b">
+      <notes>
+        <note appliesTo="source">line: 3176</note>
+      </notes>
+      <segment state="initial">
+        <source>You can also assign a custom gesture to toggle the reporting of errors in braille using the [Input Gestures dialog](#InputGestures).</source>
+        <target>You can also assign a custom gesture to toggle the reporting of errors in braille using the [Input Gestures dialog](#InputGestures).</target>
+      </segment>
+    </unit>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
     <unit id="224870b6-bb34-4022-9bc7-828a1c3b3582">
       <notes>
         <note appliesTo="source">line: 3052</note>
@@ -26130,6 +26483,58 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <target>Deze optie is alleen beschikbaar als er vertrouwde sporen in je configuratie zijn opgeslagen.</target>
       </segment>
     </unit>
+<<<<<<< HEAD
+=======
+    <unit id="5c68b37e-2092-4d1b-8d86-a768aa5ed427">
+      <notes>
+        <note appliesTo="source">line: 3554</note>
+        <note appliesTo="source">prefix: #### </note>
+        <note appliesTo="source">suffix:  {#LocalCaptionerSettings}</note>
+      </notes>
+      <segment state="final">
+        <source>AI Image Descriptions Settings</source>
+        <target>AI Afbeeldingbeschrijvingsinstellingen</target>
+      </segment>
+    </unit>
+    <unit id="373d978a-aaf6-44fb-9819-a11e32e22ae8">
+      <notes>
+        <note appliesTo="source">line: 3556</note>
+      </notes>
+      <segment state="final">
+        <source>This panel provides options to customize the behavior and default settings for the ["Image Captioner"](#LocalCaptioner).</source>
+        <target>Met de opties op dit scherm regel je de werking en stel je de standaardwaarden in van de ["Image Captioner"](#LocalCaptioner).</target>
+      </segment>
+    </unit>
+    <unit id="6c719017-95dd-413c-85d6-75af30e42a5b">
+      <notes>
+        <note appliesTo="source">line: 3558</note>
+        <note appliesTo="source">prefix: ##### </note>
+        <note appliesTo="source">suffix:  {#LocalCaptionToggle}</note>
+      </notes>
+      <segment state="final">
+        <source>Enable image captioner</source>
+        <target>Iimage captioner inschakelen</target>
+      </segment>
+    </unit>
+    <unit id="6e0ed7d7-910b-4454-b263-045c62340c26">
+      <notes>
+        <note appliesTo="source">line: 3560</note>
+      </notes>
+      <segment state="final">
+        <source>When this checkbox is enabled, NVDA will load the image captioner in memory, enabling the use of the image description command.</source>
+        <target>Wanneer dit selectievakje wordt ingeschakeld, zal NVDA de image captioner in het geheugen laden, wat het gebruik van de opdracht om een afbeelding te laten beschrijven mogelijk maakt.</target>
+      </segment>
+    </unit>
+    <unit id="172039e3-58ca-4779-921a-de434272af98">
+      <notes>
+        <note appliesTo="source">line: 3561</note>
+      </notes>
+      <segment state="final">
+        <source>Loading the image captioner will increase memory usage, so this is disabled by default.</source>
+        <target>Het laden van de image captioner zorgt voor een grotere belasting van het geheugen, vandaar dat dit standaard uitgeschakeld is.</target>
+      </segment>
+    </unit>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
     <unit id="41cbd374-e298-42ab-badc-9dd6efb312c8">
       <notes>
         <note appliesTo="source">line: 3245</note>
@@ -28172,8 +28577,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3563</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>For an introductory tutorial, please refer to [Python's Regular Expression Guide](https://docs.python.org/3.11/howto/regex.html).</source>
         <target>Voor een inleidende  tutorial kunt u terecht bij  [Python's Regular Expression Guide](https://docs.python.org/3.11/howto/regex.html).</target>
+=======
+        <source>For an introductory tutorial, please refer to [Python's Regular Expression Guide](https://docs.python.org/3.13/howto/regex.html).</source>
+        <target>Voor een instructieve inleiding ga je naar [Python's Regular Expression Guide](https://docs.python.org/3.13/howto/regex.html).</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="909761ee-4a29-4728-af07-9622d4e8ef0f">
@@ -29608,7 +30018,11 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
       </notes>
       <segment state="final">
         <source>You may include the port to connect on by appending a colon (":") and the port number to the host address.</source>
+<<<<<<< HEAD
         <target>Je kunt de poort om mee te verbinden insluiten door een dubbele punt (":") toe te voegen,  alsmede het poortnummer aan het host-adres.</target>
+=======
+        <target>Je kunt de poort waarmee verbinding moet worden gemaakt opnemen door een dubbele punt (":") alsmede het poortnummer aan het hostadres toe te voegen.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="38d8e6b4-a697-4e93-81e9-ec8f19c3e0d4">
@@ -29616,8 +30030,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3797</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>For example, `example.com:1234`.</source>
         <target>Bijvoorbeeld, `voorbeeld.com:1234`.</target>
+=======
+        <source>     For example, `example.com:1234`.</source>
+        <target>     Bij wijze van voorbeeld, `example.com:1234`.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="c0c4cd99-9bc9-46e6-8fb9-1b39fcfc2acc">
@@ -29635,8 +30054,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3799</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Be careful to type the key exactly as given.</source>
         <target>Let er goed op dat je de sleutel precies zo typt als opgegeven.</target>
+=======
+        <source>   Be careful to type the key exactly as given.</source>
+        <target>   Zorg ervoor dat je de sleutel precies zo typt als deze werd opgegeven.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="49d587fc-7af4-4cce-a2f7-9cfeaf1600f1">
@@ -29694,8 +30118,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3808</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>You will need to provide this address to the other person.</source>
         <target>Je moet dit adres aan de ander doorgeven.</target>
+=======
+        <source>   You will need to provide this address to the other person.</source>
+        <target>   Je moet dit adres aan de ander doorgeven.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="67d0c8e1-21f7-4e1a-9075-ea48966a7c5c">
@@ -29705,7 +30134,11 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
       </notes>
       <segment state="final">
         <source>You may include the port to connect on by appending a colon (":") and the port number to the host.</source>
+<<<<<<< HEAD
         <target>Je kunt eventueel ook de poort om mee te verbinden opgeven door een dubbelepunt ":") en het poortnummer toe te voegen aan de host.</target>
+=======
+        <target>Je kunt de poort waarmee verbinding moet worden gemaakt opnemen door een dubbele punt (":") en het poortnummer aan de host toe te voegen.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="4d6dd8e9-fe5a-440e-ad54-60c0faec6a44">
@@ -29713,8 +30146,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3810</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>For example, `example.com:1234`.</source>
         <target>Bijvoorbeeld, `voorbeeld.com:1234`.</target>
+=======
+        <source>     For example, `example.com:1234`.</source>
+        <target>     Bij voorbeeld, `example.com:1234`.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="dada18fb-997b-4047-9346-4f9d438e04a6">
@@ -29732,8 +30170,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3812</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>You will need to provide this to the other person.</source>
         <target>Je moet dat aan de ander doorgeven.</target>
+=======
+        <source>   You will need to provide this to the other person.</source>
+        <target>   Dit moet je aan de ander doorgeven.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="8aa95463-145b-4050-a99e-06740a395370">
@@ -29743,7 +30186,11 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
       </notes>
       <segment state="final">
         <source>Note that the key acts as both the identifier for the session and the password, so it is very important it is hard to guess.</source>
+<<<<<<< HEAD
         <target>Merk op dat de Sleutel zowel ter identificatie van de sessie als van het  wachtwoord dient, het is dus heel belangrijk dat die sleutel  moeilijk te raden is.</target>
+=======
+        <target>Merk op dat de sleutel zowel dient ter identificatie mbt de sessie en als wachtwoord , en is dus heel belangrijk als ook moeilijk te raden.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="4e76d0e7-ce86-4e4e-8189-2ccfcb7da8f8">
@@ -29849,8 +30296,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3827</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>The other person will also need this.</source>
         <target>De ander heeftdit ook nodig.</target>
+=======
+        <source>   The other person will also need this.</source>
+        <target>   Dit heeft de ander ook nodig.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="7f112026-41f8-425e-83b3-1aa35e99d106">
@@ -29860,7 +30312,11 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
       </notes>
       <segment state="final">
         <source>This should be a port that is not used by any other services.</source>
+<<<<<<< HEAD
         <target>Dit moet een poort zijn die niet voor andere doeleinden wordt gebruikt.</target>
+=======
+        <target>Dit moet een poort zijn die niet voor iets anders dient.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="be83df76-ec79-4c78-846d-bdfeb43094dc">
@@ -29870,7 +30326,11 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
       </notes>
       <segment state="final">
         <source>By default, Remote Access uses port 6837.</source>
+<<<<<<< HEAD
         <target>Standaard gebruikt Externe Toegang poert 6837.</target>
+=======
+        <target>Standaard gebruikt Externe Toegang poort 6837.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="c01ef72c-1bed-4db3-8cc0-80fc6e1a30e8">
@@ -29880,7 +30340,11 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
       </notes>
       <segment state="final">
         <source>If connecting over the internet, the port may need to be forwarded.</source>
+<<<<<<< HEAD
         <target>Als je verbinding maakt via internet, moet de poort mogelijk "forwarded" zijn.</target>
+=======
+        <target>Als er via  het internetverbinding wordt gemaakt, moet de poort mogelijk worden 'geforwarded'.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="7c7e46ab-fd29-4691-ab41-452a2ef3eb15">
@@ -29888,8 +30352,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3831</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>  This documentation does not cover how to forward ports.</source>
         <target>  Hoe het forwarden van  poorten werkt, valt niet binnen het bestek van deze documentatie.</target>
+=======
+        <source>     This documentation does not cover how to forward ports.</source>
+        <target>     Hoe het forwarden van poorten werkt, valt niet binnen het bestek van deze documentatie.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="59c85e24-7c80-4162-901c-02379194a393">
@@ -29897,8 +30366,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3832</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>  You may need to contact your network administrator to do this.</source>
         <target>  Zo nodig kun je contact opnemen met je netwerkbeheerder voor instructies.</target>
+=======
+        <source>     You may need to contact your network administrator to do this.</source>
+        <target>     Zo nodig kun je contact opnemen met je netwerkbeheerder voor instructies.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="d995902d-8e11-47a8-9306-aab1445ce6b9">
@@ -29916,8 +30390,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3834</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>You will need to provide this to the other person.</source>
         <target>Je moet dit aan de ander doorgeven.</target>
+=======
+        <source>   You will need to provide this to the other person.</source>
+        <target>   Je moet dit aan de ander doorgeven.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="498f6517-451b-4d30-a1d3-e7797c624c4e">
@@ -29927,7 +30406,11 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
       </notes>
       <segment state="final">
         <source>Note that the key acts as both the identifier for the session and the password, so it is very important it is hard to guess.</source>
+<<<<<<< HEAD
         <target>Merk op dat de sleutelter identificatie van de sessie en van het  wachtwoord dient, dus is het belangrijk dat die sleutel moeilijk te raden is.</target>
+=======
+        <target>Merk op dat de sleutelter identificatie van de sessie en van het wachtwoord dient, dus is het heel belangrijk datdeze moeilijk te raden is.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="6be70a23-825b-4949-a94c-5788cb14f373">
@@ -30138,6 +30621,176 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <target> Versturen `control+alt+delete` | Geen | Stuurt `control+alt+delete` naar de bestuurde computer. </target>
       </segment>
     </unit>
+<<<<<<< HEAD
+=======
+    <unit id="eed377db-0d79-4cb5-acdc-1c0987d7a75d">
+      <notes>
+        <note appliesTo="source">line: 4184</note>
+        <note appliesTo="source">prefix: ## </note>
+        <note appliesTo="source">suffix:  {#LocalCaptioner}</note>
+      </notes>
+      <segment state="final">
+        <source>Image Captioner</source>
+        <target>Image Captioner (Afbeeldingsbeschrijver)</target>
+      </segment>
+    </unit>
+    <unit id="587c8c34-e567-4f49-a20b-cde82445277f">
+      <notes>
+        <note appliesTo="source">line: 4186</note>
+      </notes>
+      <segment state="final">
+        <source>NVDA supports generating image descriptions on your device without connecting to the internet.</source>
+        <target>NVDA ondersteunt het genereren van afbeeldingsbeschrijvingen op jouw apparaat zonder dat er verbinding is met internet.</target>
+      </segment>
+    </unit>
+    <unit id="07f36781-12da-4d9e-b487-62548fe21b2e">
+      <notes>
+        <note appliesTo="source">line: 4187</note>
+      </notes>
+      <segment state="final">
+        <source>This feature allows NVDA to describe images encountered during navigation.</source>
+        <target>Hiermee kan NVDA afbeeldingen beschrijven die je tijdens het navigeren tegen komt.</target>
+      </segment>
+    </unit>
+    <unit id="0767a8cb-0751-452c-b43a-e6268d934546">
+      <notes>
+        <note appliesTo="source">line: 4189</note>
+      </notes>
+      <segment state="initial">
+        <source>Warning: AI image descriptions are an experimental feature.</source>
+        <target>Warning: AI image descriptions are an experimental feature.</target>
+      </segment>
+    </unit>
+    <unit id="d922aa91-292f-4b01-a044-bde971cbdd30">
+      <notes>
+        <note appliesTo="source">line: 4190</note>
+      </notes>
+      <segment state="initial">
+        <source>Image descriptions generated with this feature may not be accurate.</source>
+        <target>Image descriptions generated with this feature may not be accurate.</target>
+      </segment>
+    </unit>
+    <unit id="b0bc5588-b54d-4cac-b04c-9b55593df39b">
+      <notes>
+        <note appliesTo="source">line: 4191</note>
+      </notes>
+      <segment state="initial">
+        <source>You must not use this feature in circumstances where inaccurate results could reasonably be expected to cause harm.</source>
+        <target>You must not use this feature in circumstances where inaccurate results could reasonably be expected to cause harm.</target>
+      </segment>
+    </unit>
+    <unit id="fc58e91e-512f-4854-be1c-b73646fa3bde">
+      <notes>
+        <note appliesTo="source">line: 4192</note>
+      </notes>
+      <segment state="initial">
+        <source>Always exercise caution and skepticism when interpreting AI image descriptions.</source>
+        <target>Always exercise caution and skepticism when interpreting AI image descriptions.</target>
+      </segment>
+    </unit>
+    <unit id="bcd921f9-598d-49e5-b582-ee3d21724f45">
+      <notes>
+        <note appliesTo="source">line: 4194</note>
+      </notes>
+      <segment state="final">
+        <source>Note: An internet connection is required to enable and install the Image Captioner for the first time.</source>
+        <target>Merk op: Er is een internetverbinding nodig om de Image Captioner in te schakelen  en te installeren bij eerste gebruik.</target>
+      </segment>
+    </unit>
+    <unit id="6bdf8ada-fd7c-4a15-85a4-f5782bbdf70e">
+      <notes>
+        <note appliesTo="source">line: 4195</note>
+      </notes>
+      <segment state="final">
+        <source>It is not included with the NVDA installer to reduce the installer size.</source>
+        <target>De Captioner maakt geen deel uit van het NVDA-installatiebestand om zodoende de grootte hiervan te beperken.</target>
+      </segment>
+    </unit>
+    <unit id="91017e20-09eb-4a3d-a400-65b328d20278">
+      <notes>
+        <note appliesTo="source">line: 4197</note>
+        <note appliesTo="source">prefix: ### </note>
+        <note appliesTo="source">suffix:  {#LocalCaptionerGettingStarted}</note>
+      </notes>
+      <segment state="final">
+        <source>Getting Started</source>
+        <target>GAan de Slag</target>
+      </segment>
+    </unit>
+    <unit id="0c6bc821-bbe6-45b8-9726-d9eaa61ac037">
+      <notes>
+        <note appliesTo="source">line: 4199</note>
+      </notes>
+      <segment state="final">
+        <source>Enable the "Image Captioner" in the ["AI Image Descriptions" settings panel](#LocalCaptionToggle).</source>
+        <target>Schakel"Image Captioner" in the ["AI Image Descriptions" settings panel](#LocalCaptionToggle).</target>
+      </segment>
+    </unit>
+    <unit id="24195e7c-8079-416a-a81e-d1205886969e">
+      <notes>
+        <note appliesTo="source">line: 4200</note>
+      </notes>
+      <segment state="final">
+        <source>Once the Image Captioner is ready, press the default shortcut `NVDA+g` to recognize the image currently navigated by NVDA.</source>
+        <target>Zodra de Image Captioner klaar voor gebruik is, druk je op de standaard sneltoets `NVDA+g` om het herkennen van de afbeelding waar NVDA zich op dat moment ophoudt, te laten beginnen.</target>
+      </segment>
+    </unit>
+    <unit id="2936a89e-f05b-4301-9e3a-9fe7f5e1200e">
+      <notes>
+        <note appliesTo="source">line: 4202</note>
+        <note appliesTo="source">prefix: ### </note>
+        <note appliesTo="source">suffix:  {#LocalCaptionerGestures}</note>
+      </notes>
+      <segment state="final">
+        <source>AI Image Descriptions Key Commands Summary</source>
+        <target>Overzicht toetscommando's AI Afbeeldingsbeschrijvingen</target>
+      </segment>
+    </unit>
+    <unit id="09bc2fc2-6601-4f38-9635-283a2c8c1d53">
+      <notes>
+        <note appliesTo="source">line: 4206</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Name |Key |Description</source>
+        <target> Naam |Toets |Beschrijving</target>
+      </segment>
+    </unit>
+    <unit id="51e78c28-1d89-4f48-81df-8ef3c3abf739">
+      <notes>
+        <note appliesTo="source">line: 4208</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Get an AI-generated image description of the navigator object. | `NVDA+g` | Get a description of the navigator object provided by a recognition performed on the device locally. </source>
+        <target> Een door AI gegenereerde afbeeldingsbeschrijving van het navigatorobject laten uitvoeren. | `NVDA+g` | Een afbeeldingsbeschrijving van het navigatorobject verkrijgen die lokaal tot stand is gekomen door een herkenningsactie op de eigen computer. </target>
+      </segment>
+    </unit>
+    <unit id="3618ed6b-5b00-4c96-a3b4-cc976310655d">
+      <notes>
+        <note appliesTo="source">line: 4209</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Load or unload the image captioner | None | Load or unload the image captioner in memory, enabling the use of the image description command. </source>
+        <target> De image captioner in of uit geheugen | Geen | De image captioner in het geheugen laden of die daaruit verwijderen, waarmee het gebruik van het afbeeldingsbeschrijvingscommando mogelijk wordt gemaakt. </target>
+      </segment>
+    </unit>
+    <unit id="487654c5-f1c8-4ea6-89d2-9ba993dc2fc6">
+      <notes>
+        <note appliesTo="source">line: 4210</note>
+        <note appliesTo="source">prefix: |</note>
+        <note appliesTo="source">suffix: |</note>
+      </notes>
+      <segment state="final">
+        <source> Shows the AI image descriptions settings | None | Opens the AI image descriptions settings panel. </source>
+        <target> Toont the AI afbeeldingsbeschrijvingsinstellingen | Geen | Opent het venster AI-afbeeldingsbeschrijvingsinstellingen. </target>
+      </segment>
+    </unit>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
     <unit id="94267446-c550-43a5-80a9-d9596e6f85fd">
       <notes>
         <note appliesTo="source">line: 3865</note>
@@ -30269,6 +30922,169 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <target>Om de Add-on-store vanuit een willekeurige plaats te bereiken kunt u een eigen invoerhandeling aan maken via het dialoogvenster [Input Gestures](#InputGestures).</target>
       </segment>
     </unit>
+<<<<<<< HEAD
+=======
+    <unit id="5d80f4bf-445f-4f9b-bf27-1d5e6973d94c">
+      <notes>
+        <note appliesTo="source">line: 4233</note>
+        <note appliesTo="source">prefix: ### </note>
+        <note appliesTo="source">suffix:  {#AddonStoreSecurityWarning}</note>
+      </notes>
+      <segment state="final">
+        <source>Security warning for add-ons</source>
+        <target>Beveiligingswaarschuwing voor add-ons</target>
+      </segment>
+    </unit>
+    <unit id="9eb4ffb3-0f85-4bb0-bffa-1edf7a7601c1">
+      <notes>
+        <note appliesTo="source">line: 4235</note>
+      </notes>
+      <segment state="final">
+        <source>Add-ons listed in the Add-on Store have not been vetted by NV Access or anyone else.</source>
+        <target>Add-ons die in de Add-on Store staan, zijn  niet door NV Access doorgelicht of door wie dan ook.</target>
+      </segment>
+    </unit>
+    <unit id="b96f88ab-ac3a-4757-95a6-05cffaf2a4b3">
+      <notes>
+        <note appliesTo="source">line: 4236</note>
+      </notes>
+      <segment state="final">
+        <source>It is very important to only install add-ons from sources you trust.</source>
+        <target>Het is heel belangrijk alleen add-ons te installeren die uit betrouwbare bron afkomstig zijn.</target>
+      </segment>
+    </unit>
+    <unit id="c3b4e4fa-8ca5-4f03-b864-55d5c9db2928">
+      <notes>
+        <note appliesTo="source">line: 4237</note>
+      </notes>
+      <segment state="final">
+        <source>The functionality of add-ons is unrestricted inside NVDA.</source>
+        <target>Binnen NVDA wordt de functionaliteit van add-ons niet beperkt.</target>
+      </segment>
+    </unit>
+    <unit id="bf373123-1f00-4809-a7af-0f9420b2d770">
+      <notes>
+        <note appliesTo="source">line: 4238</note>
+      </notes>
+      <segment state="final">
+        <source>This could include accessing and modifying your personal data or even the entire system.</source>
+        <target>Dit geldt mogelijk ook voor de toegang tot en de modificatie van je persoonlijke gegevens of zelfs het gehele systeem.</target>
+      </segment>
+    </unit>
+    <unit id="4e66fb57-8d22-49cd-9210-529046e98fec">
+      <notes>
+        <note appliesTo="source">line: 4240</note>
+      </notes>
+      <segment state="final">
+        <source>Add-ons submitted to the Add-on Store are scanned by [VirusTotal](https://www.virustotal.com/).</source>
+        <target>Add-ons die in de Add-on Store worden geplaatst, zijn gescand met [VirusTotal](https://www.virustotal.com/).</target>
+      </segment>
+    </unit>
+    <unit id="4ff19a0f-ec9e-4398-9192-db43105cde94">
+      <notes>
+        <note appliesTo="source">line: 4241</note>
+      </notes>
+      <segment state="final">
+        <source>This can detect malware that was known when the add-on was submitted.</source>
+        <target>Hiermee kanmalware worden gedetecteerd die bekend was toen de add-on werd aangeboden.</target>
+      </segment>
+    </unit>
+    <unit id="c1a107d1-8c4b-403e-ba4e-578f2fb3bbf2">
+      <notes>
+        <note appliesTo="source">line: 4242</note>
+      </notes>
+      <segment state="final">
+        <source>However, VirusTotal results may be inaccurate or out of date.</source>
+        <target>Het is echter mogelijk dat het scanresultaat van VirusTotal inaccuraat of verouderd is.</target>
+      </segment>
+    </unit>
+    <unit id="876cd922-8ab8-48d0-b837-46eb4af081cb">
+      <notes>
+        <note appliesTo="source">line: 4243</note>
+      </notes>
+      <segment state="final">
+        <source>For example, an add-on that is marked as malicious might not be malicious, and an add-on that is not marked as malicious might actually be malicious.</source>
+        <target>Het is bijvoorbeeld mogelijk dat een add-on die als dubieus wordt aangemerkt, niet van twijfelachftige kwaliteit is, en anderzijds een add-on die niet als dubieus wordt aangemerkt dat wel terdege zou kunnen zijn.</target>
+      </segment>
+    </unit>
+    <unit id="e5f3cc8a-c881-4bcd-8c94-43e6db6e805f">
+      <notes>
+        <note appliesTo="source">line: 4244</note>
+      </notes>
+      <segment state="final">
+        <source>You can view a summary of the scan results for a scanned add-on by reviewing the add-on's details.</source>
+        <target>Je kunt een samenvatting van de scanresultaten van een gescande add-on inzien  door naar add-on's-details te gaan.</target>
+      </segment>
+    </unit>
+    <unit id="5b0afe6c-3e79-4297-99b4-536567119c19">
+      <notes>
+        <note appliesTo="source">line: 4245</note>
+      </notes>
+      <segment state="final">
+        <source>You can view the VirusTotal scan results directly using the "VirusTotal scan results" [action from the context menu](#AddonStoreActions).</source>
+        <target>Je kunt de scanresultaten van  VirusTotal rechtstreeks inzien dor gebruik te maken van "VirusTotal scanresultaten" [via het contextmenu](#AddonStoreActions).</target>
+      </segment>
+    </unit>
+    <unit id="25bc5d71-91ec-4475-b439-627892fc6c89">
+      <notes>
+        <note appliesTo="source">line: 4247</note>
+      </notes>
+      <segment state="final">
+        <source>There are a number of other ways of investigating the safety of an add-on:</source>
+        <target>Er zijn nog meer manieren  om de veiligheid van een add-on vast te stellen:</target>
+      </segment>
+    </unit>
+    <unit id="178b39c8-b8f9-442f-b12d-d07d306ce16f">
+      <notes>
+        <note appliesTo="source">line: 4249</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Research the developer's reputation (e.g. how long have they been contributing)</source>
+        <target>Onderzoek de reputatie  van de ontwikkelaar (bijv. hoe lang hij/zij al acftief is)</target>
+      </segment>
+    </unit>
+    <unit id="75e1acae-d366-42ea-9a49-5b7dc4cac08e">
+      <notes>
+        <note appliesTo="source">line: 4250</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Look for user feedback in the [NVDA user group](https://groups.google.com/a/nvaccess.org/g/nvda-users) or the [NVDA add-on group](https://nvda-addons.groups.io/g/nvda-addons)</source>
+        <target>Zoek naar feedback van gebruikers in [de gebruikersgroep van NVDA](https://groups.google.com/a/nvaccess.org/g/nvda-users) of de [NVDA add-on groep](https://nvda-addons.groups.io/g/nvda-addons)</target>
+      </segment>
+    </unit>
+    <unit id="2360bc2d-dc3c-490b-b19d-a5543e61bea4">
+      <notes>
+        <note appliesTo="source">line: 4251</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Verify that the add-on is regularly updated</source>
+        <target>Vergewis je ervan dat de add-on regelmatig wordt  bijgewerkt</target>
+      </segment>
+    </unit>
+    <unit id="e4e15b30-06bf-4209-80d2-312d0e9b6c0a">
+      <notes>
+        <note appliesTo="source">line: 4252</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Read [Community reviews](#AddonStoreReviews) of the add-on</source>
+        <target>Lees [reviews van de Community ](#AddonStoreReviews) over de add-on</target>
+      </segment>
+    </unit>
+    <unit id="c37be615-8152-43da-9932-e58834121f10">
+      <notes>
+        <note appliesTo="source">line: 4253</note>
+        <note appliesTo="source">prefix: * </note>
+      </notes>
+      <segment state="final">
+        <source>Seek community feedback through forums or social media</source>
+        <target>Ga op zoek naar  community-feedback via forums of social media</target>
+      </segment>
+    </unit>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
     <unit id="ff714bb0-cec9-478a-849a-a808a9b6551e">
       <notes>
         <note appliesTo="source">line: 3884</note>
@@ -30710,8 +31526,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3951</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>Just because an add-on is available in the NVDA Add-on Store, does not mean that it has been approved or vetted by NV Access or anyone else.</source>
         <target>Louter en alleen omdat een add-on beschikbaar is in de Add-on Store, mag hier niet uit worden opgemaakt deze goedgekeurd of gecontroleerd is door  NV Access of door wie dan ook.</target>
+=======
+        <source>Note: Add-ons are programs that can modify and access your device like any other software you download.</source>
+        <target>Let wel: Add-ons zijn programma's  die, net als alle software die je download, toegang hebben tot je cmputer en hieraan wijzigingen kunnen aanbrengen.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="07d2d518-fbed-4eaa-9433-cc0b03bbf34a">
@@ -30719,8 +31540,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3952</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>It is very important to only install add-ons from sources you trust.</source>
         <target>Het is erg belangrijk dat u alleen add-ons installeert  die afkomstig zijn van bronnen die u vertrouwt.</target>
+=======
+        <source>Make sure to only install add-ons from sources you trust.</source>
+        <target>zorg dat je alleen add-ons installeert die afkomstig zijn van bronnen die je vertrouwt.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="dc626334-0d66-4490-bfae-4d917a8e4a42">
@@ -30728,6 +31554,7 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 3953</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>The functionality of add-ons is unrestricted inside NVDA.</source>
         <target>Binnen NVDA gelden er geen beperkingen mbt de functionaliteit van  add-ons.</target>
       </segment>
@@ -30739,6 +31566,10 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
       <segment state="final">
         <source>This could include accessing your personal data or even the entire system.</source>
         <target>Dit zou ook kunnen gelden voor toegang tot uw persoonlijke gegevens of zelfs het gehele systeem.</target>
+=======
+        <source>Please read [our security warning](#AddonStoreSecurityWarning) for more details before installing add-ons.</source>
+        <target>Lees aub [onze beveiligingswaarschuwing](#AddonStoreSecurityWarning) voor meer details vooraleer je add-ons installeert.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="8d21a467-edc9-484e-849d-1c0828d846e2">
@@ -31217,6 +32048,38 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <target> Dev | Add-on wordt automatisch bijgewerkt naar een dev-versie (ontwikkelaarsversie) </target>
       </segment>
     </unit>
+<<<<<<< HEAD
+=======
+    <unit id="25048105-8ce7-441e-969c-53f5b8110e10">
+      <notes>
+        <note appliesTo="source">line: 4392</note>
+        <note appliesTo="source">prefix: #### </note>
+        <note appliesTo="source">suffix:  {#AddonStoreChangelog}</note>
+      </notes>
+      <segment state="final">
+        <source>What's new in the current version</source>
+        <target>What is er nieuw in de huidige versie</target>
+      </segment>
+    </unit>
+    <unit id="7ab56d43-e81a-41ad-a639-70e76aeabaf4">
+      <notes>
+        <note appliesTo="source">line: 4394</note>
+      </notes>
+      <segment state="final">
+        <source>If an add-on lists what's new for the current version, an action will be available to show these changes in browse mode.</source>
+        <target>Als in een add-on aangegeven wordt dat de huidige versie vernieuwd is, kan via een beschikbare actie in bladermodus getoond worden wat er veranderd is.</target>
+      </segment>
+    </unit>
+    <unit id="306e6818-9279-4a14-8c43-71a4de085444">
+      <notes>
+        <note appliesTo="source">line: 4395</note>
+      </notes>
+      <segment state="final">
+        <source>The title of that message will indicate the add-on version, and it will be possible to copy the presented info, and close the message window, via dedicated buttons.</source>
+        <target>Bovenaan dat bericht staat de versie van de add-on, ook is het mogelijk de aangeboden info te kopiëren, en het berichtvenster te sluiten met de daarvoor bestemde knoppen.</target>
+      </segment>
+    </unit>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
     <unit id="258db609-7d25-4412-a50d-9353188df5e7">
       <notes>
         <note appliesTo="source">line: 4022</note>
@@ -32281,8 +33144,13 @@ Sta toe dat de besturing van deze computer wordt overgenomen |Gebruik deze compu
         <note appliesTo="source">line: 4198</note>
       </notes>
       <segment state="final">
+<<<<<<< HEAD
         <source>On Windows 10 and later, NVDA uses Windows OneCore voices by default ([eSpeak NG](#eSpeakNG) is used in other releases).</source>
         <target>In Windows 10 gebruikt NVDA standaard de Windows OneCore stemmen ([eSpeak NG](#eSpeakNG) wordt in andere versies gebruikt).</target>
+=======
+        <source>NVDA uses Windows OneCore voices by default.</source>
+        <target>NVDA gebruikt standaard de OneCore stemmen van Windows.</target>
+>>>>>>> 099beee508 (Update tracked translations from Crowdin (#19434))
       </segment>
     </unit>
     <unit id="42bdcd64-0d3e-4da9-b9e8-78fdb5febf27">
