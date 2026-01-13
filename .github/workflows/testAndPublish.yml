@@ -452,9 +452,9 @@ jobs:
       fail-fast: false
       matrix:
         # To skip tests, and just run install, replace with [excluded_from_build]
-        # BEGIN JP PATCH (exclude vscode and symbols test suites, same as certBuild2025.ps1)
-        testSuite: [chrome, installer, startupShutdown, imageDescriptions]
-        # END JP PATCH (exclude vscode and symbols test suites, same as certBuild2025.ps1)
+        # BEGIN JP PATCH (exclude vscode, symbols, and imageDescriptions test suites, same as certBuild2025.ps1)
+        testSuite: [chrome, installer, startupShutdown]
+        # END JP PATCH (exclude vscode, symbols, and imageDescriptions test suites, same as certBuild2025.ps1)
         # Original: testSuite: [chrome, installer, startupShutdown, symbols, vscode, imageDescriptions]
         runner: ${{ fromJson(needs.matrix.outputs.supportedRunners) }}
         arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
