@@ -188,6 +188,36 @@
   * `099beee50` (2026-01-13) - "Update tracked translations from Crowdin (#19434)"
   * `747eae0fc` (2026-01-12) - "Fixup MathCAT settings (#19227)"
   * `0ec178ae6` (2026-01-13) - "Update user_docs/en/userGuide.xliff"
+
+## チェリーピック作業の進捗
+
+### PR 628: チェリーピック続き（2026-01-13）
+
+以下の5つのコミットをチェリーピックしました：
+
+1. ✅ `9f3aecbb0` - Revert AI image description work
+2. ✅ `d33bc9298` - Fix bugs when attempting to install add-ons
+3. ✅ `099beee50` - Update tracked translations from Crowdin
+4. ✅ `747eae0fc` - Fixup MathCAT settings
+5. ✅ `0ec178ae6` - Update user_docs/en/userGuide.xliff
+
+#### コンフリクト解決
+
+- `.github/workflows/testAndPublish.yml`: JP PATCHを保持
+- `source/gui/__init__.py`: LanguageSettingsPanelを保持（JP固有）
+- `user_docs/en/changes.md`: AI image descriptionの記述を削除
+- `uv.lock`: 再生成
+- 翻訳ファイル（.po、.xliff）: 新しいバージョンを採用し、コンフリクトマーカーを削除（68ファイル）
+
+#### ビルド確認
+
+- ✅ `scons.bat source`: 成功
+- ⚠️ JP smoke test: ローカル環境で失敗（CI環境で確認予定）
+
+#### 状態
+
+- PR作成済み: https://github.com/nvdajp/nvdajp/pull/628
+- CI確認待ち
 * x64移行コミット: `58dd14767` (2025年9月15日) - "Only build 64bit" ✅ マージ完了
 * **持続的マージ戦略**: `projectDocs/jp/beta-merge-strategy.md` を参照
 
