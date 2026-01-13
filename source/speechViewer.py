@@ -63,6 +63,10 @@ class SpeechViewerFrame(
 
 		self._createControls(sizer=self.panelContentsSizer, parent=self.panel)
 
+		# BEGIN JP PATCH
+		# nvdajp: set window transparency (90% opacity)
+		self.SetTransparent(229)  # int(255.0 * 0.90)
+		# END JP PATCH
 		# Don't let speech viewer to steal keyboard focus when opened
 		self.ShowWithoutActivating()
 
@@ -105,6 +109,10 @@ class SpeechViewerFrame(
 		)
 		if isLockScreenModeActive():
 			self.shouldShowOnStartupCheckBox.Disable()
+		# BEGIN JP PATCH
+		# nvdajp: set window transparency (90% opacity)
+		self.SetTransparent(229)  # int(255.0 * 0.90)
+		# END JP PATCH
 
 	def _onDialogActivated(self, evt):
 		# Check for destruction, if the speechviewer window has focus when we exit NVDA it regains focus briefly

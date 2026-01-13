@@ -183,7 +183,7 @@ BOOL Mecab_analysis(Mecab *m, const char *str){
 
 BOOL Mecab_print(Mecab *m){
   int i;
-  
+
   for(i = 0;i < m->size;i++)
     printf("%s\n",m->feature[i]);
   return TRUE;
@@ -199,7 +199,7 @@ char **Mecab_get_feature(Mecab *m){
 
 BOOL Mecab_refresh(Mecab *m){
   int i;
-  
+
   if(m->feature != NULL){
     for(i = 0;i < m->size;i++)
       free(m->feature[i]);

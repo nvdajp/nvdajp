@@ -111,7 +111,7 @@ void Mecab_analysis(Mecab *m, char *str){
 
 void Mecab_print(Mecab *m){
   int i;
-  
+
   for(i = 0;i < m->size;i++)
     printf("%s\n",m->feature[i]);
 }
@@ -126,7 +126,7 @@ char **Mecab_get_feature(Mecab *m){
 
 void Mecab_refresh(Mecab *m){
   int i;
-  
+
   if(m->feature != NULL){
     for(i = 0;i < m->size;i++)
       free(m->feature[i]);

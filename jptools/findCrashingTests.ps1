@@ -97,14 +97,14 @@ Write-Host "Testing indices $StartIndex to $($EndIndex - 1)..." -ForegroundColor
 
 for ($idx = $StartIndex; $idx -lt $EndIndex; $idx++) {
     Write-Host "Testing index $idx..." -ForegroundColor Yellow
-    
+
     # Convert valid index to original index
     if (-not $mapping.valid_to_original.PSObject.Properties.Name -contains $idx.ToString()) {
         Write-Host "  Index $idx is out of range, skipping..." -ForegroundColor Red
         continue
     }
     $originalIdx = $mapping.valid_to_original.$idx
-    
+
     # Get test case info
     $infoScript = @"
 import sys
@@ -127,7 +127,7 @@ if $originalIdx < len(tests) and 'input' in tests[$originalIdx]:
 else:
     print(json.dumps({'error': 'Index out of range'}, ensure_ascii=False))
 "@
-    
+
     $testInfoJson = uv run python -c $infoScript 2>&1 | Where-Object { $_ -notmatch '^WARNING|^ERROR' }
     try {
         $testInfo = $testInfoJson | ConvertFrom-Json
@@ -136,18 +136,18 @@ else:
         Write-Host "  JSON output: $testInfoJson" -ForegroundColor Gray
         continue
     }
-    
+
     if ($testInfo.PSObject.Properties.Name -contains 'error') {
         Write-Host "  Index $idx (original $originalIdx) is out of range, skipping..." -ForegroundColor Red
         continue
     }
-    
+
     $testText = $testInfo.text
     if ($testText.Length -gt 50) {
         $testText = $testText.Substring(0, 50) + "..."
     }
     Write-Host "  Test: $testText (original index: $originalIdx)" -ForegroundColor Gray
-    
+
     # Run the test using original index
     $env:JP_SMOKE_TEST_INDICES = $originalIdx.ToString()
     # The JpBrailleTests.test_pass2 unittest reads JP_SMOKE_TEST_INDICES to select
@@ -155,7 +155,7 @@ else:
     # test_pass2_by_index helper. No additional per-index test method is required.
     $unittestOutput = uv run python -m unittest miscDepsJp.jptools.test.JpBrailleTests.test_pass2 -v 2>&1
     $exitCode = $LASTEXITCODE
-    
+
     $result = [PSCustomObject]@{
         Index = $idx
         OriginalIndex = $testInfo.original_index
@@ -165,7 +165,7 @@ else:
         Status = "Unknown"
         ExitCode = $exitCode
     }
-    
+
     # Check for Windows fatal exception
     $outputStr = $unittestOutput -join "`n"
     if ($outputStr -match "Windows fatal exception" -or $exitCode -ne 0) {
@@ -183,9 +183,9 @@ else:
         $passedTests += $result
         Write-Host "  Passed" -ForegroundColor Green
     }
-    
+
     $results += $result
-    
+
     # Small delay to avoid overwhelming the system
     Start-Sleep -Milliseconds 100
 }

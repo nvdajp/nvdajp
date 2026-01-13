@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2017-2023 NV Access Limited, James Teh, Leonard de Ruijter
+# Copyright (C) 2017-2025 NV Access Limited, James Teh, Leonard de Ruijter, Cary-rowen
 # This file is covered by the GNU General Public License.
 #  See the file COPYING for more details.
 
@@ -21,9 +21,33 @@ import cursorManager
 import textInfos.offsets
 from abc import ABCMeta, abstractmethod
 from locationHelper import RectLTWH
+
+# BEGIN JP PATCH
+# nvdajp: import for East Asian width checking
+from unicodedata import east_asian_width
+
+# END JP PATCH
 from NVDAObjects import NVDAObject
 
 onRecognizeResultCallbackT = Callable[[Union["RecognitionResult", Exception]], None]
+
+
+# BEGIN JP PATCH
+# nvdajp: functions for checking East Asian narrow characters
+def isEastAsianNarrow(c):
+	return c and (east_asian_width(str(c)) == "Na")
+
+
+def startsWithEastAsianNarrow(s):
+	return s and isEastAsianNarrow(s[0])
+
+
+def endsWithEastAsianNarrow(s):
+	return s and isEastAsianNarrow(s[-1])
+
+
+# nvdajp end
+# END JP PATCH
 
 
 class BaseContentRecogTextInfo(cursorManager._ReviewCursorManagerTextInfo):
@@ -44,6 +68,12 @@ class ContentRecognizer(AutoPropertyObject):
 	"""
 	autoRefreshInterval: int = 1500
 	"""How often (in ms) to perform recognition."""
+	autoSayAllOnResult: bool = False
+	"""
+	Whether to automatically start reading the entire result after a successful recognition.
+	This is useful for users who want to hear the full content immediately
+	without needing to press additional keys.
+	"""
 
 	def getResizeFactor(self, width: int, height: int) -> Union[int, float]:
 		"""Return the factor by which an image must be resized
@@ -236,6 +266,16 @@ class LinesWordsResult(RecognitionResult):
 			for word in line:
 				if firstWordOfLine:
 					firstWordOfLine = False
+				# BEGIN JP PATCH
+				# nvdajp: don't add space between East Asian narrow characters
+				elif (
+					self._textList
+					and endsWithEastAsianNarrow(self._textList[-1])
+					and startsWithEastAsianNarrow(word["text"])
+				):
+					# Don't separate with a space for East Asian narrow characters.
+					pass
+				# END JP PATCH
 				else:
 					# Separate with a space.
 					self._textList.append(" ")

@@ -38,6 +38,7 @@ import louisHelper
 import louis
 import gui
 from controlTypes.state import State
+import winBindings.kernel32
 import winKernel
 import keyboardHandler
 import baseObject
@@ -49,6 +50,7 @@ from config.configFlags import (
 	BrailleMode,
 	ReportTableHeaders,
 	OutputMode,
+	ReportSpellingErrors,
 )
 from config.featureFlagEnums import ReviewRoutingMovesSystemCaretFlag, FontFormattingBrailleModeFlag
 from logHandler import log
@@ -72,6 +74,7 @@ from winAPI.secureDesktop import post_secureDesktopStateChange
 from textUtils import isUnicodeNormalized, UnicodeNormalizationOffsetConverter
 import hwIo
 from editableText import EditableText
+from gui.guiHelper import wxCallOnMain
 
 if TYPE_CHECKING:
 	from NVDAObjects import NVDAObject
@@ -313,6 +316,63 @@ landmarkLabels = {
 	"form": pgettext("braille landmark abbreviation", "form"),
 }
 
+# BEGIN JP PATCH
+from jpBrailleUtils import (  # noqa: E402
+	roleLabels as rawRoleLabels,
+	positiveStateLabels as rawPositiveStateLabels,
+	negativeStateLabels as rawNegativeStateLabels,
+	landmarkLabels as rawLandmarkLabels,
+)
+
+
+def useRawLabels() -> bool:
+	return config.conf["braille"]["expandAtCursor"]
+
+
+def _nvdajp(rawLabel: str) -> str:
+	if useRawLabels():
+		return rawLabel
+	return _(rawLabel)
+
+
+def getRoleLabel(role: controlTypes.Role, displayString: Optional[str] = None) -> str:
+	if useRawLabels():
+		return rawRoleLabels.get(role, displayString)
+	return roleLabels.get(role, displayString)
+
+
+def getPositiveStateLabel(state: controlTypes.State) -> str:
+	if useRawLabels():
+		return rawPositiveStateLabels.get(state)
+	return positiveStateLabels.get(state)
+
+
+def getPositiveStateLabels() -> typing.Dict[controlTypes.State, str]:
+	if useRawLabels():
+		return rawPositiveStateLabels
+	return positiveStateLabels
+
+
+def getNegativeStateLabels() -> typing.Dict[controlTypes.State, str]:
+	if useRawLabels():
+		return rawNegativeStateLabels
+	return negativeStateLabels
+
+
+def getLandmarkLabel(name: str) -> str:
+	if useRawLabels():
+		return rawLandmarkLabels.get(name)
+	return landmarkLabels.get(name)
+
+
+def getLandmarkLabels() -> typing.Dict[str, str]:
+	if useRawLabels():
+		return rawLandmarkLabels
+	return landmarkLabels
+
+
+# END JP PATCH
+
 #: Cursor shapes
 CURSOR_SHAPES = (
 	# Translators: The description of a braille cursor shape.
@@ -409,6 +469,16 @@ class FormattingMarker(NamedTuple):
 	start: str
 	end: str
 
+	def shouldBeUsed(self, key) -> bool:
+		"""Determines if the formatting marker should be reported in braille.
+		:param key: A key which represents an element that may be reported in braille.
+		:return: `True` if the element should be reported, `False` otherwise.
+		"""
+		formatConfig = config.conf["documentFormatting"]
+		if key in ("invalid-spelling", "invalid-grammar"):
+			return bool(formatConfig["reportSpellingErrors2"] & ReportSpellingErrors.BRAILLE)
+		return formatConfig["fontAttributeReporting"] & OutputMode.BRAILLE
+
 
 fontAttributeFormattingMarkers: dict[str, FormattingMarker] = {
 	"bold": FormattingMarker(
@@ -442,6 +512,22 @@ fontAttributeFormattingMarkers: dict[str, FormattingMarker] = {
 		# Translators: Brailled at the end of strikethrough text.
 		# This is the English letter "s" plus dot 7 in braille.
 		end=pgettext("braille formatting symbol", "⡎"),
+	),
+	"invalid-spelling": FormattingMarker(
+		# Translators: Brailled at the start of invalid spelling text.
+		# This is the English letter "e" in braille.
+		start=pgettext("braille formatting symbol", "⠑"),
+		# Translators: Brailled at the end of invalid spelling text.
+		# This is the English letter "e" plus dot 7 in braille.
+		end=pgettext("braille formatting symbol", "⡑"),
+	),
+	"invalid-grammar": FormattingMarker(
+		# Translators: Brailled at the start of invalid grammar text.
+		# This is the English letter "g" in braille.
+		start=pgettext("braille formatting symbol", "⠛"),
+		# Translators: Brailled at the end of invalid grammar text.
+		# This is the English letter "g" plus dot 7 in braille.
+		end=pgettext("braille formatting symbol", "⡛"),
 	),
 }
 
@@ -667,7 +753,9 @@ def _getAnnotationProperty(
 		hasDetailsRoleTemplate = _("has %s")
 		rolesLabels = list(
 			(
-				hasDetailsRoleTemplate % roleLabels.get(role, role.displayString)
+				# BEGIN JP PATCH
+				hasDetailsRoleTemplate % getRoleLabel(role, role.displayString)
+				# END JP PATCH
 				for role in detailsRoles
 				if role  # handle None case without the "has X" grammar.
 			)
@@ -683,13 +771,24 @@ def _getAnnotationProperty(
 def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 	textList = []
 	name = propertyValues.get("name")
-	if name:
-		textList.append(name)
+	# BEGIN JP PATCH
+	# if name:
+	# textList.append(name)
+	isComposition = True
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+		if name and name != _("Composition"):
+			isComposition = False
+			textList.append(name)
+	else:
+		if name:
+			textList.append(name)
+	# END JP PATCH
 	role: Optional[Union[controlTypes.Role, int]] = propertyValues.get("role")
 	roleText = propertyValues.get("roleText")
 	states = propertyValues.get("states")
 	positionInfo = propertyValues.get("positionInfo")
 	level = positionInfo.get("level") if positionInfo else None
+	childControlCount = positionInfo.get("childControlCount") if positionInfo else None
 	cellCoordsText = propertyValues.get("cellCoordsText")
 	rowNumber = propertyValues.get("rowNumber")
 	columnNumber = propertyValues.get("columnNumber")
@@ -704,34 +803,53 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 		if role == controlTypes.Role.HEADING and level:
 			# Translators: Displayed in braille for a heading with a level.
 			# %s is replaced with the level.
-			roleText = _("h%s") % level
+			# BEGIN JP PATCH
+			roleText = _nvdajp("h%s") % level
+			# END JP PATCH
 			level = None
 		elif role == controlTypes.Role.LINK and states and controlTypes.State.VISITED in states:
 			states = states.copy()
 			states.discard(controlTypes.State.VISITED)
 			# Translators: Displayed in braille for a link which has been visited.
-			roleText = _("vlnk")
-		elif (
-			role == controlTypes.Role.LIST
-			and states
-			and controlTypes.State.MULTISELECTABLE in states
-			and config.conf["presentation"]["reportMultiSelect"]
-		):
-			# Collapse the list role and multiselectable state into a single role text.
-			# Note that for other cases where this state is found, regular processing with
-			# controlTypes.processAndLabelStates will discard the state if necessary.
-			states = states.copy()
-			states.discard(controlTypes.State.MULTISELECTABLE)
-			# Translators: Displayed in braille for a multi select list.
-			roleText = _("mslst")
+			# BEGIN JP PATCH
+			roleText = _nvdajp("vlnk")
+			# END JP PATCH
+		elif role == controlTypes.Role.LIST:
+			if (
+				states
+				and controlTypes.State.MULTISELECTABLE in states
+				and config.conf["presentation"]["reportMultiSelect"]
+			):
+				# Collapse the list role and multiselectable state into a single role text.
+				# Note that for other cases where this state is found, regular processing with
+				# controlTypes.processAndLabelStates will discard the state if necessary.
+				states = states.copy()
+				states.discard(controlTypes.State.MULTISELECTABLE)
+				# Translators: Displayed in braille for a multi select list.
+				roleText = _("mslst")
+			else:
+				roleText = roleLabels.get(role, role.displayString)
+			if childControlCount:
+				roleText += childControlCount
+				childControlCount = None
 		elif (
 			name or cellCoordsText or rowNumber or columnNumber
 		) and role in controlTypes.silentRolesOnFocus:
 			roleText = None
 		else:
-			roleText = roleLabels.get(role, role.displayString)
+			# BEGIN JP PATCH
+			roleText = getRoleLabel(role, role.displayString)
+			# END JP PATCH
 	elif role is None:
 		role = propertyValues.get("_role")
+	# BEGIN JP PATCH
+	if (
+		config.conf["keyboard"]["nvdajpEnableKeyEvents"]
+		and isComposition
+		and role == controlTypes.Role.EDITABLETEXT
+	):
+		roleText = None
+	# END JP PATCH
 	value = propertyValues.get("value")
 	if value and role not in controlTypes.silentValuesForRoles:
 		textList.append(value)
@@ -743,8 +861,10 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 				controlTypes.OutputReason.FOCUS,
 				states,
 				None,
-				positiveStateLabels,
-				negativeStateLabels,
+				# BEGIN JP PATCH
+				getPositiveStateLabels(),
+				getNegativeStateLabels(),
+				# END JP PATCH
 			),
 		)
 	if roleText:
@@ -775,6 +895,14 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 			# Translators: Displayed in braille when an object (e.g. a tree view item) has a hierarchical level.
 			# %s is replaced with the level.
 			textList.append(_("lv %s") % positionInfo["level"])
+	# BEGIN JP PATCH https://github.com/nvdajp/nvdajp/issues/109
+	rowHeaderText = propertyValues.get("rowHeaderText")
+	if rowHeaderText:
+		textList.append(rowHeaderText)
+	columnHeaderText = propertyValues.get("columnHeaderText")
+	if columnHeaderText:
+		textList.append(columnHeaderText)
+	# END JP PATCH
 	if rowNumber:
 		if includeTableCellCoords and not cellCoordsText:
 			if rowSpan > 1:
@@ -790,9 +918,11 @@ def getPropertiesBraille(**propertyValues) -> str:  # noqa: C901
 				rowStr = _("r{rowNumber}").format(rowNumber=rowNumber)
 			textList.append(rowStr)
 	if columnNumber:
-		columnHeaderText = propertyValues.get("columnHeaderText")
-		if columnHeaderText:
-			textList.append(columnHeaderText)
+		# BEGIN JP PATCH (moved to above) https://github.com/nvdajp/nvdajp/issues/109
+		# columnHeaderText = propertyValues.get("columnHeaderText")
+		# if columnHeaderText:
+		# textList.append(columnHeaderText)
+		# END JP PATCH
 		if includeTableCellCoords and not cellCoordsText:
 			if columnSpan > 1:
 				# Translators: Displayed in braille for the table cell column numbers when a cell spans multiple columns.
@@ -864,6 +994,20 @@ class NVDAObjectRegion(Region):
 		)
 		description = obj.description if _shouldUseDescription else None
 		detailsRoles = obj.annotations.roles if obj.annotations else None
+		# BEGIN JP PATCH
+		columnHeaderText = None
+		try:
+			if hasattr(obj, "columnHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"]:
+				columnHeaderText = obj.columnHeaderText
+		except NotImplementedError:
+			pass
+		rowHeaderText = None
+		try:
+			if hasattr(obj, "rowHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"]:
+				rowHeaderText = obj.rowHeaderText
+		except NotImplementedError:
+			pass
+		# END JP PATCH
 		text = getPropertiesBraille(
 			name=name,
 			role=role,
@@ -880,6 +1024,10 @@ class NVDAObjectRegion(Region):
 			cellCoordsText=obj.cellCoordsText
 			if config.conf["documentFormatting"]["reportTableCellCoords"]
 			else None,
+			# BEGIN JP PATCH
+			columnHeaderText=columnHeaderText,
+			rowHeaderText=rowHeaderText,
+			# END JP PATCH
 			errorMessage=errorMessage,
 		)
 		if role == controlTypes.Role.MATH:
@@ -972,7 +1120,9 @@ def getControlFieldBraille(
 	roleText = field.get("roleTextBraille", field.get("roleText"))
 	landmark = field.get("landmark")
 	if not roleText and role == controlTypes.Role.LANDMARK and landmark:
-		roleText = f"{roleLabels[controlTypes.Role.LANDMARK]} {landmarkLabels[landmark]}"
+		# BEGIN JP PATCH
+		roleText = f"{getRoleLabel(controlTypes.Role.LANDMARK)} {getLandmarkLabel(landmark)}"
+		# END JP PATCH
 
 	content = field.get("content")
 
@@ -1126,6 +1276,8 @@ def _getControlFieldForReportStart(
 	level = field.get("level")
 	if level:
 		props["positionInfo"] = {"level": level}
+	if role == controlTypes.Role.LIST and (int(childControlCount := field.get("_childcontrolcount", 0))) > 0:
+		props["positionInfo"] = {"childControlCount": childControlCount}
 
 	text = getPropertiesBraille(**props)
 	if content:
@@ -1185,7 +1337,9 @@ def getFormatFieldBraille(field, fieldCache, isAtStart, formatConfig):
 		link = field.get("link")
 		oldLink = fieldCache.get("link")
 		if link and link != oldLink:
-			textList.append(roleLabels[controlTypes.Role.LINK])
+			# BEGIN JP PATCH
+			textList.append(getRoleLabel(controlTypes.Role.LINK))
+			# END JP PATCH
 	if formatConfig["reportComments"]:
 		comment = field.get("comment")
 		oldComment = fieldCache.get("comment") if fieldCache is not None else None
@@ -1212,7 +1366,7 @@ def getFormatFieldBraille(field, fieldCache, isAtStart, formatConfig):
 
 	if (
 		config.conf["braille"]["fontFormattingDisplay"].calculated() == FontFormattingBrailleModeFlag.TAGS
-		and (formattingTags := _getFormattingTags(field, fieldCache, formatConfig)) is not None
+		and (formattingTags := _getFormattingTags(field, fieldCache)) is not None
 	):
 		textList.append(formattingTags)
 
@@ -1243,7 +1397,6 @@ def getParagraphStartMarker() -> str | None:
 def _getFormattingTags(
 	field: dict[str, str],
 	fieldCache: dict[str, str],
-	formatConfig: dict[str, bool],
 ) -> str | None:
 	"""Get the formatting tags for the given field and cache.
 
@@ -1255,9 +1408,8 @@ def _getFormattingTags(
 	:return: The braille formatting tag as a string, or None if no pertinant formatting is applied.
 	"""
 	textList: list[str] = []
-	if formatConfig["fontAttributeReporting"] & OutputMode.BRAILLE:
-		# Only calculate font attribute tags if the user has enabled font attribute reporting in braille.
-		for fontAttribute, formattingMarker in fontAttributeFormattingMarkers.items():
+	for fontAttribute, formattingMarker in fontAttributeFormattingMarkers.items():
+		if formattingMarker.shouldBeUsed(fontAttribute):
 			_appendFormattingMarker(fontAttribute, formattingMarker, textList, field, fieldCache)
 	if len(textList) > 0:
 		return f"{FormatTagDelimiter.START}{''.join(textList)}{FormatTagDelimiter.END}"
@@ -1430,7 +1582,9 @@ class TextInfoRegion(Region):
 									formatConfig,
 								)
 								if not presCat or presCat is field.PRESCAT_LAYOUT:
-									textList.append(positiveStateLabels[controlTypes.State.CLICKABLE])
+									# BEGIN JP PATCH
+									textList.append(getPositiveStateLabel(controlTypes.State.CLICKABLE))
+									# END JP PATCH
 								inClickable = True
 						text = info.getControlFieldBraille(field, ctrlFields, True, formatConfig)
 						if text:
@@ -2378,6 +2532,26 @@ the local braille handler should be disabled as long as the system is in control
 Handlers are called without arguments.
 """
 
+_decide_disabledIncludesMessages = extensionPoints.Decider()
+"""
+Allows Remote Access to decide whether an exception should be made for showing ui.message.
+Handlers are called without arguments.
+"""
+
+_pre_showBrailleMessage = extensionPoints.Action()
+"""
+Called before a `ui.message` is shown,
+to allow Remote Access to show local messages to users who are controlling a remote computer.
+Handlers are called without arguments.
+"""
+
+_post_dismissBrailleMessage = extensionPoints.Action()
+"""
+Called after a `ui.message` is dismissed,
+to allow Remote Access to show local messages to users who are controlling a remote computer.
+Handlers are called without arguments.
+"""
+
 
 class BrailleHandler(baseObject.AutoPropertyObject):
 	# TETHER_AUTO, TETHER_FOCUS, TETHER_REVIEW and tetherValues
@@ -2467,7 +2641,7 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 			self.display.terminate()
 			self.display = None
 		if self.ackTimerHandle:
-			if not ctypes.windll.kernel32.CancelWaitableTimer(self.ackTimerHandle):
+			if not winBindings.kernel32.CancelWaitableTimer(self.ackTimerHandle):
 				raise ctypes.WinError()
 			winKernel.closeHandle(self.ackTimerHandle)
 			self.ackTimerHandle = None
@@ -2664,12 +2838,27 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		and thus is C{True} when the display size is greater than 0.
 		This is a read only property and can't be set.
 		"""
+		self._refreshEnabled()
+		return self._enabled
+
+	def _refreshEnabled(self, *, block: bool = False) -> None:
+		"""Refresh the state of the enabled property.
+
+		If it has gone from ``True`` to ``False``,
+		actions such as dismissing the current message (if any),
+		and clearing the cursor blink interval are performed.
+		These actions are performed synchronously or asynchronously depending on the value of :param:`block`.
+
+		:param block: Whether this operation should be blocking, defaults to False
+		"""
 		currentEnabled = bool(self.displaySize) and decide_enabled.decide()
 		if self._enabled != currentEnabled:
 			self._enabled = currentEnabled
 			if currentEnabled is False:
-				wx.CallAfter(self._handleEnabledDecisionFalse)
-		return currentEnabled
+				if block:
+					wxCallOnMain(self._handleEnabledDecisionFalse)
+				else:
+					wx.CallAfter(self._handleEnabledDecisionFalse)
 
 	def _set_enabled(self, value):
 		raise AttributeError(
@@ -2943,12 +3132,13 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		@postcondition: The message is displayed.
 		"""
 		if (
-			not self.enabled
+			(not self.enabled and _decide_disabledIncludesMessages.decide())
 			or config.conf["braille"]["showMessages"] == ShowMessages.DISABLED
 			or text is None
 			or config.conf["braille"]["mode"] == BrailleMode.SPEECH_OUTPUT.value
 		):
 			return
+		_pre_showBrailleMessage.notify()
 		if self.buffer is self.messageBuffer:
 			self.buffer.clear()
 		else:
@@ -2987,6 +3177,7 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 			self._messageCallLater = None
 		if shouldUpdate:
 			self.update()
+		_post_dismissBrailleMessage.notify()
 
 	def handleGainFocus(self, obj: "NVDAObject", shouldAutoTether: bool = True) -> None:
 		if not self.enabled or config.conf["braille"]["mode"] == BrailleMode.SPEECH_OUTPUT.value:
@@ -3670,7 +3861,7 @@ class BrailleDisplayDriver(driverHandler.Driver):
 		"""Base implementation to handle acknowledgement packets."""
 		if not self.receivesAckPackets:
 			raise NotImplementedError("This display driver does not support ACK packet handling")
-		if not ctypes.windll.kernel32.CancelWaitableTimer(handler.ackTimerHandle):
+		if not winBindings.kernel32.CancelWaitableTimer(handler.ackTimerHandle):
 			raise ctypes.WinError()
 		self._awaitingAck = False
 		handler._writeCellsInBackground()

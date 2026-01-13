@@ -77,7 +77,7 @@ class BaseCommand(object):
     def __getitem__(self, args):
         """Creates a bound-command with the given arguments"""
         if not isinstance(args, (tuple, list)):
-            args = [args, ]
+            args = [args]
         if not args:
             return self
         if isinstance(self, BoundCommand):
@@ -216,7 +216,7 @@ class BoundCommand(BaseCommand):
         return self.cmd.formulate(level + 1, self.args + list(args))
     def popen(self, args = (), **kwargs):
         if isinstance(args, six.string_types):
-            args = [args, ]
+            args = [args]
         return self.cmd.popen(self.args + list(args), **kwargs)
 
 class Pipeline(BaseCommand):
@@ -372,11 +372,3 @@ class ConcreteCommand(BaseCommand):
         # if self.encoding:
         #    argv = [a.encode(self.encoding) for a in argv if isinstance(a, six.string_types)]
         return argv
-
-
-
-
-
-
-
-

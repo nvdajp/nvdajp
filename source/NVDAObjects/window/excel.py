@@ -1181,6 +1181,11 @@ class ExcelWorksheet(ExcelBase):
 			"kb:control+shift+8",
 			"kb:control+pageUp",
 			"kb:control+pageDown",
+			# BEGIN JP PATCH
+			# nvdajp: restore Shift+Control+PageUp/Down key bindings for Excel cell navigation
+			"kb:shift+control+pageUp",
+			"kb:shift+control+pageDown",
+			# END JP PATCH
 			"kb:control+a",
 			"kb:control+v",
 			"kb:shift+f11",
@@ -1462,7 +1467,7 @@ _nvCellStatesToStates: dict[NvCellState, controlTypes.State] = {
 	NvCellState.HASPOPUP: controlTypes.State.HASPOPUP,
 	NvCellState.PROTECTED: controlTypes.State.PROTECTED,
 	NvCellState.HASFORMULA: controlTypes.State.HASFORMULA,
-	NvCellState.HASCOMMENT: controlTypes.State.HASCOMMENT,
+	NvCellState.HASCOMMENT: controlTypes.State.HASNOTE,
 	NvCellState.CROPPED: controlTypes.State.CROPPED,
 	NvCellState.OVERFLOWING: controlTypes.State.OVERFLOWING,
 	NvCellState.UNLOCKED: controlTypes.State.UNLOCKED,

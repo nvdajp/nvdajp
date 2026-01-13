@@ -38,10 +38,14 @@ def find_vcvarsall_with_vswhere() -> str | None:
 			args = [
 				str(VSWHERE_PATH),
 				"-latest",
-				"-products", "*",
-				"-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
-				"-find", pattern,
-				"-format", "value",
+				"-products",
+				"*",
+				"-requires",
+				"Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+				"-find",
+				pattern,
+				"-format",
+				"value",
 			]
 			if version_range != "*":
 				args.insert(2, "-version")
@@ -84,10 +88,14 @@ def find_vcvars_with_vswhere(arch: Literal["x86", "x64"] = "x64") -> str | None:
 			args = [
 				str(VSWHERE_PATH),
 				"-latest",
-				"-products", "*",
-				"-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
-				"-find", pattern,
-				"-format", "value",
+				"-products",
+				"*",
+				"-requires",
+				"Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+				"-find",
+				pattern,
+				"-format",
+				"value",
 			]
 			if version_range != "*":
 				args.insert(2, "-version")

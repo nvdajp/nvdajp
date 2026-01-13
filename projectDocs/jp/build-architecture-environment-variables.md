@@ -276,8 +276,8 @@ call scons.bat jtalkSync
 
 ## 関連ドキュメント
 
-- `projectDocs/jp/certBuild2023_evaluation.md`: `certBuild2023.cmd`の詳細な評価
-- `projectDocs/jp/troubleshooting_runjp_smoke_tests.md`: smoke test実行時のトラブルシューティング
+- `projectDocs/jp/archive/troubleshooting_runjp_smoke_tests.md`: smoke test実行時のトラブルシューティング
+- 注: `certBuild2023.cmd`の詳細な評価は`certBuild2025.ps1`の説明に統合されています（`certBuild2025.ps1`は`certBuild2023.cmd`をラップしています）
 - `projectDocs/jp/roadmap.md`: 長期的な開発計画
 
 ## 変更履歴

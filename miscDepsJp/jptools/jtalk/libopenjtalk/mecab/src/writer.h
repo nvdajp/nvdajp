@@ -44,4 +44,3 @@ class Writer {
   const char *what() { return what_.str(); }
 };
 }
-

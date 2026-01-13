@@ -3,7 +3,7 @@
 # Usage: .\ci\scripts\tests\recordMergeConflicts.ps1
 
 param(
-    [string]$OutputFile = "projectDocs/jp/merge-conflicts-detailed-2025-11.md",
+    [string]$OutputFile = "projectDocs/jp/archive/merge-conflicts-detailed-2025-11.md",
     [string]$BaseBranch = "betajp",
     [string]$MergeBranch = "nvaccess/beta"
 )
@@ -56,12 +56,12 @@ $fileCount = 0
 foreach ($file in $conflictedFiles) {
     $fileCount++
     Write-Host "Processing: $file ($fileCount / $($conflictedFiles.Count))" -ForegroundColor Gray
-    
+
     if (-not (Test-Path $file)) {
         $output += "### $fileCount. $file`n`n**状態**: ファイルが見つかりません（削除/移動の可能性）`n`n"
         continue
     }
-    
+
     # Check if it's a directory (submodule)
     if (Test-Path $file -PathType Container) {
         $output += "### $fileCount. $file`n`n**状態**: サブモジュール（ディレクトリ）`n`n"
@@ -69,19 +69,19 @@ foreach ($file in $conflictedFiles) {
         $output += "---`n`n"
         continue
     }
-    
+
     # Get conflict markers in file
     $content = Get-Content $file -Raw
     $conflictMarkers = [regex]::Matches($content, $conflictPattern, [System.Text.RegularExpressions.RegexOptions]::Multiline)
-    
+
     if ($conflictMarkers.Count -eq 0) {
         $output += "### $fileCount. $file`n`n**状態**: コンフリクトマーカーが見つかりません（未解決または自動マージ済み）`n`n"
         continue
     }
-    
+
     # Count conflicts (each conflict has 3 markers: <<<<<<, =======, >>>>>>>)
     $conflictCount = [Math]::Floor($conflictMarkers.Count / 3)
-    
+
     # Get line numbers of conflict markers
     $lineNumbers = @()
     $lineNum = 1
@@ -91,17 +91,17 @@ foreach ($file in $conflictedFiles) {
         }
         $lineNum++
     }
-    
+
     $output += "### $fileCount. $file`n`n"
     $output += "**コンフリクト数**: $conflictCount`n`n"
     $output += "**コンフリクト開始行**: $($lineNumbers -join ', ')`n`n"
-    
+
     # Show sample conflict (first one)
     if ($lineNumbers.Count -gt 0) {
         $firstConflictLine = $lineNumbers[0]
         $startLine = [Math]::Max(1, $firstConflictLine - 5)
         $endLine = [Math]::Min((Get-Content $file).Count, $firstConflictLine + 50)
-        
+
         $output += "**最初のコンフリクト周辺（行 $startLine - $endLine）**:`n`n"
         $output += "````````n"
         $lines = Get-Content $file
@@ -120,7 +120,7 @@ foreach ($file in $conflictedFiles) {
         }
         $output += "````````n`n"
     }
-    
+
     $output += "---`n`n"
 }
 
@@ -128,11 +128,11 @@ $output += @"
 
 ## 解決方針メモ
 
-各ファイルの解決方針は `projectDocs/jp/merge-issues-beta-2025-11.md` を参照してください。
+各ファイルの解決方針は `projectDocs/jp/archive/merge-issues-beta-2025-11.md` を参照してください。
 
 ## 次のステップ
 
-1. 各コンフリクトを projectDocs/jp/merge-issues-beta-2025-11.md の解決方針に従って解決
+1. 各コンフリクトを projectDocs/jp/archive/merge-issues-beta-2025-11.md の解決方針に従って解決
 2. uv.lock はコンフリクト解決後に 'uv lock --upgrade' で再生成
 3. source/locale/ja/LC_MESSAGES/nvda.po は msgmerge で上流 pot に追随
 4. 解決後、ビルドとテストを実行して確認
@@ -143,4 +143,3 @@ $output += @"
 $output | Out-File -FilePath $OutputFile -Encoding UTF8
 Write-Host "`n詳細記録を $OutputFile に保存しました。" -ForegroundColor Green
 Write-Host "コンフリクトファイル数: $fileCount" -ForegroundColor Green
-

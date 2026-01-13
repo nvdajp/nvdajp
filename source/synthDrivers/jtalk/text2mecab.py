@@ -1,15 +1,16 @@
 # coding: UTF-8
 # text2mecab.py for python-jtalk
 
+from typing import Any
 import re
 import unicodedata
 
 CODE = "utf-8"
 
-predic = None
+predic: list[list[Any]] | None = None
 
 
-def text2mecab_setup():
+def text2mecab_setup() -> None:
 	global predic
 	if predic is None:
 		predic = [
@@ -114,7 +115,10 @@ def text2mecab_setup():
 		]
 
 
-def text2mecab_convert(s):
+def text2mecab_convert(s: str) -> str:
+	if predic is None:
+		text2mecab_setup()
+	assert predic is not None  # type: ignore[unreachable]
 	for p in predic:
 		try:
 			s = re.sub(p[0], p[1], s)
@@ -123,16 +127,14 @@ def text2mecab_convert(s):
 	return s
 
 
-def text2mecab(txt, CODE_=CODE):
+def text2mecab(txt: str, CODE_: str = CODE) -> bytes:
 	text2mecab_setup()
 	txt = unicodedata.normalize("NFKC", txt)
 	txt = text2mecab_convert(txt)
 	# BEGIN JP PATCH (assert suspicious patterns before encoding)
 	# Detect mixed ASCII/non-ASCII or unusual whitespace patterns that may trigger crashes.
 	assert "\t" not in txt, "text2mecab: unexpected tab after conversion"
-	assert "\r" not in txt and "\n" not in txt, (
-		"text2mecab: unexpected newline after conversion"
-	)
+	assert "\r" not in txt and "\n" not in txt, "text2mecab: unexpected newline after conversion"
 	ascii_count = sum(1 for c in txt if ord(c) < 0x80)
 	non_ascii_count = len(txt) - ascii_count
 	if ascii_count and non_ascii_count:

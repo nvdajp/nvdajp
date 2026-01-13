@@ -52,18 +52,67 @@ repos:
     - id: check-merge-conflict
     # Checks Python files for debug statements, such as python's breakpoint function, or those inserted by some IDEs.
     - id: debug-statements
-    # BEGIN JP PATCH (temporarily disabled, to be fixed in a separate branch)
-    # # Removes trailing whitespace.
-    # - id: trailing-whitespace
-    #   types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-    # # Ensures all files end in 1 (and only 1) newline.
-    # - id: end-of-file-fixer
-    #   types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-    # # Removes the UTF-8 BOM from files that have it.
-    # # See https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/codingStandards.md#encoding
-    # - id: fix-byte-order-marker
-    #   types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-    # END JP PATCH (temporarily disabled, to be fixed in a separate branch)
+    # Removes trailing whitespace.
+    - id: trailing-whitespace
+      types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+      # nvdajp: Exclude submodules from line ending normalization
+      exclude: |
+        (?x)^(
+          include/liblouis/ |
+          include/sonic/ |
+          include/nvda-mathcat/ |
+          include/detours/ |
+          include/espeak/ |
+          include/ia2/ |
+          include/javaAccessBridge32/ |
+          include/w3c-aria-practices/ |
+          include/wil/ |
+          include/nsis/ |
+          include/nvda-cldr/ |
+          .vscode/ |
+          miscDeps/
+        )
+    # Ensures all files end in 1 (and only 1) newline.
+    - id: end-of-file-fixer
+      types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+      # nvdajp: Exclude submodules from line ending normalization
+      exclude: |
+        (?x)^(
+          include/liblouis/ |
+          include/sonic/ |
+          include/nvda-mathcat/ |
+          include/detours/ |
+          include/espeak/ |
+          include/ia2/ |
+          include/javaAccessBridge32/ |
+          include/w3c-aria-practices/ |
+          include/wil/ |
+          include/nsis/ |
+          include/nvda-cldr/ |
+          .vscode/ |
+          miscDeps/
+        )
+    # Removes the UTF-8 BOM from files that have it.
+    # See https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/codingStandards.md#encoding
+    - id: fix-byte-order-marker
+      types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
+      # nvdajp: Exclude submodules from BOM removal
+      exclude: |
+        (?x)^(
+          include/liblouis/ |
+          include/sonic/ |
+          include/nvda-mathcat/ |
+          include/detours/ |
+          include/espeak/ |
+          include/ia2/ |
+          include/javaAccessBridge32/ |
+          include/w3c-aria-practices/ |
+          include/wil/ |
+          include/nsis/ |
+          include/nvda-cldr/ |
+          .vscode/ |
+          miscDeps/
+        )
     # Validates TOML files.
     - id: check-toml
     # Validates YAML files.
@@ -108,8 +157,28 @@ repos:
     - id: ruff
       name: lint with ruff
       args: [ --fix ]
+      # nvdajp: Exclude Japanese documentation and third-party libraries
+      exclude: |
+        (?x)^(
+          miscDepsJp/include/ |
+          miscDepsJp/jptools/jtusrdic/plumbum |
+          miscDepsJp/jptools/jtusrdic/six\.py |
+          projectDocs/jp/ |
+          readme-nvdajp\.md |
+          AGENTS\.md
+        )
     - id: ruff-format
       name: format with ruff
+      # nvdajp: Exclude Japanese documentation and third-party libraries
+      exclude: |
+        (?x)^(
+          miscDepsJp/include/ |
+          miscDepsJp/jptools/jtusrdic/plumbum |
+          miscDepsJp/jptools/jtusrdic/six\.py |
+          projectDocs/jp/ |
+          readme-nvdajp\.md |
+          AGENTS\.md
+        )
 
 - repo: https://github.com/RobertCraigie/pyright-python
   rev: v1.1.403

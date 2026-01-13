@@ -3,5 +3,5 @@ from synthDriverHandler import SynthDriver  # type: ignore
 
 class SynthDriver(SynthDriver):  # type: ignore
 	@classmethod
-	def check(cls):
+	def check(cls) -> bool:
 		return False

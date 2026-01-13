@@ -38,8 +38,10 @@ class SwitchInfo(object):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-def switch(names, argtype = None, argname = None, list = False, mandatory = False, requires = (),
-        excludes = (), help = None, overridable = False, group = "Switches"):
+def switch(
+    names, argtype = None, argname = None, list = False, mandatory = False, requires = (),
+    excludes = (), help = None, overridable = False, group = "Switches",
+):
     """
     A decorator that exposes functions as command-line switches. Usage::
 
@@ -141,9 +143,11 @@ def switch(names, argtype = None, argname = None, list = False, mandatory = Fals
         help2 = inspect.getdoc(func) if help is None else help
         if not help2:
             help2 = str(func)
-        func._switch_info = SwitchInfo(names = names, argtype = argtype, list = list, func = func,
+        func._switch_info = SwitchInfo(
+            names = names, argtype = argtype, list = list, func = func,
             mandatory = mandatory, overridable = overridable, group = group,
-            requires = requires, excludes = excludes, argname = argname2, help = help2)
+            requires = requires, excludes = excludes, argname = argname2, help = help2,
+        )
         return func
     return deco
 
@@ -322,6 +326,3 @@ class NonexistentPath(Predicate):
             raise ValueError("%r already exists" % (val,))
         return p
 NonexistentPath = NonexistentPath()
-
-
-

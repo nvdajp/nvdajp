@@ -196,9 +196,11 @@ class ShellSession(object):
         shell_logger.debug("Running %r", full_cmd)
         self.proc.stdin.write(full_cmd + six.b("\n"))
         self.proc.stdin.flush()
-        self._current = SessionPopen(full_cmd, self.isatty, self.proc.stdin,
+        self._current = SessionPopen(
+            full_cmd, self.isatty, self.proc.stdin,
             MarkedPipe(self.proc.stdout, marker), MarkedPipe(self.proc.stderr, marker),
-            self.encoding)
+            self.encoding,
+        )
         return self._current
 
     def run(self, cmd, retcode = 0):
@@ -211,4 +213,3 @@ class ShellSession(object):
         :returns: A tuple of (return code, stdout, stderr)
         """
         return run_proc(self.popen(cmd), retcode)
-

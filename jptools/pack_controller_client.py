@@ -24,7 +24,9 @@ def main() -> int:
 		help="Version string used for output filename if --output is not given",
 	)
 	parser.add_argument(
-		"--client-root", default=None, help="Path to nvdajpClient root (defaults to jptools/nvdajpClient)"
+		"--client-root",
+		default=None,
+		help="Path to nvdajpClient root (defaults to jptools/nvdajpClient)",
 	)
 	parser.add_argument(
 		"--output",

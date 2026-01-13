@@ -177,7 +177,11 @@ class AutoPropertyObject(garbageHandler.TrackedObject, metaclass=AutoPropertyTyp
 		# We use a list here, as invalidating the cache on an object may cause instances to disappear,
 		# which would in turn cause an exception due to the dictionary changing size during iteration.
 		for instance in list(cls.__instances):
-			instance.invalidateCache()
+			# BEGIN JP PATCH
+			# nvdajp: Keep hasattr check for safety
+			if hasattr(instance, "invalidateCache"):
+				instance.invalidateCache()
+			# END JP PATCH
 
 
 class ScriptableType(AutoPropertyType):

@@ -117,7 +117,10 @@ class test_synthDriverHandler(unittest.TestCase):
 		self.assertEqual(synthDriverHandler.getSynth().name, FAKE_DEFAULT_SYNTH_NAME)
 		synthDriverHandler.setSynth(None)  # reset the synth so there is no fallback
 		synthDriverHandler.setSynth("auto")
-		self.assertEqual(synthDriverHandler.getSynth().name, "espeak")
+		# BEGIN JP PATCH
+		# nvdajp: defaultSynthPriorityList includes nvdajp_jtalk instead of espeak
+		self.assertEqual(synthDriverHandler.getSynth().name, "nvdajp_jtalk")
+		# END JP PATCH
 
 	def test_synthChangedExtensionPoint(self):
 		expectedKwargs = dict(

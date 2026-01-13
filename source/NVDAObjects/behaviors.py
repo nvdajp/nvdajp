@@ -294,7 +294,8 @@ class EditableTextBase(editableText.EditableText, NVDAObject):
 			else:
 				# No error.
 				return
-			nvwave.playWaveFile(os.path.join(globalVars.appDir, "waves", "textError.wav"))
+			if speech.getState().speechMode not in [speech.SpeechMode.off, speech.SpeechMode.onDemand]:
+				nvwave.playWaveFile(os.path.join(globalVars.appDir, "waves", "textError.wav"))
 
 		core.callLater(50, _delayedDetection)
 
@@ -635,6 +636,18 @@ class KeyboardHandlerBasedTypedCharSupport(EnhancedTermTypedCharSupport):
 
 class CandidateItem(NVDAObject):
 	def getFormattedCandidateName(self, number, candidate):
+		# BEGIN JP PATCH
+		# nvdajp: use discriminant reading for candidate names when nvdajpEnableKeyEvents is enabled
+		import jpUtils
+
+		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+			fb = braille.handler.displaySize > 0
+			c = jpUtils.getDiscriminantReading(candidate, forBraille=fb)
+			log.debug("{number} {candidate} {c}".format(number=number, candidate=candidate, c=c))
+			if config.conf["language"]["announceCandidateNumber"]:
+				return _("{number} {candidate}").format(number=number, candidate=c)
+			return c
+		# END JP PATCH
 		if config.conf["inputComposition"]["alwaysIncludeShortCharacterDescriptionInCandidateName"]:
 			describedSymbols = []
 			for symbol in candidate:
