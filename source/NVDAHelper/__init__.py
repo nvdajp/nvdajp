@@ -649,6 +649,16 @@ def nvdaControllerInternal_inputConversionModeUpdate(oldFlags, newFlags, lcid):
 
 @WINFUNCTYPE(c_long, c_long)
 def nvdaControllerInternal_IMEOpenStatusUpdate(opened):
+	# BEGIN JP PATCH
+	if config.conf["keyboard"]["nvdajpImeBeep"]:
+		import tones
+
+		if opened:
+			tones.beep(880, 20)
+		else:
+			tones.beep(440, 20)
+		return 0
+	# END JP PATCH
 	if opened:
 		# Translators: a message when the IME open status changes to opened
 		message = _("IME opened")
