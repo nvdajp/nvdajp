@@ -1135,7 +1135,7 @@ env.AddPreAction(espeakLib, env.Action(cleanFiles_preBuildAction))
 def addUtf8BomToTrLanguages_preBuildAction(target, source, env):
 	"""Add UTF-8 BOM to tr_languages.c for MSVC compilation with Arabic characters."""
 	import codecs
-	trLanguagesPath = espeakSrcDir.Dir("libespeak-ng/tr_languages.c").abspath
+	trLanguagesPath = espeakSrcDir.Dir("libespeak-ng").File("tr_languages.c").abspath
 	try:
 		with open(trLanguagesPath, "rb") as f:
 			content = f.read()
