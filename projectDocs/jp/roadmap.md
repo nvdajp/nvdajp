@@ -181,7 +181,13 @@
 
 **nvaccess/beta の最新状態**:
 
-* 最新コミット: `eeb6143aa` (2026年1月10日時点) - "Correctly register .nvda-addon file association on installation (#19419)"
+* 最新コミット: `0ec178ae6` (2026年1月13日時点) - "Update user_docs/en/userGuide.xliff"
+* 取り込み予定のコミット（順次チェリーピック中）:
+  * `9f3aecbb0` (2026-01-11) - "Revert AI image description work (#19425)"
+  * `d33bc9298` (2026-01-11) - "Fix bugs when attempting to install add-ons requiring a newer NVDA release (#19420)"
+  * `099beee50` (2026-01-13) - "Update tracked translations from Crowdin (#19434)"
+  * `747eae0fc` (2026-01-12) - "Fixup MathCAT settings (#19227)"
+  * `0ec178ae6` (2026-01-13) - "Update user_docs/en/userGuide.xliff"
 * x64移行コミット: `58dd14767` (2025年9月15日) - "Only build 64bit" ✅ マージ完了
 * **持続的マージ戦略**: `projectDocs/jp/beta-merge-strategy.md` を参照
 
