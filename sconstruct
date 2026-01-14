@@ -166,10 +166,13 @@ version = env["version"]
 version_build = env["version_build"]
 release = env["release"]
 publisher = env["publisher"]
-certFile = env["certFile"]
+# BEGIN JP PATCH (skip signing support)
+skipSigning = os.environ.get("SKIP_SIGNING", "")
+# END JP PATCH (skip signing support)
+certFile = env["certFile"] if not skipSigning else ""
 certPassword = env["certPassword"]
 certTimestampServer = env["certTimestampServer"]
-apiSigningToken = env["apiSigningToken"]
+apiSigningToken = env["apiSigningToken"] if not skipSigning else ""
 userDocsDir = Dir("user_docs")
 sourceDir = env.Dir("source")
 Export("sourceDir")
@@ -194,6 +197,15 @@ Export("outputDir")
 assert not (apiSigningToken and certFile), (
 	"Cannot specify signing with both API token (cloud) and local certificate"
 )
+# BEGIN JP PATCH (certificate store signing support)
+# Check for Windows certificate store signing (CERT_SHA1 or CERT_NAME from environment)
+# skipSigning is already defined above
+certSha1 = os.environ.get("CERT_SHA1", "") if not skipSigning else ""
+certName = os.environ.get("CERT_NAME", "") if not skipSigning else ""
+certStore = os.environ.get("CERT_STORE", "My")
+certMachineStore = os.environ.get("CERT_MACHINE_STORE", "")
+useCertStore = bool(certSha1 or certName) and not skipSigning
+# END JP PATCH (certificate store signing support)
 if apiSigningToken:
 	# Code signing with SignPath HSM
 	def signExecApi(target, source, env):
@@ -232,6 +244,33 @@ elif certFile:
 
 	# Export via scons environment so other libraries can be signed
 	env["signExec"] = signExecCert
+# BEGIN JP PATCH (certificate store signing support)
+elif useCertStore:
+	# Code signing with Windows certificate store (JP-specific)
+	def signExecCertStore(target, source, env):
+		# we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages
+		signExecCmd = ["signtool", "sign", "/fd", "SHA256"]
+		if certSha1:
+			signExecCmd.extend(["/s", certStore, "/sha1", certSha1])
+		elif certName:
+			signExecCmd.extend(["/s", certStore, "/n", certName])
+		if certMachineStore:
+			signExecCmd.append("/sm")
+		if certTimestampServer:
+			signExecCmd.extend(("/tr", certTimestampServer, "/td", "SHA256"))
+		print([str(x) for x in target])
+		# #3795: signtool can quite commonly fail with timestamping, so allow it to try up to 3 times with a 1 second delay between each try.
+		res = 0
+		for count in range(3):
+			res = env.Execute([signExecCmd + [target[0].abspath]])
+			if not res:
+				return 0  # success
+			time.sleep(1)
+		return res  # failed
+
+	# Export via scons environment so other libraries can be signed
+	env["signExec"] = signExecCertStore
+# END JP PATCH (certificate store signing support)
 
 # architecture-specific environments
 archTools = ["default", "midl", "msrpc"]
@@ -316,7 +355,7 @@ for po in env.Glob(sourceDir.path + "/locale/*/lc_messages/*.po"):
 
 styles = os.path.join(userDocsDir.path, "styles.css")
 numberedHeadingsStyle = os.path.join(userDocsDir.path, "numberedHeadings.css")
-logo = os.path.join(sourceDir.path, "images", "nvda.ico")
+logo = os.path.join(sourceDir.path, "images", "nvdajp3.ico")
 favicon = env.Command(
 	outputDir.File("favicon.ico"),
 	logo,
@@ -439,7 +478,9 @@ def NVDADistGenerator(target, source, env, for_signature):
 			if file.name.endswith(".dll") and file.is_file():
 				action.append(Copy(target[0], file.path))
 
-	if certFile or apiSigningToken:
+	# BEGIN JP PATCH (certificate store signing support)
+	if certFile or apiSigningToken or useCertStore:
+	# END JP PATCH (certificate store signing support)
 		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
 			action.append(
 				lambda target, source, env, progByVal=prog: env["signExec"](
@@ -524,13 +565,17 @@ uninstGen = env.Command(
 	],
 )
 uninstaller = env.Command(uninstFile, uninstGen, [uninstGen])
-if certFile or apiSigningToken:
+# BEGIN JP PATCH (certificate store signing support)
+if certFile or apiSigningToken or useCertStore:
+# END JP PATCH (certificate store signing support)
 	env.AddPostAction(uninstaller, [env["signExec"]])
 
 devDocTargets = env.SConscript(
 	"projectDocs/dev/developerGuide/sconscript", exports=["env", "outputDir", "sourceDir", "userDocsDir"]
 )
-dist = env.NVDADist("dist", [sourceDir, userDocsDir], uiAccess=bool(certFile) or bool(apiSigningToken))
+# BEGIN JP PATCH (certificate store signing support)
+dist = env.NVDADist("dist", [sourceDir, userDocsDir], uiAccess=bool(certFile) or bool(apiSigningToken) or useCertStore)
+# END JP PATCH (certificate store signing support)
 env.Depends(dist, uninstaller)
 env.Depends(dist, devDocTargets)
 # dist will always be considered obsolete
@@ -539,6 +584,24 @@ AlwaysBuild(dist)
 env.Clean(dist, dist)
 # Clean the intermediate build directory.
 env.Clean([dist], buildDir)
+
+# BEGIN JP PATCH (build dependencies)
+# Register JP builders after dist is defined so jpCertExtras can depend on dist target
+try:
+	import jptools.scons_jp as scons_jp
+
+	# Always register JP builders in this repo; miscDepsJp overlay is required
+	# for a correct build layout regardless of publisher.
+	# Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds)
+	# Pass sourceDir so it can depend on jtalkSync with current TARGET_ARCH (ensures correct architecture-specific builds)
+	scons_jp.register_jp_builders(env, dist_target=dist, source_dir=sourceDir)
+except Exception as e:
+	# Never fail the build if JP helpers are unavailable.
+	# Log the exception for debugging purposes (e.g., during development)
+	import warnings
+
+	warnings.warn(f"Failed to register JP builders: {e}", UserWarning)
+# END JP PATCH (build dependencies)
 
 launcher = env.Command(
 	outputDir.File("%s.exe" % outFilePrefix),
@@ -560,7 +623,9 @@ launcher = env.Command(
 		]
 	],
 )
-if certFile or apiSigningToken:
+# BEGIN JP PATCH (certificate store signing support)
+if certFile or apiSigningToken or useCertStore:
+# END JP PATCH (certificate store signing support)
 	env.AddPostAction(launcher, [env["signExec"]])
 env.Alias("launcher", launcher)
 
@@ -685,6 +750,13 @@ potSourceFiles = [
 ]
 
 pot = env.Command(outputDir.File("nvda.pot"), potSourceFiles, makePot)
+
+# JP: Ensure jtalkSync runs before generating pot (translation template)
+try:
+	# Even if the alias is empty in non-JP contexts, this is safe.
+	env.Depends(pot, env.Alias("jtalkSync"))
+except Exception:
+	pass
 
 env.Alias("pot", pot)
 

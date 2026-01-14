@@ -43,12 +43,23 @@ $includeTags = $tagsForTestArray | ForEach-Object {
 	"--include", $_
 }
 
+# BEGIN JP PATCH (support for excluding specific test tags)
+$excludeTags = @()
+if ($env:EXCLUDE_SYSTEM_TEST_TAGS) {
+	$excludeTagsArray = -split $env:EXCLUDE_SYSTEM_TEST_TAGS
+	$excludeTags = $excludeTagsArray | ForEach-Object {
+		"--exclude", $_
+	}
+}
+# END JP PATCH (support for excluding specific test tags)
+
 $nvdaLauncherFile=$(Resolve-Path "$env:nvdaLauncherDir\nvda*.exe")
 .\runsystemtests.bat `
 --variable whichNVDA:installed `
 --variable installDir:"${nvdaLauncherFile}" `
 --variable verboseDebugLogging:"${verboseDebugLogging}" `
 @includeTags `
+@excludeTags `
 # last line intentionally blank, allowing all lines to have line continuations.
 if ($LastExitCode -ne 0) {
 	Write-Output "FAIL: System tests (tags: ${tagsForTest}). See test results for more information."  >> $env:GITHUB_STEP_SUMMARY
