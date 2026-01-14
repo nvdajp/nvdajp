@@ -198,7 +198,11 @@ def getStringFromLine(line):
 	else:
 		# The quoted string starts after a command.
 		# Example: msgid "Secure Desktop"
-		quoted = line.split(" ", 1)[1]
+		parts = line.split(" ", 1)
+		if len(parts) < 2:
+			# No space found, return empty string
+			return ""
+		quoted = parts[1]
 	# Strip the quotes.
 	return quoted[1:-1]
 

@@ -3382,12 +3382,11 @@ This option selects the format of math content copied to the clipboard.
 ###### Output code {#MathBrailleCode}
 
 The braille math code to use.
-When this option is set to "Automatic", NVDA selects a default math braille code based on the current NVDA language.
 
 | . {.hideHeaderRow} | . |
 |---|---|
-| Options | Automatic, ASCIIMath, ASCIIMath-Finnish, CMU, LaTeX, Nemeth, Swedish, UEB, Vietnam |
-| Default | Automatic |
+| Options | ASCIIMath, ASCIIMath-Finnish, CMU, LaTeX, Nemeth, Swedish, UEB, Vietnam |
+| Default | Nemeth |
 
 ###### Highlight navigation focus with dots 7 and 8 {#MathBrailleHighlights}
 

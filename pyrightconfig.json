@@ -1,0 +1,19 @@
+{
+	"exclude": [
+		".venv",
+		"**/__pycache__",
+		"jptools",
+		"jpchar",
+		"miscDepsJp",
+		"miscDeps/python/ftdi2.py",
+		"source/NVDAObjects/UIA/__init__.py",
+		"include",
+		"source/comInterfaces",
+		"tests",
+		"site_scons",
+		"projectDocs"
+	],
+	"include": [
+		"source/synthDrivers/jtalk/**/*.py"
+	]
+}

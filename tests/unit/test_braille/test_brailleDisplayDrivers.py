@@ -185,5 +185,7 @@ class TestBRLTTY(unittest.TestCase):
 		try:
 			# SUpress Flake8 F401 imported but unused, as we're testing the import
 			import brlapi  # noqa: F401
+		except ImportError:
+			self.skipTest("brlapi module not available")
 		except Exception:
 			self.fail("Couldn't import the brlapi module")
