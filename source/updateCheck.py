@@ -79,9 +79,10 @@ __getattr__ = _deprecate.handleDeprecations(
 	_deprecate.MovedSymbol("CERT_CHAIN_PARA", "winBindings.crypt32"),
 )
 
-
 #: The URL to use for update checks.
-_DEFAULT_CHECK_URL = "https://api.nvaccess.org/nvdaUpdateCheck"
+# BEGIN JP PATCH (Japanese update server URL)
+_DEFAULT_CHECK_URL = "https://www.nvda.jp/updateCheck/"
+# END JP PATCH
 #: The time to wait between checks.
 CHECK_INTERVAL = 86400  # 1 day
 #: The time to wait before retrying a failed check.

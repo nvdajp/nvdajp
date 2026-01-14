@@ -21,9 +21,33 @@ import cursorManager
 import textInfos.offsets
 from abc import ABCMeta, abstractmethod
 from locationHelper import RectLTWH
+
+# BEGIN JP PATCH
+# nvdajp: import for East Asian width checking
+from unicodedata import east_asian_width
+
+# END JP PATCH
 from NVDAObjects import NVDAObject
 
 onRecognizeResultCallbackT = Callable[[Union["RecognitionResult", Exception]], None]
+
+
+# BEGIN JP PATCH
+# nvdajp: functions for checking East Asian narrow characters
+def isEastAsianNarrow(c):
+	return c and (east_asian_width(str(c)) == "Na")
+
+
+def startsWithEastAsianNarrow(s):
+	return s and isEastAsianNarrow(s[0])
+
+
+def endsWithEastAsianNarrow(s):
+	return s and isEastAsianNarrow(s[-1])
+
+
+# nvdajp end
+# END JP PATCH
 
 
 class BaseContentRecogTextInfo(cursorManager._ReviewCursorManagerTextInfo):
@@ -242,6 +266,16 @@ class LinesWordsResult(RecognitionResult):
 			for word in line:
 				if firstWordOfLine:
 					firstWordOfLine = False
+				# BEGIN JP PATCH
+				# nvdajp: don't add space between East Asian narrow characters
+				elif (
+					self._textList
+					and endsWithEastAsianNarrow(self._textList[-1])
+					and startsWithEastAsianNarrow(word["text"])
+				):
+					# Don't separate with a space for East Asian narrow characters.
+					pass
+				# END JP PATCH
 				else:
 					# Separate with a space.
 					self._textList.append(" ")

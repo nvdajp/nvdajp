@@ -214,6 +214,22 @@ class EditableText(TextContainerObject, ScriptableObject):
 		bookmark = info.bookmark
 		gesture.send()
 		caretMoved, newInfo = self._hasCaretMoved(bookmark)
+		# BEGIN JP PATCH
+		# nvdajp: announce new line
+		from NVDAHelper import lastCompAttr
+
+		if (
+			caretMoved
+			and (not lastCompAttr)
+			and config.conf["keyboard"]["speakTypedCharacters"]
+			and config.conf["language"]["jpAnnounceNewLine"]
+		):
+			import queueHandler
+			from gui import _
+
+			# Translators: new line of editable text
+			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, _("new line"))
+		# END JP PATCH
 		if not caretMoved or not newInfo:
 			return
 		# newInfo.copy should be good enough here, but in MS Word we get strange results.
