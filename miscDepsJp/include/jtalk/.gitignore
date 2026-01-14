@@ -1,0 +1,8 @@
+htsengineapi
+libopenjtalk
+__pycache__
+*.cmd
+*.dic
+*.readme
+*.txt
+*.py

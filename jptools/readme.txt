@@ -1,0 +1,1 @@
+see ../readme-nvdajp.md

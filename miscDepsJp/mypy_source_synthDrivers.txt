@@ -1,0 +1,2 @@
+jtalk/translator1.py
+jtalk/translator2.py
