@@ -58,7 +58,6 @@ from .settingsDialogs import (
 	InputCompositionPanel,
 	KeyboardSettingsPanel,
 	LanguageSettingsPanel,  # nvdajp
-	LocalCaptionerSettingsPanel,
 	MouseSettingsPanel,
 	MultiCategorySettingsDialog,
 	NVDASettingsDialog,
@@ -397,10 +396,6 @@ class MainFrame(wx.Frame):
 	@blockAction.when(blockAction.Context.SECURE_MODE)
 	def onRemoteAccessSettingsCommand(self, evt):
 		self.popupSettingsDialog(NVDASettingsDialog, RemoteSettingsPanel)
-
-	@blockAction.when(blockAction.Context.SECURE_MODE)
-	def onLocalCaptionerSettingsCommand(self, evt):
-		self.popupSettingsDialog(NVDASettingsDialog, LocalCaptionerSettingsPanel)
 
 	@blockAction.when(blockAction.Context.SECURE_MODE)
 	def onAdvancedSettingsCommand(self, evt: wx.CommandEvent):
