@@ -391,6 +391,76 @@ MeCab DLLがファイルパスを処理する際、Windows API（CreateFile等�
 
 ---
 
+## kansuji2arabic のコードページ依存性考察 (2026-01-15)
+
+### 概要
+
+`kansuji2arabic`関数がコードページ依存の挙動を持つ可能性があるかを考察します。
+
+### 関数の実装
+
+`kansuji2arabic`関数（`source/synthDrivers/jtalk/translator2.py`）は、漢数字をアラビア数字に変換する関数です。
+
+#### 入力の流れ
+
+1. **MeCabの解析結果から取得**:
+   ```python
+   mo.hyouki = ar[0]  # MeCabの解析結果から表記を取得
+   flag, num = kansuji2arabic(m.hyouki, logwrite)
+   ```
+
+2. **MeCabの解析結果のデコード**:
+   ```python
+   s = string_at(mf.feature[i])
+   s = s.decode(CODE, "ignore")  # CODE = "utf-8"
+   ar = s.split(",")
+   mo.hyouki = ar[0]
+   ```
+
+3. **`kansuji2arabic`関数内の処理**:
+   - 正規表現: `RE_KANSUJI = re.compile("^[一二三四五六七八九〇零十拾百千壱二参]+$")` - Unicode文字列パターン
+   - 文字列比較: `c in "〇零"` - Unicode文字列比較
+   - 文字列スライス: `text[(kanindex - 1) : kanindex]` - PythonのUnicode文字列スライス
+
+### コードページ依存性の分析
+
+#### `kansuji2arabic`関数自体はコードページに依存しない
+
+1. **Pythonの文字列処理**: Python 3では文字列はUnicode（UTF-8）として扱われるため、コードページに依存しない
+2. **正規表現**: Unicode文字列パターンなので、コードページに依存しない
+3. **文字列比較**: Unicode文字列の比較なので、コードページに依存しない
+
+#### しかし、MeCabの解析結果（`hyouki`）がコードページに依存する可能性がある
+
+1. **MeCab DLLの内部処理**: MeCab DLLが内部でコードページを使用している可能性
+2. **辞書のビルド時コードページ**: 辞書がコードページ932でビルドされている必要がある（既に解決済み）
+3. **MeCabの解析結果のエンコーディング**: MeCabの解析結果はUTF-8でデコードされているが、MeCab DLLが内部でコードページを使用している可能性
+
+### 結論
+
+**`kansuji2arabic`関数自体はコードページに依存しない**が、**MeCabの解析結果（`hyouki`）がコードページに依存する可能性がある**。
+
+したがって、間接的なコードページ依存性が存在する可能性があります：
+
+1. **辞書ビルド時のコードページ**: 辞書がコードページ932でビルドされている必要がある（既に解決済み）
+2. **MeCab DLLの内部処理**: MeCab DLLがファイルパス処理などでコードページを使用している可能性（`jpBrailleRunner.py`のコードページ動作仕様を参照）
+
+### 検証方法
+
+コードページ依存性を検証するには：
+
+1. **異なるコードページで辞書をビルド**: コードページ1252で辞書をビルドし、テストを実行
+2. **異なるコードページでテストを実行**: 辞書がCP932でビルドされている場合、テスト実行時のコードページがCP932でもCP1252でも成功することを確認（2026-01-15に検証済み）
+
+### 参照
+
+* `source/synthDrivers/jtalk/translator2.py` - `kansuji2arabic()`関数（302行目）
+* `source/synthDrivers/jtalk/translator2.py` - `rewrite_number()`関数（366行目）
+* `source/synthDrivers/jtalk/mecab.py` - `mecab_to_morphs()`関数（235行目）
+* 本ドキュメント - 「CI環境での辞書ビルド時のコードページ設定問題」セクション
+
+---
+
 ## CI flaky問題: 漢数字特殊読みエラー (2026-01-15調査)
 
 ### 問題の概要
