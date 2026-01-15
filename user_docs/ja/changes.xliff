@@ -21526,7 +21526,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>digitaleditionspreview |digitaleditions</source>
         <target>digitaleditionspreview |digitaleditions</target>
       </segment>
@@ -21537,7 +21537,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>esybraille |esysuite</source>
         <target>esybraille |esysuite</target>
       </segment>
@@ -21548,7 +21548,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>hxoutlook |hxmail</source>
         <target>hxoutlook |hxmail</target>
       </segment>
@@ -21559,7 +21559,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>miranda64 |miranda32</source>
         <target>miranda64 |miranda32</target>
       </segment>
@@ -21570,7 +21570,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>mpc-hc |mplayerc</source>
         <target>mpc-hc |mplayerc</target>
       </segment>
@@ -21581,7 +21581,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>mpc-hc64 |mplayerc</source>
         <target>mpc-hc64 |mplayerc</target>
       </segment>
@@ -21592,7 +21592,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>notepad++ |notepadPlusPlus</source>
         <target>notepad++ |notepadPlusPlus</target>
       </segment>
@@ -21603,7 +21603,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>searchapp |searchui</source>
         <target>searchapp |searchui</target>
       </segment>
@@ -21614,7 +21614,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>searchhost |searchui</source>
         <target>searchhost |searchui</target>
       </segment>
@@ -21625,7 +21625,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>springtoolsuite4 |eclipse</source>
         <target>springtoolsuite4 |eclipse</target>
       </segment>
@@ -21636,7 +21636,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>sts |eclipse</source>
         <target>sts |eclipse</target>
       </segment>
@@ -21647,7 +21647,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>teamtalk3 |teamtalk4classic</source>
         <target>teamtalk3 |teamtalk4classic</target>
       </segment>
@@ -21658,7 +21658,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>textinputhost |windowsinternal_composableshell_experiences_textinput_inputapp</source>
         <target>textinputhost |windowsinternal_composableshell_experiences_textinput_inputapp</target>
       </segment>
@@ -21669,7 +21669,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">prefix: |</note>
         <note appliesTo="source">suffix: |</note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>totalcmd64 |totalcmd</source>
         <target>totalcmd64 |totalcmd</target>
       </segment>
@@ -21723,7 +21723,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 1962</note>
         <note appliesTo="source">prefix: ## </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>2022.1</source>
         <target>2022.1</target>
       </segment>
@@ -23113,7 +23113,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2116</note>
         <note appliesTo="source">prefix: ## </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>2021.3.5</source>
         <target>2021.3.5</target>
       </segment>
@@ -23171,7 +23171,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2126</note>
         <note appliesTo="source">prefix: ## </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>2021.3.4</source>
         <target>2021.3.4</target>
       </segment>
@@ -23289,7 +23289,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2142</note>
         <note appliesTo="source">prefix: ## </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>2021.3.3</source>
         <target>2021.3.3</target>
       </segment>
@@ -23326,7 +23326,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2148</note>
         <note appliesTo="source">prefix: ## </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>2021.3.2</source>
         <target>2021.3.2</target>
       </segment>
@@ -23394,7 +23394,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2159</note>
         <note appliesTo="source">prefix: ## </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>2021.3.1</source>
         <target>2021.3.1</target>
       </segment>
@@ -23473,7 +23473,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2173</note>
         <note appliesTo="source">prefix: ## </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>2021.3</source>
         <target>2021.3</target>
       </segment>
@@ -24159,7 +24159,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2255</note>
         <note appliesTo="source">prefix: ## </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>2021.2</source>
         <target>2021.2</target>
       </segment>
@@ -24619,7 +24619,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2314</note>
         <note appliesTo="source">prefix: ## </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>2021.1</source>
         <target>2021.1</target>
       </segment>
@@ -25904,7 +25904,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2454</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>speechMode</source>
         <target>speechMode</target>
       </segment>
@@ -25914,7 +25914,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2455</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>speechMode_beeps_ms</source>
         <target>speechMode_beeps_ms</target>
       </segment>
@@ -25924,7 +25924,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
         <note appliesTo="source">line: 2456</note>
         <note appliesTo="source">prefix:   * </note>
       </notes>
-      <segment state="initial">
+      <segment state="final">
         <source>beenCanceled</source>
         <target>beenCanceled</target>
       </segment>

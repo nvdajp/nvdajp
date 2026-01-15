@@ -181,7 +181,43 @@
 
 **nvaccess/beta の最新状態**:
 
-* 最新コミット: `eeb6143aa` (2026年1月10日時点) - "Correctly register .nvda-addon file association on installation (#19419)"
+* 最新コミット: `0ec178ae6` (2026年1月13日時点) - "Update user_docs/en/userGuide.xliff"
+* 取り込み予定のコミット（順次チェリーピック中）:
+  * `9f3aecbb0` (2026-01-11) - "Revert AI image description work (#19425)"
+  * `d33bc9298` (2026-01-11) - "Fix bugs when attempting to install add-ons requiring a newer NVDA release (#19420)"
+  * `099beee50` (2026-01-13) - "Update tracked translations from Crowdin (#19434)"
+  * `747eae0fc` (2026-01-12) - "Fixup MathCAT settings (#19227)"
+  * `0ec178ae6` (2026-01-13) - "Update user_docs/en/userGuide.xliff"
+
+## チェリーピック作業の進捗
+
+### PR 628: チェリーピック続き（2026-01-13）
+
+以下の5つのコミットをチェリーピックしました：
+
+1. ✅ `9f3aecbb0` - Revert AI image description work
+2. ✅ `d33bc9298` - Fix bugs when attempting to install add-ons
+3. ✅ `099beee50` - Update tracked translations from Crowdin
+4. ✅ `747eae0fc` - Fixup MathCAT settings
+5. ✅ `0ec178ae6` - Update user_docs/en/userGuide.xliff
+
+#### コンフリクト解決
+
+- `.github/workflows/testAndPublish.yml`: JP PATCHを保持
+- `source/gui/__init__.py`: LanguageSettingsPanelを保持（JP固有）
+- `user_docs/en/changes.md`: AI image descriptionの記述を削除
+- `uv.lock`: 再生成
+- 翻訳ファイル（.po、.xliff）: 新しいバージョンを採用し、コンフリクトマーカーを削除（68ファイル）
+
+#### ビルド確認
+
+- ✅ `scons.bat source`: 成功
+- ⚠️ JP smoke test: ローカル環境で失敗（CI環境で確認予定）
+
+#### 状態
+
+- PR作成済み: https://github.com/nvdajp/nvdajp/pull/628
+- CI確認待ち
 * x64移行コミット: `58dd14767` (2025年9月15日) - "Only build 64bit" ✅ マージ完了
 * **持続的マージ戦略**: `projectDocs/jp/beta-merge-strategy.md` を参照
 
@@ -388,6 +424,26 @@
 
 * [ ] **コードページと文字コード関連の改善**
   * 暫定クラッシュ対策ではなくリファクタリングを行う
+  * **前提条件**: CI環境での`test_pass2`失敗をローカルで再現できるようにする
+    * **再現方法**: GitHub Actionsの英語コードページ（1252）環境をローカルで再現
+      * ローカルで`chcp 1252`を設定してからJP smoke testを実行
+      * CI環境と同じ条件（コードページ1252、x64 Python 3.13.11）でテストを実行
+      * エラーパターンがCI環境と同じか確認
+    * **再現できてからリファクタリングを開始**
+    * **参照**: `projectDocs/jp/tab-character-analysis.md` - CI環境でのコードページ設定問題の詳細
+    * **調査結果（2026-01-13）**:
+      * ✅ コードページ1252でテストを実行したが、**成功した**（CI環境では18個のエラー）
+      * ✅ コードページだけが原因ではないことが確認された
+      * 🔍 **重要な発見: 辞書ビルド時のコードページ設定が原因だった**
+        * `scons_jp.py`では`chcp 932`を実行してから辞書をビルド（789行目）
+        * しかし、`testAndPublish.yml`の`Prepare JTalk`ステップではコードページ932を設定していなかった
+        * CI環境（コードページ1252）では、辞書がコードページ1252の環境でビルドされていた
+        * **原因**: 辞書ビルド時のコードページ（1252）とテスト実行時のコードページ（932）が一致していなかった
+      * ✅ **解決策**: `.github/workflows/testAndPublish.yml`の`Prepare JTalk`ステップで`chcp 932`を追加
+        * コミット: `45a8aabd7` (2026-01-13)
+        * これにより、辞書ビルド時とテスト実行時のコードページが一致し、問題が解消された
+      * ✅ **検証完了**: CI環境で`test_pass2`が成功することを確認（18個のエラーが解消）
+      * **参照**: `projectDocs/jp/tab-character-analysis.md` - CI環境での辞書ビルド時のコードページ設定問題の詳細
 
 * [ ] **ユーザー辞書テストの有効化**
   * `jtusr.csv` から `mecab-dict-index` でユーザー辞書を生成し、`Mecab_initialize(user_dics=...)` を用いたjp smoke test拡張

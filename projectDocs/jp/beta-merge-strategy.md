@@ -1,6 +1,6 @@
 # 本家の特定タグを基点としたブランチの切り直し：実施方針と考察
 
-**最終更新**: 2026-01-11
+**最終更新**: 2026-01-13
 
 ## 概要
 
@@ -15,7 +15,7 @@
 
 ### 履歴の状態
 
-- **現在のブランチ**: `alphajp-260110`
+- **現在のブランチ**: `alphajp`
 - **nvaccess/beta の最新コミット**: `eeb6143aa` (Correctly register .nvda-addon file association on installation #19419)
 - **履歴の関係**: **unrelated histories**（分岐した履歴）
   - `merge-base` が見つからない
@@ -28,7 +28,7 @@
 **Unrelated histories**（関連のない履歴）とは、2つのブランチが共通の祖先（merge-base）を持たない状態です。
 
 ```
-betajpブランチ: 独自の履歴で進化（別のリポジトリから開始）
+alphajpブランチ: 独自の履歴で進化（別のリポジトリから開始）
 nvaccess/beta: 別の履歴で進化（nvaccess/nvdaリポジトリ）
 → 共通の祖先（merge-base）が存在しない
 ```
@@ -130,19 +130,24 @@ git merge --no-commit --no-ff --allow-unrelated-histories nvaccess/beta
 
 詳細は `projectDocs/jp/archive/merge-rehearsal-*.md` を参照。
 
-## 代替アプローチ：本家の特定タグを基点としたブランチの切り直し
+## 本家の特定コミットを基点としたブランチの切り直し
 
 ### アプローチの概要
 
-本家の特定のタグ（例：`release-2024.4`）を基点として、日本語版のブランチを切り直すことで、unrelated historiesの問題を根本的に解決するアプローチです。
+本家の特定のコミット（SHA1ハッシュ）を基点として、日本語版のブランチを切り直すことで、unrelated historiesの問題を根本的に解決するアプローチです。
+
+**起点となるコミット**: `0ec178ae68de8031de7fdaa486779c45ba30800f` (nvaccess/nvda beta branch)
 
 ### 技術的な可能性
 
-**可能**: 本家の特定のタグを基点として、新しいブランチを作成することは技術的に可能です。
+**可能**: 本家の特定のコミット（SHA1ハッシュ）を基点として、新しいブランチを作成することは技術的に可能です。
 
 ```powershell
-# 本家の特定のタグを基点として新しいブランチを作成
-git checkout -b betajp-new nvaccess/release-2024.4
+# 特定のSHA1ハッシュを基点として新しいブランチを作成
+git checkout -b alphajp-<date> 0ec178ae68de8031de7fdaa486779c45ba30800f
+
+# 例: 2026年1月13日を起点とする場合
+git checkout -b alphajp-20260113 0ec178ae68de8031de7fdaa486779c45ba30800f
 
 # 日本語版の変更を適用
 # - JP固有のファイルを追加
@@ -150,20 +155,33 @@ git checkout -b betajp-new nvaccess/release-2024.4
 # - テストを実行
 ```
 
+**特定のSHA1ハッシュを基点にするメリット**:
+- 特定のバージョン（リリースタグ、特定のコミット）を正確に指定できる
+- ブランチの最新が不安定な場合でも、安定したコミットを基点にできる
+- 再現性が高い（同じハッシュを基点にすれば常に同じ状態から開始できる）
+
+**注意点**:
+- ハッシュが`nvaccess`リモートに存在することを確認する必要がある（`git fetch nvaccess`を実行済みであること）
+- サブモジュールの状態も、そのコミット時点（`0ec178ae68de8031de7fdaa486779c45ba30800f`）の状態になる
+
 ### メリット
 
 1. **unrelated historiesの問題が解決される**
-   - 本家のタグを基点とすることで、共通の祖先が確実に存在する
+   - 本家の特定コミット（`0ec178ae68de8031de7fdaa486779c45ba30800f`）を基点とすることで、共通の祖先が確実に存在する
    - 将来的なマージが容易になる
    - `--allow-unrelated-histories`が不要になる
 
 2. **本家との整合性が保たれる**
-   - 本家の特定バージョンを基点とすることで、整合性が保証される
+   - 本家の特定コミットを基点とすることで、整合性が保証される
    - 将来的なマージ時のコンフリクトが大幅に減少する可能性がある
 
 3. **クリーンな履歴**
    - 新しいブランチは、本家の履歴を継承する
    - 履歴がシンプルで理解しやすくなる
+
+4. **再現性の確保**
+   - 特定のコミットハッシュを起点とすることで、いつでも同じ状態から開始できる
+   - ブランチの最新が不安定な場合でも、安定したコミットを基点にできる
 
 ### デメリットと課題
 
@@ -187,9 +205,9 @@ git checkout -b betajp-new nvaccess/release-2024.4
    - ブランチの切り直しは、既存の履歴を失うため、この原則に反する可能性がある
 
 5. **保護ブランチの問題**
-   - `betajp`ブランチは保護されている可能性がある
-   - 保護ブランチに対してforce pushはできない
-   - 新しいブランチを作成し、既存のブランチを置き換える必要がある
+   - `alphajp`ブランチは保護されていない
+   - force pushは運用上行わない（AGENTS.mdの原則に従う）
+   - 新しいブランチ（`alphajp-<date>`）を作成して作業する
 
 ### 改良アプローチ：既存ブランチをアーカイブとして残す
 
@@ -199,25 +217,21 @@ git checkout -b betajp-new nvaccess/release-2024.4
 
 1. **現行ブランチをアーカイブとして残す**
    ```powershell
-   # 現在の betajp ブランチの名前を legacy/betajp などに変更
-   git branch -m betajp legacy/betajp
-   # または、新しいブランチとして作成（元のブランチはそのまま）
-   git branch legacy/betajp betajp
+   # 現在の alphajp ブランチをアーカイブとして保存（元のブランチはそのまま）
+   git branch legacy/alphajp alphajp
    ```
    - これまでの開発履歴やコミットメッセージはすべてリポジトリ内に保持される
    - いつでも参照や検索が可能
 
 2. **新しいブランチを本家ベースで開始する**
    ```powershell
-   # 本家の 2026.1 から新しいブランチ（新しい betajp）を切り直す
-   git checkout -b betajp nvaccess/release-2026.1
-   # または、beta ブランチの最新から
-   git checkout -b betajp nvaccess/beta
+   # コミット 0ec178ae68de8031de7fdaa486779c45ba30800f を基点に
+   git checkout -b alphajp-<date> 0ec178ae68de8031de7fdaa486779c45ba30800f
    ```
    - この新しいブランチは本家と履歴が繋がっているため、今後のマージがスムーズになる
 
 3. **共存の状態**
-   - リポジトリ内には「古い歴史を持つ legacy ブランチ」と「本家と繋がった新しい betajp ブランチ」が共存する
+   - リポジトリ内には「古い歴史を持つ legacy ブランチ」と「本家と繋がった新しい alphajp-<date> ブランチ」が共存する
    - これらは一つの `.git` ディレクトリ内で管理される
    - Gitは異なる履歴を持つブランチを同じリポジトリ内に共存させることを標準的に許容する
 
@@ -249,12 +263,30 @@ git checkout -b betajp-new nvaccess/release-2024.4
    - どちらのブランチで作業するか明確にする必要がある
 
 3. **保護ブランチの問題**
-   - `betajp`ブランチは保護されている可能性がある
-   - 保護ブランチに対してリネームや新しいブランチの作成は、適切な権限が必要
+   - `alphajp`ブランチは保護されていない
+   - ただし、運用上は既存ブランチを直接操作せず、新しいブランチ（`alphajp-<date>`）で進める
 
-### 具体的な実施方針（nvaccess/betaを基点とした場合）
+### 具体的な実施方針（コミット `0ec178ae68de8031de7fdaa486779c45ba30800f` を基点とした場合）
 
 サブモジュールの再同期が完了していることを前提として、差分が比較的スムーズに適用可能な場合の実施方針です。
+
+#### 事前チェックリスト
+
+- **基点の確認**: 使用するコミットハッシュ `0ec178ae68de8031de7fdaa486779c45ba30800f` が確定している
+  - `git fetch nvaccess`で該当コミットを取得
+  - `git cat-file -e 0ec178ae68de8031de7fdaa486779c45ba30800f`で存在確認
+- **作業ブランチ名**: 新規ブランチ名（例: `alphajp-<date>`）が確定している
+- **アーカイブ名**: 既存ブランチ保存用の名前（例: `legacy/alphajp`）が確定している
+- **サブモジュール**: 再同期が完了している（`projectDocs/jp/roadmap.md`で確認）
+- **作業状態**: 作業ツリーがクリーン（`git status -sb`）
+- **既存ブランチの扱い**: `alphajp`は参照用として保持し、新しいブランチ（`alphajp-<date>`）で進める
+
+#### 作業ルール（実運用）
+
+- 破壊的操作（履歴改変、force push）は行わない
+- 完了単位でコミット（フェーズ完了時に1コミット）
+- フェーズ毎に差分確認（`git diff --stat` など）
+- 大きな差分が出たファイルは、JP PATCH部分の抽出適用を検討
 
 #### 現状の把握
 
@@ -268,25 +300,28 @@ git checkout -b betajp-new nvaccess/release-2024.4
 
 2. **上流との同期状態**
    - **前提**: サブモジュールの再同期は完了している（`roadmap.md`でカバー）
-   - サブモジュールはnvaccess/betaと同期済みの状態
+   - サブモジュールはコミット `0ec178ae68de8031de7fdaa486779c45ba30800f` 時点の状態と同期済み
    - 差分が比較的スムーズに適用可能
 
 #### 作業の流れ（前提条件）
 
 **前提**: サブモジュールの再同期は完了している（`roadmap.md`でカバー）
 
-このドキュメントでは、サブモジュールがnvaccess/betaと同期済みの状態を前提として、ブランチの切り直しとJP固有の変更の再適用を行います。
+このドキュメントでは、コミット `0ec178ae68de8031de7fdaa486779c45ba30800f` を起点として、ブランチの切り直しとJP固有の変更の再適用を行います。サブモジュールはこのコミット時点の状態で初期化されます。
 
 ##### ステージ1: 準備とアーカイブ（安全）
 
 ```powershell
-# 1. nvaccess/betaをfetch（必要に応じて再試行）
-git fetch nvaccess beta
+# 1. nvaccessリモートから最新を取得（コミット 0ec178ae68de8031de7fdaa486779c45ba30800f を含む）
+git fetch nvaccess
 
-# 2. 現在のブランチをアーカイブとして保持
+# 2. 起点となるコミットが存在することを確認
+git cat-file -e 0ec178ae68de8031de7fdaa486779c45ba30800f
+
+# 3. 現在のブランチをアーカイブとして保持
 git branch legacy/alphajp alphajp
 
-# 3. 現在の状態を確認
+# 4. 現在の状態を確認
 git log --oneline -5 legacy/alphajp
 ```
 
@@ -298,14 +333,22 @@ git log --oneline -5 legacy/alphajp
 ##### ステージ2: 新しいブランチの作成（本家ベース）
 
 ```powershell
-# nvaccess/betaを基点に新しいブランチを作成
-git checkout -b alphajp-260112 nvaccess/beta
+# 1. nvaccessリモートから最新を取得（コミット 0ec178ae68de8031de7fdaa486779c45ba30800f を含む）
+git fetch nvaccess
 
-# サブモジュールを初期化・更新（nvaccess/betaの状態）
+# 2. 起点となるコミットが存在することを確認
+git cat-file -e 0ec178ae68de8031de7fdaa486779c45ba30800f
+
+# 3. コミット 0ec178ae68de8031de7fdaa486779c45ba30800f を基点に新しいブランチを作成
+git checkout -b alphajp-<date> 0ec178ae68de8031de7fdaa486779c45ba30800f
+# 例: git checkout -b alphajp-20260113 0ec178ae68de8031de7fdaa486779c45ba30800f
+
+# 4. サブモジュールを初期化・更新（コミット 0ec178ae68de8031de7fdaa486779c45ba30800f 時点の状態）
 git submodule update --init --recursive
 
-# 確認
+# 5. 確認
 git log --oneline -5
+git show --oneline -s HEAD  # 基点となったコミットを確認
 git branch -a
 git submodule status
 ```
@@ -314,7 +357,8 @@ git submodule status
 - 本家と履歴が接続される
 - 将来的なマージが容易になる
 - `--allow-unrelated-histories`が不要になる
-- サブモジュールはnvaccess/betaの状態で初期化される（前提：サブモジュール再同期済み）
+- サブモジュールはコミット `0ec178ae68de8031de7fdaa486779c45ba30800f` 時点の状態で初期化される（前提：サブモジュール再同期済み）
+- 特定のバージョンを正確に指定でき、再現性が高い
 
 ##### ステージ3: JP固有の変更の再適用（段階的）
 
@@ -412,8 +456,8 @@ git submodule status
    # alphajpのみに存在するファイル/ディレクトリをリストアップ
    $onlyInAlphajp = Get-Content only-in-alphajp.txt
    
-   # 新しいブランチに切り替え（alphajp-260112）
-   git checkout alphajp-260112
+   # 新しいブランチに切り替え（alphajp-<date>）
+   git checkout alphajp-<date>
    
    # alphajpブランチからファイルをコピー
    foreach ($file in $onlyInAlphajp) {
@@ -430,8 +474,8 @@ git submodule status
    **ファイルの追加とJP PATCH差分の上書きを段階的に実行**します：
 
    ```powershell
-   # 新しいブランチに切り替え（alphajp-260112）
-   git checkout alphajp-260112
+   # 新しいブランチに切り替え（alphajp-<date>）
+   git checkout alphajp-<date>
    
    # ========================================
    # フェーズ1: alphajpのみに存在するファイルを追加
@@ -569,7 +613,7 @@ git submodule status
    
    # ステップ5: 差分の確認（オプション）
    # 上書き後に、本家の変更が失われていないか確認
-   # git diff nvaccess/beta alphajp-260112 --stat で統計を確認
+   # git diff 0ec178ae68de8031de7fdaa486779c45ba30800f alphajp-<date> --stat で統計を確認
    # 必要に応じて、本家の変更を手動でマージ
    
    # フェーズ2のステージング
@@ -593,8 +637,8 @@ git submodule status
    # または
    Expand-Archive -Path alphajp-files.zip -DestinationPath .
    
-   # 新しいブランチに切り替え（alphajp-260112）
-   git checkout alphajp-260112
+   # 新しいブランチに切り替え（alphajp-<date>）
+   git checkout alphajp-<date>
    
    # only-in-alphajp.txtにリストされたファイル/ディレクトリをコピー
    $files = Get-Content only-in-alphajp.txt
@@ -624,8 +668,8 @@ git submodule status
    # only-in-alphajp.txtからファイルリストを読み込み
    $files = Get-Content only-in-alphajp.txt
    
-   # 新しいブランチに切り替え（alphajp-260112）
-   git checkout alphajp-260112
+   # 新しいブランチに切り替え（alphajp-<date>）
+   git checkout alphajp-<date>
    
    # バッチでコピー（パフォーマンス向上）
    $files | ForEach-Object -Parallel {
@@ -649,8 +693,8 @@ git submodule status
    **ステップ1: 両方に存在するファイルで内容が異なるファイルを特定**
 
    ```powershell
-   # 新しいブランチに切り替え（alphajp-260112）
-   git checkout alphajp-260112
+   # 新しいブランチに切り替え（alphajp-<date>）
+   git checkout alphajp-<date>
    
    # in-both.txtから、両方に存在するファイルを読み込む
    $inBoth = Get-Content in-both.txt
@@ -762,8 +806,8 @@ git submodule status
 
    ```powershell
    # 上書き後に、本家の変更が失われていないか確認
-   # git diff nvaccess/beta alphajp-260112 --stat で統計を確認
-   git diff nvaccess/beta alphajp-260112 --stat > diff-summary.txt
+   # git diff 0ec178ae68de8031de7fdaa486779c45ba30800f alphajp-<date> --stat で統計を確認
+   git diff 0ec178ae68de8031de7fdaa486779c45ba30800f alphajp-<date> --stat > diff-summary.txt
    
    # 大きな差分があるファイルを確認
    Get-Content diff-summary.txt | Where-Object { $_ -match "\d+ \+\d+.*\d+ -" }
@@ -775,7 +819,7 @@ git submodule status
 
    **注意事項**:
    - **すべての差分を上書きするため、本家の変更が失われる可能性があります**
-   - 上書き後、`git diff nvaccess/beta alphajp-260112 --stat`で差分を確認してください
+   - 上書き後、`git diff 0ec178ae68de8031de7fdaa486779c45ba30800f alphajp-<date> --stat`で差分を確認してください
    - 本家で大幅に変更されたファイルについては、手動でJP PATCH部分のみを抽出して適用することを検討してください
    - 可能であれば、小さな単位で適用し、各段階でビルドとテストを実行してください
    - `analyzeDiffMinimization.ps1`を使用して、差分最小化の候補を確認してください
@@ -783,7 +827,7 @@ git submodule status
 7. **確認方法**
    - JP PATCHマーカーの確認: `grep -r "# BEGIN JP PATCH\|# END JP PATCH\|# nvdajp" source/`
    - JP固有ファイルの確認: `git ls-files | Select-String -Pattern "(jp|JP|nvdajp)"`
-   - `legacy/alphajp`ブランチとの比較で差分を確認: `git diff legacy/alphajp alphajp-260112 --stat`
+   - `legacy/alphajp`ブランチとの比較で差分を確認: `git diff legacy/alphajp alphajp-<date> --stat`
 
 8. **ビルドとテスト**
    ```powershell
@@ -827,11 +871,11 @@ git submodule status
 
 1. **ステージ1（準備）を実施**: 既存ブランチをアーカイブとして保持
 
-2. **ステージ2（新ブランチ作成、alphajp-260112）を実施**: 
-   - nvaccess/betaを基点に新しいブランチを作成
-   - サブモジュールを初期化・更新（nvaccess/betaの状態、既に同期済み）
+2. **ステージ2（新ブランチ作成、alphajp-<date>）を実施**: 
+   - コミット `0ec178ae68de8031de7fdaa486779c45ba30800f` を基点に新しいブランチを作成
+   - サブモジュールを初期化・更新（コミット `0ec178ae68de8031de7fdaa486779c45ba30800f` 時点の状態、既に同期済み）
 
-3. **ステージ3（JP変更の再適用、alphajp-260112）を段階的に実施**:
+3. **ステージ3（JP変更の再適用、alphajp-<date>）を段階的に実施**:
    - まずJP固有ディレクトリを追加（フェーズ1）
    - 次に両方に存在するファイルのすべての差分を上書き（フェーズ2）
    - 各段階でビルドとテストを実行
@@ -840,10 +884,11 @@ git submodule status
 
 実施前に以下を確認：
 
-1. **ブランチ名**: `alphajp-260112`で進めて問題ないか（やり直したときに区別しやすい）
-2. **アーカイブ名**: `legacy/alphajp`で問題ないか
-3. **実施タイミング**: 今すぐ実施するか、準備を整えてからか
-4. **上流との同期**: サブモジュールの再同期が完了していることを確認（`roadmap.md`でカバー）
+1. **起点となるコミット**: `0ec178ae68de8031de7fdaa486779c45ba30800f` が正しいか
+2. **ブランチ名**: `alphajp-<date>`で進めて問題ないか（やり直したときに区別しやすい）
+3. **アーカイブ名**: `legacy/alphajp`で問題ないか
+4. **実施タイミング**: 今すぐ実施するか、準備を整えてからか
+5. **上流との同期**: サブモジュールの再同期が完了していることを確認（`roadmap.md`でカバー）
 
 ### 成功させるための考察
 
@@ -865,23 +910,22 @@ git submodule status
 3. **本家の変更との整合性**
    - すべての差分を上書きするため、本家の変更が失われる可能性がある
    - 本家で大幅に変更されたファイルについては、手動でJP PATCH部分のみを抽出して適用する必要がある
-   - **対策**: 上書き後、`git diff nvaccess/beta alphajp-260112 --stat`で差分を確認
+   - **対策**: 上書き後、`git diff 0ec178ae68de8031de7fdaa486779c45ba30800f alphajp-<date> --stat`で差分を確認
    - **対策**: `analyzeDiffMinimization.ps1`を使用して、差分最小化の候補を確認
 
 4. **移行期間の複雑さ**
    - 2つのブランチが共存するため、開発フローが複雑になる可能性がある
    - どちらのブランチで作業するか明確にする必要がある
-   - **対策**: 移行期間中は、新しいブランチ（`alphajp-260112`）でのみ作業を行う
+   - **対策**: 移行期間中は、新しいブランチ（`alphajp-<date>`）でのみ作業を行う
    - **対策**: 移行完了後、`legacy/alphajp`は参照専用として保持
 
 5. **保護ブランチの問題**
-   - `betajp`ブランチは保護されている可能性がある
-   - 保護ブランチに対してリネームや新しいブランチの作成は、適切な権限が必要
-   - **対策**: 新しいブランチ（`alphajp-260112`）を作成し、移行完了後に保護ブランチの設定を更新
+   - `alphajp`ブランチは保護されていない
+   - **対策**: 新しいブランチ（`alphajp-<date>`）で移行を進め、`alphajp`は参照用として維持
 
 ## 結論
 
-**本家の特定タグを基点としたブランチの切り直し**（既存ブランチをアーカイブとして残す改良版）は技術的に可能です。
+**コミット `0ec178ae68de8031de7fdaa486779c45ba30800f` を基点としたブランチの切り直し**（既存ブランチをアーカイブとして残す改良版）は技術的に可能です。
 
 **成功の鍵**:
 - 段階的な実施と各段階でのテスト実行
@@ -895,6 +939,7 @@ git submodule status
 - 十分な時間とリソースが確保できる場合
 
 **実施前の確認事項**:
+- 起点となるコミット `0ec178ae68de8031de7fdaa486779c45ba30800f` が正しいことを確認
 - サブモジュールの再同期が完了していることを確認（`roadmap.md`を参照）
 
 ## 関連ドキュメント
