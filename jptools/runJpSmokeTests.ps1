@@ -308,6 +308,11 @@ $jptoolsDir = Join-Path $repoRoot "miscDepsJp\jptools"
 $env:PYTHONPATH = "$jtalkSource;$pythonJtalk;$jptoolsDir"
 Write-Host "PYTHONPATH set to $($env:PYTHONPATH)"
 
+# Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
+# This ensures Japanese characters in error messages can be printed without encoding errors
+$env:PYTHONUTF8 = "1"
+Write-Host "Set PYTHONUTF8=1"
+
 # Set max tests environment variable if specified
 if ($MaxTests -gt 0) {
     $env:JP_SMOKE_MAX_TESTS = $MaxTests.ToString()

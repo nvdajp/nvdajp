@@ -566,3 +566,54 @@ MeCab解析結果にゼロ幅空白が含まれている：
 * MeCabは`CHARSET_SHIFT_JIS`でコンパイルされているが、実際にはUTF-8バイト列を受け取って処理している
 * コードページ932の環境では、この矛盾が何らかの形で処理されていたが、コードページ1252の環境（特にx64）では問題が顕在化した
 * ゼロ幅空白がMeCab解析結果に含まれているという事実は、MeCabがUTF-8バイト列を処理していることを示している
+
+---
+
+## Python標準入出力のエンコーディング設定 (2026-01-15修正)
+
+### 問題の概要
+
+CI環境でJP smoke test (`test_pass2`) を実行した際、`UnicodeEncodeError`が発生しました：
+
+```
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 62-63: character maps to <undefined>
+```
+
+エラーは`jpBrailleRunner.py`の317行目で、GitHub Actionsのエラーアノテーション（日本語文字を含む）を`print()`で出力しようとした際に発生しました。
+
+### 原因
+
+Windows CI環境では、Pythonの標準出力がデフォルトで`cp1252`（Western European）エンコーディングを使用します。日本語文字を含むエラーメッセージを`print()`で出力しようとすると、`cp1252`では日本語文字をエンコードできないため、`UnicodeEncodeError`が発生します。
+
+### 解決策
+
+`jptools/runJpSmokeTests.ps1`に`PYTHONUTF8=1`環境変数を設定しました：
+
+```powershell
+# Set PYTHONUTF8=1 to enable UTF-8 mode for console output (handles Unicode characters)
+# This ensures Japanese characters in error messages can be printed without encoding errors
+$env:PYTHONUTF8 = "1"
+Write-Host "Set PYTHONUTF8=1"
+```
+
+`PYTHONUTF8=1`を設定することで、Python 3.7以降では標準入出力がUTF-8エンコーディングを使用するようになり、日本語文字を含むメッセージも正しく出力できます。
+
+### 実装箇所
+
+以下のスクリプトで既に`PYTHONUTF8=1`が設定されています：
+
+* `jptools/checkJtalkArch.ps1`: 322行目
+* `jptools/scons_jp.py`: 161行目、180行目、755行目
+* `jptools/certBuild2025.ps1`: 88行目
+* `jptools/tests.cmd`: 10行目
+* `jptools/runJpSmokeTests.ps1`: 309行目（2026-01-15追加）
+
+### 検証
+
+CI環境で`test_pass2`を実行し、日本語文字を含むエラーメッセージが正しく出力されることを確認しました。
+
+### 参照
+
+* コミット: `betajp-260116` (2026-01-15)
+* CI実行: <https://github.com/nvdajp/nvdajp/actions/runs/21032398812/job/60472083953>
+* Python 3.7以降の`PYTHONUTF8`環境変数: <https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUTF8>
