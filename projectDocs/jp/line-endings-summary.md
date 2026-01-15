@@ -44,9 +44,7 @@
 - `line-endings-investigation.md` - 詳細な調査結果と推奨対応手順
 
 ### 過去の作業記録（参考）
-- `period2-qa-evaluation.md` - 期間2の品質保証評価（改行コードの変更が何度も繰り返された問題）
-- `period2-scope-separation-plan.md` - 期間2のスコープ分割計画（改行コードを別ブランチ/PRで実施する方針）
-- `period2-implementation-strategy.md` - 期間2の実装戦略（改行コード統一の別ブランチ/PR実施方針）
+- 期間2の作業記録は完了したタスクのため削除済み（改行コードの変更が何度も繰り返された問題の記録）
 - `pr608-vs-pr609-explanation.md` - PR #608とPR #609の違い（改行コード変更の除外）
 
 **注意**: 過去のドキュメントは参考情報として保持していますが、現在の状況は `line-endings-investigation.md` を参照してください。

@@ -843,7 +843,6 @@ def shouldPlayErrorSound() -> bool:
 ## 参考資料
 
 - [日本語版ロードマップ](roadmap.md) - 長期的な目標と現行マイルストーン
-- [nvaccess/beta からのマージ計画](merge-plan-beta-2025-11.md) - マージ戦略と実装状況
 - [点字ルーティングテスト失敗の詳細](test-routing-failures.md) - テスト失敗の分析
 - [テストスキップの妥当性説明](test-routing-skip-justification.md) - テストスキップの理由
 - [点字ルーティング問題の詳細分析](braille-routing-analysis.md) - 問題の詳細分析

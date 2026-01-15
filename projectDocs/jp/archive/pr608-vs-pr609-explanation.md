@@ -41,7 +41,7 @@ PR #608に含まれていた**期間2の作業**（コミット `0e59f42031` の
 3. **フォーマット修正が複数のコミットに分かれている**
    - trailing whitespace、trailing comma、end of file が別々のコミット
 
-詳細は `projectDocs/jp/period2-qa-evaluation.md` を参照。
+詳細は削除済み（期間2の作業記録は完了したタスクのため削除）。
 
 ---
 
@@ -78,7 +78,7 @@ PR #609では、以下のようにスコープを分離しました：
 - **このPRのスコープ**: pre-commit設定とフォーマット修正（日本語対応機能の実装に集中）
 - **除外**: 改行コードの変更（別PRで実施）
 
-詳細は `projectDocs/jp/period2-scope-separation-plan.md` を参照。
+詳細は削除済み（期間2の作業記録は完了したタスクのため削除）。
 
 ---
 

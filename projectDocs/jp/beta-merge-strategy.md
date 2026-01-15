@@ -6,7 +6,18 @@
 
 このドキュメントは、本家（nvaccess/nvda）の特定タグを基点として日本語版のブランチを切り直す代替アプローチの実施方針と、成功させるための考察をまとめたものです。
 
+**注意**: 2026.1 に向けた nvaccess/nvda beta ブランチの取り込みは完了しています（2026-01-09完了）。詳細は `projectDocs/jp/roadmap.md` を参照してください。
+
 ## 現在の状況
+
+### 2026.1への取り込み状況
+
+- ✅ **2026.1 に向けた nvaccess/nvda beta ブランチの取り込み完了**（2026-01-09）
+  - 本家ベータ版の機能的な取り込み完了
+  - 従来の日本語版のパッチの移植完了
+  - すべてのテスト通過確認完了（型チェック、ビルド、JP smoke test、ユニットテスト、システムテスト）
+  - **注意**: 最終的な統合は PR マージではなく force push により実施された（unrelated histories の状態により、通常のマージでは大量のコンフリクトが発生するため）
+  - 詳細は `projectDocs/jp/roadmap.md` の「ステージ3b完了後の追加作業」セクションを参照
 
 ### リモート設定
 
@@ -15,8 +26,8 @@
 
 ### 履歴の状態
 
-- **現在のブランチ**: `alphajp`
-- **nvaccess/beta の最新コミット**: `eeb6143aa` (Correctly register .nvda-addon file association on installation #19419)
+- **現在のブランチ**: `betajp`（2026.1への取り込み完了後）
+- **nvaccess/beta の最新コミット**: 2026.1への取り込み時点の最新コミットまで取り込み完了
 - **履歴の関係**: **unrelated histories**（分岐した履歴）
   - `merge-base` が見つからない
   - グラフでは `8fa9bb6d9` が `eeb6143aa` の上に `grafted` として表示（履歴書き換えの可能性）
@@ -105,6 +116,14 @@ nvaccess/beta: 別の履歴で進化（nvaccess/nvdaリポジトリ）
 
 **注意**: これは「unrelated histories」という状態そのものが問題なのではなく、マージ時に大量のコンフリクトが発生することが実用的な問題です。
 
+#### 実際の解決方法（2026.1への取り込み）
+
+2026.1 への取り込みでは、unrelated histories の状態により通常の PR マージでは大量のコンフリクトが発生するため、最終的な統合は **force push により実施されました**。
+
+- **理由**: unrelated histories の状態では、`--allow-unrelated-histories` を使用してもすべてのファイルが「両方で変更された」と判定され、242-436ファイルものコンフリクトが発生する
+- **解決方法**: 段階的な取り込み（cherry-pick や範囲マージ）により変更を統合し、最終的に force push で統合ブランチを反映
+- **注意**: AGENTS.md の原則では「Avoid destructive operations (no history rewrites or force pushes unless explicitly requested)」とされているが、unrelated histories の状態では force push が必要な場合がある
+
 ### マージ可能性の評価
 
 #### 直接マージの試行結果
@@ -128,7 +147,7 @@ git merge --no-commit --no-ff --allow-unrelated-histories nvaccess/beta
 - **2025-12-30 (x86 Python 3.13)**: 242 ファイルのコンフリクト
 - **2025-12-30 (x64 Python 3.13)**: 255 ファイルのコンフリクト
 
-詳細は `projectDocs/jp/archive/merge-rehearsal-*.md` を参照。
+**注**: マージリハーサルの記録は完了したタスクのため削除済み。
 
 ## 本家の特定コミットを基点としたブランチの切り直し
 
@@ -569,10 +588,8 @@ git submodule status
    $differentFiles | Out-File -FilePath different-files-in-both.txt -Encoding utf8
    Write-Host "内容が異なるファイル数: $($differentFiles.Count)" -ForegroundColor Cyan
    
-   # ステップ2: compare-with-betaフォルダの情報を活用（参考）
-   # projectDocs/jp/compare-with-beta/file-list.md を確認
-   # projectDocs/jp/compare-with-beta/important-changes.md を確認
-   # projectDocs/jp/compare-with-beta/diff-minimization-candidates.md を確認
+   # ステップ2: 差分の確認（参考）
+   # 注: compare-with-beta ディレクトリは 2026.1 への取り込み完了により削除済み
    
    # ステップ3: カテゴリ別に分類して適用
    # 1. ビルドシステム関連（優先度高）
@@ -753,18 +770,11 @@ git submodule status
    Write-Host "内容が異なるファイル数: $($differentFiles.Count) / $total" -ForegroundColor Green
    ```
 
-   **ステップ2: compare-with-betaフォルダの情報を活用（参考）**
+   **ステップ2: 差分の確認（参考）**
 
    ```powershell
-   # compare-with-betaフォルダの情報を確認
-   # - file-list.md: 変更されたファイルの一覧
-   # - important-changes.md: 重要な変更の詳細
-   # - diff-minimization-candidates.md: 差分最小化の候補
-   # - summary.md: 比較結果のサマリー
-   
-   Get-Content projectDocs/jp/compare-with-beta/file-list.md
-   Get-Content projectDocs/jp/compare-with-beta/important-changes.md
-   Get-Content projectDocs/jp/compare-with-beta/summary.md
+   # 注: compare-with-beta ディレクトリは 2026.1 への取り込み完了により削除済み
+   # 差分の確認は git diff コマンドを使用してください
    ```
 
    **ステップ3: カテゴリ別に分類して適用**
@@ -945,5 +955,3 @@ git submodule status
 ## 関連ドキュメント
 
 - `projectDocs/jp/roadmap.md` - ロードマップとタスク管理
-- `projectDocs/jp/compare-with-beta/` - betaブランチとの比較結果
-- `projectDocs/jp/archive/merge-rehearsal-*.md` - 過去のマージリハーサル記録

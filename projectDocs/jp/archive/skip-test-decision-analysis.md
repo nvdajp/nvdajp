@@ -160,4 +160,4 @@
 
 * **品質保証原則**: `projectDocs/jp/roadmap.md` の「品質保証の原則」セクション
 * **エラーパターン分析**: `projectDocs/jp/jpSmokeTest-error-patterns.md`
-* **マージ準備チェックリスト**: `projectDocs/jp/merge-readiness-checklist-260102.md`
+* **注**: マージ準備チェックリストは完了したタスクのため削除済み
