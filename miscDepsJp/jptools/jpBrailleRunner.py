@@ -156,6 +156,27 @@ def pass2(verboseMode=False):
 	global output
 	outfile = "__h2output.txt"
 	with open_file(outfile, "w") as f:
+		# Display environment info (GitHub Actions compatible)
+		print("::group::Test Environment")
+		try:
+			import ctypes
+
+			code_page_acp = ctypes.windll.kernel32.GetACP()
+			print(f"  Code page (GetACP): {code_page_acp}")
+		except Exception:
+			print("  Code page (GetACP): <unavailable>")
+		try:
+			import subprocess
+
+			chcp_result = subprocess.run(["chcp"], capture_output=True, text=True, shell=True)
+			chcp_output = chcp_result.stdout.strip() if chcp_result.stdout else "<unavailable>"
+			print(f"  chcp: {chcp_output}")
+		except Exception:
+			print("  chcp: <unavailable>")
+		print(f"  jtalk_dir: {jtalk_dir}")
+		print(f"  dic_dir: {dic_dir}")
+		print("::endgroup::")
+
 		libmecab_path = jtalk_dir / "libmecab.dll"
 		f.write(f"jtalk_dir: {jtalk_dir}\n")
 		f.write(f"libmecab.dll exists: {libmecab_path.exists()} ({libmecab_path})\n")
@@ -276,6 +297,49 @@ def pass2(verboseMode=False):
 					error_summary["outpos_mismatch"] += 1
 				if isError:
 					count += 1
+					# Build error details for console output and GitHub Actions annotation
+					error_details_parts = []
+					if "result_mismatch" in error_types:
+						error_details_parts.append(f"result: expected '{t['input']}', got '{result}'")
+					if "inpos2_mismatch" in error_types:
+						error_details_parts.append(f"inpos2: expected '{correct_inpos2}', got '{result_inpos2}'")
+					if "inpos_mismatch" in error_types:
+						error_details_parts.append(f"inpos: expected '{correct_inpos}', got '{result_inpos}'")
+					if "outpos_mismatch" in error_types:
+						error_details_parts.append(f"outpos: expected '{correct_outpos}', got '{result_outpos}'")
+					error_details = " | ".join(error_details_parts)
+
+					# Output GitHub Actions error annotation
+					# Escape special characters in error message for GitHub Actions
+					error_msg = f"Test #{count} ({', '.join(error_types)}): text='{t['text']}' | {error_details}"
+					# Replace newlines and other special chars that might break annotation
+					error_msg_escaped = error_msg.replace("\n", " ").replace("\r", " ")
+					print(f"::error file={outfile}::{error_msg_escaped}")
+
+					# Output detailed error to console for immediate visibility
+					print(f"\n=== ERROR #{count}: {', '.join(error_types)} ===")
+					print(f"text   : {t['text']}")
+					print(f"correct: {t['input']}")
+					print(f"result : {result}")
+					print(f"pat    : {pat}")
+					if correct_inpos2:
+						print(f"cor_in2: {correct_inpos2}")
+					if correct_inpos1:
+						print(f"cor_in1: {correct_inpos1}")
+					if correct_inpos:
+						print(f"cor_in : {correct_inpos}")
+					if correct_outpos:
+						print(f"cor_out: {correct_outpos}")
+					print(f"res_in2: {result_inpos2}")
+					print(f"res_in1: {result_inpos1}")
+					print(f"res_in : {result_inpos}")
+					print(f"res_out: {result_outpos}")
+					if "comment" in t and t["comment"]:
+						if isinstance(t["comment"], str):
+							print(f"comment: {t['comment']}")
+						else:
+							print(f"comment: {', '.join(t['comment'])}")
+					print()  # Empty line for readability
 				if isError or verboseMode:
 					if isError:
 						f.write(f"=== ERROR #{count}: {', '.join(error_types)} ===\n")
@@ -318,9 +382,24 @@ def pass2(verboseMode=False):
 			if error_summary["outpos_mismatch"] > 0:
 				f.write(f"  - outpos mismatch: {error_summary['outpos_mismatch']}\n")
 			f.write("=" * 60 + "\n")
+
+			# Output error summary to console for immediate visibility
+			print("\n" + "=" * 60)
+			print("ERROR SUMMARY")
+			print("=" * 60)
+			print(f"Total errors: {count}")
+			if error_summary["result_mismatch"] > 0:
+				print(f"  - Result mismatch: {error_summary['result_mismatch']}")
+			if error_summary["inpos2_mismatch"] > 0:
+				print(f"  - inpos2 mismatch: {error_summary['inpos2_mismatch']}")
+			if error_summary["inpos_mismatch"] > 0:
+				print(f"  - inpos mismatch: {error_summary['inpos_mismatch']}")
+			if error_summary["outpos_mismatch"] > 0:
+				print(f"  - outpos mismatch: {error_summary['outpos_mismatch']}")
+			print("=" * 60)
 		outfile_path = Path(outfile).resolve()
 		if count > 0:
-			print(f"h2: {count} error(s) found. Details written to: {outfile_path}")
+			print(f"\nh2: {count} error(s) found. Details written to: {outfile_path}")
 			print("    Error breakdown: ", end="")
 			parts = []
 			if error_summary["result_mismatch"] > 0:
@@ -333,7 +412,7 @@ def pass2(verboseMode=False):
 				parts.append(f"outpos={error_summary['outpos_mismatch']}")
 			print(", ".join(parts))
 		else:
-			print(f"h2: All tests passed. Output written to: {outfile_path}")
+			print(f"\nh2: All tests passed. Output written to: {outfile_path}")
 	return (count, outfile)
 
 
