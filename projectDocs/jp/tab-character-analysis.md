@@ -341,6 +341,56 @@ CI環境のアーティファクト（`__h2output.txt`）から分析した結�
 
 ---
 
+## jpBrailleRunner.py のコードページ動作仕様 (2026-01-15調査)
+
+### 概要
+
+`miscDepsJp/jptools/jpBrailleRunner.py`が実際にどのコードページで動作するかを明確化します。
+
+### 動作レベルの整理
+
+#### Pythonスクリプトレベル
+
+* **ファイルI/O**: UTF-8 (`encoding="utf-8"`で明示的に指定)
+* **文字列処理**: Python内部はUTF-8/Unicode
+* **テストケースの文字列**: Pythonの文字列（Unicode）
+
+#### MeCab DLLレベル
+
+* **辞書パス**: UTF-8でエンコードしてMeCab DLLに渡される (`dic_str.encode("utf-8")`)
+* **辞書ファイル**: UTF-8で読み込まれる
+* **テキスト解析**: `text2mecab`でUTF-8に変換されてからMeCabに渡される
+
+### 重要な点
+
+MeCab DLLがファイルパスを処理する際、Windows API（CreateFile等）を使用する可能性があります。ANSI版API（CreateFileA）を使用している場合、システムのコードページ（`GetACP()`）ではなく、**コンソールのコードページ（`chcp`）が影響する可能性があります**。
+
+### 実際の動作
+
+* **Pythonスクリプト自体**: UTF-8で動作（ファイルI/O、文字列処理）
+* **MeCab DLL**: ファイルパス処理でWindows APIを使用するため、コンソールのコードページ（`chcp`）が影響する可能性がある
+* **実効コードページ**: `chcp 932`が設定されている場合、MeCab DLLは932で動作する可能性が高い
+
+### コードページの表示について
+
+`jpBrailleRunner.py`の`pass2()`関数では、環境情報として以下を表示します：
+
+* **`GetACP()`**: システムレベルのコードページ（参考情報）
+* **`chcp`**: コンソールのコードページ（実際に使用されているコードページ）
+
+**注意**: `GetACP()`はシステムレベルのコードページを返すため、プロセスレベルで`chcp 932`を設定しても反映されません。実際に使用されているコードページは`chcp`コマンドの結果で確認できます。
+
+### 結論
+
+`jpBrailleRunner.py`は実質的にUTF-8で動作しますが、MeCab DLLのファイルパス処理ではコンソールのコードページ（`chcp`）が影響する可能性があります。そのため、`chcp 932`を設定することで、辞書ビルド時とテスト実行時のコードページを一致させることが重要です。
+
+### 参照
+
+* `miscDepsJp/jptools/jpBrailleRunner.py` - `pass2()`関数
+* `source/synthDrivers/jtalk/mecab.py` - `Mecab_initialize()`関数（`GetACP()`を使用してデバッグログに記録）
+
+---
+
 ## CI flaky問題: 漢数字特殊読みエラー (2026-01-15調査)
 
 ### 問題の概要
