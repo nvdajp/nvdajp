@@ -93,6 +93,10 @@ exclude = [
 	"./source/comInterfaces/*",
 	# Code from add-ons
 	"./source/userConfig/addons/*",
+	# nvdajp: Exclude third-party libraries in miscDepsJp
+	# Note: miscDepsJp/include/python-jtalk is checked by ruff
+	"./miscDepsJp/jptools/jtusrdic/plumbum",
+	"./miscDepsJp/jptools/jtusrdic/six.py",
 ]
 
 [tool.ruff.format]
