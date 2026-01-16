@@ -225,7 +225,6 @@ class EditableText(TextContainerObject, ScriptableObject):
 			and config.conf["language"]["jpAnnounceNewLine"]
 		):
 			import queueHandler
-			from gui import _
 
 			# Translators: new line of editable text
 			queueHandler.queueFunction(queueHandler.eventQueue, speech.speakMessage, _("new line"))
