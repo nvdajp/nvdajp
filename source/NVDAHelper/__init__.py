@@ -349,6 +349,17 @@ def handleInputCompositionEnd(result):
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 
 	focus = api.getFocusObject()
+	# nvdajp begin
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and config.conf["keyboard"]["speakTypedCharacters"]:
+		if result == "\u3000":
+			# Translators: handle input composition end
+			speech.speakText(_("full shape space"))
+			return
+		elif result == "\u0020":
+			# Translators: handle input composition end
+			speech.speakText(_("space"))
+			return
+	# nvdajp end
 	result = result.lstrip("\u3000 ")
 	curInputComposition = None
 	if isinstance(focus, InputComposition):
@@ -377,9 +388,36 @@ def handleInputCompositionEnd(result):
 		eventHandler.executeEvent("gainFocus", newFocus)
 		speech.setSpeechMode(oldSpeechMode)
 
-	if curInputComposition and not result:
-		result = curInputComposition.compositionString.lstrip("\u3000 ")
+	if curInputComposition:
+		# nvdajp begin
+		# when composition is finished,
+		# (1) say 'clear' if following keys are pressed:
+		# Escape, Shift+Escape, Ctrl+Z, Ctrl+[
+		# (2) say the result, followed by 'clear' if Backspace is pressed.
+		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+			from NVDAObjects import inputComposition
+
+			gesture = inputComposition.lastKeyGesture
+			ctrl = (winUser.VK_CONTROL, False) in gesture.generalizedModifiers
+			if (gesture.vkCode == winUser.VK_ESCAPE) or ctrl and gesture.vkCode in (0x5A, 0xDB):
+				# Translators: a message when the IME cancelation status
+				speech.speakMessage(_("Clear"))
+				return
+			else:
+				result = curInputComposition.compositionString.lstrip("\u3000 ")
+				if winUser.getAsyncKeyState(winUser.VK_BACK) & 1:
+					# Translators: a message when the IME cancelation status
+					result += " " + _("Clear")
+		else:
+			result = curInputComposition.compositionString.lstrip("\u3000 ")
+		# nvdajp end
 	if result:
+		# nvdajp begin
+		if not config.conf["inputComposition"]["announceSelectedCandidate"]:
+			return
+		# nvdajp end
+		# If the input has been finalized, cancel the current speech.
+		speech.cancelSpeech()
 		speech.speakText(result, symbolLevel=characterProcessing.SymbolLevel.ALL)
 
 
@@ -524,6 +562,20 @@ def handleInputCandidateListUpdate(candidatesString, selectionIndex, inputMethod
 	from NVDAObjects.inputComposition import CandidateItem
 
 	focus = api.getFocusObject()
+	# nvdajp begin
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+		from NVDAObjects import inputComposition
+
+		if inputComposition.lastKeyGesture:
+			log.debug("lastKeyCode %x" % inputComposition.lastKeyGesture.vkCode)
+		if not inputComposition.needDiscriminantReading(inputComposition.lastKeyGesture):
+			if isinstance(focus, CandidateItem):
+				oldSpeechMode = speech.getState().speechMode
+				speech.setSpeechMode(speech.SpeechMode.off)
+				eventHandler.executeEvent("gainFocus", focus.parent)
+				speech.setSpeechMode(oldSpeechMode)
+			return
+	# nvdajp end
 	if not (0 <= selectionIndex < len(candidateStrings)):
 		if isinstance(focus, CandidateItem):
 			oldSpeechMode = speech.getState().speechMode

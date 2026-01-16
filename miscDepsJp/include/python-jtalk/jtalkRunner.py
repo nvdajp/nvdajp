@@ -12,7 +12,6 @@ import os
 import sys
 import time
 import wave
-from os import getcwd
 from pathlib import Path
 
 try:

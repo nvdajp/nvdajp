@@ -3,7 +3,6 @@
 # for python-jtalk
 
 import re
-import sys
 
 
 re_ascii = re.ASCII

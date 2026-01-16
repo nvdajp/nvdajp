@@ -181,6 +181,22 @@ NVDA日本語版は、文字単位の移動やレビューで、文字の説明�
 - **設定**: `config.conf["keyboard"]["nvdajpImeBeep"]` で有効/無効を切り替え可能（デフォルト: `false`）
 - **動作**: 半角全角キーを押すと、IME の開閉状態に応じて異なる音程のビープ音が鳴ります
 
+##### 入力構成処理の拡張
+
+`source/NVDAHelper/__init__.py` の `handleInputCompositionEnd()` と `handleInputCandidateListUpdate()` 関数に、日本語入力時の処理を拡張しました。
+
+- **背景**: `source/NVDAHelper.py` から `source/NVDAHelper/__init__.py` への移行時に抜けていた日本語版独自修正を追加
+- **実装**:
+  - **`handleInputCompositionEnd()` 関数の拡張**:
+    - **スペース文字の特別な処理**: `nvdajpEnableKeyEvents` と `speakTypedCharacters` 設定が有効な場合、全角スペース（`\u3000`）と半角スペース（`\u0020`）を特別に読み上げ（「full shape space」「space」）
+    - **IMEキャンセル処理**: Escape、Shift+Escape、Ctrl+Z、Ctrl+[ キーでIMEがキャンセルされた場合、「Clear」と報告
+    - **Backspaceキー処理**: BackspaceキーでIMEが確定された場合、結果の後に「Clear」を追加して報告
+    - **`announceSelectedCandidate` チェック**: この設定が無効な場合は、確定された文字列を読み上げない
+  - **`handleInputCandidateListUpdate()` 関数の拡張**:
+    - **キーイベント処理**: `nvdajpEnableKeyEvents` 設定が有効な場合、区別読みが必要ないキー操作では候補リストの読み上げをスキップ
+- **設定**: `config.conf["keyboard"]["nvdajpEnableKeyEvents"]` と `config.conf["keyboard"]["speakTypedCharacters"]` で有効/無効を切り替え可能
+- **動作**: 日本語入力時に、スペース文字やIMEキャンセル操作が適切に報告され、不要な候補リストの読み上げが抑制されます
+
 ##### ANSI エディットボックスのワークアラウンド
 
 `source/NVDAObjects/window/edit.py` で、ANSI ビルドされたレガシーアプリケーションのエディットコントロールに対応するワークアラウンドを実装しています。
