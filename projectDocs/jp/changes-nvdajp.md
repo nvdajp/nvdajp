@@ -642,6 +642,16 @@ def buildConfigH(target, source, env):
   - `script_reportClipboardText()`: `useDetails=repeatCount > 1` を追加
   - `script_showGui()`: `allowInSleepMode=True` を追加（スリープモードでも NVDA メニューを表示可能にする）
 
+##### 日時報告の日本語形式化（NVDA+F12）
+
+`source/globalCommands.py` の `script_dateTime()` 関数で、時刻報告時に `jpUtils.modifyTimeText()` を呼び出して日本語形式に変換する処理を追加しました。
+
+- **目的**: 時刻報告（NVDA+F12）を日本語形式で読み上げる（例: "09:30" → "9時30分"）
+- **背景**: `alphajp-251219` では存在していた機能で、`betajp` に移植時に抜けていたものを追加
+- **実装**: `TIME_NOSECONDS` フラグが設定されている場合（秒数が表示されない場合）に、`jpUtils.modifyTimeText(text)` を呼び出して時刻テキストを日本語形式に変換
+  - `modifyTimeText()` 関数（`source/jpDicUtils.py`）は、時刻文字列の先頭の0を削除し、翻訳関数 `_()` を使って "{hour}:{minute}" 形式に変換
+- **動作**: NVDA+F12 を1回押すと、時刻が日本語形式（例: "9時30分"）で読み上げられます。秒数が表示される設定の場合は、元の形式のまま読み上げられます
+
 #### 6.11 廃止された機能
 
 ##### 6.11.1 MSHTA を使用したドキュメントファイルの表示

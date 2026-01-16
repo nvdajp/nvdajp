@@ -464,6 +464,7 @@ class GlobalCommands(ScriptableObject):
 					None,
 					None,
 				)
+				text = jpUtils.modifyTimeText(text)  # nvdajp
 		else:
 			text = winKernel.GetDateFormatEx(
 				winKernel.LOCALE_NAME_USER_DEFAULT,
