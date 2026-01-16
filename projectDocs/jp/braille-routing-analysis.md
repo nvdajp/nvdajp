@@ -133,11 +133,11 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
 
 **選択**: **オプション1 - テストをスキップ**
 
-詳細は [テストスキップの妥当性説明](test-routing-skip-justification.md) を参照してください。
+詳細は テストスキップの妥当性説明 を参照してください。
 
 ### 理由
 
-調査の結果、`ReviewCursorManagerRegion` を upstream と同じ空クラスに戻しても、**nvdajp ブランチでは**該当する braille routing テストが依然として失敗することが分かりました。これは問題が日本語版独自の実装だけに起因するのではなく、テストの前提条件や環境差など、他の要因も関与している可能性を示しています。現時点ではこの挙動を十分に検証し切れていないため、これら 4 テストは一時的に skip とし、詳細を [test-routing-failures.md](test-routing-failures.md) に記録します。
+調査の結果、`ReviewCursorManagerRegion` を upstream と同じ空クラスに戻しても、**nvdajp ブランチでは**該当する braille routing テストが依然として失敗することが分かりました。これは問題が日本語版独自の実装だけに起因するのではなく、テストの前提条件や環境差など、他の要因も関与している可能性を示しています。現時点ではこの挙動を十分に検証し切れていないため、これら 4 テストは一時的に skip とし、詳細を test-routing-failures.md に記録します。
 
 **注意点:**
 - これは nvdajp ブランチ内での調査結果であり、純粋な nvaccess/nvda リポジトリでテストしたわけではありません
@@ -145,8 +145,8 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
 
 ## 関連ドキュメント
 
-- [Braille Routing Unit Test Failures](test-routing-failures.md) - テスト失敗の詳細と根本原因
-- [テストスキップの妥当性説明](test-routing-skip-justification.md) - テストをスキップする妥当性の詳細な説明
+- Braille Routing Unit Test Failures - テスト失敗の詳細と根本原因
+- テストスキップの妥当性説明 - テストをスキップする妥当性の詳細な説明
 
 ## 次のステップ
 

@@ -118,7 +118,7 @@ def test_moveCaret_never_instantActivate(self):
 ## 関連ドキュメント
 
 - [Braille Routing Unit Test Failures](test-routing-failures.md) - テスト失敗の詳細と根本原因
-- [Braille Routing 問題の分析](braille-routing-analysis.md) - 問題の本質と3つの選択肢の比較
+- Braille Routing 問題の分析 - 問題の本質と3つの選択肢の比較
 
 ## 参考
 

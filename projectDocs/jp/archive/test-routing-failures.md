@@ -261,7 +261,7 @@ def _routeToTextInfo(self, info: textInfos.TextInfo):
 
 ## 関連ドキュメント
 
-- [Braille Routing 問題の分析](braille-routing-analysis.md) - 問題の本質と3つの選択肢の比較
+- Braille Routing 問題の分析 - 問題の本質と3つの選択肢の比較
 - [テストスキップの妥当性説明](test-routing-skip-justification.md) - テストをスキップする妥当性の詳細な説明
 
 ## 更新履歴

@@ -843,7 +843,7 @@ def shouldPlayErrorSound() -> bool:
 ## 参考資料
 
 - [日本語版ロードマップ](roadmap.md) - 長期的な目標と現行マイルストーン
-- [点字ルーティングテスト失敗の詳細](test-routing-failures.md) - テスト失敗の分析
-- [テストスキップの妥当性説明](test-routing-skip-justification.md) - テストスキップの理由
+- 点字ルーティングテスト失敗の詳細 - テスト失敗の分析
+- テストスキップの妥当性説明 - テストスキップの理由
 - [点字ルーティング問題の詳細分析](braille-routing-analysis.md) - 問題の詳細分析
-- [コードレビュー: 2025.3jp から betajp-260102 への移行の抜け漏れ確認](migration-review-2025.3jp-to-260102.md) - 移行時のコードレビュー結果
+- コードレビュー: 2025.3jp から betajp-260102 への移行の抜け漏れ確認 - 移行時のコードレビュー結果

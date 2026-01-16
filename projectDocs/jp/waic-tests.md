@@ -93,7 +93,7 @@ WAIC テストは外部の WAIC テストケースページを使用します：
 
 ## 関連ドキュメント
 
-- [システムテストの概要](../tests/system/readme.md)
+- システムテストの概要
 - [Chrome システムテスト](chromeTests.robot)
 - [WAIC 公式サイト](https://waic.jp/)
 
