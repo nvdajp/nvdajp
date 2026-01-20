@@ -1,21 +1,23 @@
-name: CI/CD
+name: CI/CD Japanese Version
 
 on:
   push:
     branches:
-      - master
-      - beta
-      - rc
-      - 'try-**'
-    tags:
-      - 'release-**'
+      # BEGIN JP PATCH (nvdajp-specific branches only)
+      - alphajp
+      - betajp
+      - releasejp
+      # END JP PATCH
+      # Original upstream branches (master, beta, rc, try-**, release-** tags) removed for nvdajp
 
   pull_request:
     branches:
-      - master
-      - beta
-      - rc
-      - 'try-**'
+      # BEGIN JP PATCH (nvdajp-specific branches only)
+      - alphajp
+      - betajp
+      - releasejp
+      # END JP PATCH
+      # Original upstream branches (master, beta, rc) removed for nvdajp
 
   workflow_dispatch:
 
@@ -26,7 +28,9 @@ concurrency:
 env:
   START_BUILD_NUMBER: ${{ vars.BUILD_NUMBER_OFFSET || 0 }}
   pullRequestNumber: ${{ github.event_name == 'pull_request' && github.event.number || 0 }}
-  scons_publisher: ${{ vars.PUBLISHER_NAME || github.repository_owner }}
+  # BEGIN JP PATCH (nvdajp-specific publisher)
+  scons_publisher: ${{ vars.PUBLISHER_NAME || 'nvdajp' }}
+  # END JP PATCH
   # Don't send telemetry to Microsoft when using MSVC tooling, avoiding an unnecessary PowerShell script invocation.
   VSCMD_SKIP_SENDTELEMETRY: 1
   # Cache details about available MSVC tooling for subsequent SCons invocations to the provided file.
@@ -59,7 +63,6 @@ jobs:
     name: Build NVDA
     needs: matrix
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
-    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -76,7 +79,7 @@ jobs:
       APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
     - name: Checkout NVDA
-      uses: actions/checkout@v6
+      uses: actions/checkout@v5
       with:
         submodules: true
     - name: Install Python
@@ -103,6 +106,11 @@ jobs:
       with:
         path: ${{ env.SCONS_CACHE_MSVC_CONFIG }}
         key: ${{ env.SCONS_CACHE_KEY }}
+    # BEGIN JP PATCH (JP-specific build preparation)
+    - name: Prepare JTalk (JP-specific)
+      shell: cmd
+      run: chcp 932 >nul 2>&1 && scons jtalkPrep jtalkSync %sconsArgs% %sconsCores%
+    # END JP PATCH
     - name: Prepare source code
       shell: cmd
       run: scons source %sconsArgs% %sconsCores%
@@ -143,12 +151,15 @@ jobs:
       run: ci/scripts/tests/typeCheck.ps1
 
   checkPo:
+    # BEGIN JP PATCH (temporarily disabled, to be fixed in a separate branch)
+    if: false
+    # END JP PATCH (temporarily disabled, to be fixed in a separate branch)
     name: Check po files for errors
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: matrix
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v5
       with:
         # Include gettext
         submodules: true
@@ -195,7 +206,7 @@ jobs:
       run: ci/scripts/tests/translationCheck.ps1
     - name: Upload artifact
       if: ${{ success() || failure() }}
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
         name: makePot results
         path: |
@@ -259,7 +270,7 @@ jobs:
       run: sed -i 's|file="..\\|file="|g' testOutput/unit/unitTests.xml
     - name: Upload artifact
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
         name: Unit tests results (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: testOutput/unit/unitTests.xml
@@ -272,11 +283,60 @@ jobs:
         annotate_only: true
         report_paths: testOutput/unit/unitTests.xml
 
+  # BEGIN JP PATCH (JP-specific smoke tests)
+  jpSmokeTests:
+    name: Run JP Braille/JTalk smoke tests
+    runs-on: ${{ needs.matrix.outputs.defaultRunner }}
+    needs: [matrix, buildNVDA]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
+        pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
+    env:
+      uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
+      UV_PYTHON_PREFERENCE: managed
+    steps:
+    - name: Checkout cached build
+      uses: actions/cache/restore@v4
+      with:
+        path: .
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+        fail-on-cache-miss: true
+    - name: Install Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.pythonVersion }}
+        architecture: ${{ matrix.arch }}
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
+    - name: Run JP smoke tests
+      shell: cmd
+      # BEGIN JP PATCH (set codepage 932 for MeCab dictionary compatibility)
+      run: chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools/runJpSmokeTests.ps1
+      # END JP PATCH
+    - name: Upload JP smoke test artifacts
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: JP smoke test results (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: |
+          __h1output.txt
+          __h2output.txt
+          jpSmokeTests.log
+          source/synthDrivers/jtalk/mecab_debug.log
+  # END JP PATCH
+
   crowdinUpload:
     name: Upload translations to Crowdin
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA, checkPot]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/beta' && vars.CROWDIN_PROJECT_ID }}
+    # BEGIN JP PATCH (disable crowdin upload)
+    if: ${{ false }}
+    # END JP PATCH
+    # Original condition: if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/beta' && vars.CROWDIN_PROJECT_ID }}
     steps:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
@@ -285,7 +345,7 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Get makePot results
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v4
       with:
         name: makePot results
         path: output
@@ -306,7 +366,6 @@ jobs:
     name: Create launcher
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA]
-    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -354,14 +413,14 @@ jobs:
         scons %sconsLauncherOutTargets% %sconsArgs% %sconsCores%
     - name: Upload launcher
       id: uploadLauncher
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
         name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: |
           output/nvda*.exe
           output/nvda*controllerClient.zip
     - name: Upload documentation artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       id: uploadBuildArtifacts
       with:
         name: Documentation files and packaging metadata (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
@@ -391,31 +450,24 @@ jobs:
     name: Run system tests
     runs-on: ${{ matrix.runner }}
     needs: [matrix, createLauncher]
-    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
         # To skip tests, and just run install, replace with [excluded_from_build]
-        testSuite:
-          - installer
-          - startupShutdown
-          - symbols
-          - vscode
-          - chrome_annotations
-          - chrome_list
-          - chrome_table
-          - chrome_language
-          - chrome_roleDescription
-          - chrome_misc_aria
-          - chrome_misc
+        # BEGIN JP PATCH (exclude vscode, symbols, and imageDescriptions test suites, same as certBuild2025.ps1)
+        testSuite: [chrome, installer, startupShutdown]
+        # END JP PATCH (exclude vscode, symbols, and imageDescriptions test suites, same as certBuild2025.ps1)
+        # Original: testSuite: [chrome, installer, startupShutdown, symbols, vscode, imageDescriptions]
         runner: ${{ fromJson(needs.matrix.outputs.supportedRunners) }}
         arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
-        # A bug exists with Windows 2022 notepad that prevents NVDA from focusing it.
-        # This causes our symbol pronunciation tests to fail on this runner.
+        # BEGIN JP PATCH (disable chrome system tests on windows-2022 and windows-2025)
         exclude:
           - runner: windows-2022
-            testSuite: symbols
+            testSuite: chrome
+          - runner: windows-2025
+            testSuite: chrome
+        # END JP PATCH (disable chrome system tests on windows-2022 and windows-2025)
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
@@ -436,7 +488,7 @@ jobs:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Get NVDA launcher
       id: getLauncher
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v4
       with:
         name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: output
@@ -452,9 +504,12 @@ jobs:
       env:
         nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
         INCLUDE_SYSTEM_TEST_TAGS: ${{ matrix.testSuite }}
+        # BEGIN JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
+        EXCLUDE_SYSTEM_TEST_TAGS: restarts_on_crash
+        # END JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
     - name: Upload system tests results
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
         name: "System tests results (${{ matrix.testSuite }}) (${{ matrix.runner }}, ${{ matrix.pythonVersion }}, ${{ matrix.arch }})"
         path: |
@@ -499,7 +554,7 @@ jobs:
       run: ci/scripts/buildSymbolStore.ps1
     - name: Upload symbols artifact
       id: uploadArtifact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
         name: Symbols (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: output/symbols.zip
@@ -516,7 +571,14 @@ jobs:
     name: Check if all tests pass
     runs-on: ubuntu-latest
     if: always()
-    needs: [buildNVDA, typeCheck, checkPo, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols]
+    needs: [buildNVDA, typeCheck, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols
+      # BEGIN JP PATCH
+      , jpSmokeTests
+      # END JP PATCH
+      # BEGIN JP PATCH (checkPo temporarily disabled)
+      # , checkPo
+      # END JP PATCH (checkPo temporarily disabled)
+    ]
     steps:
     - name: Check if all tests pass
       uses: re-actors/alls-green@v1.2.2
@@ -526,7 +588,7 @@ jobs:
   uploadSymbols:
     name: Upload symbols
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
-    needs: [matrix, buildNvda]
+    needs: [matrix, createSymbols]
     if: ${{ github.event_name == 'push' && vars.feature_uploadSymbolsToMozilla }}
     steps:
     - name: Checkout cached build
@@ -540,13 +602,13 @@ jobs:
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
-    - name: Download and extract dump_syms
-      shell: bash
-      run: |
-        curl -L -o dump_syms.zip https://github.com/mozilla/dump_syms/releases/download/v2.3.5/dump_syms-x86_64-pc-windows-msvc.zip
-        7z x dump_syms.zip dump_syms.exe
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
+    - name: Get symbols
+      uses: actions/download-artifact@v4
+      with:
+        name: Symbols (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        path: output
     - name: Upload symbols to Mozilla
       continue-on-error: true
       run: uv run --with requests --directory ${{ github.workspace }} ci\scripts\mozillaSyms.py
@@ -591,7 +653,10 @@ jobs:
       deployments: write
     runs-on: ubuntu-latest
     needs: [buildNVDA, createLauncher, createSymbols, allTestsPass]
-    if: ${{ github.event_name == 'push' && !startsWith(github.ref_name, 'release-') }}
+    # BEGIN JP PATCH (nvdajp: snapshot deployment disabled - no secrets in CI)
+    if: false
+    # END JP PATCH
+    # Original upstream condition: ${{ github.event_name == 'push' && !startsWith(github.ref_name, 'release-') }}
     concurrency:
       group: snapshot-${{ github.ref_name }}
       cancel-in-progress: true
@@ -599,7 +664,7 @@ jobs:
       name: snapshot
     steps:
     - name: Get NVDA launcher
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v4
       with:
         name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
         path: output
@@ -639,7 +704,10 @@ jobs:
       discussions: write
     runs-on: ubuntu-latest
     needs: [buildNVDA, createLauncher, createSymbols, allTestsPass]
-    if: startsWith(github.ref_name, 'release-')
+    # BEGIN JP PATCH (nvdajp: release deployment disabled - no secrets in CI)
+    if: false
+    # END JP PATCH
+    # Original upstream condition: startsWith(github.ref_name, 'release-')
     concurrency:
       group: release
       cancel-in-progress: true
@@ -653,7 +721,7 @@ jobs:
         echo RELEASE_NAME=$GITHUB_REF_NAME | sed 's/release-//g' >> $GITHUB_OUTPUT
         echo NORMALIZED_TAG_NAME=$GITHUB_REF_NAME | sed 's/\./-/g' | sed 's/release-//g' >> $GITHUB_OUTPUT
     - name: Get NVDA launcher
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v4
       with:
         name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
         path: output

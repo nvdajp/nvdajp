@@ -650,6 +650,13 @@ class IAccessible(Window):
 			from . import mscandui
 
 			mscandui.findExtraOverlayClasses(self, clsList)
+		# BEGIN JP PATCH
+		# nvdajp: ATOK support
+		elif windowClassName[:5] in ("ATOK2", "ATOK3"):
+			from . import atok
+
+			atok.findExtraOverlayClasses(self, clsList)
+		# END JP PATCH
 		elif (
 			windowClassName == "GeckoPluginWindow"
 			and self.event_objectID == 0

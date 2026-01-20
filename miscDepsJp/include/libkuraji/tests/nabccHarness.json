@@ -1,0 +1,331 @@
+[
+    {
+        "note": "+ 日本語点字とNABCCの併用モード +"
+    },
+    {
+        "mode": "NABCC",
+        "text": "abcdefghijklmnopqrstuvwxyz",
+        "input": "abcdefghijklmnopqrstuvwxyz",
+        "output": "⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵"
+    },
+    {
+        "mode": "NABCC",
+        "text": "aアbcdefghijklmnopqrstuvwxyzア",
+        "input": "a アbcdefghijklmnopqrstuvwxyz ア",
+        "output": "⠁ ⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵ ⠁"
+    },
+    {
+        "mode": "NABCC",
+        "text": "1234567890",
+        "input": "1234567890",
+        "output": "⠂⠆⠒⠲⠢⠖⠶⠦⠔⠴"
+    },
+    {
+        "mode": "NABCC",
+        "text": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "input": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "output": "⡁⡃⡉⡙⡑⡋⡛⡓⡊⡚⡅⡇⡍⡝⡕⡏⡟⡗⡎⡞⡥⡧⡺⡭⡽⡵"
+    },
+    {
+        "mode": "NABCC",
+        "text": ",;:.!\"",
+        "input": ",;:.!\"",
+        "output": "⠠⠰⠱⠨⠮⠐"
+    },
+    {
+        "mode": "NABCC",
+        "text": "'()-",
+        "input": "'()-",
+        "output": "⠄⠷⠾⠤"
+    },
+    {
+        "mode": "NABCC",
+        "text": "(1)",
+        "input": "(1)",
+        "output": "⠷⠂⠾"
+    },
+    {
+        "mode": "NABCC",
+        "text": "[1]",
+        "input": "[1]",
+        "output": "⡪⠂⡻"
+    },
+    {
+        "mode": "NABCC",
+        "text": "_1",
+        "input": "_1",
+        "output": "⠸⠂"
+    },
+    {
+        "mode": "NABCC",
+        "text": "_<=>%+~`",
+        "input": "_<=>%+~`",
+        "output": "⠸⠣⠿⠜⠩⠬⠘⠈"
+    },
+    {
+        "mode": "NABCC",
+        "text": "&$?{[}]",
+        "input": "&$?{[}]",
+        "output": "⠯⠫⠹⠪⡪⠻⡻"
+    },
+    {
+        "mode": "NABCC",
+        "text": "^@#\\|/*",
+        "input": "^@#\\|/*",
+        "output": "⡘⡈⠼⡳⠳⠌⠡"
+    },
+    {
+        "mode": "NABCC",
+        "text": "\"a\"",
+        "input": "\"a\"",
+        "output": "⠐⠁⠐"
+    },
+    {
+        "mode": "NABCC",
+        "text": "'a'",
+        "input": "'a'",
+        "output": "⠄⠁⠄"
+    },
+    {
+        "mode": "NABCC",
+        "text": "ab 123　あab 123　あ",
+        "input": "ab 123 ア ab 123 ア",
+        "output": "⠁⠃ ⠂⠆⠒ ⠁ ⠁⠃ ⠂⠆⠒ ⠁"
+    },
+    {
+        "mode": "NABCC",
+        "text": "ユーザーガイド(U)",
+        "input": "ユーザー ガイド(U)",
+        "output": "⠬⠒⠐⠱⠒ ⠐⠡⠃⠐⠞⠷⡥⠾"
+    },
+    {
+        "mode": "NABCC",
+        "text": "アドレスはnv@nvda.jpです。",
+        "input": "アドレスワ nv@nvda.jp デス。",
+        "output": "⠁⠐⠞⠛⠹⠄ ⠝⠧⡈⠝⠧⠙⠁⠨⠚⠏ ⠐⠟⠹⠲"
+    },
+    {
+        "mode": "NABCC",
+        "text": "C:\\Program Files",
+        "input": "C:\\Program Files",
+        "output": "⡉⠱⡳⡏⠗⠕⠛⠗⠁⠍ ⡋⠊⠇⠑⠎"
+    },
+    {
+        "mode": "NABCC",
+        "text": "C:\\Users\\ユーザー",
+        "input": "C:\\Users\\ ユーザー",
+        "output": "⡉⠱⡳⡥⠎⠑⠗⠎⡳ ⠬⠒⠐⠱⠒"
+    },
+    {
+        "mode": "NABCC",
+        "text": "二、三",
+        "input": "2.3",
+        "output": "⠆⠨⠒"
+    },
+    {
+        "mode": "NABCC",
+        "text": "a\ta",
+        "input": "a⡀a",
+        "output": "⠁⡀⠁"
+    },
+    {
+        "mode": "NABCC",
+        "text": "if\ta():",
+        "input": "if⡀a():",
+        "output": "⠊⠋⡀⠁⠷⠾⠱"
+    },
+    {
+        "mode": "NABCC",
+        "text": "file name\t\"a\",\t'c',",
+        "input": "file name⡀\"a\",⡀'c',",
+        "output": "⠋⠊⠇⠑ ⠝⠁⠍⠑⡀⠐⠁⠐⠠⡀⠄⠉⠄⠠"
+    },
+    {
+        "mode": "NABCC",
+        "text": "fil\t\"a\",\t'c',",
+        "input": "fil⡀\"a\",⡀'c',",
+        "output": "⠋⠊⠇⡀⠐⠁⠐⠠⡀⠄⠉⠄⠠"
+    },
+    {
+        "comment": "スラッシュの直前にスペースが入る不具合を修正",
+        "mode": "NABCC",
+        "text": "3/03",
+        "input": "3/03",
+        "output": "⠒⠌⠴⠒"
+    },
+    {
+        "mode": "NABCC",
+        "text": "\"'\"",
+        "input": "\"'\"",
+        "output": "⠐⠄⠐"
+    },
+    {
+        "mode": "NABCC",
+        "text": "\"'\" ",
+        "input": "\"'\" ",
+        "output": "⠐⠄⠐ "
+    },
+    {
+        "mode": "NABCC",
+        "text": "u'コーテーション",
+        "input": "u' コーテーション",
+        "output": "⠥⠄ ⠪⠒⠟⠒⠈⠺⠴"
+    },
+    {
+        "mode": "NABCC",
+        "text": "u'コーテーション'",
+        "input": "u' コーテーション '",
+        "output": "⠥⠄ ⠪⠒⠟⠒⠈⠺⠴ ⠄"
+    },
+    {
+        "mode": "NABCC",
+        "text": "u' コーテーション' ",
+        "input": "u' コーテーション ' ",
+        "output": "⠥⠄ ⠪⠒⠟⠒⠈⠺⠴ ⠄ "
+    },
+    {
+        "mode": "NABCC",
+        "text": "u'コーテーション' ",
+        "input": "u' コーテーション ' ",
+        "output": "⠥⠄ ⠪⠒⠟⠒⠈⠺⠴ ⠄ "
+    },
+    {
+        "mode": "NABCC",
+        "text": "Hello! It's Patty. Is Kate there?",
+        "input": "Hello! It's Patty. Is Kate there?",
+        "output": "⡓⠑⠇⠇⠕⠮ ⡊⠞⠄⠎ ⡏⠁⠞⠞⠽⠨ ⡊⠎ ⡅⠁⠞⠑ ⠞⠓⠑⠗⠑⠹"
+    },
+    {
+        "mode": "NABCC",
+        "text": "what's new",
+        "input": "what's new",
+        "output": "⠺⠓⠁⠞⠄⠎ ⠝⠑⠺"
+    },
+    {
+        "mode": "NABCC",
+        "text": "what's new ",
+        "input": "what's new ",
+        "output": "⠺⠓⠁⠞⠄⠎ ⠝⠑⠺ "
+    },
+    {
+        "mode": "NABCC",
+        "text": "how are you",
+        "input": "how are you",
+        "output": "⠓⠕⠺ ⠁⠗⠑ ⠽⠕⠥"
+    },
+    {
+        "comment": [
+            "数字に続いてアルファベットがあるとスペースが入る",
+            "https://github.com/nvdajp/nvdajpmiscdep/issues/37"
+        ],
+        "mode": "NABCC",
+        "text": "30adac67",
+        "input": "30adac67",
+        "output": "⠒⠴⠁⠙⠁⠉⠖⠶"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/37",
+        "mode": "NABCC",
+        "text": "ff754fc..263b1af",
+        "input": "ff754fc..263b1af",
+        "output": "⠋⠋⠶⠢⠲⠋⠉⠨⠨⠆⠖⠒⠃⠂⠁⠋"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/37",
+        "mode": "NABCC",
+        "text": "[0-9A-Za-z]",
+        "input": "[0-9A-Za-z]",
+        "output": "⡪⠴⠤⠔⡁⠤⡵⠁⠤⠵⡻"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/37",
+        "mode": "NABCC",
+        "text": "47news:",
+        "input": "47news:",
+        "output": "⠲⠶⠝⠑⠺⠎⠱"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/38",
+        "mode": "NABCC",
+        "text": "Here's",
+        "input": "Here's",
+        "output": "⡓⠑⠗⠑⠄⠎"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/38",
+        "mode": "NABCC",
+        "text": "There's",
+        "input": "There's",
+        "output": "⡞⠓⠑⠗⠑⠄⠎"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/38",
+        "mode": "NABCC",
+        "text": "Mother's",
+        "input": "Mother's",
+        "output": "⡍⠕⠞⠓⠑⠗⠄⠎"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/42",
+        "mode": "NABCC",
+        "text": " r",
+        "input": " r",
+        "output": " ⠗"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/42",
+        "mode": "NABCC",
+        "text": " 'r",
+        "input": " 'r",
+        "output": " ⠄⠗"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/42",
+        "mode": "NABCC",
+        "_text": "行う",
+        "input": "オコナウ",
+        "output": "⠊⠪⠅⠉"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/42",
+        "mode": "NABCC",
+        "text": "行わないため",
+        "input": "オコナワナイ タメ",
+        "output": "⠊⠪⠅⠄⠅⠃ ⠕⠿"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/42",
+        "mode": "NABCC",
+        "text": "行うため",
+        "input": "オコナウ タメ",
+        "output": "⠊⠪⠅⠉ ⠕⠿"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/65",
+        "mode": "NABCC",
+        "text": "1・2・3",
+        "input": "1・2・3",
+        "output": "⠂⠐ ⠆⠐ ⠒"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/67",
+        "mode": "NABCC",
+        "text": "[NVDA][点字]",
+        "input": "[NVDA][テンジ]",
+        "output": "⡪⡝⡧⡙⡁⡻⡪⠟⠴⠐⠳⡻"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/67",
+        "mode": "NABCC",
+        "text": "{NVDA}{点字}",
+        "input": "{NVDA}{テンジ}",
+        "output": "⠪⡝⡧⡙⡁⠻⠪⠟⠴⠐⠳⠻"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajpmiscdep/issues/67",
+        "mode": "NABCC",
+        "text": "[音楽][読みたい本]",
+        "input": "[オンガク][ヨミタイ ホン]",
+        "output": "⡪⠊⠴⠐⠡⠩⡻⡪⠜⠷⠕⠃ ⠮⠴⡻"
+    }
+]

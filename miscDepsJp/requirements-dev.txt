@@ -1,0 +1,5 @@
+black
+mypy
+pyaudio
+types-pyaudio
+markdown

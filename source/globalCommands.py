@@ -2,7 +2,7 @@
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2006-2026 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Rui Batista, Joseph Lee,
+# Copyright (C) 2006-2025 NV Access Limited, Peter Vágner, Aleksey Sadovoy, Rui Batista, Joseph Lee,
 # Leonard de Ruijter, Derek Riemer, Babbage B.V., Davy Kager, Ethan Holliger, Łukasz Golonka, Accessolutions,
 # Julien Cochuyt, Jakub Lukowicz, Bill Dengler, Cyrille Bougot, Rob Meredith, Luke Davis,
 # Burman's Computer and Education Ltd, Cary-rowen.
@@ -64,6 +64,7 @@ import inputCore
 import characterProcessing
 from baseObject import ScriptableObject
 import core
+import jpUtils  # nvdajp
 from winAPI._powerTracking import reportCurrentBatteryStatus
 import winVersion
 from base64 import b16encode
@@ -180,6 +181,11 @@ def toggleIntegerValue(
 	ui.message(msg)
 
 
+# BEGIN JP PATCH (character description mode)
+characterDescriptionMode = True
+# END JP PATCH
+
+
 class GlobalCommands(ScriptableObject):
 	"""Commands that are available at all times, regardless of the current focus."""
 
@@ -274,7 +280,13 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount == 0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
+			# BEGIN JP PATCH (character description mode)
+			speech.spellTextInfo(
+				info,
+				useCharacterDescriptions=scriptCount > 1,
+				useDetails=characterDescriptionMode if scriptCount > 1 else False,
+			)
+			# END JP PATCH
 
 	@script(
 		# Translators: Input help mode message for left mouse click command.
@@ -403,7 +415,13 @@ class GlobalCommands(ScriptableObject):
 				return
 
 			elif len(info.text) < speech.speech.MAX_LENGTH_FOR_SELECTION_REPORTING:
-				speech.speakSpelling(info.text, useCharacterDescriptions=scriptCount > 1)
+				# BEGIN JP PATCH (character description mode)
+				speech.speakSpelling(
+					info.text,
+					useCharacterDescriptions=scriptCount > 1,
+					useDetails=scriptCount > 1,
+				)
+				# END JP PATCH
 			else:
 				speech.speakTextSelected(info.text)
 				braille.handler.message(selectMessage)
@@ -446,6 +464,7 @@ class GlobalCommands(ScriptableObject):
 					None,
 					None,
 				)
+				text = jpUtils.modifyTimeText(text)  # nvdajp
 		else:
 			text = winKernel.GetDateFormatEx(
 				winKernel.LOCALE_NAME_USER_DEFAULT,
@@ -1431,7 +1450,13 @@ class GlobalCommands(ScriptableObject):
 			text = " ".join(textList)
 			if len(text) > 0 and not text.isspace():
 				if scriptHandler.getLastScriptRepeatCount() == 1:
-					speech.speakSpelling(text)
+					# BEGIN JP PATCH (character description mode)
+					speech.speakSpelling(
+						text,
+						useCharacterDescriptions=characterDescriptionMode,
+						useDetails=characterDescriptionMode,
+					)
+					# END JP PATCH
 				else:
 					api.copyToClip(text, notify=True)
 		else:
@@ -1866,7 +1891,13 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount == 0:
 			speech.speakTextInfo(info, unit=textInfos.UNIT_LINE, reason=controlTypes.OutputReason.CARET)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
+			# BEGIN JP PATCH (character description mode)
+			speech.spellTextInfo(
+				info,
+				useCharacterDescriptions=scriptCount > 1,
+				useDetails=characterDescriptionMode if scriptCount > 1 else False,
+			)
+			# END JP PATCH
 
 	@script(
 		description=_(
@@ -2065,7 +2096,11 @@ class GlobalCommands(ScriptableObject):
 		if scriptCount == 0:
 			speech.speakTextInfo(info, reason=controlTypes.OutputReason.CARET, unit=textInfos.UNIT_WORD)
 		else:
-			speech.spellTextInfo(info, useCharacterDescriptions=scriptCount > 1)
+			speech.spellTextInfo(
+				info,
+				useCharacterDescriptions=(scriptCount > 1),
+				useDetails=(scriptCount > 1 and characterDescriptionMode),  # nvdajp
+			)
 
 	@script(
 		description=_(
@@ -2183,6 +2218,7 @@ class GlobalCommands(ScriptableObject):
 		speakOnDemand=True,
 	)
 	def script_review_currentCharacter(self, gesture: inputCore.InputGesture):
+		global characterDescriptionMode  # nvdajp
 		info = api.getReviewPosition().copy()
 		# This script is available on the lock screen via getSafeScripts, as such
 		# ensure the review position does not contain secure information
@@ -2196,15 +2232,28 @@ class GlobalCommands(ScriptableObject):
 		braille.handler.handleReviewMove(shouldAutoTether=True)
 		scriptCount = scriptHandler.getLastScriptRepeatCount()
 		if scriptCount == 0:
-			speech.speakTextInfo(info, unit=textInfos.UNIT_CHARACTER, reason=controlTypes.OutputReason.CARET)
+			# BEGIN JP PATCH (character description mode)
+			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode)
+			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
+			# END JP PATCH
 		elif scriptCount == 1:
-			speech.spellTextInfo(info, useCharacterDescriptions=True)
-		else:
+			# BEGIN JP PATCH (character description mode)
+			speech.spellTextInfo(info, useCharacterDescriptions=True, useDetails=True)
+			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
+			# END JP PATCH
+		elif scriptCount == 2:
+			# BEGIN JP PATCH (character description mode)
 			try:
 				cList = [ord(c) for c in info.text]
 			except TypeError:
-				c = None
-			if cList:
+				cList = None
+			if cList and jpUtils.isJa():
+				for c in cList:
+					s = jpUtils.code2kana(c)
+					o = "%d u+%s" % (c, s)
+					speech.speakMessage(o)
+				braille.handler.message("  ".join("%d %s" % (c, jpUtils.code2hex(c)) for c in cList))
+			elif cList:
 				for c in cList:
 					speech.speakMessage("%d," % c)
 					# Report hex along with decimal only when there is one character; else, it's confusing.
@@ -2218,6 +2267,18 @@ class GlobalCommands(ScriptableObject):
 					unit=textInfos.UNIT_CHARACTER,
 					reason=controlTypes.OutputReason.CARET,
 				)
+			# END JP PATCH
+		else:
+			# BEGIN JP PATCH (character description mode toggle)
+			if characterDescriptionMode:
+				# Translators: character description mode
+				ui.message(_("Character description mode disabled"))
+				characterDescriptionMode = False
+			else:
+				# Translators: character description mode
+				ui.message(_("Character description mode enabled"))
+				characterDescriptionMode = True
+			# END JP PATCH
 
 	@script(
 		description=_(
@@ -2509,6 +2570,9 @@ class GlobalCommands(ScriptableObject):
 	@script(
 		# Translators: Input help mode message for show NVDA menu command.
 		description=_("Shows the NVDA menu"),
+		# BEGIN JP PATCH
+		allowInSleepMode=True,
+		# END JP PATCH
 		gestures=("kb:NVDA+n", "ts:2finger_double_tap"),
 	)
 	@gui.blockAction.when(gui.blockAction.Context.MODAL_DIALOG_OPEN)
@@ -2856,7 +2920,13 @@ class GlobalCommands(ScriptableObject):
 			text = " ".join(s for s in speechList if isinstance(s, str))
 			braille.handler.message(text)
 		else:
-			speech.speakSpelling(focusObject.name, useCharacterDescriptions=repeatCount > 1)
+			# BEGIN JP PATCH (character description mode)
+			speech.speakSpelling(
+				focusObject.name,
+				useCharacterDescriptions=repeatCount > 1 and characterDescriptionMode,
+				useDetails=repeatCount > 1 and characterDescriptionMode,
+			)
+			# END JP PATCH
 
 	@staticmethod
 	def _getStatusBarText(setReviewCursor: bool = False) -> Optional[str]:
@@ -2941,7 +3011,13 @@ class GlobalCommands(ScriptableObject):
 			# Translators: Reported when status line exist, but is empty.
 			ui.message(_("no status bar information"))
 		else:
-			speech.speakSpelling(text)
+			# BEGIN JP PATCH (character description mode)
+			speech.speakSpelling(
+				text,
+				useCharacterDescriptions=characterDescriptionMode,
+				useDetails=characterDescriptionMode,
+			)
+			# END JP PATCH
 
 	@script(
 		description=_(
@@ -3105,7 +3181,13 @@ class GlobalCommands(ScriptableObject):
 		if repeatCount == 0:
 			ui.message(title)
 		elif repeatCount == 1:
-			speech.speakSpelling(title)
+			# BEGIN JP PATCH (character description mode)
+			speech.speakSpelling(
+				title,
+				useCharacterDescriptions=characterDescriptionMode,
+				useDetails=characterDescriptionMode,
+			)
+			# END JP PATCH
 		else:
 			api.copyToClip(title, notify=True)
 
@@ -3979,7 +4061,13 @@ class GlobalCommands(ScriptableObject):
 			if repeatCount == 0:
 				ui.message(text)
 			else:
-				speech.speakSpelling(text, useCharacterDescriptions=repeatCount > 1)
+				# BEGIN JP PATCH (character description mode)
+				speech.speakSpelling(
+					text,
+					useCharacterDescriptions=repeatCount > 1,
+					useDetails=repeatCount > 1,
+				)
+				# END JP PATCH
 		else:
 			ui.message(
 				ngettext(
@@ -4808,6 +4896,7 @@ class GlobalCommands(ScriptableObject):
 			"Pressed once, screen curtain is enabled until you restart NVDA. "
 			"Pressed twice, screen curtain is enabled until you disable it",
 		),
+		category=SCRCAT_VISION,
 		gesture="kb:NVDA+control+escape",
 	)
 	def script_toggleScreenCurtain(self, gesture: inputCore.InputGesture) -> None:

@@ -1,27 +1,25 @@
-# Reporting Security Issues
+# セキュリティ問題の報告
 
-Please do not report security vulnerabilities through public GitHub issues.
-You can report security issues directly through [a GitHub Security Advisory](https://github.com/nvaccess/nvda/security/advisories/new).
-Please use [our advisory template](./projectDocs/issues/securityAdvisoryTemplate.md).
-Alternatively, please report security issues via an email to [info@nvaccess.org](mailto:info@nvaccess.org).
+セキュリティ脆弱性の報告は GitHub の公開 issues, discussions や NVDA 日本語チームのメーリングリストで行わないでください。
+NVDA日本語版については、メールの題名を「脆弱性の報告」として https://www.nvda.jp/contact に報告してください。
+NVDA本家版については info@nvaccess.org に英語で報告してください。
 
-You should receive an acknowledgement in the advisory or via email response within 3 business days.
-If for some reason you do not, please follow up via email to ensure we received your original message.
+脆弱性の報告については3営業日以内に返信します。
+返信が届かない場合は再度ご連絡ください。
 
-Please include the requested information listed below (as much as you can provide) to help us better understand the nature and scope of the possible issue.
-This information will help us triage your report more quickly.
+問題の性質と範囲をよりよく理解するために、なるべく以下の情報を含めてください。
+ご報告をより迅速に検討するのに役立ちます。
 
-* Type of issue (e.g. denial of service, privilege escalation, etc.)
-* The location of the affected source code (tag/branch/commit or direct URL)
-* Any special configuration required to reproduce the issue
-* Step-by-step instructions to reproduce the issue
-* Proof-of-concept or exploit code (if possible)
-* Impact of the issue, including what an attacker can achieve by exploiting the issue
-* Potential workarounds to mitigate the issue
-* Indicators of compromise caused by the issue
-* If there is a known solution or approach to fixing this issue
+* 問題の種類(サービス拒否、特権エスカレーションなど)
+* 影響を受けるソースコードの場所(タグ/ブランチ/コミットまたはURL)
+* 問題を再現するために必要な特別な設定
+* 問題を再現するための具体的な操作の手順
+* 概念実証または(可能な場合)脆弱性実証コード
+* 問題の影響（攻撃者が問題を悪用して達成できることを含む）
+* 問題を軽減するための潜在的な回避策
+* 問題によって引き起こされる妥協の指標
 
-Examples of handled security issues in NVDA can be found in the [NVDA GitHub Security Advisories page](https://github.com/nvaccess/nvda/security/advisories).
+NVDA で扱われるセキュリティ問題の例は [NVDA日本語版](https://github.com/nvdajp/nvdajp/security/advisories) および [NVDA本家版](https://github.com/nvaccess/nvda/security/advisories) GitHub セキュリティ勧告のページにあります。
 
 ## Security Advisory Group
 

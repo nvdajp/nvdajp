@@ -1,0 +1,9 @@
+﻿https://osdn.jp/ticket/browse.php?group_id=4221&tid=35649
+
+記号一部 (some)
+#1 2 3 < 4 > 
+5 6 7 8 ±9×10÷11
+
+記号ほとんど (most)
+#1 ( 2 ) 3 < 4 > 
+5–6 7—8 ±9×10÷11

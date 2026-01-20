@@ -20,9 +20,15 @@ class TestResolvingInternal(unittest.TestCase):
 		"""Test whether our custom braille table resolver can resolve all defined tables."""
 		tables = brailleTables.listTables()
 		for table in tables:
+			# BEGIN JP PATCH (Support TABLES_DIR_JP for Japanese tables)
+			if table.source == brailleTables.TableSource.BUILTIN_JP:
+				expectedDir = brailleTables.TABLES_DIR_JP
+			else:
+				expectedDir = brailleTables._tablesDirs.get(table.source, brailleTables.TABLES_DIR)
+			# END JP PATCH
 			self.assertEqual(
 				list(louisHelper._resolveTableInner(tables=[table.fileName])),
-				[os.path.join(brailleTables.TABLES_DIR, table.fileName)],
+				[os.path.join(expectedDir, table.fileName)],
 			)
 
 	def test_internalTableIncludedInternal(self):
