@@ -254,6 +254,7 @@ class OneCoreSynthDriver(SynthDriver):
 		# Initialize the voice to a sane default
 		self.voice = self._getDefaultVoice()
 		self._consecutiveSpeechFailures = 0
+		self._isSpeaking = False
 
 	def _maybeInitPlayer(self, wav):
 		"""Initialize audio playback based on the wave header provided by the synthesizer.

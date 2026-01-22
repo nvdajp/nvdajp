@@ -1196,7 +1196,11 @@ class UIA(Window):
 		UIAClassName = self.UIAElement.cachedClassName
 		# #11445: to avoid COM errors, do not fetch cached UIA Automation Id from the underlying element.
 		UIAAutomationId = self.UIAAutomationId
-		if (
+		if UIAClassName=="ModeTile":
+			clsList.append(ModeTile)
+		elif UIAClassName=="Input Flyout":
+			clsList.append(InputFlyout)
+		elif (
 			UIAClassName == "NetUITWMenuItem"
 			and UIAControlType == UIAHandler.UIA_MenuItemControlTypeId
 			and not self.name

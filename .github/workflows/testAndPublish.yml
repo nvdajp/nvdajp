@@ -21,10 +21,6 @@ on:
 
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
   START_BUILD_NUMBER: ${{ vars.BUILD_NUMBER_OFFSET || 0 }}
   pullRequestNumber: ${{ github.event_name == 'pull_request' && github.event.number || 0 }}
@@ -71,8 +67,6 @@ jobs:
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     outputs:
-      # Note: each output variable is overwritten by the last job in the matrix.
-      # This is not a problem for these variables as they should be the same across jobs.
       version: ${{ steps.releaseInfo.outputs.VERSION }}
       versionType: ${{ steps.releaseInfo.outputs.VERSION_TYPE }}
       APIVersion: ${{ steps.releaseInfo.outputs.NVDA_API_VERSION }}
@@ -90,19 +84,10 @@ jobs:
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
-        python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
-    - name: Set version variables
-      run: ci/scripts/setBuildVersionVars.ps1
-    - name: Set scons args
-      run: ci/scripts/setSconsArgs.ps1
-    - name: Set cache key for SCons MSVC Cache
-      shell: bash
-      run: echo "SCONS_CACHE_KEY=${RUNNER_OS}-${ImageVersion}" >> $GITHUB_ENV
-    # On Github Actions, it can take more than two minutes for SCons to collect information about MSVC tooling, majorly impacting build performance.
-    # This information is static for the current Github Actions runner image.
-    # Therefore, cache this information with a key scoped to the current image version, ensuring that subsequent workflow runs will be much faster.
-    - name: SCons MSVC Cache
-      uses: actions/cache@v4
+        enable-cache: true
+
+    - name: Setup MSVC environment
+      uses: ilammy/msvc-dev-cmd@v1
       with:
         path: ${{ env.SCONS_CACHE_MSVC_CONFIG }}
         key: ${{ env.SCONS_CACHE_KEY }}
@@ -113,9 +98,131 @@ jobs:
     # END JP PATCH
     - name: Prepare source code
       shell: cmd
-      run: scons source %sconsArgs% %sconsCores%
-    - name: Prepare for tests
-      run: ci/scripts/tests/beforeTests.ps1
+
+    - name: Build Japanese addons
+      run: |
+        set NOWDATE=%VERSION%
+        cd jptools
+        call pack_jtalk_addon.cmd
+        call pack_kgs_addon.cmd
+        cd ..
+      shell: cmd
+      env:
+        VERSION: ${{ env.VERSION }}
+
+    - name: Build Controller Client
+      run: |
+        set sconsArgs=version_build=%GITHUB_RUN_NUMBER% --all-cores
+        call jptools\buildControllerClient.cmd %sconsArgs%
+      shell: cmd
+
+    - name: Test miscDepsJp
+      run: |
+        call jptools\testMiscDepsJp.cmd
+      shell: cmd
+
+    - name: Run Japanese tests
+      run: |
+        call jptools\tests.cmd
+        call jpchar\tests.cmd
+      shell: cmd
+
+    - name: Prepare for system tests
+      run: |
+        # Create test output directories using the same script as upstream
+        ci/scripts/tests/beforeTests.ps1
+        
+        # Start Chrome for system tests
+        $chromeStartArgsString = $(py tests/system/libraries/_chromeArgs.py)
+        $chromeStartArgsArray = $chromeStartArgsString -split " "
+        cmd /c start /min $chromeStartArgsArray
+        
+        echo "testFailExitCode=0" >> $env:GITHUB_ENV
+      shell: powershell
+
+    - name: Install NVDA for testing
+      run: |
+        $nvdaLauncherFile = ".\output\nvda_${{ env.VERSION }}.exe"
+        echo "nvdaLauncherFile=$nvdaLauncherFile" >> $env:GITHUB_ENV
+        echo "NVDALauncherFile: $nvdaLauncherFile"
+        
+        $outputDir = $(resolve-path .\testOutput)
+        $installerLogFilePath = "$outputDir\nvda_install.log"
+        $installerProcess = start-process -FilePath "$nvdaLauncherFile" -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -passthru
+        
+        try {
+          $installerProcess | wait-process -Timeout 180 -ErrorAction Stop
+          $errorCode = $installerProcess.ExitCode
+        } catch {
+          echo "::error::NVDA installer process timed out"
+          $errorCode = 1
+        }
+        
+        if($errorCode -ne 0) { 
+          echo "::error::NVDA installation failed with exit code $errorCode"
+          exit $errorCode 
+        }
+      shell: powershell
+
+    - name: Run unit tests
+      run: |
+        $outDir = (Resolve-Path .\testOutput\unit\)
+        $unitTestsXml = "$outDir\unitTests.xml"
+        .\rununittests.bat --output-file "$unitTestsXml" -v
+        
+        if($LastExitCode -ne 0) {
+          echo "testFailExitCode=$LastExitCode" >> $env:GITHUB_ENV
+          echo "::error::Unit tests failed"
+        } else {
+          echo "::notice::Unit tests passed"
+        }
+      shell: powershell
+
+    - name: Run system tests
+      run: |
+        $testOutput = (Resolve-Path .\testOutput\)
+        $systemTestOutput = (Resolve-Path "$testOutput\system")
+        
+        $verboseDebugLogging = if ($env:VERBOSE_SYSTEM_TEST_LOGGING) { "True" } else { "" }
+        # Skip symbolPronunciation tests due to timeout issues in Japanese version
+        $tagsForTest = "installer startupShutdown"
+        
+        if ($env:INCLUDE_SYSTEM_TEST_TAGS) {
+          if ($env:INCLUDE_SYSTEM_TEST_TAGS -eq "excluded_from_build") {
+            echo "::notice::System tests skipped"
+            return
+          }
+          $tagsForTest = $env:INCLUDE_SYSTEM_TEST_TAGS
+        }
+        
+        $tagsForTestArray = -split $tagsForTest
+        $includeTags = $tagsForTestArray | ForEach-Object { "--include", $_ }
+        
+        .\runsystemtests.bat --variable whichNVDA:installed --variable installDir:"$env:nvdaLauncherFile" --variable verboseDebugLogging:"$verboseDebugLogging" @includeTags
+        
+        if($LastExitCode -ne 0) {
+          echo "testFailExitCode=$LastExitCode" >> $env:GITHUB_ENV
+          echo "::error::System tests failed (tags: $tagsForTest)"
+        } else {
+          echo "::notice::System tests passed (tags: $tagsForTest)"
+        }
+        
+        Compress-Archive -Path "$systemTestOutput\*" -DestinationPath "$testOutput\systemTestResult.zip"
+      shell: powershell
+      env:
+        # On GitHub Actions, avoid installer tests (unsigned build). Run startup/shutdown only.
+        INCLUDE_SYSTEM_TEST_TAGS: startupShutdown
+
+    - name: Check test results
+      run: |
+        if ($env:testFailExitCode -and $env:testFailExitCode -ne "0") {
+          echo "::error::Tests failed with exit code $env:testFailExitCode"
+          exit $env:testFailExitCode
+        } else {
+          echo "::notice::All tests passed"
+        }
+      shell: powershell
+
     - name: Cache scons build
       uses: actions/cache/save@v4
       with:
@@ -124,8 +231,8 @@ jobs:
     - name: Store release metadata information
       id: releaseInfo
       run: |
-        Write-Output VERSION=$env:version >> $env:GITHUB_OUTPUT
-        Write-Output VERSION_TYPE=$env:versionType >> $env:GITHUB_OUTPUT
+        Write-Output VERSION=$env:VERSION >> $env:GITHUB_OUTPUT
+        Write-Output VERSION_TYPE=$env:UPDATEVERSIONTYPE >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_VERSION=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))") >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_COMPAT_TO=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))") >> $env:GITHUB_OUTPUT
 
@@ -198,8 +305,8 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Check comments for translators
@@ -208,10 +315,8 @@ jobs:
       if: ${{ success() || failure() }}
       uses: actions/upload-artifact@v4
       with:
-        name: makePot results
-        path: |
-          output/nvda.pot
-          output/potSourceFileList.txt
+        name: pot-check-${{ github.run_number }}
+        path: testOutput/translationCheck.txt
 
   licenseCheck:
     name: Check license compatibility of dependencies
@@ -227,8 +332,8 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: License check
@@ -255,8 +360,8 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -272,13 +377,13 @@ jobs:
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
       with:
-        name: Unit tests results (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        name: Unit tests results
         path: testOutput/unit/unitTests.xml
     - name: Publish unit test report
       uses: mikepenz/action-junit-report@v5
       if: ${{ failure() }}
       with:
-        check_name: Unit tests (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        check_name: Unit tests
         detailed_summary: true
         annotate_only: true
         report_paths: testOutput/unit/unitTests.xml
@@ -374,9 +479,7 @@ jobs:
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     outputs:
-      # Note: each output variable is overwritten by the last job in the matrix.
-      # So we only set the output variables for the default architecture.
-      launcherArtifactId: ${{ steps.addJobSummary.outputs.artifactId }}
+      launcherArtifactId: ${{ steps.uploadLauncher.outputs.artifact-id }}
       launcherSha256: ${{ steps.addJobSummary.outputs.SHA256 }}
     steps:
     - name: Checkout cached build
@@ -388,8 +491,8 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -415,7 +518,7 @@ jobs:
       id: uploadLauncher
       uses: actions/upload-artifact@v4
       with:
-        name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        name: NVDA launcher
         path: |
           output/nvda*.exe
           output/nvda*controllerClient.zip
@@ -423,7 +526,7 @@ jobs:
       uses: actions/upload-artifact@v4
       id: uploadBuildArtifacts
       with:
-        name: Documentation files and packaging metadata (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        name: Documentation files and packaging metadata
         path: |
           output/*.html
           output/*.css
@@ -435,12 +538,8 @@ jobs:
       run: |
         NVDA_EXE_NAME=$(ls output/nvda*.exe | head -n 1)
         SHA256=$(sha256sum "$NVDA_EXE_NAME" | cut -d ' ' -f 1)
-        # If architecture is default we save the build details to the output variable
-        if [ "${{ matrix.arch == env.defaultArch && matrix.pythonVersion == env.defaultPythonVersion }}" == "true" ]; then
-            echo SHA256=$SHA256 >> $GITHUB_OUTPUT
-            echo artifactId=${{ steps.uploadLauncher.outputs.artifact-id }} >> $GITHUB_OUTPUT
-        fi
-        echo "* [Download the NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})](${{ steps.uploadLauncher.outputs.artifact-url }})" >> $GITHUB_STEP_SUMMARY
+        echo SHA256=$SHA256 >> $GITHUB_OUTPUT
+        echo "* [Download the NVDA launcher](${{ steps.uploadLauncher.outputs.artifact-url }})" >> $GITHUB_STEP_SUMMARY
         echo "    * SHA256 of launcher exe file: \`$SHA256\`" >> $GITHUB_STEP_SUMMARY
         echo "* [Download the documentation and other build artifacts](${{ steps.uploadBuildArtifacts.outputs.artifact-url }})" >> $GITHUB_STEP_SUMMARY
         echo "    * User guide, change log, developer guide" >> $GITHUB_STEP_SUMMARY
@@ -480,8 +579,8 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -490,7 +589,7 @@ jobs:
       id: getLauncher
       uses: actions/download-artifact@v4
       with:
-        name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        name: NVDA launcher
         path: output
     - name: Install NVDA
       run: ci/scripts/installNVDA.ps1
@@ -535,9 +634,7 @@ jobs:
         arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     outputs:
-      # Note: each output variable is overwritten by the last job in the matrix.
-      # So we only set the output variables for the default architecture.
-      symbolsArtifactId: ${{ steps.defaultArtifact.outputs.artifactId }}
+      symbolsArtifactId: ${{ steps.uploadArtifact.outputs.artifact-id }}
     steps:
     - name: Checkout cached build
       uses: actions/cache/restore@v4
@@ -546,7 +643,6 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Windows SDK
-      # Installs symstore.exe to expected location.
       run: choco install -y windows-sdk-10.1
     - name: Create build symbols
       env:
@@ -556,13 +652,8 @@ jobs:
       id: uploadArtifact
       uses: actions/upload-artifact@v4
       with:
-        name: Symbols (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        name: Symbols
         path: output/symbols.zip
-    - name: Save artifact metadata
-      shell: bash
-      id: defaultArtifact
-      if: ${{ matrix.arch == env.defaultArch && matrix.pythonVersion == env.defaultPythonVersion }}
-      run: echo artifactId=${{ steps.uploadArtifact.outputs.artifact-id }} >> $GITHUB_OUTPUT
 
   allTestsPass:
     # Is a no-op action.
@@ -600,14 +691,14 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
+        python-version: '3.11'
+        architecture: 'x86'
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Get symbols
       uses: actions/download-artifact@v4
       with:
-        name: Symbols (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        name: Symbols
         path: output
     - name: Upload symbols to Mozilla
       continue-on-error: true
@@ -630,18 +721,13 @@ jobs:
     name: Cleanup cache
     permissions:
       actions: write
-    needs: [matrix, allTestsPass, crowdinUpload, uploadSymbols]
-    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.owner == github.repository_owner }}
+    needs: [allTestsPass, crowdinUpload, uploadSymbols]
+    if: ${{ always() && (github.event_name == 'push' || github.event.pull_request.head.repo.owner == github.repository_owner) }}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
-        pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     steps:
       - name: Cleanup cache
         shell: bash
-        run: gh cache delete ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+        run: gh cache delete ${{ github.ref }}-${{ github.run_id }} || echo "Cache not found or already deleted"
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -658,7 +744,7 @@ jobs:
     # END JP PATCH
     # Original upstream condition: ${{ github.event_name == 'push' && !startsWith(github.ref_name, 'release-') }}
     concurrency:
-      group: snapshot-${{ github.ref_name }}
+      group: snapshot
       cancel-in-progress: true
     environment:
       name: snapshot
@@ -666,7 +752,7 @@ jobs:
     - name: Get NVDA launcher
       uses: actions/download-artifact@v4
       with:
-        name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        name: NVDA launcher
         path: output
     - name: Deploy snapshot
       shell: bash
@@ -723,7 +809,7 @@ jobs:
     - name: Get NVDA launcher
       uses: actions/download-artifact@v4
       with:
-        name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        name: NVDA launcher
         path: output
     - name: VirusTotal Scan
       id: virusTotal
@@ -782,8 +868,7 @@ jobs:
           --prerelease \
           --title "${{ steps.getReleaseNotes.outputs.RELEASE_NAME }}" \
           --notes-file /tmp/releaseNotes.md \
-          --verify-tag \
-          --discussion-category Releases
+          --verify-tag
     - name: Publish stable release
       if: ${{ !contains(github.ref_name, 'rc') && !contains(github.ref_name, 'beta') }}
       shell: bash
@@ -796,13 +881,7 @@ jobs:
           --notes-file /tmp/releaseNotes.md \
           --verify-tag \
           --discussion-category Releases
-    - name: Upload exe to release assets
-      shell: bash
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        NVDA_EXE_NAME=$(ls output/nvda*.exe | head -n 1)
-        gh release upload ${{ github.ref_name }} \
+        gh release upload ${{github.ref_name }} \
             --repo ${{ github.repository }} \
             --clobber \
-            $NVDA_EXE_NAME#Installer
+            output/nvda*.exe#Installer

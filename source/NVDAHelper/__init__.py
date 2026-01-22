@@ -203,6 +203,85 @@ def nvdaController_brailleMessage(text: str) -> SystemErrorCodes:
 	return SystemErrorCodes.SUCCESS
 
 
+@WINFUNCTYPE(c_long, c_wchar_p)
+def nvdaController_speakSpelling(text):
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
+		return -1
+	import queueHandler
+	import speech
+
+	queueHandler.queueFunction(queueHandler.eventQueue, speech.speakSpelling, text, None, True)
+	return 0
+
+
+@WINFUNCTYPE(c_long)
+def nvdaController_isSpeaking():
+	from synthDriverHandler import getSynth
+
+	try:
+		return getSynth().isSpeaking()
+	except:  # noqa: E722
+		return False
+
+
+@WINFUNCTYPE(c_long)
+def nvdaController_getPitch():
+	from synthDriverHandler import getSynth
+
+	try:
+		return getSynth()._get_pitch()
+	except:  # noqa: E722
+		return 50
+
+
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setPitch(nPitch):
+	from synthDriverHandler import getSynth
+
+	try:
+		getSynth()._set_pitch(nPitch)
+	except:  # noqa: E722
+		pass
+	return 0
+
+
+@WINFUNCTYPE(c_long)
+def nvdaController_getRate():
+	from synthDriverHandler import getSynth
+
+	try:
+		return getSynth()._get_rate()
+	except:  # noqa: E722
+		return 50
+
+
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setRate(nRate):
+	from synthDriverHandler import getSynth
+
+	try:
+		getSynth()._set_rate(nRate)
+	except:  # noqa: E722
+		pass
+	return 0
+
+
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setAppSleepMode(mode):
+	import appModuleHandler
+
+	pid = c_long()
+	windll.rpcrt4.I_RpcBindingInqLocalClientPID(None, byref(pid))  # noqa: F405
+	pid = pid.value
+	if not pid:
+		log.error("Could not get process ID for RPC call")
+		return -1
+	curApp = appModuleHandler.getAppModuleFromProcessID(pid)
+	curApp.sleepMode = True if mode == 1 else False
+	return 0
+
+
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf = create_unicode_buffer(1024)
 	bufSize = c_ulong(2048)
@@ -456,6 +535,103 @@ def handleInputCompositionStart(compositionString, selectionStart, selectionEnd,
 	focus.compositionUpdate(compositionString, selectionStart, selectionEnd, isReading)
 
 
+def resetInputCompositionVariables():
+	global lastCompAttr, lastCompString, lastSelectionStart, lastSelectionEnd
+	lastCompAttr = None
+	lastCompString = None
+	lastSelectionStart = None
+	lastSelectionEnd = None
+
+
+resetInputCompositionVariables()
+
+
+# work around ti34120
+# https://sourceforge.jp/ticket/browse.php?group_id=4221&tid=34120
+def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
+	"""
+	Validates the given input composition string and its attributes.
+	If the string meets certain conditions, this function returns True.
+
+	This function is designed to ignore certain compositionUpdate events,
+	specifically those where an alphabetic character is inserted
+	in the middle of a string of Kana characters, such as
+	"ほｎあいうえお".
+	This is done to prevent unexpected behavior in the input composition process
+	for languages that use Kana characters.
+
+	Args:
+	compositionString (str): The input composition string to validate.
+	compAttr (str): The attributes of the input composition string.
+
+	Returns:
+	bool: True if the string meets certain conditions, False otherwise.
+	"""
+	if len(compositionString) <= 2:
+		return False
+	if any(c != "0" for c in compAttr):
+		return False
+	from unicodedata import category
+
+	if (
+		any(category(c) == "Ll" for c in compositionString[1:-1])
+		and category(compositionString[0]) == "Lo"
+		and category(compositionString[-1]) == "Lo"
+	):
+		log.debug("(%s) (%s) should be ignored" % (compositionString, compAttr))
+		return True
+	return False
+
+
+def extractCompositionString(
+	compAttr: str, compositionString: str, selectionStart: int, selectionEnd: int, lastCompAttr: str
+) -> Tuple[str, int]:
+	"""
+	This function extracts a part of the composition string based on the attribute values.
+	It checks the attribute values in a specific order and extracts the corresponding characters from the composition string.
+	The function also returns the end index of the extracted string in the original composition string.
+
+	Args:
+		compAttr (str): The attribute values for the composition string.
+			Each character in this string corresponds to a TF_ATTR value ('0', '1', etc.) for the corresponding character in the composition string.
+		compositionString (str): The composition string.
+		selectionStart (int): The start index of the selection in the composition string.
+		selectionEnd (int): The end index of the selection in the composition string.
+		lastCompAttr (str): The last attribute values for the composition string.
+
+	TF_ATTR values represent different states of text in an input composition string:
+	TF_ATTR_INPUT                = 0: The text is in the process of being composed.
+	TF_ATTR_TARGET_CONVERTED     = 1: The text has been converted as a result of the user accepting a conversion candidate.
+	TF_ATTR_CONVERTED            = 2: The text has been converted.
+	TF_ATTR_TARGET_NOTCONVERTED  = 3: The text is a target for conversion, but has not yet been converted.
+	TF_ATTR_INPUT_ERROR          = 4: There was an error in inputting the text.
+	TF_ATTR_FIXEDCONVERTED       = 5: The text has been converted and fixed, and can no longer be modified.
+
+	Returns:
+		Tuple[str, int]: The extracted string and its end index in the original composition string.
+	"""
+	extractedString = ""
+	endIndex = 0
+
+	# This inner function extracts characters from the composition string where the attribute value matches the given condition.
+	def extractString(condition: str) -> str:
+		return "".join(compositionString[i] for i, attr in enumerate(compAttr) if attr == condition)
+
+	# Check the attribute values in a specific order and extract the corresponding characters.
+	if ("3" in compAttr) and ("1" not in compAttr):
+		endIndex = len(compositionString)
+		extractedString = extractString("3")
+	elif ("1" in compAttr) and (lastCompAttr is None or any([c != "0" for c in lastCompAttr])):
+		extractedString = extractString("1")
+	elif ("0" in compAttr) and ("2" in compAttr):
+		extractedString = extractString("0")
+	elif all([c == "0" for c in compAttr]) and 0 <= selectionStart == selectionEnd < len(compAttr):
+		# reviewing pre-edit character
+		extractedString = compositionString[selectionStart]
+		log.debug("((%s))" % extractedString)
+	return extractedString, endIndex
+
+
 @WINFUNCTYPE(c_long, c_wchar_p, c_int, c_int, c_int)
 def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionStart, selectionEnd, isReading):
 	# BEGIN JP PATCH
@@ -557,6 +733,9 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 
 
 def handleInputCandidateListUpdate(candidatesString, selectionIndex, inputMethod):
+	log.debug(
+		"(%s) (%s) (%s)" % (str(candidatesString).replace("\n", "|"), str(selectionIndex), str(inputMethod))
+	)
 	candidateStrings = candidatesString.split("\n")
 	import speech
 	from NVDAObjects.inputComposition import CandidateItem
@@ -1034,6 +1213,13 @@ def initialize() -> None:
 		("nvdaController_speakSsml", nvdaController_speakSsml),
 		("nvdaController_cancelSpeech", nvdaController_cancelSpeech),
 		("nvdaController_brailleMessage", nvdaController_brailleMessage),
+		("nvdaController_speakSpelling", nvdaController_speakSpelling),
+		("nvdaController_isSpeaking", nvdaController_isSpeaking),
+		("nvdaController_getPitch", nvdaController_getPitch),
+		("nvdaController_setPitch", nvdaController_setPitch),
+		("nvdaController_getRate", nvdaController_getRate),
+		("nvdaController_setRate", nvdaController_setRate),
+		("nvdaController_setAppSleepMode", nvdaController_setAppSleepMode),
 		("nvdaControllerInternal_requestRegistration", nvdaControllerInternal_requestRegistration),
 		("nvdaControllerInternal_reportLiveRegion", nvdaControllerInternal_reportLiveRegion),
 		("nvdaControllerInternal_inputLangChangeNotify", nvdaControllerInternal_inputLangChangeNotify),

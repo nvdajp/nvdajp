@@ -7,6 +7,7 @@
 # Julien Cochuyt, Jakub Lukowicz, Bill Dengler, Cyrille Bougot, Rob Meredith, Luke Davis,
 # Burman's Computer and Education Ltd, Cary-rowen.
 
+import jpUtils
 import itertools
 from typing import (
 	Optional,

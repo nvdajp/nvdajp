@@ -665,6 +665,7 @@ STDMETHODIMP TsfSink::OnEndEdit(
 	pRange->GetText(cookie, 0, buf, len, &len);
 	const ULONG strNullCharIndex = std::min(len, BUF_SIZE - 1);
 	buf[strNullCharIndex] = L'\0';
+	long jpAttrLen = static_cast<long>(std::min(len, BUF_SIZE - 1)); // nvdajp
 	long compStart=0;
 	fetchRangeExtent(pRange,&compStart,&len);
 	long selStart=compStart;
