@@ -815,6 +815,7 @@ _nvdaExes = {
 	"nvda.exe",
 	"nvda_noUIAccess.exe",
 	"nvda_uiAccess.exe",
+	"nvda_dmp.exe",
 	"nvda_slave.exe",
 }
 

@@ -300,12 +300,12 @@ class IA2TextTextInfo(textInfos.offsets.OffsetsTextInfo):
 			try:
 				# Shrink the start to the nearest embedded object before our origin.
 				self._startOffset = textStart + text.rindex(textUtils.OBJ_REPLACEMENT_CHAR, 0, relativeOrigin)
-			except (ValueError, AttributeError):
+			except ValueError:
 				pass
 			try:
 				# Shrink the end to the nearest embedded object after our origin.
 				self._endOffset = textStart + text.index(textUtils.OBJ_REPLACEMENT_CHAR, relativeOrigin)
-			except (ValueError, AttributeError):
+			except ValueError:
 				pass
 
 	def _getCaretOffset(self):

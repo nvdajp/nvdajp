@@ -1,5 +1,3 @@
-source/synthDrivers/jtalk
-source/synthDrivers/nvdajp_jtalk.py
 *.mo
 source/comInterfaces/*.py
 !source/comInterfaces/__init__.py

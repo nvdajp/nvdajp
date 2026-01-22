@@ -114,7 +114,6 @@ localLib = env.SharedLibrary(
 		"Gdiplus",
 		"Iphlpapi",
 		"Ws2_32",
-		"WindowsApp",
 		"runtimeobject",
 		"dbghelp",
 	],

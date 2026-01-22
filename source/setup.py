@@ -256,7 +256,6 @@ freeze(
 		],
 	},
 	data_files=[
-		(".", ["ja-jp-comp6.utb", "ja-jp-rokutenkanji.tbl"]),
 		(".", glob("*.dll") + glob("*.manifest") + ["builtin.dic"]),
 		("documentation", ["../copying.txt"]),
 		("lib/%s/x86" % version, glob("lib/x86/*.dll") + glob("lib/x86/*.exe")),

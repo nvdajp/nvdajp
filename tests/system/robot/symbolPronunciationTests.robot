@@ -65,7 +65,7 @@ selectionByCharacter
 
 tableHeaderSymbols
 	[Documentation]	Ensure symbols announced as expected in table headers.
-	[Tags]	table	robot:skip
+	[Tags]	table
 	test_tableHeaders
 
 ignoreBlankLinesForReportLineIndentation

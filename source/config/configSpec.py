@@ -62,7 +62,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	trimLeadingSilence = boolean(default=true)
 
 	[[__many__]]
-		capPitchChange = integer(default=0,min=-100,max=100)
+		capPitchChange = integer(default=30,min=-100,max=100)
 		sayCapForCapitals = boolean(default=false)
 		beepForCapitals = boolean(default=false)
 		useSpellingFunctionality = boolean(default=true)
@@ -103,9 +103,6 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	wordWrap = boolean(default=true)
 	unicodeNormalization = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="disabled")
 	focusContextPresentation = option("changedContext", "fill", "scroll", default="changedContext")
-	nvdajpMessageTimeout = boolean(default=true) # obsolete (nvdajp)
-	japaneseBrailleSupport = boolean(default=true) # obsolete (nvdajp)
-	nvdajpComPort = integer(default=0) # obsolete (nvdajp)
 	interruptSpeechWhileScrolling = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 	speakOnRouting = boolean(default=false)
 	speakOnNavigatingByUnit = boolean(default=false)
@@ -187,11 +184,6 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 
 #Keyboard settings
 [keyboard]
-	nvdajpEnableKeyEvents = boolean(default=true) #nvdajp
-	nvdajpImeBeep = boolean(default=false) #nvdajp
-	useNonConvertAsNVDAModifierKey = boolean(default=true) #nvdajp
-	useConvertAsNVDAModifierKey = boolean(default=false) #nvdajp
-	useEscapeAsNVDAModifierKey = boolean(default=false)
 	# NVDAModifierKeys: Integer value combining single-bit value:
 	# 1: CapsLock
 	# 2: NumpadInsert

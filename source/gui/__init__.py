@@ -55,7 +55,6 @@ from .settingsDialogs import (
 	BrowseModePanel,
 	DocumentFormattingPanel,
 	GeneralSettingsPanel,
-	LanguageSettingsPanel,
 	InputCompositionPanel,
 	KeyboardSettingsPanel,
 	LanguageSettingsPanel,  # nvdajp
@@ -913,9 +912,6 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		helpFile = getDocFilePath(fileName)
 		if helpFile is None:
 			reportNoDocumentation(fileName, useMsgBox=True)
-			return
-		if config.conf["language"]["openDocFileByMSHTA"]:
-			run_hta(helpFile)
 			return
 		os.startfile(helpFile)
 
