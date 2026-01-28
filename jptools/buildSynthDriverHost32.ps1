@@ -14,6 +14,12 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $synthDriverHost32Dir = Join-Path $repoRoot "runtime-builders\synthDriverHost32"
 $synthDriverHost32Dest = Join-Path $repoRoot "source\lib\x86\synthDriverHost-runtime"
 
+# Ensure parent directory exists (py2exe in setup-runtime.py does mkdir(destdir) and fails if source\lib\x86 is missing)
+$destParent = Split-Path -Parent $synthDriverHost32Dest
+if (-not (Test-Path -LiteralPath $destParent)) {
+    New-Item -ItemType Directory -Path $destParent -Force | Out-Null
+}
+
 # Build
 Write-Host "Building synthDriverHost32 runtime..." -ForegroundColor Cyan
 $savedUvPython = $env:UV_PYTHON
