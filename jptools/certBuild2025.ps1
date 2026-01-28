@@ -236,6 +236,124 @@ if (-not $hasParallelOption) {
 # Build the command line
 $buildArgsString = $buildArgs -join " "
 
+# Build synthDriverHost32 runtime (32-bit Python for SAPI4/5 support)
+Write-Host "Building synthDriverHost32 runtime..." -ForegroundColor Cyan
+$synthDriverHost32Dir = Join-Path $repoRoot "runtime-builders\synthDriverHost32"
+$synthDriverHost32Dest = Join-Path $repoRoot "source\lib\x86\synthDriverHost-runtime"
+
+# Save and clear environment variables that might interfere with uv
+$savedUvPython = $env:UV_PYTHON
+$savedVirtualEnv = $env:VIRTUAL_ENV
+$env:UV_PYTHON = ""
+$env:VIRTUAL_ENV = ""
+
+try {
+    & uv run --no-active --directory $synthDriverHost32Dir python setup-runtime.py --dest-dir $synthDriverHost32Dest
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "synthDriverHost32 runtime build failed with exit code $LASTEXITCODE"
+        exit 1
+    }
+    Write-Host "synthDriverHost32 runtime built successfully" -ForegroundColor Green
+} finally {
+    # Restore environment variables
+    $env:UV_PYTHON = $savedUvPython
+    $env:VIRTUAL_ENV = $savedVirtualEnv
+}
+
+# Sign synthDriverHost32 runtime files (same as NVDA main signing)
+if (-not $SkipSigning) {
+    Write-Host "Signing synthDriverHost32 runtime files..." -ForegroundColor Cyan
+    
+    # Find signtool (reuse logic from signtool test section)
+    $signtool = $env:SIGNTOOL
+    if (-not $signtool) {
+        $signtool = Get-Command signtool -ErrorAction SilentlyContinue
+        if ($signtool) {
+            $signtool = $signtool.Source
+        }
+    }
+    if (-not $signtool) {
+        $kitsBase = "C:\Program Files (x86)\Windows Kits\10\bin"
+        if (Test-Path $kitsBase) {
+            $kitsDirs = Get-ChildItem $kitsBase -Directory | Sort-Object Name -Descending
+            foreach ($kitDir in $kitsDirs) {
+                $signtoolX64 = Join-Path $kitDir.FullName "x64\signtool.exe"
+                $signtoolX86 = Join-Path $kitDir.FullName "x86\signtool.exe"
+                if (Test-Path $signtoolX64) {
+                    $signtool = $signtoolX64
+                    break
+                } elseif (Test-Path $signtoolX86) {
+                    $signtool = $signtoolX86
+                    break
+                }
+            }
+        }
+    }
+    
+    if ($signtool) {
+        # Build signtool arguments (same as NVDA main signing in certBuild2023.cmd / sconstruct)
+        $signArgs = @("sign", "/fd", "SHA256")
+        if ($env:CERT_SHA1) {
+            $certStore = $env:CERT_STORE
+            if (-not $certStore) {
+                $certStore = "My"
+            }
+            $signArgs += @("/s", $certStore, "/sha1", $env:CERT_SHA1)
+            if ($env:CERT_MACHINE_STORE) {
+                $signArgs += "/sm"
+            }
+        } elseif ($env:CERT_NAME) {
+            $certStore = $env:CERT_STORE
+            if (-not $certStore) {
+                $certStore = "My"
+            }
+            $signArgs += @("/s", $certStore, "/n", $env:CERT_NAME)
+            if ($env:CERT_MACHINE_STORE) {
+                $signArgs += "/sm"
+            }
+        } else {
+            $signArgs += "/a"
+        }
+        if ($env:TIMESTAMP_URL) {
+            $signArgs += @("/tr", $env:TIMESTAMP_URL, "/td", "SHA256")
+        } elseif ($env:TIMESERVER) {
+            $signArgs += @("/tr", $env:TIMESERVER, "/td", "SHA256")
+        } else {
+            $signArgs += @("/tr", "http://timestamp.digicert.com", "/td", "SHA256")
+        }
+        
+        # Find all exe and dll files in synthDriverHost32 runtime directory
+        $filesToSign = Get-ChildItem -Path $synthDriverHost32Dest -Recurse -Include "*.exe", "*.dll" -File
+        
+        foreach ($file in $filesToSign) {
+            Write-Host "  Signing: $($file.Name)" -ForegroundColor Gray
+            $fileSignArgs = $signArgs + @($file.FullName)
+            
+            # Retry up to 3 times (same as sconstruct)
+            $signed = $false
+            for ($retry = 0; $retry -lt 3; $retry++) {
+                & $signtool $fileSignArgs 2>&1 | Out-Null
+                if ($LASTEXITCODE -eq 0) {
+                    $signed = $true
+                    break
+                }
+                Start-Sleep -Seconds 1
+            }
+            
+            if (-not $signed) {
+                Write-Error "Failed to sign $($file.FullName) after 3 attempts"
+                exit 1
+            }
+        }
+        
+        Write-Host "synthDriverHost32 runtime files signed successfully ($($filesToSign.Count) files)" -ForegroundColor Green
+    } else {
+        Write-Warning "signtool not found, skipping synthDriverHost32 signing"
+    }
+} else {
+    Write-Host "Skipping synthDriverHost32 signing (SkipSigning specified)" -ForegroundColor Yellow
+}
+
 Write-Host "Building with certBuild2023.cmd..." -ForegroundColor Cyan
 if ($buildArgsString) {
     Write-Host "Arguments: $buildArgsString" -ForegroundColor Gray
