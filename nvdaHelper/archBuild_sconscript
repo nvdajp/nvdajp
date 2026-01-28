@@ -4,7 +4,6 @@
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 
 import sysconfig
-import os
 
 Import(
 	"env",
@@ -28,38 +27,6 @@ def clsidStringToCLSIDDefine(clsidString):
 		"0x" + d[12:16],
 		"{%s}" % (",".join("0x" + d[x : x + 2] for x in range(16, 32, 2))),
 	)
-
-
-def installWithMoveRename(target, source, env):
-	"""
-	Install a file using move-rename to avoid file lock issues.
-	First copies to a temporary file, then renames to the target.
-	"""
-	import shutil
-	import os
-	
-	sourcePath = str(source[0])
-	targetPath = str(target[0])
-	
-	# Create target directory if it doesn't exist
-	targetDir = os.path.dirname(targetPath)
-	if not os.path.exists(targetDir):
-		os.makedirs(targetDir)
-	
-	# Copy to temporary file first
-	tempPath = targetPath + ".tmp"
-	try:
-		shutil.copy2(sourcePath, tempPath)
-		# Move-rename to final target (atomic operation on Windows)
-		os.replace(tempPath, targetPath)
-	except Exception as e:
-		# Clean up temp file on error
-		if os.path.exists(tempPath):
-			try:
-				os.remove(tempPath)
-			except:
-				pass
-		raise e
 
 
 def COMProxyDllBuilder(env, target, source, proxyClsid):
@@ -245,26 +212,14 @@ ia2RPCStubs = env.SConscript("ia2_sconscript")
 Export("ia2RPCStubs")
 if signExec:
 	env.AddPostAction(ia2RPCStubs[0], [signExec])
-# Install proxy dll using move-rename to avoid file lock issues
-proxyDllName = os.path.basename(str(ia2RPCStubs[0]))
-env.Command(
-	libInstallDir.File(proxyDllName),
-	ia2RPCStubs[0],
-	env.Action(installWithMoveRename, "Installing $TARGET")
-)
+env.Install(libInstallDir, ia2RPCStubs[0])  # proxy dll
 if isNVDACoreArch:
 	env.Install(sourceTypelibDir, ia2RPCStubs[1])  # typelib
 
 iSimpleDomRPCStubs = env.SConscript("ISimpleDOM_sconscript")
 if signExec:
 	env.AddPostAction(iSimpleDomRPCStubs[0], [signExec])
-# Install proxy dll using move-rename to avoid file lock issues
-proxyDllName = os.path.basename(str(iSimpleDomRPCStubs[0]))
-env.Command(
-	libInstallDir.File(proxyDllName),
-	iSimpleDomRPCStubs[0],
-	env.Action(installWithMoveRename, "Installing $TARGET")
-)
+env.Install(libInstallDir, iSimpleDomRPCStubs[0])  # proxy dll
 if isNVDACoreArch:
 	env.Install(sourceTypelibDir, iSimpleDomRPCStubs[1])  # typelib
 

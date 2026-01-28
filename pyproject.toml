@@ -13,7 +13,7 @@ requires-python = ">=3.13,<3.14"
 classifiers = [
 	"Development Status :: 5 - Production/Stable",
 	"Intended Audience :: End Users/Desktop",
-	"License :: OSI Approved :: GNU General Public License v2",
+	"License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
 	"Operating System :: Microsoft :: Windows",
 	"Programming Language :: Python :: 3",
 	"Topic :: Accessibility",
@@ -105,7 +105,7 @@ exclude = [
 
 [tool.ruff.format]
 indent-style = "tab"
-line-ending = "native"
+line-ending = "lf"
 
 [tool.ruff.lint.mccabe]
 max-complexity = 15
@@ -300,7 +300,7 @@ reportUnknownMemberType = false  # 20000+ errors
 default-groups = "all"
 python-preference = "only-system"
 environments = ["sys_platform == 'win32'"]
-required-version = ">=0.7.9"
+required-version = ">=0.9"
 
 [tool.setuptools]
 package-dir = {"" = "source"}
@@ -328,9 +328,9 @@ dev = [
 	"uv==0.9.11",
 ]
 lint = [
-	"ruff==0.12.7",
+	"ruff==0.14.5",
 	"pre-commit==4.2.0",
-	"pyright==1.1.403",
+	"pyright[nodejs]==1.1.407",
 ]
 license-check = [
 	"licensecheck==2025.1",
