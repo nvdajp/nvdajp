@@ -79,7 +79,7 @@ jobs:
       APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
     - name: Checkout NVDA
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         submodules: true
     - name: Install Python
@@ -173,7 +173,7 @@ jobs:
     needs: matrix
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         # Include gettext
         submodules: true
@@ -220,7 +220,7 @@ jobs:
       run: ci/scripts/tests/translationCheck.ps1
     - name: Upload artifact
       if: ${{ success() || failure() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: makePot results
         path: |
@@ -284,7 +284,7 @@ jobs:
       run: sed -i 's|file="..\\|file="|g' testOutput/unit/unitTests.xml
     - name: Upload artifact
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: Unit tests results (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: testOutput/unit/unitTests.xml
@@ -359,7 +359,7 @@ jobs:
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Get makePot results
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6
       with:
         name: makePot results
         path: output
@@ -427,14 +427,14 @@ jobs:
         scons %sconsLauncherOutTargets% %sconsArgs% %sconsCores%
     - name: Upload launcher
       id: uploadLauncher
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: |
           output/nvda*.exe
           output/nvda*controllerClient.zip
     - name: Upload documentation artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       id: uploadBuildArtifacts
       with:
         name: Documentation files and packaging metadata (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
@@ -469,7 +469,7 @@ jobs:
       matrix:
         # To skip tests, and just run install, replace with [excluded_from_build]
         # BEGIN JP PATCH (exclude vscode, symbols, and imageDescriptions test suites, same as certBuild2025.ps1)
-        testSuite: [chrome, installer, startupShutdown]
+        testSuite: [chrome, installer, startupShutdown, symbols]
         # END JP PATCH (exclude vscode, symbols, and imageDescriptions test suites, same as certBuild2025.ps1)
         # Original: testSuite: [chrome, installer, startupShutdown, symbols, vscode, imageDescriptions]
         runner: ${{ fromJson(needs.matrix.outputs.supportedRunners) }}
@@ -502,7 +502,7 @@ jobs:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Get NVDA launcher
       id: getLauncher
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6
       with:
         name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: output
@@ -523,7 +523,7 @@ jobs:
         # END JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
     - name: Upload system tests results
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: "System tests results (${{ matrix.testSuite }}) (${{ matrix.runner }}, ${{ matrix.pythonVersion }}, ${{ matrix.arch }})"
         path: |
@@ -568,7 +568,7 @@ jobs:
       run: ci/scripts/buildSymbolStore.ps1
     - name: Upload symbols artifact
       id: uploadArtifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: Symbols (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: output/symbols.zip
@@ -602,7 +602,7 @@ jobs:
   uploadSymbols:
     name: Upload symbols
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
-    needs: [matrix, createSymbols]
+    needs: [matrix, buildNvda]
     if: ${{ github.event_name == 'push' && vars.feature_uploadSymbolsToMozilla }}
     steps:
     - name: Checkout cached build
@@ -678,7 +678,7 @@ jobs:
       name: snapshot
     steps:
     - name: Get NVDA launcher
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6
       with:
         name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
         path: output
@@ -735,7 +735,7 @@ jobs:
         echo RELEASE_NAME=$GITHUB_REF_NAME | sed 's/release-//g' >> $GITHUB_OUTPUT
         echo NORMALIZED_TAG_NAME=$GITHUB_REF_NAME | sed 's/\./-/g' | sed 's/release-//g' >> $GITHUB_OUTPUT
     - name: Get NVDA launcher
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6
       with:
         name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
         path: output
