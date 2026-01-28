@@ -43,7 +43,8 @@ if (-not $doSign) {
 Write-Host "Signing synthDriverHost32 runtime files..." -ForegroundColor Cyan
 $signtool = $env:SIGNTOOL
 if (-not $signtool) {
-    $signtool = (Get-Command signtool -ErrorAction SilentlyContinue)?.Source
+    $cmd = Get-Command signtool -ErrorAction SilentlyContinue
+    if ($cmd) { $signtool = $cmd.Source }
 }
 if (-not $signtool) {
     $kitsBase = "C:\Program Files (x86)\Windows Kits\10\bin"
