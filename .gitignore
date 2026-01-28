@@ -75,4 +75,8 @@ miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/nvdajp-tankan-dic.csv
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/_temp
 miscDepsJp/jptools/jtalk/libopenjtalk/mecab-naist-jdic/dic
 source/nvda_crash_stats.txt
+source/_synthDrivers32/_sonic.py
+source/_synthDrivers32/_sapi5.py
+source/_bridge/runtimes/synthDriverHost/speech/commands.py
+source/_bridge/runtimes/synthDriverHost/speech/types.py
 *.backup
