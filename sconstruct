@@ -5,10 +5,8 @@
 # This file may be used under the terms of the GNU General Public License, version 2 or later.
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 
-import copy
 import multiprocessing
 import os
-import shutil
 import platform
 import sys
 from pathlib import Path
@@ -25,7 +23,6 @@ if not virtualEnv or not uv or Path.cwd() != Path(virtualEnv).parent:
 
 import time  # noqa: E402
 import importlib.util  # noqa: E402
-import winreg  # noqa: E402
 
 
 def recursiveCopy(env, targetDir, sourceDir):

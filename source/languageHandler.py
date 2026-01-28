@@ -451,6 +451,8 @@ def normalizeLanguage(lang: str) -> Optional[str]:
 	Normalizes a  language-dialect string  in to a standard form we can deal with.
 	Converts  any dash to underline, and makes sure that language is lowercase and dialect is upercase.
 	"""
+	if lang is None:
+		return None
 	lang = lang.replace("-", "_")
 	ld = lang.split("_")
 	ld[0] = ld[0].lower()
