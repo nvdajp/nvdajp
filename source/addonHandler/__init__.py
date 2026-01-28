@@ -824,11 +824,7 @@ class Addon(AddonBase):
 		self._importedAddonModules.clear()
 		for modName in set(sys.modules.keys()) - self._modulesBeforeInstall:
 			module = sys.modules[modName]
-			# Check if module was loaded from this add-on's path using __file__ attribute
-			# module.__name__ is a dotted module name (e.g., "addonName.module"),
-			# while self.path is a filesystem path (e.g., "C:\Users\...\addons\addonName"),
-			# so we need to check __file__ instead.
-			if module.__file__ and os.path.abspath(module.__file__).startswith(os.path.abspath(self.path)):
+			if module.__name__ and module.__name__.startswith(self.path):
 				log.debug(f"Removing module {module} from cache of imported modules")
 				del sys.modules[modName]
 
