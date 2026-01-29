@@ -1,9 +1,4 @@
-# A part of NonVisual Desktop Access (NVDA)
-# This file is covered by the GNU General Public License.
-# See the file COPYING for more details.
-# Copyright (C) 2026 NV Access Limited
-
-from .types import SpeechSequence
-
-
-__all__ = ["SpeechSequence"]
+# Minimal speech package for synthDriverHost runtime; nvwave only needs these.
+from speech.types import SpeechSequence, SequenceItemT
+from speech.commands import BreakCommand
+__all__ = ["SpeechSequence", "SequenceItemT", "BreakCommand"]

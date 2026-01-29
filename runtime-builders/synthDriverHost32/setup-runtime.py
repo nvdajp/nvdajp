@@ -3,10 +3,11 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
-import os
 import importlib
 import fnmatch
+import shutil
 from glob import glob
+from pathlib import Path
 import sys
 import argparse
 
@@ -15,13 +16,33 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--dest-dir", default="dist")
 args = parser.parse_args()
 
-nvdaSourceDir = os.path.join("..", "..", "source")
-runtimeSourceDir = os.path.join(nvdaSourceDir, "_bridge", "runtimes", "synthDriverHost")
+# Resolve relative to this script so overlay works regardless of cwd
+_scriptDir = Path(__file__).resolve().parent
+nvdaSourceDir = _scriptDir / ".." / ".." / "source"
+nvdaSourceDir = nvdaSourceDir.resolve()
+runtimeSourceDir = nvdaSourceDir / "_bridge" / "runtimes" / "synthDriverHost"
 runtimeName = "synthDriverHost"
 runtimeDestDir = args.dest_dir
 
+# Minimal speech overlay for synthDriverHost32: nvwave only needs SpeechSequence and BreakCommand.
+# Full speech.__init__ pulls in excluded modules and breaks py2exe analyze. Create overlay so
+# "from speech import SpeechSequence" resolves to this minimal package (speech.types + speech.commands).
+_speechOverlayDir = runtimeSourceDir / "speech"
+_speechOverlayDir.mkdir(parents=True, exist_ok=True)
+(_speechOverlayDir / "__init__.py").write_text(
+	"# Minimal speech package for synthDriverHost runtime; nvwave only needs these.\n"
+	"from speech.types import SpeechSequence, SequenceItemT\n"
+	"from speech.commands import BreakCommand\n"
+	"__all__ = [\"SpeechSequence\", \"SequenceItemT\", \"BreakCommand\"]\n",
+	encoding="utf-8",
+)
+for _name in ("types", "commands"):
+	shutil.copy2(
+		nvdaSourceDir / "speech" / f"{_name}.py",
+		_speechOverlayDir / f"{_name}.py",
+	)
 
-sys.path.insert(0, nvdaSourceDir)
+sys.path.insert(0, str(nvdaSourceDir))
 
 import gettext  # noqa: E402
 from buildVersion import (  # noqa: E402
@@ -45,10 +66,8 @@ from py2exe import freeze  # noqa: E402
 from py2exe.dllfinder import DllFinder  # noqa: E402
 
 RT_MANIFEST = 24
-manifestTemplateFilePath = os.path.join(nvdaSourceDir, "manifest.template.xml")
-
-with open(manifestTemplateFilePath, "r", encoding="utf-8") as manifestTemplateFile:
-	_manifestTemplate = manifestTemplateFile.read()
+manifestTemplateFilePath = nvdaSourceDir / "manifest.template.xml"
+_manifestTemplate = manifestTemplateFilePath.read_text(encoding="utf-8")
 
 
 def _genManifestTemplate(shouldHaveUIAccess: bool) -> tuple[int, int, bytes]:
@@ -64,7 +83,7 @@ orig_determine_dll_type = DllFinder.determine_dll_type
 
 
 def determine_dll_type(self, imagename):
-	dll = os.path.basename(imagename).lower()
+	dll = Path(imagename).name.lower()
 	if dll.startswith("api-ms-win-") or dll in ("powrprof.dll", "mpr.dll", "crypt32.dll"):
 		# These are definitely system dlls available on all systems and must be excluded.
 		# Including them can cause serious problems when a binary build is run on a different version of Windows.
@@ -75,24 +94,24 @@ def determine_dll_type(self, imagename):
 DllFinder.determine_dll_type = determine_dll_type
 
 
-def getRecursiveDataFiles(dest: str, source: str, excludes: tuple = ()) -> list[tuple[str, list[str]]]:
+def getRecursiveDataFiles(dest: str, source: Path, excludes: tuple = ()) -> list[tuple[str, list[str]]]:
 	rulesList: list[tuple[str, list[str]]] = []
-	for file in glob(f"{source}/*"):
-		if not any(fnmatch.fnmatch(file, exclude) for exclude in excludes) and os.path.isfile(file):
-			rulesList.append((dest, [file]))
-	for dirName in os.listdir(source):
-		if os.path.isdir(os.path.join(source, dirName)) and not dirName.startswith("."):
+	for path in source.iterdir():
+		if path.is_file() and not any(fnmatch.fnmatch(path.name, exclude) for exclude in excludes):
+			rulesList.append((dest, [str(path)]))
+	for path in source.iterdir():
+		if path.is_dir() and not path.name.startswith("."):
 			rulesList.extend(
 				getRecursiveDataFiles(
-					os.path.join(dest, dirName),
-					os.path.join(source, dirName),
+					str(Path(dest) / path.name),
+					path,
 					excludes=excludes,
 				),
 			)
 	return rulesList
 
 
-sys.path.insert(0, runtimeSourceDir)
+sys.path.insert(0, str(runtimeSourceDir))
 
 freeze(
 	version_info={
@@ -105,9 +124,9 @@ freeze(
 	},
 	console=[
 		{
-			"script": f"{runtimeSourceDir}/main.pyw",
+			"script": str(runtimeSourceDir / "main.pyw"),
 			"dest_base": f"nvda_{runtimeName}",
-			"icon_resources": [(1, f"{nvdaSourceDir}/images/nvda.ico")],
+			"icon_resources": [(1, str(nvdaSourceDir / "images" / "nvda.ico"))],
 			"other_resources": [_genManifestTemplate(shouldHaveUIAccess=False)],
 			"version_info": {
 				"version": formatBuildVersionString(),
@@ -239,8 +258,6 @@ freeze(
 			"win32pipe",
 			"audioDucking",
 			"comtypes.stream",
-			# speech.types is required by nvwave -> speech; ensure it is bundled (py2exe may not pull submodules)
-			"speech.types",
 		],
 	},
 	data_files=[
@@ -248,7 +265,7 @@ freeze(
 	]
 	+ getRecursiveDataFiles(
 		"synthDrivers",
-		f"{runtimeSourceDir}\\synthDrivers",
+		runtimeSourceDir / "synthDrivers",
 		excludes=tuple(f"*{ext}" for ext in importlib.machinery.all_suffixes())
 		+ (
 			"*.exp",
