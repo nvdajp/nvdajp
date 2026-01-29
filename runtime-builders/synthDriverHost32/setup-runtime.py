@@ -239,6 +239,8 @@ freeze(
 			"win32pipe",
 			"audioDucking",
 			"comtypes.stream",
+			# speech.types is required by nvwave -> speech; ensure it is bundled (py2exe may not pull submodules)
+			"speech.types",
 		],
 	},
 	data_files=[
