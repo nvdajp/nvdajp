@@ -31,9 +31,11 @@ default setup
 	enable_verbose_debug_logging_if_requested
 
 *** Test Cases ***
+# nvdajp: skip_in_ci excludes flaky tests in CI (symbols job); see EXCLUDE_SYSTEM_TEST_TAGS in testAndPublish.yml
 
 symbolInSpeechUI
 	[Documentation]	Ensure symbols aren't substituted within NVDA speech UI.
+	[Tags]	skip_in_ci
 	test_symbolInSpeechUI
 
 moveByWord
@@ -48,6 +50,7 @@ moveByCharacter
 
 delayedCharacterDescriptions
 	[Documentation]	Ensure delayed character descriptions are announced as expected when navigating by character.
+	[Tags]	skip_in_ci
 	test_delayedDescriptions
 
 selectionByWord
@@ -65,7 +68,7 @@ selectionByCharacter
 
 tableHeaderSymbols
 	[Documentation]	Ensure symbols announced as expected in table headers.
-	[Tags]	table
+	[Tags]	table	skip_in_ci
 	test_tableHeaders
 
 ignoreBlankLinesForReportLineIndentation

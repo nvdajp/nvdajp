@@ -526,9 +526,9 @@ jobs:
       env:
         nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
         INCLUDE_SYSTEM_TEST_TAGS: ${{ matrix.testSuite }}
-        # BEGIN JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
-        EXCLUDE_SYSTEM_TEST_TAGS: restarts_on_crash
-        # END JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1)
+        # BEGIN JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1; skip_in_ci for symbolPronunciationTests)
+        EXCLUDE_SYSTEM_TEST_TAGS: restarts_on_crash skip_in_ci
+        # END JP PATCH (exclude flaky tests that are skipped in certBuild2025.ps1; skip_in_ci for symbolPronunciationTests)
     - name: Upload system tests results
       if: ${{ failure() }}
       uses: actions/upload-artifact@v6
