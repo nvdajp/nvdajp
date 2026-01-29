@@ -42,6 +42,7 @@ from ChromeLib import ChromeLib as _ChromeLib
 from AssertsLib import AssertsLib as _AssertsLib
 import NvdaLib as _NvdaLib
 from robot.libraries.BuiltIn import BuiltIn
+from jpRobotUtil import press_numpad2_4_times
 
 _builtIn: BuiltIn = BuiltIn()
 _notepad: _NotepadLib = _getLib("NotepadLib")
@@ -272,6 +273,7 @@ def test_moveByChar():
 	"""Move by character with symbol level 'none', then with symbol level 'all'."""
 	_notepad.prepareNotepad(_getMoveByCharTestSample())
 
+	press_numpad2_4_times()
 	# todo: Symbol level should not affect the output. Use same expected speech for both.
 	_doTest(
 		navKey=Move.REVIEW_CHAR,
@@ -365,6 +367,7 @@ def test_delayedDescriptions():
 	spy = _NvdaLib.getSpyLib()
 	spy.set_configValue(["speech", "delayedCharacterDescriptions"], True)
 
+	press_numpad2_4_times()
 	_testDelayedDescription()
 
 
@@ -598,6 +601,9 @@ def test_symbolInSpeechUI():
 	"""
 	character = "t"  # Character doesn't matter, we just want to invoke "Right" speech UI.
 	_notepad.prepareNotepad(character)
+	# nvdajp: Ensure delayed character descriptions is disabled to avoid NATO phonetic
+	spy = _NvdaLib.getSpyLib()
+	spy.set_configValue(["speech", "delayedCharacterDescriptions"], False)
 	_setConfig(SymLevel.ALL)
 	spy = _NvdaLib.getSpyLib()
 	expected = "shouldn't sub tick symbol"

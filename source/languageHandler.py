@@ -56,6 +56,9 @@ LCIDS_TO_TRANSLATED_LOCALES = {
 	# Central Kurdish in localesData.LANG_NAMES_TO_LOCALIZED_DESCS["ckb"]
 	# and NVDA may drop "Arab-IQ" from this locale to get the language.
 	1170: "ckb",
+	# Python's locale.windows_locale maps LCID 1107 (0x453) to "kh_KH",  # nvdajp
+	# but the ISO 639-1 language code for Khmer is "km", not "kh".  # nvdajp
+	1107: "km_KH",  # nvdajp
 }
 """
 Map Windows locale identifiers to language codes.
@@ -131,13 +134,13 @@ def windowsLCIDToLocaleName(lcid: int) -> Optional[str]:
 	NVDA should avoid relying on LCIDs in future, as they have been deprecated by MS:
 	https://docs.microsoft.com/en-us/globalization/locale/locale-names
 	"""
+	# Check manual mapping first to override incorrect mappings in locale.windows_locale.  # nvdajp
+	localeName = LCIDS_TO_TRANSLATED_LOCALES.get(lcid)  # nvdajp
 	# From the locale.windows_locale in-line code documentation: (#4203)
 	# 	This list has been updated to include every locale up to Windows Vista.
 	# 	NOTE: this mapping is incomplete.
-	localeName = locale.windows_locale.get(lcid)
-	# Check a manual mapping before using Windows to look up the correct LCID locale name.
-	if not localeName:
-		localeName = LCIDS_TO_TRANSLATED_LOCALES.get(lcid)
+	if not localeName:  # nvdajp
+		localeName = locale.windows_locale.get(lcid)
 	if not localeName:
 		localeName = winKernel.LCIDToLocaleName(lcid)
 	if localeName:
@@ -448,6 +451,8 @@ def normalizeLanguage(lang: str) -> Optional[str]:
 	Normalizes a  language-dialect string  in to a standard form we can deal with.
 	Converts  any dash to underline, and makes sure that language is lowercase and dialect is upercase.
 	"""
+	if lang is None:
+		return None
 	lang = lang.replace("-", "_")
 	ld = lang.split("_")
 	ld[0] = ld[0].lower()

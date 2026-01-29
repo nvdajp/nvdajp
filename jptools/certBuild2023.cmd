@@ -108,6 +108,9 @@ if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME if
     echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
     goto onerror
 )
+rem Build synthDriverHost32 runtime (32-bit Python for SAPI4/5) before launcher
+powershell -ExecutionPolicy Bypass -File jptools\buildSynthDriverHost32.ps1
+@if not "%ERRORLEVEL%"=="0" goto onerror
 rem Build launcher (final target)
 rem Note: we only invoke the "launcher" target here and rely on the SCons dependency chain
 rem (launcher -> dist -> source -> jtalkSync -> jtalkPrep, and launcher -> jpCertExtras)

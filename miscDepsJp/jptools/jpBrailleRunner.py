@@ -167,9 +167,26 @@ def pass2(verboseMode=False):
 			print("  Code page (GetACP): <unavailable>")
 		try:
 			import subprocess
+			import locale
 
-			chcp_result = subprocess.run(["chcp"], capture_output=True, text=True, shell=True)
-			chcp_output = chcp_result.stdout.strip() if chcp_result.stdout else "<unavailable>"
+			# Get console code page (chcp output is in console encoding, not UTF-8)
+			# Use GetACP() result if available, otherwise try chcp with proper encoding
+			try:
+				chcp_result = subprocess.run(
+					["chcp"],
+					capture_output=True,
+					text=False,  # Get bytes first
+					shell=True,
+				)
+				# Try to decode with console encoding (usually cp932 on Japanese Windows)
+				console_encoding = locale.getpreferredencoding()
+				if chcp_result.stdout:
+					chcp_output = chcp_result.stdout.decode(console_encoding, errors="replace").strip()
+				else:
+					chcp_output = "<unavailable>"
+			except Exception:
+				# Fallback: use GetACP() result if chcp fails
+				chcp_output = f"{code_page_acp} (from GetACP)"
 			print(f"  chcp: {chcp_output}")
 		except Exception:
 			print("  chcp: <unavailable>")

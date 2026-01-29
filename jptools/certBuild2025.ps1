@@ -236,6 +236,8 @@ if (-not $hasParallelOption) {
 # Build the command line
 $buildArgsString = $buildArgs -join " "
 
+# synthDriverHost32 is built and signed inside certBuild2023.cmd via jptools\buildSynthDriverHost32.ps1
+
 Write-Host "Building with certBuild2023.cmd..." -ForegroundColor Cyan
 if ($buildArgsString) {
     Write-Host "Arguments: $buildArgsString" -ForegroundColor Gray

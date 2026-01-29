@@ -10,7 +10,7 @@ import config
 import languageHandler
 import yaml
 from logHandler import log
-from NVDAState import ReadPaths
+from NVDAState import ReadPaths, WritePaths
 from utils.displayString import DisplayStringStrEnum
 
 import libmathcat_py as libmathcat
@@ -45,7 +45,7 @@ class DecimalSeparatorOption(DisplayStringStrEnum):
 	def _displayStringLabels(self) -> dict["DecimalSeparatorOption", str]:
 		return {
 			# Translators: options for decimal separator -- "Auto" = automatically pick the choice based on the language
-			self.AUTO: pgettext("math", "Auto"),
+			self.AUTO: pgettext("math", "Automatic"),
 			# options for decimal separator -- use "."  (and use ", " for block separators)
 			self.DOT: ".",
 			# options for decimal separator -- use ","  (and use ". " for block separators)
@@ -188,16 +188,9 @@ class PauseFactor(Enum):
 	LOG_BASE: float = 1.4
 
 
-def pathToUserPreferencesFolder() -> str:
-	"""Returns the path to the folder where user preferences are stored."""
-	# the user preferences file is stored at: C:\Users\<user-name>AppData\Roaming\MathCAT\prefs.yaml
-	return os.path.join(os.path.expandvars("%APPDATA%"), "MathCAT")
-
-
 def pathToUserPreferences() -> str:
 	"""Returns the full path to the user preferences file."""
-	# the user preferences file is stored at: C:\Users\<user-name>AppData\Roaming\MathCAT\prefs.yaml
-	return os.path.join(pathToUserPreferencesFolder(), "prefs.yaml")
+	return os.path.join(WritePaths.configDir, "mathcat.yaml")
 
 
 def pathToBrailleFolder() -> str:
@@ -419,9 +412,6 @@ class MathCATUserPreferences:
 
 		setEffectiveBrailleCode()
 
-		if not os.path.exists(pathToUserPreferencesFolder()):
-			# create a folder for the user preferences
-			os.mkdir(pathToUserPreferencesFolder())
 		with open(pathToUserPreferences(), "w", encoding="utf-8") as f:
 			# write values to the user preferences file, NOT the default
 			yaml.dump(self._prefs, stream=f, allow_unicode=True)
