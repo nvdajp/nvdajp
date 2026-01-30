@@ -435,10 +435,28 @@ def initialize(
 def terminate() -> None:
 	global player
 	stop()
+	# Ensure playback stops and queue is drained so _bgthread.terminate() does not hang:
+	# stop() may have returned early when _espeak/player/bgQueue was None; the background
+	# thread might still be in _speak() or have items in the queue. We must stop playback
+	# and drain _speak items before joining the thread.
+	if _bgthread.bgQueue is not None:
+		params = []
+		try:
+			while True:
+				item = _bgthread.bgQueue.get_nowait()
+				if item[0] != _speak:
+					params.append(item)
+				_bgthread.bgQueue.task_done()
+		except Queue.Empty:
+			pass
+		for item in params:
+			_bgthread.bgQueue.put(item)
+	if player is not None:
+		player.stop()
 	_bgthread.terminate()
-	assert player is not None  # Type narrowing for type checkers
-	player.close()
-	player = None
+	if player is not None:
+		player.close()
+		player = None
 	if _espeak:
 		_espeak.terminate()
 

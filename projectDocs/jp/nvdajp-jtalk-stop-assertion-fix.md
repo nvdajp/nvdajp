@@ -4,7 +4,7 @@
 
 今回の作業では、次の3つを対象にした問題と対策案を扱います。**対策の採用可否は未定**です。
 
-1. **SAPI4 シンス**（32bit ドライバーホスト）: `_curSynth` 未設定・設定同期・config アクセス・cancel タイムアウト
+1. **SAPI4 / SAPI5 シンス**（32bit ドライバーホスト）: `_curSynth` 未設定・設定同期・config アクセス・cancel タイムアウト（sapi4_32 と sapi5_32 の両方で同様）
 2. **nvdajp_jtalk**: `stop()` / `pause()` での AssertionError（未初期化時に `cancel()` が呼ばれる）
 3. **文字説明**（スペル読み・大文字の説明など）: ini から文字列で読んだ設定が無効にならない
 
@@ -137,15 +137,17 @@ def pause(switch: bool) -> None:
 
 ---
 
-## 2. SAPI4 シンス（32bit ドライバーホスト）まわり
+## 2. SAPI4 / SAPI5 シンス（32bit ドライバーホスト）まわり
+
+**SAPI5 について**: `sapi5_32` は `sapi4_32` と同様に `SynthDriverProxy32` と `synthDriverHost32` を利用しており、同じ 32bit ブリッジ経路（`SynthDriverService`・rpyc・cancel RPC）を通ります。そのため、以下に挙げる問題と対策は **SAPI5（sapi5_32）でも同様に発生し、同じ修正で対処可能**です。設定キーは `sapi5_32` などシンス名に応じて変わりますが、原因と対策の内容は共通です。
 
 ### 問題
 
 - **AttributeError: 'NoneType' object has no attribute 'name'**  
   32bit シンドライバーホスト内で `synthDriverHandler._curSynth` が設定されておらず、`speech.commands.BaseProsodyCommand.defaultValue` などで `getSynth()` が `None` を返し、`synth.name` で落ちる。また、音声設定（レート・ピッチ等）がメインプロセスから 32bit プロセスに渡っておらず、32bit 側で設定が未初期化のままになる。
 
-- **KeyError: 'sapi4' / AttributeError (get, __contains__)**  
-  32bit プロセス内の `config.conf["speech"]` は ConfigObj の Section であり、rpyc プロキシ経由で `.get()` や `in`（`__contains__`）を使うと、セキュリティの都合で拒否され `AttributeError` になる。その結果、設定キー取得に失敗する。
+- **KeyError: 'sapi4' / 'sapi5_32' 等 / AttributeError (get, __contains__)**  
+  32bit プロセス内の `config.conf["speech"]` は ConfigObj の Section であり、rpyc プロキシ経由で `.get()` や `in`（`__contains__`）を使うと、セキュリティの都合で拒否され `AttributeError` になる。その結果、設定キー取得に失敗する。シンス名（例: `sapi4_32`、`sapi5_32`）に応じたキーで同様の事象が起きうる。
 
 - **UI フリーズ（TimeoutError）**  
   メインスレッドが `getSynth().cancel()` を呼んだとき、32bit シンドライバーホストがブロックしていると RPC が返らず、メインスレッドがタイムアウトまで固まる。
