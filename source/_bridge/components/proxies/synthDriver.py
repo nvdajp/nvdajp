@@ -111,7 +111,12 @@ class SynthDriverProxy(Proxy, SynthDriver):
 		return self._remoteService.speak(data)
 
 	def cancel(self):
-		return self._remoteService.cancel()
+		try:
+			return self._remoteService.cancel()
+		except (TimeoutError, OSError) as e:
+			# 32-bit synth host may not respond in time (e.g. blocked in SAPI4 COM)
+			# or connection may be broken. Avoid blocking the main thread.
+			log.debugWarning("cancel() on 32-bit synth did not complete: %s", e)
 
 	def pause(self, switch: bool):
 		return self._remoteService.pause(switch)

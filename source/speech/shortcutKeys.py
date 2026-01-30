@@ -82,7 +82,10 @@ def _getKeyboardShortcutSpeech(keyboardShortcut: str) -> SpeechSequence:
 
 def shouldUseSpellingFunctionality() -> bool:
 	synth = getSynth()
-	return config.conf["speech"][synth.name]["useSpellingFunctionality"]
+	val = config.conf["speech"][synth.name]["useSpellingFunctionality"]
+	if isinstance(val, str):
+		val = val.lower() in ("true", "1", "yes")
+	return bool(val)
 
 
 def _getKeySpeech(key: str) -> SpeechSequence:

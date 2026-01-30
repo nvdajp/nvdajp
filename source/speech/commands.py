@@ -259,6 +259,8 @@ class BaseProsodyCommand(SynthParamCommand):
 
 	#: The name of the setting in the configuration; e.g. pitch, rate, etc.
 	settingName = None
+	#: Default percent (0–100) when config is missing; e.g. in 32-bit synth host.
+	_defaultPercent = 50
 
 	def __init__(self, offset=0, multiplier=1):
 		"""Constructor.
@@ -280,8 +282,14 @@ class BaseProsodyCommand(SynthParamCommand):
 	def defaultValue(self):
 		"""The default value for the setting as configured by the user."""
 		synth = getSynth()
-		synthConf = config.conf["speech"][synth.name]
-		return synthConf[self.settingName]
+		try:
+			speech = config.conf["speech"]
+			synthConf = speech[synth.name]
+			return synthConf[self.settingName]
+		except (KeyError, AttributeError):
+			# KeyError: config key or setting missing. AttributeError: rpyc blocks
+			# attribute access (e.g. __contains__, get) when config is a proxy (32-bit synth host).
+			return self._defaultPercent
 
 	@property
 	def multiplier(self):
@@ -360,6 +368,7 @@ class VolumeCommand(BaseProsodyCommand):
 	"""Change the volume of the voice."""
 
 	settingName = "volume"
+	_defaultPercent = 100
 
 
 class RateCommand(BaseProsodyCommand):

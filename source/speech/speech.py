@@ -632,7 +632,10 @@ def getSpellingSpeech(
 		],
 	)
 	# END JP PATCH
-	if synthConfig["useSpellingFunctionality"]:
+	useSpelling = synthConfig["useSpellingFunctionality"]
+	if isinstance(useSpelling, str):
+		useSpelling = useSpelling.lower() in ("true", "1", "yes")
+	if useSpelling:
 		seq = _getSpellingSpeechAddCharMode(seq)
 	# This function applies Unicode normalization as appropriate.
 	# Therefore, suppress the global normalization that might still occur
