@@ -337,7 +337,8 @@ def updateSpeakIndexWhenDone(index: int) -> None:
 
 def stop() -> None:
 	global currentEngine, indexCommands, lastIndex
-	if _espeak is None or player is None or _bgthread.bgQueue is None:
+	# Need player and queue to drain and stop JTalk; _espeak only needed for currentEngine==1.
+	if player is None or _bgthread.bgQueue is None:
 		return
 	if indexReachedFunc:
 		for item in indexCommands:
@@ -346,11 +347,11 @@ def stop() -> None:
 		indexCommands.clear()
 
 		indexReachedFunc(None)
-	if currentEngine == 1:
+	if currentEngine == 1 and _espeak is not None:
 		_espeak.stop()
 		currentEngine = 0
 		return
-	# Kill all speech from now.
+	# Kill all speech from now (JTalk path or eSpeak unset).
 	# We still want parameter changes to occur, so requeue them.
 	params = []
 	stop_task_count = 0  # for log.info()
@@ -375,11 +376,9 @@ def stop() -> None:
 
 
 def pause(switch: bool) -> None:
-	if _espeak is None or player is None:
-		return
-	if currentEngine == 1:
+	if currentEngine == 1 and _espeak is not None:
 		_espeak.pause(switch)
-	elif currentEngine == 2:
+	elif currentEngine == 2 and player is not None:
 		player.pause(switch)
 
 
