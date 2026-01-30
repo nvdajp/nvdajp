@@ -102,7 +102,13 @@ def createSynthDriver(
 	conn.remoteService.installProxies(service)
 	log.debug("Creating SynthDriverProxy over remote SynthDriverService")
 	conn.remoteService.registerSynthDriversPath(synthDriversPath)
-	# Always set so config.conf["speech"][name] exists in the 32-bit process (BaseProsodyCommand.defaultValue).
+	# Ensure config.conf["speech"][name] exists in the 32-bit process (BaseProsodyCommand.defaultValue).
+	# When speechConfig is None, an empty dict is passed so the section exists; log so it is visible.
+	if speechConfig is None:
+		log.warning(
+			"No speech config found for synth '%s'; passing empty config dict to 32-bit synth driver host.",
+			name,
+		)
 	conn.remoteService.setSpeechConfigForSynth(name, speechConfig if speechConfig else {})
 	synthDriverService = conn.remoteService.SynthDriver(name)
 	return conn, synthDriverService

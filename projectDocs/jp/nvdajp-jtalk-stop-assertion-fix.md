@@ -65,8 +65,8 @@ AssertionError
 
 | 関数   | ファイル | 変更内容 |
 |--------|----------|----------|
-| `stop()`  | `source/synthDrivers/jtalk/jtalkDriver.py` | 先頭で `_espeak` / `player` / `_bgthread.bgQueue` の None チェックをし、いずれかが None なら即 return。従来の assert は削除。 |
-| `pause()` | 同上 | 先頭で `_espeak` / `player` の None チェックをし、いずれかが None なら即 return。従来の assert は削除。 |
+| `stop()`  | `source/synthDrivers/jtalk/jtalkDriver.py` | 先頭で `player` / `_bgthread.bgQueue` の None チェックのみ行い、いずれかが None なら即 return。`currentEngine==1` のときのみ `_espeak` があれば `_espeak.stop()`。従来の assert は削除。 |
+| `pause()` | 同上 | 早期 return はやめ、`currentEngine==1 and _espeak is not None` のとき `_espeak.pause()`、`currentEngine==2 and player is not None` のとき `player.pause()`。従来の assert は削除。 |
 
 #### 想定される効果
 
@@ -101,7 +101,8 @@ def stop() -> None:
 ```python
 def stop() -> None:
 	global currentEngine, indexCommands, lastIndex
-	if _espeak is None or player is None or _bgthread.bgQueue is None:
+	# Need player and queue to drain and stop JTalk; _espeak only needed for currentEngine==1.
+	if player is None or _bgthread.bgQueue is None:
 		return
 	if indexReachedFunc:
 		...
@@ -123,10 +124,10 @@ def pause(switch: bool) -> None:
 
 ```python
 def pause(switch: bool) -> None:
-	if _espeak is None or player is None:
-		return
-	if currentEngine == 1:
-		...
+	if currentEngine == 1 and _espeak is not None:
+		_espeak.pause(switch)
+	elif currentEngine == 2 and player is not None:
+		player.pause(switch)
 ```
 
 ### 採用判断のためのメモ（nvdajp_jtalk）
