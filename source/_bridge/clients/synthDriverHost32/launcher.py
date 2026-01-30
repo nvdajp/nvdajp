@@ -68,9 +68,16 @@ def isSynthDriverHost32RuntimeAvailable() -> bool:
 	return os.path.isfile(_hostExe)
 
 
-def createSynthDriver(name: str, synthDriversPath: str) -> tuple[Connection, SynthDriverService]:
+def createSynthDriver(
+	name: str,
+	synthDriversPath: str,
+	speechConfig: dict | None = None,
+) -> tuple[Connection, SynthDriverService]:
 	"""Start the 32-bit synth driver host process and connect to its RPYC service over the hosts standard pipes.
 	Instructs the host to install proxies that use the given NVDAService for remote calls back into NVDA.
+	:param name: Name of the synth driver module to load (e.g. "sapi4").
+	:param synthDriversPath: Path to the 32-bit synth drivers directory.
+	:param speechConfig: Optional config dict for this synth (e.g. rate, pitch, volume) so BaseProsodyCommand works in the 32-bit process.
 	:returns: The remote SynthDriverHostService instance.
 	"""
 	job = jobObject.Job()
@@ -95,5 +102,7 @@ def createSynthDriver(name: str, synthDriversPath: str) -> tuple[Connection, Syn
 	conn.remoteService.installProxies(service)
 	log.debug("Creating SynthDriverProxy over remote SynthDriverService")
 	conn.remoteService.registerSynthDriversPath(synthDriversPath)
+	# Always set so config.conf["speech"][name] exists in the 32-bit process (BaseProsodyCommand.defaultValue).
+	conn.remoteService.setSpeechConfigForSynth(name, speechConfig if speechConfig else {})
 	synthDriverService = conn.remoteService.SynthDriver(name)
 	return conn, synthDriverService

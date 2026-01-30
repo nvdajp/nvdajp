@@ -1923,9 +1923,10 @@ class VoiceSettingsPanel(AutoSettingsMixin, SettingsPanel):
 			wx.CheckBox(self, label=sayCapForCapsText),
 		)
 		self.bindHelpEvent("SpeechSettingsSayCapBefore", self.sayCapForCapsCheckBox)
-		self.sayCapForCapsCheckBox.SetValue(
-			config.conf["speech"][self.driver.name]["sayCapForCapitals"],
-		)
+		sayCapVal = config.conf["speech"][self.driver.name]["sayCapForCapitals"]
+		if isinstance(sayCapVal, str):
+			sayCapVal = sayCapVal.lower() in ("true", "1", "yes")
+		self.sayCapForCapsCheckBox.SetValue(bool(sayCapVal))
 
 		# Translators: This is the label for a checkbox in the
 		# voice settings panel.
@@ -1937,9 +1938,10 @@ class VoiceSettingsPanel(AutoSettingsMixin, SettingsPanel):
 			"SpeechSettingsBeepForCaps",
 			self.beepForCapsCheckBox,
 		)
-		self.beepForCapsCheckBox.SetValue(
-			config.conf["speech"][self.driver.name]["beepForCapitals"],
-		)
+		beepForCapsVal = config.conf["speech"][self.driver.name]["beepForCapitals"]
+		if isinstance(beepForCapsVal, str):
+			beepForCapsVal = beepForCapsVal.lower() in ("true", "1", "yes")
+		self.beepForCapsCheckBox.SetValue(bool(beepForCapsVal))
 
 		# Translators: This is the label for a checkbox in the
 		# voice settings panel.
@@ -1948,9 +1950,10 @@ class VoiceSettingsPanel(AutoSettingsMixin, SettingsPanel):
 			wx.CheckBox(self, label=useSpellingFunctionalityText),
 		)
 		self.bindHelpEvent("SpeechSettingsUseSpelling", self.useSpellingFunctionalityCheckBox)
-		self.useSpellingFunctionalityCheckBox.SetValue(
-			config.conf["speech"][self.driver.name]["useSpellingFunctionality"],
-		)
+		useSpellingVal = config.conf["speech"][self.driver.name]["useSpellingFunctionality"]
+		if isinstance(useSpellingVal, str):
+			useSpellingVal = useSpellingVal.lower() in ("true", "1", "yes")
+		self.useSpellingFunctionalityCheckBox.SetValue(bool(useSpellingVal))
 		self._appendSpeechModesList(settingsSizerHelper)
 
 	def _appendSymbolDictionariesList(self, settingsSizerHelper: guiHelper.BoxSizerHelper) -> None:
@@ -1992,9 +1995,10 @@ class VoiceSettingsPanel(AutoSettingsMixin, SettingsPanel):
 			wx.CheckBox(self, label=delayedCharacterDescriptionsText),
 		)
 		self.bindHelpEvent("delayedCharacterDescriptions", self.delayedCharacterDescriptionsCheckBox)
-		self.delayedCharacterDescriptionsCheckBox.SetValue(
-			config.conf["speech"]["delayedCharacterDescriptions"],
-		)
+		delayedDescVal = config.conf["speech"]["delayedCharacterDescriptions"]
+		if isinstance(delayedDescVal, str):
+			delayedDescVal = delayedDescVal.lower() in ("true", "1", "yes")
+		self.delayedCharacterDescriptionsCheckBox.SetValue(bool(delayedDescVal))
 
 	def onAutoLanguageSwitchingChange(self, evt: wx.CommandEvent):
 		"""Take action when the autoLanguageSwitching checkbox is pressed."""

@@ -35,6 +35,9 @@ class SynthDriverService(Service):
 		self._synth = synthDriver
 		self._synthIndexReachedCallback = None
 		self._synthDoneSpeakingCallback = None
+		# So that getSynth() and speech.commands.BaseProsodyCommand.defaultValue work in this process.
+		import synthDriverHandler
+		synthDriverHandler._curSynth = synthDriver
 
 	@Service.exposed
 	def registerSynthIndexReachedNotification(self, callback: Callable[[int], Any]):

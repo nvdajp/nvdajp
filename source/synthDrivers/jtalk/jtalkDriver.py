@@ -337,9 +337,8 @@ def updateSpeakIndexWhenDone(index: int) -> None:
 
 def stop() -> None:
 	global currentEngine, indexCommands, lastIndex
-	assert _espeak is not None  # Type narrowing for type checkers
-	assert _bgthread.bgQueue is not None  # Type narrowing for type checkers
-	assert player is not None  # Type narrowing for type checkers
+	if _espeak is None or player is None or _bgthread.bgQueue is None:
+		return
 	if indexReachedFunc:
 		for item in indexCommands:
 			indexReachedFunc(item)
@@ -376,8 +375,8 @@ def stop() -> None:
 
 
 def pause(switch: bool) -> None:
-	assert _espeak is not None  # Type narrowing for type checkers
-	assert player is not None  # Type narrowing for type checkers
+	if _espeak is None or player is None:
+		return
 	if currentEngine == 1:
 		_espeak.pause(switch)
 	elif currentEngine == 2:

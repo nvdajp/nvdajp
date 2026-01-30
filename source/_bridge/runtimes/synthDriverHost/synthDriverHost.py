@@ -111,6 +111,19 @@ class HostService(Service):
 		synthDrivers.__path__.insert(0, path)
 
 	@Service.exposed
+	def setSpeechConfigForSynth(self, synthName: str, configDict: dict):
+		"""Set the speech config for the given synth so BaseProsodyCommand.defaultValue can read it.
+
+		:param synthName: Name of the synth driver (e.g. "sapi4").
+		:param configDict: Config dict for this synth (e.g. rate, pitch, volume).
+		"""
+		import config
+
+		if "speech" not in config.conf:
+			config.conf["speech"] = {}
+		config.conf["speech"][synthName] = configDict
+
+	@Service.exposed
 	def SynthDriver(self, name: str) -> SynthDriverService:
 		"""Loads a synthDriver with the given name, exposing it to the remote caller as a SynthDriverService.
 
