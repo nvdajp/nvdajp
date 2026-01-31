@@ -342,10 +342,7 @@ class SynthDriver(driverHandler.Driver):
 			normalizedAvailableLang = languageHandler.normalizeLanguage(availableLang)
 			if normalizedAvailableLang is None:
 				continue
-			if (
-				lang == normalizedAvailableLang
-				or lang == normalizedAvailableLang.split("_")[0]
-			):
+			if lang == normalizedAvailableLang or lang == normalizedAvailableLang.split("_")[0]:
 				return True
 		normalizedLang = languageHandler.normalizeLanguage(lang)
 		if normalizedLang is None:
@@ -398,6 +395,12 @@ class SynthDriver(driverHandler.Driver):
 			if not s.useConfig or s.id == "voice" or c[s.id] is None:
 				continue
 			val = c[s.id]
+			if isinstance(s, NumericDriverSetting) and isinstance(val, str):
+				try:
+					val = int(val)
+				except ValueError:
+					log.debugWarning("Could not convert setting %s value '%s' to int" % (s.id, val))
+
 			if onlyChanged and getattr(self, s.id) == val:
 				continue
 			setattr(self, s.id, val)

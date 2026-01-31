@@ -198,6 +198,19 @@ class AutoSettings(AutoPropertyObject):
 			if not setting.useConfig or conf.get(setting.id) is None:
 				continue
 			val = conf[setting.id]
+			# Ensure proper type conversion for settings when config validation may have failed
+			if isinstance(val, str):
+				from .driverSetting import NumericDriverSetting, BooleanDriverSetting
+
+				if isinstance(setting, NumericDriverSetting):
+					try:
+						val = int(val)
+					except ValueError:
+						log.debugWarning(
+							f"Could not convert setting {setting.id!r} value {val!r} to int",
+						)
+				elif isinstance(setting, BooleanDriverSetting):
+					val = val.lower() in ("true", "1", "yes")
 			if onlyChanged and getattr(clsOrInst, setting.id) == val:
 				continue
 			try:
