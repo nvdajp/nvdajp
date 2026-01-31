@@ -150,7 +150,7 @@ class Proxy[Service_t: Service]:
 
 	def __del__(self):
 		log.debug(f"Destroying Proxy {self}")
-		for conn in self._heldConnections:
+		for conn in getattr(self, "_heldConnections", []):
 			if not conn.closed:
 				log.debug(f"Closing held Connection '{conn._name}' on Proxy {self}")
 				try:

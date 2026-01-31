@@ -625,26 +625,45 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		dic_dst = jtalk_dir / "dic"
 		builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
 
-		def _dic_state(dic_dir: Path) -> tuple[bool, bool]:
-			"""Return (has_sys_dic, has_utf8_version)."""
+		def _dic_state(dic_dir: Path) -> tuple[bool, bool, bool]:
+			"""Return (has_sys_dic, has_utf8_version, has_valid_codepage)."""
 			sys_dic_path = dic_dir / "sys.dic"
 			if not sys_dic_path.exists():
-				return False, False
+				return False, False, False
+
+			# Check DIC_VERSION (must be UTF-8)
+			has_utf8 = False
 			version_file = dic_dir / "DIC_VERSION"
 			if not version_file.exists():
 				print(f"jtalkSync: DIC_VERSION missing for {dic_dir}; will rebuild as UTF-8.")
-				return True, False
-			try:
-				version_text = version_file.read_text(encoding="utf-8").lower()
-			except Exception as e:
-				print(f"jtalkSync: failed to read DIC_VERSION at {version_file}: {e}")
-				return True, False
-			if "utf-8" not in version_text and "utf8" not in version_text:
-				print(
-					f"jtalkSync: dictionary at {dic_dir} not marked UTF-8 (version={version_text.strip()}); rebuilding.",
-				)
-				return True, False
-			return True, True
+			else:
+				try:
+					version_text = version_file.read_text(encoding="utf-8").lower()
+					if "utf-8" in version_text or "utf8" in version_text:
+						has_utf8 = True
+					else:
+						print(
+							f"jtalkSync: dictionary at {dic_dir} not marked UTF-8 (version={version_text.strip()}); rebuilding.",
+						)
+				except Exception as e:
+					print(f"jtalkSync: failed to read DIC_VERSION at {version_file}: {e}")
+
+			# Check DIC_CODEPAGE (must be 932)
+			has_valid_cp = False
+			cp_file = dic_dir / "DIC_CODEPAGE"
+			if not cp_file.exists():
+				print(f"jtalkSync: DIC_CODEPAGE missing for {dic_dir}; will rebuild.")
+			else:
+				try:
+					cp_text = cp_file.read_text(encoding="utf-8").strip()
+					if cp_text == "932":
+						has_valid_cp = True
+					else:
+						print(f"jtalkSync: DIC_CODEPAGE is {cp_text} (expected 932); rebuilding.")
+				except Exception as e:
+					print(f"jtalkSync: failed to read DIC_CODEPAGE at {cp_file}: {e}")
+
+			return True, has_utf8, has_valid_cp
 
 		try:
 			jtalk_dir.mkdir(parents=True, exist_ok=True)
@@ -678,8 +697,8 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				return result.returncode
 
 		sys_dic = dic_dst / "sys.dic"
-		has_dic, is_utf8_dic = _dic_state(dic_dst)
-		should_rebuild_dic = not (has_dic and is_utf8_dic)
+		has_dic, is_utf8_dic, is_valid_cp = _dic_state(dic_dst)
+		should_rebuild_dic = not (has_dic and is_utf8_dic and is_valid_cp)
 		if should_rebuild_dic:
 			print("jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py.")
 
@@ -855,6 +874,13 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			if rc_dic != 0:
 				print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
 				return rc_dic
+
+			# Write DIC_CODEPAGE marker to ensure dictionary was built with CP932
+			try:
+				(dic_dst / "DIC_CODEPAGE").write_text("932", encoding="utf-8")
+			except Exception as e:
+				print(f"jtalkSync: warning: failed to write DIC_CODEPAGE: {e}")
+
 			sys_dic = dic_dst / "sys.dic"
 
 		if not sys_dic.exists():

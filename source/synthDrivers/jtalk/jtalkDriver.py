@@ -337,9 +337,9 @@ def updateSpeakIndexWhenDone(index: int) -> None:
 
 def stop() -> None:
 	global currentEngine, indexCommands, lastIndex
-	assert _espeak is not None  # Type narrowing for type checkers
-	assert _bgthread.bgQueue is not None  # Type narrowing for type checkers
-	assert player is not None  # Type narrowing for type checkers
+	# Need player and queue to drain and stop JTalk; _espeak only needed for currentEngine==1.
+	if player is None or _bgthread.bgQueue is None:
+		return
 	if indexReachedFunc:
 		for item in indexCommands:
 			indexReachedFunc(item)
@@ -347,11 +347,11 @@ def stop() -> None:
 		indexCommands.clear()
 
 		indexReachedFunc(None)
-	if currentEngine == 1:
+	if currentEngine == 1 and _espeak is not None:
 		_espeak.stop()
 		currentEngine = 0
 		return
-	# Kill all speech from now.
+	# Kill all speech from now (JTalk path or eSpeak unset).
 	# We still want parameter changes to occur, so requeue them.
 	params = []
 	stop_task_count = 0  # for log.info()
@@ -376,11 +376,9 @@ def stop() -> None:
 
 
 def pause(switch: bool) -> None:
-	assert _espeak is not None  # Type narrowing for type checkers
-	assert player is not None  # Type narrowing for type checkers
-	if currentEngine == 1:
+	if currentEngine == 1 and _espeak is not None:
 		_espeak.pause(switch)
-	elif currentEngine == 2:
+	elif currentEngine == 2 and player is not None:
 		player.pause(switch)
 
 
@@ -436,10 +434,28 @@ def initialize(
 def terminate() -> None:
 	global player
 	stop()
+	# Ensure playback stops and queue is drained so _bgthread.terminate() does not hang:
+	# stop() may have returned early when _espeak/player/bgQueue was None; the background
+	# thread might still be in _speak() or have items in the queue. We must stop playback
+	# and drain _speak items before joining the thread.
+	if _bgthread.bgQueue is not None:
+		params = []
+		try:
+			while True:
+				item = _bgthread.bgQueue.get_nowait()
+				if item[0] != _speak:
+					params.append(item)
+				_bgthread.bgQueue.task_done()
+		except Queue.Empty:
+			pass
+		for item in params:
+			_bgthread.bgQueue.put(item)
+	if player is not None:
+		player.stop()
 	_bgthread.terminate()
-	assert player is not None  # Type narrowing for type checkers
-	player.close()
-	player = None
+	if player is not None:
+		player.close()
+		player = None
 	if _espeak:
 		_espeak.terminate()
 
