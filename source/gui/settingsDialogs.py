@@ -1219,18 +1219,6 @@ class LanguageSettingsPanel(SettingsPanel):
 		)
 		self.jpAnnounceNewLineCheckBox.SetValue(config.conf["language"]["jpAnnounceNewLine"])
 
-		self.openDocFileByMSHTACheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Open document file by MSHTA")),
-		)
-		self.openDocFileByMSHTACheckBox.SetValue(config.conf["language"]["openDocFileByMSHTA"])
-
-		self.alwaysSpeakMathInEnglishCheckBox = settingsSizerHelper.addItem(
-			# Translators: The label of a checkbox in language settings
-			wx.CheckBox(self, label=_("Always speak math in English")),
-		)
-		self.alwaysSpeakMathInEnglishCheckBox.SetValue(config.conf["language"]["alwaysSpeakMathInEnglish"])
-
 	def onSave(self):
 		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = (
 			self.nconvAsNVDAModifierCheckBox.IsChecked()
@@ -1244,11 +1232,6 @@ class LanguageSettingsPanel(SettingsPanel):
 		config.conf["language"]["announceCandidateNumber"] = self.announceCandidateNumberCheckBox.IsChecked()
 		config.conf["language"]["jpAnsiEditbox"] = self.jpAnsiEditCheckBox.IsChecked()
 		config.conf["language"]["jpAnnounceNewLine"] = self.jpAnnounceNewLineCheckBox.IsChecked()
-		config.conf["language"]["openDocFileByMSHTA"] = self.openDocFileByMSHTACheckBox.IsChecked()
-		config.conf["language"]["alwaysSpeakMathInEnglish"] = (
-			self.alwaysSpeakMathInEnglishCheckBox.IsChecked()
-		)
-
 		config.conf["language"]["jpKatakanaPitchChange"] = self.jpKatakanaPitchChangeEdit.Value
 		config.conf["language"]["halfShapePitchChange"] = self.halfShapePitchChangeEdit.Value
 
