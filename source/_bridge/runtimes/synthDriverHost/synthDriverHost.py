@@ -9,6 +9,7 @@ import sys
 import importlib
 import rpyc
 from rpyc.core.stream import PipeStream
+import synthDriverHandler
 from _bridge.components.services.synthDriver import SynthDriverService
 
 
@@ -134,6 +135,7 @@ class HostService(Service):
 		log.debug(f"Loading synth driver '{name}'")
 		mod = importlib.import_module(f"synthDrivers.{name}")
 		synth = mod.SynthDriver()
+		synthDriverHandler._curSynth = synth  # Locally track as the active synth.
 		return SynthDriverService(synth)
 
 
