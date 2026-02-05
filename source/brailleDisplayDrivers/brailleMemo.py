@@ -429,7 +429,11 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
 			waitAfterDisconnect()
-			ret = windll.kernel32.FreeLibrary(self._directBM._handle)  # noqa: F405
+			# explicitly defining the argument and return types for FreeLibrary.
+			_FreeLibrary = windll.kernel32.FreeLibrary  # noqa: F405
+			_FreeLibrary.argtypes = [HMODULE]  # noqa: F405
+			_FreeLibrary.restype = BOOL  # noqa: F405
+			ret = _FreeLibrary(self._directBM._handle)
 			# ret is not zero if success
 			log.info("KGS driver terminated %d" % ret)
 		self._directBM = None
