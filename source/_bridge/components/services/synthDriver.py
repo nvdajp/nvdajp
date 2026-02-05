@@ -46,21 +46,11 @@ class SynthDriverService(Service):
 		self._synth = synthDriver
 		self._synthIndexReachedCallback = None
 		self._synthDoneSpeakingCallback = None
-		# Ensure default pitch, rate, and volume settings exist in config
-		speechConf = config.conf["speech"]
-		if self._synth.name not in speechConf:
-			synthConf = speechConf[self._synth.name] = {}
-		else:
-			synthConf = speechConf[self._synth.name]
-		if "pitch" not in synthConf:
-			synthConf["pitch"] = self._synth.pitch
-		if "rate" not in synthConf:
-			synthConf["rate"] = self._synth.rate
-		if "volume" not in synthConf:
-			synthConf["volume"] = self._synth.volume
+
 		# So that getSynth() and speech.commands.BaseProsodyCommand.defaultValue work in this process.
 		# Config (config.conf["speech"][synthDriver.name]) is set separately via setSpeechConfigForSynth.
 		import synthDriverHandler
+
 		synthDriverHandler._curSynth = synthDriver
 
 	@Service.exposed
