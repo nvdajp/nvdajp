@@ -11,7 +11,7 @@ from typing import (
 import json
 import rpyc
 from logHandler import log
-import config
+
 from synthDriverHandler import (
 	SynthDriver,
 	synthIndexReached,
@@ -199,10 +199,6 @@ class SynthDriverService(Service):
 		if not any(param == setting.id for setting in self._synth.supportedSettings):
 			raise AttributeError(f"{param} not a supported setting")
 		setattr(self._synth, param, val)
-		# Update local config
-		# So synthCommands can use current defaults.
-		synthConf = config.conf["speech"][self._synth.name]
-		synthConf[param] = val
 
 	def terminate(self):
 		if self._synthIndexReachedCallback:
