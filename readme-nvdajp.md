@@ -16,7 +16,7 @@
 
 以下からダウンロードしてインストーラーを実行
 
-https://www.visualstudio.com/ja/downloads/
+<https://www.visualstudio.com/ja/downloads/>
 
 * Visual Studio 2022 でビルドできることを確認している
 
@@ -50,7 +50,7 @@ https://www.visualstudio.com/ja/downloads/
 
 Visual Studio と一緒にインストールしない場合は下記からダウンロードしてインストーラーを実行する。
 
-https://git-for-windows.github.io/
+<https://git-for-windows.github.io/>
 
 Git の設定
 
@@ -90,7 +90,7 @@ createDevEnvironment.md の内容だが、この手順書では使っていな�
 
 7-Zip サイトから 64bit Windows x64 (7z****-x64.exe) をダウンロードする。
 
-http://www.7-zip.org/download.html
+<http://www.7-zip.org/download.html>
 
 インストーラーを実行してデフォルトでインストールする。
 
@@ -105,9 +105,9 @@ C:\Program Files\7-Zip
 ダウンロードして実行し、インストールする。
 オプションはデフォルトでよい。
 
-https://www.python.org/downloads/release/python-31311/
+<https://www.python.org/downloads/release/python-31311/>
 
-Windows x86-64 executable installer (python-3.13.11-amd64.exe)
+Windows x86-64 executable installer (python-3.13.12-amd64.exe)
 
 ### (6) 確認すること
 
@@ -115,7 +115,7 @@ PowerShell またはコマンドプロンプトで Python 3.13 (64bit) が起動
 
 ```text
 > py -3.13 -V
-Python 3.13.11
+Python 3.13.12
 ```
 
 PowerShell で git, patch, 7z がそれぞれ実行できる。
@@ -180,10 +180,11 @@ NVDA 本体を実行するには
 ```
 
 主なオプション：
-- `-VersionBuild` : ビルド番号を指定
-- `-SkipUnitTests` : ユニットテストをスキップ
-- `-SkipSystemTests` : システムテストをスキップ
-- `-SkipSigning` : コード署名をスキップ（RDPセッション等で証明書にアクセスできない場合）
+
+* `-VersionBuild` : ビルド番号を指定
+* `-SkipUnitTests` : ユニットテストをスキップ
+* `-SkipSystemTests` : システムテストをスキップ
+* `-SkipSigning` : コード署名をスキップ（RDPセッション等で証明書にアクセスできない場合）
 
 ### (9) NVDA本家版のソースコード取得とビルド
 
@@ -207,8 +208,8 @@ NVDA日本語版では、GitHub Actionsを使用してIssueやPull Requestにマ
 1. IssueまたはPull Requestがクローズされた時
 2. マイルストーンが未設定である
 3. 以下のいずれかの条件を満たす：
-   - Issueが「completed」としてクローズされた
-   - Pull Requestがマージされた
+   * Issueが「completed」としてクローズされた
+   * Pull Requestがマージされた
 
 ### 設定方法
 
@@ -373,9 +374,10 @@ NVDA日本語版のビルドで行っているシステムテスト
 jpcharディレクトリには、文字説明と記号の一貫性をチェックするスクリプトがあります。詳細は `jpchar/readme.txt` を参照してください。
 
 主なスクリプト：
-- checkCharDesc.py - 文字説明の一貫性チェック
-- checkSymbols.py - 記号の一貫性チェック
-- compareSymbolsDic.py - 記号辞書の比較
+
+* checkCharDesc.py - 文字説明の一貫性チェック
+* checkSymbols.py - 記号の一貫性チェック
+* compareSymbolsDic.py - 記号辞書の比較
 
 ## SCons ビルドターゲット
 
@@ -388,17 +390,20 @@ NVDA日本語版では、SConsを使用したビルドシステムが実装さ�
 JTalk DLLのビルドとペイロードへの配置を行います。
 
 **動作**：
-- DLLが存在する場合: 再ビルドをスキップ（高速）
-- DLLが存在しない場合: 自動的に `nmake /f all.mak` を実行してビルド
-- ビルド成功後、生成されたDLLをペイロード位置（`miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll`）に配置
+
+* DLLが存在する場合: 再ビルドをスキップ（高速）
+* DLLが存在しない場合: 自動的に `nmake /f all.mak` を実行してビルド
+* ビルド成功後、生成されたDLLをペイロード位置（`miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll`）に配置
 
 **実行例**：
+
 ```bash
 # JTalk DLLのビルドと配置（x86_64がデフォルト）
 scons jtalkPrep
 ```
 
 **ログ例（DLL存在時）**：
+
 ```
 jtalkPrep: using TARGET_ARCH=x86_64
 jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86_64/libopenjtalk.dll
@@ -407,6 +412,7 @@ jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 ```
 
 **ログ例（DLL不在時）**：
+
 ```
 jtalkPrep: using TARGET_ARCH=x86_64
 jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86_64/libopenjtalk.dll
@@ -422,11 +428,13 @@ jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
 JTalk辞書ファイルのビルドと `source/` ディレクトリへのコピーを行います。
 
 **動作**：
-- JTalk辞書ファイル（`*.dic`, `*.bin`）をビルド
-- 日本語版固有のファイルを `source/` にオーバーレイ
-- `jtalkPrep` に依存しているため、JTalk DLLも自動的に準備される
+
+* JTalk辞書ファイル（`*.dic`, `*.bin`）をビルド
+* 日本語版固有のファイルを `source/` にオーバーレイ
+* `jtalkPrep` に依存しているため、JTalk DLLも自動的に準備される
 
 **実行例**：
+
 ```bash
 # 辞書ビルドとオーバーレイ
 scons jtalkSync
@@ -447,6 +455,7 @@ scons source user_docs launcher
 ```
 
 **内部で自動実行される**（開発者は意識不要）：
+
 1. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
 2. `jtalkSync`: 辞書ファイルのビルドとオーバーレイで `source/` に配置
 3. `source`, `dist` などのビルド
@@ -457,10 +466,10 @@ scons source user_docs launcher
 
 従来は複数の `.cmd` スクリプトが相互に呼び出し合う複雑な構造でしたが、SConsターゲットの導入により以下の改善が実現されました：
 
-- **簡素化**: 開発者は `scons` コマンドのみを意識すればよい
-- **自動化**: 依存関係が自動的に解決される
-- **高速化**: DLLが存在する場合は再ビルドをスキップ
-- **透明性**: ビルドプロセスが明確になる
+* **簡素化**: 開発者は `scons` コマンドのみを意識すればよい
+* **自動化**: 依存関係が自動的に解決される
+* **高速化**: DLLが存在する場合は再ビルドをスキップ
+* **透明性**: ビルドプロセスが明確になる
 
 **現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
 
@@ -470,23 +479,28 @@ scons source user_docs launcher
 
 現在、GitHub Actionsを使用したCI/CDパイプラインが実装されています（`.github/workflows/testAndPublish.yml`）：
 
-- **ビルド環境**: Windowsランナー、Python 3.13 (64bit)
-- **ビルドプロセス**: `jptools/nonCertBuild.py` を使用（Python版に移行済み）
-- **テスト**: ユニットテスト、システムテスト、日本語版固有のテストを実行
-- **自動化**: betajp、releasejpブランチへのpush時に自動ビルド
+* **ビルド環境**: Windowsランナー、Python 3.13 (64bit)
+* **ビルドプロセス**: `jptools/nonCertBuild.py` を使用（Python版に移行済み）
+* **テスト**: ユニットテスト、システムテスト、日本語版固有のテストを実行
+* **自動化**: betajp、releasejpブランチへのpush時に自動ビルド
 
 **今後の改善予定**：
-- 本家のCI/CD改善の取り込み
-- テストジョブの分離（typeCheck, licenseCheck等）
-- SCons MSVC Cacheによる高速化
+
+* 本家のCI/CD改善の取り込み
+* テストジョブの分離（typeCheck, licenseCheck等）
+* SCons MSVC Cacheによる高速化
 
 ### Python バージョンの対応状況
 
 #### 現在の状況（2026年1月）
-- Python 3.13 (64bit) を使用
-- CI/CDでは Python 3.13 を使用（`.github/workflows/testAndPublish.yml`）
-- 本家 NVDA と同じく Python 3.13 に対応済み
+
+* Python 3.13 (64bit) を使用
+
+* CI/CDでは Python 3.13 を使用（`.github/workflows/testAndPublish.yml`）
+* 本家 NVDA と同じく Python 3.13 に対応済み
 
 #### 備考
-- 日本語版固有のモジュール（jtalk等）も Python 3.13 に対応済み
-- `pyproject.toml` で `requires-python = ">=3.13,<3.14"` を指定
+
+* 日本語版固有のモジュール（jtalk等）も Python 3.13 に対応済み
+
+* `pyproject.toml` で `requires-python = ">=3.13,<3.14"` を指定
