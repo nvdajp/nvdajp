@@ -6074,7 +6074,14 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 
 		self._allowUsageStatsCheckBox: wx.CheckBox = generalGroup.addItem(
 			# Translators: The label of a checkbox in privacy and security settings to toggle allowing of usage stats gathering
-			wx.CheckBox(generalBox, label=_("Allow NV Access to gather NVDA usage statistics")),
+			# BEGIN JP PATCH (Replace "NV Access" with "NVDA Japanese Team")
+			wx.CheckBox(
+				generalBox,
+				label=_("Allow NV Access to gather NVDA usage statistics").replace(
+					"NV Access", _("NVDA Japanese Team")
+				),
+			),
+			# END JP PATCH
 		)
 		self.bindHelpEvent("GeneralSettingsGatherUsageStats", self._allowUsageStatsCheckBox)
 		self._allowUsageStatsCheckBox.Value = config.conf["update"]["allowUsageStats"]
