@@ -6,7 +6,7 @@
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は2026年1月10日時点での betajp ブランチの状況
+以下は2026年2月7日時点での betajp ブランチの状況
 
 ### (1) Windows 10/11 64ビット
 
@@ -54,21 +54,27 @@ Visual Studio と一緒にインストールしない場合は下記からダウ
 
 Git の設定
 
-* Adjusting your PATH environment : Use Git and optional Unix tools from the Windows Command Prompt
+Adjusting your PATH environment
 
-* Configuring the line ending conversions : Chechout Windows-style, commit Unix-style line ending
-
-設定し直す場合は
-
-```text
-> git config --global core.autocrlf true
-```
+* Use Git and optional Unix tools from the Windows Command Prompt
 
 環境変数 PATH を自分で設定しなおす場合は、以下が登録されていること。
 
 ```text
 C:\Program Files\Git\cmd
 C:\Program Files\Git\usr\bin
+```
+
+Configuring the line ending conversions
+
+Git インストール時に「Checkout Windows-style, commit Unix-style」を選ぶと、checkout 時 CRLF・commit 時 LF になる（`core.autocrlf true`）。
+
+このプロジェクトでは `.editorconfig` やフォーマッターが LF 前提のため、作業ツリーも LF にそろえる推奨がある。
+
+clone 後、リポジトリのルートで次を実行するとよい（詳細は後述「ファイル改行コードと editorconfig」を参照）。
+
+```text
+> git config --local core.autocrlf false
 ```
 
 備考：
@@ -100,21 +106,33 @@ createDevEnvironment.md の内容だが、この手順書では使っていな�
 C:\Program Files\7-Zip
 ```
 
+通常のビルドプロセスで 7z に依存する処理は廃止された。以下で 7z を使用している。
+
+* jptools/pack_kgs_addon.cmd : KGS アドオンの zip 作成
+* jptools/pack_jtalk_addon.cmd : JTalk アドオンの zip 作成
+* jptools/buildControllerClient.cmd : 日本語版用コントローラークライアント zip 作成（Python パッカーが利用できない場合に 7z にフォールバック）
+* ci/scripts/buildSymbolStore.ps1 : 本家 CI の処理
+
 ### (5) Python 3.13 (Windows 64bit)
 
 ダウンロードして実行し、インストールする。
 オプションはデフォルトでよい。
 
-<https://www.python.org/downloads/release/python-31311/>
+<https://www.python.org/downloads/release/python-31312/>
 
 Windows x86-64 executable installer (python-3.13.12-amd64.exe)
 
+Windows x86 executable installer (python-3.13.12.exe)
+
 ### (6) 確認すること
 
-PowerShell またはコマンドプロンプトで Python 3.13 (64bit) が起動する。
+PowerShell またはコマンドプロンプトで Python 3.13 (64bit/32bit) が起動する。
 
 ```text
 > py -3.13 -V
+Python 3.13.12
+
+> py -3.13-32 -V
 Python 3.13.12
 ```
 
@@ -145,10 +163,10 @@ C:\Program Files\7-Zip\7z.exe
 
 ```text
 > cd betajp-dev
-> .\scons.bat source
+> .\scons.bat synthDriverHost32Runtime source
 ```
 
-ユニットテストの出力が `OK (skipped=5)` であれば依存モジュールは準備できている。
+synthDriverHost32Runtime は 32ビット SAPI に対応するための拡張モジュールで、明示的なターゲット指定が必要。
 
 NVDA 本体を実行するには
 
@@ -175,8 +193,7 @@ NVDA 本体を実行するには
 
 ```powershell
 > cd betajp-dev
-> $env:VERSION = "2026.1jp"
-> .\jptools\certBuild2025.ps1 -VersionBuild 99999
+> .\jptools\certBuild2025.ps1
 ```
 
 主なオプション：
@@ -241,11 +258,10 @@ gh variable set MILESTONE_ID --body "71" --repo nvdajp/nvdajp
 ### ファイル改行コードと editorconfig
 
 * Windows で git clone した場合、`.gitattributes`の設定により、git に commit すると改行コードが LF になる。
-* `.editorconfig`は本家（nvaccess/beta）に合わせて `end_of_line = lf` に設定されている（2026-01-10更新）。
+* `.editorconfig`は本家（nvaccess/beta）に合わせて `end_of_line = lf` に設定されている。
 * Windows の Visual Studio Code で editorconfig を有効にすると、新規作成したファイルは保存するときに改行コードが LF になる。
-* 本家との整合性を保つため、改行コードは LF に統一する方針（タスク 2.7: UTF-8 BOMと改行コードの統一）。
-* **推奨Git設定**: リポジトリのローカル設定で `git config --local core.autocrlf false` を設定することで、`.gitattributes`の`eol=lf`設定が優先され、作業ツリーもLFで統一されます。
-* 詳細は `projectDocs/jp/line-endings-summary.md` を参照。
+* 本家との整合性を保つため、改行コードは LF に統一した。
+* **推奨Git設定**: リポジトリのローカル設定で `git config --local core.autocrlf false` を設定することで、`.gitattributes`の`eol=lf`設定が優先され、作業ツリーもLFで統一される。
 
 ### ファイルの不足やバージョンの不一致
 
@@ -303,8 +319,8 @@ Receiving objects: 100% (412/412), 86.54 KiB | 0 bytes/s, done.
 comInterfaces ファイルは git で管理されていないため、下記のようにして再生成する。
 
 ```text
-> scons.bat source\comInterfaces -c
-> scons.bat source\comInterfaces
+> .\scons.bat source\comInterfaces -c
+> .\scons.bat source\comInterfaces
 ```
 
 ## システムテスト
@@ -364,7 +380,7 @@ NVDA日本語版のビルドで行っているシステムテスト
 
 ```text
 > cd jptools
-> py jpDicTest.py
+> uv run jpDicTest.py
 ```
 
 このスクリプトは日本語辞書（nvdajp_dic.py）の機能をテストします。文字の説明や属性の取得、文字種の判定などをチェックします。
@@ -399,7 +415,7 @@ JTalk DLLのビルドとペイロードへの配置を行います。
 
 ```bash
 # JTalk DLLのビルドと配置（x86_64がデフォルト）
-scons jtalkPrep
+.\scons.bat jtalkPrep
 ```
 
 **ログ例（DLL存在時）**：
@@ -437,7 +453,7 @@ JTalk辞書ファイルのビルドと `source/` ディレクトリへのコピ�
 
 ```bash
 # 辞書ビルドとオーバーレイ
-scons jtalkSync
+.\scons.bat jtalkSync
 ```
 
 **注意**: `scons source` を実行すると、`jtalkSync` が依存として自動実行されます。通常は明示的に実行する必要はありません。
@@ -447,11 +463,7 @@ scons jtalkSync
 開発者が通常実行するコマンド：
 
 ```bash
-# これだけでビルド完結（ベンダービルド・overlay・dist 作成すべて自動）
-scons dist
-
-# または
-scons source user_docs launcher
+.\scons.bat synthDriverHost32Runtime launcher
 ```
 
 **内部で自動実行される**（開発者は意識不要）：
@@ -492,15 +504,10 @@ scons source user_docs launcher
 
 ### Python バージョンの対応状況
 
-#### 現在の状況（2026年1月）
+#### 現在の状況（2026年2月）
 
 * Python 3.13 (64bit) を使用
-
-* CI/CDでは Python 3.13 を使用（`.github/workflows/testAndPublish.yml`）
-* 本家 NVDA と同じく Python 3.13 に対応済み
-
-#### 備考
-
+* synthDriverHost32Runtime では Python 3.13 (32bit) を使用
+* CI/CDでも Python 3.13 を使用（`.github/workflows/testAndPublish.yml`）
 * 日本語版固有のモジュール（jtalk等）も Python 3.13 に対応済み
-
 * `pyproject.toml` で `requires-python = ">=3.13,<3.14"` を指定

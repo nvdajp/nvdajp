@@ -958,7 +958,11 @@ class DonateRequestDialog(wx.Dialog):
 		self._continue = continueFunc
 
 		mainSizer = wx.BoxSizer(wx.VERTICAL)
-		item = wx.StaticText(self, label=self.MESSAGE)
+		# BEGIN JP PATCH (Replace "NV Access" with "NVDA Japanese Team")
+		# Translators: 'NV Access' should be replaced with 'NVDA Japanese Team'
+		message = self.MESSAGE.replace("NV Access", _("NVDA Japanese Team"))
+		# END JP PATCH
+		item = wx.StaticText(self, label=message)
 		mainSizer.Add(item, border=20, flag=wx.LEFT | wx.RIGHT | wx.TOP)
 		sizer = wx.BoxSizer(wx.HORIZONTAL)
 		# Translators: The label of the button to donate
