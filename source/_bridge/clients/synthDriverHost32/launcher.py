@@ -76,12 +76,14 @@ def createSynthDriver(
 	name: str,
 	synthDriversPath: str,
 	speechConfig: dict | None = None,
+	configName: str | None = None,  # nvdajp
 ) -> tuple[Connection, SynthDriverService]:
 	"""Start the 32-bit synth driver host process and connect to its RPYC service over the hosts standard pipes.
 	Instructs the host to install proxies that use the given NVDAService for remote calls back into NVDA.
 	:param name: Name of the synth driver module to load (e.g. "sapi4").
 	:param synthDriversPath: Path to the 32-bit synth drivers directory.
 	:param speechConfig: Optional config dict for this synth (e.g. rate, pitch, volume) so BaseProsodyCommand works in the 32-bit process.
+	:param configName: The name of the config section for this synth. If None, name is used.  # nvdajp
 	:returns: The remote SynthDriverHostService instance.
 	"""
 	job = jobObject.Job()
@@ -106,13 +108,15 @@ def createSynthDriver(
 	conn.remoteService.installProxies(service)
 	log.debug("Creating SynthDriverProxy over remote SynthDriverService")
 	conn.remoteService.registerSynthDriversPath(synthDriversPath)
-	# Ensure config.conf["speech"][name] exists in the 32-bit process (BaseProsodyCommand.defaultValue).
+	# Ensure config.conf["speech"][configName] exists in the 32-bit process (BaseProsodyCommand.defaultValue).
 	# When speechConfig is None, an empty dict is passed so the section exists; log so it is visible.
 	if speechConfig is None:
 		log.warning(
 			"No speech config found for synth '%s'; passing empty config dict to 32-bit synth driver host.",
 			name,
 		)
-	conn.remoteService.setSpeechConfigForSynth(name, speechConfig if speechConfig else {})
+	if configName is None:  # nvdajp
+		configName = name  # nvdajp
+	conn.remoteService.setSpeechConfigForSynth(configName, speechConfig if speechConfig else {})  # nvdajp
 	synthDriverService = conn.remoteService.SynthDriver(name)
 	return conn, synthDriverService

@@ -15,6 +15,7 @@ class SynthDriver(SynthDriverProxy32):
 	description = _("Microsoft Speech API version 5 (32 bit)")
 	synthDriver32Path = os.path.join(globalVars.appDir, "_synthDrivers32")
 	synthDriver32Name = "sapi5"
+	synthDriver32ConfigName = "sapi5"  # nvdajp
 
 	@classmethod
 	def check(cls):

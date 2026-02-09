@@ -30,6 +30,7 @@ class SynthDriverProxy32(SynthDriverProxy):
 			self.synthDriver32Name,
 			self.synthDriver32Path,
 			speechConfig=speechConfig,
+			configName=getattr(self, "synthDriver32ConfigName", self.name),
 		)
 		super().__init__(remoteDriver)
 		self.holdConnection(conn)

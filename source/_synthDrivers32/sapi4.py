@@ -857,7 +857,7 @@ class SynthDriverSink(COMObject):
 
 
 class SynthDriver(SynthDriver):
-	name = "sapi4"
+	name = "sapi4_32"  # nvdajp
 	description = "Microsoft Speech API version 4"
 	supportedSettings = [SynthDriver.VoiceSetting()]
 	supportedCommands: set[type[SynthCommand]] = {
