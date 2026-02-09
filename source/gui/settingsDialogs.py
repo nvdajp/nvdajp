@@ -6176,10 +6176,10 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 			log.debugWarning("Could not set log level list to current log level")
 
 		self._allowUsageStatsCheckBox: wx.CheckBox = generalGroup.addItem(
-			# Translators: The label of a checkbox in privacy and security settings to toggle allowing of usage stats gathering
 			# BEGIN JP PATCH (Replace "NV Access" with "NVDA Japanese Team")
 			wx.CheckBox(
 				generalBox,
+				# Translators: The label of a checkbox in privacy and security settings to toggle allowing of usage stats gathering
 				label=_("Allow NV Access to gather NVDA usage statistics").replace(
 					"NV Access", _("NVDA Japanese Team")
 				),
