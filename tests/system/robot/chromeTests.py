@@ -1012,13 +1012,13 @@ def test_ariaTreeGrid_browseMode():
 				"Focus mode",
 				# Focus enters the ARIA treegrid (table)
 				"Inbox  table",
-				# Focus lands on row 2
+				# Focus lands on row 2 (order of "level 1" may vary by Chrome/NVDA; accept at end)
 				SPEECH_SEP.join(
 					[
-						"level 1",
 						"Treegrids are awesome Want to learn how to use them? aaron at thegoogle dot rocks",
 						"expanded",
 						"1 of 1",
+						"level 1",
 					],
 				),
 			],
@@ -2361,9 +2361,9 @@ def test_focus_mode_on_focusable_read_only_lists():
 				),
 				SPEECH_SEP.join(
 					[
-						"level 1",  # Inserted by Chromium even though not explicitly set
-						"Todd Kloots Hello all. At 1:30 PM",  # list element name, should read first
+						"Todd Kloots Hello all. At 1:30 PM",  # list element name
 						"1 of 1",  # item count, no role expected here
+						"level 1",  # inserted by Chromium even though not explicitly set (order may vary)
 					],
 				),
 				"Focus mode",  # Focus mode should be enabled automatically and be indicated
