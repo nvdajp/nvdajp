@@ -2,6 +2,10 @@
 
 シュアルタ/NVDA日本語チーム 西本卓也
 
+**構成**: ビルド環境準備とソースコード取得 → マイルストーン自動割り当て → git 運用方針とトラブルシューティング → システムテスト → 単体テストと文字説明のチェック → SCons ビルドターゲット（JTalk・通常ビルド・CI/CD・Python 対応状況）
+
+---
+
 ## ビルド環境準備とソースコード取得
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
@@ -77,9 +81,7 @@ clone 後、リポジトリのルートで次を実行するとよい（詳細�
 > git config --local core.autocrlf false
 ```
 
-備考：
-リモートリポジトリへのアップロード (git push) するためには
-push 先（GitHubなど）のアカウントのセットアップや公開鍵の設定、権限の取得が必要。
+**備考**: リモートへ push するには GitHub 等のアカウント・公開鍵・権限の設定が必要。
 
 #### (2.6) 補足
 
@@ -92,7 +94,7 @@ createDevEnvironment.md の内容だが、この手順書では使っていな�
 > git clone https://github.com/nvaccess/vscode-nvda.git .vscode
 ```
 
-### (4) 7-Zip (7z)
+### (3) 7-Zip (7z)
 
 7-Zip サイトから 64bit Windows x64 (7z****-x64.exe) をダウンロードする。
 
@@ -113,7 +115,7 @@ C:\Program Files\7-Zip
 * jptools/buildControllerClient.cmd : 日本語版用コントローラークライアント zip 作成（Python パッカーが利用できない場合に 7z にフォールバック）
 * ci/scripts/buildSymbolStore.ps1 : 本家 CI の処理
 
-### (5) Python 3.13 (Windows 64bit)
+### (4) Python 3.13 (Windows 64bit)
 
 ダウンロードして実行し、インストールする。
 オプションはデフォルトでよい。
@@ -124,7 +126,7 @@ Windows x86-64 executable installer (python-3.13.12-amd64.exe)
 
 Windows x86 executable installer (python-3.13.12.exe)
 
-### (6) 確認すること
+### (5) 確認すること
 
 PowerShell またはコマンドプロンプトで Python 3.13 (64bit/32bit) が起動する。
 
@@ -149,7 +151,7 @@ C:\Program Files\Git\usr\bin\patch.exe
 C:\Program Files\7-Zip\7z.exe
 ```
 
-### (7) NVDA日本語版のソースコード取得とビルド
+### (6) NVDA日本語版のソースコード取得とビルド
 
 以下で本体および Git のサブモジュールが取得される。
 
@@ -174,7 +176,7 @@ NVDA 本体を実行するには
 > .\runnvda.bat
 ```
 
-### (8) NVDA日本語版のリリースビルド
+### (7) NVDA日本語版のリリースビルド
 
 現在は `signtool sign /a` を使えることが前提。
 
@@ -187,7 +189,7 @@ NVDA 本体を実行するには
 # certBuild2025Env.ps1 を編集して $env:CERT_SHA1 を設定
 ```
 
-**注意**: `certBuild2025Env.ps1` はリポジトリにコミットしないこと。
+**注意**: `certBuild2025Env.ps1` はコミットしないこと。
 
 #### ビルド実行
 
@@ -203,7 +205,7 @@ NVDA 本体を実行するには
 * `-SkipSystemTests` : システムテストをスキップ
 * `-SkipSigning` : コード署名をスキップ（RDPセッション等で証明書にアクセスできない場合）
 
-### (9) NVDA本家版のソースコード取得とビルド
+### (8) NVDA本家版のソースコード取得とビルド
 
 ```text
 > git clone --recurse-submodules --shallow-submodules https://github.com/nvaccess/nvda.git
@@ -274,17 +276,7 @@ gh variable set MILESTONE_ID --body "71" --repo nvdajp/nvdajp
 > git submodule update --init --recursive
 ```
 
-備考：
-本家から git fetch, git merge FETCH_HEAD したあとで
-
-```text
-modified:   include/espeak (new commits)
-```
-
-のようになったときにこの操作をすると解決することが多い。
-
-不必要な modified を誤ってマージして git push すると、
-サブモジュールのバージョンが本家とずれた状態のまま GitHub に公開されてしまう。
+**備考**: 本家から `git fetch` / `git merge` したあと `modified: include/espeak (new commits)` のように出たときは、上記の submodule 同期で解消することが多い。不要な modified をマージして push するとサブモジュールのバージョンが本家とずれるので注意。
 
 ### git submodule update のエラー対応
 
@@ -327,50 +319,58 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 
 ### 方針
 
-* 本ドキュメントの手順で日本語 Windows 環境（ローカル環境）でシステムテストが通ること
-* 同時に GitHub Actions でシステムテストが通ること
+* 日本語 Windows 環境（ローカル）と GitHub Actions の両方でシステムテストが通ることを目指す。
+* 本家との差（Chrome UI 言語・文字説明モードなど）はテスト側で吸収している（後述「本家版の課題と対応」）。
 
-### 本家版の課題
+### 本家版の課題と対応
 
-* Chrome 起動オプションで UI 言語を英語にしているが、起動済みの Chrome インスタンスがあると、起動オプションにかかわらず、Chrome の UI 言語が既存インスタンスの言語になる。アドレス検索バーの読み上げに依存した処理があるため、Chrome の UI 言語が日本語であることがテストに通らない原因になる。
-* Chrome プロファイル選択画面が出てしまうと、テストに進めない。
-* NVDA 日本語版の文字説明モードの仕様変更により、左右矢印キーを押したときの読み上げが異なる場合がある。
+| 課題 | 対応 |
+|------|------|
+| Chrome の UI 言語が既存インスタンスに依存し、アドレスバー読み上げがテストに影響する | _chromeArgs.py で ja-JP・ゲストモードを指定。ChromeLib.py で「アドレス検索バー」を期待値に |
+| Chrome プロファイル選択画面でテストが進まない | ゲストモード等で回避 |
+| 日本語版の文字説明モードで矢印キー読み上げが本家と異なる | jpRobotUtil.py で `press_numpad2_4_times` などを追加 |
+| その他 | chromeTests は speech のみ有効化、symbolPronunciationTests は本家で無効のものを有効化。NVDA 由来テキストは英語のまま |
 
-### 対応
+### 実行方法
 
-* _chromeArgs.py : ローカル環境と GitHub Actions を共通のコードで動かすため Chrome の UI 言語を ja-JP に変更している。また、ゲストモードで起動するために必要なオプションを追加している。
-* ChromeLib.py : アドレス検索バーの読み上げとして期待するテキストを "Address and search bar" から "アドレス検索バー" に変更している。
-* jpRobotUtil.py : press_numpad2_4_times を実装しており、文字説明の読み上げを本家版にそろえるためにテストコードに追加している。
-* NVDA そのものの言語（NVDA に由来するテキスト）は英語のままテストをしている。テストのさらなる日本語化は今後の課題である。
-* chromeTests : 一部のテストについて speech のみを有効化し braille を無効化している。
-* symbolPronunciationTests : 本家版では無効化されているがあえて有効化し、日本語版で動かす改変をしている。今後、日本語版に固有の仕様のテストを整備する。
+既定では **NVDA はインストールせずソースから起動**（`whichNVDA:source`）される。必要に応じて `--variable whichNVDA:installed` と `installDir` を指定する。
 
-### システムテストの実行
-
-システムテストを実行するには
+**よく使うコマンド（いずれもインストール不要）**
 
 ```text
-> .\runsystemtests.bat --include symbols --test "moveByCharacter"
+# symbols スイート（CI と同じ除外タグ）
+.\runsystemtests.bat --include symbols --exclude "restarts_on_crash skip_in_ci"
+
+# 特定テストだけ（例: moveByWord）
+.\runsystemtests.bat --include symbols --exclude "restarts_on_crash skip_in_ci" --test "moveByWord"
+
+# NVDA タグ一式（Chrome 除く）
+.\runsystemtests.bat --include NVDA --exclude restarts_on_crash
 ```
 
-NVDA日本語版のビルドで行っているシステムテスト
+**インストーラー・Chrome を含める場合**
 
 ```text
-> .\runsystemtests.bat --include NVDA --exclude restarts_on_crash
-> .\runsystemtests.bat --variable whichNVDA:installed --variable installDir:"output\nvda_%VERSION%.exe" --include installer
-> .\runsystemtests.bat --include chrome
+.\runsystemtests.bat --variable whichNVDA:installed --variable installDir:"output\nvda_%VERSION%.exe" --include installer
+.\runsystemtests.bat --include chrome
 ```
 
-* restarts_on_crash タグを追加している。これらは GitHub Actions では通るが、ローカル環境では通らないため、除外する
-* installer はビルドした NVDA の exe ファイルを指定する
-* GitHub Actions ビルドに時間がかかるため `.github/workflows/testAndPublish.yml` では chrome テストを NVDA タグから除外している
-* システムテスト中にNVDAの起動と終了で音を出力する
+* `restarts_on_crash` はローカルで落ちることがあるため除外推奨。installer はビルド済み exe を指定。CI では chrome は NVDA タグから除外している（`.github/workflows/testAndPublish.yml` 参照）。テスト実行中は NVDA 起動・終了で音が出る。
 
-システムテストが失敗する場合
+**CI で落ちた symbols をローカルで再現する（インストールあり）**
 
-* マルチディスプレイ環境
-* 実行中に画面操作
-* 事前に Chrome を起動している
+[GitHub Actions の symbols ジョブ](https://github.com/nvdajp/nvdajp/actions) が失敗したとき、CI と同じ「インストール済み NVDA」で試す手順。前提: ビルド済みランチャー（`output\nvda_*.exe`）と Python 3.13・uv。
+
+1. `.\ci\scripts\tests\beforeTests.ps1` で出力用ディレクトリ作成
+2. `$env:nvdaLauncherDir = (Resolve-Path ".\output").Path` のあと `.\ci\scripts\installNVDA.ps1` でサイレントインストール
+3. 同じく `$env:nvdaLauncherDir` を設定したうえで `$env:INCLUDE_SYSTEM_TEST_TAGS = "symbols"`、`$env:EXCLUDE_SYSTEM_TEST_TAGS = "restarts_on_crash skip_in_ci"` を設定し、`.\ci\scripts\tests\systemTests.ps1` を実行
+
+インストール済みで単一テストだけ実行する例: `$nvdaExe = (Resolve-Path ".\output\nvda_*.exe").Path` のあと、`.\runsystemtests.bat --variable whichNVDA:installed --variable "installDir:$nvdaExe" --include symbols --exclude "restarts_on_crash skip_in_ci" --test "moveByWord"`
+
+### 失敗しやすい要因
+
+* マルチディスプレイ・実行中の画面操作・事前に Chrome を起動している
+* symbols 系: Notepad にフォーカスが移らないと actual が「Notepad」「Bottom」ばかりになり期待とずれる。CI では windows-2022 で symbols を除外している（Notepad のフォーカス不具合のため）
 
 ## 単体テストと文字説明のチェック
 
@@ -483,9 +483,7 @@ JTalk辞書ファイルのビルドと `source/` ディレクトリへのコピ�
 * **高速化**: DLLが存在する場合は再ビルドをスキップ
 * **透明性**: ビルドプロセスが明確になる
 
-**現状の問題点と長期的な改善方針**については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
-
-詳細は `projectDocs/jp/vendor-submodules.md` を参照してください。
+**現状の問題点と長期的な改善方針**は `projectDocs/jp/miscdepsjp-overlay-strategy.md`、ベンダーサブモジュールの詳細は `projectDocs/jp/vendor-submodules.md` を参照。
 
 ### CI/CD の現状
 

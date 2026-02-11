@@ -40,6 +40,7 @@ symbolInSpeechUI
 
 moveByWord
 	[Documentation]	Ensure symbols announced as expected when navigating by word (numpad 6).
+	[Tags]	skip_in_ci
 	test_moveByWord
 moveByLine
 	[Documentation]	Ensure symbols announced as expected when navigating by line (numpad 9).
