@@ -1,54 +1,61 @@
-# Chrome system test: 本家版と日本語版の違いの説明
+# Chrome system test 日本語環境差分
 
-このドキュメントは、Chrome system test における**本家版（nvaccess/nvda `beta`）**と
-**日本語版（nvdajp）**の違いを、読み手向けに整理して説明するものです。
-差分の背景を理解し、テスト結果の読み方を共有することが目的です。
-差分は**必ずしもバグではない**点を前提に扱います。
+この文書は、Chrome system test における本家版（nvaccess/nvda `beta`）と日本語版（nvdajp）の差分を、運用者向けに整理する正本である。
+主眼は「失敗の有無」ではなく、「差分が仕様として妥当か」を判断できるようにする点にある。
+
+## 更新チェックリスト
+
+- [ ] テスト対象ファイルの参照先が最新であることを確認した
+- [ ] 現象・原因・対処・参照コードの4章すべてを更新した
+- [ ] 本家との差分が JP PATCH と一致していることを確認した
+- [ ] CI（英語UI）とローカル（日本語UI）の両方で説明可能な状態にした
 
 ## 対象範囲
 
-- 対象: Chrome system test（テストケース・設定・共通ロジック）
 - テストケース: `tests/system/robot/chromeTests.py`
-- 共通ロジック/設定: `tests/system/libraries/_chromeArgs.py`, `tests/system/libraries/ChromeLib.py`
-- 比較対象: nvaccess/nvda `beta` と nvdajp
-- OS/環境: Windows x64 / Python 3.13
+- 共通ロジック: `tests/system/libraries/_chromeArgs.py`, `tests/system/libraries/ChromeLib.py`
+- 関連実装: `source/NVDAObjects/IAccessible/ia2TextMozilla.py`
 
-## 何が違うのか（全体像）
+## 現象
 
-Chrome system test では、**Chrome の UI 言語**と**NVDA の読み上げ設定**が
-テスト結果に直接影響します。本家版は英語 UI を前提に安定化されていますが、
-日本語版は日本語 UI を前提としているため、主に次の違いが生じます。
+### 現象1: 英語期待値と日本語UIの不一致
 
-### 1. Chrome 起動引数の違い（共通ロジック）
+- 本家版は `--lang=en-US` を前提に期待値が構成される。
+- 日本語版は `--lang=ja-JP` を使用するため、読み上げラベルが一致しない場合がある。
 
-- 本家版: `--lang=en-US`（英語 UI を強制）
-- 日本語版: `--lang=ja-JP`（日本語 UI を強制）と `--guest`（初回 UI を抑止）
+### 現象2: 文字説明モード起因の発話差
 
-**結果**として、Chrome 側の UI ラベルが日本語化され、英語の期待値と一致しない
-ケースが発生します。これはテスト安定化のための設計差分です。
+- 日本語版では文字説明モード既定値の影響で、同一カーソル位置でも発話が変化する。
 
-### 2. 文字説明モードの違い（読み上げ設定）
+### 現象3: リンク境界判定の揺れ
 
-日本語版は既定で「文字説明モード」が有効です。
-リンク内の移動や文字単位の読み上げで、英語版と異なる発話が起こり得ます。
+- IA2 実装差分により、リンク内外の判定が環境依存で揺れる場合がある。
+- 代表例として `test_pr11606` では、`blank` 固定ではなく `link` / `blank` / `B` が許容候補になる。
 
-### 3. IA2/UIA 実装差分（ブラウザ側）
+## 原因
 
-Chrome の IAccessible2 実装はロケールによりオフセット境界の解釈が異なる可能性があります。
-同じ操作でも NVDA が「リンクの外」ではなく「リンク内」と判定することがあります。
+### 原因1: UI言語前提の差
 
-### 4. マーカー検出の改善（2026-01-08）
+- Chrome 起動引数の言語設定差が、読み上げ文字列に直接反映されるためである。
 
-`ChromeLib.py`の`_waitForStartMarker()`メソッドでは、テスト開始時にChromeのアドレスバーを検出する必要があります。
-以前の日本語版では、日本語UIの「アドレス検索バー」のみをチェックしていましたが、
-これによりCI環境（英語UI）でテストが失敗していました。
+### 原因2: 日本語版既定設定の差
 
-**改善内容**:
-- 英語UI（"Address and search bar"）と日本語UI（"アドレス検索バー"）の両方に対応
-- `expectedAddressBarSpeechOptions`リストを使用し、`any()`でOR条件判定
-- これにより、英語環境と日本語環境のどちらでもテストが動作するようになった
+- 日本語版の文字説明モード既定値が、本家版のテスト期待値と一致しない場合があるためである。
 
-**実装**:
+### 原因3: ブラウザ実装差
+
+- IAccessible2 のオフセット解釈がロケール依存で変化し、境界判定の結果に差が出るためである。
+
+## 対処
+
+### 対処1: 許容値を環境差込みで定義する
+
+- 「英語固定1値」ではなく、「仕様として妥当な複数候補」を許容する。
+
+### 対処2: マーカー検出を多言語対応にする
+
+- `ChromeLib.py` の `_waitForStartMarker()` で英語UI・日本語UIの両方を検出対象にする。
+
 ```python
 # BEGIN JP PATCH (Support both English and Japanese UI language)
 expectedAddressBarSpeechOptions = ["Address and search bar", "アドレス検索バー"]
@@ -57,29 +64,18 @@ if not any(option in moveToAddressBarSpeech for option in expectedAddressBarSpee
     # エラーハンドリング
 ```
 
-この改善により、`imageDescriptions`テストなど、Chromeマーカー検出に依存するテストが
-CI環境（英語）でも日本語環境でも正常に動作するようになりました。
+### 対処3: 判定軸を「目的達成」に置く
 
-## 代表例: pr11606（リンク末尾の読み上げ）
+- 文字列完全一致だけでなく、テストの目的（正しい行・位置・要素の読み上げ）を満たすかで評価する。
 
-`test_pr11606` では、`end` キー後の読み上げが本家版では **"blank" 固定**です。
-日本語版では、Chrome の IA2 実装差分と文字説明モードの影響により
-**"link" / "blank" / "B"** が発話される可能性があります。
+## 参照コード
 
-この差分は**環境による発話の違い**であり、動作のバグではありません。
-JP 版のテストでは許容値を広げ、結果を安定化させています。
+- `tests/system/robot/chromeTests.py`
+- `tests/system/libraries/_chromeArgs.py`
+- `tests/system/libraries/ChromeLib.py`
+- `source/NVDAObjects/IAccessible/ia2TextMozilla.py`
 
-## テスト結果の読み方
+## 補足
 
-- 英語 UI を前提にした期待値は、日本語 UI では一致しないことがある
-- 文字説明モードの影響で、同じカーソル位置でも発話が異なることがある
-
-これらは**仕様・環境差による変化**として扱い、テストの目的（正しい行の読み上げ）
-を満たしているかで判断します。
-
-## 関連ファイル（読み手向け）
-
-- `tests/system/robot/chromeTests.py`（テストケース本体）
-- `tests/system/libraries/_chromeArgs.py`（Chrome 起動引数）
-- `tests/system/libraries/ChromeLib.py`（共通ヘルパ）
-- `source/NVDAObjects/IAccessible/ia2TextMozilla.py`（TextInfo の境界判定）
+- この文書は「差分の理由」を扱う。
+- 実行手順やCI運用の一般論は `projectDocs/jp/README.md` と `readme-nvdajp.md` を参照すること。
