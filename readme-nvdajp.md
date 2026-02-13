@@ -4,154 +4,41 @@
 
 **構成**: ビルド環境準備とソースコード取得 → マイルストーン自動割り当て → git 運用方針とトラブルシューティング → システムテスト → 単体テストと文字説明のチェック → SCons ビルドターゲット（JTalk・通常ビルド・CI/CD・Python 対応状況）
 
+## この文書と `projectDocs/jp/` の使い分け
+
+- この `readme-nvdajp.md` は **恒常的な手順と最短コマンド**（初回セットアップ、日常運用の入口）を扱う。
+- `projectDocs/jp/README.md` から辿れる詳細文書は **テーマ別の詳細仕様・背景・進行中の課題**（ロードマップ、分析、検証結果）を扱う。
+
 ---
 
 ## ビルド環境準備とソースコード取得
 
 [公式の情報](https://github.com/nvdajp/nvdajp/blob/betajp/projectDocs/dev/createDevEnvironment.md)
 
-以下は2026年2月7日時点での betajp ブランチの状況
+以下は **最小手順のみ** を記載する。詳細な前提条件・推奨コンポーネントは `projectDocs/dev/createDevEnvironment.md` を正本とする。
 
-### (1) Windows 10/11 64ビット
+### (1) 前提（要点）
 
-確実にビルドできる作業環境は Windows 10 または 11 64ビット
+* Windows 10/11 64bit
+* Visual Studio 2022（C++ によるデスクトップ開発）
+  * コンポーネント詳細は `projectDocs/dev/createDevEnvironment.md` の「Microsoft Visual Studio」節と `.vsconfig` の import を正本とする。
+* Git for Windows
+* Python 3.13（x64 と x86）
 
-### (2) Visual Studio Community
-
-以下からダウンロードしてインストーラーを実行
-
-<https://www.visualstudio.com/ja/downloads/>
-
-* Visual Studio 2022 でビルドできることを確認している
-
-#### (2.1) 選択する「ワークロード」の項目
-
-* C++によるデスクトップ開発
-
-#### (2.2) 「概要」「C++によるデスクトップ開発」「オプション」で選択する項目
-
-* Windows 用 C++ Clang ツール
-
-#### (2.3) 「個別のコンポーネント」「コードツール」で選択する項目
-
-個別のコンポーネント
-
-* Windows 11 SDK (10.0.22621.0)
-* MSVC v143 - VS 2022 C++ ARM64/ARM64EC ビルドツール(最新)
-* MSVC v143 - VS 2022 C++ x64/x86 ビルドツール(最新)
-* 最新の v143 ビルドツール用 C++ ATL (x86 および x64)
-* 最新の v143 ビルドツール用 C++ ATL (ARM64/ARM64EC)
-
-コードツール
-
-* Git for Windows = 後述
-
-#### (2.4) インストールの実行
-
-数GBのファイルのダウンロードとインストールが行われる。
-
-#### (2.5) Git の確認
-
-Visual Studio と一緒にインストールしない場合は下記からダウンロードしてインストーラーを実行する。
-
-<https://git-for-windows.github.io/>
-
-Git の設定
-
-Adjusting your PATH environment
-
-* Use Git and optional Unix tools from the Windows Command Prompt
-
-環境変数 PATH を自分で設定しなおす場合は、以下が登録されていること。
-
-```text
-C:\Program Files\Git\cmd
-C:\Program Files\Git\usr\bin
-```
-
-Configuring the line ending conversions
-
-Git インストール時に「Checkout Windows-style, commit Unix-style」を選ぶと、checkout 時 CRLF・commit 時 LF になる（`core.autocrlf true`）。
-
-このプロジェクトでは `.editorconfig` やフォーマッターが LF 前提のため、作業ツリーも LF にそろえる推奨がある。
-
-clone 後、リポジトリのルートで次を実行するとよい（詳細は後述「ファイル改行コードと editorconfig」を参照）。
+改行コードは LF 統一を推奨。clone 後に以下を実行する。
 
 ```text
 > git config --local core.autocrlf false
 ```
 
-**備考**: リモートへ push するには GitHub 等のアカウント・公開鍵・権限の設定が必要。
-
-#### (2.6) 補足
-
-createDevEnvironment.md の内容だが、この手順書では使っていない。
-
-* VSインストーラーのインポート機能で .vsconfig を読み込むことができる
-* Visual Studio Code を使用する場合は、NVDA用事前設定済みワークスペース構成を利用できる。リポジトリのルートで以下のコマンドを実行することで、ワークスペース構成をチェックアウトできる。
-
-```text
-> git clone https://github.com/nvaccess/vscode-nvda.git .vscode
-```
-
-### (3) 7-Zip (7z)
-
-7-Zip サイトから 64bit Windows x64 (7z****-x64.exe) をダウンロードする。
-
-<http://www.7-zip.org/download.html>
-
-インストーラーを実行してデフォルトでインストールする。
-
-環境変数 PATH に以下を登録する。
-
-```text
-C:\Program Files\7-Zip
-```
-
-通常のビルドプロセスで 7z に依存する処理は廃止された。以下で 7z を使用している。
-
-* jptools/pack_kgs_addon.cmd : KGS アドオンの zip 作成
-* jptools/pack_jtalk_addon.cmd : JTalk アドオンの zip 作成
-* jptools/buildControllerClient.cmd : 日本語版用コントローラークライアント zip 作成（Python パッカーが利用できない場合に 7z にフォールバック）
-* ci/scripts/buildSymbolStore.ps1 : 本家 CI の処理
-
-### (4) Python 3.13 (Windows 64bit)
-
-ダウンロードして実行し、インストールする。
-オプションはデフォルトでよい。
-
-<https://www.python.org/downloads/release/python-31312/>
-
-Windows x86-64 executable installer (python-3.13.12-amd64.exe)
-
-Windows x86 executable installer (python-3.13.12.exe)
-
-### (5) 確認すること
-
-PowerShell またはコマンドプロンプトで Python 3.13 (64bit/32bit) が起動する。
+### (2) 動作確認（要点）
 
 ```text
 > py -3.13 -V
-Python 3.13.12
-
 > py -3.13-32 -V
-Python 3.13.12
 ```
 
-PowerShell で git, patch, 7z がそれぞれ実行できる。
-
-```text
-> gcm git | % Source
-C:\Program Files\Git\cmd\git.exe
-
-> gcm patch | % Source
-C:\Program Files\Git\usr\bin\patch.exe
-
-> gcm 7z | % Source
-C:\Program Files\7-Zip\7z.exe
-```
-
-### (6) NVDA日本語版のソースコード取得とビルド
+### (3) NVDA日本語版のソースコード取得とビルド
 
 以下で本体および Git のサブモジュールが取得される。
 
@@ -176,7 +63,7 @@ NVDA 本体を実行するには
 > .\runnvda.bat
 ```
 
-### (7) NVDA日本語版のリリースビルド
+### (4) NVDA日本語版のリリースビルド
 
 現在は `signtool sign /a` を使えることが前提。
 
@@ -205,7 +92,9 @@ NVDA 本体を実行するには
 * `-SkipSystemTests` : システムテストをスキップ
 * `-SkipSigning` : コード署名をスキップ（RDPセッション等で証明書にアクセスできない場合）
 
-### (8) NVDA本家版のソースコード取得とビルド
+署名付きビルドの依存関係・`jpCertExtras`・`SKIP_SIGNING` などの詳細仕様は `projectDocs/jp/code-signing-dependencies.md` を正本とする。
+
+### (5) NVDA本家版のソースコード取得とビルド
 
 ```text
 > git clone --recurse-submodules --shallow-submodules https://github.com/nvaccess/nvda.git
@@ -218,11 +107,11 @@ NVDA 本体を実行するには
 
 ## マイルストーン自動割り当て機能
 
-NVDA日本語版では、GitHub Actionsを使用してIssueやPull Requestにマイルストーンを自動的に割り当てる機能を導入しています。
+NVDA日本語版では、GitHub Actionsを使用してIssueやPull Requestにマイルストーンを自動的に割り当てる機能を導入している。
 
 ### 動作概要
 
-`.github/workflows/assign-milestone-on-close.yml` ワークフローにより、以下の条件を満たす場合に自動的にマイルストーンが割り当てられます：
+`.github/workflows/assign-milestone-on-close.yml` ワークフローにより、以下の条件を満たす場合に自動的にマイルストーンが割り当てられる：
 
 1. IssueまたはPull Requestがクローズされた時
 2. マイルストーンが未設定である
@@ -232,13 +121,13 @@ NVDA日本語版では、GitHub Actionsを使用してIssueやPull Requestにマ
 
 ### 設定方法
 
-リポジトリ変数 `MILESTONE_ID` に、自動割り当てしたいマイルストーンのIDを設定します：
+リポジトリ変数 `MILESTONE_ID` に、自動割り当てしたいマイルストーンのIDを設定する：
 
 ```bash
 gh variable set MILESTONE_ID --body "71" --repo nvdajp/nvdajp
 ```
 
-現在のマイルストーンIDはリポジトリ変数 `MILESTONE_ID` で管理されています。最新のマイルストーンIDはGitHubのリポジトリ設定で確認してください。
+現在のマイルストーンIDはリポジトリ変数 `MILESTONE_ID` で管理されている。最新のマイルストーンIDはGitHubのリポジトリ設定で確認すること。
 
 ### 運用手順
 
@@ -246,7 +135,7 @@ gh variable set MILESTONE_ID --body "71" --repo nvdajp/nvdajp
 2. マイルストーンのIDを確認（URLの末尾の数字）
 3. `MILESTONE_ID` 変数を新しいマイルストーンのIDに更新
 
-この機能により、リリースノート作成時に該当マイルストーンでフィルタして変更点を簡単に把握できます。
+この機能により、リリースノート作成時に該当マイルストーンでフィルタして変更点を簡単に把握できる。
 
 ## git 運用方針とトラブルシューティング
 
@@ -321,15 +210,17 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 
 * 日本語 Windows 環境（ローカル）と GitHub Actions の両方でシステムテストが通ることを目指す。
 * 本家との差（Chrome UI 言語・文字説明モードなど）はテスト側で吸収している（後述「本家版の課題と対応」）。
+* Chrome system test の差分背景や実装詳細は `projectDocs/jp/chrome-system-test-japanese-environment.md` を参照。
 
 ### 本家版の課題と対応
 
-| 課題 | 対応 |
-|------|------|
-| Chrome の UI 言語が既存インスタンスに依存し、アドレスバー読み上げがテストに影響する | _chromeArgs.py で ja-JP・ゲストモードを指定。ChromeLib.py で「アドレス検索バー」を期待値に |
-| Chrome プロファイル選択画面でテストが進まない | ゲストモード等で回避 |
-| 日本語版の文字説明モードで矢印キー読み上げが本家と異なる | jpRobotUtil.py で `press_numpad2_4_times` などを追加 |
-| その他 | chromeTests は speech のみ有効化、symbolPronunciationTests は本家で無効のものを有効化。NVDA 由来テキストは英語のまま |
+概要のみ記載する。
+
+* Chrome の UI 言語差による期待値ずれは、起動引数と期待値の調整で吸収している。
+* Chrome の初回画面・既存プロファイル影響は、ゲストモード等で回避している。
+* 日本語版特有の読み上げ差（文字説明モード等）は、テストユーティリティで吸収している。
+
+具体的な実装差分・背景・関連ファイルは `projectDocs/jp/chrome-system-test-japanese-environment.md` を参照。
 
 ### 実行方法
 
@@ -357,24 +248,11 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 
 * `restarts_on_crash` はローカルで落ちることがあるため除外推奨。installer はビルド済み exe を指定。CI では chrome は NVDA タグから除外している（`.github/workflows/testAndPublish.yml` 参照）。テスト実行中は NVDA 起動・終了で音が出る。
 
-**CI で落ちた symbols をローカルで再現する（インストールあり）**
-
-[GitHub Actions の symbols ジョブ](https://github.com/nvdajp/nvdajp/actions) が失敗したとき、CI と同じ「インストール済み NVDA」で試す手順。前提: ビルド済みランチャー（`output\nvda_*.exe`）と Python 3.13・uv。
-
-1. `.\ci\scripts\tests\beforeTests.ps1` で出力用ディレクトリ作成
-2. `$env:nvdaLauncherDir = (Resolve-Path ".\output").Path` のあと `.\ci\scripts\installNVDA.ps1` でサイレントインストール
-3. 同じく `$env:nvdaLauncherDir` を設定したうえで `$env:INCLUDE_SYSTEM_TEST_TAGS = "symbols"`、`$env:EXCLUDE_SYSTEM_TEST_TAGS = "restarts_on_crash skip_in_ci"` を設定し、`.\ci\scripts\tests\systemTests.ps1` を実行
-
-インストール済みで単一テストだけ実行する例: `$nvdaExe = (Resolve-Path ".\output\nvda_*.exe").Path` のあと、`.\runsystemtests.bat --variable whichNVDA:installed --variable "installDir:$nvdaExe" --include symbols --exclude "restarts_on_crash skip_in_ci" --test "moveByWord"`
-
-### 失敗しやすい要因
-
-* マルチディスプレイ・実行中の画面操作・事前に Chrome を起動している
-* symbols 系: Notepad にフォーカスが移らないと actual が「Notepad」「Bottom」ばかりになり期待とずれる。CI では windows-2022 で symbols を除外している（Notepad のフォーカス不具合のため）
+CI での再現手順や失敗パターンの詳細は `projectDocs/jp/chrome-system-test-japanese-environment.md` および `projectDocs/jp/README.md` から辿れる個別ドキュメントを参照。
 
 ## 単体テストと文字説明のチェック
 
-開発中に安全に実行できるテストや確認作業として、以下のものがあります。
+開発中に安全に実行できるテストや確認作業として、以下のものがある。
 
 ### 日本語辞書のテスト
 
@@ -383,11 +261,11 @@ comInterfaces ファイルは git で管理されていないため、下記の�
 > uv run jpDicTest.py
 ```
 
-このスクリプトは日本語辞書（nvdajp_dic.py）の機能をテストします。文字の説明や属性の取得、文字種の判定などをチェックします。
+このスクリプトは日本語辞書（nvdajp_dic.py）の機能をテストする。文字の説明や属性の取得、文字種の判定などをチェックする。
 
 ### 文字説明と記号のチェック
 
-jpcharディレクトリには、文字説明と記号の一貫性をチェックするスクリプトがあります。詳細は `jpchar/readme.txt` を参照してください。
+jpcharディレクトリには、文字説明と記号の一貫性をチェックするスクリプトがある。詳細は `jpchar/readme.txt` を参照すること。
 
 主なスクリプト：
 
@@ -397,108 +275,32 @@ jpcharディレクトリには、文字説明と記号の一貫性をチェッ�
 
 ## SCons ビルドターゲット
 
-NVDA日本語版では、SConsを使用したビルドシステムが実装されています。開発者は `scons` コマンドのみを意識すればよく、複雑なビルドスクリプトを直接呼び出す必要はありません。
+この節は要点のみ記載する。
 
-### 主要なターゲット
-
-#### `scons jtalkPrep`
-
-JTalk DLLのビルドとペイロードへの配置を行います。
-
-**動作**：
-
-* DLLが存在する場合: 再ビルドをスキップ（高速）
-* DLLが存在しない場合: 自動的に `nmake /f all.mak` を実行してビルド
-* ビルド成功後、生成されたDLLをペイロード位置（`miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll`）に配置
-
-**実行例**：
-
-```bash
-# JTalk DLLのビルドと配置（x86_64がデフォルト）
-.\scons.bat jtalkPrep
-```
-
-**ログ例（DLL存在時）**：
-
-```
-jtalkPrep: using TARGET_ARCH=x86_64
-jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86_64/libopenjtalk.dll
-jtalkPrep: using existing DLL (build skipped)
-jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
-```
-
-**ログ例（DLL不在時）**：
-
-```
-jtalkPrep: using TARGET_ARCH=x86_64
-jtalkPrep: looking for vendor DLL: miscDepsJp/include/python-jtalk/x86_64/libopenjtalk.dll
-jtalkPrep: DLL not found, attempting to build via nmake...
-jtalkPrep: running nmake via vcvarsall.bat with arch=amd64
-[nmake の出力...]
-jtalkPrep: build succeeded, DLL created at miscDepsJp/include/python-jtalk/x86_64/libopenjtalk.dll
-jtalkPrep: payload -> miscDepsJp/source/synthDrivers/jtalk/libopenjtalk.dll
-```
-
-#### `scons jtalkSync`
-
-JTalk辞書ファイルのビルドと `source/` ディレクトリへのコピーを行います。
-
-**動作**：
-
-* JTalk辞書ファイル（`*.dic`, `*.bin`）をビルド
-* 日本語版固有のファイルを `source/` にオーバーレイ
-* `jtalkPrep` に依存しているため、JTalk DLLも自動的に準備される
-
-**実行例**：
-
-```bash
-# 辞書ビルドとオーバーレイ
-.\scons.bat jtalkSync
-```
-
-**注意**: `scons source` を実行すると、`jtalkSync` が依存として自動実行されます。通常は明示的に実行する必要はありません。
-
-### 通常のビルドフロー
-
-開発者が通常実行するコマンド：
+* 主要ターゲット:
+  * `scons jtalkPrep`（JTalk DLL 準備）
+  * `scons jtalkSync`（辞書ビルドと source への反映）
+* 通常の実行例:
 
 ```bash
 .\scons.bat synthDriverHost32Runtime launcher
 ```
 
-**内部で自動実行される**（開発者は意識不要）：
-
-1. `jtalkPrep`: DLLチェック → 無ければnmakeでビルド → payloadに配置
-2. `jtalkSync`: 辞書ファイルのビルドとオーバーレイで `source/` に配置
-3. `source`, `dist` などのビルド
-
-**注意**: 詳細な処理内容や現状の問題点については、`projectDocs/jp/miscdepsjp-overlay-strategy.md` を参照してください。
-
-### ビルドシステムの改善
-
-従来は複数の `.cmd` スクリプトが相互に呼び出し合う複雑な構造でしたが、SConsターゲットの導入により以下の改善が実現されました：
-
-* **簡素化**: 開発者は `scons` コマンドのみを意識すればよい
-* **自動化**: 依存関係が自動的に解決される
-* **高速化**: DLLが存在する場合は再ビルドをスキップ
-* **透明性**: ビルドプロセスが明確になる
-
-**現状の問題点と長期的な改善方針**は `projectDocs/jp/miscdepsjp-overlay-strategy.md`、ベンダーサブモジュールの詳細は `projectDocs/jp/vendor-submodules.md` を参照。
+* 詳細仕様・依存関係・長期方針は以下を正本とする。
+  * `projectDocs/jp/code-signing-dependencies.md`
+  * `projectDocs/jp/vendor-submodules.md`
+  * `projectDocs/jp/README.md`
 
 ### CI/CD の現状
 
-現在、GitHub Actionsを使用したCI/CDパイプラインが実装されています（`.github/workflows/testAndPublish.yml`）：
+現在、GitHub Actionsを使用したCI/CDパイプラインが実装されている（`.github/workflows/testAndPublish.yml`）：
 
 * **ビルド環境**: Windowsランナー、Python 3.13 (64bit)
 * **ビルドプロセス**: `jptools/nonCertBuild.py` を使用（Python版に移行済み）
 * **テスト**: ユニットテスト、システムテスト、日本語版固有のテストを実行
 * **自動化**: betajp、releasejpブランチへのpush時に自動ビルド
 
-**今後の改善予定**：
-
-* 本家のCI/CD改善の取り込み
-* テストジョブの分離（typeCheck, licenseCheck等）
-* SCons MSVC Cacheによる高速化
+今後の改善予定・優先度・進行状況の正本は `projectDocs/jp/roadmap.md` を参照。
 
 ### Python バージョンの対応状況
 
