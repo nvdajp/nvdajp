@@ -10,7 +10,7 @@ MACHINE = x86
 !ENDIF
 
 # Common CFLAGS base
-CFLAGS_BASE = /O2 /Ob2 /Oi /Ot /Oy /GT /GL /TP /EHsc /D CHARSET_SHIFT_JIS /source-charset:shift_jis /execution-charset:shift_jis /D DIC_VERSION=102 /D MECAB_WITHOUT_MUTEX_LOCK /D MECAB_DEFAULT_RC=\"dummy\" /D PACKAGE=\"open_jtalk\" /D VERSION=\"1.01\" /D HAVE_WINDOWS_H
+CFLAGS_BASE = /O2 /Ob2 /Oi /Ot /Oy /GT /GL /TP /EHsc /D CHARSET_UTF_8 /source-charset:utf-8 /execution-charset:utf-8 /D DIC_VERSION=102 /D MECAB_WITHOUT_MUTEX_LOCK /D MECAB_DEFAULT_RC=\"dummy\" /D PACKAGE=\"open_jtalk\" /D VERSION=\"1.01\" /D HAVE_WINDOWS_H
 # CFLAGS for static library and executable
 CFLAGS = $(CFLAGS_BASE) /D MECAB_STATIC
 # CFLAGS for DLL (add DLL_EXPORT macro)
