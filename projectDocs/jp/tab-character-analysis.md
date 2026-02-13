@@ -641,3 +641,44 @@ PR 636 のCIにおいて、再び Test #1 (漢数字「一人」の読み) お�
 * **検証ロジックの強化**: `jtalkSync` 実行時に `DIC_CODEPAGE` ファイルの存在と内容を確認。「932」でない場合（またはファイルがない場合）は、`sys.dic` が存在しても強制的に再ビルドを実行。
 
 これにより、キャッシュ汚染の影響を受けずに常に正しいコードページで辞書が生成されるようになりました。
+
+## CIキャッシュキー衝突によるスモークテスト失敗の恒久対策 (2026-02-13)
+
+### 事象
+
+alphajp ブランチの CI (run 21978320579) で JP smoke tests が再び失敗。
+症状は前回と同様（漢数字の読み不一致、点字記号の欠落）だが、原因は異なる。
+
+### 原因特定
+
+buildNVDA ジョブのキャッシュ保存ステップで 409 Conflict が発生：
+
+```
+Failed to save: Unable to reserve cache with key refs/heads/alphajp-21978320579-3.13.12-x64,
+another job may be creating this cache.
+(409) Conflict: cache entry with the same key, version, and scope already exists
+```
+
+GitHub Actions のキャッシュは immutable（上書き不可）。ワークフローを「Re-run all jobs」で
+再実行すると `github.run_id` は同じまま `github.run_attempt` のみインクリメントされる。
+キャッシュキーに `run_attempt` が含まれていなかったため、再実行時に前回（不完全な状態の）
+キャッシュと衝突し、新しいキャッシュを保存できなかった。
+
+その結果、下流の jpSmokeTests ジョブが古いキャッシュ（壊れた辞書を含む）を復元し、
+MeCab の形態素解析が正しく動作しなかった。
+
+betajp ではキャッシュ保存が成功していたため、同じ問題は発生しなかった。
+
+### 対策
+
+`.github/workflows/testAndPublish.yml` のキャッシュキー（全12箇所）に
+`${{ github.run_attempt }}` を追加：
+
+```yaml
+# 変更前
+key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+# 変更後
+key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+```
+
+これにより、Re-run 時にキャッシュキーが一意になり、immutable キャッシュとの衝突が回避される。

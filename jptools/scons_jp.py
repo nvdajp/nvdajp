@@ -853,6 +853,16 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			if rc != 0:
 				print(f"jtalkSync: nmake (all.mak) failed with rc={rc}")
 				return rc
+			# all.mak writes vendor_base/libopenjtalk.dll; sync it to arch-specific DLL
+			# so later copy logic never reuses a stale x86/x64 payload.
+			built_openjtalk = vendor_base / "libopenjtalk.dll"
+			arch_openjtalk = vendor_base / ("x64" if machine == "x64" else "x86") / "libopenjtalk.dll"
+			if built_openjtalk.exists():
+				arch_openjtalk.parent.mkdir(parents=True, exist_ok=True)
+				shutil.copy2(built_openjtalk, arch_openjtalk)
+				print(f"jtalkSync: synced built libopenjtalk.dll to {arch_openjtalk}")
+			else:
+				print(f"jtalkSync: warning: built libopenjtalk.dll missing at {built_openjtalk}")
 
 			# Build mecab binary (mecab-dict-index.exe) and libmecab.dll if missing
 			mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
@@ -922,6 +932,12 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				src_dll = vendor_base / "x64" / "libopenjtalk.dll"
 			else:
 				src_dll = vendor_base / "x86" / "libopenjtalk.dll"
+			if not src_dll.exists():
+				# Fallback to all.mak output if arch payload is missing.
+				fallback_openjtalk = vendor_base / "libopenjtalk.dll"
+				if fallback_openjtalk.exists():
+					src_dll = fallback_openjtalk
+					print(f"jtalkSync: using fallback libopenjtalk.dll from {fallback_openjtalk}")
 			if src_dll.exists():
 				shutil.copy2(src_dll, jtalk_dir / "libopenjtalk.dll")
 			print(f"jtalkSync: copied core assets to {jtalk_dir}")
