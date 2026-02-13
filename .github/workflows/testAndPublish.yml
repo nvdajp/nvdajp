@@ -134,7 +134,7 @@ jobs:
       uses: actions/cache/save@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
     - name: Store release metadata information
       id: releaseInfo
       run: |
@@ -152,7 +152,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Install Python
       uses: actions/setup-python@v6
@@ -207,7 +207,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Install Python
       uses: actions/setup-python@v6
@@ -236,7 +236,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Install Python
       uses: actions/setup-python@v6
@@ -264,7 +264,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Python
       uses: actions/setup-python@v6
@@ -312,10 +312,10 @@ jobs:
       UV_PYTHON_PREFERENCE: managed
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Python
       uses: actions/setup-python@v6
@@ -356,7 +356,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Get makePot results
       uses: actions/download-artifact@v7
@@ -397,7 +397,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Python
       uses: actions/setup-python@v6
@@ -497,7 +497,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Python
       uses: actions/setup-python@v6
@@ -565,7 +565,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         fail-on-cache-miss: true
     - name: Install Windows SDK
       # Installs symstore.exe to expected location.
@@ -617,7 +617,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+        key: ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
         fail-on-cache-miss: true
     - name: Install Python
       uses: actions/setup-python@v6
@@ -663,7 +663,7 @@ jobs:
     steps:
       - name: Cleanup cache
         shell: bash
-        run: gh cache delete ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+        run: gh cache delete ${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
