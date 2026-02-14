@@ -483,13 +483,28 @@ HTS_Boolean HTS_Engine_generate_parameter_sequence(HTS_Engine * engine)
 }
 
 /* HTS_Engine_generate_sample_sequence: generate sample sequence (3rd synthesis step) */
-HTS_Boolean HTS_Engine_generate_sample_sequence(HTS_Engine * engine)
+HTS_Boolean HTS_Engine_generate_sample_sequence_ex(HTS_Engine * engine
+/* begin python-jtalk */
+, double lf0_offset, double lf0_amp
+/* end python-jtalk */
+)
 {
-   return HTS_GStreamSet_create(&engine->gss, &engine->pss, engine->condition.stage, engine->condition.use_log_gain, engine->condition.sampling_frequency, engine->condition.fperiod, engine->condition.alpha, engine->condition.beta, &engine->condition.stop, engine->condition.volume, engine->condition.audio_buff_size > 0 ? &engine->audio : NULL);
+/* begin python-jtalk */
+   HTS_Boolean HTS_GStreamSet_create_ex(HTS_GStreamSet * gss, HTS_PStreamSet * pss, size_t stage, HTS_Boolean use_log_gain, size_t sampling_rate, size_t fperiod, double alpha, double beta, HTS_Boolean * stop, double volume, HTS_Audio * audio, double lf0_offset, double lf0_amp);
+/* end python-jtalk */
+   return HTS_GStreamSet_create_ex(&engine->gss, &engine->pss, engine->condition.stage, engine->condition.use_log_gain, engine->condition.sampling_frequency, engine->condition.fperiod, engine->condition.alpha, engine->condition.beta, &engine->condition.stop, engine->condition.volume, engine->condition.audio_buff_size > 0 ? &engine->audio : NULL
+/* begin python-jtalk */
+   , lf0_offset, lf0_amp
+/* end python-jtalk */
+   );
 }
 
 /* HTS_Engine_synthesize: synthesize speech */
-static HTS_Boolean HTS_Engine_synthesize(HTS_Engine * engine)
+static HTS_Boolean HTS_Engine_synthesize_ex(HTS_Engine * engine
+/* begin python-jtalk */
+, double lf0_offset, double lf0_amp
+/* end python-jtalk */
+)
 {
    if (HTS_Engine_generate_state_sequence(engine) != TRUE) {
       HTS_Engine_refresh(engine);
@@ -499,7 +514,11 @@ static HTS_Boolean HTS_Engine_synthesize(HTS_Engine * engine)
       HTS_Engine_refresh(engine);
       return FALSE;
    }
-   if (HTS_Engine_generate_sample_sequence(engine) != TRUE) {
+   if (HTS_Engine_generate_sample_sequence_ex(engine
+/* begin python-jtalk */
+   ,lf0_offset, lf0_amp
+/* end python-jtalk */
+   ) != TRUE) {
       HTS_Engine_refresh(engine);
       return FALSE;
    }
@@ -507,19 +526,35 @@ static HTS_Boolean HTS_Engine_synthesize(HTS_Engine * engine)
 }
 
 /* HTS_Engine_synthesize_from_fn: synthesize speech from file name */
-HTS_Boolean HTS_Engine_synthesize_from_fn(HTS_Engine * engine, const char *fn)
+HTS_Boolean HTS_Engine_synthesize_from_fn_ex(HTS_Engine * engine, const char *fn
+/* begin python-jtalk */
+, double lf0_offset, double lf0_amp
+/* end python-jtalk */
+)
 {
    HTS_Engine_refresh(engine);
    HTS_Label_load_from_fn(&engine->label, engine->condition.sampling_frequency, engine->condition.fperiod, fn);
-   return HTS_Engine_synthesize(engine);
+   return HTS_Engine_synthesize_ex(engine
+/* begin python-jtalk */
+   , lf0_offset, lf0_amp
+/* end python-jtalk */
+   );
 }
 
 /* HTS_Engine_synthesize_from_strings: synthesize speech from strings */
-HTS_Boolean HTS_Engine_synthesize_from_strings(HTS_Engine * engine, char **lines, size_t num_lines)
+HTS_Boolean HTS_Engine_synthesize_from_strings_ex(HTS_Engine * engine, char **lines, size_t num_lines
+/* begin python-jtalk */
+, double lf0_offset, double lf0_amp
+/* end python-jtalk */
+)
 {
    HTS_Engine_refresh(engine);
    HTS_Label_load_from_strings(&engine->label, engine->condition.sampling_frequency, engine->condition.fperiod, lines, num_lines);
-   return HTS_Engine_synthesize(engine);
+   return HTS_Engine_synthesize_ex(engine
+/* begin python-jtalk */
+   , lf0_offset, lf0_amp
+/* end python-jtalk */
+   );
 }
 
 /* HTS_Engine_save_information: save trace information */
