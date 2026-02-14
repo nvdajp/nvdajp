@@ -46,11 +46,9 @@ LDADD = $(OJTDIR)/text2mecab/text2mecab.lib \
 
 HTS_gstream_ex.c:
 	copy ..\htsengineapi\lib\HTS_gstream.c HTS_gstream_ex.c
-	patch HTS_gstream_ex.c HTS_gstream_ex.patch
 
 HTS_engine_ex.c:
 	copy ..\htsengineapi\lib\HTS_engine.c HTS_engine_ex.c
-	patch HTS_engine_ex.c HTS_engine_ex.patch
 
 libopenjtalk-timestamp.h:
 	python make_timestamp.py

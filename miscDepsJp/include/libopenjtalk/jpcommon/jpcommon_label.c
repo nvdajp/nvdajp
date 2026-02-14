@@ -296,6 +296,8 @@ static int index_accent_phrase_in_breath_group(JPCommonLabelAccentPhrase * a)
       if (index == a)
          break;
    }
+   if (i > 3)
+      i = 3;
    return i;
 }
 
@@ -395,6 +397,8 @@ static int count_mora_in_utterance(JPCommonLabelMora * m)
 
    for (i = 0, index = m->next; index != NULL; index = index->next)
       i++;
+   if (i > 10)
+      i = 10;
    return index_mora_in_utterance(m) + i;
 }
 
@@ -429,8 +433,10 @@ static void JPCommonLabel_insert_pause(JPCommonLabel * label)
                                          label->phoneme_tail, NULL, NULL);
          label->phoneme_tail = label->phoneme_tail->next;
       } else {
+#if 0
          fprintf(stderr,
                  "WARNING: JPCommonLabel_insert_word() in jpcommon_label.c: First mora should not be short pause.\n");
+#endif
       }
       label->short_pause_flag = 0;
    }
