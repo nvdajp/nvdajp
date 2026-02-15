@@ -648,7 +648,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				except Exception as e:
 					print(f"jtalkSync: failed to read DIC_VERSION at {version_file}: {e}")
 
-			# Check DIC_CODEPAGE (must be utf-8)
+			# Check DIC_CODEPAGE (must be 932)
 			has_valid_cp = False
 			cp_file = dic_dir / "DIC_CODEPAGE"
 			if not cp_file.exists():
@@ -656,10 +656,10 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			else:
 				try:
 					cp_text = cp_file.read_text(encoding="utf-8").strip()
-					if cp_text.lower() == "utf-8":
+					if cp_text == "932":
 						has_valid_cp = True
 					else:
-						print(f"jtalkSync: DIC_CODEPAGE is {cp_text} (expected utf-8); rebuilding.")
+						print(f"jtalkSync: DIC_CODEPAGE is {cp_text} (expected 932); rebuilding.")
 				except Exception as e:
 					print(f"jtalkSync: failed to read DIC_CODEPAGE at {cp_file}: {e}")
 
@@ -784,21 +784,12 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					print(f"jtalkSync: Makefile.mak not found for dictionary build: {makefile}")
 					return 1
 
-				# Ensure dicrc sets config-charset=utf-8 for .def files
+				# Create dicrc to set config-charset=sjis for .def files
 				dicrc = base / "dicrc"
-				desired_dicrc_line = "config-charset = utf-8\n"
-				need_update_dicrc = True
-				if dicrc.exists():
-					try:
-						dicrc_text = dicrc.read_text(encoding="utf-8").lower()
-						if "config-charset = utf-8" in dicrc_text:
-							need_update_dicrc = False
-					except Exception:
-						pass
-				if need_update_dicrc:
-					# Keep minimal content for deterministic behavior in CI/local.
-					dicrc.write_text(desired_dicrc_line, encoding="utf-8")
-					print("jtalkSync: wrote dicrc with config-charset = utf-8")
+				if not dicrc.exists():
+					# Use same format as existing dicrc (with spaces around =)
+					dicrc.write_text("config-charset = sjis\n", encoding="utf-8")
+					print("jtalkSync: created dicrc with config-charset = sjis")
 
 				try:
 					run(
@@ -807,26 +798,48 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						stderr=subprocess.DEVNULL,
 						check=True,
 					)
-					# nmake is available, use it directly.
-					result = run(["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"], cwd=str(base))
+					# nmake is available, use it directly
+					# Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
+					# chcp 932 is a fallback for environments where dicrc config might not be respected.
+					# Use explicit cmd /c to ensure code page change takes effect in CI environment
+					# If chcp fails, continue anyway (dicrc config should handle it)
+					cmd_script = (
+						'cmd /c "'
+						"chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && "
+						f"nmake /f Makefile.mak MACHINE={machine}"
+						'"'
+					)
+					print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
+					result = run(cmd_script, cwd=str(base), shell=True)
 					return result.returncode
 				except (FileNotFoundError, subprocess.CalledProcessError):
 					vcvarsall = _find_vcvarsall()
 					if not vcvarsall:
 						print("jtalkSync: nmake not found and vcvarsall.bat not detected for dic build")
 						return 1
+					# Force CP932 for nmake path as well
+					# Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
+					# chcp 932 is a fallback for environments where dicrc config might not be respected.
 					cmd_script = (
 						f'cmd /c "'
 						f'call "{vcvarsall}" {machine} && '
+						f"chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && "
 						f"nmake /f Makefile.mak MACHINE={machine}"
 						f'"'
 					)
-					print("jtalkSync: building dictionary via vcvarsall")
+					print(
+						"jtalkSync: building dictionary via vcvarsall (dicrc config-charset=sjis, chcp 932 as fallback)",
+					)
 					result = run(cmd_script, cwd=str(base), shell=True)
 					return result.returncode
 				# This code path should not be reached, but kept for safety
-				cmd = ["nmake", "/f", "Makefile.mak", f"MACHINE={machine}"]
-				print("jtalkSync: building dictionary")
+				# Note: dicrc has config-charset=sjis, so mecab-dict-index should read .def files as SJIS.
+				cmd = [
+					"cmd",
+					"/c",
+					f"chcp 932 >nul 2>&1 || echo Warning: chcp 932 failed, relying on dicrc config && nmake /f Makefile.mak MACHINE={machine}",
+				]
+				print("jtalkSync: building dictionary (dicrc config-charset=sjis, chcp 932 as fallback)")
 				result = run(cmd, cwd=str(base))
 				return result.returncode
 
@@ -872,9 +885,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
 				return rc_dic
 
-			# Write DIC_CODEPAGE marker to ensure dictionary was built with UTF-8 settings.
+			# Write DIC_CODEPAGE marker to ensure dictionary was built with CP932
 			try:
-				(dic_dst / "DIC_CODEPAGE").write_text("utf-8", encoding="utf-8")
+				(dic_dst / "DIC_CODEPAGE").write_text("932", encoding="utf-8")
 			except Exception as e:
 				print(f"jtalkSync: warning: failed to write DIC_CODEPAGE: {e}")
 

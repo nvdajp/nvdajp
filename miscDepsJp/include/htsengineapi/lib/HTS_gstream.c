@@ -69,11 +69,7 @@ void HTS_GStreamSet_initialize(HTS_GStreamSet * gss)
 }
 
 /* HTS_GStreamSet_create: generate speech */
-HTS_Boolean HTS_GStreamSet_create_ex(HTS_GStreamSet * gss, HTS_PStreamSet * pss, size_t stage, HTS_Boolean use_log_gain, size_t sampling_rate, size_t fperiod, double alpha, double beta, HTS_Boolean * stop, double volume, HTS_Audio * audio,
-/* begin python-jtalk */
-double lf0_offset, double lf0_amp
-/* end python-jtalk */
-)
+HTS_Boolean HTS_GStreamSet_create(HTS_GStreamSet * gss, HTS_PStreamSet * pss, size_t stage, HTS_Boolean use_log_gain, size_t sampling_rate, size_t fperiod, double alpha, double beta, HTS_Boolean * stop, double volume, HTS_Audio * audio)
 {
    size_t i, j, k;
    size_t msd_frame;
@@ -140,17 +136,10 @@ double lf0_offset, double lf0_amp
    if (gss->nstream >= 3)
       nlpf = gss->gstream[2].vector_length;
    for (i = 0; i < gss->total_frame && (*stop) == FALSE; i++) {
-      /* begin python-jtalk */
-      double lf0 = gss->gstream[1].par[i][0];
-      if (lf0 > LZERO)
-         lf0 = lf0 * lf0_amp + lf0_offset;
-      /* end python-jtalk */
       j = i * fperiod;
       if (gss->nstream >= 3)
          lpf = &gss->gstream[2].par[i][0];
-      /* begin python-jtalk */
-      HTS_Vocoder_synthesize(&v, gss->gstream[0].vector_length - 1, lf0, &gss->gstream[0].par[i][0], nlpf, lpf, alpha, beta, volume, &gss->gspeech[j], audio);
-      /* end python-jtalk */
+      HTS_Vocoder_synthesize(&v, gss->gstream[0].vector_length - 1, gss->gstream[1].par[i][0], &gss->gstream[0].par[i][0], nlpf, lpf, alpha, beta, volume, &gss->gspeech[j], audio);
    }
    HTS_Vocoder_clear(&v);
    if (audio)

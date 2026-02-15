@@ -274,20 +274,26 @@ if (-not $isCI) {
 }
 
 if (-not $SkipOverlay) {
+    # In CI, check cache first to avoid unnecessary builds
     if ($isCI) {
-        Write-Host "CI mode: clean + rebuild JTalk assets via scons jtalkSync..."
-        & "$repoRoot\scons.bat" -c jtalkSync
+        $dllPath = Join-Path $repoRoot "source\synthDrivers\jtalk\libopenjtalk.dll"
+        if (Test-Path $dllPath) {
+            Write-Host "JTalk DLL found in cache, skipping jtalkSync"
+        } else {
+            Write-Host "JTalk DLL not found in cache, running jtalkSync..."
+            & "$repoRoot\scons.bat" jtalkSync
         if ($LASTEXITCODE -ne 0) {
-            Write-Error "Failed to clean jtalkSync with exit code $LASTEXITCODE"
+            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
             exit $LASTEXITCODE
+        }
         }
     } else {
         Write-Host "Preparing JTalk assets via scons jtalkSync..."
-    }
-    & "$repoRoot\scons.bat" jtalkSync
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
-        exit $LASTEXITCODE
+        & "$repoRoot\scons.bat" jtalkSync
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
+        }
     }
 }
 
