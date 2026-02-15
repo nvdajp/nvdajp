@@ -189,13 +189,14 @@ NVDA日本語版は、文字単位の移動やレビューで、文字の説明�
 * **実装**:
   * **`handleInputCompositionEnd()` 関数の拡張**:
     * **スペース文字の特別な処理**: `nvdajpEnableKeyEvents` と `speakTypedCharacters` 設定が有効な場合、全角スペース（`\u3000`）と半角スペース（`\u0020`）を特別に読み上げ（「full shape space」「space」）
-    * **IMEキャンセル処理**: Escape、Shift+Escape、Ctrl+Z、Ctrl+[ キーでIMEがキャンセルされた場合、「Clear」と報告
-    * **Backspaceキー処理**: BackspaceキーでIMEが確定された場合、結果の後に「Clear」を追加して報告
+    * **IMEキャンセル処理**: IME がキャンセルされた場合（`nvdaControllerInternal_inputCompositionUpdate` で空の `GCS_RESULTSTR` を検出）、`cancelled=True` フラグを渡して「Clear」と報告。`lastKeyGesture` や `getAsyncKeyState` に依存しない設計で、レース条件を回避
+    * **Backspace 全削除**: 未確定文字が Backspace ですべてなくなったとき、`result` が空であることから判定し「クリア」を読む
     * **`announceSelectedCandidate` チェック**: この設定が無効な場合は、確定された文字列を読み上げない
   * **`handleInputCandidateListUpdate()` 関数の拡張**:
     * **キーイベント処理**: `nvdajpEnableKeyEvents` 設定が有効な場合、区別読みが必要ないキー操作では候補リストの読み上げをスキップ
 * **設定**: `config.conf["keyboard"]["nvdajpEnableKeyEvents"]` と `config.conf["keyboard"]["speakTypedCharacters"]` で有効/無効を切り替え可能
 * **動作**: 日本語入力時に、スペース文字やIMEキャンセル操作が適切に報告され、不要な候補リストの読み上げが抑制されます
+* **修正済みの問題**: 「変換をエンターで確定後に時々『クリア』の音声が入る」問題を修正。原因はキャンセル判定に `lastKeyGesture`（レース条件あり）と `getAsyncKeyState(VK_BACK)`（誤検出あり）を使用していたこと。`nvdaControllerInternal_inputCompositionUpdate` のキュー投入時点で確定する `cancelled` フラグに置き換えた。詳細は [IME 確定時の「クリア」誤読み上げのバグ修正](ime-clear-bugfix.md) を参照。
 
 ##### ANSI エディットボックスのワークアラウンド
 
@@ -702,7 +703,7 @@ def buildConfigH(target, source, env):
   * IME の確定処理のタイミング調整の可能性
   * Windows のキー状態キャッシュの更新
   * キーイベントの処理順序の調整
-* **今後の対応**: IME 関連の問題が再発した場合、目的を明確にしたコメントとともに再検討する
+* **今後の対応**: `handleInputCompositionEnd` から `getAsyncKeyState(VK_BACK)` を除去し `cancelled` フラグに置き換えたため（[ime-clear-bugfix.md](ime-clear-bugfix.md) 参照）、このワークアラウンドの必要性はなくなった
 
 ##### 6.12.2 logHandler.py での Unicode エスケープシーケンス処理
 

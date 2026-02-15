@@ -342,7 +342,7 @@ def nvdaControllerInternal_logMessage(level, pid, message):
 	return 0
 
 
-def handleInputCompositionEnd(result):
+def handleInputCompositionEnd(result, cancelled=False):
 	import speech
 	import characterProcessing
 	from NVDAObjects.inputComposition import InputComposition
@@ -390,24 +390,22 @@ def handleInputCompositionEnd(result):
 
 	if curInputComposition:
 		# nvdajp begin
-		# when composition is finished,
-		# (1) say 'clear' if following keys are pressed:
-		# Escape, Shift+Escape, Ctrl+Z, Ctrl+[
-		# (2) say the result, followed by 'clear' if Backspace is pressed.
+		# The cancelled flag is determined at queue time in
+		# nvdaControllerInternal_inputCompositionUpdate:
+		# - cancelled=True: IME returned empty GCS_RESULTSTR (Esc, Ctrl+Z, Ctrl+[, or Backspace deleting all)
+		# - cancelled=False: IME returned a confirmed result string (Enter, candidate selection, etc.)
+		# This avoids the race condition of reading lastKeyGesture or getAsyncKeyState.
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-			from NVDAObjects import inputComposition
-
-			gesture = inputComposition.lastKeyGesture
-			ctrl = (winUser.VK_CONTROL, False) in gesture.generalizedModifiers
-			if (gesture.vkCode == winUser.VK_ESCAPE) or ctrl and gesture.vkCode in (0x5A, 0xDB):
+			if cancelled:
 				# Translators: a message when the IME cancelation status
 				speech.speakMessage(_("Clear"))
 				return
-			else:
-				result = curInputComposition.compositionString.lstrip("\u3000 ")
-				if winUser.getAsyncKeyState(winUser.VK_BACK) & 1:
-					# Translators: a message when the IME cancelation status
-					result += " " + _("Clear")
+			result = result or curInputComposition.compositionString.lstrip("\u3000 ")
+			if not result:
+				# All characters were deleted (e.g., by Backspace)
+				# Translators: a message when the IME cancelation status
+				speech.speakMessage(_("Clear"))
+				return
 		else:
 			result = curInputComposition.compositionString.lstrip("\u3000 ")
 		# nvdajp end
@@ -530,7 +528,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 			and selectionEnd == -1
 			and isReading == 0
 		):
-			queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString)
+			queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
 			return 0
 		resetInputCompositionVariables()
 	# nvdajp end
