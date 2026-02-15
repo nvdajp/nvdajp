@@ -51,6 +51,15 @@ class JtalkTests(unittest.TestCase):
 		self.assertGreater(result["waveBytes"], 0)
 		self.assertGreater(result["tokenCount"], 20)
 		self.assertIn("nvda", result["prepared"].lower())
+		# Regression checks for reported drops:
+		# - "アイコン" in the 3rd sentence
+		# - "タッチモード" in the 5th sentence
+		self.assertIn("アイコン", result["prepared"])
+		self.assertIn("タッチモード", result["prepared"])
+		feature_text = "\n".join(result["featureHead"])
+		self.assertIn("アイコン", feature_text)
+		self.assertIn("タッチ", feature_text)
+		self.assertIn("モード", feature_text)
 
 
 if __name__ == "__main__":
