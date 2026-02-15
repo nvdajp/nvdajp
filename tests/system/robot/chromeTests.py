@@ -1004,25 +1004,26 @@ def test_ariaTreeGrid_browseMode():
 	)
 	# Press enter to activate NVDA focus mode and focus the current row
 	actualSpeech = _chrome.getSpeechAfterKey("enter")
-	_asserts.strings_match(
+	# The position of "level 1" may vary by Chrome/NVDA version (before or after row content).
+	_rowContent = "Treegrids are awesome Want to learn how to use them? aaron at thegoogle dot rocks"
+	_asserts.strings_match_any(
 		actualSpeech,
-		SPEECH_CALL_SEP.join(
-			[
-				# focus mode turns on
-				"Focus mode",
-				# Focus enters the ARIA treegrid (table)
-				"Inbox  table",
-				# Focus lands on row 2 (order of "level 1" may vary by Chrome/NVDA; accept at end)
-				SPEECH_SEP.join(
-					[
-						"Treegrids are awesome Want to learn how to use them? aaron at thegoogle dot rocks",
-						"expanded",
-						"1 of 1",
-						"level 1",
-					],
-				),
-			],
-		),
+		[
+			SPEECH_CALL_SEP.join(
+				[
+					"Focus mode",
+					"Inbox  table",
+					SPEECH_SEP.join(["level 1", _rowContent, "expanded", "1 of 1"]),
+				],
+			),
+			SPEECH_CALL_SEP.join(
+				[
+					"Focus mode",
+					"Inbox  table",
+					SPEECH_SEP.join([_rowContent, "expanded", "1 of 1", "level 1"]),
+				],
+			),
+		],
 	)
 
 
@@ -2348,27 +2349,27 @@ def test_focus_mode_on_focusable_read_only_lists():
 	)
 
 	# focus the list item
+	# The position of "level 1" may vary by Chrome/NVDA version (before or after item content).
 	actualSpeech = _chrome.getSpeechAfterKey("tab")
-	_asserts.strings_match(
+	_itemName = "Todd Kloots Hello all. At 1:30 PM"  # list element name
+	_asserts.strings_match_any(
 		actualSpeech,
-		SPEECH_CALL_SEP.join(
-			[
-				SPEECH_SEP.join(
-					[
-						"Messages",  # name for list container
-						"list",  # role for list container
-					],
-				),
-				SPEECH_SEP.join(
-					[
-						"Todd Kloots Hello all. At 1:30 PM",  # list element name
-						"1 of 1",  # item count, no role expected here
-						"level 1",  # inserted by Chromium even though not explicitly set (order may vary)
-					],
-				),
-				"Focus mode",  # Focus mode should be enabled automatically and be indicated
-			],
-		),
+		[
+			SPEECH_CALL_SEP.join(
+				[
+					SPEECH_SEP.join(["Messages", "list"]),
+					SPEECH_SEP.join(["level 1", _itemName, "1 of 1"]),
+					"Focus mode",
+				],
+			),
+			SPEECH_CALL_SEP.join(
+				[
+					SPEECH_SEP.join(["Messages", "list"]),
+					SPEECH_SEP.join([_itemName, "1 of 1", "level 1"]),
+					"Focus mode",
+				],
+			),
+		],
 		message="focus mode - focus list item and turn on focus mode",
 	)
 

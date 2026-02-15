@@ -79,6 +79,43 @@ class AssertsLib:
 			raise
 
 	@staticmethod
+	def strings_match_any(
+		actual,
+		expectedOptions: List[str],
+		ignore_case: bool = False,
+		comparison: str = "speech",
+		message: str = "",
+	):
+		"""Assert that actual matches any one of the expectedOptions."""
+		message += "\n" if message else ""
+		builtIn.log(
+			f"{message}assert {comparison} string matches one of (ignore case: {ignore_case}):  {expectedOptions}",
+			level="INFO",
+		)
+		for option in expectedOptions:
+			if ignore_case:
+				if actual.casefold() == option.casefold():
+					return
+			else:
+				if actual == option:
+					return
+		# None matched – fail with a message showing all options
+		builtIn.log(
+			"repr of ({}) actual vs expected options (ignore_case={}):\n{}\nvs\n{}".format(
+				comparison,
+				ignore_case,
+				repr(actual),
+				[repr(o) for o in expectedOptions],
+			),
+			level="DEBUG",
+		)
+		builtIn.fail(
+			f"{message}{comparison} Actual != any Expected option.\n"
+			f"Actual:\n{actual}\n\nExpected one of:\n"
+			+ "\n---\n".join(expectedOptions),
+		)
+
+	@staticmethod
 	def speech_matches(actual, expected, ignore_case=False, message=""):
 		AssertsLib.strings_match(actual, expected, ignore_case, comparison="speech", message=message)
 
