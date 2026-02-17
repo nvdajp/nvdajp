@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nvda\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-06 07:00+0000\n"
-"PO-Revision-Date: 2026-02-09 00:23\n"
+"POT-Creation-Date: 2026-02-13 06:38+0000\n"
+"PO-Revision-Date: 2026-02-13 06:48\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -2111,47 +2111,47 @@ msgid "Some operations on add-ons failed. See the log file for more details.\n"
 msgstr "アドオンに対する操作が失敗しました。ログファイルを参照してください。\n"
 "{failureMsg}"
 
-#. Translators: Title of message shown when requested action on add-ons failed.
-#. Translators: the title of an error message dialog
-#. Translators: The title of an error message dialog.
-#. Translators: The title of the message when a downloaded update file could not be preserved.
-#. Translators: the title of an error message dialog
-#. Translators: The title of a dialog presented when an error occurs.
-#. Translators: the title of an error message dialog
-#. Translators: The title of an error message dialog.
-#. Translators: the title of an error message dialog
-#. Translators: The title of an error message dialog.
-#. Translators: Title of an error message.
-#. Translators: An title for an error displayed when saving user defined input gestures fails.
-#. Translators: The title of a dialog presented when an error occurs.
-#. Translators: the title of an error dialog.
-#. Translators: The message title displayed when the user has not specified an absolute
-#. destination directory in the Create Portable NVDA dialog.
-#. Translators: Title of an error dialog shown when an error occurs while creating a portable copy of NVDA.
-#. Translators: the title of an error message dialog
-#. Translators: The title of an error message dialog.
-#. Translators: A message indicating that an error occurred.
-#. Translators: The title of the error dialog displayed when there is an error showing the GUI
-#. for a vision enhancement provider
-#. Translators: title of an error message
-#. Translators: The title of an error message box displayed when validating the startup dialog
-#. Translators: A title of a message box displayed when the host field is empty and the user tries to generate a key.
-#. Translators: Title of error dialog
-#. Translators: Title of a dialog
-#: core.py:120 documentationUtils.py:74 updateCheck.py:438 updateCheck.py:753
-#: updateCheck.py:925 gui\__init__.py:238 gui\__init__.py:246
-#: gui\__init__.py:263 gui\addonGui.py:138 gui\addonGui.py:258
-#: gui\addonGui.py:273 gui\configProfiles.py:182 gui\configProfiles.py:219
-#: gui\configProfiles.py:272 gui\configProfiles.py:284
-#: gui\configProfiles.py:293 gui\configProfiles.py:337
-#: gui\configProfiles.py:515 gui\configProfiles.py:530
-#: gui\configProfiles.py:541 gui\inputGestures.py:808 gui\inputGestures.py:822
-#: gui\installerGui.py:120 gui\installerGui.py:567 gui\installerGui.py:582
-#: gui\installerGui.py:654 gui\logViewer.py:112 gui\logViewer.py:143
-#: gui\message.py:160 gui\settingsDialogs.py:1037 gui\settingsDialogs.py:5872
-#: gui\settingsDialogs.py:6401 gui\startupDialogs.py:127
-#: _remoteClient\dialogs.py:67 _remoteClient\dialogs.py:306
-#: _remoteClient\dialogs.py:430
+#. Translators: Title of message shown when requested action on add-ons failed.
+#. Translators: the title of an error message dialog
+#. Translators: The title of an error message dialog.
+#. Translators: The title of the message when a downloaded update file could not be preserved.
+#. Translators: the title of an error message dialog
+#. Translators: The title of a dialog presented when an error occurs.
+#. Translators: the title of an error message dialog
+#. Translators: The title of an error message dialog.
+#. Translators: the title of an error message dialog
+#. Translators: The title of an error message dialog.
+#. Translators: Title of an error message.
+#. Translators: An title for an error displayed when saving user defined input gestures fails.
+#. Translators: The title of a dialog presented when an error occurs.
+#. Translators: the title of an error dialog.
+#. Translators: The message title displayed when the user has not specified an absolute
+#. destination directory in the Create Portable NVDA dialog.
+#. Translators: Title of an error dialog shown when an error occurs while creating a portable copy of NVDA.
+#. Translators: the title of an error message dialog
+#. Translators: The title of an error message dialog.
+#. Translators: A message indicating that an error occurred.
+#. Translators: The title of the error dialog displayed when there is an error showing the GUI
+#. for a vision enhancement provider
+#. Translators: title of an error message
+#. Translators: The title of an error message box displayed when validating the startup dialog
+#. Translators: A title of a message box displayed when the host field is empty and the user tries to generate a key.
+#. Translators: Title of error dialog
+#. Translators: Title of a dialog
+#: core.py:120 documentationUtils.py:74 updateCheck.py:438 updateCheck.py:753
+#: updateCheck.py:925 gui\__init__.py:238 gui\__init__.py:246
+#: gui\__init__.py:263 gui\addonGui.py:138 gui\addonGui.py:258
+#: gui\addonGui.py:273 gui\configProfiles.py:182 gui\configProfiles.py:219
+#: gui\configProfiles.py:272 gui\configProfiles.py:284
+#: gui\configProfiles.py:293 gui\configProfiles.py:337
+#: gui\configProfiles.py:515 gui\configProfiles.py:530
+#: gui\configProfiles.py:541 gui\inputGestures.py:808 gui\inputGestures.py:822
+#: gui\installerGui.py:121 gui\installerGui.py:578 gui\installerGui.py:593
+#: gui\installerGui.py:665 gui\logViewer.py:112 gui\logViewer.py:143
+#: gui\message.py:160 gui\settingsDialogs.py:1037 gui\settingsDialogs.py:5872
+#: gui\settingsDialogs.py:6401 gui\startupDialogs.py:127
+#: _remoteClient\dialogs.py:67 _remoteClient\dialogs.py:306
+#: _remoteClient\dialogs.py:430
 msgid "Error"
 msgstr "エラー"
 
@@ -6690,98 +6690,98 @@ msgstr "NVDAスピーチビューアー"
 msgid "&Show Speech Viewer on Startup"
 msgstr "NVDA起動時にスピーチビューアーを表示(&S)"
 
-#. Translators: Label for a setting in voice settings dialog.
-#: synthDriverHandler.py:127
+#. Translators: Label for a setting in voice settings dialog.
+#: synthDriverHandler.py:122
 msgid "&Language"
 msgstr "言語(&L)"
 
-#. Translators: Label for a setting in synth settings ring.
-#: synthDriverHandler.py:130
+#. Translators: Label for a setting in synth settings ring.
+#: synthDriverHandler.py:125
 msgctxt "synth setting"
 msgid "Language"
 msgstr "言語"
 
-#. Translators: Label for a setting in voice settings dialog.
-#: synthDriverHandler.py:139
+#. Translators: Label for a setting in voice settings dialog.
+#: synthDriverHandler.py:134
 msgid "&Voice"
 msgstr "音声(&V)"
 
-#. Translators: Label for a setting in synth settings ring.
-#: synthDriverHandler.py:142
+#. Translators: Label for a setting in synth settings ring.
+#: synthDriverHandler.py:137
 msgctxt "synth setting"
 msgid "Voice"
 msgstr "音声"
 
-#. Translators: Label for a setting in voice settings dialog.
-#: synthDriverHandler.py:151
+#. Translators: Label for a setting in voice settings dialog.
+#: synthDriverHandler.py:146
 msgid "V&ariant"
 msgstr "声色(&A)"
 
-#. Translators: Label for a setting in synth settings ring.
-#: synthDriverHandler.py:154
+#. Translators: Label for a setting in synth settings ring.
+#: synthDriverHandler.py:149
 msgctxt "synth setting"
 msgid "Variant"
 msgstr "声色"
 
-#. Translators: Label for a setting in voice settings dialog.
-#: synthDriverHandler.py:163
+#. Translators: Label for a setting in voice settings dialog.
+#: synthDriverHandler.py:158
 msgid "&Rate"
 msgstr "速さ(&R)"
 
-#. Translators: Label for a setting in synth settings ring.
-#: synthDriverHandler.py:167
+#. Translators: Label for a setting in synth settings ring.
+#: synthDriverHandler.py:162
 msgctxt "synth setting"
 msgid "Rate"
 msgstr "速さ"
 
-#. Translators: This is the name of the rate boost voice toggle
-#. which further increases the speaking rate when enabled.
-#: synthDriverHandler.py:177
+#. Translators: This is the name of the rate boost voice toggle
+#. which further increases the speaking rate when enabled.
+#: synthDriverHandler.py:172
 msgid "Rate boos&t"
 msgstr "高速読み上げ(&T)"
 
-#. Translators: Label for a setting in synth settings ring.
-#: synthDriverHandler.py:179
+#. Translators: Label for a setting in synth settings ring.
+#: synthDriverHandler.py:174
 msgctxt "synth setting"
 msgid "Rate boost"
 msgstr "高速読み上げ"
 
-#. Translators: Label for a setting in voice settings dialog.
-#: synthDriverHandler.py:189
+#. Translators: Label for a setting in voice settings dialog.
+#: synthDriverHandler.py:184
 msgid "V&olume"
 msgstr "音量(&O)"
 
-#. Translators: Label for a setting in synth settings ring.
-#: synthDriverHandler.py:194
+#. Translators: Label for a setting in synth settings ring.
+#: synthDriverHandler.py:189
 msgctxt "synth setting"
 msgid "Volume"
 msgstr "音量"
 
-#. Translators: Label for a setting in voice settings dialog.
-#: synthDriverHandler.py:203
+#. Translators: Label for a setting in voice settings dialog.
+#: synthDriverHandler.py:198
 msgid "&Pitch"
 msgstr "高さ(&P)"
 
-#. Translators: Label for a setting in synth settings ring.
-#: synthDriverHandler.py:207
+#. Translators: Label for a setting in synth settings ring.
+#: synthDriverHandler.py:202
 msgctxt "synth setting"
 msgid "Pitch"
 msgstr "高さ"
 
-#. Translators: Label for a setting in voice settings dialog.
-#: synthDriverHandler.py:216
+#. Translators: Label for a setting in voice settings dialog.
+#: synthDriverHandler.py:211
 msgid "&Inflection"
 msgstr "抑揚(&I)"
 
-#. Translators: Label for a setting in synth settings ring.
-#: synthDriverHandler.py:220
+#. Translators: Label for a setting in synth settings ring.
+#: synthDriverHandler.py:215
 msgctxt "synth setting"
 msgid "Inflection"
 msgstr "抑揚"
 
-#. Translators: Label for a setting in voice settings dialog.
-#. "WASAPI" is an acronym for an audio output framework, and should be translated as-is.
-#: synthDriverHandler.py:230
+#. Translators: Label for a setting in voice settings dialog.
+#. "WASAPI" is an acronym for an audio output framework, and should be translated as-is.
+#: synthDriverHandler.py:225
 msgid "Use modern audio output system (WASAPI)"
 msgstr "最新のオーディオ出力システム(WASAPI)を使用する"
 
@@ -7032,9 +7032,9 @@ msgstr "更新はありません。"
 msgid "Update to NVDA version {version} has been downloaded and is ready to be applied."
 msgstr "NVDA バージョン {version} への更新がダウンロードされ、適用できるようになりました。"
 
-#. Translators: The label of a button to review add-ons prior to NVDA update.
-#. Translators: The label of a button to launch the add-on compatibility review dialog.
-#: updateCheck.py:547 updateCheck.py:669 gui\installerGui.py:286
+#. Translators: The label of a button to review add-ons prior to NVDA update.
+#. Translators: The label of a button to launch the add-on compatibility review dialog.
+#: updateCheck.py:547 updateCheck.py:669 gui\installerGui.py:296
 msgid "&Review add-ons..."
 msgstr "アドオンの互換性の確認(&R)..."
 
@@ -7152,9 +7152,9 @@ msgstr "あとで行う(&N)"
 msgid "&Done"
 msgstr "寄付を終了(&D)"
 
-#. Translators: Message shown to users when attempting to update NVDA
-#. on a computer which is being remotely controlled via NVDA Remote Access
-#: updateCheck.py:1015 gui\installerGui.py:452
+#. Translators: Message shown to users when attempting to update NVDA
+#. on a computer which is being remotely controlled via NVDA Remote Access
+#: updateCheck.py:1015 gui\installerGui.py:462
 msgid "Updating NVDA when connected to NVDA Remote Access as the controlled computer is not recommended. "
 msgstr "NVDA Remote Accessで制御されるPCとして接続されているときにNVDAを更新することは推奨されません。"
 
@@ -7166,15 +7166,15 @@ msgid "The currently active connection may not be continued during or after the 
 msgstr "現在アクティブな接続は、更新中または更新後に継続されない可能性があります。接続が継続されたとしても、制御する側のPCからユーザーアカウント制御（UAC）のプロンプトに応答することができなくなります。制御されるPCに物理的にアクセスできる場合のみ続行してください。\n\n"
 "本当に続行しますか？"
 
-#. Translators: The title of a dialog.
-#. Translators: The title of a warning dialog.
-#. Translators: The title of a dialog.
-#. Translators: Title of the warning message.
-#. Translators: The title of a dialog.
-#. Translators: Title of warning dialog
-#: updateCheck.py:1026 gui\_SetURLDialog.py:113 gui\configProfiles.py:500
-#: gui\installerGui.py:344 gui\installerGui.py:469 gui\settingsDialogs.py:1934
-#: screenCurtain\_screenCurtain.py:70 _remoteClient\dialogs.py:291
+#. Translators: The title of a dialog.
+#. Translators: The title of a warning dialog.
+#. Translators: The title of a dialog.
+#. Translators: Title of the warning message.
+#. Translators: The title of a dialog.
+#. Translators: Title of warning dialog
+#: updateCheck.py:1026 gui\_SetURLDialog.py:113 gui\configProfiles.py:500
+#: gui\installerGui.py:354 gui\installerGui.py:479 gui\settingsDialogs.py:1934
+#: screenCurtain\_screenCurtain.py:70 _remoteClient\dialogs.py:291
 msgid "Warning"
 msgstr "警告"
 
@@ -11640,13 +11640,13 @@ msgstr "URLの検証..."
 msgid "Successfully connected to the given URL."
 msgstr "指定されたURLへの接続に成功しました。"
 
-#. Translators: The title of a dialog presented when a test succeeds
-#. Translators: The title of a dialog presented to indicate a successful operation.
-#. Translators: Title of a dialog shown when a portable copy of NVDA is created.
-#. Translators: The message title displayed when copying configuration to system settings was successful.
-#. Translators: Title of success dialog
-#: gui\_SetURLDialog.py:177 gui\installerGui.py:137 gui\installerGui.py:665
-#: gui\settingsDialogs.py:1043 _remoteClient\dialogs.py:280
+#. Translators: The title of a dialog presented when a test succeeds
+#. Translators: The title of a dialog presented to indicate a successful operation.
+#. Translators: Title of a dialog shown when a portable copy of NVDA is created.
+#. Translators: The message title displayed when copying configuration to system settings was successful.
+#. Translators: Title of success dialog
+#: gui\_SetURLDialog.py:177 gui\installerGui.py:147 gui\installerGui.py:676
+#: gui\settingsDialogs.py:1043 _remoteClient\dialogs.py:280
 msgid "Success"
 msgstr "完了"
 
@@ -12509,252 +12509,258 @@ msgstr "ジェスチャーのリセット"
 msgid "Error saving user defined gestures - probably read only file system."
 msgstr "ユーザー定義ジェスチャーを保存できませんでした - 読み取り専用ファイルシステムが使用されている可能性があります"
 
-#. Translators: The title of the dialog presented while NVDA is being updated.
-#: gui\installerGui.py:67
+#. Translators: The title of the dialog presented while NVDA is being updated.
+#: gui\installerGui.py:68
 msgid "Updating NVDA"
 msgstr "NVDAを更新中"
 
-#. Translators: The title of the dialog presented while NVDA is being installed.
-#: gui\installerGui.py:70
+#. Translators: The title of the dialog presented while NVDA is being installed.
+#: gui\installerGui.py:71
 msgid "Installing NVDA"
 msgstr "NVDAをインストール中です"
 
-#. Translators: The message displayed while NVDA is being updated.
-#: gui\installerGui.py:72
+#. Translators: The message displayed while NVDA is being updated.
+#: gui\installerGui.py:73
 msgid "Please wait while your previous installation of NVDA is being updated."
 msgstr "NVDAが更新されるまでお待ちください。"
 
-#. Translators: The message displayed while NVDA is being installed.
-#: gui\installerGui.py:75
+#. Translators: The message displayed while NVDA is being installed.
+#: gui\installerGui.py:76
 msgid "Please wait while NVDA is being installed"
 msgstr "NVDAがインストールされるまでお待ちください。"
 
-#. Translators: a message dialog asking to retry or cancel when NVDA install fails
-#: gui\installerGui.py:99
+#. Translators: a message dialog asking to retry or cancel when NVDA install fails
+#: gui\installerGui.py:100
 msgid "The installation is unable to remove or overwrite a file. Another copy of NVDA may be running on another logged-on user account. Please make sure all installed copies of NVDA are shut down and try the installation again."
 msgstr "インストール中にファイルの削除または上書きに失敗しました。ログオン中の別のユーザーがNVDAを実行しているかも知れません。インストール済みの全てのNVDAを終了してからインストールをやり直してください。"
 
-#. Translators: the title of a retry cancel dialog when NVDA installation fails
-#. Translators: the title of a retry cancel dialog when NVDA portable copy creation  fails
-#: gui\installerGui.py:104 gui\installerGui.py:646
+#. Translators: the title of a retry cancel dialog when NVDA installation fails
+#. Translators: the title of a retry cancel dialog when NVDA portable copy creation  fails
+#: gui\installerGui.py:105 gui\installerGui.py:657
 msgid "File in Use"
 msgstr "ファイルは使用中です"
 
-#. Translators: The message displayed when an error occurs during installation of NVDA.
-#: gui\installerGui.py:118
+#. Translators: The message displayed when an error occurs during installation of NVDA.
+#: gui\installerGui.py:119
 msgid "The installation of NVDA failed. Please check the Log Viewer for more information."
 msgstr "NVDAのインストールが失敗しました。詳細はログビューアーで確認してください。"
 
-#. Translators: The message displayed when NVDA has been successfully installed.
-#: gui\installerGui.py:127
+#. Translators: The message displayed when NVDA has been successfully installed.
+#: gui\installerGui.py:130
 msgid "Successfully installed NVDA. "
 msgstr "NVDAのインストールは成功しました。"
 
-#. Translators: The message displayed when NVDA has been successfully updated.
-#: gui\installerGui.py:130
+#. Translators: The message displayed when NVDA has been successfully updated.
+#: gui\installerGui.py:133
 msgid "Successfully updated your installation of NVDA. "
 msgstr "NVDAが更新されました。"
 
-#. Translators: The message displayed to the user after NVDA is installed
-#. and the installed copy is about to be started.
-#: gui\installerGui.py:135
+#. Translators: The message displayed to the user after NVDA is installed
+#. and the installed copy is about to be started.
+#: gui\installerGui.py:140
 msgid "Please press OK to start the installed copy."
 msgstr "インストールされたNVDAを実行するにはOKを押してください。"
 
-#. Translators: The title of the Install NVDA dialog.
-#: gui\installerGui.py:198
+#. Translators: The message displayed to the user after NVDA is installed
+#. and the installer is about to close without starting the installed copy.
+#: gui\installerGui.py:144
+msgid "Please press OK to close the installer."
+msgstr "OKを押すとインストーラーを終了します。"
+
+#. Translators: The title of the Install NVDA dialog.
+#: gui\installerGui.py:208
 msgid "Install NVDA"
 msgstr "NVDAのインストール"
 
-#. Translators: An informational message in the Install NVDA dialog.
-#: gui\installerGui.py:216
+#. Translators: An informational message in the Install NVDA dialog.
+#: gui\installerGui.py:226
 msgid "To install NVDA to your hard drive, please press the Continue button."
 msgstr "NVDAをインストールするには継続を押してください。"
 
-#. Translators: An informational message in the Install NVDA dialog.
-#: gui\installerGui.py:220
+#. Translators: An informational message in the Install NVDA dialog.
+#: gui\installerGui.py:230
 msgid "A previous copy of NVDA has been found on your system. This copy will be updated."
 msgstr "前のバージョンのNVDAがインストールされています。このNVDAは更新されます。"
 
-#. Translators: a message in the installer telling the user NVDA is now located in a different place.
-#: gui\installerGui.py:225
-#, python-brace-format
+#. Translators: a message in the installer telling the user NVDA is now located in a different place.
+#: gui\installerGui.py:235
+#, python-brace-format
 msgid "The installation path for NVDA has changed. it will now  be installed in {path}"
 msgstr "NVDAのインストール場所を変更しました。インストール場所は {path} になりました。"
 
-#. Translators: The label for a group box containing the NVDA installation dialog options.
-#. Translators: The label for a group box containing the NVDA welcome dialog options.
-#: gui\installerGui.py:243 gui\startupDialogs.py:63
+#. Translators: The label for a group box containing the NVDA installation dialog options.
+#. Translators: The label for a group box containing the NVDA welcome dialog options.
+#: gui\installerGui.py:253 gui\startupDialogs.py:63
 msgid "Options"
 msgstr "オプション"
 
-#. Translators: The label of a checkbox option in the Install NVDA dialog.
-#: gui\installerGui.py:249
+#. Translators: The label of a checkbox option in the Install NVDA dialog.
+#: gui\installerGui.py:259
 msgid "Use NVDA during sign-in"
 msgstr "サインイン画面で NVDA を起動"
 
-#. Translators: The label of a checkbox option in the Install NVDA dialog.
-#: gui\installerGui.py:260
+#. Translators: The label of a checkbox option in the Install NVDA dialog.
+#: gui\installerGui.py:270
 msgid "&Keep existing desktop shortcut"
 msgstr "デスクトップのショートカットを残す(&K)"
 
-#. Translators: The label of the option to create a desktop shortcut in the Install NVDA dialog.
-#. If the shortcut key has been changed for this locale,
-#. this change must also be reflected here.
-#: gui\installerGui.py:267
+#. Translators: The label of the option to create a desktop shortcut in the Install NVDA dialog.
+#. If the shortcut key has been changed for this locale,
+#. this change must also be reflected here.
+#: gui\installerGui.py:277
 msgid "Create &desktop icon and shortcut key (control+alt+n)"
 msgstr "デスクトップにアイコンとショートカットキー(Ctrl+Alt+N)を作成(&D)"
 
-#. Translators: The label of a checkbox option in the Install NVDA dialog.
-#: gui\installerGui.py:274
+#. Translators: The label of a checkbox option in the Install NVDA dialog.
+#: gui\installerGui.py:284
 msgid "Copy &portable configuration to current user account"
 msgstr "ポータブル版の設定を現在のユーザーアカウントにコピー(&P)"
 
-#. Translators: The label of a button to continue with the operation.
-#. Translators: The label for the Continue button in an NVDA dialog.
-#: gui\installerGui.py:291 gui\installerGui.py:547 gui\nvdaControls.py:383
+#. Translators: The label of a button to continue with the operation.
+#. Translators: The label for the Continue button in an NVDA dialog.
+#: gui\installerGui.py:301 gui\installerGui.py:558 gui\nvdaControls.py:383
 msgid "&Continue"
 msgstr "継続(&C)"
 
-#. Translators: A warning presented when the user attempts to downgrade NVDA
-#. to an older version.
-#: gui\installerGui.py:353
+#. Translators: A warning presented when the user attempts to downgrade NVDA
+#. to an older version.
+#: gui\installerGui.py:363
 msgid "You are attempting to install an earlier version of NVDA than the version currently installed. If you really wish to revert to an earlier version, you should first cancel this installation and completely uninstall NVDA before installing the earlier version."
 msgstr "現在インストールされているNVDAよりも前のバージョンのNVDAをインストールしようとしています。\n"
 "前のバージョンに戻したい場合は、このインストールをキャンセルしてください。\n"
 "まず現在のNVDAをアンインストールして、それから前のバージョンのNVDAをインストールし直してください。"
 
-#. Translators: The label of a button to proceed with installation,
-#. even though this is not recommended.
-#: gui\installerGui.py:369
+#. Translators: The label of a button to proceed with installation,
+#. even though this is not recommended.
+#: gui\installerGui.py:379
 msgid "&Proceed with installation (not recommended)"
 msgstr "インストールを継続(非推奨)(&P)"
 
-#. Translators: The message displayed when the user has specified a destination directory
-#. that already has a portable copy in the Create Portable NVDA dialog.
-#: gui\installerGui.py:420
-#, python-brace-format
+#. Translators: The message displayed when the user has specified a destination directory
+#. that already has a portable copy in the Create Portable NVDA dialog.
+#: gui\installerGui.py:430
+#, python-brace-format
 msgid "A portable copy already exists in the directory '{portableDirectory}'. Do you want to update it?"
 msgstr "ポータブル版はすでにフォルダー '{portableDirectory}' に存在します。更新しますか？"
 
-#. Translators: The title of a dialog presented when the user has specified a destination directory
-#. that already has a portable copy in the Create Portable NVDA dialog.
-#: gui\installerGui.py:425
+#. Translators: The title of a dialog presented when the user has specified a destination directory
+#. that already has a portable copy in the Create Portable NVDA dialog.
+#: gui\installerGui.py:435
 msgid "Portable Copy Exists"
 msgstr "ポータブル版があります"
 
-#. Translators: The message displayed when the user has specified a destination directory
-#. that already exists in the Create Portable NVDA dialog.
-#: gui\installerGui.py:432
-#, python-brace-format
+#. Translators: The message displayed when the user has specified a destination directory
+#. that already exists in the Create Portable NVDA dialog.
+#: gui\installerGui.py:442
+#, python-brace-format
 msgid "The specified directory '{portableDirectory}' is not empty. Proceeding will delete and replace existing files in the directory. Do you want to overwrite the contents of this folder? "
 msgstr "指定されたフォルダー '{portableDirectory}' は空ではありません。続行するとフォルダー内の既存のファイルが削除され、置き換えられます。 このフォルダーの内容を上書きしますか？ "
 
-#. Translators: The title of a dialog presented when the user has specified a destination directory
-#. that already exists in the Create Portable NVDA dialog.
-#: gui\installerGui.py:438
+#. Translators: The title of a dialog presented when the user has specified a destination directory
+#. that already exists in the Create Portable NVDA dialog.
+#: gui\installerGui.py:448
 msgid "Directory Exists"
 msgstr "フォルダーがあります"
 
-#. Translators: Message shown to users when attempting to install NVDA
-#. on a computer which is being remotely controlled via NVDA Remote Access
-#: gui\installerGui.py:458
+#. Translators: Message shown to users when attempting to install NVDA
+#. on a computer which is being remotely controlled via NVDA Remote Access
+#: gui\installerGui.py:468
 msgid "Installing NVDA when connected to NVDA Remote Access as the controlled computer is not recommended. "
 msgstr "NVDA Remote Accessで制御されるPCとして接続されているときにNVDAをインストールすることは推奨されません。"
 
-#. Translators: Message shown to users when attempting to install or update NVDA from the launcher
-#. on a computer which is being remotely controlled via NVDA Remote Access
-#: gui\installerGui.py:464
+#. Translators: Message shown to users when attempting to install or update NVDA from the launcher
+#. on a computer which is being remotely controlled via NVDA Remote Access
+#: gui\installerGui.py:474
 msgid "You will be unable to respond to User Account Control (UAC) prompts from the controlling computer. You should only proceed if you have physical access to the controlled computer.\n\n"
 "Are you sure you want to continue?"
 msgstr "制御する側のPCからユーザーアカウント制御（UAC）のプロンプトに応答することができなくなります。制御されるPCに物理的にアクセスできる場合のみ続行してください。\n\n"
 "本当に続行しますか？"
 
-#. Translators: The title of the Create Portable NVDA dialog.
-#: gui\installerGui.py:502
+#. Translators: The title of the Create Portable NVDA dialog.
+#: gui\installerGui.py:512
 msgid "Create Portable NVDA"
 msgstr "ポータブル版NVDAの作成"
 
-#. Translators: An informational message displayed in the Create Portable NVDA dialog.
-#: gui\installerGui.py:508
+#. Translators: An informational message displayed in the Create Portable NVDA dialog.
+#: gui\installerGui.py:518
 msgid "To create a portable copy of NVDA, please select the path and other options and then press Continue"
 msgstr "NVDAポータブル版の場所とオプションの選択"
 
-#. Translators: The label of a grouping containing controls to select the destination directory
-#. in the Create Portable NVDA dialog.
-#: gui\installerGui.py:514
+#. Translators: The label of a grouping containing controls to select the destination directory
+#. in the Create Portable NVDA dialog.
+#: gui\installerGui.py:524
 msgid "Portable directory:"
 msgstr "ポータブル版を作成する新規のフォルダーまたはドライブ"
 
-#. Translators: The label of a button to browse for a directory.
-#: gui\installerGui.py:519
+#. Translators: The label of a button to browse for a directory.
+#: gui\installerGui.py:529
 msgid "Browse..."
 msgstr "参照..."
 
-#. Translators: The title of the dialog presented when browsing for the
-#. destination directory when creating a portable copy of NVDA.
-#: gui\installerGui.py:522
+#. Translators: The title of the dialog presented when browsing for the
+#. destination directory when creating a portable copy of NVDA.
+#: gui\installerGui.py:532
 msgid "Select portable directory"
 msgstr "ポータブル版を作成する場所"
 
-#. Translators: The label of a checkbox option in the Create Portable NVDA dialog.
-#: gui\installerGui.py:530
+#. Translators: The label of a checkbox option in the Create Portable NVDA dialog.
+#: gui\installerGui.py:540
 msgid "Create a &new folder for the portable copy"
 msgstr "新しいフォルダーでポータブル版を作成(&N)"
 
-#. Translators: The label of a checkbox option in the Create Portable NVDA dialog.
-#: gui\installerGui.py:535
+#. Translators: The label of a checkbox option in the Create Portable NVDA dialog.
+#: gui\installerGui.py:545
 msgid "Copy current &user configuration"
 msgstr "現在のユーザー設定をコピー(&U)"
 
-#. Translators: The label of a checkbox option in the Create Portable NVDA dialog.
-#: gui\installerGui.py:541
+#. Translators: The label of a checkbox option in the Create Portable NVDA dialog.
+#: gui\installerGui.py:551
 msgid "&Start the new portable copy after creation"
 msgstr "作成したポータブル版を実行(&S)"
 
-#. Translators: The message displayed when the user has not specified a destination directory
-#. in the Create Portable NVDA dialog.
-#: gui\installerGui.py:565
+#. Translators: The message displayed when the user has not specified a destination directory
+#. in the Create Portable NVDA dialog.
+#: gui\installerGui.py:576
 msgid "Please specify a directory in which to create the portable copy."
 msgstr "ポータブル版を作成する場所を指定してください。"
 
-#. Translators: The message displayed when the user has not specified an absolute destination directory
-#. in the Create Portable NVDA dialog.
-#: gui\installerGui.py:577
+#. Translators: The message displayed when the user has not specified an absolute destination directory
+#. in the Create Portable NVDA dialog.
+#: gui\installerGui.py:588
 msgid "Please specify the absolute path where the portable copy should be created. It may include system variables (%temp%, %homepath%, etc.)."
 msgstr "ポータブル版作成する絶対パスを指定してください。環境変数（%temp%、%homepath%など）を含めることができます"
 
-#. Translators: The message displayed when the user cancels the creation of a portable copy of NVDA.
-#: gui\installerGui.py:628
+#. Translators: The message displayed when the user cancels the creation of a portable copy of NVDA.
+#: gui\installerGui.py:639
 msgid "Portable copy creation cancelled."
 msgstr "ポータブル版の作成をキャンセルしました。"
 
-#. Translators: The title of the dialog presented while a portable copy of NVDA is being created.
-#: gui\installerGui.py:633
+#. Translators: The title of the dialog presented while a portable copy of NVDA is being created.
+#: gui\installerGui.py:644
 msgid "Creating Portable Copy"
 msgstr "ポータブル版を作成中"
 
-#. Translators: The message displayed while a portable copy of NVDA is being created.
-#: gui\installerGui.py:635
+#. Translators: The message displayed while a portable copy of NVDA is being created.
+#: gui\installerGui.py:646
 msgid "Please wait while a portable copy of NVDA is created."
 msgstr "NVDAポータブル版が作成されるまでお待ちください。"
 
-#. Translators: a message dialog asking to retry or cancel when NVDA portable copy creation fails
-#: gui\installerGui.py:644
+#. Translators: a message dialog asking to retry or cancel when NVDA portable copy creation fails
+#: gui\installerGui.py:655
 msgid "NVDA is unable to remove or overwrite a file."
 msgstr "NVDAはファイルを削除または上書きできません。"
 
-#. Translators: The message displayed when an error occurs while creating a portable copy of NVDA.
-#. {error} will be replaced with the specific error message.
-#: gui\installerGui.py:652
-#, python-brace-format
+#. Translators: The message displayed when an error occurs while creating a portable copy of NVDA.
+#. {error} will be replaced with the specific error message.
+#: gui\installerGui.py:663
+#, python-brace-format
 msgid "Failed to create portable copy: {error}."
 msgstr "ポータブル版の作成に失敗しました: {error}"
 
-#. Translators: The message displayed when a portable copy of NVDA has been successfully created.
-#. {dir} will be replaced with the destination directory.
-#: gui\installerGui.py:663
-#, python-brace-format
+#. Translators: The message displayed when a portable copy of NVDA has been successfully created.
+#. {dir} will be replaced with the destination directory.
+#: gui\installerGui.py:674
+#, python-brace-format
 msgid "Successfully created a portable copy of NVDA at {dir}"
 msgstr "作成に成功しました。NVDAポータブル版の場所は {dir} です"
 
@@ -19162,15 +19168,15 @@ msgstr "{D}日{H}時間{M}分{S}秒"
 msgid "Default output device"
 msgstr "既定の出力デバイス"
 
-#. Translators: This is the message for a warning shown if NVDA cannot determine if
-#. Windows is locked.
-#: utils\security.py:363
+#. Translators: This is the message for a warning shown if NVDA cannot determine if
+#. Windows is locked.
+#: utils\security.py:368
 msgid "NVDA is unable to determine if Windows is locked. While this instance of NVDA is running, your desktop will not be secure when Windows is locked. Restarting Windows may address this. If this error is ongoing then disabling the Windows lock screen is recommended."
 msgstr "NVDA が Windows のロック画面を判定できないため、ロック画面でセキュリティ対策が機能しません。 Windows を再起動するとこの問題に対処できます。このエラーがひきつづき起きる場合は Windows のロック画面を無効にすることをお勧めします。"
 
-#. Translators: This is the title for a warning dialog, shown if NVDA cannot determine if
-#. Windows is locked.
-#: utils\security.py:378
+#. Translators: This is the title for a warning dialog, shown if NVDA cannot determine if
+#. Windows is locked.
+#: utils\security.py:383
 msgid "Lock screen not secure while using NVDA"
 msgstr "ロック画面で NVDA を使用するとセキュリティ対策が機能しません"
 
