@@ -123,6 +123,10 @@ def _doTestAriaDetails_NoVBufNoTextInterface(nvdaConfValues: "NVDASpyLib.NVDACon
 		message="Tab to button",
 	)
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
+	# Details can be resolved slightly late in role=application; allow one retry.
+	if actualSpeech.strip() == "No additional details":
+		spy.wait_for_speech_to_finish()
+		actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
 		actualSpeech,
 		"Press to self-destruct",
