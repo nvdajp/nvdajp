@@ -143,6 +143,52 @@ py jpBrailleRunner.py
   * On failure, `__h1output.txt` / `__h2output.txt` are uploaded as artifacts.
 * Local quick run: `.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` or `py jpBrailleRunner.py`.
 
+## MeCab がカナ読みを返さないトークンの処理
+
+### 問題の背景 (nvdajp/nvdajp#534, nvdajp/nvdajp#507, nvdajp/nvdajp#200)
+
+`×` (U+00D7) などの非ASCII記号が英字と混在すると、点訳結果が欠落する問題が報告されている。
+
+### 原因の構造
+
+translator2 の点訳パイプラインは以下の順で処理する：
+
+1. `text2mecab()` で ASCII を全角に変換（例: `a` → `ａ`）
+2. MeCab で形態素解析
+3. 各形態素の `output` フィールドに点訳用テキストを設定
+4. `translator1` でカナ→点字パターンに変換
+
+MeCab が `ａ×ｂ×ｃ` のようなトークンを `名詞,固有名詞,組織` として返すと、カナ読みフィールドが空になる（MeCab 辞書に該当エントリがない）。この場合 `mo.output` が空文字列のまま残り、点訳結果から欠落する。
+
+### フォールバック処理
+
+translator2 には `output` が空の形態素を救済するフォールバックが複数ある：
+
+| 行   | 条件                              | 処理                                       |
+| ---- | --------------------------------- | ------------------------------------------ |
+| 1536 | `RE_ASCII_CHARS.match(nhyouki)`   | ASCII 英数字+記号のみ → `nhyouki` を使う  |
+| 1547 | `RE_KATAKANA.match(nhyouki)`      | カタカナのみ → そのまま使う                |
+| 1549 | `RE_HIRAGANA.match(nhyouki)`      | ひらがなのみ → カタカナに変換              |
+
+`×` を含むトークン（例: `a×b×c`）は `RE_ASCII_CHARS` にマッチしないため、どのフォールバックにも拾われなかった。
+
+### 修正方針
+
+`RE_ASCII_CHARS` 自体に `×` を追加すると、マスあけ判定（`should_separate()` の line 1008）など既存ロジックに副作用が生じる。そのため `RE_ASCII_AND_SYMBOLS` を新設し、フォールバック処理にのみ使用する。
+
+```python
+RE_ASCII_AND_SYMBOLS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; \u00d7]+$")
+```
+
+今後、同様の非ASCII記号（例: `÷`, `±`）で問題が発生した場合は、このパターンに追加する。
+
+### デバッグの手順
+
+1. `runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JpBrailleTests.test_pass2"` でテスト実行
+2. `__h2output.txt` に MeCab の解析結果が出力される
+3. 各トークンの `名詞,固有名詞,組織,*,*,*,*,*` のようにカナフィールド（9番目以降）が空かどうかを確認
+4. テストケースは `harness.json` で `"input"` キーが有効、`"_input"` キーはスキップされる
+
 ## 既知の問題と課題
 
 ### ビルド依存関係の複雑さ
