@@ -35,6 +35,16 @@ _opSys: _OpSysLib = _getLib("OperatingSystem")
 _builtIn: BuiltIn = BuiltIn()
 _asserts: _AssertsLib = _getLib("AssertsLib")
 
+# Input mode / keyboard layout announcements that may appear in Japanese environment (e.g. "half alphanumeric" / 半角英数).
+# Stripping these from actual speech allows tests to pass whether or not the TSF/IME announces them.
+_OPTIONAL_SPEECH_LINES_JA = frozenset({"half alphanumeric", "半角英数"})
+
+
+def _normalize_speech_optional_ja_lines(speech: str) -> str:
+	"""Remove lines that are optional input-mode announcements in Japanese environment."""
+	lines = [line for line in speech.split("\n") if line.strip() not in _OPTIONAL_SPEECH_LINES_JA]
+	return "\n".join(lines)
+
 
 def _getNvdaMessageWindowhandle() -> int:
 	return getWindowHandle(windowClassName="wxWindowClassNR", windowName="NVDA")
@@ -78,7 +88,7 @@ def quits_from_menu(showExitDialog=True):
 		actualSpeech = spy.get_speech_at_index_until_now(exitTitleIndex)
 
 		_asserts.strings_match(
-			actualSpeech,
+			_normalize_speech_optional_ja_lines(actualSpeech),
 			"\n".join(
 				[
 					"Exit NVDA  dialog",
@@ -109,7 +119,7 @@ def quits_from_keyboard():
 	actualSpeech = spy.get_speech_at_index_until_now(exitTitleIndex)
 
 	_asserts.strings_match(
-		actualSpeech,
+		_normalize_speech_optional_ja_lines(actualSpeech),
 		"\n".join(
 			[
 				"Exit NVDA  dialog",
@@ -160,7 +170,7 @@ def read_welcome_dialog():
 	actualSpeech = spy.get_speech_at_index_until_now(welcomeTitleIndex)
 
 	_asserts.strings_match(
-		actualSpeech,
+		_normalize_speech_optional_ja_lines(actualSpeech),
 		"\n".join(
 			[
 				(
