@@ -122,10 +122,14 @@ def _doTestAriaDetails_NoVBufNoTextInterface(nvdaConfValues: "NVDASpyLib.NVDACon
 		"push me btn details",
 		message="Tab to button",
 	)
+	# Details can be resolved late in role=application; wait briefly then retry up to 3 attempts.
+	_builtIn.sleep("0.3 seconds")
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
-	# Details can be resolved slightly late in role=application; allow one retry.
-	if actualSpeech.strip() == "No additional details":
+	for _ in range(2):
+		if actualSpeech.strip() != "No additional details":
+			break
 		spy.wait_for_speech_to_finish()
+		_builtIn.sleep("0.5 seconds")
 		actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
 		actualSpeech,
