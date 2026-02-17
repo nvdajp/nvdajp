@@ -115,7 +115,29 @@
    * `pass2()`: `translator2` のテスト（テキスト解析とマスあけ）
    * テストケースは `miscDepsJp/include/libkuraji/tests/harness.json` と `nabccHarness.json` から読み込まれる
 
-2. **`miscDepsJp/jptools/test.py`**:
+### harness.json のテストケース形式
+
+各テストケースは JSON オブジェクトで、以下のキーを持つ：
+
+* `"comment"` — テストの説明や issue URL。テスト実行には影響しない
+* `"note"` — セクション見出し。`"input"` を持たないため実行されない
+* `"text"` — pass2 の入力テキスト（原文）
+* `"input"` — pass2 の期待する出力（カナ表記）。**このキーがないテストケースはスキップされる**
+* `"output"` — pass1 の期待する点字パターン
+* `"inpos1"`, `"inpos2"`, `"inpos"`, `"outpos"` — 位置マッピングの期待値（省略可）
+* `"mode"` — `"NABCC"` を指定すると NABCC モードでテスト
+
+#### `_input` / `_output` 規約
+
+キー名の先頭にアンダースコアを付けた `"_input"` や `"_output"` は、テストランナーに認識されずスキップされる。これを利用して「既知の失敗ケース」を記録する運用を行っている：
+
+* **未修正の問題**: `"_input"` で期待値を記録しておき、CI を壊さずに issue を追跡する
+* **修正後の有効化**: 修正が完了したら `"_input"` → `"input"` に変更してテストを有効化する
+* **期待値の調整**: 有効化時に実際の出力と期待値が異なる場合（マスあけの差異など）は期待値を修正する
+
+この規約は暗黙的なもので、テストランナー (`jpBrailleRunner.py`) が `"input" not in t` でスキップ判定していることに依存している。
+
+1. **`miscDepsJp/jptools/test.py`**:
    * unittest ベースのテストランナー
    * `JpBrailleTests` クラスで `test_pass1()` と `test_pass2()` を定義
 
