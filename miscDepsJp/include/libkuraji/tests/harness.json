@@ -15964,17 +15964,17 @@
     {
         "comment": "https://github.com/nvdajp/nvdajp/issues/200 https://github.com/nvdajp/nvdajp/issues/534",
         "text": "SDGs×",
-        "_input": "SDGs×"
+        "input": "SDGs×"
     },
     {
         "comment": "https://github.com/nvdajp/nvdajp/issues/200 https://github.com/nvdajp/nvdajp/issues/534",
         "text": "SDGs×iPad",
-        "_input": "SDGs×iPad"
+        "input": "SDGs×iPad"
     },
     {
         "comment": "https://github.com/nvdajp/nvdajp/issues/200 https://github.com/nvdajp/nvdajp/issues/534",
         "text": "SDGs×iPadと点字表示しない",
-        "_input": "SDGs×iPad ト テンジ ヒョージ シナイ"
+        "input": "SDGs×iPadト テンジ ヒョージ シナイ"
     },
     {
         "comment": "×を含む英字列が点字表示されない https://github.com/nvdajp/nvdajp/issues/534"
