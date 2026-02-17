@@ -4,8 +4,8 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 # Copyright (C) 2013 Masataka.Shinke, Takuya Nishimoto
-# h1: カナと記号のテスト
-# h2: テキスト解析とマスあけのテスト
+# translator2: MeCab・マスあけ・引用符範囲（パイプライン1番目）
+# translator1: カナと記号のテスト（パイプライン3番目）。2番目は translator_louis（未実装）
 
 import datetime
 import io
@@ -17,6 +17,7 @@ from pathlib import Path
 
 from harness import tests
 from nabccHarness import tests as nabcc_tests
+from eng2Harness import eng2_tests
 
 tests.extend(nabcc_tests)
 
@@ -114,9 +115,10 @@ def dot_numbers(s):
 	return " ".join(ret)
 
 
-def pass1():
+def run_translator1():
+	"""translator1（カナ→点字）のテスト。パイプラインでは3番目に実行される。"""
 	global output
-	outfile = "__h1output.txt"
+	outfile = "__translator1output.txt"
 	with open_file(outfile, "w") as f:
 		count = 0
 		for t in tests:
@@ -148,13 +150,14 @@ def pass1():
 						else:
 							f.write("comment: " + ", ".join(t["comment"]) + "\n")
 					f.write("\n")
-		print("h1: %d error(s). see %s" % (count, outfile))
+		print("translator1: %d error(s). see %s" % (count, outfile))
 	return (count, outfile)
 
 
-def pass2(verboseMode=False):
+def run_translator2(verboseMode=False):
+	"""translator2（MeCab・マスあけ・引用符範囲）のテスト。パイプラインでは1番目に実行される。"""
 	global output
-	outfile = "__h2output.txt"
+	outfile = "__translator2output.txt"
 	with open_file(outfile, "w") as f:
 		# Display environment info (GitHub Actions compatible)
 		print("::group::Test Environment")
@@ -319,16 +322,22 @@ def pass2(verboseMode=False):
 					if "result_mismatch" in error_types:
 						error_details_parts.append(f"result: expected '{t['input']}', got '{result}'")
 					if "inpos2_mismatch" in error_types:
-						error_details_parts.append(f"inpos2: expected '{correct_inpos2}', got '{result_inpos2}'")
+						error_details_parts.append(
+							f"inpos2: expected '{correct_inpos2}', got '{result_inpos2}'"
+						)
 					if "inpos_mismatch" in error_types:
 						error_details_parts.append(f"inpos: expected '{correct_inpos}', got '{result_inpos}'")
 					if "outpos_mismatch" in error_types:
-						error_details_parts.append(f"outpos: expected '{correct_outpos}', got '{result_outpos}'")
+						error_details_parts.append(
+							f"outpos: expected '{correct_outpos}', got '{result_outpos}'"
+						)
 					error_details = " | ".join(error_details_parts)
 
 					# Output GitHub Actions error annotation
 					# Escape special characters in error message for GitHub Actions
-					error_msg = f"Test #{count} ({', '.join(error_types)}): text='{t['text']}' | {error_details}"
+					error_msg = (
+						f"Test #{count} ({', '.join(error_types)}): text='{t['text']}' | {error_details}"
+					)
 					# Replace newlines and other special chars that might break annotation
 					error_msg_escaped = error_msg.replace("\n", " ").replace("\r", " ")
 					print(f"::error file={outfile}::{error_msg_escaped}")
@@ -416,7 +425,7 @@ def pass2(verboseMode=False):
 			print("=" * 60)
 		outfile_path = Path(outfile).resolve()
 		if count > 0:
-			print(f"\nh2: {count} error(s) found. Details written to: {outfile_path}")
+			print(f"\ntranslator2: {count} error(s) found. Details written to: {outfile_path}")
 			print("    Error breakdown: ", end="")
 			parts = []
 			if error_summary["result_mismatch"] > 0:
@@ -429,7 +438,294 @@ def pass2(verboseMode=False):
 				parts.append(f"outpos={error_summary['outpos_mismatch']}")
 			print(", ".join(parts))
 		else:
-			print(f"\nh2: All tests passed. Output written to: {outfile_path}")
+			print(f"\ntranslator2: All tests passed. Output written to: {outfile_path}")
+	return (count, outfile)
+
+
+def run_eng2_grade1():
+	"""eng2Harness の1級点字を検証。原文 → translator2 → translator1 の結果と output を比較。"""
+	global output
+	outfile = "__eng2output.txt"
+	with open_file(outfile, "w") as f:
+		# translator2 の初期化（MeCab が必要）
+		dll_dir_handle = None
+		if hasattr(os, "add_dll_directory"):
+			try:
+				dll_dir_handle = os.add_dll_directory(str(jtalk_dir))
+			except OSError:
+				pass
+		try:
+			output = io.StringIO()
+			try:
+				translator2.initialize(__print, str(jtalk_dir), str(dic_dir), user_dics)
+			except OSError as e:
+				f.write("ERROR: MeCab DLL load failed: %s\n" % e)
+				return (1, outfile)
+			finally:
+				output.close()
+		finally:
+			if dll_dir_handle is not None:
+				dll_dir_handle.close()
+
+		if mecab_module.libmc is None or mecab_module.mecab is None:
+			f.write("ERROR: MeCab not initialized. Run test_translator2 first or check environment.\n")
+			return (1, outfile)
+
+		count = 0
+		for idx, t in enumerate(eng2_tests):
+			if "note" in t and "text" not in t:
+				continue
+			if "output" not in t or "text" not in t:
+				continue
+			# 既知の失敗・未実装: _output があるケースは 1 級検証をスキップ（スキップ規約）
+			if "_output" in t:
+				continue
+			output = io.StringIO()
+			try:
+				result, pat, inpos1, inpos2 = translator2.translateWithInPos2(
+					t["text"], logwrite=__print, nabcc=False, use_foreign_quotes=True
+				)
+			except Exception as e:
+				count += 1
+				f.write("ERROR #%d: text=%r exception=%s\n\n" % (idx, t["text"], e))
+				continue
+			finally:
+				output.close()
+			braille_result, _ = translator1.translateWithInPos(result, nabcc=False)
+			if braille_result != t["output"]:
+				count += 1
+				f.write("text   : %s\n" % t["text"])
+				f.write("correct: %s\n" % t["output"])
+				f.write("result : %s\n" % braille_result)
+				if "comment" in t:
+					f.write(
+						"comment: %s\n"
+						% (t["comment"] if isinstance(t["comment"], str) else ", ".join(t["comment"]))
+					)
+				f.write("\n")
+		print("eng2_grade1: %d error(s). see %s" % (count, outfile))
+	return (count, outfile)
+
+
+# translator_louis 単体テスト用: 英文 → liblouis en-ueb-g2.ctb の期待値（引用符なし）
+# UEB G2: 大文字符 ⠠、縮約（world→⠸⠺ 等）は liblouis の実際の出力に合わせる
+TRANSLATOR_LOUIS_CASES = [
+	{"text": "and", "ueb_g2": "⠯"},
+	{"text": "the", "ueb_g2": "⠮"},
+	{"text": "Hello world", "ueb_g2": "⠠⠓⠑⠇⠇⠕ ⠸⠺"},  # 大文字符 + world 縮約
+	{"text": "what's new", "ueb_g2": "⠱⠁⠞⠄⠎ ⠝⠑⠺"},
+	{"text": "tea room", "ueb_g2": "⠞⠑⠁ ⠗⠕⠕⠍"},
+	{"text": "correct, and", "ueb_g2": "⠉⠕⠗⠗⠑⠉⠞⠂ ⠯"},
+]
+
+
+def run_translator_louis():
+	"""translator_louis 単体: liblouis en-ueb-g2.ctb で英文を UEB Grade 2 に変換し期待値と比較。
+	louis が未ビルドの場合はスキップ（0 件で成功）。"""
+	outfile = "__translator_louis_output.txt"
+	try:
+		from translator_louis_runner import translate_english_ueb_g2, is_louis_available
+	except ImportError:
+		with open_file(outfile, "w") as f:
+			f.write("translator_louis_runner not found\n")
+		print("translator_louis: skipped (runner not found)")
+		return (0, outfile)
+	if not is_louis_available():
+		with open_file(outfile, "w") as f:
+			f.write("louis not available (scons source required for source/louis/tables and liblouis.dll)\n")
+		print("translator_louis: skipped (louis not available, run scons source)")
+		return (0, outfile)
+	count = 0
+	with open_file(outfile, "w") as f:
+		for t in TRANSLATOR_LOUIS_CASES:
+			text = t["text"]
+			expected = t["ueb_g2"]
+			result = translate_english_ueb_g2(text)
+			if result is None:
+				count += 1
+				f.write("text: %r -> translate failed\n" % text)
+				continue
+			if result != expected:
+				count += 1
+				f.write("text   : %s\n" % text)
+				f.write("correct: %s\n" % expected)
+				f.write("result : %s\n" % result)
+				f.write("\n")
+	if count > 0:
+		print("translator_louis: %d error(s). see %s" % (count, outfile))
+	else:
+		print("translator_louis: all %d passed." % len(TRANSLATOR_LOUIS_CASES))
+	return (count, outfile)
+
+
+def run_eng2_ueb_g2():
+	"""eng2Harness の UEB 2級点字を検証。原文 → translator2(louis) → translator1 の結果と ueb_g2 を比較。
+	louis が未ビルドの場合はスキップ（0 件で成功）。"""
+	global output
+	outfile = "__eng2_ueb_g2_output.txt"
+	try:
+		from translator_louis_runner import get_louis_translate_for_pipeline, is_louis_available
+	except ImportError:
+		with open_file(outfile, "w") as f:
+			f.write("translator_louis_runner not found\n")
+		print("eng2_ueb_g2: skipped (runner not found)")
+		return (0, outfile)
+	if not is_louis_available():
+		with open_file(outfile, "w") as f:
+			f.write("louis not available (scons source required)\n")
+		print("eng2_ueb_g2: skipped (louis not available)")
+		return (0, outfile)
+	louisTranslate, louisTableList = get_louis_translate_for_pipeline()
+	if louisTranslate is None or not louisTableList:
+		print("eng2_ueb_g2: skipped (louis not available)")
+		return (0, outfile)
+
+	with open_file(outfile, "w") as f:
+		dll_dir_handle = None
+		if hasattr(os, "add_dll_directory"):
+			try:
+				dll_dir_handle = os.add_dll_directory(str(jtalk_dir))
+			except OSError:
+				pass
+		try:
+			output = io.StringIO()
+			try:
+				translator2.initialize(__print, str(jtalk_dir), str(dic_dir), user_dics)
+			except OSError as e:
+				f.write("ERROR: MeCab DLL load failed: %s\n" % e)
+				return (1, outfile)
+			finally:
+				output.close()
+		finally:
+			if dll_dir_handle is not None:
+				dll_dir_handle.close()
+
+		if mecab_module.libmc is None or mecab_module.mecab is None:
+			f.write("ERROR: MeCab not initialized.\n")
+			return (1, outfile)
+
+		count = 0
+		for idx, t in enumerate(eng2_tests):
+			if "note" in t and "text" not in t:
+				continue
+			if "ueb_g2" not in t or "text" not in t:
+				continue
+			if "_ueb_g2" in t:
+				continue
+			output = io.StringIO()
+			try:
+				outbuf, result, inpos1, inpos2 = translator2.translateWithInPos2(
+					t["text"],
+					logwrite=__print,
+					nabcc=False,
+					louisTranslate=louisTranslate,
+					louisTableList=louisTableList,
+					use_foreign_quotes=True,
+				)
+			except Exception as e:
+				count += 1
+				f.write("ERROR #%d: text=%r exception=%s\n\n" % (idx, t["text"], e))
+				continue
+			finally:
+				output.close()
+			# result は既に translator1 通過済みの最終点字
+			if result != t["ueb_g2"]:
+				count += 1
+				f.write("text   : %s\n" % t["text"])
+				f.write("correct: %s\n" % t["ueb_g2"])
+				f.write("result : %s\n" % result)
+				if "comment" in t:
+					f.write(
+						"comment: %s\n"
+						% (t["comment"] if isinstance(t["comment"], str) else ", ".join(t["comment"]))
+					)
+				f.write("\n")
+		print("eng2_ueb_g2: %d error(s). see %s" % (count, outfile))
+	return (count, outfile)
+
+
+def run_eng2_us_g2():
+	"""eng2Harness の US 2級点字を検証。原文 → translator2(louis en-us-g2) → translator1 の結果と us_g2 を比較。
+	louis が未ビルドの場合はスキップ（0 件で成功）。"""
+	global output
+	outfile = "__eng2_us_g2_output.txt"
+	try:
+		from translator_louis_runner import get_louis_translate_for_pipeline, is_louis_available
+	except ImportError:
+		with open_file(outfile, "w") as f:
+			f.write("translator_louis_runner not found\n")
+		print("eng2_us_g2: skipped (runner not found)")
+		return (0, outfile)
+	if not is_louis_available():
+		with open_file(outfile, "w") as f:
+			f.write("louis not available (scons source required)\n")
+		print("eng2_us_g2: skipped (louis not available)")
+		return (0, outfile)
+	louisTranslate, louisTableList = get_louis_translate_for_pipeline("us")
+	if louisTranslate is None or not louisTableList:
+		print("eng2_us_g2: skipped (louis not available)")
+		return (0, outfile)
+
+	with open_file(outfile, "w") as f:
+		dll_dir_handle = None
+		if hasattr(os, "add_dll_directory"):
+			try:
+				dll_dir_handle = os.add_dll_directory(str(jtalk_dir))
+			except OSError:
+				pass
+		try:
+			output = io.StringIO()
+			try:
+				translator2.initialize(__print, str(jtalk_dir), str(dic_dir), user_dics)
+			except OSError as e:
+				f.write("ERROR: MeCab DLL load failed: %s\n" % e)
+				return (1, outfile)
+			finally:
+				output.close()
+		finally:
+			if dll_dir_handle is not None:
+				dll_dir_handle.close()
+
+		if mecab_module.libmc is None or mecab_module.mecab is None:
+			f.write("ERROR: MeCab not initialized.\n")
+			return (1, outfile)
+
+		count = 0
+		for idx, t in enumerate(eng2_tests):
+			if "note" in t and "text" not in t:
+				continue
+			if "us_g2" not in t or "text" not in t:
+				continue
+			if "_us_g2" in t:
+				continue
+			output = io.StringIO()
+			try:
+				outbuf, result, inpos1, inpos2 = translator2.translateWithInPos2(
+					t["text"],
+					logwrite=__print,
+					nabcc=False,
+					louisTranslate=louisTranslate,
+					louisTableList=louisTableList,
+					use_foreign_quotes=True,
+				)
+			except Exception as e:
+				count += 1
+				f.write("ERROR #%d: text=%r exception=%s\n\n" % (idx, t["text"], e))
+				continue
+			finally:
+				output.close()
+			if result != t["us_g2"]:
+				count += 1
+				f.write("text   : %s\n" % t["text"])
+				f.write("correct: %s\n" % t["us_g2"])
+				f.write("result : %s\n" % result)
+				if "comment" in t:
+					f.write(
+						"comment: %s\n"
+						% (t["comment"] if isinstance(t["comment"], str) else ", ".join(t["comment"]))
+					)
+				f.write("\n")
+		print("eng2_us_g2: %d error(s). see %s" % (count, outfile))
 	return (count, outfile)
 
 
@@ -491,20 +787,20 @@ def make_doc():
 if __name__ == "__main__":
 	parser = optparse.OptionParser()
 	parser.add_option(
-		"-1",
-		"--pass1only",
+		"-2",
+		"--translator2only",
 		action="store_true",
-		dest="pass1_only",
+		dest="translator2_only",
 		default="False",
-		help="pass1 only timeit",
+		help="translator2 only timeit",
 	)
 	parser.add_option(
-		"-2",
-		"--pass2only",
+		"-1",
+		"--translator1only",
 		action="store_true",
-		dest="pass2_only",
+		dest="translator1_only",
 		default="False",
-		help="pass2 only timeit",
+		help="translator1 only timeit",
 	)
 	parser.add_option(
 		"-v",
@@ -512,7 +808,7 @@ if __name__ == "__main__":
 		action="store_true",
 		dest="verbose",
 		default="False",
-		help="pass2 with verbose mode",
+		help="translator2 with verbose mode",
 	)
 	parser.add_option(
 		"-m",
@@ -535,14 +831,14 @@ if __name__ == "__main__":
 
 	if options.make_doc:
 		make_doc()
-	elif options.pass1_only:
-		t = timeit.Timer(stmt=pass1)
+	elif options.translator2_only:
+		t = timeit.Timer(stmt=run_translator2)
 		print(t.timeit(number=options.number))
-	elif options.pass2_only:
-		t = timeit.Timer(stmt=pass2)
+	elif options.translator1_only:
+		t = timeit.Timer(stmt=run_translator1)
 		print(t.timeit(number=options.number))
 	elif options.verbose:
-		pass2(verboseMode=True)
+		run_translator2(verboseMode=True)
 	else:
-		pass1()
-		pass2()
+		run_translator2()
+		run_translator1()

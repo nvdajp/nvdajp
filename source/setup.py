@@ -277,8 +277,8 @@ freeze(
 		(".", [os.path.join(sys.base_prefix, "python3.dll")]),
 	]
 	# BEGIN JP PATCH (Japanese braille tables)
-	# ja-jp-comp6.utb: JP-specific table, installed to dist root (TABLES_DIR_JP)
-	+ [(".", ["ja-jp-comp6.utb"])]
+	# ja-jp-comp6.utb / ja-jp-comp6-ueb-g2.utb: JP-specific, installed to dist root (TABLES_DIR_JP)
+	+ [(".", ["ja-jp-comp6.utb", "ja-jp-comp6-ueb-g2.utb", "ja-jp-comp6-us-g2.utb"])]
 	# Note: ja-rokutenkanji.utb is provided by liblouis 3.36.0+ (include/liblouis/tables/ja-rokutenkanji.utb)
 	# and is automatically copied to source/louis/tables/ by nvdaHelper/liblouis/sconscript
 	# END JP PATCH

@@ -76,6 +76,45 @@
 * `\` を含む文字列（パス）
 * `[` と `]` で囲まれた文字列
 
+### 外国語引用符の判定条件
+
+`nabcc=False` の場合、`translator2.py` の `japanese_braille_separate()` で、**情報処理点字の条件に該当しない**トークンについて、次のルールで外国語引用符 `⠦...⠴` を付けるかどうかを決める。判定は形態素解析（MeCab）の前後で二段階ある。
+
+**方針（コード内コメント）**: 「空白をはさまない1単語は外国語引用符ではなく外字符で」— 1形態素だけの欧文で空白やアポストロフィを含まない場合は、外国語引用符ではなく外字符（translator1 で ⠰）として出力する。
+
+#### 入力全体の早期判定（MeCab 前）
+
+* 入力全体が半角・全角の英数字と空白・ハイフンのみ（`RE_MB_ALPHA_NUM_SPACE`）にマッチする  
+  → `use_foreign_quotes=False` では外国語引用符を付けず、Unicode 正規化した文字列のみを返す。`use_foreign_quotes=True` で英字を含む場合は早期 return を回避し、後段の引用符判定に進む。
+* 入力全体が「外字相当」（`is_gaiji`）かつ空白を含む（末尾空白除く）  
+  → 全体を `⠦` + 正規化テキスト + `⠴` で囲む。
+
+#### 形態素ごとの判定（情報処理に該当しない場合のみ）
+
+次の**いずれか**を満たす形態素の表記（`mo.nhyouki`）を、外国語引用符 `⠦...⠴` で囲む。どれも満たさない欧文形態素は外国語引用符にせず、外字符として translator1 に渡す。
+
+* **外字形＋空白またはアポストロフィ**: `RE_GAIJI` にマッチし、かつ文字列に空白または `'` を含む。  
+  （例: 複数語の欧文、`don't` のようなアポストロフィ付き語。）
+* **ピリオドを含み長さが 3 より大きい**: 文字列に `.` を含み、かつ `len(mo.nhyouki) > 3`。  
+  （例: `h26a.pdf`、`v1.4` などファイル名・バージョン表記。）
+* **数字＋アポストロフィ＋英字**: `RE_DIGIT_SINGLE_ALPHA` にマッチ。  
+  （例: `0's`、`80's`。）
+* **（新モードのみ）括弧付き英語句**: `use_foreign_quotes=True` かつ `RE_GAIJI_WITH_PARENS` にマッチ。  
+  （例: `NonVisual Desktop Access (NVDA)`。）
+
+正規表現の定義（`translator2.py`）:
+
+* `RE_GAIJI`: `^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]+$` — 先頭が英字、以降は英数字と `,.'+-\!?` および空白。
+* `RE_DIGIT_SINGLE_ALPHA`: `^[0-9]+'[A-Za-z]+$` — 数字列 + `'` + 英字列。
+* `RE_GAIJI_WITH_PARENS`: `^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]*\([A-Za-z0-9\,\.\+\-'\!\? ]+\)$` — 括弧付き英語句。
+
+情報処理点字の判定は上記より**先**に行われる。同一形態素が情報処理の条件（`@`、`://`、`\`、`[ ]`）を満たす場合は `⠠⠦...⠠⠴` となり、外国語引用符の条件は評価されない。
+
+#### ueb-g2 / us-g2 の範囲判定との一致
+
+UEB 2級（ueb-g2）および US 2級（us-g2）の変換は、**上記の外国語引用符の判定条件で決まった範囲だけ**に適用される。実装では `_apply_louis_to_foreign_quotes()` が `outbuf` 内の `⠦...⠴` の内側を検出し、その部分だけを liblouis（`en-ueb-g2.ctb` または `en-us-g2.ctb`）で2級変換する。情報処理点字 `⠠⠦...⠠⠴` の内側は対象外である。  
+したがって **ueb-g2 / us-g2 の「どこを2級にするか」の範囲判定条件は、外国語引用符の判定条件と同一**であり、別の範囲ルールは持たない。
+
 ## 位置マッピング
 
 * translator2 は `(点字文字列, brailleToRawPos, rawToBraillePos, brailleCursorPos)` を返し、liblouis と同じ形式で出力文字と原文の対応を持つ
@@ -113,9 +152,13 @@
 日本語点訳エンジンには以下のテストコードが存在します：
 
 1. **`miscDepsJp/jptools/jpBrailleRunner.py`**:
-   * `pass1()`: `translator1` のテスト（カナと記号の変換）
-   * `pass2()`: `translator2` のテスト（テキスト解析とマスあけ）
-   * テストケースは `miscDepsJp/include/libkuraji/tests/harness.json` と `nabccHarness.json` から読み込まれる
+   * `run_translator2()`: translator2 のテスト（MeCab・マスあけ・引用符範囲。パイプライン1番目）
+   * `run_translator_louis()`: translator_louis の単体テスト（liblouis UEB G2）
+   * `run_translator1()`: translator1 のテスト（カナと記号の変換。パイプライン3番目）
+   * `run_eng2_grade1()`: eng2Harness の 1級（原文→translator2→translator1）
+   * `run_eng2_ueb_g2()`: eng2Harness の UEB 2級（原文→translator2(louis)→translator1）
+   * `run_eng2_us_g2()`: eng2Harness の US 2級（原文→translator2(louis)→translator1）
+   * テストケースは `harness.json` / `nabccHarness.json` / `eng2Harness.json` から読み込まれる
 
 ### harness.json のテストケース形式
 
@@ -123,9 +166,9 @@
 
 * `"comment"` — テストの説明や issue URL。テスト実行には影響しない
 * `"note"` — セクション見出し。`"input"` を持たないため実行されない
-* `"text"` — pass2 の入力テキスト（原文）
-* `"input"` — pass2 の期待する出力（カナ表記）。**このキーがないテストケースはスキップされる**
-* `"output"` — pass1 の期待する点字パターン
+* `"text"` — translator2 の入力テキスト（原文）
+* `"input"` — translator2 の期待する出力（カナ表記）。**このキーがないテストケースはスキップされる**
+* `"output"` — translator1 の期待する点字パターン
 * `"inpos1"`, `"inpos2"`, `"inpos"`, `"outpos"` — 位置マッピングの期待値（省略可）
 * `"mode"` — `"NABCC"` を指定すると NABCC モードでテスト
 
@@ -141,7 +184,7 @@
 
 1. **`miscDepsJp/jptools/test.py`**:
    * unittest ベースのテストランナー
-   * `JpBrailleTests` クラスで `test_pass1()` と `test_pass2()` を定義
+   * `JpBrailleTests` クラスで `test_translator2()` / `test_translator1()` / `test_translator_louis()` / `test_eng2_grade1()` / `test_eng2_ueb_g2()` / `test_eng2_us_g2()` を定義
 
 ### 実行方法
 
@@ -163,8 +206,8 @@ py jpBrailleRunner.py
 
 * GitHub Actions `unitTests` job runs JP smoke after overlay.
   * `scons miscdepsjp` applies the JP overlay and copies JTalk core files.
-  * `python -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests` checks translator2 and libopenjtalk.dll load.
-  * On failure, `__h1output.txt` / `__h2output.txt` are uploaded as artifacts.
+  * `python -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests` を実行し、translator2/translator1/translator_louis/eng2/ JTalk を検証する。
+  * On failure, `__translator2output.txt` / `__translator1output.txt` / `__eng2output.txt` / `__translator_louis_output.txt` / `jpSmokeTests.log` などをアーティファクトとしてアップロードする。
 * Local quick run: `.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` or `py jpBrailleRunner.py`.
 
 ## MeCab がカナ読みを返さないトークンの処理
@@ -208,7 +251,7 @@ RE_ASCII_AND_SYMBOLS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; \u00
 
 ### デバッグの手順
 
-1. `runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JpBrailleTests.test_pass2"` でテスト実行
+1. `runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JpBrailleTests.test_translator2"` でテスト実行
 2. `__h2output.txt` に MeCab の解析結果が出力される
 3. 各トークンの `名詞,固有名詞,組織,*,*,*,*,*` のようにカナフィールド（9番目以降）が空かどうかを確認
 4. テストケースは `harness.json` で `"input"` キーが有効、`"_input"` キーはスキップされる
@@ -255,7 +298,7 @@ MeCab がカナ読みを返さない英字+非ASCII記号の混合トークン�
 1. issue 報告を受けて `__h2output.txt` の MeCab 解析ログで再現確認
 2. `translator2.py` のルール修正（`should_separate()` の除外リスト追加等）または MeCab ユーザー辞書への登録
 3. `harness.json` にテストケースを追加（修正前は `_input` で記録、修正後に `input` に昇格）
-4. pass1/pass2 テストで回帰確認
+4. test_translator2 / test_translator1 で回帰確認
 
 ## MeCab 辞書フォーマット
 
@@ -480,13 +523,13 @@ U+2800〜U+28FF の点字パターン文字に対して、ドット番号の読�
 
 | テスト種別 | テストケース数 | 備考 |
 | ---------- | -------------- | ---- |
-| pass2（translator2、マスあけ） | 2,324 | 充実 |
-| pass1（translator1、カナ→点字） | 452 | pass2 の約5分の1 |
-| pass1 スキップ中（`_output`） | 7 | |
-| pass2 スキップ中（`_input`） | 6 | |
+| translator2（マスあけ） | 2,324 | 充実 |
+| translator1（カナ→点字） | 452 | translator2 の約5分の1 |
+| translator1 スキップ中（`_output`） | 7 | |
+| translator2 スキップ中（`_input`） | 6 | |
 | NABCC（nabccHarness.json） | 51 | 少ない |
 
-translator1（カナ→点字パターン変換）の回帰テストが相対的に薄く、pass1 での不具合検出力が弱い。
+translator1（カナ→点字パターン変換）の回帰テストが相対的に薄く、test_translator1 での不具合検出力が弱い。
 
 ### 本家版との統合の課題
 
@@ -501,47 +544,69 @@ translator1（カナ→点字パターン変換）の回帰テストが相対的
 
 ### 背景
 
-日本語点字の規則では、外国語引用符 `⠦...⠴` の内側は「英語点字の表記法に従って書く」とされている。現在のエンジンは英語1級点字（uncontracted）のみ対応しており、`the` → `⠮`、`and` → `⠯` のような2級縮約（contracted braille）は未実装。
+日本語点字の規則では、外国語引用符 `⠦...⠴` の内側は「英語点字の表記法に従って書く」とされる。従来は英語1級点字（uncontracted）のみだったが、issue #304 の対応で translator_louis を導入し、UEB/US 2級縮約（contracted braille）を実装した。
 
-### 現在の土台
+### 実装の現状
 
-以下は既に betajp に存在する：
+以下は既に betajp に実装されている：
 
-* **`translator2.translate()` の `louisTranslate` パラメータ** — liblouis の translate 関数オブジェクトを受け取る引数。現在は louisHelper.py から渡されていない（常に `None`）。
-* **`eng2Harness.json`** — 14件のテストケース。各ケースに `output`（1級）、`ueb_g2`（UEB 2級）、`us_g2`（US 2級）の3種の期待値がある。
-* **`louisTableList` パラメータ** — テーブル名を渡す引数。未使用。
+* **louisHelper.py（171-194行）**: テーブル名による3分岐が実装済み
+  * `ja-jp-comp6.utb` → 従来（1級のみ、`louisTranslate=None`）
+  * `ja-jp-comp6-ueb-g2.utb` → `louis.translate` + `["en-ueb-g2.ctb"]` を渡す
+  * `ja-jp-comp6-us-g2.utb` → `louis.translate` + `["en-us-g2.ctb"]` を渡す
+* **translator2.py**: `_apply_louis_to_foreign_quotes()` が実装済み。`⠦...⠴` の内側だけを `louisTranslate()` で変換し、情報処理点字 `⠠⠦...⠠⠴` は対象外にする
+* **translator2.py**: ポジションマッピングは liblouis の `inPos` / `outPos` を使って `inpos2` を再構築する実装に更新済み（線形補間から置換）
+* **translator2.py**: `use_foreign_quotes=True` でも従来判定ロジックを維持し、必要箇所のみ `⠦...⠴` を付与する。`NonVisual Desktop Access (NVDA)` のような括弧付き英語句は1トークンに統合して引用符範囲を安定化
+* **仮想テーブル**: `ja-jp-comp6-ueb-g2.utb` / `ja-jp-comp6-us-g2.utb` が存在（内容は `ja-jp-comp6.utb` と同じひらがなテーブル。実際の変換は jpTranslate が行い、liblouis はこれらのテーブルを直接使わない）
+* **eng2Harness.json** — 14件のテストケース。各ケースに `output`（1級）、`ueb_g2`（UEB 2級）、`us_g2`（US 2級）の3種の期待値がある
+
+### 過去の実装で起きた問題
+
+* `KeyError: 'nabcc'` — `config.conf["braille"]["expandAtCursor"]` の設定キーが変更され、新テーブル選択時にクラッシュした
+* システムテストが通らなかった
+* `use_foreign_quotes=True` のときの外国語引用符適用ルールが従来モード（`use_foreign_quotes=False`）と一致しない — 1級モードでの回帰を起こす可能性
+
+### eng2Harness の期待値（ueb_g2 / us_g2）は明確か
+
+**方針（採用済み）**: **現行 liblouis の出力を正とする。** 本家 NVDA が同梱する liblouis の挙動に合わせて、破綻しないように `ueb_g2` / `us_g2` の期待値は更新してよい。translator_louis 単体テスト（`TRANSLATOR_LOUIS_CASES`）および eng2Harness の 2 級検証は、いずれもこの方針に従う。
+
+**背景**:
+
+* **出典の未文書化**: `ueb_g2` / `us_g2` の文字列が、どの版の liblouis 出力なのか、点訳のてびき等の文献に基づくのかがリポジトリ内に明記されていなかった。一部ケースには `comment` で「点訳のてびき第3版 第4章」「点訳のてびき その7 1.英語 (1) p.88」や ticket URL があるが、それは用例の参照であり、**期待値そのものの根拠**は書かれていなかった。
+* **liblouis のバージョン依存**: 2級変換は liblouis のテーブル実装に依存する。本家 NVDA が同梱する liblouis を更新すると、同じ原文でも `ueb_g2` / `us_g2` が変わりうる（例: 大文字符・縮約の差）。上記方針により、その場合は **期待値を現行 liblouis の出力に合わせて修正してよい** とする。
+
+### 既知の失敗・スキップ規約（_input / _output / _ueb_g2 / _us_g2）
+
+Harness および eng2Harness では、**アンダースコア付きのキー** を「その検証をスキップする（既知の失敗・未実装）」ために使う。
+
+| キー | 意味 | ランナーでの扱い |
+|------|------|------------------|
+| `input` / `output` | 通常の期待値。検証する。 | translator2 は `input` があるケースのみ実行。translator1 は `output` があるケースのみ実行。 |
+| `_input` / `_output` | 既知の失敗用。検証しない。 | 通常キーが無いため対象外になる。`_output` のみあるケースは run_eng2_grade1 で 1 級検証をスキップ。 |
+| `ueb_g2` / `us_g2` | 通常の期待値（2級）。 | 実装後の 2 級検証で使用。 |
+| `_ueb_g2` / `_us_g2` | 既知の失敗・未実装用。検証しない。 | そのケースの UEB/US 2 級検証をスキップする。 |
+
+**ルール**: 同じ種類で通常キー（`output`）とスキップ用キー（`_output`）の両方がある場合は、**スキップを優先**する（そのケースでは検証しない）。eng2Harness の run_eng2_grade1 では `_output` が存在するケースは 1 級比較を行わない。将来の ueb_g2 / us_g2 検証でも `_ueb_g2` / `_us_g2` が存在するケースはそれぞれスキップする。
 
 ### 設計方針
 
 issue #304 のコメントで合意された3フェーズ構成：
 
-1. **phase1**（現 pass2）: MeCab で読み付与・マスあけ・外国語引用符範囲の判定
-2. **phase2**（新規）: 外国語引用符の中身を liblouis（`en-ueb-g2.ctb` 等）で2級変換
-3. **phase3**（現 pass1）: 日本語カナ・記号・1級英字等を点字パターンに変換
+1. **translator2**: MeCab で読み付与・マスあけ・外国語引用符範囲の判定
+2. **translator_louis**: 外国語引用符 `⠦...⠴` の内側だけを liblouis（`en-ueb-g2.ctb` / `en-us-g2.ctb`）で2級変換
+3. **translator1**: 日本語カナ・記号・1級英字等を点字パターンに変換
 
-各フェーズがポジションマッピングを出力し、最後に統合する。
+2級変換の**範囲**は translator2 の外国語引用符判定と同一である（本ドキュメントの「外国語引用符の判定条件」および「ueb-g2 / us-g2 の範囲判定との一致」を参照）。各フェーズがポジションマッピングを出力し、最後に統合する。
+
+この3フェーズを実装するための **jpSmokeTest 整備とリファクタリングの計画** は `projectDocs/jp/braille-comp6-three-phase-implementation-plan.md` にまとめている（eng2Harness の活用、phase2 単体テストの枠組み、統合テストの追加順序など）。
 
 ### 論点: liblouis と MeCab の併用は妥当か
 
-現在の JP 点訳エンジンは liblouis を完全にバイパスし、MeCab + translator2 + translator1 で自己完結している。#304 の設計では phase2 で liblouis を呼び出すことになり、2つの異なる点字エンジンが1つのパイプラインに共存することになる。
+現在の JP 点訳エンジンは liblouis を完全にバイパスし、MeCab + translator2 + translator1 で自己完結している。#304 の設計では translator_louis で liblouis を呼び出すことになり、2つの異なる点字エンジンが1つのパイプラインに共存することになる。
 
-#### liblouis 併用の利点
+#### 自前実装は現実的でない
 
-* 英語2級点字の縮約ルール（UEB: 約180の縮約語、grade 2 contractions）を自前で実装しなくて済む
-* liblouis は NVDA 本体に同梱されており、追加の依存なしで利用できる
-* UEB / US Grade 2 の両方を liblouis テーブル切り替えだけで対応できる
-* liblouis のテーブルは国際的なコミュニティで保守されており、ルール更新を追従しやすい
-
-#### liblouis 併用のリスク
-
-* **2つのエンジンの結合**: MeCab ベースのポジションマッピングと liblouis のポジションマッピングを境界で統合する必要がある。縮約により文字数が変わる（例: `and` → `⠯`、3文字→1文字）ため、マッピング統合が複雑
-* **translator1 の状態機械との衝突**: translator1 は `⠦...⠴`（外国語引用符）内で `quote_mode` に入り、ASCII を1級点字に変換する。phase2 で2級変換済みの点字パターンが入ると、translator1 が再変換を試みる可能性がある
-* **liblouis のバージョン依存**: 本家 NVDA が liblouis を更新した際に、2級変換結果が変わりテストが壊れる可能性がある
-* **記号処理の二重管理**: 外国語引用符内の括弧・ピリオド等の記号を、liblouis と translator1 のどちらが処理するか決める必要がある
-
-#### liblouis を使わない代替案
-
-translator1 に2級縮約テーブルを組み込む方法もある。利点は自己完結を維持できること。しかし liblouis の `en-ueb-g2.ctb` は4,469行・約1,920ルールで構成され、自前実装は現実的でない：
+liblouis の `en-ueb-g2.ctb` は4,469行・約1,920ルールで構成される：
 
 | ルール種別 | 件数 | 内容 |
 | ---------- | ---- | ---- |
@@ -552,27 +617,61 @@ translator1 に2級縮約テーブルを組み込む方法もある。利点は�
 | `always` | 92 | 常時適用ルール |
 | `match` | 964 | 文脈依存ルール（前後の文脈条件付きマッチ） |
 
-特に `match` ルール964件は liblouis のマルチパスエンジンに依存する文脈条件分岐であり、translator1 の状態機械への移植は非現実的。**liblouis の利用はほぼ必須**と考えられる。
+`match` ルール964件は liblouis のマルチパスエンジンに依存しており、translator1 への移植は非現実的。liblouis は NVDA 本体に同梱済みで追加依存もない。**liblouis の利用はほぼ必須**。
 
-#### translator1 の quote_mode との整合
+#### 併用時の技術的な問題
 
-現在の translator1 は `⠦` を検出して `quote_mode = True` にセットし、その中の ASCII 文字を1級点字に変換している。phase2 で2級変換を行う場合、以下のいずれかが必要：
+liblouis の利用自体は妥当だが、既存パイプラインへの組み込みで以下の問題がある：
 
-* **案A**: phase2 の出力を translator1 に渡す前に、`⠦...⠴` 内の変換済み点字パターン（U+2800〜）をスキップするロジックを translator1 に追加する
-* **案B**: phase2 で `⠦...⠴` ごと最終点字パターンに変換し、translator1 には渡さない（quote_mode の処理を phase2 に移す）
-* **案C**: phase2 の出力を特別なマーカーで囲み、translator1 がマーカー内をパススルーする
+##### ~~問題1: translator1 の quote_mode との衝突~~ → 解決済み
 
-### 未解決の課題
+`_apply_louis_to_foreign_quotes` が `⠦...⠴` 内を liblouis で変換した後、`_louis_cells_to_braille_string`（translator2.py 1773行）が全出力を点字パターン（U+2800〜）またはスペースに正規化する。translator1 に渡る時点で `⠦...⠴` 内に ASCII 文字は存在しないため、`quote_mode` 中の `alpha_symbol_dic`（行428）がマッチする文字はなく、衝突は発生しない。translator1 の変更は不要（~~案A/B/C~~ いずれも不要）。
 
-* **liblouis 併用か自前実装か**: 上記の論点をふまえて方針を決定する必要がある
-* **ステップの順序**: 外国語引用符の適用ルール安定化が先か、phase2 実装が先か。引用符の境界が phase2 の入力を決めるため、先に安定化すべき可能性がある
-* **UEB か US Grade 2 か**: 両方サポートするか、どちらを標準とするか
-* **外国語引用符の適用ルール**: 現行エンジンでは `bread and butter` に引用符なし、`bread and butter.` に引用符ありとなる不整合がある
-* **情報処理点字との境界**: URL やメールアドレスは情報処理点字 `⠠⠦...⠠⠴` で囲まれるが、その中の英単語を2級縮約すべきかどうか
-* **NABCC モードとの互換**: NABCC 有効時は従来と同じ結果になることが必要
+##### ~~問題2: 外国語引用符の適用ルールが不安定~~ → 解消済み
+
+`use_foreign_quotes=True` 時の引用符適用ルールは、従来モードと同じ判定ロジックに合わせて安定化した。括弧付き英語句（例: `NonVisual Desktop Access (NVDA)`）は形態素統合を追加して、`⠦...⠴` の範囲を意図どおりに確定させている。
+
+具体例（issue #304 コメントより）:
+
+```
+# 従来: 引用符なし（外字符で処理）
+bread and butter → ⠰bread ⠰and ⠰butter
+
+# 従来: 引用符あり（ピリオドがあると付く）
+bread and butter. → ⠦bread and butter.⠴
+```
+
+**方針**: 基本方針2（従来の判定ロジックを維持する）により、新モードでも従来と同じルールで外字符・外国語引用符・情報処理点字を判定する。新モードが変えるのは `⠦...⠴` の内側の変換（1級→2級）のみ。
+
+##### ~~問題3: ポジションマッピングの統合~~ → 解消済み
+
+`_apply_louis_to_foreign_quotes` は、liblouis の `inPos` / `outPos` を使って `inpos2` を再構築する方式に更新済み。縮約による文字数変化に対して、従来の線形補間より正確なマッピングを返す。
+
+##### 問題4: liblouis バージョン依存
+
+本家 NVDA が liblouis を更新すると2級変換結果が変わりうる。eng2Harness の期待値は「現行 liblouis の出力を正とする」方針だが、本家更新のたびにテストが壊れる可能性がある。
+
+### 基本方針（2026-02 更新）
+
+1. **従来モードの動作を維持する**: `ja-jp-comp6.utb`（1級のみ）の出力は変更しない。harness.json の一括更新は行わない。`use_foreign_quotes` の変更は新モード（ueb-g2/us-g2）にのみ影響する
+2. **新モードでも従来の判定ロジックを維持する**: 外字符・外国語引用符・情報処理点字の判定は従来モードと同じにする。新モードが変えるのは外国語引用符 `⠦...⠴` の**内側**（1級→2級）のみであり、引用符の外の日本語部分の点訳を不必要に変えない
+3. **新モードの出力は逆変換可能であるべき**: 点字から原文への逆変換が可能な出力を目指す。外国語引用符 `⠦...⠴` の境界が正しくなければ逆変換できないため、引用符ルールの安定化は必須条件
+4. **ポジションマッピングは可能な限り正確であるべき**: `_apply_louis_to_foreign_quotes` は liblouis が返す `inPos`/`outPos` を使ってマッピングを構築する（実装済み）
+5. **2級テーブル選択時でも NABCC を有効にしてよい**（従来モードと同様、NABCC 出力は逆変換困難を許容する）
+
+### 実装完了状況（2026-02）
+
+方針・仕様レベルの論点は決着し、主要実装は完了している。
+
+1. **translator1 の扱い**: `_louis_cells_to_braille_string` が全出力を点字パターンに正規化するため、translator1 側の追加改修は不要（完了）
+2. **引用符ルールの安定化**: `use_foreign_quotes=True` 時の判定を従来ロジックに整合させ、eng2（1級/UEB/US）の不一致を解消（完了）
+3. **ポジションマッピング**: liblouis の `inPos`/`outPos` と MeCab 由来 `inpos2` の統合を実装（完了）
+4. **テスト整備**: `test_eng2_grade1` / `test_eng2_ueb_g2` / `test_eng2_us_g2` / `test_translator_louis` を jpSmokeTest で実行（完了）
 
 ## 関連ファイル
 
+* **計画・テスト整備**:
+  * `projectDocs/jp/braille-comp6-three-phase-implementation-plan.md`（3フェーズ実装のための jpSmokeTest 整備・リファクタリング計画）
 * **実装**:
   * `source/louisHelper.py` (エンジン切り替え)
   * `miscDepsJp/source/synthDrivers/jtalk/translator2.py` (点訳エンジン本体)

@@ -329,13 +329,29 @@ addTable(
 	_("Japanese (Rokuten Kanji) Braille"),
 )
 # BEGIN JP PATCH (Japanese 6 dot computer braille as default for Japanese)
-# Translators: The name of a braille table displayed in the
-# braille settings dialog.
 addTable(
 	"ja-jp-comp6.utb",
 	# Translators: The name of a braille table displayed in the
 	# braille settings dialog.
 	_("Japanese 6 dot computer braille"),
+	contracted=True,
+	source=TableSource.BUILTIN_JP,
+	outputForLangs={"ja"},
+)
+addTable(
+	"ja-jp-comp6-ueb-g2.utb",
+	# Translators: The name of a braille table displayed in the braille settings dialog.
+	# This table uses UEB grade 2 for content inside foreign-language quotation marks.
+	_("Japanese 6 dot computer braille (UEB grade 2 in foreign quotes)"),
+	contracted=True,
+	source=TableSource.BUILTIN_JP,
+	outputForLangs={"ja"},
+)
+addTable(
+	"ja-jp-comp6-us-g2.utb",
+	# Translators: The name of a braille table displayed in the braille settings dialog.
+	# This table uses US English grade 2 for content inside foreign-language quotation marks.
+	_("Japanese 6 dot computer braille (US grade 2 in foreign quotes)"),
 	contracted=True,
 	source=TableSource.BUILTIN_JP,
 	outputForLangs={"ja"},
