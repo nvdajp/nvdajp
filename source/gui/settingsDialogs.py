@@ -12,6 +12,7 @@
 
 import copy
 import logging
+import math
 import os
 import re
 import typing
@@ -2826,6 +2827,23 @@ class MathSettingsPanel(SettingsPanel):
 			# If the selection is invalid, return the first option's value
 			return list(enumClass)[0].value
 
+	def _getPauseFactorSliderValue(
+		self,
+		pauseFactor: int,
+	) -> int:
+		"""Convert a pause factor value to the slider scale used in the UI."""
+		if pauseFactor <= 0:
+			return 0
+		from mathPres.MathCAT.preferences import PauseFactor
+
+		sliderValue: int = round(
+			math.log(
+				pauseFactor / PauseFactor.SCALE.value,
+				PauseFactor.LOG_BASE.value,
+			),
+		)
+		return max(0, min(14, sliderValue))
+
 	def makeSettings(self, settingsSizer: wx.BoxSizer) -> None:
 		from mathPres.MathCAT import localization, preferences
 		from mathPres.MathCAT.preferences import (
@@ -2937,7 +2955,9 @@ class MathSettingsPanel(SettingsPanel):
 			maxValue=14,
 		)
 		self.bindHelpEvent("MathSpeechPauseFactor", self.pauseFactorSlider)
-		self.pauseFactorSlider.SetValue(config.conf["math"]["speech"]["pauseFactor"])
+		pauseFactorValue: int = config.conf["math"]["speech"]["pauseFactor"]
+		sliderValue: int = self._getPauseFactorSliderValue(pauseFactorValue)
+		self.pauseFactorSlider.SetValue(sliderValue)
 
 		# Translators: label for check box controlling a beep sound when math speech starts/ends
 		speechSoundText = pgettext("math", "Beep at the beginning and end of math")
@@ -3121,12 +3141,20 @@ class MathSettingsPanel(SettingsPanel):
 			self.speechAmountList.GetSelection(),
 		)
 		mathConf["speech"]["mathRate"] = self.relativeSpeedSlider.GetValue()
-		pfSlider: int = self.pauseFactorSlider.GetValue()
+		pauseFactorSliderValue: int = self.pauseFactorSlider.GetValue()
 		pauseFactor: int = (
 			0
-			if pfSlider == 0
-			else round(PauseFactor.SCALE.value * math.pow(PauseFactor.LOG_BASE.value, pfSlider))
+			if pauseFactorSliderValue == 0
+			else round(
+				PauseFactor.SCALE.value
+				* math.pow(
+					PauseFactor.LOG_BASE.value,
+					pauseFactorSliderValue,
+				),
+			)
 		)  # avoid log(0)
+		if pauseFactor > 1000:
+			pauseFactor = 1000
 		mathConf["speech"]["pauseFactor"] = pauseFactor
 		if self.speechSoundCheckBox.GetValue():
 			mathConf["speech"]["speechSound"] = "Beep"
