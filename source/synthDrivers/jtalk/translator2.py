@@ -1254,6 +1254,7 @@ def morphs_to_string(li, inbuf, logwrite):
 
 RE_MB_ALPHA_NUM_SPACE = re.compile(r"^[0-9A-Za-z\- ０-９Ａ-Ｚａ-ｚ　]+$")
 RE_ASCII_CHARS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; ]+$")
+RE_ASCII_AND_SYMBOLS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; \u00d7]+$")
 RE_INFORMATION = re.compile(r"^[A-Za-z0-9\+\@\/\#\$\%\&\*\;\.\<\>\-\_\{\}\[\] ]+$")
 RE_GAIJI = re.compile(r"^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]+$")
 RE_KATAKANA = re.compile("^[ァ-ヾ]+$")
@@ -1548,6 +1549,11 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 				mo.output = mo.nhyouki
 			elif RE_HIRAGANA.match(mo.nhyouki):
 				mo.output = "".join([chr(ord(c) + 0x60) for c in mo.nhyouki])
+			elif RE_ASCII_AND_SYMBOLS.match(mo.nhyouki):
+				# Fallback for ASCII letters/digits mixed with non-ASCII symbols
+				# such as × (U+00D7): e.g. "a×b×c", "SEO×"
+				# See https://github.com/nvdajp/nvdajp/issues/534
+				mo.output = mo.nhyouki
 
 	# 単語が小文字カタカナのみであれば修正
 	# 表記は修正せず should_separate() で小文字として判定される
