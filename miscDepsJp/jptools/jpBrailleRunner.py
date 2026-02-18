@@ -5,7 +5,7 @@
 # See the file COPYING for more details.
 # Copyright (C) 2013 Masataka.Shinke, Takuya Nishimoto
 # translator2: MeCab・マスあけ・引用符範囲（パイプライン1番目）
-# translator1: カナと記号のテスト（パイプライン3番目）。2番目は translator_louis（未実装）
+# translator1: カナと記号のテスト（パイプライン3番目）。2番目は translator_louis
 
 import datetime
 import io
