@@ -290,11 +290,22 @@ if (-not $isCI) {
 }
 
 if (-not $SkipOverlay) {
-    # In CI, always run jtalkSync so the dictionary is built with custom entries (一人→ヒトリ etc.).
-    # Skipping when DLL exists was causing result_mismatch in smoke tests because the cached
-    # dictionary could be missing custom readings (see projectDocs/jp/tab-character-analysis.md).
+    # In CI, force dictionary rebuild so custom entries (一人→ヒトリ etc.) are included.
+    # jtalkSync skips rebuild when DIC_VERSION and DIC_CODEPAGE exist in cache; removing
+    # them forces a fresh build via make_jdic.py (see projectDocs/jp/tab-character-analysis.md).
     if ($isCI) {
-        Write-Host "CI: Running jtalkSync to ensure dictionary includes custom entries..."
+        $dicDir = Join-Path $repoRoot "source\synthDrivers\jtalk\dic"
+        $dicVersion = Join-Path $dicDir "DIC_VERSION"
+        $dicCodepage = Join-Path $dicDir "DIC_CODEPAGE"
+        if (Test-Path $dicVersion) {
+            Remove-Item $dicVersion -Force
+            Write-Host "CI: Removed DIC_VERSION to force dictionary rebuild"
+        }
+        if (Test-Path $dicCodepage) {
+            Remove-Item $dicCodepage -Force
+            Write-Host "CI: Removed DIC_CODEPAGE to force dictionary rebuild"
+        }
+        Write-Host "CI: Running jtalkSync to build dictionary with custom entries..."
         & "$repoRoot\scons.bat" jtalkSync
         if ($LASTEXITCODE -ne 0) {
             Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"

@@ -117,6 +117,9 @@ jobs:
     - name: Prepare JTalk (JP-specific)
       shell: cmd
       run: chcp 932 >nul 2>&1 && scons jtalkPrep jtalkSync %sconsArgs% %sconsCores%
+    - name: Verify JTalk dictionary
+      shell: cmd
+      run: chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
     # END JP PATCH
     - name: Prepare source code
       shell: cmd

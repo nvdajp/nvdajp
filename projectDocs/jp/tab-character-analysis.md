@@ -641,3 +641,13 @@ PR 636 のCIにおいて、再び Test #1 (漢数字「一人」の読み) お�
 * **検証ロジックの強化**: `jtalkSync` 実行時に `DIC_CODEPAGE` ファイルの存在と内容を確認。「932」でない場合（またはファイルがない場合）は、`sys.dic` が存在しても強制的に再ビルドを実行。
 
 これにより、キャッシュ汚染の影響を受けずに常に正しいコードページで辞書が生成されるようになりました。
+
+### 追加対策 (2026-02)
+
+jpSmokeTests ジョブでキャッシュ復元後に辞書が「有効」と判断され再ビルドがスキップされるケースを防ぐため、`runJpSmokeTests.ps1` の CI 分岐で **DIC_VERSION と DIC_CODEPAGE を削除してから jtalkSync を実行**するようにした。これにより jtalkSync が辞書を強制的に再ビルドし、custom エントリ（一人→ヒトリ等）を含む辞書でテストが実行される。
+
+**辞書妥当性検証スクリプト**: `jptools/verifyJtalkDictionary.ps1` は、translator2 の出力（一人→ヒトリ、二人→フタリ、おはようございます→オハヨー ゴザイマス）を検証する。buildNVDA の Prepare JTalk 直後に実行し、不正な辞書がキャッシュに保存されるのを防ぐ。ローカルでは `.\jptools\verifyJtalkDictionary.ps1` で実行可能（事前に `scons jtalkSync` を実行すること）。実体は `miscDepsJp/jptools/verify_dic.py`。
+
+### 再発時のクイック参照
+
+`projectDocs/jp/archive/troubleshooting_runjp_smoke_tests.md` の「result_mismatch の再発防止チェックリスト」を参照。
