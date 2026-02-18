@@ -323,6 +323,11 @@ jobs:
       uses: astral-sh/setup-uv@v7
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
+    # BEGIN JP PATCH (dictionary excluded from cache; build for Japanese braille unit tests)
+    - name: Prepare JTalk for unit tests (JP-specific)
+      shell: cmd
+      run: chcp 932 >nul 2>&1 && scons.bat jtalkPrep jtalkSync
+    # END JP PATCH
     - name: Run unit tests
       run: ci/scripts/tests/unitTests.ps1
     - name: Replace relative paths in unit test results
