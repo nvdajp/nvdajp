@@ -701,20 +701,21 @@ elif "utf-8" in version_text or "utf8" in version_text:
 * **検証の順序**: "nvdajp" チェックを utf-8 チェックより先に行う。nvdajp が無い場合は即座に再ビルド対象とする。
 * **verify_dic.py の役割**: 実行時検証として、translator2 の出力（一人→ヒトリ 等）を確認する。ビルド時の `_dic_state` は「どの辞書を再ビルドするか」の判定、verify_dic は「生成された辞書が正しいか」の検証と役割が異なる。
 
-### 追加対策: buildNVDA での辞書強制再ビルド (2026-02)
+### 追加対策: 辞書をキャッシュから除外 (2026-02)
 
-nvdajp チェックのみでは解消しなかったため、`runJpSmokeTests.ps1` と同様のパターンを buildNVDA にも適用した。Prepare JTalk の直前に **DIC_VERSION と DIC_CODEPAGE を削除**するステップを追加し、jtalkSync が常に make_jdic で辞書を再ビルドするようにした。キャッシュや部分ビルド状態による不整合を防ぐ。
+nvdajp チェックやマーカー削除では根本解決しなかったため、**辞書をキャッシュに含めない**方針に変更した。キャッシュ保存直前に `source/synthDrivers/jtalk/dic` を削除し、復元ジョブでは辞書が存在しない状態から jtalkSync で毎回ビルドする。これにより、古い辞書がキャッシュ経由で伝播することを防ぐ。
 
 ```yaml
-# .github/workflows/testAndPublish.yml
-- name: Force JTalk dictionary rebuild (JP-specific)
+# .github/workflows/testAndPublish.yml（Cache scons build の直前に追加）
+- name: Exclude JTalk dictionary from cache (JP-specific)
   run: |
     $dicDir = "source\synthDrivers\jtalk\dic"
-    @("DIC_VERSION", "DIC_CODEPAGE") | ForEach-Object {
-      $f = Join-Path $dicDir $_
-      if (Test-Path $f) { Remove-Item $f -Force; ... }
+    if (Test-Path $dicDir) {
+      Remove-Item -Path $dicDir -Recurse -Force
     }
 ```
+
+復元ジョブ（jpSmokeTests 等）はキャッシュに辞書が含まれないため、jtalkSync を実行して辞書をビルドする。runJpSmokeTests.ps1 は既に jtalkSync を呼ぶため、そのままで動作する。
 
 ### 参照
 

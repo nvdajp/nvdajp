@@ -9,11 +9,11 @@
 | 原因 | 対策 | 参照 |
 |------|------|------|
 | 辞書ビルド時コードページ不一致 | buildNVDA の Prepare JTalk で `chcp 932` を実行してから jtalkSync | tab-character-analysis.md §CI環境での辞書ビルド時 |
-| CI キャッシュ汚染 | jtalkSync で DIC_CODEPAGE を検証、不正なら強制再ビルド。buildNVDA と jpSmokeTests の両方で DIC_VERSION/DIC_CODEPAGE 削除して辞書再ビルドを強制 | tab-character-analysis.md §CIキャッシュ汚染 |
+| CI キャッシュ汚染 | 辞書をキャッシュから除外（保存直前に dic 削除）。復元ジョブは jtalkSync で毎回ビルド | tab-character-analysis.md §CIキャッシュ汚染、§nmake 辞書の意図せぬ使用 |
 | make_jdic 由来でない辞書の誤判定 | jtalkSync の `_dic_state` で DIC_VERSION に "nvdajp" が含まれることを必須とする（make_jdic のみが DIC_VERSION を書き込む） | tab-character-analysis.md §nmake 辞書の意図せぬ使用 |
 
 **確認すること**:
-1. `.github/workflows/testAndPublish.yml` の buildNVDA で Prepare JTalk の直前に「Force JTalk dictionary rebuild」ステップがあり、DIC_VERSION/DIC_CODEPAGE を削除しているか
+1. `.github/workflows/testAndPublish.yml` の buildNVDA で「Cache scons build」の直前に「Exclude JTalk dictionary from cache」ステップがあり、`source/synthDrivers/jtalk/dic` を削除しているか（辞書をキャッシュに含めないため）
 2. `.github/workflows/testAndPublish.yml` の Prepare JTalk に `chcp 932 >nul 2>&1 &&` が付いているか
 3. `jptools/scons_jp.py` の `_dic_state` で DIC_CODEPAGE をチェックし、`"932"` でなければ再ビルドするロジックがあるか
 4. `jptools/scons_jp.py` の `_dic_state` で DIC_VERSION に "nvdajp" が含まれることをチェックしているか（make_jdic 由来の辞書のみ有効と判定するため）
