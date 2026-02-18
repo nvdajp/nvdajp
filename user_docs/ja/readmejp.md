@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2025年8月17日
+* 最終更新日：2026年2月18日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -194,13 +194,21 @@ NVDA 日本語版は、点字ディスプレイの出力テーブルに「日本
 
 「コンピューター点字(NABCC)を使用」がチェックされていれば、カーソル位置に関わらずアルファベット、数字、記号をNABCCで出力します。
 
+外国語引用符（236 356 の点字で囲まれた部分）内の英文は、英語2級点字（短縮形）で点訳できます。
+
+出力テーブル「日本語6点情報処理点字(外国語引用符内はUEB2級)」「日本語6点情報処理点字(外国語引用符内はUS2級)」を選ぶと、引用符内だけ UEB 2級またはアメリカ英語2級が使われ、それ以外は従来どおり日本語6点情報処理点字になります（[issue #304](https://github.com/nvdajp/nvdajp/issues/304)、[PR #639](https://github.com/nvdajp/nvdajp/pull/639)）。
+
 #### 入力テーブル「日本語6点情報処理点字」と「日本語6点漢点字(入力用)」
 
 NVDA 日本語版は、実験的な機能として、点字の文字入力テーブルに「日本語6点情報処理点字」「日本語6点漢点字(入力用)」を追加しています。英語の2級点字と同じような操作で文字を変換できます。ただし、基本的な文字にしか対応しておらず、記号などの入力はできません。
 
-#### 出力テーブル「日本語漢点字」
+#### 出力テーブル「日本語漢点字」と「日本語(6点漢字)」
 
-出力テーブル「日本語漢点字」が NVDA 2022.1 本家版に追加され、NVDA 2022.1jp でも利用可能になりました。これは本家版の点訳エンジン Liblouis を使用する漢点字の出力テーブルです。
+出力テーブル「日本語漢点字」が NVDA 2022.1 本家版に追加され、NVDA 2022.1jp でも利用可能になりました。これは本家版の点訳エンジン Liblouis を使用する漢点字（文芸点字）の出力テーブルです。
+
+NVDA 2026.1 本家版では、Liblouis に「日本語(6点漢字)」テーブルが追加され、NVDA 2026.1jp でも利用できます。
+
+これらは、いずれも Liblouis による漢字点字の出力用で、表記体系が異なります。
 
 ### NVDA設定ダイアログ「キーボード」カテゴリ
 
@@ -284,13 +292,13 @@ Tiflotecnia が販売する NVDA のアドオン音声エンジンです。
 
 ### KCトーカー
 
-ナレッジクリエーションが販売する KCトーカー は NVDA のアドオンで、聞き取りやすい日本語合成音声に加えて、専用のユーザー辞書エディタも提供しています。
+ナレッジクリエーションが販売する KCトーカー は NVDA のアドオンで、聞き取りやすい日本語合成音声に加えて、専用のユーザー辞書エディタも提供しています。64ビット版 NVDA への対応については販売元へお問い合わせください。
 
 * [KCトーカー](http://www.knowlec.com/?page_id=2700)
 
 ### High-speed Synthesizer For NVDA
 
-AccessibleToolsLaboratory (ACT Laboratory) が販売する High-speed Synthesizer For NVDA (HISS) は超高速読み上げに対応したNVDA用の日本語音声エンジンアドオンです。
+AccessibleToolsLaboratory (ACT Laboratory) が販売する High-speed Synthesizer For NVDA (HISS) は超高速読み上げに対応したNVDA用の日本語音声エンジンアドオンです。64ビット版 NVDA への対応については販売元へお問い合わせください。
 
 * [High-speed Synthesizer For NVDA](https://actlab.org/software/HISS)
 
@@ -798,6 +806,21 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 
 ## バージョンごとの変更点
+
+### 2026.1jp の変更点
+
+* 64ビット対応版 NVDA の最初のバージョンです。
+* [2026.1jp の変更点](https://github.com/nvdajp/nvdajp/milestone/75?closed=1)
+* [本家版 2026.1 の翻訳](https://github.com/nvdajp/nvdajp/milestone/74?closed=1)
+
+### 2025.3.1jp の変更点
+
+* [2025.3.1jp の変更点](https://github.com/nvdajp/nvdajp/milestone/76?closed=1)
+
+### 2025.3jp の変更点
+
+* [2025.3jp の変更点](https://github.com/nvdajp/nvdajp/milestone/73?closed=1)
+* [本家版 2025.3 の翻訳](https://github.com/nvdajp/nvdajp/milestone/72?closed=1)
 
 ### 2025.2jp の変更点
 

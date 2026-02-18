@@ -19831,11 +19831,11 @@ msgstr "日本語6点情報処理点字"
 
 #: brailleTables/__tables.py:346 brailleTables.py:533
 msgid "Japanese 6 dot computer braille (UEB grade 2 in foreign quotes)"
-msgstr "日本語6点情報処理点字（外国語引用符内はUEB 2級）"
+msgstr "日本語6点情報処理点字(外国語引用符内はUEB2級)"
 
 #: brailleTables/__tables.py:354 brailleTables.py:540
 msgid "Japanese 6 dot computer braille (US grade 2 in foreign quotes)"
-msgstr "日本語6点情報処理点字（外国語引用符内はUS 2級）"
+msgstr "日本語6点情報処理点字(外国語引用符内はUS2級)"
 
 #: braille.py:142
 msgid "Japanese 6 dot kanji braille"
