@@ -701,7 +701,23 @@ elif "utf-8" in version_text or "utf8" in version_text:
 * **検証の順序**: "nvdajp" チェックを utf-8 チェックより先に行う。nvdajp が無い場合は即座に再ビルド対象とする。
 * **verify_dic.py の役割**: 実行時検証として、translator2 の出力（一人→ヒトリ 等）を確認する。ビルド時の `_dic_state` は「どの辞書を再ビルドするか」の判定、verify_dic は「生成された辞書が正しいか」の検証と役割が異なる。
 
+### 追加対策: buildNVDA での辞書強制再ビルド (2026-02)
+
+nvdajp チェックのみでは解消しなかったため、`runJpSmokeTests.ps1` と同様のパターンを buildNVDA にも適用した。Prepare JTalk の直前に **DIC_VERSION と DIC_CODEPAGE を削除**するステップを追加し、jtalkSync が常に make_jdic で辞書を再ビルドするようにした。キャッシュや部分ビルド状態による不整合を防ぐ。
+
+```yaml
+# .github/workflows/testAndPublish.yml
+- name: Force JTalk dictionary rebuild (JP-specific)
+  run: |
+    $dicDir = "source\synthDrivers\jtalk\dic"
+    @("DIC_VERSION", "DIC_CODEPAGE") | ForEach-Object {
+      $f = Join-Path $dicDir $_
+      if (Test-Path $f) { Remove-Item $f -Force; ... }
+    }
+```
+
 ### 参照
 
 * CI 失敗例: <https://github.com/nvdajp/nvdajp/actions/runs/22133746699/job/63980046473>
-* 実装: `jptools/scons_jp.py` の `_dic_state()`
+* 同様の失敗（nvdajp チェック追加後）: <https://github.com/nvdajp/nvdajp/actions/runs/22134322162>
+* 実装: `jptools/scons_jp.py` の `_dic_state()`、`.github/workflows/testAndPublish.yml`
