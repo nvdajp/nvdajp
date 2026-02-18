@@ -10,13 +10,40 @@ import mecabRunner
 
 
 class JpBrailleTests(unittest.TestCase):
-	def test_pass1(self):
-		count, outfile = jpBrailleRunner.pass1()
+	def test_translator2(self):
+		"""translator2（MeCab・マスあけ・引用符範囲）。パイプライン1番目。"""
+		count, outfile = jpBrailleRunner.run_translator2()
 		self.assertEqual(count, 0)
 
-	def test_pass2(self):
-		count, outfile = jpBrailleRunner.pass2()
+	def test_translator1(self):
+		"""translator1（カナ→点字）。パイプライン3番目。"""
+		count, outfile = jpBrailleRunner.run_translator1()
 		self.assertEqual(count, 0)
+
+	def test_eng2_grade1(self):
+		"""eng2Harness の1級点字を検証（原文→translator2→translator1 と output 比較）。"""
+		count, outfile = jpBrailleRunner.run_eng2_grade1()
+		self.assertEqual(count, 0, "eng2 grade1: %d error(s). see %s" % (count, outfile))
+
+	def test_translator_louis(self):
+		"""translator_louis 単体: liblouis en-ueb-g2.ctb で英文を UEB G2 に変換。louis 未ビルド時はスキップ。"""
+		count, outfile = jpBrailleRunner.run_translator_louis()
+		self.assertEqual(count, 0, "translator_louis: %d error(s). see %s (scons source required)" % (count, outfile))
+
+	def test_eng2_ueb_g2(self):
+		"""eng2Harness の UEB 2級点字を検証（原文→translator2(louis)→translator1 と ueb_g2 比較）。louis 未ビルド時はスキップ。"""
+		count, outfile = jpBrailleRunner.run_eng2_ueb_g2()
+		self.assertEqual(count, 0, "eng2_ueb_g2: %d error(s). see %s" % (count, outfile))
+
+	def test_eng2_us_g2(self):
+		"""eng2Harness の US 2級点字を検証（原文→translator2(louis en-us-g2)→translator1 と us_g2 比較）。louis 未ビルド時はスキップ。"""
+		count, outfile = jpBrailleRunner.run_eng2_us_g2()
+		self.assertEqual(count, 0, "eng2_us_g2: %d error(s). see %s" % (count, outfile))
+
+	def test_eng2_nabcc_regression(self):
+		"""nabcc+2級併用の回帰テスト。nabcc=True で louis 2級パイプラインを実行し、クラッシュせず正常終了することを検証。louis 未ビルド時はスキップ。"""
+		count, outfile = jpBrailleRunner.run_eng2_nabcc_regression()
+		self.assertEqual(count, 0, "eng2_nabcc_regression: %d error(s). see %s" % (count, outfile))
 
 
 class MecabTests(unittest.TestCase):

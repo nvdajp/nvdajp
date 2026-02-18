@@ -9569,7 +9569,7 @@
         "comment": "点訳のてびき第3版 第4章 その2 1.",
         "text": "「住所」「氏名」「電話番号」を書いてください。",
         "input": "「ジューショ」 「シメイ」 「デンワ バンゴー」ヲ カイテ クダサイ。",
-        "_output": "⠤⠘⠹⠒⠈⠺⠤ ⠤⠳⠿⠃⠤ ⠤⠐⠟⠴⠄ ⠐⠥⠴⠐⠪⠒⠤⠔ ⠡⠃⠟ ⠩⠐⠕⠱⠃⠲"
+        "output": "⠤⠘⠹⠒⠈⠺⠤ ⠤⠳⠿⠃⠤ ⠤⠐⠟⠴⠄ ⠐⠥⠴⠐⠪⠒⠤⠔ ⠡⠃⠟ ⠩⠐⠕⠱⠃⠲"
     },
     {
         "note": "==== ２．カッコ類 ===="
@@ -10296,7 +10296,7 @@
     {
         "text": "ああ…こまった。",
         "input": "アア...コマッタ。",
-        "_output": "⠁⠁⠲⠲⠲⠪⠵⠂⠕⠲",
+        "output": "⠁⠁⠲⠲⠲⠪⠵⠂⠕⠲",
         "_inpos2": [
             0,
             1,
@@ -15962,19 +15962,42 @@
         "input": "SDGs"
     },
     {
-        "comment": "https://github.com/nvdajp/nvdajp/issues/200",
+        "comment": "https://github.com/nvdajp/nvdajp/issues/200 https://github.com/nvdajp/nvdajp/issues/534",
         "text": "SDGs×",
-        "_input": "SDGs×"
+        "input": "SDGs×"
     },
     {
-        "comment": "https://github.com/nvdajp/nvdajp/issues/200",
+        "comment": "https://github.com/nvdajp/nvdajp/issues/200 https://github.com/nvdajp/nvdajp/issues/534",
         "text": "SDGs×iPad",
-        "_input": "SDGs×iPad"
+        "input": "SDGs×iPad"
     },
     {
-        "comment": "https://github.com/nvdajp/nvdajp/issues/200",
+        "comment": "https://github.com/nvdajp/nvdajp/issues/200 https://github.com/nvdajp/nvdajp/issues/534",
         "text": "SDGs×iPadと点字表示しない",
-        "_input": "SDGs×iPad ト テンジ ヒョージ シナイ"
+        "input": "SDGs×iPadト テンジ ヒョージ シナイ"
+    },
+    {
+        "comment": "×を含む英字列が点字表示されない https://github.com/nvdajp/nvdajp/issues/534"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajp/issues/534 a×bは表示されるがa×b×cは表示されない",
+        "text": "a×b",
+        "input": "a×b"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajp/issues/534",
+        "text": "a×b×c",
+        "input": "a×b×c"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajp/issues/534",
+        "text": "Copilot×Excel×Python",
+        "input": "Copilot×Excel×Python"
+    },
+    {
+        "comment": "https://github.com/nvdajp/nvdajp/issues/507 SEO×が表示されない",
+        "text": "SEO×生成AI",
+        "input": "SEO× セイセイAI"
     },
     {
         "comment": "https://github.com/nvdajp/nvdajp/issues/260",

@@ -152,8 +152,8 @@ else:
     $env:JP_SMOKE_TEST_INDICES = $originalIdx.ToString()
     # The JpBrailleTests.test_pass2 unittest reads JP_SMOKE_TEST_INDICES to select
     # which individual test case to run, replacing the old pytest-style
-    # test_pass2_by_index helper. No additional per-index test method is required.
-    $unittestOutput = uv run python -m unittest miscDepsJp.jptools.test.JpBrailleTests.test_pass2 -v 2>&1
+    # test_translator2_by_index helper. No additional per-index test method is required.
+    $unittestOutput = uv run python -m unittest miscDepsJp.jptools.test.JpBrailleTests.test_translator2 -v 2>&1
     $exitCode = $LASTEXITCODE
 
     $result = [PSCustomObject]@{

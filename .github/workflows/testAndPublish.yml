@@ -337,8 +337,10 @@ jobs:
       with:
         name: JP smoke test results (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: |
-          __h1output.txt
-          __h2output.txt
+          __translator2output.txt
+          __translator1output.txt
+          __eng2output.txt
+          __translator_louis_output.txt
           jpSmokeTests.log
           source/synthDrivers/jtalk/mecab_debug.log
   # END JP PATCH

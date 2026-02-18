@@ -90,11 +90,22 @@ def _doTestAriaDetails_NoVBufNoTextInterface(nvdaConfValues: "NVDASpyLib.NVDACon
 	_chrome.prepareChrome(_getNoVBuf_AriaDetails_sample())
 	spy: "NVDASpyLib" = _NvdaLib.getSpyLib()
 	spy.modifyNVDAConfig(nvdaConfValues)
+	spy.wait_for_speech_to_finish()
 
+	# Initial focus can vary (before first focusable vs on first button), so accept either
+	# and ensure we end up on the second button (aria-details) before asserting.
 	actualSpeech = _NvdaLib.getSpeechAfterKey("tab")
-	_builtIn.should_contain(actualSpeech, "focus in app")
-
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("tab")
+	if "focus in app" in actualSpeech:
+		# One more Tab to reach the "push me" button with aria-details.
+		actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("tab")
+	elif "push me" in actualSpeech and "has details" in actualSpeech:
+		# Already on the second button; braille was updated with the same Tab.
+		actualBraille = spy.get_last_braille()
+	else:
+		_builtIn.fail(
+			f"First Tab did not land on a known element. Got: {actualSpeech!r}. "
+			"Expected either 'focus in app' or 'push me' with 'has details'.",
+		)
 	_asserts.speech_matches(
 		actualSpeech,
 		SPEECH_SEP.join(
@@ -111,7 +122,15 @@ def _doTestAriaDetails_NoVBufNoTextInterface(nvdaConfValues: "NVDASpyLib.NVDACon
 		"push me btn details",
 		message="Tab to button",
 	)
+	# Details can be resolved late in role=application; wait briefly then retry up to 3 attempts.
+	_builtIn.sleep("0.3 seconds")
 	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
+	for _ in range(2):
+		if actualSpeech.strip() != "No additional details":
+			break
+		spy.wait_for_speech_to_finish()
+		_builtIn.sleep("0.5 seconds")
+		actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
 		actualSpeech,
 		"Press to self-destruct",

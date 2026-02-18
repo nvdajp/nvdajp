@@ -527,6 +527,20 @@ addTable(
 	contracted=True,
 	source=TableSource.BUILTIN_JP,
 )
+# nvdajp: 外国語引用符内を UEB 2級で変換する仮想テーブル（選択肢として追加）
+addTable(
+	"ja-jp-comp6-ueb-g2.utb",
+	_("Japanese 6 dot computer braille (UEB grade 2 in foreign quotes)"),
+	contracted=True,
+	source=TableSource.BUILTIN_JP,
+)
+# nvdajp: 外国語引用符内を US 2級で変換する仮想テーブル（選択肢として追加）
+addTable(
+	"ja-jp-comp6-us-g2.utb",
+	_("Japanese 6 dot computer braille (US grade 2 in foreign quotes)"),
+	contracted=True,
+	source=TableSource.BUILTIN_JP,
+)
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.
 addTable("ka-in-g1.utb", _("Kannada grade 1"), inputForLangs={"kn"}, outputForLangs={"kn"})
