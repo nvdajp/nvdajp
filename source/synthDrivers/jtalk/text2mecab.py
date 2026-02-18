@@ -131,7 +131,6 @@ def text2mecab(txt: str, CODE_: str = CODE) -> bytes:
 	text2mecab_setup()
 	txt = unicodedata.normalize("NFKC", txt)
 	txt = text2mecab_convert(txt)
-	# BEGIN JP PATCH (assert suspicious patterns before encoding)
 	# Detect mixed ASCII/non-ASCII or unusual whitespace patterns that may trigger crashes.
 	assert "\t" not in txt, "text2mecab: unexpected tab after conversion"
 	assert "\r" not in txt and "\n" not in txt, "text2mecab: unexpected newline after conversion"
@@ -146,5 +145,4 @@ def text2mecab(txt: str, CODE_: str = CODE) -> bytes:
 	# Detect ASCII control characters (excluding space) after conversion.
 	ctrl_chars = [c for c in txt if ord(c) < 0x20 and c != " "]
 	assert not ctrl_chars, f"text2mecab: ASCII control chars detected: {ctrl_chars!r}"
-	# END JP PATCH
 	return txt.encode(CODE_, "ignore")

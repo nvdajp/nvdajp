@@ -168,18 +168,36 @@ def translate(
 	except ModuleNotFoundError:
 		log.warning("Japanese translation module not found.")
 		jpTranslate = None
-	if jpTranslate and tableList and len(tableList) > 0 and tableList[0].endswith("ja-jp-comp6.utb"):
-		log.debug(text)
-		nabcc = config.conf["braille"]["expandAtCursor"]
-		try:
-			braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
-				text,
-				cursorPos=cursorPos or 0,
-				nabcc=nabcc,
-			)
-		except Exception:
-			raise
+	# BEGIN JP PATCH: テーブル選択で従来(1級) vs 外国語引用符内 UEB/US 2級を切り替え。
+	if jpTranslate and tableList and len(tableList) > 0:
+		first_table = tableList[0]
+		if first_table.endswith("ja-jp-comp6-ueb-g2.utb"):
+			louis_table_list = ["en-ueb-g2.ctb"]
+		elif first_table.endswith("ja-jp-comp6-us-g2.utb"):
+			louis_table_list = ["en-us-g2.ctb"]
+		elif first_table.endswith("ja-jp-comp6.utb"):
+			louis_table_list = None  # 従来: 1級のみ
+		else:
+			first_table = None
+			louis_table_list = None
+		if first_table is not None:
+			log.debug(text)
+			nabcc = config.conf["braille"]["expandAtCursor"]
+			try:
+				braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
+					text,
+					cursorPos=cursorPos or 0,
+					nabcc=nabcc,
+					louisTranslate=louis.translate if louis_table_list else None,
+					louisTableList=louis_table_list,
+					use_foreign_quotes=True if louis_table_list else False,
+				)
+			except Exception:
+				raise
 	else:
+		first_table = None
+	# END JP PATCH
+	if first_table is None:
 		braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(
 			tableList,
 			text,

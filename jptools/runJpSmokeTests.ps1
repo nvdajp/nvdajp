@@ -9,27 +9,43 @@
     4. Invokes "uv run python -m unittest miscDepsJp.jptools.test" (or specific test classes/methods).
 
     Use -SkipInstall or -SkipOverlay if you already prepared the environment.
-    Use -TestFilter to run specific tests (e.g., "JpBrailleTests.test_pass2" or "JtalkTests").
+    Use -TestFilter to run specific tests (e.g., "JpBrailleTests.test_translator2", "test_eng2_grade1", "test_translator_louis", or "JtalkTests").
     Use -TestIndices to run specific test cases by index (e.g., "11" or "11,12,13").
 
     In CI environments (detected via GITHUB_ACTIONS environment variable), additional CI-specific
     processing is performed (cache checking, GitHub Actions step summary, etc.).
 
 .EXAMPLE
-    .\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JpBrailleTests.test_pass2"
-    Runs only the pass2 test (MeCab-related test).
+    .\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JpBrailleTests.test_translator2"
+    Runs only the translator2 test (MeCab-related test).
 
 .EXAMPLE
-    .\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_pass2_tab_characters"
+    .\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_translator2_tab_characters"
     Runs only test cases containing tab characters (useful for debugging tab character issues).
 
 .EXAMPLE
-    .\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_pass2_no_tab_characters"
+    .\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_translator2_no_tab_characters"
     Runs only test cases NOT containing tab characters (useful for testing without tab character issues).
 
 .EXAMPLE
-    .\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_pass2_by_index" -TestIndices "11"
+    .\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_translator2_by_index" -TestIndices "11"
     Runs only test case at index 11 (0-based).
+
+.EXAMPLE
+    .\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "test_eng2_grade1"
+    Runs only eng2Harness 1-level braille test (translator2 → translator1 vs output).
+
+.EXAMPLE
+    .\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_translator_louis"
+    Runs only translator_louis unit test (liblouis UEB G2). Requires scons source.
+
+.EXAMPLE
+    .\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_eng2_ueb_g2"
+    Runs only eng2Harness UEB 2-level test (translator2+louis → translator1 vs ueb_g2). Requires scons source.
+
+.EXAMPLE
+    .\runJpSmokeTests.ps1 -SkipInstall -TestFilter "test_eng2_us_g2"
+    Runs only eng2Harness US 2-level test (translator2+louis en-us-g2 → translator1 vs us_g2). Requires scons source.
 #>
 [CmdletBinding()]
 param(
@@ -329,21 +345,26 @@ Write-Host "Running JP braille/JTalk smoke tests (filter: $TestFilter)..."
 # unittest can run test.py directly with module path notation
 # Examples:
 #   "JpBrailleTests" -> miscDepsJp.jptools.test.JpBrailleTests
-#   "JpBrailleTests.test_pass2" -> miscDepsJp.jptools.test.JpBrailleTests.test_pass2
+#   "JpBrailleTests.test_translator2" -> miscDepsJp.jptools.test.JpBrailleTests.test_translator2
+#   "test_eng2_grade1" / "test_translator_louis" -> JpBrailleTests.<method>
 #   "JpBrailleTests or JtalkTests" -> run both classes separately
 # Default: run JpBrailleTests and JtalkTests
 $testModule = "miscDepsJp.jptools.test"
+$jpBrailleMethodNames = @("test_translator2", "test_translator1", "test_eng2_grade1", "test_translator_louis", "test_eng2_ueb_g2", "test_eng2_us_g2")
 $unittestArgs = @()
 
 if ($TestFilter -and $TestFilter -ne "JpBrailleTests or JtalkTests") {
     # Convert filter to unittest module path format
     if ($TestFilter -match "\.test_") {
-        # Specific test method: "JpBrailleTests.test_pass2"
+        # Specific test method: "JpBrailleTests.test_translator2"
         $unittestArgs = @("$testModule.$TestFilter")
     } elseif ($TestFilter -match " or ") {
         # Multiple classes: "JpBrailleTests or JtalkTests"
         $classes = $TestFilter -split " or " | ForEach-Object { $_.Trim() }
         $unittestArgs = $classes | ForEach-Object { "$testModule.$_" }
+    } elseif ($jpBrailleMethodNames -contains $TestFilter) {
+        # Bare JpBrailleTests method: "test_eng2_grade1", "test_translator_louis", etc.
+        $unittestArgs = @("$testModule.JpBrailleTests.$TestFilter")
     } else {
         # Single class: "JpBrailleTests"
         $unittestArgs = @("$testModule.$TestFilter")

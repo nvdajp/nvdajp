@@ -7,8 +7,10 @@
 
 import os.path
 import unittest
+from unittest.mock import MagicMock, patch
 
 import brailleTables
+import config
 import louisHelper
 import NVDAState
 
@@ -147,3 +149,32 @@ class TestResolvingCustom(unittest.TestCase):
 			list(louisHelper._resolveTableInner(tables=[fileNameToTest], base=basePath)),
 			[os.path.join(brailleTables.TABLES_DIR, fileNameToTest)],
 		)
+
+
+class TestTranslateNabccWithG2(unittest.TestCase):
+	"""Tests for nabcc (expandAtCursor) being passed through when 2級 table is selected.
+	ja-jp-comp6-ueb-g2.utb / ja-jp-comp6-us-g2.utb 選択時でも expandAtCursor を nabcc として渡す。
+	"""
+
+	@patch("synthDrivers.jtalk.translator2.translate")
+	def test_nabcc_passed_when_expandAtCursor_true_and_g2_table(
+		self, mock_jp_translate: MagicMock
+	) -> None:
+		"""2級テーブル選択時、expandAtCursor=True なら nabcc=True が jpTranslate に渡ること。"""
+		mock_jp_translate.return_value = (
+			"\u2801\u2802",  # braille: 2 cells
+			[0, 1],
+			[0, 1],
+			0,
+		)
+		config.conf["braille"]["expandAtCursor"] = True
+		try:
+			louisHelper.translate(
+				["ja-jp-comp6-ueb-g2.utb", "braille-patterns.cti"],
+				"ab",
+			)
+		finally:
+			config.conf["braille"]["expandAtCursor"] = False
+		mock_jp_translate.assert_called_once()
+		call_kwargs = mock_jp_translate.call_args[1]
+		self.assertTrue(call_kwargs["nabcc"], "nabcc=True should be passed for 2級 table when expandAtCursor is True")

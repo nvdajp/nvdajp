@@ -466,7 +466,9 @@ def is_alpha_or_single(s: str) -> bool:
 RE_ASCII_SYMBOLS = re.compile(r"^[\,\.\:\;\!\?\@\#\\\$\%\&\*\|\+\-\/\=\<\>\"'\^\`\_\~]+$")
 
 
-def replace_alphabet_morphs(li: list[MecabMorph], nabcc: bool = False) -> list[MecabMorph]:
+def replace_alphabet_morphs(
+	li: list[MecabMorph], nabcc: bool = False, use_foreign_quotes: bool = False
+) -> list[MecabMorph]:
 	# アルファベットまたは記号だけで表記されている語を結合する
 	# 情報処理点字の部分文字列になる記号を前後にまとめる
 	# input:
@@ -534,6 +536,48 @@ def set_pos_of_alphabets(m):
 	elif m.nhyouki not in "[]":
 		m.hinshi1 = "名詞"
 		m.hinshi2 = "アルファベット"
+
+
+def merge_parenthesized_alphabet_morphs(li: list[MecabMorph]) -> list[MecabMorph]:
+	"""英語句 + 括弧内英字（例: "NonVisual Desktop Access (NVDA)"）を 1 形態素にまとめる。"""
+	new_li: list[MecabMorph] = []
+	pos = 0
+	while pos < len(li):
+		# "foo (BAR)" pattern
+		if pos + 4 < len(li):
+			mo0, mo1, mo2, mo3, mo4 = li[pos], li[pos + 1], li[pos + 2], li[pos + 3], li[pos + 4]
+			if (
+				RE_GAIJI.match(mo0.nhyouki)
+				and (" " in mo0.nhyouki)
+				and mo1.nhyouki == " "
+				and mo2.nhyouki == "("
+				and RE_PAREN_ASCII_BODY.match(mo3.nhyouki)
+				and mo4.nhyouki == ")"
+			):
+				m = concatinate_morphs(li[pos : pos + 5])
+				m.nhyouki = m.output = unicode_normalize(m.nhyouki)
+				set_pos_of_alphabets(m)
+				new_li.append(m)
+				pos += 5
+				continue
+		# "foo(BAR)" pattern
+		if pos + 3 < len(li):
+			mo0, mo1, mo2, mo3 = li[pos], li[pos + 1], li[pos + 2], li[pos + 3]
+			if (
+				RE_GAIJI.match(mo0.nhyouki)
+				and mo1.nhyouki == "("
+				and RE_PAREN_ASCII_BODY.match(mo2.nhyouki)
+				and mo3.nhyouki == ")"
+			):
+				m = concatinate_morphs(li[pos : pos + 4])
+				m.nhyouki = m.output = unicode_normalize(m.nhyouki)
+				set_pos_of_alphabets(m)
+				new_li.append(m)
+				pos += 4
+				continue
+		new_li.append(li[pos])
+		pos += 1
+	return new_li
 
 
 # 日付の和語読み処理
@@ -1257,6 +1301,8 @@ RE_ASCII_CHARS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; ]+$")
 RE_ASCII_AND_SYMBOLS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; \u00d7]+$")
 RE_INFORMATION = re.compile(r"^[A-Za-z0-9\+\@\/\#\$\%\&\*\;\.\<\>\-\_\{\}\[\] ]+$")
 RE_GAIJI = re.compile(r"^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]+$")
+RE_GAIJI_WITH_PARENS = re.compile(r"^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]*\([A-Za-z0-9\,\.\+\-'\!\? ]+\)$")
+RE_PAREN_ASCII_BODY = re.compile(r"^[A-Za-z0-9\,\.\+\-'\!\? ]+$")
 RE_KATAKANA = re.compile("^[ァ-ヾ]+$")
 RE_HIRAGANA = re.compile("^[ぁ-ゞ]+$")
 RE_HALF_KATAKANA = re.compile("^[ｦ-ﾟ]+$")  # ff66 .. ff9f
@@ -1328,7 +1374,7 @@ def to_dakuon_kana(s):
 TAB_CODE = chr(0x200B)
 
 
-def japanese_braille_separate(inbuf, logwrite, nabcc=False):
+def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=False):
 	text = inbuf
 	if RE_HALF_KATAKANA.match(text):
 		outbuf = text
@@ -1337,8 +1383,14 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 
 	if not nabcc and RE_MB_ALPHA_NUM_SPACE.match(text):
 		outbuf = unicode_normalize(text)
-		inpos2 = range(len(outbuf))
-		return (outbuf, inpos2)
+		# fall through if contains alpha char (to be wrapped with foreign quote)
+		if use_foreign_quotes and not any(c.isalpha() for c in outbuf):
+			inpos2 = list(range(len(outbuf)))
+			return (outbuf, inpos2)
+		# legacy behavior: always return result here
+		if not use_foreign_quotes:
+			inpos2 = list(range(len(outbuf)))
+			return (outbuf, inpos2)
 
 	if not nabcc and is_gaiji(text) and " " in text.rstrip():
 		rspaces = ""
@@ -1358,15 +1410,12 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 
 	# tab code
 	text = text.replace("\t", TAB_CODE)
-	# BEGIN JP PATCH (log tab replacement)
 	if TAB_CODE in text:
 		logwrite(f"translator2: TAB_CODE present after tab replace: {text!r}")
-	# END JP PATCH
 
 	# 'ふにゃ～'
 	text = text.replace("ゃ～", "ゃー")
 
-	# BEGIN JP PATCH (assert suspicious patterns before text2mecab)
 	assert "\t" not in text and "\r" not in text and "\n" not in text, "translator2: unexpected tab/CR/LF"
 	ascii_count = sum(1 for c in text if ord(c) < 0x80)
 	non_ascii_count = len(text) - ascii_count
@@ -1379,7 +1428,6 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 	if "  " in text:
 		if logwrite:
 			logwrite("translator2: consecutive ASCII spaces detected")
-	# END JP PATCH
 	text = text2mecab(text)
 	mf = MecabFeatures()
 	Mecab_analysis(text, mf, logwrite_=logwrite)
@@ -1462,7 +1510,9 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 		if mo.hinshi2 == "アルファベット":
 			mo.output = mo.nhyouki
 
-	li = replace_alphabet_morphs(li, nabcc=nabcc)
+	li = replace_alphabet_morphs(li, nabcc=nabcc, use_foreign_quotes=use_foreign_quotes)
+	if use_foreign_quotes and not nabcc:
+		li = merge_parenthesized_alphabet_morphs(li)
 
 	for mo in li:
 		if mo.hyouki == "〝":
@@ -1641,6 +1691,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False):
 		# 空白をはさまない1単語は外国語引用符ではなく外字符で
 		elif (
 			(RE_GAIJI.match(mo.nhyouki) and ((" " in mo.nhyouki) or ("'" in mo.nhyouki)))
+			or (use_foreign_quotes and RE_GAIJI_WITH_PARENS.match(mo.nhyouki))
 			or (("." in mo.nhyouki) and len(mo.nhyouki) > 3)
 			or (
 				# "0's", "80's"
@@ -1753,7 +1804,129 @@ def terminate():
 	mecab_initialized = False
 
 
-def translateWithInPos2(inbuf, logwrite=_logwrite, nabcc=False):
+# 外国語引用符は ⠦ (U+2826) ... ⠴ (U+2834)。情報処理用 ⠠⠦...⠠⠴ は対象外。
+FOREIGN_OPEN = "\u2826"  # ⠦
+FOREIGN_CLOSE = "\u2834"  # ⠴
+INFO_PREFIX = "\u2820"  # ⠠
+
+
+def _louis_cells_to_braille_string(cells_str):
+	"""liblouis translate の出力文字列を outbuf 用（スペース + U+280x）に変換する。"""
+	result = []
+	for c in cells_str:
+		code = ord(c)
+		if code == 0x20:
+			result.append(" ")
+		elif 0x2800 <= code <= 0x28FF:
+			result.append(" " if code == 0x2800 else c)
+		elif 0x8000 <= code <= 0x80FF:
+			cell = code & 0xFF
+			result.append(" " if cell == 0 else chr(0x2800 + cell))
+		else:
+			cell = code & 0xFF
+			result.append(" " if cell == 0 else chr(0x2800 + cell))
+	return "".join(result).replace("\u2800", " ")
+
+
+def _find_foreign_quote_ranges(outbuf):
+	"""情報処理用 ⠠⠦...⠠⠴ を除外して、外国語引用符の inner 範囲を返す。"""
+	i = 0
+	ranges = []
+	while i < len(outbuf):
+		open_idx = outbuf.find(FOREIGN_OPEN, i)
+		while open_idx > 0 and outbuf[open_idx - 1] == INFO_PREFIX:
+			open_idx = outbuf.find(FOREIGN_OPEN, open_idx + 1)
+		if open_idx < 0:
+			break
+		close_search = open_idx + 1
+		close_idx = -1
+		while True:
+			cand = outbuf.find(FOREIGN_CLOSE, close_search)
+			if cand < 0:
+				break
+			if cand == 0 or outbuf[cand - 1] != INFO_PREFIX:
+				close_idx = cand
+				break
+			close_search = cand + 1
+		if close_idx < 0:
+			break
+		ranges.append((open_idx + 1, close_idx))
+		i = close_idx + 1
+	return ranges
+
+
+def _map_louis_positions(old_segment_inpos, louis_in_pos, louis_out_pos, new_len):
+	"""louis の inPos/outPos を使って inner 置換後の inpos2 セグメントを作る。"""
+	if new_len <= 0:
+		return []
+	if not old_segment_inpos:
+		return [0] * new_len
+	max_input_idx = len(old_segment_inpos) - 1
+	louis_in_pos = list(louis_in_pos) if louis_in_pos else []
+	louis_out_pos = list(louis_out_pos) if louis_out_pos else []
+	result = []
+
+	def _fallback_from_out_pos(out_idx):
+		if not louis_out_pos:
+			return None
+		candidate = 0
+		for in_idx, mapped_out in enumerate(louis_out_pos):
+			if mapped_out <= out_idx:
+				candidate = in_idx
+			else:
+				break
+		return candidate
+
+	for out_idx in range(new_len):
+		src_idx = louis_in_pos[out_idx] if out_idx < len(louis_in_pos) else None
+		if src_idx is None or src_idx < 0:
+			src_idx = _fallback_from_out_pos(out_idx)
+		if src_idx is None:
+			src_idx = 0 if new_len == 1 else (out_idx * max_input_idx) // (new_len - 1)
+		src_idx = max(0, min(max_input_idx, int(src_idx)))
+		result.append(old_segment_inpos[src_idx])
+	return result
+
+
+def _apply_louis_to_foreign_quotes(outbuf, inpos2, louisTranslate, louisTableList):
+	"""outbuf 内の ⠦...⠴ の内側を louisTranslate(louisTableList, inner) で2級変換し、outbuf と inpos2 を更新する。"""
+	inpos2 = list(inpos2)
+	try:
+		import louis as _louis
+
+		mode = getattr(_louis, "dotsIO", 0)
+	except Exception:
+		mode = 0
+	ranges = _find_foreign_quote_ranges(outbuf)  # inner ranges (start..end, end exclusive)
+	# Process from end to start so indices stay valid
+	for start, end in reversed(ranges):
+		inner = outbuf[start:end]
+		try:
+			braille_out, louis_in_pos, louis_out_pos, _cur = louisTranslate(
+				louisTableList,
+				inner,
+				cursorPos=0,
+				mode=mode,
+			)
+		except Exception:
+			continue  # leave this segment as-is on louis error
+		grade2_str = _louis_cells_to_braille_string(braille_out)
+		new_len = len(grade2_str)
+		old_segment_inpos = inpos2[start:end] if start < len(inpos2) else []
+		new_segment = _map_louis_positions(old_segment_inpos, louis_in_pos, louis_out_pos, new_len)
+		outbuf = outbuf[:start] + grade2_str + outbuf[end:]
+		inpos2 = inpos2[:start] + new_segment + inpos2[end:]
+	return (outbuf, inpos2)
+
+
+def translateWithInPos2(
+	inbuf,
+	logwrite=_logwrite,
+	nabcc=False,
+	louisTranslate=None,
+	louisTableList=None,
+	use_foreign_quotes=False,
+):
 	global mecab_initialized
 	if not mecab_initialized:
 		initialize(logwrite=logwrite)
@@ -1772,8 +1945,15 @@ def translateWithInPos2(inbuf, logwrite=_logwrite, nabcc=False):
 	if all((0x2800 <= ord(c) <= 0x28FF or c == " ") for c in inbuf):
 		outbuf = inbuf
 		inpos2 = [n for n in range(len(inbuf))]
+		already_braille = True
 	else:
-		outbuf, inpos2 = japanese_braille_separate(inbuf, logwrite, nabcc=nabcc)
+		outbuf, inpos2 = japanese_braille_separate(
+			inbuf, logwrite, nabcc=nabcc, use_foreign_quotes=use_foreign_quotes
+		)
+		already_braille = False
+	# nvdajp: translator_louis — 外国語引用符内を liblouis 2級に変換。既に点字の入力はスキップ（no-op で位置がずれないように）。
+	if louisTranslate is not None and louisTableList and not already_braille:
+		outbuf, inpos2 = _apply_louis_to_foreign_quotes(outbuf, inpos2, louisTranslate, louisTableList)
 	result, inpos1 = translator1.translateWithInPos(outbuf, nabcc=nabcc)
 	result = result.replace("□", " ")
 	return (outbuf, result, inpos1, inpos2)
@@ -1824,12 +2004,15 @@ def translate(
 	nabcc=False,
 	louisTranslate=None,
 	louisTableList=None,
+	use_foreign_quotes=False,
 ):
 	"""Translate a string of characters, providing position information.
 	@param inbuf: The string to translate.
 	@type inbuf: str
 	@param cursorPos: The position of the cursor in inbuf.
 	@type cursorPos: int
+	@param louisTranslate: If provided with louisTableList, 外国語引用符内をこの関数で2級変換する。
+	@param louisTableList: e.g. ["en-ueb-g2.ctb"]
 	@return: A tuple of:
 	        the translated string,
 	        a list of input positions for each position in the output,
@@ -1838,7 +2021,14 @@ def translate(
 	@rtype: (str, list of int, list of int, int)
 	@raise RuntimeError: If a complete translation could not be done.
 	"""
-	sp, outbuf, inpos1, inpos2 = translateWithInPos2(inbuf, logwrite=logwrite, nabcc=nabcc)
+	sp, outbuf, inpos1, inpos2 = translateWithInPos2(
+		inbuf,
+		logwrite=logwrite,
+		nabcc=nabcc,
+		louisTranslate=louisTranslate,
+		louisTableList=louisTableList,
+		use_foreign_quotes=use_foreign_quotes,
+	)
 	if not unicodeIO:
 		pat = outbuf.replace(" ", "\u2800")
 		outbuf = "".join([chr((ord(c) - 0x2800) + 0x8000) for c in pat])

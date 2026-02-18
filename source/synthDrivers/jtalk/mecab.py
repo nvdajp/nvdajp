@@ -329,7 +329,6 @@ def Mecab_analysis(
 			logwrite_(f"src is not bytes: {type(src)}")
 		features.size = 0
 		return
-	# BEGIN JP PATCH (assert basic bytes invariants before calling MeCab)
 	assert isinstance(src, bytes), "mecab: src must be bytes"
 	assert len(src) > 0, "mecab: src is empty"
 	assert b"\0" not in src, "mecab: src contains NUL byte"
@@ -339,7 +338,6 @@ def Mecab_analysis(
 		src.decode(CODE)
 	except Exception as e:
 		assert False, f"mecab: src is not valid {CODE}: {e}"
-	# END JP PATCH
 	# Log src type and content for debugging (first 100 bytes)
 	if logwrite_:
 		try:
@@ -349,10 +347,8 @@ def Mecab_analysis(
 			logwrite_(
 				f"Mecab_analysis: src type={type(src)}, len={len(src)}, preview={src_preview!r}, ends_with_null={ends_with_null}",
 			)
-			# BEGIN JP PATCH (log full bytes for short inputs)
 			if len(src) <= 256:
 				logwrite_(f"Mecab_analysis: src_full_bytes={src!r}")
-			# END JP PATCH
 		except Exception:
 			# Logging is best-effort only. Failures must not interfere
 			# with normal Mecab operation, so we intentionally ignore exceptions.
@@ -466,10 +462,8 @@ def Mecab_analysis(
 		if s != MECAB_BOS_NODE and s != MECAB_EOS_NODE:
 			c = node[0].length
 			s = string_at(node[0].surface, c) + b"," + string_at(node[0].feature)
-			# BEGIN JP PATCH (assert buffer bounds before memmove)
 			assert i < FECOUNT, "mecab node count exceeds FECOUNT"
 			assert len(s) < FELEN, "mecab feature buffer overflow risk"
-			# END JP PATCH
 			if logwrite_:
 				logwrite_(s.decode(CODE, "ignore"))
 			buf = create_string_buffer(s)
