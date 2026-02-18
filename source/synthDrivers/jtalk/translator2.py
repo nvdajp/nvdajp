@@ -1410,15 +1410,12 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 
 	# tab code
 	text = text.replace("\t", TAB_CODE)
-	# BEGIN JP PATCH (log tab replacement)
 	if TAB_CODE in text:
 		logwrite(f"translator2: TAB_CODE present after tab replace: {text!r}")
-	# END JP PATCH
 
 	# 'ふにゃ～'
 	text = text.replace("ゃ～", "ゃー")
 
-	# BEGIN JP PATCH (assert suspicious patterns before text2mecab)
 	assert "\t" not in text and "\r" not in text and "\n" not in text, "translator2: unexpected tab/CR/LF"
 	ascii_count = sum(1 for c in text if ord(c) < 0x80)
 	non_ascii_count = len(text) - ascii_count
@@ -1431,7 +1428,6 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	if "  " in text:
 		if logwrite:
 			logwrite("translator2: consecutive ASCII spaces detected")
-	# END JP PATCH
 	text = text2mecab(text)
 	mf = MecabFeatures()
 	Mecab_analysis(text, mf, logwrite_=logwrite)
@@ -1808,7 +1804,6 @@ def terminate():
 	mecab_initialized = False
 
 
-# BEGIN JP PATCH: translator_louis — 外国語引用符内を liblouis 2級変換する
 # 外国語引用符は ⠦ (U+2826) ... ⠴ (U+2834)。情報処理用 ⠠⠦...⠠⠴ は対象外。
 FOREIGN_OPEN = "\u2826"  # ⠦
 FOREIGN_CLOSE = "\u2834"  # ⠴
@@ -1924,9 +1919,6 @@ def _apply_louis_to_foreign_quotes(outbuf, inpos2, louisTranslate, louisTableLis
 	return (outbuf, inpos2)
 
 
-# END JP PATCH
-
-
 def translateWithInPos2(
 	inbuf,
 	logwrite=_logwrite,
@@ -1953,12 +1945,14 @@ def translateWithInPos2(
 	if all((0x2800 <= ord(c) <= 0x28FF or c == " ") for c in inbuf):
 		outbuf = inbuf
 		inpos2 = [n for n in range(len(inbuf))]
+		already_braille = True
 	else:
 		outbuf, inpos2 = japanese_braille_separate(
 			inbuf, logwrite, nabcc=nabcc, use_foreign_quotes=use_foreign_quotes
 		)
-	# nvdajp: translator_louis — 外国語引用符内を liblouis 2級に変換
-	if louisTranslate is not None and louisTableList:
+		already_braille = False
+	# nvdajp: translator_louis — 外国語引用符内を liblouis 2級に変換。既に点字の入力はスキップ（no-op で位置がずれないように）。
+	if louisTranslate is not None and louisTableList and not already_braille:
 		outbuf, inpos2 = _apply_louis_to_foreign_quotes(outbuf, inpos2, louisTranslate, louisTableList)
 	result, inpos1 = translator1.translateWithInPos(outbuf, nabcc=nabcc)
 	result = result.replace("□", " ")
