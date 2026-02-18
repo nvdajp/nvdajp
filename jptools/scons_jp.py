@@ -626,20 +626,26 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		builder_script_path = repo_root / "miscDepsJp" / "jptools" / "jtalk" / "make_jdic.py"
 
 		def _dic_state(dic_dir: Path) -> tuple[bool, bool, bool]:
-			"""Return (has_sys_dic, has_utf8_version, has_valid_codepage)."""
+			"""Return (has_sys_dic, has_utf8_version, has_valid_codepage).
+			Must have DIC_VERSION with 'nvdajp' (from make_jdic) to ensure custom entries (一人→ヒトリ, etc.).
+			"""
 			sys_dic_path = dic_dir / "sys.dic"
 			if not sys_dic_path.exists():
 				return False, False, False
 
-			# Check DIC_VERSION (must be UTF-8)
+			# Check DIC_VERSION (must be UTF-8 and from make_jdic with nvdajp custom entries)
 			has_utf8 = False
 			version_file = dic_dir / "DIC_VERSION"
 			if not version_file.exists():
-				print(f"jtalkSync: DIC_VERSION missing for {dic_dir}; will rebuild as UTF-8.")
+				print(f"jtalkSync: DIC_VERSION missing for {dic_dir}; will rebuild via make_jdic.py.")
 			else:
 				try:
 					version_text = version_file.read_text(encoding="utf-8").lower()
-					if "utf-8" in version_text or "utf8" in version_text:
+					if "nvdajp" not in version_text:
+						print(
+							f"jtalkSync: dictionary at {dic_dir} not from make_jdic (no 'nvdajp' in DIC_VERSION); rebuilding for custom entries.",
+						)
+					elif "utf-8" in version_text or "utf8" in version_text:
 						has_utf8 = True
 					else:
 						print(
@@ -925,13 +931,14 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	# This prevents x86/x64 DLL mismatches when switching architectures
 	# Note: arch_suffix is already defined above for jtalkPrep
 	jtalk_sync_stamp = env.File(f"miscDepsJp/_state/prep/jtalkSync.{arch_suffix}.stamp")
-	# Remove AlwaysBuild: use dependency-based rebuild instead
+	# AlwaysBuild: CI cache/stamp caused stale dictionary (一人→1ニン). Always rebuild for correctness.
 	# jtalkSync depends on jtalkPrep to avoid file lock conflicts when both try to build hts.mak
 	# Note: jtalkSync output files (sys.dic, libmecab.dll, libopenjtalk.dll) are not added here as
 	# explicit dependencies. jtalkSync first produces these files under miscDepsJp and then copies
 	# them into the source tree. The top-level 'source' target already depends on jtalkSync
 	# via env.Depends(source_dir, jtalk_sync_stamp) below, so adding the individual output files
 	# as dependencies on this stamp target would be redundant rather than preventing a circular dependency.
+	env.AlwaysBuild(jtalk_sync_stamp)
 	env.Command(jtalk_sync_stamp, [jtalk_prep_stamp], _sync_jtalk_assets)
 	env.Alias("jtalkSync", jtalk_sync_stamp)
 

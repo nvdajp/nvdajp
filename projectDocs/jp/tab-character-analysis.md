@@ -641,3 +641,99 @@ PR 636 のCIにおいて、再び Test #1 (漢数字「一人」の読み) お�
 * **検証ロジックの強化**: `jtalkSync` 実行時に `DIC_CODEPAGE` ファイルの存在と内容を確認。「932」でない場合（またはファイルがない場合）は、`sys.dic` が存在しても強制的に再ビルドを実行。
 
 これにより、キャッシュ汚染の影響を受けずに常に正しいコードページで辞書が生成されるようになりました。
+
+### 追加対策 (2026-02)
+
+jpSmokeTests ジョブでキャッシュ復元後に辞書が「有効」と判断され再ビルドがスキップされるケースを防ぐため、`runJpSmokeTests.ps1` の CI 分岐で **DIC_VERSION と DIC_CODEPAGE を削除してから jtalkSync を実行**するようにした。これにより jtalkSync が辞書を強制的に再ビルドし、custom エントリ（一人→ヒトリ等）を含む辞書でテストが実行される。
+
+**辞書妥当性検証スクリプト**: `jptools/verifyJtalkDictionary.ps1` は、translator2 の出力（一人→ヒトリ、二人→フタリ、おはようございます→オハヨー ゴザイマス）を検証する。buildNVDA の Prepare JTalk 直後に実行し、不正な辞書がキャッシュに保存されるのを防ぐ。ローカルでは `.\jptools\verifyJtalkDictionary.ps1` で実行可能（事前に `scons jtalkSync` を実行すること）。実体は `miscDepsJp/jptools/verify_dic.py`。
+
+### 再発時のクイック参照
+
+`projectDocs/jp/archive/troubleshooting_runjp_smoke_tests.md` の「result_mismatch の再発防止チェックリスト」を参照。
+
+---
+
+## nmake 辞書の意図せぬ使用による Verify JTalk dictionary 失敗 (2026-02-18)
+
+### 事象
+
+buildNVDA ジョブの「Verify JTalk dictionary」ステップが失敗。`verifyJtalkDictionary.ps1` の出力：
+
+| 入力 | 期待値 | 実際の結果 |
+|------|--------|-----------|
+| 一人 | ヒトリ | 1ニン |
+| 二人 | フタリ | 2ニン |
+| おはようございます | オハヨー ゴザイマス | オハヨーゴザイマス |
+
+### 根本原因（推定）
+
+**custom エントリ（一人→ヒトリ等）を含まない辞書が「有効」と判定され、make_jdic.py による再ビルドがスキップされていた。**
+
+辞書ビルドには2つの経路がある：
+
+1. **make_jdic.py**: `nvdajp-custom-dic.csv` を含む。一人→ヒトリ、二人→フタリ 等の custom エントリあり。DIC_VERSION に `"nvdajp-jtalk-dic (utf-8)"` を書き込む。
+2. **nmake** (libopenjtalk/mecab-naist-jdic の Makefile.mak): 標準 naist-jdic のみ。custom エントリなし。出力先は `vendor_base/libopenjtalk/mecab-naist-jdic`（`source/synthDrivers/jtalk/dic` ではない）。**nmake は DIC_VERSION ファイルを作成しない**（Makefile.mak は char.bin, matrix.bin, sys.dic, unk.dic のみ生成）。
+
+`jtalkSync` の `_dic_state()` は、従来以下のみを検証していた：
+
+* `sys.dic` の存在
+* `DIC_VERSION` に "utf-8" が含まれること
+* `DIC_CODEPAGE` が "932" であること
+
+**問題点**: DIC_VERSION に "utf-8" が含まれていれば make_jdic 由来とみなしていたが、**make_jdic 由来であることを保証するマーカーがなかった**。キャッシュ復元や部分的なビルド状態などで、custom エントリのない辞書が残り「有効」と誤判定されるケースを防げなかった。その結果、一人→1ニン（数字+人）のように標準 naist の解析結果が使われた。
+
+### 対策
+
+`jptools/scons_jp.py` の `_dic_state()` に **DIC_VERSION に "nvdajp" が含まれること** を必須条件として追加した。make_jdic.py のみが DIC_VERSION を書き込み、かつ "nvdajp" を含む。nmake は DIC_VERSION を作らないため、make_jdic 由来の辞書のみを「有効」と判定できる。
+
+```python
+# 修正後のロジック
+if "nvdajp" not in version_text:
+    print("dictionary not from make_jdic; rebuilding for custom entries.")
+elif "utf-8" in version_text or "utf8" in version_text:
+    has_utf8 = True
+```
+
+### リファクタリング時の注意点
+
+* **辞書の出所を区別する**: DIC_VERSION の "nvdajp" マーカーは、make_jdic 由来であることを示す。make_jdic のみが DIC_VERSION を書き込む。nmake は DIC_VERSION を作らないため、nvdajp チェックにより make_jdic 由来の辞書のみを有効と判定できる。
+* **検証の順序**: "nvdajp" チェックを utf-8 チェックより先に行う。nvdajp が無い場合は即座に再ビルド対象とする。
+* **verify_dic.py の役割**: 実行時検証として、translator2 の出力（一人→ヒトリ 等）を確認する。ビルド時の `_dic_state` は「どの辞書を再ビルドするか」の判定、verify_dic は「生成された辞書が正しいか」の検証と役割が異なる。
+
+### 追加対策: 辞書をキャッシュから除外 (2026-02)
+
+nvdajp チェックやマーカー削除では根本解決しなかったため、**辞書をキャッシュに含めない**方針に変更した。キャッシュ保存直前に `source/synthDrivers/jtalk/dic` を削除し、復元ジョブでは辞書が存在しない状態から jtalkSync で毎回ビルドする。これにより、古い辞書がキャッシュ経由で伝播することを防ぐ。
+
+```yaml
+# .github/workflows/testAndPublish.yml（Cache scons build の直前に追加）
+- name: Exclude JTalk dictionary from cache (JP-specific)
+  run: |
+    $dicDir = "source\synthDrivers\jtalk\dic"
+    if (Test-Path $dicDir) {
+      Remove-Item -Path $dicDir -Recurse -Force
+    }
+```
+
+復元ジョブ（jpSmokeTests 等）はキャッシュに辞書が含まれないため、jtalkSync を実行して辞書をビルドする。runJpSmokeTests.ps1 は既に jtalkSync を呼ぶため、そのままで動作する。
+
+### 追加対策: jtalkSync を AlwaysBuild に変更 (2026-02)
+
+キャッシュ除外と stamp 削除後も Verify が失敗し続けたため、`jptools/scons_jp.py` で **jtalkSync を AlwaysBuild** に変更した。これにより SCons は stamp の有無に関係なく毎回 `_sync_jtalk_assets` を実行し、辞書の再ビルド判定（`_dic_state`）を必ず行う。ローカルビルドでは辞書ビルドが毎回走るため若干遅くなるが、CI での不安定さを解消することを優先した。
+
+### 追加対策: キャッシュキーで無効化 (2026-02)
+
+**意図**: 辞書のキャッシュ除外・stamp 削除・unitTests での jtalkSync など複雑な対策をやめ、**キャッシュキーにサフィックスを追加するだけ**で古いキャッシュを無効化する方式に統一した。
+
+**背景**: ローカルビルド（キャッシュなし）の方が安定していた。一方、CI では「辞書をキャッシュから除外する」「復元ジョブで jtalkSync を実行する」など、複数の対策を組み合わせる必要があり、運用が煩雑になっていた。辞書ビルドのリファクタリングを控え、今後もキャッシュの無効化が必要になる可能性が高い。
+
+**方式**: `SCONS_CACHE_SUFFIX: "-jp-v2"` を env に定義し、すべての scons キャッシュキーに付与。サフィックスを bump（v2→v3）するだけで古いキャッシュを一括無効化できる。辞書はキャッシュに含め、復元ジョブでそのまま利用する（unitTests での jtalkSync は不要）。
+
+**運用**: 辞書ビルド経路（make_jdic、scons_jp の _sync_jtalk_assets 等）を変更したら、`testAndPublish.yml` の `SCONS_CACHE_SUFFIX` を increment する。
+
+### 参照
+
+* CI 失敗例: <https://github.com/nvdajp/nvdajp/actions/runs/22133746699/job/63980046473>
+* 同様の失敗（nvdajp チェック追加後）: <https://github.com/nvdajp/nvdajp/actions/runs/22134322162>
+* stamp 削除後も失敗: <https://github.com/nvdajp/nvdajp/actions/runs/22136300020/job/63988780566>
+* 実装: `jptools/scons_jp.py` の `_dic_state()`、`AlwaysBuild(jtalk_sync_stamp)`、`.github/workflows/testAndPublish.yml`
