@@ -789,6 +789,90 @@ def run_eng2_us_g2():
 	return (count, outfile)
 
 
+def run_eng2_nabcc_regression():
+	"""nabcc+2級併用モードの回帰テスト。nabcc=True, louis, use_foreign_quotes=True で実行し、
+	クラッシュせず正常終了することを検証。louis 未ビルド時はスキップ。"""
+	global output
+	outfile = "__eng2_nabcc_regression_output.txt"
+	try:
+		from translator_louis_runner import get_louis_translate_for_pipeline, is_louis_available
+	except ImportError:
+		with open_file(outfile, "w") as f:
+			f.write("translator_louis_runner not found\n")
+		print("eng2_nabcc_regression: skipped (runner not found)")
+		return (0, outfile)
+	if not is_louis_available():
+		with open_file(outfile, "w") as f:
+			f.write("louis not available (scons source required)\n")
+		print("eng2_nabcc_regression: skipped (louis not available)")
+		return (0, outfile)
+	louisTranslate, louisTableList = get_louis_translate_for_pipeline()
+	if louisTranslate is None or not louisTableList:
+		print("eng2_nabcc_regression: skipped (louis not available)")
+		return (0, outfile)
+
+	MAX_CASES = 3  # 最小限の件数
+
+	with open_file(outfile, "w") as f:
+		dll_dir_handle = None
+		if hasattr(os, "add_dll_directory"):
+			try:
+				dll_dir_handle = os.add_dll_directory(str(jtalk_dir))
+			except OSError:
+				pass
+		try:
+			output = io.StringIO()
+			try:
+				translator2.initialize(__print, str(jtalk_dir), str(dic_dir), user_dics)
+			except OSError as e:
+				f.write("ERROR: MeCab DLL load failed: %s\n" % e)
+				return (1, outfile)
+			finally:
+				output.close()
+		finally:
+			if dll_dir_handle is not None:
+				dll_dir_handle.close()
+
+		if mecab_module.libmc is None or mecab_module.mecab is None:
+			f.write("ERROR: MeCab not initialized.\n")
+			return (1, outfile)
+
+		count = 0
+		cases_run = 0
+		for idx, t in enumerate(eng2_tests):
+			if cases_run >= MAX_CASES:
+				break
+			if "note" in t and "text" not in t:
+				continue
+			if "ueb_g2" not in t or "text" not in t:
+				continue
+			if "_ueb_g2" in t:
+				continue
+			output = io.StringIO()
+			try:
+				outbuf, result, inpos1, inpos2 = translator2.translateWithInPos2(
+					t["text"],
+					logwrite=__print,
+					nabcc=True,
+					louisTranslate=louisTranslate,
+					louisTableList=louisTableList,
+					use_foreign_quotes=True,
+				)
+			except Exception as e:
+				count += 1
+				f.write("ERROR #%d: text=%r exception=%s\n\n" % (idx, t["text"], e))
+				cases_run += 1
+				continue
+			finally:
+				output.close()
+			cases_run += 1
+			if not result or len(result) == 0:
+				count += 1
+				f.write("ERROR #%d: text=%r empty result\n\n" % (idx, t["text"]))
+		print("eng2_nabcc_regression: %d error(s). see %s" % (count, outfile))
+	return (count, outfile)
+
+
 def make_doc():
 	outfile = "__jpBrailleHarness.md"
 	timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")

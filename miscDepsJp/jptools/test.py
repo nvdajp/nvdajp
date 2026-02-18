@@ -40,6 +40,11 @@ class JpBrailleTests(unittest.TestCase):
 		count, outfile = jpBrailleRunner.run_eng2_us_g2()
 		self.assertEqual(count, 0, "eng2_us_g2: %d error(s). see %s" % (count, outfile))
 
+	def test_eng2_nabcc_regression(self):
+		"""nabcc+2級併用の回帰テスト。nabcc=True で louis 2級パイプラインを実行し、クラッシュせず正常終了することを検証。louis 未ビルド時はスキップ。"""
+		count, outfile = jpBrailleRunner.run_eng2_nabcc_regression()
+		self.assertEqual(count, 0, "eng2_nabcc_regression: %d error(s). see %s" % (count, outfile))
+
 
 class MecabTests(unittest.TestCase):
 	def test_all(self):

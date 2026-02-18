@@ -187,7 +187,7 @@ def translate(
 				braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
 					text,
 					cursorPos=cursorPos or 0,
-					nabcc=nabcc if not louis_table_list else False,
+					nabcc=nabcc,
 					louisTranslate=louis.translate if louis_table_list else None,
 					louisTableList=louis_table_list,
 					use_foreign_quotes=True if louis_table_list else False,
