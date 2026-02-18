@@ -338,6 +338,7 @@ addTable(
 	source=TableSource.BUILTIN_JP,
 	outputForLangs={"ja"},
 )
+# 従来モードを日本語のデフォルトにするため、2級テーブルは outputForLangs に含めない（選択肢としては表示される）。
 addTable(
 	"ja-jp-comp6-ueb-g2.utb",
 	# Translators: The name of a braille table displayed in the braille settings dialog.
@@ -345,7 +346,6 @@ addTable(
 	_("Japanese 6 dot computer braille (UEB grade 2 in foreign quotes)"),
 	contracted=True,
 	source=TableSource.BUILTIN_JP,
-	outputForLangs={"ja"},
 )
 addTable(
 	"ja-jp-comp6-us-g2.utb",
@@ -354,7 +354,6 @@ addTable(
 	_("Japanese 6 dot computer braille (US grade 2 in foreign quotes)"),
 	contracted=True,
 	source=TableSource.BUILTIN_JP,
-	outputForLangs={"ja"},
 )
 # END JP PATCH
 # Translators: The name of a braille table displayed in the
