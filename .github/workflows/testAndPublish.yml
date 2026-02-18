@@ -115,7 +115,7 @@ jobs:
         key: ${{ env.SCONS_CACHE_KEY }}
     # BEGIN JP PATCH (JP-specific build preparation)
     # Force dictionary rebuild so custom entries (一人→ヒトリ etc.) are always included.
-    # Remove entire dic dir to ensure clean state (SCons may skip if markers exist).
+    # Remove dic dir AND SCons stamp so jtalkSync is not skipped (stamp would make SCons think it's up to date).
     # Exclusion from cache (below) prevents stale dic propagation to restore jobs.
     - name: Force JTalk dictionary rebuild (JP-specific)
       shell: pwsh
@@ -124,6 +124,11 @@ jobs:
         if (Test-Path $dicDir) {
           Remove-Item -Path $dicDir -Recurse -Force
           Write-Host "Removed $dicDir to force fresh dictionary build"
+        }
+        $stampDir = "miscDepsJp\_state\prep"
+        if (Test-Path $stampDir) {
+          Get-ChildItem $stampDir -Filter "jtalkSync.*.stamp" -ErrorAction SilentlyContinue | Remove-Item -Force
+          Write-Host "Removed jtalkSync stamp files to force SCons rebuild"
         }
     - name: Prepare JTalk (JP-specific)
       shell: cmd
@@ -158,7 +163,7 @@ jobs:
         uv run --no-active --directory runtime-builders/synthDriverHost32 python setup-runtime.py --dest-dir ../../source/lib/x86/synthDriverHost-runtime
     - name: Prepare for tests
       run: ci/scripts/tests/beforeTests.ps1
-    # Exclude JTalk dictionary from cache so restore jobs always build it fresh via jtalkSync.
+    # Exclude JTalk dictionary and its SCons stamp from cache so restore jobs always build it fresh via jtalkSync.
     # Caching the dic caused stale/corrupt state (一人→1ニン instead of ヒトリ). See tab-character-analysis.md.
     - name: Exclude JTalk dictionary from cache (JP-specific)
       shell: pwsh
@@ -167,6 +172,11 @@ jobs:
         if (Test-Path $dicDir) {
           Remove-Item -Path $dicDir -Recurse -Force
           Write-Host "Removed $dicDir to exclude from cache (restore jobs will run jtalkSync)"
+        }
+        $stampDir = "miscDepsJp\_state\prep"
+        if (Test-Path $stampDir) {
+          Get-ChildItem $stampDir -Filter "jtalkSync.*.stamp" -ErrorAction SilentlyContinue | Remove-Item -Force
+          Write-Host "Removed jtalkSync stamp files to exclude from cache"
         }
     - name: Cache scons build
       uses: actions/cache/save@v4
