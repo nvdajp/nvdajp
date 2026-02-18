@@ -128,6 +128,20 @@ jobs:
     - name: Prepare JTalk (JP-specific)
       shell: cmd
       run: chcp 932 >nul 2>&1 && scons jtalkPrep jtalkSync %sconsArgs% %sconsCores%
+    - name: Diagnose JTalk dictionary (JP-specific)
+      if: always()
+      shell: pwsh
+      run: |
+        $dicDir = "source\synthDrivers\jtalk\dic"
+        Write-Host "=== JTalk dictionary state after jtalkSync ==="
+        if (Test-Path $dicDir) {
+          Get-ChildItem $dicDir | ForEach-Object { Write-Host "  $($_.Name)" }
+          $ver = Join-Path $dicDir "DIC_VERSION"
+          if (Test-Path $ver) { Write-Host "DIC_VERSION: $(Get-Content $ver -Raw)" }
+        } else {
+          Write-Host "  dic directory does not exist"
+        }
+        Write-Host "make_jdic.py exists: $(Test-Path 'miscDepsJp\jptools\jtalk\make_jdic.py')"
     - name: Verify JTalk dictionary
       shell: cmd
       run: chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
