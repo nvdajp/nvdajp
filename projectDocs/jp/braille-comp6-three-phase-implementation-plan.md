@@ -92,7 +92,7 @@ issue #304（英語2級点字の併用）で合意された3フェーズ構成�
 * [x] **eng2Harness との連携（ueb_g2 / us_g2）**
   * `run_eng2_ueb_g2()` / `test_eng2_ueb_g2`: 原文 → translator2(louis en-ueb-g2) → translator1 の結果と `ueb_g2` を比較。`_ueb_g2` はスキップ。
   * `run_eng2_us_g2()` / `test_eng2_us_g2`: 同上で en-us-g2 と `us_g2` を比較。仮想テーブル `ja-jp-comp6-us-g2.utb` を追加。louis 未ビルド時は 0 件で成功。
-  * **期待値の明確化**: 方針として **現行 liblouis の出力を正とし、破綻しないように期待値（`ueb_g2` / `us_g2`）を直してよい** ことを採用（`braille-ja-jp-comp6.md` の「eng2Harness の期待値（ueb_g2 / us_g2）は明確か」を参照）。
+  * **期待値の維持**: eng2Harness の期待値はベース（ti36052・文献）を維持し、liblouis と相違するケースは `_ueb_g2` / `_us_g2` でスキップする（`braille-ja-jp-comp6.md` の「eng2Harness の期待値」を参照）。
 
 ### 4. 統合（エンドツーエンド）テスト
 
