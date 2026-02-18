@@ -29,6 +29,14 @@ CASES = [
 
 def verify() -> int:
 	"""Run verification. Returns 0 on success, 1 on failure."""
+	# Fail fast if dictionary is missing (e.g. jtalkSync did not run or failed)
+	if not (dic_dir / "sys.dic").exists():
+		print(
+			f"ERROR: Dictionary not found at {dic_dir} (sys.dic missing). Run scons jtalkSync first.",
+			file=sys.stderr,
+		)
+		return 1
+
 	import jtalkDir  # noqa: E402
 	import translator2  # noqa: E402
 
@@ -42,23 +50,29 @@ def verify() -> int:
 
 	try:
 		translator2.initialize(lambda s: None, str(jtalk_dir), str(dic_dir), jtalkDir.user_dics)
+		failed = 0
+		for text, expected in CASES:
+			result, _, _, _ = translator2.translateWithInPos2(
+				text, logwrite=lambda s: None, nabcc=False
+			)
+			if result != expected:
+				print(
+					f"FAIL: {text!r} -> expected {expected!r}, got {result!r}",
+					file=sys.stderr,
+				)
+				failed += 1
+			else:
+				print(f"OK: {text!r} -> {result!r}")
+		return 1 if failed else 0
 	except Exception as e:
-		print(f"ERROR: MeCab initialization failed: {e}", file=sys.stderr)
+		import traceback
+
+		print(f"ERROR: MeCab initialization or translation failed: {e}", file=sys.stderr)
+		traceback.print_exc(file=sys.stderr)
 		return 1
 	finally:
 		if dll_handle is not None:
 			dll_handle.close()
-
-	failed = 0
-	for text, expected in CASES:
-		result, _, _, _ = translator2.translateWithInPos2(text, logwrite=lambda s: None, nabcc=False)
-		if result != expected:
-			print(f"FAIL: {text!r} -> expected {expected!r}, got {result!r}", file=sys.stderr)
-			failed += 1
-		else:
-			print(f"OK: {text!r} -> {result!r}")
-
-	return 1 if failed else 0
 
 
 if __name__ == "__main__":
