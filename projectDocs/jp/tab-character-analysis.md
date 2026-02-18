@@ -721,6 +721,16 @@ nvdajp チェックやマーカー削除では根本解決しなかったため�
 
 キャッシュ除外と stamp 削除後も Verify が失敗し続けたため、`jptools/scons_jp.py` で **jtalkSync を AlwaysBuild** に変更した。これにより SCons は stamp の有無に関係なく毎回 `_sync_jtalk_assets` を実行し、辞書の再ビルド判定（`_dic_state`）を必ず行う。ローカルビルドでは辞書ビルドが毎回走るため若干遅くなるが、CI での不安定さを解消することを優先した。
 
+### 追加対策: キャッシュキーで無効化 (2026-02)
+
+**意図**: 辞書のキャッシュ除外・stamp 削除・unitTests での jtalkSync など複雑な対策をやめ、**キャッシュキーにサフィックスを追加するだけ**で古いキャッシュを無効化する方式に統一した。
+
+**背景**: ローカルビルド（キャッシュなし）の方が安定していた。一方、CI では「辞書をキャッシュから除外する」「復元ジョブで jtalkSync を実行する」など、複数の対策を組み合わせる必要があり、運用が煩雑になっていた。辞書ビルドのリファクタリングを控え、今後もキャッシュの無効化が必要になる可能性が高い。
+
+**方式**: `SCONS_CACHE_SUFFIX: "-jp-v2"` を env に定義し、すべての scons キャッシュキーに付与。サフィックスを bump（v2→v3）するだけで古いキャッシュを一括無効化できる。辞書はキャッシュに含め、復元ジョブでそのまま利用する（unitTests での jtalkSync は不要）。
+
+**運用**: 辞書ビルド経路（make_jdic、scons_jp の _sync_jtalk_assets 等）を変更したら、`testAndPublish.yml` の `SCONS_CACHE_SUFFIX` を increment する。
+
 ### 参照
 
 * CI 失敗例: <https://github.com/nvdajp/nvdajp/actions/runs/22133746699/job/63980046473>
