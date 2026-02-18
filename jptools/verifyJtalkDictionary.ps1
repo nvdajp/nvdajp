@@ -30,6 +30,8 @@ Set-Location $repoRoot
 $jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
 $jptoolsDir = Join-Path $repoRoot "miscDepsJp\jptools"
 $env:PYTHONPATH = "$jtalkSource;$jptoolsDir"
+# CI uses cp1252; ensure Python stdout/stderr use UTF-8 to avoid UnicodeEncodeError on Japanese
+$env:PYTHONUTF8 = "1"
 
 # Prefer .venv Python if it exists (same as runJpSmokeTests)
 $pythonExe = Join-Path $repoRoot ".venv\Scripts\python.exe"
