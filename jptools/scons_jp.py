@@ -944,13 +944,14 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	# This prevents x86/x64 DLL mismatches when switching architectures
 	# Note: arch_suffix is already defined above for jtalkPrep
 	jtalk_sync_stamp = env.File(f"miscDepsJp/_state/prep/jtalkSync.{arch_suffix}.stamp")
-	# Remove AlwaysBuild: use dependency-based rebuild instead
+	# AlwaysBuild: CI cache/stamp caused stale dictionary (一人→1ニン). Always rebuild for correctness.
 	# jtalkSync depends on jtalkPrep to avoid file lock conflicts when both try to build hts.mak
 	# Note: jtalkSync output files (sys.dic, libmecab.dll, libopenjtalk.dll) are not added here as
 	# explicit dependencies. jtalkSync first produces these files under miscDepsJp and then copies
 	# them into the source tree. The top-level 'source' target already depends on jtalkSync
 	# via env.Depends(source_dir, jtalk_sync_stamp) below, so adding the individual output files
 	# as dependencies on this stamp target would be redundant rather than preventing a circular dependency.
+	env.AlwaysBuild(jtalk_sync_stamp)
 	env.Command(jtalk_sync_stamp, [jtalk_prep_stamp], _sync_jtalk_assets)
 	env.Alias("jtalkSync", jtalk_sync_stamp)
 

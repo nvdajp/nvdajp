@@ -717,8 +717,13 @@ nvdajp チェックやマーカー削除では根本解決しなかったため�
 
 復元ジョブ（jpSmokeTests 等）はキャッシュに辞書が含まれないため、jtalkSync を実行して辞書をビルドする。runJpSmokeTests.ps1 は既に jtalkSync を呼ぶため、そのままで動作する。
 
+### 追加対策: jtalkSync を AlwaysBuild に変更 (2026-02)
+
+キャッシュ除外と stamp 削除後も Verify が失敗し続けたため、`jptools/scons_jp.py` で **jtalkSync を AlwaysBuild** に変更した。これにより SCons は stamp の有無に関係なく毎回 `_sync_jtalk_assets` を実行し、辞書の再ビルド判定（`_dic_state`）を必ず行う。ローカルビルドでは辞書ビルドが毎回走るため若干遅くなるが、CI での不安定さを解消することを優先した。
+
 ### 参照
 
 * CI 失敗例: <https://github.com/nvdajp/nvdajp/actions/runs/22133746699/job/63980046473>
 * 同様の失敗（nvdajp チェック追加後）: <https://github.com/nvdajp/nvdajp/actions/runs/22134322162>
-* 実装: `jptools/scons_jp.py` の `_dic_state()`、`.github/workflows/testAndPublish.yml`
+* stamp 削除後も失敗: <https://github.com/nvdajp/nvdajp/actions/runs/22136300020/job/63988780566>
+* 実装: `jptools/scons_jp.py` の `_dic_state()`、`AlwaysBuild(jtalk_sync_stamp)`、`.github/workflows/testAndPublish.yml`
