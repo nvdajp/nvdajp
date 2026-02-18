@@ -290,18 +290,15 @@ if (-not $isCI) {
 }
 
 if (-not $SkipOverlay) {
-    # In CI, check cache first to avoid unnecessary builds
+    # In CI, always run jtalkSync so the dictionary is built with custom entries (一人→ヒトリ etc.).
+    # Skipping when DLL exists was causing result_mismatch in smoke tests because the cached
+    # dictionary could be missing custom readings (see projectDocs/jp/tab-character-analysis.md).
     if ($isCI) {
-        $dllPath = Join-Path $repoRoot "source\synthDrivers\jtalk\libopenjtalk.dll"
-        if (Test-Path $dllPath) {
-            Write-Host "JTalk DLL found in cache, skipping jtalkSync"
-        } else {
-            Write-Host "JTalk DLL not found in cache, running jtalkSync..."
-            & "$repoRoot\scons.bat" jtalkSync
+        Write-Host "CI: Running jtalkSync to ensure dictionary includes custom entries..."
+        & "$repoRoot\scons.bat" jtalkSync
         if ($LASTEXITCODE -ne 0) {
             Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
             exit $LASTEXITCODE
-        }
         }
     } else {
         Write-Host "Preparing JTalk assets via scons jtalkSync..."
