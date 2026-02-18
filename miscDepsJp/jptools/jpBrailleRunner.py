@@ -629,11 +629,41 @@ def run_eng2_ueb_g2():
 			finally:
 				output.close()
 			# result は既に translator1 通過済みの最終点字
+			inpos, outpos_ = translator2.mergePositionMap(inpos1, inpos2, len(result), len(t["text"]))
+			outpos = translator2.makeOutPos(inpos, len(t["text"]), len(result))
+			is_error = False
 			if result != t["ueb_g2"]:
+				is_error = True
+			if "ueb_g2_inpos2" in t:
+				correct_inpos2 = ",".join("%d" % n for n in t["ueb_g2_inpos2"])
+				result_inpos2 = ",".join("%d" % n for n in inpos2)
+				if result_inpos2 != correct_inpos2:
+					is_error = True
+			if "ueb_g2_inpos" in t:
+				correct_inpos = ",".join("%d" % n for n in t["ueb_g2_inpos"])
+				result_inpos = ",".join("%d" % n for n in inpos)
+				if result_inpos != correct_inpos:
+					is_error = True
+			if "ueb_g2_outpos" in t:
+				correct_outpos = ",".join("%d" % n for n in t["ueb_g2_outpos"])
+				result_outpos = ",".join("%d" % n for n in outpos)
+				if result_outpos != correct_outpos:
+					is_error = True
+			if is_error:
 				count += 1
 				f.write("text   : %s\n" % t["text"])
-				f.write("correct: %s\n" % t["ueb_g2"])
-				f.write("result : %s\n" % result)
+				if result != t["ueb_g2"]:
+					f.write("correct: %s\n" % t["ueb_g2"])
+					f.write("result : %s\n" % result)
+				if "ueb_g2_inpos2" in t and ",".join("%d" % n for n in inpos2) != ",".join("%d" % n for n in t["ueb_g2_inpos2"]):
+					f.write("correct_inpos2: %s\n" % ",".join("%d" % n for n in t["ueb_g2_inpos2"]))
+					f.write("result_inpos2: %s\n" % ",".join("%d" % n for n in inpos2))
+				if "ueb_g2_inpos" in t and ",".join("%d" % n for n in inpos) != ",".join("%d" % n for n in t["ueb_g2_inpos"]):
+					f.write("correct_inpos: %s\n" % ",".join("%d" % n for n in t["ueb_g2_inpos"]))
+					f.write("result_inpos: %s\n" % ",".join("%d" % n for n in inpos))
+				if "ueb_g2_outpos" in t and ",".join("%d" % n for n in outpos) != ",".join("%d" % n for n in t["ueb_g2_outpos"]):
+					f.write("correct_outpos: %s\n" % ",".join("%d" % n for n in t["ueb_g2_outpos"]))
+					f.write("result_outpos: %s\n" % ",".join("%d" % n for n in outpos))
 				if "comment" in t:
 					f.write(
 						"comment: %s\n"
@@ -714,11 +744,41 @@ def run_eng2_us_g2():
 				continue
 			finally:
 				output.close()
+			inpos, outpos_ = translator2.mergePositionMap(inpos1, inpos2, len(result), len(t["text"]))
+			outpos = translator2.makeOutPos(inpos, len(t["text"]), len(result))
+			is_error = False
 			if result != t["us_g2"]:
+				is_error = True
+			if "us_g2_inpos2" in t:
+				correct_inpos2 = ",".join("%d" % n for n in t["us_g2_inpos2"])
+				result_inpos2 = ",".join("%d" % n for n in inpos2)
+				if result_inpos2 != correct_inpos2:
+					is_error = True
+			if "us_g2_inpos" in t:
+				correct_inpos = ",".join("%d" % n for n in t["us_g2_inpos"])
+				result_inpos = ",".join("%d" % n for n in inpos)
+				if result_inpos != correct_inpos:
+					is_error = True
+			if "us_g2_outpos" in t:
+				correct_outpos = ",".join("%d" % n for n in t["us_g2_outpos"])
+				result_outpos = ",".join("%d" % n for n in outpos)
+				if result_outpos != correct_outpos:
+					is_error = True
+			if is_error:
 				count += 1
 				f.write("text   : %s\n" % t["text"])
-				f.write("correct: %s\n" % t["us_g2"])
-				f.write("result : %s\n" % result)
+				if result != t["us_g2"]:
+					f.write("correct: %s\n" % t["us_g2"])
+					f.write("result : %s\n" % result)
+				if "us_g2_inpos2" in t and ",".join("%d" % n for n in inpos2) != ",".join("%d" % n for n in t["us_g2_inpos2"]):
+					f.write("correct_inpos2: %s\n" % ",".join("%d" % n for n in t["us_g2_inpos2"]))
+					f.write("result_inpos2: %s\n" % ",".join("%d" % n for n in inpos2))
+				if "us_g2_inpos" in t and ",".join("%d" % n for n in inpos) != ",".join("%d" % n for n in t["us_g2_inpos"]):
+					f.write("correct_inpos: %s\n" % ",".join("%d" % n for n in t["us_g2_inpos"]))
+					f.write("result_inpos: %s\n" % ",".join("%d" % n for n in inpos))
+				if "us_g2_outpos" in t and ",".join("%d" % n for n in outpos) != ",".join("%d" % n for n in t["us_g2_outpos"]):
+					f.write("correct_outpos: %s\n" % ",".join("%d" % n for n in t["us_g2_outpos"]))
+					f.write("result_outpos: %s\n" % ",".join("%d" % n for n in outpos))
 				if "comment" in t:
 					f.write(
 						"comment: %s\n"

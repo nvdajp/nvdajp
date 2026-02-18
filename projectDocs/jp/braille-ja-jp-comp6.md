@@ -171,8 +171,8 @@ eng2Harness.json の `v1.4` など、小数点を含むケースの期待値は�
    * `run_translator_louis()`: translator_louis の単体テスト（liblouis UEB G2）
    * `run_translator1()`: translator1 のテスト（カナと記号の変換。パイプライン3番目）
    * `run_eng2_grade1()`: eng2Harness の 1級（原文→translator2→translator1）
-   * `run_eng2_ueb_g2()`: eng2Harness の UEB 2級（原文→translator2(louis)→translator1）
-   * `run_eng2_us_g2()`: eng2Harness の US 2級（原文→translator2(louis)→translator1）
+   * `run_eng2_ueb_g2()`: eng2Harness の UEB 2級（原文→translator2(louis)→translator1）。`ueb_g2_inpos2` / `ueb_g2_inpos` / `ueb_g2_outpos` があるケースは位置マッピングも検証する
+   * `run_eng2_us_g2()`: eng2Harness の US 2級（原文→translator2(louis)→translator1）。`us_g2_inpos2` / `us_g2_inpos` / `us_g2_outpos` があるケースは位置マッピングも検証する
    * テストケースは `harness.json` / `nabccHarness.json` / `eng2Harness.json` から読み込まれる
 
 ### harness.json のテストケース形式
@@ -568,7 +568,7 @@ translator1（カナ→点字パターン変換）の回帰テストが相対的
 * **translator2.py**: ポジションマッピングは liblouis の `inPos` / `outPos` を使って `inpos2` を再構築する実装に更新済み（線形補間から置換）
 * **translator2.py**: `use_foreign_quotes=True` でも従来判定ロジックを維持し、必要箇所のみ `⠦...⠴` を付与する。`NonVisual Desktop Access (NVDA)` のような括弧付き英語句は1トークンに統合して引用符範囲を安定化
 * **仮想テーブル**: `ja-jp-comp6-ueb-g2.utb` / `ja-jp-comp6-us-g2.utb` が存在（内容は `ja-jp-comp6.utb` と同じひらがなテーブル。実際の変換は jpTranslate が行い、liblouis はこれらのテーブルを直接使わない）
-* **eng2Harness.json** — 14件のテストケース。各ケースに `output`（1級）、`ueb_g2`（UEB 2級）、`us_g2`（US 2級）の3種の期待値がある
+* **eng2Harness.json** — テストケース。各ケースに `output`（1級）、`ueb_g2`（UEB 2級）、`us_g2`（US 2級）の期待値がある。従来モードと解析が変わらないケース（英語のみ・引用符内）には `ueb_g2_inpos2` / `ueb_g2_inpos` / `ueb_g2_outpos` および `us_g2_inpos2` / `us_g2_inpos` / `us_g2_outpos` で位置マッピングの期待値を付与する。期待値の生成は `miscDepsJp/jptools/gen_eng2_posmap.py` で行える。
 
 ### 過去の実装で起きた問題
 
