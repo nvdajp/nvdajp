@@ -651,3 +651,57 @@ jpSmokeTests ジョブでキャッシュ復元後に辞書が「有効」と判�
 ### 再発時のクイック参照
 
 `projectDocs/jp/archive/troubleshooting_runjp_smoke_tests.md` の「result_mismatch の再発防止チェックリスト」を参照。
+
+---
+
+## nmake 辞書の意図せぬ使用による Verify JTalk dictionary 失敗 (2026-02-18)
+
+### 事象
+
+buildNVDA ジョブの「Verify JTalk dictionary」ステップが失敗。`verifyJtalkDictionary.ps1` の出力：
+
+| 入力 | 期待値 | 実際の結果 |
+|------|--------|-----------|
+| 一人 | ヒトリ | 1ニン |
+| 二人 | フタリ | 2ニン |
+| おはようございます | オハヨー ゴザイマス | オハヨーゴザイマス |
+
+### 根本原因（推定）
+
+**custom エントリ（一人→ヒトリ等）を含まない辞書が「有効」と判定され、make_jdic.py による再ビルドがスキップされていた。**
+
+辞書ビルドには2つの経路がある：
+
+1. **make_jdic.py**: `nvdajp-custom-dic.csv` を含む。一人→ヒトリ、二人→フタリ 等の custom エントリあり。DIC_VERSION に `"nvdajp-jtalk-dic (utf-8)"` を書き込む。
+2. **nmake** (libopenjtalk/mecab-naist-jdic の Makefile.mak): 標準 naist-jdic のみ。custom エントリなし。出力先は `vendor_base/libopenjtalk/mecab-naist-jdic`（`source/synthDrivers/jtalk/dic` ではない）。**nmake は DIC_VERSION ファイルを作成しない**（Makefile.mak は char.bin, matrix.bin, sys.dic, unk.dic のみ生成）。
+
+`jtalkSync` の `_dic_state()` は、従来以下のみを検証していた：
+
+* `sys.dic` の存在
+* `DIC_VERSION` に "utf-8" が含まれること
+* `DIC_CODEPAGE` が "932" であること
+
+**問題点**: DIC_VERSION に "utf-8" が含まれていれば make_jdic 由来とみなしていたが、**make_jdic 由来であることを保証するマーカーがなかった**。キャッシュ復元や部分的なビルド状態などで、custom エントリのない辞書が残り「有効」と誤判定されるケースを防げなかった。その結果、一人→1ニン（数字+人）のように標準 naist の解析結果が使われた。
+
+### 対策
+
+`jptools/scons_jp.py` の `_dic_state()` に **DIC_VERSION に "nvdajp" が含まれること** を必須条件として追加した。make_jdic.py のみが DIC_VERSION を書き込み、かつ "nvdajp" を含む。nmake は DIC_VERSION を作らないため、make_jdic 由来の辞書のみを「有効」と判定できる。
+
+```python
+# 修正後のロジック
+if "nvdajp" not in version_text:
+    print("dictionary not from make_jdic; rebuilding for custom entries.")
+elif "utf-8" in version_text or "utf8" in version_text:
+    has_utf8 = True
+```
+
+### リファクタリング時の注意点
+
+* **辞書の出所を区別する**: DIC_VERSION の "nvdajp" マーカーは、make_jdic 由来であることを示す。make_jdic のみが DIC_VERSION を書き込む。nmake は DIC_VERSION を作らないため、nvdajp チェックにより make_jdic 由来の辞書のみを有効と判定できる。
+* **検証の順序**: "nvdajp" チェックを utf-8 チェックより先に行う。nvdajp が無い場合は即座に再ビルド対象とする。
+* **verify_dic.py の役割**: 実行時検証として、translator2 の出力（一人→ヒトリ 等）を確認する。ビルド時の `_dic_state` は「どの辞書を再ビルドするか」の判定、verify_dic は「生成された辞書が正しいか」の検証と役割が異なる。
+
+### 参照
+
+* CI 失敗例: <https://github.com/nvdajp/nvdajp/actions/runs/22133746699/job/63980046473>
+* 実装: `jptools/scons_jp.py` の `_dic_state()`

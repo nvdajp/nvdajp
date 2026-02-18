@@ -4,18 +4,20 @@
 
 **症状**: `test_translator2` が `result_mismatch` で失敗。期待 `ヒトリ`／`フタリ`／`オハヨー ゴザイマス` に対し、実際は `1ニン`／`2ニン`／`オハヨーゴザイマス`（スペース欠落）など。
 
-**根本原因（過去の調査）**: MeCab の custom 辞書エントリ（一人→ヒトリ等）が適用されていない。主に次の2パターンで発生：
+**根本原因（過去の調査）**: MeCab の custom 辞書エントリ（一人→ヒトリ等）が適用されていない。主に次の3パターンで発生：
 
 | 原因 | 対策 | 参照 |
 |------|------|------|
 | 辞書ビルド時コードページ不一致 | buildNVDA の Prepare JTalk で `chcp 932` を実行してから jtalkSync | tab-character-analysis.md §CI環境での辞書ビルド時 |
 | CI キャッシュ汚染 | jtalkSync で DIC_CODEPAGE を検証、不正なら強制再ビルド。jpSmokeTests では DIC_VERSION/DIC_CODEPAGE 削除で辞書再ビルドを強制 | tab-character-analysis.md §CIキャッシュ汚染 |
+| make_jdic 由来でない辞書の誤判定 | jtalkSync の `_dic_state` で DIC_VERSION に "nvdajp" が含まれることを必須とする（make_jdic のみが DIC_VERSION を書き込む） | tab-character-analysis.md §nmake 辞書の意図せぬ使用 |
 
 **確認すること**:
 1. `.github/workflows/testAndPublish.yml` の Prepare JTalk に `chcp 932 >nul 2>&1 &&` が付いているか
 2. `jptools/scons_jp.py` の `_dic_state` で DIC_CODEPAGE をチェックし、`"932"` でなければ再ビルドするロジックがあるか
-3. `jptools/runJpSmokeTests.ps1` の CI 分岐で、DIC_VERSION/DIC_CODEPAGE を削除してから jtalkSync を呼んでいるか（キャッシュ由来の古い辞書を回避）
-4. `miscDepsJp/jptools/jtalk/custom_dic_maker.py` に 一人→ヒトリ、おはようございます→オハヨー ゴザイマス 等のエントリがあるか
+3. `jptools/scons_jp.py` の `_dic_state` で DIC_VERSION に "nvdajp" が含まれることをチェックしているか（make_jdic 由来の辞書のみ有効と判定するため）
+4. `jptools/runJpSmokeTests.ps1` の CI 分岐で、DIC_VERSION/DIC_CODEPAGE を削除してから jtalkSync を呼んでいるか（キャッシュ由来の古い辞書を回避）
+5. `miscDepsJp/jptools/jtalk/custom_dic_maker.py` に 一人→ヒトリ、おはようございます→オハヨー ゴザイマス 等のエントリがあるか
 
 **辞書妥当性の検証**:
 `jptools/verifyJtalkDictionary.ps1` は、辞書に custom エントリ（一人→ヒトリ等）が含まれているかを短時間で検証する。jtalkSync の直後に実行し、不正な辞書がキャッシュに保存されるのを防ぐ。CI では buildNVDA の Prepare JTalk 直後に実行する。ローカルでは `.\jptools\verifyJtalkDictionary.ps1` で実行可能（事前に `scons jtalkSync` を実行すること）。実体は `miscDepsJp/jptools/verify_dic.py`。

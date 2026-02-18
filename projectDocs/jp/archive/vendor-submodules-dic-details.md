@@ -14,6 +14,7 @@
 - 元の NAIST 辞書や関連入力は EUC-JP 前提の構成が多い。
 - 日本語版の現在フローでは、`jtalkSync` が辞書状態を検査し、必要時に `make_jdic.py` で再生成する。
 - 再生成後は UTF-8 マーカー（`DIC_VERSION`）を基準に辞書の整合性を判定する。
+- `make_jdic.py` は `DIC_VERSION` に `"nvdajp-jtalk-dic (utf-8)"` を書き込む。この "nvdajp" マーカーにより make_jdic 由来であることを示す（nmake は DIC_VERSION を作らない。2026-02 追加。詳細は `tab-character-analysis.md` §nmake 辞書の意図せぬ使用）。
 - これにより、文字コード不一致をビルド時に自動検出し、必要時のみ再生成できる。
 
 ## ディレクトリ役割（THISDIR / TEMPDIR / OUTDIR の文脈）
