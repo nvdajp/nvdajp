@@ -114,6 +114,17 @@ jobs:
         path: ${{ env.SCONS_CACHE_MSVC_CONFIG }}
         key: ${{ env.SCONS_CACHE_KEY }}
     # BEGIN JP PATCH (JP-specific build preparation)
+    # Force dictionary rebuild so custom entries (一人→ヒトリ etc.) are always included.
+    # Remove entire dic dir to ensure clean state (SCons may skip if markers exist).
+    # Exclusion from cache (below) prevents stale dic propagation to restore jobs.
+    - name: Force JTalk dictionary rebuild (JP-specific)
+      shell: pwsh
+      run: |
+        $dicDir = "source\synthDrivers\jtalk\dic"
+        if (Test-Path $dicDir) {
+          Remove-Item -Path $dicDir -Recurse -Force
+          Write-Host "Removed $dicDir to force fresh dictionary build"
+        }
     - name: Prepare JTalk (JP-specific)
       shell: cmd
       run: chcp 932 >nul 2>&1 && scons jtalkPrep jtalkSync %sconsArgs% %sconsCores%
