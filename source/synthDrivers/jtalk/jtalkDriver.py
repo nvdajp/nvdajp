@@ -29,7 +29,6 @@ from .jtalkCore import (  # noqa: E402
 )
 from .mecab import (  # noqa: E402
 	mecab,
-	Mecab_analysis,
 	Mecab_initialize,
 	Mecab_print,
 	Mecab_splitFeatures,
