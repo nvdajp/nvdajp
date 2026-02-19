@@ -16036,6 +16036,11 @@
         "output": "⠼⠋ ⠟⠴⠟⠴⠐⠳"
     },
     {
+        "text": "６点点字",
+        "input": "6テンテンジ",
+        "output": "⠼⠋⠟⠴⠟⠴⠐⠳"
+    },
+    {
         "comment": "https://github.com/nvdajp/nvdajp/issues/231",
         "text": "あっという間",
         "input": "アット イウ マ",
