@@ -30,12 +30,11 @@ from .jtalkCore import (  # noqa: E402
 from .mecab import (  # noqa: E402
 	mecab,
 	Mecab_analysis,
-	Mecab_correctFeatures,
 	Mecab_initialize,
-	MecabFeatures,
 	Mecab_print,
 	Mecab_splitFeatures,
 	Mecab_utf8_to_cp932,
+	mecab_analyze_and_correct,
 )
 from .text2mecab import text2mecab  # noqa: E402
 from . import jtalkPrepare  # noqa: E402
@@ -187,11 +186,7 @@ def _jtalk_speak(msg: str, index: int | None = None, prop: Any = None) -> None:
 		if not isSpeaking():
 			libjt_refresh()
 			return
-		mf = MecabFeatures()
-		Mecab_analysis(s, mf, logwrite_=logwrite)
-		if DEBUG:
-			Mecab_print(mf, logwrite)
-		Mecab_correctFeatures(mf)
+		mf = mecab_analyze_and_correct(s, logwrite_=logwrite)
 		if DEBUG:
 			Mecab_print(mf, logwrite)
 		ar = Mecab_splitFeatures(mf, CODE_="utf-8")
