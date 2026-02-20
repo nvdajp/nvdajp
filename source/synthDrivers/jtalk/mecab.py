@@ -176,6 +176,28 @@ class MecabFeatures(NonblockingMecabFeatures):
 		lock.release()
 
 
+def mecab_analyze_and_correct(
+	src: bytes, logwrite_: LogWriteFunc = None
+) -> NonblockingMecabFeatures:
+	"""Run Mecab_analysis and Mecab_correctFeatures with minimal lock duration.
+
+	nvdajp/nvdajp#114: When JTalk (speech) and braille display both use MeCab,
+	they contend on a single lock. Previously MecabFeatures held the lock for
+	its entire lifetime including during libjt_synthesis (which can take seconds).
+	This blocked braille updates on the main thread, causing lag and unresponsive
+	speech cancellation when pressing cursor keys rapidly.
+
+	This helper holds the lock only during the actual MeCab DLL calls. Callers
+	can then process the returned features (Mecab_splitFeatures, mecab_to_morphs,
+	libjt_synthesis, etc.) without blocking other MeCab consumers.
+	"""
+	mf = NonblockingMecabFeatures()
+	with lock:
+		Mecab_analysis(src, mf, logwrite_=logwrite_)
+		Mecab_correctFeatures(mf)
+	return mf
+
+
 def Mecab_initialize(
 	logwrite_: LogWriteFunc = None,
 	libmecab_dir: str | Path | None = None,

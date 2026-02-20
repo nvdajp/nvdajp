@@ -15,11 +15,10 @@ try:
 	from ._nvdajp_unicode import unicode_normalize
 	from .mecab import (
 		CODE,
-		MecabFeatures,
-		Mecab_analysis,
-		Mecab_correctFeatures,
 		Mecab_initialize,
 		Mecab_print,
+		NonblockingMecabFeatures,
+		mecab_analyze_and_correct,
 	)
 	from .text2mecab import text2mecab
 	from . import translator1
@@ -28,11 +27,10 @@ except (ImportError, ValueError):
 	from _nvdajp_unicode import unicode_normalize  # type: ignore
 	from mecab import (  # type: ignore
 		CODE,
-		MecabFeatures,
-		Mecab_analysis,
-		Mecab_correctFeatures,
 		Mecab_initialize,
 		Mecab_print,
+		NonblockingMecabFeatures,
+		mecab_analyze_and_correct,
 	)
 	from text2mecab import text2mecab  # type: ignore
 	import translator1  # type: ignore
@@ -232,7 +230,7 @@ def update_phonetic_symbols(mo: MecabMorph) -> None:
 			mo.output = mo.output[:p] + mo.kana[p] + mo.output[p + 1 :]
 
 
-def mecab_to_morphs(mf: MecabFeatures | None) -> list[MecabMorph]:
+def mecab_to_morphs(mf: NonblockingMecabFeatures | None) -> list[MecabMorph]:
 	li: list[MecabMorph] = []
 	if mf is None or mf.feature is None or mf.size is None:
 		return li
@@ -1429,9 +1427,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 		if logwrite:
 			logwrite("translator2: consecutive ASCII spaces detected")
 	text = text2mecab(text)
-	mf = MecabFeatures()
-	Mecab_analysis(text, mf, logwrite_=logwrite)
-	Mecab_correctFeatures(mf)
+	mf = mecab_analyze_and_correct(text, logwrite_=logwrite)
 	Mecab_print(mf, logwrite, output_header=False)
 	li = mecab_to_morphs(mf)
 	mf = None

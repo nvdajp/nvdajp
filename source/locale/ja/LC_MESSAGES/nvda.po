@@ -9291,7 +9291,7 @@ msgstr "日本語漢点字"
 #. braille settings dialog.
 #: brailleTables\__tables.py:330
 msgid "Japanese (Rokuten Kanji) Braille"
-msgstr "日本語(6点漢字)"
+msgstr "日本語6点漢字"
 
 #. Translators: The name of a braille table displayed in the
 #. braille settings dialog.
