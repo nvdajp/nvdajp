@@ -2812,7 +2812,7 @@ class GlobalCommands(ScriptableObject):
 			if _isDebugLogCatEnabled:
 				log.debug(f"Trying focus object: {focus}")
 
-			if objAtStart.annotations:
+			if focus.annotations:
 				if _isDebugLogCatEnabled:
 					log.debug("focus object has details, able to proceed")
 				return focus
