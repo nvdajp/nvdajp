@@ -215,6 +215,7 @@ def nvdaController_speakSpelling(text: str) -> SystemErrorCodes:
 	return SystemErrorCodes.SUCCESS
 
 
+# BEGIN JP PATCH
 # nvdajp: controller client JP extensions for 2025.3.xjp parity (controller-client-api-review.md)
 def _runOnEventQueueAndGetResult(func, *args, **kwargs):
 	"""Run func on eventQueue and return its result. Used by sync RPC handlers."""
@@ -350,6 +351,7 @@ def nvdaController_setAppSleepMode(mode: int) -> SystemErrorCodes:
 	return SystemErrorCodes.SUCCESS
 
 
+# END JP PATCH
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf = create_unicode_buffer(1024)
 	bufSize = c_ulong(2048)
