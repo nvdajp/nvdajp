@@ -52,6 +52,13 @@ EXPORTS
 	_nvdaController_cancelSpeech DATA
 	_nvdaController_speakText DATA
 	_nvdaController_speakSsml DATA
+	_nvdaController_speakSpelling DATA
+	_nvdaController_isSpeaking DATA
+	_nvdaController_getPitch DATA
+	_nvdaController_setPitch DATA
+	_nvdaController_getRate DATA
+	_nvdaController_setRate DATA
+	_nvdaController_setAppSleepMode DATA
 	nvdaController_onSsmlMarkReached
 	_nvdaControllerInternal_vbufChangeNotify DATA
 	displayModel_getWindowTextInRect
