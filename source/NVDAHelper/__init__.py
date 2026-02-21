@@ -216,7 +216,7 @@ def nvdaController_speakSpelling(text: str) -> SystemErrorCodes:
 
 
 # BEGIN JP PATCH
-# nvdajp: controller client JP extensions for 2025.3.xjp parity (controller-client-api-review.md)
+# nvdajp: controller client JP extensions for 2025.3.xjp parity (controller-client.md)
 def _runOnEventQueueAndGetResult(func, *args, **kwargs):
 	"""Run func on eventQueue and return its result. Used by sync RPC handlers."""
 	from queue import SimpleQueue
