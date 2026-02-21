@@ -98,7 +98,6 @@
 ### API・外部連携
 
 * Controller Client API: `projectDocs/jp/controller-client.md`（[Wiki](https://github.com/nvdajp/nvdajp/wiki/ControllerClient) の正本）
-* Controller Client API 実装レビュー: `projectDocs/jp/controller-client-api-review.md`
 
 ### 翻訳・PO運用
 
