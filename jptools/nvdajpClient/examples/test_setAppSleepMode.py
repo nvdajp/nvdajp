@@ -1,9 +1,13 @@
 # coding: utf-8
-from ctypes import *  # noqa: F403
+# NVDA日本語版拡張 nvdaController_setAppSleepMode のデモ (wx が必要)
+# Usage: python test_setAppSleepMode.py  (NVDA 起動後、examples/ から実行)
+
+import ctypes
 import wx
 
-DLLPATH = r"..\client\nvdaControllerClient32.dll"
-clientLib = windll.LoadLibrary(DLLPATH)  # noqa: F405
+from _dll_path import get_nvda_controller_client_dll_path
+
+clientLib = ctypes.windll.LoadLibrary(get_nvda_controller_client_dll_path())
 
 
 def nvdaRunning():

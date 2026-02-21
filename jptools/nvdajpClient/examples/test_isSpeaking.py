@@ -1,9 +1,13 @@
 # coding: utf-8
+# NVDA日本語版拡張 nvdaController_isSpeaking のデモ
+# Usage: python test_isSpeaking.py  (NVDA 起動後、examples/ から実行)
+
 import time
 import ctypes
 
-DLLPATH = r"..\client\nvdaControllerClient32.dll"
-clientLib = ctypes.windll.LoadLibrary(DLLPATH)
+from _dll_path import get_nvda_controller_client_dll_path
+
+clientLib = ctypes.windll.LoadLibrary(get_nvda_controller_client_dll_path())
 res = clientLib.nvdaController_testIfRunning()
 if res != 0:
 	raise ctypes.WinError(res)

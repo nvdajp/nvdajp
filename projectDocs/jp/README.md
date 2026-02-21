@@ -95,6 +95,10 @@
 * 日本語点字出力テーブル: `projectDocs/jp/braille-ja-jp-comp6.md`
 * 点字関連分析: `projectDocs/jp/braille-routing-analysis.md`、`projectDocs/jp/braille-tables-relationship.md`
 
+### API・外部連携
+
+* Controller Client API: `projectDocs/jp/controller-client.md`（[Wiki](https://github.com/nvdajp/nvdajp/wiki/ControllerClient) の正本）
+
 ### 翻訳・PO運用
 
 * PO マージ手順: `projectDocs/jp/po-merge-procedure.md`

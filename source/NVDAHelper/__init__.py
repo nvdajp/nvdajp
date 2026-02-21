@@ -203,6 +203,155 @@ def nvdaController_brailleMessage(text: str) -> SystemErrorCodes:
 	return SystemErrorCodes.SUCCESS
 
 
+# nvdajp: nvdaController_speakSpelling handler (issue #642)
+@WINFUNCTYPE(c_long, c_wchar_p)
+def nvdaController_speakSpelling(text: str) -> SystemErrorCodes:
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
+		return -1
+	import speech
+
+	queueHandler.queueFunction(queueHandler.eventQueue, speech.speakSpelling, text)
+	return SystemErrorCodes.SUCCESS
+
+
+# BEGIN JP PATCH
+# nvdajp: controller client JP extensions for 2025.3.xjp parity (controller-client.md)
+def _runOnEventQueueAndGetResult(func, *args, **kwargs):
+	"""Run func on eventQueue and return its result. Used by sync RPC handlers."""
+	from queue import SimpleQueue
+
+	resultQueue = SimpleQueue()
+
+	def wrapper():
+		try:
+			result = func(*args, **kwargs)
+			resultQueue.put_nowait(("ok", result))
+		except Exception as e:
+			log.exception("Error in _runOnEventQueueAndGetResult")
+			resultQueue.put_nowait(("err", e))
+
+	queueHandler.queueFunction(queueHandler.eventQueue, wrapper)
+	status, value = resultQueue.get()
+	if status == "err":
+		raise value
+	return value
+
+
+@WINFUNCTYPE(c_long)
+def nvdaController_isSpeaking() -> int:
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
+		return -1
+
+	import synthDriverHandler
+
+	def _get():
+		synth = synthDriverHandler.getSynth()
+		if synth is None:
+			return 0
+		# Synth may have isSpeaking (JTalk, OneCore) or deprecated _isSpeaking (SAPI5)
+		isSpk = getattr(synth, "isSpeaking", None)
+		if callable(isSpk):
+			return 1 if isSpk() else 0
+		if hasattr(synth, "_isSpeaking"):
+			return 1 if synth._isSpeaking else 0
+		return 0
+
+	return _runOnEventQueueAndGetResult(_get)
+
+
+@WINFUNCTYPE(c_long)
+def nvdaController_getPitch() -> int:
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
+		return -1
+
+	import synthDriverHandler
+
+	def _get():
+		synth = synthDriverHandler.getSynth()
+		if synth is None or not synth.isSupported("pitch"):
+			return 0
+		return synth.pitch
+
+	return _runOnEventQueueAndGetResult(_get)
+
+
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setPitch(nPitch: int) -> SystemErrorCodes:
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
+		return -1
+	nPitch = max(0, min(100, nPitch))
+
+	import synthDriverHandler
+
+	def _set():
+		synth = synthDriverHandler.getSynth()
+		if synth is not None and synth.isSupported("pitch"):
+			synth.pitch = nPitch
+
+	_runOnEventQueueAndGetResult(_set)
+	return SystemErrorCodes.SUCCESS
+
+
+@WINFUNCTYPE(c_long)
+def nvdaController_getRate() -> int:
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
+		return -1
+
+	import synthDriverHandler
+
+	def _get():
+		synth = synthDriverHandler.getSynth()
+		if synth is None or not synth.isSupported("rate"):
+			return 0
+		return synth.rate
+
+	return _runOnEventQueueAndGetResult(_get)
+
+
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setRate(nRate: int) -> SystemErrorCodes:
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
+		return -1
+	nRate = max(0, min(100, nRate))
+
+	import synthDriverHandler
+
+	def _set():
+		synth = synthDriverHandler.getSynth()
+		if synth is not None and synth.isSupported("rate"):
+			synth.rate = nRate
+
+	_runOnEventQueueAndGetResult(_set)
+	return SystemErrorCodes.SUCCESS
+
+
+@WINFUNCTYPE(c_long, c_int)
+def nvdaController_setAppSleepMode(mode: int) -> SystemErrorCodes:
+	focus = api.getFocusObject()
+	if focus.sleepMode == focus.SLEEP_FULL:
+		return -1
+
+	def _set():
+		curFocus = api.getFocusObject()
+		if curFocus and curFocus.appModule:
+			if mode != 0:
+				eventHandler.executeEvent("loseFocus", curFocus)
+				curFocus.appModule.sleepMode = True
+			else:
+				curFocus.appModule.sleepMode = False
+				eventHandler.executeEvent("gainFocus", curFocus)
+
+	_runOnEventQueueAndGetResult(_set)
+	return SystemErrorCodes.SUCCESS
+
+
+# END JP PATCH
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf = create_unicode_buffer(1024)
 	bufSize = c_ulong(2048)
@@ -1032,6 +1181,13 @@ def initialize() -> None:
 		("nvdaController_speakSsml", nvdaController_speakSsml),
 		("nvdaController_cancelSpeech", nvdaController_cancelSpeech),
 		("nvdaController_brailleMessage", nvdaController_brailleMessage),
+		("nvdaController_speakSpelling", nvdaController_speakSpelling),
+		("nvdaController_isSpeaking", nvdaController_isSpeaking),
+		("nvdaController_getPitch", nvdaController_getPitch),
+		("nvdaController_setPitch", nvdaController_setPitch),
+		("nvdaController_getRate", nvdaController_getRate),
+		("nvdaController_setRate", nvdaController_setRate),
+		("nvdaController_setAppSleepMode", nvdaController_setAppSleepMode),
 		("nvdaControllerInternal_requestRegistration", nvdaControllerInternal_requestRegistration),
 		("nvdaControllerInternal_reportLiveRegion", nvdaControllerInternal_reportLiveRegion),
 		("nvdaControllerInternal_inputLangChangeNotify", nvdaControllerInternal_inputLangChangeNotify),
