@@ -51,39 +51,61 @@ error_status_t __stdcall nvdaController_brailleMessage(const wchar_t* text) {
 	return _nvdaController_brailleMessage(text);
 }
 
-error_status_t(__stdcall *_nvdaController_setAppSleepMode)(const int mode);
+error_status_t(__stdcall *_nvdaController_setAppSleepMode)(const int mode) = nullptr;
 
-error_status_t(__stdcall *_nvdaController_speakSpelling)(const wchar_t*);
+error_status_t(__stdcall *_nvdaController_speakSpelling)(const wchar_t*) = nullptr;
 error_status_t __stdcall nvdaController_speakSpelling(const wchar_t* text) {
+	if (_nvdaController_speakSpelling == nullptr) {
+		return ERROR_CALL_NOT_IMPLEMENTED;
+	}
 	return _nvdaController_speakSpelling(text);
 }
 
-error_status_t(__stdcall *_nvdaController_isSpeaking)();
+// nvdajp: nullptr check for unregistered handlers (see controller-client-api-review.md)
+error_status_t(__stdcall *_nvdaController_isSpeaking)() = nullptr;
 error_status_t __stdcall nvdaController_isSpeaking() {
+	if (_nvdaController_isSpeaking == nullptr) {
+		return ERROR_CALL_NOT_IMPLEMENTED;
+	}
 	return _nvdaController_isSpeaking();
 }
 
-error_status_t(__stdcall *_nvdaController_getPitch)();
+error_status_t(__stdcall *_nvdaController_getPitch)() = nullptr;
 error_status_t __stdcall nvdaController_getPitch() {
+	if (_nvdaController_getPitch == nullptr) {
+		return ERROR_CALL_NOT_IMPLEMENTED;
+	}
 	return _nvdaController_getPitch();
 }
 
-error_status_t(__stdcall *_nvdaController_setPitch)(const int);
+error_status_t(__stdcall *_nvdaController_setPitch)(const int) = nullptr;
 error_status_t __stdcall nvdaController_setPitch(const int nPitch) {
+	if (_nvdaController_setPitch == nullptr) {
+		return ERROR_CALL_NOT_IMPLEMENTED;
+	}
 	return _nvdaController_setPitch(nPitch);
 }
 
-error_status_t(__stdcall *_nvdaController_getRate)();
+error_status_t(__stdcall *_nvdaController_getRate)() = nullptr;
 error_status_t __stdcall nvdaController_getRate() {
+	if (_nvdaController_getRate == nullptr) {
+		return ERROR_CALL_NOT_IMPLEMENTED;
+	}
 	return _nvdaController_getRate();
 }
 
-error_status_t(__stdcall *_nvdaController_setRate)(const int);
+error_status_t(__stdcall *_nvdaController_setRate)(const int) = nullptr;
 error_status_t __stdcall nvdaController_setRate(const int nRate) {
+	if (_nvdaController_setRate == nullptr) {
+		return ERROR_CALL_NOT_IMPLEMENTED;
+	}
 	return _nvdaController_setRate(nRate);
 }
 
 error_status_t __stdcall nvdaController_setAppSleepMode(const int mode) {
+	if (_nvdaController_setAppSleepMode == nullptr) {
+		return ERROR_CALL_NOT_IMPLEMENTED;
+	}
 	return _nvdaController_setAppSleepMode(mode);
 }
 

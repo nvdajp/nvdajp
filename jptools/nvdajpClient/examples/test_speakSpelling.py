@@ -1,13 +1,13 @@
 # coding: utf-8
-# 日本語版で拡張した speakSpelling を追加した DLL は
-# scons nvdaHelper\client で作成する必要があります。
-# いちおう以下の Python コードで「カタカナ ひらがな」をピッチを変えて出力できていることは確認しました。
+# NVDA日本語版拡張 nvdaController_speakSpelling のデモ
+# Usage: python test_speakSpelling.py  (NVDA 起動後、jptools/nvdajpClient/examples/ から実行)
 
 import time
 import ctypes
 
-DLLPATH = "../newClient/nvdaHelper/build/x86/client/nvdaControllerClient32.dll"
-clientLib = ctypes.windll.LoadLibrary(DLLPATH)
+from _dll_path import get_nvda_controller_client_dll_path
+
+clientLib = ctypes.windll.LoadLibrary(get_nvda_controller_client_dll_path())
 res = clientLib.nvdaController_testIfRunning()
 if res != 0:
 	errorMessage = str(ctypes.WinError(res))
