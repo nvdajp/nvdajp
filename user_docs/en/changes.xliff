@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en">
-<file id="changes.md" original="https://raw.githubusercontent.com/nvaccess/nvda/bb1d7d834ef6f36f826e14be54c9aa665fff824c/user_docs/en/changes.md">
+<file id="changes.md" original="https://raw.githubusercontent.com/nvaccess/nvda/de25943063154aff2235f0a7b017d53003cb3b3f/user_docs/en/changes.md">
 <skeleton>
 # $(ID:4bf3ec03-2d43-474a-aef0-92b334e594ed)
 
@@ -199,7 +199,7 @@ $(ID:aa8fc036-8205-409c-aeeb-d6edd79409e2)
 $(ID:2eca8023-090a-47e5-82ee-62447ab18f45)
 * $(ID:df2b6aab-bcc9-4fca-9e48-059e4950791d)
 * $(ID:e2cb9128-301f-4d5b-a4fc-319056960def)
-* $(ID:571dff68-a1f0-4d38-8129-41acd2f292ca)
+* $(ID:83cf8d08-aacf-4148-b6b4-6e56b5f50f82)
 * $(ID:384cc255-1841-45de-a59d-0b44f445dd60)
 $(ID:e6a3c7ef-d87b-4d7a-894f-60778c066797)
 * $(ID:2da51787-e3e7-47bc-9d1e-af3f3524e8ee)
@@ -251,7 +251,7 @@ $(ID:d872ca82-ec10-4605-90b1-cd7125692f90)
   * $(ID:8e3d8f5a-fa2e-4edf-98ea-4f0944667717)
   * $(ID:640b487a-4117-4c54-a1d3-57bbc6f78a89)
   * $(ID:47f24317-e089-4f60-962e-4ce40973db53)
-* $(ID:fbb23762-1a7e-4241-aa57-71d7cc59c26f)
+* $(ID:60e27811-ce0e-42f1-a2f9-51c8d3adde28)
 * $(ID:67e052fb-df7c-4580-99f7-0bcdbc05bd6e)
 * $(ID:c416459a-d468-4a38-8f32-ff28597cc943)
 * $(ID:b72798af-9c26-4871-bafa-01ef0ba52427)
@@ -7477,13 +7477,13 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 <source>`winUser.Input_I` and `winUser.PUL` have been removed, with no replacement. (#18883)</source>
 </segment>
 </unit>
-<unit id="571dff68-a1f0-4d38-8129-41acd2f292ca">
+<unit id="83cf8d08-aacf-4148-b6b4-6e56b5f50f82">
 <notes>
 <note appliesTo="source">line: 199</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
-<source>The `inputButtonCaps` property on `hwIo.hid.Hid` objects now correctly returns an array of `hidpi.HIDP_BUTTON_CAPS` structures rather than HIDP_VALUE_CAPS` structures. (#18902)</source>
+<source>The `inputButtonCaps` property on `hwIo.hid.Hid` objects now correctly returns an array of `hidpi.HIDP_BUTTON_CAPS` structures rather than `HIDP_VALUE_CAPS` structures. (#18902)</source>
 </segment>
 </unit>
 <unit id="384cc255-1841-45de-a59d-0b44f445dd60">
@@ -7936,13 +7936,13 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
 <source>`isScreenFullyBlack` has been moved to `NVDAHelper.localLib`. (#18958)</source>
 </segment>
 </unit>
-<unit id="fbb23762-1a7e-4241-aa57-71d7cc59c26f">
+<unit id="60e27811-ce0e-42f1-a2f9-51c8d3adde28">
 <notes>
 <note appliesTo="source">line: 251</note>
 <note appliesTo="source">prefix: * </note>
 </notes>
 <segment>
-<source>`config.conf["vision"]["screenCurtain"]` has been moved to `config.conf["screenCurtain"]. (#19177)</source>
+<source>`config.conf["vision"]["screenCurtain"]` has been moved to `config.conf["screenCurtain"]`. (#19177)</source>
 </segment>
 </unit>
 <unit id="67e052fb-df7c-4580-99f7-0bcdbc05bd6e">
