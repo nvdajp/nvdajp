@@ -451,32 +451,27 @@ def NVDADistGenerator(target, source, env, for_signature):
 
 	action.append(buildCmd)
 
-	# BEGIN JP PATCH (certificate store signing support)
-	if certFile or apiSigningToken or useCertStore:
-		# Sign exes. Actions are built at generator time when dist does not exist yet, so do not
-		# check os.path.isfile here — always add sign actions. setup.py runs before these and
-		# creates the main exes and (if present) copies synthDriverHost-runtime into dist.
-		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
-			action.append(
-				lambda target, source, env, progByVal=prog: env["signExec"](
-					[target[0].File(progByVal)], source, env
-				)
-			)
-		# nvda_synthDriverHost.exe may be absent if synthDriverHost runtime was not built; sign only if present.
-		_synth_host_prog = os.path.join("lib", version, "x86", "synthDriverHost-runtime", "nvda_synthDriverHost.exe")
-		def _sign_synth_host_if_present(target, source, env, prog=_synth_host_prog):
-			f = target[0].File(prog)
-			if os.path.isfile(f.abspath):
-				env["signExec"]([f], source, env)
-		action.append(_sign_synth_host_if_present)
-	# END JP PATCH (certificate store signing support)
-
 	action.extend((Delete(buildVersionFn), Delete(importlib.util.cache_from_source(buildVersionFn))))
 
 	return action
 
 
 env["BUILDERS"]["NVDADist"] = Builder(generator=NVDADistGenerator, target_factory=Dir)
+
+
+# BEGIN JP PATCH (certificate store signing support)
+def _sign_dist_exes_post_action(target, source, env):
+	"""Sign exes in dist after NVDADist has run. Used as PostAction so signing runs reliably."""
+	dist_dir = target[0]
+	for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
+		f = dist_dir.File(prog)
+		if os.path.isfile(f.abspath):
+			env["signExec"]([f], source, env)
+	synth_prog = os.path.join("lib", env["version"], "x86", "synthDriverHost-runtime", "nvda_synthDriverHost.exe")
+	f = dist_dir.File(synth_prog)
+	if os.path.isfile(f.abspath):
+		env["signExec"]([f], source, env)
+# END JP PATCH (certificate store signing support)
 
 
 # A builder to generate a zip archive.
@@ -558,6 +553,8 @@ devDocTargets = env.SConscript(
 )
 # BEGIN JP PATCH (certificate store signing support)
 dist = env.NVDADist("dist", [sourceDir, userDocsDir], uiAccess=bool(certFile) or bool(apiSigningToken) or useCertStore)
+if certFile or apiSigningToken or useCertStore:
+	env.AddPostAction(dist, _sign_dist_exes_post_action)
 # END JP PATCH (certificate store signing support)
 env.Depends(dist, uninstaller)
 env.Depends(dist, devDocTargets)
