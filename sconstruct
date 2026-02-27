@@ -460,9 +460,9 @@ env["BUILDERS"]["NVDADist"] = Builder(generator=NVDADistGenerator, target_factor
 
 
 # BEGIN JP PATCH (certificate store signing support)
-def _sign_dist_exes_post_action(target, source, env):
-	"""Sign exes in dist after NVDADist has run. Used as PostAction so signing runs reliably."""
-	dist_dir = target[0]
+def _sign_dist_exes_cmd(target, source, env):
+	"""Sign exes in dist. Used as Command action so jpCertExtras can depend on this stamp (correct order)."""
+	dist_dir = source[0]
 	for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
 		f = dist_dir.File(prog)
 		if os.path.isfile(f.abspath):
@@ -471,6 +471,9 @@ def _sign_dist_exes_post_action(target, source, env):
 	f = dist_dir.File(synth_prog)
 	if os.path.isfile(f.abspath):
 		env["signExec"]([f], source, env)
+	# Mark stamp so jpCertExtras runs after this
+	with open(target[0].abspath, "w", encoding="utf-8") as _:
+		pass
 # END JP PATCH (certificate store signing support)
 
 
@@ -553,8 +556,11 @@ devDocTargets = env.SConscript(
 )
 # BEGIN JP PATCH (certificate store signing support)
 dist = env.NVDADist("dist", [sourceDir, userDocsDir], uiAccess=bool(certFile) or bool(apiSigningToken) or useCertStore)
+dist_exes_signed_stamp = None
 if certFile or apiSigningToken or useCertStore:
-	env.AddPostAction(dist, _sign_dist_exes_post_action)
+	dist_exes_signed_stamp = env.File("output/_dist_exes_signed.stamp")
+	env.AlwaysBuild(dist_exes_signed_stamp)
+	env.Command(dist_exes_signed_stamp, dist, _sign_dist_exes_cmd)
 # END JP PATCH (certificate store signing support)
 env.Depends(dist, uninstaller)
 env.Depends(dist, devDocTargets)
@@ -572,9 +578,10 @@ try:
 
 	# Always register JP builders in this repo; miscDepsJp overlay is required
 	# for a correct build layout regardless of publisher.
-	# Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds)
+	# Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds).
+	# Pass dist_exes_signed_stamp when signing so jpCertExtras runs after dist exes are signed.
 	# Pass sourceDir so it can depend on jtalkSync with current TARGET_ARCH (ensures correct architecture-specific builds)
-	scons_jp.register_jp_builders(env, dist_target=dist, source_dir=sourceDir)
+	scons_jp.register_jp_builders(env, dist_target=dist, source_dir=sourceDir, dist_exes_signed_stamp=dist_exes_signed_stamp)
 except Exception as e:
 	# Never fail the build if JP helpers are unavailable.
 	# Log the exception for debugging purposes (e.g., during development)

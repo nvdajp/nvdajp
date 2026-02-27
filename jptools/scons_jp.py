@@ -359,7 +359,12 @@ def _filter_untracked(repo_root: Path, paths: list[str]) -> list[str]:
 	return out
 
 
-def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: Any | None = None) -> None:
+def register_jp_builders(
+	env: Any,
+	dist_target: Any | None = None,
+	source_dir: Any | None = None,
+	dist_exes_signed_stamp: Any | None = None,
+) -> None:
 	"""Register JP-specific aliases without affecting upstream targets.
 
 	Args:
@@ -368,6 +373,8 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					to ensure correct ordering in parallel builds (--all-cores).
 		source_dir: Optional source directory node from sconstruct. If provided, sourceDir will depend on
 					jtalkSync with the current TARGET_ARCH to ensure correct architecture-specific builds.
+		dist_exes_signed_stamp: Optional stamp from sconstruct (output/_dist_exes_signed.stamp).
+					When set, jpCertExtras depends on it so dist exes are signed before jpCertExtras.
 	"""
 	# Use BUILD_ARCH (JP-specific) to set TARGET_ARCH (SCons environment variable).
 	# BUILD_ARCH is an OS environment variable for JP-specific purposes (mainly smoke test environment switching).
@@ -1203,13 +1210,13 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 
 	jp_cert_extras_stamp = env.File("output/_jp_cert_extras.stamp")
 	env.AlwaysBuild(jp_cert_extras_stamp)
-	# Make jpCertExtras depend on dist target to ensure dist/ is fully built before signing
-	# This ensures correct ordering even in parallel builds (--all-cores)
-	if dist_target is not None:
-		# Use dist target from sconstruct (most reliable for parallel builds)
+	# Make jpCertExtras depend on dist (or dist_exes_signed_stamp when signing) so ordering is correct.
+	# When dist_exes_signed_stamp is set, dist exes are signed before jpCertExtras runs (fixes jpVerifySignatures).
+	if dist_exes_signed_stamp is not None:
+		env.Command(jp_cert_extras_stamp, dist_exes_signed_stamp, _cert_extras)
+	elif dist_target is not None:
 		env.Command(jp_cert_extras_stamp, dist_target, _cert_extras)
 	else:
-		# Fallback: use dist directory node (less safe in parallel builds, but works)
 		dist_dir_node = env.Dir("dist")
 		env.Command(jp_cert_extras_stamp, dist_dir_node, _cert_extras)
 	env.Alias("jpCertExtras", jp_cert_extras_stamp)
