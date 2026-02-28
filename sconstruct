@@ -451,44 +451,22 @@ def NVDADistGenerator(target, source, env, for_signature):
 
 	action.append(buildCmd)
 
+	# BEGIN JP PATCH (certificate store signing support)
+	if certFile or apiSigningToken or useCertStore:
+	# END JP PATCH (certificate store signing support)
+		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
+			action.append(
+				lambda target, source, env, progByVal=prog: env["signExec"](
+					[target[0].File(progByVal)], source, env
+				)
+			)
+
 	action.extend((Delete(buildVersionFn), Delete(importlib.util.cache_from_source(buildVersionFn))))
 
 	return action
 
 
 env["BUILDERS"]["NVDADist"] = Builder(generator=NVDADistGenerator, target_factory=Dir)
-
-
-# BEGIN JP PATCH (certificate store signing support)
-def _sign_dist_exes_cmd(target, source, env):
-	"""Sign exes in dist. Used as Command action so jpCertExtras/launcher run after this.
-	Invoked when building launcher via certBuild2023.cmd (e.g. from betajp.ps1 -> build.cmd -> uv run certBuild2023.cmd).
-	"""
-	dist_dir = source[0]
-	dist_path = dist_dir.abspath
-	print("Signing dist exes in %s (dist_exes_signed)" % dist_path)
-	signed = 0
-	for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
-		f = dist_dir.File(prog)
-		path = os.path.join(dist_path, prog)
-		if os.path.isfile(path):
-			res = env["signExec"]([f], source, env)
-			if res:
-				return res
-			signed += 1
-	synth_prog = os.path.join("lib", env["version"], "x86", "synthDriverHost-runtime", "nvda_synthDriverHost.exe")
-	f = dist_dir.File(synth_prog)
-	path = os.path.join(dist_path, synth_prog)
-	if os.path.isfile(path):
-		res = env["signExec"]([f], source, env)
-		if res:
-			return res
-		signed += 1
-	print("Signed %d dist exe(s)" % signed)
-	with open(target[0].abspath, "w", encoding="utf-8"):
-		pass
-	return 0
-# END JP PATCH (certificate store signing support)
 
 
 # A builder to generate a zip archive.
@@ -570,11 +548,6 @@ devDocTargets = env.SConscript(
 )
 # BEGIN JP PATCH (certificate store signing support)
 dist = env.NVDADist("dist", [sourceDir, userDocsDir], uiAccess=bool(certFile) or bool(apiSigningToken) or useCertStore)
-dist_exes_signed_stamp = None
-if certFile or apiSigningToken or useCertStore:
-	dist_exes_signed_stamp = env.File("output/_dist_exes_signed.stamp")
-	env.AlwaysBuild(dist_exes_signed_stamp)
-	env.Command(dist_exes_signed_stamp, dist, _sign_dist_exes_cmd)
 # END JP PATCH (certificate store signing support)
 env.Depends(dist, uninstaller)
 env.Depends(dist, devDocTargets)
@@ -592,10 +565,9 @@ try:
 
 	# Always register JP builders in this repo; miscDepsJp overlay is required
 	# for a correct build layout regardless of publisher.
-	# Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds).
-	# Pass dist_exes_signed_stamp when signing so jpCertExtras runs after dist exes are signed.
+	# Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds)
 	# Pass sourceDir so it can depend on jtalkSync with current TARGET_ARCH (ensures correct architecture-specific builds)
-	scons_jp.register_jp_builders(env, dist_target=dist, source_dir=sourceDir, dist_exes_signed_stamp=dist_exes_signed_stamp)
+	scons_jp.register_jp_builders(env, dist_target=dist, source_dir=sourceDir)
 except Exception as e:
 	# Never fail the build if JP helpers are unavailable.
 	# Log the exception for debugging purposes (e.g., during development)
@@ -629,9 +601,6 @@ if certFile or apiSigningToken or useCertStore:
 # END JP PATCH (certificate store signing support)
 	env.AddPostAction(launcher, [env["signExec"]])
 env.Alias("launcher", launcher)
-# Ensure dist exes are signed before launcher is built (same as jpCertExtras dependency)
-if dist_exes_signed_stamp is not None:
-	env.Depends(launcher, dist_exes_signed_stamp)
 
 clientArchive = env.ZipArchive(
 	outputDir.File("%s_controllerClient.zip" % outFilePrefix), clientDir, relativeTo=clientDir
