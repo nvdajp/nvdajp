@@ -1,5 +1,12 @@
 # ビルドログ順序の考察
 
+## ビルドの入口（betajp.ps1）
+
+- **…\build\betajp.ps1** → prepare.cmd → **common_build.ps1** → **…\build\branches\betajp\build.cmd**
+- build.cmd は **毎回 `git clone` で betajp を %VERSION_BUILD% (例: 4166) にクローン**し、その中で `uv run --directory . jptools\certBuild2023.cmd version_build=4166 -j1` を実行する。
+- したがって **実行される sconstruct はクローン先**（例: `…\build\branches\betajp\4166`）のもので、**CERT_SHA1 は build.cmd で設定された環境変数**が certBuild2023.cmd → scons.bat に引き継がれる前提になる。
+- dist や output のパスは **クローン先の dist / output**（例: `…\build\branches\betajp\4166\dist`）。
+
 ## 実際のログ順序（抜粋）
 
 1. `Delete("source\_buildVersion.py")` / `Delete("source\__pycache__\_buildVersion...")`  

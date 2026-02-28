@@ -461,19 +461,33 @@ env["BUILDERS"]["NVDADist"] = Builder(generator=NVDADistGenerator, target_factor
 
 # BEGIN JP PATCH (certificate store signing support)
 def _sign_dist_exes_cmd(target, source, env):
-	"""Sign exes in dist. Used as Command action so jpCertExtras can depend on this stamp (correct order)."""
+	"""Sign exes in dist. Used as Command action so jpCertExtras/launcher run after this.
+	Invoked when building launcher via certBuild2023.cmd (e.g. from betajp.ps1 -> build.cmd -> uv run certBuild2023.cmd).
+	"""
 	dist_dir = source[0]
+	dist_path = dist_dir.abspath
+	print("Signing dist exes in %s (dist_exes_signed)" % dist_path)
+	signed = 0
 	for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
 		f = dist_dir.File(prog)
-		if os.path.isfile(f.abspath):
-			env["signExec"]([f], source, env)
+		path = os.path.join(dist_path, prog)
+		if os.path.isfile(path):
+			res = env["signExec"]([f], source, env)
+			if res:
+				return res
+			signed += 1
 	synth_prog = os.path.join("lib", env["version"], "x86", "synthDriverHost-runtime", "nvda_synthDriverHost.exe")
 	f = dist_dir.File(synth_prog)
-	if os.path.isfile(f.abspath):
-		env["signExec"]([f], source, env)
-	# Mark stamp so jpCertExtras runs after this
-	with open(target[0].abspath, "w", encoding="utf-8") as _:
+	path = os.path.join(dist_path, synth_prog)
+	if os.path.isfile(path):
+		res = env["signExec"]([f], source, env)
+		if res:
+			return res
+		signed += 1
+	print("Signed %d dist exe(s)" % signed)
+	with open(target[0].abspath, "w", encoding="utf-8"):
 		pass
+	return 0
 # END JP PATCH (certificate store signing support)
 
 
@@ -615,6 +629,9 @@ if certFile or apiSigningToken or useCertStore:
 # END JP PATCH (certificate store signing support)
 	env.AddPostAction(launcher, [env["signExec"]])
 env.Alias("launcher", launcher)
+# Ensure dist exes are signed before launcher is built (same as jpCertExtras dependency)
+if dist_exes_signed_stamp is not None:
+	env.Depends(launcher, dist_exes_signed_stamp)
 
 clientArchive = env.ZipArchive(
 	outputDir.File("%s_controllerClient.zip" % outFilePrefix), clientDir, relativeTo=clientDir

@@ -113,11 +113,11 @@ powershell -ExecutionPolicy Bypass -File jptools\buildSynthDriverHost32.ps1
 @if not "%ERRORLEVEL%"=="0" goto onerror
 rem Build launcher (final target)
 rem Note: we only invoke the "launcher" target here and rely on the SCons dependency chain
-rem (launcher -> dist -> source -> jtalkSync -> jtalkPrep, and launcher -> jpCertExtras)
-rem to run intermediate targets such as jtalkSync and jtalkPrep. This reduces redundant
-rem scons.bat invocations and jtalkSync executions, but assumes that SCons' dependency
-rem tracking is correctly configured; this script does not independently verify that
-rem jtalkSync actually executed.
+rem (launcher -> dist_exes_signed_stamp -> dist -> ..., and launcher -> jpCertExtras)
+rem to run intermediate targets. CERT_SHA1/CERT_NAME must be in the environment so
+rem SConstruct enables certificate store signing and builds dist_exes_signed (signs dist exes).
+if defined CERT_SHA1 echo [certBuild2023] CERT_SHA1 set, dist exes will be signed before jpCertExtras
+if defined CERT_NAME if not defined CERT_SHA1 echo [certBuild2023] CERT_NAME set, dist exes will be signed
 call scons.bat launcher %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 rem Run JP smoke tests (JpBrailleTests and JtalkTests) after the launcher build completes
