@@ -1436,14 +1436,14 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			text = "\n".join(summary_lines + details_lines) + "\n"
 			stamp_path.write_text(text, encoding="utf-8")
 			try:
-				verify_log = out_dir / f"{exe.stem}_verify.log"
+				verify_log = out_dir / f"{exe.stem}_verify_log.txt"
 				verify_log.write_text(text, encoding="utf-8")
 			except Exception:
 				pass
 
 			if failures:
 				print(f"jpVerifySignatures: FAILED ({mode})")
-				print("  See output/_jp_verify_signatures*.stamp or the *_verify.log for details.")
+				print("  See output/_jp_verify_signatures*.stamp or the *_verify_log.txt for details.")
 				return 1
 			if ignored_failures and not verbose:
 				print(f"jpVerifySignatures: OK ({mode}) with {len(ignored_failures)} ignored failure(s)")

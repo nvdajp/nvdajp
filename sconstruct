@@ -454,6 +454,9 @@ def NVDADistGenerator(target, source, env, for_signature):
 	# BEGIN JP PATCH (certificate store signing support)
 	if certFile or apiSigningToken or useCertStore:
 	# END JP PATCH (certificate store signing support)
+		# nvda_synthDriverHost.exe: JP signs it via buildSynthDriverHost32.ps1 before scons; upstream
+		# added it here with "if not os.path.isfile(...): continue" but that broke the 4 exes (at
+		# generator time dist does not exist yet). JP keeps the 4 exes only.
 		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
 			action.append(
 				lambda target, source, env, progByVal=prog: env["signExec"](
