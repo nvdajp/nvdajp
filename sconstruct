@@ -453,7 +453,6 @@ def NVDADistGenerator(target, source, env, for_signature):
 
 	# BEGIN JP PATCH (certificate store signing support)
 	if certFile or apiSigningToken or useCertStore:
-	# END JP PATCH (certificate store signing support)
 		# nvda_synthDriverHost.exe: JP signs it via buildSynthDriverHost32.ps1 before scons; upstream
 		# added it here with "if not os.path.isfile(...): continue" but that broke the 4 exes (at
 		# generator time dist does not exist yet). JP keeps the 4 exes only.
@@ -463,6 +462,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 					[target[0].File(progByVal)], source, env
 				)
 			)
+	# END JP PATCH (certificate store signing support)
 
 	action.extend((Delete(buildVersionFn), Delete(importlib.util.cache_from_source(buildVersionFn))))
 
@@ -772,7 +772,7 @@ synthDriverHost32Runtime = env.Command(
 	source="#runtime-builders/synthDriverHost32/setup-runtime.py",
 	chdir=Dir("#runtime-builders/synthDriverHost32"),
 	action=[
-		  f"uv run -v --no-active --directory .  python setup-runtime.py --dest-dir dist --version {version} --publisher {publisher}",
+		  "uv run -v python setup-runtime.py ",
 		r"rmdir /s /q ..\..\source\lib\x86\synthDriverHost-runtime || exit 0",
 		r"xcopy /e /i /y dist ..\..\source\lib\x86\synthDriverHost-runtime",
 	],
