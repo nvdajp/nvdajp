@@ -41,10 +41,11 @@ env:
   supportedArchitectures: '["x64"]'
   defaultPythonVersion: '3.13.12'
   supportedPythonVersions: '["3.13.12"]'
-  # JP: Bump SCONS_CACHE_SUFFIX to invalidate all scons caches (e.g. when JTalk dic build is refactored).
-  # Intent: Simpler than excluding dic/stamp from cache and adding jtalkSync to restore jobs.
+  # JP: Bump SCONS_CACHE_SUFFIX only when the JTalk/MeCab dic *build process* changes (e.g. make_jdic refactor, DIC_CODEPAGE requirement).
+  # Bumped to v3: CI Verify JTalk dictionary was failing (一人→ヒトリ expected, got 1ニン) due to cached dic without nvdajp custom entries.
+  # Do not bump on every CI failure; investigate logs first.
   # See projectDocs/jp/tab-character-analysis.md "キャッシュキーで無効化".
-  SCONS_CACHE_SUFFIX: "-jp-v2"
+  SCONS_CACHE_SUFFIX: "-jp-v3"
 
 jobs:
   matrix:
