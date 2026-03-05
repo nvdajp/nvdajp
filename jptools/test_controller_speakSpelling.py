@@ -39,7 +39,7 @@ def main() -> int:
 
     if not os.path.isfile(dll_path):
         default_path = _default_dll_path()
-        print(f"Error: nvdaControllerClient.dll not found.", file=sys.stderr)
+        print("Error: nvdaControllerClient.dll not found.", file=sys.stderr)
         print(f"  Tried: {dll_path}", file=sys.stderr)
         print(f"  Expected (for this Python): {default_path}", file=sys.stderr)
         print("  Run: scons source", file=sys.stderr)
