@@ -356,7 +356,7 @@ def speak_break(time_ms: int) -> None:
 		return
 	# Clamp to a reasonable range (0–5 seconds)
 	time_ms = min(max(time_ms, 0), 5000)
-	_bgthread.execWhenDone(_break, [time_ms], mustBeAsync=True)
+	_bgthread.execWhenDone(_break, time_ms, mustBeAsync=True)
 
 
 def stop() -> None:
