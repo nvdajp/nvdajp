@@ -73,6 +73,9 @@ lastCompAttr = None
 lastCompString = None
 lastSelectionStart = None
 lastSelectionEnd = None
+# True when the previous composition update had compAttr (e.g. "\t"); used to avoid
+# treating IME commit (Enter) as cancel on IMEs that send (empty, -1, -1) for both.
+lastHadCompAttr = False
 # END JP PATCH
 
 
@@ -551,9 +554,8 @@ def handleInputCompositionEnd(result, cancelled=False):
 				return
 			result = result or curInputComposition.compositionString.lstrip("\u3000 ")
 			if not result:
-				# All characters were deleted (e.g., by Backspace)
-				# Translators: a message when the IME cancelation status
-				speech.speakMessage(_("Clear"))
+				# Empty result with cancelled=False: commit (Enter) on compAttr IMEs that send
+				# (empty, -1, -1) for both; we do not speak "Clear" here.
 				return
 		else:
 			result = curInputComposition.compositionString.lstrip("\u3000 ")
@@ -607,7 +609,7 @@ def handleInputCompositionStart(compositionString, selectionStart, selectionEnd,
 def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionStart, selectionEnd, isReading):
 	# BEGIN JP PATCH
 	global lastCompAttr, lastCompString
-	global lastSelectionStart, lastSelectionEnd
+	global lastSelectionStart, lastSelectionEnd, lastHadCompAttr
 	from NVDAObjects.inputComposition import InputComposition
 
 	# nvdajp begin
@@ -644,6 +646,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 		lastCompString = compositionString
 		lastSelectionStart = selectionStart
 		lastSelectionEnd = selectionEnd
+		lastHadCompAttr = True
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
@@ -669,16 +672,29 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 					ui.message(deletedString)
 					return 0
 	else:
-		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=}")
-		if (
+		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=} {lastHadCompAttr=}")
+		# (empty, -1, -1) can mean cancel (Esc/Backspace) or commit (Enter). IMEs that send compAttr
+		# (e.g. Google IME in Chrome) send (empty, -1, -1) for both; use lastKeyGesture to distinguish.
+		is_cancelled = (
 			lastCompString
 			and not compositionString
 			and selectionStart == -1
 			and selectionEnd == -1
 			and isReading == 0
-		):
-			queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
-			return 0
+		)
+		if is_cancelled:
+			if not lastHadCompAttr:
+				# No compAttr: treat as cancel (Esc / Backspace all-delete).
+				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				return 0
+			# compAttr IME: only treat as cancel when key was not Enter (race possible).
+			from NVDAObjects import inputComposition as ic
+			gesture = ic.lastKeyGesture
+			if gesture and gesture.vkCode == winUser.VK_RETURN:
+				pass  # Enter → commit, fall through
+			else:
+				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				return 0
 		resetInputCompositionVariables()
 	# nvdajp end
 	# END JP PATCH
@@ -1067,11 +1083,12 @@ class _RemoteLoader:
 # BEGIN JP PATCH
 # nvdajp: Japanese input composition variables reset function
 def resetInputCompositionVariables():
-	global lastCompAttr, lastCompString, lastSelectionStart, lastSelectionEnd
+	global lastCompAttr, lastCompString, lastSelectionStart, lastSelectionEnd, lastHadCompAttr
 	lastCompAttr = None
 	lastCompString = None
 	lastSelectionStart = None
 	lastSelectionEnd = None
+	lastHadCompAttr = False
 
 
 def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
