@@ -96,10 +96,8 @@ exclude = [
 	"./source/comInterfaces/*",
 	# Code from add-ons
 	"./source/userConfig/addons/*",
-	# nvdajp: Exclude third-party libraries in miscDepsJp
-	# Note: miscDepsJp/include/python-jtalk is checked by ruff
-	"./miscDepsJp/jptools/jtusrdic/plumbum",
-	"./miscDepsJp/jptools/jtusrdic/six.py",
+	# nvdajp: Exclude miscDepsJp (JTalk/MeCab tools and deps; runlint would fail otherwise)
+	"./miscDepsJp",
 ]
 
 [tool.ruff.format]
@@ -168,6 +166,8 @@ exclude = [
 	"./source/comInterfaces/*",
 	# Code from add-ons
 	"./source/userConfig/addons/*",
+	# nvdajp: JTalk/MeCab tools and deps
+	"./miscDepsJp",
 ]
 
 # While exclude tells pyright not to scan files in the first instance,

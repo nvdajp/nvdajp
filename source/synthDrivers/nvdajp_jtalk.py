@@ -15,6 +15,7 @@ from logHandler import log
 from autoSettingsUtils.driverSetting import BooleanDriverSetting
 
 from speech.commands import (
+	BreakCommand,
 	IndexCommand,
 	CharacterModeCommand,
 	LangChangeCommand,
@@ -45,6 +46,7 @@ class SynthDriver(BaseSynthDriver):
 		BaseSynthDriver.VolumeSetting(),
 	)
 	supportedCommands = {
+		BreakCommand,
 		IndexCommand,
 		CharacterModeCommand,
 		LangChangeCommand,
@@ -113,6 +115,8 @@ class SynthDriver(BaseSynthDriver):
 				currentLang = lang
 			elif isinstance(item, PitchCommand):
 				self._pitchOffset = item.offset
+			elif isinstance(item, BreakCommand):
+				jtalkDriver.speak_break(item.time)
 			elif isinstance(item, SpeechCommand):
 				log.debugWarning("Unsupported speech command: %s" % item)
 			else:

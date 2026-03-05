@@ -33,9 +33,6 @@ sys.path.insert(0, str(JTALK_DIR))
 
 import jtalkPrepare  # type: ignore
 from jtalkCore import (  # type: ignore
-	NJD,
-	JPCommon,
-	HTS_Engine,
 	libjt_initialize,
 	libjt_load,
 	libjt_set_alpha,
