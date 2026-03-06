@@ -258,6 +258,27 @@ def _speak(arg: tuple[str, str, int | None, Any]) -> None:
 		_espeak_speak(str(msg), lang, index, prop)
 
 
+def _break(time_ms: int) -> None:
+	"""Feed silence for time_ms milliseconds (runs in background thread)."""
+	global currentEngine
+	global player
+	global voice_args
+	if player is None or voice_args is None:
+		return
+	if time_ms <= 0:
+		return
+	setSpeaking(True)
+	currentEngine = 2
+	# 16-bit mono: 2 bytes per sample
+	samp_rate = voice_args["samp_rate"]
+	num_samples = int(time_ms / 1000.0 * samp_rate)
+	silence = (b"\x00\x00") * num_samples
+	player.feed(silence)
+	player.idle()
+	setSpeaking(False)
+	currentEngine = 0
+
+
 indexCommands: list[int] = []
 lastIndexCommand: Optional[int] = None
 
@@ -329,6 +350,15 @@ def updateSpeakIndexWhenDone(index: int) -> None:
 	_bgthread.execWhenDone(_updateSpeakIndex, index, mustBeAsync=True)
 
 
+def speak_break(time_ms: int) -> None:
+	"""Queue a break (silence) of time_ms milliseconds. Called from nvdajp_jtalk."""
+	if time_ms <= 0:
+		return
+	# Clamp to a reasonable range (0–5 seconds)
+	time_ms = min(max(time_ms, 0), 5000)
+	_bgthread.execWhenDone(_break, time_ms, mustBeAsync=True)
+
+
 def stop() -> None:
 	global currentEngine, indexCommands, lastIndex
 	# Need player and queue to drain and stop JTalk; _espeak only needed for currentEngine==1.
@@ -352,7 +382,7 @@ def stop() -> None:
 	try:
 		while True:
 			item = _bgthread.bgQueue.get_nowait()  # [func, args, kwargs]
-			if item[0] != _speak:
+			if item[0] not in (_speak, _break):
 				params.append(item)
 			else:
 				stop_task_count = stop_task_count + 1
@@ -437,7 +467,7 @@ def terminate() -> None:
 		try:
 			while True:
 				item = _bgthread.bgQueue.get_nowait()
-				if item[0] != _speak:
+				if item[0] not in (_speak, _break):
 					params.append(item)
 				_bgthread.bgQueue.task_done()
 		except Queue.Empty:
