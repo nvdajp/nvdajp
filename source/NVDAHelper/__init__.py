@@ -713,6 +713,13 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 
 	if selectionStart == -1:
+		# nvdajp: composition end (any path) - clear JP globals and record time so they do not
+		# stick and suppress newline reporting or skew future cancel/commit detection.
+		global lastCompositionEndTime
+		import time as _time
+		lastCompositionEndTime = _time.time()
+		resetInputCompositionVariables()
+		# nvdajp end
 		queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, compositionString)
 		return 0
 	focus = api.getFocusObject()

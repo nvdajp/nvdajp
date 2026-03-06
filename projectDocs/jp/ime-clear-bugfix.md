@@ -103,3 +103,11 @@ Google IME など compAttr（`\t` 付き）を送る IME では、**確定時も
 - **レース**: composition 終了が Enter より**先に**処理されると、その時点で `lastCompAttr` がリセットされる。続けて `script_caret_newLine` が動いたときに `lastCompAttr` が None になり、変換確定の Enter なのに「改行」が1回読まれる可能性がある（改行報告側の誤報告。IME クリア側の「クリア」誤読とは別のレース）。
 
 詳細は `projectDocs/jp/review-report-newline.md` の「他機能との干渉」を参照。
+
+---
+
+## 補足: selectionStart == -1 の通常確定パスでのリセット
+
+`resetInputCompositionVariables()` と `lastCompositionEndTime` の更新は、no-`\t` 分岐の「(empty, -1, -1) を commit とみなしてフォールスルーしたとき」だけ行っていた。  
+一方で、**通常の確定**（確定文字列付きで composition 終了、例: compositionString="感じ", selectionStart=-1）は、no-`\t` の else に入るが `is_cancelled` が False のため上記ブロックに入らず、そのまま後続の `if selectionStart == -1: handleInputCompositionEnd(compositionString)` に進む。この経路では JP 用グローバル（lastCompAttr, lastCompString, lastHadCompAttr 等）がリセットされず残り、その結果 (1) 直後の改行報告が lastCompAttr で抑制される、(2) 次回の cancel/commit 判定が古い値でゆがむ、という指摘があった。  
+対応として、**composition 終了と判断できるとき（selectionStart == -1 のとき）は、常にリセットと lastCompositionEndTime の更新を行う**ようにした（該当パス先頭で実行）。

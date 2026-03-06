@@ -24,9 +24,11 @@
 ## 条件式の意味
 
 ```python
+recentCompositionEnd = (time.time() - lastCompositionEndTime) < 0.15
 if (
     caretMoved
     and (not lastCompAttr)
+    and not recentCompositionEnd
     and config.conf["keyboard"]["speakTypedCharacters"]
     and config.conf["language"]["jpAnnounceNewLine"]
 ):
@@ -34,6 +36,7 @@ if (
 
 - **caretMoved**: 改行が実際に発生した（キャレットが移動した）。
 - **not lastCompAttr**: 未確定入力中でないとみなす。`NVDAHelper.lastCompAttr` は直近の IME 変換中更新で compAttr が付いていたときにセットされる。変換確定前の Enter ではまだリセットされていない想定なので、このときは「改行」を出さない。
+- **not recentCompositionEnd**: 直近 0.15 秒以内に composition 終了していない。composition 終了が Enter より先に処理されるレースで誤って「改行」を出さないための抑制（`lastCompositionEndTime` は確定扱いで終了したときのみ更新される）。
 - **speakTypedCharacters**: 入力文字の読み上げがオフでない（0 以外）。「入力文字の読み上げが有効」と仕様一致。
 - **jpAnnounceNewLine**: 当該オプションがオン。
 
