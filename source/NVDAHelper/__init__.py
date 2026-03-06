@@ -76,6 +76,9 @@ lastSelectionEnd = None
 # True when the previous composition update had compAttr (e.g. "\t"); used to avoid
 # treating IME commit (Enter) as cancel on IMEs that send (empty, -1, -1) for both.
 lastHadCompAttr = False
+# Time of last composition end (reset in (empty,-1,-1) path). Used by editableText to
+# avoid false new-line report when composition end is processed before Enter key (race).
+lastCompositionEndTime = 0.0
 # END JP PATCH
 
 
@@ -609,7 +612,7 @@ def handleInputCompositionStart(compositionString, selectionStart, selectionEnd,
 def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionStart, selectionEnd, isReading):
 	# BEGIN JP PATCH
 	global lastCompAttr, lastCompString
-	global lastSelectionStart, lastSelectionEnd, lastHadCompAttr
+	global lastSelectionStart, lastSelectionEnd, lastHadCompAttr, lastCompositionEndTime
 	from NVDAObjects.inputComposition import InputComposition
 
 	# nvdajp begin
@@ -687,14 +690,16 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 				# No compAttr: treat as cancel (Esc / Backspace all-delete).
 				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
 				return 0
-			# compAttr IME: only treat as cancel when key was not Enter (race possible).
+			# compAttr IME: composition end often arrives before key event (race). Only treat as
+			# cancel when we see Escape or Backspace; otherwise assume commit (Enter/space/unknown).
 			from NVDAObjects import inputComposition as ic
 			gesture = ic.lastKeyGesture
-			if gesture and gesture.vkCode == winUser.VK_RETURN:
-				pass  # Enter → commit, fall through
-			else:
+			if gesture and gesture.vkCode in (winUser.VK_ESCAPE, winUser.VK_BACK):
 				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
 				return 0
+			# Enter, Space, or not set yet: commit, fall through (do not speak Clear)
+		import time as _time
+		lastCompositionEndTime = _time.time()
 		resetInputCompositionVariables()
 	# nvdajp end
 	# END JP PATCH
@@ -1097,9 +1102,9 @@ def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
 	If the string meets certain conditions, this function returns True.
 
 	This function is designed to ignore certain compositionUpdate events,
-	specifically those where an alphabetic character is inserted
-	in the middle of a string of Kana characters, such as
-	"ほｎあいうえお".
+	specifically those where an alphabetic character (category Ll) is inserted
+	in the middle of a string of Kana characters (category Lo).
+	E.g. U+307B (Lo) + U+FF4E (Ll, fullwidth Latin 'n') + U+3042 U+3044 U+3046 U+3048 U+304A (Lo).
 	This is done to prevent unexpected behavior in the input composition process
 	for languages that use Kana characters.
 

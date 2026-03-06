@@ -77,11 +77,27 @@ Google IME など compAttr（`\t` 付き）を送る IME では、**確定時も
 
 2. **キャンセル判定の分岐**  
    - compAttr を送らない IME（従来どおり）: `(empty, -1, -1)` ならキャンセル扱い。`lastKeyGesture` は使わない。
-   - compAttr を送る IME: `(empty, -1, -1)` のときだけ **lastKeyGesture** を参照し、`vkCode == VK_RETURN` なら確定、それ以外（Esc / Backspace 等）ならキャンセル。レースの可能性は残るが、Enter 確定時の誤「クリア」を防ぐ。
+   - compAttr を送る IME: `(empty, -1, -1)` のとき、**lastKeyGesture が VK_ESCAPE または VK_BACK のときだけ**キャンセル扱い。それ以外（Enter / Space / 未設定）は確定扱い。composition 終了がキーイベントより先にキューに入るレースがあるため「Enter なら確定」ではなく「Esc/Back ならキャンセル」で判定する。
 
 3. **`handleInputCompositionEnd`**  
    `result` が空で `cancelled=False` のときは「Clear」を発話しない（確定として扱う）。
 
 ### トレードオフ
 
-- compAttr IME で lastKeyGesture に頼るため、composition 終了が Enter の keyDown より先にキューに入ると、ごくまれに Enter 確定後も「クリア」が読まれる可能性がある（従来の「時々」と同種）。
+- compAttr IME では「Esc/Back のときだけキャンセル」とするため、Esc/Back の keyDown が composition 終了より遅れてキューに入ると、ごくまれに Esc キャンセル時にも「クリア」が読まれない可能性がある。
+
+---
+
+## 他機能との干渉: 「テキスト編集で改行を報告」（review-report-newline）
+
+両方の処理が **`NVDAHelper.lastCompAttr`** を参照する。
+
+- **IME クリア側**: composition 更新で `lastCompAttr` をセットし、composition 終了時（確定またはキャンセル）に `resetInputCompositionVariables()` で `lastCompAttr = None` にリセットする。
+- **改行報告側**: Enter 押下時に `script_caret_newLine` で `lastCompAttr` を**読むだけ**。`not lastCompAttr` のときだけ「改行」を報告する（未確定入力中の Enter では報告しない）。
+
+### 干渉の有無
+
+- **通常**: Enter で変換確定 → キーが先に処理されれば `lastCompAttr` はまだセットのままなので「改行」は出ない。composition 終了は確定扱いなので「クリア」も出ない。問題なし。
+- **レース**: composition 終了が Enter より**先に**処理されると、その時点で `lastCompAttr` がリセットされる。続けて `script_caret_newLine` が動いたときに `lastCompAttr` が None になり、変換確定の Enter なのに「改行」が1回読まれる可能性がある（改行報告側の誤報告。IME クリア側の「クリア」誤読とは別のレース）。
+
+詳細は `projectDocs/jp/review-report-newline.md` の「他機能との干渉」を参照。
