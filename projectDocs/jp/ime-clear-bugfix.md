@@ -77,7 +77,9 @@ Google IME など compAttr（`\t` 付き）を送る IME では、**確定時も
 
 2. **キャンセル判定の分岐**  
    - compAttr を送らない IME（従来どおり）: `(empty, -1, -1)` ならキャンセル扱い。`lastKeyGesture` は使わない。
-   - compAttr を送る IME: `(empty, -1, -1)` のとき、**lastKeyGesture が VK_ESCAPE または VK_BACK のときだけ**キャンセル扱い。それ以外（Enter / Space / 未設定）は確定扱い。composition 終了がキーイベントより先にキューに入るレースがあるため「Enter なら確定」ではなく「Esc/Back ならキャンセル」で判定する。
+   - compAttr を送る IME: `(empty, -1, -1)` のとき、
+     - **キーイベント無効**（`nvdajpEnableKeyEvents` オフ）: `lastKeyGesture` が更新されないため、区別せずキャンセル扱い（Esc で「クリア」を維持）。
+     - **キーイベント有効**: **lastKeyGesture が VK_ESCAPE または VK_BACK のときだけ**キャンセル扱い。それ以外は確定扱い。レース対策のため「Esc/Back ならキャンセル」で判定。
 
 3. **`handleInputCompositionEnd`**  
    `result` が空で `cancelled=False` のときは「Clear」を発話しない（確定として扱う）。

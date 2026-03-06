@@ -690,17 +690,22 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 				# No compAttr: treat as cancel (Esc / Backspace all-delete).
 				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
 				return 0
-			# compAttr IME: composition end often arrives before key event (race). Only treat as
-			# cancel when we see Escape or Backspace; otherwise assume commit (Enter/space/unknown).
+			# compAttr IME: when key events are off, lastKeyGesture is not populated; treat as
+			# cancel so Esc/Back still get "Clear". When key events are on, only treat as cancel
+			# when we see Escape or Backspace (commit often arrives before key, so avoid Enter bug).
+			if not config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				return 0
 			from NVDAObjects import inputComposition as ic
 			gesture = ic.lastKeyGesture
 			if gesture and gesture.vkCode in (winUser.VK_ESCAPE, winUser.VK_BACK):
 				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
 				return 0
-			# Enter, Space, or not set yet: commit, fall through (do not speak Clear)
-		import time as _time
-		lastCompositionEndTime = _time.time()
-		resetInputCompositionVariables()
+			# Commit (composition end): record time so editableText can suppress false new-line
+			# report; then reset. Only here, not for non-end no-compAttr updates.
+			import time as _time
+			lastCompositionEndTime = _time.time()
+			resetInputCompositionVariables()
 	# nvdajp end
 	# END JP PATCH
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
