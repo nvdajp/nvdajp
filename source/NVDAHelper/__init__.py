@@ -73,11 +73,13 @@ lastCompAttr = None
 lastCompString = None
 lastSelectionStart = None
 lastSelectionEnd = None
-# True when the previous composition update had compAttr (e.g. "\t"); used to avoid
-# treating IME commit (Enter) as cancel on IMEs that send (empty, -1, -1) for both.
+# True when the previous composition update had a compAttr segment (i.e. compositionString
+# contained the '\t' separator). Used to avoid treating IME commit (Enter) as cancel on
+# IMEs that send (empty, -1, -1) for both.
 lastHadCompAttr = False
-# Time of last composition end (reset in (empty,-1,-1) path). Used by editableText to
-# avoid false new-line report when composition end is processed before Enter key (race).
+# Time of last composition end. Set only when (empty, -1, -1) is treated as commit (not
+# cancel). Used by editableText to avoid false new-line report when composition end is
+# processed before Enter key (race).
 lastCompositionEndTime = 0.0
 # END JP PATCH
 
