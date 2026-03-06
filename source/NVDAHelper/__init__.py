@@ -9,6 +9,7 @@ from ctypes.wintypes import (
 	HKEY,
 )
 import typing
+import time
 import os
 import winreg
 import msvcrt
@@ -73,6 +74,14 @@ lastCompAttr = None
 lastCompString = None
 lastSelectionStart = None
 lastSelectionEnd = None
+# True when the previous composition update had a compAttr segment (i.e. compositionString
+# contained the '\t' separator). Used to avoid treating IME commit (Enter) as cancel on
+# IMEs that send (empty, -1, -1) for both.
+lastHadCompAttr = False
+# Time of last composition end. Set only when (empty, -1, -1) is treated as commit (not
+# cancel). Used by editableText to avoid false new-line report when composition end is
+# processed before Enter key (race).
+lastCompositionEndTime = 0.0
 # END JP PATCH
 
 
@@ -551,9 +560,8 @@ def handleInputCompositionEnd(result, cancelled=False):
 				return
 			result = result or curInputComposition.compositionString.lstrip("\u3000 ")
 			if not result:
-				# All characters were deleted (e.g., by Backspace)
-				# Translators: a message when the IME cancelation status
-				speech.speakMessage(_("Clear"))
+				# Empty result with cancelled=False: commit (Enter) on compAttr IMEs that send
+				# (empty, -1, -1) for both; we do not speak "Clear" here.
 				return
 		else:
 			result = curInputComposition.compositionString.lstrip("\u3000 ")
@@ -607,7 +615,7 @@ def handleInputCompositionStart(compositionString, selectionStart, selectionEnd,
 def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionStart, selectionEnd, isReading):
 	# BEGIN JP PATCH
 	global lastCompAttr, lastCompString
-	global lastSelectionStart, lastSelectionEnd
+	global lastSelectionStart, lastSelectionEnd, lastHadCompAttr, lastCompositionEndTime
 	from NVDAObjects.inputComposition import InputComposition
 
 	# nvdajp begin
@@ -644,6 +652,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 		lastCompString = compositionString
 		lastSelectionStart = selectionStart
 		lastSelectionEnd = selectionEnd
+		lastHadCompAttr = True
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 			if badCompositionUpdate(compositionString, compAttr):
 				return 0
@@ -669,22 +678,50 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 					ui.message(deletedString)
 					return 0
 	else:
-		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=}")
-		if (
+		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=} {lastHadCompAttr=}")
+		# (empty, -1, -1) can mean cancel (Esc/Backspace) or commit (Enter). IMEs that send compAttr
+		# (e.g. Google IME in Chrome) send (empty, -1, -1) for both; use lastKeyGesture to distinguish.
+		is_cancelled = (
 			lastCompString
 			and not compositionString
 			and selectionStart == -1
 			and selectionEnd == -1
 			and isReading == 0
-		):
-			queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
-			return 0
-		resetInputCompositionVariables()
+		)
+		if is_cancelled:
+			if not lastHadCompAttr:
+				# No compAttr: treat as cancel (Esc / Backspace all-delete).
+				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				return 0
+			# compAttr IME: when key events are off, lastKeyGesture is not populated; treat as
+			# cancel so Esc/Back still get "Clear". When key events are on, only treat as cancel
+			# when we see Escape or Backspace (commit often arrives before key, so avoid Enter bug).
+			if not config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				return 0
+			from NVDAObjects import inputComposition as ic
+			gesture = ic.lastKeyGesture
+			if gesture and gesture.vkCode in (winUser.VK_ESCAPE, winUser.VK_BACK):
+				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				return 0
+			# Commit (composition end): record time so editableText can suppress false new-line
+			# report; then reset. Only here, not for non-end no-compAttr updates.
+			lastCompositionEndTime = time.time()
+			resetInputCompositionVariables()
 	# nvdajp end
 	# END JP PATCH
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 
 	if selectionStart == -1:
+		# nvdajp: composition end - clear JP globals. Only record lastCompositionEndTime when we
+		# had an active composition (lastCompString set), so IME-off users are not stuck in the
+		# 0.15s new-line suppression window. (If we came from the compAttr commit path above,
+		# resetInputCompositionVariables() was already called, so lastCompString is None and we
+		# skip the time update here—no double update.)
+		if lastCompString is not None:
+			lastCompositionEndTime = time.time()
+		resetInputCompositionVariables()
+		# nvdajp end
 		queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, compositionString)
 		return 0
 	focus = api.getFocusObject()
@@ -1067,11 +1104,12 @@ class _RemoteLoader:
 # BEGIN JP PATCH
 # nvdajp: Japanese input composition variables reset function
 def resetInputCompositionVariables():
-	global lastCompAttr, lastCompString, lastSelectionStart, lastSelectionEnd
+	global lastCompAttr, lastCompString, lastSelectionStart, lastSelectionEnd, lastHadCompAttr
 	lastCompAttr = None
 	lastCompString = None
 	lastSelectionStart = None
 	lastSelectionEnd = None
+	lastHadCompAttr = False
 
 
 def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
@@ -1080,9 +1118,9 @@ def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
 	If the string meets certain conditions, this function returns True.
 
 	This function is designed to ignore certain compositionUpdate events,
-	specifically those where an alphabetic character is inserted
-	in the middle of a string of Kana characters, such as
-	"ほｎあいうえお".
+	specifically those where an alphabetic character (category Ll) is inserted
+	in the middle of a string of Kana characters (category Lo).
+	E.g. U+307B (Lo) + U+FF4E (Ll, fullwidth Latin 'n') + U+3042 U+3044 U+3046 U+3048 U+304A (Lo).
 	This is done to prevent unexpected behavior in the input composition process
 	for languages that use Kana characters.
 
