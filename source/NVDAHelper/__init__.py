@@ -9,6 +9,7 @@ from ctypes.wintypes import (
 	HKEY,
 )
 import typing
+import time
 import os
 import winreg
 import msvcrt
@@ -705,8 +706,7 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 				return 0
 			# Commit (composition end): record time so editableText can suppress false new-line
 			# report; then reset. Only here, not for non-end no-compAttr updates.
-			import time as _time
-			lastCompositionEndTime = _time.time()
+			lastCompositionEndTime = time.time()
 			resetInputCompositionVariables()
 	# nvdajp end
 	# END JP PATCH
@@ -715,10 +715,11 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 	if selectionStart == -1:
 		# nvdajp: composition end - clear JP globals. Only record lastCompositionEndTime when we
 		# had an active composition (lastCompString set), so IME-off users are not stuck in the
-		# 0.15s new-line suppression window.
+		# 0.15s new-line suppression window. (If we came from the compAttr commit path above,
+		# resetInputCompositionVariables() was already called, so lastCompString is None and we
+		# skip the time update here—no double update.)
 		if lastCompString is not None:
-			import time as _time
-			lastCompositionEndTime = _time.time()
+			lastCompositionEndTime = time.time()
 		resetInputCompositionVariables()
 		# nvdajp end
 		queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, compositionString)
