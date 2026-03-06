@@ -216,11 +216,15 @@ class EditableText(TextContainerObject, ScriptableObject):
 		caretMoved, newInfo = self._hasCaretMoved(bookmark)
 		# BEGIN JP PATCH
 		# nvdajp: announce new line
-		from NVDAHelper import lastCompAttr
+		from NVDAHelper import lastCompAttr, lastCompositionEndTime
 
+		# Suppress new-line report shortly after composition end to avoid false report
+		# when composition end is processed before Enter key (race with IME).
+		recentCompositionEnd = (time.time() - lastCompositionEndTime) < 0.15
 		if (
 			caretMoved
 			and (not lastCompAttr)
+			and not recentCompositionEnd
 			and config.conf["keyboard"]["speakTypedCharacters"]
 			and config.conf["language"]["jpAnnounceNewLine"]
 		):
