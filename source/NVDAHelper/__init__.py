@@ -713,11 +713,12 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
 
 	if selectionStart == -1:
-		# nvdajp: composition end (any path) - clear JP globals and record time so they do not
-		# stick and suppress newline reporting or skew future cancel/commit detection.
-		global lastCompositionEndTime
-		import time as _time
-		lastCompositionEndTime = _time.time()
+		# nvdajp: composition end - clear JP globals. Only record lastCompositionEndTime when we
+		# had an active composition (lastCompString set), so IME-off users are not stuck in the
+		# 0.15s new-line suppression window.
+		if lastCompString is not None:
+			import time as _time
+			lastCompositionEndTime = _time.time()
 		resetInputCompositionVariables()
 		# nvdajp end
 		queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, compositionString)
