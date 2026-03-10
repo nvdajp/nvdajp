@@ -458,9 +458,9 @@ def NVDADistGenerator(target, source, env, for_signature):
 		# generator time dist does not exist yet). JP keeps the 4 exes only.
 		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
 			action.append(
-				lambda target, source, env, pathByVal=path: env["signExec"](
-					[File(pathByVal)], source, env
-				) if os.path.isfile(pathByVal) else None
+				lambda target, source, env, prog=prog: env["signExec"](
+					[File(os.path.join(target[0].path, prog))], source, env
+				) if os.path.isfile(os.path.join(target[0].path, prog)) else None
 			)
 	# END JP PATCH (certificate store signing support)
 
