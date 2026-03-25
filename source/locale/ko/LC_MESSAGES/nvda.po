@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nvda\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 01:53+0000\n"
-"PO-Revision-Date: 2026-03-16 00:25\n"
+"POT-Creation-Date: 2026-03-23 05:19+0000\n"
+"PO-Revision-Date: 2026-03-23 08:13\n"
 "Last-Translator: \n"
 "Language-Team: Korean\n"
 "Language: ko_KR\n"
@@ -2148,7 +2148,7 @@ msgstr "추가기능에 관한 일부 작업에 실패했습니다. 더 자세�
 #: gui\configProfiles.py:541 gui\inputGestures.py:808 gui\inputGestures.py:822
 #: gui\installerGui.py:122 gui\installerGui.py:632 gui\installerGui.py:648
 #: gui\installerGui.py:720 gui\logViewer.py:112 gui\logViewer.py:143
-#: gui\message.py:160 gui\settingsDialogs.py:1043 gui\settingsDialogs.py:5916
+#: gui\message.py:160 gui\settingsDialogs.py:1040 gui\settingsDialogs.py:5916
 #: gui\settingsDialogs.py:6491 gui\startupDialogs.py:127
 #: _remoteClient\dialogs.py:67 _remoteClient\dialogs.py:306
 #: _remoteClient\dialogs.py:430
@@ -2382,7 +2382,7 @@ msgstr "시스템 캐럿"
 
 #. Translators: The name of a category of NVDA commands.
 #. Translators: This is the label for the mouse settings panel.
-#: globalCommands.py:87 gui\settingsDialogs.py:2147
+#: globalCommands.py:87 gui\settingsDialogs.py:2144
 msgid "Mouse"
 msgstr "마우스"
 
@@ -2391,7 +2391,7 @@ msgstr "마우스"
 #. Translators: This is the label for the speech panel
 #. Translators: This is the label for a group of advanced options in the
 #. Advanced settings panel
-#: globalCommands.py:90 config\configFlags.py:314 gui\settingsDialogs.py:1145
+#: globalCommands.py:90 config\configFlags.py:314 gui\settingsDialogs.py:1142
 #: gui\settingsDialogs.py:4455
 msgid "Speech"
 msgstr "말하기"
@@ -5323,7 +5323,7 @@ msgstr "켬"
 #. which disables reporting of progress bars.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
 #: keyboardHandler.py:633 synthSettingsRing.py:117 controlTypes\state.py:231
-#: gui\settingsDialogs.py:2382 gui\speechDict.py:198
+#: gui\settingsDialogs.py:2379 gui\speechDict.py:198
 msgid "off"
 msgstr "끔"
 
@@ -7172,7 +7172,7 @@ msgstr "업데이트 하는 도중, 혹은 업데이트 후, 현재 활성회된
 #. Translators: The title of a dialog.
 #. Translators: Title of warning dialog
 #: updateCheck.py:1026 gui\_SetURLDialog.py:113 gui\configProfiles.py:500
-#: gui\installerGui.py:375 gui\installerGui.py:533 gui\settingsDialogs.py:1940
+#: gui\installerGui.py:375 gui\installerGui.py:533 gui\settingsDialogs.py:1937
 #: screenCurtain\_screenCurtain.py:70 _remoteClient\dialogs.py:291
 msgid "Warning"
 msgstr "경고"
@@ -11640,7 +11640,7 @@ msgstr "URL에 성공적으로 연결되었습니다."
 #. Translators: The message title displayed when copying configuration to system settings was successful.
 #. Translators: Title of success dialog
 #: gui\_SetURLDialog.py:177 gui\installerGui.py:148 gui\installerGui.py:731
-#: gui\settingsDialogs.py:1049 _remoteClient\dialogs.py:280
+#: gui\settingsDialogs.py:1046 _remoteClient\dialogs.py:280
 msgid "Success"
 msgstr "성공"
 
@@ -12607,7 +12607,7 @@ msgstr "휴대용 버전 환경 설정을 현재 사용자 계정에 복사 (&P)
 
 #. Translators: The label of a button to continue with the operation.
 #. Translators: The label for the Continue button in an NVDA dialog.
-#: gui\installerGui.py:302 gui\installerGui.py:612 gui\nvdaControls.py:383
+#: gui\installerGui.py:302 gui\installerGui.py:612 gui\nvdaControls.py:387
 msgid "&Continue"
 msgstr "계속 (&C)"
 
@@ -12808,7 +12808,7 @@ msgstr "로그 파일을 불러올 수 없습니다"
 
 #. Translators: A cancel button on a message dialog.
 #. Translators: The label for the Cancel button in an NVDA dialog.
-#: gui\message.py:332 gui\nvdaControls.py:389
+#: gui\message.py:332 gui\nvdaControls.py:393
 msgid "Cancel"
 msgstr "취소"
 
@@ -12837,13 +12837,13 @@ msgstr "저장 안 함 (&N)"
 #. e.g. "Default (Yes)".
 #. The placeholder {default} is replaced with the label of the option which describes current default behavior
 #. in NVDA.
-#: gui\nvdaControls.py:567
+#: gui\nvdaControls.py:571
 #, python-brace-format
 msgid "Default ({default})"
 msgstr "기본값 ({default})"
 
 #. Translators: Content of the message displayed when a validation error occurs in the settings dialog
-#: gui\settingsDialogs.py:459
+#: gui\settingsDialogs.py:456
 #, python-brace-format
 msgid "{message}\n\n"
 "Category: \"{category}\"\n"
@@ -12853,25 +12853,25 @@ msgstr "{message}\n"
 "옵션: \"{option}\""
 
 #. Translators: The title of the message box when a setting's configuration is not valid.
-#: gui\settingsDialogs.py:466
+#: gui\settingsDialogs.py:463
 msgid "Invalid configuration"
 msgstr "유효하지 않는 구성"
 
 #. Translators: The label for the list of categories in a multi category settings dialog.
-#: gui\settingsDialogs.py:575
+#: gui\settingsDialogs.py:572
 msgid "&Categories:"
 msgstr "설정 패널 (&C):"
 
 #. Translators: This is the label for the general settings panel.
 #. Translators: name of a grouping in Privacy and Security settings
 #. which contains miscellaneous settings.
-#: gui\settingsDialogs.py:808 gui\settingsDialogs.py:6004
+#: gui\settingsDialogs.py:805 gui\settingsDialogs.py:6004
 msgid "General"
 msgstr "일반 설정"
 
 #. Translators: Shown for a language which has been provided from the command line
 #. 'langDesc' would be replaced with description of the given locale.
-#: gui\settingsDialogs.py:822
+#: gui\settingsDialogs.py:819
 #, python-brace-format
 msgid "Command line option: {langDesc}"
 msgstr "명령줄 옵션 : {langDesc}"
@@ -12879,23 +12879,23 @@ msgstr "명령줄 옵션 : {langDesc}"
 #. Translators: The label for a setting in general settings to select NVDA's interface language
 #. (once selected, NVDA must be restarted; the option user default means the user's Windows language
 #. will be used).
-#: gui\settingsDialogs.py:828
+#: gui\settingsDialogs.py:825
 msgid "NVDA &Language (requires restart):"
 msgstr "NVDA 사용 언어 (다시 시작해야 함) (&L):"
 
 #. Translators: The label for a setting in general settings to save current configuration when NVDA
 #. exits (if it is not checked, user needs to save configuration before quitting NVDA).
-#: gui\settingsDialogs.py:846
+#: gui\settingsDialogs.py:843
 msgid "&Save configuration when exiting NVDA"
 msgstr "종료 시 NVDA 환경설정 저장 (&S)"
 
 #. Translators: The label for a setting in general settings to ask before quitting NVDA (if not checked, NVDA will exit without asking the user for action).
-#: gui\settingsDialogs.py:854
+#: gui\settingsDialogs.py:851
 msgid "Sho&w exit options when exiting NVDA"
 msgstr "종료 시 NVDA 종료 옵션 표시 (&W)"
 
 #. Translators: The label for a setting in general settings to play sounds when NVDA starts or exits.
-#: gui\settingsDialogs.py:862
+#: gui\settingsDialogs.py:859
 msgid "&Play sounds when starting or exiting NVDA"
 msgstr "NVDA 시작 및 종료음 재생 (&P)"
 
@@ -12903,7 +12903,7 @@ msgstr "NVDA 시작 및 종료음 재생 (&P)"
 #. Windows (if checked, NVDA will start automatically after logging into Windows; if not, user must
 #. start NVDA by pressing the shortcut key (CTRL+Alt+N by default).
 #. Translators: The label of a checkbox in the Welcome dialog.
-#: gui\settingsDialogs.py:871 gui\startupDialogs.py:87
+#: gui\settingsDialogs.py:868 gui\startupDialogs.py:87
 msgid "St&art NVDA after I sign in"
 msgstr "로그인 후에 NVDA 시작 (&A)"
 
@@ -12911,7 +12911,7 @@ msgstr "로그인 후에 NVDA 시작 (&A)"
 #. allow NVDA to come up in Windows login screen (useful if user
 #. needs to enter passwords or if multiple user accounts are present
 #. to allow user to choose the correct account).
-#: gui\settingsDialogs.py:883
+#: gui\settingsDialogs.py:880
 msgid "Use NVDA during sign-in (requires administrator privileges)"
 msgstr "로그인 중에 NVDA 사용 (관리자 권한 필요)"
 
@@ -12919,24 +12919,24 @@ msgstr "로그인 중에 NVDA 사용 (관리자 권한 필요)"
 #. current user settings to system settings (to allow current
 #. settings to be used in secure screens such as User Account
 #. Control (UAC) dialog).
-#: gui\settingsDialogs.py:898
+#: gui\settingsDialogs.py:895
 msgid "Use currently saved settings during sign-in and on secure screens (requires administrator privileges)"
 msgstr "Windows 로그인 및 보안 화면에서 현재 저장된 설정 사용 (관리자 권한 필요)"
 
 #. Translators: The label of a checkbox in general settings to toggle automatic checking for updated versions of NVDA.
 #. If not checked, user must check for updates manually.
-#: gui\settingsDialogs.py:912
+#: gui\settingsDialogs.py:909
 msgid "Automatically check for &updates to NVDA"
 msgstr "NVDA에서 업데이트를 자동으로 확인 (&U)"
 
 #. Translators: The label of a checkbox in general settings to toggle startup notifications
 #. for a pending NVDA update.
-#: gui\settingsDialogs.py:925
+#: gui\settingsDialogs.py:922
 msgid "Notify for &pending update on startup"
 msgstr "NVDA 실행 시 설치 준비중인 업데이트 알림 (&P)"
 
 #. Translators: The label for the update mirror on the General Settings panel.
-#: gui\settingsDialogs.py:935
+#: gui\settingsDialogs.py:932
 msgid "Update mirror"
 msgstr "업데이트 미러"
 
@@ -12944,86 +12944,86 @@ msgstr "업데이트 미러"
 #. it appears in the context of the update mirror group on the General page of NVDA's settings.
 #. Translators: This is the label for the button used to change the Add-on Store mirror URL,
 #. it appears in the context of the mirror server group on the Add-on Store page of NVDA's settings.
-#: gui\settingsDialogs.py:953 gui\settingsDialogs.py:3732
+#: gui\settingsDialogs.py:950 gui\settingsDialogs.py:3732
 msgid "Change..."
 msgstr "변경..."
 
 #. Translators: The label of a checkbox in general settings.
-#: gui\settingsDialogs.py:969
+#: gui\settingsDialogs.py:966
 msgid "Prevent &display from turning off during say all or reading with braille"
 msgstr "모두 말하기 또는 점자로 읽기 중에 디스플레이 꺼짐 방지 (&D)"
 
 #. Translators: Title of the dialog used to change NVDA's update server mirror URL.
-#: gui\settingsDialogs.py:983
+#: gui\settingsDialogs.py:980
 msgid "Set NVDA Update Mirror"
 msgstr "NVDA 업데이트 미러 설정"
 
 #. Translators: The title of the dialog presented while settings are being copied
-#: gui\settingsDialogs.py:1012
+#: gui\settingsDialogs.py:1009
 msgid "Copying Settings"
 msgstr "설정 복사 중"
 
 #. Translators: The message displayed while settings are being copied
 #. to the system configuration (for use on Windows logon etc)
-#: gui\settingsDialogs.py:1015
+#: gui\settingsDialogs.py:1012
 msgid "Please wait while settings are copied to the system configuration."
 msgstr "사용자 설정을 시스템 환경에 복사하고 있습니다. 잠시만 기다려 주십시요."
 
 #. Translators: a message dialog asking to retry or cancel when copying settings  fails
-#: gui\settingsDialogs.py:1026
+#: gui\settingsDialogs.py:1023
 msgid "Unable to copy a file. Perhaps it is currently being used by another process or you have run out of disc space on the drive you are copying to."
 msgstr "파일을 복사할 수 없습니다. 다른 프로세스에서 파일을 사용 중이거나 복사할 디스크 공간이 부족합니다."
 
 #. Translators: the title of a retry cancel dialog when copying settings  fails
-#: gui\settingsDialogs.py:1030
+#: gui\settingsDialogs.py:1027
 msgid "Error Copying"
 msgstr "복사 오류"
 
 #. Translators: The message displayed when errors were found while trying to copy current configuration to system settings.
-#: gui\settingsDialogs.py:1043
+#: gui\settingsDialogs.py:1040
 msgid "Error copying NVDA user settings"
 msgstr "사용자 설정 복사 오류"
 
 #. Translators: The message displayed when copying configuration to system settings was successful.
-#: gui\settingsDialogs.py:1047
+#: gui\settingsDialogs.py:1044
 msgid "Successfully copied NVDA user settings"
 msgstr "사용자 설정 복사 성공"
 
-#: gui\settingsDialogs.py:1071
+#: gui\settingsDialogs.py:1068
 msgid "This change requires administrator privileges."
 msgstr "이 설정 변경은 관리자 권한이 필요합니다."
 
-#: gui\settingsDialogs.py:1072
+#: gui\settingsDialogs.py:1069
 msgid "Insufficient Privileges"
 msgstr "사용자 권한 부족"
 
 #. Translators: A value that appears in NVDA's Settings to indicate that no mirror is in use.
-#: gui\settingsDialogs.py:1095 gui\settingsDialogs.py:3778
+#: gui\settingsDialogs.py:1092 gui\settingsDialogs.py:3778
 msgid "No mirror"
 msgstr "미러 없음"
 
 #. Translators: The title of the dialog which appears when the user changed NVDA's interface language.
-#: gui\settingsDialogs.py:1112
+#: gui\settingsDialogs.py:1109
 msgid "Language Configuration Change"
 msgstr "언어 변경"
 
 #. Translators: The message displayed after NVDA interface language has been changed.
-#: gui\settingsDialogs.py:1117
+#: gui\settingsDialogs.py:1114
 msgid "NVDA must be restarted for the new language to take effect."
 msgstr "새 언어를 적용하려면 NVDA를 다시 시작해야 합니다."
 
 #. Translators: The label for a button  in the dialog which appears when the user changed NVDA's interface language.
-#: gui\settingsDialogs.py:1122
+#: gui\settingsDialogs.py:1119
 msgid "Restart &now"
 msgstr "바로 재시작 (&N)"
 
 #. Translators: The label for a button  in the dialog which appears when the user changed NVDA's interface language.
-#: gui\settingsDialogs.py:1127
+#: gui\settingsDialogs.py:1124
 msgid "Restart &later"
 msgstr "나중에 재시작 (&L)"
 
 #. Translators: A label for the synthesizer on the speech panel.
-#: gui\settingsDialogs.py:1151
+#: gui\settingsDialogs.py:1148
 msgid "Synthesizer"
 msgstr "음성 합성 엔진"
 
@@ -13031,589 +13031,589 @@ msgstr "음성 합성 엔진"
 #. it appears in the context of a synthesizer group on the speech settings panel.
 #. Translators: This is the label for the button used to change braille display,
 #. it appears in the context of a braille display group on the braille settings panel.
-#: gui\settingsDialogs.py:1173 gui\settingsDialogs.py:4892
+#: gui\settingsDialogs.py:1170 gui\settingsDialogs.py:4892
 msgid "C&hange..."
 msgstr "변경 (&C)..."
 
 #. Translators: This is the label for the synthesizer selection dialog
-#: gui\settingsDialogs.py:1228
+#: gui\settingsDialogs.py:1225
 msgid "Select Synthesizer"
 msgstr "음성 엔진 선택"
 
 #. Translators: This is a label for the select
 #. synthesizer combobox in the synthesizer dialog.
-#: gui\settingsDialogs.py:1236
+#: gui\settingsDialogs.py:1233
 msgid "&Synthesizer:"
 msgstr "음성 엔진 (&S):"
 
 #. Translators: This is the label for the voice settings panel.
-#: gui\settingsDialogs.py:1620
+#: gui\settingsDialogs.py:1617
 msgid "Voice"
 msgstr "보이스"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel (if checked, text will be read using the voice for the language of the text).
-#: gui\settingsDialogs.py:1655
+#: gui\settingsDialogs.py:1652
 msgid "Automatic language switching (when supported)"
 msgstr "음성 엔진 지원 시 자동으로 언어 전환"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel (if checked, different voices for dialects will be used to
 #. read text in that dialect).
-#: gui\settingsDialogs.py:1671
+#: gui\settingsDialogs.py:1668
 msgid "Automatic dialect switching (when supported)"
 msgstr "음성 엔진 지원 시 자동으로 종속어 전환"
 
 #. Translators: This is the label for a checkbox in the voice settings panel. If checked, the language of the text been read will be reported.
-#: gui\settingsDialogs.py:1680
+#: gui\settingsDialogs.py:1677
 msgctxt "reportLanguage"
 msgid "Report lan&guage changes while reading"
 msgstr "말하는 중 언어 변경 알림 (&G)"
 
 #. Translators: This is a label for a combobox in the Voice settings panel to select
 #. reporting when the language of the text being read is not supported by the current synthesizer.
-#: gui\settingsDialogs.py:1696
+#: gui\settingsDialogs.py:1693
 msgctxt "reportLanguage"
 msgid "Report when switching to language is not s&upported by synthesizer"
 msgstr "음성 합성 엔진이 지원하지 않는 언어로 전환할 때 알림"
 
 #. Translators: This is the label for a combobox in the
 #. voice settings panel (possible choices are none, some, most and all).
-#: gui\settingsDialogs.py:1715
+#: gui\settingsDialogs.py:1712
 msgid "Punctuation/symbol &level:"
 msgstr "구두점/기호 출력 수준 (&L):"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel (if checked, text will be read using the voice for the language of the text).
-#: gui\settingsDialogs.py:1733
+#: gui\settingsDialogs.py:1730
 msgid "Trust voice's language when processing characters and symbols"
 msgstr "기호 및 글자 출력 시 선택된 음성 엔진 언어 사용"
 
 #. Translators: This is a label for a combo-box in the Speech settings panel.
 #. Translators: This is a label for a combo-box in the Braille settings panel.
-#: gui\settingsDialogs.py:1743 gui\settingsDialogs.py:5445
+#: gui\settingsDialogs.py:1740 gui\settingsDialogs.py:5445
 msgid "Unicode normali&zation"
 msgstr "유니코드 정규화"
 
 #. Translators: This is the label for a checkbox in the
 #. speech settings panel.
-#: gui\settingsDialogs.py:1754
+#: gui\settingsDialogs.py:1751
 msgid "Report '&Normalized' when navigating by character"
 msgstr "문자 단위 탐색 시 '정규화됨' 알림 (&N)"
 
 #. Translators: This is a label for a setting in voice settings (an edit box to change
 #. voice pitch for capital letters; the higher the value, the pitch will be higher).
-#: gui\settingsDialogs.py:1787
+#: gui\settingsDialogs.py:1784
 msgid "Capital pitch change percentage"
 msgstr "대문자 음높이 변경율"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel.
-#: gui\settingsDialogs.py:1802
+#: gui\settingsDialogs.py:1799
 msgid "Say &cap before capitals"
 msgstr "대문자 앞에 \"대문자\" 붙여 읽기 (&C)"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel.
-#: gui\settingsDialogs.py:1813
+#: gui\settingsDialogs.py:1810
 msgid "&Beep for capitals"
 msgstr "대문자 앞에 비프음 출력 (&B)"
 
 #. Translators: This is the label for a checkbox in the
 #. voice settings panel.
-#: gui\settingsDialogs.py:1827
+#: gui\settingsDialogs.py:1824
 msgid "Use &spelling functionality if supported"
 msgstr "철자 발음 지원 시 사용 (&S)"
 
 #. Translators: Label of the list where user can enable or disable symbol dictionaires.
-#: gui\settingsDialogs.py:1843
+#: gui\settingsDialogs.py:1840
 msgid "E&xtra dictionaries for character and symbol processing:"
 msgstr "추가 문자 및 기호 사전"
 
 #. Translators: Label of the list where user can select speech modes that will be available.
-#: gui\settingsDialogs.py:1857
+#: gui\settingsDialogs.py:1854
 msgid "&Modes available in the Cycle speech mode command:"
 msgstr "말하기 출력 모드 순환 명령 시 선택 가능한 모드 (&M)"
 
 #. Translators: This is the label for a checkbox in the voice settings panel.
-#: gui\settingsDialogs.py:1871
+#: gui\settingsDialogs.py:1868
 msgid "&Delayed descriptions for characters on cursor movement"
 msgstr "커서 이동 시 지연된 문자 설명 읽기(&D)"
 
 #. Translators: Warning shown when 'talk' speech mode is disabled in settings.
-#: gui\settingsDialogs.py:1935
+#: gui\settingsDialogs.py:1932
 msgid "You did not choose Talk as one of your speech mode options. Please note that this may result in no speech output at all. Are you sure you want to continue?"
 msgstr "말하기 모드 옵션 중 하나로 '말하기'를 선택하지 않았습니다. 이로 인해 음성 출력이 전혀 나오지 않을 수 있습니다. 정말로 계속하시겠습니까?"
 
 #. Translators: Message shown when not enough speech modes are enabled.
-#: gui\settingsDialogs.py:1963
+#: gui\settingsDialogs.py:1960
 msgid "At least two speech modes have to be checked."
 msgstr "최소 두 개의 말하기 출력 모드를 확인해야 합니다."
 
 #. Translators: Same as the label for the list of checkboxes where user can select speech modes that will
 #. be available in Speech Settings, but without keyboard accelerator (& character) nor final colon.
-#: gui\settingsDialogs.py:1966
+#: gui\settingsDialogs.py:1963
 msgid "Modes available in the Cycle speech mode command"
 msgstr "말하기 모드 순환 설정 명령에서 사용할 수 있는 모드"
 
 #. Translators: This is the label for the keyboard settings panel.
-#: gui\settingsDialogs.py:1975
+#: gui\settingsDialogs.py:1972
 msgid "Keyboard"
 msgstr "키보드"
 
 #. Translators: This is the label for a combobox in the
 #. keyboard settings panel.
 #. Translators: The label of a combobox in the Welcome dialog.
-#: gui\settingsDialogs.py:1982 gui\startupDialogs.py:68
+#: gui\settingsDialogs.py:1979 gui\startupDialogs.py:68
 msgid "&Keyboard layout:"
 msgstr "키보드 레이아웃 (&K)"
 
 #. Translators: This is the label for a list of checkboxes
 #. controlling which keys are NVDA modifier keys.
-#: gui\settingsDialogs.py:1996
+#: gui\settingsDialogs.py:1993
 msgid "&Select NVDA Modifier Keys"
 msgstr "NVDA 보조 키 선택 (&S)"
 
 #. Translators: This is the label for a combobox in the keyboard settings panel.
-#: gui\settingsDialogs.py:2012
+#: gui\settingsDialogs.py:2009
 msgid "Speak typed &characters:"
 msgstr "입력한 글자 말하기 (&C):"
 
 #. Translators: This is the label for a combobox in the keyboard settings panel.
-#: gui\settingsDialogs.py:2023
+#: gui\settingsDialogs.py:2020
 msgid "Speak typed &words:"
 msgstr "입력한 단어 말하기 (&W):"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2035
+#: gui\settingsDialogs.py:2032
 msgid "Speech &interrupt for typed characters"
 msgstr "텍스트 입력 시 음성 정지"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2047
+#: gui\settingsDialogs.py:2044
 msgid "Speech i&nterrupt for Enter key"
 msgstr "엔터키 입력 시 음성 정지"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2056
+#: gui\settingsDialogs.py:2053
 msgid "Allow skim &reading in Say All"
 msgstr "모두 읽기 사용 시 건너뛰어 읽기 사용 (&R)"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2066
+#: gui\settingsDialogs.py:2063
 msgid "&Beep if typing lowercase letters when caps lock is on"
 msgstr "Caps Lock이 켜져 있을 때 소문자 입력 시 경고음 출력 (&B)"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2075
+#: gui\settingsDialogs.py:2072
 msgid "Speak c&ommand keys"
 msgstr "보조 키 알림 (&C)"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2082
+#: gui\settingsDialogs.py:2079
 msgid "Play sound for &spelling errors while typing"
 msgstr "입력 중 철자 오류 경고음 재생 (&S)"
 
 #. Translators: This is the label for a checkbox in the
 #. keyboard settings panel.
-#: gui\settingsDialogs.py:2093
+#: gui\settingsDialogs.py:2090
 msgid "Handle keys from other &applications"
 msgstr "다른 프로그램에서의 키보드 입력 처리 (&A)"
 
 #. Translators: The label for a control in keyboard settings to modify the timeout for a multiple keypress.
-#: gui\settingsDialogs.py:2101
+#: gui\settingsDialogs.py:2098
 msgid "&Multiple key press timeout (ms):"
 msgstr "키 연속 입력 제한 시간 (밀리초):"
 
 #. Translators: Message to report wrong configuration of the NVDA key
-#: gui\settingsDialogs.py:2117
+#: gui\settingsDialogs.py:2114
 msgid "At least one key must be used as the NVDA key."
 msgstr "최소한 하나 이상의 NVDA 보조 키가 설정되어야 합니다."
 
 #. Translators: Same as the label for the list of checkboxes controlling which keys are NVDA modifier
 #. keys in Keyboard Settings, but without keyboard accelerator (& character).
-#: gui\settingsDialogs.py:2120
+#: gui\settingsDialogs.py:2117
 msgid "Select NVDA Modifier Keys"
 msgstr "NVDA 보조 키 선택"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2155
+#: gui\settingsDialogs.py:2152
 msgid "Report mouse &shape changes"
 msgstr "마우스 모양 변경 알림 (&S)"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2162
+#: gui\settingsDialogs.py:2159
 msgid "Enable mouse &tracking"
 msgstr "마우스 위치 추적 사용 (&T)"
 
 #. Translators: This is the label for a combobox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2169
+#: gui\settingsDialogs.py:2166
 msgid "Text &unit resolution:"
 msgstr "마우스 추적 시에 텍스트 단위 설정 (&U)"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2188
+#: gui\settingsDialogs.py:2185
 msgid "Report &object when mouse enters it"
 msgstr "객체에 마우스 포인터 접근 시 알림 (&O)"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2197
+#: gui\settingsDialogs.py:2194
 msgid "&Play audio coordinates when mouse moves"
 msgstr "마우스 이동 시 경고음으로 좌표 알림 (&P)"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2204
+#: gui\settingsDialogs.py:2201
 msgid "&Brightness controls audio coordinates volume"
 msgstr "밝기에 따른 비프음 크기 제어 (&B)"
 
 #. Translators: This is the label for a checkbox in the
 #. mouse settings panel.
-#: gui\settingsDialogs.py:2213
+#: gui\settingsDialogs.py:2210
 msgid "Ignore mouse input from other &applications"
 msgstr "다른 프로그램으로부터의 키보드 입력을 무시합니다 (&A)"
 
 #. Translators: This is the label for the review cursor settings panel.
-#: gui\settingsDialogs.py:2234
+#: gui\settingsDialogs.py:2231
 msgid "Review Cursor"
 msgstr "리뷰 커서"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2240
+#: gui\settingsDialogs.py:2237
 msgid "Follow system &focus"
 msgstr "시스템 초점 따라가기 (&F)"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2246
+#: gui\settingsDialogs.py:2243
 msgid "Follow System &Caret"
 msgstr "시스템 캐럿 따라가기 (&C)"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2252
+#: gui\settingsDialogs.py:2249
 msgid "Follow &mouse cursor"
 msgstr "마우스 커서 따라가기 (&M)"
 
 #. Translators: This is the label for a checkbox in the
 #. review cursor settings panel.
-#: gui\settingsDialogs.py:2258
+#: gui\settingsDialogs.py:2255
 msgid "&Simple review mode"
 msgstr "간편 리뷰 모드 (&S)"
 
 #. Translators: This is the label for the Input Composition settings panel.
-#: gui\settingsDialogs.py:2272
+#: gui\settingsDialogs.py:2269
 msgid "Input Composition"
 msgstr "입력 구성 알림 설정"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2281
+#: gui\settingsDialogs.py:2278
 msgid "Automatically report all available &candidates"
 msgstr "후보 목록 자동으로 알림 (&C)"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2293
+#: gui\settingsDialogs.py:2290
 msgid "Announce &selected candidate"
 msgstr "선택된 후보 알림 (&S)"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2308
+#: gui\settingsDialogs.py:2305
 msgid "Always include short character &description when announcing candidates"
 msgstr "후보 출력 시 글자와 풀이도 알림 (&D)"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2323
+#: gui\settingsDialogs.py:2320
 msgid "Report changes to the &reading string"
 msgstr "읽기 문자열 변환값 알림 (&R)"
 
 #. Translators: This is the label for a checkbox in the
 #. Input composition settings panel.
-#: gui\settingsDialogs.py:2338
+#: gui\settingsDialogs.py:2335
 msgid "Report changes to the &composition string"
 msgstr "입력 문자 변환값 알림 (&C)"
 
 #. Translators: This is a label appearing on the Object Presentation settings panel.
-#: gui\settingsDialogs.py:2370
+#: gui\settingsDialogs.py:2367
 msgid "Configure how much information NVDA will present about controls. These options apply to focus reporting and NVDA object navigation, but not when reading text content e.g. web content with browse mode."
 msgstr "NVDA가 컨트롤에 대해 설명하는 상세 정도를 설정합니다. 이 옵션들은 초점 이동, 객체 탐색 시 적동합니다. 단, 텍스트 내용을 읽을 때는 작동하지 않습니다(예: 브라우즈 모드로 웹 콘텐츠를 읽을 때)."
 
 #. Translators: This is the label for the object presentation panel.
-#: gui\settingsDialogs.py:2376
+#: gui\settingsDialogs.py:2373
 msgid "Object Presentation"
 msgstr "객체 표시 설정"
 
 #. Translators: An option for progress bar output in the Object Presentation dialog
 #. which reports progress bar updates by speaking.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
-#: gui\settingsDialogs.py:2386
+#: gui\settingsDialogs.py:2383
 msgid "Speak"
 msgstr "말하기"
 
 #. Translators: An option for progress bar output in the Object Presentation dialog
 #. which reports progress bar updates by beeping.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
-#: gui\settingsDialogs.py:2390
+#: gui\settingsDialogs.py:2387
 msgid "Beep"
 msgstr "경고음"
 
 #. Translators: An option for progress bar output in the Object Presentation dialog
 #. which reports progress bar updates by both speaking and beeping.
 #. See Progress bar output in the Object Presentation Settings section of the User Guide.
-#: gui\settingsDialogs.py:2394
+#: gui\settingsDialogs.py:2391
 msgid "Speak and beep"
 msgstr "경고음 및 말하기"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2407
+#: gui\settingsDialogs.py:2404
 msgid "Report &tooltips"
 msgstr "도구 설명 알림 (&T)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2414
+#: gui\settingsDialogs.py:2411
 msgid "Report &notifications"
 msgstr "도움말 표시란 알림 (&N)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2421
+#: gui\settingsDialogs.py:2418
 msgid "Report object shortcut &keys"
 msgstr "객체 핫키 알림 (&K)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2428
+#: gui\settingsDialogs.py:2425
 msgid "Report object &position information"
 msgstr "객체 위치 정보 알림 (&P)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2435
+#: gui\settingsDialogs.py:2432
 msgid "&Guess object position information when unavailable"
 msgstr "객체 위치 없을 때 위치 추정하기 (&G)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2444
+#: gui\settingsDialogs.py:2441
 msgid "Report when objects support &multiple selection"
 msgstr "지원하는 경우 목록 다중 선택 여부 알림 (&M)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2453
+#: gui\settingsDialogs.py:2450
 msgid "Report object &descriptions"
 msgstr "객체 설명 알림 (&D)"
 
 #. Translators: This is the label for a combobox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2460
+#: gui\settingsDialogs.py:2457
 msgid "Progress &bar output:"
 msgstr "진행률 출력 (&B)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2473
+#: gui\settingsDialogs.py:2470
 msgid "Report backg&round progress bars"
 msgstr "백그라운드 진행율 알림 (&R)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2487
+#: gui\settingsDialogs.py:2484
 msgid "Report dynamic &content changes"
 msgstr "자동 변경된 컨텐츠 알림 (&C)"
 
 #. Translators: This is the label for a checkbox in the
 #. object presentation settings panel.
-#: gui\settingsDialogs.py:2497
+#: gui\settingsDialogs.py:2494
 msgid "Play a sound when &auto-suggestions appear"
 msgstr "검색 결과 나타날 때 사운드로 알림 (&A)"
 
 #. Translators: This is the label for the browse mode settings panel.
-#: gui\settingsDialogs.py:2531
+#: gui\settingsDialogs.py:2528
 msgid "Browse Mode"
 msgstr "브라우즈 모드"
 
 #. Translators: This is the label for a textfield in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2538
+#: gui\settingsDialogs.py:2535
 msgid "&Maximum number of characters on one line"
 msgstr "줄단 최대 글자 수 (&M)"
 
 #. Translators: This is the label for a textfield in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2551
+#: gui\settingsDialogs.py:2548
 msgid "&Number of lines per page"
 msgstr "페이지당 최대 줄 수 (&N)"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2564
+#: gui\settingsDialogs.py:2561
 msgid "Use &screen layout (when supported)"
 msgstr "화면 레이아웃 사용 (지원되는 경우) (&S)"
 
 #. Translators: The label for a checkbox in browse mode settings to
 #. enable browse mode on page load.
-#: gui\settingsDialogs.py:2571
+#: gui\settingsDialogs.py:2568
 msgid "&Enable browse mode on page load"
 msgstr "페이지가 로드되면 브라우즈 모드 활성화 (E)"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2578
+#: gui\settingsDialogs.py:2575
 msgid "Automatic &Say All on page load"
 msgstr "페이지 로딩 시 자동으로 읽기 (&S)"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2585
+#: gui\settingsDialogs.py:2582
 msgid "Include l&ayout tables"
 msgstr "레이아웃 표 포함 (&A)"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2592
+#: gui\settingsDialogs.py:2589
 msgid "Automatic focus mode for focus changes"
 msgstr "초점 이동 시 자동 포커스 모드 전환"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2606
+#: gui\settingsDialogs.py:2603
 msgid "Automatic focus mode for caret movement"
 msgstr "캐럿 이동 시 자동 포커스 모드 전환"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2620
+#: gui\settingsDialogs.py:2617
 msgid "Audio indication of focus and browse modes"
 msgstr "포커스와 브라우즈 모드 전환 시 경고음 재생"
 
 #. Translators: This is the label for a checkbox in the
 #. browse mode settings panel.
-#: gui\settingsDialogs.py:2634
+#: gui\settingsDialogs.py:2631
 msgid "&Trap all non-command gestures from reaching the document"
 msgstr "브라우즈 모드외 명령을 문서가 처리하지 않도록 함 (&T)"
 
 #. Translators: Title of the math settings panel.
-#: gui\settingsDialogs.py:2667
+#: gui\settingsDialogs.py:2664
 msgctxt "math"
 msgid "Math"
 msgstr "수학"
 
 #. Translators: The description of the math settings panel.
-#: gui\settingsDialogs.py:2672
+#: gui\settingsDialogs.py:2669
 msgctxt "math"
 msgid "The following options control the presentation of mathematical content."
 msgstr "다음 옵션들은 수학적 콘텐츠의 표시 방식을 제어합니다."
 
 #. Translators: options for Copy math to clipboard as -- speech text
-#: gui\settingsDialogs.py:2761 mathPres\MathCAT\preferences.py:139
+#: gui\settingsDialogs.py:2741 mathPres\MathCAT\preferences.py:142
 msgctxt "math"
 msgid "Speech"
 msgstr "말하기"
 
 #. Translators: Select an impairment for MathCAT
-#: gui\settingsDialogs.py:2768
+#: gui\settingsDialogs.py:2748
 msgctxt "math"
 msgid "Impairment:"
 msgstr "장애분류:"
 
 #. Translators: MathCAT language option
-#: gui\settingsDialogs.py:2780
+#: gui\settingsDialogs.py:2760
 msgctxt "math"
 msgid "Language:"
 msgstr "언어:"
 
 #. Translators: MathCAT decimal separator option.
-#: gui\settingsDialogs.py:2792
+#: gui\settingsDialogs.py:2780
 msgctxt "math"
 msgid "Decimal separator for numbers:"
 msgstr "숫자의 소수 구분 기호:"
 
 #. Translators: Select a speech style.
-#: gui\settingsDialogs.py:2807
+#: gui\settingsDialogs.py:2795
 msgctxt "math"
 msgid "Speech style:"
 msgstr "말하기 스타일:"
 
 #. Translators: MathCAT's verbosity setting
-#: gui\settingsDialogs.py:2823
+#: gui\settingsDialogs.py:2809
 msgctxt "math"
 msgid "Speech verbosity:"
 msgstr "말하기 상세정도:"
 
 #. Translators: MathCAT's relative speed setting
-#: gui\settingsDialogs.py:2835
+#: gui\settingsDialogs.py:2821
 msgctxt "math"
 msgid "Relative speech rate"
 msgstr "상대적 말하기 속도"
 
 #. Translators: label for slider that specifies relative factor to increase or decrease pauses in the math speech
-#: gui\settingsDialogs.py:2848
+#: gui\settingsDialogs.py:2834
 msgctxt "math"
 msgid "Pause factor"
 msgstr "쉼 길이"
 
 #. Translators: label for check box controlling a beep sound when math speech starts/ends
-#: gui\settingsDialogs.py:2863
+#: gui\settingsDialogs.py:2849
 msgctxt "math"
 msgid "Beep at the beginning and end of math"
 msgstr "수식 처음과 끝에서 비프음 출력"
 
 #. Translators: label for combobox to specify how verbose/terse the speech should be
-#: gui\settingsDialogs.py:2869
+#: gui\settingsDialogs.py:2855
 msgctxt "math"
 msgid "Chemical formulae:"
 msgstr "화학식:"
 
 #. Translators: label for combobox to specify whether the expression is spoken or described (an overview)
-#: gui\settingsDialogs.py:2881
+#: gui\settingsDialogs.py:2867
 msgctxt "math"
 msgid "When entering an equation:"
 msgstr "방정식 진입 시:"
 
 #. Translators: "Speak" the expression after moving to it
-#: gui\settingsDialogs.py:2884
+#: gui\settingsDialogs.py:2870
 msgctxt "math"
 msgid "Speak"
 msgstr "말하기"
 
 #. Translators: "Describe" the expression after moving to it
-#: gui\settingsDialogs.py:2886
+#: gui\settingsDialogs.py:2872
 msgctxt "math"
 msgid "Describe overview"
 msgstr "요약 설명"
 
 #. Translators: label for checkbox to use native math speech instead of MathCAT in Word and Outlook
-#: gui\settingsDialogs.py:2900
+#: gui\settingsDialogs.py:2886
 msgctxt "math"
 msgid "Use native math speech in Word and Outlook"
 msgstr ""
 
 #. Translators: Text for the navigation group.
-#: gui\settingsDialogs.py:2908
+#: gui\settingsDialogs.py:2894
 msgctxt "math"
 msgid "Navigation"
 msgstr "탐색"
 
 #. Translators: label for combobox to specify one of three modes use to navigate math expressions
-#: gui\settingsDialogs.py:2915
+#: gui\settingsDialogs.py:2901
 msgctxt "math"
 msgid "Default navigation mode:"
 msgstr "기본 탐색 모드:"
@@ -13622,52 +13622,52 @@ msgstr "기본 탐색 모드:"
 #. reverts to the user-selected "default navigation mode" when
 #. navigating into a new equation, even if they selected a different
 #. one this session.
-#: gui\settingsDialogs.py:2930
+#: gui\settingsDialogs.py:2916
 msgctxt "math"
 msgid "Reset to the default navigation mode for each new equation"
 msgstr "각 새 방정식마다 기본 탐색 모드 초기화"
 
 #. Translators: label for checkbox that controls whether arrow keys move out of fractions, etc.,
 #. or whether you have to manually back out of the fraction, etc.
-#: gui\settingsDialogs.py:2937
+#: gui\settingsDialogs.py:2923
 msgctxt "math"
 msgid "Automatically zoom out of two-dimensional notation"
 msgstr "2차원 수식 표기법 자동 확대/축소"
 
 #. Translators: label for combobox down to specify whether you want a terse or verbose reading of navigation commands
-#: gui\settingsDialogs.py:2943
+#: gui\settingsDialogs.py:2929
 msgctxt "math"
 msgid "Navigation verbosity:"
 msgstr "탐색 상세정도:"
 
 #. Translators: label for combobox to specify how math will be copied to the clipboard
-#: gui\settingsDialogs.py:2961
+#: gui\settingsDialogs.py:2947
 msgctxt "math"
 msgid "Copy math as:"
 msgstr "다음 형식으로 수식 복사:"
 
 #. Translators: Text for the braille group.
-#: gui\settingsDialogs.py:2973
+#: gui\settingsDialogs.py:2959
 msgctxt "math"
 msgid "Braille"
 msgstr "점자"
 
 #. Translators: label for combobox to specify which braille code to use
-#: gui\settingsDialogs.py:2979
+#: gui\settingsDialogs.py:2965
 msgctxt "math"
 msgid "Output code:"
 msgstr "출력 코드:"
 
 #. Translators: An option in Math settings to select a braille code automatically,
 #. according to NVDA's language.
-#: gui\settingsDialogs.py:2984
+#: gui\settingsDialogs.py:2970
 #, python-brace-format
 msgctxt "math"
 msgid "Automatic ({name})"
 msgstr "자동 ({name})"
 
 #. Translators: label for combobox to specify how braille dots should be modified when navigating/selecting subexprs
-#: gui\settingsDialogs.py:3003
+#: gui\settingsDialogs.py:2989
 msgctxt "math"
 msgid "Highlight navigation focus with dots 7 and 8"
 msgstr "7점과 8점으로 현재 탐색 초점을 강조 표시"
@@ -15297,34 +15297,34 @@ msgstr "VirusTotal 스캔 URL:"
 
 #. Translators: A button in the addon installation warning / blocked dialog which shows
 #. more information about the addon
-#: gui\addonStoreGui\controls\messageDialogs.py:76
-#: gui\addonStoreGui\controls\messageDialogs.py:713
+#: gui\addonStoreGui\controls\messageDialogs.py:81
+#: gui\addonStoreGui\controls\messageDialogs.py:762
 msgctxt "addonStore"
 msgid "&About add-on..."
 msgstr "이 추가기능에 관하여 (&A)..."
 
 #. Translators: A button in the addon installation blocked dialog which will confirm the available action.
-#: gui\addonStoreGui\controls\messageDialogs.py:84
+#: gui\addonStoreGui\controls\messageDialogs.py:89
 msgctxt "addonStore"
 msgid "&Yes"
 msgstr "예 (&Y)"
 
 #. Translators: A button in the addon installation blocked dialog which will dismiss the dialog.
-#: gui\addonStoreGui\controls\messageDialogs.py:92
+#: gui\addonStoreGui\controls\messageDialogs.py:97
 msgctxt "addonStore"
 msgid "&No"
 msgstr "아니요 (&N)"
 
 #. Translators: A checkbox in the dialog to remember the choice made when installing or enabling
 #. incompatible add-ons, or when removing add-ons.
-#: gui\addonStoreGui\controls\messageDialogs.py:103
+#: gui\addonStoreGui\controls\messageDialogs.py:108
 msgctxt "addonStore"
 msgid "Remember this choice for subsequent add-ons"
 msgstr "이 선택 사항을 기억"
 
 #. Translators: The message displayed when updating an add-on, but the installed version
 #. identifier can not be compared with the version to be installed.
-#: gui\addonStoreGui\controls\messageDialogs.py:124
+#: gui\addonStoreGui\controls\messageDialogs.py:129
 #, python-brace-format
 msgctxt "addonStore"
 msgid "Warning: add-on installation may result in downgrade: {name}. The installed add-on version cannot be compared with the add-on store version. Installed version: {oldVersion}. Available version: {version}.\n"
@@ -15333,29 +15333,29 @@ msgstr "경고: : {name} 추가기능을 설치하면 다운그레이드될 수 
 "계속 진행하시겠습니까? "
 
 #. Translators: The title of a dialog presented when an error occurs.
-#: gui\addonStoreGui\controls\messageDialogs.py:139
-#: gui\addonStoreGui\controls\messageDialogs.py:195
+#: gui\addonStoreGui\controls\messageDialogs.py:144
+#: gui\addonStoreGui\controls\messageDialogs.py:200
 msgctxt "addonStore"
 msgid "Install add-on"
 msgstr "추가기능 설치"
 
 #. Translators: Presented when attempting to remove the selected add-on.
 #. {addon} is replaced with the add-on name.
-#: gui\addonStoreGui\controls\messageDialogs.py:157
+#: gui\addonStoreGui\controls\messageDialogs.py:162
 #, python-brace-format
 msgctxt "addonStore"
 msgid "Are you sure you wish to remove the {addon} add-on from NVDA? This cannot be undone."
 msgstr "NVDA에서 {addon} 추가기능을 삭제하시겠습니까? 일단 삭제하면 취소할 수 없습니다."
 
 #. Translators: Title for message asking if the user really wishes to remove the selected Add-on.
-#: gui\addonStoreGui\controls\messageDialogs.py:162
+#: gui\addonStoreGui\controls\messageDialogs.py:167
 msgctxt "addonStore"
 msgid "Remove add-on"
 msgstr "추가기능 제거"
 
 #. Translators: The message displayed when installing an add-on package that is incompatible
 #. because the add-on is too old for the running version of NVDA.
-#: gui\addonStoreGui\controls\messageDialogs.py:180
+#: gui\addonStoreGui\controls\messageDialogs.py:185
 #, python-brace-format
 msgctxt "addonStore"
 msgid "Warning: add-on is incompatible: {name} {version}. Check for an updated version of this add-on if possible. This add-on was last tested with NVDA {lastTestedNVDAVersion}. NVDA requires this add-on to be tested with NVDA {nvdaVersion} or higher. Installation may cause unstable behavior in NVDA.\n"
@@ -15366,7 +15366,7 @@ msgstr "경고: {name} {version} 추가기능이 호환되지 않습니다. 가�
 
 #. Translators: The message displayed when enabling an add-on package that is incompatible
 #. because the add-on is too old for the running version of NVDA.
-#: gui\addonStoreGui\controls\messageDialogs.py:213
+#: gui\addonStoreGui\controls\messageDialogs.py:218
 #, python-brace-format
 msgctxt "addonStore"
 msgid "Warning: add-on is incompatible: {name} {version}. Check for an updated version of this add-on if possible. This add-on was last tested with NVDA {lastTestedNVDAVersion}. NVDA requires this add-on to be tested with NVDA {nvdaVersion} or higher. Enabling may cause unstable behavior in NVDA.\n"
@@ -15376,26 +15376,26 @@ msgstr "경고: {name} {version} 추가기능이 호환되지 않습니다. 가�
 "정말로 설치를 진행하시겠습니까? "
 
 #. Translators: The title of a dialog presented when an error occurs.
-#: gui\addonStoreGui\controls\messageDialogs.py:228
+#: gui\addonStoreGui\controls\messageDialogs.py:233
 msgctxt "addonStore"
 msgid "Enable add-on"
 msgstr "추가기능 활성화"
 
 #. Translators: The message displayed when installing an add-on package is prohibited,
 #. because it requires a later version of NVDA than is currently installed.
-#: gui\addonStoreGui\controls\messageDialogs.py:244
+#: gui\addonStoreGui\controls\messageDialogs.py:249
 #, python-brace-format
 msgid "Installation of {summary} {version} has been blocked. The minimum NVDA version required for this add-on is {minimumNVDAVersion}, your current NVDA version is {NVDAVersion}"
 msgstr "{summary} {version} 버전의 설치가 중지되었습니다. 이 추가기능을 사용하기 위한 최소 NVDA 버전은 {minimumNVDAVersion} 입니다. 현재 설치된 NVDA 버전은 {NVDAVersion} 입니다."
 
 #. Translators: The title of a dialog presented when an error occurs.
-#: gui\addonStoreGui\controls\messageDialogs.py:256
+#: gui\addonStoreGui\controls\messageDialogs.py:261
 msgctxt "addonStore"
 msgid "Add-on installation failure"
 msgstr "추가기능 설치 실패"
 
 #. Translators: A message asking the user if they really wish to install an addon.
-#: gui\addonStoreGui\controls\messageDialogs.py:269
+#: gui\addonStoreGui\controls\messageDialogs.py:274
 #, python-brace-format
 msgid "Are you sure you want to install this add-on?\n"
 "Only install add-ons from trusted sources.\n"
@@ -15404,13 +15404,13 @@ msgstr "\"NVDA 추가기능을 설치하시겠습니까? 신뢰받는 사이트�
 "추가기능: {summary} {version}"
 
 #. Translators: Title for message asking if the user really wishes to install an Addon.
-#: gui\addonStoreGui\controls\messageDialogs.py:281
+#: gui\addonStoreGui\controls\messageDialogs.py:286
 msgctxt "addonStore"
 msgid "Add-on Installation"
 msgstr "추가기능 설치"
 
 #. Translators: message shown in the Addon Information dialog.
-#: gui\addonStoreGui\controls\messageDialogs.py:293
+#: gui\addonStoreGui\controls\messageDialogs.py:298
 #, python-brace-format
 msgctxt "addonStore"
 msgid "{summary} ({name})\n"
@@ -15421,183 +15421,211 @@ msgstr "{summary} ({name})\n"
 "설명: {description}\n"
 
 #. Translators: the publisher part of the About Add-on information
-#: gui\addonStoreGui\controls\messageDialogs.py:303
+#: gui\addonStoreGui\controls\messageDialogs.py:308
 #, python-brace-format
 msgctxt "addonStore"
 msgid "Publisher: {publisher}\n"
 msgstr "계시자: {publisher}\n"
 
 #. Translators: the author part of the About Add-on information
-#: gui\addonStoreGui\controls\messageDialogs.py:306
+#: gui\addonStoreGui\controls\messageDialogs.py:311
 #, python-brace-format
 msgctxt "addonStore"
 msgid "Author: {author}\n"
 msgstr "제작자: {author}\n"
 
 #. Translators: the url part of the About Add-on information
-#: gui\addonStoreGui\controls\messageDialogs.py:309
+#: gui\addonStoreGui\controls\messageDialogs.py:314
 #, python-brace-format
 msgctxt "addonStore"
 msgid "Homepage: {url}\n"
 msgstr "홈페이지: {url}\n"
 
 #. Translators: the minimum NVDA version part of the About Add-on information
-#: gui\addonStoreGui\controls\messageDialogs.py:313
+#: gui\addonStoreGui\controls\messageDialogs.py:318
 msgctxt "addonStore"
 msgid "Minimum required NVDA version: {}\n"
 msgstr "NVDA 최소 요구 버전: {}\n"
 
 #. Translators: the last NVDA version tested part of the About Add-on information
-#: gui\addonStoreGui\controls\messageDialogs.py:318
+#: gui\addonStoreGui\controls\messageDialogs.py:323
 msgctxt "addonStore"
 msgid "Last NVDA version tested: {}\n"
 msgstr "마지막으로 검증된 NVDA 버전: {}\n"
 
 #. Translators: title for the Addon Information dialog
-#: gui\addonStoreGui\controls\messageDialogs.py:321
+#: gui\addonStoreGui\controls\messageDialogs.py:326
 msgctxt "addonStore"
 msgid "Add-on Information"
 msgstr "추가기능 정보"
 
 #. Translators: The warning of a dialog
-#: gui\addonStoreGui\controls\messageDialogs.py:335
+#: gui\addonStoreGui\controls\messageDialogs.py:340
 msgctxt "addonStore"
 msgid "Add-on Store Warning"
 msgstr "추가기능 스토어 경고"
 
 #. Translators: Warning that is displayed before using the Add-on Store.
-#: gui\addonStoreGui\controls\messageDialogs.py:342
+#: gui\addonStoreGui\controls\messageDialogs.py:347
 msgctxt "addonStore"
 msgid "Add-ons are created by the NVDA community and are not vetted by NV Access. NV Access cannot be held responsible for add-on behavior. The functionality of add-ons is unrestricted and can include accessing your personal data or even the entire system. "
 msgstr "추가기능은 NVDA 커뮤니티에서 제작하며 NV Access의 심사를 받지 않습니다. NV Access는 추가기능에 대한 책임을 질 수 없습니다. 추가기능에는 제한이 없으며 개인 데이터 또는 전체 시스템에 대한 액세스도 포함될 수 있습니다. "
 
 #. Translators: The label of a checkbox in the add-on store warning dialog
-#: gui\addonStoreGui\controls\messageDialogs.py:364
+#: gui\addonStoreGui\controls\messageDialogs.py:369
 msgctxt "addonStore"
 msgid "&Don't show this message again"
 msgstr "다시 이 메시지 보지 않기 (&D)"
 
 #. Translators: The label of a button in a dialog
-#: gui\addonStoreGui\controls\messageDialogs.py:372
+#: gui\addonStoreGui\controls\messageDialogs.py:377
 msgctxt "addonStore"
 msgid "&OK"
 msgstr "확인 (&O)"
 
 #. Translators: The warning of a dialog
-#: gui\addonStoreGui\controls\messageDialogs.py:396
+#: gui\addonStoreGui\controls\messageDialogs.py:401
 msgctxt "addonStore"
 msgid "Add-on updates available"
 msgstr "추가기능 업데이트 사용 가능"
 
 #. Translators: Message displayed when updates are available for some installed add-ons.
-#: gui\addonStoreGui\controls\messageDialogs.py:424
+#: gui\addonStoreGui\controls\messageDialogs.py:429
 msgctxt "addonStore"
 msgid "Updates are available for some of your installed add-ons. "
 msgstr "설치된 추가기능 중 일부 업데이트 가능. "
 
 #. Translators: The label of a button in a dialog
-#: gui\addonStoreGui\controls\messageDialogs.py:437
+#: gui\addonStoreGui\controls\messageDialogs.py:442
 msgctxt "addonStore"
 msgid "Open Add-on &Store"
 msgstr "추가기능 스토어 열기 (&S)"
 
 #. Translators: The label of a button in a dialog
-#: gui\addonStoreGui\controls\messageDialogs.py:445
+#: gui\addonStoreGui\controls\messageDialogs.py:450
 msgctxt "addonStore"
 msgid "&Update all"
 msgstr "전체 업데이트 (&U)"
 
 #. Translators: The label of a button in a dialog
-#: gui\addonStoreGui\controls\messageDialogs.py:450
+#: gui\addonStoreGui\controls\messageDialogs.py:455
 msgctxt "addonStore"
 msgid "&Close"
 msgstr "닫기 (&C)"
 
 #. Translators: Message shown when updating add-ons in the updatable add-ons dialog
 #. Translators: Message shown when updating add-ons automatically
-#: gui\addonStoreGui\controls\messageDialogs.py:492
-#: gui\addonStoreGui\controls\messageDialogs.py:582
+#: gui\addonStoreGui\controls\messageDialogs.py:497
+#: gui\addonStoreGui\controls\messageDialogs.py:587
 msgctxt "addonStore"
 msgid "Updating add-ons..."
 msgstr "추가기능 업데이트 중..."
 
 #. Translators: Message shown when updating add-ons automatically
-#: gui\addonStoreGui\controls\messageDialogs.py:620
+#: gui\addonStoreGui\controls\messageDialogs.py:625
 msgctxt "addonStore"
 msgid "Add-ons updated, restart NVDA to activate changes"
 msgstr "추가기능이 업데이트되었습니다. NVDA를 재시작하여 변경사항을 활성화합니다"
 
 #. Translators: The title of the dialog which allows users to select which add-ons to copy to the system profile.
-#: gui\addonStoreGui\controls\messageDialogs.py:668
+#: gui\addonStoreGui\controls\messageDialogs.py:691
 msgctxt "addonStore"
-msgid "Copy Add-ons to System-wide Configuration"
-msgstr "시스템 전체 구성 환경으로 추가 기능 복사"
+msgid "Copy Settings to System-wide Configuration"
+msgstr ""
 
 #. Translators: Explanatory text in the dialog which allows users to select which add-ons to copy to NVDA's system config.
-#: gui\addonStoreGui\controls\messageDialogs.py:681
+#: gui\addonStoreGui\controls\messageDialogs.py:712
 msgctxt "addonStore"
-msgid "One or more add-ons are currently enabled in your NVDA configuration. If run on secure screens, they will have unrestricted, higher-than-administrator level access to your entire system. You are strongly encouraged to copy only add-ons that you absolutely require in order to use NVDA during sign-in and on secure screens.\n\n"
-"Check only the add-ons you wish to copy to the system-wide configuration."
-msgstr "현재 NVDA 구성 환경에 하나 이상의 추가 기능이 활성화되어 있습니다. 보안 화면에서 실행되면 전체 시스템에 대한 제한 없이 관리자 수준보다 높은 접근 권한을 갖게 됩니다. 로그인 중 및 보안 화면에서 NVDA를 사용하려면 반드시 필요한 애드온만 복사하는 것이 좋습니다.\n\n"
-"시스템 전체 구성 환경에 복사하려는 추가 기능만 확인합니다."
+msgid "One or more add-ons are currently enabled in your NVDA configuration. If run on secure screens, they will have unrestricted, higher-than-administrator level access to your entire system. You are strongly encouraged to copy only add-ons that you absolutely require in order to use NVDA during sign-in and on secure screens."
+msgstr ""
+
+#. Translators: Explanatory text in the dialog which allows users to select which add-ons to copy to NVDA's system config.
+#: gui\addonStoreGui\controls\messageDialogs.py:722
+msgctxt "addonStore"
+msgid "The system-wide NVDA configuration contains add-ons that are not present in your configuration. If you continue, these add-ons will be removed from the system-wide configuration."
+msgstr ""
+
+#. Translators: Instructional text in the dialog which allows users to select which add-ons to copy to NVDA's system config.
+#: gui\addonStoreGui\controls\messageDialogs.py:731
+msgctxt "addonStore"
+msgid "Check only the add-ons you wish to copy to the system-wide configuration."
+msgstr ""
 
 #. Translators: The label of the list which allows users to select which add-ons to copy to the system profile
-#: gui\addonStoreGui\controls\messageDialogs.py:693
+#: gui\addonStoreGui\controls\messageDialogs.py:743
 msgctxt "addonStore"
 msgid "Add-ons"
 msgstr "추가 기능"
 
 #. Translators: The label for a column in the copy add-ons dialog that displays the name of the add-on
 #. Translators: The name of the column that contains names of addons.
-#: gui\addonStoreGui\controls\messageDialogs.py:699
+#: gui\addonStoreGui\controls\messageDialogs.py:748
 #: gui\addonStoreGui\viewModels\addonList.py:62
 msgctxt "addonStore"
 msgid "Name"
 msgstr "이름"
 
-#. Translators: The label for a column in the copy add-ons dialog that displays the add-on's author
-#. Translators: The name of the column that contains the addon's author.
-#: gui\addonStoreGui\controls\messageDialogs.py:701
-#: gui\addonStoreGui\viewModels\addonList.py:96
+#. Translators: The label for a column in the copy add-ons dialog that displays the version of the add-on present in the current user's configuration
+#: gui\addonStoreGui\controls\messageDialogs.py:750
 msgctxt "addonStore"
-msgid "Author"
-msgstr "제작자"
+msgid "User version"
+msgstr ""
 
-#. Translators: The label for a column in the copy add-ons dialog that displays the version of the add-on
-#: gui\addonStoreGui\controls\messageDialogs.py:703
+#. Translators: The label for a column in the copy add-ons dialog that displays the version of the add-on present in the system-wide configuration
+#: gui\addonStoreGui\controls\messageDialogs.py:752
 msgctxt "addonStore"
-msgid "Version"
-msgstr "버전"
+msgid "System-wide version"
+msgstr ""
 
 #. Translators: The label for a button in the copy add-ons dialog which will initiate the copy process
-#: gui\addonStoreGui\controls\messageDialogs.py:718
+#: gui\addonStoreGui\controls\messageDialogs.py:767
 msgctxt "addonStore"
 msgid "&Continue"
 msgstr "계속 (&C)"
 
 #. Translators: The label for a button in the copy add-ons dialog which will abandon the copy process
-#: gui\addonStoreGui\controls\messageDialogs.py:721
+#: gui\addonStoreGui\controls\messageDialogs.py:770
 msgctxt "addonStore"
 msgid "Cancel"
 msgstr "취소"
 
+#. Translators: Shown when the add-on is not installed.
+#: gui\addonStoreGui\controls\messageDialogs.py:794
+msgctxt "addonStore"
+msgid "Not installed"
+msgstr ""
+
+#. Translators: Prepended to the name of an add-on to indicate that it will be removed from the system-wide configuration.
+#: gui\addonStoreGui\controls\messageDialogs.py:796
+msgctxt "addonStore"
+msgid "[remove]"
+msgstr ""
+
 #. Translators: A message to warn the user when attempting to copy add-ons for use on secure screens
-#: gui\addonStoreGui\controls\messageDialogs.py:791
+#: gui\addonStoreGui\controls\messageDialogs.py:864
 #, python-brace-format
 msgctxt "addonStore"
 msgid "You have selected to copy {num} add-on to NVDA's system-wide configuration. Using this add-on during sign-in and on secure screens is a serious security risk."
 msgid_plural "You have selected to copy {num} add-ons to NVDA's system-wide configuration. Using these add-ons during sign-in and on secure screens is a serious security risk."
 msgstr[0] "{num}개의 추가기능을 시스템 전체 구성환경으로 복사하기 위해 선택하셨습니다. 로그인 중이나 보안 화면에서 이러한 추가 기능을 사용하는 것은 심각한 보안 위험입니다."
 
+#. Translators: A message to warn the user when copying their configuration will remove add-ons
+#: gui\addonStoreGui\controls\messageDialogs.py:876
+#, python-brace-format
+msgctxt "addonStore"
+msgid "This action will remove {num} add-on from NVDA's system-wide configuration. "
+msgid_plural "This action will remove {num} add-ons from NVDA's system-wide configuration. "
+msgstr[0] ""
+
 #. Translators: A prompt asking the user to confirm whether to perform an action.
-#: gui\addonStoreGui\controls\messageDialogs.py:801
+#: gui\addonStoreGui\controls\messageDialogs.py:885
 msgctxt "addonStore"
 msgid "Are you sure you want to continue?"
 msgstr "정말로 계속하시겠습니까?"
 
 #. Translators: The title of the warning dialog displayed when trying to
 #. copy add-ons for use on secure screens.
-#: gui\addonStoreGui\controls\messageDialogs.py:805
+#: gui\addonStoreGui\controls\messageDialogs.py:892
 msgctxt "addonStore"
 msgid "Warning"
 msgstr "경고"
@@ -15726,6 +15754,12 @@ msgstr "채널"
 msgctxt "addonStore"
 msgid "Publisher"
 msgstr "계시자"
+
+#. Translators: The name of the column that contains the addon's author.
+#: gui\addonStoreGui\viewModels\addonList.py:96
+msgctxt "addonStore"
+msgid "Author"
+msgstr "제작자"
 
 #. Translators: The name of the column that contains the publication date of the add-on.
 #: gui\addonStoreGui\viewModels\addonList.py:102
@@ -15980,158 +16014,143 @@ msgctxt "math"
 msgid "Error in brailling math."
 msgstr "수식을 점자로 출력하는 도중 오류가 발생했습니다."
 
-#. Translators: menu item -- use the language of the voice chosen in the NVDA speech settings dialog
-#. "Auto" == "Automatic" -- other items in menu are "English (en)", etc., so this matches that style
-#: mathPres\MathCAT\localization.py:279
+#. Translators: {lang} is the name of the language in that language,
+#. and {code} is the code for that language variant,
+#. e.g. "en-UK" for English (United Kingdom).
+#: mathPres\MathCAT\localization.py:102
+#, python-brace-format
 msgctxt "math"
-msgid "Automatic (Use Voice's Language)"
-msgstr "자동 (음성 언어 사용)"
+msgid "{lang} ({code})"
+msgstr ""
+
+#. Translators: Math language settings menu item: Automatic uses the voice's language.
+#. Translators: options for decimal separator -- "Auto" = automatically pick the choice based on the language
+#: mathPres\MathCAT\localization.py:144 mathPres\MathCAT\preferences.py:50
+msgctxt "math"
+msgid "Automatic"
+msgstr "자동"
 
 #. Translators: Learning disabilities includes dyslexia and ADHD
 #. category of impairment that MathCAT supports: people with learning disabilities
-#: mathPres\MathCAT\preferences.py:29
+#: mathPres\MathCAT\preferences.py:32
 msgctxt "math"
 msgid "Learning disabilities"
 msgstr "장애에 관하여 배우기"
 
 #. Translators: category of impairment that MathCAT supports: people who are blind
-#: mathPres\MathCAT\preferences.py:31
+#: mathPres\MathCAT\preferences.py:34
 msgctxt "math"
 msgid "Blindness"
 msgstr "시각장애(전맹)"
 
 #. Translators: category of impairment that MathCAT supports: people who have low vision
-#: mathPres\MathCAT\preferences.py:33
+#: mathPres\MathCAT\preferences.py:36
 msgctxt "math"
 msgid "Low vision"
 msgstr "저시력"
 
-#. Translators: options for decimal separator -- "Auto" = automatically pick the choice based on the language
-#: mathPres\MathCAT\preferences.py:47
-msgctxt "math"
-msgid "Automatic"
-msgstr "자동"
-
 #. Translators: options for decimal separator -- "Custom" = user sets it
 #. Currently there is no UI for how it is done yet, but eventually there will be a dialog that pops up to set it
-#: mathPres\MathCAT\preferences.py:54
+#: mathPres\MathCAT\preferences.py:57
 msgctxt "math"
 msgid "Custom"
 msgstr "사용자 정의"
 
 #. Translators: options for speech verbosity -- "terse" = use less words
 #. Translators: options for navigation verbosity -- "terse" = use less words
-#: mathPres\MathCAT\preferences.py:67 mathPres\MathCAT\preferences.py:115
+#: mathPres\MathCAT\preferences.py:70 mathPres\MathCAT\preferences.py:118
 msgctxt "math"
 msgid "Terse"
 msgstr "간결하게"
 
 #. Translators: options for speech verbosity -- "medium" = try to be neither too terse nor too verbose
 #. Translators: options for navigation verbosity -- "medium" = try to be nether too terse nor too verbose words
-#: mathPres\MathCAT\preferences.py:69 mathPres\MathCAT\preferences.py:117
+#: mathPres\MathCAT\preferences.py:72 mathPres\MathCAT\preferences.py:120
 msgctxt "math"
 msgid "Medium"
 msgstr "보통"
 
 #. Translators: options for speech verbosity -- "verbose" = use more words
 #. Translators: options for navigation verbosity -- "verbose" = use more words
-#: mathPres\MathCAT\preferences.py:71 mathPres\MathCAT\preferences.py:119
+#: mathPres\MathCAT\preferences.py:74 mathPres\MathCAT\preferences.py:122
 msgctxt "math"
 msgid "Verbose"
 msgstr "자세히"
 
 #. Translators: values for chemistry options with example speech in parenthesis
-#: mathPres\MathCAT\preferences.py:83
+#: mathPres\MathCAT\preferences.py:86
 msgctxt "math"
 msgid "Spell it out (H 2 O)"
 msgstr "풀어서 말하기 (H 2 O)"
 
 #. Translators: values for chemistry options with example speech in parenthesis (never interpret as chemistry)
-#: mathPres\MathCAT\preferences.py:85
+#: mathPres\MathCAT\preferences.py:88
 msgctxt "math"
 msgid "Off (H sub 2 O)"
 msgstr "끔 (H 아래첨자 2 O)"
 
 #. Translators: names of different modes of navigation. "Enhanced" mode understands math structure
-#: mathPres\MathCAT\preferences.py:98
+#: mathPres\MathCAT\preferences.py:101
 msgctxt "math"
 msgid "Enhanced"
 msgstr "강화 탐색모드"
 
 #. Translators: "Simple" walks by character expect for things like fractions, roots, and scripts
-#: mathPres\MathCAT\preferences.py:100
+#: mathPres\MathCAT\preferences.py:103
 msgctxt "math"
 msgid "Simple"
 msgstr "간결하게"
 
 #. Translators: "Character" moves around by character, automatically moving into fractions, etc
-#: mathPres\MathCAT\preferences.py:102
+#: mathPres\MathCAT\preferences.py:105
 msgctxt "math"
 msgid "Character"
 msgstr "문자"
 
 #. Translators: options for Copy expression to clipboard as -- "MathML"
-#: mathPres\MathCAT\preferences.py:133
+#: mathPres\MathCAT\preferences.py:136
 msgctxt "math"
 msgid "MathML"
 msgstr "MathML"
 
 #. Translators: options for Copy math to clipboard as -- "LaTeX"
-#: mathPres\MathCAT\preferences.py:135
+#: mathPres\MathCAT\preferences.py:138
 msgctxt "math"
 msgid "LaTeX"
 msgstr "LaTex"
 
 #. Translators: options for Copy math to clipboard as -- "ASCIIMath"
-#: mathPres\MathCAT\preferences.py:137
+#: mathPres\MathCAT\preferences.py:140
 msgctxt "math"
 msgid "ASCIIMath"
 msgstr "ASCII 수식"
 
 #. Translators: Math option for using dots 7 and 8: don't highlight
-#: mathPres\MathCAT\preferences.py:153
+#: mathPres\MathCAT\preferences.py:156
 msgctxt "math"
 msgid "Off"
 msgstr "끔"
 
 #. Translators: Math option for using dots 7 and 8:
 #. only the first character of the current navigation node uses dots 7 & 8
-#: mathPres\MathCAT\preferences.py:156
+#: mathPres\MathCAT\preferences.py:159
 msgctxt "math"
 msgid "First character"
 msgstr "첫 글자"
 
 #. Translators: Math option for using dots 7 and 8:
 #. only the first and last character of the current navigation node uses dots 7 & 8
-#: mathPres\MathCAT\preferences.py:159
+#: mathPres\MathCAT\preferences.py:162
 msgctxt "math"
 msgid "Endpoints"
 msgstr "끝점"
 
 #. Translators: Math option for using dots 7 and 8:
 #. all the characters for the current navigation node use dots 7 & 8
-#: mathPres\MathCAT\preferences.py:162
+#: mathPres\MathCAT\preferences.py:165
 msgctxt "math"
 msgid "All"
 msgstr "전체"
-
-#. Translators: ClearSpeak is a speech style developed by ETS for use on high-stakes tests such as the SAT
-#: mathPres\MathCAT\preferences.py:175
-msgctxt "math"
-msgid "ClearSpeak"
-msgstr "ClearSpeak"
-
-#. Translators: SimpleSpeak is a speech style that tries to minimize speech by speaking simple expressions without bracketing words
-#: mathPres\MathCAT\preferences.py:177
-msgctxt "math"
-msgid "SimpleSpeak"
-msgstr "SimpleSpeak"
-
-#. Translators: LiteralSpeak is a speech style with no language-specific rules that reads math character by character
-#: mathPres\MathCAT\preferences.py:179
-msgctxt "math"
-msgid "LiteralSpeak"
-msgstr "LiteralSpeak"
 
 #. Translators: A mode  that allows typing in the actual 'native' characters for an east-Asian input method language currently selected, rather than alpha numeric (Roman/English) characters.
 #: NVDAHelper\__init__.py:497
@@ -19030,7 +19049,7 @@ msgid "table with {columnCountText} and {rowCountText}"
 msgstr "표, {columnCountText}, {rowCountText}"
 
 #. Translators: name of the default espeak varient.
-#: synthDrivers\_espeak.py:416
+#: synthDrivers\_espeak.py:417
 msgctxt "espeakVarient"
 msgid "none"
 msgstr "안 함"
