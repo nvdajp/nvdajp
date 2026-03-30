@@ -137,6 +137,17 @@ def _main():
 		dicrc_src = thisdir / "dicrc"
 		print(f"copy {dicrc_src} to {outdir}")
 		shutil.copy(str(dicrc_src), str(outdir))
+		# Runtime input and dictionary are UTF-8 (mecab-dict-index -f/-c utf-8). The template
+		# dicrc still says EUC-JP; align config-charset so MeCab loads params consistently with
+		# UTF-8 sys.dic (avoids CI vs local segmentation drift for custom entries).
+		dicrc_dst = outdir / "dicrc"
+		try:
+			rc_text = dicrc_dst.read_text(encoding="utf-8")
+			rc_text = rc_text.replace("config-charset = EUC-JP", "config-charset = UTF-8")
+			rc_text = rc_text.replace("config-charset=sjis", "config-charset = UTF-8")
+			dicrc_dst.write_text(rc_text, encoding="utf-8")
+		except OSError as e:
+			print(f"WARNING: could not patch dicrc for UTF-8: {e}")
 		dic_version_file = outdir / "DIC_VERSION"
 		print(f"dic version file: {dic_version_file}")
 		version = f"nvdajp-jtalk-dic ({code}) {datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
