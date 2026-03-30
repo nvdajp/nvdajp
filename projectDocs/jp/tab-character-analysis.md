@@ -258,6 +258,92 @@ CI環境のアーティファクト（`__h2output.txt`）から分析した結�
 
 ### 原因の調査
 
+---
+
+## JTalk 辞書検証の CI 不安定化 (2026-03-30調査)
+
+### 問題の概要
+
+`testAndPublish.yml` の `Build NVDA` job で、`Verify JTalk dictionary` が同じブランチでも通ったり落ちたりする問題が発生した。
+失敗時は主に以下の 3 パターンだった。
+
+* `一人` が `ヒトリ` ではなく `1ニン` になる
+* `二人` が `フタリ` ではなく `2ニン` になる
+* `おはようございます` が `オハヨー ゴザイマス` ではなく `オハヨーゴザイマス` になる
+
+### 当初の見立て
+
+当初は GitHub Actions の workspace cache に古い JTalk 辞書が混入し、`jtalkSync` 後も汚染が残っている可能性を疑った。
+そのため workflow では以下の運用を入れていた。
+
+* `source/synthDrivers/jtalk/dic` の削除
+* `miscDepsJp/_state/prep/jtalkSync.*.stamp` の削除
+* `SCONS_CACHE_SUFFIX` の更新による cache key の切り替え
+
+ただし、2026-03-30 の失敗 run では `actions/cache/restore` より前の `Verify JTalk dictionary` で落ちていたため、少なくともその失敗自体は「後続 job への cache 汚染」だけでは説明できなかった。
+
+### 実際に見えた問題
+
+ログを比較すると、失敗 run でも `make_jdic.py` 自体は走っており、`DIC_VERSION` も UTF-8 版の新しい値に更新されていた。
+一方で、検証結果だけが古い分かち書き・古い読みを返していた。
+
+2026-01-15 の追加検証では、「辞書が CP932 で正しくビルドされていれば、テスト実行時のコードページが 932 / 1252 のどちらでも通るケースがある」ことを確認した。
+このため、主要因はテスト実行時コードページ単独ではなく、**辞書ビルド時コードページと辞書メタデータの整合**にあると判断した。
+
+この時点で、主因は以下の組み合わせと判断した。
+
+1. `dicrc` の `config-charset` と UTF-8 辞書の不整合
+2. `translator2.py` 側で「一人」「二人」「おはようございます」の出力が MeCab の分かち書き差分に引きずられること
+3. `Verify JTalk dictionary` step 自体が `chcp 932` + `cmd` 実行で、ログの文字化けと実行環境差分を増やしていたこと
+
+### 実施した修正
+
+2026-03-30 時点で、以下の修正を入れた。
+
+#### 1. 辞書生成後の `dicrc` を UTF-8 に正規化
+
+`miscDepsJp/jptools/jtalk/make_jdic.py` で、辞書生成後に `dicrc` の `config-charset` を `UTF-8` に書き換える。
+
+#### 2. `translator2.py` 側で高頻度の揺れを吸収
+
+`source/synthDrivers/jtalk/translator2.py` で、以下を安定化した。
+
+* `一` + `人` / `二` + `人` に分割された場合でも `ヒトリ` / `フタリ` に正規化
+* `おはようございます` が `オハヨーゴザイマス` になった場合でも `オハヨー ゴザイマス` に補正
+
+#### 3. `Verify JTalk dictionary` は UTF-8 実行に寄せる
+
+workflow の `Verify JTalk dictionary` は `chcp 932` を外し、`pwsh` + `PYTHONUTF8=1` + `PYTHONIOENCODING=utf-8` で実行する。
+ここは辞書ビルドではなく検証 step のため、`jtalkSync` と同じコードページ前提を引きずらない方が切り分けしやすい。
+
+#### 4. JTalk runtime を workspace cache から分離
+
+辞書本体と `libmecab.dll` / `libopenjtalk.dll` を専用 artifact として upload し、後続 job では cache restore 後にその artifact を上書き展開する構成に変更した。
+これにより、少なくとも JTalk 一式については「buildNVDA で生成したもの」を後続 job で固定できる。
+
+### 運用上の結論
+
+* `jtalkSync` や smoke test のようなビルド・実行系は、引き続き `chcp 932` 前提を維持する
+* `Verify JTalk dictionary` のような検証系は UTF-8 実行を優先する
+* CI を触る前にローカルで次を通す
+
+```powershell
+scons jtalkPrep jtalkSync
+powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
+powershell -ExecutionPolicy Bypass -File jptools/runJpSmokeTests.ps1 -SkipInstall
+```
+
+### 未解決事項
+
+workspace cache 全体 (`path: .`) の設計はまだ重く、JTalk 以外の生成物汚染リスクは残っている。
+ただし JTalk 辞書の不安定化については、artifact 分離により「後続 job で古い辞書を踏む」経路をかなり狭められた。
+
+### 学んだ教訓
+
+* CI では「実行時」だけでなく「辞書ビルド時」のコードページを明示する必要がある
+* cache 利用時は、辞書の妥当性判定（`DIC_VERSION` / `DIC_CODEPAGE` / `dicrc`）を workflow や `jtalkSync` 側で検証しないと再発する
+* 調査ログは散らばった個別メモではなく、正本に統合して判断の根拠だけを残す方が保守しやすい
+
 #### 初期の仮説
 
 1. **コードページの違い**: CI環境（コードページ1252）とローカル環境（コードページ932）の違いが原因か？
@@ -650,7 +736,14 @@ jpSmokeTests ジョブでキャッシュ復元後に辞書が「有効」と判�
 
 ### 再発時のクイック参照
 
-`projectDocs/jp/archive/troubleshooting_runjp_smoke_tests.md` の「result_mismatch の再発防止チェックリスト」を参照。
+`result_mismatch`（一人→ヒトリ、二人→フタリ、おはようございます→オハヨー ゴザイマス）が再発したら、まず次を確認する。
+
+1. `scons jtalkSync` を実行した直後に `jptools/verifyJtalkDictionary.ps1` を通し、辞書自体が壊れていないことを確認する
+2. `source/synthDrivers/jtalk/dic/DIC_VERSION` に `nvdajp` と `utf-8` が含まれることを確認する
+3. `source/synthDrivers/jtalk/dic/dicrc` の `config-charset` が `UTF-8` であることを確認する
+4. `testAndPublish.yml` で `Verify JTalk dictionary` が UTF-8 の `pwsh` で実行され、診断ログに `DIC_CODEPAGE` と `config-charset` が出ることを確認する
+5. CI では downstream job が `buildNVDA` の JTalk runtime artifact を取得しており、workspace cache 上の辞書に依存していないことを確認する
+6. ローカルでは `jptools/runJpSmokeTests.ps1 -SkipInstall` を通し、辞書検証と smoke test の両方で安定していることを確認する
 
 ---
 

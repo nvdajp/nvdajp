@@ -148,13 +148,25 @@ jobs:
           Get-ChildItem $dicDir | ForEach-Object { Write-Host "  $($_.Name)" }
           $ver = Join-Path $dicDir "DIC_VERSION"
           if (Test-Path $ver) { Write-Host "DIC_VERSION: $(Get-Content $ver -Raw)" }
+          $cp = Join-Path $dicDir "DIC_CODEPAGE"
+          if (Test-Path $cp) { Write-Host "DIC_CODEPAGE: $(Get-Content $cp -Raw)" }
+          $dicrc = Join-Path $dicDir "dicrc"
+          if (Test-Path $dicrc) {
+            $charsetLine = Get-Content $dicrc | Where-Object { $_ -match "^config-charset" } | Select-Object -First 1
+            if ($charsetLine) { Write-Host "dicrc: $charsetLine" }
+          }
         } else {
           Write-Host "  dic directory does not exist"
         }
         Write-Host "make_jdic.py exists: $(Test-Path 'miscDepsJp\jptools\jtalk\make_jdic.py')"
     - name: Verify JTalk dictionary
-      shell: cmd
-      run: chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
+      # BEGIN JP PATCH (run verification in UTF-8 PowerShell to avoid log mojibake and extra code-page state)
+      shell: pwsh
+      env:
+        PYTHONUTF8: "1"
+        PYTHONIOENCODING: "utf-8"
+      run: powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
+      # END JP PATCH
     # END JP PATCH
     - name: Prepare source code
       shell: cmd
@@ -168,6 +180,16 @@ jobs:
         uv run --no-active --directory runtime-builders/synthDriverHost32 python setup-runtime.py --dest-dir ../../source/lib/x86/synthDriverHost-runtime --version "$env:version" --publisher "$env:scons_publisher"
     - name: Prepare for tests
       run: ci/scripts/tests/beforeTests.ps1
+    # BEGIN JP PATCH (ship JTalk runtime separately from workspace cache to avoid stale dic propagation)
+    - name: Upload JTalk runtime artifact
+      uses: actions/upload-artifact@v5
+      with:
+        name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: |
+          source/synthDrivers/jtalk/dic
+          source/synthDrivers/jtalk/libmecab.dll
+          source/synthDrivers/jtalk/libopenjtalk.dll
+    # END JP PATCH
     # JP: Dic is included in cache. Invalidate via SCONS_CACHE_SUFFIX bump when dic build changes.
     - name: Cache scons build
       uses: actions/cache/save@v5
@@ -305,6 +327,13 @@ jobs:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
         fail-on-cache-miss: true
+    # BEGIN JP PATCH (overwrite JTalk files from dedicated artifact after workspace cache restore)
+    - name: Get JTalk runtime artifact
+      uses: actions/download-artifact@v6
+      with:
+        name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: .
+    # END JP PATCH
     - name: Install Python
       uses: actions/setup-python@v6
       with:
@@ -356,6 +385,13 @@ jobs:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
         fail-on-cache-miss: true
+    # BEGIN JP PATCH (overwrite JTalk files from dedicated artifact after workspace cache restore)
+    - name: Get JTalk runtime artifact
+      uses: actions/download-artifact@v6
+      with:
+        name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: .
+    # END JP PATCH
     - name: Install Python
       uses: actions/setup-python@v6
       with:
@@ -441,6 +477,13 @@ jobs:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
         fail-on-cache-miss: true
+    # BEGIN JP PATCH (overwrite packaged JTalk files from dedicated artifact after workspace cache restore)
+    - name: Get JTalk runtime artifact
+      uses: actions/download-artifact@v6
+      with:
+        name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: .
+    # END JP PATCH
     - name: Install Python
       uses: actions/setup-python@v6
       with:

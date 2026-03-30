@@ -73,4 +73,4 @@ $env:BUILD_ARCH = "x64"
 - `jptools/scons_jp.py`
 - `jptools/runJpSmokeTests.ps1`
 - `jptools/checkJtalkArch.ps1`
-- `projectDocs/jp/archive/troubleshooting_runjp_smoke_tests.md`
+- `projectDocs/jp/tab-character-analysis.md`
