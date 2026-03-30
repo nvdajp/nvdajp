@@ -180,6 +180,16 @@ jobs:
         uv run --no-active --directory runtime-builders/synthDriverHost32 python setup-runtime.py --dest-dir ../../source/lib/x86/synthDriverHost-runtime --version "$env:version" --publisher "$env:scons_publisher"
     - name: Prepare for tests
       run: ci/scripts/tests/beforeTests.ps1
+    # BEGIN JP PATCH (ship JTalk runtime separately from workspace cache to avoid stale dic propagation)
+    - name: Upload JTalk runtime artifact
+      uses: actions/upload-artifact@v5
+      with:
+        name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: |
+          source/synthDrivers/jtalk/dic
+          source/synthDrivers/jtalk/libmecab.dll
+          source/synthDrivers/jtalk/libopenjtalk.dll
+    # END JP PATCH
     # JP: Dic is included in cache. Invalidate via SCONS_CACHE_SUFFIX bump when dic build changes.
     - name: Cache scons build
       uses: actions/cache/save@v4
@@ -317,6 +327,13 @@ jobs:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
         fail-on-cache-miss: true
+    # BEGIN JP PATCH (overwrite JTalk files from dedicated artifact after workspace cache restore)
+    - name: Get JTalk runtime artifact
+      uses: actions/download-artifact@v6
+      with:
+        name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: .
+    # END JP PATCH
     - name: Install Python
       uses: actions/setup-python@v6
       with:
@@ -368,6 +385,13 @@ jobs:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
         fail-on-cache-miss: true
+    # BEGIN JP PATCH (overwrite JTalk files from dedicated artifact after workspace cache restore)
+    - name: Get JTalk runtime artifact
+      uses: actions/download-artifact@v6
+      with:
+        name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: .
+    # END JP PATCH
     - name: Install Python
       uses: actions/setup-python@v6
       with:
@@ -453,6 +477,13 @@ jobs:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
         fail-on-cache-miss: true
+    # BEGIN JP PATCH (overwrite packaged JTalk files from dedicated artifact after workspace cache restore)
+    - name: Get JTalk runtime artifact
+      uses: actions/download-artifact@v6
+      with:
+        name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: .
+    # END JP PATCH
     - name: Install Python
       uses: actions/setup-python@v6
       with:
