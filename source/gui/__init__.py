@@ -104,7 +104,7 @@ from . import jpBrailleViewer  # nvdajp
 NVDA_PATH = globalVars.appDir
 # ICON_PATH=os.path.join(NVDA_PATH, "images", "nvda.ico")
 ICON_PATH = os.path.join(NVDA_PATH, "images", "nvdajp3.ico")
-# DONATE_URL = f"{versionInfo.url}/donate/"
+# DONATE_URL = f"{buildVersion.url}/donate/"
 DONATE_URL = "https://www.nvda.jp/donate.html"
 
 ### Globals
