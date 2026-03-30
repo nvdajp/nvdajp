@@ -622,7 +622,7 @@ issue #304 のコメントで合意された3フェーズ構成：
 
 2級変換の**範囲**は translator2 の外国語引用符判定と同一である（本ドキュメントの「外国語引用符の判定条件」および「ueb-g2 / us-g2 の範囲判定との一致」を参照）。各フェーズがポジションマッピングを出力し、最後に統合する。
 
-この3フェーズを実装するための **jpSmokeTest 整備とリファクタリングの計画** は `projectDocs/jp/braille-comp6-three-phase-implementation-plan.md` にまとめている（eng2Harness の活用、phase2 単体テストの枠組み、統合テストの追加順序など）。
+この 3 フェーズ実装に伴う jpSmokeTest 整備と関連リファクタリングは完了している。eng2Harness の活用、translator_louis 単体テスト、統合テストの追加方針は本節と関連テストコードに反映済みである。
 
 ### 論点: liblouis と MeCab の併用は妥当か
 
@@ -695,7 +695,6 @@ bread and butter. → ⠦bread and butter.⠴
 ## 関連ファイル
 
 * **計画・テスト整備**:
-  * `projectDocs/jp/braille-comp6-three-phase-implementation-plan.md`（3フェーズ実装のための jpSmokeTest 整備・リファクタリング計画）
 * **実装**:
   * `source/louisHelper.py` (エンジン切り替え)
   * `miscDepsJp/source/synthDrivers/jtalk/translator2.py` (点訳エンジン本体)

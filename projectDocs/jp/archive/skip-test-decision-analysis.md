@@ -133,7 +133,7 @@
 ### オプションAを採用する場合（条件付き）
 
 1. **修正計画の文書化**:
-   - `projectDocs/jp/jpSmokeTest-error-patterns.md`に修正計画を追加
+   - 正本ドキュメントまたは対応PR本文に修正計画を残す
    - マージ後の修正PRの作成を約束
 
 2. **期限の設定**:
@@ -159,5 +159,4 @@
 ## 参照
 
 * **品質保証原則**: `projectDocs/jp/roadmap.md` の「品質保証の原則」セクション
-* **エラーパターン分析**: `projectDocs/jp/jpSmokeTest-error-patterns.md`
 * **注**: マージ準備チェックリストは完了したタスクのため削除済み

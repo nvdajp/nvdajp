@@ -113,7 +113,18 @@ Issue #642 検証用: `jptools/test_controller_speakSpelling.py`
 ## 関連ドキュメント
 
 * `projectDocs/jp/changes-nvdajp.md` - 「3.1 nvdaController 関数の復元」
-* `projectDocs/jp/issue-642-speakSpelling-crash.md` - `nvdaController_speakSpelling` のクラッシュ修正
+
+### `nvdaController_speakSpelling` クラッシュ修正メモ
+
+Issue #642 では、`nvdaController_speakSpelling` の IDL / C++ 側の定義は存在していたが、Python 側の RPC ハンドラ実装と登録が欠けていたため、クライアント呼び出し時に nullptr 呼び出しで NVDA がクラッシュしていた。
+
+修正の要点:
+
+* `source/NVDAHelper/__init__.py` に `nvdaController_speakSpelling` の実装と RPC 登録を追加
+* `nvdaHelper/local/nvdaController.cpp` に nullptr チェックを追加し、未登録時は `ERROR_CALL_NOT_IMPLEMENTED` を返すように変更
+* `nvdaHelper/local/nvdaHelperLocal.def` と `nvdaHelper/client/nvdaControllerClient.def` に必要なエクスポートを追加
+
+検証は `jptools/test_controller_speakSpelling.py` で行う。
 
 ---
 

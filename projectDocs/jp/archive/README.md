@@ -14,16 +14,10 @@
 
 ## 索引
 
-- `build_file_lock_troubleshooting.md`
 - `code-signing-dependencies-details.md`
-- `codepage-investigation-history.md`
-- `completed-tasks-log.md`
-- `jpSmokeTest-error-patterns.md`
-- `local_verification_build_dependencies.md`
 - `skip-test-decision-analysis.md`
 - `test-routing-failures.md`
 - `test-routing-skip-justification.md`
-- `troubleshooting_runjp_smoke_tests.md`
 - `vendor-submodules-dic-details.md`
 
 ## 関連
