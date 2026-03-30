@@ -1,7 +1,7 @@
 # 日本語版ロードマップ（短縮版）
 
 この文書は、日本語版ブランチの実行中タスクを管理する正本である。
-過去の詳細ログや検証メモは `projectDocs/jp/archive/README.md` を参照すること。
+過去の詳細ログや検証メモが必要な場合のみ、`projectDocs/jp/archive/README.md` を参照すること。
 
 ## 今月の優先3項目
 
@@ -55,6 +55,5 @@
 ## 参照
 
 - JP Docs Hub: `projectDocs/jp/README.md`
-- マージ戦略: `projectDocs/jp/beta-merge-strategy.md`
-- 過去の記録: `projectDocs/jp/archive/README.md`
+- 必要に応じた過去の記録: `projectDocs/jp/archive/README.md`
 - 自動化ルール: `AGENTS.md`
