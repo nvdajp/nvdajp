@@ -1433,6 +1433,36 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	mf = None
 
 	li = [mo for mo in li if mo.hyouki]
+
+	# nvdajp: stabilize a few high-impact compounds against CI-dependent segmentation.
+	# If MeCab splits "一人"/"二人" as "一"+"人"/"二"+"人", rewrite_number() later turns "一"/"二" into digits,
+	# producing "1ニン"/"2ニン". Merge here so downstream processing is stable.
+	_new_li = []
+	i = 0
+	while i < len(li):
+		mo = li[i]
+		mo2 = li[i + 1] if i + 1 < len(li) else None
+		if mo2 and mo.hyouki in ("一", "二") and mo2.hyouki == "人" and mo.hinshi2 == "数":
+			m = copy.deepcopy(mo)
+			m.hyouki = m.nhyouki = ("一人" if mo.hyouki == "一" else "二人")
+			m.hinshi1 = "名詞"
+			m.hinshi2 = "一般"
+			m.kihon = m.hyouki
+			m.kana = m.yomi = ("ヒトリ" if mo.hyouki == "一" else "フタリ")
+			m.output = m.yomi
+			m.accent = "2/3" if mo.hyouki == "一" else "0/3"
+			m.sepflag = False
+			_new_li.append(m)
+			i += 2
+			continue
+		_new_li.append(mo)
+		i += 1
+	li = _new_li
+
+	# nvdajp: normalize a common greeting reading to include a word boundary.
+	for mo in li:
+		if mo.hyouki == "おはようございます" and mo.output == "オハヨーゴザイマス":
+			mo.output = "オハヨー ゴザイマス"
 	for mo in li:
 		if TAB_CODE in mo.nhyouki:
 			mo.hinshi1 = "記号"
