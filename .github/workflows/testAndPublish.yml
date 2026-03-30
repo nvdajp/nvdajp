@@ -148,13 +148,25 @@ jobs:
           Get-ChildItem $dicDir | ForEach-Object { Write-Host "  $($_.Name)" }
           $ver = Join-Path $dicDir "DIC_VERSION"
           if (Test-Path $ver) { Write-Host "DIC_VERSION: $(Get-Content $ver -Raw)" }
+          $cp = Join-Path $dicDir "DIC_CODEPAGE"
+          if (Test-Path $cp) { Write-Host "DIC_CODEPAGE: $(Get-Content $cp -Raw)" }
+          $dicrc = Join-Path $dicDir "dicrc"
+          if (Test-Path $dicrc) {
+            $charsetLine = Get-Content $dicrc | Where-Object { $_ -match "^config-charset" } | Select-Object -First 1
+            if ($charsetLine) { Write-Host "dicrc: $charsetLine" }
+          }
         } else {
           Write-Host "  dic directory does not exist"
         }
         Write-Host "make_jdic.py exists: $(Test-Path 'miscDepsJp\jptools\jtalk\make_jdic.py')"
     - name: Verify JTalk dictionary
-      shell: cmd
-      run: chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
+      # BEGIN JP PATCH (run verification in UTF-8 PowerShell to avoid log mojibake and extra code-page state)
+      shell: pwsh
+      env:
+        PYTHONUTF8: "1"
+        PYTHONIOENCODING: "utf-8"
+      run: powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
+      # END JP PATCH
     # END JP PATCH
     - name: Prepare source code
       shell: cmd
