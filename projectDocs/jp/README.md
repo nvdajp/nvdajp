@@ -38,6 +38,17 @@
 * 単体/システムテスト: `ci/scripts/tests/unitTests.ps1`、`ci/scripts/tests/systemTests.ps1`
 * PR CI 監視: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` または `-Watch`
 
+### JTalk/Smoke の切り分け手順
+
+JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、GitHub Actions を触る前に次をローカルで確認する。
+
+1. `scons jtalkPrep jtalkSync`
+2. `powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1`
+3. `powershell -ExecutionPolicy Bypass -File jptools/runJpSmokeTests.ps1 -SkipInstall`
+
+この順で通る場合、辞書ビルドそのものよりも workflow、cache、runner 差分を優先して疑う。
+`Verify JTalk dictionary` は UTF-8 実行を優先し、`jtalkSync` や smoke test のようなビルド・実行系は `chcp 932` 前提を崩さない。
+
 ## ポリシー（抜粋）
 
 * 本家版との差分は最小化する。
@@ -73,7 +84,6 @@
 ### 計画・方針
 
 * ロードマップ: `projectDocs/jp/roadmap.md`
-* 持続的マージ戦略: `projectDocs/jp/beta-merge-strategy.md`
 * 2025系との差分分析: `projectDocs/jp/compare-with-2025/README.md`
 
 ### CI・ビルド・依存関係
@@ -87,6 +97,7 @@
 
 * Chrome system test 日本語環境差分: `projectDocs/jp/chrome-system-test-japanese-environment.md`
 * WAIC テスト: `projectDocs/jp/waic-tests.md`
+* JTalk/MeCab コードページ・CI 調査: `projectDocs/jp/tab-character-analysis.md`
 * （過去記録）`projectDocs/jp/archive/README.md`
 
 ### 日本語機能・点字
@@ -108,7 +119,6 @@
 
 * 主要変更一覧: `projectDocs/jp/changes-nvdajp.md`
 * タブ文字・コードページ分析: `projectDocs/jp/tab-character-analysis.md`
-* 既存修正メモ: `projectDocs/jp/espeak-parallel-build-fix.md`、`projectDocs/jp/nvdajp-jtalk-stop-assertion-fix.md`
 
 ## 用語集
 
