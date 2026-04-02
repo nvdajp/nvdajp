@@ -1218,6 +1218,12 @@ class LanguageSettingsPanel(SettingsPanel):
 		)
 		self.jpAnnounceNewLineCheckBox.SetValue(config.conf["language"]["jpAnnounceNewLine"])
 
+		self.characterDescriptionModeCheckBox = settingsSizerHelper.addItem(
+			# Translators: The label of a checkbox in language settings
+			wx.CheckBox(self, label=_("Character description mode")),
+		)
+		self.characterDescriptionModeCheckBox.SetValue(config.conf["language"]["characterDescriptionMode"])
+
 	def onSave(self):
 		config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"] = (
 			self.nconvAsNVDAModifierCheckBox.IsChecked()
@@ -1231,6 +1237,7 @@ class LanguageSettingsPanel(SettingsPanel):
 		config.conf["language"]["announceCandidateNumber"] = self.announceCandidateNumberCheckBox.IsChecked()
 		config.conf["language"]["jpAnsiEditbox"] = self.jpAnsiEditCheckBox.IsChecked()
 		config.conf["language"]["jpAnnounceNewLine"] = self.jpAnnounceNewLineCheckBox.IsChecked()
+		config.conf["language"]["characterDescriptionMode"] = self.characterDescriptionModeCheckBox.IsChecked()
 		config.conf["language"]["jpKatakanaPitchChange"] = self.jpKatakanaPitchChangeEdit.Value
 		config.conf["language"]["halfShapePitchChange"] = self.halfShapePitchChangeEdit.Value
 

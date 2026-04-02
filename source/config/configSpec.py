@@ -40,6 +40,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	jpAnnounceNewLine = boolean(default=false)
 	openDocFileByMSHTA = boolean(default=false)
 	alwaysSpeakMathInEnglish = boolean(default=false)
+	characterDescriptionMode = boolean(default=true)
 # END JP PATCH
 
 # Speech settings
