@@ -114,7 +114,7 @@ jobs:
     # This information is static for the current Github Actions runner image.
     # Therefore, cache this information with a key scoped to the current image version, ensuring that subsequent workflow runs will be much faster.
     - name: SCons MSVC Cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.SCONS_CACHE_MSVC_CONFIG }}
         key: ${{ env.SCONS_CACHE_KEY }}
@@ -170,7 +170,7 @@ jobs:
       run: ci/scripts/tests/beforeTests.ps1
     # JP: Dic is included in cache. Invalidate via SCONS_CACHE_SUFFIX bump when dic build changes.
     - name: Cache scons build
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
@@ -188,7 +188,7 @@ jobs:
     needs: [matrix, buildNVDA]
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
@@ -243,7 +243,7 @@ jobs:
     needs: [matrix, buildNVDA]
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
@@ -272,7 +272,7 @@ jobs:
     needs: [matrix, buildNVDA]
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
@@ -300,7 +300,7 @@ jobs:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
@@ -351,7 +351,7 @@ jobs:
       UV_PYTHON_PREFERENCE: managed
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
@@ -436,7 +436,7 @@ jobs:
       launcherSha256: ${{ steps.addJobSummary.outputs.SHA256 }}
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
@@ -537,7 +537,7 @@ jobs:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
@@ -605,7 +605,7 @@ jobs:
       symbolsArtifactId: ${{ steps.defaultArtifact.outputs.artifactId }}
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
@@ -657,7 +657,7 @@ jobs:
     if: ${{ github.event_name == 'push' && vars.feature_uploadSymbolsToMozilla }}
     steps:
     - name: Checkout cached build
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
