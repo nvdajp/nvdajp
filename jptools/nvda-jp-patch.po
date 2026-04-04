@@ -108,6 +108,10 @@ msgstr "読みかたモード"
 msgid "Character description mode enabled"
 msgstr "説明モード"
 
+#: gui\settingsDialogs.py
+msgid "Character description mode"
+msgstr "文字説明モード"
+
 #: NVDAHelper.py:163
 msgid "full shape space"
 msgstr "全角スペース"

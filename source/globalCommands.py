@@ -183,10 +183,6 @@ def toggleIntegerValue(
 	ui.message(msg)
 
 
-# BEGIN JP PATCH (character description mode)
-characterDescriptionMode = True
-# END JP PATCH
-
 
 class GlobalCommands(ScriptableObject):
 	"""Commands that are available at all times, regardless of the current focus."""
@@ -286,7 +282,7 @@ class GlobalCommands(ScriptableObject):
 			speech.spellTextInfo(
 				info,
 				useCharacterDescriptions=scriptCount > 1,
-				useDetails=characterDescriptionMode if scriptCount > 1 else False,
+				useDetails=config.conf['language']['characterDescriptionMode'] if scriptCount > 1 else False,
 			)
 			# END JP PATCH
 
@@ -1473,8 +1469,8 @@ class GlobalCommands(ScriptableObject):
 					# BEGIN JP PATCH (character description mode)
 					speech.speakSpelling(
 						text,
-						useCharacterDescriptions=characterDescriptionMode,
-						useDetails=characterDescriptionMode,
+						useCharacterDescriptions=config.conf['language']['characterDescriptionMode'],
+						useDetails=config.conf['language']['characterDescriptionMode'],
 					)
 					# END JP PATCH
 				else:
@@ -1915,7 +1911,7 @@ class GlobalCommands(ScriptableObject):
 			speech.spellTextInfo(
 				info,
 				useCharacterDescriptions=scriptCount > 1,
-				useDetails=characterDescriptionMode if scriptCount > 1 else False,
+				useDetails=config.conf['language']['characterDescriptionMode'] if scriptCount > 1 else False,
 			)
 			# END JP PATCH
 
@@ -2119,7 +2115,7 @@ class GlobalCommands(ScriptableObject):
 			speech.spellTextInfo(
 				info,
 				useCharacterDescriptions=(scriptCount > 1),
-				useDetails=(scriptCount > 1 and characterDescriptionMode),  # nvdajp
+				useDetails=(scriptCount > 1 and config.conf['language']['characterDescriptionMode']),  # nvdajp
 			)
 
 	@script(
@@ -2238,7 +2234,6 @@ class GlobalCommands(ScriptableObject):
 		speakOnDemand=True,
 	)
 	def script_review_currentCharacter(self, gesture: inputCore.InputGesture):
-		global characterDescriptionMode  # nvdajp
 		info = api.getReviewPosition().copy()
 		# This script is available on the lock screen via getSafeScripts, as such
 		# ensure the review position does not contain secure information
@@ -2253,7 +2248,7 @@ class GlobalCommands(ScriptableObject):
 		scriptCount = scriptHandler.getLastScriptRepeatCount()
 		if scriptCount == 0:
 			# BEGIN JP PATCH (character description mode)
-			speech.spellTextInfo(info, useCharacterDescriptions=characterDescriptionMode)
+			speech.spellTextInfo(info, useCharacterDescriptions=config.conf['language']['characterDescriptionMode'])
 			braille.handler.message(jpUtils.getDescriptionForBraille(info.text))
 			# END JP PATCH
 		elif scriptCount == 1:
@@ -2290,14 +2285,14 @@ class GlobalCommands(ScriptableObject):
 			# END JP PATCH
 		else:
 			# BEGIN JP PATCH (character description mode toggle)
-			if characterDescriptionMode:
+			if config.conf['language']['characterDescriptionMode']:
 				# Translators: character description mode
 				ui.message(_("Character description mode disabled"))
-				characterDescriptionMode = False
+				config.conf['language']['characterDescriptionMode'] = False
 			else:
 				# Translators: character description mode
 				ui.message(_("Character description mode enabled"))
-				characterDescriptionMode = True
+				config.conf['language']['characterDescriptionMode'] = True
 			# END JP PATCH
 
 	@script(
@@ -2943,8 +2938,8 @@ class GlobalCommands(ScriptableObject):
 			# BEGIN JP PATCH (character description mode)
 			speech.speakSpelling(
 				focusObject.name,
-				useCharacterDescriptions=repeatCount > 1 and characterDescriptionMode,
-				useDetails=repeatCount > 1 and characterDescriptionMode,
+				useCharacterDescriptions=repeatCount > 1 and config.conf['language']['characterDescriptionMode'],
+				useDetails=repeatCount > 1 and config.conf['language']['characterDescriptionMode'],
 			)
 			# END JP PATCH
 
@@ -3034,8 +3029,8 @@ class GlobalCommands(ScriptableObject):
 			# BEGIN JP PATCH (character description mode)
 			speech.speakSpelling(
 				text,
-				useCharacterDescriptions=characterDescriptionMode,
-				useDetails=characterDescriptionMode,
+				useCharacterDescriptions=config.conf['language']['characterDescriptionMode'],
+				useDetails=config.conf['language']['characterDescriptionMode'],
 			)
 			# END JP PATCH
 
@@ -3204,8 +3199,8 @@ class GlobalCommands(ScriptableObject):
 			# BEGIN JP PATCH (character description mode)
 			speech.speakSpelling(
 				title,
-				useCharacterDescriptions=characterDescriptionMode,
-				useDetails=characterDescriptionMode,
+				useCharacterDescriptions=config.conf['language']['characterDescriptionMode'],
+				useDetails=config.conf['language']['characterDescriptionMode'],
 			)
 			# END JP PATCH
 		else:
