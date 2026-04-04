@@ -6390,7 +6390,6 @@ class NVDASettingsDialog(MultiCategorySettingsDialog):
 		DocumentFormattingPanel,
 		DocumentNavigationPanel,
 		MagnifierPanel,
-		MathSettingsPanel,
 		RemoteSettingsPanel,
 	]
 	# #19634: the desktop heap on the secure desktop is quite restrictive.
