@@ -142,6 +142,12 @@ repos:
           )
         )
 
+- repo: https://github.com/rhysd/actionlint
+  rev: v1.7.11
+  hooks:
+    # Lint GitHub Actions workflow files.
+    - id: actionlint
+
 - repo: https://github.com/asottile/add-trailing-comma
   rev: v4.0.0
   hooks:
@@ -152,7 +158,7 @@ repos:
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Matches Ruff version in pyproject.
-  rev: v0.14.5
+  rev: v0.15.4
   hooks:
     - id: ruff
       name: lint with ruff
@@ -187,7 +193,7 @@ repos:
     name: Check types with pyright
 
 - repo: https://github.com/astral-sh/uv-pre-commit
-  rev: 0.9.11
+  rev: 0.10.6
   hooks:
     - id: uv-lock
       name: Verify uv lock file
@@ -196,7 +202,7 @@ repos:
 
 # BEGIN JP PATCH (temporarily disabled, to be fixed in a separate branch)
 # - repo: https://github.com/DavidAnson/markdownlint-cli2
-#   rev: v0.18.1
+#   rev: v0.21.0
 #   hooks:
 #   - id: markdownlint-cli2
 #     name: Lint markdown files
@@ -218,8 +224,8 @@ repos:
       types_or: [c, c++]
     - id: checkPot
       name: translation string check
-      entry: cmd.exe /c "scons checkPot --all-cores"
-      language: system
+      entry: ./runcheckpot.bat --all-cores
+      language: script
       pass_filenames: false
       types: [python]
       files: ^source/.*$

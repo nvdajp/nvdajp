@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2025 NV Access Limited, Antoine Haffreingue
+# Copyright (C) 2025-2026 NV Access Limited, Antoine Haffreingue
 # This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
@@ -11,24 +11,29 @@ Implements the magnifier global class and its basic functionalities.
 from typing import Callable
 from logHandler import log
 import wx
-import api
 import ui
 import speech
 import screenCurtain
 import winUser
-import mouseHandler
 from winAPI import _displayTracking
 from winAPI._displayTracking import OrientationState, getPrimaryDisplayOrientation
 from .utils.types import (
 	MagnifierPosition,
+	MagnifierAction,
 	Coordinates,
 	MagnifierType,
 	Direction,
-	FocusType,
 	Filter,
 )
-
-from .config import getDefaultZoomLevel, getDefaultFilter, ZoomLevel
+from .config import (
+	getDefaultZoomLevel,
+	getDefaultPanStep,
+	getDefaultFilter,
+	ZoomLevel,
+	isTrueCentered,
+	shouldKeepMouseCentered,
+)
+from .utils.focusManager import FocusManager
 
 
 class Magnifier:
@@ -40,13 +45,14 @@ class Magnifier:
 		self._magnifierType: MagnifierType = MagnifierType.FULLSCREEN
 		self._isActive: bool = False
 		self._zoomLevel: float = getDefaultZoomLevel()
+		self._panStep: int = getDefaultPanStep()
 		self._timer: None | wx.Timer = None
-		self._lastFocusedObject: FocusType | None = None
-		self._lastNVDAPosition = Coordinates(0, 0)
-		self._lastMousePosition = Coordinates(0, 0)
+		self._focusManager = FocusManager()
 		self._lastScreenPosition = Coordinates(0, 0)
 		self._currentCoordinates = Coordinates(0, 0)
+		self._lastFocusCoordinates = Coordinates(0, 0)
 		self._filterType: Filter = getDefaultFilter()
+		self._isManualPanning: bool = False
 		# Register for display changes
 		_displayTracking.displayChanged.register(self._onDisplayChanged)
 		self._screenCurtainIsActive: bool = False
@@ -71,6 +77,25 @@ class Magnifier:
 			value = closestZoom
 		self._zoomLevel = value
 
+	def _getScreenLimits(self) -> tuple[int, int, int, int]:
+		"""
+		Get screen coordinate limits based on current mode.
+
+		:return: Tuple of (minX, minY, maxX, maxY)
+		"""
+		if isTrueCentered():
+			# In true center mode: can pan until mouse reaches screen edge
+			return (0, 0, self._displayOrientation.width, self._displayOrientation.height)
+		else:
+			# In normal mode: calculate limits to keep view within screen
+			visibleWidth = self._displayOrientation.width / self.zoomLevel
+			visibleHeight = self._displayOrientation.height / self.zoomLevel
+			minX = int(visibleWidth / 2)
+			minY = int(visibleHeight / 2)
+			maxX = int(self._displayOrientation.width - (visibleWidth / 2))
+			maxY = int(self._displayOrientation.height - (visibleHeight / 2))
+			return (minX, minY, maxX, maxY)
+
 	def _setZoomRawValue(self, value: float) -> None:
 		"""
 		Set zoom level directly without validation.
@@ -80,7 +105,6 @@ class Magnifier:
 		"""
 		self._zoomLevel = value
 
-	# Functions
 	def _onDisplayChanged(self, orientationState: OrientationState) -> None:
 		"""
 		Called when display configuration changes
@@ -107,7 +131,7 @@ class Magnifier:
 			return
 
 		self._isActive = True
-		self._currentCoordinates = self._getFocusCoordinates()
+		self._currentCoordinates = self._focusManager.getCurrentFocusCoordinates()
 
 	def _updateMagnifier(self) -> None:
 		"""
@@ -115,7 +139,11 @@ class Magnifier:
 		"""
 		if not self._isActive:
 			return
-		self._currentCoordinates = self._getFocusCoordinates()
+		self._managePanning()
+		if not self._isManualPanning:
+			self._currentCoordinates = self._focusManager.getCurrentFocusCoordinates()
+		if shouldKeepMouseCentered():
+			self._keepMouseCentered()
 		self._doUpdate()
 		self._startTimer(self._updateMagnifier)
 
@@ -186,6 +214,68 @@ class Magnifier:
 			if newZoom >= ZoomLevel.MIN_ZOOM:
 				self.zoomLevel = newZoom
 
+	def _pan(self, action: MagnifierAction) -> bool:
+		"""
+		Pan the magnifier in the specified direction
+
+		:param action: The pan action (left, right, up, down)
+		:return: True if the actions results in the pan successfully moving, False otherwise.
+		"""
+		x, y = self._currentCoordinates
+		originalX, originalY = x, y
+
+		minX, minY, maxX, maxY = self._getScreenLimits()
+
+		# Clamp current position if out of bounds
+		x = max(minX, min(x, maxX))
+		y = max(minY, min(y, maxY))
+
+		panPixels = int((self._displayOrientation.width / self.zoomLevel) * self._panStep / 100)
+
+		match action:
+			case MagnifierAction.PAN_LEFT:
+				x = max(minX, x - panPixels)
+			case MagnifierAction.PAN_RIGHT:
+				x = min(maxX, x + panPixels)
+			case MagnifierAction.PAN_UP:
+				y = max(minY, y - panPixels)
+			case MagnifierAction.PAN_DOWN:
+				y = min(maxY, y + panPixels)
+			case MagnifierAction.PAN_LEFT_EDGE:
+				x = minX
+			case MagnifierAction.PAN_RIGHT_EDGE:
+				x = maxX
+			case MagnifierAction.PAN_TOP_EDGE:
+				y = minY
+			case MagnifierAction.PAN_BOTTOM_EDGE:
+				y = maxY
+			case _:
+				log.error(f"Unknown pan action: {action}")
+
+		self._isManualPanning = True
+		self._currentCoordinates = Coordinates(x, y)
+		self._doUpdate()
+
+		return (x, y) != (originalX, originalY)
+
+	def _managePanning(self) -> None:
+		"""
+		Ensure that manual panning mode (self._isManualPanning) is set to False when focus coordinates change.
+		"""
+		focusCoordinates = self._focusManager.getCurrentFocusCoordinates()
+		if self._isManualPanning:
+			if focusCoordinates != self._lastFocusCoordinates:
+				self._isManualPanning = False
+		self._lastFocusCoordinates = focusCoordinates
+
+	def _keepMouseCentered(self) -> None:
+		"""
+		Move the mouse cursor to the center of the magnified view.
+		Subclasses may override this to adapt the behavior for specific modes.
+		"""
+		centerX, centerY = self._currentCoordinates
+		winUser.setCursorPos(centerX, centerY)
+
 	def _startTimer(self, callback: Callable[[], None] = None) -> None:
 		"""
 		Start the timer with a callback function
@@ -208,7 +298,10 @@ class Magnifier:
 		else:
 			log.debug("no timer to stop")
 
-	def _getMagnifierPosition(self, coordinates: Coordinates) -> MagnifierPosition:
+	def _getMagnifierPosition(
+		self,
+		coordinates: Coordinates,
+	) -> MagnifierPosition:
 		"""
 		Compute the top-left corner of the magnifier window centered on (x, y)
 
@@ -225,85 +318,9 @@ class Magnifier:
 		left = int(x - (visibleWidth / 2))
 		top = int(y - (visibleHeight / 2))
 
-		# Clamp to screen boundaries
-		left = max(0, min(left, int(self._displayOrientation.width - visibleWidth)))
-		top = max(0, min(top, int(self._displayOrientation.height - visibleHeight)))
+		# Clamp to screen boundaries only if not in true center mode
+		if not isTrueCentered():
+			left = max(0, min(left, int(self._displayOrientation.width - visibleWidth)))
+			top = max(0, min(top, int(self._displayOrientation.height - visibleHeight)))
 
 		return MagnifierPosition(left, top, int(visibleWidth), int(visibleHeight))
-
-	def _getCursorPosition(self) -> Coordinates:
-		"""
-		Get the current review position as (x, y), falling back to navigator object if needed
-		Tries to get the review position from NVDA's API, or the center of the navigator object
-		This part is taken from NVDA+shift+m gesture
-
-		:return: The (x, y) coordinates of the NVDA position
-		"""
-		# Try to get the current review position object from NVDA's API
-		reviewPosition = api.getReviewPosition()
-		if reviewPosition:
-			try:
-				# Try to get the point at the start of the review position
-				point = reviewPosition.pointAtStart
-				return Coordinates(point.x, point.y)
-			except (NotImplementedError, LookupError, AttributeError):
-				# If that fails, fall through to try navigator object
-				pass
-
-		# Fallback: try to use the navigator object location
-		navigatorObject = api.getNavigatorObject()
-		try:
-			# Try to get the bounding rectangle of the navigator object
-			left, top, width, height = navigatorObject.location
-			# Calculate the center point of the rectangle
-			x = left + (width // 2)
-			y = top + (height // 2)
-			return Coordinates(x, y)
-		except Exception:
-			# If no location is found, log this and return (0, 0)
-			return Coordinates(0, 0)
-
-	def _getFocusCoordinates(self) -> Coordinates:
-		"""
-		Return position (x,y) of current focus element
-
-		:return: The (x, y) coordinates of the focus element
-		"""
-		nvdaPosition = self._getCursorPosition()
-		mousePosition = winUser.getCursorPos()
-		# convert to Coordinates named tuple
-		mousePosition = Coordinates(mousePosition[0], mousePosition[1])
-		# Check if left mouse button is pressed
-		isClickPressed = mouseHandler.isLeftMouseButtonLocked()
-
-		# Always update positions in background (keep them synchronized)
-		nvdaChanged = self._lastNVDAPosition != nvdaPosition
-		mouseChanged = self._lastMousePosition != mousePosition
-
-		if nvdaChanged:
-			self._lastNVDAPosition = nvdaPosition
-		if mouseChanged:
-			self._lastMousePosition = mousePosition
-
-		# During drag & drop, force focus on mouse
-		if isClickPressed:
-			self._lastFocusedObject = FocusType.MOUSE
-			return mousePosition
-
-		# Check mouse first (mouse has priority) - when not dragging
-		if mouseChanged:
-			self._lastFocusedObject = FocusType.MOUSE
-			return mousePosition
-
-		# Then check NVDA (only change focus if mouse didn't move)
-		if nvdaChanged:
-			self._lastFocusedObject = FocusType.NVDA
-			return nvdaPosition
-
-		# Return current position of the focused object (no changes detected)
-		if self._lastFocusedObject == FocusType.NVDA:
-			return nvdaPosition
-		elif self._lastFocusedObject == FocusType.MOUSE:
-			return mousePosition
-		else:
-			return mousePosition

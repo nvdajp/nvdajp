@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2007-2025 NV Access Limited, Rui Batista, Joseph Lee, Leonard de Ruijter, Babbage B.V.,
+# Copyright (C) 2007-2026 NV Access Limited, Rui Batista, Joseph Lee, Leonard de Ruijter, Babbage B.V.,
 # Accessolutions, Julien Cochuyt, Cyrille Bougot, Łukasz Golonka
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -182,19 +182,23 @@ def getOnErrorSoundRequested() -> "extensionPoints.Action":
 def shouldPlayErrorSound() -> bool:
 	"""Indicates if an error sound should be played when an error is logged."""
 	import config
+	from config.configFlags import PlayErrorSound
 
-	# BEGIN JP PATCH
-	# nvdajp: Only play the error sound if the config explicitly states it (Yes = 1).
-	# All versions are treated as release versions, so buildVersion.isTestVersion is not checked.
-	# END JP PATCH
-	# Only play the error sound if this is a test version or if the config states it explicitly.
-	# 0: Only in test versions, 1: Yes
-	return (
-		# BEGIN JP PATCH
-		# buildVersion.isTestVersion  # nvdajp: disabled - all versions treated as release
-		# END JP PATCH
-		config.conf is not None and config.conf["featureFlag"]["playErrorSound"] == 1
+	playErrorSound = (
+		PlayErrorSound(config.conf["featureFlag"]["playErrorSound"])
+		if config.conf
+		else PlayErrorSound.ONLY_IN_TEST_VERSIONS
 	)
+
+	match playErrorSound:
+		case PlayErrorSound.YES:
+			return True
+		case PlayErrorSound.NO:
+			return False
+		case PlayErrorSound.ONLY_IN_TEST_VERSIONS:
+			# BEGIN JP PATCH (nvdajp: all versions are treated as release versions)
+			return False
+			# END JP PATCH
 
 
 # Function to strip the base path of our code from traceback text to improve readability.

@@ -164,45 +164,35 @@ textParagraphNavigation
 styleNav
 	[Documentation]	Same style navigation
 	test_styleNav
-aria-errormessage
-	[Documentation]	Test that aria-errormessage is reported correctly in focus and browse mode
-	test_ariaErrorMessage
-Report language disabled
-	[Documentation]	Read a sentence with different languages without reporting none of them.
-	test_reportLanguageDisabled
-Report language enabled
-	[Documentation]	Read a sentence with different languages reporting them.
-	test_reportLanguageEnabled
-Report language without dialects
-	[Documentation]	Read a sentence with different languages without reporting dialects.
-	test_reportLanguageWithoutDialects
-Report not supported language without other languages
-	[Documentation]	Read a sentence with different languages without reporting supported ones.
-	test_reportNotSupportedLanguageWithoutOtherLanguages
-Report not supported language and other languages
-	[Documentation]	Read a sentence with different languages reporting them, included the not supported language.
-	test_reportNotSupportedLanguageAndOtherLanguages
-test_waic_as_0029_01
-	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-label属性と併用)
-	test waic as 0029 01
-test_waic_as_0029_02
-	[Documentation]	aria-describedby 属性による説明ラベルの提供 (input要素)
-	test waic as 0029 02
-test_waic_as_0029_03
-	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素)
-	test waic as 0029 03
-test_waic_as_0029_04
-	[Documentation]	aria-describedby 属性による説明ラベルの提供 (input要素 : 隠された要素と関連付け)
-	test waic as 0029 04
-test_waic_as_0029_05
-	[Documentation]	aria-describedby 属性による説明ラベルの提供 (input要素 : XHTML文書)
-	test waic as 0029 05
-test_waic_as_0029_06
-	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-label属性と併用 : aria-describedby属性を script で生成)
-	test waic as 0029 06
-test_waic_as_0029_07
-	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : aria-labelledby属性と併用)
-	test waic as 0029 07
 test_waic_as_0029_08
 	[Documentation]	aria-describedby 属性による説明ラベルの提供 (button要素 : 複数のaria-describedby属性値)
 	test waic as 0029 08
+
+## chrome_link tests
+### Link destination reporting (NVDA+K)
+
+Report link destination plain link
+	[Documentation]	NVDA+K reports the URL of a plain link.
+	[Tags]	chrome_link
+	test_reportLinkDestination_plainLink
+Report link destination nested strong
+	[Documentation]	NVDA+K reports the URL when caret is on text inside a strong tag within a link (#17363).
+	[Tags]	chrome_link
+	test_reportLinkDestination_nestedStrong
+Report link destination nested em
+	[Documentation]	NVDA+K reports the URL when caret is on text inside an em tag within a link (#17363).
+	[Tags]	chrome_link
+	test_reportLinkDestination_nestedEm
+Report link destination deeply nested
+	[Documentation]	NVDA+K reports the URL when caret is on deeply nested elements within a link (#17363).
+	[Tags]	chrome_link
+	test_reportLinkDestination_deeplyNested
+Report link destination image link
+	[Documentation]	NVDA+K reports the URL of an image link (#14779).
+	[Tags]	chrome_link
+	test_reportLinkDestination_imageLink
+Report link destination not a link
+	[Documentation]	NVDA+K reports 'Not a link' when caret is not on a link.
+	[Tags]	chrome_link
+	test_reportLinkDestination_notALink
+

@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2025 NV Access Limited, Antoine Haffreingue
+# Copyright (C) 2025-2026 NV Access Limited, Antoine Haffreingue
 # This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
@@ -29,7 +29,7 @@ class SpotlightManager:
 		self._timer: wx.CallLater | None = None
 		self._animationSteps: int = 40
 		self._animationStepDelay: int = 12
-		self._currentCoordinates: Coordinates = fullscreenMagnifier._getFocusCoordinates()
+		self._currentCoordinates: Coordinates = fullscreenMagnifier._focusManager.getCurrentFocusCoordinates()
 		self._originalZoomLevel: float = 0.0
 		self._currentZoomLevel: float = 0.0
 		self._originalMode: FullScreenMode | None = None
@@ -45,7 +45,7 @@ class SpotlightManager:
 
 		self._spotlightIsActive = True
 
-		startCoords = self._fullscreenMagnifier._getFocusCoordinates()
+		startCoords = self._fullscreenMagnifier._focusManager.getCurrentFocusCoordinates()
 		startCoords = self._fullscreenMagnifier._getCoordinatesForMode(startCoords)
 		centerScreen = Coordinates(
 			self._fullscreenMagnifier._displayOrientation.width // 2,
@@ -155,7 +155,7 @@ class SpotlightManager:
 			f"zoom back with original zoom level {self._originalZoomLevel} and current zoom level {self._currentZoomLevel}",
 		)
 
-		focus = self._fullscreenMagnifier._getFocusCoordinates()
+		focus = self._fullscreenMagnifier._focusManager.getCurrentFocusCoordinates()
 
 		if self._originalMode == FullScreenMode.RELATIVE:
 			savedZoom = self._fullscreenMagnifier.zoomLevel

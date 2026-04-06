@@ -567,6 +567,7 @@ jobs:
           # - chrome_roleDescription  # nvdajp: excluded
           # - chrome_misc_aria  # nvdajp: excluded
           # - chrome_misc  # nvdajp: excluded
+          # - chrome_link  # nvdajp: excluded
         # END JP PATCH (exclude vscode test suite)
         runner: ${{ fromJson(needs.matrix.outputs.supportedRunners) }}
         arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}

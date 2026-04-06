@@ -4,13 +4,11 @@
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
 from _magnifier.magnifier import Magnifier, MagnifierType
-from _magnifier.utils.types import Coordinates, Filter, FocusType, Direction
+from _magnifier.utils.types import Filter, Direction, Coordinates, MagnifierAction
 import unittest
 from winAPI._displayTracking import getPrimaryDisplayOrientation
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 import wx
-import mouseHandler
-import winUser
 
 
 class _TestMagnifier(unittest.TestCase):
@@ -67,9 +65,7 @@ class TestMagnifier(_TestMagnifier):
 		self.assertEqual(self.magnifier._filterType, Filter.NORMAL)
 		self.assertEqual(self.magnifier._magnifierType, MagnifierType.FULLSCREEN)
 		self.assertFalse(self.magnifier._isActive)
-		self.assertIsNone(self.magnifier._lastFocusedObject)
-		self.assertEqual(self.magnifier._lastNVDAPosition, (0, 0))
-		self.assertEqual(self.magnifier._lastMousePosition, (0, 0))
+		self.assertIsNotNone(self.magnifier._focusManager)
 
 	def testZoomLevelProperty(self):
 		"""ZoomLevel property."""
@@ -96,32 +92,36 @@ class TestMagnifier(_TestMagnifier):
 
 	def testStartMagnifier(self):
 		"""Activating the magnifier."""
-		self.magnifier._getFocusCoordinates = MagicMock(return_value=(100, 200))
+		self.magnifier._focusManager.getCurrentFocusCoordinates = MagicMock(
+			return_value=Coordinates(100, 200),
+		)
 
 		# Test starting from inactive state
 		self.assertFalse(self.magnifier._isActive)
 		self.magnifier._startMagnifier()
 
 		self.assertTrue(self.magnifier._isActive)
-		self.assertEqual(self.magnifier._currentCoordinates, (100, 200))
-		self.magnifier._getFocusCoordinates.assert_called_once()
+		self.assertEqual(self.magnifier._currentCoordinates, Coordinates(100, 200))
+		self.magnifier._focusManager.getCurrentFocusCoordinates.assert_called_once()
 
-		# Test starting when already active (should not call _getFocusCoordinates again)
-		self.magnifier._getFocusCoordinates.reset_mock()
+		# Test starting when already active (should not call getCurrentFocusCoordinates again)
+		self.magnifier._focusManager.getCurrentFocusCoordinates.reset_mock()
 		self.magnifier._startMagnifier()
 
 		self.assertTrue(self.magnifier._isActive)
-		self.magnifier._getFocusCoordinates.assert_not_called()
+		self.magnifier._focusManager.getCurrentFocusCoordinates.assert_not_called()
 
 	def testUpdateMagnifier(self):
 		"""Updating the magnifier's properties."""
-		self.magnifier._getFocusCoordinates = MagicMock(return_value=(100, 200))
+		self.magnifier._focusManager.getCurrentFocusCoordinates = MagicMock(
+			return_value=Coordinates(100, 200),
+		)
 		self.magnifier._doUpdate = MagicMock()
 		self.magnifier._startTimer = MagicMock()
 
 		# Call the update function without activation
 		self.magnifier._updateMagnifier()
-		self.magnifier._getFocusCoordinates.assert_not_called()
+		self.magnifier._focusManager.getCurrentFocusCoordinates.assert_not_called()
 		self.magnifier._doUpdate.assert_not_called()
 		self.magnifier._startTimer.assert_not_called()
 
@@ -129,12 +129,16 @@ class TestMagnifier(_TestMagnifier):
 		self.magnifier._isActive = True
 		self.magnifier._updateMagnifier()
 
-		self.magnifier._getFocusCoordinates.assert_called_once()
+		# getCurrentFocusCoordinates is called twice: once in _managePanning and once to update _currentCoordinates
+		self.assertEqual(
+			self.magnifier._focusManager.getCurrentFocusCoordinates.call_count,
+			2,
+		)
 		self.magnifier._doUpdate.assert_called_once()
 		self.magnifier._startTimer.assert_called_once_with(
 			self.magnifier._updateMagnifier,
 		)
-		self.assertEqual(self.magnifier._currentCoordinates, (100, 200))
+		self.assertEqual(self.magnifier._currentCoordinates, Coordinates(100, 200))
 
 	def testDoUpdate(self):
 		"""DoUpdate function raises NotImplementedError."""
@@ -178,6 +182,196 @@ class TestMagnifier(_TestMagnifier):
 		self.magnifier.zoomLevel = 1.0
 		self.magnifier._zoom(Direction.OUT)
 		self.assertEqual(self.magnifier.zoomLevel, 1.0)  # Should remain at min
+
+	def _setupPanTest(self):
+		"""Common setup for pan tests."""
+		self.magnifier._doUpdate = MagicMock()
+		self.magnifier._isActive = True
+		self.magnifier._panStep = 10  # 10% of screen width
+		centerX = self.screenWidth // 2
+		centerY = self.screenHeight // 2
+		self.magnifier._currentCoordinates = Coordinates(centerX, centerY)
+		expectedPanPixels = int(
+			(self.screenWidth / self.magnifier.zoomLevel) * 10 / 100,
+		)
+		return centerX, centerY, expectedPanPixels
+
+	def _testSimplePan(
+		self,
+		action: MagnifierAction,
+		axis: str,
+		direction: int,
+		edgeAttr: str,
+	):
+		"""
+		Test simple pan action (LEFT, RIGHT, UP, DOWN).
+
+		:param action: The pan action to test
+		:param axis: 'x' or 'y'
+		:param direction: -1 for left/up, +1 for right/down
+		:param edgeAttr: The screen limit attribute name ('left', 'right', 'top', 'bottom')
+		"""
+		centerX, centerY, expectedPanPixels = self._setupPanTest()
+		minX, minY, maxX, maxY = self.magnifier._getScreenLimits()
+		edgeMap = {"left": minX, "right": maxX, "top": minY, "bottom": maxY}
+		edgeValue = edgeMap[edgeAttr]
+		centerValue = centerX if axis == "x" else centerY
+
+		with patch("_magnifier.magnifier.winUser.setCursorPos"):
+			# Test normal pan - movement succeeds (position changes)
+			hasMoved = self.magnifier._pan(action)
+			self.assertTrue(hasMoved)
+			currentValue = getattr(self.magnifier._currentCoordinates, axis)
+			self.assertEqual(currentValue, centerValue + direction * expectedPanPixels)
+
+			# Test reaching edge - movement succeeds on first contact (position changes to edge)
+			if axis == "x":
+				self.magnifier._currentCoordinates = Coordinates(
+					edgeValue - direction * expectedPanPixels,
+					centerY,
+				)
+			else:
+				self.magnifier._currentCoordinates = Coordinates(
+					centerX,
+					edgeValue - direction * expectedPanPixels,
+				)
+
+			hasMoved = self.magnifier._pan(action)
+			self.assertTrue(hasMoved)
+			currentValue = getattr(self.magnifier._currentCoordinates, axis)
+			self.assertEqual(currentValue, edgeValue)
+
+			# Test trying to pan beyond edge - movement fails (already at edge, no movement)
+			hasMoved = self.magnifier._pan(action)
+			self.assertFalse(hasMoved)
+			currentValue = getattr(self.magnifier._currentCoordinates, axis)
+			self.assertEqual(currentValue, edgeValue)
+
+	def _testPanToEdge(self, action: MagnifierAction, axis: str, edgeAttr: str):
+		"""
+		Test pan to edge action (PAN_X_EDGE).
+
+		:param action: The pan to edge action to test
+		:param axis: 'x' or 'y'
+		:param edgeAttr: The screen limit attribute name ('left', 'right', 'top', 'bottom')
+		"""
+		_ = self._setupPanTest()
+		minX, minY, maxX, maxY = self.magnifier._getScreenLimits()
+		edgeMap = {"left": minX, "right": maxX, "top": minY, "bottom": maxY}
+		edgeValue = edgeMap[edgeAttr]
+
+		with patch("_magnifier.magnifier.winUser.setCursorPos"):
+			# Test jump to edge - movement succeeds (moves to edge)
+			hasMoved = self.magnifier._pan(action)
+			self.assertTrue(hasMoved)
+			currentValue = getattr(self.magnifier._currentCoordinates, axis)
+			self.assertEqual(currentValue, edgeValue)
+
+			# Test trying to pan to edge again - movement fails (already at edge, no movement)
+			hasMoved = self.magnifier._pan(action)
+			self.assertFalse(hasMoved)
+			currentValue = getattr(self.magnifier._currentCoordinates, axis)
+			self.assertEqual(currentValue, edgeValue)
+
+	def testPanLeft(self):
+		"""Pan left and detect edge limit."""
+		self._testSimplePan(
+			MagnifierAction.PAN_LEFT,
+			axis="x",
+			direction=-1,
+			edgeAttr="left",
+		)
+
+	def testPanRight(self):
+		"""Pan right and detect edge limit."""
+		self._testSimplePan(
+			MagnifierAction.PAN_RIGHT,
+			axis="x",
+			direction=1,
+			edgeAttr="right",
+		)
+
+	def testPanUp(self):
+		"""Pan up and detect edge limit."""
+		self._testSimplePan(
+			MagnifierAction.PAN_UP,
+			axis="y",
+			direction=-1,
+			edgeAttr="top",
+		)
+
+	def testPanDown(self):
+		"""Pan down and detect edge limit."""
+		self._testSimplePan(
+			MagnifierAction.PAN_DOWN,
+			axis="y",
+			direction=1,
+			edgeAttr="bottom",
+		)
+
+	def testPanToLeftEdge(self):
+		"""Pan directly to left edge."""
+		self._testPanToEdge(
+			MagnifierAction.PAN_LEFT_EDGE,
+			axis="x",
+			edgeAttr="left",
+		)
+
+	def testPanToRightEdge(self):
+		"""Pan directly to right edge."""
+		self._testPanToEdge(
+			MagnifierAction.PAN_RIGHT_EDGE,
+			axis="x",
+			edgeAttr="right",
+		)
+
+	def testPanToTopEdge(self):
+		"""Pan directly to top edge."""
+		self._testPanToEdge(
+			MagnifierAction.PAN_TOP_EDGE,
+			axis="y",
+			edgeAttr="top",
+		)
+
+	def testPanToBottomEdge(self):
+		"""Pan directly to bottom edge."""
+		self._testPanToEdge(
+			MagnifierAction.PAN_BOTTOM_EDGE,
+			axis="y",
+			edgeAttr="bottom",
+		)
+
+	def testManagePanning(self):
+		"""Manual panning ends when focus coordinates change, and _lastFocusCoordinates is always kept up to date."""
+		focusA = Coordinates(100, 200)
+		focusB = Coordinates(300, 400)
+
+		self.magnifier._focusManager.getCurrentFocusCoordinates = MagicMock(return_value=focusA)
+
+		# When not panning, _lastFocusCoordinates is updated every cycle
+		self.magnifier._isManualPanning = False
+		self.magnifier._managePanning()
+		self.assertFalse(self.magnifier._isManualPanning)
+		self.assertEqual(self.magnifier._lastFocusCoordinates, focusA)
+
+		# When panning starts and focus hasn't changed, panning continues
+		self.magnifier._isManualPanning = True
+		self.magnifier._managePanning()
+		self.assertTrue(self.magnifier._isManualPanning)
+		self.assertEqual(self.magnifier._lastFocusCoordinates, focusA)
+
+		# When focus changes while panning, manual panning ends
+		self.magnifier._focusManager.getCurrentFocusCoordinates = MagicMock(return_value=focusB)
+		self.magnifier._managePanning()
+		self.assertFalse(self.magnifier._isManualPanning)
+		self.assertEqual(self.magnifier._lastFocusCoordinates, focusB)
+
+	def testKeepMouseCentered(self):
+		"""Base _keepMouseCentered moves cursor to _currentCoordinates."""
+		self.magnifier._currentCoordinates = Coordinates(640, 360)
+		with patch("_magnifier.magnifier.winUser.setCursorPos") as mockSetCursor:
+			self.magnifier._keepMouseCentered()
+			mockSetCursor.assert_called_once_with(640, 360)
 
 	def testStartTimer(self):
 		"""Starting the timer."""
@@ -238,78 +432,18 @@ class TestMagnifier(_TestMagnifier):
 		self.assertEqual(width, expected_width)
 		self.assertEqual(height, expected_height)
 
-	def testGetNVDAPosition(self):
-		"""Getting NVDA position with different API responses."""
-		# Case 1: Review position successful
-		with patch("_magnifier.magnifier.api.getReviewPosition") as mock_review:
-			mock_point = Mock()
-			mock_point.x = 300
-			mock_point.y = 400
-			mock_review.return_value.pointAtStart = mock_point
+	def testMagnifierPositionTrueCentered(self):
+		"""Test magnifier position calculation with true centered mode."""
+		x, y = int(self.screenWidth / 2), int(self.screenHeight / 2)
+		with patch("source._magnifier.magnifier.isTrueCentered", return_value=True):
+			left, top, width, height = self.magnifier._getMagnifierPosition((x, y))
 
-			x, y = self.magnifier._getCursorPosition()
-			self.assertEqual((x, y), (300, 400))
+			expected_width = int(self.screenWidth / self.magnifier.zoomLevel)
+			expected_height = int(self.screenHeight / self.magnifier.zoomLevel)
+			expected_left = int(x - (expected_width / 2))
+			expected_top = int(y - (expected_height / 2))
 
-		# Case 2: Review position fails, navigator works
-		with patch("_magnifier.magnifier.api.getReviewPosition", return_value=None):
-			with patch("_magnifier.magnifier.api.getNavigatorObject") as mock_navigator:
-				mock_navigator.return_value.location = (100, 150, 200, 300)
-
-				x, y = self.magnifier._getCursorPosition()
-				# Center: (100 + 200//2, 150 + 300//2) = (200, 300)
-				self.assertEqual((x, y), (200, 300))
-
-		# Case 3: Everything fails
-		with patch("_magnifier.magnifier.api.getReviewPosition", return_value=None):
-			with patch("_magnifier.magnifier.api.getNavigatorObject") as mock_navigator:
-				mock_navigator.return_value.location = Mock(side_effect=Exception())
-
-				x, y = self.magnifier._getCursorPosition()
-				self.assertEqual((x, y), (0, 0))
-
-	def testGetFocusCoordinates(self):
-		"""All priority scenarios for focus coordinates."""
-
-		def testValues(
-			getNvda: Coordinates,
-			mousePos: Coordinates,
-			leftPressed: bool,
-			expected_coords: Coordinates,
-			expected_focused: FocusType,
-		):
-			self.magnifier._getCursorPosition = MagicMock(return_value=getNvda)
-			self.magnifier._lastNVDAPosition = (0, 0)
-			self.magnifier._lastMousePosition = (0, 0)
-			mouseHandler.isLeftMouseButtonLocked = MagicMock(return_value=leftPressed)
-			winUser.getCursorPos = MagicMock(return_value=mousePos)
-
-			focusCoordinates = self.magnifier._getFocusCoordinates()
-
-			self.assertEqual(focusCoordinates, expected_coords)
-			self.assertEqual(self.magnifier._lastFocusedObject, expected_focused)
-
-		# Case 1: Left click is pressed should return mouse position
-		testValues((0, 0), (0, 0), True, (0, 0), FocusType.MOUSE)
-
-		# Case 2: Not left click mouse moving
-		testValues((0, 0), (10, 10), False, (10, 10), FocusType.MOUSE)
-
-		# Case 3: Last move is NVDA mouse not changed
-		testValues((10, 10), (0, 0), False, (10, 10), FocusType.NVDA)
-
-		# Case 4: Nothing changed last move Mouse
-		self.magnifier._lastFocusedObject = FocusType.MOUSE
-		testValues((0, 0), (0, 0), False, (0, 0), FocusType.MOUSE)
-
-		# Case 5: Nothing changed last move NVDA
-		self.magnifier._lastFocusedObject = FocusType.NVDA
-		testValues((0, 0), (0, 0), False, (0, 0), FocusType.NVDA)
-
-		# Case 6: Both have moved and no Left click
-		testValues((10, 10), (20, 20), False, (20, 20), FocusType.MOUSE)
-
-		# Case 7: Both have moved and Left click
-		testValues((10, 10), (20, 20), True, (20, 20), FocusType.MOUSE)
-
-		# Case 8: Only nvda moved but left pressed (very unlikely)
-		testValues((10, 10), (0, 0), True, (0, 0), FocusType.MOUSE)
+			self.assertEqual(left, expected_left)
+			self.assertEqual(top, expected_top)
+			self.assertEqual(width, expected_width)
+			self.assertEqual(height, expected_height)

@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2025 NV Access Limited, Antoine Haffreingue
+# Copyright (C) 2025-2026 NV Access Limited, Antoine Haffreingue
 # This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
@@ -14,8 +14,8 @@ from winBindings import magnification
 from .magnifier import Magnifier
 from .utils.filterHandler import FilterMatrix
 from .utils.spotlightManager import SpotlightManager
-from .utils.types import Filter, Coordinates, FullScreenMode, FocusType
-from .config import getDefaultFullscreenMode, shouldKeepMouseCentered
+from .utils.types import Filter, Coordinates, FullScreenMode
+from .config import getDefaultFullscreenMode
 
 
 class FullScreenMagnifier(Magnifier):
@@ -78,9 +78,6 @@ class FullScreenMagnifier(Magnifier):
 		# Always save screen position for mode continuity
 		self._lastScreenPosition = coordinates
 
-		if self._lastFocusedObject == FocusType.NVDA:
-			if shouldKeepMouseCentered():
-				self.moveMouseToScreen()
 		self._fullscreenMagnifier(coordinates)
 
 	def _stopMagnifier(self) -> None:
@@ -158,13 +155,22 @@ class FullScreenMagnifier(Magnifier):
 			case FullScreenMode.CENTER:
 				return coordinates
 
-	def moveMouseToScreen(self) -> None:
+	def _keepMouseCentered(self) -> None:
 		"""
-		keep mouse in screen
+		Move the mouse to the center of the magnified view.
+		Skips if a mouse button is currently pressed to avoid interfering with clicks.
 		"""
-		left, top, visibleWidth, visibleHeight = self._getMagnifierPosition(self._currentCoordinates)
-		centerX = int(left + (visibleWidth / 2))
-		centerY = int(top + (visibleHeight / 2))
+		if (
+			winUser.getKeyState(winUser.VK_LBUTTON) < 0
+			or winUser.getKeyState(winUser.VK_RBUTTON) < 0
+			or winUser.getKeyState(winUser.VK_MBUTTON) < 0
+		):
+			log.debug("Mouse button pressed, skipping cursor repositioning to avoid interfering with click")
+			return
+		coords = self._getCoordinatesForMode(self._currentCoordinates)
+		left, top, visibleWidth, visibleHeight = self._getMagnifierPosition(coords)
+		centerX = left + visibleWidth // 2
+		centerY = top + visibleHeight // 2
 		winUser.setCursorPos(centerX, centerY)
 
 	def _borderPos(
@@ -203,7 +209,10 @@ class FullScreenMagnifier(Magnifier):
 			dy = focusY - maxY
 
 		if dx != 0 or dy != 0:
-			return Coordinates(self._lastScreenPosition[0] + dx, self._lastScreenPosition[1] + dy)
+			return Coordinates(
+				self._lastScreenPosition[0] + dx,
+				self._lastScreenPosition[1] + dy,
+			)
 		else:
 			return self._lastScreenPosition
 
@@ -244,7 +253,9 @@ class FullScreenMagnifier(Magnifier):
 		"""
 		Launch Spotlight from Full-screen class
 		"""
-		log.debug(f"Launching spotlight mode from full-screen magnifier with mode {self._fullscreenMode}")
+		log.debug(
+			f"Launching spotlight mode from full-screen magnifier with mode {self._fullscreenMode}",
+		)
 		self._stopTimer()
 		self._spotlightManager._startSpotlight()
 
