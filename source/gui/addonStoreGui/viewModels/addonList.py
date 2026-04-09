@@ -9,6 +9,7 @@ from enum import Enum
 
 from functools import lru_cache
 from locale import strxfrm
+from datetime import datetime
 from typing import (
 	Any,
 	Generic,
@@ -375,7 +376,10 @@ class AddonListVM:
 		if field is AddonListField.channel:
 			return listItemVM.model.channel.displayString
 		if field is AddonListField.installDate:
-			return listItemVM.model.installDate.strftime("%x")
+			if listItemVM.model.installDate is None:
+				return ""
+			else:
+				return listItemVM.model.installDate.strftime("%x")
 		if field is AddonListField.minimumNVDAVersion:
 			return formatVersionForGUI(*listItemVM.model.minimumNVDAVersion)
 		if field is AddonListField.lastTestedVersion:
