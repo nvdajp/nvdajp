@@ -1301,9 +1301,13 @@ RE_INFORMATION = re.compile(r"^[A-Za-z0-9\+\@\/\#\$\%\&\*\;\.\<\>\-\_\{\}\[\] ]+
 RE_GAIJI = re.compile(r"^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]+$")
 RE_GAIJI_WITH_PARENS = re.compile(r"^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]*\([A-Za-z0-9\,\.\+\-'\!\? ]+\)$")
 RE_PAREN_ASCII_BODY = re.compile(r"^[A-Za-z0-9\,\.\+\-'\!\? ]+$")
-RE_WWW_SCHEMELESS_DOMAIN = re.compile(
-	r"^www\.[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$",
-	re.IGNORECASE,
+# US 2級で前置符・インジケータが入りやすい「ドット区切り英数字トークン」
+# 例: www.example.com, example.co.jp, v1.4, 1.0, Dr.Smith, 192.168.0.1
+# - 空白を含まない
+# - ドット `.` で区切られたラベルが 2 個以上
+# - 各ラベルは先頭が英数字、以降は英数字・ハイフン・アンダースコア
+RE_US_G2_DOTTED_TOKEN = re.compile(
+	r"^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$"
 )
 RE_KATAKANA = re.compile("^[ァ-ヾ]+$")
 RE_HIRAGANA = re.compile("^[ぁ-ゞ]+$")
@@ -1935,7 +1939,7 @@ def _is_us_g2_louis_table(louisTableList):
 
 
 def _should_skip_us_g2_louis_for_inner(inner):
-	return RE_WWW_SCHEMELESS_DOMAIN.match(inner) is not None
+	return RE_US_G2_DOTTED_TOKEN.match(inner) is not None
 
 
 def _apply_louis_to_foreign_quotes(outbuf, inpos2, louisTranslate, louisTableList):
