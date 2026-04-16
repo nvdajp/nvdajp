@@ -296,6 +296,14 @@
         "us_g2_outpos": [0, 3, 5, 6]
     },
     {
+        "comment": "nvdajp/nvdajp#649: US2級でドメイン文字列を2級変換するとインジケータが混入するため、2級適用を抑止したい。",
+        "text": "www.sample.com",
+        "input": "⠦www.sample.com⠴",
+        "output": "⠦⠺⠺⠺⠲⠎⠁⠍⠏⠇⠑⠲⠉⠕⠍⠴",
+        "_ueb_g2": "⠦⠺⠺⠺⠲⠎⠁⠍⠏⠇⠑⠲⠉⠕⠍⠴",
+        "us_g2": "⠦⠺⠺⠺⠲⠎⠁⠍⠏⠇⠑⠲⠉⠕⠍⠴"
+    },
+    {
         "text": "abc.123.jp",
         "input": "⠦abc.123.jp⠴",
         "output": "⠦⠁⠃⠉⠲⠼⠁⠃⠉⠲⠚⠏⠴",
