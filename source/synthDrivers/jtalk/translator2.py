@@ -1301,6 +1301,10 @@ RE_INFORMATION = re.compile(r"^[A-Za-z0-9\+\@\/\#\$\%\&\*\;\.\<\>\-\_\{\}\[\] ]+
 RE_GAIJI = re.compile(r"^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]+$")
 RE_GAIJI_WITH_PARENS = re.compile(r"^[A-Za-z][A-Za-z0-9\,\.\+\-'\!\? ]*\([A-Za-z0-9\,\.\+\-'\!\? ]+\)$")
 RE_PAREN_ASCII_BODY = re.compile(r"^[A-Za-z0-9\,\.\+\-'\!\? ]+$")
+RE_WWW_SCHEMELESS_DOMAIN = re.compile(
+	r"^www\.[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$",
+	re.IGNORECASE,
+)
 RE_KATAKANA = re.compile("^[ァ-ヾ]+$")
 RE_HIRAGANA = re.compile("^[ぁ-ゞ]+$")
 RE_HALF_KATAKANA = re.compile("^[ｦ-ﾟ]+$")  # ff66 .. ff9f
@@ -1926,9 +1930,18 @@ def _map_louis_positions(old_segment_inpos, louis_in_pos, louis_out_pos, new_len
 	return result
 
 
+def _is_us_g2_louis_table(louisTableList):
+	return any(str(table).replace("\\", "/").endswith("en-us-g2.ctb") for table in louisTableList)
+
+
+def _should_skip_us_g2_louis_for_inner(inner):
+	return RE_WWW_SCHEMELESS_DOMAIN.match(inner) is not None
+
+
 def _apply_louis_to_foreign_quotes(outbuf, inpos2, louisTranslate, louisTableList):
 	"""outbuf 内の ⠦...⠴ の内側を louisTranslate(louisTableList, inner) で2級変換し、outbuf と inpos2 を更新する。"""
 	inpos2 = list(inpos2)
+	is_us_g2 = _is_us_g2_louis_table(louisTableList)
 	try:
 		import louis as _louis
 
@@ -1939,6 +1952,8 @@ def _apply_louis_to_foreign_quotes(outbuf, inpos2, louisTranslate, louisTableLis
 	# Process from end to start so indices stay valid
 	for start, end in reversed(ranges):
 		inner = outbuf[start:end]
+		if is_us_g2 and _should_skip_us_g2_louis_for_inner(inner):
+			continue
 		try:
 			braille_out, louis_in_pos, louis_out_pos, _cur = louisTranslate(
 				louisTableList,
