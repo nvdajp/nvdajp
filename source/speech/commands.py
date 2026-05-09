@@ -272,6 +272,13 @@ class BaseProsodyCommand(SynthParamCommand):
 			e.g. 0.5 is half, 1 returns to the configured setting.
 		@param multiplier: int/float
 		"""
+		# BEGIN JP PATCH
+		# nvdajp: Coerce string values (e.g. via remote synth host).
+		if isinstance(offset, str):
+			offset = int(float(offset))
+		if isinstance(multiplier, str):
+			multiplier = float(multiplier)
+		# END JP PATCH
 		if offset != 0 and multiplier != 1:
 			raise ValueError("offset and multiplier both specified")
 		self._offset = offset
