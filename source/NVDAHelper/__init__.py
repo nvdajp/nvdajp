@@ -212,7 +212,7 @@ def nvdaController_brailleMessage(text: str) -> SystemErrorCodes:
 	return SystemErrorCodes.SUCCESS
 
 
-# nvdajp: nvdaController_speakSpelling handler (issue #642)
+# nvdajp: nvdaController_speakSpelling handler (issue #642; issue #652: restore 2025.3-style character descriptions)
 @WINFUNCTYPE(c_long, c_wchar_p)
 def nvdaController_speakSpelling(text: str) -> SystemErrorCodes:
 	focus = api.getFocusObject()
@@ -220,7 +220,7 @@ def nvdaController_speakSpelling(text: str) -> SystemErrorCodes:
 		return -1
 	import speech
 
-	queueHandler.queueFunction(queueHandler.eventQueue, speech.speakSpelling, text)
+	queueHandler.queueFunction(queueHandler.eventQueue, speech.speakSpelling, text, None, True)
 	return SystemErrorCodes.SUCCESS
 
 
