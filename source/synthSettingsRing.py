@@ -22,6 +22,11 @@ class SynthSetting(baseObject.AutoPropertyObject):
 		self.max = setting.maxVal if isinstance(setting, NumericDriverSetting) else max
 		self.step = setting.normalStep if isinstance(setting, NumericDriverSetting) else 1
 		self.largeStep = self.setting.largeStep if isinstance(setting, NumericDriverSetting) else 10
+		# BEGIN JP PATCH
+		# nvdajp: SAPI4 rate can be quantized by engine. Keep a ring-local requested value
+		# so repeated increase/decrease does not snap back to SpeedGet-derived percent.
+		self._ringShadowValue: int | None = None
+		# END JP PATCH
 
 	def first(self) -> str:
 		"""Sets the value of the current synth setting to the first value."""
@@ -36,24 +41,52 @@ class SynthSetting(baseObject.AutoPropertyObject):
 		return self._getReportValue(val)
 
 	def increase(self):
-		val = min(self.max, self.value + self.step)
+		# BEGIN JP PATCH
+		base = (
+			self._ringShadowValue
+			if self._shouldUseRingShadowValue() and self._ringShadowValue is not None
+			else self.value
+		)
+		val = min(self.max, base + self.step)
+		# END JP PATCH
 		self.value = val
 		return self._getReportValue(val)
 
 	def increaseLarge(self) -> str:
 		"""Increases the value of the current synth setting by a larger step."""
-		val = min(self.max, self.value + self.largeStep * 2)
+		# BEGIN JP PATCH
+		base = (
+			self._ringShadowValue
+			if self._shouldUseRingShadowValue() and self._ringShadowValue is not None
+			else self.value
+		)
+		val = min(self.max, base + self.largeStep * 2)
+		# END JP PATCH
 		self.value = val
 		return self._getReportValue(val)
 
 	def decrease(self):
-		val = max(self.min, self.value - self.step)
+		# BEGIN JP PATCH
+		base = (
+			self._ringShadowValue
+			if self._shouldUseRingShadowValue() and self._ringShadowValue is not None
+			else self.value
+		)
+		val = max(self.min, base - self.step)
+		# END JP PATCH
 		self.value = val
 		return self._getReportValue(val)
 
 	def decreaseLarge(self) -> str:
 		"""Decreases the value of the current synth setting by a larger step."""
-		val = max(self.min, self.value - self.largeStep * 2)
+		# BEGIN JP PATCH
+		base = (
+			self._ringShadowValue
+			if self._shouldUseRingShadowValue() and self._ringShadowValue is not None
+			else self.value
+		)
+		val = max(self.min, base - self.largeStep * 2)
+		# END JP PATCH
 		self.value = val
 		return self._getReportValue(val)
 
@@ -63,6 +96,16 @@ class SynthSetting(baseObject.AutoPropertyObject):
 	def _set_value(self, value):
 		setattr(self.synth, self.setting.id, value)
 		config.conf["speech"][self.synth.name][self.setting.id] = value
+		# BEGIN JP PATCH
+		if self._shouldUseRingShadowValue():
+			self._ringShadowValue = value
+		# END JP PATCH
+
+	# BEGIN JP PATCH
+	def _shouldUseRingShadowValue(self) -> bool:
+		# Keep this strictly scoped to problematic path.
+		return self.synth.name == "sapi4_32" and self.setting.id == "rate"
+	# END JP PATCH
 
 	def _getReportValue(self, val):
 		return str(val)
