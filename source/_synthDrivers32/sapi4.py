@@ -914,6 +914,11 @@ class SynthDriver(SynthDriver):
 		if len(self._enginesList) == 0:
 			raise RuntimeError("No Sapi4 engines available")
 		self._rateDelta = 0
+		# BEGIN JP PATCH
+		# nvdajp: Track desired (UI-facing) and engine-acknowledged rate separately.
+		self._desiredRatePercent: int | None = None
+		self._engineRatePercent: int | None = None
+		# END JP PATCH
 		self._pitchDelta = 0
 		self._volume = 100
 		self._paused = False
@@ -942,9 +947,22 @@ class SynthDriver(SynthDriver):
 		# but avoid duplicating the first command, if any,
 		# And only add the defaults when there is a prosody command in the sequence.
 		supportedProsody = [c for c in self.supportedCommands if issubclass(c, BaseProsodyCommand)]
+		# BEGIN JP PATCH
+		# nvdajp: Avoid RateCommand() default injection relying on stale config value.
+		# Use current effective SAPI4 rate as explicit Spd tag instead.
+		hasProsody = bool(unprocessedSequence) and any(type(i) in supportedProsody for i in unprocessedSequence)
+		supportedProsodyWithoutRate = [c for c in supportedProsody if c is not RateCommand]
+		rateResetTag = None
+		if hasProsody and RateCommand in supportedProsody:
+			ratePercent = self._getDesiredRatePercent()
+			rateRaw = self._percentToParam(ratePercent, self._minRate, self._maxRate)
+			rateResetTag = f"\\Spd={rateRaw}\\"
+			if not isinstance(unprocessedSequence[0], RateCommand):
+				textList.append(rateResetTag)
+		# END JP PATCH
 		prosodyToAdd = []
-		if any(type(i) in supportedProsody for i in unprocessedSequence):
-			prosodyToAdd.extend(c() for c in supportedProsody)
+		if any(type(i) in supportedProsodyWithoutRate for i in unprocessedSequence):
+			prosodyToAdd.extend(c() for c in supportedProsodyWithoutRate)
 		speechSequence = [c for c in prosodyToAdd if not isinstance(unprocessedSequence[0], type(c))]
 		speechSequence.extend(unprocessedSequence)
 		# To be sure, add all default values to the end of the sequence.
@@ -981,6 +999,10 @@ class SynthDriver(SynthDriver):
 				log.debugWarning("Unsupported speech command: %s" % item)
 			else:
 				log.error("Unknown speech: %s" % item)
+		# BEGIN JP PATCH
+		if rateResetTag:
+			textList.append(rateResetTag)
+		# END JP PATCH
 		# lastHandledIndexInSequence is the index denoting the end of the speech sequence.
 		# store it on the driver to support the synthDoneSpeaking notification.
 		self._finalIndex = lastHandledIndexInSequence
@@ -1055,6 +1077,10 @@ class SynthDriver(SynthDriver):
 		if mode is None:
 			raise ValueError("no such mode: %s" % val)
 		self._currentMode = mode
+		# BEGIN JP PATCH
+		self._desiredRatePercent = None
+		self._engineRatePercent = None
+		# END JP PATCH
 		if self._ttsCentral:
 			try:
 				# Some SAPI4 synthesizers may fail this call.
@@ -1095,6 +1121,15 @@ class SynthDriver(SynthDriver):
 				self._maxRate = newVal.value - 1
 				val = max(self._minRate, min(self._maxRate, self._defaultRate + self._rateDelta))
 				self._ttsAttrs.SpeedSet(val)
+				# BEGIN JP PATCH
+				verify = DWORD()
+				self._ttsAttrs.SpeedGet(byref(verify))
+				verifyRaw = max(min(verify.value, self._maxRate), self._minRate)
+				self._rateDelta = verifyRaw - self._defaultRate
+				self._engineRatePercent = self._paramToPercent(verifyRaw, self._minRate, self._maxRate)
+				if self._desiredRatePercent is None:
+					self._desiredRatePercent = self._engineRatePercent
+				# END JP PATCH
 				if self._maxRate <= self._minRate:
 					hasRate = False
 			except COMError:
@@ -1181,16 +1216,27 @@ class SynthDriver(SynthDriver):
 		return voices
 
 	def _get_rate(self) -> int:
-		val = DWORD()
-		self._ttsAttrs.SpeedGet(byref(val))
-		# Sometimes the raw value can drift outside the min and max value.
-		val.value = max(min(val.value, self._maxRate), self._minRate)
-		return self._paramToPercent(val.value, self._minRate, self._maxRate)
+		# BEGIN JP PATCH
+		# nvdajp: Keep UI/ring progression stable by returning desired rate.
+		if self._desiredRatePercent is None:
+			if self._engineRatePercent is None:
+				self._engineRatePercent = self._readCurrentRatePercentFromEngine()
+			self._desiredRatePercent = self._engineRatePercent
+		return self._desiredRatePercent
+		# END JP PATCH
 
 	def _set_rate(self, val: int):
-		val = self._percentToParam(val, self._minRate, self._maxRate)
-		self._ttsAttrs.SpeedSet(val)
-		self._rateDelta = val - self._defaultRate
+		# BEGIN JP PATCH
+		val = max(0, min(100, int(val)))
+		self._desiredRatePercent = val
+		# END JP PATCH
+		raw = self._percentToParam(val, self._minRate, self._maxRate)
+		self._ttsAttrs.SpeedSet(raw)
+		# BEGIN JP PATCH
+		verifyRaw = self._readCurrentRateRawFromEngine()
+		self._rateDelta = verifyRaw - self._defaultRate
+		self._engineRatePercent = self._paramToPercent(verifyRaw, self._minRate, self._maxRate)
+		# END JP PATCH
 
 	def _get_pitch(self) -> int:
 		val = WORD()
@@ -1221,6 +1267,23 @@ class SynthDriver(SynthDriver):
 		val |= val << 16
 		self._ttsAttrs.VolumeSet(val)
 
+	# BEGIN JP PATCH
+	def _readCurrentRateRawFromEngine(self) -> int:
+		val = DWORD()
+		self._ttsAttrs.SpeedGet(byref(val))
+		# Sometimes the raw value can drift outside the min and max value.
+		return max(min(val.value, self._maxRate), self._minRate)
+
+	def _readCurrentRatePercentFromEngine(self) -> int:
+		return self._paramToPercent(self._readCurrentRateRawFromEngine(), self._minRate, self._maxRate)
+
+	def _getDesiredRatePercent(self) -> int:
+		if self._desiredRatePercent is None:
+			if self._engineRatePercent is None:
+				self._engineRatePercent = self._readCurrentRatePercentFromEngine()
+			self._desiredRatePercent = self._engineRatePercent
+		return self._desiredRatePercent
+	# END JP PATCH
 
 def _mmDeviceEndpointIdToWaveOutId(targetEndpointId: str) -> int:
 	"""Translate from an MMDevice Endpoint ID string to a WaveOut Device ID number.
