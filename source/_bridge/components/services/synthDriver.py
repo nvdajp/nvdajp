@@ -187,6 +187,16 @@ class SynthDriverService(Service):
 		self._synth.cancel()
 
 	@Service.exposed
+	def isSpeaking(self) -> bool:
+		try:
+			isSpeaking = getattr(self._synth, "isSpeaking", None)
+			if callable(isSpeaking):
+				return bool(isSpeaking())
+			return bool(getattr(self._synth, "_isSpeaking", False))
+		except Exception:
+			return False
+
+	@Service.exposed
 	def pause(self, switch: bool):
 		self._synth.pause(switch)
 
