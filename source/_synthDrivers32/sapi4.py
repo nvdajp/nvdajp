@@ -113,6 +113,13 @@ class SynthDriverBufSink(COMObject):
 			if synth._bookmarks.popleft() == dwMarkNum:
 				break
 
+	# BEGIN JP PATCH
+	def ITTSBufNotifySink_TextDataDone(self, this: int, qTimeStamp: int, dwMarkNum: int) -> None:
+		synth = self.synthRef()
+		if synth and hasattr(synth, "setSpeaking"):
+			synth.setSpeaking(False)
+	# END JP PATCH
+
 	def IUnknown_Release(self, this: int, *args, **kwargs):
 		if not self._allowDelete and self._refcnt.value == 1:
 			log.debugWarning("ITTSBufNotifySink::Release called too many times by engine")
@@ -923,6 +930,7 @@ class SynthDriver(SynthDriver):
 		self._enginePitchPercent: int | None = None
 		self._desiredVolumePercent: int | None = None
 		self._engineVolumePercent: int | None = None
+		self._isSpeaking: bool = False
 		# END JP PATCH
 		self._pitchDelta = 0
 		self._volume = 100
@@ -1029,10 +1037,16 @@ class SynthDriver(SynthDriver):
 			self._bufSinkPtr,
 			ITTSBufNotifySink._iid_,
 		)
+		# BEGIN JP PATCH
+		self._isSpeaking = True
+		# END JP PATCH
 
 	def cancel(self):
 		if isDebugForSynthDriver():
 			log.debug("SAPI4: Cancelling")
+		# BEGIN JP PATCH
+		self._isSpeaking = True
+		# END JP PATCH
 		try:
 			# cancel all pending bookmarks
 			self._bookmarkLists.clear()
@@ -1063,6 +1077,14 @@ class SynthDriver(SynthDriver):
 		else:
 			self._ttsCentral.AudioResume()
 		self._paused = switch
+
+	# BEGIN JP PATCH
+	def setSpeaking(self, switch: bool) -> None:
+		self._isSpeaking = switch
+
+	def isSpeaking(self) -> bool:
+		return self._isSpeaking
+	# END JP PATCH
 
 	def removeSetting(self, name):
 		# Putting it here because currently no other synths make use of it. OrderedDict, where you are?
