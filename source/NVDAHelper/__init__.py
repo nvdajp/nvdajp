@@ -252,7 +252,11 @@ def nvdaController_isSpeaking() -> int:
 	from synthDriverHandler import getSynth
 
 	try:
-		return getSynth().isSpeaking()
+		# BEGIN JP PATCH
+		# nvdajp: Accept both callable and bool-style isSpeaking implementations.
+		isSpeaking = getattr(getSynth(), "isSpeaking", False)
+		return bool(isSpeaking()) if callable(isSpeaking) else bool(isSpeaking)
+		# END JP PATCH
 	except:  # noqa: E722
 		return False
 

@@ -47,6 +47,14 @@
 | `nvdaController_setRate(const int nRate)` | 音声速度値の変更 (0-100) | 0=成功 |
 | `nvdaController_setAppSleepMode(const int mode)` | アプリケーションスリープモードの制御 (0=解除, 1=設定) | 0=成功 |
 
+#### `nvdaController_isSpeaking` の互換方針（nvdajp）
+
+日本語版では、アドオンや外部クライアントとの互換性を維持するため、`isSpeaking` の取得について以下の方針を採用する。
+
+* **両対応を維持**: 音声ドライバーが `isSpeaking()` を callable として提供する場合と、`isSpeaking` 属性（bool）として提供する場合の両方を受け入れる。
+* **安全側のフォールバック**: 取得または呼び出しに失敗した場合は、`False`（0）として扱う。
+* SAPI5ドライバーにおける isSpeaking 属性の非推奨扱いを撤回し、日本語版では維持する。
+
 ---
 
 ## ビルド方法
