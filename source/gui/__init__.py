@@ -770,6 +770,15 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 		self.Bind(wx.adv.EVT_TASKBAR_RIGHT_DOWN, self.onActivate)
 
 	def evaluateUpdatePendingUpdateMenuItemCommand(self):
+		# BEGIN JP PATCH
+		# nvdajp: pending-update item is only created when updateCheck is available
+		if (
+			globalVars.appArgs.secure
+			or not updateCheck
+			or not hasattr(self, "installPendingUpdateMenuItem")
+		):
+			return
+		# END JP PATCH
 		try:
 			self.menu.Remove(self.installPendingUpdateMenuItem)
 		except Exception:
