@@ -9,10 +9,10 @@ with open(args.fileName, "w") as f:
 		"""name = kgsbraille
 summary = "KGS Braille Memo Driver"
 version = {version}
-author = "Takuya Nishimoto <nishimotz@gmail.com>"
-description = "KGS Driver, which supports BM Smart series, Braille Memo series, Braille Memo Pocket and Braille Tender."
+author = "Shuaruta Inc. / Takuya Nishimoto <info@shuaruta.com>"
+description = "KGS Driver, which supports Next Touch 40, BM Air/Smart series, Braille Memo series, Braille Memo Pocket and Braille Tender."
 url = https://www.nvda.jp/en/
-minimumNVDAVersion = 2019.3.0
-lastTestedNVDAVersion = 2024.4.0
+minimumNVDAVersion = 2026.1.0
+lastTestedNVDAVersion = 2026.1.0
 """.format(version=args.version),
 	)
