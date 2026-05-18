@@ -217,7 +217,7 @@ _KGS_USB_SERIAL_REGISTRY = (
 
 
 def _cp210xUsbIdMatch(match: bdDetect.DeviceMatch) -> bool:
-	"""bdDetect filter for CP210x ports also used by SuperBraille / Seika."""
+	"""bdDetect filter for CP210x UART bridges used by KGS (not generic CP210x adapters)."""
 	info = match.deviceInfo
 	text = " ".join(
 		filter(
@@ -240,12 +240,7 @@ def _cp210xUsbIdMatch(match: bdDetect.DeviceMatch) -> bool:
 		"bm_disp",
 		"bm-nexttouch",
 	)
-	if any(hint in text for hint in kgsHints):
-		return True
-	# Generic CP210x label: allow trying kgs; DirectBM rejects non-KGS hardware.
-	if "cp210" in text or "silicon labs" in text:
-		return True
-	return False
+	return any(hint in text for hint in kgsHints)
 
 
 def _appendKgsUsbRegistryPorts(ports, usbPorts, vidPid, friendlyFmt):
@@ -406,10 +401,11 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 				"VID_1148&PID_0001",  # KGS USB To Serial Com Port
 			},
 		)
-		# Next Touch 40, BrailleMemo Pocket (CP210x; shares ID with superBrl / seika)
+		# Next Touch 40, BrailleMemo Pocket (CP210x; shares ID with superBrl)
 		driverRegistrar.addUsbDevice(
 			ProtocolType.SERIAL,
 			_KGS_CP210X_USB_ID,
+			useAsFallback=True,
 			matchFunc=_cp210xUsbIdMatch,
 		)
 

@@ -267,7 +267,7 @@ BRLTTY [BrailleMemo ドライバ](https://github.com/brltty/brltty/commit/777575
 
 従来 `kgs` の bdDetect には **1148 ベンダのみ**登録されており、Next Touch 40 USB は **自動検出の対象外**だった（手動 COM 選択または汎用シリアル列挙経由のみ）。
 
-**注意:** 同一 `VID_10C4&PID_EA60` を `superBrl` も登録。自動検出時は接続試行順で先に成功したドライバが使われる。Next Touch のみの環境では `kgs` + DirectBM が接続する想定。
+**注意:** 同一 `VID_10C4&PID_EA60` を `superBrl` も登録。`kgs` は **KGS 固有のデバイス記述に一致するときだけ** `useAsFallback=True` で試行する（汎用 CP210x 名だけの機器では `superBrl` 等が先）。Windows が「Silicon Labs CP210x」等の汎用名しか出さない Next Touch では、手動で COM を選ぶか、ペアリング名に `BM-NextTouch` 等が出る Bluetooth 経由を使う。
 
 ### 8.2 ローカル検証
 
@@ -286,5 +286,5 @@ NVDA 側:
 
 ### 8.3 コード変更（betajp）
 
-- `source/brailleDisplayDrivers/kgs.py`: `registerAutomaticDetection` に `VID_10C4&PID_EA60` + `_cp210xUsbIdMatch`
+- `source/brailleDisplayDrivers/kgs.py`: `VID_10C4&PID_EA60` を `_cp210xUsbIdMatch` + `useAsFallback=True` で登録
 - `kgsListComPorts`: 上記 VID のレジストリ列挙を追加（手動ポート一覧の表示名）
