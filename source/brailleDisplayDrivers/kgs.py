@@ -206,6 +206,77 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	return False
 
 
+# Next Touch 40 / BrailleMemo Pocket etc. (Silicon Labs CP210x). See BRLTTY BrailleMemo driver.
+_KGS_CP210X_USB_ID = "VID_10C4&PID_EA60"
+
+_KGS_USB_SERIAL_REGISTRY = (
+	("VID_1148&PID_0301", "USB: KGS BM-SMART USB Serial (%s)"),
+	("VID_1148&PID_0001", "USB: KGS USB To Serial Com Port (%s)"),
+	(_KGS_CP210X_USB_ID, "USB: KGS CP210x / Next Touch 40 (%s)"),
+)
+
+
+def _cp210xUsbIdMatch(match: bdDetect.DeviceMatch) -> bool:
+	"""bdDetect filter for CP210x ports also used by SuperBraille / Seika."""
+	info = match.deviceInfo
+	text = " ".join(
+		filter(
+			None,
+			(
+				info.get("friendlyName"),
+				info.get("busReportedDeviceDescription"),
+				info.get("hardwareID"),
+			),
+		),
+	).lower()
+	kgsHints = (
+		"kgs",
+		"braille memo",
+		"braillememo",
+		"next touch",
+		"bm-smart",
+		"bmsmart",
+		"bm smart",
+		"bm_disp",
+		"bm-nexttouch",
+	)
+	if any(hint in text for hint in kgsHints):
+		return True
+	# Generic CP210x label: allow trying kgs; DirectBM rejects non-KGS hardware.
+	if "cp210" in text or "silicon labs" in text:
+		return True
+	return False
+
+
+def _appendKgsUsbRegistryPorts(ports, usbPorts, vidPid, friendlyFmt):
+	try:
+		rootKey = winreg.OpenKey(
+			winreg.HKEY_LOCAL_MACHINE,
+			r"SYSTEM\CurrentControlSet\Enum\USB\%s" % vidPid,
+		)
+	except OSError:
+		return
+	with rootKey:
+		for index in itertools.count():
+			try:
+				keyName = winreg.EnumKey(rootKey, index)
+			except OSError:
+				break
+			try:
+				with winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
+					portName = winreg.QueryValueEx(paramsKey, "PortName")[0]
+					ports.append(
+						{
+							"friendlyName": friendlyFmt % portName,
+							"hardwareID": "USB\\%s" % vidPid,
+							"port": str(portName),
+						},
+					)
+					usbPorts[portName] = True
+			except OSError:
+				continue
+
+
 def kgsListComPorts(preferSerial=False):
 	ports = []
 	btPorts = {}
@@ -218,63 +289,8 @@ def kgsListComPorts(preferSerial=False):
 			ports.append(p)
 			btPorts[p["port"]] = True
 
-	# BM-SMART USB
-	try:
-		rootKey = winreg.OpenKey(
-			winreg.HKEY_LOCAL_MACHINE,
-			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0301",
-		)
-	except WindowsError:
-		pass
-	else:
-		with rootKey:
-			for index in itertools.count():
-				try:
-					keyName = winreg.EnumKey(rootKey, index)
-				except WindowsError:
-					break
-				try:
-					with winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
-						portName = winreg.QueryValueEx(paramsKey, "PortName")[0]
-						ports.append(
-							{
-								"friendlyName": "USB: KGS BM-SMART USB Serial (%s)" % portName,
-								"hardwareID": "USB\\VID_1148&PID_0301",
-								"port": str(portName),
-							},
-						)
-						usbPorts[portName] = True
-				except WindowsError:
-					continue
-
-	# KGS USB for BM46
-	try:
-		rootKey = winreg.OpenKey(
-			winreg.HKEY_LOCAL_MACHINE,
-			r"SYSTEM\CurrentControlSet\Enum\USB\VID_1148&PID_0001",
-		)
-	except WindowsError:
-		pass
-	else:
-		with rootKey:
-			for index in itertools.count():
-				try:
-					keyName = winreg.EnumKey(rootKey, index)
-				except WindowsError:
-					break
-				try:
-					with winreg.OpenKey(rootKey, os.path.join(keyName, "Device Parameters")) as paramsKey:
-						portName = winreg.QueryValueEx(paramsKey, "PortName")[0]
-						ports.append(
-							{
-								"friendlyName": "USB: KGS USB To Serial Com Port (%s)" % portName,
-								"hardwareID": "USB\\VID_1148&PID_0001",
-								"port": str(portName),
-							},
-						)
-						usbPorts[portName] = True
-				except WindowsError:
-					continue
+	for vidPid, friendlyFmt in _KGS_USB_SERIAL_REGISTRY:
+		_appendKgsUsbRegistryPorts(ports, usbPorts, vidPid, friendlyFmt)
 
 	# serial ports
 	for p in hwPortUtils.listComPorts(onlyAvailable=True):
@@ -390,8 +406,15 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 				"VID_1148&PID_0001",  # KGS USB To Serial Com Port
 			},
 		)
+		# Next Touch 40, BrailleMemo Pocket (CP210x; shares ID with superBrl / seika)
+		driverRegistrar.addUsbDevice(
+			ProtocolType.SERIAL,
+			_KGS_CP210X_USB_ID,
+			matchFunc=_cp210xUsbIdMatch,
+		)
 
-		driverRegistrar.addBluetoothDevices(lambda m: m.id.startswith("BM"))  # "BM Series", "BMsmart-KGS"
+		# "BM Series", "BMsmart-KGS", "BM-NextTouch" (BRLTTY)
+		driverRegistrar.addBluetoothDevices(lambda m: m.id.startswith("BM"))
 
 	def __init__(self, port="auto"):
 		super(BrailleDisplayDriver, self).__init__()

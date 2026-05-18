@@ -13,6 +13,6 @@ author = "Shuaruta Inc. / Takuya Nishimoto <info@shuaruta.com>"
 description = "KGS Driver, which supports Next Touch 40, BM Air/Smart series, Braille Memo series, Braille Memo Pocket and Braille Tender."
 url = https://www.nvda.jp/en/
 minimumNVDAVersion = 2026.1.0
-lastTestedNVDAVersion = 2026.1.0
+lastTestedNVDAVersion = 2026.1.1
 """.format(version=args.version),
 	)
