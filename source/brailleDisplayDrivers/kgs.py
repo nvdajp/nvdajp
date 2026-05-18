@@ -216,33 +216,6 @@ _KGS_USB_SERIAL_REGISTRY = (
 )
 
 
-def _cp210xUsbIdMatch(match: bdDetect.DeviceMatch) -> bool:
-	"""bdDetect filter for CP210x UART bridges used by KGS (not generic CP210x adapters)."""
-	info = match.deviceInfo
-	text = " ".join(
-		filter(
-			None,
-			(
-				info.get("friendlyName"),
-				info.get("busReportedDeviceDescription"),
-				info.get("hardwareID"),
-			),
-		),
-	).lower()
-	kgsHints = (
-		"kgs",
-		"braille memo",
-		"braillememo",
-		"next touch",
-		"bm-smart",
-		"bmsmart",
-		"bm smart",
-		"bm_disp",
-		"bm-nexttouch",
-	)
-	return any(hint in text for hint in kgsHints)
-
-
 def _appendKgsUsbRegistryPorts(ports, usbPorts, vidPid, friendlyFmt):
 	try:
 		rootKey = winreg.OpenKey(
@@ -264,12 +237,80 @@ def _appendKgsUsbRegistryPorts(ports, usbPorts, vidPid, friendlyFmt):
 						{
 							"friendlyName": friendlyFmt % portName,
 							"hardwareID": "USB\\%s" % vidPid,
+							"registryVidPid": vidPid,
 							"port": str(portName),
 						},
 					)
 					usbPorts[portName] = True
 			except OSError:
 				continue
+
+
+def _liveComPortsByName():
+	return {p["port"]: p for p in hwPortUtils.listComPorts(onlyAvailable=True)}
+
+
+def _scanKgsRegistryUsbPorts(usb=False, bluetooth=False, limitToDevices=None):
+	"""Yield USB serial ports from the KGS USB registry keys (reliable for Next Touch 40 / CP210x)."""
+	if not usb:
+		return
+	if limitToDevices is not None and BrailleDisplayDriver.name not in limitToDevices:
+		return
+	livePorts = _liveComPortsByName()
+	ports = []
+	usbPorts = {}
+	for vidPid, friendlyFmt in _KGS_USB_SERIAL_REGISTRY:
+		_appendKgsUsbRegistryPorts(ports, usbPorts, vidPid, friendlyFmt)
+	seen = set()
+	for portInfo in ports:
+		com = portInfo["port"]
+		live = livePorts.get(com)
+		if not live:
+			continue
+		registryVidPid = portInfo.get("registryVidPid")
+		liveUsbId = live.get("usbID")
+		# Skip ghost COM entries left after unplugging USB (registry still lists the old port).
+		if registryVidPid and liveUsbId != registryVidPid:
+			log.debug(
+				"skipping registry %s on %s (live usbID=%r)",
+				registryVidPid,
+				com,
+				liveUsbId,
+			)
+			continue
+		if com in seen:
+			continue
+		seen.add(com)
+		merged = dict(live)
+		merged["friendlyName"] = portInfo["friendlyName"]
+		merged["usbID"] = registryVidPid or liveUsbId
+		yield (
+			BrailleDisplayDriver.name,
+			bdDetect.DeviceMatch(ProtocolType.SERIAL, merged.get("usbID") or "", com, merged),
+		)
+
+
+def _scanKgsBluetoothPorts(usb=False, bluetooth=False, limitToDevices=None):
+	"""Yield paired BM* Bluetooth serial ports (e.g. BM-NextTouch on COM5)."""
+	if not bluetooth:
+		return
+	if limitToDevices is not None and BrailleDisplayDriver.name not in limitToDevices:
+		return
+	seen = set()
+	for portInfo in hwPortUtils.listComPorts(onlyAvailable=True):
+		btName = portInfo.get("bluetoothName")
+		if not btName or btName[:2].upper() != "BM":
+			continue
+		com = portInfo["port"]
+		if com in seen:
+			continue
+		seen.add(com)
+		info = dict(portInfo)
+		info["friendlyName"] = "Bluetooth: %s (%s)" % (btName, com)
+		yield (
+			BrailleDisplayDriver.name,
+			bdDetect.DeviceMatch(ProtocolType.SERIAL, btName, com, info),
+		)
 
 
 def kgsListComPorts(preferSerial=False):
@@ -401,62 +442,85 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 				"VID_1148&PID_0001",  # KGS USB To Serial Com Port
 			},
 		)
-		# Next Touch 40, BrailleMemo Pocket (CP210x; shares ID with superBrl)
+		# Next Touch 40 / Pocket (CP210x). Fallback so superBrl is tried on the shared USB ID first.
 		driverRegistrar.addUsbDevice(
 			ProtocolType.SERIAL,
 			_KGS_CP210X_USB_ID,
 			useAsFallback=True,
-			matchFunc=_cp210xUsbIdMatch,
 		)
+		# Registry COM ports (e.g. COM3 for Next Touch) before generic USB ID matching.
+		driverRegistrar.addDeviceScanner(_scanKgsRegistryUsbPorts, moveToStart=True)
 
 		# "BM Series", "BMsmart-KGS", "BM-NextTouch" (BRLTTY)
 		driverRegistrar.addBluetoothDevices(lambda m: m.id.startswith("BM"))
+		driverRegistrar.addDeviceScanner(_scanKgsBluetoothPorts, moveToStart=True)
+
+	def _cleanupFailedPort(self, port):
+		global fConnection, numCells
+		if self._directBM and getattr(self._directBM, "_handle", None) and port:
+			try:
+				bmDisConnect(self._directBM, port)
+				waitAfterDisconnect()
+			except Exception:
+				log.debugWarning("cleanup after failed port %s" % port, exc_info=True)
+		numCells = 0
+		fConnection = False
 
 	def __init__(self, port="auto"):
 		super(BrailleDisplayDriver, self).__init__()
 		global fConnection, numCells
 		if not lock():
 			return
-		for portType, portId, port, portInfo in self._getTryPorts(port):
-			execEndConnection = False
-			if port != self._portName and self._portName:
-				execEndConnection = True
-				log.debug("changing connection %s to %s" % (self._portName, port))
-			elif fConnection:
-				log.debug("already connection %s" % port)
-				self.numCells = numCells
-				unlock()
-				return
-			else:
-				log.debug("first connection %s" % port)
-				self.numCells = 0
-			if not self._directBM:
-				kgs_dll = os.path.join(kgs_dir, "DirectBM.dll")
-				log.debug(kgs_dll)
-				self._directBM = windll.LoadLibrary(kgs_dll)  # noqa: F405
+		try:
+			for portType, portId, port, portInfo in self._getTryPorts(port):
+				execEndConnection = False
+				btName = portInfo.get("bluetoothName") if portInfo else None
+				log.info(
+					"kgs trying %s type=%s id=%r bluetoothName=%r",
+					port,
+					portType,
+					portId,
+					btName,
+				)
+				if self._portName and port != self._portName:
+					execEndConnection = True
+					log.debug("changing connection %s to %s" % (self._portName, port))
+				elif fConnection and self._portName == port:
+					log.debug("already connection %s" % port)
+					self.numCells = numCells
+					return
+				elif fConnection:
+					execEndConnection = True
+					log.debug("reconnecting (fConnection set, was %s, trying %s)" % (self._portName, port))
+				else:
+					log.debug("first connection %s" % port)
+					self.numCells = 0
 				if not self._directBM:
-					unlock()
-					raise RuntimeError("No KGS instance found")
-				self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
-				self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
-			ret, self._portName = bmConnect(
-				self._directBM,
-				port,
-				self._keyCallbackInst,
-				self._statusCallbackInst,
-				execEndConnection,
-			)
-			if ret:
-				self.numCells = numCells
-				log.info("connected %s" % port)
-				unlock()
-				return
-			else:
+					kgs_dll = os.path.join(kgs_dir, "DirectBM.dll")
+					log.debug(kgs_dll)
+					self._directBM = windll.LoadLibrary(kgs_dll)  # noqa: F405
+					if not self._directBM:
+						raise RuntimeError("No KGS instance found")
+					self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
+					self._statusCallbackInst = KGS_PSTATUSCALLBACK(nvdaKgsStatusChangedProc)
+				ret, self._portName = bmConnect(
+					self._directBM,
+					port,
+					self._keyCallbackInst,
+					self._statusCallbackInst,
+					execEndConnection,
+				)
+				if ret:
+					self.numCells = numCells
+					log.info("connected %s" % port)
+					return
 				self.numCells = 0
 				log.info("failed %s" % port)
-		else:
+				self._cleanupFailedPort(port)
+			else:
+				raise RuntimeError("No KGS display found")
+		finally:
 			unlock()
-			raise RuntimeError("No KGS display found")
 
 	def terminate(self):
 		if not lock():

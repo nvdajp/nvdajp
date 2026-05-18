@@ -267,7 +267,16 @@ BRLTTY [BrailleMemo ドライバ](https://github.com/brltty/brltty/commit/777575
 
 従来 `kgs` の bdDetect には **1148 ベンダのみ**登録されており、Next Touch 40 USB は **自動検出の対象外**だった（手動 COM 選択または汎用シリアル列挙経由のみ）。
 
-**注意:** 同一 `VID_10C4&PID_EA60` を `superBrl` も登録。`kgs` は **KGS 固有のデバイス記述に一致するときだけ** `useAsFallback=True` で試行する（汎用 CP210x 名だけの機器では `superBrl` 等が先）。Windows が「Silicon Labs CP210x」等の汎用名しか出さない Next Touch では、手動で COM を選ぶか、ペアリング名に `BM-NextTouch` 等が出る Bluetooth 経由を使う。
+**注意:** 同一 `VID_10C4&PID_EA60` を `superBrl` も登録。`kgs` は `useAsFallback=True` で CP210x を試す（`superBrl` 失敗後）。**USB 用** `addDeviceScanner`（レジストリ COM）と **BT 用** `addDeviceScanner`（`bluetoothName` が `BM` で始まる COM）を別々に登録。
+
+**USB / Bluetooth の切り替え（Next Touch 40）**
+
+| 使う経路 | 本体・Windows | NVDA |
+|----------|----------------|------|
+| USB | USB ケーブル接続。**BT 接続は切る** | ポート一覧の **USB: KGS CP210x / Next Touch 40 (COMx)** または自動（USB スキャン） |
+| Bluetooth | **USB ケーブルを抜く**（同時接続時は USB 優先になりやすい） | **Bluetooth: BM-NextTouch (COMx)** または自動（Bluetooth スキャン） |
+
+ログで `failed COM3` のあと `failed COM5` となるのは、USB スキャンと BT スキャンが別タイミングで走っているため。片方だけ使うときは上記のとおり他方を無効化する。
 
 ### 8.2 ローカル検証
 
@@ -286,5 +295,5 @@ NVDA 側:
 
 ### 8.3 コード変更（betajp）
 
-- `source/brailleDisplayDrivers/kgs.py`: `VID_10C4&PID_EA60` を `_cp210xUsbIdMatch` + `useAsFallback=True` で登録
+- `source/brailleDisplayDrivers/kgs.py`: `VID_10C4&PID_EA60`（`useAsFallback=True`）+ レジストリ COM 用 `addDeviceScanner`
 - `kgsListComPorts`: 上記 VID のレジストリ列挙を追加（手動ポート一覧の表示名）
