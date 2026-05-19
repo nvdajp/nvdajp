@@ -1382,6 +1382,11 @@ TAB_CODE = chr(0x200B)
 
 def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=False):
 	text = inbuf
+	# NVDA focus/review strings may contain CR/LF; MeCab path rejects them.
+	if "\r" in text or "\n" in text:
+		if logwrite:
+			logwrite(f"translator2: normalizing line breaks: {text!r}")
+		text = text.replace("\r\n", "\n").replace("\r", "\n").replace("\n", " ")
 	if RE_HALF_KATAKANA.match(text):
 		outbuf = text
 		inpos2 = range(len(outbuf))
