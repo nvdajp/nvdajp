@@ -961,22 +961,35 @@ class SynthDriver(SynthDriver):
 		# And only add the defaults when there is a prosody command in the sequence.
 		supportedProsody = [c for c in self.supportedCommands if issubclass(c, BaseProsodyCommand)]
 		# BEGIN JP PATCH
-		# nvdajp: Keep SynthSettingsRing rate stable by avoiding RateCommand
-		# default injection based on stale config; restore current effective
-		# rate with an explicit Spd tag.
-		hasProsody = bool(unprocessedSequence) and any(type(i) in supportedProsody for i in unprocessedSequence)
-		supportedProsodyWithoutRate = [c for c in supportedProsody if c is not RateCommand]
-		rateResetTag = None
-		if hasProsody and RateCommand in supportedProsody:
-			ratePercent = self._getDesiredRatePercent()
-			rateRaw = self._percentToParam(ratePercent, self._minRate, self._maxRate)
-			rateResetTag = f"\\Spd={rateRaw}\\"
-			if not isinstance(unprocessedSequence[0], RateCommand):
-				textList.append(rateResetTag)
+		# nvdajp: Keep SynthSettingsRing prosody stable by restoring desired
+		# rate/pitch/volume via explicit tags instead of default prosody commands.
+		prosodyExcludedFromDefaultInjection = (RateCommand, PitchCommand, VolumeCommand)
+		supportedProsodyForDefaultInjection = [
+			c for c in supportedProsody if c not in prosodyExcludedFromDefaultInjection
+		]
+		desiredProsodyResetTags: list[tuple[type, str]] = []
+		if RateCommand in supportedProsody:
+			rateRaw = self._percentToParam(
+				self._getDesiredRatePercent(), self._minRate, self._maxRate
+			)
+			desiredProsodyResetTags.append((RateCommand, f"\\Spd={rateRaw}\\"))
+		if PitchCommand in supportedProsody:
+			pitchRaw = self._percentToParam(
+				self._getDesiredPitchPercent(), self._minPitch, self._maxPitch
+			)
+			desiredProsodyResetTags.append((PitchCommand, f"\\Pit={pitchRaw}\\"))
+		if VolumeCommand in supportedProsody:
+			volumeRaw = self._percentToParam(
+				self._getDesiredVolumePercent(), self._minVolume, self._maxVolume
+			)
+			desiredProsodyResetTags.append((VolumeCommand, f"\\Vol={volumeRaw}\\"))
+		for commandType, tag in desiredProsodyResetTags:
+			if not unprocessedSequence or not isinstance(unprocessedSequence[0], commandType):
+				textList.append(tag)
 		# END JP PATCH
 		prosodyToAdd = []
-		if any(type(i) in supportedProsodyWithoutRate for i in unprocessedSequence):
-			prosodyToAdd.extend(c() for c in supportedProsodyWithoutRate)
+		if any(type(i) in supportedProsodyForDefaultInjection for i in unprocessedSequence):
+			prosodyToAdd.extend(c() for c in supportedProsodyForDefaultInjection)
 		speechSequence = [c for c in prosodyToAdd if not isinstance(unprocessedSequence[0], type(c))]
 		speechSequence.extend(unprocessedSequence)
 		# To be sure, add all default values to the end of the sequence.
@@ -1014,8 +1027,8 @@ class SynthDriver(SynthDriver):
 			else:
 				log.error("Unknown speech: %s" % item)
 		# BEGIN JP PATCH
-		if rateResetTag:
-			textList.append(rateResetTag)
+		for _commandType, tag in desiredProsodyResetTags:
+			textList.append(tag)
 		# END JP PATCH
 		# lastHandledIndexInSequence is the index denoting the end of the speech sequence.
 		# store it on the driver to support the synthDoneSpeaking notification.
