@@ -192,17 +192,17 @@ class InputComposition(EditableTextWithAutoSelectDetection, Window):
 					braille.handler.message,
 					newTextForBraille,
 				)
-		if (
-			config.conf["keyboard"]["speakTypedCharacters"] != TypingEcho.OFF.value
-			or config.conf["keyboard"]["speakTypedWords"] != TypingEcho.OFF.value
-			or isCandidate
-		):
-			queueHandler.queueFunction(
-				queueHandler.eventQueue,
-				speech.speakText,
-				newText,
-				symbolLevel=characterProcessing.SymbolLevel.ALL,
-			)
+			if (
+				config.conf["keyboard"]["speakTypedCharacters"] != TypingEcho.OFF.value
+				or config.conf["keyboard"]["speakTypedWords"] != TypingEcho.OFF.value
+				or isCandidate
+			):
+				queueHandler.queueFunction(
+					queueHandler.eventQueue,
+					speech.speakText,
+					newText,
+					symbolLevel=characterProcessing.SymbolLevel.ALL,
+				)
 		# nvdajp end
 
 	def compositionUpdate(
