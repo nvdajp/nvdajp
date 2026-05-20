@@ -6,6 +6,7 @@
 |------|----------------|----------------------|
 | Enter 確定後に時々「クリア」 | `NVDAHelper/__init__.py` | 2026.1jp で対応済み（下記） |
 | 未変換 Backspace で「ブランク」 | `NVDAObjects/inputComposition.py` | [PR #657](https://github.com/nvdajp/nvdajp/pull/657) で対応予定 |
+| 未変換 Backspace で消した1文字を読む | `editableText.py`（本家標準） | **正しい挙動**（#657 で「ブランク」除去後に聞こえる。下記「2つの経路」） |
 | 未変換をすべて Backspace で削除しても「クリア」が出ない | `NVDAHelper/__init__.py` | **残課題**（#656、下記「残課題」） |
 
 ---
@@ -136,6 +137,29 @@ GitHub: [nvdajp/nvdajp#656](https://github.com/nvdajp/nvdajp/issues/656)
 1. **「ブランク」**: Backspace のたびに、不要な「ブランク」（`speech._getSpeakMessageSpeech` の `_("blank")`）が読まれる。
 2. **「クリア」が出ない**: 入力した文字をすべて Backspace で削除しても「クリア」が読まれない（2025.3.3JP では読まれる想定）。
 
+**注**: 未変換中に Backspace で **消した1文字が読まれる** こと自体は不具合ではない。本家 NVDA の標準動作である（下記「2つの経路」）。
+
+### 未変換 Backspace 時の読み上げ: 2つの経路
+
+IME 未確定中はフォーカスが `InputComposition`（`EditableTextWithAutoSelectDetection` の子クラス）にある。Backspace 1回あたりの読み上げは、次の **独立した2経路** が重なる。
+
+| 経路 | コード | 役割 | 典型例 |
+|------|--------|------|--------|
+| **A. 削除文字** | `editableText._backspaceScriptHelper` | Backspace **前**にキャレット直前1文字を取得し、`gesture.send()` 後に `speech.speakSpelling(delChunk)` | 未変換の「き」を消す → 「き」が読まれる。**本家・2025.3.3JP 共通** |
+| **B. 変換文字列の差分** | `inputComposition.reportNewText` → `calculateInsertedChars` → `speech.speakText` | 変化領域の **新側** 文字列のみを読む。末尾1文字削除だけでは `newText` が空になり **無音** になりやすい | 読みが置き換わる更新では差分が読まれることがある |
+
+- 経路 A は `source/editableText.py` の `script_caret_backspaceCharacter`（本家 `master` と同じ。日本語版でも未改変）。
+- 経路 B は IME サポート導入時からの `calculateInsertedChars`（挿入差分用。本家 `source/NVDAObjects/inputComposition.py` も同様）。
+
+**#656 で問題だったのは経路 B のみ**: 2026.1jp では `speakText` が `if newText:` の外にあり、`newText==""` でも `speakText("")` がキューされ **「ブランク」** になっていた。経路 A の削除文字読み上げを壊す変更ではない。
+
+**#657 修正後の望ましい挙動**:
+
+- 経路 A: これまでどおり削除した1文字が読まれる（本家どおり）。
+- 経路 B: `newText` が空のときは `speakText` をキューしない → **「ブランク」が出ない**。
+
+設定「キーボード」→「入力文字の読み上げ」がオフのときは経路 A も B も基本的に動かない（本家仕様）。
+
 ### 「ブランク」の原因と対応（対応済み／PR #657）
 
 2026.1jp で JP スナップショットを本家 beta に載せ替えた際、`InputComposition.reportNewText` で `speech.speakText` のキュー投入が **`if newText:` の外** にあり、composition 更新で `newText` が空文字 `""` になっても `speakText("")` が呼ばれていた。空文字は `isBlank` とみなされ「ブランク」になる。
@@ -150,7 +174,8 @@ GitHub: [nvdajp/nvdajp#656](https://github.com/nvdajp/nvdajp/issues/656)
 
 **確認の目安**:
 
-- メモ帳 + Microsoft IME または ATOK、未変換で文字入力 → Backspace → 「ブランク」が出ないこと。
+- メモ帳 + Microsoft IME または ATOK、未変換で文字入力 → Backspace → **「ブランク」が出ない**こと。
+- 同条件で Backspace → **消した1文字が読まれる**こと（経路 A。本家どおり。回帰ではない）。
 - Enter 確定後に誤「クリア」が混ざらないこと（本ドキュメント「テストの目安」の回帰確認）。
 
 ### 「クリア」が出ない原因（残課題）
@@ -176,7 +201,8 @@ GitHub: [nvdajp/nvdajp#656](https://github.com/nvdajp/nvdajp/issues/656)
 PR #657 マージ後、以下を **残課題の有無** の確認に用いる。
 
 - [ ] 未変換で Backspace → 「ブランク」が出ない（#657 の目的）。
-- [ ] 未変換を Backspace ですべて削除 → 「クリア」が読まれる（現状は失敗しうる＝残課題）。
+- [ ] 未変換で Backspace → 消した1文字が読まれる（経路 A。本家どおり。入力文字の読み上げが有効であること）。
+- [ ] 未変換を Backspace ですべて削除 → 「クリア」が読まれる（現状は失敗しうる＝残課題。経路 A とは別）。
 - [ ] Enter で変換確定 → 確定文字列が読まれ、誤「クリア」が入らない（2026.1 回帰）。
 - [ ] Esc で未確定キャンセル → 「クリア」が読まれる（ごくまれに失敗しうる＝既知トレードオフ）。
 
