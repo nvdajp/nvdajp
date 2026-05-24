@@ -601,6 +601,11 @@ def getSingleCharDescription(
 	synthConfig = config.conf["speech"][synth.name]
 	if PitchCommand in synth.supportedCommands and text.isupper():
 		capPitchChange = synthConfig["capPitchChange"]
+		# BEGIN JP PATCH
+		# nvdajp: Coerce config values from remote synth host.
+		if isinstance(capPitchChange, str):
+			capPitchChange = int(float(capPitchChange))
+		# END JP PATCH
 	else:
 		capPitchChange = 0
 	yield BreakCommand(getSingleCharDescriptionDelayMS())
@@ -649,6 +654,11 @@ def getSpellingSpeech(
 
 	if PitchCommand in synth.supportedCommands:
 		capPitchChange = synthConfig["capPitchChange"]
+		# BEGIN JP PATCH
+		# nvdajp: Coerce config values from remote synth host.
+		if isinstance(capPitchChange, str):
+			capPitchChange = int(float(capPitchChange))
+		# END JP PATCH
 	else:
 		capPitchChange = 0
 	unicodeNormalization = not useCharacterDescriptions and bool(

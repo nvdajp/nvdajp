@@ -1087,13 +1087,9 @@ class SynthDriver(SynthDriver):
 
 	def __getattr__(self, attrName: str) -> Any:
 		"""This is used to reserve backward compatibility."""
-		if attrName == "isSpeaking" and NVDAState._allowDeprecatedAPI():
-			log.warning(
-				"The property isSpeaking is deprecated for removal with no replacement. ",
-				stack_info=True,
-			)
-			# When the property is removed, the backing variable `_isSpeaking`,
-			# and all its references can also be removed,
-			# as it is not doing anything useful.
+		# BEGIN JP PATCH
+		# nvdajp: Keep attribute-style isSpeaking access for add-on compatibility.
+		if attrName == "isSpeaking":
 			return self._isSpeaking
+		# END JP PATCH
 		raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attrName}'")

@@ -113,6 +113,13 @@ class SynthDriverBufSink(COMObject):
 			if synth._bookmarks.popleft() == dwMarkNum:
 				break
 
+	# BEGIN JP PATCH
+	def ITTSBufNotifySink_TextDataDone(self, this: int, qTimeStamp: int, dwMarkNum: int) -> None:
+		synth = self.synthRef()
+		if synth and hasattr(synth, "setSpeaking"):
+			synth.setSpeaking(False)
+	# END JP PATCH
+
 	def IUnknown_Release(self, this: int, *args, **kwargs):
 		if not self._allowDelete and self._refcnt.value == 1:
 			log.debugWarning("ITTSBufNotifySink::Release called too many times by engine")
@@ -914,6 +921,17 @@ class SynthDriver(SynthDriver):
 		if len(self._enginesList) == 0:
 			raise RuntimeError("No Sapi4 engines available")
 		self._rateDelta = 0
+		# BEGIN JP PATCH
+		# nvdajp: For SynthSettingsRing items, keep UI-desired value and
+		# engine-acknowledged value separately for prosody settings.
+		self._desiredRatePercent: int | None = None
+		self._engineRatePercent: int | None = None
+		self._desiredPitchPercent: int | None = None
+		self._enginePitchPercent: int | None = None
+		self._desiredVolumePercent: int | None = None
+		self._engineVolumePercent: int | None = None
+		self._isSpeaking: bool = False
+		# END JP PATCH
 		self._pitchDelta = 0
 		self._volume = 100
 		self._paused = False
@@ -942,9 +960,36 @@ class SynthDriver(SynthDriver):
 		# but avoid duplicating the first command, if any,
 		# And only add the defaults when there is a prosody command in the sequence.
 		supportedProsody = [c for c in self.supportedCommands if issubclass(c, BaseProsodyCommand)]
+		# BEGIN JP PATCH
+		# nvdajp: Keep SynthSettingsRing prosody stable by restoring desired
+		# rate/pitch/volume via explicit tags instead of default prosody commands.
+		prosodyExcludedFromDefaultInjection = (RateCommand, PitchCommand, VolumeCommand)
+		supportedProsodyForDefaultInjection = [
+			c for c in supportedProsody if c not in prosodyExcludedFromDefaultInjection
+		]
+		desiredProsodyResetTags: list[tuple[type, str]] = []
+		if RateCommand in supportedProsody:
+			rateRaw = self._percentToParam(
+				self._getDesiredRatePercent(), self._minRate, self._maxRate
+			)
+			desiredProsodyResetTags.append((RateCommand, f"\\Spd={rateRaw}\\"))
+		if PitchCommand in supportedProsody:
+			pitchRaw = self._percentToParam(
+				self._getDesiredPitchPercent(), self._minPitch, self._maxPitch
+			)
+			desiredProsodyResetTags.append((PitchCommand, f"\\Pit={pitchRaw}\\"))
+		if VolumeCommand in supportedProsody:
+			volumeRaw = self._percentToParam(
+				self._getDesiredVolumePercent(), self._minVolume, self._maxVolume
+			)
+			desiredProsodyResetTags.append((VolumeCommand, f"\\Vol={volumeRaw}\\"))
+		for commandType, tag in desiredProsodyResetTags:
+			if not unprocessedSequence or not isinstance(unprocessedSequence[0], commandType):
+				textList.append(tag)
+		# END JP PATCH
 		prosodyToAdd = []
-		if any(type(i) in supportedProsody for i in unprocessedSequence):
-			prosodyToAdd.extend(c() for c in supportedProsody)
+		if any(type(i) in supportedProsodyForDefaultInjection for i in unprocessedSequence):
+			prosodyToAdd.extend(c() for c in supportedProsodyForDefaultInjection)
 		speechSequence = [c for c in prosodyToAdd if not isinstance(unprocessedSequence[0], type(c))]
 		speechSequence.extend(unprocessedSequence)
 		# To be sure, add all default values to the end of the sequence.
@@ -981,6 +1026,10 @@ class SynthDriver(SynthDriver):
 				log.debugWarning("Unsupported speech command: %s" % item)
 			else:
 				log.error("Unknown speech: %s" % item)
+		# BEGIN JP PATCH
+		for _commandType, tag in desiredProsodyResetTags:
+			textList.append(tag)
+		# END JP PATCH
 		# lastHandledIndexInSequence is the index denoting the end of the speech sequence.
 		# store it on the driver to support the synthDoneSpeaking notification.
 		self._finalIndex = lastHandledIndexInSequence
@@ -1001,10 +1050,16 @@ class SynthDriver(SynthDriver):
 			self._bufSinkPtr,
 			ITTSBufNotifySink._iid_,
 		)
+		# BEGIN JP PATCH
+		self._isSpeaking = True
+		# END JP PATCH
 
 	def cancel(self):
 		if isDebugForSynthDriver():
 			log.debug("SAPI4: Cancelling")
+		# BEGIN JP PATCH
+		self._isSpeaking = True
+		# END JP PATCH
 		try:
 			# cancel all pending bookmarks
 			self._bookmarkLists.clear()
@@ -1036,6 +1091,14 @@ class SynthDriver(SynthDriver):
 			self._ttsCentral.AudioResume()
 		self._paused = switch
 
+	# BEGIN JP PATCH
+	def setSpeaking(self, switch: bool) -> None:
+		self._isSpeaking = switch
+
+	def isSpeaking(self) -> bool:
+		return self._isSpeaking
+	# END JP PATCH
+
 	def removeSetting(self, name):
 		# Putting it here because currently no other synths make use of it. OrderedDict, where you are?
 		for i, s in enumerate(self.supportedSettings):
@@ -1055,6 +1118,14 @@ class SynthDriver(SynthDriver):
 		if mode is None:
 			raise ValueError("no such mode: %s" % val)
 		self._currentMode = mode
+		# BEGIN JP PATCH
+		self._desiredRatePercent = None
+		self._engineRatePercent = None
+		self._desiredPitchPercent = None
+		self._enginePitchPercent = None
+		self._desiredVolumePercent = None
+		self._engineVolumePercent = None
+		# END JP PATCH
 		if self._ttsCentral:
 			try:
 				# Some SAPI4 synthesizers may fail this call.
@@ -1095,6 +1166,15 @@ class SynthDriver(SynthDriver):
 				self._maxRate = newVal.value - 1
 				val = max(self._minRate, min(self._maxRate, self._defaultRate + self._rateDelta))
 				self._ttsAttrs.SpeedSet(val)
+				# BEGIN JP PATCH
+				verify = DWORD()
+				self._ttsAttrs.SpeedGet(byref(verify))
+				verifyRaw = max(min(verify.value, self._maxRate), self._minRate)
+				self._rateDelta = verifyRaw - self._defaultRate
+				self._engineRatePercent = self._paramToPercent(verifyRaw, self._minRate, self._maxRate)
+				if self._desiredRatePercent is None:
+					self._desiredRatePercent = self._engineRatePercent
+				# END JP PATCH
 				if self._maxRate <= self._minRate:
 					hasRate = False
 			except COMError:
@@ -1124,6 +1204,15 @@ class SynthDriver(SynthDriver):
 				self._maxPitch = newVal.value
 				val = max(self._minPitch, min(self._maxPitch, self._defaultPitch + self._pitchDelta))
 				self._ttsAttrs.PitchSet(val)
+				# BEGIN JP PATCH
+				verify = WORD()
+				self._ttsAttrs.PitchGet(byref(verify))
+				verifyRaw = max(min(verify.value, self._maxPitch), self._minPitch)
+				self._pitchDelta = verifyRaw - self._defaultPitch
+				self._enginePitchPercent = self._paramToPercent(verifyRaw, self._minPitch, self._maxPitch)
+				if self._desiredPitchPercent is None:
+					self._desiredPitchPercent = self._enginePitchPercent
+				# END JP PATCH
 				if self._maxPitch <= self._minPitch:
 					hasPitch = False
 			except COMError:
@@ -1150,7 +1239,15 @@ class SynthDriver(SynthDriver):
 				self._ttsAttrs.VolumeSet(TTSATTR_MAXVOLUME)
 				self._ttsAttrs.VolumeGet(byref(newVal))
 				self._maxVolume = newVal.value & 0xFFFF
-				self._set_volume(self._volume)
+				self._set_volume(self._getDesiredVolumePercent())
+				# BEGIN JP PATCH
+				verify = DWORD()
+				self._ttsAttrs.VolumeGet(byref(verify))
+				verifyRaw = max(min(verify.value & 0xFFFF, self._maxVolume), self._minVolume)
+				self._engineVolumePercent = self._paramToPercent(verifyRaw, self._minVolume, self._maxVolume)
+				if self._desiredVolumePercent is None:
+					self._desiredVolumePercent = self._engineVolumePercent
+				# END JP PATCH
 				if self._maxVolume <= self._minVolume:
 					hasVolume = False
 			except COMError:
@@ -1181,46 +1278,116 @@ class SynthDriver(SynthDriver):
 		return voices
 
 	def _get_rate(self) -> int:
-		val = DWORD()
-		self._ttsAttrs.SpeedGet(byref(val))
-		# Sometimes the raw value can drift outside the min and max value.
-		val.value = max(min(val.value, self._maxRate), self._minRate)
-		return self._paramToPercent(val.value, self._minRate, self._maxRate)
+		# BEGIN JP PATCH
+		# nvdajp: For SynthSettingsRing rate, return the UI-desired value for
+		# stable progression while keeping engine-acknowledged rate separately.
+		return self._getDesiredRatePercent()
+		# END JP PATCH
 
 	def _set_rate(self, val: int):
-		val = self._percentToParam(val, self._minRate, self._maxRate)
-		self._ttsAttrs.SpeedSet(val)
-		self._rateDelta = val - self._defaultRate
+		# BEGIN JP PATCH
+		val = max(0, min(100, int(val)))
+		self._desiredRatePercent = val
+		# END JP PATCH
+		raw = self._percentToParam(val, self._minRate, self._maxRate)
+		self._ttsAttrs.SpeedSet(raw)
+		# BEGIN JP PATCH
+		verifyRaw = self._readCurrentRateRawFromEngine()
+		self._rateDelta = verifyRaw - self._defaultRate
+		self._engineRatePercent = self._paramToPercent(verifyRaw, self._minRate, self._maxRate)
+		# END JP PATCH
 
 	def _get_pitch(self) -> int:
-		val = WORD()
-		self._ttsAttrs.PitchGet(byref(val))
-		# Sometimes the raw value can drift outside the min and max value.
-		val.value = max(min(val.value, self._maxPitch), self._minPitch)
-		return self._paramToPercent(val.value, self._minPitch, self._maxPitch)
+		# BEGIN JP PATCH
+		# nvdajp: Keep SynthSettingsRing pitch stable by returning desired pitch.
+		return self._getDesiredPitchPercent()
+		# END JP PATCH
 
 	def _set_pitch(self, val: int):
-		val = self._percentToParam(val, self._minPitch, self._maxPitch)
-		self._ttsAttrs.PitchSet(val)
-		self._pitchDelta = val - self._defaultPitch
+		# BEGIN JP PATCH
+		val = max(0, min(100, int(val)))
+		self._desiredPitchPercent = val
+		# END JP PATCH
+		raw = self._percentToParam(val, self._minPitch, self._maxPitch)
+		self._ttsAttrs.PitchSet(raw)
+		# BEGIN JP PATCH
+		verifyRaw = self._readCurrentPitchRawFromEngine()
+		self._pitchDelta = verifyRaw - self._defaultPitch
+		self._enginePitchPercent = self._paramToPercent(verifyRaw, self._minPitch, self._maxPitch)
+		# END JP PATCH
 
 	def _get_volume(self) -> int:
-		val = DWORD()
-		self._ttsAttrs.VolumeGet(byref(val))
-		# Sometimes the raw value can drift outside the min and max value.
-		val.value &= 0xFFFF
-		val.value = max(min(val.value, self._maxVolume), self._minVolume)
-		return self._paramToPercent(val.value, self._minVolume, self._maxVolume)
+		# BEGIN JP PATCH
+		# nvdajp: Keep SynthSettingsRing volume stable by returning desired volume.
+		return self._getDesiredVolumePercent()
+		# END JP PATCH
 
 	def _set_volume(self, val: int):
+		# BEGIN JP PATCH
+		val = max(0, min(100, int(val)))
+		self._desiredVolumePercent = val
+		# END JP PATCH
 		self._volume = val
-		val = self._percentToParam(val, self._minVolume, self._maxVolume)
+		raw = self._percentToParam(val, self._minVolume, self._maxVolume)
 		# If you specify a value greater than 65535, the engine assumes that you want to set the
 		# left and right channels separately and converts the value to a double word,
 		# using the low word for the left channel and the high word for the right channel.
-		val |= val << 16
-		self._ttsAttrs.VolumeSet(val)
+		raw |= raw << 16
+		self._ttsAttrs.VolumeSet(raw)
+		# BEGIN JP PATCH
+		verifyRaw = self._readCurrentVolumeRawFromEngine()
+		self._engineVolumePercent = self._paramToPercent(verifyRaw, self._minVolume, self._maxVolume)
+		# END JP PATCH
 
+	# BEGIN JP PATCH
+	def _readCurrentRateRawFromEngine(self) -> int:
+		val = DWORD()
+		self._ttsAttrs.SpeedGet(byref(val))
+		# Sometimes the raw value can drift outside the min and max value.
+		return max(min(val.value, self._maxRate), self._minRate)
+
+	def _readCurrentRatePercentFromEngine(self) -> int:
+		return self._paramToPercent(self._readCurrentRateRawFromEngine(), self._minRate, self._maxRate)
+
+	def _getDesiredRatePercent(self) -> int:
+		if self._desiredRatePercent is None:
+			if self._engineRatePercent is None:
+				self._engineRatePercent = self._readCurrentRatePercentFromEngine()
+			self._desiredRatePercent = self._engineRatePercent
+		return self._desiredRatePercent
+
+	def _readCurrentPitchRawFromEngine(self) -> int:
+		val = WORD()
+		self._ttsAttrs.PitchGet(byref(val))
+		# Sometimes the raw value can drift outside the min and max value.
+		return max(min(val.value, self._maxPitch), self._minPitch)
+
+	def _readCurrentPitchPercentFromEngine(self) -> int:
+		return self._paramToPercent(self._readCurrentPitchRawFromEngine(), self._minPitch, self._maxPitch)
+
+	def _getDesiredPitchPercent(self) -> int:
+		if self._desiredPitchPercent is None:
+			if self._enginePitchPercent is None:
+				self._enginePitchPercent = self._readCurrentPitchPercentFromEngine()
+			self._desiredPitchPercent = self._enginePitchPercent
+		return self._desiredPitchPercent
+
+	def _readCurrentVolumeRawFromEngine(self) -> int:
+		val = DWORD()
+		self._ttsAttrs.VolumeGet(byref(val))
+		# Sometimes the raw value can drift outside the min and max value.
+		return max(min(val.value & 0xFFFF, self._maxVolume), self._minVolume)
+
+	def _readCurrentVolumePercentFromEngine(self) -> int:
+		return self._paramToPercent(self._readCurrentVolumeRawFromEngine(), self._minVolume, self._maxVolume)
+
+	def _getDesiredVolumePercent(self) -> int:
+		if self._desiredVolumePercent is None:
+			if self._engineVolumePercent is None:
+				self._engineVolumePercent = self._readCurrentVolumePercentFromEngine()
+			self._desiredVolumePercent = self._engineVolumePercent
+		return self._desiredVolumePercent
+	# END JP PATCH
 
 def _mmDeviceEndpointIdToWaveOutId(targetEndpointId: str) -> int:
 	"""Translate from an MMDevice Endpoint ID string to a WaveOut Device ID number.

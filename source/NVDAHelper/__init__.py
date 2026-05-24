@@ -212,7 +212,7 @@ def nvdaController_brailleMessage(text: str) -> SystemErrorCodes:
 	return SystemErrorCodes.SUCCESS
 
 
-# nvdajp: nvdaController_speakSpelling handler (issue #642)
+# nvdajp: nvdaController_speakSpelling handler (issue #642; issue #652: restore 2025.3-style character descriptions)
 @WINFUNCTYPE(c_long, c_wchar_p)
 def nvdaController_speakSpelling(text: str) -> SystemErrorCodes:
 	focus = api.getFocusObject()
@@ -220,7 +220,7 @@ def nvdaController_speakSpelling(text: str) -> SystemErrorCodes:
 		return -1
 	import speech
 
-	queueHandler.queueFunction(queueHandler.eventQueue, speech.speakSpelling, text)
+	queueHandler.queueFunction(queueHandler.eventQueue, speech.speakSpelling, text, None, True)
 	return SystemErrorCodes.SUCCESS
 
 
@@ -249,115 +249,73 @@ def _runOnEventQueueAndGetResult(func, *args, **kwargs):
 
 @WINFUNCTYPE(c_long)
 def nvdaController_isSpeaking() -> int:
-	focus = api.getFocusObject()
-	if focus.sleepMode == focus.SLEEP_FULL:
-		return -1
+	from synthDriverHandler import getSynth
 
-	import synthDriverHandler
-
-	def _get():
-		synth = synthDriverHandler.getSynth()
-		if synth is None:
-			return 0
-		# Synth may have isSpeaking (JTalk, OneCore) or deprecated _isSpeaking (SAPI5)
-		isSpk = getattr(synth, "isSpeaking", None)
-		if callable(isSpk):
-			return 1 if isSpk() else 0
-		if hasattr(synth, "_isSpeaking"):
-			return 1 if synth._isSpeaking else 0
-		return 0
-
-	return _runOnEventQueueAndGetResult(_get)
+	try:
+		# BEGIN JP PATCH
+		# nvdajp: Accept both callable and bool-style isSpeaking implementations.
+		isSpeaking = getattr(getSynth(), "isSpeaking", False)
+		return bool(isSpeaking()) if callable(isSpeaking) else bool(isSpeaking)
+		# END JP PATCH
+	except:  # noqa: E722
+		return False
 
 
 @WINFUNCTYPE(c_long)
 def nvdaController_getPitch() -> int:
-	focus = api.getFocusObject()
-	if focus.sleepMode == focus.SLEEP_FULL:
-		return -1
+	from synthDriverHandler import getSynth
 
-	import synthDriverHandler
-
-	def _get():
-		synth = synthDriverHandler.getSynth()
-		if synth is None or not synth.isSupported("pitch"):
-			return 0
-		return synth.pitch
-
-	return _runOnEventQueueAndGetResult(_get)
+	try:
+		return getSynth()._get_pitch()
+	except:  # noqa: E722
+		return 50
 
 
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setPitch(nPitch: int) -> SystemErrorCodes:
-	focus = api.getFocusObject()
-	if focus.sleepMode == focus.SLEEP_FULL:
-		return -1
-	nPitch = max(0, min(100, nPitch))
+	from synthDriverHandler import getSynth
 
-	import synthDriverHandler
-
-	def _set():
-		synth = synthDriverHandler.getSynth()
-		if synth is not None and synth.isSupported("pitch"):
-			synth.pitch = nPitch
-
-	_runOnEventQueueAndGetResult(_set)
-	return SystemErrorCodes.SUCCESS
+	try:
+		getSynth()._set_pitch(nPitch)
+	except:  # noqa: E722
+		pass
+	return 0
 
 
 @WINFUNCTYPE(c_long)
 def nvdaController_getRate() -> int:
-	focus = api.getFocusObject()
-	if focus.sleepMode == focus.SLEEP_FULL:
-		return -1
+	from synthDriverHandler import getSynth
 
-	import synthDriverHandler
-
-	def _get():
-		synth = synthDriverHandler.getSynth()
-		if synth is None or not synth.isSupported("rate"):
-			return 0
-		return synth.rate
-
-	return _runOnEventQueueAndGetResult(_get)
+	try:
+		return getSynth()._get_rate()
+	except:  # noqa: E722
+		return 50
 
 
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setRate(nRate: int) -> SystemErrorCodes:
-	focus = api.getFocusObject()
-	if focus.sleepMode == focus.SLEEP_FULL:
-		return -1
-	nRate = max(0, min(100, nRate))
+	from synthDriverHandler import getSynth
 
-	import synthDriverHandler
-
-	def _set():
-		synth = synthDriverHandler.getSynth()
-		if synth is not None and synth.isSupported("rate"):
-			synth.rate = nRate
-
-	_runOnEventQueueAndGetResult(_set)
-	return SystemErrorCodes.SUCCESS
+	try:
+		getSynth()._set_rate(nRate)
+	except:  # noqa: E722
+		pass
+	return 0
 
 
 @WINFUNCTYPE(c_long, c_int)
 def nvdaController_setAppSleepMode(mode: int) -> SystemErrorCodes:
-	focus = api.getFocusObject()
-	if focus.sleepMode == focus.SLEEP_FULL:
+	import appModuleHandler
+
+	pid = c_long()
+	winBindings.rpcrt4.I_RpcBindingInqLocalClientPID(None, byref(pid))  # noqa: F405
+	pid = pid.value
+	if not pid:
+		log.error("Could not get process ID for RPC call")
 		return -1
-
-	def _set():
-		curFocus = api.getFocusObject()
-		if curFocus and curFocus.appModule:
-			if mode != 0:
-				eventHandler.executeEvent("loseFocus", curFocus)
-				curFocus.appModule.sleepMode = True
-			else:
-				curFocus.appModule.sleepMode = False
-				eventHandler.executeEvent("gainFocus", curFocus)
-
-	_runOnEventQueueAndGetResult(_set)
-	return SystemErrorCodes.SUCCESS
+	curApp = appModuleHandler.getAppModuleFromProcessID(pid)
+	curApp.sleepMode = True if mode == 1 else False
+	return 0
 
 
 # END JP PATCH

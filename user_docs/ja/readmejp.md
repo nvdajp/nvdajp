@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2026年3月14日
+* 最終更新日：2026年5月18日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -252,15 +252,15 @@ Tiflotecnia が販売する NVDA のアドオン音声エンジンです。
 
 * [Tiflotecnia Voices for NVDA](http://www.tiflotecnia.com/)
 
-### KCトーカー
+### KCトーカー2
 
-ナレッジクリエーションが販売する KCトーカー は NVDA のアドオンで、聞き取りやすい日本語合成音声に加えて、専用のユーザー辞書エディタも提供しています。64ビット版 NVDA への対応については販売元へお問い合わせください。
+ナレッジクリエーションとシュアルタが販売する KCトーカー2 は NVDA のアドオンで、聞き取りやすい日本語合成音声に加えて、専用のユーザー辞書エディタも提供しています。
 
-* [KCトーカー](http://www.knowlec.com/?page_id=2700)
+* [KCトーカー2](https://kc2.shuaruta.net/)
 
 ### High-speed Synthesizer For NVDA
 
-AccessibleToolsLaboratory (ACT Laboratory) が販売する High-speed Synthesizer For NVDA (HISS) は超高速読み上げに対応したNVDA用の日本語音声エンジンアドオンです。64ビット版 NVDA への対応については販売元へお問い合わせください。
+AccessibleToolsLaboratory (ACT Laboratory) が販売する High-speed Synthesizer For NVDA (HISS) は超高速読み上げに対応したNVDA用の日本語音声エンジンアドオンです。
 
 * [High-speed Synthesizer For NVDA](https://actlab.org/software/HISS)
 
@@ -767,6 +767,12 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 * [NvdaDemoApp (bitbucket.org)](https://bitbucket.org/nishimotz/nvdademoapp)
 
 ## バージョンごとの変更点
+
+### 2026.1.1jp の変更点
+
+* [nvdaController_speakSpelling の不具合を修正しました](https://github.com/nvdajp/nvdajp/issues/652)。
+* NVDA コントローラークライアントを使用する一部のアプリと音声エンジンの組み合わせで起きる互換性の問題を修正しました。
+* 一部の音声エンジンで音声設定や簡単音声設が正しく動作しなかった問題を修正しました。
 
 ### 2026.1jp の変更点
 

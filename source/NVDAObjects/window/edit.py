@@ -614,19 +614,23 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 
 	# BEGIN JP PATCH
 	# nvdajp: workaround for ANSI edit controls (legacy applications)
-	def _needsWorkAroundEncoding(self):
+	def _needsWorkAroundEncoding(self) -> bool:
 		"""Check if ANSI encoding workaround is needed for this edit control.
 		This is for legacy ANSI applications that use Shift-JIS encoding.
 		"""
 		return config.conf["language"]["jpAnsiEditbox"] and (not self.obj.isWindowUnicode)
 
-	def _startEndInBytesToStartEndInUnicodeChars(self, start, end):
+	def _startEndInBytesToStartEndInUnicodeChars(
+		self,
+		story_text: str,
+		start: int,
+		end: int,
+	) -> tuple[int, int]:
 		"""Convert byte positions to Unicode character positions for ANSI edit controls.
 		This is needed because ANSI edit controls work with byte positions,
 		but NVDA works with Unicode character positions.
 		"""
 		# start/end in bytes to start/end in unicode chars
-		story_text = self._getStoryText()
 		start_new = end_new = -1
 		bytepos = 0
 		for charpos, ch in enumerate(story_text):
@@ -637,18 +641,24 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 				end_new = charpos
 				break
 			bytepos += cb
+			# end is usually near the current line; stop early to avoid scanning the whole story.
+			if bytepos > end:
+				break
 		if end_new == -1:
 			end_new = len(story_text)
 		return (start_new, end_new)
 
 	# END JP PATCH
 
-	def _getLineOffsets(self, offset):
+	def _getLineOffsets(self, offset: int) -> tuple[int, int]:
 		# BEGIN JP PATCH
 		# nvdajp: workaround for ANSI edit controls
-		if self._needsWorkAroundEncoding():
+		needsWorkAroundEncoding = self._needsWorkAroundEncoding()
+		story_text: str | None = None
+		if needsWorkAroundEncoding:
+			story_text = self._getStoryText()
 			# offset in unicode chars to offset in bytes
-			s = self._getStoryText()[0:offset]
+			s = story_text[0:offset]
 			offset = len(s.encode("mbcs", "replace"))
 		# END JP PATCH
 		lineNum = self._getLineNumFromOffset(offset)
@@ -657,11 +667,17 @@ class EditTextInfo(textInfos.offsets.OffsetsTextInfo):
 		end = start + length
 		# BEGIN JP PATCH
 		# nvdajp: convert byte positions back to Unicode character positions
-		if self._needsWorkAroundEncoding():
-			start_new, end_new = self._startEndInBytesToStartEndInUnicodeChars(start, end)
+		if needsWorkAroundEncoding:
+			start_new, end_new = self._startEndInBytesToStartEndInUnicodeChars(story_text, start, end)
 			log.debug(
-				"offset %d lineNum %d start %d length %d end %d start_new %d end_new %d"
-				% (offset, lineNum, start, length, end, start_new, end_new),
+				"offset %d lineNum %d start %d length %d end %d start_new %d end_new %d",
+				offset,
+				lineNum,
+				start,
+				length,
+				end,
+				start_new,
+				end_new,
 			)
 			return (start_new, end_new)
 		# END JP PATCH

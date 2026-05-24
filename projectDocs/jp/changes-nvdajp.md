@@ -493,6 +493,8 @@ def buildConfigH(target, source, env):
 * `nvdaController_setRate` - 速度設定
 * `nvdaController_setAppSleepMode` - アプリケーションスリープモード設定
 
+`nvdaController_isSpeaking` については、アドオン互換性維持のため、背後の synth 実装が `isSpeaking()`（callable）を提供する場合と `isSpeaking` 属性（bool）を提供する場合の両方を受け入れる方針を明記する。
+
 **関連ファイル**:
 
 * `nvdaHelper/interfaces/nvdaController/nvdaController.idl` - インターフェース定義

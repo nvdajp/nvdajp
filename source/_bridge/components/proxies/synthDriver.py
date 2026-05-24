@@ -8,6 +8,7 @@ import json
 import weakref
 import typing
 from collections import OrderedDict
+import audioDucking
 from logHandler import log
 from _bridge.base import Proxy
 from autoSettingsUtils.driverSetting import DriverSetting, NumericDriverSetting, BooleanDriverSetting
@@ -38,9 +39,19 @@ if typing.TYPE_CHECKING:
 class SynthDriverProxy(Proxy, SynthDriver):
 	"""Wraps a remote SynthDriverService, providing the same interface as a local SynthDriver."""
 
+	_audioDuckingSuspender: audioDucking._AudioDuckingSuspender | None = None
+	_isSpeaking: bool
+
 	def __init__(self, service: SynthDriverService):
 		log.debug(f"Creating SynthDriverProxy instance for remote synth driver '{self.name}'")
 		super().__init__(service)
+		self._isSpeaking = False
+		if audioDucking.isAudioDuckingSupported():
+			# Proxied synthDrivers cannot currently support audio ducking because they produce audio directly
+			# in their own process, and NVDA cannot correctly duck this external audio. Therefore, we create
+			# an _AudioDuckingSuspender to ensure that audio ducking is suspended while any proxied synth
+			# driver exists.
+			self._audioDuckingSuspender = audioDucking._AudioDuckingSuspender()
 		selfRef = weakref.ref(self)
 		for notification in self.supportedNotifications:
 			if notification is synthIndexReached:
@@ -58,6 +69,7 @@ class SynthDriverProxy(Proxy, SynthDriver):
 				def localCallback_synthDoneSpeaking():
 					synth = selfRef()
 					if synth is not None:
+						synth._isSpeaking = False
 						synthDoneSpeaking.notify(synth=synth)
 
 				self._remoteService.registerSynthDoneSpeakingNotification(localCallback_synthDoneSpeaking)
@@ -142,6 +154,8 @@ class SynthDriverProxy(Proxy, SynthDriver):
 		return variants
 
 	def speak(self, speechSequence):
+		if speechSequence:
+			self._isSpeaking = True
 		data = []
 		for item in speechSequence:
 			if isinstance(item, str):
@@ -203,12 +217,19 @@ class SynthDriverProxy(Proxy, SynthDriver):
 		return self._remoteService.speak(data)
 
 	def cancel(self):
+		self._isSpeaking = False
 		try:
 			return self._remoteService.cancel()
 		except (TimeoutError, OSError) as e:
 			# 32-bit synth host may not respond in time (e.g. blocked in SAPI4 COM)
 			# or connection may be broken. Avoid blocking the main thread.
 			log.warning("cancel() on 32-bit synth did not complete: %s", e)
+
+	def isSpeaking(self) -> bool:
+		try:
+			return bool(self._remoteService.isSpeaking())
+		except Exception:
+			return self._isSpeaking
 
 	def pause(self, switch: bool):
 		return self._remoteService.pause(switch)
