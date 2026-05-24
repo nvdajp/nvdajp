@@ -23,7 +23,8 @@
 * Visual Studio 2022（C++ によるデスクトップ開発）
   * コンポーネント詳細は `projectDocs/dev/createDevEnvironment.md` の「Microsoft Visual Studio」節と `.vsconfig` の import を正本とする。
 * Git for Windows
-* Python 3.13（x64 と x86）
+* [uv](https://docs.astral.sh/uv/)（`ensureuv.ps1` がリポジトリの Python 3.13 環境を用意する）
+* synthDriverHost32Runtime 用に 32bit Python 3.13 も必要（`scons.bat` 実行時に uv が取得する）
 
 改行コードは LF 統一を推奨。clone 後に以下を実行する。
 
@@ -34,9 +35,11 @@
 ### (2) 動作確認（要点）
 
 ```text
-> py -3.13 -V
-> py -3.13-32 -V
+> .\ensureuv.ps1 --version
+> .\scons.bat --version
 ```
+
+`py` ランチャー（`py -3.13` など）は使わない。Python 実行は `ensureuv.ps1` / `scons.bat` / リポジトリ付属の `.bat` 経由とする。
 
 ### (3) NVDA日本語版のソースコード取得とビルド
 

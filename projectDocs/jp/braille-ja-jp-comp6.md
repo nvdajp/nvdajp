@@ -4,9 +4,9 @@
 
 ## このブランチの対象
 
-* **アーキテクチャ**: x86（32bit）
-* **Python バージョン**: 3.11
-* **ビルド環境**: Windows 10/11
+* **アーキテクチャ**: x64（64bit）
+* **Python バージョン**: 3.13
+* **ビルド環境**: Windows 10/11（詳細は `projectDocs/jp/build-architecture-environment-variables.md`）
 
 ## 概要
 
@@ -203,18 +203,22 @@ eng2Harness.json の `v1.4` など、小数点を含むケースの期待値は�
 
 ### 実行方法
 
-ローカルでの実行:
+リポジトリルートから実行する（`py` ランチャーは使わない）:
 
-```batch
-cd miscDepsJp\jptools
-py test.py
+```powershell
+powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
 ```
 
-または個別に:
+点字テストだけ絞る例:
 
-```batch
-cd miscDepsJp\jptools
-py jpBrailleRunner.py
+```powershell
+powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay -TestFilter "JpBrailleTests"
+```
+
+ランナーを直接使う例:
+
+```powershell
+uv run python miscDepsJp\jptools\jpBrailleRunner.py
 ```
 
 ### CI JP smoke
@@ -223,7 +227,7 @@ py jpBrailleRunner.py
   * `scons miscdepsjp` applies the JP overlay and copies JTalk core files.
   * `python -m unittest miscDepsJp.jptools.test.JpBrailleTests miscDepsJp.jptools.test.JtalkTests` を実行し、translator2/translator1/translator_louis/eng2/ JTalk を検証する。
   * On failure, `__translator2output.txt` / `__translator1output.txt` / `__eng2output.txt` / `__translator_louis_output.txt` / `jpSmokeTests.log` などをアーティファクトとしてアップロードする。
-* Local quick run: `.\jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay` or `py jpBrailleRunner.py`.
+* ローカル簡易実行: `powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay`
 
 ## MeCab がカナ読みを返さないトークンの処理
 
