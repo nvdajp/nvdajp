@@ -100,9 +100,7 @@ class UIATextInfo(textInfos.TextInfo):
 	# UIA property IDs that should be automatically cached for control fields
 	_controlFieldUIACachedPropertyIDs = {
 		UIAHandler.UIA_IsValuePatternAvailablePropertyId,
-		UIAHandler.UIA_HasKeyboardFocusPropertyId,
 		UIAHandler.UIA_NamePropertyId,
-		UIAHandler.UIA_ToggleToggleStatePropertyId,
 		UIAHandler.UIA_HelpTextPropertyId,
 		UIAHandler.UIA.UIA_FullDescriptionPropertyId,
 		UIAHandler.UIA_AccessKeyPropertyId,
@@ -1149,17 +1147,17 @@ class UIA(Window):
 
 	def _getUIACacheablePropertyValue_handlesCOMErrors(
 		self,
-		id: int,
+		ID: int,
 		ignoreDefault: bool = False,
 		onError: Any = False,
 	) -> Any:
 		"""
-		Identical to _getUIACacheablePropertyValue, except that it will return onError if a COM error accurs
-		:onError: (default = False)
+		Identical to _getUIACacheablePropertyValue, except that it will return onError if a COM error occurs.
+		:param onError: The value to return if a COMError is raised (default = False).
 		"""
 		res = None
 		try:
-			res = self._getUIACacheablePropertyValue(id, ignoreDefault=ignoreDefault)
+			res = self._getUIACacheablePropertyValue(ID, ignoreDefault=ignoreDefault)
 		except COMError:
 			res = onError
 		return res
@@ -1963,6 +1961,7 @@ class UIA(Window):
 		disabled = not self._getUIACacheablePropertyValue_handlesCOMErrors(
 			UIAHandler.UIA_IsEnabledPropertyId,
 			True,
+			True,
 		)
 		if disabled:
 			states.add(controlTypes.State.UNAVAILABLE)
@@ -1981,6 +1980,7 @@ class UIA(Window):
 		isDataValid = self._getUIACacheablePropertyValue_handlesCOMErrors(
 			UIAHandler.UIA_IsDataValidForFormPropertyId,
 			True,
+			UIAHandler.handler.reservedNotSupportedValue,
 		)
 		if not isDataValid:
 			states.add(controlTypes.State.INVALID_ENTRY)

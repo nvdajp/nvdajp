@@ -478,8 +478,10 @@ class AddonListVM:
 					return addonStoreListItemVM.model.submissionTime
 				return 0
 			if self._sortByModelField == AddonListField.installDate:
-				addonManifestListItemVM = cast(AddonListItemVM[_AddonManifestModel], listItemVM)
-				return addonManifestListItemVM.model.installDate
+				if getattr(listItemVM.model, "installDate", None):
+					listItemVM = cast(AddonListItemVM[_AddonManifestModel], listItemVM)
+					return listItemVM.model.installDate
+				return datetime.max
 			if self._sortByModelField == AddonListField.searchRank:
 				return listItemVM.searchRank(self._filterString or "")
 			return strxfrm(self._getAddonFieldText(listItemVM, self._sortByModelField))
