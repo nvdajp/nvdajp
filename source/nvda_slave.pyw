@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2009-2026 NV Access Limited, Cyrille Bougot, Christopher Toth
 # This file is covered by the GNU General Public License.

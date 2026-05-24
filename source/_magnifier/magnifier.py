@@ -1,0 +1,399 @@
+# A part of NonVisual Desktop Access (NVDA)
+# Copyright (C) 2025-2026 NV Access Limited, Antoine Haffreingue
+# This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
+# For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
+
+"""
+Magnifier module.
+Implements the magnifier global class and its basic functionalities.
+"""
+
+from typing import Callable
+from comtypes import COMError
+from logHandler import log
+import wx
+import ui
+import speech
+import screenCurtain
+import winUser
+from winAPI import _displayTracking
+from winAPI._displayTracking import OrientationState, getPrimaryDisplayOrientation
+from .utils.types import (
+	MagnifierParameters,
+	MagnifierAction,
+	MagnifiedView,
+	Direction,
+	Filter,
+	Coordinates,
+)
+from .config import (
+	getZoomLevel,
+	getPanStep,
+	getFilter,
+	ZoomLevel,
+	isTrueCentered,
+	shouldKeepMouseCentered,
+)
+from .utils.focusManager import FocusManager
+
+
+class Magnifier:
+	_TIMER_INTERVAL_MS: int = 12
+	_MARGIN_BORDER: int = 50
+	_MAX_CONSECUTIVE_ERRORS: int = 3
+	_MAGNIFIED_VIEW: MagnifiedView
+
+	def __init__(self):
+		self._displayOrientation = getPrimaryDisplayOrientation()
+		self._isActive: bool = False
+		self._zoomLevel: float = getZoomLevel()
+		self._panStep: int = getPanStep()
+		self._timer: None | wx.Timer = None
+		self._focusManager = FocusManager()
+		self._lastScreenPosition = Coordinates(0, 0)
+		self._currentCoordinates = Coordinates(0, 0)
+		self._lastFocusCoordinates = Coordinates(0, 0)
+		self._filterType: Filter = getFilter()
+		self._isManualPanning: bool = False
+		self._consecutiveErrors: int = 0
+		self._recoveryAttempts: int = 0
+		# Register for display changes
+		_displayTracking.displayChanged.register(self._onDisplayChanged)
+		self._screenCurtainIsActive: bool = False
+
+	@property
+	def filterType(self) -> Filter:
+		return self._filterType
+
+	@filterType.setter
+	def filterType(self, value: Filter) -> None:
+		self._filterType = value
+
+	@property
+	def zoomLevelRatio(self) -> float:
+		"""Get the zoom level as a float (e.g., 2.0 for 200% zoom)"""
+		return self._zoomLevel / 100.0
+
+	@property
+	def zoomLevel(self) -> float:
+		"""Get the zoom level as a percentage (e.g., 200 for 200% zoom)"""
+		return self._zoomLevel
+
+	@zoomLevel.setter
+	def zoomLevel(self, value: int) -> None:
+		"""
+		Set zoom level, ensuring it's a valid value in the zoom range.
+
+		:param value: The zoom level to set
+		:raises ValueError: If the value is not in the valid zoom range
+		"""
+		if not isinstance(value, int):
+			raise ValueError("Zoom level must be an integer percentage")
+		if not (ZoomLevel.MIN_ZOOM <= value <= ZoomLevel.MAX_ZOOM):
+			raise ValueError(f"Zoom level must be between {ZoomLevel.MIN_ZOOM} and {ZoomLevel.MAX_ZOOM}")
+		if value % ZoomLevel.STEP_FACTOR != 0:
+			raise ValueError(f"Zoom level must be a multiple of {ZoomLevel.STEP_FACTOR}")
+		self._zoomLevel = float(value)
+
+	@property
+	def currentCoordinates(self) -> Coordinates:
+		"""
+		Get the current coordinates of the magnifier.
+
+		:return: The current coordinates
+		"""
+		return self._currentCoordinates
+
+	@currentCoordinates.setter
+	def currentCoordinates(self, coordinates: Coordinates) -> None:
+		"""
+		Set the current coordinates of the magnifier, applying screen boundary protection.
+		The magnifier will never move beyond the visible screen boundaries.
+
+		:param coordinates: The new coordinates to set
+		"""
+		self._currentCoordinates = self._clampCoordinates(coordinates)
+
+	def _getScreenLimits(self) -> tuple[int, int, int, int]:
+		"""
+		Get screen coordinate limits based on current mode.
+
+		:return: Tuple of (minX, minY, maxX, maxY)
+		"""
+		if isTrueCentered():
+			# In true center mode: can pan until mouse reaches screen edge
+			return (0, 0, self._displayOrientation.width, self._displayOrientation.height)
+		else:
+			# In normal mode: calculate limits to keep view within screen
+			visibleWidth = self._displayOrientation.width / self.zoomLevelRatio
+			visibleHeight = self._displayOrientation.height / self.zoomLevelRatio
+			minX = int(visibleWidth / 2)
+			minY = int(visibleHeight / 2)
+			maxX = int(self._displayOrientation.width - (visibleWidth / 2))
+			maxY = int(self._displayOrientation.height - (visibleHeight / 2))
+			return (minX, minY, maxX, maxY)
+
+	def _clampCoordinates(self, coordinates: Coordinates) -> Coordinates:
+		"""
+		Clamp coordinates to stay within screen boundaries.
+		Ensures the magnified view always displays content within the visible range.
+
+		:param coordinates: The coordinates to clamp
+		:return: The clamped coordinates
+		"""
+		x, y = coordinates
+		minX, minY, maxX, maxY = self._getScreenLimits()
+		x = max(minX, min(x, maxX))
+		y = max(minY, min(y, maxY))
+		return Coordinates(x, y)
+
+	def _setZoomRawValue(self, value: float) -> None:
+		"""
+		Set zoom level directly without validation.
+		Used internally for smooth animations (e.g., spotlight).
+
+		:param value: The zoom level to set (can be any intermediate value)
+		"""
+		value = max(ZoomLevel.MIN_ZOOM, min(value, ZoomLevel.MAX_ZOOM))
+		self._zoomLevel = value
+
+	def _onDisplayChanged(self, orientationState: OrientationState) -> None:
+		"""
+		Called when display configuration changes
+		"""
+		log.debug("Display configuration changed, updating screen dimensions")
+		self.orientationState = orientationState
+
+	def _startMagnifier(self) -> None:
+		"""
+		Start the magnifier
+		"""
+		if self._isActive:
+			return
+		# Check if screen curtain is active - if so, block magnifier from starting
+		if screenCurtain.screenCurtain and screenCurtain.screenCurtain.enabled:
+			log.debug("Screen curtain is active, cannot start magnifier")
+
+			message = pgettext(
+				"magnifier",
+				# Translators: Message when trying to enable magnifier while screen curtain is active
+				"Cannot enable magnifier: screen curtain is active. Please disable screen curtain first.",
+			)
+			ui.message(message, speechPriority=speech.priorities.Spri.NOW)
+			return
+
+		self._isActive = True
+		self.currentCoordinates = self._focusManager.getCurrentFocusCoordinates()
+
+	def _updateMagnifier(self) -> None:
+		"""
+		Update the magnifier position and content.
+		This method is called repeatedly by the timer.
+		On transient errors (below threshold): reschedules itself to keep running.
+		On repeated errors (at threshold): delegates rescheduling to _attemptRecovery.
+		"""
+		if not self._isActive:
+			return
+		try:
+			self._managePanning()
+			if not self._isManualPanning:
+				self.currentCoordinates = self._focusManager.getCurrentFocusCoordinates()
+			if shouldKeepMouseCentered():
+				self._keepMouseCentered()
+			self._doUpdate()
+			self._consecutiveErrors = 0
+			self._recoveryAttempts = 0
+		except (OSError, COMError):
+			self._consecutiveErrors += 1
+			if self._consecutiveErrors >= self._MAX_CONSECUTIVE_ERRORS:
+				log.error(
+					f"Error updating magnifier ({self._consecutiveErrors}/{self._MAX_CONSECUTIVE_ERRORS}), attempting recovery",
+					exc_info=True,
+				)
+				try:
+					self._attemptRecovery()
+				except Exception:
+					# Recovery itself failed: reset counter and restart timer directly
+					# to avoid a permanent freeze (recovery is responsible for rescheduling
+					# but may fail before reaching that point).
+					log.error(
+						"Recovery failed unexpectedly, restarting timer to prevent freeze",
+						exc_info=True,
+					)
+					self._consecutiveErrors = 0
+					self._startTimer(self._updateMagnifier)
+				return
+			log.warning(
+				f"Transient error updating magnifier ({self._consecutiveErrors}/{self._MAX_CONSECUTIVE_ERRORS})",
+				exc_info=True,
+			)
+		# Always reschedule the timer to keep the magnifier alive
+		self._startTimer(self._updateMagnifier)
+
+	def _doUpdate(self) -> None:
+		"""
+		Perform the actual update of the magnifier
+		"""
+		raise NotImplementedError("Subclasses must implement this method")
+
+	def _attemptRecovery(self) -> None:
+		"""
+		Attempt to recover from repeated errors in the update loop.
+		Subclasses should override this to perform API-specific recovery
+		(e.g., reinitializing the Magnification API).
+		The base implementation resets the error counter and restarts the timer.
+		"""
+		log.info("Attempting base magnifier recovery")
+		self._consecutiveErrors = 0
+		self._startTimer(self._updateMagnifier)
+
+	def _stopMagnifier(self) -> None:
+		"""
+		Stop the magnifier
+		"""
+		if not self._isActive:
+			return
+		self._stopTimer()
+		self._isActive = False
+		# Unregister from display changes
+		_displayTracking.displayChanged.unregister(self._onDisplayChanged)
+
+	def onScreenCurtainEnabled(self) -> None:
+		"""
+		Called when screen curtain is being enabled.
+		Handles disabling magnifier if it's active.
+		"""
+		if self._isActive:
+			ui.message(
+				pgettext(
+					"magnifier",
+					# Translators: Spoken message when magnifier is disabled due to screen curtain being enabled.
+					"Magnifier is active, disabling it before enabling screen curtain",
+				),
+			)
+			self._stopMagnifier()
+			self._screenCurtainIsActive = True
+		else:
+			self._screenCurtainIsActive = False
+
+	def onScreenCurtainDisabled(self) -> None:
+		"""
+		Called when screen curtain is being disabled.
+		Handles re-enabling magnifier if it was active before screen curtain.
+		"""
+		if self._screenCurtainIsActive:
+			ui.message(
+				pgettext(
+					"magnifier",
+					# Translators: Spoken message when magnifier is re-enabled after screen curtain is disabled.
+					"Magnifier was active before screen curtain, re-enabling it",
+				),
+			)
+			self._startMagnifier()
+			self._updateMagnifier()
+			self._screenCurtainIsActive = False
+
+	def _zoom(self, direction: Direction) -> None:
+		"""
+		Adjust the zoom level of the magnifier
+
+		:param direction: Direction.IN to zoom in, Direction.OUT to zoom out
+		"""
+		if direction == Direction.IN:
+			newZoom = int(self.zoomLevel + ZoomLevel.STEP_FACTOR)
+			if newZoom <= ZoomLevel.MAX_ZOOM:
+				self.zoomLevel = newZoom
+		elif direction == Direction.OUT:
+			newZoom = int(self.zoomLevel - ZoomLevel.STEP_FACTOR)
+			if newZoom >= ZoomLevel.MIN_ZOOM:
+				self.zoomLevel = newZoom
+
+	def _pan(self, action: MagnifierAction) -> bool:
+		"""
+		Pan the magnifier in the specified direction
+
+		:param action: The pan action (left, right, up, down)
+		:return: True if the actions results in the pan successfully moving, False otherwise.
+		"""
+		x, y = self.currentCoordinates
+		originalX, originalY = x, y
+
+		minX, minY, maxX, maxY = self._getScreenLimits()
+
+		panPixels = int((self._displayOrientation.width / self.zoomLevelRatio) * self._panStep / 100)
+
+		match action:
+			case MagnifierAction.PAN_LEFT:
+				x = max(minX, x - panPixels)
+			case MagnifierAction.PAN_RIGHT:
+				x = min(maxX, x + panPixels)
+			case MagnifierAction.PAN_UP:
+				y = max(minY, y - panPixels)
+			case MagnifierAction.PAN_DOWN:
+				y = min(maxY, y + panPixels)
+			case MagnifierAction.PAN_LEFT_EDGE:
+				x = minX
+			case MagnifierAction.PAN_RIGHT_EDGE:
+				x = maxX
+			case MagnifierAction.PAN_TOP_EDGE:
+				y = minY
+			case MagnifierAction.PAN_BOTTOM_EDGE:
+				y = maxY
+			case _:
+				log.error(f"Unknown pan action: {action}")
+
+		self._isManualPanning = True
+		self.currentCoordinates = Coordinates(x, y)
+		self._doUpdate()
+
+		return (x, y) != (originalX, originalY)
+
+	def _managePanning(self) -> None:
+		"""
+		Ensure that manual panning mode (self._isManualPanning) is set to False when focus coordinates change.
+		"""
+		focusCoordinates = self._focusManager.getCurrentFocusCoordinates()
+		if self._isManualPanning:
+			if focusCoordinates != self._lastFocusCoordinates:
+				self._isManualPanning = False
+		self._lastFocusCoordinates = focusCoordinates
+
+	def _keepMouseCentered(self) -> None:
+		"""
+		Move the mouse cursor to the center of the magnified view.
+		Subclasses may override this to adapt the behavior for specific modes.
+		"""
+		centerX, centerY = self.currentCoordinates
+		winUser.setCursorPos(centerX, centerY)
+
+	def _startTimer(self, callback: Callable[[], None] = None) -> None:
+		"""
+		Start the timer with a callback function
+
+		:param callback: The function to call when the timer expires
+		"""
+		self._stopTimer()
+		self._timer = wx.Timer()
+		self._timer.Bind(wx.EVT_TIMER, lambda evt: callback())
+		self._timer.Start(self._TIMER_INTERVAL_MS, oneShot=True)
+
+	def _stopTimer(self) -> None:
+		"""
+		Stop timer execution
+		"""
+		if self._timer:
+			if self._timer.IsRunning():
+				self._timer.Stop()
+			self._timer = None
+		else:
+			log.debug("no timer to stop")
+
+	def _getMagnifierParameters(self, coordinates: Coordinates) -> MagnifierParameters:
+		"""
+		Compute the top-left corner of the magnifier window centered on (x, y)
+
+		:param coordinates: The (x, y) coordinates to center the magnifier on
+
+		:return: The size, position and filter of the magnifier window
+		"""
+		raise NotImplementedError("Subclasses must implement this method")

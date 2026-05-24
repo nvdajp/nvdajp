@@ -103,6 +103,7 @@ def getSpellingSpeechWithoutCharMode(
 	fallbackToCharIfNoDescription: bool = True,
 	unicodeNormalization: bool = False,
 	reportNormalizedForCharacterNavigation: bool = False,
+	endsUtterance: bool = True,
 ) -> Generator[SequenceItemT, None, None]:
 	from speech import (
 		getCurrentLanguage,
@@ -178,7 +179,8 @@ def getSpellingSpeechWithoutCharMode(
 			sayCharTypes=useDetails,
 			reportNormalized=isNormalized and reportNormalizedForCharacterNavigation,
 		)
-		yield EndUtteranceCommand()
+		if endsUtterance:
+			yield EndUtteranceCommand()
 
 
 # Constants for character processing
