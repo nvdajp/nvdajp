@@ -7,16 +7,16 @@
 ### 署名あり
 
 ```powershell
-.\scons.bat launcher --all-cores
+.\scons.bat launcher
 ```
 
-前提として `certFile` / `apiSigningToken` / `CERT_SHA1` / `CERT_NAME` のいずれかが有効であること。
+前提として `certFile` / `apiSigningToken` / `CERT_SHA1` / `CERT_NAME` のいずれかが有効であること。`--all-cores` は使わない（JP ターゲットで並列ビルドが失敗することがある）。
 
 ### 署名なし（明示的スキップ）
 
 ```powershell
 $env:SKIP_SIGNING = "1"
-.\scons.bat launcher --all-cores
+.\scons.bat launcher
 ```
 
 ## フローの使い分け
@@ -49,7 +49,7 @@ jtalkPrep -> jtalkSync -> source -> user_docs -> dist -> jpCertExtras -> launche
 ## 依存関係の要点
 
 - `jpCertExtras` は `dist` ターゲット（または `dist` ディレクトリノード）に依存する。
-- これにより、`--all-cores` の並列ビルドでも順序が崩れない。
+- これにより、`dist` 完了後にだけ `jpCertExtras` が実行される。
 - 署名設定が有効な場合のみ、`launcher` は `jpCertExtras` に依存する。
 
 ## 署名設定

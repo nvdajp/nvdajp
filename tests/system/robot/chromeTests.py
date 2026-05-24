@@ -3065,6 +3065,9 @@ def test_reportNotSupportedLanguageAndOtherLanguages():
 			),
 		),
 	)
+
+
+
 def test_waic_as_0029_01():
 	_chrome.prepareChrome("""
 	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-01.html"></iframe>
@@ -3229,7 +3232,9 @@ def test_waic_as_0029_08():
 	actualSpeech = _chrome.getSpeechAfterTab()
 	_asserts.strings_match(
 		actualSpeech,
+		"カスタマイズ  button  このページで使われているレイアウトやスタイルをカスタマイズ ボタンを押下しレイアウトやスタイルを選択してください",
 	)
+
 
 # Constants for link destination tests
 REPORT_LINK_DESTINATION_GESTURE = "NVDA+k"

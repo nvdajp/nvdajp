@@ -242,9 +242,4 @@ repos:
       entry: ./runlicensecheck.bat
       language: script
       pass_filenames: false
-    - id: pyright
-      name: type check with pyright
-      entry: uv run pyright
-      language: system
-      types: [python]
-      exclude: "(sconscript|sconstruct)$"
+

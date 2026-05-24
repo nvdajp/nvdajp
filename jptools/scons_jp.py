@@ -404,7 +404,8 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		- If missing, attempt to build via nmake (requires MSVC environment)
 		- Write payload into source/synthDrivers/jtalk/libopenjtalk.dll (Phase 1: files moved)
 		"""
-		repo_root = Path.cwd()
+		# Use SCons top-level dir so repo_root is correct when cwd changes (e.g. synthDriverHost32Runtime with --all-cores)
+		repo_root = Path(env.Dir("#").abspath)
 		arch = str(env.get("TARGET_ARCH", "x64")).lower()
 		vendor_base = repo_root / "miscDepsJp" / "include" / "python-jtalk"
 

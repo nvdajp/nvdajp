@@ -39,6 +39,7 @@ all:
 	copy ..\libopenjtalk\jpcommon\*.c .
 	copy ..\libopenjtalk\jpcommon\*.h .
 	copy ..\libopenjtalk\jpcommon\Makefile.mak .
+	rem jpcommon_label.c modifications are baked into miscDepsJp/include/libopenjtalk
 	nmake /f Makefile.mak
 	cd ..
 	cd lib
