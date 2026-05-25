@@ -12,6 +12,7 @@ import braille
 import inputCore
 import hwPortUtils
 import time
+import globalVars
 import tones
 import os
 from collections import OrderedDict
@@ -38,6 +39,15 @@ numCells = 0
 isUnknownEquipment = False
 
 locked = False
+
+
+def _connectionBeepsEnabled():
+	"""Return False during install or launcher so connection tones do not mask speech."""
+	return not (
+		globalVars.appArgs.install
+		or globalVars.appArgs.installSilent
+		or globalVars.appArgs.launcher
+	)
 
 
 def lock():
@@ -371,10 +381,12 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				log.debug("isUnknownEquipment")
 				break
 			time.sleep(0.5)
-			tones.beep(400 + (loop * 20), 20)
+			if _connectionBeepsEnabled():
+				tones.beep(400 + (loop * 20), 20)
 			processEvents()
 		else:
-			tones.beep(200, 100)
+			if _connectionBeepsEnabled():
+				tones.beep(200, 100)
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
@@ -397,10 +409,11 @@ def processEvents():
 def waitAfterDisconnect():
 	for loop in range(10):
 		time.sleep(0.5)
-		try:
-			tones.beep(450 - (loop * 20), 20)
-		except:  # noqa: E722
-			pass
+		if _connectionBeepsEnabled():
+			try:
+				tones.beep(450 - (loop * 20), 20)
+			except:  # noqa: E722
+				pass
 		processEvents()
 
 
