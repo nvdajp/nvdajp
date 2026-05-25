@@ -25,6 +25,7 @@ else:
 	byte = chr
 
 from .kgs import (
+	_connectionBeepsEnabled,
 	kgsListComPorts,
 	waitAfterDisconnect,
 	kgs_dir,
@@ -151,12 +152,14 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				log.info("isUnknownEquipment")
 				break
 			time.sleep(0.5)
-			tones.beep(400 + (loop * 20), 20)
+			if _connectionBeepsEnabled():
+				tones.beep(400 + (loop * 20), 20)
 			processEvents()
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
-		tones.beep(200, 100)
+		if _connectionBeepsEnabled():
+			tones.beep(200, 100)
 	log.info("connection:%d port:%d" % (fConnection, _port))
 	return fConnection, port
 

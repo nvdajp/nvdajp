@@ -7,6 +7,8 @@
 # Copyright (C) 2013 Masamitsu Misono
 # Copyright (C) 2011-2022 Takuya Nishimoto
 
+from .kgs import _connectionBeepsEnabled
+
 import braille
 import brailleInput
 import inputCore
@@ -314,10 +316,12 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				log.debug("isUnknownEquipment")
 				break
 			time.sleep(0.5)
-			tones.beep(400 + (loop * 20), 20)
+			if _connectionBeepsEnabled():
+				tones.beep(400 + (loop * 20), 20)
 			processEvents()
 		else:
-			tones.beep(200, 100)
+			if _connectionBeepsEnabled():
+				tones.beep(200, 100)
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
@@ -340,10 +344,11 @@ def processEvents():
 def waitAfterDisconnect():
 	for loop in range(10):
 		time.sleep(0.5)
-		try:
-			tones.beep(450 - (loop * 20), 20)
-		except:  # noqa: E722
-			pass
+		if _connectionBeepsEnabled():
+			try:
+				tones.beep(450 - (loop * 20), 20)
+			except:  # noqa: E722
+				pass
 		processEvents()
 
 
