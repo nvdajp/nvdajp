@@ -2,22 +2,145 @@
 
 Usage:
   py jptools/kgs_bdDetect_probe.py
+  py jptools/kgs_bdDetect_probe.py --encoding mbcs
+  py jptools/kgs_bdDetect_probe.py --encoding auto
+
+Encoding:
+  Japanese Windows consoles often use the system ANSI code page (MBCS, typically cp932).
+  PowerShell may emit UTF-8 or MBCS depending on version and settings. Use --encoding
+  mbcs if device names look garbled with the default, or set KGS_PROBE_ENCODING=mbcs.
 """
 
 from __future__ import annotations
 
+import argparse
 import itertools
 import json
+import locale
 import os
 import re
 import subprocess
 import sys
 import winreg
 
+_ENCODING_CHOICES = ("auto", "utf-8", "mbcs")
+_OUTPUT_ENCODING: str = "utf-8"
+_SUBPROCESS_DECODINGS: list[str] = ["utf-8-sig", "utf-8", "mbcs"]
+
+
+def _encoding_candidates() -> list[str]:
+	"""Build an ordered list of encodings to try for subprocess output."""
+	candidates: list[str] = []
+	if override := os.environ.get("KGS_PROBE_ENCODING"):
+		candidates.append(override.strip())
+	if _OUTPUT_ENCODING not in ("auto",):
+		candidates.append(_OUTPUT_ENCODING)
+	if sys.stdout.encoding:
+		candidates.append(sys.stdout.encoding)
+	try:
+		candidates.append(locale.getencoding())
+	except AttributeError:
+		candidates.append(locale.getpreferredencoding(False))
+	candidates.extend(_SUBPROCESS_DECODINGS)
+	seen: set[str] = set()
+	ordered: list[str] = []
+	for enc in candidates:
+		if not enc or enc in seen:
+			continue
+		seen.add(enc)
+		ordered.append(enc)
+	return ordered
+
+
+def _resolve_output_encoding(name: str) -> str:
+	"""Resolve CLI --encoding for stdout."""
+	if name != "auto":
+		return name
+	if os.environ.get("PYTHONUTF8", "").lower() in ("1", "true", "yes"):
+		return "utf-8"
+	stdout_enc = (sys.stdout.encoding or "").lower().replace("-", "")
+	if stdout_enc in ("utf8", "utf_8"):
+		return "utf-8"
+	if sys.platform == "win32":
+		try:
+			return locale.getencoding() or "mbcs"
+		except AttributeError:
+			return locale.getpreferredencoding(False) or "mbcs"
+	return sys.stdout.encoding or "utf-8"
+
+
+def _text_decode_score(text: str) -> int:
+	"""Heuristic: higher is more likely correct Japanese/ASCII device text."""
+	if not text:
+		return -999
+	score = 0
+	if "\ufffd" in text:
+		score -= 100
+	if "Bluetooth" in text:
+		score += 5
+	if any("\u3040" <= c <= "\u30ff" or "\u4e00" <= c <= "\u9fff" for c in text):
+		score += 25
+	# Typical mojibake when UTF-8 is read as MBCS (or the reverse)
+	score -= sum(1 for c in text if "\u0080" <= c <= "\u00ff")
+	return score
+
+
+def _json_caption_score(decoded: str) -> int:
+	"""Score a decoded JSON blob by PnP Caption fields (if parseable)."""
+	try:
+		data = json.loads(decoded.strip())
+	except json.JSONDecodeError:
+		return _text_decode_score(decoded)
+	if isinstance(data, dict):
+		items = [data]
+	elif isinstance(data, list):
+		items = data
+	else:
+		return _text_decode_score(decoded)
+	score = 0
+	for item in items:
+		if isinstance(item, dict):
+			score = max(score, _text_decode_score(str(item.get("Caption") or "")))
+	return score
+
+
+def _decode_bytes(data: bytes, encodings: list[str] | None = None) -> tuple[str, str]:
+	"""Decode subprocess bytes; return (text, encoding_used)."""
+	candidates = encodings or _encoding_candidates()
+	if len(candidates) == 1:
+		enc = candidates[0]
+		try:
+			return data.decode(enc), enc
+		except (LookupError, UnicodeDecodeError):
+			return data.decode("utf-8", errors="replace"), "utf-8(replace)"
+
+	best_text = ""
+	best_enc = "utf-8(replace)"
+	best_score = -10**9
+	for enc in candidates:
+		try:
+			text = data.decode(enc)
+		except (LookupError, UnicodeDecodeError):
+			continue
+		score = _json_caption_score(text)
+		if score > best_score:
+			best_score = score
+			best_text = text
+			best_enc = enc
+	if best_text:
+		return best_text, best_enc
+	return data.decode("utf-8", errors="replace"), "utf-8(replace)"
+
 
 def _out(text: str) -> None:
-	enc = sys.stdout.encoding or "utf-8"
-	print(text.encode(enc, errors="replace").decode(enc, errors="replace"))
+	"""Print using the resolved console encoding (avoids double codec on Windows)."""
+	payload = (text + os.linesep).encode(_OUTPUT_ENCODING, errors="replace")
+	try:
+		sys.stdout.buffer.write(payload)
+		sys.stdout.buffer.flush()
+	except (AttributeError, OSError):
+		print(text)
+
 
 _KGS_USB_IDS = (
 	"VID_1148&PID_0301",
@@ -73,8 +196,10 @@ def _usb_id_from_pnp_id(pnp_id: str) -> str | None:
 	return m.group(0) if m else None
 
 
-def _live_ports_pnp() -> list[dict]:
-	"""Serial/COM devices via PowerShell (no NVDA imports)."""
+def _live_ports_pnp() -> tuple[list[dict], str]:
+	"""Serial/COM devices via PowerShell (no NVDA imports). Returns rows and decode label."""
+	# Do not force PowerShell output encoding: on Japanese Windows the pipeline may be
+	# UTF-8 or MBCS (cp932); _decode_bytes picks the best match.
 	ps = (
 		"$ports = @(); "
 		"Get-CimInstance Win32_PnPEntity | Where-Object { $_.Caption -match '\\(COM\\d+\\)' } | "
@@ -85,18 +210,17 @@ def _live_ports_pnp() -> list[dict]:
 		"$ports | ConvertTo-Json -Compress"
 	)
 	try:
-		out = subprocess.check_output(
+		raw = subprocess.check_output(
 			["powershell", "-NoProfile", "-Command", ps],
-			text=True,
-			encoding="utf-8",
-			errors="replace",
 			timeout=30,
-		).strip()
+		)
 	except (subprocess.SubprocessError, OSError) as ex:
 		_out("  (PnP query failed: %s)" % ex)
-		return []
+		return [], "n/a"
+	text, decode_used = _decode_bytes(raw)
+	out = text.strip()
 	if not out or out == "null":
-		return []
+		return [], decode_used
 	data = json.loads(out)
 	if isinstance(data, dict):
 		data = [data]
@@ -116,11 +240,37 @@ def _live_ports_pnp() -> list[dict]:
 				"isBluetooth": "BTHENUM" in pnp.upper() or "BTHMODEM" in pnp.upper(),
 			},
 		)
-	return rows
+	return rows, decode_used
+
+
+def _parse_args() -> argparse.Namespace:
+	parser = argparse.ArgumentParser(description="Probe USB/COM data for KGS bdDetect.")
+	parser.add_argument(
+		"--encoding",
+		choices=_ENCODING_CHOICES,
+		default="auto",
+		help=(
+			"Console output encoding and preferred subprocess decode "
+			"(auto: system locale / MBCS on Japanese Windows; mbcs: ANSI code page)"
+		),
+	)
+	return parser.parse_args()
 
 
 def main() -> int:
-	_out("KGS bdDetect probe\n=== Registry USB -> COM (can remain after unplug) ===")
+	global _OUTPUT_ENCODING, _SUBPROCESS_DECODINGS
+
+	args = _parse_args()
+	_OUTPUT_ENCODING = _resolve_output_encoding(args.encoding)
+	if args.encoding == "mbcs":
+		_SUBPROCESS_DECODINGS = ["mbcs", "cp932", "utf-8-sig", "utf-8"]
+	elif args.encoding == "utf-8":
+		_SUBPROCESS_DECODINGS = ["utf-8-sig", "utf-8", "mbcs"]
+	else:
+		_SUBPROCESS_DECODINGS = ["utf-8-sig", "utf-8", "mbcs", "cp932"]
+
+	_out("KGS bdDetect probe (stdout encoding: %s)" % _OUTPUT_ENCODING)
+	_out("=== Registry USB -> COM (can remain after unplug) ===")
 	registry_coms: dict[str, list[str]] = {}
 	for vidPid in _KGS_USB_IDS:
 		for e in _enum_usb_com_ports(vidPid):
@@ -137,7 +287,8 @@ def main() -> int:
 		_out("  %s <= %s" % (e["port"], e["device"]))
 
 	_out("\n=== Live PnP serial (Name / usbID / Status) ===")
-	live = _live_ports_pnp()
+	live, pnp_decode = _live_ports_pnp()
+	_out("  (PnP JSON decoded as: %s)" % pnp_decode)
 	if not live:
 		_out("  (none or query failed)")
 	for row in live:
