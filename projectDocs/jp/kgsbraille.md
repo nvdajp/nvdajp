@@ -110,7 +110,7 @@ KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto�
 **KGS の現状**
 
 - 3 ドライバとも **`supportedSettings` 未宣言**（実質オプションなし）
-- 接続速度（9600 bps 固定）、KBDC 名（`Active BM` / Shift-JIS 機種名）、ビープによる接続フィードバックなどは **すべてコード固定**
+- 接続速度（9600 bps 固定）、KBDC 名（`Active BM` / Shift-JIS 機種名）、ビープによる接続フィードバックなどは **すべてコード固定**（接続プローブ音のインストール時抑制は [§2.6](#26-接続プローブ音とインストールランチャー時の抑制470)）
 - ユーザーが NVDA 設定だけで変えられる項目は **ポート選択と gestureMap（NVDA キー割当）** が中心
 
 **メンテナンス上の意味**
@@ -130,6 +130,65 @@ KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto�
 
 これらは **ハード・DLL の能力外**として、無理に追従する必要はない。
 
+### 2.6 接続プローブ音とインストール／ランチャー時の抑制（#470）
+
+**背景**
+
+- [nvdajp/nvdajp#470](https://github.com/nvdajp/nvdajp/issues/470): KGS USB ドライバーが入っているが端末がすぐ見つからないとき、NVDA **インストール／ランチャー**起動中に点字自動検出が COM 接続を試行し、`_fixConnection` のプローブ音が **音声の読み上げを遮る**。
+- ランチャー（`--launcher`）のみの段階でも `braille.initialize()` と `bdDetect` は動くため、許諾画面やインストール UI の読み上げと競合しうる（`--install` が付く前から該当）。
+
+**実装（`betajp-kgs-issue470` / PR [#659](https://github.com/nvdajp/nvdajp/pull/659)）**
+
+`kgs.py` に `_connectionBeepsEnabled()` を定義し、次のいずれかが真のとき **接続プローブ用トーンを鳴らさない**。
+
+| フラグ | コマンドライン | 典型的な場面 |
+|--------|----------------|--------------|
+| `globalVars.appArgs.install` | `--install` | コマンドラインからのインストール（完了後に新 NVDA を起動しうる） |
+| `globalVars.appArgs.installSilent` | `--install-silent` | サイレントインストール（完了後の自動起動なし） |
+| `globalVars.appArgs.launcher` | `--launcher` | `nvdaLauncher` が展開した一時コピー（セットアップ exe の主経路） |
+
+```python
+def _connectionBeepsEnabled():
+    return not (
+        globalVars.appArgs.install
+        or globalVars.appArgs.installSilent
+        or globalVars.appArgs.launcher
+    )
+```
+
+**抑制する音（3 ドライバ共通の接続試行まわり）**
+
+| 関数 | 音 | 対象モジュール |
+|------|-----|----------------|
+| `_fixConnection` | 待機ループ中の上昇ビープ（400Hz + 20×loop、20ms）、タイムアウト時の失敗音（200Hz、100ms） | `kgs`, `brailleMemo`, `kgsbn46` |
+| `waitAfterDisconnect` | 切断後スイープ（450Hz から逓減、10 回） | `kgs`（`brailleMemo` は同名関数を同条件で実装）、`kgsbn46` は `kgs.waitAfterDisconnect` を import |
+
+**抑制しない音**
+
+| 箇所 | 音 | 理由 |
+|------|-----|------|
+| `nvdaKgsStatusChangedProc` 等のステータスコールバック | 接続成功 1000Hz 30ms、切断 1000Hz 300ms | #470 の対象は長時間のプローブ列；接続確定／切断の短いフィードバックは従来どおり |
+
+**通常起動**
+
+- 上記 3 フラグがすべて偽（インストール済み NVDA の通常起動）では **従来どおりプローブ音が鳴る**。
+
+**コード配置**
+
+- 判定の正: `source/brailleDisplayDrivers/kgs.py` の `_connectionBeepsEnabled`
+- `brailleMemo.py`: `from .kgs import _connectionBeepsEnabled`
+- `kgsbn46.py`: 同上 + 独自 `_fixConnection` に適用
+
+**検証の目安**
+
+1. KGS USB ドライバーあり・端末未接続でランチャーまたは `--install` 起動 → インストール関連の読み上げ中に **プローブ音が連続しない**こと。
+2. 通常起動で点字「自動」・KGS 対象 COM あり → **プローブ音は従来どおり**（接続試行のフィードバックが残ること）。
+3. 実機接続時 → 接続／切断の短いステータスビープは **変わらない**こと（任意）。
+
+**今後の拡張**
+
+- ユーザー設定で常時 on/off する案（`BooleanDriverSetting`）は §2.4・§5.3 の「接続音 on/off」と同系。現状は **インストール系プロセスのみ**コードで抑制。
+
 ---
 
 ## 3. コード品質・保守上の論点（現状評価）
@@ -140,7 +199,7 @@ KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto�
 - `kgs.py` の **豊富な `gestureMap`**（キーボードエミュレーション）
 - `brailleMemo.py` の **8 点コンピュータ点字**（`BrailleInputGesture`）
 - `kgsbn46.py` の **46 系専用キー・KBDC 名・自動ポートスキャン**
-- 接続・切断時の **トーン + `processEvents()`** による利用者向けフィードバック
+- 接続・切断時の **トーン + `processEvents()`** による利用者向けフィードバック（インストール／ランチャー時はプローブ音のみ抑制、§2.6）
 
 ### 3.2 技術的負債（把握のみ／即修正不要）
 
@@ -207,6 +266,7 @@ KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto�
 | 項目 | 内容 |
 |------|------|
 | 既知事象の文書化 | 自動検出の繰り返し（readmejp 記載）を本 doc にリンク |
+| #470 対応 | インストール／ランチャー時の接続プローブ音抑制（§2.6、PR #659） |
 | 静的整理 | `kgsbn46` の Py2 残骸削除、例外処理の明確化（挙動不変） |
 | 調査 | `kgsbn46` ルーティングキー decode の実機確認（バグなら最小修正） |
 
@@ -239,6 +299,9 @@ KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto�
 | 参考実装 | `source/brailleDisplayDrivers/brailleNote.py`, `hims.py`, `dotPad/driver.py` |
 | アドオン生成 | `jptools/pack_kgs_addon.py`, `pack_kgs_addon.cmd`, `kgs_manifest.py` |
 | bdDetect 検証 | `jptools/kgs_bdDetect_probe.py` |
+| 起動引数 | `source/argsParsing.py`, `source/globalVars.py`（`appArgs.install` / `installSilent` / `launcher`） |
+| ランチャー | `launcher/nvdaLauncher.nsi`（`--launcher` 付与） |
+| Issue / PR | [#470](https://github.com/nvdajp/nvdajp/issues/470), [#659](https://github.com/nvdajp/nvdajp/pull/659) |
 | ユーザ doc | `user_docs/en/readmejp.md` |
 | 変更履歴 | `projectDocs/jp/changes-nvdajp.md` |
 
@@ -251,6 +314,7 @@ KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto�
 | 2026-05-18 | 初版（現状・NVDA 仕様差分・方針案） |
 | 2026-05-18 | アドオン `lastTestedNVDAVersion` を 2026.1.1 に更新 |
 | 2026-05-18 | Next Touch 40 向け `VID_10C4&PID_EA60` の bdDetect 登録、`kgs_bdDetect_probe.py` 追加 |
+| 2026-05-25 | §2.6: インストール／ランチャー時の接続プローブ音抑制（#470 / PR #659） |
 
 ---
 
