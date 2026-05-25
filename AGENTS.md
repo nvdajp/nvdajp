@@ -4,10 +4,9 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 ## Scope
 
-- Target platform: Windows x86 with Python 3.11 (this branch: betajp-251206v4)
+- Target platform: Windows x64 with Python 3.13
 - Out of scope: arm64, CI releases using secrets
-- Related issues: #539 (workflow alignment), #530 (2026.1 merge)
-- Note: Java Access Bridge 32-bit is supported
+- Related issues: #539 (workflow alignment)
 
 ## Principles
 
@@ -23,13 +22,15 @@ This document summarizes the rules automation agents/scripts must obey when work
     - Files under `jptools/` (JP-specific tools directory)
   - **Note**: JP PATCH markers are only needed when modifying upstream files. JP-specific new files do not need these markers.
 - Prefer SCons/pure Python tooling; auxiliary `.cmd` or `nmake` usage should be limited to JP-specific overlays
+- Use `scons.bat` / `ensureuv.ps1` for builds and Python tooling; do not use the Windows `py` launcher
+- Do not use SCons `--all-cores` by default (parallel builds can fail with JP targets such as `jtalkPrep`)
 - Do not perform code-signing or releases in CI (no secrets). Official release builds happen locally.
 
 ## Quick commands
 
 - Type check: `ci/scripts/tests/typeCheck.ps1`
 - Lint (optional): `uv run ruff format --check && uv run ruff check`
-- Build example: `scons source dist launcher --all-cores`
+- Build example: `scons.bat synthDriverHost32Runtime source` (see `readme-nvdajp.md`)
 
 ## CI & branching
 
@@ -62,10 +63,10 @@ To reduce CI load and wait for completion:
 - Monitor: `gh run list -w .github/workflows/testAndPublish.yml -b betajp -L 3`
 - View logs: `gh run view <runId> --job <jobId> --log`
 - Rerun failures: `gh run rerun <runId> --failed`
-- Key workflows: `.github/workflows/testAndPublish.yml`, `.github/workflows/nvbeta-typecheck.yml`
+- Key workflow: `.github/workflows/testAndPublish.yml` (includes `typeCheck`, unit/system tests, JP smoke tests)
 - **PR CI monitoring**: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <number>` (single check) or `-Watch` (continuous monitoring)
   - Automatically analyzes failures and provides specific advice
-  - Detects common issues like JTalk build architecture mismatches, MSVC environment problems, etc.
+  - Detects common issues like JTalk/MeCab dictionary build problems, MSVC environment issues, etc.
 
 ## References
 
@@ -91,9 +92,8 @@ To reduce CI load and wait for completion:
 
 ### スコープ
 
-- 対象: Windows x86 + Python 3.11（このブランチ: betajp-251206v4）
+- 対象: Windows x64 + Python 3.13
 - 除外: arm64、Secrets を使う配布系ジョブ
-- 注記: Java Access Bridge 32-bit は対応済み
 
 ### 禁則と優先
 
@@ -109,13 +109,15 @@ To reduce CI load and wait for completion:
     - `jptools/` 配下のファイル（日本語版固有のツールディレクトリ）
   - **注**: 本家版ファイルを変更する場合のみマーキングが必要。日本語版固有の新規ファイルには不要
 - ビルドは SCons／純 Python を優先。`.cmd` や `nmake` は JP 独自処理のみ
+- ビルドと Python 実行は `scons.bat`／`ensureuv.ps1` を使う。Windows の `py` ランチャーは使わない
+- SCons の `--all-cores` はデフォルトで使わない（`jtalkPrep` など JP ターゲットで並列ビルドが失敗することがある）
 - CI ではコードサインや Secrets 利用を行わない
 
 ### 最短コマンド
 
 - 型チェック: `ci/scripts/tests/typeCheck.ps1`
 - Lint（任意）: `uv run ruff format --check && uv run ruff check`
-- ビルド: `scons source dist launcher --all-cores`
+- ビルド: `scons.bat synthDriverHost32Runtime source`（詳細は `readme-nvdajp.md`）
 
 ### CI とブランチ
 
@@ -148,7 +150,7 @@ CI負荷軽減と完了待ちのため：
 - 再実行: `gh run rerun <runId> --failed`
 - **PR CI 監視スクリプト**: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` (単回チェック) または `-Watch` (継続監視)
   - 失敗を自動分析し、具体的なアドバイスを提供
-  - JTalk ビルドのアーキテクチャ不一致、MSVC 環境の問題などを検出
+  - JTalk 辞書ビルドや MSVC 環境の問題などを検出
 
 ### 参考
 

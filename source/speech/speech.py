@@ -41,6 +41,8 @@ from .commands import (
 	SuppressUnicodeNormalizationCommand,
 	CharacterModeCommand,
 	WaveFileCommand,
+	CallbackCommand,
+	_CancellableSpeechCommand,
 )
 from .shortcutKeys import getKeyboardShortcutsSpeech
 
@@ -88,6 +90,8 @@ if typing.TYPE_CHECKING:
 _speechState: Optional["SpeechState"] = None
 _curWordChars: List[str] = []
 IDEOGRAPHIC_COMMA: Final[str] = "\u3001"
+_lastSpeech: tuple[SpeechSequence, characterProcessing.SymbolLevel | None] | None = None
+"""Last spoken text and the symbol level with which it was spoken."""
 
 
 class SpeechMode(DisplayStringIntEnum):
@@ -140,6 +144,24 @@ def getState():
 
 def setSpeechMode(newMode: SpeechMode):
 	_speechState.speechMode = newMode
+
+
+def _setLastSpeechString(
+	speechSequence: SpeechSequence,
+	symbolLevel: characterProcessing.SymbolLevel | None,
+	priority: Spri,
+):
+	# Check if the speech sequence contains text to speak
+	if any(isinstance(item, str) for item in speechSequence):
+		global _lastSpeech
+		_lastSpeech = (
+			[
+				item
+				for item in speechSequence
+				if not isinstance(item, (CallbackCommand, _CancellableSpeechCommand))
+			],
+			symbolLevel,
+		)
 
 
 def initialize():
@@ -385,6 +407,8 @@ def _getSpellingSpeechAddCharMode(
 				yield CharacterModeCommand(False)
 				charMode = False
 		yield item
+	if charMode:
+		yield CharacterModeCommand(False)
 
 
 def _getSpellingCharAddCapNotification(
@@ -445,6 +469,7 @@ def _getSpellingSpeechWithoutCharMode(
 	fallbackToCharIfNoDescription: bool = True,
 	unicodeNormalization: bool = False,
 	reportNormalizedForCharacterNavigation: bool = False,
+	endsUtterance: bool = True,
 ) -> Generator[SequenceItemT, None, None]:
 	"""
 	Processes text when spelling by character.
@@ -466,6 +491,7 @@ def _getSpellingSpeechWithoutCharMode(
 	:param unicodeNormalization: Whether to use Unicode normalization for the given text.
 	:param reportNormalizedForCharacterNavigation: When unicodeNormalization is true, indicates if 'normalized'
 		should be reported along with the currently spelled character.
+	:param endsUtterance: Whether an EndUtteranceCommand should be yielded at the end.
 	:returns: A speech sequence generator.
 	"""
 	defaultLanguage = getCurrentLanguage()
@@ -546,7 +572,8 @@ def _getSpellingSpeechWithoutCharMode(
 				uppercase and beepForCapitals,
 				itemIsNormalized and reportNormalizedForCharacterNavigation,
 			)
-			yield EndUtteranceCommand()
+			if endsUtterance:
+				yield EndUtteranceCommand()
 
 
 def getSingleCharDescriptionDelayMS() -> int:
@@ -604,13 +631,24 @@ def getSingleCharDescription(
 
 def getSpellingSpeech(
 	text: str,
-	locale: Optional[str] = None,
+	locale: str | None = None,
 	useCharacterDescriptions: bool = False,
 	# BEGIN JP PATCH
 	# nvdajp: useDetails parameter for detailed character descriptions
 	useDetails: bool = False,
 	# END JP PATCH
+	endsUtterance: bool = True,
+	useCharMode: bool = True,
 ) -> Generator[SequenceItemT, None, None]:
+	"""
+	Gets a speech sequence for spelling text.
+	:param text: The text to be spelled.
+	:param locale: The locale to use for character descriptions, if applicable.
+	:param useCharacterDescriptions: Whether or not to use character descriptions, e.g. speak "a" as "alpha".
+	:param endsUtterance: Whether an EndUtteranceCommand should be yielded at the end.
+	:param useCharMode: Whether to wrap the sequence in CharacterModeCommand.
+	:returns: A speech sequence generator.
+	"""
 	synth = getSynth()
 	synthConfig = config.conf["speech"][synth.name]
 
@@ -640,12 +678,10 @@ def getSpellingSpeech(
 		reportNormalizedForCharacterNavigation=config.conf["speech"][
 			"reportNormalizedForCharacterNavigation"
 		],
+		endsUtterance=endsUtterance,
 	)
 	# END JP PATCH
-	useSpelling = synthConfig["useSpellingFunctionality"]
-	if isinstance(useSpelling, str):
-		useSpelling = useSpelling.lower() in ("true", "1", "yes")
-	if useSpelling:
+	if useCharMode and synthConfig["useSpellingFunctionality"]:
 		seq = _getSpellingSpeechAddCharMode(seq)
 	# This function applies Unicode normalization as appropriate.
 	# Therefore, suppress the global normalization that might still occur
@@ -1247,7 +1283,7 @@ def speak(  # noqa: C901
 
 def speakPreselectedText(
 	text: str,
-	priority: Optional[Spri] = None,
+	priority: Spri | None = None,
 ):
 	"""Helper method to announce that a newly focused control already has
 	text selected. This method is in contrast with L{speakTextSelected}.
@@ -1286,8 +1322,8 @@ def getPreselectedTextSpeech(
 
 
 def speakTextSelected(
-	text: str,
-	priority: Optional[Spri] = None,
+	text: str | SpeechSequence,
+	priority: Spri | None = None,
 ):
 	"""Helper method to announce that the user has caused text to be selected.
 	This method is in contrast with L{speakPreselectedText}.
@@ -1304,8 +1340,8 @@ def speakTextSelected(
 
 def speakSelectionMessage(
 	message: str,
-	text: str,
-	priority: Optional[Spri] = None,
+	text: str | SpeechSequence,
+	priority: Spri | None = None,
 ):
 	seq = _getSelectionMessageSpeech(message, text)
 	if seq:
@@ -1317,8 +1353,26 @@ MAX_LENGTH_FOR_SELECTION_REPORTING = 512
 
 def _getSelectionMessageSpeech(
 	message: str,
-	text: str,
+	text: str | SpeechSequence,
 ) -> SpeechSequence:
+	if isinstance(text, list):
+		# If text is a speech sequence, we can't use string formatting.
+		# Instead, split the message by %s and insert the sequence.
+		# This allows for correct localization order (e.g. prefix vs suffix).
+		prefix, sep, suffix = message.partition("%s")
+		if not sep:
+			log.warning("Selection message '%s' does not contain '%%s'", message)
+			return _getSpeakMessageSpeech(message) + text
+
+		seq = list(text)
+		# Insert prefix/suffix as separate items so they remain outside any
+		# speech commands (e.g. PitchCommand for capitals).
+		if prefix:
+			seq.insert(0, prefix)
+		if suffix:
+			seq.append(suffix)
+		return seq
+
 	if len(text) < MAX_LENGTH_FOR_SELECTION_REPORTING:
 		return _getSpeakMessageSpeech(message % text)
 	textLength = len(text)
@@ -1337,7 +1391,7 @@ def speakSelectionChange(  # noqa: C901
 	speakSelected: bool = True,
 	speakUnselected: bool = True,
 	generalize: bool = False,
-	priority: Optional[Spri] = None,
+	priority: Spri | None = None,
 ):
 	"""Speaks a change in selection, either selected or unselected text.
 	@param oldInfo: a TextInfo instance representing what the selection was before
@@ -1385,25 +1439,25 @@ def speakSelectionChange(  # noqa: C901
 		if not generalize:
 			for text in selectedTextList:
 				if len(text) == 1:
-					text = characterProcessing.processSpeechSymbol(locale, text)
+					text = list(getSpellingSpeech(text, locale, endsUtterance=False, useCharMode=False))
 				speakTextSelected(text, priority=priority)
 		elif len(selectedTextList) > 0:
 			text = newInfo.text
 			if len(text) == 1:
-				text = characterProcessing.processSpeechSymbol(locale, text)
+				text = list(getSpellingSpeech(text, locale, endsUtterance=False, useCharMode=False))
 			speakTextSelected(text, priority=priority)
 	if speakUnselected:
 		if not generalize:
 			for text in unselectedTextList:
 				if len(text) == 1:
-					text = characterProcessing.processSpeechSymbol(locale, text)
+					text = list(getSpellingSpeech(text, locale, endsUtterance=False, useCharMode=False))
 				# Translators: This is spoken to indicate what has been unselected. for example 'hello unselected'
 				speakSelectionMessage(_("%s unselected"), text, priority=priority)
 		elif len(unselectedTextList) > 0:
 			if not newInfo.isCollapsed:
 				text = newInfo.text
 				if len(text) == 1:
-					text = characterProcessing.processSpeechSymbol(locale, text)
+					text = list(getSpellingSpeech(text, locale, endsUtterance=False, useCharMode=False))
 				# Translators: This is spoken to indicate when the previous selection was removed and a new selection was made. for example 'hello world selected instead'
 				speakSelectionMessage(_("%s selected instead"), text, priority=priority)
 			else:

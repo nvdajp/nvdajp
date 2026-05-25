@@ -23,7 +23,8 @@
 * Visual Studio 2022（C++ によるデスクトップ開発）
   * コンポーネント詳細は `projectDocs/dev/createDevEnvironment.md` の「Microsoft Visual Studio」節と `.vsconfig` の import を正本とする。
 * Git for Windows
-* Python 3.13（x64 と x86）
+* [uv](https://docs.astral.sh/uv/)（`ensureuv.ps1` がリポジトリの Python 3.13 環境を用意する）
+* synthDriverHost32Runtime 用に 32bit Python 3.13 も必要（`scons.bat` 実行時に uv が取得する）
 
 改行コードは LF 統一を推奨。clone 後に以下を実行する。
 
@@ -34,9 +35,11 @@
 ### (2) 動作確認（要点）
 
 ```text
-> py -3.13 -V
-> py -3.13-32 -V
+> .\ensureuv.ps1 --version
+> .\scons.bat --version
 ```
+
+`py` ランチャー（`py -3.13` など）は使わない。Python 実行は `ensureuv.ps1` / `scons.bat` / リポジトリ付属の `.bat` 経由とする。
 
 ### (3) NVDA日本語版のソースコード取得とビルド
 
@@ -107,35 +110,38 @@ NVDA 本体を実行するには
 
 ## マイルストーン自動割り当て機能
 
-NVDA日本語版では、GitHub Actionsを使用してIssueやPull Requestにマイルストーンを自動的に割り当てる機能を導入している。
+NVDA日本語版では、GitHub Actions を使い、**マージされた Pull Request** にマイルストーンを自動付与する。
 
 ### 動作概要
 
-`.github/workflows/assign-milestone-on-close.yml` ワークフローにより、以下の条件を満たす場合に自動的にマイルストーンが割り当てられる：
+`.github/workflows/assign-milestone-on-close.yml` により、次をすべて満たす PR に `MILESTONE_ID` で指定したマイルストーンが付く：
 
-1. IssueまたはPull Requestがクローズされた時
+1. Pull Request がクローズされた（マージ）
 2. マイルストーンが未設定である
-3. 以下のいずれかの条件を満たす：
-   * Issueが「completed」としてクローズされた
-   * Pull Requestがマージされた
+
+Issue のクローズには反応しない。
 
 ### 設定方法
 
-リポジトリ変数 `MILESTONE_ID` に、自動割り当てしたいマイルストーンのIDを設定する：
+リポジトリ変数 `MILESTONE_ID` に、自動割り当て先マイルストーンの数値 ID を設定する。現在の対象は [2026.2jp](https://github.com/nvdajp/nvdajp/milestone/78)（ID: `78`）。
 
-```bash
-gh variable set MILESTONE_ID --body "71" --repo nvdajp/nvdajp
+```powershell
+gh variable set MILESTONE_ID --body "78" --repo nvdajp/nvdajp
 ```
 
-現在のマイルストーンIDはリポジトリ変数 `MILESTONE_ID` で管理されている。最新のマイルストーンIDはGitHubのリポジトリ設定で確認すること。
+ID は GitHub の Milestones 画面 URL 末尾の数字（例: `.../milestone/78` → `78`）。設定確認:
+
+```powershell
+gh variable list --repo nvdajp/nvdajp
+```
 
 ### 運用手順
 
-1. 新しいリリースの準備時に、GitHubで新しいマイルストーン（例：`2025.3jp`）を作成
-2. マイルストーンのIDを確認（URLの末尾の数字）
-3. `MILESTONE_ID` 変数を新しいマイルストーンのIDに更新
+1. 新リリース準備時に GitHub でマイルストーン（例: `2026.2jp`）を作成する
+2. マイルストーン URL 末尾の ID を確認する
+3. `MILESTONE_ID` をその ID に更新する（上記 `gh variable set`）
 
-この機能により、リリースノート作成時に該当マイルストーンでフィルタして変更点を簡単に把握できる。
+リリースノート作成時に該当マイルストーンでフィルタし、変更点を把握しやすくする。
 
 ## git 運用方針とトラブルシューティング
 

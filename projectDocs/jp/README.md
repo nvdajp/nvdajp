@@ -32,17 +32,20 @@
 
 ## CI/ビルド クイックスタート
 
-* 本家寄せの型チェック: `.github/workflows/nvbeta-typecheck.yml`
-* 日本語版フルCI: `.github/workflows/testAndPublish.yml`
-* ローカルビルド例: `scons source dist launcher --all-cores`
-* 単体/システムテスト: `ci/scripts/tests/unitTests.ps1`、`ci/scripts/tests/systemTests.ps1`
+* 日本語版フル CI: `.github/workflows/testAndPublish.yml`（型チェック `typeCheck`、ユニットテスト、JP smoke tests を含む）
+* ローカル型チェック: `ci/scripts/tests/typeCheck.ps1`
+* ローカルビルド例: `scons.bat synthDriverHost32Runtime source`（`--all-cores` は使わない）
+* 単体テスト: `rununittests.bat`（CI では `ci/scripts/tests/unitTests.ps1`）
+* システムテスト: `ci/scripts/tests/systemTests.ps1`
 * PR CI 監視: `ci/scripts/monitor-pr-ci.ps1 -PrNumber <番号>` または `-Watch`
+
+Python 実行は `ensureuv.ps1` / `scons.bat` / リポジトリ付属の `.bat` を使う。Windows の `py` ランチャーは使わない。
 
 ### JTalk/Smoke の切り分け手順
 
 JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、GitHub Actions を触る前に次をローカルで確認する。
 
-1. `scons jtalkPrep jtalkSync`
+1. `scons.bat jtalkPrep jtalkSync`
 2. `powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1`
 3. `powershell -ExecutionPolicy Bypass -File jptools/runJpSmokeTests.ps1 -SkipInstall`
 
@@ -53,9 +56,8 @@ JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、G
 
 * 本家版との差分は最小化する。
 * `SCons` と純 Python を優先し、外部依存は段階的に縮小する。
-* CI 前提（Python/ランナー/キャッシュ）は本家版に準拠する。
-* 秘密情報（署名トークン等）は GitHub Secrets/Variables で管理する。
-* 署名・配布はローカル実施を原則とする。
+* 対象プラットフォームは Windows x64 + Python 3.13（`projectDocs/jp/build-architecture-environment-variables.md` 参照）。
+* CI は検証用途。署名・配布はローカル実施を原則とし、CI では Secrets を使わない（`AGENTS.md` 参照）。
 
 ## 開発方針（本家版準拠）
 
@@ -131,8 +133,9 @@ JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、G
 
 ### SCons ターゲット
 
-* `scons jtalkPrep`: JTalk DLL をビルドしペイロードへ配置する。
-* `scons jtalkSync`: JTalk 辞書を検査し、必要に応じて再生成する。
-* `scons source`: NVDA 本体をビルドする。
+* `scons.bat jtalkPrep`: JTalk DLL をビルドしペイロードへ配置する。
+* `scons.bat jtalkSync`: JTalk 辞書を検査し、必要に応じて再生成する。
+* `scons.bat source`: NVDA 本体をビルドする。
+* `scons.bat synthDriverHost32Runtime`: 32bit SAPI 用 synth driver host をビルドする（`source` の前に実行）。
 
 詳細は `projectDocs/jp/vendor-submodules.md` を参照すること。

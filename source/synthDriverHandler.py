@@ -227,6 +227,17 @@ class SynthDriver(driverHandler.Driver):
 			defaultVal=True,
 		)
 
+	@classmethod
+	def PunctuationSilenceSetting(cls) -> BooleanDriverSetting:
+		"""Factory function for creating punctuation silence setting."""
+		return BooleanDriverSetting(
+			"punctuationSilence",
+			# Translators: Label for a setting toggle in voice settings dialog.
+			_("Natural pause after punctuation"),
+			availableInSettingsRing=False,
+			defaultVal=True,
+		)
+
 	@abstractmethod
 	def speak(self, speechSequence):
 		"""
@@ -333,18 +344,21 @@ class SynthDriver(driverHandler.Driver):
 		"""
 		if lang is None:
 			return True
-		for availableLang in self.availableLanguages:
-			normalizedAvailableLang = languageHandler.normalizeLanguage(availableLang)
-			if normalizedAvailableLang is None:
-				continue
-			if lang == normalizedAvailableLang or lang == normalizedAvailableLang.split("_")[0]:
-				return True
 		normalizedLang = languageHandler.normalizeLanguage(lang)
 		if normalizedLang is None:
 			return False
 		rootLang = normalizedLang.split("_")[0]
-		fallbackLang = f"{rootLang}-{rootLang}"
-		if fallbackLang in self.availableLanguages:
+		normalizedAvailableLangs: set[str] = set()
+		for availableLang in self.availableLanguages:
+			if availableLang is None:
+				continue
+			normalizedAvailableLang = languageHandler.normalizeLanguage(availableLang)
+			if normalizedAvailableLang is None:
+				continue
+			normalizedAvailableLangs.add(normalizedAvailableLang)
+		if normalizedLang in normalizedAvailableLangs:
+			return True
+		if any(rootLang == availableLang.split("_")[0] for availableLang in normalizedAvailableLangs):
 			return True
 		return False
 

@@ -1,6 +1,17 @@
-# IME 確定時の「クリア」誤読み上げのバグ修正
+# IME 入力時の読み上げ（「クリア」誤読・「ブランク」等）
 
-## 現象
+本ドキュメントは、日本語 IME まわりの読み上げ不具合とその修正方針をまとめる。主題は 2026.1jp で対応した **Enter 確定後の「クリア」誤読** である。あわせて [Issue #656](https://github.com/nvdajp/nvdajp/issues/656)（未変換中の Backspace）の対応状況も記載する。
+
+| 症状 | 主な変更箇所 | 状態（2026-05 時点） |
+|------|----------------|----------------------|
+| Enter 確定後に時々「クリア」 | `NVDAHelper/__init__.py` | 2026.1jp で対応済み（下記） |
+| 未変換 Backspace で「ブランク」 | `NVDAObjects/inputComposition.py` | [PR #657](https://github.com/nvdajp/nvdajp/pull/657) で対応予定 |
+| 未変換 Backspace で消した1文字を読む | `editableText.py`（本家標準） | **正しい挙動**（#657 で「ブランク」除去後に聞こえる。下記「2つの経路」） |
+| 未変換をすべて Backspace で削除しても「クリア」が出ない | `NVDAHelper/__init__.py` | **残課題**（#656、下記「残課題」） |
+
+---
+
+## 現象（「クリア」誤読）
 
 - マイクロソフト IME で変換をエンターで確定したあと、**時々**「クリア」の音声が入る。
 - 本来はキャンセル時のみ「クリア」と読み上げる想定。
@@ -112,3 +123,87 @@ Google IME など compAttr（`\t` 付き）を送る IME では、**確定時も
 `resetInputCompositionVariables()` と `lastCompositionEndTime` の更新は、no-`\t` 分岐の「(empty, -1, -1) を commit とみなしてフォールスルーしたとき」だけ行っていた。  
 一方で、**通常の確定**（確定文字列付きで composition 終了、例: compositionString="感じ", selectionStart=-1）は、no-`\t` の else に入るが `is_cancelled` が False のため上記ブロックに入らず、そのまま後続の `if selectionStart == -1: handleInputCompositionEnd(compositionString)` に進む。この経路では JP 用グローバル（lastCompAttr, lastCompString, lastHadCompAttr 等）がリセットされず残り、その結果 (1) 直後の改行報告が lastCompAttr で抑制される、(2) 次回の cancel/commit 判定が古い値でゆがむ、という指摘があった。  
 対応として、**composition 終了と判断できるとき（selectionStart == -1 のとき）は、常にリセットと lastCompositionEndTime の更新を行う**ようにした（該当パス先頭で実行）。
+
+---
+
+## 追記: Issue #656（未変換 Backspace の「ブランク」／「クリア」）
+
+GitHub: [nvdajp/nvdajp#656](https://github.com/nvdajp/nvdajp/issues/656)
+
+2025.3.3JP では再現しないが、2026.1.1jp-beta 以降で報告された。メモ帳等で日本語変換をオンにし、**未変換（読みのみ）の状態で Backspace** を押したときの挙動に関する Issue である。
+
+### 現象（#656）
+
+1. **「ブランク」**: Backspace のたびに、不要な「ブランク」（`speech._getSpeakMessageSpeech` の `_("blank")`）が読まれる。
+2. **「クリア」が出ない**: 入力した文字をすべて Backspace で削除しても「クリア」が読まれない（2025.3.3JP では読まれる想定）。
+
+**注**: 未変換中に Backspace で **消した1文字が読まれる** こと自体は不具合ではない。本家 NVDA の標準動作である（下記「2つの経路」）。
+
+### 未変換 Backspace 時の読み上げ: 2つの経路
+
+IME 未確定中はフォーカスが `InputComposition`（`EditableTextWithAutoSelectDetection` の子クラス）にある。Backspace 1回あたりの読み上げは、次の **独立した2経路** が重なる。
+
+| 経路 | コード | 役割 | 典型例 |
+|------|--------|------|--------|
+| **A. 削除文字** | `editableText._backspaceScriptHelper` | Backspace **前**にキャレット直前1文字を取得し、`gesture.send()` 後に `speech.speakSpelling(delChunk)` | 未変換の「き」を消す → 「き」が読まれる。**本家・2025.3.3JP 共通** |
+| **B. 変換文字列の差分** | `inputComposition.reportNewText` → `calculateInsertedChars` → `speech.speakText` | 変化領域の **新側** 文字列のみを読む。末尾1文字削除だけでは `newText` が空になり **無音** になりやすい | 読みが置き換わる更新では差分が読まれることがある |
+
+- 経路 A は `source/editableText.py` の `script_caret_backspaceCharacter`（本家 `master` と同じ。日本語版でも未改変）。
+- 経路 B は IME サポート導入時からの `calculateInsertedChars`（挿入差分用。本家 `source/NVDAObjects/inputComposition.py` も同様）。
+
+**#656 で問題だったのは経路 B のみ**: 2026.1jp では `speakText` が `if newText:` の外にあり、`newText==""` でも `speakText("")` がキューされ **「ブランク」** になっていた。経路 A の削除文字読み上げを壊す変更ではない。
+
+**#657 修正後の望ましい挙動**:
+
+- 経路 A: これまでどおり削除した1文字が読まれる（本家どおり）。
+- 経路 B: `newText` が空のときは `speakText` をキューしない → **「ブランク」が出ない**。
+
+設定「キーボード」→「入力文字の読み上げ」がオフのときは経路 A も B も基本的に動かない（本家仕様）。
+
+### 「ブランク」の原因と対応（対応済み／PR #657）
+
+2026.1jp で JP スナップショットを本家 beta に載せ替えた際、`InputComposition.reportNewText` で `speech.speakText` のキュー投入が **`if newText:` の外** にあり、composition 更新で `newText` が空文字 `""` になっても `speakText("")` が呼ばれていた。空文字は `isBlank` とみなされ「ブランク」になる。
+
+2025.3.2jp では `speakText` は `if newText:` の内側のみだった。
+
+**修正**（[PR #657](https://github.com/nvdajp/nvdajp/pull/657)、ブランチ `releasejp-issue656`）:
+
+- **ファイル**: `source/NVDAObjects/inputComposition.py` の `reportNewText` のみ。
+- **内容**: `speakTypedCharacters` / `speakTypedWords` / 候補読み上げ用の `speech.speakText` キューを、再び `if newText:` の内側に移動する。
+- **本ドキュメント前半の「クリア」対策**（`NVDAHelper` の `cancelled` フラグ等）とは**独立**であり、Enter 確定後の誤「クリア」回帰の影響は小さい。
+
+**確認の目安**:
+
+- メモ帳 + Microsoft IME または ATOK、未変換で文字入力 → Backspace → **「ブランク」が出ない**こと。
+- 同条件で Backspace → **消した1文字が読まれる**こと（経路 A。本家どおり。回帰ではない）。
+- Enter 確定後に誤「クリア」が混ざらないこと（本ドキュメント「テストの目安」の回帰確認）。
+
+### 「クリア」が出ない原因（残課題）
+
+#656 のうち **Backspace で未確定文字をすべて削除したときに「クリア」が読まれない** 件は、本ドキュメント前半で述べた **2026.1jp の「クリア」誤読対策** とトレードオフの関係にある。
+
+1. **2025.3.2jp** では `handleInputCompositionEnd` 内で `getAsyncKeyState(VK_BACK)` 等により、composition 終了時に Backspace 由来の「クリア」を付与しうる設計だった（Enter 確定後の誤「クリア」の原因にもなっていた）。
+2. **2026.1jp** では `cancelled` フラグと compAttr IME 向けの分岐（上記「Google IME / Chrome」および「トレードオフ」）により、**Enter 確定と Backspace 全削除の両方**が `(compositionString='', selectionStart=-1, selectionEnd=-1)` で来る IME では、`lastKeyGesture` が `VK_BACK` のときだけ `cancelled=True` とする。
+3. IME コールバックが keyDown より先に処理されると、`lastKeyGesture` が Backspace でないまま composition 終了し、**確定扱い**（`cancelled=False`、空 `result` では「Clear」を出さない）になる。その結果、ユーザーからは「全削除してもクリアしない」と見える。
+
+これは上記「トレードオフ」（Esc/Back の keyDown が遅いと「クリア」が出ない）の、Backspace 全削除における顕在化である。
+
+### 残課題の扱い（推奨）
+
+| 項目 | 推奨 |
+|------|------|
+| リリース | 2026.1.1jp には **PR #657（ブランク）のみ** を入れ、**「クリア」全削除は既知の制限**として Issue #656 に残すのが安全。 |
+| 本格対応 | `NVDAHelper/__init__.py` の cancel / Backspace 判定の見直し。**2026.2jp-beta 等で時間をかけて**、本ドキュメント「テストの目安」4 項目 + Microsoft IME / ATOK / Google IME + Chrome で検証する。 |
+| 注意 | `getAsyncKeyState(VK_BACK)` の単純復帰は Enter 確定後の誤「クリア」を再発させうる。Backspace 全削除と Enter 確定の両立には、キュー投入時の判定強化や別シグナル（composition 更新の `deletedString` 等）の検討が必要。 |
+
+### #656 向けテストの目安（残課題確認用）
+
+PR #657 マージ後、以下を **残課題の有無** の確認に用いる。
+
+- [ ] 未変換で Backspace → 「ブランク」が出ない（#657 の目的）。
+- [ ] 未変換で Backspace → 消した1文字が読まれる（経路 A。本家どおり。入力文字の読み上げが有効であること）。
+- [ ] 未変換を Backspace ですべて削除 → 「クリア」が読まれる（現状は失敗しうる＝残課題。経路 A とは別）。
+- [ ] Enter で変換確定 → 確定文字列が読まれ、誤「クリア」が入らない（2026.1 回帰）。
+- [ ] Esc で未確定キャンセル → 「クリア」が読まれる（ごくまれに失敗しうる＝既知トレードオフ）。
+
+関連 PR: [nvdajp/nvdajp#657](https://github.com/nvdajp/nvdajp/pull/657)（`releasejp` ← `releasejp-issue656`）。
