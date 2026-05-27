@@ -8,6 +8,7 @@ import json
 import weakref
 import typing
 from collections import OrderedDict
+import audioDucking
 from logHandler import log
 from _bridge.base import Proxy
 from autoSettingsUtils.driverSetting import DriverSetting, NumericDriverSetting, BooleanDriverSetting

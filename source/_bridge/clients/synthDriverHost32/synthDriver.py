@@ -18,18 +18,6 @@ class SynthDriverProxy32(SynthDriverProxy):
 		return isSynthDriverHost32RuntimeAvailable()
 
 	def __init__(self):
-		import config
-
-		speechSection = config.conf["speech"].get(self.name)
-		if speechSection is not None:
-			# ConfigObj Section is not dict(section)-safe; build a plain dict by key.
-			speechConfig = {k: speechSection[k] for k in speechSection}
-		else:
-			speechConfig = None
-		conn, remoteDriver = createSynthDriver(
-			self.synthDriver32Name,
-			self.synthDriver32Path,
-			speechConfig=speechConfig,
-		)
+		conn, remoteDriver = createSynthDriver(self.synthDriver32Name, self.synthDriver32Path)
 		super().__init__(remoteDriver)
 		self.holdConnection(conn)

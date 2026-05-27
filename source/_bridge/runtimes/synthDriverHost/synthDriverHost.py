@@ -128,10 +128,11 @@ class HostService(Service):
 
 	@Service.exposed
 	def setSpeechConfigForSynth(self, synthName: str, configDict: dict):
+		# nvdajp: Apply the main NVDA speech profile in the 32-bit host (rateBoost, voice, etc.).
 		"""Set the speech config for the given synth so BaseProsodyCommand.defaultValue can read it.
 
 		:param synthName: Name of the synth driver (e.g. "sapi4").
-		:param configDict: Config dict for this synth (e.g. rate, pitch, volume).
+		:param configDict: Config dict for this synth (e.g. rate, pitch, volume, rateBoost).
 		"""
 		import config
 

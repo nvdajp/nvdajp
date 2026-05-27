@@ -11,7 +11,7 @@ from typing import (
 import json
 import rpyc
 from logHandler import log
-
+import config
 from synthDriverHandler import (
 	SynthDriver,
 	synthIndexReached,
@@ -46,12 +46,18 @@ class SynthDriverService(Service):
 		self._synth = synthDriver
 		self._synthIndexReachedCallback = None
 		self._synthDoneSpeakingCallback = None
-
-		# So that getSynth() and speech.commands.BaseProsodyCommand.defaultValue work in this process.
-		# Config (config.conf["speech"][synthDriver.name]) is set separately via setSpeechConfigForSynth.
-		import synthDriverHandler
-
-		synthDriverHandler._curSynth = synthDriver
+		# Ensure default pitch, rate, and volume settings exist in config
+		speechConf = config.conf["speech"]
+		if self._synth.name not in speechConf:
+			synthConf = speechConf[self._synth.name] = {}
+		else:
+			synthConf = speechConf[self._synth.name]
+		if "pitch" not in synthConf:
+			synthConf["pitch"] = self._synth.pitch
+		if "rate" not in synthConf:
+			synthConf["rate"] = self._synth.rate
+		if "volume" not in synthConf:
+			synthConf["volume"] = self._synth.volume
 
 	@Service.exposed
 	def registerSynthIndexReachedNotification(self, callback: Callable[[int], Any]):
@@ -187,16 +193,6 @@ class SynthDriverService(Service):
 		self._synth.cancel()
 
 	@Service.exposed
-	def isSpeaking(self) -> bool:
-		try:
-			isSpeaking = getattr(self._synth, "isSpeaking", None)
-			if callable(isSpeaking):
-				return bool(isSpeaking())
-			return bool(getattr(self._synth, "_isSpeaking", False))
-		except Exception:
-			return False
-
-	@Service.exposed
 	def pause(self, switch: bool):
 		self._synth.pause(switch)
 
@@ -211,6 +207,21 @@ class SynthDriverService(Service):
 		if not any(param == setting.id for setting in self._synth.supportedSettings):
 			raise AttributeError(f"{param} not a supported setting")
 		setattr(self._synth, param, val)
+		# Update local config
+		# So synthCommands can use current defaults.
+		synthConf = config.conf["speech"][self._synth.name]
+		synthConf[param] = val
+
+	@Service.exposed
+	def isSpeaking(self) -> bool:
+		# nvdajp: Accept both callable and bool-style isSpeaking implementations.
+		try:
+			isSpeaking = getattr(self._synth, "isSpeaking", None)
+			if callable(isSpeaking):
+				return bool(isSpeaking())
+			return bool(getattr(self._synth, "_isSpeaking", False))
+		except Exception:
+			return False
 
 	def terminate(self):
 		if self._synthIndexReachedCallback:
