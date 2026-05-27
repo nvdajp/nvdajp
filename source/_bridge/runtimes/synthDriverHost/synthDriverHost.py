@@ -138,7 +138,9 @@ class HostService(Service):
 
 		if "speech" not in config.conf:
 			config.conf["speech"] = {}
-		config.conf["speech"][synthName] = configDict
+		# RPyC may deliver configDict as a netref; store a plain local dict.
+		localConfig = {k: configDict[k] for k in configDict} if configDict else {}
+		config.conf["speech"][synthName] = localConfig
 
 	@Service.exposed
 	def SynthDriver(self, name: str) -> SynthDriverService:
