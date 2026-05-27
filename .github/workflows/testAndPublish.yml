@@ -344,21 +344,22 @@ jobs:
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Run unit tests
+      id: unit-tests
       run: ci/scripts/tests/unitTests.ps1
     - name: Replace relative paths in unit test results
-      if: ${{ failure() }}
+      if: failure() && steps.unit-tests.outcome == 'failure'
       # Junit reports fail on these
       shell: bash
       run: sed -i 's|file="..\\|file="|g' testOutput/unit/unitTests.xml
     - name: Upload artifact
-      if: ${{ failure() }}
+      if: failure() && steps.unit-tests.outcome == 'failure'
       uses: actions/upload-artifact@v7
       with:
         name: Unit tests results (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: testOutput/unit/unitTests.xml
     - name: Publish unit test report
       uses: mikepenz/action-junit-report@v6
-      if: ${{ failure() }}
+      if: failure() && steps.unit-tests.outcome == 'failure'
       with:
         check_name: Unit tests (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         detailed_summary: true
