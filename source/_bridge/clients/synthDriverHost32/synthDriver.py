@@ -18,6 +18,13 @@ class SynthDriverProxy32(SynthDriverProxy):
 		return isSynthDriverHost32RuntimeAvailable()
 
 	def __init__(self):
+		# nvdajp: Ensure the config section exists so GUI/settings ring can persist changes
+		# (e.g. rate) for 32-bit proxied synths such as "sapi4_32".
+		import config
+
+		speechConf = config.conf["speech"]
+		if self.name not in speechConf:
+			speechConf[self.name] = {}
 		conn, remoteDriver = createSynthDriver(
 			self.synthDriver32Name,
 			self.synthDriver32Path,
