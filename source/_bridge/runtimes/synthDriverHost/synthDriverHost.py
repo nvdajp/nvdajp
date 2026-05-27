@@ -127,20 +127,19 @@ class HostService(Service):
 		synthDrivers.__path__.insert(0, path)
 
 	@Service.exposed
-	def setSpeechConfigForSynth(self, synthName: str, configDict: dict):
+	def setSpeechConfigForSynth(self, synthName: str, configJson: str):
 		# nvdajp: Apply the main NVDA speech profile in the 32-bit host (rateBoost, voice, etc.).
 		"""Set the speech config for the given synth so BaseProsodyCommand.defaultValue can read it.
 
 		:param synthName: Name of the synth driver (e.g. "sapi4").
-		:param configDict: Config dict for this synth (e.g. rate, pitch, volume, rateBoost).
+		:param configJson: JSON-encoded config for this synth (e.g. rate, pitch, volume, rateBoost).
 		"""
+		import json
 		import config
 
 		if "speech" not in config.conf:
 			config.conf["speech"] = {}
-		# RPyC may deliver configDict as a netref; store a plain local dict.
-		localConfig = {k: configDict[k] for k in configDict} if configDict else {}
-		config.conf["speech"][synthName] = localConfig
+		config.conf["speech"][synthName] = json.loads(configJson)
 
 	@Service.exposed
 	def SynthDriver(self, name: str) -> SynthDriverService:

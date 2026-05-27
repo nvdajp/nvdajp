@@ -4,6 +4,7 @@
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
 import os
+import json
 import subprocess
 from typing import Any
 import rpyc
@@ -138,7 +139,7 @@ def createSynthDriver(
 	conn.remoteService.installProxies(service, brokerAudio=False)
 	log.debug("Creating SynthDriverProxy over remote SynthDriverService")
 	conn.remoteService.registerSynthDriversPath(synthDriversPath)
-	configDict = _speechConfigDictFor32BitHost(speechConfigName or name)
-	conn.remoteService.setSpeechConfigForSynth(name, configDict)
+	configJson = json.dumps(_speechConfigDictFor32BitHost(speechConfigName or name))
+	conn.remoteService.setSpeechConfigForSynth(name, configJson)
 	synthDriverService = conn.remoteService.SynthDriver(name)
 	return conn, synthDriverService
