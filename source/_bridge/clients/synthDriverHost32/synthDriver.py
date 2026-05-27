@@ -18,18 +18,17 @@ class SynthDriverProxy32(SynthDriverProxy):
 		return isSynthDriverHost32RuntimeAvailable()
 
 	def __init__(self):
+		# nvdajp: Ensure the config section exists so GUI/settings ring can persist changes
+		# (e.g. rate) for 32-bit proxied synths such as "sapi4_32".
 		import config
 
-		speechSection = config.conf["speech"].get(self.name)
-		if speechSection is not None:
-			# ConfigObj Section is not dict(section)-safe; build a plain dict by key.
-			speechConfig = {k: speechSection[k] for k in speechSection}
-		else:
-			speechConfig = None
+		speechConf = config.conf["speech"]
+		if self.name not in speechConf:
+			speechConf[self.name] = {}
 		conn, remoteDriver = createSynthDriver(
 			self.synthDriver32Name,
 			self.synthDriver32Path,
-			speechConfig=speechConfig,
+			speechConfigName=self.name,
 		)
 		super().__init__(remoteDriver)
 		self.holdConnection(conn)

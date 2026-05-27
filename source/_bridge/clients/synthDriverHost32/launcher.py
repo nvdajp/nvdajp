@@ -4,6 +4,7 @@
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
 import os
+import json
 import subprocess
 from typing import Any
 import rpyc
@@ -92,16 +93,28 @@ def isSynthDriverHost32RuntimeAvailable() -> bool:
 	return os.path.isfile(_hostExe)
 
 
+def _speechConfigDictFor32BitHost(speechConfigName: str) -> dict:
+	# nvdajp: Read the NVDA speech profile (e.g. sapi4_32), not the 32-bit module name (sapi4).
+	import config
+
+	speechSection = config.conf["speech"].get(speechConfigName)
+	if speechSection is None:
+		log.warning(
+			"No speech config found for synth '%s'; passing empty config dict to 32-bit synth driver host.",
+			speechConfigName,
+		)
+		return {}
+	return {k: speechSection[k] for k in speechSection}
+
+
 def createSynthDriver(
 	name: str,
 	synthDriversPath: str,
-	speechConfig: dict | None = None,
+	*,
+	speechConfigName: str | None = None,
 ) -> tuple[Connection, SynthDriverService]:
 	"""Start the 32-bit synth driver host process and connect to its RPYC service over the hosts standard pipes.
 	Instructs the host to install proxies that use the given NVDAService for remote calls back into NVDA.
-	:param name: Name of the synth driver module to load (e.g. "sapi4").
-	:param synthDriversPath: Path to the 32-bit synth drivers directory.
-	:param speechConfig: Optional config dict for this synth (e.g. rate, pitch, volume) so BaseProsodyCommand works in the 32-bit process.
 	:returns: The remote SynthDriverHostService instance.
 	"""
 	job = jobObject.Job()
@@ -123,16 +136,10 @@ def createSynthDriver(
 	conn.bgEventLoop(daemon=True)
 	log.debug("Connection to synthDriverHost32 process RPYC service established")
 
-	conn.remoteService.installProxies(service, brokerAudio=True)
+	conn.remoteService.installProxies(service, brokerAudio=False)
 	log.debug("Creating SynthDriverProxy over remote SynthDriverService")
 	conn.remoteService.registerSynthDriversPath(synthDriversPath)
-	# Ensure config.conf["speech"][name] exists in the 32-bit process (BaseProsodyCommand.defaultValue).
-	# When speechConfig is None, an empty dict is passed so the section exists; log so it is visible.
-	if speechConfig is None:
-		log.warning(
-			"No speech config found for synth '%s'; passing empty config dict to 32-bit synth driver host.",
-			name,
-		)
-	conn.remoteService.setSpeechConfigForSynth(name, speechConfig if speechConfig else {})
+	configJson = json.dumps(_speechConfigDictFor32BitHost(speechConfigName or name))
+	conn.remoteService.setSpeechConfigForSynth(name, configJson)
 	synthDriverService = conn.remoteService.SynthDriver(name)
 	return conn, synthDriverService
