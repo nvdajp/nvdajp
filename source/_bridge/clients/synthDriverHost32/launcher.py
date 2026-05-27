@@ -92,23 +92,26 @@ def isSynthDriverHost32RuntimeAvailable() -> bool:
 	return os.path.isfile(_hostExe)
 
 
-def _copySpeechConfigTo32BitHost(remoteService, synthName: str) -> None:
-	# nvdajp: Copy the main NVDA speech profile (rateBoost, voice, etc.) into the 32-bit host.
+def _speechConfigDictFor32BitHost(speechConfigName: str) -> dict:
+	# nvdajp: Read the NVDA speech profile (e.g. sapi4_32), not the 32-bit module name (sapi4).
 	import config
 
-	speechSection = config.conf["speech"].get(synthName)
+	speechSection = config.conf["speech"].get(speechConfigName)
 	if speechSection is None:
 		log.warning(
 			"No speech config found for synth '%s'; passing empty config dict to 32-bit synth driver host.",
-			synthName,
+			speechConfigName,
 		)
-		configDict: dict = {}
-	else:
-		configDict = {k: speechSection[k] for k in speechSection}
-	remoteService.setSpeechConfigForSynth(synthName, configDict)
+		return {}
+	return {k: speechSection[k] for k in speechSection}
 
 
-def createSynthDriver(name: str, synthDriversPath: str) -> tuple[Connection, SynthDriverService]:
+def createSynthDriver(
+	name: str,
+	synthDriversPath: str,
+	*,
+	speechConfigName: str | None = None,
+) -> tuple[Connection, SynthDriverService]:
 	"""Start the 32-bit synth driver host process and connect to its RPYC service over the hosts standard pipes.
 	Instructs the host to install proxies that use the given NVDAService for remote calls back into NVDA.
 	:returns: The remote SynthDriverHostService instance.
@@ -135,6 +138,7 @@ def createSynthDriver(name: str, synthDriversPath: str) -> tuple[Connection, Syn
 	conn.remoteService.installProxies(service, brokerAudio=False)
 	log.debug("Creating SynthDriverProxy over remote SynthDriverService")
 	conn.remoteService.registerSynthDriversPath(synthDriversPath)
-	_copySpeechConfigTo32BitHost(conn.remoteService, name)
+	configDict = _speechConfigDictFor32BitHost(speechConfigName or name)
+	conn.remoteService.setSpeechConfigForSynth(name, configDict)
 	synthDriverService = conn.remoteService.SynthDriver(name)
 	return conn, synthDriverService

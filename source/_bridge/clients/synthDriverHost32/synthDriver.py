@@ -18,6 +18,10 @@ class SynthDriverProxy32(SynthDriverProxy):
 		return isSynthDriverHost32RuntimeAvailable()
 
 	def __init__(self):
-		conn, remoteDriver = createSynthDriver(self.synthDriver32Name, self.synthDriver32Path)
+		conn, remoteDriver = createSynthDriver(
+			self.synthDriver32Name,
+			self.synthDriver32Path,
+			speechConfigName=self.name,
+		)
 		super().__init__(remoteDriver)
 		self.holdConnection(conn)
