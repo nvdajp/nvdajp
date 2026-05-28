@@ -72,6 +72,16 @@ if ($isCI) {
 }
 Set-Location $repoRoot
 
+# CP932 console for MeCab (dictionary built with SJIS). Same as CI testAndPublish.yml.
+# PYTHONUTF8 handles Python strings; chcp 932 aligns MeCab DLL / Windows API path behavior.
+$null = cmd /c "chcp 932 >nul 2>&1"
+try {
+    $chcpLine = (cmd /c chcp 2>&1 | Out-String).Trim()
+    Write-Host "Console code page: $chcpLine"
+} catch {
+    Write-Host "[WARN] Could not read chcp output: $_" -ForegroundColor Yellow
+}
+
 # Set REPO_ROOT environment variable for long-term maintainability
 # This allows scripts to get repo root without depending on miscDepsJp folder structure
 $env:REPO_ROOT = $repoRoot
