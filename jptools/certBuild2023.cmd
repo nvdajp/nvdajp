@@ -22,6 +22,11 @@ echo RELEASE is %RELEASE%
 rem Set Python UTF-8 mode for all Python commands (needed for JP tests and smoke tests)
 set PYTHONUTF8=1
 
+rem MeCab dictionary is built with CP932 (jtalkSync / dicrc). Match CI (testAndPublish.yml):
+rem use console code page 932 so MeCab DLL path handling matches dictionary build.
+rem PowerShell 7 defaults to UTF-8 (65001) and can break translator2 smoke tests without this.
+chcp 932 >nul 2>&1
+
 rem Timestamp server (override via env if needed)
 rem Note: HTTP (not HTTPS) is intentional:
 rem - Microsoft Authenticode spec uses HTTP 1.1 POST for timestamp requests
@@ -120,7 +125,7 @@ call scons.bat launcher %SCONSARGS%
 rem Run JP smoke tests (JpBrailleTests and JtalkTests) after the launcher build completes
 rem Note: the launcher build ensures jtalkSync runs via its dependency chain when needed, so DLLs
 rem and dictionaries should be up to date
-powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
+chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
 @if not "%ERRORLEVEL%"=="0" goto onerror
 if not defined SKIP_SIGNING (
     call scons.bat jpVerifySignatures %SCONSARGS%
