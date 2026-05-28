@@ -39,8 +39,8 @@ env:
   supportedRunners: '["windows-2022", "windows-2025-vs2026"]'
   defaultArch: x64
   supportedArchitectures: '["x64"]'
-  defaultPythonVersion: '3.13.12'
-  supportedPythonVersions: '["3.13.12"]'
+  defaultPythonVersion: '3.13.13'
+  supportedPythonVersions: '["3.13.13"]'
   # JP: Bump SCONS_CACHE_SUFFIX only when the JTalk/MeCab dic *build process* changes (e.g. make_jdic refactor, DIC_CODEPAGE requirement).
   # Bumped to v3: CI Verify JTalk dictionary was failing (一人→ヒトリ expected, got 1ニン) due to cached dic without nvdajp custom entries.
   # Do not bump on every CI failure; investigate logs first.

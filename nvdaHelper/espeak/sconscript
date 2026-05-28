@@ -194,15 +194,8 @@ def cleanFiles_preBuildAction(target, source, env):
 	"""
 	removeEmoji()
 	# refer to CLEANFILES in include\espeak\Makefile.am
-	for f in (
-		# These files are created when we moved them from espeak/dictsource/extra/*_*.
-		os.path.join(espeakRepo.abspath, "dictsource", "ru_listx"),
-		os.path.join(espeakRepo.abspath, "dictsource", "cmn_listx"),
-		os.path.join(espeakRepo.abspath, "dictsource", "yue_listx"),
-	):
-		if os.path.exists(f):
-			print(f"Removing listx file: {f}")
-			os.remove(f)
+	# NOTE: `*_listx` files are now managed by the build (copied from dictsource/extra).
+	# Deleting them here can race with that copy and cause sporadic build failures in CI.
 
 
 env["BUILDERS"]["espeak_compilePhonemeData"] = Builder(
