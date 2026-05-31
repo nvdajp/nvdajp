@@ -122,10 +122,14 @@ rem tracking is correctly configured; this script does not independently verify 
 rem jtalkSync actually executed.
 call scons.bat launcher %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-rem Run JP smoke tests (JpBrailleTests and JtalkTests) after the launcher build completes
-rem Note: the launcher build ensures jtalkSync runs via its dependency chain when needed, so DLLs
-rem and dictionaries should be up to date
-chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
+rem Force a clean JTalk dictionary rebuild before smoke tests (match CI testAndPublish.yml).
+rem Launcher may have run jtalkSync earlier; a fresh dic avoids CP932/encoding drift on local builds.
+chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\forceJtalkDictionaryRebuild.ps1
+@if not "%ERRORLEVEL%"=="0" goto onerror
+chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\verifyJtalkDictionary.ps1
+@if not "%ERRORLEVEL%"=="0" goto onerror
+rem Run JP smoke tests (JpBrailleTests and JtalkTests) after dictionary verify
+chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall
 @if not "%ERRORLEVEL%"=="0" goto onerror
 if not defined SKIP_SIGNING (
     call scons.bat jpVerifySignatures %SCONSARGS%
