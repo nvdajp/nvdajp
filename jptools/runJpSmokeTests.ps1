@@ -72,14 +72,16 @@ if ($isCI) {
 }
 Set-Location $repoRoot
 
-# CP932 console for MeCab (dictionary built with SJIS). Same as CI testAndPublish.yml.
-# PYTHONUTF8 handles Python strings; chcp 932 aligns MeCab DLL / Windows API path behavior.
-$null = cmd /c "chcp 932 >nul 2>&1"
-try {
-    $chcpLine = (cmd /c chcp 2>&1 | Out-String).Trim()
-    Write-Host "Console code page: $chcpLine"
-} catch {
-    Write-Host "[WARN] Could not read chcp output: $_" -ForegroundColor Yellow
+# CP932 console for MeCab on local Windows builds. GHA runners ignore chcp 932 reliably;
+# CI uses UTF-8 dictionary (make_jdic.py) + PYTHONUTF8 instead.
+if (-not $isCI) {
+	$null = cmd /c "chcp 932 >nul 2>&1"
+	try {
+		$chcpLine = (cmd /c chcp 2>&1 | Out-String).Trim()
+		Write-Host "Console code page: $chcpLine"
+	} catch {
+		Write-Host "[WARN] Could not read chcp output: $_" -ForegroundColor Yellow
+	}
 }
 
 # Set REPO_ROOT environment variable for long-term maintainability
@@ -300,34 +302,36 @@ if (-not $isCI) {
 }
 
 if (-not $SkipOverlay) {
-    # In CI, force dictionary rebuild so custom entries (一人→ヒトリ etc.) are included.
-    # jtalkSync skips rebuild when DIC_VERSION and DIC_CODEPAGE exist in cache; removing
-    # them forces a fresh build via make_jdic.py (see projectDocs/jp/tab-character-analysis.md).
     if ($isCI) {
+        # buildNVDA uploads a verified JTalk artifact; jpSmokeTests restores it before this script runs.
+        # Do not delete DIC_VERSION / rerun jtalkSync here — this job has no MSVC setup and rebuilds
+        # are flaky (custom entries like 二百十日 missing → translator2 failures).
         $dicDir = Join-Path $repoRoot "source\synthDrivers\jtalk\dic"
         $dicVersion = Join-Path $dicDir "DIC_VERSION"
-        $dicCodepage = Join-Path $dicDir "DIC_CODEPAGE"
-        if (Test-Path $dicVersion) {
-            Remove-Item $dicVersion -Force
-            Write-Host "CI: Removed DIC_VERSION to force dictionary rebuild"
+        $sysDic = Join-Path $dicDir "sys.dic"
+        $artifactDicReady = $false
+        if ((Test-Path $sysDic) -and (Test-Path $dicVersion)) {
+            $versionText = Get-Content $dicVersion -Raw -ErrorAction SilentlyContinue
+            if ($versionText -match "nvdajp") {
+                $artifactDicReady = $true
+                Write-Host "CI: Using verified JTalk dictionary from buildNVDA artifact (skip jtalkSync rebuild)"
+            }
         }
-        if (Test-Path $dicCodepage) {
-            Remove-Item $dicCodepage -Force
-            Write-Host "CI: Removed DIC_CODEPAGE to force dictionary rebuild"
-        }
-        Write-Host "CI: Running jtalkSync to build dictionary with custom entries..."
-        & "$repoRoot\scons.bat" jtalkSync
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "Failed to clean jtalkSync with exit code $LASTEXITCODE"
-            exit $LASTEXITCODE
+        if (-not $artifactDicReady) {
+            Write-Host "CI: JTalk artifact dictionary not verified; running jtalkSync..."
+            & "$repoRoot\scons.bat" jtalkSync
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+                exit $LASTEXITCODE
+            }
         }
     } else {
         Write-Host "Preparing JTalk assets via scons jtalkSync..."
-    }
-    & "$repoRoot\scons.bat" jtalkSync
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
-        exit $LASTEXITCODE
+        & "$repoRoot\scons.bat" jtalkSync
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
+        }
     }
 }
 

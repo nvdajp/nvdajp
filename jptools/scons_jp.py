@@ -664,15 +664,15 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				except Exception as e:
 					print(f"jtalkSync: failed to read DIC_VERSION at {version_file}: {e}")
 
-			# Check DIC_CODEPAGE (must be utf-8)
+			# Check DIC_CODEPAGE (must match UTF-8 make_jdic output; not console chcp)
 			has_valid_cp = False
 			cp_file = dic_dir / "DIC_CODEPAGE"
 			if not cp_file.exists():
 				print(f"jtalkSync: DIC_CODEPAGE missing for {dic_dir}; will rebuild.")
 			else:
 				try:
-					cp_text = cp_file.read_text(encoding="utf-8").strip()
-					if cp_text.lower() == "utf-8":
+					cp_text = cp_file.read_text(encoding="utf-8").strip().lower()
+					if cp_text in ("utf-8", "utf8", "932"):
 						has_valid_cp = True
 					else:
 						print(f"jtalkSync: DIC_CODEPAGE is {cp_text} (expected utf-8); rebuilding.")
@@ -879,7 +879,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				print(f"jtalkSync: nmake/make_jdic (mecab-naist-jdic) failed with rc={rc_dic}")
 				return rc_dic
 
-			# Write DIC_CODEPAGE marker to ensure dictionary was built with UTF-8 settings.
+			# Write DIC_CODEPAGE marker (UTF-8 dictionary from make_jdic.py; not console code page)
 			try:
 				(dic_dst / "DIC_CODEPAGE").write_text("utf-8", encoding="utf-8")
 			except Exception as e:
