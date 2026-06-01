@@ -137,7 +137,8 @@ jobs:
         }
     - name: Prepare JTalk (JP-specific)
       shell: cmd
-      run: chcp 932 >nul 2>&1 && scons jtalkPrep jtalkSync %sconsArgs% %sconsCores%
+      # Dictionary is UTF-8 (make_jdic.py); do not rely on chcp 932 in GHA — it does not propagate reliably.
+      run: scons jtalkPrep jtalkSync %sconsArgs% %sconsCores%
     - name: Diagnose JTalk dictionary (JP-specific)
       if: always()
       shell: pwsh
@@ -403,10 +404,12 @@ jobs:
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Run JP smoke tests
-      shell: cmd
-      # BEGIN JP PATCH (set codepage 932; SkipOverlay keeps buildNVDA JTalk artifact — do not rerun jtalkSync here)
-      run: chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
-      # END JP PATCH
+      shell: pwsh
+      env:
+        PYTHONUTF8: "1"
+        PYTHONIOENCODING: utf-8
+      # SkipOverlay: use buildNVDA JTalk artifact; UTF-8 verify path (no chcp 932 in GHA).
+      run: ./jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
     - name: Upload JP smoke test artifacts
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
