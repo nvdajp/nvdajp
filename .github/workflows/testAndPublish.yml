@@ -404,8 +404,8 @@ jobs:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
     - name: Run JP smoke tests
       shell: cmd
-      # BEGIN JP PATCH (set codepage 932 for MeCab dictionary compatibility)
-      run: chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools/runJpSmokeTests.ps1
+      # BEGIN JP PATCH (set codepage 932; SkipOverlay keeps buildNVDA JTalk artifact — do not rerun jtalkSync here)
+      run: chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
       # END JP PATCH
     - name: Upload JP smoke test artifacts
       if: ${{ failure() }}

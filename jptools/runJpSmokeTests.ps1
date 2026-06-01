@@ -300,26 +300,28 @@ if (-not $isCI) {
 }
 
 if (-not $SkipOverlay) {
-    # In CI, force dictionary rebuild so custom entries (一人→ヒトリ etc.) are included.
-    # jtalkSync skips rebuild when DIC_VERSION and DIC_CODEPAGE exist in cache; removing
-    # them forces a fresh build via make_jdic.py (see projectDocs/jp/tab-character-analysis.md).
     if ($isCI) {
+        # buildNVDA uploads a verified JTalk artifact; jpSmokeTests restores it before this script runs.
+        # Do not delete DIC_VERSION / rerun jtalkSync here — this job has no MSVC setup and rebuilds
+        # are flaky (custom entries like 二百十日 missing → translator2 failures).
         $dicDir = Join-Path $repoRoot "source\synthDrivers\jtalk\dic"
         $dicVersion = Join-Path $dicDir "DIC_VERSION"
-        $dicCodepage = Join-Path $dicDir "DIC_CODEPAGE"
-        if (Test-Path $dicVersion) {
-            Remove-Item $dicVersion -Force
-            Write-Host "CI: Removed DIC_VERSION to force dictionary rebuild"
+        $sysDic = Join-Path $dicDir "sys.dic"
+        $artifactDicReady = $false
+        if ((Test-Path $sysDic) -and (Test-Path $dicVersion)) {
+            $versionText = Get-Content $dicVersion -Raw -ErrorAction SilentlyContinue
+            if ($versionText -match "nvdajp") {
+                $artifactDicReady = $true
+                Write-Host "CI: Using verified JTalk dictionary from buildNVDA artifact (skip jtalkSync rebuild)"
+            }
         }
-        if (Test-Path $dicCodepage) {
-            Remove-Item $dicCodepage -Force
-            Write-Host "CI: Removed DIC_CODEPAGE to force dictionary rebuild"
-        }
-        Write-Host "CI: Running jtalkSync to build dictionary with custom entries..."
-        & "$repoRoot\scons.bat" jtalkSync
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
-            exit $LASTEXITCODE
+        if (-not $artifactDicReady) {
+            Write-Host "CI: JTalk artifact dictionary not verified; running jtalkSync..."
+            & "$repoRoot\scons.bat" jtalkSync
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "Failed to run scons jtalkSync with exit code $LASTEXITCODE"
+                exit $LASTEXITCODE
+            }
         }
     } else {
         Write-Host "Preparing JTalk assets via scons jtalkSync..."
