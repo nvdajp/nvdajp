@@ -577,6 +577,7 @@ env.Clean([dist], buildDir)
 
 # BEGIN JP PATCH (build dependencies)
 # Register JP builders after dist is defined so jpCertExtras can depend on dist target
+jp_cert_extras_stamp = None
 try:
 	import jptools.scons_jp as scons_jp
 
@@ -584,7 +585,7 @@ try:
 	# for a correct build layout regardless of publisher.
 	# Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds)
 	# Pass sourceDir so it can depend on jtalkSync with current TARGET_ARCH (ensures correct architecture-specific builds)
-	scons_jp.register_jp_builders(env, dist_target=dist, source_dir=sourceDir)
+	jp_cert_extras_stamp = scons_jp.register_jp_builders(env, dist_target=dist, source_dir=sourceDir)
 except Exception as e:
 	# Never fail the build if JP helpers are unavailable.
 	# Log the exception for debugging purposes (e.g., during development)
@@ -618,6 +619,10 @@ if certFile or apiSigningToken or useCertStore:
 # END JP PATCH (certificate store signing support)
 	env.AddPostAction(launcher, [env["signExec"]])
 env.Alias("launcher", launcher)
+# BEGIN JP PATCH (build dependencies)
+if jp_cert_extras_stamp is not None:
+	scons_jp.register_jp_launcher_deps(env, launcher, jp_cert_extras_stamp)
+# END JP PATCH (build dependencies)
 
 clientArchive = env.ZipArchive(
 	outputDir.File("%s_controllerClient.zip" % outFilePrefix),
