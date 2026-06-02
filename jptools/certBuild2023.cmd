@@ -116,18 +116,17 @@ if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME if
 rem Build synthDriverHost32 runtime (32-bit Python for SAPI4/5) before launcher
 powershell -ExecutionPolicy Bypass -File jptools\buildSynthDriverHost32.ps1
 @if not "%ERRORLEVEL%"=="0" goto onerror
+rem Force a clean JTalk dictionary rebuild before dist/launcher (match CI testAndPublish.yml).
+rem dist copies sourceDir at build time; rebuilding after launcher would leave stale dic in the installer.
+chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\forceJtalkDictionaryRebuild.ps1
+@if not "%ERRORLEVEL%"=="0" goto onerror
+chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\verifyJtalkDictionary.ps1
+@if not "%ERRORLEVEL%"=="0" goto onerror
 rem Build launcher (final target)
-rem Note: we only invoke the "launcher" target here and rely on the SCons dependency chain
-rem (launcher -> dist -> source -> jtalkSync -> jtalkPrep, and launcher -> jpCertExtras)
-rem to run intermediate targets such as jtalkSync and jtalkPrep. This reduces redundant
-rem scons.bat invocations and jtalkSync executions, but assumes that SCons' dependency
-rem tracking is correctly configured; this script does not independently verify that
-rem jtalkSync actually executed.
+rem Note: dist copies sourceDir after jtalkSync; dictionary rebuild above ensures packaged dic is fresh.
 call scons.bat launcher %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
-rem Run JP smoke tests (JpBrailleTests and JtalkTests) after the launcher build completes
-rem Note: the launcher build ensures jtalkSync runs via its dependency chain when needed, so DLLs
-rem and dictionaries should be up to date
+rem Run JP smoke tests (JpBrailleTests and JtalkTests) after dictionary verify
 chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
 @if not "%ERRORLEVEL%"=="0" goto onerror
 if not defined SKIP_SIGNING (

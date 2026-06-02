@@ -4,20 +4,38 @@
 
 .DESCRIPTION
     Runs a quick sanity check that translator2 produces expected output for
-    custom-dictionary entries. Use after jtalkSync to catch CI cache pollution
+    custom-dictionary entries. Use after jtalkSync to catch cache pollution
     or incorrect dictionary builds before running full smoke tests.
 
-    Can be run locally or in CI (e.g. after buildNVDA's Prepare JTalk step).
+    - CI (GITHUB_ACTIONS): basic cases only (stable on GHA; no chcp 932 reliance).
+    - Local / certBuild: strict custom-dictionary coverage before release smoke tests.
+
+.PARAMETER Strict
+    Force strict verification (basic + extended custom-dic cases).
+
+.PARAMETER Basic
+    Force basic verification only (same as CI).
 
 .EXAMPLE
     .\jptools\verifyJtalkDictionary.ps1
-    Run after: scons jtalkSync
+    Local default: strict verification after scons jtalkSync.
 
 .EXAMPLE
-    # CI (buildNVDA) で jtalkSync 直後に実行する場合
-    chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
+    .\jptools\verifyJtalkDictionary.ps1 -Basic
+    CI-equivalent sanity check only.
 #>
+[CmdletBinding()]
+param(
+    [switch]$Strict,
+    [switch]$Basic
+)
+
 $ErrorActionPreference = 'Stop'
+
+if ($Strict -and $Basic) {
+    Write-Error "Use -Strict or -Basic, not both."
+    exit 1
+}
 
 $isCI = $env:GITHUB_ACTIONS -eq "true"
 if ($isCI) {
@@ -27,13 +45,24 @@ if ($isCI) {
 }
 Set-Location $repoRoot
 
+if ($Strict) {
+    $env:JP_VERIFY_DIC_MODE = "strict"
+} elseif ($Basic) {
+    $env:JP_VERIFY_DIC_MODE = "basic"
+} else {
+    Remove-Item Env:JP_VERIFY_DIC_MODE -ErrorAction SilentlyContinue
+}
+
 $jtalkSource = Join-Path $repoRoot "source\synthDrivers\jtalk"
 $jptoolsDir = Join-Path $repoRoot "miscDepsJp\jptools"
 $env:PYTHONPATH = "$jtalkSource;$jptoolsDir"
-# CI uses cp1252; ensure Python stdout/stderr use UTF-8 to avoid UnicodeEncodeError on Japanese
 $env:PYTHONUTF8 = "1"
 
-# Prefer .venv Python if it exists (same as runJpSmokeTests)
+# Local certBuild: chcp 932 may help MeCab on Japanese Windows. Skip on GHA.
+if (-not $isCI) {
+    $null = cmd /c "chcp 932 >nul 2>&1"
+}
+
 $pythonExe = Join-Path $repoRoot ".venv\Scripts\python.exe"
 if (-not (Test-Path $pythonExe)) {
     $pythonExe = "python"
@@ -45,6 +74,7 @@ if (-not (Test-Path $verifyScript)) {
     exit 1
 }
 
-Write-Host "Verifying JTalk dictionary (一人→ヒトリ, etc.)..."
+$modeHint = if ($env:JP_VERIFY_DIC_MODE) { $env:JP_VERIFY_DIC_MODE } elseif ($isCI) { "basic (CI default)" } else { "strict (local default)" }
+Write-Host "Verifying JTalk dictionary (mode: $modeHint)..."
 & $pythonExe $verifyScript
 exit $LASTEXITCODE
