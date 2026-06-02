@@ -1201,33 +1201,18 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 
 	jp_cert_extras_stamp = env.File("output/_jp_cert_extras.stamp")
 	env.AlwaysBuild(jp_cert_extras_stamp)
-	# Make jpCertExtras depend on dist target to ensure dist/ is fully built before signing
-	# This ensures correct ordering even in parallel builds (--all-cores)
+	# Order after dist without using dist as a Command source.
+	# Using dist as source inherits NVDADist signExec File nodes (e.g. dist/l10nUtil.exe)
+	# as implicit dependencies; those are side effects, not SCons targets, and fail under -j2.
+	env.Command(jp_cert_extras_stamp, [], _cert_extras)
 	if dist_target is not None:
-		# Use dist target from sconstruct (most reliable for parallel builds)
-		env.Command(jp_cert_extras_stamp, dist_target, _cert_extras)
+		env.Depends(jp_cert_extras_stamp, dist_target)
 	else:
-		# Fallback: use dist directory node (less safe in parallel builds, but works)
-		dist_dir_node = env.Dir("dist")
-		env.Command(jp_cert_extras_stamp, dist_dir_node, _cert_extras)
+		env.Depends(jp_cert_extras_stamp, env.Dir("dist"))
 	env.Alias("jpCertExtras", jp_cert_extras_stamp)
 
-	# Add dependency: launcher depends on jpCertExtras (only when signing is configured)
-	# This ensures dist/ DLLs are signed before launcher includes them.
-	# For non-cert builds, jpCertExtras will skip gracefully (returns 0 when signExec is None).
-	try:
-		signExec = env.get("signExec")
-		certFile = env.get("certFile")
-		apiSigningToken = env.get("apiSigningToken")
-		# Only add dependency if signing is configured
-		if signExec or certFile or apiSigningToken:
-			# Use env.Alias() to get the launcher alias (same pattern as sconstruct L401, L724)
-			launcher_alias = env.Alias("launcher")
-			if launcher_alias:
-				env.Depends(launcher_alias, jp_cert_extras_stamp)
-	except Exception:
-		# If launcher alias is not available, that's okay (non-cert builds, etc.)
-		pass
+	# launcher depends on jpCertExtras; wired in sconstruct after launcher is defined
+	# (register_jp_builders runs before launcher exists, so Depends cannot be set here).
 
 	# Clean up old version directories in dist/lib/, dist/lib64/, dist/libArm64/
 	# to prevent signature verification failures from old unsigned files.
@@ -1469,3 +1454,20 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 	verify_all_env.AlwaysBuild(jp_verify_all_stamp)
 	verify_all_env.Command(jp_verify_all_stamp, [], _verify_signatures)
 	env.Alias("jpVerifySignaturesAll", jp_verify_all_stamp)
+
+	return jp_cert_extras_stamp
+
+
+def register_jp_launcher_deps(env: Any, launcher: Any, jp_cert_extras_stamp: Any) -> None:
+	"""Ensure launcher waits for jpCertExtras when signing is enabled.
+
+	Must be called from sconstruct after the launcher target is created.
+	"""
+	try:
+		signExec = env.get("signExec")
+		certFile = env.get("certFile")
+		apiSigningToken = env.get("apiSigningToken")
+		if signExec or certFile or apiSigningToken:
+			env.Depends(launcher, jp_cert_extras_stamp)
+	except Exception:
+		pass
