@@ -463,18 +463,9 @@ def NVDADistGenerator(target, source, env, for_signature):
 
 	# BEGIN JP PATCH (certificate store signing support)
 	if certFile or apiSigningToken or useCertStore:
-		# nvda_synthDriverHost.exe: JP signs it via buildSynthDriverHost32.ps1 before scons; upstream
-		# added it here with "if not os.path.isfile(...): continue" but that broke the 4 exes (at
-		# generator time dist does not exist yet). JP keeps the 4 exes only.
-		for prog in "nvda_noUIAccess.exe", "nvda_uiAccess.exe", "nvda_slave.exe", "l10nUtil.exe":
-			# Avoid late-binding issues in lambdas: bind `path` and `node` by value.  # nvdajp
-			path = os.path.join(target[0].path, prog)  # nvdajp
-			node = File(path)  # nvdajp
-			action.append(
-				lambda target, source, env, pathByVal=path, nodeByVal=node: (
-					env["signExec"]([nodeByVal], source, env) if os.path.isfile(pathByVal) else None
-				),
-			)
+		# JP signs dist/*.exe via jpCertExtras after dist is built.  # nvdajp
+		# Signing these here (as part of NVDADistGenerator) introduces implicit dependencies on
+		# dist/l10nUtil.exe etc. which are not SCons targets, and can fail under -j2.  # nvdajp
 	# END JP PATCH (certificate store signing support)
 
 	action.extend((Delete(buildVersionFn), Delete(importlib.util.cache_from_source(buildVersionFn))))

@@ -1158,6 +1158,20 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				candidates.append(dll_path)
 			else:
 				missing_required.append(dll_path)
+
+		# Sign critical EXEs in dist/ (certificate store builds).
+		# These were previously signed as part of NVDADistGenerator, but that introduces implicit
+		# dependencies on dist/*.exe which are side effects, not SCons targets, and can fail under -j2.
+		for exe_name in [
+			"nvda_noUIAccess.exe",
+			"nvda_uiAccess.exe",
+			"nvda_slave.exe",
+			"l10nUtil.exe",
+			"uninstall.exe",
+		]:
+			exe_path = dist_dir / exe_name
+			if exe_path.exists():
+				candidates.append(exe_path)
 		# Sign files in dist/lib/<version>/ (nvdaHelper*.dll, etc.)
 		# These files are copied from source/ to dist/ during dist build, but may lose signatures
 		# during the copy process. We sign them here to ensure they are signed before launcher build.
