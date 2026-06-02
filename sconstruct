@@ -466,6 +466,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 		# JP signs dist/*.exe via jpCertExtras after dist is built.  # nvdajp
 		# Signing these here (as part of NVDADistGenerator) introduces implicit dependencies on
 		# dist/l10nUtil.exe etc. which are not SCons targets, and can fail under -j2.  # nvdajp
+		pass  # nvdajp
 	# END JP PATCH (certificate store signing support)
 
 	action.extend((Delete(buildVersionFn), Delete(importlib.util.cache_from_source(buildVersionFn))))
