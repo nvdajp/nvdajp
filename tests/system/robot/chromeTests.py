@@ -3095,7 +3095,7 @@ def test_waic_as_0029_02():
 	actualSpeech = _chrome.getSpeechAfterTab()
 	_asserts.strings_match(
 		actualSpeech,
-		"名前  edit  aria-describedbyでリンクされたこの分野のちょっとした指示です ideographic period  blank\nFocus mode",
+		"form landmark\n名前  edit  aria-describedbyでリンクされたこの分野のちょっとした指示です ideographic period  blank\nFocus mode",
 	)
 
 
