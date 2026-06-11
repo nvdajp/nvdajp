@@ -245,6 +245,18 @@ def Mecab_initialize(
 	dic: str | Path | None = None,
 	user_dics: list[str] | None = None,
 ) -> None:
+	"""Initialize or reuse the process-global MeCab tagger.
+
+	If a tagger already exists but the requested ``(dic, user_dics)`` differs
+	from ``_mecab_config``, the old tagger is destroyed and rebuilt. Previously
+	the first successful initialization won for the rest of the process (silent
+	no-op on later calls), which made jpSmokeTests order-dependent. Production
+	callers such as ``translator2.initialize`` and ``jtalkDriver`` normally pass
+	the same ``user_dics`` and are unaffected.
+
+	Config comparison and ``mecab_new`` run outside ``lock``; smoke tests are
+	single-threaded. See ``projectDocs/jp/tab-character-analysis.md`` (2026-06-11).
+	"""
 	if libmecab_dir is None or dic is None:
 		raise ValueError("libmecab_dir and dic must be provided")
 	mecab_dll = str(Path(libmecab_dir) / "libmecab.dll")

@@ -833,12 +833,63 @@ nvdajp チェックやマーカー削除では根本解決しなかったため�
 
 ---
 
+## MeCab 初期化の実行順依存と PR #663 (2026-06-11)
+
+### 事象
+
+jpSmokeTests（`miscDepsJp/jptools/test.py`）は 1 プロセスで複数モジュールが共有する process-global な MeCab tagger を使う。
+修正前の `Mecab_initialize` は一度 tagger が存在すると **設定が変わっても silent no-op** だったため、
+「どのテストが先に初期化したか」で結果が変わるフレークがあった。
+
+### jpSmokeTests の unittest 実行順（クラス名のアルファベット順）
+
+`python -m unittest miscDepsJp.jptools.test` ではクラス名順に実行される:
+
+1. **`JpBrailleTests`** — `test_translator2` が `translator2.initialize(..., user_dics)` で **ユーザー辞書付き** tagger を構築
+2. **`JtalkPrepareTests`** / **`JtalkTests`** — `jtalk_pipeline_probe` 等が `Mecab_initialize(..., dic)` で **base 辞書（user_dics なし）** を要求
+3. **`MecabTests`**（**最後**）— `runTasks(enableUserDic=False)` → `runTasks(enableUserDic=True)`
+
+Braille パイプライン docstring の「1番目/3番目」は **jpBrailleRunner 内の処理順** であり、unittest クラス順とは別。
+
+### 修正前のフレークの実態
+
+典型的な jpSmokeTests では `test_translator2` が先に user 辞書で MeCab を初期化する。
+その後、`jtalk_pipeline_probe` や `runTasks(enableUserDic=False)` が base 辞書を要求しても
+`Mecab_initialize` が no-op のため **user 辞書付き tagger のまま** テストが走る。
+これが harness 期待値との不一致や「実行順で結果が変わる」原因だった。
+
+逆方向（base 先 → `enableUserDic=True` が no-op）も同じ構造で起こりうる。
+
+### PR #663 の修正内容
+
+* `_mecab_config` で `(dic, user_dics)` を記録し、要求設定が異なれば `Mecab_terminate()` 後に tagger を再構築
+* `MecabFeatures` のロック例外安全化、`get_reading` の明示的 `with lock`、`mc_malloc` NULL チェック
+* `mecab_debug.log` は import 時に 1 回 truncate（`runTasks` 内だと Braille/JTalk テストのログを消してしまうため）
+
+Codex レビュー P2（user 辞書実行後の teardown）は、**現スイートでは MecabTests が最後のため被害者がいない**。
+`_mecab_config` による lazy rebuild は **実行順に依存しない堅牢化** として入れたもので、
+将来のテスト追加や `-TestFilter` での部分実行でも設定ミスマッチが silent に残らないようにする。
+
+### production への影響
+
+* `translator2.initialize` と `jtalkDriver` は同じ `user_dics` を渡すのが通常で、動作は変わらない
+* 挙動変更: 従来は「先に成功した初期化が勝ち続ける」→ 修正後は「設定が違えば後から作り直す」
+* 設定比較〜 `mecab_new` は lock 外（単一スレッドの smoke test では問題なし。従来からの構造）
+
+### 参照
+
+* PR: <https://github.com/nvdajp/nvdajp/pull/663>
+* 実装: `source/synthDrivers/jtalk/mecab.py`, `miscDepsJp/jptools/mecabRunner.py`
+
+---
+
 ## test_translator2 の失敗と辞書ビルドの非再現性 (2026-06-11調査)
 
 ### 事象
 
 PR #663 の CI（run 27345314857 / 27344580039）で jpSmokeTests の `test_translator2` が失敗した。
 failure パターンは従来の「一人→1ニン」系とは別で、`verify_dic.py` の CASES_STRICT 相当のエントリが落ちた。
+**MeCab 初期化の実行順依存（上節）とは別問題**である。
 
 | 入力 | 期待値 | 実際の結果 |
 |------|--------|-----------|

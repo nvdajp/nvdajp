@@ -53,6 +53,7 @@ JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、G
 ただしローカルで通っても、CI の辞書ビルドはランナーイメージ版（ツールチェーン）依存で異なる `sys.dic` を生成しうる。
 ランナー差分を疑う場合は、失敗ランと成功ランの `JTalk runtime` artifact の `sys.dic` ハッシュと
 Runner Image Version を比較する（詳細: `projectDocs/jp/tab-character-analysis.md` の 2026-06-11 調査）。
+MeCab 初期化の実行順依存（jpSmokeTests 内で process-global な tagger が意図しない辞書設定のまま残る問題）も同ドキュメントの PR #663 節を参照。
 `Verify JTalk dictionary` は UTF-8 実行を優先し、`jtalkSync` や smoke test のようなビルド・実行系は `chcp 932` 前提を崩さない。
 
 ## ポリシー（抜粋）

@@ -200,6 +200,7 @@ eng2Harness.json の `v1.4` など、小数点を含むケースの期待値は�
 1. **`miscDepsJp/jptools/test.py`**:
    * unittest ベースのテストランナー
    * `JpBrailleTests` クラスで `test_translator2()` / `test_translator1()` / `test_translator_louis()` / `test_eng2_grade1()` / `test_eng2_ueb_g2()` / `test_eng2_us_g2()` を定義
+   * unittest は**クラス名のアルファベット順**で実行する: `JpBrailleTests` → `JtalkPrepareTests` / `JtalkTests` → `MecabTests`（最後）。`test_translator2` は user 辞書で MeCab を初期化し、後続の `jtalk_pipeline_probe` や `MecabTests.runTasks(False)` は base 辞書を要求する。PR #663 以前は `Mecab_initialize` が silent no-op のため、process-global な tagger が意図しない辞書設定のまま残ることがあった。詳細: `projectDocs/jp/tab-character-analysis.md` の 2026-06-11 節
 
 ### 実行方法
 

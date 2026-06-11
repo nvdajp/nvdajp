@@ -44,9 +44,10 @@ def _truncate_debug_log():
 	# mecab_debug.log is opened in append mode everywhere; truncate it once
 	# per test process so CI failures are not diagnosed against log lines
 	# left over from a previous run. This runs at import time, before any
-	# test executes: doing it in runTasks() would be too late, as the
-	# braille/jtalk tests run first (alphabetical class order) and their
-	# debug log lines would be wiped before CI could collect them.
+	# test executes: doing it in runTasks() would be too late, as MecabTests
+	# runs last in unittest class order (JpBrailleTests -> Jtalk* -> MecabTests)
+	# and truncating there would wipe braille/jtalk debug log lines before CI
+	# could collect them.
 	try:
 		debug_log_path = jt_dir / "mecab_debug.log"
 		debug_log_path.write_text("", encoding="utf-8")
@@ -111,9 +112,9 @@ def get_reading(msg):
 
 def runTasks(enableUserDic=False):
 	# Mecab_initialize rebuilds the process-global tagger when the requested
-	# dictionary configuration differs from the current one, so each run uses
-	# exactly the configuration requested here regardless of which test module
-	# initialized MeCab earlier in the process.
+	# dictionary configuration differs from the current one. In jpSmokeTests,
+	# test_translator2 (user_dics) runs before this class (MecabTests is last),
+	# so runTasks(False) must switch back to the base dictionary explicitly.
 	if enableUserDic:
 		user_dics_str = ", ".join(map(str, user_dics)) if user_dics else "None"
 		__print(f"Initializing MeCab with user dictionaries: {jt_dir}, {dic}, {user_dics_str}")
