@@ -7,7 +7,10 @@
     custom-dictionary entries. Use after jtalkSync to catch cache pollution
     or incorrect dictionary builds before running full smoke tests.
 
-    - CI (GITHUB_ACTIONS): basic cases only (stable on GHA; no chcp 932 reliance).
+    - CI (GITHUB_ACTIONS): the workflow passes -Strict, because the dictionary
+      build is not reproducible and basic cases pass even against a broken
+      sys.dic (entries present but unreachable via the index). Without -Strict
+      the GHA default is basic.
     - Local / certBuild: strict cases by default (二百十日, ごめんください, etc.).
 
 .PARAMETER Strict

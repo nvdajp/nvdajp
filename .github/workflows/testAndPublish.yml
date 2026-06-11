@@ -162,11 +162,17 @@ jobs:
         Write-Host "make_jdic.py exists: $(Test-Path 'miscDepsJp\jptools\jtalk\make_jdic.py')"
     - name: Verify JTalk dictionary
       # BEGIN JP PATCH (run verification in UTF-8 PowerShell to avoid log mojibake and extra code-page state)
+      # -Strict: the dictionary build is not reproducible (mecab-dict-index can
+      # emit a sys.dic whose entries exist but are unreachable via the index, even
+      # on the same runner image), and the basic cases pass against such a broken
+      # dictionary. Strict cases fail the build here instead of surfacing later as
+      # a flaky test_translator2 in jpSmokeTests.
+      # See projectDocs/jp/tab-character-analysis.md "test_translator2 の失敗と辞書ビルドの非再現性".
       shell: pwsh
       env:
         PYTHONUTF8: "1"
         PYTHONIOENCODING: "utf-8"
-      run: powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
+      run: powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1 -Strict
       # END JP PATCH
     # END JP PATCH
     - name: Prepare source code
