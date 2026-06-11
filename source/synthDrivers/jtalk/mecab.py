@@ -212,15 +212,20 @@ def mecab_analyze_and_correct(
 	return mf
 
 
+# Dictionary configuration of the current tagger: (dic, user_dics) both
+# normalized to strings. None while no tagger exists. Mecab_initialize uses
+# this to decide whether an existing tagger can be reused or must be rebuilt.
+_mecab_config = None
+
+
 def Mecab_terminate(logwrite_: LogWriteFunc = None) -> None:
 	"""Destroy the current MeCab tagger so Mecab_initialize can rebuild it.
 
-	Mecab_initialize is a no-op while the global tagger exists, so a second
-	call with a different dictionary configuration (e.g. with/without user
-	dictionaries) is silently ignored. Tests that need to switch
-	configurations within one process must call this first.
+	Mecab_initialize calls this automatically when it is invoked with a
+	dictionary configuration different from the current tagger's, so callers
+	normally do not need to call it themselves.
 	"""
-	global mecab
+	global mecab, _mecab_config
 	if mecab is None:
 		return
 	with lock:
@@ -231,6 +236,7 @@ def Mecab_terminate(logwrite_: LogWriteFunc = None) -> None:
 				if logwrite_:
 					logwrite_("Mecab_terminate: mecab_destroy failed")
 		mecab = None
+		_mecab_config = None
 
 
 def Mecab_initialize(
@@ -259,7 +265,23 @@ def Mecab_initialize(
 		libmc.mecab_destroy.restype = None
 	# At this point, libmc is guaranteed to be initialized (not None)
 	assert libmc is not None  # Type narrowing for type checkers
-	global mecab
+	global mecab, _mecab_config
+	# Normalize the requested configuration the same way it is consumed below:
+	# an empty user_dics list selects the same tagger as None.
+	requested_config = (
+		str(dic),
+		tuple(str(s) for s in user_dics) if user_dics else None,
+	)
+	if mecab is not None and requested_config != _mecab_config:
+		# A tagger built for a different dictionary configuration exists.
+		# Initialization used to be a silent no-op here, which made results
+		# depend on which module initialized MeCab first in the process.
+		if logwrite_:
+			logwrite_(
+				f"Mecab_initialize: dictionary configuration changed, reinitializing: "
+				f"{_mecab_config} -> {requested_config}",
+			)
+		Mecab_terminate(logwrite_)
 	if mecab is None:
 		# libmc is guaranteed to be initialized at this point (asserted above)
 		assert libmc is not None  # Type narrowing for type checkers
@@ -327,6 +349,7 @@ def Mecab_initialize(
 				logwrite_(error_msg)
 			# Raise exception to prevent using uninitialized mecab (causes access violation on x64)
 			raise RuntimeError(error_msg)
+		_mecab_config = requested_config
 		if logwrite_:
 			s = libmc.mecab_strerror(mecab).strip()
 			if s:

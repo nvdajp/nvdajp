@@ -110,11 +110,10 @@ def get_reading(msg):
 
 
 def runTasks(enableUserDic=False):
-	# MeCab is a process-global singleton: without terminating first, a
-	# previous initialization (by another test module, or the previous
-	# runTasks call with a different enableUserDic) silently wins and this
-	# run would use the wrong dictionary configuration.
-	Mecab_terminate(__print)
+	# Mecab_initialize rebuilds the process-global tagger when the requested
+	# dictionary configuration differs from the current one, so each run uses
+	# exactly the configuration requested here regardless of which test module
+	# initialized MeCab earlier in the process.
 	if enableUserDic:
 		user_dics_str = ", ".join(map(str, user_dics)) if user_dics else "None"
 		__print(f"Initializing MeCab with user dictionaries: {jt_dir}, {dic}, {user_dics_str}")
