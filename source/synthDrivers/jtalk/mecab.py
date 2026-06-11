@@ -154,6 +154,11 @@ class NonblockingMecabFeatures(object):
 		self.feature = FEATURE_ptr_array()
 		for i in range(0, FECOUNT):
 			buf = mc_malloc(FELEN)
+			if not buf:
+				# memmove into a NULL slot would corrupt memory silently;
+				# fail loudly instead. Slots already allocated are freed by
+				# __del__ (free(NULL) is a safe no-op for the rest).
+				raise MemoryError("mecab: failed to allocate feature buffer")
 			self.feature[i] = cast(buf, FEATURE_ptr)
 
 	def __del__(self):
@@ -166,14 +171,23 @@ class NonblockingMecabFeatures(object):
 
 class MecabFeatures(NonblockingMecabFeatures):
 	def __init__(self):
-		global lock
 		lock.acquire()
-		super(MecabFeatures, self).__init__()
+		# The lock must be released exactly once even if buffer allocation
+		# fails here or __del__ runs more than once, otherwise every later
+		# MeCab consumer deadlocks waiting on the lock.
+		self._lock_held = True
+		try:
+			super(MecabFeatures, self).__init__()
+		except Exception:
+			self._lock_held = False
+			lock.release()
+			raise
 
 	def __del__(self):
-		global lock
 		super(MecabFeatures, self).__del__()
-		lock.release()
+		if getattr(self, "_lock_held", False):
+			self._lock_held = False
+			lock.release()
 
 
 def mecab_analyze_and_correct(
@@ -198,6 +212,27 @@ def mecab_analyze_and_correct(
 	return mf
 
 
+def Mecab_terminate(logwrite_: LogWriteFunc = None) -> None:
+	"""Destroy the current MeCab tagger so Mecab_initialize can rebuild it.
+
+	Mecab_initialize is a no-op while the global tagger exists, so a second
+	call with a different dictionary configuration (e.g. with/without user
+	dictionaries) is silently ignored. Tests that need to switch
+	configurations within one process must call this first.
+	"""
+	global mecab
+	if mecab is None:
+		return
+	with lock:
+		if libmc is not None:
+			try:
+				libmc.mecab_destroy(mecab)
+			except Exception:
+				if logwrite_:
+					logwrite_("Mecab_terminate: mecab_destroy failed")
+		mecab = None
+
+
 def Mecab_initialize(
 	logwrite_: LogWriteFunc = None,
 	libmecab_dir: str | Path | None = None,
@@ -220,6 +255,8 @@ def Mecab_initialize(
 		libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]
 		libmc.mecab_new.argtypes = [c_int, c_char_p_p]
 		libmc.mecab_new.restype = c_void_p
+		libmc.mecab_destroy.argtypes = [c_void_p]
+		libmc.mecab_destroy.restype = None
 	# At this point, libmc is guaranteed to be initialized (not None)
 	assert libmc is not None  # Type narrowing for type checkers
 	global mecab

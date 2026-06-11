@@ -40,6 +40,24 @@ def __print(s):
 		pass
 
 
+_log_truncated = False
+
+
+def _truncate_debug_log():
+	# mecab_debug.log is opened in append mode everywhere; truncate it once
+	# per test process so CI failures are not diagnosed against log lines
+	# left over from a previous run.
+	global _log_truncated
+	if _log_truncated:
+		return
+	_log_truncated = True
+	try:
+		debug_log_path = jt_dir / "mecab_debug.log"
+		debug_log_path.write_text("", encoding="utf-8")
+	except Exception:
+		pass
+
+
 _buffer = ""
 
 
@@ -77,18 +95,28 @@ def Mecab_get_reading(mf, CODE_=CODE):  # type: ignore
 
 def get_reading(msg):
 	s = text2mecab(msg)
-	mf = MecabFeatures()
-	Mecab_analysis(s, mf, logwrite_=__print)
-	Mecab_print(mf, logwrite_=__print_dummy)
-	Mecab_correctFeatures(mf)
-	Mecab_print(mf, logwrite_=__print_dummy)
-	Mecab_print(mf)
-	reading = Mecab_get_reading(mf)
-	mf = None
+	# Hold the MeCab lock explicitly instead of via MecabFeatures, whose
+	# release depends on __del__ (GC timing): a traceback keeping the object
+	# alive after a failure would deadlock every following test case.
+	with lock:
+		mf = NonblockingMecabFeatures()
+		Mecab_analysis(s, mf, logwrite_=__print)
+		Mecab_print(mf, logwrite_=__print_dummy)
+		Mecab_correctFeatures(mf)
+		Mecab_print(mf, logwrite_=__print_dummy)
+		Mecab_print(mf)
+		reading = Mecab_get_reading(mf)
+		mf = None
 	return reading
 
 
 def runTasks(enableUserDic=False):
+	# MeCab is a process-global singleton: without terminating first, a
+	# previous initialization (by another test module, or the previous
+	# runTasks call with a different enableUserDic) silently wins and this
+	# run would use the wrong dictionary configuration.
+	_truncate_debug_log()
+	Mecab_terminate(__print)
 	if enableUserDic:
 		user_dics_str = ", ".join(map(str, user_dics)) if user_dics else "None"
 		__print(f"Initializing MeCab with user dictionaries: {jt_dir}, {dic}, {user_dics_str}")
