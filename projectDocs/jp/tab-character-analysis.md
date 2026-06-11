@@ -830,3 +830,126 @@ nvdajp チェックやマーカー削除では根本解決しなかったため�
 * 同様の失敗（nvdajp チェック追加後）: <https://github.com/nvdajp/nvdajp/actions/runs/22134322162>
 * stamp 削除後も失敗: <https://github.com/nvdajp/nvdajp/actions/runs/22136300020/job/63988780566>
 * 実装: `jptools/scons_jp.py` の `_dic_state()`、`AlwaysBuild(jtalk_sync_stamp)`、`.github/workflows/testAndPublish.yml`
+
+---
+
+## MeCab 初期化の実行順依存と PR #663 (2026-06-11)
+
+### 事象
+
+jpSmokeTests（`miscDepsJp/jptools/test.py`）は 1 プロセスで複数モジュールが共有する process-global な MeCab tagger を使う。
+修正前の `Mecab_initialize` は一度 tagger が存在すると **設定が変わっても silent no-op** だったため、
+「どのテストが先に初期化したか」で結果が変わるフレークがあった。
+
+### jpSmokeTests の unittest 実行順（クラス名のアルファベット順）
+
+`python -m unittest miscDepsJp.jptools.test` ではクラス名順に実行される:
+
+1. **`JpBrailleTests`** — `test_translator2` が `translator2.initialize(..., user_dics)` で **ユーザー辞書付き** tagger を構築
+2. **`JtalkPrepareTests`** / **`JtalkTests`** — `jtalk_pipeline_probe` 等が `Mecab_initialize(..., dic)` で **base 辞書（user_dics なし）** を要求
+3. **`MecabTests`**（**最後**）— `runTasks(enableUserDic=False)` → `runTasks(enableUserDic=True)`
+
+Braille パイプライン docstring の「1番目/3番目」は **jpBrailleRunner 内の処理順** であり、unittest クラス順とは別。
+
+### 修正前のフレークの実態
+
+典型的な jpSmokeTests では `test_translator2` が先に user 辞書で MeCab を初期化する。
+その後、`jtalk_pipeline_probe` や `runTasks(enableUserDic=False)` が base 辞書を要求しても
+`Mecab_initialize` が no-op のため **user 辞書付き tagger のまま** テストが走る。
+これが harness 期待値との不一致や「実行順で結果が変わる」原因だった。
+
+逆方向（base 先 → `enableUserDic=True` が no-op）も同じ構造で起こりうる。
+
+### PR #663 の修正内容
+
+* `_mecab_config` で `(dic, user_dics)` を記録し、要求設定が異なれば `Mecab_terminate()` 後に tagger を再構築
+* `MecabFeatures` のロック例外安全化、`get_reading` の明示的 `with lock`、`mc_malloc` NULL チェック
+* `mecab_debug.log` は import 時に 1 回 truncate（`runTasks` 内だと Braille/JTalk テストのログを消してしまうため）
+
+Codex レビュー P2（user 辞書実行後の teardown）は、**現スイートでは MecabTests が最後のため被害者がいない**。
+`_mecab_config` による lazy rebuild は **実行順に依存しない堅牢化** として入れたもので、
+将来のテスト追加や `-TestFilter` での部分実行でも設定ミスマッチが silent に残らないようにする。
+
+### production への影響
+
+* `translator2.initialize` と `jtalkDriver` は同じ `user_dics` を渡すのが通常で、動作は変わらない
+* 挙動変更: 従来は「先に成功した初期化が勝ち続ける」→ 修正後は「設定が違えば後から作り直す」
+* 設定比較〜 `mecab_new` は lock 外（単一スレッドの smoke test では問題なし。従来からの構造）
+
+### 参照
+
+* PR: <https://github.com/nvdajp/nvdajp/pull/663>
+* 実装: `source/synthDrivers/jtalk/mecab.py`, `miscDepsJp/jptools/mecabRunner.py`
+
+---
+
+## test_translator2 の失敗と辞書ビルドの非再現性 (2026-06-11調査)
+
+### 事象
+
+PR #663 の CI（run 27345314857 / 27344580039）で jpSmokeTests の `test_translator2` が失敗した。
+failure パターンは従来の「一人→1ニン」系とは別で、`verify_dic.py` の CASES_STRICT 相当のエントリが落ちた。
+**MeCab 初期化の実行順依存（上節）とは別問題**である。
+
+| 入力 | 期待値 | 実際の結果 |
+|------|--------|-----------|
+| 二百十日 | 2ヒャク トオカ | 210ニチ |
+| ごめんください | ゴメン クダサイ | ゴメンクダサイ |
+| 寄付行為 | キフ コーイ | キフギョータメ |
+| !⣏ 感嘆符 ほか ⣏ 系 6 件 | ⣏ の読みを保持 | ⣏ の読みが消失 |
+
+形態素ダンプでは `寄付行為` が `寄付/行/為` に分割されており、`filter_jdic.py` で点訳フィールド付きエントリとして
+登録されるはずの語が辞書引きに失敗していた。なお PR #663 の差分（mecab.py / mecabRunner.py の Python 変更）は
+辞書ビルドに関与しておらず、この失敗とは無関係である。
+
+### 根本原因: 辞書ビルドがツールチェーン依存で非再現
+
+失敗ラン（PR、run 27345314857）と直近成功ラン（betajp、run 27309955248）の `JTalk runtime` artifact を比較した結果:
+
+* `sys.dic` は**サイズ完全一致（71,485,434 バイト）だが内容が約 214,600 バイト相違**（`matrix.bin` は同一ハッシュ）
+* `libmecab.dll` / `libopenjtalk.dll` も別バイナリ
+* 両ランとも `windows-2025-vs2026` ランナーだが **Image Version が異なる**（失敗: 20260525.121.1、成功: 20260608.135.2）
+
+つまり辞書ソース・ビルド手順が同一でも、ジョブが割り当てられるランナーイメージ版（= ネイティブツールチェーン）に
+よって `mecab-dict-index.exe` の出力する `sys.dic` が変わる。**キャッシュ汚染ではなく、クリーンビルド同士で結果が
+異なる**。これが従来「flaky」と見えていた失敗の少なくとも一因である。
+
+### ビルド段階で検出できなかった理由
+
+* `verify_dic.py` は GHA（`GITHUB_ACTIONS=true`）では CASES_BASIC のみ実行する縮退があり、今回落ちた 3 ケースは
+  まさに CASES_STRICT 側にある
+* CASES_BASIC の「おはようございます→オハヨー ゴザイマス」は translator2.py の出力補正（2026-03-30 対策 #2）に
+  より**辞書が壊れていても通る**ため、辞書検証として機能していない
+
+このため壊れた辞書が `Verify JTalk dictionary` を通過し、jpSmokeTests の `test_translator2`（補正のない strict な
+期待値を持つ）で初めて顕在化した。
+
+### 再発時の切り分け手順（artifact 比較）
+
+1. 失敗ランと直近成功ランの `JTalk runtime` artifact をダウンロードし、`sys.dic` の SHA-256 を比較する
+
+   ```sh
+   gh run download <runId> -n "JTalk runtime (3.13.13, x64)" -D <dir>
+   shasum -a 256 <dir>/dic/sys.dic
+   ```
+
+2. 両ランの buildNVDA「Set up job」ログで Runner Image の Version を比較する
+3. 失敗時 artifact の `__translator2output.txt` で `user_dics:` の値と形態素ダンプを確認する
+   （例: 寄付行為が 寄付/行/為 に分割されていれば辞書エントリ欠落）
+
+### 対応方針（未実施）
+
+* **期待値（harness）を結果に合わせる対応は不可**。失敗結果は誤読・マスあけ欠落・点字パターン消失であり、
+  期待値側が正しい
+* 短期: buildNVDA の辞書ビルド直後に `verify_dic.py` を strict モード（`JP_VERIFY_DIC_MODE=strict`）で実行し、
+  壊れた辞書を build 段階で fail させる
+* 中期: `mecab-dict-index` 出力のツールチェーン依存性の調査（同値キーの不安定ソートが有力候補）、または
+  検証済み辞書を成果物として固定し辞書ソース変更時のみ再ビルドする方式の検討
+* 根本対応後、translator2.py の出力補正（おはようございます等）と verify_dic.py の GHA basic 縮退を撤去する
+
+### 参照
+
+* 失敗ラン（PR #663）: <https://github.com/nvdajp/nvdajp/actions/runs/27345314857>
+* 成功ラン（betajp）: <https://github.com/nvdajp/nvdajp/actions/runs/27309955248>
+* 検証ケース定義: `miscDepsJp/jptools/verify_dic.py`（CASES_BASIC / CASES_STRICT）
+* 点訳エントリの生成: `miscDepsJp/jptools/jtalk/filter_jdic.py`（例: 寄付行為 → キフ コーイ）
