@@ -40,22 +40,21 @@ def __print(s):
 		pass
 
 
-_log_truncated = False
-
-
 def _truncate_debug_log():
 	# mecab_debug.log is opened in append mode everywhere; truncate it once
 	# per test process so CI failures are not diagnosed against log lines
-	# left over from a previous run.
-	global _log_truncated
-	if _log_truncated:
-		return
-	_log_truncated = True
+	# left over from a previous run. This runs at import time, before any
+	# test executes: doing it in runTasks() would be too late, as the
+	# braille/jtalk tests run first (alphabetical class order) and their
+	# debug log lines would be wiped before CI could collect them.
 	try:
 		debug_log_path = jt_dir / "mecab_debug.log"
 		debug_log_path.write_text("", encoding="utf-8")
 	except Exception:
 		pass
+
+
+_truncate_debug_log()
 
 
 _buffer = ""
@@ -115,7 +114,6 @@ def runTasks(enableUserDic=False):
 	# previous initialization (by another test module, or the previous
 	# runTasks call with a different enableUserDic) silently wins and this
 	# run would use the wrong dictionary configuration.
-	_truncate_debug_log()
 	Mecab_terminate(__print)
 	if enableUserDic:
 		user_dics_str = ", ".join(map(str, user_dics)) if user_dics else "None"
