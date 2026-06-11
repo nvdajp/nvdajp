@@ -20,7 +20,9 @@ dic_dir = jtalk_dir / "dic"
 sys.path.insert(0, str(jtalk_dir))
 
 # Verification cases: (input_text, expected_output)
-# CI: sanity only (translator2 normalizations + minimal custom-dic signal).
+# CI passes JP_VERIFY_DIC_MODE=strict (via verifyJtalkDictionary.ps1 -Strict):
+# a non-reproducible dictionary build can produce a sys.dic that passes every
+# basic case while strict-case entries are unreachable via the index.
 # Local/certBuild: strict custom-dictionary coverage before release smoke tests.
 CASES_BASIC = [
 	("一人", "ヒトリ"),
@@ -41,7 +43,8 @@ def _cases_for_run() -> list[tuple[str, str]]:
 		return list(CASES_BASIC)
 	if mode == "strict":
 		return CASES_BASIC + CASES_STRICT
-	# Default: basic on GHA (chcp/console env differs); strict locally.
+	# Default when JP_VERIFY_DIC_MODE is unset: basic on GHA (the CI workflow
+	# passes strict explicitly); strict locally.
 	if os.environ.get("GITHUB_ACTIONS") == "true":
 		return list(CASES_BASIC)
 	return CASES_BASIC + CASES_STRICT
