@@ -154,6 +154,11 @@ class NonblockingMecabFeatures(object):
 		self.feature = FEATURE_ptr_array()
 		for i in range(0, FECOUNT):
 			buf = mc_malloc(FELEN)
+			if not buf:
+				# memmove into a NULL slot would corrupt memory silently;
+				# fail loudly instead. Slots already allocated are freed by
+				# __del__ (free(NULL) is a safe no-op for the rest).
+				raise MemoryError("mecab: failed to allocate feature buffer")
 			self.feature[i] = cast(buf, FEATURE_ptr)
 
 	def __del__(self):
@@ -166,14 +171,23 @@ class NonblockingMecabFeatures(object):
 
 class MecabFeatures(NonblockingMecabFeatures):
 	def __init__(self):
-		global lock
 		lock.acquire()
-		super(MecabFeatures, self).__init__()
+		# The lock must be released exactly once even if buffer allocation
+		# fails here or __del__ runs more than once, otherwise every later
+		# MeCab consumer deadlocks waiting on the lock.
+		self._lock_held = True
+		try:
+			super(MecabFeatures, self).__init__()
+		except Exception:
+			self._lock_held = False
+			lock.release()
+			raise
 
 	def __del__(self):
-		global lock
 		super(MecabFeatures, self).__del__()
-		lock.release()
+		if getattr(self, "_lock_held", False):
+			self._lock_held = False
+			lock.release()
 
 
 def mecab_analyze_and_correct(
@@ -198,12 +212,51 @@ def mecab_analyze_and_correct(
 	return mf
 
 
+# Dictionary configuration of the current tagger: (dic, user_dics) both
+# normalized to strings. None while no tagger exists. Mecab_initialize uses
+# this to decide whether an existing tagger can be reused or must be rebuilt.
+_mecab_config = None
+
+
+def Mecab_terminate(logwrite_: LogWriteFunc = None) -> None:
+	"""Destroy the current MeCab tagger so Mecab_initialize can rebuild it.
+
+	Mecab_initialize calls this automatically when it is invoked with a
+	dictionary configuration different from the current tagger's, so callers
+	normally do not need to call it themselves.
+	"""
+	global mecab, _mecab_config
+	if mecab is None:
+		return
+	with lock:
+		if libmc is not None:
+			try:
+				libmc.mecab_destroy(mecab)
+			except Exception:
+				if logwrite_:
+					logwrite_("Mecab_terminate: mecab_destroy failed")
+		mecab = None
+		_mecab_config = None
+
+
 def Mecab_initialize(
 	logwrite_: LogWriteFunc = None,
 	libmecab_dir: str | Path | None = None,
 	dic: str | Path | None = None,
 	user_dics: list[str] | None = None,
 ) -> None:
+	"""Initialize or reuse the process-global MeCab tagger.
+
+	If a tagger already exists but the requested ``(dic, user_dics)`` differs
+	from ``_mecab_config``, the old tagger is destroyed and rebuilt. Previously
+	the first successful initialization won for the rest of the process (silent
+	no-op on later calls), which made jpSmokeTests order-dependent. Production
+	callers such as ``translator2.initialize`` and ``jtalkDriver`` normally pass
+	the same ``user_dics`` and are unaffected.
+
+	Config comparison and ``mecab_new`` run outside ``lock``; smoke tests are
+	single-threaded. See ``projectDocs/jp/tab-character-analysis.md`` (2026-06-11).
+	"""
 	if libmecab_dir is None or dic is None:
 		raise ValueError("libmecab_dir and dic must be provided")
 	mecab_dll = str(Path(libmecab_dir) / "libmecab.dll")
@@ -220,9 +273,27 @@ def Mecab_initialize(
 		libmc.mecab_sparse_tonode.argtypes = [c_void_p, c_char_p]
 		libmc.mecab_new.argtypes = [c_int, c_char_p_p]
 		libmc.mecab_new.restype = c_void_p
+		libmc.mecab_destroy.argtypes = [c_void_p]
+		libmc.mecab_destroy.restype = None
 	# At this point, libmc is guaranteed to be initialized (not None)
 	assert libmc is not None  # Type narrowing for type checkers
-	global mecab
+	global mecab, _mecab_config
+	# Normalize the requested configuration the same way it is consumed below:
+	# an empty user_dics list selects the same tagger as None.
+	requested_config = (
+		str(dic),
+		tuple(str(s) for s in user_dics) if user_dics else None,
+	)
+	if mecab is not None and requested_config != _mecab_config:
+		# A tagger built for a different dictionary configuration exists.
+		# Initialization used to be a silent no-op here, which made results
+		# depend on which module initialized MeCab first in the process.
+		if logwrite_:
+			logwrite_(
+				f"Mecab_initialize: dictionary configuration changed, reinitializing: "
+				f"{_mecab_config} -> {requested_config}",
+			)
+		Mecab_terminate(logwrite_)
 	if mecab is None:
 		# libmc is guaranteed to be initialized at this point (asserted above)
 		assert libmc is not None  # Type narrowing for type checkers
@@ -290,6 +361,7 @@ def Mecab_initialize(
 				logwrite_(error_msg)
 			# Raise exception to prevent using uninitialized mecab (causes access violation on x64)
 			raise RuntimeError(error_msg)
+		_mecab_config = requested_config
 		if logwrite_:
 			s = libmc.mecab_strerror(mecab).strip()
 			if s:

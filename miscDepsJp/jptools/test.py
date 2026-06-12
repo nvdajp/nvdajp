@@ -1,4 +1,14 @@
 # -*- coding: UTF-8 -*-
+"""JP smoke tests (MeCab, braille, JTalk).
+
+unittest runs test *classes* in alphabetical order:
+
+1. JpBrailleTests (test_translator2 initializes MeCab with user_dics)
+2. JtalkPrepareTests / JtalkTests (jtalk_pipeline_probe expects base dictionary)
+3. MecabTests (runTasks without then with user_dics)
+
+See projectDocs/jp/tab-character-analysis.md (2026-06-11, PR #663).
+"""
 
 import unittest
 

@@ -596,7 +596,7 @@ jdic = [
 	},
 	{
 		"text": "静画",
-		"pos": "名詞,固有名詞,*,*,*,*",
+		"pos": "名詞,固有名詞,一般,*,*,*",
 		"speech": "セイガ",
 		"accent": "1/3",
 	},
@@ -899,7 +899,7 @@ jdic = [
 	},
 	{
 		"text": "満遍無く",
-		"pos": "副詞,*,*,*,*,*",
+		"pos": "副詞,一般,*,*,*,*",
 		"speech": "マンベンナク",
 		"braille": "マンベンナク",
 		"cost": -1000,
@@ -1016,7 +1016,7 @@ jdic = [
 	},
 	{
 		"text": "坂田金時",
-		"pos": "名詞,一般,固有名詞,人名,*,*",
+		"pos": "名詞,固有名詞,人名,一般,*,*",
 		"braille": "サカタノ キントキ",
 		"accent": "1/8",
 	},
@@ -1128,7 +1128,7 @@ jdic = [
 	{
 		"text": "立川談四楼",
 		"braille": "タテカワ ダンシロー",
-		"pos": "名詞,固有名詞,人名,*,*,*",
+		"pos": "名詞,固有名詞,人名,一般,*,*",
 		"accent": "2/9",
 	},
 	# https://github.com/nvdajp/nvdajpmiscdep/issues/64
@@ -1394,14 +1394,14 @@ jdic = [
 	{
 		"text": "日馬富士",
 		"braille": "ハルマフジ",
-		"pos": "名詞,固有名詞,人名,*,*,*",
+		"pos": "名詞,固有名詞,人名,一般,*,*",
 		"accent": "3/5",
 	},
 	# https://github.com/nvdajp/nvdajpmiscdep/issues/64
 	{
 		"text": "日馬富士関",
 		"braille": "ハルマフジゼキ",
-		"pos": "名詞,固有名詞,人名,*,*,*",
+		"pos": "名詞,固有名詞,人名,一般,*,*",
 		"accent": "5/7",
 	},
 	# https://github.com/nvdajp/nvdajpmiscdep/issues/64
@@ -1518,7 +1518,11 @@ def make_dic(CODE, THISDIR):
 			if di.braille:
 				brl = di.braille
 			# 表層形,左文脈ID,右文脈ID,コスト,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形,活用型,原形,読み,発音
-			s = "%s,,,%d,%s,%s,%s,%s,%s,C0" % (k1, cost, pos, k1, y, y, pros)
+			# 左右文脈IDは明示的に 0 (BOS/EOS) を指定する。空欄にすると
+			# mecab-dict-index の文脈ID解決に依存し、過去には解決失敗時の
+			# 未定義動作で sys.dic が非決定的になっていた。0,0 は従来の
+			# テスト済み挙動（読み・マスアケ）を保存する。
+			s = "%s,0,0,%d,%s,%s,%s,%s,%s,C0" % (k1, cost, pos, k1, y, y, pros)
 			if brl:
 				s += "," + brl
 			s += "\n"

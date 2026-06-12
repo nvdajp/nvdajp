@@ -43,9 +43,12 @@ env:
   supportedPythonVersions: '["3.13.13"]'
   # JP: Bump SCONS_CACHE_SUFFIX only when the JTalk/MeCab dic *build process* changes (e.g. make_jdic refactor, DIC_CODEPAGE requirement).
   # Bumped to v3: CI Verify JTalk dictionary was failing (一人→ヒトリ expected, got 1ニン) due to cached dic without nvdajp custom entries.
+  # Bumped to v4: mecab-dict-index sources patched (config-charset UTF-8, ContextID
+  # hardening) and dic makers now emit explicit context ids; cached .obj files
+  # from the old sources must not be linked into the new tool.
   # Do not bump on every CI failure; investigate logs first.
   # See projectDocs/jp/tab-character-analysis.md "キャッシュキーで無効化".
-  SCONS_CACHE_SUFFIX: "-jp-v3"
+  SCONS_CACHE_SUFFIX: "-jp-v4"
 
 jobs:
   matrix:
@@ -165,11 +168,17 @@ jobs:
         Write-Host "make_jdic.py exists: $(Test-Path 'miscDepsJp\jptools\jtalk\make_jdic.py')"
     - name: Verify JTalk dictionary
       # BEGIN JP PATCH (run verification in UTF-8 PowerShell to avoid log mojibake and extra code-page state)
+      # -Strict: the dictionary build is not reproducible (mecab-dict-index can
+      # emit a sys.dic whose entries exist but are unreachable via the index, even
+      # on the same runner image), and the basic cases pass against such a broken
+      # dictionary. Strict cases fail the build here instead of surfacing later as
+      # a flaky test_translator2 in jpSmokeTests.
+      # See projectDocs/jp/tab-character-analysis.md "test_translator2 の失敗と辞書ビルドの非再現性".
       shell: pwsh
       env:
         PYTHONUTF8: "1"
         PYTHONIOENCODING: "utf-8"
-      run: powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1
+      run: powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1 -Strict
       # END JP PATCH
     # END JP PATCH
     - name: Install signPath
