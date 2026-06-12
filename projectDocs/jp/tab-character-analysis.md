@@ -976,6 +976,7 @@ run 27351400056（rerun、image 20260525.121.1、translator2 成功）の artifa
   検証済み辞書を成果物として固定し辞書ソース変更時のみ再ビルドする方式の検討。
   非決定性が同一環境でも発生する以上、ランナー固定方向の対策は効果が見込めない
 * 根本対応後、translator2.py の出力補正（おはようございます等）と verify_dic.py の GHA basic 縮退を撤去する
+  （**2026-06-12 実施済み**: `betajp-jtalk-dic-followup`）
 
 ## 非決定性の根本原因の特定と修正 (2026-06-12)
 
@@ -1070,3 +1071,21 @@ naist データで常に fail する。posid は nvdajp ランタイム（jtalk 
 * 成功ラン（betajp）: <https://github.com/nvdajp/nvdajp/actions/runs/27309955248>
 * 検証ケース定義: `miscDepsJp/jptools/verify_dic.py`（CASES_BASIC / CASES_STRICT）
 * 点訳エントリの生成: `miscDepsJp/jptools/jtalk/filter_jdic.py`（例: 寄付行為 → キフ コーイ）
+
+## 後続: 出力補正と verify_dic 縮退の撤去 (2026-06-12)
+
+辞書ビルドの決定性が確認できたため、2026-03-30 に入れた暫定対策を撤去した。
+
+### 変更内容
+
+* `source/synthDrivers/jtalk/translator2.py`:
+  一人/二人の分割マージ（`一`+`人` → `ヒトリ`）と
+  おはようございますの読み補正（`オハヨーゴザイマス` → `オハヨー ゴザイマス`）を削除。
+  カスタム辞書の点訳専用フィールド（16 番目）が正しく適用される前提に戻した
+* `miscDepsJp/jptools/verify_dic.py`:
+  `GITHUB_ACTIONS=true` 時の CASES_BASIC のみ実行を廃止。未指定時は常に strict
+* `jptools/verifyJtalkDictionary.ps1`: 上記に合わせて説明と mode 表示を更新
+
+### 検証
+
+* `verifyJtalkDictionary.ps1`（strict 6 件）と `JpBrailleTests.test_translator2` で回帰確認

@@ -41,8 +41,9 @@
   - 根本原因（mecab-dict-index の config-charset 誤設定 → ContextID 解決失敗 →
     未定義動作でゴミ文脈 ID）を 2026-06-12 に特定・修正済み。
     `make_jdic.py` 2 回連続実行で sys.dic がバイト一致することを確認。
-  - 残り: translator2.py の出力補正と verify_dic.py の GHA basic 縮退の撤去、
-    カスタムエントリへの品詞別文脈 ID 付与（コスト再調整を伴う将来課題）。
+  - translator2.py の出力補正（一人/二人/おはようございます）と
+    verify_dic.py の GHA basic 縮退の撤去は 2026-06-12 に実施済み。
+  - 将来課題: カスタムエントリへの品詞別文脈 ID 付与（コスト再調整を伴う）。
   - 参照: `projectDocs/jp/tab-character-analysis.md`
     「非決定性の根本原因の特定と修正 (2026-06-12)」
 - **タスク 2.6 CI基盤の最小限更新**
