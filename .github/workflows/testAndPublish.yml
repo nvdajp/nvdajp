@@ -43,9 +43,12 @@ env:
   supportedPythonVersions: '["3.13.13"]'
   # JP: Bump SCONS_CACHE_SUFFIX only when the JTalk/MeCab dic *build process* changes (e.g. make_jdic refactor, DIC_CODEPAGE requirement).
   # Bumped to v3: CI Verify JTalk dictionary was failing (一人→ヒトリ expected, got 1ニン) due to cached dic without nvdajp custom entries.
+  # Bumped to v4: mecab-dict-index sources patched (config-charset UTF-8, ContextID
+  # hardening) and dic makers now emit explicit context ids; cached .obj files
+  # from the old sources must not be linked into the new tool.
   # Do not bump on every CI failure; investigate logs first.
   # See projectDocs/jp/tab-character-analysis.md "キャッシュキーで無効化".
-  SCONS_CACHE_SUFFIX: "-jp-v3"
+  SCONS_CACHE_SUFFIX: "-jp-v4"
 
 jobs:
   matrix:

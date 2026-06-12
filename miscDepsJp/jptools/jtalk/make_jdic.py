@@ -119,20 +119,44 @@ def _main():
 		)
 
 		print(f"{tempdir} {[str(mecab_dict_index), '-d', '.', '-o', str(outdir), '-f', code, '-c', code]}")
-		# In console mode (log_fp is None), don't set stdout/stderr to preserve default console output
-		# In file mode (log_fp is set), redirect both stdout and stderr to the log file
-		run_kwargs = {
-			"cwd": str(tempdir),
-			"text": True,
-			"check": True,
-		}
-		if log_fp:
-			run_kwargs["stdout"] = log_fp
-			run_kwargs["stderr"] = subprocess.STDOUT
-		subprocess.run(
+		# Capture output so we can scan it: mecab-dict-index never exits nonzero
+		# on CHECK_DIE failures (the Open JTalk build disables exit in die()), so
+		# errors like "cannot find LEFT-ID" would otherwise produce a corrupt,
+		# non-reproducible sys.dic that only fails much later in smoke tests.
+		result = subprocess.run(
 			[str(mecab_dict_index), "-d", ".", "-o", str(outdir), "-f", code, "-c", code],
-			**run_kwargs,
+			cwd=str(tempdir),
+			check=True,
+			capture_output=True,
+			text=True,
+			encoding="utf-8",
+			errors="replace",
 		)
+		tool_output = (result.stdout or "") + (result.stderr or "")
+		# In file mode stdout is redirected to make_jdic.log; in console mode this
+		# prints to the console, matching the previous behavior in both modes.
+		print(tool_output)
+		fatal_markers = [
+			"cannot find LEFT-ID",
+			"cannot find RIGHT-ID",
+			"invalid ids are found",
+			"may be broken",
+			"rewrite failed",
+			"no such file or directory",
+			"format error",
+			"not a number",
+		]
+		fatal_lines = [
+			line for line in tool_output.splitlines() if any(m in line for m in fatal_markers)
+		]
+		if fatal_lines:
+			print(f"make_jdic: mecab-dict-index reported {len(fatal_lines)} fatal error line(s):")
+			for line in fatal_lines[:20]:
+				print(f"  {line}")
+			raise SystemExit(
+				"make_jdic: dictionary build failed: mecab-dict-index reported errors "
+				"(it does not exit nonzero on its own; see log for details)",
+			)
 
 		dicrc_src = thisdir / "dicrc"
 		print(f"copy {dicrc_src} to {outdir}")

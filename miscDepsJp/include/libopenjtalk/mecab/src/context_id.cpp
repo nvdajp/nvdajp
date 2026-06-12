@@ -95,6 +95,11 @@ int ContextID::lid(const char *l) const {
   std::map<std::string, int>::const_iterator it = left_.find(l);
   CHECK_DIE(it != left_.end())
       << "cannot find LEFT-ID  for " << l;
+  // for NVDAJP: die() does not exit in the Open JTalk build, so a failed
+  // lookup used to fall through and dereference end(), writing per-process
+  // heap garbage into the dictionary. Return the BOS/EOS id instead; the
+  // CHECK_DIE message above still reports the failure to the build log.
+  if (it == left_.end()) return 0;
   return it->second;
 }
 
@@ -102,6 +107,7 @@ int ContextID::rid(const char *r) const {
   std::map<std::string, int>::const_iterator it = right_.find(r);
   CHECK_DIE(it != right_.end())
       << "cannot find RIGHT-ID  for " << r;
+  if (it == right_.end()) return 0;
   return it->second;
 }
 }

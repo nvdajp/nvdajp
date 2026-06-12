@@ -977,6 +977,68 @@ run 27351400056（rerun、image 20260525.121.1、translator2 成功）の artifa
   非決定性が同一環境でも発生する以上、ランナー固定方向の対策は効果が見込めない
 * 根本対応後、translator2.py の出力補正（おはようございます等）と verify_dic.py の GHA basic 縮退を撤去する
 
+## 非決定性の根本原因の特定と修正 (2026-06-12)
+
+ローカルで `make_jdic.py` を繰り返し実行すると毎回異なる `sys.dic` が生成されることを確認し
+（つまりローカルでも再現する）、binary 解析と vendored ソース読解で根本原因を完全に特定した。
+
+### 根本原因の連鎖
+
+1. **`sys.dic` の相違は token セクションの `lcAttr`/`rcAttr`（左右文脈 ID）のみ**。
+   darts 索引・feature 文字列・サイズは全ビルドで一致。相違する 53,650 token はすべて
+   nvdajp カスタム辞書（eng / tankan / custom）のエントリで、ビルドごとに単一の
+   ゴミペア（観測例: `(13860,0)` `(0,13860)` `(0,0)` `(11306,42626)` `(43496,43395)`）を共有する
+2. カスタム辞書 CSV は左右文脈 ID が空欄のため、`mecab-dict-index` は rewrite.def +
+   left-id.def / right-id.def による **ContextID 解決**を行う
+3. **`param.cpp` の Open JTalk パッチで `Param::load` の dicrc 解析が無効化され、
+   `config-charset` が "EUC-JP" にハードコード**されている。nvdajp のビルド
+   （make_jdic.py）は def ファイルを UTF-8 に変換して渡すため、UTF-8 の def が
+   EUC-JP→UTF-8 の誤変換で文字化けし、ContextID の map キーが壊れる
+   （`cid->left_size() != matrix.left_size()` の警告も出ていた）。pos-id.def も
+   同様に壊れ、全 token の posid が -1 (65535) になっていた
+4. **`common.h` の Open JTalk パッチで `die()` の `exit(-1)` が無効化**されており、
+   `CHECK_DIE` はエラーを表示して続行する。このため `ContextID::lid/rid` の
+   lookup 失敗が `end()` イテレータの参照外し（未定義動作）に到達し、
+   **ヒープのゴミを文脈 ID として返す**。同一プロセス内は同じ値（全カスタム
+   エントリが同一ペア）、プロセスが変わると ASLR で別の値 = ビルド非決定性
+5. `matrix.is_valid` の範囲チェックも CHECK_DIE のため素通りし、不正 ID が
+   そのまま `sys.dic` に書き込まれる。テストの成否は引いたゴミの値次第
+   （`(0,0)` や `(13860,0)` は通り、`(0,13860)` は 寄付行為→キフギョータメ等で失敗）
+
+イメージ版依存に見えたのは、ゴミ値（ヒープレイアウト）の分布が環境の影響を
+受けるためで、本質はプロセスごとの未定義動作だった。
+
+### 修正内容
+
+* `miscDepsJp/include/libopenjtalk/mecab/src/param.cpp`:
+  config-charset のハードコードを "EUC-JP" → "UTF-8" に変更
+  （ビルドパイプラインは全ファイル UTF-8 のため）。posid も正常化される
+* `miscDepsJp/include/libopenjtalk/mecab/src/context_id.cpp`:
+  lookup 失敗時に `end()` を参照せず 0 (BOS/EOS) を返すよう防御
+  （CHECK_DIE のメッセージは引き続き出力される）
+* `miscDepsJp/jptools/jtalk/make_jdic.py`:
+  mecab-dict-index の出力を捕捉し、"cannot find LEFT-ID" /
+  "invalid ids are found" 等の致命的エラーを検出したらビルドを fail させる
+  （ツール自身は CHECK_DIE で exit しないため）
+* `eng/tankan/custom_dic_maker.py`: カスタムエントリの左右文脈 ID を空欄でなく
+  **明示的に `0,0` (BOS/EOS) で出力**。ContextID 解決自体が不要になり決定的。
+  品詞別の正しい ID (名詞,一般=1345 等) を与える実験では translator2 の
+  5 ケース（一時雨・一言一行・使節団の一行・蓬萊飾り）で読み・マスアケが
+  変化した。`(0,0)` は CI run 27351400056（全テスト green）と同じ値であり、
+  従来のテスト済み挙動を保存する。品詞別 ID への移行はコスト再調整を伴う
+  将来課題とする
+* `custom_dic_maker.py` / `eng_dic_maker.py`: naist の文脈 ID 階層に存在しない
+  品詞（名詞,固有名詞,\* 等）を持つ 7 エントリを修正（静画・坂田金時・
+  立川談四楼・日馬富士・日馬富士関・ｎｉｐｐｏｎ・ｎｖａｃｃｅｓｓ）
+* `SCONS_CACHE_SUFFIX` を -jp-v4 に bump（旧ソースの .obj 混入防止）
+
+### 修正後の検証 (2026-06-12 ローカル)
+
+* `make_jdic.py` 2 回連続実行で `sys.dic` が**バイト単位で一致**（決定性達成）
+* mecab-dict-index のエラー 160,950 件 → 0 件
+* カスタム token: lc=0 rc=0 posid=実値（従来 posid は全 token 65535 だった）
+* jp テストスイート 11 件 OK（translator2 全件通過）、strict 検証 6 件 OK
+
 ### 参照
 
 * 失敗ラン（PR #663）: <https://github.com/nvdajp/nvdajp/actions/runs/27345314857>
