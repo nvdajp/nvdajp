@@ -1038,6 +1038,31 @@ run 27351400056（rerun、image 20260525.121.1、translator2 成功）の artifa
 * mecab-dict-index のエラー 160,950 件 → 0 件
 * カスタム token: lc=0 rc=0 posid=実値（従来 posid は全 token 65535 だった）
 * jp テストスイート 11 件 OK（translator2 全件通過）、strict 検証 6 件 OK
+* ツールチェーン非依存の確認: VS 2026 (18.7) でビルドした mecab-dict-index と
+  VS 2022 でビルドしたもので `sys.dic` の SHA-256 が一致
+
+### POS-ID 検証の追加とスコープの設計判断 (2026-06-12, Codex P2 対応)
+
+pos-id.def に存在しない品詞を持つ行は `POSIDGenerator::id()` が**ログを出さずに
+-1 を返す**ため、mecab-dict-index のログ走査では捕捉できない（token の posid が
+65535 になる）。レビュー指摘を受けて以下を追加した:
+
+* `make_jdic.py`: mecab-dict-index 実行**前**に、nvdajp 生成 3 CSV
+  （eng/tankan/custom）の全行を pos-id.def のパターンと照合し、解決不能な行を
+  列挙してビルドを fail させる
+* `custom_dic_maker.py`: この検証で検出された唯一のエントリ
+  `満遍無く`（副詞,\* → 副詞,一般）を修正
+
+**検証スコープを nvdajp 生成 CSV に限定した理由**: naist-jdic.csv 原本自体が
+pos-id.def でカバーされない 12 行を含む（`副詞,*` の 数多く・かず多く・
+数おおく、`名詞,非自立,*` の 台詞=ゼリフ・灰=バイ 等の連語用エントリ）。
+これは上流データの不整合であり、辞書全体の posid==65535 検査にすると素の
+naist データで常に fail する。posid は nvdajp ランタイム（jtalk / 点訳）で
+一切参照されない（修正前は全 token が posid=65535 のまま長年動作していた事実が
+実証）ため、この 12 行は「修正すべきバグ」ではなく「文書化された上流の癖」と
+して受け入れる。将来 posid を使う機能を導入する場合は、ビルド時に
+`_temp/pos-id.def` へフォールバックパターン（`副詞,*` → 34 等）を追記する
+方式が、vendored データと feature 文字列を変えない最も安全な 0 化手段となる。
 
 ### 参照
 
