@@ -397,11 +397,21 @@ def make_dic(IN_FILE, CODE, THISDIR):
 				cost = i[3]
 			if len(i) >= 5 and i[4] is not None:
 				hin1 = i[4]
+			# naist-jdic の文脈ID (left-id.def/right-id.def) は
+			# 「名詞,固有名詞,一般,...」のように細分類2まで持つ。
+			# 「名詞,固有名詞,*,...」だと mecab-dict-index の文脈ID解決が
+			# 失敗するため、細分類2を補う。
+			hin2 = "一般" if hin1 == "固有名詞" else "*"
 			# 表層形,左文脈ID,右文脈ID,コスト,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形,活用型,原形,読み,発音
-			s = "%s,,,%d,名詞,%s,*,*,*,*,%s,%s,%s,%s,C0\n" % (
+			# 左右文脈IDは明示的に 0 (BOS/EOS) を指定する。空欄にすると
+			# mecab-dict-index の文脈ID解決に依存し、過去には解決失敗時の
+			# 未定義動作で sys.dic が非決定的になっていた。0,0 は従来の
+			# テスト済み挙動（読み・マスアケ）を保存する。
+			s = "%s,0,0,%d,名詞,%s,%s,*,*,*,%s,%s,%s,%s,C0\n" % (
 				k1,
 				cost,
 				hin1,
+				hin2,
 				k1,
 				y,
 				y,

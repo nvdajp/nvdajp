@@ -133,7 +133,14 @@ bool Param::load(const char *filename) {
   set<std::string>("bos-feature","BOS/EOS,*,*,*,*,*,*,*,*",false);
   set<std::string>("eval-size","8",false);
   set<std::string>("unk-eval-size","4",false);
-  set<std::string>("config-charset","EUC-JP",false);
+  // for NVDAJP: the dicrc parsing above is disabled (Open JTalk patch), so this
+  // hardcoded value is the only source of config-charset. The nvdajp build
+  // pipeline (make_jdic.py) converts every .def file to UTF-8 before running
+  // mecab-dict-index; with "EUC-JP" here the already-UTF-8 def files were
+  // garbled by the EUC-JP -> UTF-8 conversion, ContextID/POSID lookups missed,
+  // and (because die() does not exit) the end() dereference wrote per-process
+  // heap garbage into lcAttr/rcAttr, making sys.dic non-reproducible.
+  set<std::string>("config-charset","UTF-8",false);
   set<std::string>("node-format-yomi","%pS%f[7]",false);
   set<std::string>("unk-format-yomi","%M",false);
   set<std::string>("eos-format-yomi","\n",false);
