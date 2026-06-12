@@ -405,6 +405,17 @@ Phase 0 の成功を前提に、残りモジュールの Makefile.mak を同様�
   1. betajp 側 CI で同等確認
   2. `projectDocs/jp/archive/codepage-investigation-history.md` への完了追記
 
+#### 追記（2026-06-12, alphajp を betajp のランタイム方針に再同期）
+
+* `merge betajp into alphajp` 後も、alphajp 固有の Phase 1 コミットにより
+  `miscDepsJp/include/libopenjtalk` の `njd*` / `text2mecab` だけが UTF-8 のまま残り、
+  `Mecab_utf8_to_cp932` との不整合で複合数読み（12→イチニ）が再発した。
+* betajp 側は同モジュールを Shift_JIS 維持のため、通常の merge では自動では戻らない
+  （betajp が当該 Makefile を変更していないため、git は alphajp 側変更を保持する）。
+* alphajp は betajp と同じ **辞書 UTF-8 + 合成 DLL Shift_JIS** ハイブリッドに揃え、
+  `JtalkTests.test_jtalk_digit_compound_twelve` で桁結合を監視する。
+* `jpcommon` / `njd2jpcommon` の UTF-8 化と `Mecab_utf8_to_cp932` 撤去は未完了のまま。
+
 ## 参照
 
 * ロードマップ: `projectDocs/jp/roadmap.md`（タスク 5.0）

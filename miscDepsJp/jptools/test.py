@@ -89,6 +89,16 @@ class JtalkTests(unittest.TestCase):
 		self.assertGreater(result["tokenCount"], 20)
 		self.assertIn("nvda", result["prepared"].lower())
 
+	def test_jtalk_digit_compound_twelve(self):
+		"""12 must be synthesized as juu-ni, not digit-by-digit ichi-ni."""
+		result = jtalk_pipeline_probe.probe_digit_compound("12")
+		self.assertTrue(result["hasWave"])
+		self.assertEqual(result["mecabTokenCount"], 2)
+		self.assertTrue(
+			result["digitMerged"],
+			"njd_set_digit failed to merge 12; labels=%r" % result["labelsSnippet"],
+		)
+
 
 if __name__ == "__main__":
 	unittest.main()
