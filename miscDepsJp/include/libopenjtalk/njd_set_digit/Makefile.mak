@@ -1,6 +1,7 @@
 
 CC = cl
 
+# Keep SHIFT_JIS while jtalkDriver calls Mecab_utf8_to_cp932 before libjt_synthesis.
 CFLAGS = /O2 /Ob2 /Oi /Ot /Oy /GT /GL /TC /I ../njd /D CHARSET_SHIFT_JIS /source-charset:shift_jis /execution-charset:shift_jis
 LFLAGS = /LTCG
 

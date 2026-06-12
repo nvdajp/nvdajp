@@ -32,6 +32,7 @@ if str(JTALK_DIR) in sys.path:
 sys.path.insert(0, str(JTALK_DIR))
 
 import jtalkPrepare  # type: ignore
+import jtalkCore  # type: ignore
 from jtalkCore import (  # type: ignore
 	libjt_initialize,
 	libjt_load,
@@ -121,6 +122,54 @@ def initialize() -> None:
 def probe_text(text: str, feature_limit: int = 8) -> dict:
 	initialize()
 	return _probe_one(text, feature_limit=feature_limit)
+
+
+def probe_digit_compound(text: str = "12") -> dict:
+	"""Check njd_set_digit merges ASCII digits into compound readings.
+
+	While Mecab_utf8_to_cp932 runs before libjt_synthesis, njd_set_digit must stay
+	compiled as CHARSET_SHIFT_JIS. UTF-8 rule tables against CP932 node strings
+	fail strcmp and leave digit-by-digit readings (イチ+ニ instead of ジュウニ).
+	"""
+	from ctypes import string_at
+
+	initialize()
+	assert jtalkCore.libjt is not None
+	prepared = jtalkPrepare.convert(text)
+	src = text2mecab(prepared)
+	mf = MecabFeatures()
+	Mecab_analysis(src, mf)
+	Mecab_correctFeatures(mf)
+	mecab_token_count = mf.size
+	Mecab_utf8_to_cp932(mf)
+	libjt = jtalkCore.libjt
+	njd = jtalkCore.njd
+	jpcommon = jtalkCore.jpcommon
+	libjt.mecab2njd(njd, mf.feature, mf.size)
+	libjt.njd_set_pronunciation(njd)
+	libjt.njd_set_digit(njd)
+	libjt.njd2jpcommon(jpcommon, njd)
+	libjt.JPCommon_make_label(jpcommon)
+	label_count = libjt.JPCommon_get_label_size(jpcommon)
+	label_feature = libjt.JPCommon_get_label_feature(jpcommon)
+	labels = "".join(
+		string_at(label_feature[i]).decode("ascii", errors="replace")
+		for i in range(label_count)
+	)
+	libjt_refresh()
+	labels_lower = labels.lower()
+	# Merged twelve: ju-mora path. Digit-by-digit: i+ch (イチ) mora path.
+	digit_merged = ("j+u" in labels_lower or "j-u" in labels_lower) and (
+		"i+ch" not in labels_lower and "i-ch" not in labels_lower
+	)
+	return {
+		"text": text,
+		"mecabTokenCount": mecab_token_count,
+		"labelCount": label_count,
+		"hasWave": label_count > 2,
+		"digitMerged": digit_merged,
+		"labelsSnippet": labels[:400],
+	}
 
 
 def main() -> int:

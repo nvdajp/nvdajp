@@ -1089,3 +1089,32 @@ naist データで常に fail する。posid は nvdajp ランタイム（jtalk 
 ### 検証
 
 * `verifyJtalkDictionary.ps1`（strict 6 件）と `JpBrailleTests.test_translator2` で回帰確認
+
+## JTalk 複合数読み回帰（2026-06-12, alphajp 調査 → betajp 修正）
+
+### 症状
+
+alphajp ビルド（betajp 取り込み直後）で、メニュー位置「6の12」等が
+「ロクノイチニ」と桁読みになる。期待は「ロクノジュウニ」。
+
+### 原因
+
+`jtalkDriver._jtalk_speak` は合成前に `Mecab_utf8_to_cp932` で feature を
+CP932 化する一方、`njd_set_digit` を `CHARSET_UTF_8` でコンパイルすると
+規則テーブルとの `strcmp` が失敗し、MeCab が分割した `１`+`２` を結合できない。
+
+`jpcommon` / `njd2jpcommon` が Shift_JIS のままである限り、CP932 変換は必要で、
+**`njd_set_digit` は Shift_JIS を維持**する必要がある。
+
+betajp 本体の Makefile は Shift_JIS のまま。alphajp 側で UTF-8 化された
+コミットがマージ経路に入ると再発する。
+
+### 対応（betajp-jtalk-follow-up）
+
+* `miscDepsJp/include/libopenjtalk/njd_set_digit/Makefile.mak`:
+  Shift_JIS 維持をコメントで明示
+* `miscDepsJp/jptools/jtalk_pipeline_probe.py`:
+  `probe_digit_compound("12")` で HTS ラベルから桁結合を検証
+* `miscDepsJp/jptools/test.py`:
+  `JtalkTests.test_jtalk_digit_compound_twelve` を追加
+* `SCONS_CACHE_SUFFIX` を `-jp-v5` に bump（stale `njd_set_digit.obj` 回避）
