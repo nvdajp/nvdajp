@@ -49,12 +49,22 @@ def getLouisVersion():
 
 
 # Liblouis is build with Clang, as Microsoft Visual C++ is unable to build C99 code.
-clangDirs = glob.glob(os.path.join(find_vc_pdir(env.get("MSVC_VERSION"), env), r"Tools\Llvm\bin"))
+# BEGIN JP PATCH (support VS 2026 18.7+ LLVM directory layout)
+# Visual Studio 2026 (18.7+) no longer ships the x86-hosted Tools\Llvm\bin
+# directory; Clang lives only in host-arch specific directories such as
+# Tools\Llvm\x64\bin. Accept either layout and put the found directory on the
+# build PATH so clang-cl resolves regardless of what vcvars added.
+_vcDir = find_vc_pdir(env.get("MSVC_VERSION"), env)
+clangDirs = glob.glob(os.path.join(_vcDir, r"Tools\Llvm\bin")) or glob.glob(
+	os.path.join(_vcDir, r"Tools\Llvm\x64\bin"),
+)
 if len(clangDirs) == 0:
 	raise RuntimeError(
 		"Could not find the Clang compiler. "
 		"Perhaps the C++ Clang tools for Windows component in visual Studio is not installed",
 	)
+env.PrependENVPath("PATH", clangDirs[0])
+# END JP PATCH (support VS 2026 18.7+ LLVM directory layout)
 env["CC"] = "clang-cl"
 env["M4"] = f'"{env.File("#miscdeps/tools/m4.exe")}"'
 # Liblouis disables GNU extensions for m4
