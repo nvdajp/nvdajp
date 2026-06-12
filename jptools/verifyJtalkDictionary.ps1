@@ -7,11 +7,8 @@
     custom-dictionary entries. Use after jtalkSync to catch cache pollution
     or incorrect dictionary builds before running full smoke tests.
 
-    - CI (GITHUB_ACTIONS): the workflow passes -Strict, because the dictionary
-      build is not reproducible and basic cases pass even against a broken
-      sys.dic (entries present but unreachable via the index). Without -Strict
-      the GHA default is basic.
-    - Local / certBuild: strict cases by default (二百十日, ごめんください, etc.).
+    - Default: strict verification (basic + extended custom-dic cases).
+    - CI workflow passes -Strict explicitly; verify_dic.py also defaults to strict.
 
 .PARAMETER Strict
     Force strict verification (basic + extended custom-dic cases).
@@ -77,7 +74,7 @@ if (-not (Test-Path $verifyScript)) {
     exit 1
 }
 
-$modeHint = if ($env:JP_VERIFY_DIC_MODE) { $env:JP_VERIFY_DIC_MODE } elseif ($isCI) { "basic (CI default)" } else { "strict (local default)" }
+$modeHint = if ($env:JP_VERIFY_DIC_MODE) { $env:JP_VERIFY_DIC_MODE } else { "strict (default)" }
 Write-Host "Verifying JTalk dictionary (mode: $modeHint)..."
 & $pythonExe $verifyScript
 exit $LASTEXITCODE
