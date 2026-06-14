@@ -423,7 +423,6 @@ class MainFrame(wx.Frame):
 	def onInputGesturesCommand(self, evt):
 		self.popupSettingsDialog(InputGesturesDialog)
 
-	@blockAction.when(blockAction.Context.SECURE_MODE)
 	def onMagnifierSettingsCommand(self, evt: wx.CommandEvent):
 		self.popupSettingsDialog(NVDASettingsDialog, MagnifierPanel)
 
