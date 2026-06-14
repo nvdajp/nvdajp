@@ -615,6 +615,18 @@ Place two fingers on the screen and move them toward each other to perform a pin
 Move them away from each other to perform a pinch out gesture.
 The fingers must move at least 50 pixels closer together or further apart to be recognised as a pinch in or out.
 
+##### Sequential Flicks {#SequentialFlicks}
+
+You can perform two flicks in quick succession to trigger a sequential flick gesture.
+This greatly expands the number of touch gestures that can be assigned to NVDA commands.
+
+Both flicks can be performed in two ways:
+
+* Lifting your finger after the first flick and then performing the second flick before the gesture times out.
+* Or as a single continuous swipe that sharply changes direction, without lifting your finger.
+
+Twelve combinations are recognised: the four opposite-direction pairs (such as flick right then flick left), and the eight perpendicular L-shaped pairs (such as flick right then flick up).
+
 #### Touch Modes {#TouchModes}
 
 As there are many more NVDA commands than possible touch gestures, NVDA has several touch modes you can switch between which make certain subsets of commands available.
@@ -1586,21 +1598,20 @@ Once the magnifier is enabled, you can use the following keyboard commands to co
 
 | Name | Key | Description |
 |---|---|---|
-| Toggles the magnifier on and off | `NVDA+shift+w` | Enables or disables the magnifier |
-| Increases the magnification level of the magnifier | `NVDA+shift+equals` | Increases the zoom level. Starts the magnifier if it's not already running. |
-| Decreases the magnification level of the magnifier | `NVDA+shift+minus` | Decreases the zoom level |
-| Toggle filter of the magnifier | `NVDA+shift+i` | Cycles through available color filters (normal, grayscale, inverted) |
-| Toggle focus mode for the full-screen magnifier | None | Cycles through focus tracking modes (center, border, relative) |
-| Launch spotlight if magnifier is full-screen | `NVDA+shift+l` | Activates spotlight mode for focused reading or presentations |
-| Pan left | `NVDA+alt+leftArrow` | Pan the magnified view to the left by the specified panning step size |
-| Pan right | `NVDA+alt+rightArrow` | Pan the magnified view to the right by the specified panning step size |
-| Pan up | `NVDA+alt+upArrow` | Pan the magnified view upwards by the specified panning step size |
-| Pan down | `NVDA+alt+downArrow` | Pan the magnified view downwards by the specified panning step size |
-| Pan to left edge | `NVDA+shift+alt+leftArrow` | Pan the magnified view directly to the left edge of the screen |
-| Pan to right edge | `NVDA+shift+alt+rightArrow` | Pan the magnified view directly to the right edge of the screen |
-| Pan to top edge | `NVDA+shift+alt+upArrow` | Pan the magnified view directly to the top edge of the screen |
-| Pan to bottom edge | `NVDA+shift+alt+downArrow` | Pan the magnified view directly to the bottom edge of the screen |
-| Move mouse to view | None | Move the mouse cursor to the center of the magnified view |
+| Toggle the magnifier on and off | `NVDA+shift+w` | Enables or disables the magnifier |
+| Increase the magnification level | `NVDA+shift+equals` | Increases the zoom level. Starts the magnifier if it's not already running. |
+| Decrease the magnification level | `NVDA+shift+minus` | Decreases the zoom level |
+| Cycle color filters | `NVDA+shift+i` | Cycles through the available color filters (normal, grayscale, inverted) |
+| Cycle tracking mode | None | Cycles through tracking modes (center, border, relative) |
+| Show entire screen overview | `NVDA+shift+l` | Temporarily shows an overview of the entire screen |
+| Pan left | `NVDA+alt+leftArrow` | Moves the magnified view left by the configured panning step size |
+| Pan right | `NVDA+alt+rightArrow` | Moves the magnified view right by the configured panning step size |
+| Pan up | `NVDA+alt+upArrow` | Moves the magnified view up by the configured panning step size |
+| Pan down | `NVDA+alt+downArrow` | Moves the magnified view down by the configured panning step size |
+| Pan to left edge | `NVDA+shift+alt+leftArrow` | Moves the magnified view directly to the left edge of the screen |
+| Pan to right edge | `NVDA+shift+alt+rightArrow` | Moves the magnified view directly to the right edge of the screen |
+| Pan to top edge | `NVDA+shift+alt+upArrow` | Moves the magnified view directly to the top edge of the screen |
+| Pan to bottom edge | `NVDA+shift+alt+downArrow` | Moves the magnified view directly to the bottom edge of the screen |
 
 <!-- KC:endInclude -->
 
@@ -3550,6 +3561,23 @@ This style works best when working with documents which use block paragraphs.
 Note that this paragraph style cannot be used in Microsoft Word or Microsoft Outlook, unless you are using UIA to access Microsoft Word controls.
 
 You may toggle through the available paragraph styles from anywhere by assigning a key in the [Input Gestures dialog](#InputGestures).
+
+##### Word Segmentation Standard {#WordSegmentationStandard}
+
+This setting controls how NVDA determines word boundaries when navigating by word.
+Chinese word segmentation is also used for braille.
+When a Chinese braille output table is in use, NVDA can insert spaces between Chinese words in braille.
+
+| . {.hideHeaderRow} |.|
+|---|---|
+| Options | Default (Auto), Auto, Standard, Chinese |
+| Default | Auto |
+
+| Option | Behaviour |
+|---|---|
+| Auto | Use Chinese word segmentation for Chinese text when available. For other text, use standard word segmentation. |
+| Standard | Use standard Windows word segmentation. |
+| Chinese | Use Chinese word segmentation. If Chinese word segmentation is not available, NVDA falls back to standard word segmentation. |
 
 #### Math Settings {#MathSettings}
 

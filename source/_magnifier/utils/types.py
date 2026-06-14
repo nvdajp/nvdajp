@@ -85,10 +85,10 @@ class MagnifierAction(DisplayStringEnum):
 			self.CHANGE_MAGNIFIER_VIEW: pgettext("magnifier action", "change magnifier view"),
 			# Translators: Action description for changing full-screen mode.
 			self.CHANGE_FULLSCREEN_MODE: pgettext("magnifier action", "change full-screen mode"),
-			# Translators: Action description for starting spotlight mode.
-			self.START_SPOTLIGHT: pgettext("magnifier action", "start spotlight mode"),
 			# Translators: Action description for move mouse to view
 			self.MOVE_MOUSE_TO_VIEW: pgettext("magnifier action", "move mouse to view"),
+			# Translators: Action description for showing entire screen overview.
+			self.START_SPOTLIGHT: pgettext("magnifier action", "show screen overview"),
 		}
 
 

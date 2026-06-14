@@ -26,6 +26,7 @@ source/lib
 source/lib64
 source/typelibs
 source/louis
+source/cppjieba
 *.obj
 *.exp
 *.lib
