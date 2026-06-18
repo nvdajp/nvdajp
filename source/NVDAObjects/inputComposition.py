@@ -63,6 +63,34 @@ class InputCompositionTextInfo(OffsetsTextInfo):
 # nvdajp begin
 # from keyboardHandler.internal_keyDownEvent
 lastKeyGesture = None
+# Set when Enter is pressed during an active composition (compAttr IMEs may send
+# (empty, -1, -1) on commit as well as on cancel).
+compositionCommitFromEnter = False
+
+
+def resetCompositionKeyState() -> None:
+	global compositionCommitFromEnter
+	compositionCommitFromEnter = False
+
+
+def isInInputComposition(focus=None) -> bool:
+	if focus is None:
+		import api
+
+		focus = api.getFocusObject()
+	if isinstance(focus, InputComposition):
+		return True
+	if isinstance(focus.parent, InputComposition):
+		return True
+	if isinstance(focus, CandidateItemBehavior):
+		return isinstance(focus.parent, InputComposition)
+	return False
+
+
+def noteCompositionKeyDown(vkCode: int) -> None:
+	global compositionCommitFromEnter
+	if vkCode == winUser.VK_RETURN:
+		compositionCommitFromEnter = True
 
 
 def reportKeyDownEvent(gesture):
