@@ -257,6 +257,14 @@ def internal_keyDownEvent(vkCode, scanCode, extended, injected):
 			stickyNVDAModifier = None
 			stickyNVDAModifierLocked = False
 		gesture = KeyboardInputGesture(currentModifiers, vkCode, scanCode, extended)
+		# nvdajp begin
+		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+			from NVDAObjects import inputComposition
+
+			focus = api.getFocusObject()
+			if inputComposition.isInInputComposition(focus):
+				inputComposition.noteCompositionKeyDown(vkCode)
+		# nvdajp end
 		if not (stickyKeysFlags & winUser.SKF_STICKYKEYSON) and (
 			bypassNVDAModifier
 			or (

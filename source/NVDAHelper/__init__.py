@@ -466,6 +466,20 @@ def nvdaControllerInternal_logMessage(level, pid, message):
 	return 0
 
 
+def _handleCompAttrCompositionEnd(lastString: str) -> None:
+	"""Resolve compAttr IME (empty, -1, -1) after queued key events may have run."""
+	global lastCompositionEndTime
+	from NVDAObjects import inputComposition as ic
+
+	if ic.isCompositionCommitFromEnter():
+		lastCompositionEndTime = time.time()
+		resetInputCompositionVariables()
+		handleInputCompositionEnd("", cancelled=False)
+	else:
+		resetInputCompositionVariables()
+		handleInputCompositionEnd(lastString, cancelled=True)
+
+
 def handleInputCompositionEnd(result, cancelled=False):
 	import speech
 	import characterProcessing
@@ -569,6 +583,9 @@ def handleInputCompositionStart(compositionString, selectionStart, selectionEnd,
 		if parent == focus:
 			parent = focus
 		curInputComposition = InputComposition(parent=parent)
+		from NVDAObjects import inputComposition as ic
+
+		ic.beginCompositionSessionIfNeeded()
 		oldSpeechMode = speech.getState().speechMode
 		speech.setSpeechMode(speech.SpeechMode.off)
 		eventHandler.executeEvent("gainFocus", curInputComposition)
@@ -605,6 +622,10 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 			)
 			return 0
 		log.debug(f"({lastCompString=}) ({compositionString=})")
+		if compositionString and not lastCompString:
+			from NVDAObjects import inputComposition as ic
+
+			ic.beginCompositionSessionIfNeeded()
 		deletedString = ""
 		if (
 			lastCompString
@@ -660,20 +681,14 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
 				return 0
 			# compAttr IME: when key events are off, lastKeyGesture is not populated; treat as
-			# cancel so Esc/Back still get "Clear". When key events are on, only treat as cancel
-			# when we see Escape or Backspace (commit often arrives before key, so avoid Enter bug).
+			# cancel so Esc/Back still get "Clear". When key events are on, defer cancel vs commit
+			# so Enter can set compositionCommitFromEnter before we decide (Google IME). MS-IME /
+			# ATOK send non-empty results on Enter, so (empty, -1, -1) without Enter is cancel.
 			if not config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
 				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
 				return 0
-			from NVDAObjects import inputComposition as ic
-			gesture = ic.lastKeyGesture
-			if gesture and gesture.vkCode in (winUser.VK_ESCAPE, winUser.VK_BACK):
-				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
-				return 0
-			# Commit (composition end): record time so editableText can suppress false new-line
-			# report; then reset. Only here, not for non-end no-compAttr updates.
-			lastCompositionEndTime = time.time()
-			resetInputCompositionVariables()
+			queueHandler.queueFunction(queueHandler.eventQueue, _handleCompAttrCompositionEnd, lastCompString)
+			return 0
 	# nvdajp end
 	# END JP PATCH
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
@@ -1071,11 +1086,14 @@ class _RemoteLoader:
 # nvdajp: Japanese input composition variables reset function
 def resetInputCompositionVariables():
 	global lastCompAttr, lastCompString, lastSelectionStart, lastSelectionEnd, lastHadCompAttr
+	from NVDAObjects import inputComposition as ic
+
 	lastCompAttr = None
 	lastCompString = None
 	lastSelectionStart = None
 	lastSelectionEnd = None
 	lastHadCompAttr = False
+	ic.resetCompositionKeyState()
 
 
 def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
