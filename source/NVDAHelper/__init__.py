@@ -471,7 +471,7 @@ def _handleCompAttrCompositionEnd(lastString: str) -> None:
 	global lastCompositionEndTime
 	from NVDAObjects import inputComposition as ic
 
-	if ic.compositionCommitFromEnter:
+	if ic.isCompositionCommitFromEnter():
 		lastCompositionEndTime = time.time()
 		resetInputCompositionVariables()
 		handleInputCompositionEnd("", cancelled=False)
@@ -583,6 +583,9 @@ def handleInputCompositionStart(compositionString, selectionStart, selectionEnd,
 		if parent == focus:
 			parent = focus
 		curInputComposition = InputComposition(parent=parent)
+		from NVDAObjects import inputComposition as ic
+
+		ic.beginCompositionSessionIfNeeded()
 		oldSpeechMode = speech.getState().speechMode
 		speech.setSpeechMode(speech.SpeechMode.off)
 		eventHandler.executeEvent("gainFocus", curInputComposition)
@@ -619,6 +622,10 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 			)
 			return 0
 		log.debug(f"({lastCompString=}) ({compositionString=})")
+		if compositionString and not lastCompString:
+			from NVDAObjects import inputComposition as ic
+
+			ic.beginCompositionSessionIfNeeded()
 		deletedString = ""
 		if (
 			lastCompString

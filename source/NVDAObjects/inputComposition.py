@@ -63,14 +63,58 @@ class InputCompositionTextInfo(OffsetsTextInfo):
 # nvdajp begin
 # from keyboardHandler.internal_keyDownEvent
 lastKeyGesture = None
-# Set when Enter is pressed during an active composition (compAttr IMEs may send
-# (empty, -1, -1) on commit as well as on cancel).
-compositionCommitFromEnter = False
+# Session id for compAttr IME Enter vs cancel detection. compAttr IMEs may send
+# (empty, -1, -1) on commit as well as on cancel.
+_compositionSessionId = 0
+_compositionCommitEnterSessionId: int | None = None
+_compositionSessionInProgress = False
+
+
+def beginCompositionSessionIfNeeded() -> None:
+	global _compositionSessionId, _compositionCommitEnterSessionId, _compositionSessionInProgress
+	if _compositionSessionInProgress:
+		return
+	_compositionSessionId += 1
+	_compositionCommitEnterSessionId = None
+	_compositionSessionInProgress = True
+
+
+def endCompositionSession() -> None:
+	global _compositionSessionId, _compositionCommitEnterSessionId, _compositionSessionInProgress
+	_compositionCommitEnterSessionId = None
+	_compositionSessionInProgress = False
+	_compositionSessionId += 1
 
 
 def resetCompositionKeyState() -> None:
-	global compositionCommitFromEnter
-	compositionCommitFromEnter = False
+	endCompositionSession()
+
+
+def isCompositionActive() -> bool:
+	from NVDAHelper import lastCompString
+
+	if lastCompString:
+		return True
+	if not isInInputComposition():
+		return False
+	import api
+
+	focus = api.getFocusObject()
+	if isinstance(focus, InputComposition):
+		comp = focus
+	elif isinstance(focus.parent, InputComposition):
+		comp = focus.parent
+	else:
+		return False
+	return bool(comp.compositionString or comp.readingString)
+
+
+def isCompositionCommitFromEnter() -> bool:
+	return (
+		_compositionCommitEnterSessionId is not None
+		and _compositionCommitEnterSessionId == _compositionSessionId
+		and _compositionSessionInProgress
+	)
 
 
 def isInInputComposition(focus=None) -> bool:
@@ -88,9 +132,9 @@ def isInInputComposition(focus=None) -> bool:
 
 
 def noteCompositionKeyDown(vkCode: int) -> None:
-	global compositionCommitFromEnter
-	if vkCode == winUser.VK_RETURN:
-		compositionCommitFromEnter = True
+	global _compositionCommitEnterSessionId
+	if vkCode == winUser.VK_RETURN and isCompositionActive():
+		_compositionCommitEnterSessionId = _compositionSessionId
 
 
 def reportKeyDownEvent(gesture):
