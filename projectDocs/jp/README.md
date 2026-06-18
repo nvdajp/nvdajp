@@ -108,6 +108,7 @@ MeCab 初期化の実行順依存（jpSmokeTests 内で process-global な tagge
 
 ### 日本語機能・点字
 
+* 日本語キーボード向け locale ジェスチャ: `projectDocs/jp/locale-gestures-japanese-keyboard.md`
 * 日本語入力メソッド実装: `projectDocs/jp/japanese-input-method-implementation.md`
 * 日本語点字出力テーブル: `projectDocs/jp/braille-ja-jp-comp6.md`
 * 点字関連分析: `projectDocs/jp/braille-routing-analysis.md`、`projectDocs/jp/braille-tables-relationship.md`
