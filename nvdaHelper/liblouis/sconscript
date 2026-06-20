@@ -55,8 +55,6 @@ if not env.WhereIs("clang-cl"):
 		"Could not find the Clang compiler. "
 		"Perhaps the C++ Clang tools for Windows component in Visual Studio is not installed?",
 	)
-env.PrependENVPath("PATH", clangDirs[0])
-# END JP PATCH (support VS 2026 18.7+ LLVM directory layout)
 env["CC"] = "clang-cl"
 env["M4"] = f'"{env.File("#miscdeps/tools/m4.exe")}"'
 # Liblouis disables GNU extensions for m4
