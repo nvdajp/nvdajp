@@ -764,7 +764,6 @@ jobs:
       # , checkPo
       # END JP PATCH (checkPo temporarily disabled)
     ]
-    needs: [buildNVDA, typeCheck, checkPo, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols]
     permissions:
       contents: read
     steps:
