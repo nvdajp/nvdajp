@@ -20,7 +20,7 @@
    * `source/brailleTables/__tables.py` で `ja-jp-comp6.utb` が登録されている
    * デフォルトテーブルとして設定可能（`config.conf["braille"]["translationTable"]`）
 
-2. **点字変換の呼び出し**: `source/braille.py` の `update()` メソッドで `louisHelper.translate()` が呼ばれる
+2. **点字変換の呼び出し**: `source/braille/regions/base.py` の `Region.update()` メソッドで `louisHelper.translate()` が呼ばれる（本家 #20252 で `source/braille.py` がパッケージへ分割）
 
 3. **エンジン分岐**: `source/louisHelper.py` の `translate()` 関数で判定
 
@@ -554,7 +554,7 @@ translator1（カナ→点字パターン変換）の回帰テストが相対的
 * 本家版への統合は困難（日本語特有の処理が多い）
 * JP パッチが入っている本家ファイル:
   * `source/louisHelper.py` — `jpTranslate` 分岐（`ja-jp-comp6.utb` 判定）
-  * `source/braille.py` — `_nvdajp()`, `jpBrailleUtils`, `nvdajpEnableKeyEvents`, issue #109 パッチ
+  * `source/braille/`（本家 #20252 でパッケージ化）— `labels.py`（`_nvdajp()`, `jpBrailleUtils`, ラベル切替関数）, `regions/properties.py`（`nvdajpEnableKeyEvents`, issue #109 パッチ）, `regions/NVDAObject.py`, `regions/textInfo.py`
 * 本家がこれらのファイルを変更するたびにコンフリクトの可能性がある
 
 ## 英語2級点字の併用（nvdajp/nvdajp#304）

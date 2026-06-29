@@ -106,11 +106,12 @@
 
 ##### 点字処理の JP 固有コード
 
-* `source/braille.py` - JP 固有の点字処理コードを実装
-  * `jpBrailleUtils` からのインポートと関数群（`useRawLabels()`, `_nvdajp()`, `getRoleLabel()` など）により、生ラベルと翻訳済みラベルの切り替えが可能
-  * `getPropertiesBraille()` 関数内で Composition の名前表示制御、EDITABLETEXT ロールの処理、テーブルヘッダー処理などの JP 固有処理を実装
-  * 他の関数（`_getAnnotationProperty()`, `getControlFieldBraille()`, `getFormatFieldBraille()`, `_addTextWithFields()`）でも JP 固有関数を使用
-  * `NVDAObjectRegion.update()` 内でテーブルヘッダー処理を実装
+* `source/braille/` - JP 固有の点字処理コードを実装（本家 #20252 で `source/braille.py` がパッケージへ分割されたため、JP 差分も各モジュールへ移植済み）
+  * `source/braille/labels.py` - `jpBrailleUtils` からのインポートと関数群（`useRawLabels()`, `_nvdajp()`, `getRoleLabel()`, `getPositiveStateLabel(s)()`, `getNegativeStateLabels()`, `getLandmarkLabel(s)()`）により、生ラベルと翻訳済みラベルの切り替えが可能
+  * `source/braille/__init__.py` - 上記 JP 関数を re-export（`source/NVDAObjects/__init__.py` 等からの外部参照用）
+  * `source/braille/regions/properties.py` - `getPropertiesBraille()` 内で Composition の名前表示制御、EDITABLETEXT ロールの処理、テーブルヘッダー処理（issue #109）などの JP 固有処理を実装。`_getAnnotationProperty()`, `getControlFieldBraille()`, `getFormatFieldBraille()` でも JP 固有関数を使用
+  * `source/braille/regions/NVDAObject.py` - `NVDAObjectRegion.update()` 内でテーブルヘッダー処理を実装
+  * `source/braille/regions/textInfo.py` - `_addTextWithFields()` で clickable ラベルに JP 固有関数を使用
   * `config.conf["braille"]["expandAtCursor"]` が `True` の場合、生ラベル（翻訳なし）を使用し、`False` の場合は翻訳済みラベルを使用します
 * `source/NVDAObjects/__init__.py` - `_get_roleTextBraille()` メソッドで、JP 固有の `getRoleLabel()` と `getLandmarkLabel()` 関数を使用してランドマークの点字ラベルを生成
 
@@ -336,7 +337,7 @@ ATOK の変換候補にコメントウィンドウがある場合の対応：
 
 #### 3.3 点字と音声の統合
 
-* `source/braille.py` (128行変更) - 点字処理の拡張
+* `source/braille/` - 点字処理の拡張（本家 #20252 のパッケージ分割に伴い、JP 差分は `labels.py` / `regions/properties.py` / `regions/NVDAObject.py` / `regions/textInfo.py` / `__init__.py` へ移植）
 * `source/speech/speech.py` (33行変更) - 音声処理の拡張
 * `source/speech/__init__.py` (0行追加) - 音声モジュールの初期化
 

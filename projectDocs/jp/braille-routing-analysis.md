@@ -141,7 +141,7 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
 
 **注意点:**
 - これは nvdajp ブランチ内での調査結果であり、純粋な nvaccess/nvda リポジトリでテストしたわけではありません
-- nvdajp には `braille.py` や `cursorManager.py` など、他のファイルにも差分があり、それらが影響している可能性があります
+- nvdajp には `braille/`（本家 #20252 でパッケージ化）や `cursorManager.py` など、他のファイルにも差分があり、それらが影響している可能性があります
 
 ## 関連ドキュメント
 

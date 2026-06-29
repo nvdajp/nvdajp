@@ -48,7 +48,7 @@ DirectBM.dll
 ## 2. 開発当時（〜2010 年代）と現行 NVDA 点字ドライバ仕様の差分
 
 KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto）NVDA 用に開発され、**ベンダ DLL（DirectBM）+ ctypes コールバック**という当時典型的な形で実装されている。  
-現行 betajp（NVDA **2026.1** 系）の `source/braille.py` および本家同梱ドライバが前提とする API との差を以下に整理する。
+現行 betajp（NVDA **2026.1** 系）の `source/braille/`（本家 #20252 でパッケージ化。`BrailleDisplayDriver` は `source/braille/display/driver.py`）および本家同梱ドライバが前提とする API との差を以下に整理する。
 
 ### 2.1 時代区分（目安）
 
@@ -59,7 +59,7 @@ KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto�
 | 2019〜 | `autoSettingsUtils.driverSetting`、ドライバ別設定 UI | **未対応**（3 ドライバとも `supportedSettings = ()` 相当） |
 | 2020 年代〜 | `hwIo` 標準化、型ヒント、`receivesAckPackets`、HID 標準など | **未移行**（DLL コールバックのまま） |
 
-※ 正確な導入バージョンは本家 NVDA の changelog / git 履歴参照。メンテ判断には **現行 `source/braille.py` の docstring が仕様の正**とする。
+※ 正確な導入バージョンは本家 NVDA の changelog / git 履歴参照。メンテ判断には **現行 `source/braille/display/driver.py` の `BrailleDisplayDriver` docstring が仕様の正**とする。
 
 ### 2.2 API・実装パターンの対照表
 
@@ -247,7 +247,7 @@ def _connectionBeepsEnabled():
 ### 4.4 推奨するメンテナンス形態
 
 1. **回帰の基準機種を固定**（readmejp: BMS40 / BM46 等）し、変更ごとに手動スモーク
-2. **本家 `source/braille.py` の `BrailleDisplayDriver` docstring** を仕様差分チェックリストとして定期参照（NVDA マージ時）
+2. **本家 `source/braille/display/driver.py` の `BrailleDisplayDriver` docstring** を仕様差分チェックリストとして定期参照（NVDA マージ時）
 3. バグ修正は **該当ドライバファイルのみ**最小 diff（AGENTS.md の JP 差分最小化方針と整合）
 4. アドオンとコアで **同一ソース**を共有しているため、コミット時は `kgs.py` / `brailleMemo.py` / DLL の同期を確認
 
@@ -293,7 +293,7 @@ def _connectionBeepsEnabled():
 | 種別 | パス |
 |------|------|
 | ドライバ | `source/brailleDisplayDrivers/kgs.py`, `brailleMemo.py`, `kgsbn46.py`, `DirectBM.dll` |
-| NVDA 基底 | `source/braille.py`（`BrailleDisplayDriver`）, `source/bdDetect.py` |
+| NVDA 基底 | `source/braille/display/driver.py`（`BrailleDisplayDriver`）, `source/bdDetect.py` |
 | 設定 UI | `source/gui/settingsDialogs.py`（`BrailleSettingsPanel`） |
 | ドライバ設定 API | `source/autoSettingsUtils/driverSetting.py` |
 | 参考実装 | `source/brailleDisplayDrivers/brailleNote.py`, `hims.py`, `dotPad/driver.py` |

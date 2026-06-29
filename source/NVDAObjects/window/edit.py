@@ -1106,8 +1106,8 @@ class Edit(EditableTextWithAutoSelectDetection, EditBase):
 	editAPIVersion = 0
 	editValueUnit = textInfos.UNIT_LINE
 
-	def _get_TextInfo(self):
-		if self.editAPIVersion != 0 and self.ITextDocumentObject:
+	def _get_TextInfo(self) -> type[textInfos.TextInfo]:
+		if self.editAPIVersion != 0 and self.ITextDocumentObject and self.ITextSelectionObject:
 			return ITextDocumentTextInfo
 		else:
 			return EditTextInfo
@@ -1162,7 +1162,7 @@ class RichEdit(Edit):
 		# We then fall back to normal Edit support.
 		try:
 			return self.TextInfo(self, position)
-		except COMError:
+		except (COMError, AttributeError):
 			log.debugWarning("Could not instanciate ITextDocumentTextInfo", exc_info=True)
 			self.TextInfo = EditTextInfo
 			return self.TextInfo(self, position)
