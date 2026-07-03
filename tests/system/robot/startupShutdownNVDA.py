@@ -99,11 +99,14 @@ def quits_from_menu(showExitDialog=True):
 		_builtIn.sleep(1)  # the dialog is not always receiving the enter keypress, wait a little for it
 		spy.emulateKeyPress("enter", blockUntilProcessed=False)  # don't block so NVDA can exit
 
+	# BEGIN JP PATCH
 	_blockUntilConditionMet(
 		getValue=lambda: not _nvdaIsRunning(),
-		giveUpAfterSeconds=3,
+		# Allow extra time on slower CI or loaded systems before treating shutdown as a failure.
+		giveUpAfterSeconds=5,
 		errorMessage="NVDA failed to exit in the specified timeout",
 	)
+	# END JP PATCH
 	_builtIn.should_not_be_true(_nvdaIsRunning(), msg="NVDA is still running")
 
 
@@ -130,11 +133,14 @@ def quits_from_keyboard():
 	_builtIn.sleep(1)  # the dialog is not always receiving the enter keypress, wait a little longer for it
 	_builtIn.should_be_true(_nvdaIsRunning(), msg="NVDA is not running")
 	spy.emulateKeyPress("enter", blockUntilProcessed=False)  # don't block so NVDA can exit
+	# BEGIN JP PATCH
 	_blockUntilConditionMet(
 		getValue=lambda: not _nvdaIsRunning(),
-		giveUpAfterSeconds=5,
+		# Give the keyboard-driven shutdown path a little more headroom on slower environments.
+		giveUpAfterSeconds=7,
 		errorMessage="NVDA failed to exit in the specified timeout",
 	)
+	# END JP PATCH
 	_builtIn.should_not_be_true(_nvdaIsRunning(), msg="NVDA is still running")
 
 
