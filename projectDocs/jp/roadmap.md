@@ -18,6 +18,8 @@
 - Python 3.13（x64）への移行は完了済みである。
 - ビルドは SCons 中心の運用に統一済みである。
 - 署名・配布はローカル実施、CI は検証用途という方針を維持している。
+- JTalk 辞書ビルドの決定性確保と `verify_dic.py` strict モードの CI 適用は完了済み（2026-06-12）。
+- タブ文字を含む入力の MeCab クラッシュは `TAB_CODE` プレースホルダ方式で安定化済み。
 
 ## 進行中タスク
 
@@ -32,24 +34,18 @@
 - **タスク 4.1 無効化されたユニットテスト／システムテストの復帰**
   - ローカルでの復帰確認
   - CI での安定稼働確認
+  - 4 件の点字 routing テスト（`ReviewCursorManagerRegion`）は未復帰。参照: `projectDocs/jp/braille-routing-analysis.md`
 
 ### 優先度: 中
 
-- **タスク 2.7 JTalk 辞書ビルドの再現性確保**
-  - 辞書ビルドが同一ランナーイメージでもビルドごとに非決定的となる問題への対応。
-  - 短期の `verify_dic.py` strict モードの CI 適用は実施済み。
-  - 根本原因（mecab-dict-index の config-charset 誤設定 → ContextID 解決失敗 →
-    未定義動作でゴミ文脈 ID）を 2026-06-12 に特定・修正済み。
-    `make_jdic.py` 2 回連続実行で sys.dic がバイト一致することを確認。
-  - translator2.py の出力補正（一人/二人/おはようございます）と
-    verify_dic.py の GHA basic 縮退の撤去は 2026-06-12 に実施済み。
-  - 将来課題: カスタムエントリへの品詞別文脈 ID 付与（コスト再調整を伴う）。
-  - 参照: `projectDocs/jp/tab-character-analysis.md`
-    「非決定性の根本原因の特定と修正 (2026-06-12)」
 - **タスク 2.6 CI基盤の最小限更新**
   - 上流 `testAndPublish.yml` 追従を小さなPR単位で実施する。
 - **タスク 2.5b コード品質改善（残り）**
   - ログ改善、例外処理改善、重複削減を継続する。
+- **タスク 2.8 カスタムエントリへの品詞別文脈 ID 付与（将来課題）**
+  - JTalk 辞書のカスタムエントリを `0,0` (BOS/EOS) ではなく品詞別 ID に移行する。
+  - コスト再調整を伴うため、translator2 の読み・マスアケ変動を受け入れる必要がある。
+  - 参照: `projectDocs/jp/tab-character-analysis.md`
 
 ### 優先度: 低
 
