@@ -50,11 +50,8 @@ JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、G
 3. `powershell -ExecutionPolicy Bypass -File jptools/runJpSmokeTests.ps1 -SkipInstall`
 
 この順で通る場合、辞書ビルドそのものよりも workflow、cache、runner 差分を優先して疑う。
-ただしローカルで通っても、CI の辞書ビルドはランナーイメージ版（ツールチェーン）依存で異なる `sys.dic` を生成しうる。
-ランナー差分を疑う場合は、失敗ランと成功ランの `JTalk runtime` artifact の `sys.dic` ハッシュと
-Runner Image Version を比較する（詳細: `projectDocs/jp/tab-character-analysis.md` の 2026-06-11 調査）。
-MeCab 初期化の実行順依存（jpSmokeTests 内で process-global な tagger が意図しない辞書設定のまま残る問題）も同ドキュメントの PR #663 節を参照。
 `Verify JTalk dictionary` は UTF-8 実行を優先し、`jtalkSync` や smoke test のようなビルド・実行系は `chcp 932` 前提を崩さない。
+再発時のクイック参照や過去の調査経緯は `projectDocs/jp/tab-character-analysis.md` を参照すること。
 
 ## ポリシー（抜粋）
 
@@ -125,7 +122,7 @@ MeCab 初期化の実行順依存（jpSmokeTests 内で process-global な tagge
 ### 調査・実装メモ
 
 * 主要変更一覧: `projectDocs/jp/changes-nvdajp.md`
-* タブ文字・コードページ分析: `projectDocs/jp/tab-character-analysis.md`
+* タブ文字・MeCab・辞書ビルド: `projectDocs/jp/tab-character-analysis.md`
 
 ## 用語集
 
