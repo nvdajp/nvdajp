@@ -7,6 +7,7 @@
 
 import config
 import braille
+import brailleTables
 import textInfos
 import api
 import controlTypes
@@ -39,6 +40,15 @@ class TestReviewRoutingMovesSystemCaretInNavigableText(unittest.TestCase):
 	cm: CursorManager
 
 	def setUp(self):
+		# BEGIN JP PATCH
+		# nvdajp's default braille table is ja-jp-comp6.utb, which translates
+		# through the Japanese braille translator and inserts extra indicator
+		# cells for Latin text, so braille cell positions no longer map
+		# one-to-one to characters. These tests assume upstream's one-to-one
+		# mapping, so force upstream's default table while they run.
+		self._originalTable = braille.handler.table
+		braille.handler.table = brailleTables.getTable("en-ueb-g1.ctb")
+		# END JP PATCH
 		# Set tethering to review.
 		braille.handler.setTether(braille.TetherTo.REVIEW.value)
 		cmText = "the quick brown fox jumps over the lazy dog"
@@ -48,14 +58,12 @@ class TestReviewRoutingMovesSystemCaretInNavigableText(unittest.TestCase):
 		api.setReviewPosition(caret)
 		braille.handler.handleReviewMove()
 
-	@unittest.skip(
-		"See projectDocs/jp/archive/test-routing-failures.md for details. "
-		"Investigation revealed that even when ReviewCursorManagerRegion is reverted to upstream's "
-		"empty class implementation, these tests still fail in the nvdajp branch. This suggests "
-		"the issue may not be solely due to nvdajp-specific code, but could involve test "
-		"preconditions, environment differences, or other factors. These tests are temporarily "
-		"skipped pending further investigation.",
-	)
+	# BEGIN JP PATCH
+	def tearDown(self):
+		braille.handler.table = self._originalTable
+
+	# END JP PATCH
+
 	def test_moveCaret_never_moveReviewAndActivate(self):
 		"""Test that routing action on a cell will move the review cursor when routing changes the position,
 		whereas it should activate the current position when the review cursor is already at that position.
@@ -86,14 +94,6 @@ class TestReviewRoutingMovesSystemCaretInNavigableText(unittest.TestCase):
 		caret = self.cm.makeTextInfo(textInfos.POSITION_CARET)
 		self.assertEqual(caret, self.caret)
 
-	@unittest.skip(
-		"See projectDocs/jp/archive/test-routing-failures.md for details. "
-		"Investigation revealed that even when ReviewCursorManagerRegion is reverted to upstream's "
-		"empty class implementation, these tests still fail in the nvdajp branch. This suggests "
-		"the issue may not be solely due to nvdajp-specific code, but could involve test "
-		"preconditions, environment differences, or other factors. These tests are temporarily "
-		"skipped pending further investigation.",
-	)
 	def test_moveCaret_never_instantActivate(self):
 		"""Test that routing action on a cell will activate the current position
 		when the review cursor is already at that position.
@@ -113,14 +113,6 @@ class TestReviewRoutingMovesSystemCaretInNavigableText(unittest.TestCase):
 		caret = self.cm.makeTextInfo(textInfos.POSITION_CARET)
 		self.assertEqual(caret, self.caret)
 
-	@unittest.skip(
-		"See projectDocs/jp/archive/test-routing-failures.md for details. "
-		"Investigation revealed that even when ReviewCursorManagerRegion is reverted to upstream's "
-		"empty class implementation, these tests still fail in the nvdajp branch. This suggests "
-		"the issue may not be solely due to nvdajp-specific code, but could involve test "
-		"preconditions, environment differences, or other factors. These tests are temporarily "
-		"skipped pending further investigation.",
-	)
 	def test_moveCaret_always_moveReviewAndActivate(self):
 		"""Test that routing action on a cell will move the review cursor when routing changes the position,
 		whereas it should activate the current position when the review cursor is already at that position.
@@ -151,14 +143,6 @@ class TestReviewRoutingMovesSystemCaretInNavigableText(unittest.TestCase):
 		caret = self.cm.makeTextInfo(textInfos.POSITION_CARET)
 		self.assertEqual(caret, expectedReview)
 
-	@unittest.skip(
-		"See projectDocs/jp/archive/test-routing-failures.md for details. "
-		"Investigation revealed that even when ReviewCursorManagerRegion is reverted to upstream's "
-		"empty class implementation, these tests still fail in the nvdajp branch. This suggests "
-		"the issue may not be solely due to nvdajp-specific code, but could involve test "
-		"preconditions, environment differences, or other factors. These tests are temporarily "
-		"skipped pending further investigation.",
-	)
 	def test_moveCaret_always_instantActivate(self):
 		"""Test that routing action on a cell will activate the current position
 		when the review cursor is already at that position.

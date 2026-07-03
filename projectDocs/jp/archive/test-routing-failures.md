@@ -1,5 +1,10 @@
 # Braille Routing Unit Test Failures
 
+> **解決済み (2026-07-03)**: 根本原因は routing 実装ではなく、nvdajp の既定点字テーブル
+> (`ja-jp-comp6.utb`) が日本語点訳エンジンを経由するため、テストが前提とする
+> 「1 セル = 1 文字」のマッピングが崩れていたこと。テスト側でテーブルを明示指定して
+> スキップを解除した。詳細は `projectDocs/jp/braille-routing-analysis.md` を参照。
+
 ## 概要
 
 `tests/unit/test_braille/test_routing.py` の `TestReviewRoutingMovesSystemCaretInNavigableText` クラスで4つのテストが失敗しています。これらはすべて `ReviewCursorManagerRegion` の実装に関連する問題です。
