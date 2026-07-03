@@ -1,5 +1,25 @@
 # Braille Routing 問題の分析
 
+## 解決済み (2026-07-03)
+
+**真の根本原因**: routing 実装のバグではなく、**点字テーブルの既定値の違い**でした。
+
+- nvdajp は `config` の既定点字テーブルを `en-ueb-g1.ctb` から `ja-jp-comp6.utb` に変更している（`source/config/configSpec.py`）
+- `ja-jp-comp6.utb` の場合、`louisHelper.translate()` は liblouis ではなく日本語点訳エンジン（`synthDrivers.jtalk.translator2`）を使う
+- 日本語点訳エンジンはラテン文字テキストに外字符などの追加セルを挿入するため、点字セル位置と文字位置が 1 対 1 に対応しなくなる
+- upstream のテストは「1 セル = 1 文字」のマッピングを前提としており（upstream の既定テーブル `en-ueb-g1.ctb` ではこれが成立）、既定テーブルのまま実行すると `routeTo(3)` が文字位置 2 に解決される等のズレが生じて失敗していた
+- `ReviewCursorManagerRegion` を空クラスに戻しても失敗が続いたのはこのため。routing ロジック自体は upstream と同一で正しい
+
+**修正内容**（ブランチ `betajp-braille-routing-fix`）:
+
+1. `source/braille.py` の `ReviewCursorManagerRegion` は upstream と同じ空クラスのまま（対応済みだった）
+2. `tests/unit/test_braille/test_routing.py` の `TestReviewRoutingMovesSystemCaretInNavigableText.setUp()` で upstream の既定テーブル `en-ueb-g1.ctb` を明示的に設定し、`tearDown()` で復元（JP PATCH コメント付き）
+3. 4 つの `@unittest.skip` を削除
+
+これにより 4 テストすべてがパスし、ユニットテストスイート全体（1172 件）もグリーン。以下は当時の調査記録として残す。
+
+---
+
 ## 問題の本質
 
 **結論**: **C) カスタムコードのバグ修正が必要**
