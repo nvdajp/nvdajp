@@ -35,7 +35,19 @@ _curAddon = addonHandler.Addon(str(_addonDir))
 _addonSummary = _curAddon.manifest["summary"]
 addonHandler.initTranslation()
 
-mecabDictIndex = plumbum.local[str(Path(__file__).parent / "mecab-dict-index.exe")]
+# mecab-dict-index.exe is no longer stored in the repository: the old i386
+# binary produced dictionaries that the current runtime rejects (left/right
+# context table size mismatch in Dictionary::isCompatible). Packaging this
+# add-on must ship the x64 binary built by "scons jtalkSync"
+# (miscDepsJp/jptools/jtalk/libopenjtalk/mecab/src/mecab-dict-index.exe).
+# See projectDocs/jp/userdic.md.
+_mecabDictIndexPath = Path(__file__).parent / "mecab-dict-index.exe"
+
+
+def _getMecabDictIndex():
+	if not _mecabDictIndexPath.exists():
+		return None
+	return plumbum.local[str(_mecabDictIndexPath)]
 
 
 def editUserDicSrc(self):
@@ -57,6 +69,11 @@ def editUserDicSrc(self):
 def compileUserDic(self):
 	log.info('system_dic "%s"' % jtalkDir.dic_dir)
 	log.info('configDir "%s"' % jtalkDir.configDir)
+	mecabDictIndex = _getMecabDictIndex()
+	if mecabDictIndex is None:
+		log.error("mecab-dict-index.exe not found: %s" % _mecabDictIndexPath)
+		gui.messageBox(_("mecab-dict-index.exe not found."), _("Error"), wx.OK)
+		return
 	srcs = jtalkDir.user_dic_srcs()
 	if not srcs:
 		gui.messageBox(_("No source found."), _("Done"), wx.OK)
