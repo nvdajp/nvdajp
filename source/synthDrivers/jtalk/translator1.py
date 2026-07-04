@@ -450,6 +450,55 @@ def make_cyrillic_dic() -> dict[str, str]:
 
 cyrillic_dic = make_cyrillic_dic()
 
+# Greek letters. nvdajp-specific rendering (nvdajp issue #456):
+# lowercase letters use the international Greek braille patterns
+# (the same base cells as liblouis grc-international-common.uti and
+# UEB Greek letters) and capital letters add dot 7, without any
+# enclosure symbols. The specification is described in
+# user_docs/ja/readmejp.md.
+# U+03C2 (final sigma) shares the pattern of U+03C3 (sigma); both map
+# to the same capital letter, so deriving capitals from either is safe.
+_greek_lower_dots = {
+	"\u03b1": "1",  # GREEK SMALL LETTER ALPHA
+	"\u03b2": "12",  # GREEK SMALL LETTER BETA
+	"\u03b3": "1245",  # GREEK SMALL LETTER GAMMA
+	"\u03b4": "145",  # GREEK SMALL LETTER DELTA
+	"\u03b5": "15",  # GREEK SMALL LETTER EPSILON
+	"\u03b6": "1356",  # GREEK SMALL LETTER ZETA
+	"\u03b7": "156",  # GREEK SMALL LETTER ETA
+	"\u03b8": "1456",  # GREEK SMALL LETTER THETA
+	"\u03b9": "24",  # GREEK SMALL LETTER IOTA
+	"\u03ba": "13",  # GREEK SMALL LETTER KAPPA
+	"\u03bb": "123",  # GREEK SMALL LETTER LAMDA
+	"\u03bc": "134",  # GREEK SMALL LETTER MU
+	"\u03bd": "1345",  # GREEK SMALL LETTER NU
+	"\u03be": "1346",  # GREEK SMALL LETTER XI
+	"\u03bf": "135",  # GREEK SMALL LETTER OMICRON
+	"\u03c0": "1234",  # GREEK SMALL LETTER PI
+	"\u03c1": "1235",  # GREEK SMALL LETTER RHO
+	"\u03c2": "234",  # GREEK SMALL LETTER FINAL SIGMA
+	"\u03c3": "234",  # GREEK SMALL LETTER SIGMA
+	"\u03c4": "2345",  # GREEK SMALL LETTER TAU
+	"\u03c5": "136",  # GREEK SMALL LETTER UPSILON
+	"\u03c6": "124",  # GREEK SMALL LETTER PHI
+	"\u03c7": "12346",  # GREEK SMALL LETTER CHI
+	"\u03c8": "13456",  # GREEK SMALL LETTER PSI
+	"\u03c9": "2456",  # GREEK SMALL LETTER OMEGA
+}
+
+
+def make_greek_dic() -> dict[str, str]:
+	dic = {}
+	for lower, dots in _greek_lower_dots.items():
+		dic[lower] = _dots_to_braille(dots)
+		upper = lower.upper()
+		if upper != lower:
+			dic[upper] = _dots_to_braille(dots + "7")
+	return dic
+
+
+greek_dic = make_greek_dic()
+
 
 def is_ara(c: str) -> bool:
 	# 数字の後につなぎ符が必要
@@ -691,6 +740,14 @@ def translateWithInPos(text: str, nabcc: bool = False) -> tuple[str, list[int]]:
 		# no enclosure symbols (nvdajp-specific). nvdajp issue #224
 		elif text[pos] in cyrillic_dic:
 			retval += cyrillic_dic[text[pos]]
+			inPos.append(pos)
+			latin = num = False
+			latin_sym = False
+			pos += 1
+		# Greek letters: international Greek braille patterns, capitals add
+		# dot 7, no enclosure symbols (nvdajp-specific). nvdajp issue #456
+		elif text[pos] in greek_dic:
+			retval += greek_dic[text[pos]]
 			inPos.append(pos)
 			latin = num = False
 			latin_sym = False
