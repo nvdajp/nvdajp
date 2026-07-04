@@ -385,6 +385,72 @@ alpha_cap_dic = {
 }
 
 
+def _dots_to_braille(dots: str) -> str:
+	"""Convert a dot-number string such as "1247" to a Unicode braille
+	character. Dots 1-8 map to bits 0-7 of the braille cell value."""
+	cell = 0
+	for d in dots:
+		cell |= 1 << (int(d) - 1)
+	return chr(0x2800 + cell)
+
+
+# Cyrillic (Russian) letters. nvdajp-specific rendering (nvdajp issue #224):
+# lowercase letters use the international Russian braille patterns and
+# capital letters add dot 7, without any enclosure symbols.
+# The specification is described in user_docs/ja/readmejp.md.
+# Keys are lowercase letters; capitals are derived in make_cyrillic_dic().
+_cyrillic_lower_dots = {
+	"\u0430": "1",  # CYRILLIC SMALL LETTER A
+	"\u0431": "12",  # CYRILLIC SMALL LETTER BE
+	"\u0432": "2456",  # CYRILLIC SMALL LETTER VE
+	"\u0433": "1245",  # CYRILLIC SMALL LETTER GHE
+	"\u0434": "145",  # CYRILLIC SMALL LETTER DE
+	"\u0435": "15",  # CYRILLIC SMALL LETTER IE
+	"\u0451": "16",  # CYRILLIC SMALL LETTER IO
+	"\u0436": "245",  # CYRILLIC SMALL LETTER ZHE
+	"\u0437": "1356",  # CYRILLIC SMALL LETTER ZE
+	"\u0438": "24",  # CYRILLIC SMALL LETTER I
+	"\u0439": "12346",  # CYRILLIC SMALL LETTER SHORT I
+	"\u043a": "13",  # CYRILLIC SMALL LETTER KA
+	"\u043b": "123",  # CYRILLIC SMALL LETTER EL
+	"\u043c": "134",  # CYRILLIC SMALL LETTER EM
+	"\u043d": "1345",  # CYRILLIC SMALL LETTER EN
+	"\u043e": "135",  # CYRILLIC SMALL LETTER O
+	"\u043f": "1234",  # CYRILLIC SMALL LETTER PE
+	"\u0440": "1235",  # CYRILLIC SMALL LETTER ER
+	"\u0441": "234",  # CYRILLIC SMALL LETTER ES
+	"\u0442": "2345",  # CYRILLIC SMALL LETTER TE
+	"\u0443": "136",  # CYRILLIC SMALL LETTER U
+	"\u0444": "124",  # CYRILLIC SMALL LETTER EF
+	"\u0445": "125",  # CYRILLIC SMALL LETTER HA
+	"\u0446": "14",  # CYRILLIC SMALL LETTER TSE
+	"\u0447": "12345",  # CYRILLIC SMALL LETTER CHE
+	"\u0448": "156",  # CYRILLIC SMALL LETTER SHA
+	"\u0449": "1346",  # CYRILLIC SMALL LETTER SHCHA
+	"\u044a": "12356",  # CYRILLIC SMALL LETTER HARD SIGN
+	"\u044b": "2346",  # CYRILLIC SMALL LETTER YERU
+	"\u044c": "23456",  # CYRILLIC SMALL LETTER SOFT SIGN
+	"\u044d": "246",  # CYRILLIC SMALL LETTER E
+	"\u044e": "1256",  # CYRILLIC SMALL LETTER YU
+	"\u044f": "1246",  # CYRILLIC SMALL LETTER YA
+	"\u0463": "345",  # CYRILLIC SMALL LETTER YAT
+	"\u046b": "246",  # CYRILLIC SMALL LETTER BIG YUS
+}
+
+
+def make_cyrillic_dic() -> dict[str, str]:
+	dic = {}
+	for lower, dots in _cyrillic_lower_dots.items():
+		dic[lower] = _dots_to_braille(dots)
+		upper = lower.upper()
+		if upper != lower:
+			dic[upper] = _dots_to_braille(dots + "7")
+	return dic
+
+
+cyrillic_dic = make_cyrillic_dic()
+
+
 def is_ara(c: str) -> bool:
 	# 数字の後につなぎ符が必要
 	return c in "アイウエオラリルレロ"
@@ -619,6 +685,14 @@ def translateWithInPos(text: str, nabcc: bool = False) -> tuple[str, list[int]]:
 			else:
 				retval += text[pos]
 				inPos.append(pos)
+			latin_sym = False
+			pos += 1
+		# Cyrillic letters: Russian braille patterns, capitals add dot 7,
+		# no enclosure symbols (nvdajp-specific). nvdajp issue #224
+		elif text[pos] in cyrillic_dic:
+			retval += cyrillic_dic[text[pos]]
+			inPos.append(pos)
+			latin = num = False
 			latin_sym = False
 			pos += 1
 		# Exception
