@@ -1295,6 +1295,7 @@ def morphs_to_string(li, inbuf, logwrite):
 
 
 RE_MB_ALPHA_NUM_SPACE = re.compile(r"^[0-9A-Za-z\- ０-９Ａ-Ｚａ-ｚ　]+$")
+RE_CYRILLIC = re.compile(r"^[\u0400-\u04FF]+$")
 RE_ASCII_CHARS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; ]+$")
 RE_ASCII_AND_SYMBOLS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; \u00d7]+$")
 RE_INFORMATION = re.compile(r"^[A-Za-z0-9\+\@\/\#\$\%\&\*\;\.\<\>\-\_\{\}\[\] ]+$")
@@ -1465,6 +1466,12 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 			mo.output = " "
 		elif mo.hinshi2 == "数" and mo.nhyouki.isdigit():
 			# digit numbers (not kanji characters)
+			mo.output = mo.nhyouki
+		elif RE_CYRILLIC.match(mo.nhyouki):
+			# Cyrillic words are unknown to MeCab (no reading) and would
+			# otherwise be dropped because their output stays empty.
+			# Pass the characters through so that translator1 renders them
+			# with Russian braille patterns. nvdajp issue #224
 			mo.output = mo.nhyouki
 
 	li = replace_morphs(li, CONNECTED_MORPHS)
