@@ -5,10 +5,11 @@ import unicodedata
 
 
 def nfkc_normalize_with_map(s: str) -> tuple[str, list[int]]:
-	"""NFKC 正規化した文字列と、正規化後の各文字が元の文字列の
-	どの位置に由来するかのマップを返す。
-	… → "..." や ⑩ → "10" のように正規化で文字数が変わっても
-	点訳のポジションマッピングを維持するために使う (nvdajp #117, #328)。
+	"""Return the NFKC-normalized string together with a map from each
+	normalized character back to its position in the original string.
+	NFKC changes the character count for some characters, e.g.
+	U+2026 HORIZONTAL ELLIPSIS -> "..." and U+2469 CIRCLED NUMBER TEN -> "10",
+	which would break braille position mapping (nvdajp issues #117, #328).
 	"""
 	out: list[str] = []
 	nmap: list[int] = []
@@ -16,9 +17,11 @@ def nfkc_normalize_with_map(s: str) -> tuple[str, list[int]]:
 	n = len(s)
 	while i < n:
 		j = i + 1
-		# 結合文字と、NFKC で結合文字になる半角濁点・半濁点 (U+FF9E/U+FF9F) は
-		# 基底文字とまとめて正規化する（分割すると合成されず結果が変わるため）
-		while j < n and (unicodedata.combining(s[j]) or s[j] in "ﾞﾟ"):
+		# Normalize combining characters, and the halfwidth voiced/semi-voiced
+		# sound marks (U+FF9E/U+FF9F, which NFKC turns into combining
+		# characters), together with their base character; normalizing them
+		# separately would prevent composition and change the result.
+		while j < n and (unicodedata.combining(s[j]) or s[j] in "\uff9e\uff9f"):
 			j += 1
 		seg = unicodedata.normalize("NFKC", s[i:j])
 		out.append(seg)
@@ -26,8 +29,10 @@ def nfkc_normalize_with_map(s: str) -> tuple[str, list[int]]:
 		i = j
 	result = "".join(out)
 	if unicodedata.normalize("NFKC", result) != result:
-		# 分割正規化の連結が NFKC 安定でない場合は全体正規化にフォールバックし、
-		# 位置は従来どおり（正規化後の位置をそのまま、末尾は最終文字に丸める）とする
+		# The concatenation of per-segment results is not NFKC-stable.
+		# Fall back to whole-string normalization and keep the legacy
+		# position behavior (positions in the normalized string, with the
+		# tail clamped to the last character of the original string).
 		result = unicodedata.normalize("NFKC", s)
 		nmap = [min(p, n - 1) for p in range(len(result))]
 	return (result, nmap)

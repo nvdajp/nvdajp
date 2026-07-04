@@ -1439,10 +1439,12 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	if "  " in text:
 		if logwrite:
 			logwrite("translator2: consecutive ASCII spaces detected")
-	# NFKC 正規化で文字数が変わる文字（… → "..."、⑩ → "10" など）があると
-	# text2mecab() 内の正規化で inpos2 が元テキストとずれるため、
-	# ここで位置マップ付きで先に正規化しておく（NFKC は冪等なので
-	# text2mecab() 内の再正規化では長さは変わらない）。#117, #328
+	# NFKC normalization changes the character count for some characters
+	# (U+2026 HORIZONTAL ELLIPSIS -> "...", U+2469 CIRCLED NUMBER TEN -> "10"),
+	# so the normalization inside text2mecab() would make inpos2 drift from
+	# the original text. Normalize here with a position map instead; NFKC is
+	# idempotent, so the second normalization inside text2mecab() no longer
+	# changes the length. nvdajp issues #117, #328
 	text, nfkc_map = nfkc_normalize_with_map(text)
 	text = text2mecab(text)
 	mf = mecab_analyze_and_correct(text, logwrite_=logwrite)
@@ -1773,7 +1775,8 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 
 	outbuf, inpos2 = morphs_to_string(li, inbuf, logwrite)
 
-	# inpos2 は正規化後テキストの位置なので、元テキストの位置に引き戻す
+	# inpos2 holds positions in the normalized text; map them back to
+	# positions in the original text.
 	if nfkc_map:
 		last = len(nfkc_map) - 1
 		inpos2 = [nfkc_map[min(p, last)] for p in inpos2]
