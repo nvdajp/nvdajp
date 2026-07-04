@@ -12,7 +12,7 @@ from typing import Callable
 
 
 try:
-	from ._nvdajp_unicode import unicode_normalize
+	from ._nvdajp_unicode import unicode_normalize, nfkc_normalize_with_map
 	from .mecab import (
 		CODE,
 		Mecab_initialize,
@@ -24,7 +24,7 @@ try:
 	from . import translator1
 	from .jtalkDir import jtalk_dir, dic_dir, user_dics
 except (ImportError, ValueError):
-	from _nvdajp_unicode import unicode_normalize  # type: ignore
+	from _nvdajp_unicode import unicode_normalize, nfkc_normalize_with_map  # type: ignore
 	from mecab import (  # type: ignore
 		CODE,
 		Mecab_initialize,
@@ -1439,6 +1439,13 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	if "  " in text:
 		if logwrite:
 			logwrite("translator2: consecutive ASCII spaces detected")
+	# NFKC normalization changes the character count for some characters
+	# (U+2026 HORIZONTAL ELLIPSIS -> "...", U+2469 CIRCLED NUMBER TEN -> "10"),
+	# so the normalization inside text2mecab() would make inpos2 drift from
+	# the original text. Normalize here with a position map instead; NFKC is
+	# idempotent, so the second normalization inside text2mecab() no longer
+	# changes the length. nvdajp issues #117, #328
+	text, nfkc_map = nfkc_normalize_with_map(text)
 	text = text2mecab(text)
 	mf = mecab_analyze_and_correct(text, logwrite_=logwrite)
 	Mecab_print(mf, logwrite, output_header=False)
@@ -1767,6 +1774,12 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	logwrite("")
 
 	outbuf, inpos2 = morphs_to_string(li, inbuf, logwrite)
+
+	# inpos2 holds positions in the normalized text; map them back to
+	# positions in the original text.
+	if nfkc_map:
+		last = len(nfkc_map) - 1
+		inpos2 = [nfkc_map[min(p, last)] for p in inpos2]
 
 	if nabcc:
 		outbuf = outbuf.replace(TAB_CODE, "⡀")
