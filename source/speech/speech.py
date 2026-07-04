@@ -1810,6 +1810,15 @@ def getTextInfoSpeech(  # noqa: C901
 		firstField = textWithFields[0]
 		if isinstance(firstField, str):
 			firstText = firstField.strip() if not firstField.isspace() else firstField
+	# BEGIN JP PATCH
+	# nvdajp #113: Scintilla controls (Notepad++ etc.) treat CRLF as one
+	# caret position, so the character/word unit text can be exactly
+	# "\r\n" (two characters). That fell through to the plain text path
+	# and was announced as "blank". Treat the pair as a single newline
+	# character so it is spoken the same way as "\n" in LF-only documents.
+	if isWordOrCharUnit and firstText == "\r\n":
+		textWithFields[0] = firstText = "\n"
+	# END JP PATCH
 	if onlyInitialFields or (
 		isWordOrCharUnit
 		and (len(firstText) == 1 or len(unicodeNormalize(firstText)) == 1)
