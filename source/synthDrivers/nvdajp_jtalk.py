@@ -26,8 +26,19 @@ from speech.types import SpeechSequence
 import languageHandler
 from .jtalk import jtalkDriver
 from .jtalk.jtalkDriver import VoiceProperty
-from .jtalk._nvdajp_espeak import isJapaneseLang
 from synthDriverHandler import synthIndexReached, synthDoneSpeaking
+
+
+def isJapaneseLang(msg: str) -> bool:
+	"""Return True if msg contains characters typically used in Japanese
+	text: CJK symbols/kana/ideographs (U+3000-U+9FFF), CJK compatibility
+	ideographs (U+F900-U+FAFF), or halfwidth/fullwidth forms (U+FF00-U+FFEF).
+	Moved from the removed _nvdajp_espeak module."""
+	for i in msg:
+		c = ord(i)
+		if (0x3000 <= c <= 0x9FFF) or (0xF900 <= c <= 0xFAFF) or (0xFF00 <= c <= 0xFFEF):
+			return True
+	return False
 
 
 class SynthDriver(BaseSynthDriver):
