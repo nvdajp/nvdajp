@@ -34,11 +34,75 @@
   1. Chrome/Edge でテキスト葉ノード上にマウス移動したとき、読み上げが親要素に切り替わる
   2. ツリー未構築ケース（ページを開いた直後など）はこのパッチでは改善しない（既知の制限）
 
-## 期待される効果
+## 再現・検証手順（runnvda.bat で「何が直ったか」を確認する方法）
 
-- Chromium 系の「マウスを乗せても無音／無関係な文字列だけ読む」事象の一部が改善
-- ヒットテスト自体は IA2 側で変わらないので、ツリー構築済みのページでは効果大
-- ツリー未構築ケース（岡根さんの再現 PC を含む）は従来どおり — 別途「ページタイトルだけ読む」現象の個別対応が必要
+### 前提知識: 本パッチが直す対象
+
+`mouseHandler.executeMouseMoveEvent` は `objectFromPoint` でマウス下の最深オブジェクトを取り、`beTransparentToMouse=True` のオブジェクトを親へ遡って読み上げ対象を決める（[mouseHandler.py:234](https://github.com/nvaccess/nvda/blob/master/source/mouseHandler.py)）。
+
+- **Firefox**: `mozilla.py:TextLeaf` が `beTransparentToMouse=True` を設定しているため、テキスト葉ノード（`ROLE_SYSTEM_TEXT` かつフォーカス不可・編集不可）にマウスが当たっても親へ遡り、読み上げ可能な祖先（段落・リンク・見出し等）を読む。
+- **Chromium（本パッチ前）**: `chromium.py` に相当クラスが無く、テキスト葉ノードがマウス吸収するため「無音」や「無関係な1文字だけ読む」になる。
+- **本パッチ後**: `chromium.py` に同じ `TextLeaf(beTransparentToMouse=True)` を追加し、`findExtraOverlayClasses` で判定して組み込む。Firefox と同じ遡りが起きる。
+
+> **注意**: 本パッチは「テキスト葉ノードに吸収される」ケースのみ有効。Chromium のアクセシビリティツリー未構築時（hit test がドキュメントルートしか返さない）は改善しない。ツリー未構築時の症状「ページタイトルだけ読む」は別原因。
+
+### 手順1: 不具合の再現（パッチ前の状態を記録）
+
+`betajp` ブランチ（パッチ無し）で確認するか、本ブランチでパッチ箇所を一時コメントアウトして観察。
+
+1. `runnvda.bat` で NVDA ソース起動
+2. 設定 → マウス → **「マウスの追跡を有効化」をオン**、**「マウスが入ったときオブジェクトを報告」をオン**、**テキスト単位「段落」**（既定）
+3. Chrome/Edge でテキスト密度の高いページを開く（例: Wikipedia 日本語版の記事ページ）
+4. **Tab キー等で一度ページ内をブラウズモードで読ませる**（アクセシビリティツリーを構築させる）
+5. マウスをゆっくりとテキスト上（段落やリンク内の文字列）に移動させる
+6. **観察**: 「ページタイトルだけ読む」「無音」「1文字だけ読む」等の症状を記録。Firefox で同じページを開いて比較すると、Firefox は段落単位で読み上げるはず
+
+### 手順2: パッチ後の確認
+
+本ブランチ `betajp-fix-94` のまま `runnvda.bat` 起動。手順1と同じ条件で観察。
+
+**期待される変化**:
+
+| 状況 | パッチ前 | パッチ後（期待） |
+|------|----------|------------------|
+| 段落内テキストにマウス移動 | 無音／1文字のみ | 段落テキストを読み上げ |
+| リンク内テキストにマウス移動 | リンクURLや無音 | リンクテキストを読み上げ |
+| 見出し内テキストにマウス移動 | 無音 | 見出しテキストを読み上げ |
+| ボタン内テキストにマウス移動 | 無音 | ボタン名を読み上げ |
+
+> **ツリー未構築ケース（パッチで改善しない）**: ページを開いた直後、ブラウズモードで1度も読ませていない状態だと「ページタイトルだけ読む」になる。これは hit test がドキュメントルートしか返さないため、本パッチ対象外。手順1・2では必ず一度ブラウズモードで読ませてからテストすること。
+
+### 手順3: ログで客観的に確認（推奨）
+
+音声だけだと分かりにくい場合、NVDA ログでオブジェクトの種類と親遡りの発生を観察する。
+
+1. NVDA メニュー → ツール → ログビューア を開く
+2. ログレベルを **DEBUG** に設定（NVDA メニュー → 設定 → 一般 → ログレベル）
+3. 手順2と同じ操作を行う
+4. ログビューアで `IO - mouseHandler.executeMouseMoveEvent` または `Speaking` 行を確認
+   - パッチ前: `TextLeaf` 相当（`STATICTEXT` / `ROLE_SYSTEM_TEXT`）が読み上げ対象になる、または無音
+   - パッチ後: 段落・リンク・見出し等の親オブジェクトが読み上げ対象になる
+
+### 手順4: 一時ログ追加（必要な場合のみ）
+
+`mouseHandler.executeMouseMoveEvent` には情報ログが無いため、より確実に観測したい場合は一時的に下記のような debug ログを追加して検証し、検証後に削除する。
+
+```python
+# 一時検証用（検証後に削除）
+mouseObject = desktopObject.objectFromPoint(x, y)
+log.debug(f"objectFromPoint: {mouseObject!r} beTransparent={mouseObject.beTransparentToMouse}")
+while mouseObject and mouseObject.beTransparentToMouse:
+	mouseObject = mouseObject.parent
+log.debug(f"after transparent skip: {mouseObject!r}")
+```
+
+これで、`objectFromPoint` が返した最深オブジェクトが `TextLeaf`（`beTransparentToMouse=True`）か、それが親に遡って何になったか、がログで分かる。
+
+### 手順5: Firefox での比較
+
+同一ページを Firefox で開き、手順2と同じ操作を行う。Firefox は `mozilla.py:TextLeaf` で既に `beTransparentToMouse=True` を設定しているため、本パッチ後の Chromium と同等の挙動（段落・リンク・見出しを読む）になるはず。これが「期待される正常動作」の基準。
+
+## 期待される効果
 
 ## upstream PR への展開
 
