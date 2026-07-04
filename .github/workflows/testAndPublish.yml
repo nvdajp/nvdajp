@@ -194,7 +194,7 @@ jobs:
       run: ci/scripts/tests/beforeTests.ps1
     # BEGIN JP PATCH (ship JTalk runtime separately from workspace cache to avoid stale dic propagation)
     - name: Upload JTalk runtime artifact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: |
@@ -341,7 +341,7 @@ jobs:
         fail-on-cache-miss: true
     # BEGIN JP PATCH (overwrite JTalk files from dedicated artifact after workspace cache restore)
     - name: Get JTalk runtime artifact
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v8
       with:
         name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: .
@@ -400,7 +400,7 @@ jobs:
         fail-on-cache-miss: true
     # BEGIN JP PATCH (overwrite JTalk files from dedicated artifact after workspace cache restore)
     - name: Get JTalk runtime artifact
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v8
       with:
         name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: .
@@ -423,7 +423,7 @@ jobs:
       run: ./jptools/runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
     - name: Upload JP smoke test artifacts
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: JP smoke test results (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: |
@@ -494,7 +494,7 @@ jobs:
         fail-on-cache-miss: true
     # BEGIN JP PATCH (overwrite packaged JTalk files from dedicated artifact after workspace cache restore)
     - name: Get JTalk runtime artifact
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v8
       with:
         name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: .
@@ -729,7 +729,7 @@ jobs:
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Get symbols
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: Symbols (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
         path: output
