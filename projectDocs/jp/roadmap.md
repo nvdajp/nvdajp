@@ -17,6 +17,7 @@
 - 本家 2026.1 の機能的取り込みおよび Python 3.13（x64）への移行は完了済みである。
 - ビルドは SCons 中心の運用に統一済みである。
 - 署名・配布はローカル実施、CI は検証用途という方針を維持している。
+- 日本語点訳エンジンの libkuraji への分離（フェーズ1〜3）は完了済みである（2026-07-06）。参照: `projectDocs/jp/braille-engine-decoupling-plan.md`
 
 ## 進行中タスク
 
@@ -39,9 +40,9 @@
   - コスト再調整を伴うため、translator2 の読み・マスアケ変動を受け入れる必要がある。
   - 有効化済みのユーザー辞書テスト経路を、sys.dic を再ビルドせずに品詞別 ID・コストを試す実験サンドボックスとして使える。
   - 参照: `projectDocs/jp/tab-character-analysis.md`、`projectDocs/jp/userdic.md`
-- **タスク 2.9 libkuraji: 点訳エンジンの分離・ライブラリ化（設計・実装計画）**
-  - 日本語点訳エンジン（translator1/2）を libkuraji として分離し、独立したライブラリ/CLI として利用可能にする。JTalk との分離方式（形態素解析の依存性注入）が主要論点。
-  - 参照: `projectDocs/jp/braille-engine-decoupling-plan.md`
+- **タスク 2.9b libkuraji-dic: 辞書の別パッケージ化（残タスク）**
+  - JTalk 拡張辞書のビルド済みバイナリを別パッケージとして配布し、`kuraji` CLI を nvdajp 抜きでスタンドアロン動作させる。
+  - 参照: `projectDocs/jp/braille-engine-decoupling-plan.md`（6. 完了状態のまとめ）
 
 ### 優先度: 低
 
