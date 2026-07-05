@@ -626,7 +626,11 @@ def translate_with_pos(text: str, nabcc: bool = False) -> Tuple[str, List[int]]:
             i += 1
             continue
 
-        # unknown character: no output cell
+        # unknown character: emit a placeholder cell so that the
+        # 1-input-char-to-1-output-cell position mapping is preserved
+        # for scripts outside this translator's coverage (e.g. Hebrew).
+        # translator2 replaces "□" with a space in its final output.
+        emit("□", i)
         i += 1
 
     return "".join(out), pos
