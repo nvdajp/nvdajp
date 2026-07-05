@@ -12,7 +12,7 @@ from typing import Callable
 
 
 try:
-	from ._nvdajp_unicode import unicode_normalize
+	from ._nvdajp_unicode import unicode_normalize, nfkc_normalize_with_map
 	from .mecab import (
 		CODE,
 		Mecab_initialize,
@@ -24,7 +24,7 @@ try:
 	from . import translator1
 	from .jtalkDir import jtalk_dir, dic_dir, user_dics
 except (ImportError, ValueError):
-	from _nvdajp_unicode import unicode_normalize  # type: ignore
+	from _nvdajp_unicode import unicode_normalize, nfkc_normalize_with_map  # type: ignore
 	from mecab import (  # type: ignore
 		CODE,
 		Mecab_initialize,
@@ -1295,6 +1295,8 @@ def morphs_to_string(li, inbuf, logwrite):
 
 
 RE_MB_ALPHA_NUM_SPACE = re.compile(r"^[0-9A-Za-z\- ０-９Ａ-Ｚａ-ｚ　]+$")
+# Greek (U+0370-U+03FF) and Cyrillic (U+0400-U+04FF) letters
+RE_GREEK_CYRILLIC = re.compile(r"^[\u0370-\u04FF]+$")
 RE_ASCII_CHARS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; ]+$")
 RE_ASCII_AND_SYMBOLS = re.compile(r"^[A-Za-z0-9\.\,\-\+\:\/\~\?\&\%\#\*\$\; \u00d7]+$")
 RE_INFORMATION = re.compile(r"^[A-Za-z0-9\+\@\/\#\$\%\&\*\;\.\<\>\-\_\{\}\[\] ]+$")
@@ -1439,6 +1441,13 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	if "  " in text:
 		if logwrite:
 			logwrite("translator2: consecutive ASCII spaces detected")
+	# NFKC normalization changes the character count for some characters
+	# (U+2026 HORIZONTAL ELLIPSIS -> "...", U+2469 CIRCLED NUMBER TEN -> "10"),
+	# so the normalization inside text2mecab() would make inpos2 drift from
+	# the original text. Normalize here with a position map instead; NFKC is
+	# idempotent, so the second normalization inside text2mecab() no longer
+	# changes the length. nvdajp issues #117, #328
+	text, nfkc_map = nfkc_normalize_with_map(text)
 	text = text2mecab(text)
 	mf = mecab_analyze_and_correct(text, logwrite_=logwrite)
 	Mecab_print(mf, logwrite, output_header=False)
@@ -1458,6 +1467,12 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 			mo.output = " "
 		elif mo.hinshi2 == "数" and mo.nhyouki.isdigit():
 			# digit numbers (not kanji characters)
+			mo.output = mo.nhyouki
+		elif RE_GREEK_CYRILLIC.match(mo.nhyouki):
+			# Greek and Cyrillic words are unknown to MeCab (no reading) and
+			# would otherwise be dropped because their output stays empty.
+			# Pass the characters through so that translator1 renders them
+			# with Greek or Russian braille patterns. nvdajp issues #224, #456
 			mo.output = mo.nhyouki
 
 	li = replace_morphs(li, CONNECTED_MORPHS)
@@ -1767,6 +1782,12 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	logwrite("")
 
 	outbuf, inpos2 = morphs_to_string(li, inbuf, logwrite)
+
+	# inpos2 holds positions in the normalized text; map them back to
+	# positions in the original text.
+	if nfkc_map:
+		last = len(nfkc_map) - 1
+		inpos2 = [nfkc_map[min(p, last)] for p in inpos2]
 
 	if nabcc:
 		outbuf = outbuf.replace(TAB_CODE, "⡀")

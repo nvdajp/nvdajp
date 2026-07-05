@@ -6,6 +6,7 @@
 import sys
 from pathlib import Path
 
+import build_userdic
 from mecabHarness import tasks
 
 # Use source/synthDrivers/jtalk directly (files moved from miscDepsJp in Phase 1)
@@ -15,13 +16,10 @@ script_dir = Path(__file__).resolve().parent
 repo_root = (script_dir / ".." / "..").resolve()
 jt_dir = repo_root / "source" / "synthDrivers" / "jtalk"
 sys.path.insert(0, str(jt_dir))
-import jtalkDir  # type: ignore
 from _nvdajp_unicode import unicode_normalize  # type: ignore
 from mecab import *  # type: ignore
 
 dic = jt_dir / "dic"
-user_dics_org = jtalkDir.user_dics_org
-user_dics = jtalkDir.user_dics
 
 
 def __print(s):
@@ -110,12 +108,54 @@ def get_reading(msg):
 	return reading
 
 
+# Sample word from jtusr.csv: 12 characters, analyzed as several
+# morphemes by the base dictionary and as a single morpheme when the
+# user dictionary is loaded.
+USER_DIC_TEST_TEXT = "次世代型点字ピンディスプレイ"
+
+
+def analyze(msg):
+	"""Return (morpheme count, reading, braille) for msg with the current dictionaries."""
+	s = text2mecab(msg)
+	with lock:
+		mf = NonblockingMecabFeatures()
+		Mecab_analysis(s, mf, logwrite_=__print)
+		Mecab_correctFeatures(mf)
+		size = mf.size
+		reading, braille = Mecab_get_reading(mf)
+		mf = None
+	return size, reading, braille
+
+
+def probeUserDic():
+	"""Analyze USER_DIC_TEST_TEXT with and without the user dictionary.
+
+	Builds jtusr.dic first (strict: raises when the x64 mecab-dict-index.exe
+	or the runtime dictionary is missing). Returns a dict with "base" and
+	"user" keys, each holding the analyze() tuple.
+	"""
+	dics = build_userdic.ensure_user_dic(strict=True)
+	__print(f"probeUserDic: initializing MeCab without user dictionaries: {jt_dir}, {dic}")
+	Mecab_initialize(__print, str(jt_dir), str(dic))
+	base = analyze(USER_DIC_TEST_TEXT)
+	__print(f"probeUserDic: initializing MeCab with user dictionaries: {dics}")
+	Mecab_initialize(__print, str(jt_dir), str(dic), dics)
+	user = analyze(USER_DIC_TEST_TEXT)
+	return {"base": base, "user": user}
+
+
 def runTasks(enableUserDic=False):
 	# Mecab_initialize rebuilds the process-global tagger when the requested
 	# dictionary configuration differs from the current one. In jpSmokeTests,
 	# test_translator2 (user_dics) runs before this class (MecabTests is last),
 	# so runTasks(False) must switch back to the base dictionary explicitly.
 	if enableUserDic:
+		# All harness tasks must also pass with the user dictionary loaded;
+		# the user dictionary is required here (strict) so that a broken or
+		# missing jtusr.dic cannot silently degrade this run to the base
+		# dictionary. Whether the entry is actually selected is verified by
+		# probeUserDic().
+		user_dics = build_userdic.ensure_user_dic(strict=True)
 		user_dics_str = ", ".join(map(str, user_dics)) if user_dics else "None"
 		__print(f"Initializing MeCab with user dictionaries: {jt_dir}, {dic}, {user_dics_str}")
 		Mecab_initialize(__print, str(jt_dir), str(dic), user_dics)

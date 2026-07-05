@@ -40,13 +40,17 @@ jtalk_dir_str = str(jtalk_dir)
 if jtalk_dir_str in sys.path:
 	sys.path.remove(jtalk_dir_str)
 sys.path.insert(0, jtalk_dir_str)
-import jtalkDir  # type: ignore
 import translator1  # type: ignore
 import translator2  # type: ignore
 import mecab as mecab_module  # type: ignore
 
+import build_userdic
+
 dic_dir = jtalk_dir / "dic"
-user_dics = jtalkDir.user_dics
+# Build jtusr.dic against the current sys.dic and load it, instead of the
+# cwd-dependent glob in jtalkDir (the harness has no task that needs the
+# user dictionary; loading it here verifies it does not change results).
+user_dics = build_userdic.ensure_user_dic()
 
 
 def __write(file, s=""):

@@ -5,7 +5,6 @@
 # Copyright (C) 2010-2019 Takuya Nishimoto (nishimotz.com)
 
 from logHandler import log
-import time
 from typing import Any, Callable, Optional, cast
 
 import queue as Queue
@@ -16,7 +15,6 @@ import copy
 import nvwave
 from pathlib import Path
 
-_espeak: Optional[Any] = None  # from .. import _espeak
 from .jtalkCore import (  # noqa: E402
 	libjt_initialize,
 	libjt_load,
@@ -39,7 +37,6 @@ from .text2mecab import text2mecab  # noqa: E402
 from . import jtalkPrepare  # noqa: E402
 from ..jtalk._nvdajp_unicode import unicode_normalize  # noqa: E402
 from ..jtalk import _bgthread  # noqa: E402
-import watchdog  # noqa: E402
 import config  # noqa: E402
 from .jtalkDir import jtalk_dir, dic_dir, user_dics  # noqa: E402
 
@@ -61,7 +58,6 @@ _jtalk_voices = [
 		"htsvoice": str(jtalk_dir / "m001" / "m001.htsvoice"),
 		"alpha": 0.55,
 		"beta": 0.00,
-		"espeak_variant": "max",
 	},
 	{
 		"id": "V2",
@@ -76,7 +72,6 @@ _jtalk_voices = [
 		"htsvoice": str(jtalk_dir / "mei" / "mei_happy.htsvoice"),
 		"alpha": 0.60,  # 0.55,
 		"beta": 0.00,
-		"espeak_variant": "f1",
 	},
 	{
 		"id": "V3",
@@ -90,7 +85,6 @@ _jtalk_voices = [
 		"htsvoice": str(jtalk_dir / "lite" / "voice.htsvoice"),
 		"alpha": 0.42,
 		"beta": 0.00,
-		"espeak_variant": "max",
 	},
 	{
 		"id": "V4",
@@ -106,7 +100,6 @@ _jtalk_voices = [
 		"htsvoice": str(jtalk_dir / "tohokuf01" / "tohoku-f01-neutral.htsvoice"),
 		"alpha": 0.54,
 		"beta": 0.00,
-		"espeak_variant": "f1",
 	},
 ]
 default_jtalk_voice = _jtalk_voices[3]  # V4
@@ -131,7 +124,9 @@ logwrite: Callable[[str], None] = log.debug
 lastIndex: Optional[int] = None
 currIndex: Optional[int] = None
 player: Optional[nvwave.WavePlayer] = None
-currentEngine: int = 0  # 1:espeak 2:jtalk
+# 0: idle, 2: JTalk or silence. Value 1 belonged to the removed eSpeak
+# bridge; 2 is kept as is so that log output stays comparable.
+currentEngine: int = 0
 indexReachedFunc: Optional[Callable[[Optional[int]], None]] = None
 
 
@@ -220,30 +215,6 @@ def _jtalk_speak(msg: str, index: int | None = None, prop: Any = None) -> None:
 	currentEngine = 0
 
 
-espeakMark: int = 10000
-
-
-def _espeak_speak(msg: str, lang: str, index: int | None = None, prop: Any = None) -> None:
-	global currentEngine, lastIndex, espeakMark
-	assert _espeak is not None  # Type narrowing for type checkers
-	assert lastIndex is not None  # Type narrowing for type checkers
-	currentEngine = 1
-	msg = str(msg)
-	msg.translate({ord("\01"): None, ord("<"): "&lt;", ord(">"): "&gt;"})
-	msg = '<voice xml:lang="%s">%s</voice>' % (lang, msg)
-	msg += '<mark name="%d" />' % espeakMark
-	_espeak.speak(msg)
-	if hasattr(_espeak, "lastIndex"):
-		while currentEngine == 1 and _espeak.lastIndex != espeakMark:
-			time.sleep(0.1)
-			watchdog.alive()
-	time.sleep(0.4)
-	watchdog.alive()
-	lastIndex = index
-	currentEngine = 0
-	espeakMark += 1
-
-
 # call from BgThread
 def _speak(arg: tuple[str, str, int | None, Any]) -> None:
 	msg, lang, index, prop = arg
@@ -251,11 +222,10 @@ def _speak(arg: tuple[str, str, int | None, Any]) -> None:
 		logwrite("[" + lang + "]" + str(msg))
 	if DEBUG:
 		logwrite("_speak(%s)" % str(msg))
-	if _espeak is None or lang == "ja":
-		# log.info("_jtalk_speak")
-		_jtalk_speak(str(msg), index, prop)
-	else:
-		_espeak_speak(str(msg), lang, index, prop)
+	# JTalk speaks every language segment. The eSpeak bridge that used to
+	# handle non-Japanese segments here was removed; see
+	# projectDocs/jp/espeak-bridge-removal.md and nvdajp issue #6.
+	_jtalk_speak(str(msg), index, prop)
 
 
 def _break(time_ms: int) -> None:
@@ -323,11 +293,6 @@ def onJtalkDone() -> None:
 	_processIndexReached()
 
 
-def onEspeakDone(index: int) -> None:
-	# log.info("onEspeakDone %r" % index)
-	_processIndexReached()
-
-
 def speak(msg: str, lang: str, index: int | None = None, voiceProperty_: Any = None) -> None:
 	# log.info("index(%r) msg(%s) lang(%s)" % (index, msg, lang))
 	# if msg is None and lang is None:
@@ -361,7 +326,7 @@ def speak_break(time_ms: int) -> None:
 
 def stop() -> None:
 	global currentEngine, indexCommands, lastIndex
-	# Need player and queue to drain and stop JTalk; _espeak only needed for currentEngine==1.
+	# Need player and queue to drain and stop JTalk.
 	if player is None or _bgthread.bgQueue is None:
 		return
 	if indexReachedFunc:
@@ -371,11 +336,7 @@ def stop() -> None:
 		indexCommands.clear()
 
 		indexReachedFunc(None)
-	if currentEngine == 1 and _espeak is not None:
-		_espeak.stop()
-		currentEngine = 0
-		return
-	# Kill all speech from now (JTalk path or eSpeak unset).
+	# Kill all speech from now.
 	# We still want parameter changes to occur, so requeue them.
 	params = []
 	stop_task_count = 0  # for log.info()
@@ -400,9 +361,7 @@ def stop() -> None:
 
 
 def pause(switch: bool) -> None:
-	if currentEngine == 1 and _espeak is not None:
-		_espeak.pause(switch)
-	elif currentEngine == 2 and player is not None:
+	if currentEngine == 2 and player is not None:
 		player.pause(switch)
 
 
@@ -416,15 +375,6 @@ def initialize(
 	voice_args = voice
 	assert voice_args is not None  # Type narrowing for type checkers
 	speaker_attenuation = voice_args["speaker_attenuation"]
-	if _espeak:
-		if not _espeak.espeakDLL:
-			try:
-				_espeak.initialize(indexCallback=onEspeakDone)
-			except TypeError:
-				_espeak.initialize()
-			log.debug("jtalk using eSpeak version %s" % _espeak.info())
-		_espeak.setVoiceByLanguage("en")
-		_espeak.setVoiceAndVariant(variant=voice["espeak_variant"])
 	if not player:
 		audio_config = cast(dict[str, Any], config.conf["audio"])
 		player = nvwave.WavePlayer(
@@ -459,7 +409,7 @@ def terminate() -> None:
 	global player
 	stop()
 	# Ensure playback stops and queue is drained so _bgthread.terminate() does not hang:
-	# stop() may have returned early when _espeak/player/bgQueue was None; the background
+	# stop() may have returned early when player/bgQueue was None; the background
 	# thread might still be in _speak() or have items in the queue. We must stop playback
 	# and drain _speak items before joining the thread.
 	if _bgthread.bgQueue is not None:
@@ -480,8 +430,6 @@ def terminate() -> None:
 	if player is not None:
 		player.close()
 		player = None
-	if _espeak:
-		_espeak.terminate()
 
 
 rate_percent: int = 50

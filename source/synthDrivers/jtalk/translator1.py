@@ -385,6 +385,121 @@ alpha_cap_dic = {
 }
 
 
+def _dots_to_braille(dots: str) -> str:
+	"""Convert a dot-number string such as "1247" to a Unicode braille
+	character. Dots 1-8 map to bits 0-7 of the braille cell value."""
+	cell = 0
+	for d in dots:
+		cell |= 1 << (int(d) - 1)
+	return chr(0x2800 + cell)
+
+
+# Cyrillic (Russian) letters. nvdajp-specific rendering (nvdajp issue #224):
+# lowercase letters use the international Russian braille patterns and
+# capital letters add dot 7, without any enclosure symbols.
+# The specification is described in user_docs/ja/readmejp.md.
+# Keys are lowercase letters; capitals are derived in make_cyrillic_dic().
+_cyrillic_lower_dots = {
+	"\u0430": "1",  # CYRILLIC SMALL LETTER A
+	"\u0431": "12",  # CYRILLIC SMALL LETTER BE
+	"\u0432": "2456",  # CYRILLIC SMALL LETTER VE
+	"\u0433": "1245",  # CYRILLIC SMALL LETTER GHE
+	"\u0434": "145",  # CYRILLIC SMALL LETTER DE
+	"\u0435": "15",  # CYRILLIC SMALL LETTER IE
+	"\u0451": "16",  # CYRILLIC SMALL LETTER IO
+	"\u0436": "245",  # CYRILLIC SMALL LETTER ZHE
+	"\u0437": "1356",  # CYRILLIC SMALL LETTER ZE
+	"\u0438": "24",  # CYRILLIC SMALL LETTER I
+	"\u0439": "12346",  # CYRILLIC SMALL LETTER SHORT I
+	"\u043a": "13",  # CYRILLIC SMALL LETTER KA
+	"\u043b": "123",  # CYRILLIC SMALL LETTER EL
+	"\u043c": "134",  # CYRILLIC SMALL LETTER EM
+	"\u043d": "1345",  # CYRILLIC SMALL LETTER EN
+	"\u043e": "135",  # CYRILLIC SMALL LETTER O
+	"\u043f": "1234",  # CYRILLIC SMALL LETTER PE
+	"\u0440": "1235",  # CYRILLIC SMALL LETTER ER
+	"\u0441": "234",  # CYRILLIC SMALL LETTER ES
+	"\u0442": "2345",  # CYRILLIC SMALL LETTER TE
+	"\u0443": "136",  # CYRILLIC SMALL LETTER U
+	"\u0444": "124",  # CYRILLIC SMALL LETTER EF
+	"\u0445": "125",  # CYRILLIC SMALL LETTER HA
+	"\u0446": "14",  # CYRILLIC SMALL LETTER TSE
+	"\u0447": "12345",  # CYRILLIC SMALL LETTER CHE
+	"\u0448": "156",  # CYRILLIC SMALL LETTER SHA
+	"\u0449": "1346",  # CYRILLIC SMALL LETTER SHCHA
+	"\u044a": "12356",  # CYRILLIC SMALL LETTER HARD SIGN
+	"\u044b": "2346",  # CYRILLIC SMALL LETTER YERU
+	"\u044c": "23456",  # CYRILLIC SMALL LETTER SOFT SIGN
+	"\u044d": "246",  # CYRILLIC SMALL LETTER E
+	"\u044e": "1256",  # CYRILLIC SMALL LETTER YU
+	"\u044f": "1246",  # CYRILLIC SMALL LETTER YA
+	"\u0463": "345",  # CYRILLIC SMALL LETTER YAT
+	"\u046b": "246",  # CYRILLIC SMALL LETTER BIG YUS
+}
+
+
+def make_cyrillic_dic() -> dict[str, str]:
+	dic = {}
+	for lower, dots in _cyrillic_lower_dots.items():
+		dic[lower] = _dots_to_braille(dots)
+		upper = lower.upper()
+		if upper != lower:
+			dic[upper] = _dots_to_braille(dots + "7")
+	return dic
+
+
+cyrillic_dic = make_cyrillic_dic()
+
+# Greek letters. nvdajp-specific rendering (nvdajp issue #456):
+# lowercase letters use the international Greek braille patterns
+# (the same base cells as liblouis grc-international-common.uti and
+# UEB Greek letters) and capital letters add dot 7, without any
+# enclosure symbols. The specification is described in
+# user_docs/ja/readmejp.md.
+# U+03C2 (final sigma) shares the pattern of U+03C3 (sigma); both map
+# to the same capital letter, so deriving capitals from either is safe.
+_greek_lower_dots = {
+	"\u03b1": "1",  # GREEK SMALL LETTER ALPHA
+	"\u03b2": "12",  # GREEK SMALL LETTER BETA
+	"\u03b3": "1245",  # GREEK SMALL LETTER GAMMA
+	"\u03b4": "145",  # GREEK SMALL LETTER DELTA
+	"\u03b5": "15",  # GREEK SMALL LETTER EPSILON
+	"\u03b6": "1356",  # GREEK SMALL LETTER ZETA
+	"\u03b7": "156",  # GREEK SMALL LETTER ETA
+	"\u03b8": "1456",  # GREEK SMALL LETTER THETA
+	"\u03b9": "24",  # GREEK SMALL LETTER IOTA
+	"\u03ba": "13",  # GREEK SMALL LETTER KAPPA
+	"\u03bb": "123",  # GREEK SMALL LETTER LAMDA
+	"\u03bc": "134",  # GREEK SMALL LETTER MU
+	"\u03bd": "1345",  # GREEK SMALL LETTER NU
+	"\u03be": "1346",  # GREEK SMALL LETTER XI
+	"\u03bf": "135",  # GREEK SMALL LETTER OMICRON
+	"\u03c0": "1234",  # GREEK SMALL LETTER PI
+	"\u03c1": "1235",  # GREEK SMALL LETTER RHO
+	"\u03c2": "234",  # GREEK SMALL LETTER FINAL SIGMA
+	"\u03c3": "234",  # GREEK SMALL LETTER SIGMA
+	"\u03c4": "2345",  # GREEK SMALL LETTER TAU
+	"\u03c5": "136",  # GREEK SMALL LETTER UPSILON
+	"\u03c6": "124",  # GREEK SMALL LETTER PHI
+	"\u03c7": "12346",  # GREEK SMALL LETTER CHI
+	"\u03c8": "13456",  # GREEK SMALL LETTER PSI
+	"\u03c9": "2456",  # GREEK SMALL LETTER OMEGA
+}
+
+
+def make_greek_dic() -> dict[str, str]:
+	dic = {}
+	for lower, dots in _greek_lower_dots.items():
+		dic[lower] = _dots_to_braille(dots)
+		upper = lower.upper()
+		if upper != lower:
+			dic[upper] = _dots_to_braille(dots + "7")
+	return dic
+
+
+greek_dic = make_greek_dic()
+
+
 def is_ara(c: str) -> bool:
 	# 数字の後につなぎ符が必要
 	return c in "アイウエオラリルレロ"
@@ -619,6 +734,22 @@ def translateWithInPos(text: str, nabcc: bool = False) -> tuple[str, list[int]]:
 			else:
 				retval += text[pos]
 				inPos.append(pos)
+			latin_sym = False
+			pos += 1
+		# Cyrillic letters: Russian braille patterns, capitals add dot 7,
+		# no enclosure symbols (nvdajp-specific). nvdajp issue #224
+		elif text[pos] in cyrillic_dic:
+			retval += cyrillic_dic[text[pos]]
+			inPos.append(pos)
+			latin = num = False
+			latin_sym = False
+			pos += 1
+		# Greek letters: international Greek braille patterns, capitals add
+		# dot 7, no enclosure symbols (nvdajp-specific). nvdajp issue #456
+		elif text[pos] in greek_dic:
+			retval += greek_dic[text[pos]]
+			inPos.append(pos)
+			latin = num = False
 			latin_sym = False
 			pos += 1
 		# Exception

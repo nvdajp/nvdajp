@@ -51,7 +51,7 @@
 param(
     [switch]$SkipInstall,
     [switch]$SkipOverlay,
-    [string]$TestFilter = "JpBrailleTests or JtalkTests",
+    [string]$TestFilter = "JpBrailleTests or JtalkTests or MecabTests",
     [int]$MaxTests = 0,
     [string]$TestIndices = ""
 )
@@ -375,7 +375,7 @@ $testModule = "miscDepsJp.jptools.test"
 $jpBrailleMethodNames = @("test_translator2", "test_translator1", "test_eng2_grade1", "test_translator_louis", "test_eng2_ueb_g2", "test_eng2_us_g2")
 $unittestArgs = @()
 
-if ($TestFilter -and $TestFilter -ne "JpBrailleTests or JtalkTests") {
+if ($TestFilter -and $TestFilter -ne "JpBrailleTests or JtalkTests or MecabTests") {
     # Convert filter to unittest module path format
     if ($TestFilter -match "\.test_") {
         # Specific test method: "JpBrailleTests.test_translator2"
@@ -392,8 +392,10 @@ if ($TestFilter -and $TestFilter -ne "JpBrailleTests or JtalkTests") {
         $unittestArgs = @("$testModule.$TestFilter")
     }
 } else {
-    # Default: run JpBrailleTests and JtalkTests
-    $unittestArgs = @("$testModule.JpBrailleTests", "$testModule.JtalkTests")
+    # Default: run JpBrailleTests, JtalkTests and MecabTests
+    # (MecabTests includes the user dictionary tests; jtusr.dic is rebuilt
+    # from jtusr.csv by miscDepsJp/jptools/build_userdic.py at test time)
+    $unittestArgs = @("$testModule.JpBrailleTests", "$testModule.JtalkTests", "$testModule.MecabTests")
 }
 
 # Run tests

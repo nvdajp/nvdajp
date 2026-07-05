@@ -4,6 +4,40 @@
 import unicodedata
 
 
+def nfkc_normalize_with_map(s: str) -> tuple[str, list[int]]:
+	"""Return the NFKC-normalized string together with a map from each
+	normalized character back to its position in the original string.
+	NFKC changes the character count for some characters, e.g.
+	U+2026 HORIZONTAL ELLIPSIS -> "..." and U+2469 CIRCLED NUMBER TEN -> "10",
+	which would break braille position mapping (nvdajp issues #117, #328).
+	"""
+	out: list[str] = []
+	nmap: list[int] = []
+	i = 0
+	n = len(s)
+	while i < n:
+		j = i + 1
+		# Normalize combining characters, and the halfwidth voiced/semi-voiced
+		# sound marks (U+FF9E/U+FF9F, which NFKC turns into combining
+		# characters), together with their base character; normalizing them
+		# separately would prevent composition and change the result.
+		while j < n and (unicodedata.combining(s[j]) or s[j] in "\uff9e\uff9f"):
+			j += 1
+		seg = unicodedata.normalize("NFKC", s[i:j])
+		out.append(seg)
+		nmap.extend([i] * len(seg))
+		i = j
+	result = "".join(out)
+	if unicodedata.normalize("NFKC", result) != result:
+		# The concatenation of per-segment results is not NFKC-stable.
+		# Fall back to whole-string normalization and keep the legacy
+		# position behavior (positions in the normalized string, with the
+		# tail clamped to the last character of the original string).
+		result = unicodedata.normalize("NFKC", s)
+		nmap = [min(p, n - 1) for p in range(len(result))]
+	return (result, nmap)
+
+
 def unicode_normalize(s: str) -> str:
 	s = s.replace("\u00a0", " ")  # Unicode no break space
 	s = s.replace("\u2002", " ")  # Unicode en space
