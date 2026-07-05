@@ -13,4 +13,3 @@ source/synthDrivers/jtalk/mecab.py
 source/synthDrivers/jtalk/text2mecab.py
 __*.txt
 .venv
-!jptools/jtusrdic/mecab-dict-index.exe

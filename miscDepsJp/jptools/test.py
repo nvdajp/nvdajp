@@ -8,6 +8,10 @@ unittest runs test *classes* in alphabetical order:
 3. MecabTests (runTasks without then with user_dics)
 
 See projectDocs/jp/tab-character-analysis.md (2026-06-11, PR #663).
+
+The user dictionary (jtusr.dic) is rebuilt from jtusr.csv by
+build_userdic.py with the x64 mecab-dict-index.exe prepared by
+"scons jtalkSync". See projectDocs/jp/userdic.md.
 """
 
 import unittest
@@ -38,7 +42,9 @@ class JpBrailleTests(unittest.TestCase):
 	def test_translator_louis(self):
 		"""translator_louis 単体: liblouis en-ueb-g2.ctb で英文を UEB G2 に変換。louis 未ビルド時はスキップ。"""
 		count, outfile = jpBrailleRunner.run_translator_louis()
-		self.assertEqual(count, 0, "translator_louis: %d error(s). see %s (scons source required)" % (count, outfile))
+		self.assertEqual(
+			count, 0, "translator_louis: %d error(s). see %s (scons source required)" % (count, outfile)
+		)
 
 	def test_eng2_ueb_g2(self):
 		"""eng2Harness の UEB 2級点字を検証（原文→translator2(louis)→translator1 と ueb_g2 比較）。louis 未ビルド時はスキップ。"""
@@ -62,6 +68,28 @@ class MecabTests(unittest.TestCase):
 		self.assertEqual(count, 0)
 		count = mecabRunner.runTasks(enableUserDic=True)
 		self.assertEqual(count, 0)
+
+	def test_user_dic_applied(self):
+		"""User dictionary entry must actually win over the base analysis.
+
+		The jtusr.csv sample word is split into several morphemes by the
+		base dictionary and becomes a single morpheme (with the braille
+		segmentation from the CSV) once jtusr.dic is loaded. This catches
+		both load failures (incompatible dictionary) and entries that are
+		never selected (context ID / cost mistakes).
+		"""
+		result = mecabRunner.probeUserDic()
+		baseSize = result["base"][0]
+		userSize, userReading, userBraille = result["user"]
+		self.assertGreater(
+			baseSize, 1, "base dictionary should split the sample word: %r" % (result["base"],)
+		)
+		self.assertEqual(userSize, 1, "user dic entry not selected: %r" % (result["user"],))
+		# The braille segmentation must match the harness.json entry for the
+		# same word so that translator2 results do not depend on whether the
+		# user dictionary is loaded.
+		self.assertEqual(userReading, "ジセダイガタテンジピンディスプレイ")
+		self.assertEqual(userBraille, "ジセダイガタテンジピン ディスプレイ")
 
 
 class JtalkPrepareTests(unittest.TestCase):

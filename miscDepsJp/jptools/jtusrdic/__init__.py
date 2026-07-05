@@ -35,7 +35,19 @@ _curAddon = addonHandler.Addon(str(_addonDir))
 _addonSummary = _curAddon.manifest["summary"]
 addonHandler.initTranslation()
 
-mecabDictIndex = plumbum.local[str(Path(__file__).parent / "mecab-dict-index.exe")]
+# mecab-dict-index.exe is no longer stored in the repository: the old i386
+# binary produced dictionaries that the current runtime rejects (left/right
+# context table size mismatch in Dictionary::isCompatible). Packaging this
+# add-on must ship the x64 binary built by "scons jtalkSync"
+# (miscDepsJp/jptools/jtalk/libopenjtalk/mecab/src/mecab-dict-index.exe).
+# See projectDocs/jp/userdic.md.
+_mecabDictIndexPath = Path(__file__).parent / "mecab-dict-index.exe"
+
+
+def _getMecabDictIndex():
+	if not _mecabDictIndexPath.exists():
+		return None
+	return plumbum.local[str(_mecabDictIndexPath)]
 
 
 def editUserDicSrc(self):
@@ -46,9 +58,14 @@ def editUserDicSrc(self):
 	else:
 		fileName = str(Path(jtalkDir.configDir) / "jtusr.txt")
 		with open(fileName, "w", encoding="utf-8", errors="replace") as f:
+			# Entries must carry explicit context IDs and a cost (0,0 = BOS/EOS
+			# plus cost, the same convention as the sys.dic custom entries).
+			# Empty ID fields require a CRF model file which naist-jdic does
+			# not provide, so mecab-dict-index cannot resolve them.
+			# See projectDocs/jp/userdic.md.
 			f.writelines(
 				[
-					"足手纏い,,,,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n",
+					"足手纏い,0,0,1000,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n",
 				],
 			)
 		os.startfile(fileName)
@@ -57,6 +74,11 @@ def editUserDicSrc(self):
 def compileUserDic(self):
 	log.info('system_dic "%s"' % jtalkDir.dic_dir)
 	log.info('configDir "%s"' % jtalkDir.configDir)
+	mecabDictIndex = _getMecabDictIndex()
+	if mecabDictIndex is None:
+		log.error("mecab-dict-index.exe not found: %s" % _mecabDictIndexPath)
+		gui.messageBox(_("mecab-dict-index.exe not found."), _("Error"), wx.OK)
+		return
 	srcs = jtalkDir.user_dic_srcs()
 	if not srcs:
 		gui.messageBox(_("No source found."), _("Done"), wx.OK)
