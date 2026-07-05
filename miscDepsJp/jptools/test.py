@@ -42,7 +42,9 @@ class JpBrailleTests(unittest.TestCase):
 	def test_translator_louis(self):
 		"""translator_louis 単体: liblouis en-ueb-g2.ctb で英文を UEB G2 に変換。louis 未ビルド時はスキップ。"""
 		count, outfile = jpBrailleRunner.run_translator_louis()
-		self.assertEqual(count, 0, "translator_louis: %d error(s). see %s (scons source required)" % (count, outfile))
+		self.assertEqual(
+			count, 0, "translator_louis: %d error(s). see %s (scons source required)" % (count, outfile)
+		)
 
 	def test_eng2_ueb_g2(self):
 		"""eng2Harness の UEB 2級点字を検証（原文→translator2(louis)→translator1 と ueb_g2 比較）。louis 未ビルド時はスキップ。"""
@@ -79,7 +81,9 @@ class MecabTests(unittest.TestCase):
 		result = mecabRunner.probeUserDic()
 		baseSize = result["base"][0]
 		userSize, userReading, userBraille = result["user"]
-		self.assertGreater(baseSize, 1, "base dictionary should split the sample word: %r" % (result["base"],))
+		self.assertGreater(
+			baseSize, 1, "base dictionary should split the sample word: %r" % (result["base"],)
+		)
 		self.assertEqual(userSize, 1, "user dic entry not selected: %r" % (result["user"],))
 		# The braille segmentation must match the harness.json entry for the
 		# same word so that translator2 results do not depend on whether the

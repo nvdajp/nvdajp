@@ -84,3 +84,6 @@ NVDA 本体は `jtalkDir.py` が configDir の `jtusr.dic` を検出して
 にあるが、現在ビルド・配布はされていない。復活させる場合は
 `scons jtalkSync` がビルドする x64 の `mecab-dict-index.exe` を
 アドオンに同梱し、エントリは明示ID+コスト形式にする必要がある。
+ユーザーが文脈ID欄を空のまま書いたエントリはビルドできない
+（CRF モデル要求で失敗する）ため、`compileUserDic` 側で CSV を
+事前検証して明確なエラーを出す実装を検討すること。

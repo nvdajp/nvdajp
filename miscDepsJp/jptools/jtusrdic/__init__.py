@@ -58,9 +58,14 @@ def editUserDicSrc(self):
 	else:
 		fileName = str(Path(jtalkDir.configDir) / "jtusr.txt")
 		with open(fileName, "w", encoding="utf-8", errors="replace") as f:
+			# Entries must carry explicit context IDs and a cost (0,0 = BOS/EOS
+			# plus cost, the same convention as the sys.dic custom entries).
+			# Empty ID fields require a CRF model file which naist-jdic does
+			# not provide, so mecab-dict-index cannot resolve them.
+			# See projectDocs/jp/userdic.md.
 			f.writelines(
 				[
-					"足手纏い,,,,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n",
+					"足手纏い,0,0,1000,名詞,形容動詞語幹,*,*,*,*,足手纏い,アシデマトイ,アシデマトイ,4/6,C1,アシデ マトイ\n",
 				],
 			)
 		os.startfile(fileName)
