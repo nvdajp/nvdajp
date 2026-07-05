@@ -7,34 +7,17 @@
 
 import copy
 import re
-from ctypes import string_at
 from typing import Callable
 
 
 try:
 	from ._nvdajp_unicode import unicode_normalize, nfkc_normalize_with_map
-	from .mecab import (
-		CODE,
-		Mecab_initialize,
-		Mecab_print,
-		NonblockingMecabFeatures,
-		mecab_analyze_and_correct,
-	)
-	from .text2mecab import text2mecab
+	from .mecabAnalyzer import MecabAnalyzer
 	from . import translator1
-	from .jtalkDir import jtalk_dir, dic_dir, user_dics
 except (ImportError, ValueError):
 	from _nvdajp_unicode import unicode_normalize, nfkc_normalize_with_map  # type: ignore
-	from mecab import (  # type: ignore
-		CODE,
-		Mecab_initialize,
-		Mecab_print,
-		NonblockingMecabFeatures,
-		mecab_analyze_and_correct,
-	)
-	from text2mecab import text2mecab  # type: ignore
+	from mecabAnalyzer import MecabAnalyzer  # type: ignore
 	import translator1  # type: ignore
-	from jtalkDir import jtalk_dir, dic_dir, user_dics  # type: ignore
 
 _logwrite = None
 try:
@@ -230,14 +213,12 @@ def update_phonetic_symbols(mo: MecabMorph) -> None:
 			mo.output = mo.output[:p] + mo.kana[p] + mo.output[p + 1 :]
 
 
-def mecab_to_morphs(mf: NonblockingMecabFeatures | None) -> list[MecabMorph]:
+def mecab_to_morphs(feature_lines: list[str] | None) -> list[MecabMorph]:
 	li: list[MecabMorph] = []
-	if mf is None or mf.feature is None or mf.size is None:
+	if not feature_lines:
 		return li
-	for i in range(0, mf.size):
-		s = string_at(mf.feature[i])
+	for s in feature_lines:
 		if s:
-			s = s.decode(CODE, "ignore")
 			ar = s.split(",")
 			mo = MecabMorph()
 			mo.hyouki = ar[0]
@@ -1443,16 +1424,12 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 			logwrite("translator2: consecutive ASCII spaces detected")
 	# NFKC normalization changes the character count for some characters
 	# (U+2026 HORIZONTAL ELLIPSIS -> "...", U+2469 CIRCLED NUMBER TEN -> "10"),
-	# so the normalization inside text2mecab() would make inpos2 drift from
-	# the original text. Normalize here with a position map instead; NFKC is
-	# idempotent, so the second normalization inside text2mecab() no longer
-	# changes the length. nvdajp issues #117, #328
+	# so the normalization inside the analyzer (text2mecab) would make inpos2
+	# drift from the original text. Normalize here with a position map
+	# instead; NFKC is idempotent, so the second normalization inside the
+	# analyzer no longer changes the length. nvdajp issues #117, #328
 	text, nfkc_map = nfkc_normalize_with_map(text)
-	text = text2mecab(text)
-	mf = mecab_analyze_and_correct(text, logwrite_=logwrite)
-	Mecab_print(mf, logwrite, output_header=False)
-	li = mecab_to_morphs(mf)
-	mf = None
+	li = mecab_to_morphs(_analyzer.analyze(text, logwrite))
 
 	li = [mo for mo in li if mo.hyouki]
 
@@ -1798,32 +1775,28 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 
 
 mecab_initialized = False
+_analyzer = None
 
 
-def initialize(logwrite=_logwrite, mecab_dir_=None, dic_dir_=None, user_dics_=None):
-	global mecab_initialized
+def initialize(logwrite=_logwrite, mecab_dir_=None, dic_dir_=None, user_dics_=None, analyzer=None):
+	"""Prepare the morphological analyzer.
+
+	When ``analyzer`` is given it is used as-is (dependency injection);
+	it must provide ``analyze(text, logwrite) -> list[str]`` and
+	``is_ready() -> bool``. Otherwise the bundled MeCab-based analyzer
+	is created and initialized with the given directories.
+	"""
+	global mecab_initialized, _analyzer
 	# Set flag to False first to prevent race conditions
 	mecab_initialized = False
-	if mecab_dir_ and dic_dir_ and user_dics_:
-		Mecab_initialize(logwrite, mecab_dir_, dic_dir_, user_dics_)
-	else:
-		Mecab_initialize(logwrite, jtalk_dir, dic_dir, user_dics)
-	# Verify MeCab is actually initialized before setting flag
-	try:
-		from . import mecab as mecab_module
-	except (ImportError, ValueError):
-		import mecab as mecab_module  # type: ignore
-	if mecab_module.libmc is None or mecab_module.mecab is None:
-		msg = "MeCab initialization failed: libmc=%s, mecab=%s" % (
-			mecab_module.libmc,
-			mecab_module.mecab,
-		)
-		if logwrite:
-			logwrite(msg)
-		raise RuntimeError(msg)
+	if analyzer is None:
+		analyzer = MecabAnalyzer()
+		# raises RuntimeError when MeCab is not actually ready
+		analyzer.initialize(logwrite, mecab_dir_, dic_dir_, user_dics_)
+	_analyzer = analyzer
 	if logwrite:
 		logwrite("initialize() done.")
-	# Set flag only after MeCab is fully initialized
+	# Set flag only after the analyzer is fully initialized
 	mecab_initialized = True
 
 
@@ -1831,8 +1804,9 @@ def terminate():
 	global _logwrite
 	if _logwrite:
 		_logwrite("terminate() done.")
-	global mecab_initialized
+	global mecab_initialized, _analyzer
 	mecab_initialized = False
+	_analyzer = None
 
 
 # 外国語引用符は ⠦ (U+2826) ... ⠴ (U+2834)。情報処理用 ⠠⠦...⠠⠴ は対象外。
@@ -1972,15 +1946,10 @@ def translateWithInPos2(
 	global mecab_initialized
 	if not mecab_initialized:
 		initialize(logwrite=logwrite)
-	# Double-check MeCab is actually ready (defense against timing issues)
-	try:
-		from . import mecab as mecab_module
-	except (ImportError, ValueError):
-		import mecab as mecab_module  # type: ignore
-	if mecab_module.libmc is None or mecab_module.mecab is None:
-		# MeCab was marked as initialized but isn't actually ready - reinitialize
+	# Double-check the analyzer is actually ready (defense against timing issues)
+	if _analyzer is None or not _analyzer.is_ready():
 		if logwrite:
-			logwrite("Warning: mecab_initialized=True but MeCab not ready, reinitializing...")
+			logwrite("Warning: mecab_initialized=True but analyzer not ready, reinitializing...")
 		mecab_initialized = False
 		initialize(logwrite=logwrite)
 	# do not translate if string is unicode braille
