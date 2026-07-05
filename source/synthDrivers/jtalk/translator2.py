@@ -1429,7 +1429,10 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	# instead; NFKC is idempotent, so the second normalization inside the
 	# analyzer no longer changes the length. nvdajp issues #117, #328
 	text, nfkc_map = nfkc_normalize_with_map(text)
-	li = mecab_to_morphs(_analyzer.analyze(text, logwrite))
+	analyzer = _analyzer
+	if analyzer is None:
+		raise RuntimeError("translator2 is not initialized; call initialize()")
+	li = mecab_to_morphs(analyzer.analyze(text, logwrite))
 
 	li = [mo for mo in li if mo.hyouki]
 
