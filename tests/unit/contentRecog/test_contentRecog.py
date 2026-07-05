@@ -70,27 +70,24 @@ class TestLinesWordsResult(unittest.TestCase):
 		],
 	]
 	TOP = 0
-	# BEGIN JP PATCH
-	# nvdajp: East Asian narrow characters don't have spaces between them
-	BOTTOM = 21
-	WORD1_OFFSETS = (0, 5)
+	BOTTOM = 23
+	WORD1_OFFSETS = (0, 6)
 	WORD1_SECOND = 1
-	WORD1_LAST = 4
+	WORD1_LAST = 5
 	WORD1_RECT = RectLTWH(100, 200, 10, 20)
-	WORD2_START = 5
-	WORD2_OFFSETS = (5, 11)
+	WORD2_START = 6
+	WORD2_OFFSETS = (6, 12)
 	WORD2_RECT = RectLTWH(110, 200, 10, 20)
-	WORD3_OFFSETS = (11, 16)
-	WORD3_START = 11
+	WORD3_OFFSETS = (12, 18)
+	WORD3_START = 12
 	WORD3_RECT = RectLTWH(100, 220, 10, 20)
-	WORD4_OFFSETS = (16, 22)
+	WORD4_OFFSETS = (18, 24)
 	WORD4_RECT = RectLTWH(110, 220, 10, 20)
-	LINE1_OFFSETS = (0, 11)
+	LINE1_OFFSETS = (0, 12)
 	LINE1_SECOND = 1
-	LINE1_LAST = 10
-	LINE2_OFFSETS = (11, 22)
-	LINE2_START = 11
-	# END JP PATCH
+	LINE1_LAST = 11
+	LINE2_OFFSETS = (12, 24)
+	LINE2_START = 12
 
 	def setUp(self):
 		info = contentRecog.RecogImageInfo(0, 0, 1000, 2000, 1)
@@ -99,10 +96,7 @@ class TestLinesWordsResult(unittest.TestCase):
 		self.textInfo = self.result.makeTextInfo(self.fakeObj, textInfos.POSITION_FIRST)
 
 	def test_text(self):
-		# BEGIN JP PATCH
-		# nvdajp: East Asian narrow characters don't have spaces between them
-		self.assertEqual(self.result.text, "word1word2\nword3word4\n")
-		# END JP PATCH
+		self.assertEqual(self.result.text, "word1 word2\nword3 word4\n")
 
 	def test_textLen(self):
 		self.assertEqual(self.result.textLen, len(self.result.text))
@@ -178,3 +172,39 @@ class TestLinesWordsResult(unittest.TestCase):
 	def test_copyTextInfo(self):
 		copy = self.textInfo.copy()
 		self.assertEqual(copy, self.textInfo)
+
+
+# BEGIN JP PATCH
+class TestLinesWordsResultEastAsianWide(unittest.TestCase):
+	"""East Asian wide characters must be joined without spaces (#683).
+
+	Windows OCR reports each Japanese character or short run as a
+	separate word; separating them with spaces would make the result
+	unreadable. A space is inserted only between two East Asian narrow
+	characters (e.g. between Latin words).
+	"""
+
+	DATA = [
+		[
+			{"x": 100, "y": 200, "width": 10, "height": 20, "text": "こんにちは"},
+			{"x": 110, "y": 200, "width": 10, "height": 20, "text": "世界"},
+		],
+		[
+			{"x": 100, "y": 220, "width": 10, "height": 20, "text": "あいう"},
+			{"x": 110, "y": 220, "width": 10, "height": 20, "text": "word"},
+			{"x": 120, "y": 220, "width": 10, "height": 20, "text": "えお"},
+		],
+	]
+
+	def setUp(self):
+		info = contentRecog.RecogImageInfo(0, 0, 1000, 2000, 1)
+		self.result = contentRecog.LinesWordsResult(self.DATA, info)
+
+	def test_text(self):
+		self.assertEqual(self.result.text, "こんにちは世界\nあいうwordえお\n")
+
+	def test_textLen(self):
+		self.assertEqual(self.result.textLen, len(self.result.text))
+
+
+# END JP PATCH
