@@ -607,14 +607,15 @@ def buildConfigH(target, source, env):
 
 #### 6.7 コンテンツ認識の日本語文字処理
 
-`source/contentRecog/__init__.py` に、東アジア幅（East Asian Width）が狭い文字（Narrow）の処理を追加しました。
+`source/contentRecog/__init__.py` に、東アジア幅（East Asian Width）に基づく単語区切りの処理を追加しました。
 
-* **目的**: OCR などのコンテンツ認識結果で、東アジア幅が狭い文字（半角文字など）の間に不要なスペースを挿入しないようにする
+* **目的**: OCR などのコンテンツ認識結果で、日本語（東アジア幅が Wide/Fullwidth の文字）の単語間に不要なスペースを挿入しないようにする。スペースを挿入するのは、前の単語の末尾と次の単語の先頭がともに東アジア幅が狭い文字（Narrow、半角英数など）の場合のみ
 * **背景**: 2025.3jp では存在していた機能で、2026.1 のマージ時に削除されていたものを追加
 * **実装**:
   * `unicodedata.east_asian_width` のインポートを追加
   * `isEastAsianNarrow(c)`、`startsWithEastAsianNarrow(s)`、`endsWithEastAsianNarrow(s)` 関数を追加
-  * `LinesWordsResult._parseData()` メソッドで、前の単語の末尾と次の単語の先頭がともに東アジア幅が狭い文字の場合、スペースを挿入しないように条件分岐を追加
+  * `LinesWordsResult._parseData()` メソッドで、前の単語の末尾と次の単語の先頭がともに東アジア幅が狭い文字の場合のみスペースを挿入する条件分岐を追加
+* **注意**: 2026.1 マージ時の復元でこの条件分岐が逆転し（Narrow 同士でスペースを抑制し、日本語の文字間にスペースを挿入）、issue #683「OCR時に日本語の文字間にスペースが入る」のリグレッションが発生していた。2026-07-05 に 2025.3jp のロジックへ修正し、日本語ケースのユニットテスト（`TestLinesWordsResultEastAsianWide`）を追加した
 
 #### 6.8 編集可能テキストでの改行報告
 

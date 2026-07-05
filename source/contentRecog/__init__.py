@@ -267,19 +267,19 @@ class LinesWordsResult(RecognitionResult):
 				if firstWordOfLine:
 					firstWordOfLine = False
 				# BEGIN JP PATCH
-				# nvdajp: don't add space between East Asian narrow characters
+				# nvdajp: separate words with a space only when both sides are
+				# East Asian narrow characters (e.g. Latin words). East Asian
+				# wide characters such as Japanese kana and kanji must be
+				# joined without a space (#683).
 				elif (
 					self._textList
 					and endsWithEastAsianNarrow(self._textList[-1])
 					and startsWithEastAsianNarrow(word["text"])
 				):
-					# Don't separate with a space for East Asian narrow characters.
-					pass
-				# END JP PATCH
-				else:
 					# Separate with a space.
 					self._textList.append(" ")
 					self.textLen += 1
+				# END JP PATCH
 				self.words.append(
 					LwrWord(
 						self.textLen,
