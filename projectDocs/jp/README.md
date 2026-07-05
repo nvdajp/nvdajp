@@ -88,6 +88,7 @@ JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、G
 
 * ロードマップ: `projectDocs/jp/roadmap.md`
 * 2025系との差分分析: `projectDocs/jp/compare-with-2025/README.md`
+* 点訳エンジンの分離計画: `projectDocs/jp/braille-engine-decoupling-plan.md`
 
 ### CI・ビルド・依存関係
 
