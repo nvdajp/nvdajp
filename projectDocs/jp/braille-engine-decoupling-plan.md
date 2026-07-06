@@ -115,8 +115,9 @@ graph TD
 - **フェーズ 4.2（完了, 2026-07-06）**: ユーザー辞書ビルドの汎用化。nvdajp 専用だった `build_userdic.py` を汎用ツールとして同梱（`--mecab-dict-index` / `--dic-dir` / `--csv` / `--outfile`）。libkuraji・JTalk 双方のユーザーが、開発環境なしで独自語彙（固有名詞・専門用語）を追加できるようにする土台。エンドツーエンドで検証済み。
 - **フェーズ 4.3（完了, 2026-07-06）**: CI での `mecab-dict-index` フルビルド。当初 [nishimotz/libopenjtalk](https://github.com/nishimotz/libopenjtalk) を使う想定だったが、これは nvdajp が実際に使う MeCab ソースとは別系統で、UTF-8 の `rewrite.def` 解析が壊れることが判明したため不採用。nvdajp が実際にビルドしているソース（`miscDepsJp/include/python-jtalk/libopenjtalk/mecab`。Open JTalk フォーク、BSD 系）を `src/mecab-src/` にベンダーし、`.github/workflows/build-dic.yml`（Windows + `ilammy/msvc-dev-cmd`）で `mecab-dict-index.exe` のビルド → 辞書ビルド → ユーザー辞書ビルドまで CI で検証。**教訓**: nvdajp 内には MeCab ソースのコピーが 2 箇所あり（`miscDepsJp/jptools/jtalk/...` と `miscDepsJp/include/python-jtalk/...`）、前者はクリーンビルドすると現行 MSVC で `error C2593`（演算子のあいまいさ）になる古い未使用コピーだった。実際のビルド（`jtalkSync`）は後者（`/D MECAB_STATIC` フラグ付き）をコンパイルしてから前者へコピーしているだけで、nvdajp の実ビルドが「毎回 git clone からでも成立する」という前提を軽視して誤った結論を出しかけた。
 - **フェーズ 4.4（完了, 2026-07-06）**: GitHub Releases での配布。`.github/workflows/release-dic.yml` を追加。`v*` タグの push をトリガーに、辞書一式（6 ファイル）を zip 化して SHA256 チェックサムとともに GitHub Release に自動添付する。**公開リポジトリに自動リリース公開の経路を作る操作のため、着手前に利用者へ明示的な許可を確認済み。** 実際のリリース作成（初回タグ push）は未実施。
-- **フェーズ 4.5（未着手、方針は確定済み）**: nvdajp の `jtalkSync` が任意でフェーズ 4.4 の成果物に依存できるようにする。**方針転換として `projectDocs/jp/vendor-submodules.md`（「辞書のビルド時取得（方針転換）」節）に記録済み**: 既定はローカルビルドを維持し、`jtalkDicSource=prebuilt` 相当のオプトインで pin されたリリース（タグ＋SHA256）を取得。チェックサム不一致時はローカルへの黙ったフォールバックをせずビルド失敗とする。
-  - **注意**: `libkuraji-jtalk-dic` の成果物には `bep-eng.dic`（GPL、ライセンス非互換のため除外）由来の英単語読みエントリが含まれない。この読みは `replace_alphabet_morphs`（`translator2.py`）により点訳結果では常に元のアルファベット表記に上書きされるため点訳の文字面には影響しない（実測で確認済み: `acrobat` は辞書上の読み「アクロバット」ではなく外字符＋ラテン文字で点訳される）。**影響するのは JTalk の音声合成（発音）のみ**。`prebuilt` 経路を使っても点訳精度への影響はない。
+- **フェーズ 4.5（完了, 2026-07-06）**: nvdajp の `jtalkSync` が任意でフェーズ 4.4 の成果物に依存できるようにする。**方針転換として `projectDocs/jp/vendor-submodules.md`（「辞書のビルド時取得（方針転換）」節）に記録済み**: 既定はローカルビルドを維持し、`jtalkDicSource=prebuilt`（scons 変数、`miscDepsJp/jptools/jtalk-dic-version.txt` に pin されたタグ＋SHA256）を取得。チェックサム不一致時はローカルへの黙ったフォールバックをせずビルド失敗とする。`PREBUILT_SOURCE` マーカーで再実行時のべき等性（再ダウンロードしない）を確保。
+  - **教訓（重要）**: 当初 `bep-eng.dic` 除外による `MecabTests` 245 件回帰を確認したが、原因は `bep-eng.dic` 不在そのものではなく、代替エントリの実装不備だった。(1) 追加した語彙エントリの表記を半角 ASCII のままにしていたため、`text2mecab_convert()` が入力を全角に変換する仕様と食い違い、絶対にマッチしない死んだエントリになっていた（`_to_mecab_surface()` で全角化して解決）。(2) 複合語 `pokémon go` を 1 語のエントリにしたため分かち書き境界情報を失っていた（2 語に分割して解決）。**CI がビルドした成果物を実際にダウンロードして検証しないと、ローカルビルドとの差異を見落とす**ことも判明（libkuraji-jtalk-dic v1.0.1 で発覚）。`libkuraji-jtalk-dic` v1.0.2 で `mecabHarness.json` コーパス 0 件不一致・JP smoke tests 全緑を、実際にダウンロードしたリリース成果物で確認済み。pin を v1.0.2 に更新済み。
+  - **注意**: `libkuraji-jtalk-dic` は `bep-eng.dic`（GPL、ライセンス非互換のため除外）の代わりに、`mecabHarness.json`（nvdajp 自身の BSD テストデータ）を正解データとしたクリーンルームの代替エントリ（242 語）を `nvdajp-custom-dic.csv` に追加済み（v1.0.2）。点訳の文字面自体は `replace_alphabet_morphs`（`translator2.py`）により常に元のアルファベット表記に上書きされるため影響しない（実測確認済み: `acrobat` は外字符＋ラテン文字で点訳される）。**影響するのは JTalk の音声合成（発音）のみ**で、`prebuilt` 経路でも `mecabHarness.json` コーパスは 0 件不一致（v1.0.2 で確認済み）。ただしテストコーパス外の一般語彙は `bep-eng.dic`（47000 語）ほどの網羅性は無い。
 
 ---
 
@@ -148,8 +149,8 @@ graph TD
 | `libkuraji-jtalk-dic`: ビルドレシピ抽出・ユーザー辞書汎用化 | 完了（フェーズ 4.1〜4.2） |
 | `libkuraji-jtalk-dic`: CI でのフルビルド | 完了（フェーズ 4.3） |
 | `libkuraji-jtalk-dic`: GitHub Releases 配布（ワークフロー） | 完了（フェーズ 4.4）。初回タグ push は未実施 |
-| nvdajp `jtalkSync` のプリビルド依存化 | **未着手**（フェーズ 4.5、方針は `vendor-submodules.md` に確定済み） |
+| nvdajp `jtalkSync` のプリビルド依存化 | 完了（フェーズ 4.5、`jtalkDicSource=prebuilt`） |
 
 ### 残タスク
-- **`libkuraji-jtalk-dic` フェーズ 4.5**: nvdajp `jtalkSync` のオプトイン取得（`v*` タグの初回リリース作成後に着手）。これが揃うと `kuraji` CLI が nvdajp 抜きでも実際の日本語文（漢字かな交じり文）を点訳できるようになる。現状は nvdajp に組み込んだ構成、またはビルド済み辞書を手元に用意した構成でのみ動作する。
+- **`kuraji` CLI のスタンドアロン化**: フェーズ 4 全体（4.1〜4.5）が完了したことで `kuraji` CLI は nvdajp 抜きでも `libkuraji-jtalk-dic` のビルド済み辞書があれば実際の日本語文（漢字かな交じり文）を点訳できる状態になった。CLI 側に辞書取得の便宜（`--dic-dir` 指定の簡易化やダウンロード補助等）を足すかは今後の任意課題。
 - roadmap.md のタスク 2.9b を完了として更新する。

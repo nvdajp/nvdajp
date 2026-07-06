@@ -1,0 +1,7 @@
+# Pin for the optional prebuilt JTalk dictionary (jtalkDicSource=prebuilt).
+# Update via an explicit PR after a new nishimotz/libkuraji-jtalk-dic release.
+# See projectDocs/jp/vendor-submodules.md ("辞書のビルド時取得（方針転換）").
+repo=nishimotz/libkuraji-jtalk-dic
+tag=v1.0.2
+asset=jtalk-dic-v1.0.2.zip
+sha256=f9de5b1e78456ef1bfc6798e0fdb414323eb715f5da10991fb0f22b76b4b6e5f
