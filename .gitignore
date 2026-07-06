@@ -20,6 +20,8 @@ source/synthDrivers/jtalk/dic/right-id.def
 source/synthDrivers/jtalk/dic/matrix.bin
 source/synthDrivers/jtalk/dic/rewrite.def
 source/synthDrivers/jtalk/dic/rewrite.bin
+source/synthDrivers/jtalk/dic/PREBUILT_SOURCE
+miscDepsJp/jptools/jtalk/libopenjtalk/mecab/src/PREBUILT_SOURCE
 *.manifest
 source/synthDrivers/espeak-ng-data
 source/lib
