@@ -40,9 +40,10 @@
   - コスト再調整を伴うため、translator2 の読み・マスアケ変動を受け入れる必要がある。
   - 有効化済みのユーザー辞書テスト経路を、sys.dic を再ビルドせずに品詞別 ID・コストを試す実験サンドボックスとして使える。
   - 参照: `projectDocs/jp/tab-character-analysis.md`、`projectDocs/jp/userdic.md`
-- **タスク 2.9b libkuraji-dic: 辞書の別パッケージ化（残タスク）**
-  - JTalk 拡張辞書のビルド済みバイナリを別パッケージとして配布し、`kuraji` CLI を nvdajp 抜きでスタンドアロン動作させる。
-  - 参照: `projectDocs/jp/braille-engine-decoupling-plan.md`（6. 完了状態のまとめ）
+- **タスク 2.9b libkuraji-jtalk-dic: 辞書の別パッケージ化（進行中）**
+  - JTalk 拡張辞書のビルドレシピ抽出・ユーザー辞書汎用化は完了（[nishimotz/libkuraji-jtalk-dic](https://github.com/nishimotz/libkuraji-jtalk-dic)）。
+  - 残: CI でのフルビルド → GitHub Releases 配布 → nvdajp `jtalkSync` のオプトイン取得（方針は `vendor-submodules.md` に確定済み）。
+  - 参照: `projectDocs/jp/braille-engine-decoupling-plan.md`（フェーズ 4）、`projectDocs/jp/vendor-submodules.md`
 
 ### 優先度: 低
 

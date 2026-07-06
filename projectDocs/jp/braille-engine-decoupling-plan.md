@@ -66,7 +66,7 @@ translator2 が `synthDrivers/jtalk/` に同居している理由は、MeCab ラ
 このため方針を次のとおりとする:
 
 - **参照構成の明記**: libkuraji のテストスイートが保証するのは「JTalk 拡張辞書を注入した構成」のみとする。（実装済み: `tests/mecabFixture.json` が JTalk 拡張辞書構成の録画）
-- **辞書の別パッケージ化**: JTalk 辞書（拡張 NAIST-JDIC）は容量が大きいためコードと分離し、ビルド済みバイナリを別パッケージ（例: `libkuraji-dic`）として配布する。ライセンスは MeCab（BSD 選択可）・NAIST-JDIC（修正 BSD 系）・Open JTalk 拡張（修正 BSD）・nvdajp 拡張（自作）とすべて BSD 系で揃っており、同梱・再配布に法的支障はない。（**未着手**: CLI をスタンドアロンで使う場合の残タスク。現状は nvdajp 組み込み構成でのみ辞書入りで動作する）
+- **辞書の別パッケージ化**: JTalk 辞書（拡張 NAIST-JDIC）は容量が大きいためコードと分離し、ビルド済みバイナリを別パッケージとして配布する。ライセンスは MeCab（BSD 選択可）・NAIST-JDIC（修正 BSD 系）・Open JTalk 拡張（修正 BSD）・nvdajp 拡張（自作）とすべて BSD 系で揃っており、同梱・再配布に法的支障はない。**実施済み（2026-07-06）**: [nishimotz/libkuraji-jtalk-dic](https://github.com/nishimotz/libkuraji-jtalk-dic) を新設し、ビルドレシピ（`make_jdic.py`・NAIST-JDIC ソース・nvdajp 拡張エントリ）を抽出。ユーザー辞書ビルドツール（`build_userdic.py`）も汎用化して同梱（libkuraji/JTalk 双方のユーザーが独自語彙を追加できる）。名称が `libkuraji-dic` ではなく `libkuraji-jtalk-dic` なのは、この辞書が libkuraji 単独の所有物ではなく JTalk（音声合成）と共有する資産であるため。詳細はフェーズ 4 を参照。CI でのフルビルド・GitHub Releases 配布は未着手（残タスク）。
 - **他辞書はベストエフォート**: `mecab-python3` + 汎用辞書の注入は「動くが品質保証外」とし、解析器インターフェースの仕様に「点訳表記フィールドはオプション（無ければ読みにフォールバック）」と明記する。
 - 点訳専用のカスタムエントリ（`nvdajp-custom-dic`、`nvdajp-tankan-dic` 等の点訳関連分）は libkuraji 側リソースとして管理する。
 
@@ -110,6 +110,13 @@ graph TD
 - 実装: libkuraji を `source/libkuraji/` にベンダーコピー（`miscDepsJp/jptools/syncLibkuraji.py` で同期。libkuraji が正、nvdajp への一方向コピー）。`translator1.py` / `translator2.py` / `_nvdajp_unicode.py` は薄い互換シムに置換し、`louisHelper.py` 等の呼び出し元は無変更のまま維持。
 - **教訓**: 分離作業で `kana.py` が harness.json のカバー範囲外の文字（ヘブライ文字等）を読み飛ばす退行が発生し、点字カーソルのルーティング（1 入力文字 = 1 出力セルの位置対応）が壊れた。原因は旧 `translator1.py` が未知文字を `□` プレースホルダーとして 1:1 対応を保っていたのに対し、書き直し版が単純にスキップしていたこと。nvdajp の既定点字テーブル `ja-jp-comp6.utb` は全テキストが translator2 経由になる（`louisHelper.py` の JP パッチ）ため、日本語以外のテキストでも回帰が波及する。libkuraji 側で `d9f662f` により修正済み。**クリーンルーム書き直しの際は、テストコーパスに無い入力（他言語スクリプト等）のフォールバック挙動を旧実装と突き合わせる**ことが必要。
 
+### フェーズ 4: JTalk 拡張辞書の分離（進行中、[nishimotz/libkuraji-jtalk-dic](https://github.com/nishimotz/libkuraji-jtalk-dic)）
+- **フェーズ 4.1（完了, 2026-07-06）**: ビルドレシピの抽出。`make_jdic.py` を CLI 化（`--mecab-dict-index` / `--outdir` / `--validate-only`）し、NAIST-JDIC ソース・nvdajp 拡張エントリ（custom/tankan/eng dic）とともに移管。エンドツーエンドで検証済み（nvdajp の `mecab-dict-index.exe` で `sys.dic` 一式をビルドし、実際に `translator2` に読み込ませて分かち書き・点訳が正しく動くことを確認）。CI は `--validate-only`（品詞 ID 解決の検証、MeCab 不要）のみ稼働。
+- **フェーズ 4.2（完了, 2026-07-06）**: ユーザー辞書ビルドの汎用化。nvdajp 専用だった `build_userdic.py` を汎用ツールとして同梱（`--mecab-dict-index` / `--dic-dir` / `--csv` / `--outfile`）。libkuraji・JTalk 双方のユーザーが、開発環境なしで独自語彙（固有名詞・専門用語）を追加できるようにする土台。エンドツーエンドで検証済み。
+- **フェーズ 4.3（未着手）**: CI での `mecab-dict-index` フルビルド。[nishimotz/libopenjtalk](https://github.com/nishimotz/libopenjtalk) の MeCab ソースを Windows ランナー（MSVC）でビルドし、`sys.dic` 一式を CI 内で生成できるようにする。
+- **フェーズ 4.4（未着手）**: GitHub Releases での配布。フェーズ 4.3 の成果物（6 ファイル一式）をタグ付きでリリースに添付。
+- **フェーズ 4.5（未着手、方針は確定済み）**: nvdajp の `jtalkSync` が任意でフェーズ 4.4 の成果物に依存できるようにする。**方針転換として `projectDocs/jp/vendor-submodules.md`（「辞書のビルド時取得（方針転換）」節）に記録済み**: 既定はローカルビルドを維持し、`jtalkDicSource=prebuilt` 相当のオプトインで pin されたリリース（タグ＋SHA256）を取得。チェックサム不一致時はローカルへの黙ったフォールバックをせずビルド失敗とする。
+
 ---
 
 ## 5. 関連ドキュメントと参照
@@ -118,6 +125,8 @@ graph TD
 - [JTalk 辞書検証の分析 (tab-character-analysis.md)](tab-character-analysis.md)
 - [ユーザー辞書とツールの x64 化 (userdic.md)](userdic.md)
 - [libkuraji リポジトリ](https://github.com/nishimotz/libkuraji)（BSD 3-Clause、点訳エンジン本体）
+- [libkuraji-jtalk-dic リポジトリ](https://github.com/nishimotz/libkuraji-jtalk-dic)（BSD 3-Clause、JTalk 拡張辞書のビルドレシピ）
+- [ベンダーツリー運用方針 (vendor-submodules.md)](vendor-submodules.md) — 辞書のビルド時取得の方針転換を記載
 
 ---
 
@@ -134,9 +143,12 @@ graph TD
 | `kuraji` CLI | 完了 |
 | README（使い方・解析器契約・辞書契約） | 完了 |
 | 性能改善（unicode_normalize の translate 化等） | 完了（約 1.9 倍高速化） |
-| **`libkuraji-dic`（辞書の別パッケージ化）** | **未着手** — CLI をスタンドアロンで使う際の残タスク |
 | NABCC モード | 完了 |
+| `libkuraji-jtalk-dic`: ビルドレシピ抽出・ユーザー辞書汎用化 | 完了（フェーズ 4.1〜4.2） |
+| `libkuraji-jtalk-dic`: CI でのフルビルド | **未着手**（フェーズ 4.3） |
+| `libkuraji-jtalk-dic`: GitHub Releases 配布 | **未着手**（フェーズ 4.4） |
+| nvdajp `jtalkSync` のプリビルド依存化 | **未着手**（フェーズ 4.5、方針は `vendor-submodules.md` に確定済み） |
 
 ### 残タスク
-- **`libkuraji-dic`**: JTalk 拡張辞書のビルド済みバイナリを別パッケージとして GitHub Releases 等で配布し、`kuraji` CLI が nvdajp 抜きでも実際の日本語文（漢字かな交じり文）を点訳できるようにする。現状は nvdajp に組み込んだ構成でのみ辞書入りで動作する。
-- roadmap.md のタスク 2.9 を完了として更新する。
+- **`libkuraji-jtalk-dic` フェーズ 4.3〜4.5**: CI でのフルビルド → GitHub Releases 配布 → nvdajp `jtalkSync` のオプトイン取得。これが揃うと `kuraji` CLI が nvdajp 抜きでも実際の日本語文（漢字かな交じり文）を点訳できるようになる。現状は nvdajp に組み込んだ構成、またはビルド済み辞書を手元に用意した構成でのみ動作する。
+- roadmap.md のタスク 2.9b を完了として更新する。
