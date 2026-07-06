@@ -845,6 +845,38 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				result = run(cmd_script, cwd=str(base), shell=True)
 				return result.returncode
 
+		# jptools/build_userdic.py needs mecab-dict-index.exe under
+		# jptools/jtalk/libopenjtalk/mecab/src/ to build the user dictionary
+		# (jtusr.dic). This is independent of where the base dictionary comes
+		# from (local build vs. prebuilt release), so ensure it unconditionally
+		# rather than only as a side effect of the local dictionary build below.
+		if builder_script_path.exists():
+			mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
+			mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
+			make_jdic_mecab_bin = (
+				builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
+			)
+			if not make_jdic_mecab_bin.exists():
+				arch_for_tool = str(env.get("TARGET_ARCH", "x64")).lower()
+				machine_for_tool = "x64" if arch_for_tool in ("x64", "x86_64") else "x86"
+				if not mecab_dict_index_bin.exists():
+					rc_tool = _build_mecab_bin(machine_for_tool)
+					if rc_tool != 0:
+						print(f"jtalkSync: nmake (mecab-dict-index tool) failed with rc={rc_tool}")
+						return rc_tool
+				if mecab_dict_index_bin.exists():
+					try:
+						make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
+						shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
+						print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin} (for build_userdic.py)")
+					except Exception as e:
+						print(f"jtalkSync: failed to copy mecab-dict-index.exe for build_userdic.py: {e}")
+				else:
+					print(
+						f"jtalkSync: warning: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}; "
+						"build_userdic.py's jtusr.dic build will be skipped.",
+					)
+
 		# If dictionary is missing or invalid, build it directly into source/synthDrivers/jtalk/dic
 		if should_rebuild_dic or not sys_dic.exists():
 
