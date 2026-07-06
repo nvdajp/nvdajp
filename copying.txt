@@ -573,6 +573,12 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
 
 ### bep-eng.dic (NVDA Japanese)
 
+NVDA Japanese may contain bep-eng.dic, an English-word-reading dictionary
+used to build the JTalk extended dictionary when it is built locally
+(jtalkDicSource=local). It is not included when the JTalk extended
+dictionary is instead obtained from the libkuraji-jtalk-dic project (see
+below), which is the default.
+
 bep-eng.dic.txt is under GPL.
 available at:
 http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic
@@ -1481,5 +1487,92 @@ http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.di
     
       <signature of Ty Coon>, 1 April 1990
       Ty Coon, President of Vice
-    
+
     That's all there is to it!
+
+
+### libkuraji (NVDA Japanese)
+
+libkuraji is the Japanese Braille translation engine used by NVDA Japanese
+(word separation and kana-to-braille conversion), originally developed as
+part of NVDA Japanese and now maintained as an independent library.
+
+<https://github.com/nishimotz/libkuraji>
+
+    BSD 3-Clause License
+
+    Copyright (c) 2010-2026, Takuya Nishimoto
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this
+      list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+
+    * Neither the name of the copyright holder nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+### libkuraji-jtalk-dic (NVDA Japanese)
+
+NVDA Japanese may contain the JTalk extended dictionary as built by the
+libkuraji-jtalk-dic project (NAIST-JDIC plus custom entries), which is used
+by both JTalk speech synthesis and libkuraji Braille translation. By
+default (jtalkDicSource=prebuilt) NVDA Japanese downloads a prebuilt,
+checksum-verified copy of this dictionary; it may instead be built locally
+from vendored NAIST-JDIC source (jtalkDicSource=local), in which case
+bep-eng.dic (see above) is also included.
+
+<https://github.com/nishimotz/libkuraji-jtalk-dic>
+
+    BSD 3-Clause License
+
+    Copyright (c) 2010-2026, Takuya Nishimoto
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this
+      list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+
+    * Neither the name of the copyright holder nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    This dictionary also incorporates, under its own BSD 3-Clause terms:
+    - NAIST-JDIC: Copyright (c) 2009, Nara Institute of Science and
+      Technology, Japan.
+    - MeCab (used to build the dictionary): see the MeCab section above.
