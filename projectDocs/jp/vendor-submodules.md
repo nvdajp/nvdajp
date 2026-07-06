@@ -43,7 +43,7 @@ JTalk 拡張辞書（NAIST-JDIC + nvdajp 独自拡張）は、点訳エンジン
 
 ### 方針転換の内容
 
-- **既定（ローカルビルド）は維持する**: `scons jtalkSync` は今までどおり、リポジトリ内の NAIST-JDIC ソース＋ nvdajp 拡張エントリを `mecab-dict-index` でビルドする。ネットワーク取得なしで完結する経路を恒久的に維持する。理由: 辞書の内容（品詞 ID・カスタムエントリ等）を編集する開発（roadmap タスク 2.8 等）は、変更が `libkuraji-jtalk-dic` のリリースに反映される前にローカルビルドで検証する必要があるため。
+- **既定（ローカルビルド）は維持する**: `scons jtalkSync` は今までどおり、リポジトリ内の NAIST-JDIC ソース＋ nvdajp 拡張エントリを `mecab-dict-index` でビルドする。ネットワーク取得なしで完結する経路を恒久的に維持する。理由は 2 つ: (1) 辞書の内容（品詞 ID・カスタムエントリ等）を編集する開発（roadmap タスク 2.8 等）は、変更が `libkuraji-jtalk-dic` のリリースに反映される前にローカルビルドで検証する必要がある。(2) `libkuraji-jtalk-dic` は BSD 3-Clause のため、GPL 由来の `bep-eng.dic`（英単語読みエントリ、`nvdajp-eng-dic` の元）を含まない。この読みは音声合成専用ではなく点訳結果（`mo.output` のフォールバック経由）にも反映されるため、`prebuilt` 経路を使うと nvdajp 自身の英単語の読み・点訳精度がローカルビルドより下がる。
 - **任意経路として、ビルド時に外部成果物を取得できるようにする**: `libkuraji-jtalk-dic` の CI がビルドした辞書一式（`sys.dic` / `matrix.bin` / `char.bin` / `unk.dic` / `dicrc` / `DIC_VERSION` の 6 ファイル）を、pin されたリリースタグ＋SHA256 チェックサムで検証したうえで取得・展開する経路を追加する（`scons jtalkSync jtalkDicSource=prebuilt` 想定）。
 - **チェックサム不一致時はローカルビルドへの黙ったフォールバックをしない**: ビルドを失敗させる。これは「本文書の他の原則から離れて外部取得を許す」以上、取得内容の完全性検証は妥協しないため。
 - **pin は明示的な PR で更新する**: `latest` を追わず、固定タグ＋ハッシュを記録するファイル（例: `miscDepsJp/jptools/jtalk-dic-version.txt`）を用意し、更新は通常の依存バージョン bump と同様にレビューを経る。

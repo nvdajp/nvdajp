@@ -116,6 +116,7 @@ graph TD
 - **フェーズ 4.3（完了, 2026-07-06）**: CI での `mecab-dict-index` フルビルド。当初 [nishimotz/libopenjtalk](https://github.com/nishimotz/libopenjtalk) を使う想定だったが、これは nvdajp が実際に使う MeCab ソースとは別系統で、UTF-8 の `rewrite.def` 解析が壊れることが判明したため不採用。nvdajp が実際にビルドしているソース（`miscDepsJp/include/python-jtalk/libopenjtalk/mecab`。Open JTalk フォーク、BSD 系）を `src/mecab-src/` にベンダーし、`.github/workflows/build-dic.yml`（Windows + `ilammy/msvc-dev-cmd`）で `mecab-dict-index.exe` のビルド → 辞書ビルド → ユーザー辞書ビルドまで CI で検証。**教訓**: nvdajp 内には MeCab ソースのコピーが 2 箇所あり（`miscDepsJp/jptools/jtalk/...` と `miscDepsJp/include/python-jtalk/...`）、前者はクリーンビルドすると現行 MSVC で `error C2593`（演算子のあいまいさ）になる古い未使用コピーだった。実際のビルド（`jtalkSync`）は後者（`/D MECAB_STATIC` フラグ付き）をコンパイルしてから前者へコピーしているだけで、nvdajp の実ビルドが「毎回 git clone からでも成立する」という前提を軽視して誤った結論を出しかけた。
 - **フェーズ 4.4（完了, 2026-07-06）**: GitHub Releases での配布。`.github/workflows/release-dic.yml` を追加。`v*` タグの push をトリガーに、辞書一式（6 ファイル）を zip 化して SHA256 チェックサムとともに GitHub Release に自動添付する。**公開リポジトリに自動リリース公開の経路を作る操作のため、着手前に利用者へ明示的な許可を確認済み。** 実際のリリース作成（初回タグ push）は未実施。
 - **フェーズ 4.5（未着手、方針は確定済み）**: nvdajp の `jtalkSync` が任意でフェーズ 4.4 の成果物に依存できるようにする。**方針転換として `projectDocs/jp/vendor-submodules.md`（「辞書のビルド時取得（方針転換）」節）に記録済み**: 既定はローカルビルドを維持し、`jtalkDicSource=prebuilt` 相当のオプトインで pin されたリリース（タグ＋SHA256）を取得。チェックサム不一致時はローカルへの黙ったフォールバックをせずビルド失敗とする。
+  - **注意**: `libkuraji-jtalk-dic` の成果物には `bep-eng.dic`（GPL、ライセンス非互換のため除外）由来の英単語読みエントリが含まれない。この読みは `mo.output` のフォールバック経由で点訳結果にも直接反映される（音声合成専用ではない）ため、`prebuilt` 経路を使うと nvdajp 側でも英単語の読み・点訳精度が nvdajp 自身のローカルビルドより下がる。既定をローカルビルドのままにする理由がもう一つ増えたことになる。
 
 ---
 
