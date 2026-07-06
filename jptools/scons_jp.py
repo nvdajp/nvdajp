@@ -769,6 +769,60 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			)
 			return 0
 
+		def _fetch_prebuilt_tool(repo_root: Path, dest_path: Path) -> int:
+			"""Fetch the pinned, checksum-verified mecab-dict-index.exe release
+			asset from nishimotz/libkuraji-jtalk-dic, instead of relying on it
+			being produced as a side effect of jtalkPrep's unrelated
+			libopenjtalk.dll build (unreliable when that build is cache-skipped).
+
+			This binary is unsigned; the checksum is the only integrity check.
+			A checksum mismatch fails the build; no local-build fallback.
+			"""
+			import hashlib
+			import urllib.request
+
+			pin_path = repo_root / "miscDepsJp" / "jptools" / "jtalk-dic-version.txt"
+			if not pin_path.exists():
+				print(f"jtalkSync: pin file not found: {pin_path}")
+				return 1
+			pin = _parse_dic_pin(pin_path)
+			required = {"repo", "tag", "tool_asset", "tool_sha256"}
+			if not required.issubset(pin):
+				print(f"jtalkSync: pin file {pin_path} missing required keys: {required - set(pin)}")
+				return 1
+
+			marker_path = dest_path.parent / "PREBUILT_SOURCE"
+			marker_expected = f"repo={pin['repo']}\ntag={pin['tag']}\nsha256={pin['tool_sha256']}\n"
+			if (
+				marker_path.exists()
+				and marker_path.read_text(encoding="utf-8") == marker_expected
+				and dest_path.exists()
+			):
+				print(f"jtalkSync: prebuilt mecab-dict-index.exe already up to date (tag={pin['tag']}).")
+				return 0
+
+			url = f"https://github.com/{pin['repo']}/releases/download/{pin['tag']}/{pin['tool_asset']}"
+			print(f"jtalkSync: fetching mecab-dict-index.exe from {url}")
+			try:
+				dest_path.parent.mkdir(parents=True, exist_ok=True)
+				urllib.request.urlretrieve(url, str(dest_path))
+			except Exception as e:
+				print(f"jtalkSync: failed to download mecab-dict-index.exe: {e}")
+				return 1
+
+			digest = hashlib.sha256(dest_path.read_bytes()).hexdigest()
+			if digest != pin["tool_sha256"]:
+				print(
+					f"jtalkSync: checksum mismatch for {pin['tool_asset']}: "
+					f"expected {pin['tool_sha256']}, got {digest}. Aborting (no local-build fallback).",
+				)
+				dest_path.unlink(missing_ok=True)
+				return 1
+
+			marker_path.write_text(marker_expected, encoding="utf-8")
+			print(f"jtalkSync: mecab-dict-index.exe installed (tag={pin['tag']}, sha256={digest}).")
+			return 0
+
 		try:
 			jtalk_dir.mkdir(parents=True, exist_ok=True)
 			dic_dst.mkdir(parents=True, exist_ok=True)
@@ -848,34 +902,43 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		# jptools/build_userdic.py needs mecab-dict-index.exe under
 		# jptools/jtalk/libopenjtalk/mecab/src/ to build the user dictionary
 		# (jtusr.dic). This is independent of where the base dictionary comes
-		# from (local build vs. prebuilt release), so ensure it unconditionally
-		# rather than only as a side effect of the local dictionary build below.
+		# from, so ensure it unconditionally rather than only as a side effect
+		# of the local dictionary build below.
 		if builder_script_path.exists():
-			mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
-			mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
 			make_jdic_mecab_bin = (
 				builder_script_path.parent / "libopenjtalk" / "mecab" / "src" / "mecab-dict-index.exe"
 			)
 			if not make_jdic_mecab_bin.exists():
-				arch_for_tool = str(env.get("TARGET_ARCH", "x64")).lower()
-				machine_for_tool = "x64" if arch_for_tool in ("x64", "x86_64") else "x86"
-				if not mecab_dict_index_bin.exists():
-					rc_tool = _build_mecab_bin(machine_for_tool)
+				if dic_source == "prebuilt":
+					# Fetch the tool from the same pinned release as the
+					# dictionary, rather than depending on jtalkPrep's
+					# unrelated libopenjtalk.dll build (which may be
+					# cache-skipped and not produce this side artifact).
+					rc_tool = _fetch_prebuilt_tool(repo_root, make_jdic_mecab_bin)
 					if rc_tool != 0:
-						print(f"jtalkSync: nmake (mecab-dict-index tool) failed with rc={rc_tool}")
 						return rc_tool
-				if mecab_dict_index_bin.exists():
-					try:
-						make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
-						shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
-						print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin} (for build_userdic.py)")
-					except Exception as e:
-						print(f"jtalkSync: failed to copy mecab-dict-index.exe for build_userdic.py: {e}")
 				else:
-					print(
-						f"jtalkSync: warning: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}; "
-						"build_userdic.py's jtusr.dic build will be skipped.",
-					)
+					mecab_src_dir = vendor_base / "libopenjtalk" / "mecab" / "src"
+					mecab_dict_index_bin = mecab_src_dir / "mecab-dict-index.exe"
+					arch_for_tool = str(env.get("TARGET_ARCH", "x64")).lower()
+					machine_for_tool = "x64" if arch_for_tool in ("x64", "x86_64") else "x86"
+					if not mecab_dict_index_bin.exists():
+						rc_tool = _build_mecab_bin(machine_for_tool)
+						if rc_tool != 0:
+							print(f"jtalkSync: nmake (mecab-dict-index tool) failed with rc={rc_tool}")
+							return rc_tool
+					if mecab_dict_index_bin.exists():
+						try:
+							make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
+							shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
+							print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin} (for build_userdic.py)")
+						except Exception as e:
+							print(f"jtalkSync: failed to copy mecab-dict-index.exe for build_userdic.py: {e}")
+					else:
+						print(
+							f"jtalkSync: warning: mecab-dict-index.exe still missing after build: {mecab_dict_index_bin}; "
+							"build_userdic.py's jtusr.dic build will be skipped.",
+						)
 
 		# If dictionary is missing or invalid, build it directly into source/synthDrivers/jtalk/dic
 		if should_rebuild_dic or not sys_dic.exists():
