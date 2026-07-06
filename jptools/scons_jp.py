@@ -681,6 +681,94 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 
 			return True, has_utf8, has_valid_cp
 
+		def _parse_dic_pin(pin_path: Path) -> dict[str, str]:
+			pin: dict[str, str] = {}
+			for line in pin_path.read_text(encoding="utf-8").splitlines():
+				line = line.strip()
+				if not line or line.startswith("#") or "=" not in line:
+					continue
+				key, _, value = line.partition("=")
+				pin[key.strip()] = value.strip()
+			return pin
+
+		def _sync_prebuilt_dic(repo_root: Path, dic_dst: Path) -> int:
+			"""Fetch a pinned, checksum-verified prebuilt dictionary release from
+			nishimotz/libkuraji-jtalk-dic instead of building locally.
+
+			See projectDocs/jp/vendor-submodules.md ("辞書のビルド時取得（方針転換）"):
+			this is an explicit exception to the "no build-time external fetch"
+			principle for the JTalk vendor area. A checksum mismatch fails the
+			build; it never falls back to a local build silently.
+
+			Note: the prebuilt dictionary omits bep-eng.dic (GPL, incompatible
+			with libkuraji-jtalk-dic's BSD 3-Clause license). This does not
+			affect braille output (replace_alphabet_morphs always restores the
+			original Latin spelling), only JTalk's spoken pronunciation of some
+			English words.
+			"""
+			import hashlib
+			import urllib.request
+			import zipfile
+
+			pin_path = repo_root / "miscDepsJp" / "jptools" / "jtalk-dic-version.txt"
+			if not pin_path.exists():
+				print(f"jtalkSync: jtalkDicSource=prebuilt but pin file not found: {pin_path}")
+				return 1
+			pin = _parse_dic_pin(pin_path)
+			required = {"repo", "tag", "asset", "sha256"}
+			if not required.issubset(pin):
+				print(f"jtalkSync: pin file {pin_path} missing required keys: {required - set(pin)}")
+				return 1
+
+			marker_path = dic_dst / "PREBUILT_SOURCE"
+			marker_expected = f"repo={pin['repo']}\ntag={pin['tag']}\nsha256={pin['sha256']}\n"
+			if (
+				marker_path.exists()
+				and marker_path.read_text(encoding="utf-8") == marker_expected
+				and (dic_dst / "sys.dic").exists()
+			):
+				print(f"jtalkSync: prebuilt dictionary already up to date (tag={pin['tag']}); skipping fetch.")
+				return 0
+
+			url = f"https://github.com/{pin['repo']}/releases/download/{pin['tag']}/{pin['asset']}"
+			print(f"jtalkSync: fetching prebuilt dictionary from {url}")
+			zip_path = dic_dst.parent / pin["asset"]
+			try:
+				urllib.request.urlretrieve(url, str(zip_path))
+			except Exception as e:
+				print(f"jtalkSync: failed to download prebuilt dictionary: {e}")
+				return 1
+
+			digest = hashlib.sha256(zip_path.read_bytes()).hexdigest()
+			if digest != pin["sha256"]:
+				print(
+					f"jtalkSync: checksum mismatch for {pin['asset']}: "
+					f"expected {pin['sha256']}, got {digest}. Aborting (no local-build fallback).",
+				)
+				zip_path.unlink(missing_ok=True)
+				return 1
+
+			# Clear only the files the base dictionary build produces; leave
+			# static license files (COPYING, COPYING-bep-eng.txt) untouched.
+			for name in ("sys.dic", "unk.dic", "matrix.bin", "char.bin", "dicrc", "DIC_VERSION"):
+				(dic_dst / name).unlink(missing_ok=True)
+			with zipfile.ZipFile(zip_path) as zf:
+				zf.extractall(dic_dst)
+			zip_path.unlink(missing_ok=True)
+
+			try:
+				(dic_dst / "DIC_CODEPAGE").write_text("utf-8", encoding="utf-8")
+			except Exception as e:
+				print(f"jtalkSync: warning: failed to write DIC_CODEPAGE: {e}")
+			marker_path.write_text(marker_expected, encoding="utf-8")
+
+			print(f"jtalkSync: prebuilt dictionary installed (tag={pin['tag']}, sha256={digest}).")
+			print(
+				"jtalkSync: note: the prebuilt dictionary omits bep-eng.dic (GPL); "
+				"see projectDocs/jp/vendor-submodules.md.",
+			)
+			return 0
+
 		try:
 			jtalk_dir.mkdir(parents=True, exist_ok=True)
 			dic_dst.mkdir(parents=True, exist_ok=True)
@@ -712,12 +800,20 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				result = run(cmd_script, cwd=str(vendor_base), shell=True)
 				return result.returncode
 
-		sys_dic = dic_dst / "sys.dic"
-		has_dic, is_utf8_dic, is_valid_cp = _dic_state(dic_dst)
-		should_rebuild_dic = not (has_dic and is_utf8_dic and is_valid_cp)
-		if should_rebuild_dic:
-			print("jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py.")
-			print(f"jtalkSync: repo_root={repo_root!r} builder_script_path.exists()={builder_script_path.exists()!r}")
+		dic_source = str(env.get("jtalkDicSource", "local")).lower()
+		if dic_source == "prebuilt":
+			rc_prebuilt = _sync_prebuilt_dic(repo_root, dic_dst)
+			if rc_prebuilt != 0:
+				return rc_prebuilt
+			sys_dic = dic_dst / "sys.dic"
+			should_rebuild_dic = False
+		else:
+			sys_dic = dic_dst / "sys.dic"
+			has_dic, is_utf8_dic, is_valid_cp = _dic_state(dic_dst)
+			should_rebuild_dic = not (has_dic and is_utf8_dic and is_valid_cp)
+			if should_rebuild_dic:
+				print("jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py.")
+				print(f"jtalkSync: repo_root={repo_root!r} builder_script_path.exists()={builder_script_path.exists()!r}")
 
 		def _build_mecab_bin(machine: str) -> int:
 			# Makefile.mak is in src subdirectory
