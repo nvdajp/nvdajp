@@ -84,6 +84,18 @@ vars.Add(
 )
 vars.Add("apiSigningToken", "The API key for the signing service", "")
 vars.Add(
+	EnumVariable(
+		"jtalkDicSource",
+		"How jtalkSync obtains the JTalk extended dictionary: 'prebuilt' (default) "
+		"downloads a pinned, checksum-verified release from "
+		"nishimotz/libkuraji-jtalk-dic; 'local' builds it from vendored NAIST-JDIC "
+		"source instead (no network needed; required when editing dictionary content, "
+		"see projectDocs/jp/vendor-submodules.md)",
+		"prebuilt",
+		["local", "prebuilt"],
+	),
+)
+vars.Add(
 	PathVariable(
 		"outputDir",
 		"The directory where the final built archives and such will be placed",

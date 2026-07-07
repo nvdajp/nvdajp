@@ -1,0 +1,12 @@
+# Pin for the optional prebuilt JTalk dictionary (jtalkDicSource=prebuilt,
+# the default). Update via an explicit PR after a new
+# nishimotz/libkuraji-jtalk-dic release.
+# See projectDocs/jp/vendor-submodules.md ("辞書のビルド時取得（方針転換）").
+repo=nishimotz/libkuraji-jtalk-dic
+tag=v1.1.4
+asset=jtalk-dic-v1.1.4.zip
+sha256=44051b8a9c16530abca9503e4405362a9e7b754ea6ca10a4392860f3042409fd
+# mecab-dict-index.exe: used by build_userdic.py to compile jtusr.dic
+# (the user dictionary). Unsigned executable; verified via checksum before use.
+tool_asset=mecab-dict-index-v1.1.4.exe
+tool_sha256=db08868e0ffea1044a1c1fc521802b3e3f316138ce16908a7a74c601a62fa3a0

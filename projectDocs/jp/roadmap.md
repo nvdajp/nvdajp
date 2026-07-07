@@ -5,22 +5,19 @@
 
 ## 今月の優先3項目
 
-1. **リグレッション対策の継続**
-   - 2025.3.x jp 相当の動作確認を継続し、差分を解消する。
-2. **無効化テストの復帰**
-   - ユニットテスト／システムテストの復帰を進め、CIで常時緑を維持する。
+1. **リグレッション対策の継続（動作確認）**
+   - ATOK や Notepad++ での実機/動作確認を継続し、差分を解消する。
+2. **コード品質とCIの維持**
+   - ログ改善、例外処理改善等のコード品質向上を進めつつ、CIの安定稼働を維持する。
 3. **上流追従の定常運用**
    - 本家 beta の更新を小さなPRで取り込み、差分最小化を維持する。
 
 ## 現在の到達点
 
-- 本家 2026.1 の機能的取り込みは完了済みである。
-- Python 3.13（x64）への移行は完了済みである。
+- 本家 2026.1 の機能的取り込みおよび Python 3.13（x64）への移行は完了済みである。
 - ビルドは SCons 中心の運用に統一済みである。
 - 署名・配布はローカル実施、CI は検証用途という方針を維持している。
-- JTalk 辞書ビルドの決定性確保と `verify_dic.py` strict モードの CI 適用は完了済み（2026-06-12）。
-- タブ文字を含む入力の MeCab クラッシュは `TAB_CODE` プレースホルダ方式で安定化済み。
-- ユーザー辞書テストの有効化と辞書ビルドツールの x64 化は完了済み（2026-07-05）。旧 i386 ツール製の辞書は現行ランタイムと非互換だったため、テスト時に x64 ツールで再ビルドする方式に変更。参照: `projectDocs/jp/userdic.md`
+- 日本語点訳エンジンの libkuraji への分離（フェーズ1〜3）は完了済みである（2026-07-06）。参照: `projectDocs/jp/braille-engine-decoupling-plan.md`
 
 ## 進行中タスク
 
@@ -31,11 +28,6 @@
   - ATOK + 点字ディスプレイの組み合わせ確認
   - JP smoke tests の定期実行
   - 参照: `projectDocs/jp/compare-with-2025/recommended-actions.md`
-
-- **タスク 4.1 無効化されたユニットテスト／システムテストの復帰**
-  - ローカルでの復帰確認
-  - CI での安定稼働確認
-  - 4 件の点字 routing テスト（`ReviewCursorManagerRegion`）は未復帰。参照: `projectDocs/jp/braille-routing-analysis.md`
 
 ### 優先度: 中
 
@@ -48,6 +40,10 @@
   - コスト再調整を伴うため、translator2 の読み・マスアケ変動を受け入れる必要がある。
   - 有効化済みのユーザー辞書テスト経路を、sys.dic を再ビルドせずに品詞別 ID・コストを試す実験サンドボックスとして使える。
   - 参照: `projectDocs/jp/tab-character-analysis.md`、`projectDocs/jp/userdic.md`
+- **タスク 2.9b libkuraji-jtalk-dic: 辞書の別パッケージ化（完了）**
+  - JTalk 拡張辞書のビルドレシピ抽出・CI フルビルド・GitHub Releases 配布・nvdajp `jtalkSync` のオプトイン取得（`jtalkDicSource=prebuilt`）まで完了（[nishimotz/libkuraji-jtalk-dic](https://github.com/nishimotz/libkuraji-jtalk-dic)）。
+  - 既定はローカルビルドのまま（`bep-eng.dic` 除外により `prebuilt` では JTalk の読み上げ精度が一部低下するため）。
+  - 参照: `projectDocs/jp/braille-engine-decoupling-plan.md`（フェーズ 4）、`projectDocs/jp/vendor-submodules.md`
 
 ### 優先度: 低
 
