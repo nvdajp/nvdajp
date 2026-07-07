@@ -27,7 +27,7 @@ isSpeaking: bool = False
 class BgThread(threading.Thread):
 	def __init__(self):
 		threading.Thread.__init__(self)
-		self.setDaemon(True)
+		self.daemon = True
 
 	def run(self) -> None:
 		global isSpeaking, bgQueue
