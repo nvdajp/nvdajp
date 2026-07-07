@@ -386,8 +386,7 @@ def initialize(
 	if not _bgthread.bgThread:
 		_bgthread.initialize()
 	if not mecab:
-		lw = logwrite if DEBUG else None
-		Mecab_initialize(lw, jtalk_dir, dic_dir, user_dics)
+		Mecab_initialize(logwrite, jtalk_dir, dic_dir, user_dics)
 	jtalkPrepare.setup()
 
 	jt_dll = str(jtalk_dir / "libopenjtalk.dll")
