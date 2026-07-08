@@ -66,7 +66,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	useWASAPIForSAPI4 = featureFlag(optionsEnum="BoolFlag", behaviorOfDefault="enabled")
 
 	[[__many__]]
-		capPitchChange = integer(default=30,min=-100,max=100)
+		capPitchChange = integer(default=0,min=-100,max=100) # was default=30 (nvdajp)
 		sayCapForCapitals = boolean(default=false)
 		beepForCapitals = boolean(default=false)
 		useSpellingFunctionality = boolean(default=true)
