@@ -294,16 +294,23 @@ def Mecab_initialize(
 				f"{_mecab_config} -> {requested_config}",
 			)
 		Mecab_terminate(logwrite_)
-	if mecab is None:
-		# libmc is guaranteed to be initialized at this point (asserted above)
-		assert libmc is not None  # Type narrowing for type checkers
-		if logwrite_:
-			logwrite_("dic: %s" % dic)
+	# Always print/log the version and dictionary info if logwrite_ is provided,
+	# even if mecab is already initialized.
+	if logwrite_:
+		logwrite_("dic: %s" % dic)
 		try:
 			dic_version_path = Path(dic) / "DIC_VERSION"
 			s = dic_version_path.read_text(encoding="utf-8").strip()
-			if logwrite_:
-				logwrite_("mecab:" + libmc.mecab_version() + " " + s)
+			version_str = libmc.mecab_version().decode("utf-8", "ignore")
+			logwrite_("mecab:" + version_str + " " + s)
+		except Exception:
+			pass
+	if mecab is None:
+		# libmc is guaranteed to be initialized at this point (asserted above)
+		assert libmc is not None  # Type narrowing for type checkers
+		try:
+			dic_version_path = Path(dic) / "DIC_VERSION"
+			s = dic_version_path.read_text(encoding="utf-8").strip()
 			# check utf-8 dictionary
 			if CODE not in s:
 				raise RuntimeError("utf-8 dictionary for mecab required.")
