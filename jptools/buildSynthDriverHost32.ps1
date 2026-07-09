@@ -47,51 +47,65 @@ if (-not $doSign) {
 }
 
 Write-Host "Signing synthDriverHost32 runtime files..." -ForegroundColor Cyan
-$signtool = $env:SIGNTOOL
-if (-not $signtool) {
-    $cmd = Get-Command signtool -ErrorAction SilentlyContinue
-    if ($cmd) { $signtool = $cmd.Source }
-}
-if (-not $signtool) {
-    $kitsBase = "C:\Program Files (x86)\Windows Kits\10\bin"
-    if (Test-Path $kitsBase) {
-        $kitsDirs = Get-ChildItem $kitsBase -Directory | Sort-Object Name -Descending
-        foreach ($kitDir in $kitsDirs) {
-            $p = Join-Path $kitDir.FullName "x64\signtool.exe"
-            if (Test-Path $p) { $signtool = $p; break }
-            $p = Join-Path $kitDir.FullName "x86\signtool.exe"
-            if (Test-Path $p) { $signtool = $p; break }
+
+$useAzureKv = $env:AZURE_KV_SIGNING -and $env:AZURE_KV_SIGNING -ne "0"
+$signScript = Join-Path $repoRoot "ci\scripts\signAzureKV.ps1"
+
+if (-not $useAzureKv) {
+    $signtool = $env:SIGNTOOL
+    if (-not $signtool) {
+        $cmd = Get-Command signtool -ErrorAction SilentlyContinue
+        if ($cmd) { $signtool = $cmd.Source }
+    }
+    if (-not $signtool) {
+        $kitsBase = "C:\Program Files (x86)\Windows Kits\10\bin"
+        if (Test-Path $kitsBase) {
+            $kitsDirs = Get-ChildItem $kitsBase -Directory | Sort-Object Name -Descending
+            foreach ($kitDir in $kitsDirs) {
+                $p = Join-Path $kitDir.FullName "x64\signtool.exe"
+                if (Test-Path $p) { $signtool = $p; break }
+                $p = Join-Path $kitDir.FullName "x86\signtool.exe"
+                if (Test-Path $p) { $signtool = $p; break }
+            }
         }
     }
-}
-if (-not $signtool) {
-    Write-Warning "signtool not found, skipping synthDriverHost32 signing"
-    exit 0
-}
+    if (-not $signtool) {
+        Write-Warning "signtool not found, skipping synthDriverHost32 signing"
+        exit 0
+    }
 
-$signArgs = @("sign", "/fd", "SHA256")
-if ($env:CERT_SHA1) {
-    $certStore = if ($env:CERT_STORE) { $env:CERT_STORE } else { "My" }
-    $signArgs += @("/s", $certStore, "/sha1", $env:CERT_SHA1)
-    if ($env:CERT_MACHINE_STORE) { $signArgs += "/sm" }
-} elseif ($env:CERT_NAME) {
-    $certStore = if ($env:CERT_STORE) { $env:CERT_STORE } else { "My" }
-    $signArgs += @("/s", $certStore, "/n", $env:CERT_NAME)
-    if ($env:CERT_MACHINE_STORE) { $signArgs += "/sm" }
-} else {
-    $signArgs += "/a"
-}
-if ($env:TIMESTAMP_URL) {
-    $signArgs += @("/tr", $env:TIMESTAMP_URL, "/td", "SHA256")
-} elseif ($env:TIMESERVER) {
-    $signArgs += @("/tr", $env:TIMESERVER, "/td", "SHA256")
-} else {
-    $signArgs += @("/tr", "http://timestamp.digicert.com", "/td", "SHA256")
+    $signArgs = @("sign", "/fd", "SHA256")
+    if ($env:CERT_SHA1) {
+        $certStore = if ($env:CERT_STORE) { $env:CERT_STORE } else { "My" }
+        $signArgs += @("/s", $certStore, "/sha1", $env:CERT_SHA1)
+        if ($env:CERT_MACHINE_STORE) { $signArgs += "/sm" }
+    } elseif ($env:CERT_NAME) {
+        $certStore = if ($env:CERT_STORE) { $env:CERT_STORE } else { "My" }
+        $signArgs += @("/s", $certStore, "/n", $env:CERT_NAME)
+        if ($env:CERT_MACHINE_STORE) { $signArgs += "/sm" }
+    } else {
+        $signArgs += "/a"
+    }
+    if ($env:TIMESTAMP_URL) {
+        $signArgs += @("/tr", $env:TIMESTAMP_URL, "/td", "SHA256")
+    } elseif ($env:TIMESERVER) {
+        $signArgs += @("/tr", $env:TIMESERVER, "/td", "SHA256")
+    } else {
+        $signArgs += @("/tr", "http://timestamp.digicert.com", "/td", "SHA256")
+    }
 }
 
 $filesToSign = Get-ChildItem -Path $synthDriverHost32Dest -Recurse -Include "*.exe", "*.dll" -File
 foreach ($file in $filesToSign) {
     Write-Host "  Signing: $($file.Name)" -ForegroundColor Gray
+    if ($useAzureKv) {
+        & pwsh -NoProfile -ExecutionPolicy Bypass -File $signScript -FileToSign $file.FullName
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to sign $($file.FullName) with Azure Key Vault"
+            exit 1
+        }
+        continue
+    }
     $fileSignArgs = $signArgs + @($file.FullName)
     $signed = $false
     for ($retry = 0; $retry -lt 3; $retry++) {

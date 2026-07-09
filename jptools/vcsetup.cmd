@@ -28,6 +28,12 @@ goto :setup_vcvars
 
 :setup_vcvars
 
+if /I "%ARCH%"=="x64" (
+  set "VCVARS=vcvars64.bat"
+) else (
+  set "VCVARS=vcvars32.bat"
+)
+
 rem Use shared Python module for VS path detection (jptools/vs_utils.py)
 rem This ensures consistency with scons_jp.py and runJpSmokeTests.ps1
 rem Note: %~dp0 is jptools/ directory, so find_vcvars.py is in the same directory
@@ -47,11 +53,6 @@ if not defined FOUND (
 
 if not defined FOUND (
   rem Fallback to direct search if Python call fails
-  if /I "%ARCH%"=="x64" (
-    set "VCVARS=vcvars64.bat"
-  ) else (
-    set "VCVARS=vcvars32.bat"
-  )
   for %%E in (BuildTools Community Professional Enterprise) do (
     if not defined FOUND (
       if exist "%ProgramFiles%\Microsoft Visual Studio\2022\%%E\VC\Auxiliary\Build\%VCVARS%" (
