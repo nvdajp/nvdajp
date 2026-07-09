@@ -60,7 +60,12 @@ if not defined SIGNTOOL (
 
 rem Auto-detect a valid code signing cert from Windows cert store when not explicitly specified
 rem Preference: CurrentUser\My, then LocalMachine\My. Exclude self-signed.
-rem Skip certificate detection if SKIP_SIGNING is set
+rem Skip certificate detection if SKIP_SIGNING is set or Azure Key Vault signing is requested
+if defined AZURE_KV_SIGNING if not "%AZURE_KV_SIGNING%"=="0" (
+    set AZURE_KV_SIGNING=1
+    echo Using Azure Key Vault code signing ^(AZURE_KV_SIGNING=%AZURE_KV_SIGNING%^)
+    goto cert_store_done
+)
 if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME (
     for /f "usebackq tokens=1,2 delims=;" %%A in (`pwsh -NoProfile -Command ^
         "$now=Get-Date; "^ 
@@ -89,6 +94,8 @@ if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME (
     set _CERT_THUMB=
 )
 
+:cert_store_done
+
 rem Validate CERT_SHA1 (must be exactly 40 hex chars). If invalid, clear it.
 if defined CERT_SHA1 (
     for /f "usebackq delims=" %%V in (`pwsh -NoProfile -Command ^
@@ -106,10 +113,12 @@ rem SConstruct will detect CERT_SHA1/CERT_NAME from environment and use certific
 set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
 if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certTimestampServer=%TIMESTAMP_URL%
 if defined CERT_NAME if not defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certTimestampServer=%TIMESTAMP_URL%
+if not defined SKIP_SIGNING if defined AZURE_KV_SIGNING if not "%AZURE_KV_SIGNING%"=="0" goto cert_signing_ready
 if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN (
-    echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
+    echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, AZURE_KV_SIGNING=1, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
     goto onerror
 )
+:cert_signing_ready
 rem Build synthDriverHost32 runtime (32-bit Python for SAPI4/5) before launcher
 powershell -ExecutionPolicy Bypass -File jptools\buildSynthDriverHost32.ps1
 @if not "%ERRORLEVEL%"=="0" goto onerror
