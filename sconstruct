@@ -204,6 +204,8 @@ certName = os.environ.get("CERT_NAME", "") if not skipSigning else ""
 certStore = os.environ.get("CERT_STORE", "My")
 certMachineStore = os.environ.get("CERT_MACHINE_STORE", "")
 useCertStore = bool(certSha1 or certName) and not skipSigning
+useAzureKvSigning = os.environ.get("AZURE_KV_SIGNING", "") not in ("", "0") and not skipSigning
+signingEnabled = bool(certFile or apiSigningToken or useCertStore or useAzureKvSigning)
 # END JP PATCH (certificate store signing support)
 if apiSigningToken:
 	# Code signing with SignPath HSM
@@ -244,6 +246,50 @@ elif certFile:
 	# Export via scons environment so other libraries can be signed
 	env["signExec"] = signExecCert
 # BEGIN JP PATCH (certificate store signing support)
+elif useAzureKvSigning:
+	# Code signing with Azure Key Vault HSM (GlobalSign) via AzureSignTool
+	_azureKvEnvKeys = (
+		"USERPROFILE",
+		"ProgramFiles",
+		"ProgramFiles(x86)",
+		"AZURE_KEY_VAULT_URI",
+		"CERT_NAME",
+		"TIMESTAMP_URL",
+		"TIMESERVER",
+		"AZURE_KV_ACCESS_TOKEN",
+		"AZURE_CLIENT_ID",
+		"AZURE_CLIENT_SECRET",
+		"AZURE_TENANT_ID",
+	)
+
+	def _azureKvSignShellCmd(filePath: str) -> str:
+		# SCons env.Execute does not pass the full OS environment to child shells.
+		# Pass the file path via NVDA_SIGN_FILE to avoid cmd/PowerShell quoting issues.
+		cmdSets = ["set AZURE_KV_SIGNING=1", f"set NVDA_SIGN_FILE={filePath}"]
+		for key in _azureKvEnvKeys:
+			if val := os.environ.get(key):
+				if key == "ProgramFiles(x86)":
+					cmdSets.append(f'set "ProgramFiles(x86)={val}"')
+				else:
+					cmdSets.append(f"set {key}={val}")
+		setPrefix = "&&".join(cmdSets)
+		return (
+			f'cmd /c "{setPrefix}&& PowerShell -NoProfile -ExecutionPolicy Bypass '
+			f'-File ci\\scripts\\signAzureKV.ps1"'
+		)
+
+	def signExecAzureKv(target, source, env):
+		if len(target) > 1:
+			print(f"Iterating through {len(target)} files passed to signExecAzureKv")
+		retval = 1
+		for targetFile in target:
+			if (abspath := targetFile.abspath).endswith((".exe", ".dll")):
+				ps_cmd = _azureKvSignShellCmd(abspath)
+				if (retval := env.Execute(ps_cmd, shell=True)) != 0:
+					print(f"Error signing file: {abspath}")
+		return retval
+
+	env["signExec"] = signExecAzureKv
 elif useCertStore:
 	# Code signing with Windows certificate store (JP-specific)
 	def signExecCertStore(target, source, env):
@@ -452,7 +498,7 @@ def NVDADistGenerator(target, source, env, for_signature):
 	action.append(buildCmd)
 
 	# BEGIN JP PATCH (certificate store signing support)
-	if certFile or apiSigningToken or useCertStore:
+	if signingEnabled:
 		# nvda_synthDriverHost.exe: JP signs it via buildSynthDriverHost32.ps1 before scons; upstream
 		# added it here with "if not os.path.isfile(...): continue" but that broke the 4 exes (at
 		# generator time dist does not exist yet). JP keeps the 4 exes only.
@@ -542,7 +588,7 @@ uninstGen = env.Command(
 )
 uninstaller = env.Command(uninstFile, uninstGen, [uninstGen])
 # BEGIN JP PATCH (certificate store signing support)
-if certFile or apiSigningToken or useCertStore:
+if signingEnabled:
 # END JP PATCH (certificate store signing support)
 	env.AddPostAction(uninstaller, [env["signExec"]])
 
@@ -550,7 +596,7 @@ devDocTargets = env.SConscript(
 	"projectDocs/dev/developerGuide/sconscript", exports=["env", "outputDir", "sourceDir", "userDocsDir"]
 )
 # BEGIN JP PATCH (certificate store signing support)
-dist = env.NVDADist("dist", [sourceDir, userDocsDir], uiAccess=bool(certFile) or bool(apiSigningToken) or useCertStore)
+dist = env.NVDADist("dist", [sourceDir, userDocsDir], uiAccess=signingEnabled)
 # END JP PATCH (certificate store signing support)
 env.Depends(dist, uninstaller)
 env.Depends(dist, devDocTargets)
@@ -600,7 +646,7 @@ launcher = env.Command(
 	],
 )
 # BEGIN JP PATCH (certificate store signing support)
-if certFile or apiSigningToken or useCertStore:
+if signingEnabled:
 # END JP PATCH (certificate store signing support)
 	env.AddPostAction(launcher, [env["signExec"]])
 env.Alias("launcher", launcher)

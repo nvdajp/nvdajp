@@ -10,7 +10,7 @@
 .\scons.bat launcher --all-cores
 ```
 
-前提として `certFile` / `apiSigningToken` / `CERT_SHA1` / `CERT_NAME` のいずれかが有効であること。
+前提として `certFile` / `apiSigningToken` / `CERT_SHA1` / `CERT_NAME` / `AZURE_KV_SIGNING=1` のいずれかが有効であること。
 
 ### 署名なし（明示的スキップ）
 
@@ -59,6 +59,7 @@ jtalkPrep -> jtalkSync -> source -> user_docs -> dist -> jpCertExtras -> launche
 - ローカル証明書: `certFile`
 - API 署名: `apiSigningToken`
 - 証明書ストア: `CERT_SHA1` または `CERT_NAME`
+- Azure Key Vault HSM: `AZURE_KV_SIGNING=1`（`az login` または `AZURE_CLIENT_*` + `AZURE_KEY_VAULT_URI` + `CERT_NAME`）
 
 ### 明示的無効化
 

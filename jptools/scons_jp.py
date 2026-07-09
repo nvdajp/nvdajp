@@ -1227,8 +1227,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		signExec = env.get("signExec")
 		certFile = env.get("certFile")
 		apiSigningToken = env.get("apiSigningToken")
+		azureKvSigning = os.environ.get("AZURE_KV_SIGNING", "") not in ("", "0")
 		# Only add dependency if signing is configured
-		if signExec or certFile or apiSigningToken:
+		if signExec or certFile or apiSigningToken or azureKvSigning:
 			# Use env.Alias() to get the launcher alias (same pattern as sconstruct L401, L724)
 			launcher_alias = env.Alias("launcher")
 			if launcher_alias:

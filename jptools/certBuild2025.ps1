@@ -63,19 +63,27 @@ Set-Location $repoRoot
 # Set up environment variables
 # Load CERT_SHA1 from environment or optional env file to avoid committing secrets
 # Skip if SkipSigning is specified
+$useAzureKvSigning = $env:AZURE_KV_SIGNING -and $env:AZURE_KV_SIGNING -ne "0"
 if (-not $SkipSigning) {
+    if ($useAzureKvSigning) {
+        Write-Host "Using Azure Key Vault code signing (AZURE_KV_SIGNING)" -ForegroundColor Cyan
+        $env:AZURE_KV_SIGNING = "1"
+        $env:CERT_SHA1 = ""
+        $env:CERT_NAME = ""
+    } else {
     $envScript = Join-Path $PSScriptRoot "certBuild2025Env.ps1"
     if (-not $env:CERT_SHA1) {
         if (Test-Path $envScript) {
             . $envScript
         } else {
-            Write-Error "CERT_SHA1 is not set. Set it in the environment or create certBuild2025Env.ps1 from certBuild2025Env.sample.ps1."
+            Write-Error "CERT_SHA1 is not set. Set it in the environment, create certBuild2025Env.ps1 from certBuild2025Env.sample.ps1, or set AZURE_KV_SIGNING=1."
             exit 1
         }
     }
     if (-not $env:CERT_SHA1) {
         Write-Error "CERT_SHA1 is empty after loading the environment. Aborting."
         exit 1
+    }
     }
 } else {
     # Clear CERT_SHA1 and CERT_NAME to ensure signing is skipped
@@ -92,6 +100,8 @@ $env:RELEASE = "1"
 # This ensures signing environment is properly configured
 if ($SkipSignTest) {
     Write-Host "Skipping signtool test (SkipSignTest specified)" -ForegroundColor Yellow
+} elseif ($useAzureKvSigning) {
+    Write-Host "Skipping signtool test (Azure Key Vault signing)" -ForegroundColor Yellow
 } else {
     Write-Host "Testing signtool with dummy file..." -ForegroundColor Cyan
     $msgfmtPath = Join-Path $repoRoot "miscDeps" "tools" "msgfmt.exe"
@@ -196,9 +206,15 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 $env:NOWDATE = ($nowdateOutput | Out-String).Trim()
-$env:VERSION = "jpalpha_$env:NOWDATE"
-$env:UPDATEVERSIONTYPE = "nvdajpalpha"
-$env:PUBLISHER = "nvdajp"
+if (-not $env:VERSION) {
+    $env:VERSION = "jpalpha_$env:NOWDATE"
+}
+if (-not $env:UPDATEVERSIONTYPE) {
+    $env:UPDATEVERSIONTYPE = "nvdajpalpha"
+}
+if (-not $env:PUBLISHER) {
+    $env:PUBLISHER = "nvdajp"
+}
 
 # Optional logging: tee output of invoked cmd/bat into a file.
 if ($LogPath -eq "") {
