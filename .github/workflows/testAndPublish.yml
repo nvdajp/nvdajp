@@ -224,7 +224,8 @@ jobs:
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
-        Write-Output "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        if (-not $token) { throw "Failed to obtain Azure Key Vault access token" }
+        "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     # END JP PATCH
     - name: Run synthDriverHost32 runtime builder with its own Python
       shell: pwsh
@@ -593,7 +594,8 @@ jobs:
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
-        Write-Output "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        if (-not $token) { throw "Failed to obtain Azure Key Vault access token" }
+        "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     # END JP PATCH
     - name: Build scons docs targets
       shell: cmd

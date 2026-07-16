@@ -134,9 +134,13 @@ function Get-KeyVaultAccessToken {
     }
     $az = Get-Command az -ErrorAction SilentlyContinue
     if ($az) {
-        $token = az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv 2>$null
-        if ($LASTEXITCODE -eq 0 -and $token) {
-            return $token.Trim()
+        try {
+            $token = & $az.Source account get-access-token --resource https://vault.azure.net --query accessToken -o tsv 2>$null
+            if ($LASTEXITCODE -eq 0 -and $token) {
+                return $token.Trim()
+            }
+        } catch {
+            Write-Warning "az account get-access-token failed: $_"
         }
     }
     if ($env:AZURE_CLIENT_SECRET -and $env:AZURE_CLIENT_ID -and $env:AZURE_TENANT_ID) {
