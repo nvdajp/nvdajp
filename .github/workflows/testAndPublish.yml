@@ -85,8 +85,8 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable)
-      AZURE_KV_SIGNING: ${{ vars.AZURE_KV_SIGNING }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, push/workflow_dispatch only)
+      AZURE_KV_SIGNING: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.AZURE_KV_SIGNING || '' }}
       # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
@@ -543,8 +543,8 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable)
-      AZURE_KV_SIGNING: ${{ vars.AZURE_KV_SIGNING }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, push/workflow_dispatch only)
+      AZURE_KV_SIGNING: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.AZURE_KV_SIGNING || '' }}
       # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
