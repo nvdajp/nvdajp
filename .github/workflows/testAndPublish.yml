@@ -207,9 +207,9 @@ jobs:
         dotnet tool install --global AzureSignTool
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     # END JP PATCH
-    # BEGIN JP PATCH (Azure Key Vault signing with OIDC)
+    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
-      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -217,7 +217,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Azure Key Vault access token
-      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
@@ -580,9 +580,9 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-    # BEGIN JP PATCH (Azure Key Vault signing with OIDC)
+    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
-      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -590,7 +590,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Azure Key Vault access token
-      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
