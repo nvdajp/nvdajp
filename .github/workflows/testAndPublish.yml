@@ -77,6 +77,7 @@ jobs:
     permissions:
       contents: read
       actions: write
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -84,6 +85,9 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable)
+      AZURE_KV_SIGNING: ${{ vars.AZURE_KV_SIGNING }}
+      # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
       # This is not a problem for these variables as they should be the same across jobs.
@@ -206,6 +210,13 @@ jobs:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Set Azure Key Vault access token
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      shell: pwsh
+      run: |
+        $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
+        Write-Output "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     # END JP PATCH
     - name: Run synthDriverHost32 runtime builder with its own Python
       shell: pwsh
@@ -515,6 +526,7 @@ jobs:
     permissions:
       contents: read
       actions: write
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -522,6 +534,9 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable)
+      AZURE_KV_SIGNING: ${{ vars.AZURE_KV_SIGNING }}
+      # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
       # So we only set the output variables for the default architecture.
@@ -556,6 +571,22 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+    # BEGIN JP PATCH (Azure Key Vault signing with OIDC)
+    - name: Login to Azure for Key Vault signing
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Set Azure Key Vault access token
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      shell: pwsh
+      run: |
+        $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
+        Write-Output "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+    # END JP PATCH
     - name: Build scons docs targets
       shell: cmd
       run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
