@@ -204,7 +204,7 @@ jobs:
       if: ${{ env.AZURE_KV_SIGNING == '1' }}
       shell: pwsh
       run: |
-        dotnet tool install --global AzureSignTool
+        dotnet tool install --global AzureSignTool --version 7.0.1
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     # END JP PATCH
     # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
@@ -617,7 +617,7 @@ jobs:
       if: ${{ env.AZURE_KV_SIGNING == '1' }}
       shell: pwsh
       run: |
-        dotnet tool install --global AzureSignTool
+        dotnet tool install --global AzureSignTool --version 7.0.1
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     # END JP PATCH
     - name: Build NVDAController client
