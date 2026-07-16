@@ -199,6 +199,14 @@ jobs:
         PowerShell -Command "Set-ExecutionPolicy Bypass"
         PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
         PowerShell -Command "Install-Module -Name SignPath -Force"
+    # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
+    - name: Install AzureSignTool
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      shell: pwsh
+      run: |
+        dotnet tool install --global AzureSignTool
+        Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+    # END JP PATCH
     - name: Prepare source code
       shell: cmd
       run: scons source %sconsArgs% %sconsCores%
@@ -600,6 +608,14 @@ jobs:
         PowerShell -Command "Set-ExecutionPolicy Bypass"
         PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
         PowerShell -Command "Install-Module -Name SignPath -Force"
+    # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
+    - name: Install AzureSignTool
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      shell: pwsh
+      run: |
+        dotnet tool install --global AzureSignTool
+        Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+    # END JP PATCH
     - name: Build NVDAController client
       shell: cmd
       run: scons client %sconsArgs% %sconsCores%
