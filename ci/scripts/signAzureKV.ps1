@@ -137,6 +137,9 @@ function Get-KeyVaultAccessToken {
         try {
             $token = & $az.Source account get-access-token --resource https://vault.azure.net --query accessToken -o tsv 2>$null
             if ($LASTEXITCODE -eq 0 -and $token) {
+                if ($env:GITHUB_ACTIONS -eq "true") {
+                    Write-Host "::add-mask::$token"
+                }
                 return $token.Trim()
             }
         } catch {
