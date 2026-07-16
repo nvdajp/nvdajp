@@ -146,15 +146,11 @@ function Get-KeyVaultAccessToken {
             Write-Warning "az account get-access-token failed: $_"
         }
     }
-    if ($env:AZURE_CLIENT_SECRET -and $env:AZURE_CLIENT_ID -and $env:AZURE_TENANT_ID) {
-        return $null
-    }
     throw @"
 Azure Key Vault signing credentials are not available.
 Set one of:
   - AZURE_KV_ACCESS_TOKEN
   - az login (Azure CLI session)
-  - AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET
 "@
 }
 
