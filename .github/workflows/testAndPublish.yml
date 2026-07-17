@@ -1112,7 +1112,7 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::${{ secrets.AWS_NVDAJP_ACCOUNT_ID }}:role/nvdajp-alpha-meta-publisher
+        role-to-assume: ${{ vars.AWS_ALPHA_ROLE_ARN }}
         aws-region: ap-northeast-1
     - name: Upload alpha-meta.json to S3
       shell: bash
@@ -1127,7 +1127,7 @@ jobs:
           "apiCompatTo": "${{ needs.buildNVDA.outputs.APIBackCompat }}"
         }
         EOF
-        aws s3 cp alpha-meta.json s3://nvdajp/alpha/alpha-meta.json --content-type application/json
+        aws s3 cp alpha-meta.json s3://nvdajp/alpha/alpha-meta.json --content-type application/json --acl public-read
     # END JP PATCH
     outputs:
       releaseTag: ${{ steps.tag.outputs.TAG }}
