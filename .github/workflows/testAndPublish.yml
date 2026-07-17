@@ -1116,14 +1116,27 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         tag="${{ steps.tag.outputs.TAG }}"
+        version="${{ needs.buildNVDA.outputs.version }}"
+        exe_name="${{ steps.hashes.outputs.EXE_NAME }}"
+        sha1="${{ steps.hashes.outputs.SHA1 }}"
+        sha256="${{ steps.hashes.outputs.SHA256 }}"
+        notes_file="/tmp/alphaReleaseNotes.md"
+        {
+          echo "This is an alpha pre-release of the NVDA Japanese Version."
+          echo "It may contain unfinished features or bugs and is intended for testing and feedback only."
+          echo ""
+          echo "* Download: $exe_name"
+          echo "* SHA1: \`$sha1\`"
+          echo "* SHA256: \`$sha256\`"
+        } > "$notes_file"
         gh release create "$tag" \
-          "output/${{ steps.hashes.outputs.EXE_NAME }}" \
+          "output/$exe_name" \
           jptools/nvdajp-jtalk-*.nvda-addon \
           jptools/kgsbraille-*.nvda-addon \
           output/nvda_*_controllerClientJp.zip \
           --repo ${{ github.repository }} \
-          --title "NVDA Japanese alpha ${{ needs.buildNVDA.outputs.version }}" \
-          --notes "$(printf '%s\nSHA1: %s\nSHA256: %s\n' '${{ steps.hashes.outputs.EXE_NAME }}' '${{ steps.hashes.outputs.SHA1 }}' '${{ steps.hashes.outputs.SHA256 }}')" \
+          --title "$version" \
+          --notes-file "$notes_file" \
           --prerelease
     # BEGIN JP PATCH (S3 alpha-meta.json upload via AWS OIDC, no long-term keys)
     - name: Configure AWS credentials
