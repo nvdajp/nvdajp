@@ -22,7 +22,9 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_type }}
+  # BEGIN JP PATCH (separate concurrency groups by event name so workflow_dispatch is not cancelled by push)
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_type }}-${{ github.event_name }}
+  # END JP PATCH
   cancel-in-progress: true
 
 env:
