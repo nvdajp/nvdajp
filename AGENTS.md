@@ -34,7 +34,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 ## CI & branching
 
-- Base branch for PRs: `betajp` (protected; direct pushes forbidden)
+- Base branch for PRs: `betajp` (currently direct pushes are still possible; protected-branch migration is planned)
 - Required checks: `allTestsPass`, etc.
 - Release/snapshot jobs stay disabled unless explicitly requested; avoid secrets.
 
