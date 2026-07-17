@@ -61,6 +61,9 @@ jobs:
       supportedRunners: ${{ steps.setMatrix.outputs.supportedRunners }}
       supportedArchitectures: ${{ steps.setMatrix.outputs.supportedArchitectures }}
       supportedPythonVersions: ${{ steps.setMatrix.outputs.supportedPythonVersions }}
+      # BEGIN JP PATCH (compute nowdate once for alphajp workflow_dispatch alpha release)
+      nowdate: ${{ steps.setMatrix.outputs.nowdate }}
+      # END JP PATCH
     steps:
     - name: Set architecture and python version
       id: setMatrix
@@ -69,6 +72,10 @@ jobs:
         echo "supportedRunners=$(jq -c <<< '${{ env.supportedRunners }}')" >> "$GITHUB_OUTPUT"
         echo "supportedArchitectures=$(jq -c <<< '${{ env.supportedArchitectures }}')" >> "$GITHUB_OUTPUT"
         echo "supportedPythonVersions=$(jq -c <<< '${{ env.supportedPythonVersions }}')" >> "$GITHUB_OUTPUT"
+        # BEGIN JP PATCH (compute JST nowdate once; used by buildNVDA/createLauncher/publishAlphaRelease)
+        nowdate=$(python3 -c "from datetime import datetime, timedelta, timezone; jst = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=9))); print(f'{jst:%y%m%d}{chr(97+jst.hour)}')")
+        echo "nowdate=$nowdate" >> "$GITHUB_OUTPUT"
+        # END JP PATCH
   buildNVDA:
     name: Build NVDA
     needs: matrix
@@ -85,14 +92,18 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, push/workflow_dispatch only)
-      AZURE_KV_SIGNING: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.AZURE_KV_SIGNING || '' }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
+      AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
+      # END JP PATCH
+      # BEGIN JP PATCH (use nowdate computed once in matrix job)
+      NOWDATE: ${{ needs.matrix.outputs.nowdate }}
       # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
       # This is not a problem for these variables as they should be the same across jobs.
       version: ${{ steps.releaseInfo.outputs.VERSION }}
       versionType: ${{ steps.releaseInfo.outputs.VERSION_TYPE }}
+      nowdate: ${{ steps.releaseInfo.outputs.NOWDATE }}
       APIVersion: ${{ steps.releaseInfo.outputs.NVDA_API_VERSION }}
       APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
@@ -207,9 +218,9 @@ jobs:
         dotnet tool install --global AzureSignTool --version 7.0.1
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     # END JP PATCH
-    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
+    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -217,7 +228,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Azure Key Vault access token
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
@@ -253,10 +264,29 @@ jobs:
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+    # BEGIN JP PATCH (build JP addons on alphajp workflow_dispatch so they can be attached to GitHub Release)
+    - name: Build JP addons
+      if: ${{ github.ref_name == 'alphajp' && github.event_name == 'workflow_dispatch' }}
+      shell: pwsh
+      env:
+        VERSION: ${{ env.nowdate }}
+      run: |
+        uv run --no-active python jptools/pack_jtalk_addon.py --nowdate "$env:VERSION"
+        uv run --no-active python jptools/pack_kgs_addon.py --version "$env:VERSION"
+    - name: Upload JP addon artifacts
+      if: ${{ github.ref_name == 'alphajp' && github.event_name == 'workflow_dispatch' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: JP addons (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: |
+          jptools/nvdajp-jtalk-*.nvda-addon
+          jptools/kgsbraille-*.nvda-addon
+    # END JP PATCH
     - name: Store release metadata information
       id: releaseInfo
       run: |
         Write-Output VERSION=$env:version >> $env:GITHUB_OUTPUT
+        Write-Output NOWDATE=$env:nowdate >> $env:GITHUB_OUTPUT
         Write-Output VERSION_TYPE=$env:versionType >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_VERSION=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))") >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_COMPAT_TO=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))") >> $env:GITHUB_OUTPUT
@@ -544,8 +574,11 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, push/workflow_dispatch only)
-      AZURE_KV_SIGNING: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.AZURE_KV_SIGNING || '' }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
+      AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
+      # END JP PATCH
+      # BEGIN JP PATCH (use nowdate computed once in matrix job)
+      NOWDATE: ${{ needs.matrix.outputs.nowdate }}
       # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
@@ -581,9 +614,9 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
+    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -591,7 +624,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Azure Key Vault access token
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
@@ -626,6 +659,16 @@ jobs:
     - name: Create NVDA launcher
       shell: cmd
       run: scons %sconsLauncherOutTargets% %sconsArgs%
+    - name: Rename controller client archive for JP release
+      shell: pwsh
+      if: ${{ github.ref_name == 'alphajp' && github.event_name == 'workflow_dispatch' }}
+      run: |
+        $cc = Get-ChildItem -Path output -Filter "nvda_*controllerClient.zip" | Select-Object -First 1
+        if ($cc) {
+          $newName = "output/nvda_$env:version`_controllerClientJp.zip"
+          Move-Item -LiteralPath $cc.FullName -Destination $newName -Force
+          Write-Host "Renamed controller client to $newName"
+        }
     - name: Upload launcher
       id: uploadLauncher
       uses: actions/upload-artifact@v7
@@ -633,7 +676,7 @@ jobs:
         name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: |
           output/nvda*.exe
-          output/nvda*controllerClient.zip
+          output/nvda*controllerClient*.zip
     - name: Upload documentation artifacts
       uses: actions/upload-artifact@v7
       id: uploadBuildArtifacts
@@ -1021,6 +1064,93 @@ jobs:
           --discussion-category Releases \
           ${{ ( contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') ) && '--prerelease' || '' }} \
           $NVDA_EXE_NAME#Installer
+
+  publishAlphaRelease:
+    name: Publish alpha pre-release
+    permissions:
+      contents: write
+      # BEGIN JP PATCH (AWS OIDC federation for S3 alpha-meta.json upload)
+      id-token: write
+      # END JP PATCH
+    runs-on: ubuntu-latest
+    needs: [matrix, buildNVDA, createLauncher, createSymbols, allTestsPass]
+    # BEGIN JP PATCH (nvdajp: publish alpha pre-release on workflow_dispatch only, and only on alphajp branch)
+    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'alphajp'
+    # END JP PATCH
+    concurrency:
+      group: alpha-release
+      cancel-in-progress: true
+    steps:
+    # BEGIN JP PATCH (use nowdate computed once in matrix job)
+    - name: Determine tag
+      shell: bash
+      id: tag
+      run: |
+        tag="alphajp-${{ needs.matrix.outputs.nowdate }}"
+        echo "TAG=$tag" >> "$GITHUB_OUTPUT"
+        echo "URL=https://github.com/${{ github.repository }}/releases/tag/$tag" >> "$GITHUB_OUTPUT"
+    # END JP PATCH
+    - name: Download NVDA launcher and JP addons
+      uses: actions/download-artifact@v8
+      with:
+        name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        path: output
+    - name: Download JP addons
+      uses: actions/download-artifact@v8
+      with:
+        name: JP addons (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        path: jptools
+    - name: Calculate hashes
+      shell: bash
+      id: hashes
+      run: |
+        exe=$(ls output/nvda*.exe | head -n 1)
+        echo "EXE_NAME=$(basename "$exe")" >> "$GITHUB_OUTPUT"
+        echo "SHA1=$(sha1sum "$exe" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+        echo "SHA256=$(sha256sum "$exe" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+    - name: Create pre-release
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        tag="${{ steps.tag.outputs.TAG }}"
+        gh release create "$tag" \
+          "output/${{ steps.hashes.outputs.EXE_NAME }}" \
+          jptools/nvdajp-jtalk-*.nvda-addon \
+          jptools/kgsbraille-*.nvda-addon \
+          output/nvda_*_controllerClientJp.zip \
+          --repo ${{ github.repository }} \
+          --title "NVDA Japanese alpha ${{ needs.buildNVDA.outputs.version }}" \
+          --notes "$(printf '%s\nSHA1: %s\nSHA256: %s\n' '${{ steps.hashes.outputs.EXE_NAME }}' '${{ steps.hashes.outputs.SHA1 }}' '${{ steps.hashes.outputs.SHA256 }}')" \
+          --prerelease
+    # BEGIN JP PATCH (S3 alpha-meta.json upload via AWS OIDC, no long-term keys)
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ vars.AWS_ALPHA_ROLE_ARN }}
+        aws-region: ap-northeast-1
+    - name: Upload alpha-meta.json to S3
+      shell: bash
+      run: |
+        cat > alpha-meta.json <<EOF
+        {
+          "version": "${{ needs.buildNVDA.outputs.version }}",
+          "launcherUrl": "https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.TAG }}/${{ steps.hashes.outputs.EXE_NAME }}",
+          "sha1": "${{ steps.hashes.outputs.SHA1 }}",
+          "sha256": "${{ steps.hashes.outputs.SHA256 }}",
+          "apiVersion": "${{ needs.buildNVDA.outputs.APIVersion }}",
+          "apiCompatTo": "${{ needs.buildNVDA.outputs.APIBackCompat }}"
+        }
+        EOF
+        aws s3 cp alpha-meta.json s3://nvdajp/alpha/alpha-meta.json --content-type application/json --acl public-read
+    # END JP PATCH
+    outputs:
+      releaseTag: ${{ steps.tag.outputs.TAG }}
+      releaseUrl: ${{ steps.tag.outputs.URL }}
+      exeName: ${{ steps.hashes.outputs.EXE_NAME }}
+      sha1: ${{ steps.hashes.outputs.SHA1 }}
+      sha256: ${{ steps.hashes.outputs.SHA256 }}
+      version: ${{ needs.buildNVDA.outputs.version }}
 
   submit-winget:
     name: Submit manifest to WinGet Packages Repository
