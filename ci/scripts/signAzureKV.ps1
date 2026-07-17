@@ -4,7 +4,6 @@
 # Authentication (first match wins):
 #   1. AZURE_KV_ACCESS_TOKEN  - pre-issued token (GitHub Actions OIDC)
 #   2. az account get-access-token  - local `az login` session
-#   3. AZURE_CLIENT_SECRET + AZURE_CLIENT_ID + AZURE_TENANT_ID
 #
 # Key Vault settings (defaults match shuaruta/code-signing):
 #   AZURE_KEY_VAULT_URI, CERT_NAME (certificate name in Key Vault)
@@ -129,25 +128,24 @@ function Find-SignToolExe {
 
 function Get-KeyVaultAccessToken {
     Initialize-SigningToolPath
-    if ($env:AZURE_KV_ACCESS_TOKEN) {
-        return $env:AZURE_KV_ACCESS_TOKEN
+    $token = $env:AZURE_KV_ACCESS_TOKEN
+    if ($token) {
+        return $token
     }
     $az = Get-Command az -ErrorAction SilentlyContinue
     if ($az) {
         $token = az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv 2>$null
         if ($LASTEXITCODE -eq 0 -and $token) {
-            return $token.Trim()
+            $token = $token.Trim()
+            Write-Host "::add-mask::$token"
+            return $token
         }
-    }
-    if ($env:AZURE_CLIENT_SECRET -and $env:AZURE_CLIENT_ID -and $env:AZURE_TENANT_ID) {
-        return $null
     }
     throw @"
 Azure Key Vault signing credentials are not available.
 Set one of:
   - AZURE_KV_ACCESS_TOKEN
   - az login (Azure CLI session)
-  - AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET
 "@
 }
 
@@ -172,19 +170,11 @@ $signArgs = @(
     "sign",
     "-kvu", $keyVaultUri,
     "-kvc", $certName,
+    "-kva", $accessToken,
     "-tr", $timestampUrl,
     "-fd", "sha256",
     "-v"
 )
-if ($accessToken) {
-    $signArgs += @("-kva", $accessToken)
-} else {
-    $signArgs += @(
-        "-kvi", $env:AZURE_CLIENT_ID,
-        "-kvs", $env:AZURE_CLIENT_SECRET,
-        "-kvt", $env:AZURE_TENANT_ID
-    )
-}
 $signArgs += $FileToSign
 
 & $azureSignTool @signArgs
