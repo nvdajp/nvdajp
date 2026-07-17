@@ -4,7 +4,6 @@
 # Authentication (first match wins):
 #   1. AZURE_KV_ACCESS_TOKEN  - pre-issued token (GitHub Actions OIDC)
 #   2. az account get-access-token  - local `az login` session
-#   3. AZURE_CLIENT_SECRET + AZURE_CLIENT_ID + AZURE_TENANT_ID
 #
 # Key Vault settings (defaults match shuaruta/code-signing):
 #   AZURE_KEY_VAULT_URI, CERT_NAME (certificate name in Key Vault)
@@ -171,19 +170,11 @@ $signArgs = @(
     "sign",
     "-kvu", $keyVaultUri,
     "-kvc", $certName,
+    "-kva", $accessToken,
     "-tr", $timestampUrl,
     "-fd", "sha256",
     "-v"
 )
-if ($accessToken) {
-    $signArgs += @("-kva", $accessToken)
-} else {
-    $signArgs += @(
-        "-kvi", $env:AZURE_CLIENT_ID,
-        "-kvs", $env:AZURE_CLIENT_SECRET,
-        "-kvt", $env:AZURE_TENANT_ID
-    )
-}
 $signArgs += $FileToSign
 
 & $azureSignTool @signArgs

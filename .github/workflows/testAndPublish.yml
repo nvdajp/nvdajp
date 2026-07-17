@@ -122,6 +122,15 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+    - name: Install signPath
+      env:
+        apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+      if: ${{ env.apiSigningToken }}
+      shell: cmd
+      run: |
+        PowerShell -Command "Set-ExecutionPolicy Bypass"
+        PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
+        PowerShell -Command "Install-Module -Name SignPath -Force"
     - name: Set cache key for SCons MSVC Cache
       shell: bash
       run: echo "SCONS_CACHE_KEY=${RUNNER_OS}-${ImageVersion}" >> $GITHUB_ENV
@@ -557,9 +566,6 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-    - name: Build scons docs targets
-      shell: cmd
-      run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
     # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
     # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
     - name: Install AzureSignTool
@@ -569,6 +575,9 @@ jobs:
         dotnet tool install --global AzureSignTool --version 7.0.1
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     # END JP PATCH
+    - name: Build scons docs targets
+      shell: cmd
+      run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
     # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
       if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
@@ -587,6 +596,15 @@ jobs:
         Write-Host "::add-mask::$token"
         "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     # END JP PATCH
+    - name: Install signpath
+      env:
+        apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+      if: ${{ env.apiSigningToken }}
+      shell: cmd
+      run: |
+        PowerShell -Command "Set-ExecutionPolicy Bypass"
+        PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
+        PowerShell -Command "Install-Module -Name SignPath -Force"
     - name: Create launcher and controller client
       shell: cmd
       run: |
