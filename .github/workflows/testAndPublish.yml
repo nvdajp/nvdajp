@@ -93,6 +93,7 @@ jobs:
       # This is not a problem for these variables as they should be the same across jobs.
       version: ${{ steps.releaseInfo.outputs.VERSION }}
       versionType: ${{ steps.releaseInfo.outputs.VERSION_TYPE }}
+      nowdate: ${{ steps.releaseInfo.outputs.NOWDATE }}
       APIVersion: ${{ steps.releaseInfo.outputs.NVDA_API_VERSION }}
       APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
@@ -253,10 +254,29 @@ jobs:
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+    # BEGIN JP PATCH (build JP addons on alphajp workflow_dispatch so they can be attached to GitHub Release)
+    - name: Build JP addons
+      if: ${{ github.ref_name == 'alphajp' && github.event_name == 'workflow_dispatch' }}
+      shell: pwsh
+      env:
+        VERSION: ${{ env.nowdate }}
+      run: |
+        uv run --no-active python jptools/pack_jtalk_addon.py --nowdate "$env:VERSION"
+        uv run --no-active python jptools/pack_kgs_addon.py --version "$env:VERSION"
+    - name: Upload JP addon artifacts
+      if: ${{ github.ref_name == 'alphajp' && github.event_name == 'workflow_dispatch' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: JP addons (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: |
+          jptools/nvdajp-jtalk-*.nvda-addon
+          jptools/kgsbraille-*.nvda-addon
+    # END JP PATCH
     - name: Store release metadata information
       id: releaseInfo
       run: |
         Write-Output VERSION=$env:version >> $env:GITHUB_OUTPUT
+        Write-Output NOWDATE=$env:nowdate >> $env:GITHUB_OUTPUT
         Write-Output VERSION_TYPE=$env:versionType >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_VERSION=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))") >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_COMPAT_TO=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))") >> $env:GITHUB_OUTPUT
@@ -626,6 +646,16 @@ jobs:
     - name: Create NVDA launcher
       shell: cmd
       run: scons %sconsLauncherOutTargets% %sconsArgs%
+    - name: Rename controller client archive for JP release
+      shell: pwsh
+      if: ${{ github.ref_name == 'alphajp' && github.event_name == 'workflow_dispatch' }}
+      run: |
+        $cc = Get-ChildItem -Path output -Filter "nvda_*controllerClient.zip" | Select-Object -First 1
+        if ($cc) {
+          $newName = "output/nvda_$env:version`_controllerClientJp.zip"
+          Move-Item -LiteralPath $cc.FullName -Destination $newName -Force
+          Write-Host "Renamed controller client to $newName"
+        }
     - name: Upload launcher
       id: uploadLauncher
       uses: actions/upload-artifact@v7
@@ -633,7 +663,7 @@ jobs:
         name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: |
           output/nvda*.exe
-          output/nvda*controllerClient.zip
+          output/nvda*controllerClient*.zip
     - name: Upload documentation artifacts
       uses: actions/upload-artifact@v7
       id: uploadBuildArtifacts
@@ -1038,11 +1068,23 @@ jobs:
       group: alpha-release
       cancel-in-progress: true
     steps:
-    - name: Download NVDA launcher
+    - name: Determine tag
+      shell: bash
+      id: tag
+      run: |
+        tag="alphajp-${{ needs.buildNVDA.outputs.nowdate }}"
+        echo "TAG=$tag" >> "$GITHUB_OUTPUT"
+        echo "URL=https://github.com/${{ github.repository }}/releases/tag/$tag" >> "$GITHUB_OUTPUT"
+    - name: Download NVDA launcher and JP addons
       uses: actions/download-artifact@v8
       with:
         name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
         path: output
+    - name: Download JP addons
+      uses: actions/download-artifact@v8
+      with:
+        name: JP addons (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        path: jptools
     - name: Calculate hashes
       shell: bash
       id: hashes
@@ -1051,24 +1093,21 @@ jobs:
         echo "EXE_NAME=$(basename "$exe")" >> "$GITHUB_OUTPUT"
         echo "SHA1=$(sha1sum "$exe" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
         echo "SHA256=$(sha256sum "$exe" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
-    - name: Determine tag
-      shell: bash
-      id: tag
-      run: |
-        echo "TAG=alpha-${{ needs.buildNVDA.outputs.version }}" >> "$GITHUB_OUTPUT"
     - name: Create pre-release
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
         tag="${{ steps.tag.outputs.TAG }}"
-        gh release create "$tag" "output/${{ steps.hashes.outputs.EXE_NAME }}" \
+        gh release create "$tag" \
+          "output/${{ steps.hashes.outputs.EXE_NAME }}" \
+          jptools/nvdajp-jtalk-*.nvda-addon \
+          jptools/kgsbraille-*.nvda-addon \
+          output/nvda_*_controllerClientJp.zip \
           --repo ${{ github.repository }} \
           --title "NVDA Japanese alpha ${{ needs.buildNVDA.outputs.version }}" \
-          --notes "$(printf 'nvda_%s.exe\nSHA1: %s\nSHA256: %s\n' '${{ needs.buildNVDA.outputs.version }}' '${{ steps.hashes.outputs.SHA1 }}' '${{ steps.hashes.outputs.SHA256 }}')" \
+          --notes "$(printf '%s\nSHA1: %s\nSHA256: %s\n' '${{ steps.hashes.outputs.EXE_NAME }}' '${{ steps.hashes.outputs.SHA1 }}' '${{ steps.hashes.outputs.SHA256 }}')" \
           --prerelease
-        echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
-        echo "RELEASE_URL=https://github.com/${{ github.repository }}/releases/tag/$tag" >> "$GITHUB_ENV"
     # BEGIN JP PATCH (S3 alpha-meta.json upload via AWS OIDC, no long-term keys)
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -1092,7 +1131,7 @@ jobs:
     # END JP PATCH
     outputs:
       releaseTag: ${{ steps.tag.outputs.TAG }}
-      releaseUrl: ${{ env.RELEASE_URL }}
+      releaseUrl: ${{ steps.tag.outputs.URL }}
       exeName: ${{ steps.hashes.outputs.EXE_NAME }}
       sha1: ${{ steps.hashes.outputs.SHA1 }}
       sha256: ${{ steps.hashes.outputs.SHA256 }}
