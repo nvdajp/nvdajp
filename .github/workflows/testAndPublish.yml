@@ -85,8 +85,8 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, push/workflow_dispatch only)
-      AZURE_KV_SIGNING: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.AZURE_KV_SIGNING || '' }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
+      AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
       # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
@@ -207,9 +207,9 @@ jobs:
         dotnet tool install --global AzureSignTool --version 7.0.1
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     # END JP PATCH
-    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
+    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -217,7 +217,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Azure Key Vault access token
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
@@ -544,8 +544,8 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, push/workflow_dispatch only)
-      AZURE_KV_SIGNING: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.AZURE_KV_SIGNING || '' }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
+      AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
       # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
@@ -581,9 +581,9 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
+    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -591,7 +591,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Azure Key Vault access token
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
@@ -1021,6 +1021,82 @@ jobs:
           --discussion-category Releases \
           ${{ ( contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') ) && '--prerelease' || '' }} \
           $NVDA_EXE_NAME#Installer
+
+  publishAlphaRelease:
+    name: Publish alpha pre-release
+    permissions:
+      contents: write
+      # BEGIN JP PATCH (AWS OIDC federation for S3 alpha-meta.json upload)
+      id-token: write
+      # END JP PATCH
+    runs-on: ubuntu-latest
+    needs: [buildNVDA, createLauncher, createSymbols, allTestsPass]
+    # BEGIN JP PATCH (nvdajp: publish alpha pre-release on workflow_dispatch only)
+    if: github.event_name == 'workflow_dispatch'
+    # END JP PATCH
+    concurrency:
+      group: alpha-release
+      cancel-in-progress: true
+    steps:
+    - name: Download NVDA launcher
+      uses: actions/download-artifact@v8
+      with:
+        name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        path: output
+    - name: Calculate hashes
+      shell: bash
+      id: hashes
+      run: |
+        exe=$(ls output/nvda*.exe | head -n 1)
+        echo "EXE_NAME=$(basename "$exe")" >> "$GITHUB_OUTPUT"
+        echo "SHA1=$(sha1sum "$exe" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+        echo "SHA256=$(sha256sum "$exe" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+    - name: Determine tag
+      shell: bash
+      id: tag
+      run: |
+        echo "TAG=alpha-${{ needs.buildNVDA.outputs.version }}" >> "$GITHUB_OUTPUT"
+    - name: Create pre-release
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        tag="${{ steps.tag.outputs.TAG }}"
+        gh release create "$tag" "output/${{ steps.hashes.outputs.EXE_NAME }}" \
+          --repo ${{ github.repository }} \
+          --title "NVDA Japanese alpha ${{ needs.buildNVDA.outputs.version }}" \
+          --notes "$(printf 'nvda_%s.exe\nSHA1: %s\nSHA256: %s\n' '${{ needs.buildNVDA.outputs.version }}' '${{ steps.hashes.outputs.SHA1 }}' '${{ steps.hashes.outputs.SHA256 }}')" \
+          --prerelease
+        echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
+        echo "RELEASE_URL=https://github.com/${{ github.repository }}/releases/tag/$tag" >> "$GITHUB_ENV"
+    # BEGIN JP PATCH (S3 alpha-meta.json upload via AWS OIDC, no long-term keys)
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_NVDAJP_ACCOUNT_ID }}:role/nvdajp-alpha-meta-publisher
+        aws-region: ap-northeast-1
+    - name: Upload alpha-meta.json to S3
+      shell: bash
+      run: |
+        cat > alpha-meta.json <<EOF
+        {
+          "version": "${{ needs.buildNVDA.outputs.version }}",
+          "launcherUrl": "https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.TAG }}/${{ steps.hashes.outputs.EXE_NAME }}",
+          "sha1": "${{ steps.hashes.outputs.SHA1 }}",
+          "sha256": "${{ steps.hashes.outputs.SHA256 }}",
+          "apiVersion": "${{ needs.buildNVDA.outputs.APIVersion }}",
+          "apiCompatTo": "${{ needs.buildNVDA.outputs.APIBackCompat }}"
+        }
+        EOF
+        aws s3 cp alpha-meta.json s3://nvdajp/alpha/alpha-meta.json --content-type application/json
+    # END JP PATCH
+    outputs:
+      releaseTag: ${{ steps.tag.outputs.TAG }}
+      releaseUrl: ${{ env.RELEASE_URL }}
+      exeName: ${{ steps.hashes.outputs.EXE_NAME }}
+      sha1: ${{ steps.hashes.outputs.SHA1 }}
+      sha256: ${{ steps.hashes.outputs.SHA256 }}
+      version: ${{ needs.buildNVDA.outputs.version }}
 
   submit-winget:
     name: Submit manifest to WinGet Packages Repository
