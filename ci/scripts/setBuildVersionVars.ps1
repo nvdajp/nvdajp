@@ -24,6 +24,8 @@ if ($env:GITHUB_REF_TYPE -eq "tag" -and $env:GITHUB_REF_NAME.StartsWith("release
 		# BEGIN JP PATCH (betajp: use nowdate-based version like 2026.2jp-beta-260720a)
 		if ($env:GITHUB_REF_NAME -eq "betajp" -and $env:NOWDATE) {
 			$version = "2026.2jp-beta-$env:NOWDATE"
+			$release = 1
+			$versionType = "nvdajpbeta"
 		}
 		# END JP PATCH
 		if ($env:GITHUB_REF_NAME.StartsWith("try-release-")) {
