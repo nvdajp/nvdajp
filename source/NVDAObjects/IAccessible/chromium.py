@@ -11,6 +11,8 @@ from comtypes import COMError
 
 import config
 import controlTypes
+import oleacc
+from comInterfaces import IAccessible2Lib as IA2
 from NVDAObjects.IAccessible import IAccessible
 from virtualBuffers.gecko_ia2 import Gecko_ia2 as GeckoVBuf, Gecko_ia2_TextInfo as GeckoVBufTextInfo
 from . import ia2Web
@@ -180,10 +182,42 @@ class Editor(ia2Web.Editor):
 	TextInfo = EditorTextInfo
 
 
+# BEGIN JP PATCH
+# Workaround for Chromium-based browsers (Chrome, Edge, etc.) where the
+# accessibility tree exposes individual text leaf nodes that absorb mouse
+# hit tests, preventing mouse tracking from reaching readable ancestors.
+# Upstream tracking: nvaccess/nvda#8076 and chromium issue 380416882.
+class TextLeaf(ia2Web.Ia2Web):
+	role = controlTypes.Role.STATICTEXT
+	beTransparentToMouse = True
+
+
+# END JP PATCH
+
+
 def findExtraOverlayClasses(obj, clsList):
 	"""Determine the most appropriate class(es) for Chromium objects.
 	This works similarly to L{NVDAObjects.NVDAObject.findOverlayClasses} except that it never calls any other findOverlayClasses method.
 	"""
+	# BEGIN JP PATCH
+	# Mirror Mozilla's TextLeaf detection so that mouse tracking on
+	# Chromium-based browsers can skip over transparent text leaf nodes.
+	# See nvaccess/nvda#8076.
+	if (
+		isinstance(obj.IAccessibleObject, IA2.IAccessible2)
+		and obj.IAccessibleRole == oleacc.ROLE_SYSTEM_TEXT
+	):
+		iaStates = obj.IAccessibleStates
+		# Text leaves are never focusable.
+		# Not unavailable excludes disabled editable text fields (which also aren't focusable).
+		if not (
+			iaStates & oleacc.STATE_SYSTEM_FOCUSABLE
+			or iaStates & oleacc.STATE_SYSTEM_UNAVAILABLE
+		):
+			# This excludes a non-focusable @role="textbox".
+			if not (obj.IA2States & IA2.IA2_STATE_EDITABLE):
+				clsList.append(TextLeaf)
+	# END JP PATCH
 	if (
 		obj.role == controlTypes.Role.LISTITEM
 		and obj.parent
