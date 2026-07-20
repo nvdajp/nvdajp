@@ -1128,7 +1128,7 @@ jobs:
           "apiCompatTo": "${{ needs.buildNVDA.outputs.APIBackCompat }}"
         }
         EOF
-        aws s3 cp beta-meta.json s3://nvdajp/beta/beta-meta.json --content-type application/json
+        aws s3 cp beta-meta.json s3://nvdajp/beta/beta-meta.json --content-type application/json --acl public-read
     outputs:
       releaseTag: ${{ steps.tag.outputs.TAG }}
       releaseUrl: ${{ steps.tag.outputs.URL }}
