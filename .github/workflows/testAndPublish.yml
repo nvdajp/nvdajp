@@ -85,8 +85,8 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, push/workflow_dispatch only)
-      AZURE_KV_SIGNING: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.AZURE_KV_SIGNING || '' }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
+      AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
       # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
@@ -207,9 +207,9 @@ jobs:
         dotnet tool install --global AzureSignTool --version 7.0.1
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     # END JP PATCH
-    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
+    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -217,7 +217,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Azure Key Vault access token
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
@@ -529,8 +529,8 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, push/workflow_dispatch only)
-      AZURE_KV_SIGNING: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.AZURE_KV_SIGNING || '' }}
+      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
+      AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
       # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
@@ -578,9 +578,9 @@ jobs:
     - name: Build scons docs targets
       shell: cmd
       run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
-    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - push/workflow_dispatch only)
+    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -588,7 +588,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set Azure Key Vault access token
-      if: ${{ env.AZURE_KV_SIGNING == '1' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
       shell: pwsh
       run: |
         $token = (az account get-access-token --resource https://vault.azure.net --query accessToken -o tsv)
