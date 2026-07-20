@@ -993,3 +993,91 @@ jobs:
           --discussion-category Releases \
           ${{ ( contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') ) && '--prerelease' || '' }} \
           $NVDA_EXE_NAME#Installer
+
+  # BEGIN JP PATCH (publish beta pre-release on workflow_dispatch only)
+  publishBetaRelease:
+    name: Publish beta pre-release
+    permissions:
+      contents: write
+      id-token: write
+    runs-on: ubuntu-latest
+    needs: [matrix, buildNVDA, createLauncher, createSymbols, allTestsPass]
+    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'betajp'
+    concurrency:
+      group: beta-release
+      cancel-in-progress: true
+    steps:
+    - name: Determine tag
+      shell: bash
+      id: tag
+      run: |
+        tag="betajp-${{ needs.buildNVDA.outputs.version }}"
+        echo "TAG=$tag" >> "$GITHUB_OUTPUT"
+        echo "URL=https://github.com/${{ github.repository }}/releases/tag/$tag" >> "$GITHUB_OUTPUT"
+    - name: Download NVDA launcher
+      uses: actions/download-artifact@v8
+      with:
+        name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        path: output
+    - name: Calculate hashes
+      shell: bash
+      id: hashes
+      run: |
+        exe=$(ls output/nvda*.exe | head -n 1)
+        echo "EXE_NAME=$(basename "$exe")" >> "$GITHUB_OUTPUT"
+        echo "SHA1=$(sha1sum "$exe" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+        echo "SHA256=$(sha256sum "$exe" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+    - name: Create pre-release
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        tag="${{ steps.tag.outputs.TAG }}"
+        version="${{ needs.buildNVDA.outputs.version }}"
+        exe_name="${{ steps.hashes.outputs.EXE_NAME }}"
+        sha1="${{ steps.hashes.outputs.SHA1 }}"
+        sha256="${{ steps.hashes.outputs.SHA256 }}"
+        notes_file="/tmp/betaReleaseNotes.md"
+        {
+          echo "This is a beta pre-release of the NVDA Japanese Version."
+          echo "It is intended for testing and feedback before the stable release."
+          echo ""
+          echo "* Download: $exe_name"
+          echo "* SHA1: \`$sha1\`"
+          echo "* SHA256: \`$sha256\`"
+        } > "$notes_file"
+        gh release create "$tag" \
+          "output/$exe_name" \
+          --repo ${{ github.repository }} \
+          --title "$version" \
+          --notes-file "$notes_file" \
+          --prerelease
+    # BEGIN JP PATCH (S3 beta-meta.json upload via AWS OIDC, no long-term keys)
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ vars.AWS_BETA_ROLE_ARN }}
+        aws-region: ap-northeast-1
+    - name: Upload beta-meta.json to S3
+      shell: bash
+      run: |
+        cat > beta-meta.json <<EOF
+        {
+          "version": "${{ needs.buildNVDA.outputs.version }}",
+          "launcherUrl": "https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.TAG }}/${{ steps.hashes.outputs.EXE_NAME }}",
+          "sha1": "${{ steps.hashes.outputs.SHA1 }}",
+          "sha256": "${{ steps.hashes.outputs.SHA256 }}",
+          "apiVersion": "${{ needs.buildNVDA.outputs.APIVersion }}",
+          "apiCompatTo": "${{ needs.buildNVDA.outputs.APIBackCompat }}"
+        }
+        EOF
+        aws s3 cp beta-meta.json s3://nvdajp/beta/beta-meta.json --content-type application/json --acl public-read
+    # END JP PATCH
+    outputs:
+      releaseTag: ${{ steps.tag.outputs.TAG }}
+      releaseUrl: ${{ steps.tag.outputs.URL }}
+      exeName: ${{ steps.hashes.outputs.EXE_NAME }}
+      sha1: ${{ steps.hashes.outputs.SHA1 }}
+      sha256: ${{ steps.hashes.outputs.SHA256 }}
+      version: ${{ needs.buildNVDA.outputs.version }}
+  # END JP PATCH
