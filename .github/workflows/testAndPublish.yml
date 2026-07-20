@@ -92,10 +92,8 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
+      # BEGIN JP PATCH (Azure KV signing + nowdate for betajp release)
       AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
-      # END JP PATCH
-      # BEGIN JP PATCH (use nowdate computed once in matrix job)
       NOWDATE: ${{ needs.matrix.outputs.nowdate }}
       # END JP PATCH
     outputs:
@@ -559,10 +557,8 @@ jobs:
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
-      # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
+      # BEGIN JP PATCH (Azure KV signing + nowdate for betajp release)
       AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
-      # END JP PATCH
-      # BEGIN JP PATCH (use nowdate computed once in matrix job)
       NOWDATE: ${{ needs.matrix.outputs.nowdate }}
       # END JP PATCH
     outputs:
@@ -833,12 +829,10 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs: [buildNVDA, typeCheck, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols
-      # BEGIN JP PATCH
+      # BEGIN JP PATCH (jpSmokeTests added; checkPo temporarily disabled)
       , jpSmokeTests
-      # END JP PATCH
-      # BEGIN JP PATCH (checkPo temporarily disabled)
       # , checkPo
-      # END JP PATCH (checkPo temporarily disabled)
+      # END JP PATCH
     ]
     steps:
     - name: Check if all tests pass
