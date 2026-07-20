@@ -1052,7 +1052,6 @@ jobs:
           --title "$version" \
           --notes-file "$notes_file" \
           --prerelease
-    # BEGIN JP PATCH (S3 beta-meta.json upload via AWS OIDC, no long-term keys)
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -1071,8 +1070,7 @@ jobs:
           "apiCompatTo": "${{ needs.buildNVDA.outputs.APIBackCompat }}"
         }
         EOF
-        aws s3 cp beta-meta.json s3://nvdajp/beta/beta-meta.json --content-type application/json --acl public-read
-    # END JP PATCH
+        aws s3 cp beta-meta.json s3://nvdajp/beta/beta-meta.json --content-type application/json
     outputs:
       releaseTag: ${{ steps.tag.outputs.TAG }}
       releaseUrl: ${{ steps.tag.outputs.URL }}
