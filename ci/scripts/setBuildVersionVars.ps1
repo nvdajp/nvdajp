@@ -21,6 +21,11 @@ if ($env:GITHUB_REF_TYPE -eq "tag" -and $env:GITHUB_REF_NAME.StartsWith("release
 		$version = "alpha-$BUILD_NUMBER,$commitVersion"
 	} else {
 		$version = "$env:GITHUB_REF_NAME-$BUILD_NUMBER,$commitVersion"
+		# BEGIN JP PATCH (betajp: use nowdate-based version like 2026.2jp-beta-260720a)
+		if ($env:GITHUB_REF_NAME -eq "betajp" -and $env:NOWDATE) {
+			$version = "2026.2jp-beta-$env:NOWDATE"
+		}
+		# END JP PATCH
 		if ($env:GITHUB_REF_NAME.StartsWith("try-release-")) {
 			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 		}

@@ -61,6 +61,9 @@ jobs:
       supportedRunners: ${{ steps.setMatrix.outputs.supportedRunners }}
       supportedArchitectures: ${{ steps.setMatrix.outputs.supportedArchitectures }}
       supportedPythonVersions: ${{ steps.setMatrix.outputs.supportedPythonVersions }}
+      # BEGIN JP PATCH (compute nowdate once for betajp workflow_dispatch beta release)
+      nowdate: ${{ steps.setMatrix.outputs.nowdate }}
+      # END JP PATCH
     steps:
     - name: Set architecture and python version
       id: setMatrix
@@ -69,6 +72,10 @@ jobs:
         echo "supportedRunners=$(jq -c <<< '${{ env.supportedRunners }}')" >> "$GITHUB_OUTPUT"
         echo "supportedArchitectures=$(jq -c <<< '${{ env.supportedArchitectures }}')" >> "$GITHUB_OUTPUT"
         echo "supportedPythonVersions=$(jq -c <<< '${{ env.supportedPythonVersions }}')" >> "$GITHUB_OUTPUT"
+        # BEGIN JP PATCH (compute JST nowdate once; used by buildNVDA/createLauncher/publishBetaRelease)
+        nowdate=$(python3 -c "from datetime import datetime, timedelta, timezone; jst = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=9))); print(f'{jst:%y%m%d}{chr(97+jst.hour)}')")
+        echo "nowdate=$nowdate" >> "$GITHUB_OUTPUT"
+        # END JP PATCH
   buildNVDA:
     name: Build NVDA
     needs: matrix
@@ -88,11 +95,15 @@ jobs:
       # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
       AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
       # END JP PATCH
+      # BEGIN JP PATCH (use nowdate computed once in matrix job)
+      NOWDATE: ${{ needs.matrix.outputs.nowdate }}
+      # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
       # This is not a problem for these variables as they should be the same across jobs.
       version: ${{ steps.releaseInfo.outputs.VERSION }}
       versionType: ${{ steps.releaseInfo.outputs.VERSION_TYPE }}
+      nowdate: ${{ steps.releaseInfo.outputs.NOWDATE }}
       APIVersion: ${{ steps.releaseInfo.outputs.NVDA_API_VERSION }}
       APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
@@ -253,10 +264,29 @@ jobs:
       with:
         path: .
         key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+    # BEGIN JP PATCH (build JP addons on betajp workflow_dispatch so they can be attached to GitHub Release)
+    - name: Build JP addons
+      if: ${{ github.ref_name == 'betajp' && github.event_name == 'workflow_dispatch' }}
+      shell: pwsh
+      env:
+        VERSION: ${{ env.nowdate }}
+      run: |
+        uv run --no-active python jptools/pack_jtalk_addon.py --nowdate "$env:VERSION"
+        uv run --no-active python jptools/pack_kgs_addon.py --version "$env:VERSION"
+    - name: Upload JP addon artifacts
+      if: ${{ github.ref_name == 'betajp' && github.event_name == 'workflow_dispatch' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: JP addons (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
+        path: |
+          jptools/nvdajp-jtalk-*.nvda-addon
+          jptools/kgsbraille-*.nvda-addon
+    # END JP PATCH
     - name: Store release metadata information
       id: releaseInfo
       run: |
         Write-Output VERSION=$env:version >> $env:GITHUB_OUTPUT
+        Write-Output NOWDATE=$env:nowdate >> $env:GITHUB_OUTPUT
         Write-Output VERSION_TYPE=$env:versionType >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_VERSION=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))") >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_COMPAT_TO=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))") >> $env:GITHUB_OUTPUT
@@ -532,6 +562,9 @@ jobs:
       # BEGIN JP PATCH (enable Azure Key Vault signing via repository variable, workflow_dispatch only)
       AZURE_KV_SIGNING: ${{ github.event_name == 'workflow_dispatch' && vars.AZURE_KV_SIGNING || '' }}
       # END JP PATCH
+      # BEGIN JP PATCH (use nowdate computed once in matrix job)
+      NOWDATE: ${{ needs.matrix.outputs.nowdate }}
+      # END JP PATCH
     outputs:
       # Note: each output variable is overwritten by the last job in the matrix.
       # So we only set the output variables for the default architecture.
@@ -605,10 +638,30 @@ jobs:
         PowerShell -Command "Set-ExecutionPolicy Bypass"
         PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
         PowerShell -Command "Install-Module -Name SignPath -Force"
-    - name: Create launcher and controller client
-      shell: cmd
+    # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
+    - name: Install AzureSignTool
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      shell: pwsh
       run: |
-        scons %sconsLauncherOutTargets% %sconsArgs% %sconsCores%
+        dotnet tool install --global AzureSignTool --version 7.0.1
+        Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+    # END JP PATCH
+    - name: Build NVDAController client
+      shell: cmd
+      run: scons client %sconsArgs% %sconsCores%
+    - name: Create NVDA launcher
+      shell: cmd
+      run: scons %sconsLauncherOutTargets% %sconsArgs%
+    - name: Rename controller client archive for JP release
+      shell: pwsh
+      if: ${{ github.ref_name == 'betajp' && github.event_name == 'workflow_dispatch' }}
+      run: |
+        $cc = Get-ChildItem -Path output -Filter "nvda_*controllerClient.zip" | Select-Object -First 1
+        if ($cc) {
+          $newName = "output/nvda_$env:version`_controllerClientJp.zip"
+          Move-Item -LiteralPath $cc.FullName -Destination $newName -Force
+          Write-Host "Renamed controller client to $newName"
+        }
     - name: Upload launcher
       id: uploadLauncher
       uses: actions/upload-artifact@v7
@@ -1014,11 +1067,16 @@ jobs:
         tag="betajp-${{ needs.buildNVDA.outputs.version }}"
         echo "TAG=$tag" >> "$GITHUB_OUTPUT"
         echo "URL=https://github.com/${{ github.repository }}/releases/tag/$tag" >> "$GITHUB_OUTPUT"
-    - name: Download NVDA launcher
+    - name: Download NVDA launcher and JP addons
       uses: actions/download-artifact@v8
       with:
         name: NVDA launcher (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
         path: output
+    - name: Download JP addons
+      uses: actions/download-artifact@v8
+      with:
+        name: JP addons (${{ env.defaultPythonVersion }}, ${{ env.defaultArch }})
+        path: jptools
     - name: Calculate hashes
       shell: bash
       id: hashes
@@ -1048,6 +1106,9 @@ jobs:
         } > "$notes_file"
         gh release create "$tag" \
           "output/$exe_name" \
+          jptools/nvdajp-jtalk-*.nvda-addon \
+          jptools/kgsbraille-*.nvda-addon \
+          output/nvda_*_controllerClientJp.zip \
           --repo ${{ github.repository }} \
           --title "$version" \
           --notes-file "$notes_file" \
