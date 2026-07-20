@@ -26,6 +26,7 @@ if ($env:GITHUB_REF_TYPE -eq "tag" -and $env:GITHUB_REF_NAME.StartsWith("release
 			$version = "2026.2jp-beta-$env:NOWDATE"
 			$release = 1
 			$versionType = "nvdajpbeta"
+			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 		}
 		# END JP PATCH
 		if ($env:GITHUB_REF_NAME.StartsWith("try-release-")) {
