@@ -616,6 +616,19 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+        apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+    # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
+    # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
+    - name: Install AzureSignTool
+      if: ${{ env.AZURE_KV_SIGNING == '1' }}
+      shell: pwsh
+      run: |
+        dotnet tool install --global AzureSignTool --version 7.0.1
+        Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+    # END JP PATCH
+    - name: Build scons docs targets
+      shell: cmd
+      run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
     # BEGIN JP PATCH (Azure Key Vault signing with OIDC - workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
       if: ${{ env.AZURE_KV_SIGNING == '1' }}
@@ -678,7 +691,9 @@ jobs:
         name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: |
           output/nvda*.exe
+          output/nvda*.exe
           output/nvda*controllerClient*.zip
+          output/nvda*controllerClientJp.zip
     - name: Upload documentation artifacts
       uses: actions/upload-artifact@v7
       id: uploadBuildArtifacts
@@ -849,12 +864,10 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs: [buildNVDA, typeCheck, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols
-      # BEGIN JP PATCH
+      # BEGIN JP PATCH (jpSmokeTests added; checkPo temporarily disabled)
       , jpSmokeTests
-      # END JP PATCH
-      # BEGIN JP PATCH (checkPo temporarily disabled)
       # , checkPo
-      # END JP PATCH (checkPo temporarily disabled)
+      # END JP PATCH
     ]
     permissions:
       contents: read
@@ -1165,6 +1178,7 @@ jobs:
       exeName: ${{ steps.hashes.outputs.EXE_NAME }}
       sha1: ${{ steps.hashes.outputs.SHA1 }}
       sha256: ${{ steps.hashes.outputs.SHA256 }}
+      version: ${{ needs.buildNVDA.outputs.version }}
       version: ${{ needs.buildNVDA.outputs.version }}
 
   submit-winget:
