@@ -357,7 +357,7 @@ class NVDASpyLib:
 	def wait_for_NVDA_startup_to_complete(self):
 		_blockUntilConditionMet(
 			getValue=lambda: self._isNvdaStartupComplete,
-			giveUpAfterSeconds=self._minTimeout(10),
+			giveUpAfterSeconds=self._minTimeout(30),
 			errorMessage="Unable to connect to nvdaSpy",
 		)
 		self.reset_all_speech_index()
