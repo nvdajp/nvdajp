@@ -616,7 +616,6 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-        apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
     # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
     # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
     - name: Install AzureSignTool
@@ -1178,7 +1177,6 @@ jobs:
       exeName: ${{ steps.hashes.outputs.EXE_NAME }}
       sha1: ${{ steps.hashes.outputs.SHA1 }}
       sha256: ${{ steps.hashes.outputs.SHA256 }}
-      version: ${{ needs.buildNVDA.outputs.version }}
       version: ${{ needs.buildNVDA.outputs.version }}
 
   submit-winget:
