@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2026年5月18日
+* 最終更新日：2026年7月22日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -784,6 +784,11 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 * [NvdaDemoApp (bitbucket.org)](https://bitbucket.org/nishimotz/nvdademoapp)
 
 ## バージョンごとの変更点
+
+### 2026.2jp の変更点
+
+* NVDA コントローラークライアントの日本語版拡張アーカイブ (controllerClientJp.zip) に、x64 および arm64 の nvdaControllerClient.dll が含まれるようになりました。
+  * これにより、x64 プロセスで動作する外部アプリケーションから日本語版拡張 API (nvdaController_speakSpelling など) を利用できます。
 
 ### 2026.1.1jp の変更点
 
