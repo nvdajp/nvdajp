@@ -227,7 +227,7 @@ class NvdaLib:
 		)
 		builtIn.log(f"Connecting to {self._spyAlias}", level="DEBUG")
 		# If any remote call takes longer than this, the connection will be closed!
-		maxRemoteKeywordDurationSeconds = 30
+		maxRemoteKeywordDurationSeconds = 60
 		builtIn.import_library(
 			"Remote",  # name of library to import
 			# Arguments to construct the library instance:
@@ -276,7 +276,7 @@ class NvdaLib:
 		nvdaProcessHandle = self._startNVDAInstallerProcess()
 		process.process_should_be_running(nvdaProcessHandle)
 		# Timeout is increased due to the installer load time and start up splash sound
-		self._connectToRemoteServer(connectionTimeoutSecs=30)
+		self._connectToRemoteServer(connectionTimeoutSecs=60)
 		self.nvdaSpy.wait_for_NVDA_startup_to_complete()
 		return nvdaProcessHandle
 
