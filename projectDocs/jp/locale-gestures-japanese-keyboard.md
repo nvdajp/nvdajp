@@ -15,10 +15,10 @@ JIS 配列では US 配列と違い `=` が物理キーではない。
 	zoomIn = kb:NVDA+shift+;
 ```
 
-- セクション: `[globalCommands.GlobalCommands]`
-- キー名: スクリプト名（`script_` なし）
-- NVDA は **物理キー名** で識別する（`source/keyboardHandler.py`）。
-- 入力ヘルプ（`NVDA+1`）で実際のキー名を確認できる
+* セクション: `[globalCommands.GlobalCommands]`
+* キー名: スクリプト名（`script_` なし）
+* NVDA は **物理キー名** で識別する（`source/keyboardHandler.py`）。
+* 入力ヘルプ（`NVDA+1`）で実際のキー名を確認できる
 
 ## 優先順位
 

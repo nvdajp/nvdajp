@@ -143,7 +143,7 @@ configH = configHDir.File("config.h")
 env.Command(
 	configH,
 	[],
-	buildConfigH
+	buildConfigH,
 )
 # Prepend configH directory to CPPPATH so that "config.h" can be found
 env.Prepend(CPPPATH=[configHDir])

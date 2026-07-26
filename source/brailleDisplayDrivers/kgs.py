@@ -43,11 +43,7 @@ locked = False
 
 def _connectionBeepsEnabled():
 	"""Return False during install or launcher so connection tones do not mask speech."""
-	return not (
-		globalVars.appArgs.install
-		or globalVars.appArgs.installSilent
-		or globalVars.appArgs.launcher
-	)
+	return not (globalVars.appArgs.install or globalVars.appArgs.installSilent or globalVars.appArgs.launcher)
 
 
 def lock():

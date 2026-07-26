@@ -604,7 +604,7 @@ uninstGen = env.Command(
 uninstaller = env.Command(uninstFile, uninstGen, [uninstGen])
 # BEGIN JP PATCH (certificate store signing support)
 if signingEnabled:
-# END JP PATCH (certificate store signing support)
+	# END JP PATCH (certificate store signing support)
 	env.AddPostAction(uninstaller, [env["signExec"]])
 
 devDocTargets = env.SConscript(
@@ -664,7 +664,7 @@ launcher = env.Command(
 )
 # BEGIN JP PATCH (certificate store signing support)
 if signingEnabled:
-# END JP PATCH (certificate store signing support)
+	# END JP PATCH (certificate store signing support)
 	env.AddPostAction(launcher, [env["signExec"]])
 env.Alias("launcher", launcher)
 # BEGIN JP PATCH (build dependencies)

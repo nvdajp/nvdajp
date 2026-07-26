@@ -191,7 +191,8 @@ class MecabFeatures(NonblockingMecabFeatures):
 
 
 def mecab_analyze_and_correct(
-	src: bytes, logwrite_: LogWriteFunc = None
+	src: bytes,
+	logwrite_: LogWriteFunc = None,
 ) -> NonblockingMecabFeatures:
 	"""Run Mecab_analysis and Mecab_correctFeatures with minimal lock duration.
 
@@ -376,7 +377,9 @@ def Mecab_initialize(
 
 
 def Mecab_analysis(
-	src: bytes, features: MecabFeatures | NonblockingMecabFeatures, logwrite_: LogWriteFunc = None
+	src: bytes,
+	features: MecabFeatures | NonblockingMecabFeatures,
+	logwrite_: LogWriteFunc = None,
 ) -> None:
 	# CRITICAL: Declare global mecab at the start of the function
 	# This must be before any reference to mecab to avoid SyntaxError
@@ -617,7 +620,10 @@ def Mecab_getFeature(mf: MecabFeatures | NonblockingMecabFeatures, pos: int, COD
 
 
 def Mecab_setFeature(
-	mf: MecabFeatures | NonblockingMecabFeatures, pos: int, s: str, CODE_: str = CODE
+	mf: MecabFeatures | NonblockingMecabFeatures,
+	pos: int,
+	s: str,
+	CODE_: str = CODE,
 ) -> None:
 	s_encoded = s.encode(CODE_, "ignore")
 	buf = create_string_buffer(s_encoded)
@@ -951,7 +957,8 @@ def Mecab_duplicateFeatures(
 
 
 def Mecab_splitFeatures(
-	mf: MecabFeatures | NonblockingMecabFeatures, CODE_: str = "utf-8"
+	mf: MecabFeatures | NonblockingMecabFeatures,
+	CODE_: str = "utf-8",
 ) -> list[NonblockingMecabFeatures]:
 	ar = []
 	startPos = 0

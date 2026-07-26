@@ -118,6 +118,7 @@ class SynthDriverBufSink(COMObject):
 		synth = self.synthRef()
 		if synth and hasattr(synth, "setSpeaking"):
 			synth.setSpeaking(False)
+
 	# END JP PATCH
 
 	def IUnknown_Release(self, this: int, *args, **kwargs):
@@ -970,17 +971,23 @@ class SynthDriver(SynthDriver):
 		desiredProsodyResetTags: list[tuple[type, str]] = []
 		if RateCommand in supportedProsody:
 			rateRaw = self._percentToParam(
-				self._getDesiredRatePercent(), self._minRate, self._maxRate
+				self._getDesiredRatePercent(),
+				self._minRate,
+				self._maxRate,
 			)
 			desiredProsodyResetTags.append((RateCommand, f"\\Spd={rateRaw}\\"))
 		if PitchCommand in supportedProsody:
 			pitchRaw = self._percentToParam(
-				self._getDesiredPitchPercent(), self._minPitch, self._maxPitch
+				self._getDesiredPitchPercent(),
+				self._minPitch,
+				self._maxPitch,
 			)
 			desiredProsodyResetTags.append((PitchCommand, f"\\Pit={pitchRaw}\\"))
 		if VolumeCommand in supportedProsody:
 			volumeRaw = self._percentToParam(
-				self._getDesiredVolumePercent(), self._minVolume, self._maxVolume
+				self._getDesiredVolumePercent(),
+				self._minVolume,
+				self._maxVolume,
 			)
 			desiredProsodyResetTags.append((VolumeCommand, f"\\Vol={volumeRaw}\\"))
 		for commandType, tag in desiredProsodyResetTags:
@@ -1097,6 +1104,7 @@ class SynthDriver(SynthDriver):
 
 	def isSpeaking(self) -> bool:
 		return self._isSpeaking
+
 	# END JP PATCH
 
 	def removeSetting(self, name):
@@ -1387,7 +1395,9 @@ class SynthDriver(SynthDriver):
 				self._engineVolumePercent = self._readCurrentVolumePercentFromEngine()
 			self._desiredVolumePercent = self._engineVolumePercent
 		return self._desiredVolumePercent
+
 	# END JP PATCH
+
 
 def _mmDeviceEndpointIdToWaveOutId(targetEndpointId: str) -> int:
 	"""Translate from an MMDevice Endpoint ID string to a WaveOut Device ID number.

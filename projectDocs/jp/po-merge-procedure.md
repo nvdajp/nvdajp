@@ -11,9 +11,9 @@
 
 ## 前提条件
 
-- `jptools/nvda-jp-patch.po` が存在すること
-- `source/locale/ja/LC_MESSAGES/nvda.po` が存在すること
-- PowerShell を利用できること
+* `jptools/nvda-jp-patch.po` が存在すること
+* `source/locale/ja/LC_MESSAGES/nvda.po` が存在すること
+* PowerShell を利用できること
 
 ## 標準フロー
 
@@ -31,23 +31,23 @@
 
 ## 追加ルール
 
-- `msgctxt` がある場合は `msgctxt|msgid` 単位で扱う
-- 競合時は JP 固有翻訳を優先する
-- `# nvdajp from here` と `# end of nvdajp` の範囲を維持する
+* `msgctxt` がある場合は `msgctxt|msgid` 単位で扱う
+* 競合時は JP 固有翻訳を優先する
+* `# nvdajp from here` と `# end of nvdajp` の範囲を維持する
 
 ## トラブルシューティング
 
 ### スクリプトが失敗する
 
-- PO フォーマットを確認する
-- `nvda.po.backup.*` から復元して再実行する
+* PO フォーマットを確認する
+* `nvda.po.backup.*` から復元して再実行する
 
 ### 翻訳が反映されない
 
-- `msgid` / `msgctxt` の一致を確認する
-- 実行ログを確認する
+* `msgid` / `msgctxt` の一致を確認する
+* 実行ログを確認する
 
 ## 参照
 
-- PO 状態: `projectDocs/jp/po-file-status.md`
-- JP Docs Hub: `projectDocs/jp/README.md`
+* PO 状態: `projectDocs/jp/po-file-status.md`
+* JP Docs Hub: `projectDocs/jp/README.md`

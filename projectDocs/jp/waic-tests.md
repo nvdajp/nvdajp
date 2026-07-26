@@ -21,11 +21,11 @@ WAIC (Web Accessibility Initiative) テストは、NVDA 日本語版の Chrome �
 
 ## 実装場所
 
-- **Python 実装**: `tests/system/robot/chromeTests.py`
-  - 関数: `test_waic_as_0029_01()` から `test_waic_as_0029_08()`
-- **Robot Framework テストケース**: `tests/system/robot/chromeTests.robot`
-  - テストケース名: `WAIC AS-0029-01` から `WAIC AS-0029-08`
-  - タグ: `waic`
+* **Python 実装**: `tests/system/robot/chromeTests.py`
+  * 関数: `test_waic_as_0029_01()` から `test_waic_as_0029_08()`
+* **Robot Framework テストケース**: `tests/system/robot/chromeTests.robot`
+  * テストケース名: `WAIC AS-0029-01` から `WAIC AS-0029-08`
+  * タグ: `waic`
 
 ## テストの実行方法
 
@@ -58,7 +58,7 @@ WAIC (Web Accessibility Initiative) テストは、NVDA 日本語版の Chrome �
 各 WAIC テストは以下の手順で実行されます：
 
 1. Chrome で iframe を使用して WAIC のテストケースページを読み込む
-   - URL: `https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-XX.html`
+   * URL: `https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-XX.html`
 2. NVDA の音声出力を確認
 3. キーボード操作（Tab、矢印キーなど）で要素を移動
 4. 各要素の音声出力が期待値と一致することを確認
@@ -67,8 +67,8 @@ WAIC (Web Accessibility Initiative) テストは、NVDA 日本語版の Chrome �
 
 WAIC テストは外部の WAIC テストケースページを使用します：
 
-- **ベース URL**: `https://waic.github.io/as_test/WAIC-CODE/`
-- **テストケース**: `WAIC-CODE-0029-01.html` から `WAIC-CODE-0029-08.html`
+* **ベース URL**: `https://waic.github.io/as_test/WAIC-CODE/`
+* **テストケース**: `WAIC-CODE-0029-01.html` から `WAIC-CODE-0029-08.html`
 
 これらのページは、W3C の ARIA 仕様に基づいた標準的なテストケースを提供します。
 
@@ -88,17 +88,17 @@ WAIC テストは外部の WAIC テストケースページを使用します：
 
 ### 音声出力が一致しない場合
 
-- NVDA の設定（特に日本語文字の読み上げ設定）を確認してください。
-- `jpRobotUtil.py` が正しく読み込まれていることを確認してください（`chromeTests.robot` でインポートされています）。
+* NVDA の設定（特に日本語文字の読み上げ設定）を確認してください。
+* `jpRobotUtil.py` が正しく読み込まれていることを確認してください（`chromeTests.robot` でインポートされています）。
 
 ## 関連ドキュメント
 
-- システムテストの概要
-- [Chrome システムテスト](chromeTests.robot)
-- [WAIC 公式サイト](https://waic.jp/)
+* システムテストの概要
+* [Chrome システムテスト](chromeTests.robot)
+* [WAIC 公式サイト](https://waic.jp/)
 
 ## 履歴
 
-- **2025-01-XX**: WAIC テストを `betajp` ブランチから復元
-  - `chromeTests.py` に 8 つの WAIC テスト関数を追加
-  - `chromeTests.robot` に 8 つの WAIC テストケースを追加
+* **2025-01-XX**: WAIC テストを `betajp` ブランチから復元
+  * `chromeTests.py` に 8 つの WAIC テスト関数を追加
+  * `chromeTests.robot` に 8 つの WAIC テストケースを追加

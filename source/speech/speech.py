@@ -1597,7 +1597,11 @@ def speakTextInfo(
 ) -> bool:
 	# BEGIN JP PATCH
 	# nvdajp: Character description mode support
-	if config.conf["language"]["characterDescriptionMode"] and reason == OutputReason.CARET and unit == textInfos.UNIT_CHARACTER:
+	if (
+		config.conf["language"]["characterDescriptionMode"]
+		and reason == OutputReason.CARET
+		and unit == textInfos.UNIT_CHARACTER
+	):
 		speakSpelling(info.text, useCharacterDescriptions=True)
 		return True
 	# END JP PATCH

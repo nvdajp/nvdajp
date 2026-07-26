@@ -68,15 +68,15 @@ if defined AZURE_KV_SIGNING if not "%AZURE_KV_SIGNING%"=="0" (
 )
 if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME (
     for /f "usebackq tokens=1,2 delims=;" %%A in (`pwsh -NoProfile -Command ^
-        "$now=Get-Date; "^ 
-        "function FindCert([string]\$root){ "^ 
-        "  Get-ChildItem -Path \$root -ErrorAction SilentlyContinue | Where-Object { "^ 
-        "    \$_.HasPrivateKey -and \$_.NotAfter -gt \$now -and \$_.NotBefore -le \$now -and "^ 
-        "    (\$_.EnhancedKeyUsageList | Where-Object { \$_.ObjectId -eq '1.3.6.1.5.5.7.3.3' }) -and "^ 
-        "    \$_.Issuer -ne \$_.Subject "^ 
-        "  } | Sort-Object NotAfter -Descending | Select-Object -First 1 "^ 
-        "}; "^ 
-        "\$cert=FindCert 'Cert:\\CurrentUser\\My'; \$scope='USER'; if(-not \$cert){ \$cert=FindCert 'Cert:\\LocalMachine\\My'; \$scope='MACHINE' } ; "^ 
+        "$now=Get-Date; "^
+        "function FindCert([string]\$root){ "^
+        "  Get-ChildItem -Path \$root -ErrorAction SilentlyContinue | Where-Object { "^
+        "    \$_.HasPrivateKey -and \$_.NotAfter -gt \$now -and \$_.NotBefore -le \$now -and "^
+        "    (\$_.EnhancedKeyUsageList | Where-Object { \$_.ObjectId -eq '1.3.6.1.5.5.7.3.3' }) -and "^
+        "    \$_.Issuer -ne \$_.Subject "^
+        "  } | Sort-Object NotAfter -Descending | Select-Object -First 1 "^
+        "}; "^
+        "\$cert=FindCert 'Cert:\\CurrentUser\\My'; \$scope='USER'; if(-not \$cert){ \$cert=FindCert 'Cert:\\LocalMachine\\My'; \$scope='MACHINE' } ; "^
         "if(\$cert){ \$tp=(\$cert.Thumbprint -replace ' ','').ToUpper(); if(\$tp -match '^[0-9A-F]{40}$'){ Write-Output (\"\$scope;\" + \$tp) } } "
     `) do (
         set "_CERT_SCOPE=%%A"

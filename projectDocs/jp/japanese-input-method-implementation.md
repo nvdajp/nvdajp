@@ -6,8 +6,8 @@ nvdajp では、日本語入力メソッド（IME）と Text Services Framework 
 
 ## ファイル構成
 
-- **`nvdaHelper/remote/ime.cpp`**: IMM (Input Method Manager) API を使用した日本語 IME サポート
-- **`nvdaHelper/remote/tsf.cpp`**: TSF (Text Services Framework) API を使用した日本語入力サポート
+* **`nvdaHelper/remote/ime.cpp`**: IMM (Input Method Manager) API を使用した日本語 IME サポート
+* **`nvdaHelper/remote/tsf.cpp`**: TSF (Text Services Framework) API を使用した日本語入力サポート
 
 ## 日本語版固有の変更
 
@@ -55,8 +55,8 @@ static WCHAR* getCompositionString(HIMC imc, DWORD index) {
 **理由**: 日本語 IME の変換状態（未変換、選択中、未選択など）を NVDA に通知するため。これにより、ユーザーは変換候補の状態を音声や点字で確認できます。
 
 **データ形式**:
-- 変換文字列と compAttr 文字列をタブ文字（`L'\t'`）で区切る
-- compAttr 文字列は各文字の変換状態を表す数字の文字列（例: `L"222221111000"`）
+
+* compAttr 文字列は各文字の変換状態を表す数字の文字列（例: `L"222221111000"`）
 
 ### `tsf.cpp` の変更
 
@@ -95,15 +95,15 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 **機能**: TSF の表示属性を文字列として取得する
 
 **データ形式**:
-- `jpAttrBuf` に各文字の変換状態を表す数字の文字列を格納
-- 例: `L"222221111000"`
-- 各数字の意味:
-  - `0`: TF_ATTR_INPUT (入力中)
-  - `1`: TF_ATTR_TARGET_CONVERTED (変換対象・変換済み)
-  - `2`: TF_ATTR_CONVERTED (変換済み)
-  - `3`: TF_ATTR_TARGET_NOTCONVERTED (変換対象・未変換)
-  - `4`: TF_ATTR_INPUT_ERROR (入力エラー)
-  - `5`: TF_ATTR_FIXEDCONVERTED (確定変換済み)
+* `jpAttrBuf` に各文字の変換状態を表す数字の文字列を格納
+* 例: `L"222221111000"`
+* 各数字の意味:
+  * `0`: TF_ATTR_INPUT (入力中)
+  * `1`: TF_ATTR_TARGET_CONVERTED (変換対象・変換済み)
+  * `2`: TF_ATTR_CONVERTED (変換済み)
+  * `3`: TF_ATTR_TARGET_NOTCONVERTED (変換対象・未変換)
+  * `4`: TF_ATTR_INPUT_ERROR (入力エラー)
+  * `5`: TF_ATTR_FIXEDCONVERTED (確定変換済み)
 
 #### 2. `OnEndEdit` での表示属性通知
 
@@ -128,8 +128,8 @@ if (hr == S_OK) {
 **変更内容**: TSF の変換文字列に表示属性情報を追加して通知
 
 **データ形式**:
-- 変換文字列と表示属性文字列をタブ文字（`L'\t'`）で区切る
-- 例: `L"変換文字列\t222221111000"`
+
+* 例: `L"変換文字列\t222221111000"`
 
 **フォールバック**: `getDispAttrFromRange()` が失敗した場合は、表示属性なしで通知
 
@@ -138,13 +138,13 @@ if (hr == S_OK) {
 これらのファイルは、本家版のマージ時に上書きされる可能性があります。マージ後は、以下の点を確認してください：
 
 1. **`ime.cpp`**:
-   - `lastOpenStatus` の初期値が `false` になっているか
-   - `getCompositionString()` 関数が `#else` ブロック（compAttr 追加版）を使用しているか
+   * `lastOpenStatus` の初期値が `false` になっているか
+   * `getCompositionString()` 関数が `#else` ブロック（compAttr 追加版）を使用しているか
 
 2. **`tsf.cpp`**:
-   - `getDispAttrFromRangeWithShift()` 関数が存在するか
-   - `getDispAttrFromRange()` 関数が存在するか
-   - `OnEndEdit()` 関数内で `jpAttrBuf` を使用しているか
+   * `getDispAttrFromRangeWithShift()` 関数が存在するか
+   * `getDispAttrFromRange()` 関数が存在するか
+   * `OnEndEdit()` 関数内で `jpAttrBuf` を使用しているか
 
 ## ATOK 対応
 
@@ -152,8 +152,8 @@ nvdajp では、ATOK（日本語入力システム）の UI コメント機能�
 
 ### ファイル構成
 
-- **`source/NVDAObjects/IAccessible/atok.py`**: ATOK の UI コメントウィンドウを処理するクラス
-- **`source/NVDAObjects/IAccessible/__init__.py`**: ATOK の `findExtraOverlayClasses` を呼び出す処理
+* **`source/NVDAObjects/IAccessible/atok.py`**: ATOK の UI コメントウィンドウを処理するクラス
+* **`source/NVDAObjects/IAccessible/__init__.py`**: ATOK の `findExtraOverlayClasses` を呼び出す処理
 
 ### 実装内容
 
@@ -188,13 +188,13 @@ class ATOKxxUIComment(IAccessible):
 **機能**: ATOK の UI コメントウィンドウ（候補コメント）を検出し、音声で読み上げます。
 
 **条件**:
-- `nvdajpEnableKeyEvents` が有効
-- `announceSelectedCandidate` が有効
+* `nvdajpEnableKeyEvents` が有効
+* `announceSelectedCandidate` が有効
 
 **動作**:
-- UI コメントが表示されたときにビープ音を鳴らす
-- コメントの内容を音声で読み上げる
-- マウスカーソルをコメントウィンドウの中央に移動
+* UI コメントが表示されたときにビープ音を鳴らす
+* コメントの内容を音声で読み上げる
+* マウスカーソルをコメントウィンドウの中央に移動
 
 #### `findExtraOverlayClasses` 関数
 
@@ -226,18 +226,18 @@ elif windowClassName[:5] in ("ATOK2", "ATOK3"):
 
 ## 関連ファイル
 
-- `nvdaHelper/remote/ime.h`: IME 関連のヘッダー
-- `nvdaHelper/remote/tsf.h`: TSF 関連のヘッダー
-- `source/inputComposition.py`: Python 側での入力変換処理
-- `source/languageHandler.py`: 言語処理（日本語固有の処理を含む）
-- `source/NVDAObjects/IAccessible/atok.py`: ATOK UI コメント対応
+* `nvdaHelper/remote/ime.h`: IME 関連のヘッダー
+* `nvdaHelper/remote/tsf.h`: TSF 関連のヘッダー
+* `source/inputComposition.py`: Python 側での入力変換処理
+* `source/languageHandler.py`: 言語処理（日本語固有の処理を含む）
+* `source/NVDAObjects/IAccessible/atok.py`: ATOK UI コメント対応
 
 ## 参考資料
 
-- Windows IME API: [ImmGetCompositionString function](https://learn.microsoft.com/en-us/windows/win32/api/imm/nf-imm-immgetcompositionstringw)
-- Windows TSF API: [Text Services Framework](https://learn.microsoft.com/en-us/windows/win32/tsf/text-services-framework)
-- 日本語版の設定: `source/gui/settingsDialogs.py` の `LanguageSettingsPanel`
+* Windows IME API: [ImmGetCompositionString function](https://learn.microsoft.com/en-us/windows/win32/api/imm/nf-imm-immgetcompositionstringw)
+* Windows TSF API: [Text Services Framework](https://learn.microsoft.com/en-us/windows/win32/tsf/text-services-framework)
+* 日本語版の設定: `source/gui/settingsDialogs.py` の `LanguageSettingsPanel`
 
 ## 変更履歴
 
-- 2025-12-30: x64 Python 3.13 移行時に、betajp ブランチから日本語版固有の変更を復元
+* 2025-12-30: x64 Python 3.13 移行時に、betajp ブランチから日本語版固有の変更を復元

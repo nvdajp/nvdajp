@@ -105,26 +105,14 @@ portion of it, thus forming a work based on the Program, and copy and
 distribute such modifications or work under the terms of Section 1
 above, provided that you also meet all of these conditions:
 
-  
-**a)** You must cause the modified files to carry prominent notices
-stating that you changed the files and the date of any change.
-
-  
 **b)** You must cause any work that you distribute or publish, that in
-whole or in part contains or is derived from the Program or any part
 thereof, to be licensed as a whole at no charge to all third parties
-under the terms of this License.
 
-  
-**c)** If the modified program normally reads commands interactively
 when run, you must cause it, when started running for such interactive
-use in the most ordinary way, to print or display an announcement
 including an appropriate copyright notice and a notice that there is
 no warranty (or else, saying that you provide a warranty) and that
-users may redistribute the program under these conditions, and telling
 the user how to view a copy of this License. (Exception: if the
 Program itself is interactive but does not normally print such an
-announcement, your work based on the Program is not required to print
 an announcement.)
 
 These requirements apply to the modified work as a whole. If
@@ -152,38 +140,26 @@ the scope of this License.
 under Section 2) in object code or executable form under the terms of
 Sections 1 and 2 above provided that you also do one of the following:
 
-  
 **a)** Accompany it with the complete corresponding machine-readable
 source code, which must be distributed under the terms of Sections 1
 and 2 above on a medium customarily used for software interchange; or,
-
-  
 **b)** Accompany it with a written offer, valid for at least three
 years, to give any third party, for a charge no more than your cost of
 physically performing source distribution, a complete machine-readable
-copy of the corresponding source code, to be distributed under the
-terms of Sections 1 and 2 above on a medium customarily used for
 software interchange; or,
 
-  
 **c)** Accompany it with the information you received as to the offer
-to distribute corresponding source code. (This alternative is allowed
-only for noncommercial distribution and only if you received the
 program in object code or executable form with such an offer, in
 accord with Subsection b above.)
-
 The source code for a work means the preferred form of the work for
 making modifications to it. For an executable work, complete source
-code means all the source code for all modules it contains, plus any
 associated interface definition files, plus the scripts used to
 control compilation and installation of the executable. However, as a
-special exception, the source code distributed need not include
 anything that is normally distributed (in either source or binary
 form) with the major components (compiler, kernel, and so on) of the
 operating system on which the executable runs, unless that component
 itself accompanies the executable.
 
-If distribution of executable or object code is made by offering
 access to copy from a designated place, then offering equivalent
 access to copy the source code from the same place counts as
 distribution of the source code, even though third parties are not
@@ -300,35 +276,24 @@ FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF
 SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGES.
 
-
 ## Non-GPL Components in Plugins and Drivers
 
 Plugins and drivers, including those provided by third parties, are considered derivative works of NVDA and must therefore be licensed under the terms of the GNU General Public License version 2.
 As a special exception, an NVDA plugin or driver (as defined in the NVDA Developer Guide) may use components under other licenses provided that:
 
 a. Any such component does not prevent the NVDA plugin or driver from being licensed under the terms of the GNU General Public License version 2; and
-
 b. Any such component does not directly use and is not directly used by any portion of NVDA outside of that plugin or driver.
 For example, a speech synthesizer driver may use a speech synthesiser under a proprietary license.
 In contrast, in a plugin providing support for an application, the code which implements any interface provided by NVDA must be licensed under the GNU General Public License version 2.
 
-
 ## Microsoft Distributable Code
 
-This applies to the following files:
-
-* `mfc*.dll`
 * `Microsoft.VC*.manifest`
 * `msvc*.dll`
-
 As a special exception to the GNU General Public License version 2, these components may be included with binary distributions of NVDA without being subject to the terms of that license.
 
-Microsoft Distributable Code is covered by the following terms:
-
 You may not
-
 a. alter any copyright, trademark or patent notice in the Distributable Code;
-
 b. use Microsoft's trademarks in your programs' names or in a way that suggests your programs come from or are endorsed by Microsoft;
 
 c. distribute Distributable Code to run on a platform other than the Windows platform;
@@ -336,7 +301,6 @@ c. distribute Distributable Code to run on a platform other than the Windows pla
 d. include Distributable Code in malicious, deceptive or unlawful programs; or
 
 e. modify or distribute the source code of any Distributable Code so that any part of it becomes subject to an Excluded License.
-An Excluded License is one that requires, as a condition of use, modification or distribution, that
 
  i. the code be disclosed or distributed in source code form; or
 
@@ -344,7 +308,7 @@ An Excluded License is one that requires, as a condition of use, modification or
 
 ## Third-Party Dependencies
 
-NVDA includes various third-party dependencies, each with its own license terms. 
+NVDA includes various third-party dependencies, each with its own license terms.
 Python pip modules with acceptable licences are automatically limited by our build system to include only BSD, MIT, Python, LGPLV3+ and Apache.
 
 In addition to these dependencies, the following are also included in NVDA:
@@ -406,7 +370,6 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     /* POSSIBILITY OF SUCH DAMAGE.                                       */
     /* ----------------------------------------------------------------- */
 
-
 ### HTS engine API (NVDA Japanese)
 
     /* ----------------------------------------------------------------- */
@@ -415,7 +378,6 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     /*           http://hts-engine.sourceforge.net/                      */
     /* ----------------------------------------------------------------- */
     /*                                                                   */
-    /*  Copyright (c) 2001-2015  Nagoya Institute of Technology          */
     /*                           Department of Computer Science          */
     /*                                                                   */
     /*                2001-2008  Tokyo Institute of Technology           */
@@ -424,7 +386,6 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     /*                                                                   */
     /* All rights reserved.                                              */
     /*                                                                   */
-    /* Redistribution and use in source and binary forms, with or        */
     /* without modification, are permitted provided that the following   */
     /* conditions are met:                                               */
     /*                                                                   */
@@ -433,7 +394,6 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     /* - Redistributions in binary form must reproduce the above         */
     /*   copyright notice, this list of conditions and the following     */
     /*   disclaimer in the documentation and/or other materials provided */
-    /*   with the distribution.                                          */
     /* - Neither the name of the HTS working group nor the names of its  */
     /*   contributors may be used to endorse or promote products derived */
     /*   from this software without specific prior written permission.   */
@@ -453,9 +413,7 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     /* POSSIBILITY OF SUCH DAMAGE.                                       */
     /* ----------------------------------------------------------------- */
 
-
 ### Mei happy (NVDA Japanese)
-
 
     ===============================================================================
                               HTS Voice "Mei" version 1.4
@@ -464,10 +422,8 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     
     The work is released as a part of MMDAgent (http://www.mmdagent.jp/).
     
-    *******************************************************************************
                                         Copying
     *******************************************************************************
-    
     # ----------------------------------------------------------------- #
     #           HTS Voice "Mei"                                         #
     #           released by MMDAgent Project Team                       #
@@ -475,10 +431,8 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     # ----------------------------------------------------------------- #
     #                                                                   #
     #  Copyright (c) 2009-2015  Nagoya Institute of Technology          #
-    #                           Department of Computer Science          #
     #                                                                   #
     # Some rights reserved.                                             #
-    #                                                                   #
     # This work is licensed under the Creative Commons Attribution 3.0  #
     # license.                                                          #
     #                                                                   #
@@ -486,10 +440,8 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     #  * to Share - to copy, distribute and transmit the work           #
     #  * to Remix - to adapt the work                                   #
     # Under the following conditions:                                   #
-    #  * Attribution - You must attribute the work in the manner        #
     #    specified by the author or licensor (but not in any way that   #
     #    suggests that they endorse you or your use of the work).       #
-    # With the understanding that:                                      #
     #  * Waiver - Any of the above conditions can be waived if you get  #
     #    permission from the copyright holder.                          #
     #  * Public Domain - Where the work or any of its elements is in    #
@@ -537,7 +489,6 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     http://www.mmdagent.jp/
     ===============================================================================
 
-
 ### HTS voice tohoku-f01 normal (NVDA Japanese)
 
     ----------------------------------------------------------------------------------
@@ -549,7 +500,6 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     Some rights reserved.
     
     This work is licensed under the Creative Commons Attribution 4.0 license (CC-BY 4.0).
-    ----------------------------------------------------------------------------------
     This is a human-readable summary of (and not a substitute for) the license.
     
     You are free to:
@@ -561,7 +511,6 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     
     
     Under the following terms:
-    
     Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
     No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
     
@@ -571,10 +520,8 @@ Furthermore, NVDA also utilises some static/binary dependencies, details of whic
     You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.
     No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material.
 
-
 ### bep-eng.dic (NVDA Japanese)
 
-NVDA Japanese may contain bep-eng.dic, an English-word-reading dictionary
 used to build the JTalk extended dictionary when it is built locally
 (jtalkDicSource=local). It is not included when the JTalk extended
 dictionary is instead obtained from the libkuraji-jtalk-dic project (see
@@ -582,58 +529,47 @@ below), which is the default.
 
 bep-eng.dic.txt is under GPL.
 available at:
-http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic
+<http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic>
 
-    # License GPL
     #
     # - modified hankaku kana to zenkaku kana
     # - added basic japanese letters
     # by M.Ohtsuka(mash)
     #
 
-
 ### MeCab (NVDA Japanese)
 
     == AUTHORS ==
     
-    Taku Kudo <taku@chasen.org>
-    
-    == COPYING ==
-    
+<http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic>
+
     libmecab.dll is from mecab-0.996.exe
-    available at http://taku910.github.io/mecab/
-    
+available at <http://taku910.github.io/mecab/>/>
     MeCab is copyrighted free software by Taku Kudo <taku@chasen.org> and
     Nippon Telegraph and Telephone Corporation, and is released under
-    any of the GPL (see the file GPL), the LGPL (see the file LGPL), or the
     BSD License (see the file BSD).
-    
-    
-    == BSD License ==
-    
+
+<http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic>
     Copyright (c) 2001-2008, Taku Kudo
-    Copyright (c) 2004-2008, Nippon Telegraph and Telephone Corporation
     All rights reserved.
-    
+
     Redistribution and use in source and binary forms, with or without modification, are
     permitted provided that the following conditions are met:
-    
+
      * Redistributions of source code must retain the above
-       copyright notice, this list of conditions and the
        following disclaimer.
     
      * Redistributions in binary form must reproduce the above
        copyright notice, this list of conditions and the
-       following disclaimer in the documentation and/or other
+<http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic>
        materials provided with the distribution.
-    
+
      * Neither the name of the Nippon Telegraph and Telegraph Corporation
        nor the names of its contributors may be used to endorse or
-       promote products derived from this software without specific
+   promote products derived from this software without specific
        prior written permission.
-    
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
-    WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
     PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
     ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
     LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -1491,7 +1427,6 @@ http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.di
 
     That's all there is to it!
 
-
 ### libkuraji (NVDA Japanese)
 
 libkuraji is the Japanese Braille translation engine used by NVDA Japanese
@@ -1506,7 +1441,6 @@ part of NVDA Japanese and now maintained as an independent library.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
 
     * Redistributions of source code must retain the above copyright notice, this
       list of conditions and the following disclaimer.
@@ -1521,7 +1455,6 @@ part of NVDA Japanese and now maintained as an independent library.
 
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
     AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
     FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
     DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -1530,14 +1463,12 @@ part of NVDA Japanese and now maintained as an independent library.
     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 ### libkuraji-jtalk-dic (NVDA Japanese)
 
 NVDA Japanese may contain the JTalk extended dictionary as built by the
 libkuraji-jtalk-dic project (NAIST-JDIC plus custom entries), which is used
 by both JTalk speech synthesis and libkuraji Braille translation. By
 default (jtalkDicSource=prebuilt) NVDA Japanese downloads a prebuilt,
-checksum-verified copy of this dictionary; it may instead be built locally
 from vendored NAIST-JDIC source (jtalkDicSource=local), in which case
 bep-eng.dic (see above) is also included.
 
@@ -1546,7 +1477,6 @@ bep-eng.dic (see above) is also included.
     BSD 3-Clause License
 
     Copyright (c) 2010-2026, Takuya Nishimoto
-    All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
@@ -1562,7 +1492,6 @@ bep-eng.dic (see above) is also included.
       contributors may be used to endorse or promote products derived from
       this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
     AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
     IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE

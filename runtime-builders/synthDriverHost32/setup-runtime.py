@@ -35,7 +35,7 @@ _speechOverlayDir.mkdir(parents=True, exist_ok=True)
 	"# Minimal speech package for synthDriverHost runtime; nvwave only needs these.\n"
 	"from speech.types import SpeechSequence, SequenceItemT\n"
 	"from speech.commands import BreakCommand\n"
-	"__all__ = [\"SpeechSequence\", \"SequenceItemT\", \"BreakCommand\"]\n",
+	'__all__ = ["SpeechSequence", "SequenceItemT", "BreakCommand"]\n',
 	encoding="utf-8",
 )
 for _name in ("types", "commands"):

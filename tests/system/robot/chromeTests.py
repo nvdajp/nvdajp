@@ -3069,7 +3069,6 @@ def test_reportNotSupportedLanguageAndOtherLanguages():
 	)
 
 
-
 def test_waic_as_0029_01():
 	_chrome.prepareChrome("""
 	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-01.html"></iframe>

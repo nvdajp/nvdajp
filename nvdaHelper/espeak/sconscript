@@ -1126,10 +1126,13 @@ for i in phonemeData:
 # Removes files that are created when installing from dictsource/extra/*_* to dictsource.
 # Also removes emoji files from dictsource compilation, refer to cleanEmoji for justification.
 env.AddPreAction(espeakLib, env.Action(cleanFiles_preBuildAction))
+
+
 # BEGIN JP PATCH (Add UTF-8 BOM to tr_languages.c for MSVC compilation with Arabic characters)
 def addUtf8BomToTrLanguages_preBuildAction(target, source, env):
 	"""Add UTF-8 BOM to tr_languages.c for MSVC compilation with Arabic characters."""
 	import codecs
+
 	trLanguagesPath = espeakSrcDir.Dir("libespeak-ng").File("tr_languages.c").abspath
 	try:
 		with open(trLanguagesPath, "rb") as f:
@@ -1141,6 +1144,7 @@ def addUtf8BomToTrLanguages_preBuildAction(target, source, env):
 	except Exception as e:
 		print(f"Warning: Failed to add UTF-8 BOM to {trLanguagesPath}: {e}")
 	return 0
+
 
 env.AddPreAction(espeakLib, env.Action(addUtf8BomToTrLanguages_preBuildAction))
 # END JP PATCH (Add UTF-8 BOM to tr_languages.c for MSVC compilation with Arabic characters)

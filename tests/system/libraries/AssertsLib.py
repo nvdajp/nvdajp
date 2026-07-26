@@ -111,8 +111,7 @@ class AssertsLib:
 		)
 		builtIn.fail(
 			f"{message}{comparison} Actual != any Expected option.\n"
-			f"Actual:\n{actual}\n\nExpected one of:\n"
-			+ "\n---\n".join(expectedOptions),
+			f"Actual:\n{actual}\n\nExpected one of:\n" + "\n---\n".join(expectedOptions),
 		)
 
 	@staticmethod
