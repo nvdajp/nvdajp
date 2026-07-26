@@ -38,11 +38,16 @@ def showHelp(helpId: str):
 		noHelpMessage = _("No help available here.")
 		queueHandler.queueFunction(queueHandler.eventQueue, ui.message, noHelpMessage)
 		return
-	helpFile = documentationUtils.getDocFilePath("userGuide.html")
+	# BEGIN JP PATCH (Open readmejp.html for Japanese language settings context help)
+	if helpId.startswith("JpSettings"):
+		helpFile = documentationUtils.getDocFilePath("readmejp.html")
+	else:
+		helpFile = documentationUtils.getDocFilePath("userGuide.html")
+	# END JP PATCH
 	if helpFile is None:
 		documentationUtils.reportNoDocumentation("userGuide.html")
 		return
-	log.debug(f"Opening help: helpId = {helpId}, userGuidePath: {helpFile}")
+	log.debug(f"Opening help: helpId = {helpId}, helpPath: {helpFile}")
 
 	nvdaTempDir = os.path.join(tempfile.gettempdir(), "nvda")
 	if not os.path.exists(nvdaTempDir):

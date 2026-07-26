@@ -47,7 +47,7 @@ This shortcut can be modified using the property (ALT+Enter) of NVDAJP icon of W
 
 ## Object Navigation
 
-### Character description mode
+### Character description mode {#JpSettingsCharacterDescriptionMode}
 
 Character description mode can be changed for caret moves by left arrow or right arrow key and character review commands.
 
@@ -72,61 +72,61 @@ Pressing "Report current character in review" (numpad2 or NVDA+period) four-time
 
 ## Configuration
 
-### Language settings
+### Language settings {#JpSettings}
 
 Language settings dialog contains settings for Japanese keyboard, character description, and input composition.
 
-#### Use NonConvert as NVDA key
+#### Use NonConvert as NVDA key {#JpSettingsNonConvert}
 
 If checked, NonConvert key can be used as NVDA modifier key. Default is on.
 The Welcome dialog also has this option.
 
-#### Use Convert as NVDA key
+#### Use Convert as NVDA key {#JpSettingsConvert}
 
 If checked, Convert key can be used as NVDA modifier key. Default is off.
 The Welcome dialog also has this option.
 
-#### Use Escape as NVDA key
+#### Use Escape as NVDA key {#JpSettingsEscape}
 
 If checked, Escape key can be used as NVDA modifier key. Default is off.
 The Welcome dialog also has this option.
 
-#### Beep if IME mode is changed
+#### Beep if IME mode is changed {#JpSettingsImeBeep}
 
 If checked, the press of Half-shape/Full-shape key is announced only with beep.
 Default is off.
 
-#### Phonetic reading for Kana
+#### Phonetic reading for Kana {#JpSettingsPhoneticReadingKana}
 
 If checked, Hiragana and Katakana characters are reported using phonetic reading when "Report current character in review" is pressed twice.
 Default is off.
 
-#### Phonetic reading for Latin
+#### Phonetic reading for Latin {#JpSettingsPhoneticReadingLatin}
 
 If checked, Latin characters are reported using phonetic reading when "Report current character in review" is pressed twice.
 Default is off.
 
-#### Katakana pitch change percentage
+#### Katakana pitch change percentage {#JpSettingsKatakanaPitchChange}
 
 The amount that the pitch of the voice will change when speaking a Katakana letter for character review.
 Default is -20.
 
 For candidates of Japanese input methods, pitch change is not available.
 
-#### Half-shape pitch change percentage
+#### Half-shape pitch change percentage {#JpSettingsHalfShapePitchChange}
 
 The amount that the pitch of the voice will change when speaking a half-shape letter for character review.
 Default is 20.
 
 For candidates of Japanese input methods, pitch change is not available.
 
-#### Announce candidate number
+#### Announce candidate number {#JpSettingsAnnounceCandidateNumber}
 
 The default of 'Announce candidate number' is disabled.
 If checked, items in candidate window of Japanese input methods such as Micosoft IME are annonced with numbers.
 If 'IME support of nvdajp' is disabled, this option has no effect.
 
-#### Use IME support of nvdajp
+#### Use IME support of nvdajp {#JpSettingsEnableKeyEvents}
 
 The default of 'Use IME support of nvdajp' is enabled.
 
@@ -134,13 +134,13 @@ If this option is enabled, pressing escape key to clear the input method session
 
 To disable, turn off the option.
 
-#### Work around ANSI editbox
+#### Work around ANSI editbox {#JpSettingsAnsiEdit}
 
 NVDA Japanese have made a work around edit control for ANSI applications. Because of this, some applications cannot handle line ending positions correctly.
 If this option is turned off, edit controls are treated as same as the original version of NVDA.
 If you use Winbiff e-mail software, please turn this option off.
 
-#### Announce new line in editable text
+#### Announce new line in editable text {#JpSettingsAnnounceNewLine}
 
 This option allows announcement of new line when Enter key is pressed in editable text.
 If Enter key is used for ending input composition session, it is not announced.
