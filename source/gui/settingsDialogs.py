@@ -1146,6 +1146,7 @@ class LanguageRestartDialog(
 class LanguageSettingsPanel(SettingsPanel):
 	# Translators: This is the label for the language settings dialog.
 	title = _("Language Settings")
+	helpId = "JpSettings"
 
 	def makeSettings(self, settingsSizer):
 		settingsSizerHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
@@ -1153,36 +1154,42 @@ class LanguageSettingsPanel(SettingsPanel):
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Use NonConvert as an NVDA modifier key")),
 		)
+		self.bindHelpEvent("JpSettingsNonConvert", self.nconvAsNVDAModifierCheckBox)
 		self.nconvAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"])
 
 		self.convAsNVDAModifierCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Use Convert as an NVDA modifier key")),
 		)
+		self.bindHelpEvent("JpSettingsConvert", self.convAsNVDAModifierCheckBox)
 		self.convAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useConvertAsNVDAModifierKey"])
 
 		self.escAsNVDAModifierCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Use Escape as an NVDA modifier key")),
 		)
+		self.bindHelpEvent("JpSettingsEscape", self.escAsNVDAModifierCheckBox)
 		self.escAsNVDAModifierCheckBox.SetValue(config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
 
 		self.nvdajpImeBeepCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Beep for IME mode change")),
 		)
+		self.bindHelpEvent("JpSettingsImeBeep", self.nvdajpImeBeepCheckBox)
 		self.nvdajpImeBeepCheckBox.SetValue(config.conf["keyboard"]["nvdajpImeBeep"])
 
 		self.jpPhoneticReadingKanaCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Phonetic reading for Kana")),
 		)
+		self.bindHelpEvent("JpSettingsPhoneticReadingKana", self.jpPhoneticReadingKanaCheckBox)
 		self.jpPhoneticReadingKanaCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingKana"])
 
 		self.jpPhoneticReadingLatinCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Phonetic reading for Latin")),
 		)
+		self.bindHelpEvent("JpSettingsPhoneticReadingLatin", self.jpPhoneticReadingLatinCheckBox)
 		self.jpPhoneticReadingLatinCheckBox.SetValue(config.conf["language"]["jpPhoneticReadingLatin"])
 
 		self.jpKatakanaPitchChangeEdit = settingsSizerHelper.addLabeledControl(
@@ -1193,6 +1200,7 @@ class LanguageSettingsPanel(SettingsPanel):
 			max=100,
 			initial=config.conf["language"]["jpKatakanaPitchChange"],
 		)
+		self.bindHelpEvent("JpSettingsKatakanaPitchChange", self.jpKatakanaPitchChangeEdit)
 
 		self.halfShapePitchChangeEdit = settingsSizerHelper.addLabeledControl(
 			# Translators: The label of a editbox in language settings
@@ -1202,35 +1210,41 @@ class LanguageSettingsPanel(SettingsPanel):
 			max=100,
 			initial=config.conf["language"]["halfShapePitchChange"],
 		)
+		self.bindHelpEvent("JpSettingsHalfShapePitchChange", self.halfShapePitchChangeEdit)
 
 		self.announceCandidateNumberCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Announce candidate number")),
 		)
+		self.bindHelpEvent("JpSettingsAnnounceCandidateNumber", self.announceCandidateNumberCheckBox)
 		self.announceCandidateNumberCheckBox.SetValue(config.conf["language"]["announceCandidateNumber"])
 
 		self.nvdajpEnableKeyEventsCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Use IME support of nvdajp")),
 		)
+		self.bindHelpEvent("JpSettingsEnableKeyEvents", self.nvdajpEnableKeyEventsCheckBox)
 		self.nvdajpEnableKeyEventsCheckBox.SetValue(config.conf["keyboard"]["nvdajpEnableKeyEvents"])
 
 		self.jpAnsiEditCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Work around ANSI editbox")),
 		)
+		self.bindHelpEvent("JpSettingsAnsiEdit", self.jpAnsiEditCheckBox)
 		self.jpAnsiEditCheckBox.SetValue(config.conf["language"]["jpAnsiEditbox"])
 
 		self.jpAnnounceNewLineCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Announce new line in editable text")),
 		)
+		self.bindHelpEvent("JpSettingsAnnounceNewLine", self.jpAnnounceNewLineCheckBox)
 		self.jpAnnounceNewLineCheckBox.SetValue(config.conf["language"]["jpAnnounceNewLine"])
 
 		self.characterDescriptionModeCheckBox = settingsSizerHelper.addItem(
 			# Translators: The label of a checkbox in language settings
 			wx.CheckBox(self, label=_("Character description mode")),
 		)
+		self.bindHelpEvent("JpSettingsCharacterDescriptionMode", self.characterDescriptionModeCheckBox)
 		self.characterDescriptionModeCheckBox.SetValue(config.conf["language"]["characterDescriptionMode"])
 
 	def onSave(self):
