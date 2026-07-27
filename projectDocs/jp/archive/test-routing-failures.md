@@ -18,7 +18,19 @@
 * **実際の動作**: `lastActivateTime` が 0.0 のまま（`activate()` が呼ばれていない）
 
 ### 2. `test_moveCaret_always_instantActivate`
+* **場所**: `tests/unit/test_braille/test_routing.py:147`
+* **エラー**: `AssertionError: 0.0 not greater than or equal to <timestamp>`
+* **期待動作**: 同上
+* **実際の動作**: 同上
 
+### 3. `test_moveCaret_never_moveReviewAndActivate`
+
+* **エラー**: `AssertionError: CursorManagerTextInfo (3, 3) != CursorManagerTextInfo (0, 0)`
+* **期待動作**: ルーティング後、`api.getReviewPosition()` が期待位置を返す
+
+* **実際の動作**: レビュー位置が期待値と異なる
+
+### 4. `test_moveCaret_always_moveReviewAndActivate`
 
 * **場所**: `tests/unit/test_braille/test_routing.py:114`
 * **エラー**: `AssertionError: CursorManagerTextInfo (3, 3) != CursorManagerTextInfo (2, 2)`
@@ -41,22 +53,22 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
 #### 1. `_getSelection()` の問題（修正済み）
 
 **元の動作:**
-
-
-
-
 * MRO により `ReviewTextInfoRegion._getSelection()` が呼ばれる
 **修正後:**
+
+```python
 def _getSelection(self):
+    # Use CursorManagerRegion's implementation to get the actual CursorManager's selection
     return CursorManagerRegion._getSelection(self)
-
-
-
-
 ```
 
+#### 2. `_routeToTextInfo()` の問題（未解決）
+
+```python
 def _routeToTextInfo(self, info: textInfos.TextInfo):
     TextInfoRegion._routeToTextInfo(self, info)
+    # Then apply ReviewTextInfoRegion's additional behavior
+    if not _routingShouldMoveSystemCaret():
         return
     # ... (省略)
     else:
@@ -223,7 +235,11 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
 
             # Update the physical caret using CursorManagerRegion's implementation
             # This ensures self.obj.selection is updated
+
             CursorManagerRegion._setCursor(self, info)
+```
+
+**重要なポイント:**
 
 
 1. `ReviewTextInfoRegion._routeToTextInfo()` → `TextInfoRegion._routeToTextInfo()` → `ReviewTextInfoRegion._setCursor()` → `api.setReviewPosition()` の流れを維持
@@ -231,6 +247,10 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
 1. 最後に `CursorManagerRegion._setCursor()` を呼んで `self.obj.selection` も更新
 
 2## なぜ現在の実装が失敗するのか
+
+**現在の実装（問題あり）:**
+
+
 ```python
 def _routeToTextInfo(self, info: textInfos.TextInfo):
 
@@ -257,6 +277,10 @@ def _routeToTextInfo(self, info: textInfos.TextInfo):
 *
 *
 
+
+* これは nvdajp ブランチ内での調査結果であり、純粋な nvaccess/nvda リポジトリでテストしたわけではありません
+* nvdajp には `braille.py` や `cursorManager.py` など、他のファイルにも差分があり、それらが影響している可能性があります
+
 *# 将来の TODO
 *
 
@@ -269,7 +293,6 @@ def _routeToTextInfo(self, info: textInfos.TextInfo):
 
 * Braille Routing 問題の分析 - 問題の本質と3つの選択肢の比較
 * [テストスキップの妥当性説明](test-routing-skip-justification.md) - テストをスキップする妥当性の詳細な説明
-
 ## 更新履歴
 
 * 2025-01-XX: ドキュメント作成

@@ -100,6 +100,10 @@ if client.nvdaController_testIfRunning() == 0:
 
 python test_pitchCtl.py
 
+
+```
+
+本家デモ: `extras/controllerClient/examples/example_python.py`
 Issue #642 検証用: `jptools/test_controller_speakSpelling.py`
 
 ---
@@ -137,5 +141,18 @@ Issue #642 では、`nvdaController_speakSpelling` の IDL / C++ 側の定義は
 GitHub PR #644 において指摘された、現在の設計上の課題を以下にまとめる。これらは将来的な API の安定性や本家（NV Access）への統合を考慮する際の検討項目である。
 
 ### 1. 戻り値の型とデータの混在
+現在の `nvdaController_isSpeaking`, `nvdaController_getPitch`, `nvdaController_getRate` は、IDL（インターフェース定義）上は `error_status_t`（Windows エラーコード）を返す関数として定義されている。しかし、実際の実装ではステータスコードではなく、ピッチ値（0-100）や発話状態（0/1）といったデータを直接戻り値として返している。
 
+
+### 2. 未実装時の戻り値の整合性
+コントローラーハンドラが未登録の場合、現在は `ERROR_CALL_NOT_IMPLEMENTED` (120) を返しているが、これを boolean（発話中かどうか）として解釈するクライアントコードでは、120 が True（発話中）と判定され、無限ループなどの予期せぬ挙動を引き起こす可能性がある。
+
+
+### 3. 音声エンジン（Synth）による信頼性の差異
+
+* **問題点**: 一部の音声エンジン（例: eSpeak）では発話中かどうかのフックを提供していないため、実際には発話していても常に 0（停止中）と返る場合がある。
+* **改善案**: 全ての音声エンジンで正確な状態が取得できるわけではないことをドキュメントで明示するか、より汎用的な状態取得方法を検討する。
+### 4. アーキテクチャ判別の堅牢化
+
+* **問題点**: ARM64 環境の Python など、ポインタサイズだけでは x64 と区別できないケースがあり、誤ったアーキテクチャの DLL をロードしようとする可能性がある。
 * **改善案**: `platform.machine()` などを併用し、x86/x64/ARM64 を明示的に判別するロジックへの改善を検討する。

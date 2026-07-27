@@ -31,42 +31,126 @@
 
     _ = winUser.getAsyncKeyState(winUser.VK_BACK)  # noqa: F841
 
-import re
 
-* msg = re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x" + x.group(1), 16)), text_type(msg))
+# nvdajp end
 
-* pt:  # noqa: E722
 
-*
-
+*``
 *
 
 **移植しない理由**（`changes-nvdajp.md`より）:
+
+* 目的が不明確（戻り値を使用していない）
+* 副作用を期待している可能性があるが、その意図が不明
+* コメントがなく、実装の意図が推測できない
 * 本家版 2026.1 でも削除されている
+* 現在のコードベースでは `NVDAHelper.py` で IME のキャンセル状態をチェックする処理があるため、このワークアラウンドが現在も必要かどうか不明
+
+**今後の対応**: IME 関連の問題が再発した場合、目的を明確にしたコメントとともに再検討する
+
+
+**状況**: **意図的に移植しないと判断された機能**（`changes-nvdajp.md` 6.12.2 参照）
+
+```python
+from six import unichr, text_type
+import re
+try:
+*   msg = re.sub(r"\\u([0-9a-f]{4})", lambda x: unichr(int("0x" + x.group(1), 16)), text_type(msg))
+*xcept:  # noqa: E722
+*   pass
+*``
+*
+**移植しない理由**（`changes-nvdajp.md`より）:
+* Python 3 では文字列は既に Unicode なので、通常はこの処理は不要
+* `six` モジュールへの依存を避けられる（Python 3.13 では `text_type` は `str`、`unichr` は `chr` と同じ）
+* 本家版 2026.1 でも削除されている
+* 日本語環境でこの処理が必要だった明確な記録が見つからない
+
+**今後の対応**: 外部ライブラリやエラーメッセージで `\uXXXX` 形式のエスケープシーケンスが問題になる場合は、`six` を使わない形で再検討する
+
+
+### 3. `source_mathPres_mathPlayer.py`（意図的な削除）
+
+
+**状況**: **意図的に移植しないと判断された機能**（`changes-nvdajp.md` 6.12.3 参照）
+
+*
+**削除されたコード**:
+*
 *``python
+*f config.conf["language"]["alwaysSpeakMathInEnglish"]:
+*   lang = "en"
+*``
+*
+**移植しない理由**（`changes-nvdajp.md`より）:
+* MathPlayer はレガシーな数式読み上げエンジンであり、現在は MathCAT が推奨されている
+* 本家版 2026.1 でも削除されている
+
 * MathCAT では同様の機能が提供されている可能性がある
 
+**今後の対応**: MathCAT で同様の機能が必要な場合は、MathCAT 側で実装を検討する
+
+
+### 4. `source_NVDAObjects_window_scintilla.py`
+
+
+**問題**: JP固有のメソッドが完全に削除されている（意図的な削除かどうか不明）
+
+**削除されたコード**:
+
+```python
+*ef collapse(self, end: bool = False):
+*   """Before collapsing to end, if no text is selected, TextInfo is expanded to line.
+    This fixes a bug where next braille line command didn't move the cursor to the last empty line
+    in Notepad++ documents.
+*   https://github.com/nvaccess/nvda/issues/17430
+*   """
+*   if end and self.obj.makeTextInfo(textInfos.POSITION_SELECTION).isCollapsed:
 *       self.expand(textInfos.UNIT_LINE)
+*   super().collapse(end=end)
+*``
 *
 **影響**:
 * Notepad++ での点字表示に関するバグ修正が失われている
-
+* 本家の issue #17430 への参照があるが、JP固有の修正として実装されていた
 *
+**注意**: `changes-nvdajp.md` にはこの削除についての記載がないため、意図的な削除かどうか不明です。
+*
+**推奨対応**:
+* このメソッドを復元し、JP PATCHマーカーで囲む
 * または、本家で修正されているか確認
+* 意図的な削除である場合は、`changes-nvdajp.md` に記載を追加することを検討
+*
+*# 差分最小化の原則に反する可能性があるファイル
+*
+*## 1. `source_api.py`
+*
 **問題**: 元の2025.3.x jpの実装（`getattr`/`hasattr`を使用した安全なアクセス）が保持されていない
+*
+**変更内容**:
 * `getattr(o, "appModule", None)` → `o.appModule` に変更（2箇所）
 * `hasattr(tempObj, "container")` チェックの削除
 * `tempObj = container if hasattr(tempObj, "container") else None` → `tempObj = container` に変更
+*
 **分析**:
+* 本家の変更に完全に追従している
+* しかし、元の2025.3.x jpで`getattr`/`hasattr`を使っていた理由が不明確
+* もし元の実装に安全性の考慮があった場合、それを保持すべき
+
 **良い点**:
 * JP PATCHマーカーは正しく更新されている（`# BEGIN JP PATCH / # END JP PATCH`）
+* ATOKと点字ディスプレイのワークアラウンドは保持されている
 *
 **推奨対応**:
+* 元の実装で`getattr`/`hasattr`を使っていた理由を確認
 * 本家の変更が必須でない場合、元の実装を保持することを検討
+*
+## JP PATCHマーカーが正しく更新されているファイル（良い例）
 *
 *## 1. `source_characterProcessing.py`
 *
 **良い点**:
+* `# nvdajp begin/end` → `# BEGIN JP PATCH / # END JP PATCH` に正しく更新
 * JP固有の機能（characters.dic、cldr.dic、users characters）が保持されている
 * ファイルパスの修正（`globalVars.appDir`の追加）も適切
 *

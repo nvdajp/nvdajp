@@ -6,35 +6,66 @@
 
 ### 1.1 libkuraji の現在の実体
 
-ness.json`（かな点訳）、`mecabHarness.json`（形態素解析）、`eng2Harness.json`（英語 G2）、`nabccHarness.json`（NABCC）
+  * `harness.json`（かな点訳）、`mecabHarness.json`（形態素解析）、`eng2Harness.json`（英語 G2）、`nabccHarness.json`（NABCC）
+* つまり libkuraji は「点訳エンジンの独立リポジトリ」という構想の器としてすでに存在するが、**エンジン本体のコードはまだ nvdajp 側にある**。
+
+> 上記は設計当初の状態。現在は libkuraji がエンジン本体（`kana.py` = translator1 相当、`translator2.py`）を含む独立パッケージとして完成し、nvdajp はそのベンダーコピー（`source/libkuraji/`）を利用する。
+
+### 1.2 点訳エンジン本体の所在と結合
+* エンジン本体: `source/synthDrivers/jtalk/translator2.py`（Phase 2: 分かち書き・マスあけ）、`translator1.py`（Phase 1: かな→点字）。
+* 呼び出し元（nvdajp 側の利用者）は 2 箇所のみ:
+  * `source/louisHelper.py`（`translate as jpTranslate`）
+  * `source/gui/jpBrailleViewer.py`
+* テストランナーは `miscDepsJp/jptools/harness.py` 等で、libkuraji の JSON を読み込んで nvdajp 内のエンジンを検証している。
+* 結合の実態:
+  * `translator2` は同居する `mecab.py`（python-jtalk 由来の MeCab ラッパー）と JTalk 辞書（`jtalk/dic`）に依存する。
+  * NVDA 固有依存（`config`、`logHandler` 等）は translator 本体の import には現れておらず、結合は主に **MeCab／辞書経由**である（詳細はフェーズ 1 で棚卸し）。
+
+> 上記は分離前の結合状態。現在は `translator1.py` / `translator2.py` / `_nvdajp_unicode.py` が薄い互換シムに置き換わっており、呼び出し元（louisHelper.py / jpBrailleViewer.py）は無変更のまま libkuraji に委譲する。
+
+### 1.3 目指す関係
 
 
-
-上記は分離前の結合状態。現在は `translator1.py` / `translator2.py` / `_nvdajp_unicode.py` が薄い互換シムに置き換わっており、呼び出し元（louisHelper.py / jpBrailleViewer.py）は無変更のまま libkuraji に委譲する。
-
-
-**nvdajp**: libkuraji を依存パッケージ（またはベンダーツリー）として取り込み、`louisHelper.py` / `jpBrailleViewer.py` から呼び出す。JTalk（音声合成）は nvdajp 側に残る。
+* **nvdajp**: libkuraji を依存パッケージ（またはベンダーツリー）として取り込み、`louisHelper.py` / `jpBrailleViewer.py` から呼び出す。JTalk（音声合成）は nvdajp 側に残る。
 
 ### ゴール
 
+* **ライブラリ化**: `pip install` 等で導入でき、任意の Python プロジェクトから呼び出せる。（達成: `pip install git+https://github.com/nishimotz/libkuraji.git`）
+* **CLI ツール化**: `echo "テキスト" | kuraji` のように点訳結果を得られる。（達成）
 * **テストの独立化**: libkuraji リポジトリ単体でテストスイートが完結する（テストデータはすでに libkuraji 側にある）。（達成: MeCab 出力の録画・再生方式で 2219 テストが MeCab なしで完結）
 * **nvdajp からの結合度排除**: NVDA 固有モジュールへの依存を持ち込まない。（達成）
+
+---
+
 ## 2. 論点: JTalk と libkuraji はどう分離できるか
 
+translator2 が `synthDrivers/jtalk/` に同居している理由は、MeCab ラッパーと JTalk 辞書（拡張 NAIST-JDIC）を音声合成と共用しているためである。分離の設計選択肢:
 
 ### 案 A: 形態素解析インターフェースによる依存性注入（推奨）
-
 * libkuraji は「形態素解析結果（表層形・読み・品詞のリスト）を受け取る」抽象インターフェースを定義する。
+
+* nvdajp 組み込み時は、JTalk 側の `mecab.py` ＋ JTalk 辞書をアダプター経由で注入する（辞書・DLL の二重持ちなし、読み・マスあけの挙動も現行と一致）。
+* スタンドアロン利用時は `mecab-python3` ＋ `unidic-lite`/`ipadic` 等を optional dependency として利用する。
 * 課題: 辞書が異なると読み・分かち書き結果が変わる。libkuraji のテストスイートは「JTalk 辞書を注入した構成」を基準にするか、辞書差分を許容するテスト設計が必要。
+
+### 案 B: MeCab ラッパー＋辞書ごと libkuraji に移す
+
 * `mecab.py` と辞書ビルド（`jptools` の辞書関連）を libkuraji 側へ移し、JTalk（音声合成）が libkuraji の MeCab に依存する形に逆転させる。
+* 利点: 点訳の再現性が完全。欠点: 音声合成が点訳ライブラリに依存するのは不自然で、辞書（大容量）の配布問題を libkuraji が抱え込む。
+### 案 C: MeCab 層を第三のパッケージに分離
+
 * 「MeCab ラッパー＋JTalk 辞書」を独立パッケージ（例: python-jtalk 系の再整理）とし、JTalk と libkuraji の両方がそれに依存する。
 * 最も筋は良いがリポジトリが 3 つになり運用コストが高い。まず案 A で始め、必要になったら C へ発展させるのが現実的。
 
 **採用・実装済み**: 案 A。libkuraji 本体（`translator2.py`）は形態素解析器非依存で、`analyzer.analyze(text, logwrite) -> list[str]` / `is_ready() -> bool` の 2 メソッドを注入する形になっている。nvdajp 側は `mecabAnalyzer.py`（MeCab + JTalk 拡張辞書）を注入。辞書の同一性が必要なテスト（harness.json 経由の分かち書き検証）は、nvdajp 側で録画した MeCab 出力（`tests/mecabFixture.json`、`recordMecabFixture.py` で再録画）を libkuraji 側で再生することで、**MeCab をインストールせずに libkuraji 単体の CI で完結**させている。
 
+### 辞書アセットの扱いと「辞書契約」
+
 **translator2 の真の依存先は MeCab 本体ではなく、JTalk 拡張辞書の出力フォーマットと内容である。** フェーズ 1 で MeCab ライブラリは `mecabAnalyzer.py` に抽象化したが、以下は辞書側の仕様（事実上の API）として残る:
 
 1. **拡張フィールド**: `mecab_to_morphs` は feature 行の第 13 フィールド（`ar[12]`）を「点訳表記」として読む。これは nvdajp が辞書ビルド時に追加した独自フィールドで、標準の ipadic / unidic には存在しない（無い場合は読みフィールドにフォールバックする）。
+2. **読みの規約**: カタカナ読み、アクセント欄の `0/1` 形式、`’` を含む長音処理など、translator2 のルールは JTalk 辞書固有の出力に合わせてチューニングされている。
+3. **テストの前提**: `libkuraji/tests/harness.json` の期待値自体が JTalk 辞書の読み・分かち書きを前提としており、辞書を替えると正解が変わる。
 
 このため方針を次のとおりとする:
 
@@ -59,49 +90,63 @@ ness.json`（かな点訳）、`mecabHarness.json`（形態素解析）、`eng2H
 ## 4. 開発ロードマップ（フェーズ分け）— 全完了
 
 ```mermaid
-
 graph TD
     A["フェーズ1: nvdajp 内部でのリファクタリング (MeCab 依存の抽象化) ✅"] --> B["フェーズ2: libkuraji へのコード移管とパッケージ化 ✅"]
-
-
+    B --> C["フェーズ3: nvdajp が libkuraji を依存として利用 ✅"]
 ```
-
 ### フェーズ 1: nvdajp 内部での結合度低下（低リスク）— 完了 (PR [#685](https://github.com/nvdajp/nvdajp/pull/685), 2026-07-05)
 
 * translator1/2 の NVDA 固有依存（config、logHandler、ctypes 経由の MeCab 直接呼び出し等）を棚卸しする。
 * MeCab 呼び出しを translator2 本体から分離し、形態素データ（リスト）を受け取るインターフェースに変更する（案 A の下準備）。
+* 現行の harness テスト（`jptools/harness.py` 等）が引き続き通ることを CI で確認する。
 * 実装: 新規 `source/synthDrivers/jtalk/mecabAnalyzer.py` に MeCab 依存（ctypes の feature 取り出し・`text2mecab`・辞書パス・初期化/ready 判定）を集約。`translator2.initialize(analyzer=...)` で解析器を注入可能にした。
+### フェーズ 2: libkuraji リポジトリへの移管とパッケージ化 — 完了 (2026-07-05, [nishimotz/libkuraji](https://github.com/nishimotz/libkuraji))
 
 * translator1/2（リファクタリング後）を libkuraji リポジトリへ移し、`pyproject.toml`・CLI エントリポイントを整備する。
+* テストランナー（現 `jptools/*Harness.py` 相当）も libkuraji へ移し、単体で完結させる。
+* translator1 相当（かな→点字）は移管せず、libkuraji 側で新規に書き直す（`harness.json` をテストとして先に通す）。
 * 実装: `kana.py`（クリーンルーム書き直し、harness.json 全464件+NABCC 51件が一致）、`translator2.py`（著作権者の許諾を得て BSD 移管）、`cli.py`（`kuraji` コマンド）、GitHub Actions CI（Ubuntu/Windows × Python 3.10/3.13）。`tests/mecabFixture.json`（nvdajp 側で録画した MeCab 出力の再生）により、MeCab 未インストールでも translator2 のテスト（分かち書き・英語 Grade 1/2）を含めて 2219 件のテストが libkuraji 単体で完結する。旧実装比で分かち書き処理が約 1.9 倍高速化。
 
-* JP smoke tests・点字ユニットテストで回帰がないことを確認する。
 
+* `synthDrivers/jtalk/translator1.py` / `translator2.py` を削除し、libkuraji（subtree 更新または pip 依存）に置き換える。
+* `louisHelper.py` と `gui/jpBrailleViewer.py` の import を切り替え、JTalk の `mecab.py` をアダプターとして注入する。
+* JP smoke tests・点字ユニットテストで回帰がないことを確認する。
+* 実装: libkuraji を `source/libkuraji/` にベンダーコピー（`miscDepsJp/jptools/syncLibkuraji.py` で同期。libkuraji が正、nvdajp への一方向コピー）。`translator1.py` / `translator2.py` / `_nvdajp_unicode.py` は薄い互換シムに置換し、`louisHelper.py` 等の呼び出し元は無変更のまま維持。
+* **教訓**: 分離作業で `kana.py` が harness.json のカバー範囲外の文字（ヘブライ文字等）を読み飛ばす退行が発生し、点字カーソルのルーティング（1 入力文字 = 1 出力セルの位置対応）が壊れた。原因は旧 `translator1.py` が未知文字を `□` プレースホルダーとして 1:1 対応を保っていたのに対し、書き直し版が単純にスキップしていたこと。nvdajp の既定点字テーブル `ja-jp-comp6.utb` は全テキストが translator2 経由になる（`louisHelper.py` の JP パッチ）ため、日本語以外のテキストでも回帰が波及する。libkuraji 側で `d9f662f` により修正済み。**クリーンルーム書き直しの際は、テストコーパスに無い入力（他言語スクリプト等）のフォールバック挙動を旧実装と突き合わせる**ことが必要。
+
+
+* **フェーズ 4.1（完了, 2026-07-06）**: ビルドレシピの抽出。`make_jdic.py` を CLI 化（`--mecab-dict-index` / `--outdir` / `--validate-only`）し、NAIST-JDIC ソース・nvdajp 拡張エントリ（custom/tankan/eng dic）とともに移管。エンドツーエンドで検証済み（nvdajp の `mecab-dict-index.exe` で `sys.dic` 一式をビルドし、実際に `translator2` に読み込ませて分かち書き・点訳が正しく動くことを確認）。CI は `--validate-only`（品詞 ID 解決の検証、MeCab 不要）のみ稼働。
 * **フェーズ 4.2（完了, 2026-07-06）**: ユーザー辞書ビルドの汎用化。nvdajp 専用だった `build_userdic.py` を汎用ツールとして同梱（`--mecab-dict-index` / `--dic-dir` / `--csv` / `--outfile`）。libkuraji・JTalk 双方のユーザーが、開発環境なしで独自語彙（固有名詞・専門用語）を追加できるようにする土台。エンドツーエンドで検証済み。
 * **フェーズ 4.3（完了, 2026-07-06）**: CI での `mecab-dict-index` フルビルド。当初 [nishimotz/libopenjtalk](https://github.com/nishimotz/libopenjtalk) を使う想定だったが、これは nvdajp が実際に使う MeCab ソースとは別系統で、UTF-8 の `rewrite.def` 解析が壊れることが判明したため不採用。nvdajp が実際にビルドしているソース（`miscDepsJp/include/python-jtalk/libopenjtalk/mecab`。Open JTalk フォーク、BSD 系）を `src/mecab-src/` にベンダーし、`.github/workflows/build-dic.yml`（Windows + `ilammy/msvc-dev-cmd`）で `mecab-dict-index.exe` のビルド → 辞書ビルド → ユーザー辞書ビルドまで CI で検証。**教訓**: nvdajp 内には MeCab ソースのコピーが 2 箇所あり（`miscDepsJp/jptools/jtalk/...` と `miscDepsJp/include/python-jtalk/...`）、前者はクリーンビルドすると現行 MSVC で `error C2593`（演算子のあいまいさ）になる古い未使用コピーだった。実際のビルド（`jtalkSync`）は後者（`/D MECAB_STATIC` フラグ付き）をコンパイルしてから前者へコピーしているだけで、nvdajp の実ビルドが「毎回 git clone からでも成立する」という前提を軽視して誤った結論を出しかけた。
-
 * **フェーズ 4.4（完了, 2026-07-06）**: GitHub Releases での配布。`.github/workflows/release-dic.yml` を追加。`v*` タグの push をトリガーに、辞書一式（6 ファイル）を zip 化して SHA256 チェックサムとともに GitHub Release に自動添付する。**公開リポジトリに自動リリース公開の経路を作る操作のため、着手前に利用者へ明示的な許可を確認済み。** 実際のリリース作成（初回タグ push）は未実施。
-
+* **フェーズ 4.5（完了, 2026-07-06。既定を `prebuilt` に再改定, 2026-07-06）**: nvdajp の `jtalkSync` が任意でフェーズ 4.4 の成果物に依存できるようにする。**方針は `projectDocs/jp/vendor-submodules.md`（「辞書のビルド時取得（方針転換）」節）に記録済み**: `jtalkDicSource`（scons 変数、`miscDepsJp/jptools/jtalk-dic-version.txt` に pin されたタグ＋SHA256）で `prebuilt`（既定・署名ビルド含む全ビルドが対象）と `local`（辞書開発用の明示オプトイン）を切替え。チェックサム不一致時はローカルへの黙ったフォールバックをせずビルド失敗とする。`PREBUILT_SOURCE` マーカーで再実行時のべき等性（再ダウンロードしない）を確保。既定変更の理由: JTalk の利用シェアが OneCore 音声の数分の一まで縮小しており、`bep-eng.dic` 網羅性低下の実害よりビルド時間短縮のメリットを優先。
+  * **教訓（重要）**: 当初 `bep-eng.dic` 除外による `MecabTests` 245 件回帰を確認したが、原因は `bep-eng.dic` 不在そのものではなく、代替エントリの実装不備だった。(1) 追加した語彙エントリの表記を半角 ASCII のままにしていたため、`text2mecab_convert()` が入力を全角に変換する仕様と食い違い、絶対にマッチしない死んだエントリになっていた（`_to_mecab_surface()` で全角化して解決）。(2) 複合語 `pokémon go` を 1 語のエントリにしたため分かち書き境界情報を失っていた（2 語に分割して解決）。**CI がビルドした成果物を実際にダウンロードして検証しないと、ローカルビルドとの差異を見落とす**ことも判明（libkuraji-jtalk-dic v1.0.1 で発覚）。`libkuraji-jtalk-dic` v1.0.2 で `mecabHarness.json` コーパス 0 件不一致・JP smoke tests 全緑を、実際にダウンロードしたリリース成果物で確認済み。pin を v1.0.2 に更新済み。
+  * **注意**: `libkuraji-jtalk-dic` は `bep-eng.dic`（GPL、ライセンス非互換のため除外）の代わりに、`mecabHarness.json`（nvdajp 自身の BSD テストデータ）を正解データとしたクリーンルームの代替エントリ（242 語）を `nvdajp-custom-dic.csv` に追加済み（v1.0.2）。点訳の文字面自体は `replace_alphabet_morphs`（`translator2.py`）により常に元のアルファベット表記に上書きされるため影響しない（実測確認済み: `acrobat` は外字符＋ラテン文字で点訳される）。**影響するのは JTalk の音声合成（発音）のみ**で、`prebuilt` 経路でも `mecabHarness.json` コーパスは 0 件不一致（v1.0.2 で確認済み）。ただしテストコーパス外の一般語彙は `bep-eng.dic`（47000 語）ほどの網羅性は無い。
 
 ---
-
 ## 5. 関連ドキュメントと参照
 
+* [日本語点字出力テーブルの実装詳細 (braille-ja-jp-comp6.md)](braille-ja-jp-comp6.md)
+* [日本語点字テーブルの関係整理 (braille-tables-relationship.md)](braille-tables-relationship.md)
 * [JTalk 辞書検証の分析 (tab-character-analysis.md)](tab-character-analysis.md)
+* [ユーザー辞書とツールの x64 化 (userdic.md)](userdic.md)
 * [libkuraji リポジトリ](https://github.com/nishimotz/libkuraji)（BSD 3-Clause、点訳エンジン本体）
 * [libkuraji-jtalk-dic リポジトリ](https://github.com/nishimotz/libkuraji-jtalk-dic)（BSD 3-Clause、JTalk 拡張辞書のビルドレシピ）
 * [ベンダーツリー運用方針 (vendor-submodules.md)](vendor-submodules.md) — 辞書のビルド時取得の方針転換を記載
+
 ---
 
+## 6. 完了状態のまとめ（2026-07-06 時点）
 
 | 項目 | 状態 |
 | :--- | :--- |
 | libkuraji リポジトリ（BSD 3-Clause, CI 付き） | 完了 |
 | kana.py（translator1 相当のクリーンルーム書き直し） | 完了（全 515 テストパス） |
+| translator2 の BSD 移管 | 完了（著作権者許諾済み） |
 | MeCab 依存の抽象化（`mecabAnalyzer.py`） | 完了 |
 
+| nvdajp のベンダー切替え（`source/libkuraji/`） | 完了 |
 | MeCab フィクスチャ再生方式（`mecabFixture.json`） | 完了 |
-
 | `kuraji` CLI | 完了 |
 | README（使い方・解析器契約・辞書契約） | 完了 |
 | 性能改善（unicode_normalize の translate 化等） | 完了（約 1.9 倍高速化） |
@@ -110,7 +155,6 @@ graph TD
 | `libkuraji-jtalk-dic`: CI でのフルビルド | 完了（フェーズ 4.3） |
 | `libkuraji-jtalk-dic`: GitHub Releases 配布（ワークフロー） | 完了（フェーズ 4.4）。初回タグ push は未実施 |
 | nvdajp `jtalkSync` のプリビルド依存化 | 完了（フェーズ 4.5、`jtalkDicSource=prebuilt`） |
-
 
 ### 残タスク
 

@@ -95,7 +95,19 @@ HRESULT getDispAttrFromRange(ITfContext *pContext,
 **機能**: TSF の表示属性を文字列として取得する
 
 **データ形式**:
+* `jpAttrBuf` に各文字の変換状態を表す数字の文字列を格納
+* 例: `L"222221111000"`
+* 各数字の意味:
+  * `0`: TF_ATTR_INPUT (入力中)
+  * `1`: TF_ATTR_TARGET_CONVERTED (変換対象・変換済み)
+  * `2`: TF_ATTR_CONVERTED (変換済み)
+  * `3`: TF_ATTR_TARGET_NOTCONVERTED (変換対象・未変換)
+  * `4`: TF_ATTR_INPUT_ERROR (入力エラー)
+  * `5`: TF_ATTR_FIXEDCONVERTED (確定変換済み)
 
+#### 2. `OnEndEdit` での表示属性通知
+
+```cpp
 // BEGIN JP PATCH (Japanese TSF display attribute support)
 //nvdaControllerInternal_inputCompositionUpdate(buf,selStart,selEnd,0);
 constexpr long jpAttrLen = 256;
@@ -176,31 +188,35 @@ class ATOKxxUIComment(IAccessible):
 **機能**: ATOK の UI コメントウィンドウ（候補コメント）を検出し、音声で読み上げます。
 
 **条件**:
-
-
-
-
 * `nvdajpEnableKeyEvents` が有効
 * `announceSelectedCandidate` が有効
+
+**動作**:
 * UI コメントが表示されたときにビープ音を鳴らす
+* コメントの内容を音声で読み上げる
+* マウスカーソルをコメントウィンドウの中央に移動
 
 #### `findExtraOverlayClasses` 関数
 
-
-
-
+```python
+def findExtraOverlayClasses(obj, clsList):
+	windowClassName = obj.windowClassName
 	if windowClassName.endswith("UIComment"):
-
+		clsList.append(ATOKxxUIComment)
+```
 
 **機能**: ウィンドウクラス名が `"UIComment"` で終わる場合に `ATOKxxUIComment` クラスを適用します。
 
+#### `IAccessible.__init__.py` での呼び出し
+
+```python
 elif windowClassName[:5] in ("ATOK2", "ATOK3"):
-
 	from . import atok
-
+	atok.findExtraOverlayClasses(self, clsList)
 ```
 
 **機能**: ウィンドウクラス名が `"ATOK2"` または `"ATOK3"` で始まる場合に ATOK のオーバーレイクラスを検索します。
+
 ### マージ時の注意事項
 
 マージ後は、以下の点を確認してください：
