@@ -30,20 +30,20 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v7
+      uses: actions/checkout@v4
       with:
         ref: beta
         fetch-depth: 1
         submodules: true
 
     - name: Set up python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: '3.13'
         architecture: 'x86'
 
     - name: setup uv
-      uses: astral-sh/setup-uv@v7
+      uses: astral-sh/setup-uv@v6
 
     - name: Download translations from Crowdin
       run: uv run source/l10nUtil.py exportTranslations -o . -l ${{ matrix.newLanguage }}
@@ -51,6 +51,13 @@ jobs:
         crowdinProjectID: ${{ vars.CROWDIN_PROJECT_ID }}
         crowdinAuthToken: ${{ secrets.CROWDIN_AUTH_TOKEN }}
 
+    - name: Install pre-commit
+      run: |
+        python -m pip install --upgrade pip
+        pip install pre-commit
+        pre-commit install
+
+    # Job will fail if pre-commit checks fail
     - name: Commit language files only
       id: commit
       shell: bash
@@ -60,10 +67,6 @@ jobs:
         git config --local user.email ""
         git add source/locale/${{ matrix.newLanguage }}
         git add user_docs/${{ matrix.newLanguage }}
-
-        # Lint the staged translation files. If a hook fails or rewrites a file,
-        # this step fails, so the job stops here and no pull request is opened.
-        uv run prek run
 
         # Check if there are any changes to commit
         if git diff --staged --quiet; then

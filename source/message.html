@@ -1,20 +1,7 @@
 <!doctype html>
-<html>
+<html style="width: 350px; height: 300px">
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta charset="utf-8">
 	<title>{{TITLE}}</title>
-	<style>
-		body {
-			margin: 1em;
-			overflow-wrap: break-word;
-			word-wrap: break-word;
-		}
-		pre {
-			white-space: pre-wrap;
-			word-wrap: break-word;
-		}
-	</style>
 	<script>
 		document.addEventListener('keydown', function (e) {
 			if (e.key === 'Escape') {
@@ -25,7 +12,7 @@
 		});
 	</script>
 </head>
-<body>
+<body style="margin: 1em">
 	<div id="messageDiv">{{MESSAGE}}</div>
 </body>
 </html>

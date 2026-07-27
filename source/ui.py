@@ -139,7 +139,7 @@ def browseableMessage(
 		)
 
 	# --- build the dialog ---
-	dialog = HtmlMessageDialog(None, templatedMessage, title, buttons=None)
+	dialog = HtmlMessageDialog(gui.mainFrame, templatedMessage, title, buttons=None)
 
 	if copyButton:
 		dialog.addButton(

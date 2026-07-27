@@ -152,7 +152,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver, ScriptableObject):
 	isThreadSafe = True
 	supportsAutomaticDetection = True
 	timeout = 0.2
-	supportedSettings = (braille.BrailleDisplayDriver.HIDInputSetting(useConfig=True),)
+	supportedSettings = (braille.BrailleDisplayDriver.HIDInputSetting(useConfig=False),)
 
 	@classmethod
 	def registerAutomaticDetection(cls, driverRegistrar: bdDetect.DriverRegistrar):
@@ -411,8 +411,6 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver, ScriptableObject):
 		return not self._rawKeyboardInput
 
 	def _set_hidKeyboardInput(self, state):
-		if state is self.hidKeyboardInput:
-			return
 		rawState = not state
 		if self.isHid:
 			# Make sure the device settings are up to date.
