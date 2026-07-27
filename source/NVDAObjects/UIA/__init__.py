@@ -203,9 +203,17 @@ class UIATextInfo(textInfos.TextInfo):
 		val = fetch(UIAHandler.UIA_UnderlineStyleAttributeId)
 		if val != UIAHandler.handler.reservedNotSupportedValue:
 			formatField["underline"] = bool(val)
+		# BEGIN JP PATCH (issue #710): UIA returns a TextDecorationLineStyleEnum value for
+		# UIA_StrikethroughStyleAttributeId. Report double strikethrough distinctly from single.
 		val = fetch(UIAHandler.UIA_StrikethroughStyleAttributeId)
 		if val != UIAHandler.handler.reservedNotSupportedValue:
-			formatField["strikethrough"] = bool(val)
+			if val == 3:  # TextDecorationLineStyle_Double
+				formatField["strikethrough"] = "double"
+			elif val == 1:  # TextDecorationLineStyle_Single
+				formatField["strikethrough"] = True
+			elif val:
+				formatField["strikethrough"] = bool(val)
+			# END JP PATCH
 
 	def _getFormatFieldSuperscriptsAndSubscripts(
 		self,
