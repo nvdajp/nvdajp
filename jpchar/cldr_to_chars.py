@@ -49,6 +49,8 @@ with open(characterDescriptions, encoding="utf-8") as fp:
 			if fields and fields[0] in cldrDict:
 				print(
 					"characterDescriptions.dic:{} {} => {}".format(
-						cnt + 1, repr(fields), cldrDict[fields[0]]
+						cnt + 1,
+						repr(fields),
+						cldrDict[fields[0]],
 					),
 				)

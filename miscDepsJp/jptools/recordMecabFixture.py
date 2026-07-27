@@ -70,7 +70,7 @@ def main():
 		for use_foreign_quotes in (False, True):
 			try:
 				translator2.translateWithInPos2(
-					t["text"], logwrite=log, nabcc=nabcc, use_foreign_quotes=use_foreign_quotes
+					t["text"], logwrite=log, nabcc=nabcc, use_foreign_quotes=use_foreign_quotes,
 				)
 			except Exception as e:
 				errors += 1

@@ -7,10 +7,10 @@
 /* at Tue Jan 19 12:14:07 2038
  */
 /* Compiler settings for build\arm64ec\interfaces\nvdaController\nvdaController.idl, build\arm64ec\interfaces\nvdaController\nvdaController.acf:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.01.0628 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.01.0628
     protocol : dce , ms_ext, c_ext, robust
-    error checks: allocation ref bounds_check enum stub_data 
-    VC __declspec() decoration level: 
+    error checks: allocation ref bounds_check enum stub_data
+    VC __declspec() decoration level:
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
@@ -47,15 +47,15 @@
 #endif
 #endif
 
-/* Forward Declarations */ 
+/* Forward Declarations */
 
 #ifdef __cplusplus
 extern "C"{
-#endif 
+#endif
 
 
 /* interface __MIDL_itf_nvdaController_0000_0000 */
-/* [local] */ 
+/* [local] */
 
 /*
 This file is a part of the NVDA project.
@@ -70,7 +70,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 This license can be found at:
 http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 */
-typedef /* [v1_enum] */ 
+typedef /* [v1_enum] */
 enum tagSPEECH_PRIORITY
     {
         SPEECH_PRIORITY_NORMAL	= 0,
@@ -78,7 +78,7 @@ enum tagSPEECH_PRIORITY
         SPEECH_PRIORITY_NOW	= 2
     } 	SPEECH_PRIORITY;
 
-typedef /* [v1_enum] */ 
+typedef /* [v1_enum] */
 enum tagSYMBOL_LEVEL
     {
         SYMBOL_LEVEL_NONE	= 0,
@@ -89,10 +89,10 @@ enum tagSYMBOL_LEVEL
         SYMBOL_LEVEL_UNCHANGED	= -1
     } 	SYMBOL_LEVEL;
 
-typedef error_status_t ( __stdcall *onSsmlMarkReachedFuncType )( 
+typedef error_status_t ( __stdcall *onSsmlMarkReachedFuncType )(
     /* [string][in] */ const wchar_t *mark);
 
-error_status_t __stdcall nvdaController_setOnSsmlMarkReachedCallback( 
+error_status_t __stdcall nvdaController_setOnSsmlMarkReachedCallback(
     onSsmlMarkReachedFuncType callback);
 
 
@@ -105,34 +105,34 @@ extern RPC_IF_HANDLE nvdaController___MIDL_itf_nvdaController_0000_0000_v0_0_s_i
 #define __NvdaController_INTERFACE_DEFINED__
 
 /* interface NvdaController */
-/* [implicit_handle][version][uuid] */ 
+/* [implicit_handle][version][uuid] */
 
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_testIfRunning( void);
 
-/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_speakText( 
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_speakText(
     /* [string][in] */ const wchar_t *text);
 
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_cancelSpeech( void);
 
-/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_brailleMessage( 
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_brailleMessage(
     /* [string][in] */ const wchar_t *message);
 
-/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_speakSpelling( 
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_speakSpelling(
     /* [string][in] */ const wchar_t *text);
 
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_isSpeaking( void);
 
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_getPitch( void);
 
-/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_setPitch( 
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_setPitch(
     const int nPitch);
 
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_getRate( void);
 
-/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_setRate( 
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_setRate(
     const int nRate);
 
-/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_setAppSleepMode( 
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_setAppSleepMode(
     /* [in] */ const int mode);
 
 
@@ -148,18 +148,18 @@ extern RPC_IF_HANDLE nvdaController_NvdaController_v1_0_s_ifspec;
 #define __NvdaController2_INTERFACE_DEFINED__
 
 /* interface NvdaController2 */
-/* [implicit_handle][version][uuid] */ 
+/* [implicit_handle][version][uuid] */
 
-/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_getProcessId( 
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_getProcessId(
     /* [out] */ unsigned long *pid);
 
-/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_speakSsml( 
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_speakSsml(
     /* [string][in] */ const wchar_t *ssml,
     /* [defaultvalue][in] */ const SYMBOL_LEVEL symbolLevel,
     /* [defaultvalue][in] */ const SPEECH_PRIORITY priority,
     /* [defaultvalue][in] */ const boolean asynchronous);
 
-/* [comm_status][fault_status][callback] */ error_status_t __stdcall nvdaController_onSsmlMarkReached( 
+/* [comm_status][fault_status][callback] */ error_status_t __stdcall nvdaController_onSsmlMarkReached(
     /* [string][in] */ const wchar_t *mark);
 
 
@@ -180,5 +180,3 @@ extern RPC_IF_HANDLE nvdaController_NvdaController2_v1_0_s_ifspec;
 #endif
 
 #endif
-
-

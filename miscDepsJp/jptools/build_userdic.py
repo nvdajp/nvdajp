@@ -75,7 +75,7 @@ def build_user_dic():
 	# JTalk build disables exit in die()), so also require the success marker.
 	if result.returncode != 0 or "done!" not in output or not USER_DIC_PATH.exists():
 		raise RuntimeError(
-			"mecab-dict-index failed to build %s (exit %d):\n%s" % (USER_DIC_PATH, result.returncode, output)
+			"mecab-dict-index failed to build %s (exit %d):\n%s" % (USER_DIC_PATH, result.returncode, output),
 		)
 	return USER_DIC_PATH
 

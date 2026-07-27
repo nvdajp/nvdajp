@@ -447,7 +447,9 @@ RE_ASCII_SYMBOLS = re.compile(r"^[\,\.\:\;\!\?\@\#\\\$\%\&\*\|\+\-\/\=\<\>\"'\^\
 
 
 def replace_alphabet_morphs(
-	li: list[MecabMorph], nabcc: bool = False, use_foreign_quotes: bool = False
+	li: list[MecabMorph],
+	nabcc: bool = False,
+	use_foreign_quotes: bool = False,
 ) -> list[MecabMorph]:
 	# アルファベットまたは記号だけで表記されている語を結合する
 	# 情報処理点字の部分文字列になる記号を前後にまとめる
@@ -1291,7 +1293,7 @@ RE_PAREN_ASCII_BODY = re.compile(r"^[A-Za-z0-9\,\.\+\-'\!\? ]+$")
 # - ドット `.` で区切られたラベルが 2 個以上
 # - 各ラベルは先頭が英数字、以降は英数字・ハイフン・アンダースコア
 RE_US_G2_DOTTED_TOKEN = re.compile(
-	r"^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$"
+	r"^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$",
 )
 RE_KATAKANA = re.compile("^[ァ-ヾ]+$")
 RE_HIRAGANA = re.compile("^[ぁ-ゞ]+$")
@@ -1950,7 +1952,10 @@ def translateWithInPos2(
 		already_braille = True
 	else:
 		outbuf, inpos2 = japanese_braille_separate(
-			inbuf, logwrite, nabcc=nabcc, use_foreign_quotes=use_foreign_quotes
+			inbuf,
+			logwrite,
+			nabcc=nabcc,
+			use_foreign_quotes=use_foreign_quotes,
 		)
 		already_braille = False
 	# nvdajp: translator_louis — 外国語引用符内を liblouis 2級に変換。既に点字の入力はスキップ（no-op で位置がずれないように）。

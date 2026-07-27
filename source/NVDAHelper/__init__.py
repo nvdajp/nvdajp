@@ -665,7 +665,9 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 					ui.message(deletedString)
 					return 0
 	else:
-		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=} {lastHadCompAttr=}")
+		log.debug(
+			f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=} {lastHadCompAttr=}",
+		)
 		# (empty, -1, -1) can mean cancel (Esc/Backspace) or commit (Enter). IMEs that send compAttr
 		# (e.g. Google IME in Chrome) send (empty, -1, -1) for both; use lastKeyGesture to distinguish.
 		is_cancelled = (
@@ -678,14 +680,24 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 		if is_cancelled:
 			if not lastHadCompAttr:
 				# No compAttr: treat as cancel (Esc / Backspace all-delete).
-				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				queueHandler.queueFunction(
+					queueHandler.eventQueue,
+					handleInputCompositionEnd,
+					lastCompString,
+					True,
+				)
 				return 0
 			# compAttr IME: when key events are off, lastKeyGesture is not populated; treat as
 			# cancel so Esc/Back still get "Clear". When key events are on, defer cancel vs commit
 			# so Enter can set compositionCommitFromEnter before we decide (Google IME). MS-IME /
 			# ATOK send non-empty results on Enter, so (empty, -1, -1) without Enter is cancel.
 			if not config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				queueHandler.queueFunction(
+					queueHandler.eventQueue,
+					handleInputCompositionEnd,
+					lastCompString,
+					True,
+				)
 				return 0
 			queueHandler.queueFunction(queueHandler.eventQueue, _handleCompAttrCompositionEnd, lastCompString)
 			return 0

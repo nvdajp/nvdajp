@@ -251,4 +251,3 @@ repos:
       entry: ./runlicensecheck.bat
       language: script
       pass_filenames: false
-

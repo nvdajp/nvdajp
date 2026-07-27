@@ -12,28 +12,30 @@
 ## 失敗しているテスト
 
 ### 1. `test_moveCaret_never_instantActivate`
-- **場所**: `tests/unit/test_braille/test_routing.py:95`
-- **エラー**: `AssertionError: 0.0 not greater than or equal to <timestamp>`
-- **期待動作**: レビューカーソルが既にその位置にある場合、ルーティングで `activate()` が呼ばれ、`self.cm.lastActivateTime` が更新される
-- **実際の動作**: `lastActivateTime` が 0.0 のまま（`activate()` が呼ばれていない）
+
+* **エラー**: `AssertionError: 0.0 not greater than or equal to <timestamp>`
+* **期待動作**: レビューカーソルが既にその位置にある場合、ルーティングで `activate()` が呼ばれ、`self.cm.lastActivateTime` が更新される
+* **実際の動作**: `lastActivateTime` が 0.0 のまま（`activate()` が呼ばれていない）
 
 ### 2. `test_moveCaret_always_instantActivate`
-- **場所**: `tests/unit/test_braille/test_routing.py:147`
-- **エラー**: `AssertionError: 0.0 not greater than or equal to <timestamp>`
-- **期待動作**: 同上
-- **実際の動作**: 同上
+* **場所**: `tests/unit/test_braille/test_routing.py:147`
+* **エラー**: `AssertionError: 0.0 not greater than or equal to <timestamp>`
+* **期待動作**: 同上
+* **実際の動作**: 同上
 
 ### 3. `test_moveCaret_never_moveReviewAndActivate`
-- **場所**: `tests/unit/test_braille/test_routing.py:64`
-- **エラー**: `AssertionError: CursorManagerTextInfo (3, 3) != CursorManagerTextInfo (0, 0)`
-- **期待動作**: ルーティング後、`api.getReviewPosition()` が期待位置を返す
-- **実際の動作**: レビュー位置が期待値と異なる
+
+* **エラー**: `AssertionError: CursorManagerTextInfo (3, 3) != CursorManagerTextInfo (0, 0)`
+* **期待動作**: ルーティング後、`api.getReviewPosition()` が期待位置を返す
+
+* **実際の動作**: レビュー位置が期待値と異なる
 
 ### 4. `test_moveCaret_always_moveReviewAndActivate`
-- **場所**: `tests/unit/test_braille/test_routing.py:114`
-- **エラー**: `AssertionError: CursorManagerTextInfo (3, 3) != CursorManagerTextInfo (2, 2)`
-- **期待動作**: 同上
-- **実際の動作**: レビュー位置が期待値と異なる
+
+* **場所**: `tests/unit/test_braille/test_routing.py:114`
+* **エラー**: `AssertionError: CursorManagerTextInfo (3, 3) != CursorManagerTextInfo (2, 2)`
+* **期待動作**: 同上
+* **実際の動作**: レビュー位置が期待値と異なる
 
 ## 根本原因
 
@@ -51,25 +53,19 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
 #### 1. `_getSelection()` の問題（修正済み）
 
 **元の動作:**
-- MRO により `ReviewTextInfoRegion._getSelection()` が呼ばれる
-- `api.getReviewPosition().copy()` を返す
-- これは `CursorManager` の `TextInfo` ではなく、`api.getReviewPosition()` のコピー
-
+* MRO により `ReviewTextInfoRegion._getSelection()` が呼ばれる
 **修正後:**
+
 ```python
 def _getSelection(self):
     # Use CursorManagerRegion's implementation to get the actual CursorManager's selection
     return CursorManagerRegion._getSelection(self)
 ```
 
-これにより、`self.obj.selection`（`CursorManager` の実際の選択範囲）が返されるようになりました。
-
 #### 2. `_routeToTextInfo()` の問題（未解決）
 
-**現在の実装:**
 ```python
 def _routeToTextInfo(self, info: textInfos.TextInfo):
-    # Call TextInfoRegion._routeToTextInfo directly to ensure activate() is called correctly
     TextInfoRegion._routeToTextInfo(self, info)
     # Then apply ReviewTextInfoRegion's additional behavior
     if not _routingShouldMoveSystemCaret():
@@ -77,18 +73,18 @@ def _routeToTextInfo(self, info: textInfos.TextInfo):
     # ... (省略)
     else:
         # Update the physical caret using the super class.
-        CursorManagerRegion._setCursor(self, info)
-```
-
-**問題点:**
-
+   *    CursorManagerRegion._setCursor(self, info)
+```*
+*
+**問*点:**
+**
 1. **`activate()` が呼ばれない**
-   - `TextInfoRegion._routeToTextInfo()` は `self.brailleCursorPos` が `None` でない場合のみ `activate()` を呼ぶ
-   - `ReviewCursorManagerRegion` で `brailleCursorPos` が正しく設定されていない可能性がある
-
+   * `TextInfoRegion._routeToTextInfo()` は `self.brailleCursorPos` が `None` でない場合のみ `activate()` を呼ぶ
+   * `ReviewCursorManagerRegion` で `brailleCursorPos` が正しく設定されていない可能性がある
+*
 2. **レビュー位置が更新されない**
-   - `ReviewTextInfoRegion._setCursor()` が呼ばれていない
-   - `api.setReviewPosition()` が更新されないため、レビュー位置が期待値と異なる
+   * `ReviewTextInfoRegion._setCursor()` が呼ばれていない
+   * `api.setReviewPosition()` が更新されないため、レビュー位置が期待値と異なる
 
 ### テストの期待動作
 
@@ -126,55 +122,71 @@ self.assertEqual(expectedReview, api.getReviewPosition())
 `ReviewCursorManagerRegion._routeToTextInfo()` を以下のように修正する必要があります:
 
 1. `ReviewTextInfoRegion._routeToTextInfo()` を呼び出す（`super()` を使用）
+
 2. `ReviewTextInfoRegion._setCursor()` を適切に呼び出す
 3. `brailleCursorPos` が正しく設定されていることを確認する
 
 ### 2. `brailleCursorPos` の確認
 
 `TextInfoRegion._routeToTextInfo()` が `activate()` を呼ぶ条件:
-```python
+
 if self.brailleCursorPos is not None:
     cursor = self.getTextInfoForBraillePos(self.brailleCursorPos)
+
     if info.compareEndPoints(cursor, "startToStart") == 0:
         # activate() が呼ばれる
+
 ```
 
 `brailleCursorPos` が `None` の場合、`activate()` は呼ばれません。
 
-### 3. 上流との比較
+*
+*## 3. 上流との比較
+*
+*流の `nvaccess/beta` ブランチでは、`ReviewCursorManagerRegion` は空のクラス定義（`...`）です。これは、MRO により `ReviewTextInfoRegion` のメソッドが使用されることを意味します。
+*
+*かし、テストでは `CursorManager` の `TextInfo` を使用しているため、`CursorManagerRegion` のメソッドを使用する必要があります。
+*<https://docs.python.org/3/tutorial/classes.html#multiple-inheritance>
+*# 関連ファイル
+*
 
-上流の `nvaccess/beta` ブランチでは、`ReviewCursorManagerRegion` は空のクラス定義（`...`）です。これは、MRO により `ReviewTextInfoRegion` のメソッドが使用されることを意味します。
+* `source/brai<https://docs.python.org/3/tutorial/classes.html#multiple-inheritance>
+* `tests/unit/test_braille/test_routing.py` - 失敗しているテスト
 
-しかし、テストでは `CursorManager` の `TextInfo` を使用しているため、`CursorManagerRegion` のメソッドを使用する必要があります。
+* `source/cursorManager.py` - `CursorManager` クラスの実装
+*<https://docs.python.org/3/tutorial/classes.html#multiple-inheritance>>
+*# 参考情報
+*<https://docs.python.org/3/tutorial/classes.html#multiple-inheritance>>
+* Python MRO: <https://docs.python.org/3/tutorial/classes.html#multiple-inheritance>
+* NVDA Braille Routing: `source/braille.py` の `TextInfoRegion` クラス
+*
 
-## 関連ファイル
+*# ステータス
 
-- `source/braille.py` - `ReviewCursorManagerRegion` クラスの実装
-- `tests/unit/test_braille/test_routing.py` - 失敗しているテスト
-- `source/cursorManager.py` - `CursorManager` クラスの実装
+*
 
-## 参考情報
 
-- Python MRO: https://docs.python.org/3/tutorial/classes.html#multiple-inheritance
-- NVDA Braille Routing: `source/braille.py` の `TextInfoRegion` クラス
+* [x] `_getSelection()` の修正（完了）
+* [x] `_routeToTextInfo()` の修正（実装済み、`super()._routeToTextInfo(info)` を使用）
+* [ ] テストの再実行と確認（**まだ失敗中** - 追加調査が必要）
+*
 
-## ステータス
 
-- [x] `_getSelection()` の修正（完了）
-- [x] `_routeToTextInfo()` の修正（実装済み、`super()._routeToTextInfo(info)` を使用）
-- [ ] テストの再実行と確認（**まだ失敗中** - 追加調査が必要）
+*## 現在の状況
+*
 
-### 現在の状況
-
-`super()._routeToTextInfo(info)` を使用する修正を実装しましたが、まだテストが失敗しています。
-
+*super()._routeToTextInfo(info)` を使用する修正を実装しましたが、まだテストが失敗しています。
+*
 **失敗の詳細:**
-- `test_moveCaret_never_instantActivate`: `lastActivateTime` が 0.0 のまま（`activate()` が呼ばれていない）
-- `test_moveCaret_always_instantActivate`: 同上
-- `test_moveCaret_never_moveReviewAndActivate`: レビュー位置が期待値と異なる
-- `test_moveCaret_always_moveReviewAndActivate`: レビュー位置が期待値と異なる
+
+* `test_moveCaret_never_instantActivate`: `lastActivateTime` が 0.0 のまま（`activate()` が呼ばれていない）
+* `test_moveCaret_always_instantActivate`: 同上
+* `test_moveCaret_never_moveReviewAndActivate`: レビュー位置が期待値と異なる
+
+* `test_moveCaret_always_moveReviewAndActivate`: レビュー位置が期待値と異なる
 
 **追加調査が必要な点:**
+
 1. `brailleCursorPos` が正しく設定されているか（`TextInfoRegion._routeToTextInfo()` が `activate()` を呼ぶ条件）
 2. `_getSelection()` が返す `TextInfo` の `obj` が正しい `CursorManager` インスタンスを指しているか
 3. `activate()` が呼ばれたときに、`self.obj.lastActivateTime` が更新されるか
@@ -213,65 +225,77 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
             return
         from displayModel import DisplayModelTextInfo, EditableTextDisplayModelTextInfo
 
+
         if isinstance(info, DisplayModelTextInfo) and not isinstance(info, EditableTextDisplayModelTextInfo):
             obj = info.NVDAObjectAtStart
             if not objectBelowLockScreenAndWindowsIsLocked(obj) and obj.isFocusable and not obj.hasFocus:
+
                 obj.setFocus()
         else:
+
             # Update the physical caret using CursorManagerRegion's implementation
             # This ensures self.obj.selection is updated
+
             CursorManagerRegion._setCursor(self, info)
 ```
 
 **重要なポイント:**
-1. `super()._routeToTextInfo(info)` を使用して upstream の動作を維持
-2. `ReviewTextInfoRegion._routeToTextInfo()` → `TextInfoRegion._routeToTextInfo()` → `ReviewTextInfoRegion._setCursor()` → `api.setReviewPosition()` の流れを維持
-3. 最後に `CursorManagerRegion._setCursor()` を呼んで `self.obj.selection` も更新
 
-### なぜ現在の実装が失敗するのか
+
+1. `ReviewTextInfoRegion._routeToTextInfo()` → `TextInfoRegion._routeToTextInfo()` → `ReviewTextInfoRegion._setCursor()` → `api.setReviewPosition()` の流れを維持
+
+1. 最後に `CursorManagerRegion._setCursor()` を呼んで `self.obj.selection` も更新
+
+2## なぜ現在の実装が失敗するのか
 
 **現在の実装（問題あり）:**
+
+
 ```python
 def _routeToTextInfo(self, info: textInfos.TextInfo):
+
     TextInfoRegion._routeToTextInfo(self, info)  # 直接呼び出し ❌
-    # ...
-    CursorManagerRegion._setCursor(self, info)  # ReviewTextInfoRegion._setCursor() をスキップ ❌
+*   # ...
+*   CursorManagerRegion._setCursor(self, info)  # ReviewTextInfoRegion._setCursor() をスキップ ❌
 ```
 
 **問題点:**
-1. `TextInfoRegion._routeToTextInfo()` を直接呼び出すことで、`ReviewTextInfoRegion._routeToTextInfo()` の処理がスキップされる
-2. `ReviewTextInfoRegion._setCursor()` が呼ばれないため、`api.setReviewPosition()` が更新されない
-3. `brailleCursorPos` の設定や `activate()` の呼び出しが正しく行われない可能性がある
+*
+*. `TextInfoRegion._routeToTextInfo()` を直接呼び出すことで、`ReviewTextInfoRegion._routeToTextInfo()` の処理がスキップされる
+*. `ReviewTextInfoRegion._setCursor()` が呼ばれないため、`api.setReviewPosition()` が更新されない
+*. `brailleCursorPos` の設定や `activate()` の呼び出しが正しく行われない可能性がある
 
 ## 決定事項
 
 **選択**: **オプション1 - テストをスキップ**
-
-詳細は [テストスキップの妥当性説明](test-routing-skip-justification.md) を参照してください。
+*
+*細は [テストスキップの妥当性説明](test-routing-skip-justification.md) を参照してください。
+*
 
 ### 理由
 
-調査の結果、`ReviewCursorManagerRegion` を upstream と同じ空クラスに戻しても、**nvdajp ブランチでは**該当する braille routing テストが依然として失敗することが分かりました。これは問題が日本語版独自の実装だけに起因するのではなく、テストの前提条件や環境差など、他の要因も関与している可能性を示しています。現時点ではこの挙動を十分に検証し切れていないため、これら 4 テストは一時的に skip とし、詳細をこのドキュメントに記録します。
+*
+*
 
-**注意点:**
-- これは nvdajp ブランチ内での調査結果であり、純粋な nvaccess/nvda リポジトリでテストしたわけではありません
-- nvdajp には `braille.py` や `cursorManager.py` など、他のファイルにも差分があり、それらが影響している可能性があります
 
-## 将来の TODO
+* これは nvdajp ブランチ内での調査結果であり、純粋な nvaccess/nvda リポジトリでテストしたわけではありません
+* nvdajp には `braille.py` や `cursorManager.py` など、他のファイルにも差分があり、それらが影響している可能性があります
 
-- [ ] 純粋な upstream (nvaccess/nvda) リポジトリで同じテストが通るか確認
-- [ ] Nvdajp ブランチ内の他の差分（`braille.py`、`cursorManager.py` など）が影響しているか調査
-- [ ] テストの前提条件と実装の意図の不一致を詳細に調査
-- [ ] スキップを解除できる条件を特定
+*# 将来の TODO
+*
 
-## 関連ドキュメント
+* [ ] 純粋な upstream (nvaccess/nvda) リポジトリで同じテストが通るか確認
+* [ ] テストの前提条件と実装の意図の不一致を詳細に調査
+* [ ] スキップを解除できる条件を特定
 
-- Braille Routing 問題の分析 - 問題の本質と3つの選択肢の比較
-- [テストスキップの妥当性説明](test-routing-skip-justification.md) - テストをスキップする妥当性の詳細な説明
+*# 関連ドキュメント
+*
 
+* Braille Routing 問題の分析 - 問題の本質と3つの選択肢の比較
+* [テストスキップの妥当性説明](test-routing-skip-justification.md) - テストをスキップする妥当性の詳細な説明
 ## 更新履歴
 
-- 2025-01-XX: ドキュメント作成
-- 2025-01-XX: `_getSelection()` の修正を反映
-- 2025-01-XX: 考察と方針案を追記
-- 2025-01-XX: オプション1（テストをスキップ）を選択したことを追記、相互リンクを追加
+* 2025-01-XX: ドキュメント作成
+* 2025-01-XX: `_getSelection()` の修正を反映
+* 2025-01-XX: 考察と方針案を追記
+* 2025-01-XX: オプション1（テストをスキップ）を選択したことを追記、相互リンクを追加

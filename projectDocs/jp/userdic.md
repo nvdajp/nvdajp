@@ -11,11 +11,11 @@ MeCab ユーザー辞書をロードできる。この文書は、JP smoke tests
 
 ## ビルド方法
 
-- ソース: `miscDepsJp/jptools/jtusr.csv`（UTF-8）
-- ビルダー: `miscDepsJp/jptools/build_userdic.py`
-- ツール: `miscDepsJp/jptools/jtalk/libopenjtalk/mecab/src/mecab-dict-index.exe`
+* ソース: `miscDepsJp/jptools/jtusr.csv`（UTF-8）
+* ビルダー: `miscDepsJp/jptools/build_userdic.py`
+* ツール: `miscDepsJp/jptools/jtalk/libopenjtalk/mecab/src/mecab-dict-index.exe`
   （x64。`scons jtalkSync` がパッチ済み libopenjtalk mecab ソースからビルドして配置する）
-- 出力: `miscDepsJp/jptools/jtusr.dic`（gitignore 済み。**リポジトリにはコミットしない**）
+* 出力: `miscDepsJp/jptools/jtusr.dic`（gitignore 済み。**リポジトリにはコミットしない**）
 
 ```
 uv run python miscDepsJp\jptools\build_userdic.py
@@ -67,13 +67,13 @@ JpBrailleTests（translator2）はユーザー辞書をロードした状態で
 
 ## テストの構成
 
-- `MecabTests.test_all`: 全ハーネスケースをユーザー辞書なし→ありの順に
+* `MecabTests.test_all`: 全ハーネスケースをユーザー辞書なし→ありの順に
   実行し、どちらも結果が変わらないことを検証する。
-- `MecabTests.test_user_dic_applied`: サンプル語がベース辞書では複数
+* `MecabTests.test_user_dic_applied`: サンプル語がベース辞書では複数
   形態素、ユーザー辞書ありでは1形態素（CSV の読み・分かち書き）になる
   ことを検証する。ロード失敗（非互換）と「ロードされたが選択されない」
   （文脈ID・コスト設定ミス）の両方を検出できる。
-- `JpBrailleTests`: ユーザー辞書をロードした状態で translator2 を検証
+* `JpBrailleTests`: ユーザー辞書をロードした状態で translator2 を検証
   する（ユーザー辞書がハーネス結果を変えないことの検証を兼ねる）。
 
 ## NVDA 実行時のユーザー辞書（参考）

@@ -5,9 +5,9 @@
 
 **前提（2026 時点）**
 
-- パッケージング（コア同梱 + `kgsbraille` アドオン）の変更は**予定しない**
-- ドライバの統合・廃止（`brailleMemo` 廃止、`kgs` / `kgsbn46` の一本化など）も**予定しない**
-- 本ドキュメントは、現状把握・NVDA 本家仕様との差分・今後メンテ可能な改善の整理を目的とする
+* パッケージング（コア同梱 + `kgsbraille` アドオン）の変更は**予定しない**
+* ドライバの統合・廃止（`brailleMemo` 廃止、`kgs` / `kgsbn46` の一本化など）も**予定しない**
+* 本ドキュメントは、現状把握・NVDA 本家仕様との差分・今後メンテ可能な改善の整理を目的とする
 
 ---
 
@@ -47,7 +47,7 @@ DirectBM.dll
 
 ## 2. 開発当時（〜2010 年代）と現行 NVDA 点字ドライバ仕様の差分
 
-KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto）NVDA 用に開発され、**ベンダ DLL（DirectBM）+ ctypes コールバック**という当時典型的な形で実装されている。  
+KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto）NVDA 用に開発され、**ベンダ DLL（DirectBM）+ ctypes コールバック**という当時典型的な形で実装されている。
 現行 betajp（NVDA **2026.1** 系）の `source/braille/`（本家 #20252 でパッケージ化。`BrailleDisplayDriver` は `source/braille/display/driver.py`）および本家同梱ドライバが前提とする API との差を以下に整理する。
 
 ### 2.1 時代区分（目安）
@@ -82,42 +82,42 @@ KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto�
 
 **現行仕様（要約）**
 
-- `supportsAutomaticDetection = True` のドライバは `registerAutomaticDetection` で USB ID / Bluetooth 名などを登録
-- ユーザーがポート「自動」を選ぶと、`_getTryPorts` → `_getAutoPorts` が `DeviceMatch` を列挙
-- `getPossiblePorts` の**既定実装**は、登録済み USB/Bluetooth に応じて `auto` / `usb` / `bluetooth` と `getManualPorts()` を合成
+* `supportsAutomaticDetection = True` のドライバは `registerAutomaticDetection` で USB ID / Bluetooth 名などを登録
+* ユーザーがポート「自動」を選ぶと、`_getTryPorts` → `_getAutoPorts` が `DeviceMatch` を列挙
+* `getPossiblePorts` の**既定実装**は、登録済み USB/Bluetooth に応じて `auto` / `usb` / `bluetooth` と `getManualPorts()` を合成
 
 **KGS の現状**
 
-- **`kgs.py` のみ** `registerAutomaticDetection` 実装（`VID_1148&PID_0301`, `VID_1148&PID_0001`, `VID_10C4&PID_EA60`（Next Touch 40 等 CP210x）, Bluetooth `BM` プレフィックス）
-- 一方で `getPossiblePorts` を**丸ごと上書き**しているため、本家ドライバに見られる **「USB」「Bluetooth」分割ポート**は UI に出ない（「自動」+ `kgsListComPorts` で得た COM 名リスト）
-- `brailleMemo` / `kgsbn46` は自動検出未登録 → `check()` は手動ポート列挙に依存
-- `kgsListComPorts` はレジストリ・Bluetooth 名・汎用シリアルを広く列挙するため、**非 KGS 機器の COM に接続を試みる**余地がある（`_getTryPorts` / 自前ループで順に試行）
+* **`kgs.py` のみ** `registerAutomaticDetection` 実装（`VID_1148&PID_0301`, `VID_1148&PID_0001`, `VID_10C4&PID_EA60`（Next Touch 40 等 CP210x）, Bluetooth `BM` プレフィックス）
+* 一方で `getPossiblePorts` を**丸ごと上書き**しているため、本家ドライバに見られる **「USB」「Bluetooth」分割ポート**は UI に出ない（「自動」+ `kgsListComPorts` で得た COM 名リスト）
+* `brailleMemo` / `kgsbn46` は自動検出未登録 → `check()` は手動ポート列挙に依存
+* `kgsListComPorts` はレジストリ・Bluetooth 名・汎用シリアルを広く列挙するため、**非 KGS 機器の COM に接続を試みる**余地がある（`_getTryPorts` / 自前ループで順に試行）
 
 **メンテナンス上の意味**
 
-- 自動検出は **「動くが本家 UX と完全一致しない」** 状態
-- 完全に本家パターンへ寄せるには `getManualPorts` 化 + `getPossiblePorts` 既定実装への移行が必要（**挙動・UI の回帰テスト必須**）
-- 現方針（統合・廃止なし）では、**`kgs` の登録内容の VID/PID 維持**と、readme 記載の「自動検出が繰り返される」既知事象の把握で足りる可能性が高い
+* 自動検出は **「動くが本家 UX と完全一致しない」** 状態
+* 完全に本家パターンへ寄せるには `getManualPorts` 化 + `getPossiblePorts` 既定実装への移行が必要（**挙動・UI の回帰テスト必須**）
+* 現方針（統合・廃止なし）では、**`kgs` の登録内容の VID/PID 維持**と、readme 記載の「自動検出が繰り返される」既知事象の把握で足りる可能性が高い
 
 ### 2.4 ドライバごとのオプション（点字設定）
 
 **現行仕様（要約）**
 
-- `BrailleDisplayDriver.supportedSettings` に `DriverSetting` / `BooleanDriverSetting` / `NumericDriverSetting` または基底クラスのファクトリ（`DotFirmnessSetting`, `BrailleInputSetting`, `HIDInputSetting`）を列挙
-- 点字設定ダイアログの **「表示デバイスを変更」→ ドライバ選択後** に、そのドライバ専用のコントロールが表示される（`AutoSettingsMixin` 経由）
-- 例: `dotPad` の表示先、`handyTech` の点字強度、`alva` / `eurobraille` の HID キーボード入力シミュレーション
+* `BrailleDisplayDriver.supportedSettings` に `DriverSetting` / `BooleanDriverSetting` / `NumericDriverSetting` または基底クラスのファクトリ（`DotFirmnessSetting`, `BrailleInputSetting`, `HIDInputSetting`）を列挙
+* 点字設定ダイアログの **「表示デバイスを変更」→ ドライバ選択後** に、そのドライバ専用のコントロールが表示される（`AutoSettingsMixin` 経由）
+* 例: `dotPad` の表示先、`handyTech` の点字強度、`alva` / `eurobraille` の HID キーボード入力シミュレーション
 
 **KGS の現状**
 
-- 3 ドライバとも **`supportedSettings` 未宣言**（実質オプションなし）
-- 接続速度（9600 bps 固定）、KBDC 名（`Active BM` / Shift-JIS 機種名）、ビープによる接続フィードバックなどは **すべてコード固定**（接続プローブ音のインストール時抑制は [§2.6](#26-接続プローブ音とインストールランチャー時の抑制470)）
-- ユーザーが NVDA 設定だけで変えられる項目は **ポート選択と gestureMap（NVDA キー割当）** が中心
+* 3 ドライバとも **`supportedSettings` 未宣言**（実質オプションなし）
+* 接続速度（9600 bps 固定）、KBDC 名（`Active BM` / Shift-JIS 機種名）、ビープによる接続フィードバックなどは **すべてコード固定**（接続プローブ音のインストール時抑制は [§2.6](#26-接続プローブ音とインストールランチャー時の抑制470)）
+* ユーザーが NVDA 設定だけで変えられる項目は **ポート選択と gestureMap（NVDA キー割当）** が中心
 
 **メンテナンス上の意味**
 
-- オプション追加は **DLL / プロトコルと無関係なら比較的安全**（例: 接続時ビープの on/off、ログレベルは別系統）
-- ハード仕様に触れる項目（ボーレート、KBDC 名）は **実機検証なしでは非推奨**
-- 現方針では **必須ではない** が、ユーザー要望があれば `BooleanDriverSetting` 1 項目から段階導入は現行 API で可能
+* オプション追加は **DLL / プロトコルと無関係なら比較的安全**（例: 接続時ビープの on/off、ログレベルは別系統）
+* ハード仕様に触れる項目（ボーレート、KBDC 名）は **実機検証なしでは非推奨**
+* 現方針では **必須ではない** が、ユーザー要望があれば `BooleanDriverSetting` 1 項目から段階導入は現行 API で可能
 
 ### 2.5 その他の現行仕様（KGS が対象外）
 
@@ -134,8 +134,8 @@ KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto�
 
 **背景**
 
-- [nvdajp/nvdajp#470](https://github.com/nvdajp/nvdajp/issues/470): KGS USB ドライバーが入っているが端末がすぐ見つからないとき、NVDA **インストール／ランチャー**起動中に点字自動検出が COM 接続を試行し、`_fixConnection` のプローブ音が **音声の読み上げを遮る**。
-- ランチャー（`--launcher`）のみの段階でも `braille.initialize()` と `bdDetect` は動くため、許諾画面やインストール UI の読み上げと競合しうる（`--install` が付く前から該当）。
+* [nvdajp/nvdajp#470](https://github.com/nvdajp/nvdajp/issues/470): KGS USB ドライバーが入っているが端末がすぐ見つからないとき、NVDA **インストール／ランチャー**起動中に点字自動検出が COM 接続を試行し、`_fixConnection` のプローブ音が **音声の読み上げを遮る**。
+* ランチャー（`--launcher`）のみの段階でも `braille.initialize()` と `bdDetect` は動くため、許諾画面やインストール UI の読み上げと競合しうる（`--install` が付く前から該当）。
 
 **実装（`betajp-kgs-issue470` / PR [#659](https://github.com/nvdajp/nvdajp/pull/659)）**
 
@@ -171,13 +171,13 @@ def _connectionBeepsEnabled():
 
 **通常起動**
 
-- 上記 3 フラグがすべて偽（インストール済み NVDA の通常起動）では **従来どおりプローブ音が鳴る**。
+* 上記 3 フラグがすべて偽（インストール済み NVDA の通常起動）では **従来どおりプローブ音が鳴る**。
 
 **コード配置**
 
-- 判定の正: `source/brailleDisplayDrivers/kgs.py` の `_connectionBeepsEnabled`
-- `brailleMemo.py`: `from .kgs import _connectionBeepsEnabled`
-- `kgsbn46.py`: 同上 + 独自 `_fixConnection` に適用
+* 判定の正: `source/brailleDisplayDrivers/kgs.py` の `_connectionBeepsEnabled`
+* `brailleMemo.py`: `from .kgs import _connectionBeepsEnabled`
+* `kgsbn46.py`: 同上 + 独自 `_fixConnection` に適用
 
 **検証の目安**
 
@@ -187,7 +187,7 @@ def _connectionBeepsEnabled():
 
 **今後の拡張**
 
-- ユーザー設定で常時 on/off する案（`BooleanDriverSetting`）は §2.4・§5.3 の「接続音 on/off」と同系。現状は **インストール系プロセスのみ**コードで抑制。
+* ユーザー設定で常時 on/off する案（`BooleanDriverSetting`）は §2.4・§5.3 の「接続音 on/off」と同系。現状は **インストール系プロセスのみ**コードで抑制。
 
 ---
 
@@ -195,11 +195,11 @@ def _connectionBeepsEnabled():
 
 ### 3.1 強み（維持価値）
 
-- 長年の実使用実績（日本国内の KGS 端末）
-- `kgs.py` の **豊富な `gestureMap`**（キーボードエミュレーション）
-- `brailleMemo.py` の **8 点コンピュータ点字**（`BrailleInputGesture`）
-- `kgsbn46.py` の **46 系専用キー・KBDC 名・自動ポートスキャン**
-- 接続・切断時の **トーン + `processEvents()`** による利用者向けフィードバック（インストール／ランチャー時はプローブ音のみ抑制、§2.6）
+* 長年の実使用実績（日本国内の KGS 端末）
+* `kgs.py` の **豊富な `gestureMap`**（キーボードエミュレーション）
+* `brailleMemo.py` の **8 点コンピュータ点字**（`BrailleInputGesture`）
+* `kgsbn46.py` の **46 系専用キー・KBDC 名・自動ポートスキャン**
+* 接続・切断時の **トーン + `processEvents()`** による利用者向けフィードバック（インストール／ランチャー時はプローブ音のみ抑制、§2.6）
 
 ### 3.2 技術的負債（把握のみ／即修正不要）
 
@@ -215,8 +215,8 @@ def _connectionBeepsEnabled():
 
 ### 3.3 x64 / 将来 NVDA バージョン
 
-- `DirectBM.dll` は **32/64 ビット依存のネイティブ DLL**。環境変更時は DLL 提供元（KGS）との整合が最優先
-- `changes-nvdajp.md` に x64 動作確認タスクあり → **DLL 互換がメンテのボトルネック**（Python リファクタより優先度が高い場合あり）
+* `DirectBM.dll` は **32/64 ビット依存のネイティブ DLL**。環境変更時は DLL 提供元（KGS）との整合が最優先
+* `changes-nvdajp.md` に x64 動作確認タスクあり → **DLL 互換がメンテのボトルネック**（Python リファクタより優先度が高い場合あり）
 
 ---
 
@@ -224,25 +224,25 @@ def _connectionBeepsEnabled():
 
 ### 4.1 変更しやすい（NVDA API 追従・低リスク）
 
-- `kgs_manifest.py` の `minimumNVDAVersion` 更新（`lastTestedNVDAVersion` は betajp 版に合わせて随時更新）
-- ログレベル・メッセージ・翻訳（`description`）の修正
-- `registerAutomaticDetection` の USB ID 追加（新 VID/PID が公表されている場合）
-- ドキュメント（`readmejp.md`、本ファイル）の既知問題の追記
-- 明らかな Python 3 専用化（`xrange` 削除、`WindowsError` → `OSError`）
+* `kgs_manifest.py` の `minimumNVDAVersion` 更新（`lastTestedNVDAVersion` は betajp 版に合わせて随時更新）
+* ログレベル・メッセージ・翻訳（`description`）の修正
+* `registerAutomaticDetection` の USB ID 追加（新 VID/PID が公表されている場合）
+* ドキュメント（`readmejp.md`、本ファイル）の既知問題の追記
+* 明らかな Python 3 専用化（`xrange` 削除、`WindowsError` → `OSError`）
 
 ### 4.2 可能だがテスト負荷が高い
 
-- `supportedSettings` による **非ハード依存**オプション（接続音、詳細ログ）
-- `getManualPorts` + 既定 `getPossiblePorts` への移行（ポート UI の本家化）
-- `brailleMemo` への `registerAutomaticDetection` 追加（`kgs` と二重登録にならないよう設計）
-- 共通モジュール抽出（`kgs_common.py` 等）— **挙動不変**が条件
+* `supportedSettings` による **非ハード依存**オプション（接続音、詳細ログ）
+* `getManualPorts` + 既定 `getPossiblePorts` への移行（ポート UI の本家化）
+* `brailleMemo` への `registerAutomaticDetection` 追加（`kgs` と二重登録にならないよう設計）
+* 共通モジュール抽出（`kgs_common.py` 等）— **挙動不変**が条件
 
 ### 4.3 困難または外部依存
 
-- `DirectBM.dll` 非公開プロトコル部分の `hwIo` 化（DLL 改修なしでは不可）
-- HID Braille 標準への移行
-- `kgsbn46` キー decode ロジック修正（**実機なしでは確証が持てない**）
-- 3 ドライバのユーザー向け統合（**現方針では対象外**）
+* `DirectBM.dll` 非公開プロトコル部分の `hwIo` 化（DLL 改修なしでは不可）
+* HID Braille 標準への移行
+* `kgsbn46` キー decode ロジック修正（**実機なしでは確証が持てない**）
+* 3 ドライバのユーザー向け統合（**現方針では対象外**）
 
 ### 4.4 推奨するメンテナンス形態
 
@@ -257,9 +257,9 @@ def _connectionBeepsEnabled():
 
 ### 5.1 固定方針（変更しない）
 
-- 配布形態: コア 3 モジュール + アドオン `kgsbraille`（`kgs` + `brailleMemo` + DLL）
-- ドライバ名・ユーザー向け 3 択（`kgs` / `brailleMemo` / `kgsbn46`）の維持
-- `DirectBM.dll` ベースのアーキテクチャ維持
+* 配布形態: コア 3 モジュール + アドオン `kgsbraille`（`kgs` + `brailleMemo` + DLL）
+* ドライバ名・ユーザー向け 3 択（`kgs` / `brailleMemo` / `kgsbn46`）の維持
+* `DirectBM.dll` ベースのアーキテクチャ維持
 
 ### 5.2 短期（2026.1 系メンテ）
 
@@ -281,10 +281,10 @@ def _connectionBeepsEnabled():
 
 ### 5.4 意図的に行わない（現方針）
 
-- `kgsbn46` のアドオン同梱／コアからの削除
-- `brailleMemo` 廃止と `kgs` への機能統合
-- `DirectBM.dll` の廃止や `hwIo` への全面置換（DLL 提供なしでは不可）
-- ユーザーに見えるドライバ名・gesture ID の一括変更
+* `kgsbn46` のアドオン同梱／コアからの削除
+* `brailleMemo` 廃止と `kgs` への機能統合
+* `DirectBM.dll` の廃止や `hwIo` への全面置換（DLL 提供なしでは不可）
+* ユーザーに見えるドライバ名・gesture ID の一括変更
 
 ---
 
@@ -359,5 +359,5 @@ NVDA 側:
 
 ### 8.3 コード変更（betajp）
 
-- `source/brailleDisplayDrivers/kgs.py`: `VID_10C4&PID_EA60`（`useAsFallback=True`）+ レジストリ COM 用 `addDeviceScanner`
-- `kgsListComPorts`: 上記 VID のレジストリ列挙を追加（手動ポート一覧の表示名）
+* `source/brailleDisplayDrivers/kgs.py`: `VID_10C4&PID_EA60`（`useAsFallback=True`）+ レジストリ COM 用 `addDeviceScanner`
+* `kgsListComPorts`: 上記 VID のレジストリ列挙を追加（手動ポート一覧の表示名）

@@ -1,8 +1,8 @@
 # セキュリティ問題の報告
 
 セキュリティ脆弱性の報告は GitHub の公開 issues, discussions や NVDA 日本語チームのメーリングリストで行わないでください。
-NVDA日本語版については、メールの題名を「脆弱性の報告」として https://www.nvda.jp/contact に報告してください。
-NVDA本家版については info@nvaccess.org に英語で報告してください。
+NVDA日本語版については、メールの題名を「脆弱性の報告」として <https://www.nvda.jp/contact>t>t>t> に報告してください。
+NVDA本家版については <info@nvaccess.org>g>g>g> に英語で報告してください。
 
 脆弱性の報告については3営業日以内に返信します。
 返信が届かない場合は再度ご連絡ください。

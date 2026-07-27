@@ -158,7 +158,8 @@ class TestTranslateNabccWithG2(unittest.TestCase):
 
 	@patch("synthDrivers.jtalk.translator2.translate")
 	def test_nabcc_passed_when_expandAtCursor_true_and_g2_table(
-		self, mock_jp_translate: MagicMock
+		self,
+		mock_jp_translate: MagicMock,
 	) -> None:
 		"""2級テーブル選択時、expandAtCursor=True なら nabcc=True が jpTranslate に渡ること。"""
 		mock_jp_translate.return_value = (
@@ -177,4 +178,7 @@ class TestTranslateNabccWithG2(unittest.TestCase):
 			config.conf["braille"]["expandAtCursor"] = False
 		mock_jp_translate.assert_called_once()
 		call_kwargs = mock_jp_translate.call_args[1]
-		self.assertTrue(call_kwargs["nabcc"], "nabcc=True should be passed for 2級 table when expandAtCursor is True")
+		self.assertTrue(
+			call_kwargs["nabcc"],
+			"nabcc=True should be passed for 2級 table when expandAtCursor is True",
+		)
