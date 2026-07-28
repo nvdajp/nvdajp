@@ -93,10 +93,4 @@ class Test_getUIAUnitFromNVDAUnit(TestCase):
 	def test_unmappedUnitRaisesNotImplementedError(self):
 		with self.assertRaises(NotImplementedError):
 			getUIAUnitFromNVDAUnit(textInfos.UNIT_SENTENCE)
-			getUIAUnitFromNVDAUnit(textInfos.UNIT_WORD),
-			NVDAUnitsToUIAUnits[textInfos.UNIT_WORD],
-		)
 
-	def test_unmappedUnitRaisesNotImplementedError(self):
-		with self.assertRaises(NotImplementedError):
-			getUIAUnitFromNVDAUnit(textInfos.UNIT_SENTENCE)
