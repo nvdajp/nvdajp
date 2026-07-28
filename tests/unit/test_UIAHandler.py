@@ -1,22 +1,20 @@
 # A part of NonVisual Desktop Access (NVDA)
+# Copyright (C) 2026 NV Access Limited, Leonard de Ruijter
 # Copyright (C) 2026 NV Access Limited, Tobias Heath
 # This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
 # For full terms and any additional permissions, see the NVDA license file:
 # https://github.com/nvaccess/nvda/blob/master/copying.txt
 
-"""Unit tests for the UIAHandler hung-window guard.
-
-These cover the mechanism that drops UIA events from a not-responding
-application so it cannot freeze NVDA or flood the log.
-"""
+"""Unit tests for the UIAHandler hung-window guard and UIA unit conversion."""
 
 from unittest import TestCase
 from unittest.mock import patch
 
 from comtypes import COMError
 
+import textInfos
 import winUser
-from UIAHandler import utils
+from UIAHandler import NVDAUnitsToUIAUnits, getUIAUnitFromNVDAUnit, utils
 
 
 def _makeCOMError() -> COMError:
@@ -83,3 +81,22 @@ class Test_shouldSkipEventForHungWindow(TestCase):
 		with patch.object(winUser, "isHungAppWindow", side_effect=RuntimeError("boom")):
 			# A failure inside the guard itself must never escape into the COM handler.
 			self.assertFalse(utils._shouldSkipEventForHungWindow(_FakeElement(cachedHandle=1)))
+
+
+class Test_getUIAUnitFromNVDAUnit(TestCase):
+	def test_mappedUnitReturnsUIAUnit(self):
+		self.assertEqual(
+			getUIAUnitFromNVDAUnit(textInfos.UNIT_WORD),
+			NVDAUnitsToUIAUnits[textInfos.UNIT_WORD],
+		)
+
+	def test_unmappedUnitRaisesNotImplementedError(self):
+		with self.assertRaises(NotImplementedError):
+			getUIAUnitFromNVDAUnit(textInfos.UNIT_SENTENCE)
+			getUIAUnitFromNVDAUnit(textInfos.UNIT_WORD),
+			NVDAUnitsToUIAUnits[textInfos.UNIT_WORD],
+		)
+
+	def test_unmappedUnitRaisesNotImplementedError(self):
+		with self.assertRaises(NotImplementedError):
+			getUIAUnitFromNVDAUnit(textInfos.UNIT_SENTENCE)
