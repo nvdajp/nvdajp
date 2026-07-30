@@ -87,7 +87,7 @@ $	ドル	none
 @	アット	some
 [	ダイカッコ	most
 ]	ダイカッコトジ	most
-\\	エン	none
+\\	バックスラッシュ	most
 ^	ベキジョー	all
 _	アンダーライン	some
 `	アクサングラーブ	some
