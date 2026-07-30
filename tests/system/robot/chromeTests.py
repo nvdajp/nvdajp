@@ -1215,11 +1215,13 @@ def test_ariaRoleDescription_inline_browseMode():
 	# but not exiting
 	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
 	# nvdajp: Support both English and Japanese UI strings (Chrome provides localized strings)
+	# Note: Japanese order is "ラベルのない画像" first, then IMG_DESC_MSG_JA
+	# Note: Japanese environment reports "ideographic period" after the context menu message
 	_asserts.strings_match_any(
 		actualSpeech,
 		[
 			f"Start  Unlabeled graphic  Our logo. {IMG_DESC_MSG}  End",
-			f"Start  ラベルのない画像  Our logo. {IMG_DESC_MSG_JA}  End",
+			f"Start  ラベルのない画像  Our logo. {IMG_DESC_MSG_JA} ideographic period  End",
 		],
 		message="Full line with custom role",
 	)
@@ -1303,11 +1305,12 @@ def test_ariaRoleDescription_inline_contentEditable():
 	# but not exiting
 	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
 	# nvdajp: Support both English and Japanese UI strings
+	# Note: Japanese environment reports "ideographic period" after the context menu message
 	_asserts.strings_match_any(
 		actualSpeech,
 		[
 			f"Start  Unlabeled graphic  Our logo. {IMG_DESC_MSG}    End",
-			f"Start  ラベルのない画像  Our logo. {IMG_DESC_MSG_JA}    End",
+			f"Start  ラベルのない画像  Our logo. {IMG_DESC_MSG_JA} ideographic period    End",
 		],
 		message="Full line with custom role in content editable",
 	)
