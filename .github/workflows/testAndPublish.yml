@@ -706,9 +706,11 @@ jobs:
       matrix:
         # To skip tests, and just run install, replace with [excluded_from_build]
         # BEGIN JP PATCH (exclude vscode test suite; exclude symbols: Speech did not finish before timeout in CI)
+        # Phase 1 (2026-07-30): Enable chrome tests (90% stable per survey results)
         testSuite:
           - installer
           - startupShutdown
+          - chrome  # nvdajp: enabled 2026-07-30 (90% stability per system test survey)
           # - symbols  # nvdajp: excluded (symbolPronunciationTests timeout in CI)
           # - vscode  # nvdajp: excluded
           # - chrome_annotations  # nvdajp: excluded
