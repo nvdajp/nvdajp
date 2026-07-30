@@ -1195,6 +1195,8 @@ def test_ariaRoleDescription_focus():
 
 
 IMG_DESC_MSG = "To get missing image descriptions, open the context menu."
+# nvdajp: Japanese translation for dual-environment support
+IMG_DESC_MSG_JA = "画像の説明がない場合に取得するには、コンテキスト メニューを開きます。"
 
 
 def test_ariaRoleDescription_inline_browseMode():
@@ -1212,16 +1214,25 @@ def test_ariaRoleDescription_inline_browseMode():
 	# entering the custom role should be reported,
 	# but not exiting
 	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
+	# nvdajp: Support both English and Japanese UI strings (Chrome provides localized strings)
+	_asserts.strings_match_any(
 		actualSpeech,
-		f"Start  Unlabeled graphic  Our logo. {IMG_DESC_MSG}  End",
+		[
+			f"Start  Unlabeled graphic  Our logo. {IMG_DESC_MSG}  End",
+			f"Start  ラベルのない画像  Our logo. {IMG_DESC_MSG_JA}  End",
+		],
+		message="Full line with custom role",
 	)
 	# When reading the line by word,
 	# Both entering and exiting the custom role should be reported.
 	actualSpeech = _chrome.getSpeechAfterKey("control+rightArrow")
-	_asserts.strings_match(
+	_asserts.strings_match_any(
 		actualSpeech,
-		"Unlabeled graphic  Our",
+		[
+			"Unlabeled graphic  Our",
+			"ラベルのない画像  Our",
+		],
+		message="First word with custom role",
 	)
 	actualSpeech = _chrome.getSpeechAfterKey("control+rightArrow")
 	_asserts.strings_match(
@@ -1291,16 +1302,25 @@ def test_ariaRoleDescription_inline_contentEditable():
 	# entering the custom role should be reported,
 	# but not exiting
 	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
+	# nvdajp: Support both English and Japanese UI strings
+	_asserts.strings_match_any(
 		actualSpeech,
-		f"Start  Unlabeled graphic  Our logo. {IMG_DESC_MSG}    End",
+		[
+			f"Start  Unlabeled graphic  Our logo. {IMG_DESC_MSG}    End",
+			f"Start  ラベルのない画像  Our logo. {IMG_DESC_MSG_JA}    End",
+		],
+		message="Full line with custom role in content editable",
 	)
 	# When reading the line by word,
 	# Both entering and exiting the custom role should be reported.
 	actualSpeech = _chrome.getSpeechAfterKey("control+rightArrow")
-	_asserts.strings_match(
+	_asserts.strings_match_any(
 		actualSpeech,
-		f"Unlabeled graphic  Our logo. {IMG_DESC_MSG}    out of Unlabeled graphic",
+		[
+			f"Unlabeled graphic  Our logo. {IMG_DESC_MSG}    out of Unlabeled graphic",
+			f"ラベルのない画像  Our logo. {IMG_DESC_MSG_JA}    out of ラベルのない画像",
+		],
+		message="First word with custom role in content editable",
 	)
 	actualSpeech = _chrome.getSpeechAfterKey("control+rightArrow")
 	_asserts.strings_match(
