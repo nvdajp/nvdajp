@@ -1196,7 +1196,8 @@ def test_ariaRoleDescription_focus():
 
 IMG_DESC_MSG = "To get missing image descriptions, open the context menu."
 # nvdajp: Japanese translation for dual-environment support
-IMG_DESC_MSG_JA = "画像の説明がない場合に取得するには、コンテキスト メニューを開きます。"
+# Note: No trailing period - Chrome reports "ideographic period" separately
+IMG_DESC_MSG_JA = "画像の説明がない場合に取得するには、コンテキスト メニューを開きます"
 
 
 def test_ariaRoleDescription_inline_browseMode():
