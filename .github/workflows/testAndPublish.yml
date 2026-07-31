@@ -564,7 +564,9 @@ jobs:
     name: Create launcher
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA]
-    timeout-minutes: 35
+    # BEGIN JP PATCH (extend launcher build timeout: 35m -> 45m)
+    timeout-minutes: 45
+    # END JP PATCH
     permissions:
       contents: read
       actions: write
