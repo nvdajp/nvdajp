@@ -724,7 +724,9 @@ jobs:
     name: Run system tests
     runs-on: ${{ matrix.runner }}
     needs: [matrix, createLauncher]
-    timeout-minutes: 10
+    # BEGIN JP PATCH (extend timeout for chrome tests: 10m → 20m to avoid cascade failures)
+    timeout-minutes: 20
+    # END JP PATCH
     permissions:
       contents: read
       actions: write
@@ -733,21 +735,21 @@ jobs:
       fail-fast: false
       matrix:
         # To skip tests, and just run install, replace with [excluded_from_build]
-        # BEGIN JP PATCH (exclude vscode test suite; exclude symbols: Speech did not finish before timeout in CI)
+        # BEGIN JP PATCH (restore upstream test split; add chrome_waic for JP WAIC tests)
+        # Excluded: symbols (Speech timeout in CI), vscode (VS Code environment required)
         testSuite:
           - installer
           - startupShutdown
-          # - symbols  # nvdajp: excluded (symbolPronunciationTests timeout in CI)
-          # - vscode  # nvdajp: excluded
-          # - chrome_annotations  # nvdajp: excluded
-          # - chrome_list  # nvdajp: excluded
-          # - chrome_table  # nvdajp: excluded
-          # - chrome_language  # nvdajp: excluded
-          # - chrome_roleDescription  # nvdajp: excluded
-          # - chrome_misc_aria  # nvdajp: excluded
-          # - chrome_misc  # nvdajp: excluded
-          # - chrome_link  # nvdajp: excluded (added upstream)
-        # END JP PATCH (exclude vscode test suite)
+          - chrome_annotations
+          - chrome_list
+          - chrome_table
+          - chrome_language
+          - chrome_roleDescription
+          - chrome_misc_aria
+          - chrome_misc
+          - chrome_link
+          - chrome_waic  # nvdajp: WAIC aria-describedby tests (dual English/Japanese support)
+        # END JP PATCH
         runner: ${{ fromJson(needs.matrix.outputs.supportedRunners) }}
         arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}

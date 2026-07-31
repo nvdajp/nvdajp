@@ -99,10 +99,14 @@ JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、G
 
 ### テスト
 
+* **システムテスト・CI カスタマイズ方針**: `projectDocs/jp/system-test-ci-customization-policy.md` ← 最優先
 * Chrome system test 日本語環境差分: `projectDocs/jp/chrome-system-test-japanese-environment.md`
 * WAIC テスト: `projectDocs/jp/waic-tests.md`
 * JTalk/MeCab コードページ・CI 調査: `projectDocs/jp/tab-character-analysis.md`
 * JTalk ユーザー辞書の設計とテスト: `projectDocs/jp/userdic.md`
+* システムテスト実態調査: `projectDocs/jp/system-test-survey-report.md`
+* CI 復帰計画: `projectDocs/jp/system-tests-ci-restoration-plan.md`
+* CI 改善計画: `projectDocs/jp/ci-system-tests-improvement-plan.md`
 * （過去記録）`projectDocs/jp/archive/README.md`
 
 ### 日本語機能・点字
