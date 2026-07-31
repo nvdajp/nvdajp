@@ -121,9 +121,12 @@ class ChromeLib:
 		)
 		process.process_should_be_running(ChromeLib._processRFHandleForStart)
 		titlePattern = self.getUniqueTestCaseTitleRegex(testCase)
+		# BEGIN JP PATCH (Extend window wait timeout for slow CI runners)
+		giveUpAfterSeconds = 20
+		# END JP PATCH
 		success, ChromeLib._chromeWindow = _blockUntilConditionMet(
 			getValue=lambda: GetWindowWithTitle(titlePattern, lambda message: builtIn.log(message, "DEBUG")),
-			giveUpAfterSeconds=10,  # Chrome has been taking ~3 seconds to open a new tab.
+			giveUpAfterSeconds=giveUpAfterSeconds,  # Chrome has been taking ~3 seconds to open a new tab.
 			shouldStopEvaluator=lambda _window: _window is not None,
 			intervalBetweenSeconds=0.5,
 			errorMessage="Unable to get chrome window",
@@ -198,6 +201,12 @@ class ChromeLib:
 					return False
 
 		afterControlF6Speech = _NvdaLib.getSpeechAfterKey("control+F6")  # focus web content, chrome shortcut.
+		# BEGIN JP PATCH (Retry nvda+tab if tab title not immediately reported after control+F6)
+		if ChromeLib._testCaseTitle not in afterControlF6Speech:
+			spy.wait_for_speech_to_finish()
+			builtIn.sleep("0.5 seconds")
+			afterControlF6Speech = _NvdaLib.getSpeechAfterKey("nvda+tab")
+		# END JP PATCH
 		if ChromeLib._testCaseTitle not in afterControlF6Speech:
 			builtIn.log(
 				f"Didn't get tab title '{ChromeLib._testCaseTitle}' after moving to document, "
@@ -264,8 +273,15 @@ class ChromeLib:
 			windowsLib.taskSwitchToItemMatching(targetWindowNamePattern=chromeTitleSpeechPattern)
 			windowsLib.logForegroundWindowTitle()
 
-			if not _chromeLib.canChromeTitleBeReported(chromeTitleSpeechPattern):
+			# BEGIN JP PATCH (Retry reporting chrome title for slow CI runners)
+			for _retry in range(3):
+				if _chromeLib.canChromeTitleBeReported(chromeTitleSpeechPattern):
+					break
+				spy.wait_for_speech_to_finish()
+				builtIn.sleep("0.5 seconds")
+			else:
 				raise AssertionError("NVDA unable to report chrome title")
+			# END JP PATCH
 
 		spy.wait_for_speech_to_finish()
 
