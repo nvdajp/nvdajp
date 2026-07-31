@@ -1322,7 +1322,7 @@ def test_ariaRoleDescription_inline_contentEditable():
 		actualSpeech,
 		[
 			f"Unlabeled graphic  Our logo. {IMG_DESC_MSG}    out of Unlabeled graphic",
-			f"ラベルのない画像  Our logo. {IMG_DESC_MSG_JA}    out of ラベルのない画像",
+			f"ラベルのない画像  Our logo. {IMG_DESC_MSG_JA} ideographic period    out of ラベルのない画像",
 		],
 		message="First word with custom role in content editable",
 	)
