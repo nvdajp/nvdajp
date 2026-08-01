@@ -713,3 +713,17 @@ def upgradeConfigFrom_22_to_23(profile: ConfigObj) -> None:
 	log.debug(
 		f"Converted '{key}' with value {oldValue} to '{newKey}' with value {newValue}.",
 	)
+
+
+def upgradeConfigFrom_23_to_24(profile: ConfigObj):
+	"""Upgrade configuration from schema version 23 to 24."""
+	magnifierConf = profile.get("magnifier")
+	if not magnifierConf:
+		log.debug("No magnifier section in profile. No action taken.")
+		return
+	try:
+		del magnifierConf["isTrueCentered"]
+	except KeyError:
+		log.debug("No isTrueCentered setting in profile. No action taken.")
+	if magnifierConf.get("fullscreenMode") == "border":
+		del magnifierConf["fullscreenMode"]
