@@ -700,8 +700,8 @@ jobs:
     name: Run system tests
     runs-on: ${{ matrix.runner }}
     needs: [matrix, createLauncher]
-    # BEGIN JP PATCH (extend timeout for chrome tests: 10m → 20m to avoid cascade failures)
-    timeout-minutes: 20
+    # BEGIN JP PATCH (extend timeout for chrome tests: 10m → 30m to avoid cascade failures)
+    timeout-minutes: 30
     # END JP PATCH
     strategy:
       fail-fast: false
