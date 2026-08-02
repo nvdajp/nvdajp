@@ -205,7 +205,10 @@ class NvdaLib:
 		)
 		return handle
 
-	def _connectToRemoteServer(self, connectionTimeoutSecs: int = 15) -> None:
+	# BEGIN JP PATCH (extend connection timeout: 15s → 30s to reduce flaky
+	# "Unable to connect to nvdaSpyLib" failures on slow CI runners)
+	def _connectToRemoteServer(self, connectionTimeoutSecs: int = 30) -> None:
+		# END JP PATCH
 		"""Connects to the nvdaSpyServer
 		Because we do not know how far through the startup NVDA is, we have to poll
 		to check that the server is available. Importing the library immediately seems
