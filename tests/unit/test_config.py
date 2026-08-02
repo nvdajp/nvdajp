@@ -31,6 +31,7 @@ from config.featureFlag import (
 from config.featureFlagEnums import (
 	getAvailableEnums,
 	BoolFlag,
+	BrailleTextWrapFlag,
 )
 from config.profileUpgradeSteps import (
 	_friendlyNameToEndpointId,
@@ -45,6 +46,8 @@ from config.profileUpgradeSteps import (
 	upgradeConfigFrom_17_to_18,
 	upgradeConfigFrom_18_to_19,
 	upgradeConfigFrom_21_to_22,
+	upgradeConfigFrom_22_to_23,
+	upgradeConfigFrom_23_to_24,
 )
 from config.configFlags import (
 	NVDAKey,
@@ -1444,3 +1447,113 @@ class Config_loadCustomSections(unittest.TestCase):
 		self.assertFalse(_customSections["myNestedSection"]["isBaseOnly"])
 		self.assertIn("myNestedSection", confspec)
 		self.assertEqual(confspec["myNestedSection"], spec)
+
+
+class Config_profileUpgradeSteps_upgradeConfigFrom_22_to_23(unittest.TestCase):
+	"""Tests for the alphajp-specific wordWrap -> textWrap migration (schema 22 to 23)."""
+
+	def test_noBrailleSection_unchanged(self):
+		"""Profile with no [braille] section is not modified."""
+		profile = _loadProfile("")
+		upgradeConfigFrom_22_to_23(profile)
+		with self.assertRaises(KeyError):
+			profile["braille"]
+
+	def test_noWordWrapKey_unchanged(self):
+		"""Profile with [braille] but no wordWrap key is not modified."""
+		configString = """
+[braille]
+	display = auto
+"""
+		profile = _loadProfile(configString)
+		upgradeConfigFrom_22_to_23(profile)
+		self.assertNotIn("textWrap", profile["braille"])
+
+	def test_wordWrapTrue_migratesToAtWordBoundaries(self):
+		"""wordWrap = true is migrated to textWrap = AT_WORD_BOUNDARIES."""
+		configString = """
+[braille]
+	wordWrap = true
+"""
+		profile = _loadProfile(configString)
+		upgradeConfigFrom_22_to_23(profile)
+		self.assertEqual(
+			profile["braille"]["textWrap"],
+			BrailleTextWrapFlag.AT_WORD_BOUNDARIES.name,
+		)
+
+	def test_wordWrapFalse_migratesToNone(self):
+		"""wordWrap = false is migrated to textWrap = NONE."""
+		configString = """
+[braille]
+	wordWrap = false
+"""
+		profile = _loadProfile(configString)
+		upgradeConfigFrom_22_to_23(profile)
+		self.assertEqual(
+			profile["braille"]["textWrap"],
+			BrailleTextWrapFlag.NONE.name,
+		)
+
+	def test_nonBooleanWordWrap_unchanged(self):
+		"""A non-boolean wordWrap value is left untouched."""
+		configString = """
+[braille]
+	wordWrap = notABool
+"""
+		profile = _loadProfile(configString)
+		upgradeConfigFrom_22_to_23(profile)
+		self.assertEqual(profile["braille"]["wordWrap"], "notABool")
+		self.assertNotIn("textWrap", profile["braille"])
+
+
+class Config_profileUpgradeSteps_upgradeConfigFrom_23_to_24(unittest.TestCase):
+	"""Tests for the magnifier true-center/border removal (schema 23 to 24)."""
+
+	def test_noMagnifierSection_unchanged(self):
+		"""Profile with no [magnifier] section is not modified."""
+		profile = _loadProfile("")
+		upgradeConfigFrom_23_to_24(profile)
+		with self.assertRaises(KeyError):
+			profile["magnifier"]
+
+	def test_isTrueCentered_removed(self):
+		"""The isTrueCentered key is removed when present."""
+		configString = """
+[magnifier]
+	isTrueCentered = true
+	fullscreenMode = relative
+"""
+		profile = _loadProfile(configString)
+		upgradeConfigFrom_23_to_24(profile)
+		self.assertNotIn("isTrueCentered", profile["magnifier"])
+
+	def test_borderFullscreenMode_removed(self):
+		"""A fullscreenMode of 'border' is removed."""
+		configString = """
+[magnifier]
+	fullscreenMode = border
+"""
+		profile = _loadProfile(configString)
+		upgradeConfigFrom_23_to_24(profile)
+		self.assertNotIn("fullscreenMode", profile["magnifier"])
+
+	def test_otherFullscreenMode_kept(self):
+		"""A fullscreenMode other than 'border' is retained."""
+		configString = """
+[magnifier]
+	fullscreenMode = relative
+"""
+		profile = _loadProfile(configString)
+		upgradeConfigFrom_23_to_24(profile)
+		self.assertEqual(profile["magnifier"]["fullscreenMode"], "relative")
+
+	def test_magnifierWithoutKeys_unchanged(self):
+		"""A magnifier section with neither isTrueCentered nor border mode is unchanged."""
+		configString = """
+[magnifier]
+	zoomLevel = 2
+"""
+		profile = _loadProfile(configString)
+		upgradeConfigFrom_23_to_24(profile)
+		self.assertEqual(profile["magnifier"]["zoomLevel"], "2")
