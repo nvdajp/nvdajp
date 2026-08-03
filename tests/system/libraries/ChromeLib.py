@@ -274,11 +274,13 @@ class ChromeLib:
 			windowsLib.logForegroundWindowTitle()
 
 			# BEGIN JP PATCH (Retry reporting chrome title for slow CI runners)
-			for _retry in range(3):
+			# NVDA/title reporting can be delayed by several seconds on CI
+			# runners after Chrome starts; retry up to 6 times (approx 15s) before failing.
+			for _retry in range(6):
 				if _chromeLib.canChromeTitleBeReported(chromeTitleSpeechPattern):
 					break
 				spy.wait_for_speech_to_finish()
-				builtIn.sleep("0.5 seconds")
+				builtIn.sleep("1 seconds")
 			else:
 				raise AssertionError("NVDA unable to report chrome title")
 			# END JP PATCH
