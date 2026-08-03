@@ -730,6 +730,27 @@ jobs:
         exclude:
           - runner: windows-2022
             testSuite: symbols
+          # BEGIN JP PATCH (run chrome system tests only on the newest Windows
+          # runner to reduce flaky failures; installer/startupShutdown still run on both)
+          - runner: windows-2022
+            testSuite: chrome_annotations
+          - runner: windows-2022
+            testSuite: chrome_list
+          - runner: windows-2022
+            testSuite: chrome_table
+          - runner: windows-2022
+            testSuite: chrome_language
+          - runner: windows-2022
+            testSuite: chrome_roleDescription
+          - runner: windows-2022
+            testSuite: chrome_misc_aria
+          - runner: windows-2022
+            testSuite: chrome_misc
+          - runner: windows-2022
+            testSuite: chrome_link
+          - runner: windows-2022
+            testSuite: chrome_waic
+          # END JP PATCH
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
