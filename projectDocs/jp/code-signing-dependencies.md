@@ -10,7 +10,7 @@
 .\scons.bat launcher
 ```
 
-前提として `certFile` / `apiSigningToken` / `CERT_SHA1` / `CERT_NAME` / `AZURE_KV_SIGNING=1` のいずれかが有効であること。`--all-cores` は使わない（JP ターゲットで並列ビルドが失敗することがある）。
+前提として Azure Key Vault 署名が有効であること（`AZURE_KV_SIGNING=1` が既定）。ローカル証明書（`certFile` / `CERT_SHA1` / `CERT_NAME`）は廃止。`--all-cores` は使わない（JP ターゲットで並列ビルドが失敗することがある）。
 
 ### 署名なし（明示的スキップ）
 
@@ -56,10 +56,9 @@ jtalkPrep -> jtalkSync -> source -> user_docs -> dist -> jpCertExtras -> launche
 
 ### 有効化される設定
 
-- ローカル証明書: `certFile`
-- API 署名: `apiSigningToken`
-- 証明書ストア: `CERT_SHA1` または `CERT_NAME`
-- Azure Key Vault HSM: `AZURE_KV_SIGNING=1`（`az login` または `AZURE_CLIENT_*` + `AZURE_KEY_VAULT_URI` + `CERT_NAME`）
+- Azure Key Vault HSM: `AZURE_KV_SIGNING=1`（既定。`az login` または `AZURE_KV_ACCESS_TOKEN` で認証）
+
+旧方式のローカル証明書ストア署名（`CERT_SHA1` / `CERT_NAME`）は Sectigo 失効（2026-08-06）に伴い廃止済み。
 
 ### 明示的無効化
 
@@ -73,7 +72,7 @@ jtalkPrep -> jtalkSync -> source -> user_docs -> dist -> jpCertExtras -> launche
 
 ### 証明書ストア署名が意図せず有効になる
 
-- `CERT_SHA1` / `CERT_NAME` の環境変数が残っている可能性がある。
+- `CERT_SHA1` / `CERT_NAME` の環境変数が残っている可能性がある（旧方式の残骸）。
 - 未署名ビルドにしたい場合は `SKIP_SIGNING=1` を明示する。
 
 ### `dist/` が無い、または DLL が見つからない

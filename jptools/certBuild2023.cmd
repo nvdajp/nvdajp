@@ -58,66 +58,18 @@ if not defined SIGNTOOL (
     echo [WARN] signtool not found in PATH or Windows Kits. Verification may be skipped.
 )
 
-rem Auto-detect a valid code signing cert from Windows cert store when not explicitly specified
-rem Preference: CurrentUser\My, then LocalMachine\My. Exclude self-signed.
-rem Skip certificate detection if SKIP_SIGNING is set or Azure Key Vault signing is requested
-if defined AZURE_KV_SIGNING if not "%AZURE_KV_SIGNING%"=="0" (
-    set AZURE_KV_SIGNING=1
-    echo Using Azure Key Vault code signing ^(AZURE_KV_SIGNING=%AZURE_KV_SIGNING%^)
-    goto cert_store_done
-)
-if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME (
-    for /f "usebackq tokens=1,2 delims=;" %%A in (`pwsh -NoProfile -Command ^
-        "$now=Get-Date; "^ 
-        "function FindCert([string]\$root){ "^ 
-        "  Get-ChildItem -Path \$root -ErrorAction SilentlyContinue | Where-Object { "^ 
-        "    \$_.HasPrivateKey -and \$_.NotAfter -gt \$now -and \$_.NotBefore -le \$now -and "^ 
-        "    (\$_.EnhancedKeyUsageList | Where-Object { \$_.ObjectId -eq '1.3.6.1.5.5.7.3.3' }) -and "^ 
-        "    \$_.Issuer -ne \$_.Subject "^ 
-        "  } | Sort-Object NotAfter -Descending | Select-Object -First 1 "^ 
-        "}; "^ 
-        "\$cert=FindCert 'Cert:\\CurrentUser\\My'; \$scope='USER'; if(-not \$cert){ \$cert=FindCert 'Cert:\\LocalMachine\\My'; \$scope='MACHINE' } ; "^ 
-        "if(\$cert){ \$tp=(\$cert.Thumbprint -replace ' ','').ToUpper(); if(\$tp -match '^[0-9A-F]{40}$'){ Write-Output (\"\$scope;\" + \$tp) } } "
-    `) do (
-        set "_CERT_SCOPE=%%A"
-        set "_CERT_THUMB=%%B"
-    )
-    if defined _CERT_THUMB (
-        set CERT_STORE=My
-        set CERT_SHA1=!_CERT_THUMB!
-        if /I "!_CERT_SCOPE!"=="MACHINE" set CERT_MACHINE_STORE=1
-        echo Using certificate from store: scope=!_CERT_SCOPE! sha1=!_CERT_THUMB!
-    ) else (
-        echo [INFO] No suitable code signing certificate found in store.
-    )
-    set _CERT_SCOPE=
-    set _CERT_THUMB=
-)
+rem Azure Key Vault signing is the default and only supported signing method.
+rem Local certificate store signing (CERT_SHA1 / eToken) is retired.
+if not defined AZURE_KV_SIGNING set AZURE_KV_SIGNING=1
+echo Using Azure Key Vault code signing ^(AZURE_KV_SIGNING=%AZURE_KV_SIGNING%^)
 
-:cert_store_done
-
-rem Validate CERT_SHA1 (must be exactly 40 hex chars). If invalid, clear it.
-if defined CERT_SHA1 (
-    for /f "usebackq delims=" %%V in (`pwsh -NoProfile -Command ^
-        "$v=$env:CERT_SHA1; if($v -match '^[0-9A-Fa-f]{40}$'){ 'OK' }"`) do set "__SHA1_OK=%%V"
-    if not defined __SHA1_OK (
-        echo [WARN] Ignoring invalid CERT_SHA1 value: %CERT_SHA1%
-        set CERT_SHA1=
-    )
-    set __SHA1_OK=
-)
-
-rem Build SCons args; enable signing only when a valid store cert is selected
+rem Build SCons args; signing is driven by AZURE_KV_SIGNING (see scons_jp.py / SConstruct).
 rem Note: Do not set certFile=1 for certificate store signing (JP-specific)
-rem SConstruct will detect CERT_SHA1/CERT_NAME from environment and use certificate store signing
 set SCONSARGS=release=%RELEASE% publisher=%PUBLISHER% version=%VERSION% updateVersionType=%UPDATEVERSIONTYPE% %SCONSOPTIONS%
-if defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certTimestampServer=%TIMESTAMP_URL%
-if defined CERT_NAME if not defined CERT_SHA1 set SCONSARGS=%SCONSARGS% certTimestampServer=%TIMESTAMP_URL%
-if not defined SKIP_SIGNING if defined AZURE_KV_SIGNING if not "%AZURE_KV_SIGNING%"=="0" goto cert_signing_ready
-if not defined SKIP_SIGNING if not defined CERT_SHA1 if not defined CERT_NAME if not defined ALLOW_AUTO_SIGN (
-    echo [ERROR] No valid code signing certificate found. Set CERT_SHA1 or CERT_NAME, AZURE_KV_SIGNING=1, or set ALLOW_AUTO_SIGN=1 to allow automatic selection.
-    goto onerror
-)
+if defined SKIP_SIGNING goto cert_signing_ready
+if not "%AZURE_KV_SIGNING%"=="0" goto cert_signing_ready
+echo [ERROR] Azure Key Vault signing is required (set AZURE_KV_SIGNING=1), or SKIP_SIGNING=1 to skip signing.
+goto onerror
 :cert_signing_ready
 rem Build synthDriverHost32 runtime (32-bit Python for SAPI4/5) before launcher
 powershell -ExecutionPolicy Bypass -File jptools\buildSynthDriverHost32.ps1
