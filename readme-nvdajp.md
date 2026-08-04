@@ -68,18 +68,17 @@ NVDA 本体を実行するには
 
 ### (4) NVDA日本語版のリリースビルド
 
-現在は `signtool sign /a` を使えることが前提。
+コード署名は **Azure Key Vault 署名（GlobalSign HSM）** を既定・唯一の方式として使用します。
 
 #### 事前準備
 
-`jptools\certBuild2025Env.sample.ps1` をコピーして `jptools\certBuild2025Env.ps1` を作成し、証明書のSHA-1 thumbprintを設定する。
+Azure CLI でサインインしておきます（または `AZURE_KV_ACCESS_TOKEN` を設定）。
 
 ```powershell
-> Copy-Item .\jptools\certBuild2025Env.sample.ps1 .\jptools\certBuild2025Env.ps1
-# certBuild2025Env.ps1 を編集して $env:CERT_SHA1 を設定
+> az login
 ```
 
-**注意**: `certBuild2025Env.ps1` はコミットしないこと。
+Key Vault / 証明書の詳細は `f:\shuaruta\code-signing\HOWTO.md` を参照してください。
 
 #### ビルド実行
 
@@ -93,7 +92,7 @@ NVDA 本体を実行するには
 * `-VersionBuild` : ビルド番号を指定
 * `-SkipUnitTests` : ユニットテストをスキップ
 * `-SkipSystemTests` : システムテストをスキップ
-* `-SkipSigning` : コード署名をスキップ（RDPセッション等で証明書にアクセスできない場合）
+* `-SkipSigning` : コード署名をスキップ
 
 署名付きビルドの依存関係・`jpCertExtras`・`SKIP_SIGNING` などの詳細仕様は `projectDocs/jp/code-signing-dependencies.md` を正本とする。
 

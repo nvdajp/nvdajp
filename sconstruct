@@ -210,17 +210,13 @@ Export("outputDir")
 assert not (apiSigningToken and certFile), (
 	"Cannot specify signing with both API token (cloud) and local certificate"
 )
-# BEGIN JP PATCH (certificate store signing support)
-# Check for Windows certificate store signing (CERT_SHA1 or CERT_NAME from environment)
+# BEGIN JP PATCH (Azure Key Vault signing)
+# Azure Key Vault signing (GlobalSign HSM) is the JP default signing method.
+# Local certificate store signing (CERT_SHA1 / CERT_NAME) is retired.
 # skipSigning is already defined above
-certSha1 = os.environ.get("CERT_SHA1", "") if not skipSigning else ""
-certName = os.environ.get("CERT_NAME", "") if not skipSigning else ""
-certStore = os.environ.get("CERT_STORE", "My")
-certMachineStore = os.environ.get("CERT_MACHINE_STORE", "")
-useCertStore = bool(certSha1 or certName) and not skipSigning
 useAzureKvSigning = os.environ.get("AZURE_KV_SIGNING", "") not in ("", "0") and not skipSigning
-signingEnabled = bool(certFile or apiSigningToken or useCertStore or useAzureKvSigning)
-# END JP PATCH (certificate store signing support)
+signingEnabled = bool(certFile or apiSigningToken or useAzureKvSigning)
+# END JP PATCH (Azure Key Vault signing)
 if apiSigningToken:
 	# Code signing with SignPath HSM
 	def signExecApi(target, source, env):
@@ -301,32 +297,7 @@ elif useAzureKvSigning:
 		return retval
 
 	env["signExec"] = signExecAzureKv
-elif useCertStore:
-	# Code signing with Windows certificate store (JP-specific)
-	def signExecCertStore(target, source, env):
-		# we encrypt with SHA256 as this is the minimum required by the Windows Store for appx packages
-		signExecCmd = ["signtool", "sign", "/fd", "SHA256"]
-		if certSha1:
-			signExecCmd.extend(["/s", certStore, "/sha1", certSha1])
-		elif certName:
-			signExecCmd.extend(["/s", certStore, "/n", certName])
-		if certMachineStore:
-			signExecCmd.append("/sm")
-		if certTimestampServer:
-			signExecCmd.extend(("/tr", certTimestampServer, "/td", "SHA256"))
-		print([str(x) for x in target])
-		# #3795: signtool can quite commonly fail with timestamping, so allow it to try up to 3 times with a 1 second delay between each try.
-		res = 0
-		for count in range(3):
-			res = env.Execute([signExecCmd + [target[0].abspath]])
-			if not res:
-				return 0  # success
-			time.sleep(1)
-		return res  # failed
-
-	# Export via scons environment so other libraries can be signed
-	env["signExec"] = signExecCertStore
-# END JP PATCH (certificate store signing support)
+# END JP PATCH (Azure Key Vault signing)
 
 # architecture-specific environments
 archTools = ["default", "midl", "msrpc"]

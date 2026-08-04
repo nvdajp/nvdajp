@@ -9,7 +9,6 @@ In order to use touch features, NVDA must be installed on a touchscreen computer
 """
 
 import threading
-import speech
 from functools import cached_property
 from typing import (
 	TYPE_CHECKING,
@@ -196,7 +195,6 @@ ANRUS_TOUCH_MODIFICATION_ACTIVE = 2
 
 touchWindow = None
 touchThread = None
-blockTouchInput: bool = False
 
 
 _flickActions: frozenset[TouchAction] = frozenset(
@@ -467,6 +465,7 @@ class TouchHandler(threading.Thread):
 			raise ValueError("Unknown mode %s" % mode)
 		self._curTouchMode = mode
 
+	# BEGIN JP PATCH
 	def _executeGesture(self, gesture: "TouchInputGesture") -> None:
 		"""Execute a touch gesture, silently ignoring unbound gestures.
 
@@ -510,9 +509,6 @@ class TouchHandler(threading.Thread):
 		_blockedThisPump = False
 		pendingFlick: TouchInputGesture | None = None
 		for preheldTracker, tracker in self.trackerManager.emitTrackers():
-			if blockTouchInput:
-				_blockedThisPump = True
-				continue
 			modeStr = (
 				self._curTouchMode.value if isinstance(self._curTouchMode, TouchMode) else self._curTouchMode
 			)
@@ -546,6 +542,7 @@ class TouchHandler(threading.Thread):
 
 	def pump(self):
 		self._processGestures()
+	# END JP PATCH
 		interval = self.trackerManager.pendingEmitInterval
 		if interval and interval > 0:
 			# Ensure we are pumped again by the time more pending multiTouch trackers are ready
