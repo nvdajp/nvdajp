@@ -311,6 +311,5 @@ testSuite:
 - `projectDocs/jp/chrome-system-test-japanese-environment.md` — Chrome テストの日本語環境差分
 - `projectDocs/jp/waic-tests.md` — WAIC テストの詳細
 - `projectDocs/jp/system-tests-ci-restoration-plan.md` — CI 復帰計画
-- `projectDocs/jp/ci-system-tests-improvement-plan.md` — CI 改善計画
 - `AGENTS.md` — JP 自動化ガイドライン
 - `.github/instructions/review.instructions.md` — コードレビュー指示
