@@ -54,15 +54,48 @@ if ($env:EXCLUDE_SYSTEM_TEST_TAGS) {
 # END JP PATCH (support for excluding specific test tags)
 
 $nvdaLauncherFile=$(Resolve-Path "$env:nvdaLauncherDir\nvda*.exe")
-.\runsystemtests.bat `
---variable whichNVDA:installed `
---variable installDir:"${nvdaLauncherFile}" `
---variable verboseDebugLogging:"${verboseDebugLogging}" `
-@includeTags `
-@excludeTags `
-# last line intentionally blank, allowing all lines to have line continuations.
-if ($LastExitCode -ne 0) {
-	Write-Output "FAIL: System tests (tags: ${tagsForTest}). See test results for more information."  >> $env:GITHUB_STEP_SUMMARY
-	Write-Output "testFailExitCode=$LastExitCode" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+# BEGIN JP PATCH (retry flaky system tests once using Robot Framework's --rerunfailed)
+# CI speech-backend instability can cause intermittent "Speech did not finish before
+# timeout" failures on an otherwise healthy build. Re-run only the failed tests once,
+# then merge the retry output with the original output.xml.
+$maxSystemTestRetries = 1
+$retryCount = 0
+$systemTestsExitCode = 0
+do {
+	if ($retryCount -gt 0) {
+		Write-Output "System tests failed (exit $systemTestsExitCode); retrying failed tests (retry $retryCount of $maxSystemTestRetries)..."
+		.\runsystemtests.bat `
+		--variable whichNVDA:installed `
+		--variable installDir:"${nvdaLauncherFile}" `
+		--variable verboseDebugLogging:"${verboseDebugLogging}" `
+		--rerunfailed "testOutput/system/output.xml" `
+		--output "testOutput/system/output_rerun.xml" `
+		@includeTags `
+		@excludeTags `
+	} else {
+		.\runsystemtests.bat `
+		--variable whichNVDA:installed `
+		--variable installDir:"${nvdaLauncherFile}" `
+		--variable verboseDebugLogging:"${verboseDebugLogging}" `
+		@includeTags `
+		@excludeTags `
+	}
+	$systemTestsExitCode = $LastExitCode
+	$retryCount++
+} while ($systemTestsExitCode -ne 0 -and $retryCount -le $maxSystemTestRetries -and (Test-Path "testOutput/system/output.xml"))
+
+# If a retry ran, merge the retry output.xml into the original so the combined
+# test report reflects all executed tests.
+if ($retryCount -gt 1 -and $systemTestsExitCode -eq 0) {
+	Write-Output "Merging rerun results into the original system test output."
+	$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
+	uv run --group system-tests --directory $repoRoot -m rebot --merge --output "testOutput/system/output.xml" "testOutput/system/output.xml" "testOutput/system/output_rerun.xml"
 }
-exit $LastExitCode
+# END JP PATCH (retry flaky system tests)
+
+if ($systemTestsExitCode -ne 0) {
+	Write-Output "FAIL: System tests (tags: ${tagsForTest}). See test results for more information."  >> $env:GITHUB_STEP_SUMMARY
+	Write-Output "testFailExitCode=$systemTestsExitCode" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+}
+exit $systemTestsExitCode
