@@ -157,3 +157,10 @@ CI負荷軽減と完了待ちのため：
 * `readme-nvdajp.md`, `projectDocs/jp/README.md`, `projectDocs/jp/roadmap.md`
 * ビルドシステムの方針: `projectDocs/jp/miscdepsjp-overlay-strategy.md`
 * 差分が無い場合は上流ドキュメントを参照
+
+---
+
+### Workspace 共通ルール
+
+* このフォルダ（`alphajp`）は `alphajp` ブランチの**優先作業場**です。
+* マルチルートワークスペース共通の方針（ブランチ⇄フォルダ対応、共通運用規則）は `f:\nvda\gh\AGENTS.md` を参照してください。
