@@ -11,6 +11,7 @@ from characterProcessing import SpeechSymbolProcessor
 from characterProcessing import SymbolLevel
 from characterProcessing import processSpeechSymbols as process
 from characterProcessing import processSpeechSymbol
+from characterProcessing import LocaleDataMap
 
 
 class TestComplex(unittest.TestCase):
@@ -183,3 +184,39 @@ class TestUsingCLDR(unittest.TestCase):
 				CHAR_IN_SYMB_FILE_DESC,
 				msg=f'Test failure for locale={locale} with "{CHAR_IN_SYMB_FILE_DESC}"',
 			)
+
+
+class TestLocaleDataMapFallback(unittest.TestCase):
+	"""Test that LocaleDataMap falls back to the base language when the full locale is missing.
+
+	Regression test for issue #494: requesting symbols for a locale such as 'ja_JP'
+	(which has no dedicated data) should fall back to 'ja' instead of raising LookupError.
+	"""
+
+	def _makeMap(self):
+		"""Create a LocaleDataMap whose factory only supports base languages (no country variants)."""
+		available = {"ja", "en", "fr"}
+
+		def factory(locale):
+			if locale in available:
+				return f"data:{locale}"
+			raise LookupError(locale)
+
+		return LocaleDataMap(factory)
+
+	def test_fallback_to_base_language(self):
+		"""fetchLocaleData('ja_JP') should return the 'ja' data when fallback=True."""
+		dataMap = self._makeMap()
+		self.assertEqual(dataMap.fetchLocaleData("ja_JP", fallback=True), "data:ja")
+
+	def test_no_fallback_raises(self):
+		"""fetchLocaleData('ja_JP') should raise LookupError when fallback=False."""
+		dataMap = self._makeMap()
+		with self.assertRaises(LookupError):
+			dataMap.fetchLocaleData("ja_JP", fallback=False)
+
+	def test_exact_locale_preferred(self):
+		"""An exact locale match should be used even when fallback is enabled."""
+		dataMap = self._makeMap()
+		self.assertEqual(dataMap.fetchLocaleData("fr", fallback=True), "data:fr")
+
