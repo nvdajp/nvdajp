@@ -563,7 +563,9 @@ class SpeechSymbolProcessor:
 
 		# We need to merge symbol data from several sources.
 		sources = self.sources = []
-		fetched = self.localeSymbols.fetchLocaleData(locale, fallback=False)
+		# BEGIN JP PATCH (issue #494: fall back to base language when full locale is missing)
+		fetched = self.localeSymbols.fetchLocaleData(locale, fallback=True)
+		# END JP PATCH
 		# A slice that reverses a list and ignores the last item (which is the user dictionary)
 		builtinSlice = slice(-2, None, -1)
 		self.builtinSources = list(fetched[builtinSlice])
@@ -936,7 +938,9 @@ class SymbolDictionaryDefinition:
 		:param locale: The locale to get symbols for.
 		:raises FileNotFoundError: When this is not a user dictionary and the locale wasn't found.
 		"""
-		return self.symbols.fetchLocaleData(locale, fallback=False)
+		# BEGIN JP PATCH (issue #494: fall back to base language when full locale is missing)
+		return self.symbols.fetchLocaleData(locale, fallback=True)
+		# END JP PATCH
 
 	def _initSymbols(self, locale: str) -> SpeechSymbols:
 		raiseOnError = self.source != _SymbolDefinitionSource.USER
