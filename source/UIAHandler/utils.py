@@ -266,10 +266,14 @@ class BulkUIATextRangeAttributeValueFetcher(UIATextRangeAttributeValueFetcher):
 		try:
 			values = textRange.GetAttributeValues(IDsArray, len(IDsArray))
 		except COMError:
-			# #717: Some UIA providers (e.g. Chrome) can raise a COMError
+			# Some UIA providers (e.g. Chrome) can raise a COMError
 			# (such as RPC_E_SERVERFAULT) when fetching multiple attribute values
-			# in a single cross-process call. Fall back to fetching each attribute
-			# individually, which handles COMError per attribute (see #7124).
+			# in a single cross-process call via GetAttributeValues.
+			# Fall back to fetching each attribute individually via getAttributeValue,
+			# which already handles COMError per attribute (see nvaccess#7124).
+			# This is not silently swallowing the error — the bulk fetch is an
+			# optimization; falling back to the individual path preserves text and
+			# braille output, at the cost of one cross-process call per attribute.
 			log.debugWarning("GetAttributeValues failed, falling back to individual fetches", exc_info=True)
 			return
 		self.IDsToValues = {IDs[x]: values[x] for x in range(len(IDs))}
