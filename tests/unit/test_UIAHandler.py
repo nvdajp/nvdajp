@@ -5,16 +5,17 @@
 # For full terms and any additional permissions, see the NVDA license file:
 # https://github.com/nvaccess/nvda/blob/master/copying.txt
 
-"""Unit tests for the UIAHandler hung-window guard and UIA unit conversion."""
+"""Unit tests for the UIAHandler hung-window guard, UIA unit conversion, and bulk attribute fetcher."""
 
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from comtypes import COMError
 
 import textInfos
 import winUser
 from UIAHandler import NVDAUnitsToUIAUnits, getUIAUnitFromNVDAUnit, utils
+from UIAHandler.utils import BulkUIATextRangeAttributeValueFetcher
 
 
 def _makeCOMError() -> COMError:
@@ -94,3 +95,43 @@ class Test_getUIAUnitFromNVDAUnit(TestCase):
 		with self.assertRaises(NotImplementedError):
 			getUIAUnitFromNVDAUnit(textInfos.UNIT_SENTENCE)
 
+
+class TestBulkUIATextRangeAttributeValueFetcher(TestCase):
+	"""Tests for the bulk UIA text range attribute value fetcher."""
+
+	def _makeHandler(self):
+		handler = Mock()
+		handler.ReservedMixedAttributeValue = "mixed"
+		handler.reservedNotSupportedValue = "not-supported"
+		return handler
+
+	def test_getAttributeValuesCOMErrorFallsBackToIndividualFetches(self):
+		"""A COMError from GetAttributeValues should fall back to individual fetches."""
+		textRange = Mock()
+		textRange.GetAttributeValues.side_effect = COMError(-2147417851, "server fault", None)
+		# Individual fetches succeed.
+		textRange.getAttributeValue.side_effect = lambda ID: {1: "value1", 2: "value2"}[ID]
+		with patch("UIAHandler.utils.UIAHandler.handler", self._makeHandler()):
+			fetcher = BulkUIATextRangeAttributeValueFetcher(textRange, [1, 2])
+			self.assertEqual(fetcher.getValue(1), "value1")
+			self.assertEqual(fetcher.getValue(2), "value2")
+		textRange.GetAttributeValues.assert_called_once()
+
+	def test_getAttributeValuesSucceeds(self):
+		"""A successful GetAttributeValues should be used directly."""
+		textRange = Mock()
+		textRange.GetAttributeValues.return_value = ["value1", "value2"]
+		with patch("UIAHandler.utils.UIAHandler.handler", self._makeHandler()):
+			fetcher = BulkUIATextRangeAttributeValueFetcher(textRange, [1, 2])
+			self.assertEqual(fetcher.getValue(1), "value1")
+			self.assertEqual(fetcher.getValue(2), "value2")
+		textRange.getAttributeValue.assert_not_called()
+
+	def test_getAttributeValuesCOMErrorIndividualFetchAlsoFails(self):
+		"""If both bulk and individual fetches fail, reservedNotSupportedValue is returned."""
+		textRange = Mock()
+		textRange.GetAttributeValues.side_effect = COMError(-2147417851, "server fault", None)
+		textRange.getAttributeValue.side_effect = COMError(-2147417851, "server fault", None)
+		with patch("UIAHandler.utils.UIAHandler.handler", self._makeHandler()):
+			fetcher = BulkUIATextRangeAttributeValueFetcher(textRange, [1, 2])
+			self.assertEqual(fetcher.getValue(1), "not-supported")

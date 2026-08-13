@@ -87,6 +87,7 @@ JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、G
 ### 計画・方針
 
 * ロードマップ: `projectDocs/jp/roadmap.md`
+* **本家貢献ロードマップ**: `projectDocs/jp/upstream-contribution-roadmap.md`（#494 / #113 / #575 / #710 / #94 を本家へ提案する管理表）
 * 2025系との差分分析: `projectDocs/jp/compare-with-2025/README.md`
 * 点訳エンジンの分離計画: `projectDocs/jp/braille-engine-decoupling-plan.md`
 

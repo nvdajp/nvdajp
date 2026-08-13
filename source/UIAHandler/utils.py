@@ -261,13 +261,28 @@ class UIATextRangeAttributeValueFetcher(object):
 class BulkUIATextRangeAttributeValueFetcher(UIATextRangeAttributeValueFetcher):
 	def __init__(self, textRange, IDs):
 		IDs = list(IDs)
-		self.IDsToValues = {}
+		self.IDsToValues = None
 		super(BulkUIATextRangeAttributeValueFetcher, self).__init__(textRange)
 		IDsArray = (ctypes.c_long * len(IDs))(*IDs)
-		values = textRange.GetAttributeValues(IDsArray, len(IDsArray))
+		try:
+			values = textRange.GetAttributeValues(IDsArray, len(IDsArray))
+		except COMError:
+			# Some UIA providers (e.g. Chrome) can raise a COMError
+			# (such as RPC_E_SERVERFAULT) when fetching multiple attribute values
+			# in a single cross-process call via GetAttributeValues.
+			# Fall back to fetching each attribute individually via getAttributeValue,
+			# which already handles COMError per attribute (see nvaccess#7124).
+			# This is not silently swallowing the error — the bulk fetch is an
+			# optimization; falling back to the individual path preserves text and
+			# braille output, at the cost of one cross-process call per attribute.
+			log.debugWarning("GetAttributeValues failed, falling back to individual fetches", exc_info=True)
+			return
 		self.IDsToValues = {IDs[x]: values[x] for x in range(len(IDs))}
 
 	def getValue(self, ID, ignoreMixedValues=False):
+		if self.IDsToValues is None:
+			# Fall back to the individual attribute value fetcher.
+			return super().getValue(ID, ignoreMixedValues=ignoreMixedValues)
 		val = self.IDsToValues[ID]
 		if not ignoreMixedValues and val == UIAHandler.handler.ReservedMixedAttributeValue:
 			raise UIAMixedAttributeError
