@@ -466,66 +466,26 @@ class LiveText(NVDAObject):
 		Subclasses may override this method to provide custom filtering of new text,
 		where logic depends on multiple lines.
 		"""
-<<<<<<< HEAD
-		maxNewLines: int = config.conf["terminals"]["maxNewLines"]
-		if maxNewLines:
-			droppedCount = len(lines) - maxNewLines
-=======
 		if self.MAX_LINES > 0:
 			droppedCount = len(lines) - self.MAX_LINES
->>>>>>> nvaccess/master
 			if droppedCount > 0:
 				if (
 					config.conf["terminals"]["beepForSkippedLines"]
 					and speech.getState().speechMode == speech.SpeechMode.talk
 				):
-<<<<<<< HEAD
-					skippedLinesBeepHz = 550
-					tones.beep(
-						skippedLinesBeepHz,
-						self._getSkippedLinesBeepLength(droppedCount),
-					)
-				lines = lines[-maxNewLines:]
-=======
 					SKIPPED_LINES_BEEP_HZ = 550
 					tones.beep(
 						SKIPPED_LINES_BEEP_HZ,
 						self._getSkippedLinesBeepLength(droppedCount),
 					)
 				lines = lines[-self.MAX_LINES :]
->>>>>>> nvaccess/master
 		if self._reportNewLinesGenID is not None:
 			queueHandler.cancelGeneratorObject(self._reportNewLinesGenID)
 			self._reportNewLinesGenID = None
-		newLinesBatchSize: int = config.conf["terminals"]["newLinesBatchSize"]
-		if newLinesBatchSize <= 0:  # Report synchronously
-			for line in lines:
-				self._reportNewText(line)
-		else:
-			self._reportNewLinesGenID = queueHandler.registerGeneratorObject(
-				self._reportNewLinesGenerator(
-					lines,
-					newLinesBatchSize,
-				),
-			)
+		self._reportNewLinesGenID = queueHandler.registerGeneratorObject(
+			self._reportNewLinesGenerator(lines),
+		)
 
-<<<<<<< HEAD
-	@staticmethod
-	def _getSkippedLinesBeepLength(droppedCount: int) -> int:
-		skippedLinesBeepMinLengthMs = 10
-		skippedLinesBeepMaxLengthMs = 100
-		droppedCount = max(droppedCount, 1)
-		maxNewLines: int = config.conf["terminals"]["maxNewLines"]
-		ratio = 1.0 if maxNewLines <= 1 else min(1.0, math.log(droppedCount, maxNewLines))
-		lengthRange = skippedLinesBeepMaxLengthMs - skippedLinesBeepMinLengthMs
-		return round(skippedLinesBeepMinLengthMs + lengthRange * ratio)
-
-	def _reportNewLinesGenerator(
-		self,
-		lines: list[str],
-		batchSize: int,
-	) -> Generator[None, None, None]:
-=======
 	def _getSkippedLinesBeepLength(self, droppedCount: int) -> int:
 		SKIPPED_LINES_BEEP_MIN_DURATION_MS = 10
 		SKIPPED_LINES_BEEP_MAX_DURATION_MS = 100
@@ -536,11 +496,10 @@ class LiveText(NVDAObject):
 
 	def _reportNewLinesGenerator(self, lines: list[str]) -> Generator[None, None, None]:
 		YIELD_EVERY = 5  # Sweet spot between yielding on every line and a batch
->>>>>>> nvaccess/master
 		try:
 			for i, line in enumerate(lines, 1):
 				self._reportNewText(line)
-				if i % batchSize == 0:
+				if i % YIELD_EVERY == 0:
 					yield
 		finally:
 			self._reportNewLinesGenID = None

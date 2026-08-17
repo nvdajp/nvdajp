@@ -109,24 +109,6 @@ jobs:
       APIVersion: ${{ steps.releaseInfo.outputs.NVDA_API_VERSION }}
       APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
-<<<<<<< HEAD
-    - name: Checkout NVDA
-      uses: actions/checkout@v6
-      with:
-        submodules: recursive
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
-        update-environment: true
-    - name: Install Python (32 bit)
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: x86
-        update-environment: false
-=======
     - parallel:
         - name: Checkout NVDA
           uses: actions/checkout@v7
@@ -153,7 +135,6 @@ jobs:
             python-version: ${{ matrix.pythonVersion }}
             architecture: x86
             update-environment: false
->>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -175,7 +156,6 @@ jobs:
       with:
         path: ${{ env.SCONS_CACHE_MSVC_CONFIG }}
         key: ${{ env.SCONS_CACHE_KEY }}
-<<<<<<< HEAD
     # BEGIN JP PATCH (JP-specific build preparation)
     # Force dictionary rebuild so custom entries (一人→ヒトリ etc.) are always included.
     # Remove dic dir AND SCons stamp so jtalkSync is not skipped (stamp would make SCons think it's up to date).
@@ -233,15 +213,6 @@ jobs:
       run: powershell -ExecutionPolicy Bypass -File jptools/verifyJtalkDictionary.ps1 -Strict
       # END JP PATCH
     # END JP PATCH
-    - name: Install signPath
-      env:
-        apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-      if: ${{ env.apiSigningToken }}
-      shell: cmd
-      run: |
-        PowerShell -Command "Set-ExecutionPolicy Bypass"
-        PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
-        PowerShell -Command "Install-Module -Name SignPath -Force"
     # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
     - name: Install AzureSignTool
       if: ${{ env.AZURE_KV_SIGNING == '1' }}
@@ -268,8 +239,6 @@ jobs:
         Write-Host "::add-mask::$token"
         "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     # END JP PATCH
-=======
->>>>>>> nvaccess/master
     - name: Prepare source code
       shell: cmd
       run: scons source %sconsArgs% %sconsCores%
@@ -416,32 +385,18 @@ jobs:
       contents: read
       actions: write
     steps:
-<<<<<<< HEAD
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
-=======
     - parallel:
         - name: Checkout cached build
           uses: actions/cache/restore@v5
           with:
             path: .
-            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
             fail-on-cache-miss: true
         - name: Install Python
           uses: actions/setup-python@v6
           with:
             python-version: ${{ env.defaultPythonVersion }}
             architecture: ${{ env.defaultArch }}
->>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Check comments for translators
@@ -462,32 +417,18 @@ jobs:
     permissions:
       contents: read
     steps:
-<<<<<<< HEAD
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
-=======
     - parallel:
         - name: Checkout cached build
           uses: actions/cache/restore@v5
           with:
             path: .
-            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
             fail-on-cache-miss: true
         - name: Install Python
           uses: actions/setup-python@v6
           with:
             python-version: ${{ env.defaultPythonVersion }}
             architecture: ${{ env.defaultArch }}
->>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: License check
@@ -509,13 +450,18 @@ jobs:
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
-<<<<<<< HEAD
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
     # BEGIN JP PATCH (overwrite JTalk files from dedicated artifact after workspace cache restore)
     - name: Get JTalk runtime artifact
       uses: actions/download-artifact@v8
@@ -523,25 +469,6 @@ jobs:
         name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: .
     # END JP PATCH
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
-=======
-    - parallel:
-        - name: Checkout cached build
-          uses: actions/cache/restore@v5
-          with:
-            path: .
-            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
-            fail-on-cache-miss: true
-        - name: Install Python
-          uses: actions/setup-python@v6
-          with:
-            python-version: ${{ matrix.pythonVersion }}
-            architecture: ${{ matrix.arch }}
->>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -637,30 +564,12 @@ jobs:
     permissions:
       contents: read
     steps:
-<<<<<<< HEAD
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Get makePot results
-      uses: actions/download-artifact@v8
-      with:
-        name: makePot results
-        path: output
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
-=======
     - parallel:
         - name: Checkout cached build
           uses: actions/cache/restore@v5
           with:
             path: .
-            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
             fail-on-cache-miss: true
         - name: Install Python
           uses: actions/setup-python@v6
@@ -672,7 +581,6 @@ jobs:
           with:
             name: makePot results
             path: output
->>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Upload translations to Crowdin
@@ -711,13 +619,18 @@ jobs:
       launcherArtifactId: ${{ steps.addJobSummary.outputs.artifactId }}
       launcherSha256: ${{ steps.addJobSummary.outputs.SHA256 }}
     steps:
-<<<<<<< HEAD
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
     # BEGIN JP PATCH (overwrite packaged JTalk files from dedicated artifact after workspace cache restore)
     - name: Get JTalk runtime artifact
       uses: actions/download-artifact@v8
@@ -725,25 +638,6 @@ jobs:
         name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: .
     # END JP PATCH
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
-=======
-    - parallel:
-        - name: Checkout cached build
-          uses: actions/cache/restore@v5
-          with:
-            path: .
-            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
-            fail-on-cache-miss: true
-        - name: Install Python
-          uses: actions/setup-python@v6
-          with:
-            python-version: ${{ matrix.pythonVersion }}
-            architecture: ${{ matrix.arch }}
->>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -754,8 +648,6 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-<<<<<<< HEAD
-    # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
     # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
     - name: Install AzureSignTool
       if: ${{ env.AZURE_KV_SIGNING == '1' }}
@@ -764,9 +656,6 @@ jobs:
         dotnet tool install --global AzureSignTool --version 7.0.1
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     # END JP PATCH
-    - name: Build scons docs targets
-      shell: cmd
-      run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
     # BEGIN JP PATCH (Azure Key Vault signing with OIDC - workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
       if: ${{ env.AZURE_KV_SIGNING == '1' }}
@@ -785,28 +674,6 @@ jobs:
         Write-Host "::add-mask::$token"
         "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     # END JP PATCH
-    - name: Build scons docs targets
-      shell: cmd
-      run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
-    # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
-    - name: Install signpath
-      env:
-        apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-      if: ${{ env.apiSigningToken }}
-      shell: cmd
-      run: |
-        PowerShell -Command "Set-ExecutionPolicy Bypass"
-        PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
-        PowerShell -Command "Install-Module -Name SignPath -Force"
-    # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
-    - name: Install AzureSignTool
-      if: ${{ env.AZURE_KV_SIGNING == '1' }}
-      shell: pwsh
-      run: |
-        dotnet tool install --global AzureSignTool --version 7.0.1
-        Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-    # END JP PATCH
-=======
     - parallel:
         - name: Build scons docs targets
           shell: cmd
@@ -821,7 +688,6 @@ jobs:
             PowerShell -Command "Set-ExecutionPolicy Bypass"
             PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
             PowerShell -Command "Install-Module -Name SignPath -Force"
->>>>>>> nvaccess/master
     - name: Build NVDAController client
       shell: cmd
       run: scons client %sconsArgs% %sconsCores%
@@ -937,36 +803,18 @@ jobs:
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
-<<<<<<< HEAD
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
-    - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v7
-      with:
-        python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
-=======
     - parallel:
         - name: Checkout cached build
           uses: actions/cache/restore@v5
           with:
             path: .
-            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
             fail-on-cache-miss: true
         - name: Install Python
           uses: actions/setup-python@v6
           with:
             python-version: ${{ matrix.pythonVersion }}
             architecture: ${{ matrix.arch }}
->>>>>>> nvaccess/master
     - name: Get NVDA launcher
       id: getLauncher
       uses: actions/download-artifact@v8
@@ -1028,28 +876,16 @@ jobs:
       # So we only set the output variables for the default architecture.
       symbolsArtifactId: ${{ steps.defaultArtifact.outputs.artifactId }}
     steps:
-<<<<<<< HEAD
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Windows SDK
-      # Installs symstore.exe to expected location.
-      run: choco install -y windows-sdk-10.1
-=======
     - parallel:
         - name: Checkout cached build
           uses: actions/cache/restore@v5
           with:
             path: .
-            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
             fail-on-cache-miss: true
         - name: Install Windows SDK
           # Installs symstore.exe to expected location.
           run: choco install -y windows-sdk-10.1
->>>>>>> nvaccess/master
     - name: Create build symbols
       env:
         symStore: C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\symstore.exe
@@ -1073,16 +909,12 @@ jobs:
     name: Check if all tests pass
     runs-on: ubuntu-latest
     if: always()
-<<<<<<< HEAD
-    needs: [buildNVDA, typeCheck, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols
+    needs: [buildNVDA, typeCheckPyright, typeCheckTy, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols
       # BEGIN JP PATCH (jpSmokeTests added; checkPo temporarily disabled)
       , jpSmokeTests
       # , checkPo
       # END JP PATCH
     ]
-=======
-    needs: [buildNVDA, typeCheckPyright, typeCheckTy, checkPo, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols]
->>>>>>> nvaccess/master
     permissions:
       contents: read
     steps:
@@ -1099,25 +931,12 @@ jobs:
     permissions:
       contents: read
     steps:
-<<<<<<< HEAD
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
-=======
     - parallel:
         - name: Checkout cached build
           uses: actions/cache/restore@v5
           with:
             path: .
-            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
             fail-on-cache-miss: true
         - name: Install Python
           uses: actions/setup-python@v6
@@ -1129,7 +948,6 @@ jobs:
           run: |
             curl -L -o dump_syms.zip https://github.com/mozilla/dump_syms/releases/download/v2.3.5/dump_syms-x86_64-pc-windows-msvc.zip
             7z x dump_syms.zip dump_syms.exe
->>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Get symbols

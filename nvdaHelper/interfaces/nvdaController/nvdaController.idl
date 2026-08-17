@@ -115,12 +115,6 @@ interface NvdaController {
 
 /**
  * #nvdajp
- * Is speaking status
- */
-	error_status_t __stdcall isSpeaking();
-
-/**
- * #nvdajp
  * Get pitch voice
  */
 	error_status_t __stdcall getPitch();

@@ -14,11 +14,7 @@ from . import configDefaults
 #: provide an upgrade step (@see profileUpgradeSteps.py). An upgrade step does not need to be added when
 #: just adding a new element to (or removing from) the schema, only when old versions of the config
 #: (conforming to old schema versions) will not work correctly with the new schema.
-<<<<<<< HEAD
-latestSchemaVersion = 24
-=======
 latestSchemaVersion = 25
->>>>>>> nvaccess/master
 
 #: The configuration specification string
 #: @type: String
@@ -339,11 +335,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 [terminals]
 	speakPasswords = boolean(default=false)
 	keyboardSupportInLegacy = boolean(default=True)
-<<<<<<< HEAD
-	maxNewLines = integer(min=0, default=100)
-	newLinesBatchSize = integer(min=0, default=5)
-=======
->>>>>>> nvaccess/master
+
 	beepForSkippedLines = boolean(default=true)
 	diffAlgo = option("auto", "dmp", "difflib", default="auto")
 	wtStrategy = featureFlag(optionsEnum="WindowsTerminalStrategyFlag", behaviorOfDefault="diffing")

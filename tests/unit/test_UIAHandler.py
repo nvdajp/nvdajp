@@ -1,24 +1,10 @@
 # A part of NonVisual Desktop Access (NVDA)
-<<<<<<< HEAD
-# Copyright (C) 2026 NV Access Limited, Leonard de Ruijter
-# Copyright (C) 2026 NV Access Limited, Tobias Heath
-=======
 # Copyright (C) 2026 NV Access Limited, Leonard de Ruijter, Tobias Heath
->>>>>>> nvaccess/master
 # This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
 # For full terms and any additional permissions, see the NVDA license file:
 # https://github.com/nvaccess/nvda/blob/master/copying.txt
 
-<<<<<<< HEAD
 """Unit tests for the UIAHandler hung-window guard, UIA unit conversion, and bulk attribute fetcher."""
-=======
-
-"""Unit tests for the UIAHandler hung-window guard.
-
-These cover the mechanism that drops UIA events from a not-responding
-application so it cannot freeze NVDA or flood the log.
-"""
->>>>>>> nvaccess/master
 
 from unittest import TestCase
 from unittest.mock import Mock, patch
@@ -26,14 +12,9 @@ from unittest.mock import Mock, patch
 from comtypes import COMError
 
 import textInfos
-<<<<<<< HEAD
-import winUser
-from UIAHandler import NVDAUnitsToUIAUnits, getUIAUnitFromNVDAUnit, utils
-from UIAHandler.utils import BulkUIATextRangeAttributeValueFetcher
-=======
 from UIAHandler import getUIAUnitFromNVDAUnit, NVDAUnitsToUIAUnits, utils
+from UIAHandler.utils import BulkUIATextRangeAttributeValueFetcher
 import winUser
->>>>>>> nvaccess/master
 
 
 def _makeCOMError() -> COMError:
@@ -112,21 +93,9 @@ class Test_shouldSkipEventForHungWindow(TestCase):
 		with patch.object(winUser, "isHungAppWindow", side_effect=RuntimeError("boom")):
 			# A failure inside the guard itself must never escape into the COM handler.
 			self.assertFalse(utils._shouldSkipEventForHungWindow(_FakeElement(cachedHandle=1)))
-<<<<<<< HEAD
 
 
-class Test_getUIAUnitFromNVDAUnit(TestCase):
-	def test_mappedUnitReturnsUIAUnit(self):
-		self.assertEqual(
-			getUIAUnitFromNVDAUnit(textInfos.UNIT_WORD),
-			NVDAUnitsToUIAUnits[textInfos.UNIT_WORD],
-		)
-
-	def test_unmappedUnitRaisesNotImplementedError(self):
-		with self.assertRaises(NotImplementedError):
-			getUIAUnitFromNVDAUnit(textInfos.UNIT_SENTENCE)
-
-
+# BEGIN JP PATCH
 class TestBulkUIATextRangeAttributeValueFetcher(TestCase):
 	"""Tests for the bulk UIA text range attribute value fetcher."""
 
@@ -166,5 +135,4 @@ class TestBulkUIATextRangeAttributeValueFetcher(TestCase):
 		with patch("UIAHandler.utils.UIAHandler.handler", self._makeHandler()):
 			fetcher = BulkUIATextRangeAttributeValueFetcher(textRange, [1, 2])
 			self.assertEqual(fetcher.getValue(1), "not-supported")
-=======
->>>>>>> nvaccess/master
+# END JP PATCH

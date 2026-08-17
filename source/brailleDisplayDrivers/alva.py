@@ -155,11 +155,7 @@ class BrailleDisplayDriver(braille.display.driver.BrailleDisplayDriver, Scriptab
 	isThreadSafe = True
 	supportsAutomaticDetection = True
 	timeout = 0.2
-<<<<<<< HEAD
-	supportedSettings = (braille.BrailleDisplayDriver.HIDInputSetting(useConfig=False),)
-=======
 	supportedSettings = (braille.display.driver.BrailleDisplayDriver.HIDInputSetting(useConfig=True),)
->>>>>>> nvaccess/master
 
 	@classmethod
 	def registerAutomaticDetection(cls, driverRegistrar: bdDetect.DriverRegistrar):

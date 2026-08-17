@@ -61,15 +61,6 @@ error_status_t __stdcall nvdaController_speakSpelling(const wchar_t* text) {
 	return _nvdaController_speakSpelling(text);
 }
 
-// nvdajp: nullptr check for unregistered handlers (see controller-client.md)
-error_status_t(__stdcall *_nvdaController_isSpeaking)() = nullptr;
-error_status_t __stdcall nvdaController_isSpeaking() {
-	if (_nvdaController_isSpeaking == nullptr) {
-		return ERROR_CALL_NOT_IMPLEMENTED;
-	}
-	return _nvdaController_isSpeaking();
-}
-
 error_status_t(__stdcall *_nvdaController_getPitch)() = nullptr;
 error_status_t __stdcall nvdaController_getPitch() {
 	if (_nvdaController_getPitch == nullptr) {

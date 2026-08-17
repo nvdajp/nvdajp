@@ -1,5 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2025 NV Access Limited, Wang Chong
+# Copyright (C) 2025-2026 NV Access Limited, Wang Chong, Leonard de Ruijter
 # This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
@@ -143,10 +143,13 @@ class WordSegmentationStrategy(ABC):
 		"""Return (start inclusive, end exclusive) or None. Offsets are str offsets relative to self.text."""
 		pass
 
-	@abstractmethod
 	def segmentedText(self, sep: str = " ", newSepIndex: list[int] | None = None) -> str:
-		"""Segmented result with separators."""
-		pass
+		"""Segmented result with separators.
+
+		The default returns the text unchanged; only strategies that insert separators
+		for braille output (e.g. Chinese) override this.
+		"""
+		return self.text
 
 	def getWordOffsetRange(
 		self,
@@ -226,9 +229,6 @@ class UniscribeWordSegmentationStrategy(WordSegmentationStrategy):
 
 	def getSegmentForOffset(self, offset: int) -> tuple[int, int] | None:
 		return self._calculateUniscribeOffsets(self.text, offset)
-
-	def segmentedText(self, sep: str = " ", newSepIndex: list[int] | None = None) -> str:
-		return self.text
 
 
 class ChineseWordSegmentationStrategy(WordSegmentationStrategy):
@@ -348,8 +348,6 @@ class ChineseWordSegmentationStrategy(WordSegmentationStrategy):
 	def __init__(self, text: str, encoding: str | None = None) -> None:
 		super().__init__(text, encoding)
 		self.wordEnds = self._callCppJieba()
-<<<<<<< HEAD
-=======
 
 
 class IcuWordSegmentationStrategy(WordSegmentationStrategy):
@@ -367,4 +365,3 @@ class IcuWordSegmentationStrategy(WordSegmentationStrategy):
 			offset,
 			self.encoding,
 		)
->>>>>>> nvaccess/master

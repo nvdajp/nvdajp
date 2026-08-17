@@ -690,9 +690,6 @@ def upgradeConfigFrom_21_to_22(profile: ConfigObj):
 		log.debug("Changed math.speech.language from 'Auto' to 'en'.")
 
 
-<<<<<<< HEAD
-def upgradeConfigFrom_22_to_23(profile: ConfigObj) -> None:
-=======
 def upgradeConfigFrom_22_to_23(profile: ConfigObj):
 	# No-op to resolve upgrade conflicts between alpha/beta in 2026.2 release cycle
 	pass
@@ -713,7 +710,6 @@ def upgradeConfigFrom_23_to_24(profile: ConfigObj):
 
 
 def upgradeConfigFrom_24_to_25(profile: ConfigObj) -> None:
->>>>>>> nvaccess/master
 	"""
 	If the wordWrap braille config flag is explicitly set in a profile,
 	set the new text wrap option to word boundaries,
@@ -736,20 +732,3 @@ def upgradeConfigFrom_24_to_25(profile: ConfigObj) -> None:
 	log.debug(
 		f"Converted '{key}' with value {oldValue} to '{newKey}' with value {newValue}.",
 	)
-<<<<<<< HEAD
-
-
-def upgradeConfigFrom_23_to_24(profile: ConfigObj):
-	"""Upgrade configuration from schema version 23 to 24."""
-	magnifierConf = profile.get("magnifier")
-	if not magnifierConf:
-		log.debug("No magnifier section in profile. No action taken.")
-		return
-	try:
-		del magnifierConf["isTrueCentered"]
-	except KeyError:
-		log.debug("No isTrueCentered setting in profile. No action taken.")
-	if magnifierConf.get("fullscreenMode") == "border":
-		del magnifierConf["fullscreenMode"]
-=======
->>>>>>> nvaccess/master

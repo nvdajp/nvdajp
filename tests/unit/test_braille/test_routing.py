@@ -7,13 +7,10 @@
 
 import config
 import braille
-<<<<<<< HEAD
-import brailleTables
-=======
 import braille.regions.base
 import braille.regions.textInfo
 from config.configFlags import TetherTo
->>>>>>> nvaccess/master
+import brailleTables  # nvdajp
 import textInfos
 import api
 import controlTypes
