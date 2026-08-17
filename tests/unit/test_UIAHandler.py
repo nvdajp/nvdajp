@@ -1,6 +1,5 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2026 NV Access Limited, Leonard de Ruijter
-# Copyright (C) 2026 NV Access Limited, Tobias Heath
+# Copyright (C) 2026 NV Access Limited, Leonard de Ruijter, Tobias Heath
 # This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
 # For full terms and any additional permissions, see the NVDA license file:
 # https://github.com/nvaccess/nvda/blob/master/copying.txt
@@ -13,9 +12,9 @@ from unittest.mock import Mock, patch
 from comtypes import COMError
 
 import textInfos
-import winUser
-from UIAHandler import NVDAUnitsToUIAUnits, getUIAUnitFromNVDAUnit, utils
+from UIAHandler import getUIAUnitFromNVDAUnit, NVDAUnitsToUIAUnits, utils
 from UIAHandler.utils import BulkUIATextRangeAttributeValueFetcher
+import winUser
 
 
 def _makeCOMError() -> COMError:
@@ -47,6 +46,18 @@ class _FakeElement:
 			"The hung-window guard must never read a live (current) property, "
 			"as that is exactly the call that hangs on an unresponsive application.",
 		)
+
+
+class Test_getUIAUnitFromNVDAUnit(TestCase):
+	def test_mappedUnitReturnsUIAUnit(self):
+		self.assertEqual(
+			getUIAUnitFromNVDAUnit(textInfos.UNIT_WORD),
+			NVDAUnitsToUIAUnits[textInfos.UNIT_WORD],
+		)
+
+	def test_unmappedUnitRaisesNotImplementedError(self):
+		with self.assertRaises(NotImplementedError):
+			getUIAUnitFromNVDAUnit(textInfos.UNIT_SENTENCE)
 
 
 class Test_getCachedWindowHandleFromEvent(TestCase):
@@ -84,18 +95,7 @@ class Test_shouldSkipEventForHungWindow(TestCase):
 			self.assertFalse(utils._shouldSkipEventForHungWindow(_FakeElement(cachedHandle=1)))
 
 
-class Test_getUIAUnitFromNVDAUnit(TestCase):
-	def test_mappedUnitReturnsUIAUnit(self):
-		self.assertEqual(
-			getUIAUnitFromNVDAUnit(textInfos.UNIT_WORD),
-			NVDAUnitsToUIAUnits[textInfos.UNIT_WORD],
-		)
-
-	def test_unmappedUnitRaisesNotImplementedError(self):
-		with self.assertRaises(NotImplementedError):
-			getUIAUnitFromNVDAUnit(textInfos.UNIT_SENTENCE)
-
-
+# BEGIN JP PATCH
 class TestBulkUIATextRangeAttributeValueFetcher(TestCase):
 	"""Tests for the bulk UIA text range attribute value fetcher."""
 
@@ -135,3 +135,6 @@ class TestBulkUIATextRangeAttributeValueFetcher(TestCase):
 		with patch("UIAHandler.utils.UIAHandler.handler", self._makeHandler()):
 			fetcher = BulkUIATextRangeAttributeValueFetcher(textRange, [1, 2])
 			self.assertEqual(fetcher.getValue(1), "not-supported")
+
+
+# END JP PATCH

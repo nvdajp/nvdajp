@@ -36,6 +36,7 @@ from speech import (
 	sayAll,
 	shortcutKeys,
 )
+from speech.speech import CHUNK_SEPARATOR
 from NVDAObjects import NVDAObject, NVDAObjectTextInfo
 import globalVars
 from logHandler import log, Logger
@@ -62,7 +63,10 @@ import languageHandler
 from scriptHandler import script, getLastScriptRepeatCount
 import ui
 import braille
-import brailleInput
+import braille.constants
+import braille.display.gesture
+import braille.regions.focus
+import braille.input
 import inputCore
 import characterProcessing
 from baseObject import ScriptableObject
@@ -3994,15 +3998,15 @@ class GlobalCommands(ScriptableObject):
 	)
 	@gui.blockAction.when(gui.blockAction.Context.BRAILLE_MODE_SPEECH_OUTPUT)
 	def script_braille_toggleFocusContextPresentation(self, gesture):
-		values = [x[0] for x in braille.focusContextPresentations]
-		labels = [x[1] for x in braille.focusContextPresentations]
+		values = [x[0] for x in braille.constants.focusContextPresentations]
+		labels = [x[1] for x in braille.constants.focusContextPresentations]
 		try:
 			index = values.index(config.conf["braille"]["focusContextPresentation"])
 		except:  # noqa: E722
 			index = 0
 		newIndex = (index + 1) % len(values)
 		config.conf["braille"]["focusContextPresentation"] = values[newIndex]
-		braille.invalidateCachedFocusAncestors(0)
+		braille.regions.focus.invalidateCachedFocusAncestors(0)
 		braille.handler.handleGainFocus(api.getFocusObject())
 		# Translators: Reports the new state of braille focus context presentation.
 		# %s will be replaced with the context presentation setting.
@@ -4071,7 +4075,7 @@ class GlobalCommands(ScriptableObject):
 			# Translators: A message reported when changing the braille cursor shape when the braille cursor is turned off.
 			ui.message(_("Braille cursor is turned off"))
 			return
-		shapes = [s[0] for s in braille.CURSOR_SHAPES]
+		shapes = [s[0] for s in braille.constants.CURSOR_SHAPES]
 		if braille.handler.getTether() == TetherTo.FOCUS.value:
 			cursorShape = "cursorShapeFocus"
 		else:
@@ -4080,10 +4084,10 @@ class GlobalCommands(ScriptableObject):
 			index = shapes.index(config.conf["braille"][cursorShape]) + 1
 		except:  # noqa: E722
 			index = 1
-		if index >= len(braille.CURSOR_SHAPES):
+		if index >= len(braille.constants.CURSOR_SHAPES):
 			index = 0
-		config.conf["braille"][cursorShape] = braille.CURSOR_SHAPES[index][0]
-		shapeMsg = braille.CURSOR_SHAPES[index][1]
+		config.conf["braille"][cursorShape] = braille.constants.CURSOR_SHAPES[index][0]
+		shapeMsg = braille.constants.CURSOR_SHAPES[index][1]
 		# Translators: Reports which braille cursor shape is activated.
 		ui.message(_("Braille cursor %s") % shapeMsg)
 
@@ -4357,7 +4361,7 @@ class GlobalCommands(ScriptableObject):
 		description=_("Routes the cursor to or activates the object under this braille cell"),
 		category=SCRCAT_BRAILLE,
 	)
-	def script_braille_routeTo(self, gesture: braille.BrailleDisplayGesture):
+	def script_braille_routeTo(self, gesture: braille.display.gesture.BrailleDisplayGesture):
 		if not gesture.cellIndexes:
 			return
 		braille.handler.routeTo(gesture.cellIndexes[0])
@@ -4367,7 +4371,7 @@ class GlobalCommands(ScriptableObject):
 		description=_("Reports formatting info for the text under this braille cell"),
 		category=SCRCAT_BRAILLE,
 	)
-	def script_braille_reportFormatting(self, gesture: braille.BrailleDisplayGesture):
+	def script_braille_reportFormatting(self, gesture: braille.display.gesture.BrailleDisplayGesture):
 		if not gesture.cellIndexes:
 			return
 		info = braille.handler.getTextInfoForWindowPos(gesture.cellIndexes[0])
@@ -4382,7 +4386,7 @@ class GlobalCommands(ScriptableObject):
 		description=_("Selects the text from the first up to the last braille cell"),
 		category=SCRCAT_BRAILLE,
 	)
-	def script_braille_selectRange(self, gesture: braille.BrailleDisplayGesture):
+	def script_braille_selectRange(self, gesture: braille.display.gesture.BrailleDisplayGesture):
 		if not gesture.cellIndexes or len(gesture.cellIndexes) < 2:
 			return
 		startPos = min(gesture.cellIndexes)
@@ -4425,7 +4429,7 @@ class GlobalCommands(ScriptableObject):
 		gesture="bk:dots",
 	)
 	def script_braille_dots(self, gesture):
-		brailleInput.handler.input(gesture.dots)
+		braille.input.handler.input(gesture.dots)
 
 	@script(
 		# Translators: Input help mode message for a braille command.
@@ -4456,7 +4460,7 @@ class GlobalCommands(ScriptableObject):
 		gesture="bk:dot7",
 	)
 	def script_braille_eraseLastCell(self, gesture):
-		brailleInput.handler.eraseLastCell()
+		braille.input.handler.eraseLastCell()
 
 	@script(
 		# Translators: Input help mode message for a braille command.
@@ -4465,7 +4469,7 @@ class GlobalCommands(ScriptableObject):
 		gesture="bk:dot8",
 	)
 	def script_braille_enter(self, gesture):
-		brailleInput.handler.enter()
+		braille.input.handler.enter()
 
 	@script(
 		# Translators: Input help mode message for a braille command.
@@ -4474,7 +4478,7 @@ class GlobalCommands(ScriptableObject):
 		gesture="bk:dot7+dot8",
 	)
 	def script_braille_translate(self, gesture):
-		brailleInput.handler.translate()
+		braille.input.handler.translate()
 
 	@script(
 		# Translators: Input help mode message for a braille command.
@@ -4483,7 +4487,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleShift(self, gesture):
-		brailleInput.handler.toggleModifier("shift")
+		braille.input.handler.toggleModifier("shift")
 
 	@script(
 		# Translators: Input help mode message for a braille command.
@@ -4492,7 +4496,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleControl(self, gesture):
-		brailleInput.handler.toggleModifier("control")
+		braille.input.handler.toggleModifier("control")
 
 	@script(
 		# Translators: Input help mode message for a braille command.
@@ -4501,7 +4505,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleAlt(self, gesture):
-		brailleInput.handler.toggleModifier("alt")
+		braille.input.handler.toggleModifier("alt")
 
 	@script(
 		description=_(
@@ -4512,7 +4516,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleWindows(self, gesture):
-		brailleInput.handler.toggleModifier("leftWindows")
+		braille.input.handler.toggleModifier("leftWindows")
 
 	@script(
 		# Translators: Input help mode message for a braille command.
@@ -4521,7 +4525,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleNVDAKey(self, gesture):
-		brailleInput.handler.toggleModifier("NVDA")
+		braille.input.handler.toggleModifier("NVDA")
 
 	@script(
 		description=_(
@@ -4532,7 +4536,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleControlShift(self, gesture):
-		brailleInput.handler.toggleModifiers(["control", "shift"])
+		braille.input.handler.toggleModifiers(["control", "shift"])
 
 	@script(
 		description=_(
@@ -4543,7 +4547,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleAltShift(self, gesture):
-		brailleInput.handler.toggleModifiers(["alt", "shift"])
+		braille.input.handler.toggleModifiers(["alt", "shift"])
 
 	@script(
 		description=_(
@@ -4555,7 +4559,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleWindowsShift(self, gesture):
-		brailleInput.handler.toggleModifiers(["leftWindows", "shift"])
+		braille.input.handler.toggleModifiers(["leftWindows", "shift"])
 
 	@script(
 		description=_(
@@ -4566,7 +4570,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleNVDAKeyShift(self, gesture):
-		brailleInput.handler.toggleModifiers(["NVDA", "shift"])
+		braille.input.handler.toggleModifiers(["NVDA", "shift"])
 
 	@script(
 		description=_(
@@ -4577,7 +4581,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleControlAlt(self, gesture):
-		brailleInput.handler.toggleModifiers(["control", "alt"])
+		braille.input.handler.toggleModifiers(["control", "alt"])
 
 	@script(
 		description=_(
@@ -4589,7 +4593,7 @@ class GlobalCommands(ScriptableObject):
 		bypassInputHelp=True,
 	)
 	def script_braille_toggleControlAltShift(self, gesture):
-		brailleInput.handler.toggleModifiers(["control", "alt", "shift"])
+		braille.input.handler.toggleModifiers(["control", "alt", "shift"])
 
 	@script(
 		description=_(
@@ -4906,20 +4910,28 @@ class GlobalCommands(ScriptableObject):
 	def script_interactWithMath(self, gesture):
 		import mathPres
 
-		mathMl = mathPres.getMathMlFromTextInfo(api.getReviewPosition())
+		reviewPosition = api.getReviewPosition()
+		mathMl = mathPres.getMathMlFromTextInfo(reviewPosition)
+		sourceObj = None
 		if not mathMl:
 			obj = api.getNavigatorObject()
 			if obj.role == controlTypes.Role.MATH:
 				try:
 					mathMl = obj.mathMl
+					sourceObj = obj
 				except (NotImplementedError, LookupError):
 					mathMl = None
+		else:
+			try:
+				sourceObj = reviewPosition.NVDAObjectAtStart
+			except (NotImplementedError, LookupError):
+				pass
 		if not mathMl:
 			# Translators: Reported when the user attempts math interaction
 			# with something that isn't math.
 			ui.message(_("Not math"))
 			return
-		mathPres.interactWithMathMl(mathMl)
+		mathPres.interactWithMathMl(mathMl, sourceObj=sourceObj)
 
 	@script(
 		# Translators: Describes a command.
@@ -5653,7 +5665,7 @@ class GlobalCommands(ScriptableObject):
 			return
 		lastSpeechSeq, symbolLevel = lastSpeech
 		repeats = getLastScriptRepeatCount()
-		lastSpeechText = "  ".join(i for i in lastSpeechSeq if isinstance(i, str))
+		lastSpeechText = CHUNK_SEPARATOR.join(i for i in lastSpeechSeq if isinstance(i, str))
 		if repeats == 0:
 			speech.speak(lastSpeechSeq, symbolLevel=symbolLevel)
 			braille.handler.message(lastSpeechText)
@@ -5661,6 +5673,23 @@ class GlobalCommands(ScriptableObject):
 			# Translators: title for report last spoken information dialog.
 			title = _("Last spoken information")
 			ui.browseableMessage(lastSpeechText, title, copyButton=True, closeButton=True)
+
+	@script(
+		description=_(
+			# Translators: Input help mode message for the command to copy the last spoken information.
+			"Copies the last spoken information to the clipboard.",
+		),
+		gesture="kb:NVDA+control+x",
+		category=SCRCAT_SPEECH,
+	)
+	def script_copyLastSpokenInformation(self, gesture: "inputCore.InputGesture") -> None:
+		lastSpeech = speech.speech._lastSpeech
+		if lastSpeech is None:
+			# Translators: Reported when there is no last spoken information to copy.
+			ui.message(_("Nothing to copy"))
+			return
+		lastSpeechText = CHUNK_SEPARATOR.join(item for item in lastSpeech[0] if isinstance(item, str))
+		api.copyToClip(lastSpeechText, notify=True)
 
 
 #: The single global commands instance.

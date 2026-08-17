@@ -4,6 +4,7 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
+from __future__ import annotations
 from ctypes.wintypes import (
 	HANDLE,
 	HKEY,
@@ -13,7 +14,6 @@ import time
 import os
 import winreg
 import msvcrt
-
 from ctypes import (
 	CDLL,
 	POINTER,
@@ -31,6 +31,7 @@ from ctypes import (
 	create_unicode_buffer,
 	windll,
 	wstring_at,
+	_Pointer,
 )
 
 from winBindings import user32
@@ -256,20 +257,6 @@ def _runOnEventQueueAndGetResult(func, *args, **kwargs):
 
 
 @WINFUNCTYPE(c_long)
-def nvdaController_isSpeaking() -> int:
-	from synthDriverHandler import getSynth
-
-	try:
-		# BEGIN JP PATCH
-		# nvdajp: Accept both callable and bool-style isSpeaking implementations.
-		isSpeaking = getattr(getSynth(), "isSpeaking", False)
-		return bool(isSpeaking()) if callable(isSpeaking) else bool(isSpeaking)
-		# END JP PATCH
-	except:  # noqa: E722
-		return False
-
-
-@WINFUNCTYPE(c_long)
 def nvdaController_getPitch() -> int:
 	from synthDriverHandler import getSynth
 
@@ -327,6 +314,16 @@ def nvdaController_setAppSleepMode(mode: int) -> SystemErrorCodes:
 
 
 # END JP PATCH
+@WINFUNCTYPE(c_long, POINTER(c_bool))
+def nvdaController_isSpeaking(pSpeaking: _Pointer[c_bool]) -> int:
+	if not pSpeaking:
+		return SystemErrorCodes.INVALID_PARAMETER.value
+	import speech
+
+	pSpeaking[0] = speech.isSpeaking()
+	return SystemErrorCodes.SUCCESS.value
+
+
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf = create_unicode_buffer(1024)
 	bufSize = c_ulong(2048)
@@ -1215,13 +1212,17 @@ def initialize() -> None:
 		("nvdaController_speakSsml", nvdaController_speakSsml),
 		("nvdaController_cancelSpeech", nvdaController_cancelSpeech),
 		("nvdaController_brailleMessage", nvdaController_brailleMessage),
+		# BEGIN JP PATCH
 		("nvdaController_speakSpelling", nvdaController_speakSpelling),
+		# END JP PATCH
 		("nvdaController_isSpeaking", nvdaController_isSpeaking),
+		# BEGIN JP PATCH
 		("nvdaController_getPitch", nvdaController_getPitch),
 		("nvdaController_setPitch", nvdaController_setPitch),
 		("nvdaController_getRate", nvdaController_getRate),
 		("nvdaController_setRate", nvdaController_setRate),
 		("nvdaController_setAppSleepMode", nvdaController_setAppSleepMode),
+		# END JP PATCH
 		("nvdaControllerInternal_requestRegistration", nvdaControllerInternal_requestRegistration),
 		("nvdaControllerInternal_reportLiveRegion", nvdaControllerInternal_reportLiveRegion),
 		("nvdaControllerInternal_inputLangChangeNotify", nvdaControllerInternal_inputLangChangeNotify),

@@ -46,8 +46,8 @@ from config.profileUpgradeSteps import (
 	upgradeConfigFrom_17_to_18,
 	upgradeConfigFrom_18_to_19,
 	upgradeConfigFrom_21_to_22,
-	upgradeConfigFrom_22_to_23,
 	upgradeConfigFrom_23_to_24,
+	upgradeConfigFrom_24_to_25,
 )
 from config.configFlags import (
 	NVDAKey,
@@ -1449,13 +1449,13 @@ class Config_loadCustomSections(unittest.TestCase):
 		self.assertEqual(confspec["myNestedSection"], spec)
 
 
-class Config_profileUpgradeSteps_upgradeConfigFrom_22_to_23(unittest.TestCase):
-	"""Tests for the alphajp-specific wordWrap -> textWrap migration (schema 22 to 23)."""
+class Config_profileUpgradeSteps_upgradeConfigFrom_24_to_25(unittest.TestCase):
+	"""Tests for the wordWrap -> textWrap migration (schema 24 to 25)."""
 
 	def test_noBrailleSection_unchanged(self):
 		"""Profile with no [braille] section is not modified."""
 		profile = _loadProfile("")
-		upgradeConfigFrom_22_to_23(profile)
+		upgradeConfigFrom_24_to_25(profile)
 		with self.assertRaises(KeyError):
 			profile["braille"]
 
@@ -1466,7 +1466,7 @@ class Config_profileUpgradeSteps_upgradeConfigFrom_22_to_23(unittest.TestCase):
 	display = auto
 """
 		profile = _loadProfile(configString)
-		upgradeConfigFrom_22_to_23(profile)
+		upgradeConfigFrom_24_to_25(profile)
 		self.assertNotIn("textWrap", profile["braille"])
 
 	def test_wordWrapTrue_migratesToAtWordBoundaries(self):
@@ -1476,7 +1476,7 @@ class Config_profileUpgradeSteps_upgradeConfigFrom_22_to_23(unittest.TestCase):
 	wordWrap = true
 """
 		profile = _loadProfile(configString)
-		upgradeConfigFrom_22_to_23(profile)
+		upgradeConfigFrom_24_to_25(profile)
 		self.assertEqual(
 			profile["braille"]["textWrap"],
 			BrailleTextWrapFlag.AT_WORD_BOUNDARIES.name,
@@ -1489,7 +1489,7 @@ class Config_profileUpgradeSteps_upgradeConfigFrom_22_to_23(unittest.TestCase):
 	wordWrap = false
 """
 		profile = _loadProfile(configString)
-		upgradeConfigFrom_22_to_23(profile)
+		upgradeConfigFrom_24_to_25(profile)
 		self.assertEqual(
 			profile["braille"]["textWrap"],
 			BrailleTextWrapFlag.NONE.name,
@@ -1502,7 +1502,7 @@ class Config_profileUpgradeSteps_upgradeConfigFrom_22_to_23(unittest.TestCase):
 	wordWrap = notABool
 """
 		profile = _loadProfile(configString)
-		upgradeConfigFrom_22_to_23(profile)
+		upgradeConfigFrom_24_to_25(profile)
 		self.assertEqual(profile["braille"]["wordWrap"], "notABool")
 		self.assertNotIn("textWrap", profile["braille"])
 

@@ -1,7 +1,7 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2007-2025 NV access Limited, Joseph Lee, Łukasz Golonka, Cyrille Bougot
-# This file is covered by the GNU General Public License.
-# See the file COPYING for more details.
+# Copyright (C) 2007-2026 NV Access Limited, Joseph Lee, Łukasz Golonka, Cyrille Bougot, Leonard de Ruijter
+# This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
+# For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
 """Language and localization support.
 This module assists in NVDA going global through language services
@@ -20,12 +20,7 @@ import globalVars
 from logHandler import log
 import winBindings.kernel32
 import winKernel
-from typing import (
-	FrozenSet,
-	List,
-	Optional,
-	Tuple,
-)
+from utils._deprecate import RemovedSymbol, handleDeprecations
 
 # a few Windows locale constants
 LOCALE_USER_DEFAULT = 0x400
@@ -41,31 +36,40 @@ CP_ACP = "0"
 #: or because it is not a legal locale name (e.g. "zzzz").
 LCID_NONE = 0  # 0 used instead of None for backwards compatibility.
 
-LANGS_WITHOUT_TRANSLATIONS: FrozenSet[str] = frozenset(("en",))
+LANGS_WITHOUT_TRANSLATIONS: frozenset[str] = frozenset(("en",))
 
 _language: str | None = None
 """Language of NVDA's UI.
 """
 
-installedTranslation: Optional[weakref.ReferenceType] = None
+installedTranslation: weakref.ReferenceType | None = None
 """Saved copy of the installed translation for ease of wrapping.
 """
 
-LCIDS_TO_TRANSLATED_LOCALES = {
-	# Windows maps this to "ku-Arab-IQ", however a translation is added for
-	# Central Kurdish in localesData.LANG_NAMES_TO_LOCALIZED_DESCS["ckb"]
-	# and NVDA may drop "Arab-IQ" from this locale to get the language.
-	1170: "ckb",
+_LCID_TO_LOCALE_NAME_OVERRIDES = {
+	# Windows reports these as "ku-Arab-IQ".
+	0x0092: "ckb",  # Central Kurdish
+	0x0492: "ckb",  # Central Kurdish - Iraq
+	0x7C92: "ckb",  # Central Kurdish
 	# Python's locale.windows_locale maps LCID 1107 (0x453) to "kh_KH",  # nvdajp
 	# but the ISO 639-1 language code for Khmer is "km", not "kh".  # nvdajp
-	1107: "km_KH",  # nvdajp
+	0x0453: "km_KH",  # nvdajp
 }
 """
-Map Windows locale identifiers to language codes.
-These are Windows LCIDs that are used in NVDA but are not found in locale.windows_locale.
-These have been added when new locales have been introduced to the translation system and
-we cannot use the results from the Windows function LCIDToLocaleName.
+Map Windows locale identifiers to the language codes NVDA uses,
+for identifiers where NVDA's code differs from the one reported by Windows.
+Checked before `winKernel.LCIDToLocaleName`.
 """
+
+
+__getattr__ = handleDeprecations(
+	RemovedSymbol(
+		"LCIDS_TO_TRANSLATED_LOCALES",
+		_LCID_TO_LOCALE_NAME_OVERRIDES,
+		message="Use languageHandler.windowsLCIDToLocaleName or winKernel.LCIDToLocaleName instead.",
+	),
+)
+"""Module level `__getattr__` used to preserve backward compatibility."""
 
 
 class LOCALE(enum.IntEnum):
@@ -127,20 +131,14 @@ def localeNameToWindowsLCID(localeName: str) -> int:
 	return LCID
 
 
-def windowsLCIDToLocaleName(lcid: int) -> Optional[str]:
+def windowsLCIDToLocaleName(lcid: int) -> str | None:
 	"""
 	Gets a normalized locale from a Windows LCID.
 
 	NVDA should avoid relying on LCIDs in future, as they have been deprecated by MS:
 	https://docs.microsoft.com/en-us/globalization/locale/locale-names
 	"""
-	# Check manual mapping first to override incorrect mappings in locale.windows_locale.  # nvdajp
-	localeName = LCIDS_TO_TRANSLATED_LOCALES.get(lcid)  # nvdajp
-	# From the locale.windows_locale in-line code documentation: (#4203)
-	# 	This list has been updated to include every locale up to Windows Vista.
-	# 	NOTE: this mapping is incomplete.
-	if not localeName:  # nvdajp
-		localeName = locale.windows_locale.get(lcid)
+	localeName = _LCID_TO_LOCALE_NAME_OVERRIDES.get(lcid)
 	if not localeName:
 		localeName = winKernel.LCIDToLocaleName(lcid)
 	if localeName:
@@ -176,7 +174,7 @@ def getLanguageDescription(language: str) -> str | None:
 	return desc
 
 
-def englishLanguageNameFromNVDALocale(localeName: str) -> Optional[str]:
+def englishLanguageNameFromNVDALocale(localeName: str) -> str | None:
 	"""Returns either English name of the given language  using `GetLocaleInfoEx` or None
 	if the given locale is not known to Windows."""
 	localeName = normalizeLocaleForWin32(localeName)
@@ -209,7 +207,7 @@ def englishLanguageNameFromNVDALocale(localeName: str) -> Optional[str]:
 	return None
 
 
-def englishCountryNameFromNVDALocale(localeName: str) -> Optional[str]:
+def englishCountryNameFromNVDALocale(localeName: str) -> str | None:
 	"""Returns either English name of the given country using GetLocaleInfoEx or None
 	if the given locale is not known to Windows."""
 	localeName = normalizeLocaleForWin32(localeName)
@@ -228,7 +226,7 @@ def englishCountryNameFromNVDALocale(localeName: str) -> Optional[str]:
 	return None
 
 
-def ansiCodePageFromNVDALocale(localeName: str) -> Optional[str]:
+def ansiCodePageFromNVDALocale(localeName: str) -> str | None:
 	"""Returns either ANSI code page for a given locale using GetLocaleInfoEx or None
 	if the given locale is not known to Windows."""
 	localeName = normalizeLocaleForWin32(localeName)
@@ -253,7 +251,7 @@ def ansiCodePageFromNVDALocale(localeName: str) -> Optional[str]:
 	return None
 
 
-def listNVDALocales() -> List[str]:
+def listNVDALocales() -> list[str]:
 	# Make a list of all the locales found in NVDA's locale dir
 	localesDir = os.path.join(globalVars.appDir, "locale")
 	locales = [
@@ -271,7 +269,7 @@ def listNVDALocales() -> List[str]:
 	return locales
 
 
-def getAvailableLanguages(presentational: bool = False) -> List[Tuple[str, str]]:
+def getAvailableLanguages(presentational: bool = False) -> list[tuple[str, str]]:
 	"""generates a list of locale names, plus their full localized language and country names.
 	@param presentational: whether this is meant to be shown alphabetically by language description
 	"""
@@ -446,13 +444,11 @@ def getLanguage() -> str:
 	return _language
 
 
-def normalizeLanguage(lang: str) -> Optional[str]:
+def normalizeLanguage(lang: str) -> str | None:
 	"""
 	Normalizes a  language-dialect string  in to a standard form we can deal with.
 	Converts  any dash to underline, and makes sure that language is lowercase and dialect is upercase.
 	"""
-	if lang is None:
-		return None
 	lang = lang.replace("-", "_")
 	ld = lang.split("_")
 	ld[0] = ld[0].lower()
