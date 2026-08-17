@@ -25,6 +25,7 @@ import config
 import languageHandler
 import NVDAHelper
 import textUtils
+from textUtils import icu
 from NVDAState import ReadPaths
 from logHandler import log
 
@@ -347,3 +348,23 @@ class ChineseWordSegmentationStrategy(WordSegmentationStrategy):
 	def __init__(self, text: str, encoding: str | None = None) -> None:
 		super().__init__(text, encoding)
 		self.wordEnds = self._callCppJieba()
+<<<<<<< HEAD
+=======
+
+
+class IcuWordSegmentationStrategy(WordSegmentationStrategy):
+	"""ICU-based word segmentation (Windows built-in ICU library).
+
+	Word boundaries follow Unicode Standard Annex #29 default rules plus automatic
+	dictionary-based segmentation selected by the script of the text.
+	SegmentedText returns the text unchanged (no braille separator insertion).
+	"""
+
+	def getSegmentForOffset(self, offset: int) -> tuple[int, int] | None:
+		return icu.calculateOffsetsForEncoding(
+			icu.calculateWordOffsets,
+			self.text,
+			offset,
+			self.encoding,
+		)
+>>>>>>> nvaccess/master

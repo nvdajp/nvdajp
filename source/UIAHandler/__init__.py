@@ -70,7 +70,12 @@ baseCachePropertyIDs = {
 	UIA.UIA_IsControlElementPropertyId,
 	UIA.UIA_NamePropertyId,
 	UIA.UIA_LocalizedControlTypePropertyId,
+	UIA.UIA_HasKeyboardFocusPropertyId,
 }
+"""UIA property IDs included in the handler's base cache request.
+The base cache request is attached to all event handler registrations and to the base tree walker,
+so event senders and elements fetched through them carry these properties in their element cache.
+"""
 
 #: The window class name for Microsoft Word documents.
 # Microsoft Word's UI Automation implementation
@@ -93,6 +98,12 @@ goodUIAWindowClassNames = (
 	"RAIL_WINDOW",
 	# #17407, #17771: WinUI 3 top-level pane window class name.
 	"Microsoft.UI.Content.DesktopChildSiteBridge",
+	# #20448: Windows Terminal hosts its content in a XAML island whose child window
+	# (Windows.UI.Composition.DesktopWindowContentBridge) is the one that actually
+	# exposes a UIA server-side provider.
+	# However, the top-level CASCADIA_HOSTING_WINDOW_CLASS window
+	# reports no server-side provider.
+	"CASCADIA_HOSTING_WINDOW_CLASS",
 )
 
 badUIAWindowClassNames = (

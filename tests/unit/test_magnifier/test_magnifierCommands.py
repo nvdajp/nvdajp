@@ -5,7 +5,11 @@
 
 import unittest
 from unittest.mock import MagicMock, patch
+<<<<<<< HEAD
 from _magnifier.commands import zoom, cycleMagnifiedView, toggleMagnifier
+=======
+from _magnifier.commands import zoom, cycleMagnifiedView, moveMouseToView, toggleMagnifier
+>>>>>>> nvaccess/master
 from _magnifier.utils.errorHandling import MagnifierStartError
 from _magnifier.utils.types import Direction, MagnifiedView
 

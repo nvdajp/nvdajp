@@ -37,10 +37,12 @@ from treeInterceptorHandler import (
 	TreeInterceptor,
 )
 import braille
+import braille.labels
+import braille.regions.properties
 from utils.security import _isObjectBelowLockScreen
 import vision
 import globalPluginHandler
-import brailleInput
+import braille.input
 import locationHelper
 import aria
 from winAPI.sessionTracking import isLockScreenModeActive
@@ -517,11 +519,16 @@ class NVDAObject(
 		which will override the standard label for this object's role property as well as the value of roleText.
 		By default, NVDA falls back to using roleText.
 		"""
+<<<<<<< HEAD
 		# BEGIN JP PATCH
 		# nvdajp: use getRoleLabel and getLandmarkLabel functions for JP-specific braille processing
 		if self.landmark and self.landmark in braille.getLandmarkLabels():
 			return f"{braille.getRoleLabel(controlTypes.Role.LANDMARK)} {braille.getLandmarkLabel(self.landmark)}"
 		# END JP PATCH
+=======
+		if self.landmark and self.landmark in braille.labels.landmarkLabels:
+			return f"{braille.labels.roleLabels[controlTypes.Role.LANDMARK]} {braille.labels.landmarkLabels[self.landmark]}"
+>>>>>>> nvaccess/master
 		return self.roleText
 
 	#: Typing information for auto property _get_value
@@ -1336,7 +1343,7 @@ class NVDAObject(
 					self.reportFocus()
 					# Display results as flash messages.
 					braille.handler.message(
-						braille.getPropertiesBraille(
+						braille.regions.properties.getPropertiesBraille(
 							name=self.name,
 							role=self.role,
 							positionInfo=self.positionInfo,
@@ -1374,7 +1381,7 @@ class NVDAObject(
 		"""
 		self.reportFocus()
 		braille.handler.handleGainFocus(self)
-		brailleInput.handler.handleGainFocus(self)
+		braille.input.handler.handleGainFocus(self)
 		vision.handler.handleGainFocus(self)
 
 	def event_loseFocus(self):
@@ -1430,7 +1437,7 @@ class NVDAObject(
 	def event_caret(self):
 		if self is api.getFocusObject() and not eventHandler.isPendingEvents("gainFocus"):
 			braille.handler.handleCaretMove(self)
-			brailleInput.handler.handleCaretMove(self)
+			braille.input.handler.handleCaretMove(self)
 			vision.handler.handleCaretMove(self)
 			review.handleCaretMove(self)
 

@@ -4,6 +4,7 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
+from __future__ import annotations
 from ctypes.wintypes import (
 	HANDLE,
 	HKEY,
@@ -13,7 +14,6 @@ import time
 import os
 import winreg
 import msvcrt
-
 from ctypes import (
 	CDLL,
 	POINTER,
@@ -31,6 +31,7 @@ from ctypes import (
 	create_unicode_buffer,
 	windll,
 	wstring_at,
+	_Pointer,
 )
 
 from winBindings import user32
@@ -220,6 +221,7 @@ def nvdaController_brailleMessage(text: str) -> SystemErrorCodes:
 	return SystemErrorCodes.SUCCESS
 
 
+<<<<<<< HEAD
 # nvdajp: nvdaController_speakSpelling handler (issue #642; issue #652: restore 2025.3-style character descriptions)
 @WINFUNCTYPE(c_long, c_wchar_p)
 def nvdaController_speakSpelling(text: str) -> SystemErrorCodes:
@@ -327,6 +329,18 @@ def nvdaController_setAppSleepMode(mode: int) -> SystemErrorCodes:
 
 
 # END JP PATCH
+=======
+@WINFUNCTYPE(c_long, POINTER(c_bool))
+def nvdaController_isSpeaking(pSpeaking: _Pointer[c_bool]) -> int:
+	if not pSpeaking:
+		return SystemErrorCodes.INVALID_PARAMETER.value
+	import speech
+
+	pSpeaking[0] = speech.isSpeaking()
+	return SystemErrorCodes.SUCCESS.value
+
+
+>>>>>>> nvaccess/master
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf = create_unicode_buffer(1024)
 	bufSize = c_ulong(2048)
@@ -1215,6 +1229,7 @@ def initialize() -> None:
 		("nvdaController_speakSsml", nvdaController_speakSsml),
 		("nvdaController_cancelSpeech", nvdaController_cancelSpeech),
 		("nvdaController_brailleMessage", nvdaController_brailleMessage),
+<<<<<<< HEAD
 		("nvdaController_speakSpelling", nvdaController_speakSpelling),
 		("nvdaController_isSpeaking", nvdaController_isSpeaking),
 		("nvdaController_getPitch", nvdaController_getPitch),
@@ -1222,6 +1237,9 @@ def initialize() -> None:
 		("nvdaController_getRate", nvdaController_getRate),
 		("nvdaController_setRate", nvdaController_setRate),
 		("nvdaController_setAppSleepMode", nvdaController_setAppSleepMode),
+=======
+		("nvdaController_isSpeaking", nvdaController_isSpeaking),
+>>>>>>> nvaccess/master
 		("nvdaControllerInternal_requestRegistration", nvdaControllerInternal_requestRegistration),
 		("nvdaControllerInternal_reportLiveRegion", nvdaControllerInternal_reportLiveRegion),
 		("nvdaControllerInternal_inputLangChangeNotify", nvdaControllerInternal_inputLangChangeNotify),

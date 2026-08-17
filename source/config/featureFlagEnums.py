@@ -189,6 +189,26 @@ class BrailleTextWrapFlag(DisplayStringEnum):
 		}
 
 
+class SayAllReadingUnitFlag(DisplayStringEnum):
+	"""Feature flag for the text unit say all advances by (the reading chunk)."""
+
+	DEFAULT = enum.auto()
+	SENTENCE = enum.auto()
+	PARAGRAPH = enum.auto()
+	LINE = enum.auto()
+
+	@property
+	def _displayStringLabels(self):
+		return {
+			# Translators: Label for an option in the Speech settings (say all reading unit).
+			self.SENTENCE: pgettext("sayAll", "Sentence where possible"),
+			# Translators: Label for an option in the Speech settings (say all reading unit).
+			self.PARAGRAPH: pgettext("sayAll", "Paragraph"),
+			# Translators: Label for an option in the Speech settings (say all reading unit).
+			self.LINE: pgettext("sayAll", "Line"),
+		}
+
+
 def getAvailableEnums() -> typing.Generator[typing.Tuple[str, FlagValueEnum], None, None]:
 	for name, value in globals().items():
 		if (

@@ -109,6 +109,7 @@ jobs:
       APIVersion: ${{ steps.releaseInfo.outputs.NVDA_API_VERSION }}
       APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
+<<<<<<< HEAD
     - name: Checkout NVDA
       uses: actions/checkout@v6
       with:
@@ -125,6 +126,34 @@ jobs:
         python-version: ${{ matrix.pythonVersion }}
         architecture: x86
         update-environment: false
+=======
+    - parallel:
+        - name: Checkout NVDA
+          uses: actions/checkout@v7
+          with:
+            submodules: recursive
+        - name: Install signPath
+          env:
+            apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+          if: ${{ env.apiSigningToken }}
+          shell: cmd
+          run: |
+            PowerShell -Command "Set-ExecutionPolicy Bypass"
+            PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
+            PowerShell -Command "Install-Module -Name SignPath -Force"
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
+            update-environment: true
+        - name: Install Python (32 bit)
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: x86
+            update-environment: false
+>>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -146,6 +175,7 @@ jobs:
       with:
         path: ${{ env.SCONS_CACHE_MSVC_CONFIG }}
         key: ${{ env.SCONS_CACHE_KEY }}
+<<<<<<< HEAD
     # BEGIN JP PATCH (JP-specific build preparation)
     # Force dictionary rebuild so custom entries (一人→ヒトリ etc.) are always included.
     # Remove dic dir AND SCons stamp so jtalkSync is not skipped (stamp would make SCons think it's up to date).
@@ -238,6 +268,8 @@ jobs:
         Write-Host "::add-mask::$token"
         "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     # END JP PATCH
+=======
+>>>>>>> nvaccess/master
     - name: Prepare source code
       shell: cmd
       run: scons source %sconsArgs% %sconsCores%
@@ -293,8 +325,32 @@ jobs:
         Write-Output NVDA_API_VERSION=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))") >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_COMPAT_TO=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))") >> $env:GITHUB_OUTPUT
 
-  typeCheck:
+  typeCheckPyright:
     name: Check types with Pyright
+    runs-on: ${{ needs.matrix.outputs.defaultRunner }}
+    needs: [matrix, buildNVDA]
+    permissions:
+      contents: read
+    steps:
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v7
+    - name: Static type analysis
+      run: ci/scripts/tests/typeCheckPyright.ps1
+
+  typeCheckTy:
+    name: Check types with ty
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA]
     permissions:
@@ -314,7 +370,7 @@ jobs:
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Static type analysis
-      run: ci/scripts/tests/typeCheck.ps1
+      run: ci/scripts/tests/typeCheckTy.ps1
 
   checkPo:
     # BEGIN JP PATCH (temporarily disabled, to be fixed in a separate branch)
@@ -360,6 +416,7 @@ jobs:
       contents: read
       actions: write
     steps:
+<<<<<<< HEAD
     - name: Checkout cached build
       uses: actions/cache/restore@v5
       with:
@@ -371,6 +428,20 @@ jobs:
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
+=======
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
+>>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Check comments for translators
@@ -391,6 +462,7 @@ jobs:
     permissions:
       contents: read
     steps:
+<<<<<<< HEAD
     - name: Checkout cached build
       uses: actions/cache/restore@v5
       with:
@@ -402,6 +474,20 @@ jobs:
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
+=======
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
+>>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: License check
@@ -423,6 +509,7 @@ jobs:
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
+<<<<<<< HEAD
     - name: Checkout cached build
       uses: actions/cache/restore@v5
       with:
@@ -441,6 +528,20 @@ jobs:
       with:
         python-version: ${{ matrix.pythonVersion }}
         architecture: ${{ matrix.arch }}
+=======
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
+>>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -536,6 +637,7 @@ jobs:
     permissions:
       contents: read
     steps:
+<<<<<<< HEAD
     - name: Checkout cached build
       uses: actions/cache/restore@v5
       with:
@@ -552,6 +654,25 @@ jobs:
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
+=======
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
+        - name: Get makePot results
+          uses: actions/download-artifact@v8
+          with:
+            name: makePot results
+            path: output
+>>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Upload translations to Crowdin
@@ -590,6 +711,7 @@ jobs:
       launcherArtifactId: ${{ steps.addJobSummary.outputs.artifactId }}
       launcherSha256: ${{ steps.addJobSummary.outputs.SHA256 }}
     steps:
+<<<<<<< HEAD
     - name: Checkout cached build
       uses: actions/cache/restore@v5
       with:
@@ -608,6 +730,20 @@ jobs:
       with:
         python-version: ${{ matrix.pythonVersion }}
         architecture: ${{ matrix.arch }}
+=======
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
+>>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -618,6 +754,7 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+<<<<<<< HEAD
     # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
     # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
     - name: Install AzureSignTool
@@ -669,6 +806,22 @@ jobs:
         dotnet tool install --global AzureSignTool --version 7.0.1
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     # END JP PATCH
+=======
+    - parallel:
+        - name: Build scons docs targets
+          shell: cmd
+          run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
+        # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
+        - name: Install signpath
+          env:
+            apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+          if: ${{ env.apiSigningToken }}
+          shell: cmd
+          run: |
+            PowerShell -Command "Set-ExecutionPolicy Bypass"
+            PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
+            PowerShell -Command "Install-Module -Name SignPath -Force"
+>>>>>>> nvaccess/master
     - name: Build NVDAController client
       shell: cmd
       run: scons client %sconsArgs% %sconsCores%
@@ -784,6 +937,7 @@ jobs:
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
+<<<<<<< HEAD
     - name: Checkout cached build
       uses: actions/cache/restore@v5
       with:
@@ -799,19 +953,38 @@ jobs:
       uses: astral-sh/setup-uv@v7
       with:
         python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
+=======
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
+>>>>>>> nvaccess/master
     - name: Get NVDA launcher
       id: getLauncher
       uses: actions/download-artifact@v8
       with:
         name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: output
-    - name: Install NVDA
-      run: ci/scripts/installNVDA.ps1
-      env:
-        nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
-    - name: Download and install Visual Studio Code
-      if: ${{ matrix.testSuite == 'vscode' }}
-      run: choco install -y vscode
+    - parallel:
+        - name: Install the latest version of uv
+          uses: astral-sh/setup-uv@v7
+          with:
+            python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
+        - name: Install NVDA
+          run: ci/scripts/installNVDA.ps1
+          env:
+            nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
+        - name: Download and install Visual Studio Code
+          if: ${{ matrix.testSuite == 'vscode' }}
+          run: choco install -y vscode
     - name: Run system tests
       run: ci/scripts/tests/systemTests.ps1
       env:
@@ -855,6 +1028,7 @@ jobs:
       # So we only set the output variables for the default architecture.
       symbolsArtifactId: ${{ steps.defaultArtifact.outputs.artifactId }}
     steps:
+<<<<<<< HEAD
     - name: Checkout cached build
       uses: actions/cache/restore@v5
       with:
@@ -864,6 +1038,18 @@ jobs:
     - name: Install Windows SDK
       # Installs symstore.exe to expected location.
       run: choco install -y windows-sdk-10.1
+=======
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}
+            fail-on-cache-miss: true
+        - name: Install Windows SDK
+          # Installs symstore.exe to expected location.
+          run: choco install -y windows-sdk-10.1
+>>>>>>> nvaccess/master
     - name: Create build symbols
       env:
         symStore: C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\symstore.exe
@@ -887,12 +1073,16 @@ jobs:
     name: Check if all tests pass
     runs-on: ubuntu-latest
     if: always()
+<<<<<<< HEAD
     needs: [buildNVDA, typeCheck, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols
       # BEGIN JP PATCH (jpSmokeTests added; checkPo temporarily disabled)
       , jpSmokeTests
       # , checkPo
       # END JP PATCH
     ]
+=======
+    needs: [buildNVDA, typeCheckPyright, typeCheckTy, checkPo, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols]
+>>>>>>> nvaccess/master
     permissions:
       contents: read
     steps:
@@ -909,6 +1099,7 @@ jobs:
     permissions:
       contents: read
     steps:
+<<<<<<< HEAD
     - name: Checkout cached build
       uses: actions/cache/restore@v5
       with:
@@ -920,6 +1111,25 @@ jobs:
       with:
         python-version: ${{ env.defaultPythonVersion }}
         architecture: ${{ env.defaultArch }}
+=======
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
+        - name: Download and extract dump_syms
+          shell: bash
+          run: |
+            curl -L -o dump_syms.zip https://github.com/mozilla/dump_syms/releases/download/v2.3.5/dump_syms-x86_64-pc-windows-msvc.zip
+            7z x dump_syms.zip dump_syms.exe
+>>>>>>> nvaccess/master
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Get symbols

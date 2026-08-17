@@ -27,6 +27,7 @@ from scriptHandler import script
 import api
 import ui
 import braille
+import braille.regions.properties
 import core
 import nvwave
 import globalVars
@@ -465,20 +466,34 @@ class LiveText(NVDAObject):
 		Subclasses may override this method to provide custom filtering of new text,
 		where logic depends on multiple lines.
 		"""
+<<<<<<< HEAD
 		maxNewLines: int = config.conf["terminals"]["maxNewLines"]
 		if maxNewLines:
 			droppedCount = len(lines) - maxNewLines
+=======
+		if self.MAX_LINES > 0:
+			droppedCount = len(lines) - self.MAX_LINES
+>>>>>>> nvaccess/master
 			if droppedCount > 0:
 				if (
 					config.conf["terminals"]["beepForSkippedLines"]
 					and speech.getState().speechMode == speech.SpeechMode.talk
 				):
+<<<<<<< HEAD
 					skippedLinesBeepHz = 550
 					tones.beep(
 						skippedLinesBeepHz,
 						self._getSkippedLinesBeepLength(droppedCount),
 					)
 				lines = lines[-maxNewLines:]
+=======
+					SKIPPED_LINES_BEEP_HZ = 550
+					tones.beep(
+						SKIPPED_LINES_BEEP_HZ,
+						self._getSkippedLinesBeepLength(droppedCount),
+					)
+				lines = lines[-self.MAX_LINES :]
+>>>>>>> nvaccess/master
 		if self._reportNewLinesGenID is not None:
 			queueHandler.cancelGeneratorObject(self._reportNewLinesGenID)
 			self._reportNewLinesGenID = None
@@ -494,6 +509,7 @@ class LiveText(NVDAObject):
 				),
 			)
 
+<<<<<<< HEAD
 	@staticmethod
 	def _getSkippedLinesBeepLength(droppedCount: int) -> int:
 		skippedLinesBeepMinLengthMs = 10
@@ -509,6 +525,18 @@ class LiveText(NVDAObject):
 		lines: list[str],
 		batchSize: int,
 	) -> Generator[None, None, None]:
+=======
+	def _getSkippedLinesBeepLength(self, droppedCount: int) -> int:
+		SKIPPED_LINES_BEEP_MIN_DURATION_MS = 10
+		SKIPPED_LINES_BEEP_MAX_DURATION_MS = 100
+		droppedCount = max(droppedCount, 1)
+		ratio = 1.0 if self.MAX_LINES <= 1 else min(1.0, math.log(droppedCount, self.MAX_LINES))
+		lengthRange = SKIPPED_LINES_BEEP_MAX_DURATION_MS - SKIPPED_LINES_BEEP_MIN_DURATION_MS
+		return round(SKIPPED_LINES_BEEP_MIN_DURATION_MS + lengthRange * ratio)
+
+	def _reportNewLinesGenerator(self, lines: list[str]) -> Generator[None, None, None]:
+		YIELD_EVERY = 5  # Sweet spot between yielding on every line and a batch
+>>>>>>> nvaccess/master
 		try:
 			for i, line in enumerate(lines, 1):
 				self._reportNewText(line)
@@ -1069,7 +1097,9 @@ class ToolTip(NVDAObject):
 			return
 		speech.speakObject(self, reason=controlTypes.OutputReason.FOCUS)
 		# Ideally, we wouldn't use getPropertiesBraille directly.
-		braille.handler.message(braille.getPropertiesBraille(name=self.name, role=self.role))
+		braille.handler.message(
+			braille.regions.properties.getPropertiesBraille(name=self.name, role=self.role),
+		)
 
 
 class Notification(NVDAObject):
@@ -1083,7 +1113,9 @@ class Notification(NVDAObject):
 			return
 		speech.speakObject(self, reason=controlTypes.OutputReason.FOCUS)
 		# Ideally, we wouldn't use getPropertiesBraille directly.
-		braille.handler.message(braille.getPropertiesBraille(name=self.name, role=self.role))
+		braille.handler.message(
+			braille.regions.properties.getPropertiesBraille(name=self.name, role=self.role),
+		)
 
 	event_show = event_alert
 

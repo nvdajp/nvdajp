@@ -7,7 +7,13 @@
 
 import config
 import braille
+<<<<<<< HEAD
 import brailleTables
+=======
+import braille.regions.base
+import braille.regions.textInfo
+from config.configFlags import TetherTo
+>>>>>>> nvaccess/master
 import textInfos
 import api
 import controlTypes
@@ -57,7 +63,7 @@ class TestBrailleOffsetConverters(unittest.TestCase):
 			patch("textUtils._wordSeg.wordSegUtils.WordSegmenter", return_value=wordSegmenter),
 			patch("braille.regions.base.louisHelper.translate", translate),
 		):
-			region = braille.Region()
+			region = braille.regions.base.Region()
 			region.rawText = "你ℌ"
 			region.rawTextTypeforms = [11, 22]
 			region.cursorPos = 1
@@ -89,7 +95,7 @@ class TestReviewRoutingMovesSystemCaretInNavigableText(unittest.TestCase):
 		braille.handler.table = brailleTables.getTable("en-ueb-g1.ctb")
 		# END JP PATCH
 		# Set tethering to review.
-		braille.handler.setTether(braille.TetherTo.REVIEW.value)
+		braille.handler.setTether(TetherTo.REVIEW.value)
 		cmText = "the quick brown fox jumps over the lazy dog"
 		cm = self.cm = CursorManager(text=cmText)
 		cm.role = controlTypes.Role.EDITABLETEXT
@@ -222,7 +228,7 @@ class TestTextInfoRegionRouting(unittest.TestCase):
 		ti.collapse(end=True)
 		ti.expand(textInfos.UNIT_CHARACTER)
 		self.assertEqual(ti.text, testText[2])
-		region = braille.TextInfoRegion(obj)
+		region = braille.regions.textInfo.TextInfoRegion(obj)
 		region.update()
 		index = 3  # Position of e
 		pos = region.rawToBraillePos[index]
@@ -243,7 +249,7 @@ class TestTextInfoRegionRouting(unittest.TestCase):
 		ti.collapse(end=True)
 		ti.expand(textInfos.UNIT_CHARACTER)
 		self.assertEqual(ti.text, testText[4])
-		region = braille.TextInfoRegion(obj)
+		region = braille.regions.textInfo.TextInfoRegion(obj)
 		region.update()
 		index = 1  # Position of ב
 		pos = region.rawToBraillePos[index]
