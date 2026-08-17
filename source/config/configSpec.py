@@ -13,7 +13,7 @@ from . import configDefaults
 #: provide an upgrade step (@see profileUpgradeSteps.py). An upgrade step does not need to be added when
 #: just adding a new element to (or removing from) the schema, only when old versions of the config
 #: (conforming to old schema versions) will not work correctly with the new schema.
-latestSchemaVersion = 22
+latestSchemaVersion = 24
 
 #: The configuration specification string
 #: @type: String
@@ -133,7 +133,6 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	enabled = boolean(default=false)
 	magnifiedView = string(default="fullscreen")
 	zoom = integer(min=100, max=5000, default=200)
-	isTrueCentered = boolean(default=False)
 	filter = string(default="normal")
 	followMouse = boolean(default=True)
 	followSystemFocus = boolean(default=True)
@@ -571,6 +570,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 		# [default -- includes two forms of non-breaking spaces]
 		blockSeparators = string(default=", \u00a0\u202f")
 		# Auto, '.', ',', Custom
+		# Custom is not currently functional or surfaced in the UI, but is included here for future use.
 		decimalSeparator = string(default="Auto")
 		# Use native math speech instead of MathCAT in Word and Outlook
 		useWordNativeMath = boolean(default=false)
