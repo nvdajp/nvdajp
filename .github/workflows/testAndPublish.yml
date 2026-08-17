@@ -343,7 +343,7 @@ jobs:
 
   checkPo:
     # BEGIN JP PATCH (temporarily disabled, to be fixed in a separate branch)
-    if: false
+    if: ${{ github.repository == '' }}
     # END JP PATCH (temporarily disabled, to be fixed in a separate branch)
     name: Check po files for errors
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
@@ -557,8 +557,8 @@ jobs:
     name: Upload translations to Crowdin
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA, checkPot]
-    # BEGIN JP PATCH (disable crowdin upload)
-    if: ${{ false }}
+    # BEGIN JP PATCH (crowdin disabled for JP builds)
+    if: ${{ github.repository == '' }}
     # END JP PATCH
     # Original condition: if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/beta' && vars.CROWDIN_PROJECT_ID }}
     permissions:
@@ -777,8 +777,10 @@ jobs:
         # A bug exists with Windows 2022 notepad that prevents NVDA from focusing it.
         # This causes our symbol pronunciation tests to fail on this runner.
         exclude:
-          - runner: windows-2022
-            testSuite: symbols
+          # BEGIN JP PATCH (symbols is excluded from testSuite above)
+          # - runner: windows-2022
+          #   testSuite: symbols
+          # END JP PATCH
           # BEGIN JP PATCH (run chrome system tests only on the newest Windows
           # runner to reduce flaky failures; installer/startupShutdown still run on both)
           - runner: windows-2022
@@ -1000,7 +1002,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [buildNVDA, createLauncher, createSymbols, allTestsPass]
     # BEGIN JP PATCH (nvdajp: snapshot deployment disabled - no secrets in CI)
-    if: false
+    if: ${{ github.repository == '' }}
     # END JP PATCH
     # Original upstream condition: ${{ github.event_name == 'push' && !startsWith(github.ref_name, 'release-') }}
     concurrency:
@@ -1051,7 +1053,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [buildNVDA, createLauncher, createSymbols, allTestsPass]
     # BEGIN JP PATCH (nvdajp: release deployment disabled - no secrets in CI)
-    if: false
+    if: ${{ github.repository == '' }}
     # END JP PATCH
     # Original upstream condition: startsWith(github.ref_name, 'release-')
     concurrency:

@@ -219,4 +219,3 @@ class TestLocaleDataMapFallback(unittest.TestCase):
 		"""An exact locale match should be used even when fallback is enabled."""
 		dataMap = self._makeMap()
 		self.assertEqual(dataMap.fetchLocaleData("fr", fallback=True), "data:fr")
-

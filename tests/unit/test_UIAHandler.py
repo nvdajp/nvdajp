@@ -135,4 +135,6 @@ class TestBulkUIATextRangeAttributeValueFetcher(TestCase):
 		with patch("UIAHandler.utils.UIAHandler.handler", self._makeHandler()):
 			fetcher = BulkUIATextRangeAttributeValueFetcher(textRange, [1, 2])
 			self.assertEqual(fetcher.getValue(1), "not-supported")
+
+
 # END JP PATCH

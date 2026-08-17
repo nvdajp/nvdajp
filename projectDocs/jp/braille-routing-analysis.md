@@ -71,7 +71,7 @@ class ReviewCursorManagerRegion(ReviewTextInfoRegion, CursorManagerRegion):
 
 * CursorManagerRegion._setCursor(self, info)  # CursorManagerRegion を直接呼び出し
 
-* 
+*
 *
 
 

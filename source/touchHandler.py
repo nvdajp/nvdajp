@@ -56,6 +56,7 @@ import systemUtils
 from utils import _deprecate
 from utils.displayString import DisplayStringStrEnum
 from treeInterceptorHandler import post_browseModeStateChange
+import speech  # nvdajp
 
 __getattr__ = _deprecate.handleDeprecations(
 	_deprecate.MovedSymbol(
@@ -591,7 +592,7 @@ class TouchHandler(threading.Thread):
 
 	def pump(self):
 		self._processGestures()
-	# END JP PATCH
+		# END JP PATCH
 		interval = self.trackerManager.pendingEmitInterval
 		if interval and interval > 0:
 			# Ensure we are pumped again by the time more pending multiTouch trackers are ready

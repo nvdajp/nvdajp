@@ -322,6 +322,8 @@ def nvdaController_isSpeaking(pSpeaking: _Pointer[c_bool]) -> int:
 
 	pSpeaking[0] = speech.isSpeaking()
 	return SystemErrorCodes.SUCCESS.value
+
+
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf = create_unicode_buffer(1024)
 	bufSize = c_ulong(2048)
