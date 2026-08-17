@@ -502,6 +502,7 @@ Portable and temporary copies of NVDA have the following restrictions:
   * Windows 11 Voice Access
 * The inability to read User Account Control (UAC) screens when trying to start an application with administrative privileges.
 * The inability to support input from a touchscreen.
+If the NVDA magnifier is enabled, touchscreen input will not work correctly.
 * The inability to provide features such as browse mode and speaking of typed characters in Windows Store apps.
 * Audio ducking is not supported.
 
@@ -1365,13 +1366,69 @@ However, at any time during navigation, you can switch navigation modes using `s
 
 ## Braille {#Braille}
 
-If you own a braille display, NVDA can display information in braille.
+If you have access to a braille display, NVDA can display information in braille.
 If your braille display has a Perkins-style keyboard, you can also enter contracted or uncontracted braille.
 Braille can also be displayed on screen using the [Braille Viewer](#BrailleViewer) instead of, or at the same time as, using a physical braille display.
 
 Please see the [Supported Braille Displays](#SupportedBrailleDisplays) section for information about the supported braille displays.
 This section also contains information about what displays support NVDA's automatic background braille display detection functionality.
 You can configure braille using the [Braille category](#BrailleSettings) of the [NVDA Settings](#NVDASettings) dialog.
+
+### Reading Braille {#BrailleReading}
+
+When reading braille on a refreshable display, text is presented in the current [output table](#BrailleSettingsOutputTable) and [Braille Mode](#BrailleMode).
+Where text is longer than will fit on the display, panning or other keys on the device can be used to navigate without moving the focus or text caret.
+
+#### Automatic Braille Scrolling {#AutomaticBrailleScrolling}
+
+Automatic braille scrolling can be enabled to scroll the display at a set speed.
+When using this feature, the braille display scrolls to present information which is more than will fit on the display at once.
+The feature is disabled by default.
+You can change the gestures assigned to use automatic braille scrolling in NVDA's [Input Gestures dialog](#InputGestures) before it can be used.
+Gestures are also available to speed up or slow down the rate of automatic scrolling.
+Alternatively, you can [set the automatic scroll rate in Braille Settings](#BrailleAutoScrollRate).
+
+While braille is scrolling, you can still use the scroll back and scroll forward commands without stopping scrolling.
+Scroll back can be useful to read previous contents again.
+Scroll forward can be useful to skip a blank line, or if the line being read is short.
+
+While reading, automatic braille scrolling will stop when any of the following happen:
+
+* The toggle automatic braille scrolling key is pressed
+* The user presses a key or gesture which would display a new message
+* The focus is moved (including with braille display panning keys)
+* The end of the document is reached
+* The state of the lock or secure screen is changed (such as the computer being locked)
+
+#### Braille Reading Gestures {#BrailleReadingGestures}
+
+<!-- KC:beginInclude -->
+| Name | Key | Description |
+|---|---|---|
+| Toggles braille mode | `NVDA+alt+t` | Allows cycling between available braille modes: "follow cursors" and "display speech output"|
+| Tether braille | `NVDA+control+t` | This option allows you to choose whether the braille display will follow the system focus / caret, the navigator object / review cursor, or both |
+| Toggle automatic scroll | `NVDA+alt+k` | Toggles whether NVDA periodically scrolls the braille display to present information which is too long to show at once |
+| Increase automatic scroll rate | `NVDA+alt+l` | Makes automatic scrolling faster (when enabled) |
+| Decrease automatic scroll rate | `NVDA+alt+j` | Makes automatic scrolling slower (when enabled) |
+| Cycle braille cursor shapes | None | Cycle through the shape options (dot pattern) of the braille cursor |
+| Cycle move system caret when routing review cursor | None | Cycle through the braille move system caret when routing review cursor states |
+| Cycle show messages modes | None | Cycle through the braille show messages modes |
+| Cycle braille show selection states | None | Cycle through the braille show selection states |
+| Cycle braille Unicode normalization states | None | Cycle through the braille Unicode normalization states |
+| Move braille to focus | None | Moves the braille display to the current focus |
+| Move braille to next line | None | Moves the braille display to the next line |
+| Move braille to previous line | None | Moves the braille display to the previous line |
+| Report braille formatting | None | Reports formatting info for the text under this braille cell |
+| Route to or activate braille object | None | Routes the cursor to or activates the object under this braille cell |
+| Scroll braille display back | None | Scrolls the braille display back |
+| Scroll braille display forward | None | Scrolls the braille display forward |
+| Toggle braille cursor | None | Toggle the braille cursor on and off |
+| Toggle braille context information | None | Toggle the way context information is presented in braille |
+| Toggle speaking when navigating braille | None | Toggles on and off speaking when navigating by lines or paragraph with braille |
+| Toggle speaking character when routing | None | Toggles speaking the character under the cursor when routing cursor in text |
+<!-- KC:endInclude -->
+
+Refer to NVDA's [Braille Settings](#BrailleSettings) for all options which can be used to adjust braille reading.
 
 ### Control Type, State and Landmark abbreviations {#BrailleAbbreviations}
 
@@ -1512,6 +1569,19 @@ When typing in contracted Braille, using the modifier toggle keys will cause you
 In addition, the emulated keypress cannot reflect Braille typed before the modifier key was pressed.
 This means that, to type alt+2 with a Braille code that uses a number sign, you must first toggle Alt and then type a number sign.
 
+#### Braille Input Gestures {#BrailleInputGestures}
+
+<!-- KC:beginInclude -->
+
+| Name | Key | Description |
+|---|---|---|
+| Input via braille display | any dots | Inputs braille dots via the braille keyboard |
+| Erase last entered | `dot7` | Erases the last entered braille cell or character |
+| Translate braille input | `dot7+dot8` | Translates any braille input |
+| Translate and press enter | `dot8` | Translates any braille input and presses the enter key |
+
+<!-- KC:endInclude -->
+
 ## Vision {#Vision}
 
 While NVDA is primarily aimed at blind or vision impaired people who primarily use speech and/or braille to operate a computer, it also provides built-in facilities to change the contents of the screen.
@@ -1584,7 +1654,7 @@ Once the magnifier is enabled, you can use the following keyboard commands to co
 | Increase the magnification level | `NVDA+shift+equals` | Increases the zoom level. Starts the magnifier if it's not already running. |
 | Decrease the magnification level | `NVDA+shift+minus` | Decreases the zoom level |
 | Cycle color filters | `NVDA+shift+i` | Cycles through the available color filters (normal, grayscale, inverted) |
-| Cycle tracking mode | None | Cycles through tracking modes (center, border, relative) |
+| Cycle tracking mode | None | Cycles through tracking modes (center, relative) |
 | Show entire screen overview | `NVDA+shift+l` | Temporarily shows an overview of the entire screen |
 | Pan left | `NVDA+alt+leftArrow` | Moves the magnified view left by the configured panning step size |
 | Pan right | `NVDA+alt+rightArrow` | Moves the magnified view right by the configured panning step size |
@@ -1614,15 +1684,12 @@ The magnifier provides three color filter options:
 
 To cycle through the available filters press `NVDA+shift+i`.
 
-### Tracking Modes {#MagnifierTrackingModes}
+### Tracking Modes {#MagnifierTrackingMode}
 
-The magnifier offers three different modes for tracking the mouse, system focus, review cursor, and navigator object, and determining which part of the screen to magnify:
+The magnifier offers different modes for tracking the mouse, system focus, review cursor, and navigator object, and determining which part of the screen to magnify:
 
 * Center: The magnified area is centered on the currently tracked position.
 This mode keeps the tracked element at the center of the screen and clamps to the screen edge.
-To disable clamping, activate [true center tracking in the Magnifier settings](#MagnifierTrueCenterTracking).
-* Border: The magnified area only moves when the tracked position approaches the edge of the visible area.
-This mode provides a more stable view, only adjusting when necessary.
 * Relative: The magnified area maintains the relative position of the tracked element based on its position on the screen.
 
 To cycle through the tracking modes, please assign a custom gesture using the [Input Gestures dialog](#InputGestures).
@@ -2558,16 +2625,13 @@ To toggle this option from anywhere, please assign a custom gesture to "speakOnN
 
 ##### Automatic Scroll Rate {#BrailleAutoScrollRate}
 
-This slider controls the rate of automatic braille display scrolling, measured in cells per second.
-The minimum value (0%) will be 1 cell per second, and the maximum value (100%), 20 cells per second.
-For example, with the default value of 10 cells/sec, if a braille display with 40 cells is used, the number of seconds between automatic scrolls will be 4.
+This slider controls the rate at which NVDA scrolls the braille display when [automatic braille scrolling](#AutomaticBrailleScrolling) is enabled, measured in cells per second.
+
+To increase or decrease the scroll rate from anywhere, please assign custom gestures using the [Input Gestures dialog](#InputGestures).
+
+The minimum value (0%) is 1 cell per second, and the maximum value (100%) is 20 cells per second.
+For example, with the default value of 10 cells/sec, if a 40-cell braille display is used, the display will scroll automatically every 4 seconds.
 If the display had 20 cells, each line of braille would be shown for 2 seconds.
-
-While the automatic scroll option is enabled, you can still use the scroll back command to read previous contents again, and scroll forward, for example, to skip a blank line, or if the line being read is too short.
-
-Automatic scrolling will be disabled if a routing key is pressed, if a message is presented in braille, if a new object is displayed, when entering a secure screen, when the session is locked, or when the end of the window is reached.
-
-Commands can be assigned to toggle the automatic scroll option, and to increase or decrease the scroll rate, from the "Braille" section of the [Input Gestures dialog](#InputGestures).
 
 ##### Avoid splitting words when possible {#BrailleSettingsWordWrap}
 
@@ -2912,16 +2976,6 @@ The available options are:
 | Grayscale | Converts all colors to shades of gray, which can help reduce eye strain and improve contrast. |
 | Inverted | Inverts all colors on the screen, which can be helpful for users who prefer light text on dark backgrounds or have photophobia. |
 
-##### True center tracking {#MagnifierTrueCenterTracking}
-
-This checkbox controls whether the magnifier should always keep the tracked position centered on the screen, even when the tracked element is next to the screen edges, or if it should allow the tracked position to move towards the edges of the screen.
-When enabled, the magnifier will always keep the tracked position centered on the screen, which can be helpful for users who prefer a consistent tracked position within the magnified view.
-
-| . {.hideHeaderRow} |.|
-|---|---|
-| Options | Disabled, Enabled |
-| Default | Disabled |
-
 ##### Panning step size {#MagnifierPanningStepSize}
 
 This option allows you to set the panning step size as a percentage of the visible magnified window.
@@ -2976,7 +3030,7 @@ When enabled, the magnified area will automatically move to follow the navigator
 | Options | Disabled, Enabled |
 | Default | Enabled |
 
-##### Tracking mode {#MagnifierTrackingMode}
+##### Tracking mode {#MagnifierTrackingModeSetting}
 
 This combo box allows you to select the tracking mode when using the magnifier.
 To cycle through the tracking modes, please assign a custom gesture using the [Input Gestures dialog](#InputGestures).
@@ -2984,13 +3038,12 @@ The available options are:
 
 | . {.hideHeaderRow} |.|
 |---|---|
-| Options | Center, Border, Relative |
+| Options | Center, Relative |
 | Default | Center |
 
 | Option | Description |
 |---|---|
 | Center | The magnified area is always centered on the currently tracked position. |
-| Border | The magnified area only moves when the tracked element approaches the edge of the visible area. |
 | Relative | The magnified area maintains the relative position of the tracked element based on its position on the screen. |
 
 #### Keyboard {#KeyboardSettings}
@@ -3564,6 +3617,16 @@ If speech rules for the main language cannot be found, English ("en") is used.
 |---|---|
 | Options | Automatic, English, English (en-GB), Chinese (Traditional) (zh-TW), Finnish, German, Indonesian, Norwegian Bokmål, Spanish, Swedish, Vietnamese |
 | Default | Automatic (the language of the current voice if supported, or fallback to English) |
+
+###### Decimal separator for numbers {#MathSpeechDecimalSeparator}
+
+This determines the character used as the decimal separator when reading numbers in math.
+When set to Automatic, the separator is chosen based on the math language.
+
+| . {.hideHeaderRow} | . |
+|---|---|
+| Options | Automatic, ".", "," |
+| Default | Automatic |
 
 ###### Speech Style {#MathSpeechStyle}
 

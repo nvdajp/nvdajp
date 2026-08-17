@@ -16,10 +16,17 @@ A new command allows repeating the last spoken information, with the ability to 
 The default gesture to repeat the last spoken information is `NVDA+x`, which can be changed in the Input Gestures dialog.
 
 The braille display can now automatically scroll and DotPad devices support multi-button combinations.
+The default gesture to toggle automatic scroll is `NVDA+alt+k`.
 
 Liblouis has been updated with new Italian and Estonian braille tables.
 
 When resetting NVDA to factory defaults, an Undo button is now available to restore the previous configuration.
+
+### Security Fixes
+
+Please responsibly disclose security issues following NVDA's [security policy](https://github.com/nvaccess/nvda/blob/master/security.md).
+
+* Prevents showing potentially sensitive information on braille displays when the computer is shut down or restarted. ([GHSA-qhjv-3xf4-9c66](https://github.com/nvaccess/nvda/security/advisories/GHSA-qhjv-3xf4-9c66))
 
 ### New Features
 
@@ -35,6 +42,7 @@ When resetting NVDA to factory defaults, an Undo button is now available to rest
   * A new command, assigned to `NVDA+x`, has been introduced to repeat the last information spoken by NVDA; pressing it twice shows it in a browseable message. (#625, @CyrilleB79)
 * Braille:
   * Added the ability to automatically scroll the braille display. (#18573, @nvdaes)
+    * `NVDA+alt+k`, `NVDA+alt+l` and `NVDA+alt+j` gestures can be used to toggle automatic scroll, increase scroll rating and decrease scroll rating, respectively.
   * DotPad braille displays now support multi-button combination gestures. (#19565, @bramd)
     * You can now press multiple buttons simultaneously to create custom gestures (e.g., `f1+panLeft`).
 * Touch:
@@ -78,6 +86,7 @@ This is more noticeable for Windows releases which are enablement packages on to
 This provides Unicode-aware `\w` and `\b` and additional regex features.
 The setting is disabled by default. (#20013, @LeonarddeR)
 * The "Type" radio buttons in the "Add Dictionary Entry" dialog are now arranged vertically rather than horizontally. (#19657)
+* Removed the non-functional "Custom" option from the math decimal separator setting. (#20425)
 
 ### Bug Fixes
 
@@ -88,6 +97,7 @@ The setting is disabled by default. (#20013, @LeonarddeR)
 * Fixed an error that could occur when NVDA checked whether a language is supported for a synthesizer with invalid languages. (#20080, @nvdaes)
 * NVDA will attempt to recover more quickly from freezes in some applications, especially those written in Java. (#14396, @thgcode)
 * In Firefox browse mode, the accessible name of form controls (such as checkboxes and radio buttons) is now correctly announced when the control has an `aria-label` and an associated `<label>` element that contains only `aria-hidden` content. (#19409, @bramd)
+* In Foxit PDF Editor, NVDA can once again browse PDF documents. (#20440, @cary-rowen)
 * The "Toggles on and off if the screen layout is preserved while rendering the document content" item in the "Browse mode" category of the Input Gestures dialog now behaves correctly. (#18378)
 * In Microsoft Word with UIA enabled, page changes are now correctly announced when navigating table rows that span multiple pages. (#19386, @akj)
 * Fixed excessive resource usage and highlight flickering when using Visual Highlight. (#17434, @hwf1324)
@@ -101,6 +111,7 @@ The setting is disabled by default. (#20013, @LeonarddeR)
 * Speech dictionary entries of type Whole word now correctly handle words containing Unicode combining marks (e.g. Hebrew niqqud, Arabic harakat). (#20013, @LeonarddeR)
   * In particular, Whole word entries no longer incorrectly match inside larger words when those words contain combining marks.
 * Fixed a case which could cause NVDA to freeze while reading math in braille. (#20319, @AAClause)
+* NVDA no longer fails to load sapi4 voices that do not support pitch, rate or volume. (#20302)
 
 ### Changes for Developers
 
@@ -109,18 +120,20 @@ Please refer to [the developer guide](https://download.nvaccess.org/documentatio
 * Clarified NV Access's policy on API breaking changes in the [Developer Guide](https://download.nvaccess.org/documentation/developerGuide.html#API). (#19599)
 * Updated components:
   * Ruff to 0.15.9. (#19736, #19908)
-  * uv to 0.11.7. (#19736, #19908, #19968)
+  * uv to 0.11.29. (#19736, #19908, #19968, #20142)
   * Requests to 2.33.0. (#19877)
-  * cryptography to 46.0.7. (#19877, #19968)
+  * cryptography to 48.0.1. (#19877, #19968, #20142)
   * Python to 3.13.13. (#20231, @dpy013)
+  * lxml to 6.1.1. (#20142)
+  * PyMdown Extensions to 10.21.3. (#20142)
 * A new parameter `redactSecrets` has been added to logging functions e.g. `log.debug`. (#19966)
   * When set to `True`, logging output will be sanitized to replace detected secrets with asterisks.
   * This is set to `False` by default for performance purposes.
   * It is encouraged to enable this when logging anything particularly sensitive e.g. clipboard content.
   * Added a `DEBUG_UNREDACTED` logging level for cases where developers explicitly need debug logging without `redactSecrets` masking.
-* NVDA libraries built by the build system are now linked with the [/SETCOMPAT](https://learn.microsoft.com/en-us/cpp/build/reference/cetcompat) flag, improving protection against certain malware attacks. (#19435, @LeonarddeR)
+* NVDA libraries built by the build system are now linked with the [/CETCOMPAT](https://learn.microsoft.com/en-us/cpp/build/reference/cetcompat) flag, improving protection against certain malware attacks. (#19435, @LeonarddeR)
 * Subclasses of `browseMode.BrowseModeDocumentTreeInterceptor` that support screen layout being on and off should override the `_toggleScreenLayout` method, rather than implementing `script_toggleScreenLayout` directly. (#19487)
-* A new method has been added to the UIA.UIA class, called `_getUIACacheablePropertyValue_handleCOMErrors`. (#19713, @Emil-18)
+* A new method has been added to the UIA.UIA class, called `_getUIACacheablePropertyValue_handlesCOMErrors`. (#19713, @Emil-18)
   * This method calls `_getUIACacheablePropertyValue`, and takes an extra argument (`onError`) that specifies the value that should be returned if a `COMError` is raised.
 * The `scons tests` build target has been removed, as it was misleadingly named.
 It only ran the translation string comment check, which is equivalent to `scons checkPot`.
@@ -143,6 +156,7 @@ Use the individual test commands instead: `runcheckpot.bat`, `rununittests.bat`,
 * The `speechDictHandler.ENTRY_TYPE_*` constants are deprecated.
 Use the `speechDictHandler.types.EntryType` enumeration instead. (#19430, @LeonarddeR)
 * `speechDictHandler.SpeechDictEntry` and `speechDictHandler.SpeechDict` have been moved to `speechDictHandler.types`. (#19430, @LeonarddeR)
+* `speechDictHandler.dictionaries` and `speechDictHandler.dictTypes` are deprecated without replacement. (#19558, @LeonarddeR)
 
 ## 2026.1.1
 

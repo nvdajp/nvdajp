@@ -2946,7 +2946,11 @@ class MathSettingsPanel(SettingsPanel):
 		self.decimalSeparatorList = speechGroup.addLabeledControl(
 			decimalSeparatorText,
 			wx.Choice,
-			choices=[option.displayString for option in DecimalSeparatorOption],
+			choices=[
+				option.displayString
+				for option in DecimalSeparatorOption
+				if option != DecimalSeparatorOption.CUSTOM
+			],
 		)
 		self.bindHelpEvent("MathSpeechDecimalSeparator", self.decimalSeparatorList)
 		self.decimalSeparatorList.SetSelection(
@@ -6172,7 +6176,6 @@ class MagnifierPanel(SettingsPanel):
 		magnifierConfig.setPanStep(selectedPanStep)
 		magnifierConfig.setFilter(selectedFilter)
 		magnifierConfig.setFullscreenMode(selectedMode)
-		config.conf["magnifier"]["isTrueCentered"] = self.trueCenterTrackingCheckBox.GetValue()
 
 		for trackingType, checkBox in self._trackingTypeCheckBoxes.items():
 			magnifierConfig.setFollowState(trackingType, checkBox.GetValue())
@@ -6261,20 +6264,6 @@ class MagnifierPanel(SettingsPanel):
 		self.filterList.SetSelection(list(Filter).index(filterValue))
 		self.filterList.Bind(wx.EVT_CHOICE, self._onImmediateSettingChange)
 
-		# True center tracking SETTINGS
-		# Translators: The label for a setting in magnifier settings to select whether true center tracking is used
-		trueCenterTrackingText = _("&True center tracking")
-		self.trueCenterTrackingCheckBox = generalGroup.addItem(
-			wx.CheckBox(generalGroupBox, label=trueCenterTrackingText),
-		)
-		self.bindHelpEvent(
-			"MagnifierTrueCenterTracking",
-			self.trueCenterTrackingCheckBox,
-		)
-		self.trueCenterTrackingCheckBox.SetValue(magnifierConfig.isTrueCentered())
-		self._trueCenterTrackingInitially = self.trueCenterTrackingCheckBox.GetValue()
-		self.trueCenterTrackingCheckBox.Bind(wx.EVT_CHECKBOX, self._onImmediateSettingChange)
-
 		# Panning SETTINGS
 		# Translators: The label for a setting in magnifier settings to select the pan step size (in percentage).
 		panStepSizeLabelText = _("&Panning step size (%):")
@@ -6329,26 +6318,17 @@ class MagnifierPanel(SettingsPanel):
 			checkBox.Bind(wx.EVT_CHECKBOX, self._onImmediateSettingChange)
 			self._trackingTypeCheckBoxes[trackingType] = checkBox
 
-		# Tracking GROUP
-		# Translators: This is the label for a group of tracking magnifier options in the
-		# magnifier settings panel
-		trackingGroupText = _("Tracking")
-		self.trackingGroupSizer = wx.StaticBoxSizer(wx.VERTICAL, self, label=trackingGroupText)
-		trackingGroupBox = self.trackingGroupSizer.GetStaticBox()
-		trackingGroup = guiHelper.BoxSizerHelper(trackingGroupBox, sizer=self.trackingGroupSizer)
-		sHelper.addItem(trackingGroup)
-
 		# Tracking MODE SETTINGS
-		# Translators: The label for a setting in magnifier settings to select the full-screen mode
-		trackingModeLabelText = _("Tracking &mode:")
-		trackingModeChoices = [mode.displayString for mode in FullScreenMode] if FullScreenMode else []
+		# Translators: The label for a setting in magnifier settings to select the tracking mode
+		trackingModeLabelText = _("&Tracking mode:")
+		trackingModeChoices = [mode.displayString for mode in FullScreenMode]
 		self.trackingModeList = trackingGroup.addLabeledControl(
 			trackingModeLabelText,
 			wx.Choice,
 			choices=trackingModeChoices,
 		)
 		self.bindHelpEvent(
-			"MagnifierTrackingMode",
+			"MagnifierTrackingModeSetting",
 			self.trackingModeList,
 		)
 
@@ -6368,14 +6348,12 @@ class MagnifierPanel(SettingsPanel):
 		selectedPanStep = self.panSpinCtrl.GetValue()
 		selectedFilter = list(Filter)[self.filterList.GetSelection()]
 		selectedMode = list(FullScreenMode)[self.trackingModeList.GetSelection()]
-		isTrueCentered = self.trueCenterTrackingCheckBox.GetValue()
 
 		roundedZoom = magnifierConfig.roundZoomLevel(selectedZoom)
 		self._zoomInitially = roundedZoom
 		self._panStepInitially = selectedPanStep
 		self._filterInitially = selectedFilter
 		self._trackingModeInitially = selectedMode
-		self._trueCenterTrackingInitially = isTrueCentered
 		for trackingType, checkBox in self._trackingTypeCheckBoxes.items():
 			shouldFollow = checkBox.GetValue()
 			self._trackingTypeInitially[trackingType] = shouldFollow
@@ -6386,7 +6364,6 @@ class MagnifierPanel(SettingsPanel):
 		magnifierConfig.setPanStep(self._panStepInitially)
 		magnifierConfig.setFilter(self._filterInitially)
 		magnifierConfig.setFullscreenMode(self._trackingModeInitially)
-		config.conf["magnifier"]["isTrueCentered"] = self._trueCenterTrackingInitially
 		for trackingType, state in self._trackingTypeInitially.items():
 			magnifierConfig.setFollowState(trackingType, state)
 
@@ -6407,8 +6384,19 @@ class MagnifierPanel(SettingsPanel):
 		requestedEnabled = evt.IsChecked()
 		currentEnabled = magnifierConfig.getEnabled()
 		if requestedEnabled != currentEnabled:
-			toggleMagnifier()
+			# Enabling from settings is a GUI action, so present start failures in a message box.
+			toggleMagnifier(onStartError=self._showMagnifierStartError)
 			self.enableMagnifierCheckBox.SetValue(magnifierConfig.getEnabled())
+
+	def _showMagnifierStartError(self, message: str):
+		"""Show a magnifier start failure in a message box, since enabling from settings is a GUI action."""
+		gui.messageBox(
+			message,
+			# Translators: The title of an error message box shown when the magnifier fails to start.
+			_("Magnifier"),
+			wx.OK | wx.ICON_ERROR,
+			self,
+		)
 
 
 class PrivacyAndSecuritySettingsPanel(SettingsPanel):

@@ -82,8 +82,8 @@ class MagnifierAction(DisplayStringEnum):
 			self.TOGGLE_FILTER: pgettext("magnifier action", "cycle color filters"),
 			# Translators: Action description for changing magnifier view.
 			self.CHANGE_MAGNIFIER_VIEW: pgettext("magnifier action", "change magnifier view"),
-			# Translators: Action description for changing full-screen mode.
-			self.CHANGE_FULLSCREEN_MODE: pgettext("magnifier action", "change full-screen mode"),
+			# Translators: Action description for changing tracking mode.
+			self.CHANGE_FULLSCREEN_MODE: pgettext("magnifier action", "change tracking mode"),
 			# Translators: Action description for showing entire screen overview.
 			self.START_SPOTLIGHT: pgettext("magnifier action", "show screen overview"),
 		}
@@ -149,7 +149,6 @@ class ZoomHistory(NamedTuple):
 
 class FullScreenMode(DisplayStringStrEnum):
 	CENTER = "center"
-	BORDER = "border"
 	RELATIVE = "relative"
 
 	@property
@@ -157,8 +156,6 @@ class FullScreenMode(DisplayStringStrEnum):
 		return {
 			# Translators: Magnifier tracking mode - center the tracked item on the screen.
 			self.CENTER: pgettext("magnifier", "Center"),
-			# Translators: Magnifier tracking mode - follow the tracked item only when it reaches screen borders.
-			self.BORDER: pgettext("magnifier", "Border"),
 			# Translators: Magnifier tracking mode - preserve the tracked item's screen position within the magnified view (same relative screen location).
 			self.RELATIVE: pgettext("magnifier", "Relative"),
 		}
