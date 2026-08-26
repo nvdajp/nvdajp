@@ -20,7 +20,8 @@ dic_dir = jtalk_dir / "dic"
 sys.path.insert(0, str(jtalk_dir))
 
 # Verification cases: (input_text, expected_output)
-# Default is strict (basic + extended). Pass JP_VERIFY_DIC_MODE=basic to limit cases.
+# CI: sanity only (translator2 normalizations + minimal custom-dic signal).
+# Local/certBuild: strict custom-dictionary coverage before release smoke tests.
 CASES_BASIC = [
 	("一人", "ヒトリ"),
 	("二人", "フタリ"),
@@ -31,12 +32,19 @@ CASES_STRICT = [
 	("二百十日", "2ヒャク トオカ"),
 	("ごめんください", "ゴメン クダサイ"),
 	("寄付行為", "キフ コーイ"),
+	("晴れ所により一時雨", "ハレ トコロニ ヨリ イチジ アメ"),
+	("行っていらっしゃい", "イッテ イラッシャイ"),
 ]
 
 
 def _cases_for_run() -> list[tuple[str, str]]:
 	mode = os.environ.get("JP_VERIFY_DIC_MODE", "").strip().lower()
 	if mode == "basic":
+		return list(CASES_BASIC)
+	if mode == "strict":
+		return CASES_BASIC + CASES_STRICT
+	# Default: basic on GHA (chcp/console env differs); strict locally.
+	if os.environ.get("GITHUB_ACTIONS") == "true":
 		return list(CASES_BASIC)
 	return CASES_BASIC + CASES_STRICT
 

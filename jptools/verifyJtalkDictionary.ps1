@@ -7,8 +7,8 @@
     custom-dictionary entries. Use after jtalkSync to catch cache pollution
     or incorrect dictionary builds before running full smoke tests.
 
-    - Default: strict verification (basic + extended custom-dic cases).
-    - CI workflow passes -Strict explicitly; verify_dic.py also defaults to strict.
+    - CI (GITHUB_ACTIONS): basic cases only (stable on GHA; no chcp 932 reliance).
+    - Local / certBuild: strict custom-dictionary coverage before release smoke tests.
 
 .PARAMETER Strict
     Force strict verification (basic + extended custom-dic cases).
@@ -74,7 +74,7 @@ if (-not (Test-Path $verifyScript)) {
     exit 1
 }
 
-$modeHint = if ($env:JP_VERIFY_DIC_MODE) { $env:JP_VERIFY_DIC_MODE } else { "strict (default)" }
+$modeHint = if ($env:JP_VERIFY_DIC_MODE) { $env:JP_VERIFY_DIC_MODE } elseif ($isCI) { "basic (CI default)" } else { "strict (local default)" }
 Write-Host "Verifying JTalk dictionary (mode: $modeHint)..."
 & $pythonExe $verifyScript
 exit $LASTEXITCODE
