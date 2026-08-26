@@ -85,7 +85,7 @@ rem Note: dist copies sourceDir after jtalkSync; dictionary rebuild above ensure
 call scons.bat launcher %SCONSARGS%
 @if not "%ERRORLEVEL%"=="0" goto onerror
 rem Run JP smoke tests (JpBrailleTests and JtalkTests) after dictionary verify
-chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall
+chcp 932 >nul 2>&1 && powershell -ExecutionPolicy Bypass -File jptools\runJpSmokeTests.ps1 -SkipInstall -SkipOverlay
 @if not "%ERRORLEVEL%"=="0" goto onerror
 if not defined SKIP_SIGNING (
     call scons.bat jpVerifySignatures %SCONSARGS%
