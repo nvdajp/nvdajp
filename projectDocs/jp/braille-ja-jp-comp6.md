@@ -35,7 +35,7 @@
        braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = louis.translate(...)
    ```
 
-4. **日本語点字変換**: `miscDepsJp/source/synthDrivers/jtalk/translator2.py` の `translate()` 関数が実行される
+4. **日本語点字変換**: `source/synthDrivers/jtalk/translator2.py` の `translate()` 関数が実行される
    * `translateWithInPos2()` を呼び出し
    * `japanese_braille_separate()` で形態素解析とマスあけ処理
    * `translator1.translateWithInPos()` でカナ→点字変換
@@ -750,8 +750,8 @@ bread and butter. → ⠦bread and butter.⠴
 * **計画・テスト整備**:
 * **実装**:
   * `source/louisHelper.py` (エンジン切り替え)
-  * `miscDepsJp/source/synthDrivers/jtalk/translator2.py` (点訳エンジン本体)
-  * `miscDepsJp/source/synthDrivers/jtalk/translator1.py` (カナ→点字変換)
+  * `source/synthDrivers/jtalk/translator2.py` (点訳エンジン本体)
+  * `source/synthDrivers/jtalk/translator1.py` (カナ→点字変換)
   * `source/brailleTables/__tables.py` (テーブル登録)
 
 * **テスト**:

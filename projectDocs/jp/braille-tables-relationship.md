@@ -21,7 +21,7 @@ nvdajp には、日本語点字に関連する3つの異なるテーブル/エ�
 
 1. ユーザーが「日本語6点情報処理点字」を選択
 2. `source/louisHelper.py` の `translate()` 関数で `ja-jp-comp6.utb` を検出
-3. **liblouis を経由せず**、`miscDepsJp/source/synthDrivers/jtalk/translator2.py` の `translate()` を直接呼び出し
+3. **liblouis を経由せず**、`source/synthDrivers/jtalk/translator2.py` の `translate()` を直接呼び出し
 4. MeCab で形態素解析を行い、日本語点字ルールに従って変換
 
 **実装状況の確認が必要**: `louisHelper.py` に `jpTranslate` の実装があるか、または別の場所で処理されているかを確認する必要があります。
