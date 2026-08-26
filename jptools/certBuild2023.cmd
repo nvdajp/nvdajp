@@ -47,9 +47,6 @@ call jptools\check_vs_version.cmd
 nmake /?
 @if not "%ERRORLEVEL%"=="0" goto onerror
 
-patch -v
-@if not "%ERRORLEVEL%"=="0" goto onerror
-
 rem Ensure signtool is discoverable for SCons (verify/sign)
 if not defined SIGNTOOL (
     for /f "usebackq delims=" %%S in (`where signtool 2^>NUL`) do set "SIGNTOOL=%%S"
