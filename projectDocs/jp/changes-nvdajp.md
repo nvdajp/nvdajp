@@ -56,7 +56,7 @@
 
 ##### JTalk シンセサイザードライバー
 
-* `miscDepsJp/source/synthDrivers/jtalk/` - 日本語音声合成ドライバー
+* `source/synthDrivers/jtalk/` - 日本語音声合成ドライバー
   * M001、Lite、Mei、Tohoku-f01 の音声をサポート
   * 自動言語切り替え機能
   * ピッチ、速度、音量、抑揚の調整機能
@@ -65,16 +65,16 @@
 
 ##### 追加されたファイル
 
-* `miscDepsJp/source/synthDrivers/jtalk/jtalkDriver.py` (436行)
-* `miscDepsJp/source/synthDrivers/jtalk/jtalkCore.py` (518行)
-* `miscDepsJp/source/synthDrivers/jtalk/jtalkPrepare.py` (122行)
-* `miscDepsJp/source/synthDrivers/jtalk/translator1.py` (640行)
-* `miscDepsJp/source/synthDrivers/jtalk/translator2.py` (1,798行)
-* `miscDepsJp/source/synthDrivers/nvdajp_jtalk.py` (230行)
+* `source/synthDrivers/jtalk/jtalkDriver.py` (436行)
+* `source/synthDrivers/jtalk/jtalkCore.py` (518行)
+* `source/synthDrivers/jtalk/jtalkPrepare.py` (122行)
+* `source/synthDrivers/jtalk/translator1.py` (640行)
+* `source/synthDrivers/jtalk/translator2.py` (1,798行)
+* `source/synthDrivers/nvdajp_jtalk.py` (230行)
 
 ##### Haruka 音声エンジン対応
 
-* `miscDepsJp/source/synthDrivers/haruka/` - Haruka (nvdajp) 日本語専用ドライバー
+* `source/synthDrivers/haruka/` - Haruka (nvdajp) 日本語専用ドライバー
   * Microsoft Speech Platform 用の日本語音声エンジン
   * Windows 7 で利用可能（標準ではシステムに入っていない）
   * 本家版の Microsoft Speech Platform ドライバーとは別の日本語専用実装
