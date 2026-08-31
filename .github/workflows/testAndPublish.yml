@@ -276,7 +276,7 @@ jobs:
       if: ${{ (github.ref_name == 'betajp' || github.ref_name == 'releasejp') && github.event_name == 'workflow_dispatch' }}
       shell: pwsh
       env:
-        VERSION: ${{ github.ref_name == 'releasejp' && env.version || nowdate }}
+        VERSION: ${{ github.ref_name == 'releasejp' && env.version || env.nowdate }}
       run: |
         uv run --no-active python jptools/pack_jtalk_addon.py --nowdate "$env:VERSION"
         uv run --no-active python jptools/pack_kgs_addon.py --version "$env:VERSION"
