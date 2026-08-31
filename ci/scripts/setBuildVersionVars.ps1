@@ -29,6 +29,14 @@ if ($env:GITHUB_REF_TYPE -eq "tag" -and $env:GITHUB_REF_NAME.StartsWith("release
 			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 		}
 		# END JP PATCH
+		# BEGIN JP PATCH (releasejp: use 2026.2jp for workflow_dispatch signed releases)
+		if ($env:GITHUB_REF_NAME -eq "releasejp" -and $env:GITHUB_EVENT_NAME -eq "workflow_dispatch") {
+			$version = "2026.2jp"
+			$release = 1
+			$versionType = "nvdajp"
+			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+		}
+		# END JP PATCH
 		if ($env:GITHUB_REF_NAME.StartsWith("try-release-")) {
 			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 		}
