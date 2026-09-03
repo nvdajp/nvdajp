@@ -26,6 +26,10 @@ on:
         description: 'Release tag for releasejp (e.g. release-2026.2jp-rc1 or release-2026.2jp)'
         required: false
         type: string
+      previousStableTag:
+        description: 'Previous stable release tag for Full Changelog (optional; e.g. release-2026.1.1jp). If empty, latest stable tag is used.'
+        required: false
+        type: string
       # END JP PATCH
 
 concurrency:
@@ -1229,6 +1233,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
         PRERELEASE_FLAG: ${{ steps.tag.outputs.PRERELEASE_FLAG }}
+        PREVIOUS_STABLE_TAG_INPUT: ${{ inputs.previousStableTag }}
       run: |
         tag="${{ steps.tag.outputs.TAG }}"
         version="${{ needs.buildNVDA.outputs.version }}"
@@ -1238,18 +1243,40 @@ jobs:
         notes_file="/tmp/releaseNotes.md"
         if [ -n "$PRERELEASE_FLAG" ]; then
           title_text="Pre-release "
-          body_text="This is a pre-release of the NVDA Japanese Version. It is intended for testing and feedback before the stable release."
+          {
+            echo "This is a pre-release of the NVDA Japanese Version. It is intended for testing and feedback before the stable release."
+            echo ""
+            echo "* Download: $exe_name"
+            echo "* SHA1: \`$sha1\`"
+            echo "* SHA256: \`$sha256\`"
+          } > "$notes_file"
         else
           title_text=""
-          body_text="This is the stable release of the NVDA Japanese Version."
+          prev_tag="${PREVIOUS_STABLE_TAG_INPUT}"
+          if [ -z "$prev_tag" ]; then
+            prev_tag=$(gh release list --repo ${{ github.repository }} --limit 100 \
+              | awk -F '\t' '$2 !~ /Pre-release/ {print $3; exit}')
+          fi
+          {
+            echo "NVDAJP is developed by NVDA Japanese Team, based on the work of NV Access."
+            echo ""
+            echo "NVDAJP $version is a stable release."
+            echo ""
+            echo "NVDAJP contains enhancements for Japanese language users, such as JTalk TTS which can be used with the installer or portable version."
+            echo ""
+            echo "* \`$exe_name\` : launcher (installer)"
+            echo "* \`nvda_*_controllerClientJp.zip\` : SDK regarding Japanese modifications of NVDA API."
+            echo "* \`nvdajp-jtalk-*.nvda-addon\` : Japanese TTS, which is not necessary for NVDA Japanese version because it is already included. The add-on can be used with the original version of NVDA."
+            echo "* \`kgsbraille-*.nvda-addon\` : KGS braille display driver, which is not necessary for NVDA Japanese version because it is already included. The add-on can be used with the original version of NVDA."
+            echo ""
+            echo "* SHA1: \`$sha1\`"
+            echo "* SHA256: \`$sha256\`"
+            if [ -n "$prev_tag" ]; then
+              echo ""
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${prev_tag}...${tag}"
+            fi
+          } > "$notes_file"
         fi
-        {
-          echo "$body_text"
-          echo ""
-          echo "* Download: $exe_name"
-          echo "* SHA1: \`$sha1\`"
-          echo "* SHA256: \`$sha256\`"
-        } > "$notes_file"
         gh release create "$tag" \
           "output/$exe_name" \
           jptools/nvdajp-jtalk-*.nvda-addon \
