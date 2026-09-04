@@ -25,6 +25,12 @@
 * 変化しやすい情報（CI状況、調査ログ、暫定回避策）は `projectDocs/jp/*` に集約する。
 * 文書追加・移動時は本ファイルの索引を同時更新する。
 
+### 優先順位（正本の所在）
+
+* **日本語版の運用・仕様は `projectDocs/jp/` を正本とする。** 本家版（nvaccess）の文書（例: `projectDocs/community/releaseProcess.md`、`projectDocs/dev/*`）と食い違う場合は、`projectDocs/jp/` の記述を優先する。
+* 本家版文書は upstream との差分を作らないため**変更しない**。日本語版固有の手順・方針は `readme-nvdajp.md` と `projectDocs/jp/` に集約する。
+* 例: リリース手順は本家の `releaseProcess.md`（rc/beta/master ブランチ運用）ではなく、`projectDocs/jp/code-signing-dependencies.md`（releasejp の workflow_dispatch 署名リリース）を正本とする。
+
 ## ロードマップ
 
 * 正本: `projectDocs/jp/roadmap.md`
