@@ -1254,8 +1254,11 @@ jobs:
           title_text=""
           prev_tag="${PREVIOUS_STABLE_TAG_INPUT}"
           if [ -z "$prev_tag" ]; then
-            prev_tag=$(gh release list --repo ${{ github.repository }} --limit 100 \
-              | awk -F '\t' '$2 !~ /Pre-release/ {print $3; exit}')
+            # Use the REST API to find the latest non-prerelease release tag.
+            # Avoid piping `gh release list` into awk with `exit`, which causes
+            # SIGPIPE (exit code 141) and fails the step.
+            prev_tag=$(gh api "repos/${{ github.repository }}/releases?per_page=100" \
+              --jq '[.[] | select(.prerelease==false and .draft==false) | .tag_name][0] // empty')
           fi
           {
             echo "NVDAJP is developed by NVDA Japanese Team, based on the work of NV Access."
