@@ -9,6 +9,12 @@
 - この `readme-nvdajp.md` は **恒常的な手順と最短コマンド**（初回セットアップ、日常運用の入口）を扱う。
 - `projectDocs/jp/README.md` から辿れる詳細文書は **テーマ別の詳細仕様・背景・進行中の課題**（ロードマップ、分析、検証結果）を扱う。
 
+### 優先順位（正本の所在）
+
+- **日本語版の運用・仕様は `projectDocs/jp/` を正本とする。** 本家版（nvaccess）の文書（例: `projectDocs/community/releaseProcess.md`、`projectDocs/dev/*`）と内容が食い違う場合は、`projectDocs/jp/` の記述を優先する。
+- 本家版文書は upstream との差分を作らないため**変更しない**。日本語版固有の手順・方針は `readme-nvdajp.md` と `projectDocs/jp/` に集約する。
+- 例: リリース手順は本家の `releaseProcess.md`（rc/beta/master ブランチ運用）ではなく、`projectDocs/jp/code-signing-dependencies.md`（releasejp の workflow_dispatch 署名リリース）を正本とする。
+
 ---
 
 ## ビルド環境準備とソースコード取得
