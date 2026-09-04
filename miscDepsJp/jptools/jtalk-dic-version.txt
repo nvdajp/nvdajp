@@ -3,10 +3,10 @@
 # nishimotz/libkuraji-jtalk-dic release.
 # See projectDocs/jp/vendor-submodules.md ("辞書のビルド時取得（方針転換）").
 repo=nishimotz/libkuraji-jtalk-dic
-tag=v1.1.8
-asset=jtalk-dic-v1.1.8.zip
-sha256=b92ddf3b7e4bc95c3a32e7fadb5abf65f8c216f7a8566e53605ed68378c535be
+tag=v1.1.9
+asset=jtalk-dic-v1.1.9.zip
+sha256=442c143a0092f47c23c6907cee9b2e4a5278621d872c600129550bde38099906
 # mecab-dict-index.exe: used by build_userdic.py to compile jtusr.dic
 # (the user dictionary). Unsigned executable; verified via checksum before use.
-tool_asset=mecab-dict-index-v1.1.8.exe
-tool_sha256=ceb343808b25491da4cd17660bf988aeb2cc032e2e7b9c7e96905166b522776f
+tool_asset=mecab-dict-index-v1.1.9.exe
+tool_sha256=27daa29f4089b03f8f8e42662c149d46b885bd542f136d15a0b24aecc14609dc
