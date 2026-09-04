@@ -92,7 +92,8 @@ jtalkPrep -> jtalkSync -> source -> user_docs -> dist -> jpCertExtras -> launche
 | betajp | 署名なし | 署名あり（Azure KV） |
 | releasejp | 署名なし | 署名あり（Azure KV）※本 PR で追加 |
 
-- `push` / `pull_request` は常に署名なしビルドである。
+- ブランチへの `push` / `pull_request` は常に署名なしビルドである。
+- タグの `push` は CI を発火しない（`on.push` は `branches` のみで `tags` を対象にしていない）。
 - 署名が必要なリリース / プレリリースは必ず `workflow_dispatch` で発火する。
 
 ### リリースワークフローの使い分け
@@ -136,7 +137,7 @@ workflow_dispatch on releasejp + releaseTag 入力
 3. ブランチ: `releasejp`、入力 `releaseTag: release-2026.2jp-rc1` で発火
 4. 全テストが通過すれば `nvda_2026.2jp.exe` が署名付きで作成され、GitHub Releases にプレリリースとして公開される
 
-RC で不備が見つかった場合は修正コミットを `releasejp` ブランチに追加し、次の `releaseTag`（例: `release-2026.2jp-rc2`）で再度発火する。OK ならば最後の RC と同じコミットに `release-2026.2jp` タグを追加して `workflow_dispatch` から正式リリースを作成する。
+RC で不備が見つかった場合は修正コミットを `releasejp` ブランチに追加し、次の `releaseTag`（例: `release-2026.2jp-rc2`）で再度発火する。OK ならば `releaseTag: release-2026.2jp` で `workflow_dispatch` を発火して正式リリースを作成する。タグは手動で打たないこと。`publishRelease` ジョブが `gh release create` により `releasejp` ブランチの HEAD に `release-2026.2jp` タグを自動生成するため、手動でタグを打つとビルド対象リビジョンとタグのリビジョンがずれる恐れがある。
 
 ### 更新通知
 
