@@ -5,7 +5,9 @@ $installerLogFilePath="$nvdaInstallerLogDir\nvda_install_temp.log"
 $installerCrashDumpPath="$nvdaInstallerLogDir\nvda_crash.dmp"
 $installerProcess=Start-Process -FilePath "$nvdaLauncherFile" -ArgumentList "--install-silent --debug-logging --log-file $installerLogFilePath" -passthru
 try {
-	$installerProcess | Wait-Process -Timeout 180 -ErrorAction Stop
+	# BEGIN JP PATCH (extend timeout 180s -> 360s to accommodate larger JP installer payload)
+	$installerProcess | Wait-Process -Timeout 360 -ErrorAction Stop
+	# END JP PATCH
 	$errorCode=$installerProcess.ExitCode
 } catch {
 	Write-Output "NVDA installer process timed out.`n" >> $env:GITHUB_STEP_SUMMARY
