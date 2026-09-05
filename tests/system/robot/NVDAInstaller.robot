@@ -26,12 +26,9 @@ default startup
 	start NVDAInstaller	standard-dontShowWelcomeDialog.ini
 
 *** Test Cases ***
-# nvdajp: skip_in_ci — first test often fails on CI with "Unable to connect to nvdaSpyLib"
-# and teardown PermissionError on nvda.log; portable copy test is sufficient for installer smoke.
 
 Read install dialog
 	[Documentation]	Ensure that the install dialog can be read in full
-	[Tags]	skip_in_ci
 	read_install_dialog	# run test
 
 Read install dialog portable copy
