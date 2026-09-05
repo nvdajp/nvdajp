@@ -263,7 +263,7 @@ def test_mark_aria_details_role():
 	_spy: NVDASpyLib = _NvdaLib.getSpyLib()
 	_spy.setBrailleCellCount(400)
 
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("downArrow")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("downArrow")
 
 	_asserts.speech_matches(
 		actualSpeech,
@@ -325,7 +325,7 @@ def test_mark_aria_details_role():
 	)
 
 	# Tab into the contenteditable
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("tab")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("tab")
 	_asserts.speech_matches(
 		actualSpeech,
 		expectedSpeech,
@@ -390,7 +390,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	spy: NVDASpyLib = _NvdaLib.getSpyLib()
 	spy.modifyNVDAConfig(nvdaConfValues)
 
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("downArrow")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("downArrow")
 	_asserts.speech_matches(
 		actualSpeech,
 		SPEECH_SEP.join(
@@ -413,7 +413,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# 	message="Browse mode: Read line with details.",
 	# )
 	# this word has no details attached
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("control+rightArrow")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("control+rightArrow")
 	_asserts.speech_matches(
 		actualSpeech,
 		"word",
@@ -426,7 +426,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# )
 
 	# check that there is no summary reported
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
 		actualSpeech,
 		"No additional details",
@@ -438,7 +438,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# 	message="Browse mode: Report details on word without details",
 	# )
 	# this word has a comment attached to it
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("control+rightArrow")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("control+rightArrow")
 	_asserts.speech_matches(
 		actualSpeech,
 		"highlighted  has comment  cat  out of highlighted",
@@ -450,7 +450,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# 	message="Browse mode: Move by word to word with details",
 	# )
 	# read the details summary
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
 		actualSpeech,
 		"Cats go woof BTW —Jonathon Commentor No they don't —Zara",
@@ -463,7 +463,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# )
 
 	# move down to the link nested in a container with details
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("downArrow")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("downArrow")
 	_asserts.speech_matches(
 		actualSpeech,
 		"out of edit  Hello  highlighted  has details  this is a  link  test",
@@ -475,7 +475,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# 	message="Browse mode: Move by line to paragraph with link nested in a container with details",
 	# )
 	# Jump to the link from same line
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("k")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("k")
 	_asserts.speech_matches(
 		actualSpeech,
 		"test  link",
@@ -506,7 +506,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 		),
 		message="Browse mode: Reset to prior line before jump to the link.",
 	)
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("k")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("k")
 	_asserts.speech_matches(
 		actualSpeech,
 		"highlighted  has details  test  link",
@@ -518,7 +518,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# 	message="Browse mode: From prior line jump to link nested in a container with details",
 	# )
 	# read the details summary
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
 		actualSpeech,
 		"No additional details",
@@ -553,7 +553,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	)
 
 	# Tab into the contenteditable
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("tab")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("tab")
 	_asserts.speech_matches(
 		actualSpeech,
 		SPEECH_SEP.join(
@@ -577,7 +577,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# )
 
 	# Try to read the details
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
 		actualSpeech,
 		SPEECH_SEP.join(
@@ -595,7 +595,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 
 	# move to the word with details: "cat"
 	_NvdaLib.getSpeechAfterKey("control+rightArrow")
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("control+rightArrow")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("control+rightArrow")
 	_asserts.speech_matches(
 		actualSpeech,
 		SPEECH_SEP.join(
@@ -615,7 +615,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# )
 
 	# Try to read the details
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
 		actualSpeech,
 		"Cats go woof BTW —Jonathon Commentor No they don't —Zara",
@@ -628,7 +628,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# )
 
 	# Tab to the link
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("tab")
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey("tab")
 	_asserts.speech_matches(
 		actualSpeech,
 		SPEECH_CALL_SEP.join(
@@ -656,7 +656,7 @@ def exercise_mark_aria_details(nvdaConfValues: "NVDASpyLib.NVDAConfMods"):
 	# )
 
 	# Try to read the details
-	actualSpeech, actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
+	actualSpeech, _actualBraille = _NvdaLib.getSpeechAndBrailleAfterKey(READ_DETAILS_GESTURE)
 	_asserts.speech_matches(
 		actualSpeech,
 		SPEECH_SEP.join(

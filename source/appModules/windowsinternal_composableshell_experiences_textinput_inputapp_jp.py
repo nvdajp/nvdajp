@@ -12,18 +12,24 @@ and managing cloud clipboard paste.
 This is applicable on Windows 10 Fall Creators Update and later."""
 
 from collections.abc import Callable
-import appModuleHandler
+
 import api
+import appModuleHandler
+import braille
+import config
+import controlTypes
 import eventHandler
 import speech
-import braille
 import ui
-import config
 import winVersion
-import controlTypes
-from NVDAObjects.UIA import UIA, XamlEditableText, ListItem
-from NVDAObjects.behaviors import CandidateItem as CandidateItemBehavior, EditableTextWithAutoSelectDetection
 from NVDAObjects import NVDAObject
+from NVDAObjects.behaviors import (
+	CandidateItem as CandidateItemBehavior,
+)
+from NVDAObjects.behaviors import (
+	EditableTextWithAutoSelectDetection,
+)
+from NVDAObjects.UIA import UIA, ListItem, XamlEditableText
 
 
 class ImeCandidateUI(UIA):
@@ -311,7 +317,7 @@ class AppModule(appModuleHandler.AppModule):
 	def event_nameChange(self, obj, nextHandler):
 		# Logic for IME candidate items is handled all within its own object
 		# Therefore pass these events straight on.
-		if isinstance(obj, ImeCandidateItem) or isinstance(obj, ImeCandidateUI):
+		if isinstance(obj, (ImeCandidateItem, ImeCandidateUI)):
 			return nextHandler()
 
 		if (

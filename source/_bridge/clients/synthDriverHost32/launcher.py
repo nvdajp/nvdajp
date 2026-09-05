@@ -7,15 +7,16 @@ import json
 import os
 import subprocess
 from typing import Any
-import rpyc
-from rpyc.core.stream import PipeStream
-import NVDAState
-from logHandler import log
-from _bridge.base import Connection, Service
-from _bridge.components.services.synthDriver import SynthDriverService
-from winBindings.jobapi2 import JOB_OBJECT_LIMIT
+
 import jobObject
+import NVDAState
+import rpyc
+from _bridge.base import Connection, Service
 from _bridge.components.services.nvwave import WavePlayerService
+from _bridge.components.services.synthDriver import SynthDriverService
+from logHandler import log
+from rpyc.core.stream import PipeStream
+from winBindings.jobapi2 import JOB_OBJECT_LIMIT
 
 
 @rpyc.service

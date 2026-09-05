@@ -5,9 +5,10 @@
 # Copyright (C) 2019 Takuya Nishimoto
 # Copyright (C) 2012 Masataka.Shinke
 
-import wx
-import gui
 import config
+import wx
+
+import gui
 
 
 class JpBrailleViewerFrame(wx.MiniFrame):

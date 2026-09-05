@@ -407,7 +407,7 @@ class SynthDriver(driverHandler.Driver):
 				try:
 					val = int(val)
 				except ValueError:
-					log.debugWarning("Could not convert setting %s value '%s' to int" % (s.id, val))
+					log.debugWarning(f"Could not convert setting {s.id} value '{val}' to int")
 			elif isinstance(s, BooleanDriverSetting) and isinstance(val, str):
 				if val.lower() == "true":
 					val = True

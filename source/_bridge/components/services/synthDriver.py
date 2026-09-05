@@ -215,7 +215,7 @@ class SynthDriverService(Service):
 			if callable(isSpeaking):
 				return bool(isSpeaking())
 			return bool(getattr(self._synth, "_isSpeaking", False))
-		except Exception:
+		except Exception:  # noqa: BLE001
 			return False
 
 	def terminate(self):

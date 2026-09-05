@@ -58,66 +58,15 @@ repos:
     - id: trailing-whitespace
       groups: [autofix]
       types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-      # nvdajp: Exclude submodules from line ending normalization
-      exclude: |
-        (?x)^(
-          include/liblouis/ |
-          include/sonic/ |
-          include/nvda-mathcat/ |
-          include/detours/ |
-          include/espeak/ |
-          include/ia2/ |
-          include/javaAccessBridge32/ |
-          include/w3c-aria-practices/ |
-          include/wil/ |
-          include/nsis/ |
-          include/nvda-cldr/ |
-          .vscode/ |
-          miscDeps/
-        )
     # Ensures all files end in 1 (and only 1) newline.
     - id: end-of-file-fixer
       groups: [autofix]
       types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-      # nvdajp: Exclude submodules from line ending normalization
-      exclude: |
-        (?x)^(
-          include/liblouis/ |
-          include/sonic/ |
-          include/nvda-mathcat/ |
-          include/detours/ |
-          include/espeak/ |
-          include/ia2/ |
-          include/javaAccessBridge32/ |
-          include/w3c-aria-practices/ |
-          include/wil/ |
-          include/nsis/ |
-          include/nvda-cldr/ |
-          .vscode/ |
-          miscDeps/
-        )
     # Removes the UTF-8 BOM from files that have it.
     # See https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/codingStandards.md#encoding
     - id: fix-byte-order-marker
       groups: [autofix]
       types_or: [python, c, c++, batch, markdown, toml, yaml, powershell]
-      # nvdajp: Exclude submodules from BOM removal
-      exclude: |
-        (?x)^(
-          include/liblouis/ |
-          include/sonic/ |
-          include/nvda-mathcat/ |
-          include/detours/ |
-          include/espeak/ |
-          include/ia2/ |
-          include/javaAccessBridge32/ |
-          include/w3c-aria-practices/ |
-          include/wil/ |
-          include/nsis/ |
-          include/nvda-cldr/ |
-          .vscode/ |
-          miscDeps/
-        )
     # Validates TOML files.
     - id: check-toml
     # Validates YAML files.
@@ -135,15 +84,18 @@ repos:
       # This is a Python verbose regular expression.
       # See https://docs.python.org/3/library/re.html#re.VERBOSE
       exclude: |
-        (?x)^tests/(
-          checkPot.py |  # Doesn't use unittest
-          system |  # Uses robot
-          unit/ (
-            # Test helpers
-            textProvider.py |
-            extensionPointTestHelpers.py |
-            objectProvider.py |
-            test_speechManager/speechManagerTestHarness.py
+        (?x)^(
+          ci/scripts/tests/ |
+          tests/(
+            checkPot.py |  # Doesn't use unittest
+            system |  # Uses robot
+            unit/ (
+              # Test helpers
+              textProvider.py |
+              extensionPointTestHelpers.py |
+              objectProvider.py |
+              test_speechManager/speechManagerTestHarness.py
+            )
           )
         )
 
@@ -173,9 +125,16 @@ repos:
       # nvdajp: Exclude Japanese documentation and third-party libraries
       exclude: |
         (?x)^(
-          miscDepsJp/include/ |
-          miscDepsJp/jptools/jtusrdic/plumbum |
-          miscDepsJp/jptools/jtusrdic/six\.py |
+          miscDepsJp/ |
+          jpchar/ |
+          jptools/ |
+          source/libkuraji/ |
+          source/synthDrivers/jtalk/ |
+          source/synthDrivers/nvdajp_jtalk\.py |
+          source/brailleDisplayDrivers/brailleMemo\.py |
+          source/brailleDisplayDrivers/kgs\.py |
+          source/brailleDisplayDrivers/kgsbn46\.py |
+          source/appModules/netradiorecorder4\.py |
           projectDocs/jp/ |
           readme-nvdajp\.md |
           AGENTS\.md
@@ -186,9 +145,16 @@ repos:
       # nvdajp: Exclude Japanese documentation and third-party libraries
       exclude: |
         (?x)^(
-          miscDepsJp/include/ |
-          miscDepsJp/jptools/jtusrdic/plumbum |
-          miscDepsJp/jptools/jtusrdic/six\.py |
+          miscDepsJp/ |
+          jpchar/ |
+          jptools/ |
+          source/libkuraji/ |
+          source/synthDrivers/jtalk/ |
+          source/synthDrivers/nvdajp_jtalk\.py |
+          source/brailleDisplayDrivers/brailleMemo\.py |
+          source/brailleDisplayDrivers/kgs\.py |
+          source/brailleDisplayDrivers/kgsbn46\.py |
+          source/appModules/netradiorecorder4\.py |
           projectDocs/jp/ |
           readme-nvdajp\.md |
           AGENTS\.md
@@ -258,3 +224,9 @@ repos:
       entry: ./runlicensecheck.bat
       language: script
       pass_filenames: false
+    - id: pyright
+      name: type check with pyright
+      entry: uv run pyright
+      language: system
+      types: [python]
+      exclude: "(sconscript|sconstruct)$"

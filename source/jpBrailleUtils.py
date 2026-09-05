@@ -7,7 +7,6 @@
 
 import controlTypes
 
-
 _gettext_org = _
 _ = lambda x: x
 _pgettext_org = pgettext

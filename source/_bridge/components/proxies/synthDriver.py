@@ -228,7 +228,7 @@ class SynthDriverProxy(Proxy, SynthDriver):
 	def isSpeaking(self) -> bool:
 		try:
 			return bool(self._remoteService.isSpeaking())
-		except Exception:
+		except Exception:  # noqa: BLE001
 			return self._isSpeaking
 
 	def pause(self, switch: bool):

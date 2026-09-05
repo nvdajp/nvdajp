@@ -1154,7 +1154,7 @@ def addUtf8BomToTrLanguages_preBuildAction(target, source, env):
 			with open(trLanguagesPath, "wb") as f:
 				f.write(codecs.BOM_UTF8 + content)
 			print(f"Added UTF-8 BOM to {trLanguagesPath}")
-	except Exception as e:
+	except Exception as e:  # noqa: BLE001
 		print(f"Warning: Failed to add UTF-8 BOM to {trLanguagesPath}: {e}")
 	return 0
 

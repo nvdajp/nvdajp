@@ -1015,7 +1015,7 @@ class SynthDriver(SynthDriver):
 				textList.append("\\mrk=%d\\" % item.index)  # noqa: UP031
 				bookmarks.append(item.index)
 				lastHandledIndexInSequence = item.index
-			elif False and isinstance(item, CharacterModeCommand):  # nvdajp
+			elif False and isinstance(item, CharacterModeCommand):  # noqa: SIM223 # nvdajp
 				textList.append("\\RmS=1\\" if item.state else "\\RmS=0\\")
 				charMode = item.state
 			elif isinstance(item, BreakCommand):

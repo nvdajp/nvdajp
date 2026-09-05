@@ -24,13 +24,13 @@ from ..formatting import (
 	getParagraphStartMarker,
 )
 from ..labels import (
-	positiveStateLabels,
 	_nvdajp,
-	getRoleLabel,
-	getPositiveStateLabels,
-	getNegativeStateLabels,
 	getLandmarkLabel,
 	# END JP PATCH
+	getNegativeStateLabels,
+	getPositiveStateLabels,
+	getRoleLabel,
+	positiveStateLabels,
 )
 
 
@@ -218,7 +218,7 @@ def getPropertiesBraille(**propertyValues) -> str:
 				# %s is replaced with the row number.
 				rowStr = _("r{rowNumber}").format(rowNumber=rowNumber)
 			textList.append(rowStr)
-	if columnNumber:
+	if columnNumber:  # noqa: SIM102
 		# BEGIN JP PATCH (moved to above) https://github.com/nvdajp/nvdajp/issues/109
 		# columnHeaderText = propertyValues.get("columnHeaderText")
 		# if columnHeaderText:

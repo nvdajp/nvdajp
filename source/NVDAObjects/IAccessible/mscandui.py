@@ -91,10 +91,11 @@ class MSCandUI_candidateListItem(BaseCandidateItem):
 def notifyCandidateComment(item):
 	# BEGIN JP PATCH
 	# nvdajp: function to notify Microsoft IME candidate comment
-	import windowUtils
-	import NVDAObjects.IAccessible
-	import winUser
 	import jpUtils
+	import windowUtils
+	import winUser
+
+	import NVDAObjects.IAccessible
 
 	parent = api.getDesktopObject().windowHandle
 	try:

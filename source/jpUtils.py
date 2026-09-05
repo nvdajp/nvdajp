@@ -5,47 +5,46 @@
 
 import re
 import unicodedata
+from collections.abc import Generator
+from typing import Any
+
+import characterProcessing
+import config
 import languageHandler
-from logHandler import log
 from jpDicUtils import (
-	isJa,
-	isZenkakuHiragana,
-	isZenkakuKatakana,
-	isHankakuKatakana,
-	isHalfShape,
-	isFullShapeAlphabet,
-	isHalfShapeAlphabet,  # noqa: F401
-	isFullShapeNumber,
-	isHalfShapeNumber,
-	isKanaCharacter,  # noqa: F401
-	isLatinCharacter,
-	isFullShapeSymbol,
-	isUpper,
-	getAttrDesc,
-	getJpAttr,
-	getPitchChangeForCharAttr,
-	code2hex,
-	useAttrDesc,
-	getOrd,
-	splitChars,
-	modifyTimeText,  # noqa: F401
-	processKangxiRadicals,  # noqa: F401
 	CharAttr,
 	JpAttr,
+	code2hex,
+	getAttrDesc,
+	getJpAttr,
+	getOrd,
+	getPitchChangeForCharAttr,
+	isFullShapeAlphabet,
+	isFullShapeNumber,
+	isFullShapeSymbol,
+	isHalfShape,
+	isHalfShapeAlphabet,  # noqa: F401
+	isHalfShapeNumber,
+	isHankakuKatakana,
+	isJa,
+	isKanaCharacter,  # noqa: F401
+	isLatinCharacter,
+	isUpper,
+	isZenkakuHiragana,
+	isZenkakuKatakana,
+	modifyTimeText,  # noqa: F401
+	processKangxiRadicals,  # noqa: F401
+	splitChars,
+	useAttrDesc,
 )
-
-
-from typing import Any
-from collections.abc import Generator
-import config
-import characterProcessing
-from speech.types import SequenceItemT
+from logHandler import log
 from speech.commands import (
-	LangChangeCommand,
-	EndUtteranceCommand,
-	PitchCommand,
 	BeepCommand,
+	EndUtteranceCommand,
+	LangChangeCommand,
+	PitchCommand,
 )
+from speech.types import SequenceItemT
 
 
 def _getSpellingCharAddCapNotification(
@@ -107,9 +106,9 @@ def getSpellingSpeechWithoutCharMode(
 	endsUtterance: bool = True,
 ) -> Generator[SequenceItemT]:
 	from speech import (
-		getCurrentLanguage,
-		getCharDescListFromText,
 		LANGS_WITH_CONJUNCT_CHARS,
+		getCharDescListFromText,
+		getCurrentLanguage,
 	)
 	from textUtils import unicodeNormalize
 
@@ -136,7 +135,7 @@ def getSpellingSpeechWithoutCharMode(
 			text = normalized
 			isNormalized = True
 	# count = 0
-	localeHasConjuncts = True if locale.split("_", 1)[0] in LANGS_WITH_CONJUNCT_CHARS else False
+	localeHasConjuncts = locale.split("_", 1)[0] in LANGS_WITH_CONJUNCT_CHARS
 	charDescList = getCharDescListFromText(text, locale) if localeHasConjuncts else text
 	for item in charDescList:
 		charDesc: tuple[str, ...] | list[str] | str | None = None
@@ -163,12 +162,15 @@ def getSpellingSpeechWithoutCharMode(
 		else:
 			if (symbol := characterProcessing.processSpeechSymbol(locale, speakCharAs)) != speakCharAs:
 				speakCharAs = symbol
-			elif not isNormalized and unicodeNormalization:
-				if (normalized := unicodeNormalize(speakCharAs)) != speakCharAs:
-					speakCharAs = " ".join(
-						characterProcessing.processSpeechSymbol(locale, normChar) for normChar in normalized
-					)
-					isNormalized = True
+			elif (
+				not isNormalized
+				and unicodeNormalization
+				and ((normalized := unicodeNormalize(speakCharAs)) != speakCharAs)
+			):
+				speakCharAs = " ".join(
+					characterProcessing.processSpeechSymbol(locale, normChar) for normChar in normalized
+				)
+				isNormalized = True
 		if speech_conf["autoLanguageSwitching"]:
 			yield LangChangeCommand(locale)
 		yield from _getSpellingCharAddCapNotification(
@@ -206,7 +208,7 @@ def getLongDesc(s: str) -> str:
 		if d:
 			r = "  ".join(d)
 			return r
-	except Exception as e:
+	except Exception as e:  # noqa: BLE001
 		log.debug(repr(e))
 	log.debug(repr([s, 2]))
 	return s
@@ -231,7 +233,7 @@ def replaceSpecialKanaCharacter(c: str) -> str:
 
 
 def getCharDesc(locale: str, char: str, jpAttr: JpAttr) -> tuple[str, ...] | list[str] | None:
-	""" """
+	"""Get character description."""
 	charDesc: tuple[str, ...] | list[str] | None = None
 	if jpAttr.jpLatinCharacter and not jpAttr.usePhoneticReadingLatin:
 		charDesc = (getShortDesc(char.lower()),)
@@ -250,7 +252,7 @@ def getCharDesc(locale: str, char: str, jpAttr: JpAttr) -> tuple[str, ...] | lis
 		charDesc = (getShortDesc(char),)
 	else:
 		charDesc = characterProcessing.getCharacterDescription(locale, char.lower())
-	log.debug(repr([locale, char, ("%0x" % getOrd(char)), charDesc]))
+	log.debug(repr([locale, char, f"{getOrd(char):0x}", charDesc]))
 	return charDesc
 
 
@@ -287,10 +289,10 @@ def getCandidateCharDesc(c, a, forBraille=False):
 		d = c
 	elif a.half or isFullShapeAlphabet(c) or isFullShapeNumber(c) or isFullShapeSymbol(c):
 		d = getShortDesc(c)
-		log.debug("shortdesc (%s) %s" % (c, d))
+		log.debug(f"shortdesc ({c}) {d}")
 	elif a.hira or a.kata:
 		d = replaceSpecialKanaCharacter(c)
-		log.debug("kana (%s) %s" % (c, d))
+		log.debug(f"kana ({c}) {d}")
 	else:
 		d = getLongDesc(c)
 		if d.endswith(" ブシュホジョ") and forBraille:
@@ -298,19 +300,19 @@ def getCandidateCharDesc(c, a, forBraille=False):
 		if d.endswith(" コーキブシュ") and forBraille:
 			d = d.replace(" コーキブシュ", " 康熙部首")
 		if d != c:
-			log.debug("longdesc (%s) %s" % (c, d))
+			log.debug(f"longdesc ({c}) {d}")
 		else:
 			d2 = characterProcessing.processSpeechSymbol("ja", c)
 			if d != d2:
-				log.debug("sym (%s) %s" % (c, d2))
+				log.debug(f"sym ({c}) {d2}")
 				d = d2
 			elif (0xD800 <= ord(c[0]) <= 0xDBFF) and len(c) == 2:
 				uc = (ord(c[0]) - 0xD800) * 0x800 + (ord(c[1]) - 0xDC00)
 				d = code2hex(uc)
-				log.debug("sp (%s) %s" % (c, d))
+				log.debug(f"sp ({c}) {d}")
 			else:
 				d = code2hex(ord(c[0]))
-				log.debug("code (%s) %s" % (c, d))
+				log.debug(f"code ({c}) {d}")
 	if len(d) > 1:
 		return " " + d + " "
 	return d
@@ -338,7 +340,7 @@ def getDiscriminantReading(
 			sayCharTypes and (isLatinCharacter(c) and not forBraille),
 		)
 		if not attrOnly:
-			log.debug("(%s) %d %s" % (uc, len(c), getAttrDesc(ca)))
+			log.debug(f"({uc}) {len(c)} {getAttrDesc(ca)}")
 		attrs.append((uc, ca))
 	if attrOnly:
 		s = ""
@@ -395,7 +397,7 @@ def processHexCode(locale: str, msg: str) -> str:
 				lambda x: "u+" + code2kana(int("0x" + x.group(1), 16)),
 				str(msg),
 			)
-		except Exception as e:
+		except Exception as e:  # noqa: BLE001
 			log.debug(e)
 	return msg
 

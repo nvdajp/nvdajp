@@ -135,6 +135,7 @@ class HostService(Service):
 		:param configJson: JSON-encoded config for this synth (e.g. rate, pitch, volume, rateBoost).
 		"""
 		import json
+
 		import config
 
 		if "speech" not in config.conf:

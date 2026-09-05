@@ -206,10 +206,10 @@ def findExtraOverlayClasses(obj, clsList):
 		iaStates = obj.IAccessibleStates
 		# Text leaves are never focusable.
 		# Not unavailable excludes disabled editable text fields (which also aren't focusable).
-		if not (iaStates & oleacc.STATE_SYSTEM_FOCUSABLE or iaStates & oleacc.STATE_SYSTEM_UNAVAILABLE):
-			# This excludes a non-focusable @role="textbox".
-			if not (obj.IA2States & IA2.IA2_STATE_EDITABLE):
-				clsList.append(TextLeaf)
+		if not (
+			iaStates & oleacc.STATE_SYSTEM_FOCUSABLE or iaStates & oleacc.STATE_SYSTEM_UNAVAILABLE
+		) and not (obj.IA2States & IA2.IA2_STATE_EDITABLE):
+			clsList.append(TextLeaf)
 	# END JP PATCH
 	if (
 		obj.role == controlTypes.Role.LISTITEM

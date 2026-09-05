@@ -125,23 +125,22 @@ class CharacterDescriptions:
 		self._readings = {}
 		fileName = os.path.join(globalVars.appDir, "locale", locale, "characters.dic")
 		if os.path.isfile(fileName):
-			f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
-			for line in f:
-				if line.isspace() or line.startswith("#"):
-					continue
-				line = line.rstrip("\r\n")
-				temp = line.split("\t")
-				if len(temp) > 1:
-					key = temp.pop(0)
-					code = temp.pop(0)
-					rd = temp.pop(0)
-					if rd.startswith("[") and rd.endswith("]"):
-						self._readings[key] = rd[1:-1]
-					self._entries[key] = temp
-				else:
-					log.warning("can't parse line '%s'" % line)
-			log.debug("Loaded %d readings." % len(self._readings))
-			f.close()
+			with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
+				for line in f:
+					if line.isspace() or line.startswith("#"):
+						continue
+					line = line.rstrip("\r\n")
+					temp = line.split("\t")
+					if len(temp) > 1:
+						key = temp.pop(0)
+						code = temp.pop(0)
+						rd = temp.pop(0)
+						if rd.startswith("[") and rd.endswith("]"):
+							self._readings[key] = rd[1:-1]
+						self._entries[key] = temp
+					else:
+						log.warning(f"can't parse line '{line}'")
+				log.debug(f"Loaded {len(self._readings)} readings.")
 		# nvdajp characters.dic end
 
 		# nvdajp cldr emoji
@@ -150,57 +149,55 @@ class CharacterDescriptions:
 			if os.path.isfile(fileName):
 				import unicodedata
 
-				f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
+				with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
+					for line in f:
+						line = line.rstrip("\r\n")
+						temp = line.split("\t")
+						if len(temp) > 1:
+							key = temp.pop(0)
+							if unicodedata.category(key[0]) not in ("So", "Cn"):
+								continue
+							rd = temp.pop(0)
+							self._readings[key] = rd
+							self._entries[key] = (rd,)
+		# nvdajp cldr emoji end
+
+		# nvdajp users chardesc
+		fileName = os.path.join(globalVars.appArgs.configPath, f"characterDescriptions-{locale}.dic")
+		if os.path.isfile(fileName):
+			log.debug(f"Loading users characterDescriptions-{locale}.dic")
+			with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
 				for line in f:
+					if line.isspace() or line.startswith("#"):
+						continue
 					line = line.rstrip("\r\n")
 					temp = line.split("\t")
 					if len(temp) > 1:
 						key = temp.pop(0)
-						if unicodedata.category(key[0]) not in ("So", "Cn"):
-							continue
-						rd = temp.pop(0)
-						self._readings[key] = rd
-						self._entries[key] = (rd,)
-				f.close()
-		# nvdajp cldr emoji end
-
-		# nvdajp users chardesc
-		fileName = os.path.join(globalVars.appArgs.configPath, "characterDescriptions-%s.dic" % locale)
-		if os.path.isfile(fileName):
-			log.debug("Loading users characterDescriptions-%s.dic" % locale)
-			f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
-			for line in f:
-				if line.isspace() or line.startswith("#"):
-					continue
-				line = line.rstrip("\r\n")
-				temp = line.split("\t")
-				if len(temp) > 1:
-					key = temp.pop(0)
-					self._entries[key] = temp
-				else:
-					log.warning("can't parse line '%s'" % line)
-			log.debug("Loaded users characterDescriptions.")
-			f.close()
+						self._entries[key] = temp
+					else:
+						log.warning(f"can't parse line '{line}'")
+				log.debug("Loaded users characterDescriptions.")
 		# nvdajp users chardesc end
 
 		# nvdajp users characters
-		fileName = os.path.join(globalVars.appArgs.configPath, "characters-%s.dic" % locale)
+		fileName = os.path.join(globalVars.appArgs.configPath, f"characters-{locale}.dic")
 		if os.path.isfile(fileName):
-			f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
-			for line in f:
-				if line.isspace() or line.startswith("#"):
-					continue
-				line = line.rstrip("\r\n")
-				temp = line.split("\t")
-				if len(temp) > 1:
-					key = temp.pop(0)
-					code = temp.pop(0)  # noqa: F841
-					rd = temp.pop(0)
-					if rd.startswith("[") and rd.endswith("]"):
-						self._readings[key] = rd[1:-1]
-					self._entries[key] = temp
-				else:
-					log.warning("can't parse line '%s'" % line)
+			with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
+				for line in f:
+					if line.isspace() or line.startswith("#"):
+						continue
+					line = line.rstrip("\r\n")
+					temp = line.split("\t")
+					if len(temp) > 1:
+						key = temp.pop(0)
+						code = temp.pop(0)  # noqa: F841
+						rd = temp.pop(0)
+						if rd.startswith("[") and rd.endswith("]"):
+							self._readings[key] = rd[1:-1]
+						self._entries[key] = temp
+					else:
+						log.warning(f"can't parse line '{line}'")
 		# nvdajp users characters end
 		# END JP PATCH
 

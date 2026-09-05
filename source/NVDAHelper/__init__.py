@@ -272,7 +272,7 @@ def nvdaController_setPitch(nPitch: int) -> SystemErrorCodes:
 
 	try:
 		getSynth()._set_pitch(nPitch)
-	except:  # noqa: E722
+	except:  # noqa: E722, S110
 		pass
 	return 0
 
@@ -293,7 +293,7 @@ def nvdaController_setRate(nRate: int) -> SystemErrorCodes:
 
 	try:
 		getSynth()._set_rate(nRate)
-	except:  # noqa: E722
+	except:  # noqa: E722, S110
 		pass
 	return 0
 
@@ -309,7 +309,7 @@ def nvdaController_setAppSleepMode(mode: int) -> SystemErrorCodes:
 		log.error("Could not get process ID for RPC call")
 		return -1
 	curApp = appModuleHandler.getAppModuleFromProcessID(pid)
-	curApp.sleepMode = True if mode == 1 else False
+	curApp.sleepMode = mode == 1
 	return 0
 
 
@@ -743,7 +743,7 @@ def handleInputCandidateListUpdate(candidatesString, selectionIndex, inputMethod
 		from NVDAObjects import inputComposition
 
 		if inputComposition.lastKeyGesture:
-			log.debug("lastKeyCode %x" % inputComposition.lastKeyGesture.vkCode)
+			log.debug(f"lastKeyCode {inputComposition.lastKeyGesture.vkCode:x}")
 		if not inputComposition.needDiscriminantReading(inputComposition.lastKeyGesture):
 			if isinstance(focus, CandidateItem):
 				oldSpeechMode = speech.getState().speechMode
@@ -1137,7 +1137,7 @@ def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
 		and category(compositionString[0]) == "Lo"
 		and category(compositionString[-1]) == "Lo"
 	):
-		log.debug("(%s) (%s) should be ignored" % (compositionString, compAttr))
+		log.debug(f"({compositionString}) ({compAttr}) should be ignored")
 		return True
 	return False
 
@@ -1184,14 +1184,14 @@ def extractCompositionString(
 	if ("3" in compAttr) and ("1" not in compAttr):
 		endIndex = len(compositionString)
 		extractedString = extractString("3")
-	elif ("1" in compAttr) and (lastCompAttr is None or any([c != "0" for c in lastCompAttr])):
+	elif ("1" in compAttr) and (lastCompAttr is None or any(c != "0" for c in lastCompAttr)):
 		extractedString = extractString("1")
 	elif ("0" in compAttr) and ("2" in compAttr):
 		extractedString = extractString("0")
-	elif all([c == "0" for c in compAttr]) and 0 <= selectionStart == selectionEnd < len(compAttr):
+	elif all(c == "0" for c in compAttr) and 0 <= selectionStart == selectionEnd < len(compAttr):
 		# reviewing pre-edit character
 		extractedString = compositionString[selectionStart]
-		log.debug("((%s))" % extractedString)
+		log.debug(f"(({extractedString}))")
 	return extractedString, endIndex
 
 

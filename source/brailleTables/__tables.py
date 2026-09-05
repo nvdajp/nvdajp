@@ -7,7 +7,7 @@
 Note that importing this module for the first time will add all tables to the internal table store.
 """
 
-from . import addTable, TableSource
+from . import TableSource, addTable
 
 # Translators: The name of a braille table displayed in the
 # braille settings dialog.

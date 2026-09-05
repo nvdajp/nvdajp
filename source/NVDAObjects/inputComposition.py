@@ -170,9 +170,7 @@ def needDiscriminantReading(gesture):
 	):
 		return True
 	# VK_RCONTROL
-	if (winUser.VK_CONTROL, True) in gesture.generalizedModifiers:
-		return True
-	return False
+	return (winUser.VK_CONTROL, True) in gesture.generalizedModifiers
 
 
 lastCompositionText = None

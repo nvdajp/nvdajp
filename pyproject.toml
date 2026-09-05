@@ -103,8 +103,17 @@ exclude = [
 	"./source/comInterfaces/*",
 	# Code from add-ons
 	"./source/userConfig/addons/*",
-	# nvdajp: Exclude miscDepsJp (JTalk/MeCab tools and deps; runlint would fail otherwise)
+	# nvdajp: Exclude JP tools, legacy synth drivers, and vendored libkuraji from ruff
 	"./miscDepsJp",
+	"./jpchar",
+	"./jptools",
+	"./source/libkuraji",
+	"./source/synthDrivers/jtalk",
+	"./source/synthDrivers/nvdajp_jtalk.py",
+	"./source/brailleDisplayDrivers/brailleMemo.py",
+	"./source/brailleDisplayDrivers/kgs.py",
+	"./source/brailleDisplayDrivers/kgsbn46.py",
+	"./source/appModules/netradiorecorder4.py",
 ]
 
 [tool.ruff.format]

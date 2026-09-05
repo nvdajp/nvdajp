@@ -232,17 +232,14 @@ def translate(
 		if first_table is not None:
 			log.debug(text)
 			nabcc = config.conf["braille"]["expandAtCursor"]
-			try:
-				braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
-					text,
-					cursorPos=cursorPos or 0,
-					nabcc=nabcc,
-					louisTranslate=louis.translate if louis_table_list else None,
-					louisTableList=louis_table_list,
-					use_foreign_quotes=True if louis_table_list else False,
-				)
-			except Exception:
-				raise
+			braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
+				text,
+				cursorPos=cursorPos or 0,
+				nabcc=nabcc,
+				louisTranslate=louis.translate if louis_table_list else None,
+				louisTableList=louis_table_list,
+				use_foreign_quotes=bool(louis_table_list),
+			)
 	else:
 		first_table = None
 	# END JP PATCH

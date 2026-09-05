@@ -7,6 +7,7 @@
 """Unit tests for the contentRecog module."""
 
 import unittest  # noqa: I001
+from typing import ClassVar
 import contentRecog
 import textInfos
 from locationHelper import RectLTWH
@@ -194,7 +195,7 @@ class TestLinesWordsResultEastAsianWide(unittest.TestCase):
 	characters (e.g. between Latin words).
 	"""
 
-	DATA = [
+	DATA: ClassVar = [
 		[
 			{"x": 100, "y": 200, "width": 10, "height": 20, "text": "こんにちは"},
 			{"x": 110, "y": 200, "width": 10, "height": 20, "text": "世界"},

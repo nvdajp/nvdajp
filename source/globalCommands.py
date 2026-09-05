@@ -2363,9 +2363,9 @@ class GlobalCommands(ScriptableObject):
 			if cList and jpUtils.isJa():
 				for c in cList:
 					s = jpUtils.code2kana(c)
-					o = "%d u+%s" % (c, s)
+					o = f"{c} u+{s}"
 					speech.speakMessage(o)
-				braille.handler.message("  ".join("%d %s" % (c, jpUtils.code2hex(c)) for c in cList))
+				braille.handler.message("  ".join(f"{c} {jpUtils.code2hex(c)}" for c in cList))
 			elif cList:
 				for c in cList:
 					speech.speakMessage("%d," % c)  # noqa: UP031

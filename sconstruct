@@ -600,7 +600,7 @@ try:
 	# Pass dist target so jpCertExtras can depend on it (ensures correct ordering in parallel builds)
 	# Pass sourceDir so it can depend on jtalkSync with current TARGET_ARCH (ensures correct architecture-specific builds)
 	jp_cert_extras_stamp = scons_jp.register_jp_builders(env, dist_target=dist, source_dir=sourceDir)
-except Exception as e:
+except Exception as e:  # noqa: BLE001
 	# Never fail the build if JP helpers are unavailable.
 	# Log the exception for debugging purposes (e.g., during development)
 	import warnings
@@ -772,7 +772,7 @@ pot = env.Command(outputDir.File("nvda.pot"), potSourceFiles, makePot)
 try:
 	# Even if the alias is empty in non-JP contexts, this is safe.
 	env.Depends(pot, env.Alias("jtalkSync"))
-except Exception:
+except Exception:  # noqa: BLE001, S110
 	pass
 
 env.Alias("pot", pot)

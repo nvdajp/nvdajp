@@ -244,10 +244,16 @@ landmarkLabels = {
 # BEGIN JP PATCH
 import config
 from jpBrailleUtils import (
-	roleLabels as rawRoleLabels,
-	positiveStateLabels as rawPositiveStateLabels,
-	negativeStateLabels as rawNegativeStateLabels,
 	landmarkLabels as rawLandmarkLabels,
+)
+from jpBrailleUtils import (
+	negativeStateLabels as rawNegativeStateLabels,
+)
+from jpBrailleUtils import (
+	positiveStateLabels as rawPositiveStateLabels,
+)
+from jpBrailleUtils import (
+	roleLabels as rawRoleLabels,
 )
 
 
