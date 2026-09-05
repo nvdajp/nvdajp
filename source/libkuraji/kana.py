@@ -11,6 +11,8 @@
 
 import unicodedata
 
+from .limits import enforce_max_input_length
+
 
 def _cell(*dots: int) -> str:
 	value = 0
@@ -108,9 +110,7 @@ for _table, _prefix in (
 ):
 	for _kc, _row in _table.items():
 		for _small, _v in _SMALL_VOWEL.items():
-			KANA2[_kc + _small] = _prefix + _cell(
-				*(_VOWEL_DOTS[_v] + _ROW_EXTRA_DOTS[_row]),
-			)
+			KANA2[_kc + _small] = _prefix + _cell(*(_VOWEL_DOTS[_v] + _ROW_EXTRA_DOTS[_row]))
 
 
 def _k2(pair: str, prefix: str, base: str) -> None:
@@ -506,6 +506,7 @@ _KANA2_FIRST = frozenset(key[0] for key in KANA2)
 
 def translate_with_pos(text: str, nabcc: bool = False) -> tuple[str, list[int]]:
 	"""Translate kana text into braille; return (cells, input positions)."""
+	enforce_max_input_length(text)
 	norm = _normalize(text)
 	out: list[str] = []  # cell strings; joined at the end
 	pos: list[int] = []  # one entry per cell

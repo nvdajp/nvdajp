@@ -16,6 +16,7 @@ import re
 from collections.abc import Callable
 
 from .unicodeutil import unicode_normalize, nfkc_normalize_with_map
+from .limits import enforce_max_input_length
 from . import kana as translator1
 
 
@@ -238,7 +239,13 @@ def mecab_to_morphs(feature_lines: list[str] | None) -> list[MecabMorph]:
 			if len(ar) > 9:
 				mo.kana = unicode_normalize(ar[8])  # "（ニチ）" -> "(ニチ)"
 				# ありがとうございますー,感動詞,*,*,*,*,*,ありがとうございますー,アリガトウゴザイマスー,アリガトーゴザイマス’ー,0/1,C0
-				mo.yomi = unicode_normalize(ar[9]).replace("’", "")
+				yomi_raw = unicode_normalize(ar[9])
+				# Strip accent markers (’) from Japanese phonetic readings (which contain Katakana),
+				# but preserve literal quote characters in punctuation/symbols.
+				if any(0x30A0 <= ord(c) <= 0x30FF for c in yomi_raw):
+					mo.yomi = yomi_raw.replace("’", "")
+				else:
+					mo.yomi = yomi_raw
 				mo.accent = ar[10]
 				if len(ar) > 12:
 					# Mecab辞書の拡張フィールドの点訳表記があれば使用する
@@ -1293,9 +1300,7 @@ RE_PAREN_ASCII_BODY = re.compile(r"^[A-Za-z0-9\,\.\+\-'\!\? ]+$")
 # - 空白を含まない
 # - ドット `.` で区切られたラベルが 2 個以上
 # - 各ラベルは先頭が英数字、以降は英数字・ハイフン・アンダースコア
-RE_US_G2_DOTTED_TOKEN = re.compile(
-	r"^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$",
-)
+RE_US_G2_DOTTED_TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$")
 RE_KATAKANA = re.compile("^[ァ-ヾ]+$")
 RE_HIRAGANA = re.compile("^[ぁ-ゞ]+$")
 RE_HALF_KATAKANA = re.compile("^[ｦ-ﾟ]+$")  # ff66 .. ff9f
@@ -2029,6 +2034,7 @@ def translate(
 	@rtype: (str, list of int, list of int, int)
 	@raise RuntimeError: If a complete translation could not be done.
 	"""
+	enforce_max_input_length(inbuf)
 	sp, outbuf, inpos1, inpos2 = translateWithInPos2(
 		inbuf,
 		logwrite=logwrite,
