@@ -1,12 +1,11 @@
 # A part of NonVisual Desktop Access (NVDA)
-# Copyright (C) 2006-2025 NV Access Limited, Leonard de Ruijter, gexgd0419
-# This file is covered by the GNU General Public License.
-# See the file COPYING for more details.
+# Copyright (C) 2006-2026 NV Access Limited, Leonard de Ruijter, gexgd0419
+# This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
+# For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
-from datetime import datetime
+from datetime import datetime  # noqa: I001
 from enum import IntEnum
 from functools import wraps
-import locale
 from collections import OrderedDict, deque
 import queue
 import threading
@@ -15,6 +14,7 @@ import winreg
 import winBindings.ole32
 from winBindings import user32
 import winBindings.winmm
+import languageHandler
 from winBindings.mmeapi import WAVEFORMATEX
 from comtypes import CoCreateInstance, CoInitialize, COMObject, COMError, GUID, hresult, ReturnHRESULT
 from ctypes import (
@@ -32,7 +32,8 @@ from ctypes import (
 	sizeof,
 )
 from ctypes.wintypes import BOOL, DWORD, FILETIME, HANDLE, MSG, WORD
-from typing import TYPE_CHECKING, Callable, NamedTuple, Optional
+from typing import TYPE_CHECKING, NamedTuple
+from collections.abc import Callable
 import nvwave
 from synthDriverHandler import (
 	SynthDriver,
@@ -90,7 +91,7 @@ from speech.types import SpeechSequence
 
 
 class SynthDriverBufSink(COMObject):
-	_com_interfaces_ = [ITTSBufNotifySink]
+	_com_interfaces_ = [ITTSBufNotifySink]  # noqa: RUF012
 
 	def __init__(self, synthRef: weakref.ReferenceType):
 		self.synthRef = synthRef
@@ -136,9 +137,13 @@ else:
 	c_ulonglong_p = POINTER(c_ulonglong)
 	LP_IAudioDestNotifySink = POINTER(IAudioDestNotifySink)
 
-_Bookmark = NamedTuple("Bookmark", [("bytePos", int), ("id", int)])
 
-_lastLoggedTimes: dict[Callable, float] = dict()
+class _Bookmark(NamedTuple):
+	bytePos: int
+	id: int
+
+
+_lastLoggedTimes: dict[Callable, float] = dict()  # noqa: C408
 
 
 def _logTrace(logAll: bool = False, format: str = ""):
@@ -153,7 +158,7 @@ def _logTrace(logAll: bool = False, format: str = ""):
 	def _decorator(func):
 		@wraps(func)
 		def _wrapper(*args, **kwargs):
-			global _lastLoggedTimes
+			global _lastLoggedTimes  # noqa: PLW0602
 			funcname = func.__name__.split("_")[1]
 			try:
 				result = func(*args, **kwargs)
@@ -236,7 +241,7 @@ class _ComThread(threading.Thread):
 					task = self._tasks.get_nowait()
 					try:
 						task.result = task.func(*task.args, **task.kwargs)
-					except BaseException as e:
+					except BaseException as e:  # noqa: BLE001
 						task.exception = e
 					finally:
 						completed = task.completed
@@ -333,7 +338,7 @@ class SynthDriverAudio(COMObject):
 	  `Stop` and `UnClaim` will not clear the buffer, but `Flush` will.
 	"""
 
-	_com_interfaces_ = [IAudio, IAudioDest]
+	_com_interfaces_ = [IAudio, IAudioDest]  # noqa: RUF012
 
 	def __init__(self, comThread: _ComThread):
 		"""Constructor.
@@ -348,7 +353,7 @@ class SynthDriverAudio(COMObject):
 		self._player: nvwave.WavePlayer | None = None
 		self._writtenBytes = 0
 		self._playedBytes = 0
-		self._startTime = datetime.now()
+		self._startTime = datetime.now()  # noqa: DTZ005
 		self._startBytes = 0
 		self._freeBytes = 0
 		self._audioQueue: deque[bytes] = deque()
@@ -527,7 +532,7 @@ class SynthDriverAudio(COMObject):
 			raise ReturnHRESULT(AudioError.ALREADY_STARTED, None)
 		elif self._deviceState not in (_AudioState.CLAIMED, _AudioState.RECLAIMING):
 			raise ReturnHRESULT(AudioError.NOT_CLAIMED, None)
-		self._startTime = datetime.now()
+		self._startTime = datetime.now()  # noqa: DTZ005
 		self._startBytes = self._playedBytes
 		try:
 			self._player.pause(False)
@@ -731,7 +736,7 @@ class SynthDriverMMAudio(COMObject):
 	which can log the interactions between MMAudioDest and the TTS engine.
 	"""
 
-	_com_interfaces_ = [IAudio, IAudioDest]
+	_com_interfaces_ = [IAudio, IAudioDest]  # noqa: RUF012
 
 	def __init__(self):
 		if isDebugForSynthDriver():
@@ -817,7 +822,7 @@ class SynthDriverMMAudio(COMObject):
 
 
 class SynthDriverSink(COMObject):
-	_com_interfaces_ = [ITTSNotifySinkW]
+	_com_interfaces_ = [ITTSNotifySinkW]  # noqa: RUF012
 
 	def __init__(self, synthRef: weakref.ReferenceType):
 		self.synthRef = synthRef
@@ -866,20 +871,20 @@ class SynthDriverSink(COMObject):
 class SynthDriver(SynthDriver):
 	name = "sapi4"
 	description = "Microsoft Speech API version 4"
-	supportedSettings = [SynthDriver.VoiceSetting()]
-	supportedCommands: set[type[SynthCommand]] = {
+	supportedSettings = [SynthDriver.VoiceSetting()]  # noqa: RUF012
+	supportedCommands: set[type[SynthCommand]] = {  # noqa: RUF012
 		IndexCommand,
 		CharacterModeCommand,
 		BreakCommand,
 	}
-	supportedNotifications = {synthIndexReached, synthDoneSpeaking}
+	supportedNotifications = {synthIndexReached, synthDoneSpeaking}  # noqa: RUF012
 
 	@classmethod
 	def check(cls):
 		try:
-			winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, r"CLSID\%s" % CLSID_TTSEnumerator).Close()
+			winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, r"CLSID\%s" % CLSID_TTSEnumerator).Close()  # noqa: UP031
 			return True
-		except WindowsError:
+		except OSError:
 			return False
 
 	def _fetchEnginesList(self):
@@ -891,7 +896,7 @@ class SynthDriver(SynthDriver):
 			try:
 				self._ttsEngines.Next(1, byref(mode), byref(fetched))
 			except:  # noqa: E722
-				log.error("can't get next engine", exc_info=True)
+				log.error("can't get next engine", exc_info=True)  # noqa: G201
 				break
 			if fetched.value == 0:
 				break
@@ -900,7 +905,7 @@ class SynthDriver(SynthDriver):
 
 	def __init__(self):
 		self._comThread = _ComThread()
-		self._finalIndex: Optional[int] = None
+		self._finalIndex: int | None = None
 		self._ttsCentral = None
 		self._ttsAudio = None
 		self._sinkRegKey = DWORD()
@@ -1000,7 +1005,7 @@ class SynthDriver(SynthDriver):
 			if isinstance(item, str):
 				textList.append(item.replace("\\", "\\\\"))
 			elif isinstance(item, IndexCommand):
-				textList.append("\\mrk=%d\\" % item.index)
+				textList.append("\\mrk=%d\\" % item.index)  # noqa: UP031
 				bookmarks.append(item.index)
 				lastHandledIndexInSequence = item.index
 			elif False and isinstance(item, CharacterModeCommand):  # nvdajp
@@ -1023,9 +1028,9 @@ class SynthDriver(SynthDriver):
 				# so here only 0~65535 are used.
 				textList.append(f"\\Vol={val}\\")
 			elif isinstance(item, SpeechCommand):
-				log.debugWarning("Unsupported speech command: %s" % item)
+				log.debugWarning("Unsupported speech command: %s" % item)  # noqa: UP031
 			else:
-				log.error("Unknown speech: %s" % item)
+				log.error("Unknown speech: %s" % item)  # noqa: UP031
 		# BEGIN JP PATCH
 		for _commandType, tag in desiredProsodyResetTags:
 			textList.append(tag)
@@ -1116,7 +1121,7 @@ class SynthDriver(SynthDriver):
 			if mode.gModeID == val:
 				break
 		if mode is None:
-			raise ValueError("no such mode: %s" % val)
+			raise ValueError("no such mode: %s" % val)  # noqa: UP031
 		self._currentMode = mode
 		# BEGIN JP PATCH
 		self._desiredRatePercent = None
@@ -1269,11 +1274,8 @@ class SynthDriver(SynthDriver):
 		voices = OrderedDict()
 		for mode in self._enginesList:
 			ID = str(mode.gModeID)
-			name = "%s - %s" % (mode.szModeName, mode.szProductName)
-			try:
-				language = locale.windows_locale[mode.language.LanguageID]
-			except KeyError:
-				language = None
+			name = "%s - %s" % (mode.szModeName, mode.szProductName)  # noqa: UP031
+			language = languageHandler.windowsLCIDToLocaleName(mode.language.LanguageID)
 			voices[ID] = VoiceInfo(ID, name, language)
 		return voices
 

@@ -1,4 +1,4 @@
-import oleacc
+import oleacc  # noqa: I001
 import queueHandler
 import eventHandler
 import controlTypes
@@ -39,7 +39,7 @@ class BaseCandidateItem(CandidateItemBehavior, IAccessible):
 	keyboardShortcut = ""
 
 	def _get_candidateNumber(self):
-		number = super(BaseCandidateItem, self).keyboardShortcut
+		number = super().keyboardShortcut
 		try:
 			number = int(number)
 		except (ValueError, TypeError):
@@ -47,7 +47,7 @@ class BaseCandidateItem(CandidateItemBehavior, IAccessible):
 		return number
 
 	def _get_parent(self):
-		parent = super(BaseCandidateItem, self).parent
+		parent = super().parent
 		# Translators: A label for a 'candidate' list which contains symbols the user can choose from  when typing east-asian characters into a document.
 		parent.name = _("Candidate")
 		parent.description = None
@@ -57,21 +57,21 @@ class BaseCandidateItem(CandidateItemBehavior, IAccessible):
 		try:
 			number = int(self.candidateNumber)
 		except (TypeError, ValueError):
-			return super(BaseCandidateItem, self).name
-		candidate = super(BaseCandidateItem, self).name
+			return super().name
+		candidate = super().name
 		return self.getFormattedCandidateName(number, candidate)
 
 	def _get_description(self):
-		candidate = super(BaseCandidateItem, self).name
+		candidate = super().name
 		return self.getFormattedCandidateDescription(candidate)
 
 	def _get_basicText(self):
-		return super(BaseCandidateItem, self).name
+		return super().name
 
 
 class MSCandUI_candidateListItem(BaseCandidateItem):
 	def _get_states(self):
-		states = super(MSCandUI_candidateListItem, self).states
+		states = super().states
 		states.add(controlTypes.State.SELECTABLE)
 		return states
 
@@ -129,7 +129,7 @@ def notifyCandidateComment(item):
 
 class MSCandUI21_candidateMenuItem(BaseCandidateItem):
 	def _get_previous(self):
-		item = super(MSCandUI21_candidateMenuItem, self).previous
+		item = super().previous
 		if not item or controlTypes.State.INVISIBLE in item.states:
 			return
 		return MSCandUI21_candidateMenuItem(
@@ -138,7 +138,7 @@ class MSCandUI21_candidateMenuItem(BaseCandidateItem):
 		)
 
 	def _get_next(self):
-		item = super(MSCandUI21_candidateMenuItem, self).next
+		item = super().next
 		if not item or controlTypes.State.INVISIBLE in item.states:
 			return
 		return MSCandUI21_candidateMenuItem(
@@ -148,7 +148,7 @@ class MSCandUI21_candidateMenuItem(BaseCandidateItem):
 
 	def doAction(self, index=None):
 		if not index:
-			l = self.location  # noqa: E741
+			l = self.location
 			if l:
 				x = l[0]
 				y = l[1]
@@ -195,7 +195,7 @@ class MSCandUI21_candidateMenuItem(BaseCandidateItem):
 		if oldItem and isinstance(oldItem.candidateNumber, int) and oldItem.name:
 			reportSelectedCandidate(oldItem, allowDuplicate=True, newList=True)
 
-	__gestures = {
+	__gestures = {  # noqa: RUF012
 		"kb:downArrow": "nextItem",
 		"kb:upArrow": "previousItem",
 		"kb:pageDown": "changePage",
@@ -243,7 +243,7 @@ class MSCandUIWindow_candidateListItem(MSCandUI_candidateListItem):
 		if self.IAccessibleRole != oleacc.ROLE_SYSTEM_LISTITEM:
 			return False
 		name = super(BaseCandidateItem, self).name
-		if not name:
+		if not name:  # noqa: SIM103
 			return False
 		return True
 
@@ -272,7 +272,7 @@ class MSCandUIWindow(IAccessible):
 	role = controlTypes.Role.LIST
 
 	def _get_states(self):
-		states = super(MSCandUIWindow, self).states
+		states = super().states
 		states.discard(controlTypes.State.UNAVAILABLE)
 		return states
 
@@ -300,7 +300,7 @@ class ModernCandidateUICandidateItem(BaseCandidateItem):
 
 	def refreshCandidateList(self):
 		textList = []
-		candidateItems = super(ModernCandidateUICandidateItem, self).parent.children
+		candidateItems = super().parent.children
 		for child in candidateItems:
 			if (
 				not isinstance(child, ModernCandidateUICandidateItem)

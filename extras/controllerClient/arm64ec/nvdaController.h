@@ -120,8 +120,6 @@ extern RPC_IF_HANDLE nvdaController___MIDL_itf_nvdaController_0000_0000_v0_0_s_i
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_speakSpelling( 
     /* [string][in] */ const wchar_t *text);
 
-/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_isSpeaking( void);
-
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_getPitch( void);
 
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_setPitch( 
@@ -170,6 +168,24 @@ extern RPC_IF_HANDLE nvdaController_NvdaController2_v1_0_c_ifspec;
 extern RPC_IF_HANDLE NvdaController2_v1_0_c_ifspec;
 extern RPC_IF_HANDLE nvdaController_NvdaController2_v1_0_s_ifspec;
 #endif /* __NvdaController2_INTERFACE_DEFINED__ */
+
+#ifndef __NvdaController3_INTERFACE_DEFINED__
+#define __NvdaController3_INTERFACE_DEFINED__
+
+/* interface NvdaController3 */
+/* [implicit_handle][version][uuid] */ 
+
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_isSpeaking( 
+    /* [out] */ boolean *speaking);
+
+
+extern handle_t nvdaController3BindingHandle;
+
+
+extern RPC_IF_HANDLE nvdaController_NvdaController3_v1_0_c_ifspec;
+extern RPC_IF_HANDLE NvdaController3_v1_0_c_ifspec;
+extern RPC_IF_HANDLE nvdaController_NvdaController3_v1_0_s_ifspec;
+#endif /* __NvdaController3_INTERFACE_DEFINED__ */
 
 /* Additional Prototypes for ALL interfaces */
 

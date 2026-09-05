@@ -52,8 +52,8 @@ env:
   supportedRunners: '["windows-2022", "windows-2025-vs2026"]'
   defaultArch: x64
   supportedArchitectures: '["x64"]'
-  defaultPythonVersion: '3.13.13'
-  supportedPythonVersions: '["3.13.13"]'
+  defaultPythonVersion: '3.13.15'
+  supportedPythonVersions: '["3.13.15"]'
   # JP: Bump SCONS_CACHE_SUFFIX only when the JTalk/MeCab dic *build process* changes (e.g. make_jdic refactor, DIC_CODEPAGE requirement).
   # Bumped to v3: CI Verify JTalk dictionary was failing (一人→ヒトリ expected, got 1ニン) due to cached dic without nvdajp custom entries.
   # Bumped to v4: mecab-dict-index sources patched (config-charset UTF-8, ContextID
@@ -118,22 +118,32 @@ jobs:
       APIVersion: ${{ steps.releaseInfo.outputs.NVDA_API_VERSION }}
       APIBackCompat: ${{ steps.releaseInfo.outputs.NVDA_API_COMPAT_TO }}
     steps:
-    - name: Checkout NVDA
-      uses: actions/checkout@v6
-      with:
-        submodules: true
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
-        update-environment: true
-    - name: Install Python (32 bit)
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: x86
-        update-environment: false
+    - parallel:
+        - name: Checkout NVDA
+          uses: actions/checkout@v7
+          with:
+            submodules: recursive
+        - name: Install signPath
+          env:
+            apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+          if: ${{ env.apiSigningToken }}
+          shell: cmd
+          run: |
+            PowerShell -Command "Set-ExecutionPolicy Bypass"
+            PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
+            PowerShell -Command "Install-Module -Name SignPath -Force"
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
+            update-environment: true
+        - name: Install Python (32 bit)
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: x86
+            update-environment: false
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -144,15 +154,7 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-    - name: Install signPath
-      env:
-        apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-      if: ${{ env.apiSigningToken }}
-      shell: cmd
-      run: |
-        PowerShell -Command "Set-ExecutionPolicy Bypass"
-        PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
-        PowerShell -Command "Install-Module -Name SignPath -Force"
+
     - name: Set cache key for SCons MSVC Cache
       shell: bash
       run: echo "SCONS_CACHE_KEY=${RUNNER_OS}-${ImageVersion}" >> $GITHUB_ENV
@@ -302,10 +304,36 @@ jobs:
         Write-Output NVDA_API_VERSION=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import CURRENT; print('{}.{}.{}'.format(*CURRENT))") >> $env:GITHUB_OUTPUT
         Write-Output NVDA_API_COMPAT_TO=$(python -c "import sys; sys.path.append('source'); from addonAPIVersion import BACK_COMPAT_TO; print('{}.{}.{}'.format(*BACK_COMPAT_TO))") >> $env:GITHUB_OUTPUT
 
-  typeCheck:
+  typeCheckPyright:
     name: Check types with Pyright
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA]
+    permissions:
+      contents: read
+    steps:
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v7
+    - name: Static type analysis
+      run: ci/scripts/tests/typeCheckPyright.ps1
+
+  typeCheckTy:
+    name: Check types with ty
+    runs-on: ${{ needs.matrix.outputs.defaultRunner }}
+    needs: [matrix, buildNVDA]
+    permissions:
+      contents: read
     steps:
     - name: Checkout cached build
       uses: actions/cache/restore@v5
@@ -321,7 +349,7 @@ jobs:
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Static type analysis
-      run: ci/scripts/tests/typeCheck.ps1
+      run: ci/scripts/tests/typeCheckTy.ps1
 
   checkPo:
     # BEGIN JP PATCH (temporarily disabled, to be fixed in a separate branch)
@@ -330,9 +358,11 @@ jobs:
     name: Check po files for errors
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: matrix
+    permissions:
+      contents: read
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         # Include gettext
         submodules: true
@@ -343,14 +373,14 @@ jobs:
         architecture: ${{ env.defaultArch }}
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
-    - name: Run pre-commit
+    - name: Run prek
       run: |
         # Ensure uv environment is up to date.
-        # If the uv environment is outdated, running pre-commit will trigger uv to generate a uv.lock file,
-        # which causes checkPo to fail without clear errors because pre-commit fails when files are changed during its run.
-        uv run pre-commit run uv-lock --all-files
-        # Run pre-commit on the translations
-        uv run pre-commit run checkPo --all-files
+        # If the uv environment is outdated, running prek will trigger uv to generate a uv.lock file,
+        # which causes checkPo to fail without clear errors because prek fails when files are changed during its run.
+        uv run prek run uv-lock --all-files
+        # Run prek on the translations
+        uv run prek run checkPo --all-files
     - name: Add job summary
       if: ${{ failure() }}
       shell: bash
@@ -361,18 +391,22 @@ jobs:
     name: Check translator comments
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA]
+    permissions:
+      contents: read
+      actions: write
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Check comments for translators
@@ -390,18 +424,21 @@ jobs:
     name: Check license compatibility of dependencies
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA]
+    permissions:
+      contents: read
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: License check
@@ -411,6 +448,10 @@ jobs:
     name: Run unit tests
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA]
+    permissions:
+      contents: read
+      actions: write
+      checks: write
     strategy:
       fail-fast: false
       matrix:
@@ -419,12 +460,18 @@ jobs:
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
     # BEGIN JP PATCH (overwrite JTalk files from dedicated artifact after workspace cache restore)
     - name: Get JTalk runtime artifact
       uses: actions/download-artifact@v8
@@ -432,11 +479,6 @@ jobs:
         name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: .
     # END JP PATCH
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -478,12 +520,18 @@ jobs:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
       UV_PYTHON_PREFERENCE: managed
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
     # BEGIN JP PATCH (overwrite JTalk files from dedicated artifact after workspace cache restore)
     - name: Get JTalk runtime artifact
       uses: actions/download-artifact@v8
@@ -491,11 +539,6 @@ jobs:
         name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: .
     # END JP PATCH
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -529,23 +572,26 @@ jobs:
     if: ${{ false }}
     # END JP PATCH
     # Original condition: if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/beta' && vars.CROWDIN_PROJECT_ID }}
+    permissions:
+      contents: read
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v4
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Get makePot results
-      uses: actions/download-artifact@v8
-      with:
-        name: makePot results
-        path: output
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
+        - name: Get makePot results
+          uses: actions/download-artifact@v8
+          with:
+            name: makePot results
+            path: output
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Upload translations to Crowdin
@@ -580,12 +626,18 @@ jobs:
       launcherArtifactId: ${{ steps.addJobSummary.outputs.artifactId }}
       launcherSha256: ${{ steps.addJobSummary.outputs.SHA256 }}
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
     # BEGIN JP PATCH (overwrite packaged JTalk files from dedicated artifact after workspace cache restore)
     - name: Get JTalk runtime artifact
       uses: actions/download-artifact@v8
@@ -593,11 +645,6 @@ jobs:
         name: JTalk runtime (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: .
     # END JP PATCH
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
       with:
@@ -608,19 +655,27 @@ jobs:
       run: ci/scripts/setSconsArgs.ps1
       env:
         apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-    # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
-    # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
+    - parallel:
+        - name: Build scons docs targets
+          shell: cmd
+          run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
+        # Run launcher separately as we can't safely generate that in parallel to docs scons targets (#18867)
+        - name: Install signpath
+          env:
+            apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
+          if: ${{ env.apiSigningToken }}
+          shell: cmd
+          run: |
+            PowerShell -Command "Set-ExecutionPolicy Bypass"
+            PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
+            PowerShell -Command "Install-Module -Name SignPath -Force"
+    # BEGIN JP PATCH (install AzureSignTool and login to Azure for Key Vault signing)
     - name: Install AzureSignTool
       if: ${{ env.AZURE_KV_SIGNING == '1' }}
       shell: pwsh
       run: |
         dotnet tool install --global AzureSignTool --version 7.0.1
         Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-    # END JP PATCH
-    - name: Build scons docs targets
-      shell: cmd
-      run: scons %sconsDocsOutTargets% %sconsArgs% %sconsCores%
-    # BEGIN JP PATCH (Azure Key Vault signing with OIDC - workflow_dispatch only)
     - name: Login to Azure for Key Vault signing
       if: ${{ env.AZURE_KV_SIGNING == '1' }}
       uses: azure/login@v2
@@ -638,29 +693,13 @@ jobs:
         Write-Host "::add-mask::$token"
         "AZURE_KV_ACCESS_TOKEN=$token" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     # END JP PATCH
-    - name: Install signpath
-      env:
-        apiSigningToken: ${{ github.event_name == 'push' && secrets.API_SIGNING_TOKEN || '' }}
-      if: ${{ env.apiSigningToken }}
-      shell: cmd
-      run: |
-        PowerShell -Command "Set-ExecutionPolicy Bypass"
-        PowerShell -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted"
-        PowerShell -Command "Install-Module -Name SignPath -Force"
-    # BEGIN JP PATCH (install AzureSignTool before Azure KV signing)
-    - name: Install AzureSignTool
-      if: ${{ env.AZURE_KV_SIGNING == '1' }}
-      shell: pwsh
-      run: |
-        dotnet tool install --global AzureSignTool --version 7.0.1
-        Join-Path $env:USERPROFILE ".dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-    # END JP PATCH
     - name: Build NVDAController client
       shell: cmd
       run: scons client %sconsArgs% %sconsCores%
     - name: Create NVDA launcher
       shell: cmd
       run: scons %sconsLauncherOutTargets% %sconsArgs%
+    # BEGIN JP PATCH (rename controller client archive for JP release)
     - name: Rename controller client archive for JP release
       shell: pwsh
       if: ${{ (github.ref_name == 'betajp' || github.ref_name == 'releasejp') && github.event_name == 'workflow_dispatch' }}
@@ -671,6 +710,7 @@ jobs:
           Move-Item -LiteralPath $cc.FullName -Destination $newName -Force
           Write-Host "Renamed controller client to $newName"
         }
+    # END JP PATCH
     - name: Upload launcher
       id: uploadLauncher
       uses: actions/upload-artifact@v7
@@ -714,6 +754,10 @@ jobs:
     # BEGIN JP PATCH (extend timeout for chrome tests: 10m → 30m to avoid cascade failures)
     timeout-minutes: 30
     # END JP PATCH
+    permissions:
+      contents: read
+      actions: write
+      checks: write
     strategy:
       fail-fast: false
       matrix:
@@ -723,6 +767,8 @@ jobs:
         testSuite:
           - installer
           - startupShutdown
+          - browseableMessage
+          # - vscode
           - chrome_annotations
           - chrome_list
           - chrome_table
@@ -732,15 +778,18 @@ jobs:
           - chrome_misc
           - chrome_link
           - chrome_waic  # nvdajp: WAIC aria-describedby tests (dual English/Japanese support)
+          - l10n
         # END JP PATCH
         runner: ${{ fromJson(needs.matrix.outputs.supportedRunners) }}
         arch: ${{ fromJson(needs.matrix.outputs.supportedArchitectures) }}
         pythonVersion: ${{ fromJson(needs.matrix.outputs.supportedPythonVersions) }}
         # A bug exists with Windows 2022 notepad that prevents NVDA from focusing it.
-        # This causes our symbol pronunciation tests to fail on this runner.
+        # This causes our symbol pronunciation and browseable message tests to fail on this runner.
         exclude:
           - runner: windows-2022
             testSuite: symbols
+          - runner: windows-2022
+            testSuite: browseableMessage
           # BEGIN JP PATCH (run chrome system tests only on the newest Windows
           # runner to reduce flaky failures; installer/startupShutdown still run on both)
           - runner: windows-2022
@@ -765,34 +814,36 @@ jobs:
     env:
       uv-arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'x86' }}
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.pythonVersion }}
-        architecture: ${{ matrix.arch }}
-    - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v7
-      with:
-        python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.pythonVersion }}
+            architecture: ${{ matrix.arch }}
     - name: Get NVDA launcher
       id: getLauncher
       uses: actions/download-artifact@v8
       with:
         name: NVDA launcher (${{ matrix.pythonVersion }}, ${{ matrix.arch }})
         path: output
-    - name: Install NVDA
-      run: ci/scripts/installNVDA.ps1
-      env:
-        nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
-    - name: Download and install Visual Studio Code
-      if: ${{ matrix.testSuite == 'vscode' }}
-      run: choco install -y vscode
+    - parallel:
+        - name: Install the latest version of uv
+          uses: astral-sh/setup-uv@v7
+          with:
+            python-version: cpython-${{ matrix.pythonVersion }}-windows-${{ env.uv-arch }}-none
+        - name: Install NVDA
+          run: ci/scripts/installNVDA.ps1
+          env:
+            nvdaLauncherDir: ${{ steps.getLauncher.outputs.download-path }}
+        - name: Download and install Visual Studio Code
+          if: ${{ matrix.testSuite == 'vscode' }}
+          run: choco install -y vscode
     - name: Run system tests
       run: ci/scripts/tests/systemTests.ps1
       env:
@@ -823,6 +874,9 @@ jobs:
     name: Create symbols
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA]
+    permissions:
+      contents: read
+      actions: write
     strategy:
       fail-fast: false
       matrix:
@@ -833,15 +887,16 @@ jobs:
       # So we only set the output variables for the default architecture.
       symbolsArtifactId: ${{ steps.defaultArtifact.outputs.artifactId }}
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Windows SDK
-      # Installs symstore.exe to expected location.
-      run: choco install -y windows-sdk-10.1
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ matrix.pythonVersion }}-${{ matrix.arch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Windows SDK
+          # Installs symstore.exe to expected location.
+          run: choco install -y windows-sdk-10.1
     - name: Create build symbols
       env:
         symStore: C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\symstore.exe
@@ -865,12 +920,14 @@ jobs:
     name: Check if all tests pass
     runs-on: ubuntu-latest
     if: always()
-    needs: [buildNVDA, typeCheck, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols
+    needs: [buildNVDA, typeCheckPyright, typeCheckTy, checkPot, licenseCheck, unitTests, createLauncher, systemTests, createSymbols
       # BEGIN JP PATCH (jpSmokeTests added; checkPo temporarily disabled)
       , jpSmokeTests
       # , checkPo
       # END JP PATCH
     ]
+    permissions:
+      contents: read
     steps:
     - name: Check if all tests pass
       uses: re-actors/alls-green@v1.2.2
@@ -880,20 +937,28 @@ jobs:
   uploadSymbols:
     name: Upload symbols
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
-    needs: [matrix, buildNvda]
+    needs: [matrix, buildNVDA]
     if: ${{ github.event_name == 'push' && vars.feature_uploadSymbolsToMozilla }}
+    permissions:
+      contents: read
     steps:
-    - name: Checkout cached build
-      uses: actions/cache/restore@v5
-      with:
-        path: .
-        key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
-        fail-on-cache-miss: true
-    - name: Install Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.defaultPythonVersion }}
-        architecture: ${{ env.defaultArch }}
+    - parallel:
+        - name: Checkout cached build
+          uses: actions/cache/restore@v5
+          with:
+            path: .
+            key: ${{ github.ref }}-${{ github.run_id }}-${{ env.defaultPythonVersion }}-${{ env.defaultArch }}${{ env.SCONS_CACHE_SUFFIX }}
+            fail-on-cache-miss: true
+        - name: Install Python
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ env.defaultPythonVersion }}
+            architecture: ${{ env.defaultArch }}
+        - name: Download and extract dump_syms
+          shell: bash
+          run: |
+            curl -L -o dump_syms.zip https://github.com/mozilla/dump_syms/releases/download/v2.3.5/dump_syms-x86_64-pc-windows-msvc.zip
+            7z x dump_syms.zip dump_syms.exe
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v7
     - name: Get symbols
@@ -1297,3 +1362,24 @@ jobs:
       sha256: ${{ steps.hashes.outputs.SHA256 }}
       version: ${{ needs.buildNVDA.outputs.version }}
   # END JP PATCH
+
+  submit-winget:
+    name: Submit manifest to WinGet Packages Repository
+    needs: [matrix, release]
+    runs-on: ${{ needs.matrix.outputs.defaultRunner }}
+    if: startsWith(github.ref_name, 'release-')
+    permissions:
+      contents: read
+    steps:
+    - name: Checkout NVDA
+      uses: actions/checkout@v7
+      with:
+        submodules: false
+
+    - name: Submit package using wingetcreate
+      env:
+        GH_TOKEN: ${{ github.token }}
+        # wingetcreate will read the token from the below environment variable
+        # Reference: https://aka.ms/winget-create-token
+        WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_CREATE_GITHUB_TOKEN }}
+      run: ci/scripts/submitWinGet.ps1

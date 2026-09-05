@@ -3,10 +3,7 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
-from typing import (
-	Callable,
-	Optional,
-)
+from collections.abc import Callable  # noqa: I001
 import wx
 import gui
 import config
@@ -164,7 +161,7 @@ class SpeechViewerFrame(
 		config.conf["speechViewer"]["autoPositionWindow"] = False
 
 
-_guiFrame: Optional[SpeechViewerFrame] = None
+_guiFrame: SpeechViewerFrame | None = None
 isActive: bool = False
 
 
@@ -178,7 +175,7 @@ def activate():
 
 def _setActive(
 	isNowActive: bool,
-	speechViewerFrame: Optional[SpeechViewerFrame] = None,
+	speechViewerFrame: SpeechViewerFrame | None = None,
 ) -> None:
 	global _guiFrame, isActive
 	isActive = isNowActive
@@ -212,14 +209,14 @@ def appendSpeechSequence(sequence: SpeechSequence) -> None:
 
 
 def _cleanup():
-	global isActive
+	global isActive  # noqa: PLW0602
 	if not isActive:
 		return
 	_setActive(False)
 
 
 def deactivate():
-	global _guiFrame, isActive
+	global _guiFrame, isActive  # noqa: PLW0602
 	if not isActive:
 		return
 	# #7077: If the window is destroyed, text control will be gone, so save speech viewer position before destroying the window.
