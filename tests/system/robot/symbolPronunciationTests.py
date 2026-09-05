@@ -588,8 +588,9 @@ def test_symbolInSpeechUI():
 	"""
 	character = "t"  # Character doesn't matter, we just want to invoke "Right" speech UI.
 	_notepad.prepareNotepad(character)
-	# nvdajp: Ensure delayed character descriptions is disabled to avoid NATO phonetic
+	# nvdajp: Ensure character description mode is disabled to avoid NATO phonetic (Tango -> t)
 	spy = _NvdaLib.getSpyLib()
+	spy.set_configValue(["language", "characterDescriptionMode"], False)
 	spy.set_configValue(["speech", "delayedCharacterDescriptions"], False)
 	_setConfig(SymLevel.ALL)
 	spy = _NvdaLib.getSpyLib()
