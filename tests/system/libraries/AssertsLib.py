@@ -90,18 +90,12 @@ class AssertsLib:
 					return
 		# None matched – fail with a message showing all options
 		builtIn.log(
-			"repr of ({}) actual vs expected options (ignore_case={}):\n{}\nvs\n{}".format(
-				comparison,
-				ignore_case,
-				repr(actual),
-				[repr(o) for o in expectedOptions],
-			),
+			f"repr of ({comparison}) actual vs expected options (ignore_case={ignore_case}):\n{actual!r}\nvs\n{[repr(o) for o in expectedOptions]}",
 			level="DEBUG",
 		)
 		builtIn.fail(
 			f"{message}{comparison} Actual != any Expected option.\n"
-			f"Actual:\n{actual}\n\nExpected one of:\n"
-			+ "\n---\n".join(expectedOptions),
+			f"Actual:\n{actual}\n\nExpected one of:\n" + "\n---\n".join(expectedOptions),
 		)
 
 	@staticmethod

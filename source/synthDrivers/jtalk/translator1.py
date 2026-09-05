@@ -19,4 +19,4 @@ except ImportError:
 	sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 	from libkuraji.kana import translate_with_pos, translateWithInPos
 
-__all__ = ["translate_with_pos", "translateWithInPos"]
+__all__ = ["translateWithInPos", "translate_with_pos"]

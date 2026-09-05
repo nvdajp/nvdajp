@@ -4,6 +4,6 @@
 # Copyright (C) 2026 NV Access Limited
 
 from .commands import BreakCommand
-from .types import SequenceItemT, SpeechSequence  # noqa: I001
+from .types import SequenceItemT, SpeechSequence
 
 __all__ = ["BreakCommand", "SequenceItemT", "SpeechSequence"]

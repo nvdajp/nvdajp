@@ -3,43 +3,44 @@
 # NVDA Japanese Team
 # A part of NonVisual Desktop Access (NVDA)
 
-import re  # noqa: E402
-import unicodedata  # noqa: E402
-import languageHandler  # noqa: E402
-from logHandler import log  # noqa: E402
-from jpDicUtils import (  # noqa: E402
-	isJa,  # noqa: F401
-	isZenkakuHiragana,  # noqa: F401
-	isZenkakuKatakana,  # noqa: F401
-	isHankakuKatakana,  # noqa: F401
-	isHalfShape,  # noqa: F401
-	isFullShapeAlphabet,  # noqa: F401
+import re
+import unicodedata
+import languageHandler
+from logHandler import log
+from jpDicUtils import (
+	isJa,
+	isZenkakuHiragana,
+	isZenkakuKatakana,
+	isHankakuKatakana,
+	isHalfShape,
+	isFullShapeAlphabet,
 	isHalfShapeAlphabet,  # noqa: F401
-	isFullShapeNumber,  # noqa: F401
-	isHalfShapeNumber,  # noqa: F401
+	isFullShapeNumber,
+	isHalfShapeNumber,
 	isKanaCharacter,  # noqa: F401
-	isLatinCharacter,  # noqa: F401
-	isFullShapeSymbol,  # noqa: F401
-	isUpper,  # noqa: F401
-	getAttrDesc,  # noqa: F401
-	getJpAttr,  # noqa: F401
-	getPitchChangeForCharAttr,  # noqa: F401
-	code2hex,  # noqa: F401
-	useAttrDesc,  # noqa: F401
-	getOrd,  # noqa: F401
-	splitChars,  # noqa: F401
+	isLatinCharacter,
+	isFullShapeSymbol,
+	isUpper,
+	getAttrDesc,
+	getJpAttr,
+	getPitchChangeForCharAttr,
+	code2hex,
+	useAttrDesc,
+	getOrd,
+	splitChars,
 	modifyTimeText,  # noqa: F401
 	processKangxiRadicals,  # noqa: F401
-	CharAttr,  # noqa: F401
-	JpAttr,  # noqa: F401
+	CharAttr,
+	JpAttr,
 )
 
 
-from typing import Generator, Any  # noqa: E402
-import config  # noqa: E402
-import characterProcessing  # noqa: E402
-from speech.types import SequenceItemT  # noqa: E402
-from speech.commands import (  # noqa: E402
+from typing import Any
+from collections.abc import Generator
+import config
+import characterProcessing
+from speech.types import SequenceItemT
+from speech.commands import (
 	LangChangeCommand,
 	EndUtteranceCommand,
 	PitchCommand,
@@ -55,7 +56,7 @@ def _getSpellingCharAddCapNotification(
 	beepForCapitals: bool,
 	sayCharTypes: bool,
 	reportNormalized: bool = False,
-) -> Generator[SequenceItemT, None, None]:
+) -> Generator[SequenceItemT]:
 	"""This function produces a speech sequence containing a character to be spelt as well as commands
 	to indicate that this character is uppercase if applicable.
 	@param speakCharOrg: The character.
@@ -104,7 +105,7 @@ def getSpellingSpeechWithoutCharMode(
 	unicodeNormalization: bool = False,
 	reportNormalizedForCharacterNavigation: bool = False,
 	endsUtterance: bool = True,
-) -> Generator[SequenceItemT, None, None]:
+) -> Generator[SequenceItemT]:
 	from speech import (
 		getCurrentLanguage,
 		getCharDescListFromText,
@@ -323,7 +324,7 @@ def getDiscriminantReading(
 	sayCharTypes: bool = True,
 ) -> str:
 	if not name:
-		return ""  # noqa: E701
+		return ""
 	nameChars = splitChars(name)
 	attrs: list[tuple[str, CharAttr]] = []
 	for uc in nameChars:
@@ -396,7 +397,6 @@ def processHexCode(locale: str, msg: str) -> str:
 			)
 		except Exception as e:
 			log.debug(e)
-			pass
 	return msg
 
 

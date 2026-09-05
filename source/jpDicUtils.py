@@ -164,9 +164,12 @@ def getPitchChangeForCharAttr(uppercase: bool, jpAttr: JpAttr, capPitchChange: i
 	conf: dict[str, Any] = config.conf["language"]  # type: ignore[assignment]
 	if jpAttr.jpZenkakuKatakana and conf["jpKatakanaPitchChange"]:
 		return conf["jpKatakanaPitchChange"]
-	elif jpAttr.jpHankakuKatakana and conf["halfShapePitchChange"]:
-		return conf["halfShapePitchChange"]
-	elif jpAttr.halfShape and conf["halfShapePitchChange"]:
+	elif (
+		jpAttr.jpHankakuKatakana
+		and conf["halfShapePitchChange"]
+		or jpAttr.halfShape
+		and conf["halfShapePitchChange"]
+	):
 		return conf["halfShapePitchChange"]
 	return 0
 
@@ -233,9 +236,9 @@ def modifyTimeText(text: str) -> str:
 	if mo:
 		hour, minute = mo.group(1), mo.group(2)
 		if len(hour) == 2 and hour[0] == "0":
-			hour = hour[1:]  # noqa: E701
+			hour = hour[1:]
 		if len(minute) == 2 and minute[0] == "0":
-			minute = minute[1:]  # noqa: E701
+			minute = minute[1:]
 		# Translators: hour and minute
 		text = _("{hour}:{minute}").format(hour=hour, minute=minute)
 	else:
@@ -243,9 +246,9 @@ def modifyTimeText(text: str) -> str:
 		if mo:
 			am_or_pm, hour, minute = mo.group(1), mo.group(2), mo.group(3)
 			if len(hour) == 2 and hour[0] == "0":
-				hour = hour[1:]  # noqa: E701
+				hour = hour[1:]
 			if len(minute) == 2 and minute[0] == "0":
-				minute = minute[1:]  # noqa: E701
+				minute = minute[1:]
 			# Translators: hour and minute
 			text = am_or_pm + _("{hour}:{minute}").format(hour=hour, minute=minute)
 	return text

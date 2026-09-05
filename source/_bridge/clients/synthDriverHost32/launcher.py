@@ -4,7 +4,7 @@
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
 import json
-import os  # noqa: I001
+import os
 import subprocess
 from typing import Any
 import rpyc

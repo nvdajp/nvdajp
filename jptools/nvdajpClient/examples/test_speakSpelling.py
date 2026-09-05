@@ -1,4 +1,3 @@
-# coding: utf-8
 # NVDA日本語版拡張 nvdaController_speakSpelling のデモ
 # Usage: python test_speakSpelling.py  (NVDA 起動後、jptools/nvdajpClient/examples/ から実行)
 

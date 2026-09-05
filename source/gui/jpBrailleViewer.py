@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # gui/jpBrailleViewer.py
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
@@ -13,7 +12,7 @@ import config
 
 class JpBrailleViewerFrame(wx.MiniFrame):
 	def __init__(self):
-		super(JpBrailleViewerFrame, self).__init__(
+		super().__init__(
 			gui.mainFrame,
 			wx.ID_ANY,
 			# Translators: braille viewer window title
@@ -58,7 +57,7 @@ def appendText(text):
 	if _guiFrame.FindFocus() == _guiFrame.textCtrl:
 		return
 	translate = __import__("synthDrivers.jtalk.translator2", globals(), locals(), ("getReadingAndBraille",))
-	(sp, tr) = getattr(translate, "getReadingAndBraille")(
+	(sp, tr) = translate.getReadingAndBraille(
 		text,
 		nabcc=config.conf["braille"]["expandAtCursor"],
 	)

@@ -16,8 +16,8 @@ import globalVars
 import tones
 import os
 from collections import OrderedDict
-from ctypes import *  # noqa: F403
-from ctypes.wintypes import *  # noqa: F403
+from ctypes import *
+from ctypes.wintypes import *
 from logHandler import log
 import sys
 import winreg
@@ -27,8 +27,8 @@ try:
 except ImportError:
 	from bdDetect import DeviceType as ProtocolType
 
-byte = lambda x: x.to_bytes(1, "big")  # noqa: E731
-import itertools  # noqa: E402
+byte = lambda x: x.to_bytes(1, "big")
+import itertools
 
 kgs_dir = os.path.dirname(__file__)
 if not os.path.isfile(os.path.join(kgs_dir, "DirectBM.dll")) and hasattr(sys, "frozen"):
@@ -43,11 +43,7 @@ locked = False
 
 def _connectionBeepsEnabled():
 	"""Return False during install or launcher so connection tones do not mask speech."""
-	return not (
-		globalVars.appArgs.install
-		or globalVars.appArgs.installSilent
-		or globalVars.appArgs.launcher
-	)
+	return not (globalVars.appArgs.install or globalVars.appArgs.installSilent or globalVars.appArgs.launcher)
 
 
 def lock():
@@ -84,7 +80,7 @@ class BMDRVS:
 	MAX = 9
 
 
-KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)  # noqa: F405
+KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)
 
 
 def nvdaKgsStatusChangedProc(nStatus, nDispSize):
@@ -123,7 +119,7 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 		log.debug("status changed to %d" % nStatus)
 
 
-KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))  # noqa: F405
+KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))
 
 
 def nvdaKgsHandleKeyInfoProc(lpKeys):
@@ -133,76 +129,76 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	names = []
 	routingIndex = None
 	if keys[2] & 1:
-		names.append("func1")  # noqa: E701
+		names.append("func1")
 	if keys[2] & 2:
-		names.append("func4")  # noqa: E701
+		names.append("func4")
 	if keys[2] & 4:
-		names.append("ctrl")  # noqa: E701
+		names.append("ctrl")
 	if keys[2] & 8:
-		names.append("alt")  # noqa: E701
+		names.append("alt")
 	if keys[2] & 16:
-		names.append("select")  # noqa: E701
+		names.append("select")
 	if keys[2] & 32:
-		names.append("read")  # noqa: E701
+		names.append("read")
 	if keys[2] & 64:
-		names.append("func2")  # noqa: E701
+		names.append("func2")
 	if keys[2] & 128:
-		names.append("func3")  # noqa: E701
-	if keys[0] == 1:  # noqa: E701
+		names.append("func3")
+	if keys[0] == 1:
 		if keys[1] & 1:
-			names.append("space")  # noqa: E701
+			names.append("space")
 		if keys[1] & 2:
-			names.append("dot6")  # noqa: E701
+			names.append("dot6")
 		if keys[1] & 4:
-			names.append("dot5")  # noqa: E701
+			names.append("dot5")
 		if keys[1] & 8:
-			names.append("dot4")  # noqa: E701
+			names.append("dot4")
 		if keys[1] & 16:
-			names.append("enter")  # noqa: E701
+			names.append("enter")
 		if keys[1] & 32:
-			names.append("dot3")  # noqa: E701
+			names.append("dot3")
 		if keys[1] & 64:
-			names.append("dot2")  # noqa: E701
+			names.append("dot2")
 		if keys[1] & 128:
-			names.append("dot1")  # noqa: E701
+			names.append("dot1")
 	elif keys[0] == 2:
 		if keys[1] & 1:
-			names.append("esc")  # noqa: E701
+			names.append("esc")
 		if keys[1] & 2:
-			names.append("inf")  # noqa: E701
+			names.append("inf")
 		if keys[1] & 4:
-			names.append("bs")  # noqa: E701
+			names.append("bs")
 		if keys[1] & 8:
-			names.append("del")  # noqa: E701
+			names.append("del")
 		if keys[1] & 16:
-			names.append("ins")  # noqa: E701
+			names.append("ins")
 		if keys[1] & 32:
-			names.append("chng")  # noqa: E701
+			names.append("chng")
 		if keys[1] & 64:
-			names.append("ok")  # noqa: E701
+			names.append("ok")
 		if keys[1] & 128:
-			names.append("set")  # noqa: E701
+			names.append("set")
 	elif keys[0] == 3:
 		if keys[1] & 1:
-			names.append("upArrow")  # noqa: E701
+			names.append("upArrow")
 		if keys[1] & 2:
-			names.append("downArrow")  # noqa: E701
+			names.append("downArrow")
 		if keys[1] & 4:
-			names.append("leftArrow")  # noqa: E701
+			names.append("leftArrow")
 		if keys[1] & 8:
-			names.append("rightArrow")  # noqa: E701
+			names.append("rightArrow")
 	elif keys[0] == 4:
 		names.append("route")
 		routingIndex = keys[1] - 1
 	elif keys[0] == 6:
 		if keys[1] & 1:
-			names.append("bw")  # noqa: E701
+			names.append("bw")
 		if keys[1] & 2:
-			names.append("fw")  # noqa: E701
+			names.append("fw")
 		if keys[1] & 4:
-			names.append("ls")  # noqa: E701
+			names.append("ls")
 		if keys[1] & 8:
-			names.append("rs")  # noqa: E701
+			names.append("rs")
 	if routingIndex is not None:
 		log.io("names %s %d" % ("+".join(names), routingIndex))
 	else:
@@ -480,7 +476,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		fConnection = False
 
 	def __init__(self, port="auto"):
-		super(BrailleDisplayDriver, self).__init__()
+		super().__init__()
 		global fConnection, numCells
 		if not lock():
 			return
@@ -511,7 +507,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 				if not self._directBM:
 					kgs_dll = os.path.join(kgs_dir, "DirectBM.dll")
 					log.debug(kgs_dll)
-					self._directBM = windll.LoadLibrary(kgs_dll)  # noqa: F405
+					self._directBM = windll.LoadLibrary(kgs_dll)
 					if not self._directBM:
 						raise RuntimeError("No KGS instance found")
 					self._keyCallbackInst = KGS_PKEYCALLBACK(nvdaKgsHandleKeyInfoProc)
@@ -530,8 +526,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 				self.numCells = 0
 				log.info("failed %s" % port)
 				self._cleanupFailedPort(port)
-			else:
-				raise RuntimeError("No KGS display found")
+			raise RuntimeError("No KGS display found")
 		finally:
 			unlock()
 
@@ -539,14 +534,14 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		if not lock():
 			return
 		log.info("KGS driver terminating")
-		super(BrailleDisplayDriver, self).terminate()
+		super().terminate()
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
 			waitAfterDisconnect()
 			# explicitly defining the argument and return types for FreeLibrary.
-			_FreeLibrary = windll.kernel32.FreeLibrary  # noqa: F405
-			_FreeLibrary.argtypes = [HMODULE]  # noqa: F405
-			_FreeLibrary.restype = BOOL  # noqa: F405
+			_FreeLibrary = windll.kernel32.FreeLibrary
+			_FreeLibrary.argtypes = [HMODULE]
+			_FreeLibrary.restype = BOOL
 			ret = _FreeLibrary(self._directBM._handle)
 			# ret is not zero if success
 			log.info("KGS driver terminated %d" % ret)
@@ -577,29 +572,29 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	def display(self, data):
 		if not data:
-			return  # noqa: E701
+			return
 		s = b""
 		for c in data:
 			d = 0
 			if c & 0x01:
-				d += 0x80  # noqa: E701
+				d += 0x80
 			if c & 0x02:
-				d += 0x40  # noqa: E701
+				d += 0x40
 			if c & 0x04:
-				d += 0x20  # noqa: E701
+				d += 0x20
 			if c & 0x08:
-				d += 0x08  # noqa: E701
+				d += 0x08
 			if c & 0x10:
-				d += 0x04  # noqa: E701
+				d += 0x04
 			if c & 0x20:
-				d += 0x02  # noqa: E701
+				d += 0x02
 			if c & 0x40:
-				d += 0x10  # noqa: E701
+				d += 0x10
 			if c & 0x80:
-				d += 0x01  # noqa: E701
+				d += 0x01
 			s += byte(d)
-		dataBuf = create_string_buffer(s, 256)  # noqa: F405
-		cursorBuf = create_string_buffer(b"", 256)  # noqa: F405
+		dataBuf = create_string_buffer(s, 256)
+		cursorBuf = create_string_buffer(b"", 256)
 		try:
 			ret = self._directBM.bmDisplayData(dataBuf, cursorBuf, self.numCells)
 			log.debug("bmDisplayData %d" % ret)
@@ -744,6 +739,6 @@ class InputGesture(braille.BrailleDisplayGesture):
 	source = BrailleDisplayDriver.name
 
 	def __init__(self, names, routingIndex):
-		super(InputGesture, self).__init__()
+		super().__init__()
 		self.id = "+".join(names)
 		self.routingIndex = routingIndex

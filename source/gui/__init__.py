@@ -789,11 +789,7 @@ class SysTrayIcon(wx.adv.TaskBarIcon):
 	def evaluateUpdatePendingUpdateMenuItemCommand(self):
 		# BEGIN JP PATCH
 		# nvdajp: pending-update item is only created when updateCheck is available
-		if (
-			globalVars.appArgs.secure
-			or not updateCheck
-			or not hasattr(self, "installPendingUpdateMenuItem")
-		):
+		if globalVars.appArgs.secure or not updateCheck or not hasattr(self, "installPendingUpdateMenuItem"):
 			return
 		# END JP PATCH
 		try:

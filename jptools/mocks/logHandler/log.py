@@ -5,7 +5,7 @@ def debug(s, prefix="DEBUG"):
 		try:
 			print(f"{prefix} {s.encode('utf-8')}")
 		except Exception as e:
-			print(f"{prefix} {repr(e)}")
+			print(f"{prefix} {e!r}")
 
 
 def info(s):

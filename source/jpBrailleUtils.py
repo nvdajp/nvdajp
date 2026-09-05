@@ -5,16 +5,15 @@
 
 ## braille labels (not translated)
 
-import typing
 import controlTypes
 
 
 _gettext_org = _
-_ = lambda x: x  # noqa: E731
+_ = lambda x: x
 _pgettext_org = pgettext
-pgettext = lambda x, y: y  # noqa: E731
+pgettext = lambda x, y: y
 
-roleLabels: typing.Dict[controlTypes.Role, str] = {
+roleLabels: dict[controlTypes.Role, str] = {
 	# Translators: Displayed in braille for an object which is a
 	# window.
 	controlTypes.Role.WINDOW: _("wnd"),

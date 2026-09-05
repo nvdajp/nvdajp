@@ -202,17 +202,11 @@ def findExtraOverlayClasses(obj, clsList):
 	# Mirror Mozilla's TextLeaf detection so that mouse tracking on
 	# Chromium-based browsers can skip over transparent text leaf nodes.
 	# See nvaccess/nvda#8076.
-	if (
-		isinstance(obj.IAccessibleObject, IA2.IAccessible2)
-		and obj.IAccessibleRole == oleacc.ROLE_SYSTEM_TEXT
-	):
+	if isinstance(obj.IAccessibleObject, IA2.IAccessible2) and obj.IAccessibleRole == oleacc.ROLE_SYSTEM_TEXT:
 		iaStates = obj.IAccessibleStates
 		# Text leaves are never focusable.
 		# Not unavailable excludes disabled editable text fields (which also aren't focusable).
-		if not (
-			iaStates & oleacc.STATE_SYSTEM_FOCUSABLE
-			or iaStates & oleacc.STATE_SYSTEM_UNAVAILABLE
-		):
+		if not (iaStates & oleacc.STATE_SYSTEM_FOCUSABLE or iaStates & oleacc.STATE_SYSTEM_UNAVAILABLE):
 			# This excludes a non-focusable @role="textbox".
 			if not (obj.IA2States & IA2.IA2_STATE_EDITABLE):
 				clsList.append(TextLeaf)

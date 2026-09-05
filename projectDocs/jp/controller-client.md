@@ -103,7 +103,7 @@ python test_speakSpelling.py
 python test_pitchCtl.py
 ```
 
-本家デモ: `extras/controllerClient/examples/example_python.py`  
+本家デモ: `extras/controllerClient/examples/example_python.py`
 Issue #642 検証用: `jptools/test_controller_speakSpelling.py`
 
 ---

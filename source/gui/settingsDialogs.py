@@ -1256,7 +1256,9 @@ class LanguageSettingsPanel(SettingsPanel):
 		config.conf["language"]["announceCandidateNumber"] = self.announceCandidateNumberCheckBox.IsChecked()
 		config.conf["language"]["jpAnsiEditbox"] = self.jpAnsiEditCheckBox.IsChecked()
 		config.conf["language"]["jpAnnounceNewLine"] = self.jpAnnounceNewLineCheckBox.IsChecked()
-		config.conf["language"]["characterDescriptionMode"] = self.characterDescriptionModeCheckBox.IsChecked()
+		config.conf["language"]["characterDescriptionMode"] = (
+			self.characterDescriptionModeCheckBox.IsChecked()
+		)
 		config.conf["language"]["jpKatakanaPitchChange"] = self.jpKatakanaPitchChangeEdit.Value
 		config.conf["language"]["halfShapePitchChange"] = self.halfShapePitchChangeEdit.Value
 
@@ -6665,7 +6667,8 @@ class PrivacyAndSecuritySettingsPanel(SettingsPanel):
 				generalBox,
 				# Translators: The label of a checkbox in privacy and security settings to toggle allowing of usage stats gathering
 				label=_("Allow NV Access to gather NVDA usage statistics").replace(
-					"NV Access", _("NVDA Japanese Team")
+					"NV Access",
+					_("NVDA Japanese Team"),
 				),
 			),
 			# END JP PATCH

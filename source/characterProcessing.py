@@ -205,7 +205,6 @@ class CharacterDescriptions:
 		# END JP PATCH
 
 	def getCharacterDescription(self, character: str) -> list[str] | None:
-
 		"""
 		Looks up the given character and returns a list containing all the description strings found.
 		"""
@@ -248,7 +247,7 @@ def getCharacterDescription(locale: str, character: str) -> list[str] | None:
 # nvdajp
 def getCharacterReading(locale, character):
 	try:
-		l = _charDescLocaleDataMap.fetchLocaleData(locale)  # noqa: E741
+		l = _charDescLocaleDataMap.fetchLocaleData(locale)
 	except LookupError:
 		return character
 	return l.getCharacterReading(character)

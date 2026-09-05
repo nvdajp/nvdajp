@@ -727,7 +727,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				and marker_path.read_text(encoding="utf-8") == marker_expected
 				and (dic_dst / "sys.dic").exists()
 			):
-				print(f"jtalkSync: prebuilt dictionary already up to date (tag={pin['tag']}); skipping fetch.")
+				print(
+					f"jtalkSync: prebuilt dictionary already up to date (tag={pin['tag']}); skipping fetch.",
+				)
 				return 0
 
 			url = f"https://github.com/{pin['repo']}/releases/download/{pin['tag']}/{pin['asset']}"
@@ -867,7 +869,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			should_rebuild_dic = not (has_dic and is_utf8_dic and is_valid_cp)
 			if should_rebuild_dic:
 				print("jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py.")
-				print(f"jtalkSync: repo_root={repo_root!r} builder_script_path.exists()={builder_script_path.exists()!r}")
+				print(
+					f"jtalkSync: repo_root={repo_root!r} builder_script_path.exists()={builder_script_path.exists()!r}",
+				)
 
 		def _build_mecab_bin(machine: str) -> int:
 			# Makefile.mak is in src subdirectory
@@ -931,7 +935,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						try:
 							make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
 							shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
-							print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin} (for build_userdic.py)")
+							print(
+								f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin} (for build_userdic.py)",
+							)
 						except Exception as e:
 							print(f"jtalkSync: failed to copy mecab-dict-index.exe for build_userdic.py: {e}")
 					else:

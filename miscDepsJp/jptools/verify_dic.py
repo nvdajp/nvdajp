@@ -78,7 +78,7 @@ def verify() -> int:
 		failed = 0
 		for text, expected in cases:
 			result, _, _, _ = translator2.translateWithInPos2(
-				text, logwrite=lambda s: None, nabcc=False
+				text, logwrite=lambda s: None, nabcc=False,
 			)
 			if result != expected:
 				print(

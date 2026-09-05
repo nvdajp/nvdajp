@@ -5,7 +5,7 @@
 SRC_FILE = "6ten kanji characters table-UTF8.txt"
 
 with open(SRC_FILE, encoding="utf-8-sig") as f:
-	for s in f.readlines():
+	for s in f:
 		if s and s[0] != "#":
 			s = s.strip('"\n')
 			a = s.split("\t")

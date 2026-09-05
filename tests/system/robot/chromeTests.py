@@ -273,7 +273,7 @@ def test_mark_aria_details_role():
 	# _asserts.braille_matches(
 	# 	message="Browse mode braille: Read line with different aria details roles.",
 	# 	actual=actualBraille,
-	# 	expected=" ".join(  # noqa: FLY002
+	# 	expected=" ".join(
 	# 		[
 	# 			"mln",
 	# 			"edt ",
@@ -334,7 +334,7 @@ def test_mark_aria_details_role():
 	# _asserts.braille_matches(
 	# 	message="Focus mode braille: Read line with different aria details roles",
 	# 	actual=actualBraille,
-	# 	expected=" ".join(  # noqa: FLY002
+	# 	expected=" ".join(
 	# 		[
 	# 			# no "mln edt"
 	# 			# the role doc-endnote is unsupported as an IA2 role
@@ -3137,6 +3137,7 @@ def test_reportNotSupportedLanguageAndOtherLanguages():
 # They use should_contain for Japanese content text (locale-independent)
 # rather than exact string match (which would break on English role names).
 
+
 def test_waic_as_0029_01():
 	_chrome.prepareChrome("""
 	<iframe width="800" height="600" src="https://waic.github.io/as_test/WAIC-CODE/WAIC-CODE-0029-01.html"></iframe>
@@ -3145,7 +3146,10 @@ def test_waic_as_0029_01():
 	_builtIn.should_contain(actualSpeech, "メインページへ戻る")
 	actualSpeech = _chrome.getSpeechAfterTab()
 	_builtIn.should_contain(actualSpeech, "閉じる")
-	_builtIn.should_contain(actualSpeech, "このウィンドウを閉じると、入力された情報は破棄され、メインページに戻ります")
+	_builtIn.should_contain(
+		actualSpeech,
+		"このウィンドウを閉じると、入力された情報は破棄され、メインページに戻ります",
+	)
 
 
 def test_waic_as_0029_02():
@@ -3215,7 +3219,10 @@ def test_waic_as_0029_06():
 	_builtIn.should_contain(actualSpeech, "メインページへ戻る")
 	actualSpeech = _chrome.getSpeechAfterTab()
 	_builtIn.should_contain(actualSpeech, "閉じる")
-	_builtIn.should_contain(actualSpeech, "このウィンドウを閉じると、入力された情報は破棄され、メインページに戻ります")
+	_builtIn.should_contain(
+		actualSpeech,
+		"このウィンドウを閉じると、入力された情報は破棄され、メインページに戻ります",
+	)
 
 
 def test_waic_as_0029_07():
@@ -3256,6 +3263,8 @@ def test_waic_as_0029_08():
 	_builtIn.should_contain(actualSpeech, "カスタマイズ")
 	_builtIn.should_contain(actualSpeech, "このページで使われているレイアウトやスタイルをカスタマイズ")
 	_builtIn.should_contain(actualSpeech, "ボタンを押下しレイアウトやスタイルを選択してください")
+
+
 # END JP PATCH
 
 

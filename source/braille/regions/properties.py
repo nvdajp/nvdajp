@@ -24,14 +24,9 @@ from ..formatting import (
 	getParagraphStartMarker,
 )
 from ..labels import (
-	landmarkLabels,
-	negativeStateLabels,
 	positiveStateLabels,
-	roleLabels,
-	# BEGIN JP PATCH
 	_nvdajp,
 	getRoleLabel,
-	getPositiveStateLabel,
 	getPositiveStateLabels,
 	getNegativeStateLabels,
 	getLandmarkLabel,

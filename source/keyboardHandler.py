@@ -132,6 +132,7 @@ def passNextKeyThrough():
 	if passKeyThroughCount == -1:
 		passKeyThroughCount = 0
 
+
 def isNVDAModifierKey(vkCode: int, extended: bool) -> bool:
 	if (
 		(
@@ -145,8 +146,7 @@ def isNVDAModifierKey(vkCode: int, extended: bool) -> bool:
 			and extended
 		)
 		or (
-			(config.conf["keyboard"]["NVDAModifierKeys"] & NVDAKey.CAPS_LOCK)
-			and vkCode == winUser.VK_CAPITAL
+			(config.conf["keyboard"]["NVDAModifierKeys"] & NVDAKey.CAPS_LOCK) and vkCode == winUser.VK_CAPITAL
 		)
 		# BEGIN JP PATCH
 		or (
@@ -157,10 +157,7 @@ def isNVDAModifierKey(vkCode: int, extended: bool) -> bool:
 			config.conf["keyboard"]["useConvertAsNVDAModifierKey"]
 			and (vkCode == winUser.VK_CONVERT or (vkCode == winUser.VK_IME_ON and extended))
 		)
-		or (
-			config.conf["keyboard"]["useEscapeAsNVDAModifierKey"]
-			and vkCode == winUser.VK_ESCAPE
-		)
+		or (config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] and vkCode == winUser.VK_ESCAPE)
 		# END JP PATCH
 	):
 		return True

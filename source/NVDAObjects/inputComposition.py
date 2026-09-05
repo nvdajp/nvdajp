@@ -295,7 +295,7 @@ class InputComposition(EditableTextWithAutoSelectDetection, Window):
 				(self.readingString if isReading else self.compositionString),
 				compositionString,
 				forceNewText=forceNewText,
-			)  # noqa: E701
+			)
 		hasChanged = False
 		if isReading:
 			self.readingString = compositionString

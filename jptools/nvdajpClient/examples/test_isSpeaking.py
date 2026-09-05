@@ -1,4 +1,3 @@
-# coding: utf-8
 # NVDA日本語版拡張 nvdaController_isSpeaking のデモ
 # Usage: python test_isSpeaking.py  (NVDA 起動後、examples/ から実行)
 

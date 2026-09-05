@@ -33,8 +33,6 @@ from ..constants import (
 from .properties import getFormatFieldBraille
 from ._routing import _routingShouldMoveSystemCaret
 from ..labels import (
-	positiveStateLabels,
-	# BEGIN JP PATCH
 	getPositiveStateLabel,
 	# END JP PATCH
 )

@@ -1,5 +1,6 @@
 import sys
-from typing import Any, Optional, Mapping, cast
+from typing import Any, cast
+from collections.abc import Mapping
 
 try:
 	# Importing tests.unit triggers the unit test harness initialization
@@ -14,7 +15,7 @@ try:
 	braille_conf: Any = conf_map.get("braille")
 	table = braille_conf.get("translationTable") if hasattr(braille_conf, "get") else None
 
-	handler: Optional[Any] = getattr(braille, "handler", None)
+	handler: Any | None = getattr(braille, "handler", None)
 	dims = getattr(handler, "displayDimensions", None)
 	disp = getattr(handler, "buffer", None)
 	size = getattr(disp, "displaySize", None)

@@ -181,4 +181,3 @@ gh variable list --repo nvdajp/nvdajp
 - `jptools/certBuild2023.cmd`
 - `projectDocs/jp/README.md`
 - 詳細アーカイブ: `projectDocs/jp/archive/code-signing-dependencies-details.md`
-

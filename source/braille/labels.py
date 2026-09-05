@@ -242,7 +242,6 @@ landmarkLabels = {
 }
 
 # BEGIN JP PATCH
-import typing
 import config
 from jpBrailleUtils import (
 	roleLabels as rawRoleLabels,
@@ -274,13 +273,13 @@ def getPositiveStateLabel(state: controlTypes.State) -> str:
 	return positiveStateLabels.get(state)
 
 
-def getPositiveStateLabels() -> typing.Dict[controlTypes.State, str]:
+def getPositiveStateLabels() -> dict[controlTypes.State, str]:
 	if useRawLabels():
 		return rawPositiveStateLabels
 	return positiveStateLabels
 
 
-def getNegativeStateLabels() -> typing.Dict[controlTypes.State, str]:
+def getNegativeStateLabels() -> dict[controlTypes.State, str]:
 	if useRawLabels():
 		return rawNegativeStateLabels
 	return negativeStateLabels
@@ -292,8 +291,10 @@ def getLandmarkLabel(name: str) -> str:
 	return landmarkLabels.get(name)
 
 
-def getLandmarkLabels() -> typing.Dict[str, str]:
+def getLandmarkLabels() -> dict[str, str]:
 	if useRawLabels():
 		return rawLandmarkLabels
 	return landmarkLabels
+
+
 # END JP PATCH
