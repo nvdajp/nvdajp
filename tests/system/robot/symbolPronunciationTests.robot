@@ -49,7 +49,6 @@ moveByCharacter
 
 delayedCharacterDescriptions
 	[Documentation]	Ensure delayed character descriptions are announced as expected when navigating by character.
-	[Tags]	skip_in_ci
 	test_delayedDescriptions
 
 selectionByWord

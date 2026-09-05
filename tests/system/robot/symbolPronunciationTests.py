@@ -359,14 +359,16 @@ def _testDelayedDescription(expectDescription: bool = True) -> None:
 
 def test_delayedDescriptions():
 	_notepad.prepareNotepad(_getDelayedDescriptionsTestSample())
+	# nvdajp: Ensure character description mode is disabled so delayedCharacterDescriptions can be tested in isolation
+	spy = _NvdaLib.getSpyLib()
+	spy.set_configValue(["language", "characterDescriptionMode"], False)
+
 	# Ensure this feature is disabled by default.
 	_testDelayedDescription(expectDescription=False)
 
 	# Activate delayed descriptions feature to do the next test.
-	spy = _NvdaLib.getSpyLib()
 	spy.set_configValue(["speech", "delayedCharacterDescriptions"], True)
 
-	press_numpad2_4_times()
 	_testDelayedDescription()
 
 
