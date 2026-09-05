@@ -763,10 +763,11 @@ jobs:
       matrix:
         # To skip tests, and just run install, replace with [excluded_from_build]
         # BEGIN JP PATCH (restore upstream test split; add chrome_waic for JP WAIC tests)
-        # Excluded: symbols (Speech timeout in CI), vscode (VS Code environment required)
+        # Excluded: vscode (VS Code environment required)
         testSuite:
           - installer
           - startupShutdown
+          - symbols
           - browseableMessage
           # - vscode
           - chrome_annotations
@@ -786,10 +787,8 @@ jobs:
         # A bug exists with Windows 2022 notepad that prevents NVDA from focusing it.
         # This causes our symbol pronunciation and browseable message tests to fail on this runner.
         exclude:
-          # BEGIN JP PATCH (symbols is not in testSuite matrix)
-          # - runner: windows-2022
-          #   testSuite: symbols
-          # END JP PATCH
+          - runner: windows-2022
+            testSuite: symbols
           - runner: windows-2022
             testSuite: browseableMessage
           # BEGIN JP PATCH (run chrome system tests only on the newest Windows
