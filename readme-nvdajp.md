@@ -9,6 +9,12 @@
 - この `readme-nvdajp.md` は **恒常的な手順と最短コマンド**（初回セットアップ、日常運用の入口）を扱う。
 - `projectDocs/jp/README.md` から辿れる詳細文書は **テーマ別の詳細仕様・背景・進行中の課題**（ロードマップ、分析、検証結果）を扱う。
 
+### 優先順位（正本の所在）
+
+- **日本語版の運用・仕様は `projectDocs/jp/` を正本とする。** 本家版（nvaccess）の文書（例: `projectDocs/community/releaseProcess.md`、`projectDocs/dev/*`）と内容が食い違う場合は、`projectDocs/jp/` の記述を優先する。
+- 本家版文書は upstream との差分を作らないため**変更しない**。日本語版固有の手順・方針は `readme-nvdajp.md` と `projectDocs/jp/` に集約する。
+- 例: リリース手順は本家の `releaseProcess.md`（rc/beta/master ブランチ運用）ではなく、`projectDocs/jp/code-signing-dependencies.md`（releasejp の workflow_dispatch 署名リリース）を正本とする。
+
 ---
 
 ## ビルド環境準備とソースコード取得
@@ -122,13 +128,13 @@ Issue のクローズには反応しない。
 
 ### 設定方法
 
-リポジトリ変数 `MILESTONE_ID` に、自動割り当て先マイルストーンの数値 ID を設定する。現在の対象は [2026.2jp](https://github.com/nvdajp/nvdajp/milestone/78)（ID: `78`）。
+リポジトリ変数 `MILESTONE_ID` に、自動割り当て先マイルストーンの数値 ID を設定する。現在の対象は [2026.3jp](https://github.com/nvdajp/nvdajp/milestone/81)（ID: `81`）。
 
 ```powershell
-gh variable set MILESTONE_ID --body "78" --repo nvdajp/nvdajp
+gh variable set MILESTONE_ID --body "81" --repo nvdajp/nvdajp
 ```
 
-ID は GitHub の Milestones 画面 URL 末尾の数字（例: `.../milestone/78` → `78`）。設定確認:
+ID は GitHub の Milestones 画面 URL 末尾の数字（例: `.../milestone/81` → `81`）。設定確認:
 
 ```powershell
 gh variable list --repo nvdajp/nvdajp
@@ -136,11 +142,12 @@ gh variable list --repo nvdajp/nvdajp
 
 ### 運用手順
 
-1. 新リリース準備時に GitHub でマイルストーン（例: `2026.2jp`）を作成する
+1. 新リリース準備時に GitHub でマイルストーン（例: `2026.3jp`）を作成する
 2. マイルストーン URL 末尾の ID を確認する
 3. `MILESTONE_ID` をその ID に更新する（上記 `gh variable set`）
 
 リリースノート作成時に該当マイルストーンでフィルタし、変更点を把握しやすくする。
+正式リリース公開後のディスカッション連携手順などは `projectDocs/jp/code-signing-dependencies.md` の「リリース公開後の作業（ランブック）」を参照。
 
 ## git 運用方針とトラブルシューティング
 

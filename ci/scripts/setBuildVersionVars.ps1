@@ -29,6 +29,14 @@ if ($env:GITHUB_REF_TYPE -eq "tag" -and $env:GITHUB_REF_NAME.StartsWith("release
 			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 		}
 		# END JP PATCH
+		# BEGIN JP PATCH (releasejp: derive version from buildVersion.py for workflow_dispatch signed releases)
+		if ($env:GITHUB_REF_NAME -eq "releasejp" -and $env:GITHUB_EVENT_NAME -eq "workflow_dispatch") {
+			$version = python -c "import sys; sys.path.append('source'); import buildVersion; print(f'{buildVersion.version_year}.{buildVersion.version_major}jp')"
+			$release = 1
+			$versionType = "nvdajp"
+			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+		}
+		# END JP PATCH
 		if ($env:GITHUB_REF_NAME.StartsWith("try-release-")) {
 			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 		}
