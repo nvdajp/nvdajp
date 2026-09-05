@@ -698,83 +698,90 @@ def test_tableHeaders():
 			</table>
 		""",
 	)
-	_setConfig(SymLevel.ALL)
-	# Expected to be in browse mode
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		# into the table, describe first column header
-		"  ".join(  # noqa: FLY002
-			[
-				"table",  # enter table context
-				"with 2 rows and 3 columns",  # details of the table context
-				"row 1",  # enter row 1 context
-				"column 1",  # enter column 1 context
-				"First dash-name",  # the contents of the cell
-			],
-		),
-	)
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		# describe second column header
-		"  ".join(  # noqa: FLY002
-			[
-				"column 2",  # enter column 2 context, still in row 1, still in table
-				"right-pointing arrow   t-shirt",  # the contents of the cell
-			],
-		),
-	)
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		# describe third column header
-		"  ".join(  # noqa: FLY002
-			[
-				"column 3",  # enter column 3 context, still in row 1, still in table
-				"Don tick t",  # the contents of the cell
-			],
-		),
-	)
-	# into the first (non-header) row
-	actualSpeech = _chrome.getSpeechAfterKey("downArrow")
-	_asserts.strings_match(
-		actualSpeech,
-		# describe third column header
-		"  ".join(  # noqa: FLY002
-			[
-				"row 2",  # enter row 2 context, still in table
-				"First dash-name",  # reminder of the column name
-				"column 1",  # explicit column 2 context,
-				"a",  # the contents of the cell
-			],
-		),
-	)
+	# nvdajp: Ensure character description mode is disabled to avoid NATO phonetic (Bravo -> b, Charlie -> c)
+	spy = _NvdaLib.getSpyLib()
+	spy.set_configValue(["language", "characterDescriptionMode"], False)
 
-	_doTest(
-		navKey=Move.CARET_CHAR,
-		symbolLevel=SymLevel.NONE,
-		reportedAfterLast=EndSpeech.NONE,
-		expectedSpeech=[
-			# name of column, column number, \n cell contents
-			"t-shirt  column 2\nb",  # note symbols NOT replaced in column name
-			"Don't  column 3\nc",  # note symbols NOT replaced in column name
-		],
-	)
-	# reset to start of row.
-	_NvdaLib.getSpeechAfterKey(Move.CARET_CHAR_BACK.value)
-	_NvdaLib.getSpeechAfterKey(Move.CARET_CHAR_BACK.value)
+	try:
+		_setConfig(SymLevel.ALL)
+		# Expected to be in browse mode
+		actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+		_asserts.strings_match(
+			actualSpeech,
+			# into the table, describe first column header
+			"  ".join(  # noqa: FLY002
+				[
+					"table",  # enter table context
+					"with 2 rows and 3 columns",  # details of the table context
+					"row 1",  # enter row 1 context
+					"column 1",  # enter column 1 context
+					"First dash-name",  # the contents of the cell
+				],
+			),
+		)
+		actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+		_asserts.strings_match(
+			actualSpeech,
+			# describe second column header
+			"  ".join(  # noqa: FLY002
+				[
+					"column 2",  # enter column 2 context, still in row 1, still in table
+					"right-pointing arrow   t-shirt",  # the contents of the cell
+				],
+			),
+		)
+		actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+		_asserts.strings_match(
+			actualSpeech,
+			# describe third column header
+			"  ".join(  # noqa: FLY002
+				[
+					"column 3",  # enter column 3 context, still in row 1, still in table
+					"Don tick t",  # the contents of the cell
+				],
+			),
+		)
+		# into the first (non-header) row
+		actualSpeech = _chrome.getSpeechAfterKey("downArrow")
+		_asserts.strings_match(
+			actualSpeech,
+			# describe third column header
+			"  ".join(  # noqa: FLY002
+				[
+					"row 2",  # enter row 2 context, still in table
+					"First dash-name",  # reminder of the column name
+					"column 1",  # explicit column 2 context,
+					"a",  # the contents of the cell
+				],
+			),
+		)
 
-	_doTest(
-		navKey=Move.CARET_CHAR,
-		symbolLevel=SymLevel.ALL,
-		reportedAfterLast=EndSpeech.NONE,
-		expectedSpeech=[
-			# name of column, column number 2, \n cell contents
-			"right-pointing arrow   t-shirt  column 2\nb",  # note symbols ARE replaced in column name
-			"Don tick t  column 3\nc",  # note symbols ARE replaced in column name
-		],
-	)
+		_doTest(
+			navKey=Move.CARET_CHAR,
+			symbolLevel=SymLevel.NONE,
+			reportedAfterLast=EndSpeech.NONE,
+			expectedSpeech=[
+				# name of column, column number, \n cell contents
+				"t-shirt  column 2\nb",  # note symbols NOT replaced in column name
+				"Don't  column 3\nc",  # note symbols NOT replaced in column name
+			],
+		)
+		# reset to start of row.
+		_NvdaLib.getSpeechAfterKey(Move.CARET_CHAR_BACK.value)
+		_NvdaLib.getSpeechAfterKey(Move.CARET_CHAR_BACK.value)
+
+		_doTest(
+			navKey=Move.CARET_CHAR,
+			symbolLevel=SymLevel.ALL,
+			reportedAfterLast=EndSpeech.NONE,
+			expectedSpeech=[
+				# name of column, column number 2, \n cell contents
+				"right-pointing arrow   t-shirt  column 2\nb",  # note symbols ARE replaced in column name
+				"Don tick t  column 3\nc",  # note symbols ARE replaced in column name
+			],
+		)
+	finally:
+		_chrome.close_chrome_tab()
 
 
 def test_ignoreBlankLinesForReportLineIndentation():
