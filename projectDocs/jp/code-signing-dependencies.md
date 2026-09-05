@@ -144,6 +144,36 @@ RC で不備が見つかった場合は修正コミットを `releasejp` ブラ�
 - RC / プレリリースでは `version=2026.2jp`、`updateVersionType=nvdajp` として署名ビルドが作成される。
 - 実行後、NVDA の更新チェックは `2026.2jp` を自身のバージョンとして通知する。
 
+### リリース公開後の作業（ランブック）
+
+正式リリースの公開完了後、以下の運用作業を実施する。
+
+#### 1. リリースと連動したディスカッションの作成（前提踏襲）
+
+正式リリースの公開後、GitHub Releases と連動したディスカッション（カテゴリ「お知らせ」）を作成・紐づける。
+GitHub Releases API（`PATCH`）で `discussion_category_name` を指定することで、過去リリース（2026.1jp、2026.1.1jp 等）と同様に自動生成および相互リンクが行われる。
+
+```bash
+# タグ名から release ID を取得してディスカッションを生成・紐づけ
+gh api -X PATCH "repos/nvdajp/nvdajp/releases/$(gh api repos/nvdajp/nvdajp/releases/tags/<tag_name> --jq .id)" \
+  -f discussion_category_name="お知らせ"
+
+# 確認（discussion_url が設定されていること）
+gh api "repos/nvdajp/nvdajp/releases/tags/<tag_name>" --jq '{name: .name, tag_name: .tag_name, discussion_url: .discussion_url}'
+```
+
+#### 2. 次期マイルストーンへの自動割り当て切り替え
+
+新バージョンの正式リリース完了後、PRマージ時のマイルストーン自動付与先（`.github/workflows/assign-milestone-on-close.yml`）を次期マイルストーンに切り替える。
+
+```powershell
+# 次期マイルストーンの数値 ID を確認（例: 2026.3jp の ID が 81 の場合）
+gh variable set MILESTONE_ID --body "81" --repo nvdajp/nvdajp
+
+# 設定確認
+gh variable list --repo nvdajp/nvdajp
+```
+
 ## 関連
 
 - `jptools/scons_jp.py`
@@ -151,3 +181,4 @@ RC で不備が見つかった場合は修正コミットを `releasejp` ブラ�
 - `jptools/certBuild2023.cmd`
 - `projectDocs/jp/README.md`
 - 詳細アーカイブ: `projectDocs/jp/archive/code-signing-dependencies-details.md`
+
