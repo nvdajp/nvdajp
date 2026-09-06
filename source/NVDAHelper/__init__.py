@@ -315,9 +315,20 @@ def nvdaController_setAppSleepMode(mode: int) -> SystemErrorCodes:
 
 @WINFUNCTYPE(c_long)
 def nvdaController_isSpeakingJp() -> int:
-	import speech
+	from synthDriverHandler import getSynth
 
 	try:
+		synth = getSynth()
+		isSpeaking = getattr(synth, "isSpeaking", None)
+		if isSpeaking is not None:
+			state = bool(isSpeaking()) if callable(isSpeaking) else bool(isSpeaking)
+			return 1 if state else 0
+	except Exception:  # noqa: BLE001, S110
+		pass
+
+	try:
+		import speech
+
 		return 1 if speech.isSpeaking() else 0
 	except Exception:  # noqa: BLE001
 		return 0
