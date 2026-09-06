@@ -504,6 +504,8 @@ def buildConfigH(target, source, env):
   Microsoft RPC では、インターフェース内のメソッド順序（Opnum）でディスパッチされます。従来の日本語版 `NvdaController` インターフェース（UUID `DFF50B99-F7FD-4ca7-A82C-DAEB3E025295`）の Opnum 5（`speakSpelling` の次、`getPitch` の前）の位置に `isSpeakingJp()` を配置しているため、旧バージョンの `nvdaControllerClient.dll` を同梱した既存の外部アプリケーションから `isSpeaking()` を呼び出した場合も、NVDA 側では Opnum 5 の `isSpeakingJp` 実装へ安全にルーティングされ、後方互換性が維持されます。
 * **新規開発での推奨**:
   新規に作成する外部アプリケーションや、本家版 NVDA と共通で動作させるコードでは、本家版標準の `nvdaController_isSpeaking(boolean* speaking)` の使用が推奨されます。
+* **詳細仕様と相互互換マトリクス**:
+  Opnum の割り当て一覧、新旧クライアント DLL × 新旧/本家版 NVDA の詳細な相互互換性マトリクス、サードパーティ向け推奨実装パターンについては [`projectDocs/jp/controller-client.md`](controller-client.md) の「RPC アーキテクチャと新旧・本家版の相互互換性マトリクス」を参照してください。
 
 **関連ファイル**:
 
