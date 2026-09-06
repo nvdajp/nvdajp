@@ -9,6 +9,14 @@
 
 import bdDetect
 import braille
+try:
+	import braille.display.driver
+	import braille.display.gesture
+	_BrailleDisplayDriver = braille.display.driver.BrailleDisplayDriver
+	_BrailleDisplayGesture = braille.display.gesture.BrailleDisplayGesture
+except (ImportError, AttributeError):
+	_BrailleDisplayDriver = braille.BrailleDisplayDriver
+	_BrailleDisplayGesture = braille.BrailleDisplayGesture
 import inputCore
 import hwPortUtils
 import time
@@ -433,7 +441,7 @@ def bmDisConnect(hBrl, port):
 	return ret
 
 
-class BrailleDisplayDriver(braille.BrailleDisplayDriver):
+class BrailleDisplayDriver(_BrailleDisplayDriver):
 	name = "kgs"
 	# Translators: braille display driver description
 	description = _("KGS BrailleMemo series")
@@ -735,7 +743,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	)
 
 
-class InputGesture(braille.BrailleDisplayGesture):
+class InputGesture(_BrailleDisplayGesture):
 	source = BrailleDisplayDriver.name
 
 	def __init__(self, names, routingIndex):

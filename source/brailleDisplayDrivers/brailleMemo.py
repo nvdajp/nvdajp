@@ -10,7 +10,20 @@
 from .kgs import _connectionBeepsEnabled
 
 import braille
-import brailleInput
+try:
+	import braille.display.driver
+	import braille.display.gesture
+	_BrailleDisplayDriver = braille.display.driver.BrailleDisplayDriver
+	_BrailleDisplayGesture = braille.display.gesture.BrailleDisplayGesture
+except (ImportError, AttributeError):
+	_BrailleDisplayDriver = braille.BrailleDisplayDriver
+	_BrailleDisplayGesture = braille.BrailleDisplayGesture
+try:
+	import braille.input.gesture
+	_BrailleInputGesture = braille.input.gesture.BrailleInputGesture
+except (ImportError, AttributeError):
+	import brailleInput
+	_BrailleInputGesture = brailleInput.BrailleInputGesture
 import inputCore
 import hwPortUtils
 import time
@@ -372,7 +385,7 @@ def bmDisConnect(hBrl, port):
 	return ret
 
 
-class BrailleDisplayDriver(braille.BrailleDisplayDriver):
+class BrailleDisplayDriver(_BrailleDisplayDriver):
 	name = "brailleMemo"
 	# Translators: braille display driver description
 	description = _("BrailleMemo experimental")
@@ -542,7 +555,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	)
 
 
-class InputGesture(braille.BrailleDisplayGesture, brailleInput.BrailleInputGesture):
+class InputGesture(_BrailleDisplayGesture, _BrailleInputGesture):
 	source = BrailleDisplayDriver.name
 
 	def __init__(self, names, routingIndex):
