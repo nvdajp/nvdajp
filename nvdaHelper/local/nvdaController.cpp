@@ -61,6 +61,15 @@ error_status_t __stdcall nvdaController_speakSpelling(const wchar_t* text) {
 	return _nvdaController_speakSpelling(text);
 }
 
+// nvdajp: nvdaController_isSpeakingJp (zero-argument convention: returns 1 for speaking, 0 for stopped)
+error_status_t(__stdcall *_nvdaController_isSpeakingJp)() = nullptr;
+error_status_t __stdcall nvdaController_isSpeakingJp() {
+	if (_nvdaController_isSpeakingJp == nullptr) {
+		return ERROR_CALL_NOT_IMPLEMENTED;
+	}
+	return _nvdaController_isSpeakingJp();
+}
+
 error_status_t(__stdcall *_nvdaController_getPitch)() = nullptr;
 error_status_t __stdcall nvdaController_getPitch() {
 	if (_nvdaController_getPitch == nullptr) {

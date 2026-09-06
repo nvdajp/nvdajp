@@ -313,6 +313,16 @@ def nvdaController_setAppSleepMode(mode: int) -> SystemErrorCodes:
 	return 0
 
 
+@WINFUNCTYPE(c_long)
+def nvdaController_isSpeakingJp() -> int:
+	import speech
+
+	try:
+		return 1 if speech.isSpeaking() else 0
+	except Exception:  # noqa: BLE001
+		return 0
+
+
 # END JP PATCH
 
 
@@ -1215,6 +1225,7 @@ def initialize() -> None:
 		("nvdaController_cancelSpeech", nvdaController_cancelSpeech),
 		("nvdaController_brailleMessage", nvdaController_brailleMessage),
 		("nvdaController_speakSpelling", nvdaController_speakSpelling),
+		("nvdaController_isSpeakingJp", nvdaController_isSpeakingJp),
 		("nvdaController_isSpeaking", nvdaController_isSpeaking),
 		("nvdaController_getPitch", nvdaController_getPitch),
 		("nvdaController_setPitch", nvdaController_setPitch),

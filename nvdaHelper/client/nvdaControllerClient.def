@@ -18,7 +18,7 @@ EXPORTS
 	nvdaController_cancelSpeech
 	nvdaController_brailleMessage
 	nvdaController_speakSpelling
-	nvdaController_isSpeaking
+	nvdaController_isSpeakingJp
 	nvdaController_getPitch
 	nvdaController_setPitch
 	nvdaController_getRate

@@ -481,24 +481,37 @@ def buildConfigH(target, source, env):
 
 ### 3. NVDAHelper の機能復元
 
-#### 3.1 nvdaController 関数の復元
+#### 3.1 nvdaController 関数の復元と nvdaController_isSpeakingJp の導入
 
 `nvdaHelper/local/nvdaController.cpp` に以下の関数を復元：
 
 * `nvdaController_speakSpelling` - スペル読み上げ
-* `nvdaController_isSpeaking` - 読み上げ中かどうかの確認
+* `nvdaController_isSpeakingJp` - 読み上げ中かどうかの確認（従来の日本語版独自関数 nvdaController_isSpeaking を名称変更）
 * `nvdaController_getPitch` - ピッチ取得
 * `nvdaController_setPitch` - ピッチ設定
 * `nvdaController_getRate` - 速度取得
 * `nvdaController_setRate` - 速度設定
 * `nvdaController_setAppSleepMode` - アプリケーションスリープモード設定
 
-`nvdaController_isSpeaking` については、アドオン互換性維持のため、背後の synth 実装が `isSpeaking()`（callable）を提供する場合と `isSpeaking` 属性（bool）を提供する場合の両方を受け入れる方針を明記する。
+##### nvdaController_isSpeaking の衝突回避と nvdaController_isSpeakingJp
+
+本家版 2026.3 で `nvdaController_isSpeaking(boolean* speaking)`（`NvdaController3` インターフェース、戻り値は `error_status_t`、読み上げ中フラグは出力ポインタ引数）が正式に追加されました。
+従来の日本語版では引数なしで `int`（読み上げ中: 1 / 停止: 0）を直接返す同名関数が提供されていたため、シンボルおよびシグネチャの衝突が発生していました。
+
+このため、日本語版独自関数を `nvdaController_isSpeakingJp()` として改名・提供し、本家版の `nvdaController_isSpeaking()` と併存・両立させました。
+
+* **RPC ABI と既存アプリの後方互換性**:
+  Microsoft RPC では、インターフェース内のメソッド順序（Opnum）でディスパッチされます。従来の日本語版 `NvdaController` インターフェース（UUID `DFF50B99-F7FD-4ca7-A82C-DAEB3E025295`）の Opnum 5（`speakSpelling` の次、`getPitch` の前）の位置に `isSpeakingJp()` を配置しているため、旧バージョンの `nvdaControllerClient.dll` を同梱した既存の外部アプリケーションから `isSpeaking()` を呼び出した場合も、NVDA 側では Opnum 5 の `isSpeakingJp` 実装へ安全にルーティングされ、後方互換性が維持されます。
+* **新規開発での推奨**:
+  新規に作成する外部アプリケーションや、本家版 NVDA と共通で動作させるコードでは、本家版標準の `nvdaController_isSpeaking(boolean* speaking)` の使用が推奨されます。
 
 **関連ファイル**:
 
 * `nvdaHelper/interfaces/nvdaController/nvdaController.idl` - インターフェース定義
 * `nvdaHelper/interfaces/nvdaController/nvdaController.acf` - 属性設定
+* `nvdaHelper/client/nvdaControllerClient.def` - DLL エクスポート定義
+* `nvdaHelper/local/nvdaHelperLocal.def` - 内部エクスポート定義
+* `projectDocs/jp/controller-client.md` - コントローラークライアントの詳細仕様ドキュメント
 
 ### 4. テストの修正とドキュメント化
 

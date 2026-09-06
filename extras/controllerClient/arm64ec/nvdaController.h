@@ -120,6 +120,8 @@ extern RPC_IF_HANDLE nvdaController___MIDL_itf_nvdaController_0000_0000_v0_0_s_i
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_speakSpelling(
     /* [string][in] */ const wchar_t *text);
 
+/* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_isSpeakingJp( void);
+
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_getPitch( void);
 
 /* [comm_status][fault_status] */ error_status_t __stdcall nvdaController_setPitch(

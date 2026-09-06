@@ -115,6 +115,12 @@ interface NvdaController {
 
 /**
  * #nvdajp
+ * Is speaking status (nvdajp compatible zero-argument function: returns 1 for speaking, 0 for stopped)
+ */
+	error_status_t __stdcall isSpeakingJp();
+
+/**
+ * #nvdajp
  * Get pitch voice
  */
 	error_status_t __stdcall getPitch();
