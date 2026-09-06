@@ -8,6 +8,14 @@
 # Copyright (C) 2011-2019 Takuya Nishimoto
 
 import braille
+try:
+	import braille.display.driver
+	import braille.display.gesture
+	_BrailleDisplayDriver = braille.display.driver.BrailleDisplayDriver
+	_BrailleDisplayGesture = braille.display.gesture.BrailleDisplayGesture
+except (ImportError, AttributeError):
+	_BrailleDisplayDriver = braille.BrailleDisplayDriver
+	_BrailleDisplayGesture = braille.BrailleDisplayGesture
 import inputCore
 import time
 import tones
@@ -214,7 +222,7 @@ def bmDisConnect(hBrl, port):
 	return ret
 
 
-class BrailleDisplayDriver(braille.BrailleDisplayDriver):
+class BrailleDisplayDriver(_BrailleDisplayDriver):
 	name = "kgsbn46"
 	# Translators: braille display driver description
 	description = _("KGS BrailleNote 46C/46D")
@@ -360,7 +368,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	)
 
 
-class InputGesture(braille.BrailleDisplayGesture):
+class InputGesture(_BrailleDisplayGesture):
 	source = BrailleDisplayDriver.name
 
 	def __init__(self, names, routingIndex):
