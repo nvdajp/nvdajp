@@ -820,7 +820,7 @@ def Mecab_correctFeatures(
 				if logwrite_:
 					logwrite_(
 						f"mecab_correctFeatures: corrected feature too long "
-						f"({len(feature)} chars), skipped correction"
+						f"({len(feature)} chars), skipped correction",
 					)
 				continue
 			Mecab_setFeature(mf, pos, feature, CODE_=CODE_)
