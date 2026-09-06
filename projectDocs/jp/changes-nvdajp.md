@@ -870,6 +870,18 @@ PR #730（nvaccess/beta マージ）のレビューで判明した残課題を `
 * `tests/system/libraries/SystemTestSpy/speechSpyGlobalPlugin.py`: 設定値を取得する `get_configValue` を追加（`set_configValue` は自動復元しないため）。
 * `tests/system/robot/symbolPronunciationTests.py`: `characterDescriptionMode` を `False` に一時変更する 3 テスト（`test_delayedDescriptions` / `test_symbolInSpeechUI` / `test_tableHeaders`）で、テスト終了時に元の値へ復元するようにした。将来の upstream マージで後続テストが JP CI のみ失敗する構造的な問題を緩和する。
 
+### MeCab feature バッファの境界チェック（セキュリティ修正）
+
+JTalk の MeCab 解析では各 feature を msvcrt `malloc` で確保した固定長 2,000 バイト（`mecab.py` の `FELEN`）のヒープバッファに格納する。解析パス（`Mecab_analysis`）には `assert len(s) < FELEN` があるが、解析後の補正処理（`Mecab_correctFeatures`）の書き戻しパスは無防備で、生成物の長さを確認せずに `memmove` で同じバッファへ書き戻していた。
+
+* 実測（2026-09-06、既定辞書）: 未知語の 1 形態素は最大約 29 文字で打ち切られ、補正による増幅は最大約 735 バイトで収まり、現行辞書では 2,000 バイトには届かない。ただしこの上限は MeCab の lattice 挙動と辞書内容に依存する非公式な不変条件であり、userdic や補正パターンの将来変更で崩れ得る。
+* `source/synthDrivers/jtalk/mecab.py`:
+  * `Mecab_setFeature`: `len(s_encoded) >= FELEN` で `ValueError` を送出し、ヒープ破壊の代わりに fail-fast する（解析パスの assert と整合）。
+  * `Mecab_correctFeatures`: PATTERN 1/2（読み未知の形態素を 1 文字ずつ再解析して読み・発音を連結）で、構築した feature が `FELEN` に収まらない場合は補正をスキップして元の形態素を残す（JTalk には読み未知のフォールバックが既にある）。スキップ時は `logwrite_` で記録。
+  * `mecab_analyze_and_correct`: `logwrite_` を `Mecab_correctFeatures` へ渡すようにした。
+* テスト: `tests/unit/test_jpMecabSetFeature.py`（境界単体テスト、MeCab DLL 不要）、`miscDepsJp/jptools/test.py` の `test_jtalk_long_unknown_run_feature_bounds`（実 MeCab パイプラインでの上限回帰テスト。`jtalk_pipeline_probe` の `_probe_one` に `maxFeatureLen` を追加）。
+* 同種の純 Python 実装 `source/libkuraji/mecab_correct.py`（libkuraji 上流由来）は固定長バッファを持たないため影響なし。nvdajpmiscdep 側の旧 jtalk ソースは 2023-09 に凍結済み（現行は本リポジトリの `source/synthDrivers/jtalk` を import する）。
+
 ---
 
 ## 2025.3jp からの移行で確認が必要な項目（TODO）
