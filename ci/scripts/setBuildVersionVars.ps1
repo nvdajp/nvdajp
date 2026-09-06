@@ -19,6 +19,21 @@ if ($env:GITHUB_REF_TYPE -eq "tag" -and $env:GITHUB_REF_NAME.StartsWith("release
 		$version = "pr$env:pullRequestNumber-$BUILD_NUMBER,$commitVersion"
 	} elseif ($env:GITHUB_REF_NAME -eq "master") {
 		$version = "alpha-$BUILD_NUMBER,$commitVersion"
+	} elseif ($env:GITHUB_REF_NAME -eq "alphajp" -and $env:GITHUB_EVENT_NAME -eq "workflow_dispatch") {
+		# BEGIN JP PATCH (alphajp workflow_dispatch release: align with local build versioning)
+		# Use nowdate computed once in the matrix job if available; otherwise compute it here.
+		if ($env:NOWDATE) {
+			$nowdate = $env:NOWDATE
+		} else {
+			$jstNow = (Get-Date).ToUniversalTime().AddHours(9)
+			$nowdate = $jstNow.ToString("yyMMdd") + [char]($jstNow.Hour + 97)
+		}
+		$version = "jpalpha_$nowdate"
+		$versionType = "nvdajpalpha"
+		$release = 1
+		Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+		Write-Output "nowdate=$nowdate" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+		# END JP PATCH
 	} else {
 		$version = "$env:GITHUB_REF_NAME-$BUILD_NUMBER,$commitVersion"
 		# BEGIN JP PATCH (betajp: use nowdate-based version like 2026.2jp-beta-260720a)
