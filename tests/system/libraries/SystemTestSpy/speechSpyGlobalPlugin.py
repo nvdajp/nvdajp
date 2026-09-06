@@ -116,6 +116,18 @@ class NVDASpyLib:
 		ultimateKey = keyPath[-1]
 		penultimateConf[ultimateKey] = val
 
+	# nvdajp: read a config value so tests can save and restore values they
+	# temporarily flip (set_configValue never restores automatically).
+	def get_configValue(self, keyPath: ConfKeyPath) -> ConfKeyVal:
+		import config
+
+		if not keyPath or len(keyPath) < 1:
+			raise ValueError("Key path not provided")
+		conf = config.conf
+		for key in keyPath:
+			conf = conf[key]
+		return conf
+
 	def assignGesture(
 		self,
 		gesture: str,

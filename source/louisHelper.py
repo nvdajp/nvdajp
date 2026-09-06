@@ -232,14 +232,27 @@ def translate(
 		if first_table is not None:
 			log.debug(text)
 			nabcc = config.conf["braille"]["expandAtCursor"]
-			braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
-				text,
-				cursorPos=cursorPos or 0,
-				nabcc=nabcc,
-				louisTranslate=louis.translate if louis_table_list else None,
-				louisTableList=louis_table_list,
-				use_foreign_quotes=bool(louis_table_list),
-			)
+			# nvdajp: libkuraji enforces a max input length (65,536 chars by
+			# default) and raises InputTooLongError. Catch it here so an
+			# oversized line degrades to a liblouis translation instead of
+			# raising inside the braille region update and leaving the
+			# display stale.
+			from libkuraji.limits import InputTooLongError
+
+			try:
+				braille, brailleToRawPos, rawToBraillePos, brailleCursorPos = jpTranslate(
+					text,
+					cursorPos=cursorPos or 0,
+					nabcc=nabcc,
+					louisTranslate=louis.translate if louis_table_list else None,
+					louisTableList=louis_table_list,
+					use_foreign_quotes=bool(louis_table_list),
+				)
+			except InputTooLongError:
+				log.warning(
+					"Japanese input exceeds the libkuraji length limit; falling back to liblouis.",
+				)
+				first_table = None
 	else:
 		first_table = None
 	# END JP PATCH

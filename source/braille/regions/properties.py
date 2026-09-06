@@ -24,13 +24,16 @@ from ..formatting import (
 	getParagraphStartMarker,
 )
 from ..labels import (
+	# BEGIN JP PATCH
+	# JP replaces the direct label dict lookups (landmarkLabels,
+	# negativeStateLabels, roleLabels) with translation helpers.
 	_nvdajp,
 	getLandmarkLabel,
-	# END JP PATCH
 	getNegativeStateLabels,
 	getPositiveStateLabels,
 	getRoleLabel,
 	positiveStateLabels,
+	# END JP PATCH
 )
 
 
@@ -219,11 +222,8 @@ def getPropertiesBraille(**propertyValues) -> str:
 				rowStr = _("r{rowNumber}").format(rowNumber=rowNumber)
 			textList.append(rowStr)
 	if columnNumber:  # noqa: SIM102
-		# BEGIN JP PATCH (moved to above) https://github.com/nvdajp/nvdajp/issues/109
-		# columnHeaderText = propertyValues.get("columnHeaderText")
-		# if columnHeaderText:
-		# 	textList.append(columnHeaderText)
-		# END JP PATCH
+		# columnHeaderText is emitted above (JP PATCH, issue #109), before the
+		# row/column number lines, per the JP cell-header reading order.
 		if includeTableCellCoords and not cellCoordsText:
 			if columnSpan > 1:
 				# Translators: Displayed in braille for the table cell column numbers when a cell spans multiple columns.

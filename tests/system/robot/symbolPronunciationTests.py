@@ -361,6 +361,7 @@ def test_delayedDescriptions():
 	_notepad.prepareNotepad(_getDelayedDescriptionsTestSample())
 	# nvdajp: Ensure character description mode is disabled so delayedCharacterDescriptions can be tested in isolation
 	spy = _NvdaLib.getSpyLib()
+	_prevCharDescMode = spy.get_configValue(["language", "characterDescriptionMode"])
 	spy.set_configValue(["language", "characterDescriptionMode"], False)
 
 	# Ensure this feature is disabled by default.
@@ -370,6 +371,9 @@ def test_delayedDescriptions():
 	spy.set_configValue(["speech", "delayedCharacterDescriptions"], True)
 
 	_testDelayedDescription()
+
+	# nvdajp: restore so the flipped value does not leak into later tests
+	spy.set_configValue(["language", "characterDescriptionMode"], _prevCharDescMode)
 
 
 def test_selByWord():
@@ -592,6 +596,7 @@ def test_symbolInSpeechUI():
 	_notepad.prepareNotepad(character)
 	# nvdajp: Ensure character description mode is disabled to avoid NATO phonetic (Tango -> t)
 	spy = _NvdaLib.getSpyLib()
+	_prevCharDescMode = spy.get_configValue(["language", "characterDescriptionMode"])
 	spy.set_configValue(["language", "characterDescriptionMode"], False)
 	spy.set_configValue(["speech", "delayedCharacterDescriptions"], False)
 	_setConfig(SymLevel.ALL)
@@ -620,6 +625,9 @@ def test_symbolInSpeechUI():
 		[f"{expected}\n{character}"],
 		msg="actual vs expected. NVDA speech UI substitutes symbols",
 	)
+
+	# nvdajp: restore so the flipped value does not leak into later tests
+	spy.set_configValue(["language", "characterDescriptionMode"], _prevCharDescMode)
 
 
 def _setConfig(
@@ -700,6 +708,7 @@ def test_tableHeaders():
 	)
 	# nvdajp: Ensure character description mode is disabled to avoid NATO phonetic (Bravo -> b, Charlie -> c)
 	spy = _NvdaLib.getSpyLib()
+	_prevCharDescMode = spy.get_configValue(["language", "characterDescriptionMode"])
 	spy.set_configValue(["language", "characterDescriptionMode"], False)
 
 	try:
@@ -782,6 +791,8 @@ def test_tableHeaders():
 		)
 	finally:
 		_chrome.close_chrome_tab()
+		# nvdajp: restore so the flipped value does not leak into later tests
+		spy.set_configValue(["language", "characterDescriptionMode"], _prevCharDescMode)
 
 
 def test_ignoreBlankLinesForReportLineIndentation():

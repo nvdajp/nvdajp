@@ -2,6 +2,7 @@
 # Copyright (C) 2026 Takuya Nishimoto
 # License: BSD 3-Clause. See LICENSE.
 
+import functools
 import os
 
 DEFAULT_MAX_INPUT_CHARS = 65536
@@ -11,10 +12,16 @@ class InputTooLongError(ValueError):
 	"""Raised when input text exceeds the configured character limit."""
 
 
+@functools.cache
 def get_max_input_chars() -> int | None:
 	"""Return the max input length, or None when unlimited.
 
 	Override with LIBKURAJI_MAX_INPUT_CHARS. A value of 0 disables the limit.
+
+	The value is resolved once and memoized: this runs on every translate
+	call (i.e. on every braille rendering), so the environment is read only
+	on the first call. Call ``get_max_input_chars.cache_clear()`` to re-read
+	the environment (e.g. from tests that mutate it at runtime).
 	"""
 	raw = os.environ.get("LIBKURAJI_MAX_INPUT_CHARS", "").strip()
 	if not raw:

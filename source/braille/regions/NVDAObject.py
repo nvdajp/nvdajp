@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 import config
 import controlTypes
+from config.configFlags import ReportTableHeaders
 from controlTypes.state import State
 from editableText import EditableText
 from utils.security import objectBelowLockScreenAndWindowsIsLocked
@@ -87,19 +88,24 @@ class NVDAObjectRegion(Region):
 		)
 		description = obj.description if _shouldUseDescription else None
 		detailsRoles = obj.annotations.roles if obj.annotations else None
-		# BEGIN JP PATCH
+		# BEGIN JP PATCH https://github.com/nvdajp/nvdajp/issues/109
+		# Gate on the config value first so the (possibly expensive) header
+		# properties are never fetched when table headers are not reported.
+		# Match the speech-side per-direction gating (see speech.py
+		# getTableCellSpeech) instead of testing the enum for truthiness.
+		reportTableHeaders = config.conf["documentFormatting"]["reportTableHeaders"]
 		columnHeaderText = None
-		try:
-			if hasattr(obj, "columnHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"]:
+		if reportTableHeaders in (ReportTableHeaders.ROWS_AND_COLUMNS, ReportTableHeaders.COLUMNS):
+			try:
 				columnHeaderText = obj.columnHeaderText
-		except NotImplementedError:
-			pass
+			except NotImplementedError:
+				pass
 		rowHeaderText = None
-		try:
-			if hasattr(obj, "rowHeaderText") and config.conf["documentFormatting"]["reportTableHeaders"]:
+		if reportTableHeaders in (ReportTableHeaders.ROWS_AND_COLUMNS, ReportTableHeaders.ROWS):
+			try:
 				rowHeaderText = obj.rowHeaderText
-		except NotImplementedError:
-			pass
+			except NotImplementedError:
+				pass
 		# END JP PATCH
 		text = getPropertiesBraille(
 			name=name,
