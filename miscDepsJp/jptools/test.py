@@ -127,6 +127,23 @@ class JtalkTests(unittest.TestCase):
 			"njd_set_digit failed to merge 12; labels=%r" % result["labelsSnippet"],
 		)
 
+	def test_jtalk_long_unknown_run_feature_bounds(self):
+		"""Security regression: MeCab feature slots are fixed 2000-byte
+		heap buffers (mecab.py FELEN). A long unknown-word run is re-parsed
+		character by character in Mecab_correctFeatures (PATTERN 1/2), so
+		the corrected features must stay within the slot size instead of
+		overflowing the heap. The braille pattern characters here expand to
+		~14 kana each, which amplifies the reading the most.
+		"""
+		result = jtalk_pipeline_probe.probe_text("∫⣿♪" * 200)
+		self.assertTrue(result["hasWave"])
+		self.assertLess(
+			result["maxFeatureLen"],
+			2000,
+			"corrected MeCab feature exceeded the fixed slot size: %r"
+			% result["maxFeatureLen"],
+		)
+
 
 if __name__ == "__main__":
 	unittest.main()

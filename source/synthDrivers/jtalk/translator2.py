@@ -99,6 +99,13 @@ def translate(
 	louisTableList=None,
 	use_foreign_quotes=False,
 ):
+	"""Translate with the libkuraji engine.
+
+	Note: libkuraji enforces a max input length (65,536 chars by default,
+	see libkuraji.limits) and raises InputTooLongError. The braille path in
+	louisHelper catches it and falls back to liblouis; other callers must
+	handle the exception themselves.
+	"""
 	_ensure_initialized(logwrite)
 	return _t2.translate(
 		inbuf,

@@ -149,15 +149,18 @@ def isNVDAModifierKey(vkCode: int, extended: bool) -> bool:
 			(config.conf["keyboard"]["NVDAModifierKeys"] & NVDAKey.CAPS_LOCK) and vkCode == winUser.VK_CAPITAL
 		)
 		# BEGIN JP PATCH
+		# JP: test vkCode before the config lookups so that the (relatively
+		# expensive) config walks are skipped on the hot keystroke path for
+		# keys that cannot match.
 		or (
-			config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"]
-			and (vkCode == winUser.VK_NONCONVERT or (vkCode == winUser.VK_IME_OFF and extended))
+			(vkCode == winUser.VK_NONCONVERT or (vkCode == winUser.VK_IME_OFF and extended))
+			and config.conf["keyboard"]["useNonConvertAsNVDAModifierKey"]
 		)
 		or (
-			config.conf["keyboard"]["useConvertAsNVDAModifierKey"]
-			and (vkCode == winUser.VK_CONVERT or (vkCode == winUser.VK_IME_ON and extended))
+			(vkCode == winUser.VK_CONVERT or (vkCode == winUser.VK_IME_ON and extended))
+			and config.conf["keyboard"]["useConvertAsNVDAModifierKey"]
 		)
-		or (config.conf["keyboard"]["useEscapeAsNVDAModifierKey"] and vkCode == winUser.VK_ESCAPE)
+		or (vkCode == winUser.VK_ESCAPE and config.conf["keyboard"]["useEscapeAsNVDAModifierKey"])
 		# END JP PATCH
 	):
 		return True

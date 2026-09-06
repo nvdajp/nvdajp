@@ -1593,12 +1593,15 @@ def speakTextInfo(
 ) -> bool:
 	# BEGIN JP PATCH
 	# nvdajp: Character description mode support
+	# useDetails=True matches the review-cursor path in globalCommands.py
+	# (script_navigatorScript_repeatCount) so caret and review navigation
+	# read the same detailed descriptions.
 	if (
 		config.conf["language"]["characterDescriptionMode"]
 		and reason == OutputReason.CARET
 		and unit == textInfos.UNIT_CHARACTER
 	):
-		speakSpelling(info.text, useCharacterDescriptions=True)
+		speakSpelling(info.text, useCharacterDescriptions=True, useDetails=True)
 		return True
 	# END JP PATCH
 	speechGen = getTextInfoSpeech(

@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from ctypes import string_at
 from pathlib import Path
 
 
@@ -89,6 +90,10 @@ def _probe_one(text: str, feature_limit: int = 8) -> dict:
 	Mecab_correctFeatures(mf)
 	feature_head = _iter_features(mf, limit=feature_limit)
 	token_count = mf.size
+	max_feature_len = max(
+		(len(string_at(mf.feature[i])) for i in range(mf.size)),
+		default=0,
+	)
 	Mecab_utf8_to_cp932(mf)
 	buf = libjt_synthesis(mf.feature, mf.size, fperiod_=240)
 	libjt_refresh()
@@ -97,6 +102,7 @@ def _probe_one(text: str, feature_limit: int = 8) -> dict:
 		"prepared": prepared,
 		"tokenCount": token_count,
 		"featureHead": feature_head,
+		"maxFeatureLen": max_feature_len,
 		"waveBytes": len(buf) if buf else 0,
 		"hasWave": bool(buf),
 	}

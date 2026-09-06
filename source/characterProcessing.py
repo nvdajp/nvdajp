@@ -17,7 +17,7 @@ from typing import (
 	Generic,
 	TypeVar,
 )
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 
 import NVDAState
 from logHandler import log
@@ -92,6 +92,38 @@ class LocaleDataMap(Generic[_LocaleDataT]):  # noqa: UP046
 		self._noDataLocalesCache.clear()
 
 
+def _iterNvdajpTabDic(
+	fileName: str,
+	*,
+	skipComments: bool = True,
+	hasCodeField: bool = False,
+	warnOnBadLine: bool = True,
+) -> Generator[tuple[str, list[str]]]:
+	"""Yield ``(key, fields)`` for each well-formed line of a nvdajp tab-separated dictionary.
+
+	``key`` is the first field; ``fields`` is the remainder of the line.
+	When ``hasCodeField`` is set, the second field (a code point used by the
+	characters.dic format) is consumed and discarded, so ``fields[0]`` is the
+	reading/description field. Blank, comment-only and unparseable lines are
+	skipped (with a warning when ``warnOnBadLine`` is set).
+	"""
+	with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
+		for line in f:
+			if skipComments and (line.isspace() or line.startswith("#")):
+				continue
+			line = line.rstrip("\r\n")
+			temp = line.split("\t")
+			if len(temp) <= 1:
+				if warnOnBadLine:
+					log.warning(f"can't parse line '{line}'")
+				continue
+			key = temp.pop(0)
+			if hasCodeField:
+				# The code field exists in the file format but is not used.
+				temp.pop(0)
+			yield key, temp
+
+
 class CharacterDescriptions:
 	"""
 	Represents a map of characters to one or more descriptions (examples) for that character.
@@ -125,79 +157,51 @@ class CharacterDescriptions:
 		self._readings = {}
 		fileName = os.path.join(globalVars.appDir, "locale", locale, "characters.dic")
 		if os.path.isfile(fileName):
-			with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
-				for line in f:
-					if line.isspace() or line.startswith("#"):
-						continue
-					line = line.rstrip("\r\n")
-					temp = line.split("\t")
-					if len(temp) > 1:
-						key = temp.pop(0)
-						code = temp.pop(0)
-						rd = temp.pop(0)
-						if rd.startswith("[") and rd.endswith("]"):
-							self._readings[key] = rd[1:-1]
-						self._entries[key] = temp
-					else:
-						log.warning(f"can't parse line '{line}'")
-				log.debug(f"Loaded {len(self._readings)} readings.")
+			for key, fields in _iterNvdajpTabDic(fileName, hasCodeField=True):
+				rd = fields[0]
+				if rd.startswith("[") and rd.endswith("]"):
+					self._readings[key] = rd[1:-1]
+				self._entries[key] = fields[1:]
+			log.debug(f"Loaded {len(self._readings)} readings.")
 		# nvdajp characters.dic end
 
 		# nvdajp cldr emoji
+		# cldr.dic lines have no comment syntax and short lines are common,
+		# so comment skipping and bad-line warnings stay off here.
 		if "cldr" in config.conf["speech"]["symbolDictionaries"]:  # type: ignore
 			fileName = os.path.join(globalVars.appDir, "locale", locale, "cldr.dic")
 			if os.path.isfile(fileName):
 				import unicodedata
 
-				with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
-					for line in f:
-						line = line.rstrip("\r\n")
-						temp = line.split("\t")
-						if len(temp) > 1:
-							key = temp.pop(0)
-							if unicodedata.category(key[0]) not in ("So", "Cn"):
-								continue
-							rd = temp.pop(0)
-							self._readings[key] = rd
-							self._entries[key] = (rd,)
+				for key, fields in _iterNvdajpTabDic(
+					fileName,
+					skipComments=False,
+					warnOnBadLine=False,
+				):
+					if unicodedata.category(key[0]) not in ("So", "Cn"):
+						continue
+					rd = fields[0]
+					self._readings[key] = rd
+					self._entries[key] = (rd,)
 		# nvdajp cldr emoji end
 
 		# nvdajp users chardesc
 		fileName = os.path.join(globalVars.appArgs.configPath, f"characterDescriptions-{locale}.dic")
 		if os.path.isfile(fileName):
 			log.debug(f"Loading users characterDescriptions-{locale}.dic")
-			with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
-				for line in f:
-					if line.isspace() or line.startswith("#"):
-						continue
-					line = line.rstrip("\r\n")
-					temp = line.split("\t")
-					if len(temp) > 1:
-						key = temp.pop(0)
-						self._entries[key] = temp
-					else:
-						log.warning(f"can't parse line '{line}'")
-				log.debug("Loaded users characterDescriptions.")
+			for key, fields in _iterNvdajpTabDic(fileName):
+				self._entries[key] = fields
+			log.debug("Loaded users characterDescriptions.")
 		# nvdajp users chardesc end
 
 		# nvdajp users characters
 		fileName = os.path.join(globalVars.appArgs.configPath, f"characters-{locale}.dic")
 		if os.path.isfile(fileName):
-			with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
-				for line in f:
-					if line.isspace() or line.startswith("#"):
-						continue
-					line = line.rstrip("\r\n")
-					temp = line.split("\t")
-					if len(temp) > 1:
-						key = temp.pop(0)
-						code = temp.pop(0)  # noqa: F841
-						rd = temp.pop(0)
-						if rd.startswith("[") and rd.endswith("]"):
-							self._readings[key] = rd[1:-1]
-						self._entries[key] = temp
-					else:
-						log.warning(f"can't parse line '{line}'")
+			for key, fields in _iterNvdajpTabDic(fileName, hasCodeField=True):
+				rd = fields[0]
+				if rd.startswith("[") and rd.endswith("]"):
+					self._readings[key] = rd[1:-1]
+				self._entries[key] = fields[1:]
 		# nvdajp users characters end
 		# END JP PATCH
 

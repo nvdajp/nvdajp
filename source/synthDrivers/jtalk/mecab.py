@@ -210,7 +210,7 @@ def mecab_analyze_and_correct(
 	mf = NonblockingMecabFeatures()
 	with lock:
 		Mecab_analysis(src, mf, logwrite_=logwrite_)
-		Mecab_correctFeatures(mf)
+		Mecab_correctFeatures(mf, logwrite_=logwrite_)
 	return mf
 
 
@@ -627,6 +627,12 @@ def Mecab_setFeature(
 	CODE_: str = CODE,
 ) -> None:
 	s_encoded = s.encode(CODE_, "ignore")
+	# Security: each feature slot is a fixed FELEN-byte heap buffer
+	# (see NonblockingMecabFeatures). Writing a longer feature would
+	# overflow the heap. Fail loudly instead, the same way Mecab_analysis
+	# asserts len(s) < FELEN for freshly parsed nodes.
+	if len(s_encoded) >= FELEN:
+		raise ValueError(f"mecab feature too long: {len(s_encoded)} bytes >= {FELEN}")
 	buf = create_string_buffer(s_encoded)
 	dst_ptr = mf.feature[pos]
 	src_ptr = byref(buf)
@@ -730,7 +736,11 @@ def _makeBraillePatternReading(s):
 	return "".join(ar) + "ノテン"
 
 
-def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: str = CODE) -> None:
+def Mecab_correctFeatures(
+	mf: MecabFeatures | NonblockingMecabFeatures,
+	CODE_: str = CODE,
+	logwrite_: LogWriteFunc = None,
+) -> None:
 	for pos in range(mf.size):
 		ar = Mecab_getFeature(mf, pos, CODE_=CODE_).split(",")
 		if pos >= 1:
@@ -800,6 +810,19 @@ def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: s
 						mora += getMoraCount(ar2[10])
 			nbmf = None
 			feature = f"{hyoki},名詞,普通名詞,*,*,*,*,{hyoki},{yomi},{pron},0/{mora},C0"
+			# Security: this pattern concatenates one re-parsed reading per
+			# input character, so yomi/pron can grow far beyond the original
+			# morpheme. The feature slot is a fixed FELEN-byte heap buffer;
+			# if the result would not fit, skip the correction and keep the
+			# original feature (JTalk already falls back for morphemes whose
+			# reading is unknown).
+			if len(feature.encode(CODE_, "ignore")) >= FELEN:
+				if logwrite_:
+					logwrite_(
+						f"mecab_correctFeatures: corrected feature too long "
+						f"({len(feature)} chars), skipped correction",
+					)
+				continue
 			Mecab_setFeature(mf, pos, feature, CODE_=CODE_)
 		elif ar2 and ar[0] == "ー" and ar[1] == "名詞" and ar[2] == "一般":
 			# PATTERN 3
