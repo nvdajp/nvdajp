@@ -69,6 +69,108 @@
 
 ---
 
+## RPC アーキテクチャと新旧・本家版の相互互換性マトリクス
+
+### 1. RPC 通信における Opnum（Operation Number）の仕組み
+
+Windows のローカル名前付きパイプやネットワーク RPC（DCE/RPC）では、関数名（文字列）は通信パケット上を送信されません。呼び出し時には以下のペアのみが送受信されます：
+
+1. **インターフェースの UUID**
+2. **関数の連番（0 から始まるメソッドインデックス: Opnum）**
+
+MIDL コンパイラは、IDL ファイル内で宣言されたメソッドの順序に従い、上から順に Opnum 0, 1, 2... を割り当てます。
+
+```text
+【インターフェース 1: NvdaController (UUID: DFF50B99-F7FD-4ca7-A82C-DAEB3E025295)】
+  Opnum 0:  testIfRunning()
+  Opnum 1:  speakText(text)
+  Opnum 2:  cancelSpeech()
+  Opnum 3:  brailleMessage(message)
+  Opnum 4:  speakSpelling(text)           [日本語版独自拡張]
+  Opnum 5:  isSpeakingJp()               [日本語版独自拡張: 旧 isSpeaking 互換スロット]
+  Opnum 6:  getPitch()                   [日本語版独自拡張]
+  Opnum 7:  setPitch(pitch)              [日本語版独自拡張]
+  Opnum 8:  getRate()                    [日本語版独自拡張]
+  Opnum 9:  setRate(rate)                [日本語版独自拡張]
+  Opnum 10: setAppSleepMode(mode)        [日本語版独自拡張]
+
+【インターフェース 2: NvdaController2 (UUID: 6056e488-863a-441a-ba62-a279fa759d57)】
+  Opnum 0:  getProcessId(pid)
+  Opnum 1:  speakSsml(ssml, symbolLevel, priority, asynchronous)
+  Opnum 2:  setOnSsmlMarkReachedCallback(callback)
+
+【インターフェース 3: NvdaController3 (UUID: 53b26c64-42b7-4b68-b7ae-247cead24a73)】
+  Opnum 0:  isSpeaking([out] boolean* speaking)   [本家 2026.3+ 公式 API 3.0]
+```
+
+#### なぜ本家はインターフェースを新設（UUID を分離）するのか？
+既存の公開済みインターフェースに関数を追加・削除すると、Opnum の順序がずれて未定義動作や引数の誤解釈を招きます。また、古いバージョンの NVDA に対して存在しない Opnum を送ると RPC エラー（または例外）が発生します。
+本家 NV Access はこの ABI 破壊を避けるため、機能拡張時にインターフェース自体を分離（`NvdaController2`, `NvdaController3`）して UUID でバージョンを区別する設計を採用しています。
+
+#### なぜ日本語版 Opnum 5 に `isSpeakingJp()` を配置することが不可欠だったのか？
+過去の日本語版（2025.3.xjp 以前）では、`NvdaController` インターフェースの末尾に直接独自メソッドを追加していました。
+もし本家 2026.3 のマージ時に旧 `isSpeaking` を削除して `NvdaController3` に一本化してしまうと、`getPitch`〜`setAppSleepMode`（Opnum 6〜10）がすべて 1 つずつ上に繰り上がってしまいます。
+その結果、古い DLL（2025.3.xjp 等）を同梱・再配布している既存アプリケーションが `getPitch()`（旧 Opnum 6）を呼んだ際、新 NVDA 側では Opnum 6 が `setPitch()` として解釈され、重大な引数不整合や誤動作を招きます。
+Opnum 5 の位置に `isSpeakingJp()`（旧シグネチャ互換）を維持したことで、既存アプリに対する RPC バイナリ互換（ABI）が 100% 保持されています。
+
+---
+
+### 2. クライアント DLL と NVDA 本体の相互互換性マトリクス
+
+外部アプリケーションを配布するサードパーティ開発者が DLL を同梱する場合の動作マトリクスを以下に示します。
+
+#### ケース A: サードパーティが新しい日本語版 DLL（2026.3jp 以降）を同梱する場合
+
+| アプリケーションが呼び出す API | 接続先: NVDA 2026.3jp | 接続先: NVDA 2026.2jp 以前 | 接続先: 本家版 NVDA 2026.3+ | 接続先: 本家版 NVDA 2026.2 以前 |
+| :--- | :--- | :--- | :--- | :--- |
+| **`nvdaController_isSpeaking(&speaking)`**<br>（本家公式 API 3.0） | **◯ 正常動作**<br>(`NvdaController3` Opnum 0) | **× 非対応**<br>(`RPC_S_UNKNOWN_IF` / エラー返却) | **◯ 正常動作**<br>(`NvdaController3` Opnum 0) | **× 非対応**<br>(本家に該当 API なし) |
+| **`nvdaController_isSpeakingJp()`**<br>（日本語版 0 引数互換 API） | **◯ 正常動作**<br>(`NvdaController` Opnum 5) | **◯ 正常動作**<br>(旧 Opnum 5 に合流、1/0 返却) | **× 非対応**<br>(本家に Opnum 5 なし) | **× 非対応** |
+| **`speakText` / `cancelSpeech` 等**<br>（基本 API） | **◯ 正常動作** | **◯ 正常動作** | **◯ 正常動作** | **◯ 正常動作** |
+| **`speakSpelling` / `getPitch` / `setRate` 等**<br>（日本語版独自拡張 API） | **◯ 正常動作** | **◯ 正常動作** | **× 非対応**<br>(本家に該当メソッドなし) | **× 非対応** |
+
+#### ケース B: サードパーティが旧日本語版 DLL（2025.3.xjp 以前）を同梱している場合
+
+| 旧 DLL 内の呼び出し関数 | 接続先: NVDA 2026.3jp | 接続先: NVDA 2026.2jp 以前 |
+| :--- | :--- | :--- |
+| **旧 `nvdaController_isSpeaking()`** | **◯ 正常動作**（サーバー側の Opnum 5 `isSpeakingJp` が透過的に処理） | **◯ 正常動作** |
+| **`getPitch`, `setPitch`, `getRate`, `setRate`, `setAppSleepMode` (Opnum 6〜10)** | **◯ 正常動作**（Opnum がずれていないため正常通信） | **◯ 正常動作** |
+
+#### ケース C: 本家版公式のクライアント DLL を同梱している場合
+
+| アプリケーションが呼び出す API | 接続先: 日本語版 NVDA 2026.3jp | 接続先: 本家版 NVDA 2026.3+ |
+| :--- | :--- | :--- |
+| **`nvdaController_isSpeaking(&speaking)`** | **◯ 正常動作**（日本語版も `NvdaController3` を完全実装） | **◯ 正常動作** |
+
+---
+
+### 3. サードパーティ開発者への推奨実装パターン
+
+1. **日本語環境（新旧 NVDA が混在しうる環境）をターゲットにする場合**:
+   - `nvdaController_isSpeakingJp()` を使用してください。
+   - 2026.3jp でビルドした新しい DLL を同梱していても、ユーザー環境が NVDA 2026.2jp であっても 2026.3jp であっても、コードを変更することなく発話状態（1/0）を正常に取得できます。
+2. **本家版 NVDA（グローバル環境）と共通で動作させたい場合**:
+   - 本家標準の `nvdaController_isSpeaking(boolean* speaking)` を使用してください。
+   - 本家版 NVDA 2026.3 以降および日本語版 NVDA 2026.3jp 以降の両方で動作します。
+3. **最も堅牢なハイブリッド実装パターン（全バージョン対応）**:
+   - まず本家標準の `nvdaController_isSpeaking(&speaking)` を呼び出し、戻り値がエラー（非ゼロ、`RPC_S_UNKNOWN_IF` など）だった場合に `nvdaController_isSpeakingJp()` を呼び出すフォールバックを実装することで、本家版 2026.3+、日本語版 2026.3jp、日本語版 2026.2jp 以前のすべてに 1 つのバイナリで安全に対応できます。
+
+```python
+# Python でのハイブリッド判定例
+def is_speaking(client) -> bool:
+    # 1. 本家標準 API 3.0 を試行（本家 2026.3+ および 日本語版 2026.3jp+）
+    if hasattr(client, "nvdaController_isSpeaking"):
+        speaking = ctypes.c_bool()
+        res = client.nvdaController_isSpeaking(ctypes.byref(speaking))
+        if res == 0:
+            return speaking.value
+
+    # 2. 日本語版 0引数互換 API を試行（日本語版 2026.3jp+ および 2026.2jp 以前）
+    if hasattr(client, "nvdaController_isSpeakingJp"):
+        return bool(client.nvdaController_isSpeakingJp())
+
+    return False
+```
+
 ## ビルド方法
 
 ```powershell
