@@ -35,25 +35,37 @@
 | `nvdaController_speakSsml(ssml, symbolLevel, priority, asynchronous)` | SSML による音声出力 |
 | `nvdaController_setOnSsmlMarkReachedCallback(callback)` | SSML マーク到達時のコールバック設定 |
 
+### NVDA 2026.3+ API 3.0（NvdaController3 インターフェース、本家共通）
+
+| 関数 | 説明 | 戻り値 |
+|------|------|--------|
+| `nvdaController_isSpeaking(boolean* speaking)` | NVDA が発話中かどうかの確認 | 0=成功 (エラー時は Windows エラーコード)。発話状態は `*speaking` に格納 (TRUE=発話中, FALSE=停止) |
+
 ### NVDA日本語版独自拡張（nvdajp）— 2025.3.xjp 互換
 
 | 関数 | 説明 | 戻り値 |
 |------|------|--------|
 | `nvdaController_speakSpelling(const wchar_t* text)` | スペル読み上げ（1文字ずつ読み上げ） | 0=成功 |
-| `nvdaController_isSpeaking()` | 音声出力中かどうかの確認 | 0=停止中, 1=出力中 |
+| `nvdaController_isSpeakingJp()` | 音声出力中かどうかの確認（従来の 0引数互換 API） | 0=停止中, 1=出力中 |
 | `nvdaController_getPitch()` | 現在の音声ピッチ値の取得 | 0-100（スリープ時は -1） |
 | `nvdaController_setPitch(const int nPitch)` | 音声ピッチ値の変更 (0-100) | 0=成功 |
 | `nvdaController_getRate()` | 現在の音声速度値の取得 | 0-100（スリープ時は -1） |
 | `nvdaController_setRate(const int nRate)` | 音声速度値の変更 (0-100) | 0=成功 |
 | `nvdaController_setAppSleepMode(const int mode)` | アプリケーションスリープモードの制御 (0=解除, 1=設定) | 0=成功 |
 
-#### `nvdaController_isSpeaking` の互換方針（nvdajp）
+#### `isSpeaking` の互換方針（本家標準と日本語版互換の併用）
 
-日本語版では、アドオンや外部クライアントとの互換性を維持するため、`isSpeaking` の取得について以下の方針を採用する。
+本家 NVDA 2026.3 で待望の公式 `isSpeaking`（API 3.0 / `NvdaController3`）が導入されたことに伴い、日本語版では以下の**新旧併用・完全互換方針**を採用する。
 
-* **両対応を維持**: 音声ドライバーが `isSpeaking()` を callable として提供する場合と、`isSpeaking` 属性（bool）として提供する場合の両方を受け入れる。
-* **安全側のフォールバック**: 取得または呼び出しに失敗した場合は、`False`（0）として扱う。
-* SAPI5ドライバーにおける isSpeaking 属性の非推奨扱いを撤回し、日本語版では維持する。
+1. **本家標準 API との完全合流**:
+   - `nvdaController_isSpeaking(boolean* speaking)` を本家と完全に同一のシグネチャ（1引数 out パラメータ、戻り値 `error_status_t`）で提供する。新規コードや本家共通の外部アプリケーションは本 API の利用を推奨。
+2. **日本語版 0引数呼び出しの互換維持（`isSpeakingJp`）**:
+   - 従来の 0引数呼び出し・戻り値 (0/1) スタイルのコードを保護するため、`nvdaController_isSpeakingJp()` を並行して提供する。
+3. **旧 DLL 同梱アプリに対する RPC バイナリ互換（ABI）の保護**:
+   - 旧日本語版（2025.3.xjp 以前）でビルドされた `nvdaControllerClient.dll` を同梱・再配布している外部アプリケーションが、新バージョン（2026.3jp）の NVDA と通信する場合を想定し、IDL（`interface NvdaController`）内のメソッドインデックス 5 の位置に `isSpeakingJp()` を配置している。
+   - これにより、旧 DLL から RPC 経由でメソッド 5 が呼ばれた場合でもサーバー側の `isSpeakingJp()` に正しくルーティングされ、後続の `getPitch`, `setPitch`, `getRate`, `setRate`, `setAppSleepMode`（メソッド 6〜10）のインデックスのズレも生じない。
+4. **音声エンジン互換性**:
+   - 音声ドライバーが `isSpeaking()`（callable）または `isSpeaking` 属性（bool）を提供する場合の安全なフォールバックを維持する。
 
 ---
 
@@ -83,7 +95,16 @@ if client.nvdaController_testIfRunning() == 0:
     client.nvdaController_setPitch(min(100, pitch + 10))
     rate = client.nvdaController_getRate()
     client.nvdaController_setRate(max(0, rate - 5))
-    speaking = client.nvdaController_isSpeaking()  # 0=停止, 1=出力中
+
+    # 音声出力中かどうかの確認
+    # 方式A（本家 2026.3+ API 3.0 標準、out パラメータ方式）:
+    speaking = ctypes.c_bool()
+    if client.nvdaController_isSpeaking(ctypes.byref(speaking)) == 0 and speaking.value:
+        print("発話中 (API 3.0)")
+
+    # 方式B（日本語版 0引数互換方式、2025.3.xjp 互換）:
+    if client.nvdaController_isSpeakingJp():
+        print("発話中 (isSpeakingJp)")
 ```
 
 ## デモスクリプト
@@ -91,7 +112,7 @@ if client.nvdaController_testIfRunning() == 0:
 | スクリプト | 対象 API | 説明 |
 |------------|----------|------|
 | `jptools/nvdajpClient/examples/test_speakSpelling.py` | speakSpelling | スペル読み上げデモ |
-| `jptools/nvdajpClient/examples/test_isSpeaking.py` | isSpeaking | 読み上げ中はビープ、終了後に完了メッセージ |
+| `jptools/nvdajpClient/examples/test_isSpeaking.py` | isSpeaking / isSpeakingJp | 読み上げ中はビープ、終了後に完了メッセージ |
 | `jptools/nvdajpClient/examples/test_pitchCtl.py` | getPitch / setPitch | ピッチ変更デモ |
 | `jptools/nvdajpClient/examples/test_rateCtl.py` | getRate / setRate | 速度変更デモ |
 | `jptools/nvdajpClient/examples/test_setAppSleepMode.py` | setAppSleepMode | Sleep On/Off GUI（wx が必要） |
@@ -103,7 +124,7 @@ python test_speakSpelling.py
 python test_pitchCtl.py
 ```
 
-本家デモ: `extras/controllerClient/examples/example_python.py`  
+本家デモ: `extras/controllerClient/examples/example_python.py`
 Issue #642 検証用: `jptools/test_controller_speakSpelling.py`
 
 ---
@@ -141,10 +162,11 @@ Issue #642 では、`nvdaController_speakSpelling` の IDL / C++ 側の定義は
 GitHub PR #644 において指摘された、現在の設計上の課題を以下にまとめる。これらは将来的な API の安定性や本家（NV Access）への統合を考慮する際の検討項目である。
 
 ### 1. 戻り値の型とデータの混在
-現在の `nvdaController_isSpeaking`, `nvdaController_getPitch`, `nvdaController_getRate` は、IDL（インターフェース定義）上は `error_status_t`（Windows エラーコード）を返す関数として定義されている。しかし、実際の実装ではステータスコードではなく、ピッチ値（0-100）や発話状態（0/1）といったデータを直接戻り値として返している。
+現在の `nvdaController_isSpeakingJp`, `nvdaController_getPitch`, `nvdaController_getRate` は、IDL（インターフェース定義）上は `error_status_t`（Windows エラーコード）を返す関数として定義されている。しかし、実際の実装ではステータスコードではなく、ピッチ値（0-100）や発話状態（0/1）といったデータを直接戻り値として返している。
 
 * **問題点**: 呼び出し側のコードが戻り値を Windows エラーコードとして扱うと、正常な値（例：ピッチ 50）をエラーと誤認する可能性がある。また、エラーの発生と正常なデータの区別ができない。
 * **改善案**: 戻り値は常に成功・失敗のステータスコードを返すようにし、実際のデータは `[out]` パラメータ（ポインタ経由）で受け取る設計への変更を検討する。
+* **2026.3 での解決状況**: `isSpeaking` については、本家 NVDA 2026.3 で `interface NvdaController3 { error_status_t isSpeaking([out] boolean* speaking); }` が公式採用され、本改善案通りのインターフェースが標準化された。日本語版では本家標準 API `nvdaController_isSpeaking` を提供しつつ、従来の戻り値形式の呼び出し互換として `nvdaController_isSpeakingJp` を並行提供している。残る `getPitch`, `getRate` についても将来的な本家提案やバージョンアップ時に同様の out パラメータ設計への移行を検討する。
 
 ### 2. 未実装時の戻り値の整合性
 コントローラーハンドラが未登録の場合、現在は `ERROR_CALL_NOT_IMPLEMENTED` (120) を返しているが、これを boolean（発話中かどうか）として解釈するクライアントコードでは、120 が True（発話中）と判定され、無限ループなどの予期せぬ挙動を引き起こす可能性がある。

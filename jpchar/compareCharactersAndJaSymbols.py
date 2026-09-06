@@ -35,7 +35,7 @@ for char in characters_dict.keys():
 
 		# 下から3桁目よりも上を比較する
 		if hex(ord(prev_char))[:-2] != hex(ord(char))[:-2]:
-			print("")
+			print()
 			print(f"# {hex(ord(char)).replace('0x', 'U+')[:-2]}00-")
 
 		# symbols.dic の形式で出力する

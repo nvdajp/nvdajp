@@ -1,5 +1,4 @@
 # _nvdajp_spellchar.py
-# -*- coding: utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2010-2011 Takuya Nishimoto (nishimotz.com)
 # This file is covered by the GNU General Public License.

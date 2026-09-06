@@ -43,7 +43,7 @@ class JpBrailleTests(unittest.TestCase):
 		"""translator_louis 単体: liblouis en-ueb-g2.ctb で英文を UEB G2 に変換。louis 未ビルド時はスキップ。"""
 		count, outfile = jpBrailleRunner.run_translator_louis()
 		self.assertEqual(
-			count, 0, "translator_louis: %d error(s). see %s (scons source required)" % (count, outfile)
+			count, 0, "translator_louis: %d error(s). see %s (scons source required)" % (count, outfile),
 		)
 
 	def test_eng2_ueb_g2(self):
@@ -82,7 +82,7 @@ class MecabTests(unittest.TestCase):
 		baseSize = result["base"][0]
 		userSize, userReading, userBraille = result["user"]
 		self.assertGreater(
-			baseSize, 1, "base dictionary should split the sample word: %r" % (result["base"],)
+			baseSize, 1, "base dictionary should split the sample word: %r" % (result["base"],),
 		)
 		self.assertEqual(userSize, 1, "user dic entry not selected: %r" % (result["user"],))
 		# The braille segmentation must match the harness.json entry for the

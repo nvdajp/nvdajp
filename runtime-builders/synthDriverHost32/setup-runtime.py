@@ -3,6 +3,7 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
+import os  # noqa: I001
 import importlib
 import fnmatch
 import shutil
@@ -35,7 +36,7 @@ _speechOverlayDir.mkdir(parents=True, exist_ok=True)
 	"# Minimal speech package for synthDriverHost runtime; nvwave only needs these.\n"
 	"from speech.types import SpeechSequence, SequenceItemT\n"
 	"from speech.commands import BreakCommand\n"
-	"__all__ = [\"SpeechSequence\", \"SequenceItemT\", \"BreakCommand\"]\n",
+	'__all__ = ["SpeechSequence", "SequenceItemT", "BreakCommand"]\n',
 	encoding="utf-8",
 )
 for _name in ("types", "commands"):
@@ -46,8 +47,8 @@ for _name in ("types", "commands"):
 
 sys.path.insert(0, str(nvdaSourceDir))
 
-import gettext  # noqa: E402
-from buildVersion import (  # noqa: E402
+import gettext  # noqa: I001
+from buildVersion import (
 	formatBuildVersionString,
 	name,
 	publisher,
@@ -64,18 +65,21 @@ gettext.install("nvda")
 
 # versionInfo names must be imported after Gettext
 # Suppress E402 (module level import not at top of file)
-from versionInfo import (  # noqa: E402
+from versionInfo import (  # noqa: I001
 	copyright as NVDAcopyright,  # copyright is a reserved python keyword
 	description,
 )
 
 
-from py2exe import freeze  # noqa: E402
-from py2exe.dllfinder import DllFinder  # noqa: E402
+from py2exe import freeze
+from py2exe.dllfinder import DllFinder
 
 RT_MANIFEST = 24
-manifestTemplateFilePath = nvdaSourceDir / "manifest.template.xml"
-_manifestTemplate = manifestTemplateFilePath.read_text(encoding="utf-8")
+manifestTemplateFilePath = os.path.join(nvdaSourceDir, "manifest.template.xml")
+VC_RUNTIME_DLL = "vcruntime140.dll"
+
+with open(manifestTemplateFilePath, "r", encoding="utf-8") as manifestTemplateFile:
+	_manifestTemplate = manifestTemplateFile.read()
 
 
 def _genManifestTemplate(shouldHaveUIAccess: bool) -> tuple[int, int, bytes]:
@@ -117,6 +121,14 @@ def getRecursiveDataFiles(dest: str, source: Path, excludes: tuple = ()) -> list
 				),
 			)
 	return rulesList
+
+
+def _getVCRuntimePath() -> str:
+	for runtimeDir in (sys.base_prefix, sys.base_exec_prefix, os.path.dirname(sys.executable)):
+		dllPath = os.path.join(runtimeDir, VC_RUNTIME_DLL)
+		if os.path.isfile(dllPath):
+			return dllPath
+	raise RuntimeError(f"Could not locate {VC_RUNTIME_DLL} in the active Python runtime")
 
 
 sys.path.insert(0, str(runtimeSourceDir))
@@ -269,7 +281,7 @@ freeze(
 		],
 	},
 	data_files=[
-		(".", glob("*.dll") + glob("*.manifest")),
+		(".", glob("*.dll") + glob("*.manifest") + [_getVCRuntimePath()]),
 	]
 	+ getRecursiveDataFiles(
 		"synthDrivers",

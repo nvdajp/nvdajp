@@ -17,4 +17,3 @@ del nvdajp-eng-dic.csv
 del nvdajp-roma-dic.csv
 del nvdajp-tankan-dic.csv
 cd ..\..
-

@@ -28,6 +28,7 @@ source/lib
 source/lib64
 source/typelibs
 source/louis
+source/cppjieba
 *.obj
 *.exp
 *.lib
@@ -84,4 +85,6 @@ source/_bridge/runtimes/synthDriverHost/speech/commands.py
 source/_bridge/runtimes/synthDriverHost/speech/types.py
 *.backup
 jptools/nvdajpClient/examples/
-runtime-builders/synthDriverHost32
+runtime-builders/synthDriverHost32/.venv/
+runtime-builders/synthDriverHost32/dist/
+runtime-builders/synthDriverHost32/*.egg-info/

@@ -4,6 +4,7 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
+from __future__ import annotations  # noqa: I001
 from ctypes.wintypes import (
 	HANDLE,
 	HKEY,
@@ -13,7 +14,6 @@ import time
 import os
 import winreg
 import msvcrt
-
 from ctypes import (
 	CDLL,
 	POINTER,
@@ -31,6 +31,7 @@ from ctypes import (
 	create_unicode_buffer,
 	windll,
 	wstring_at,
+	_Pointer,
 )
 
 from winBindings import user32
@@ -58,14 +59,14 @@ from utils import _deprecate
 
 
 if typing.TYPE_CHECKING:
-	from speech.priorities import SpeechPriority
+	from speech.priorities import SpeechPriority  # noqa: I001
 	from characterProcessing import SymbolLevel
 
 
 _remoteLib = None
-_remoteLoaderX86: "_RemoteLoader | None" = None
-_remoteLoaderAMD64: "_RemoteLoader | None" = None
-_remoteLoaderARM64: "_RemoteLoader | None" = None
+_remoteLoaderX86: _RemoteLoader | None = None
+_remoteLoaderAMD64: _RemoteLoader | None = None
+_remoteLoaderARM64: _RemoteLoader | None = None
 lastLanguageID = None
 lastLayoutString = None
 # BEGIN JP PATCH
@@ -87,7 +88,7 @@ lastCompositionEndTime = 0.0
 
 # utility function to point an exported function pointer in a dll  to a ctypes wrapped python function
 def _setDllFuncPointer(dll, name, cfunc):
-	cast(getattr(dll, name), POINTER(c_void_p)).contents.value = cast(cfunc, c_void_p).value  # noqa: F405
+	cast(getattr(dll, name), POINTER(c_void_p)).contents.value = cast(cfunc, c_void_p).value
 
 
 # Implementation of nvdaController methods
@@ -106,10 +107,10 @@ def nvdaController_speakText(text):
 # Note: when working on nvdaController_speakSsml, look for opportunities to simplify
 # and move logic out into smaller helper functions.
 @WINFUNCTYPE(c_long, c_wchar_p, c_int, c_int, c_bool)
-def nvdaController_speakSsml(  # noqa: C901
+def nvdaController_speakSsml(
 	ssml: str,
-	symbolLevel: "SymbolLevel",
-	priority: "SpeechPriority",
+	symbolLevel: SymbolLevel,
+	priority: SpeechPriority,
 	asynchronous: bool,
 ) -> SystemErrorCodes:
 	focus = api.getFocusObject()
@@ -160,7 +161,7 @@ def nvdaController_speakSsml(  # noqa: C901
 	try:
 		sequence = _getSpeakSsmlSpeech(ssml, markCallable, prefixSpeechCommand)
 	except Exception:
-		log.error("Error parsing SSML", exc_info=True)
+		log.error("Error parsing SSML", exc_info=True)  # noqa: G201
 		return SystemErrorCodes.INVALID_PARAMETER
 
 	if not asynchronous:
@@ -256,20 +257,6 @@ def _runOnEventQueueAndGetResult(func, *args, **kwargs):
 
 
 @WINFUNCTYPE(c_long)
-def nvdaController_isSpeaking() -> int:
-	from synthDriverHandler import getSynth
-
-	try:
-		# BEGIN JP PATCH
-		# nvdajp: Accept both callable and bool-style isSpeaking implementations.
-		isSpeaking = getattr(getSynth(), "isSpeaking", False)
-		return bool(isSpeaking()) if callable(isSpeaking) else bool(isSpeaking)
-		# END JP PATCH
-	except:  # noqa: E722
-		return False
-
-
-@WINFUNCTYPE(c_long)
 def nvdaController_getPitch() -> int:
 	from synthDriverHandler import getSynth
 
@@ -285,7 +272,7 @@ def nvdaController_setPitch(nPitch: int) -> SystemErrorCodes:
 
 	try:
 		getSynth()._set_pitch(nPitch)
-	except:  # noqa: E722
+	except:  # noqa: E722, S110
 		pass
 	return 0
 
@@ -306,7 +293,7 @@ def nvdaController_setRate(nRate: int) -> SystemErrorCodes:
 
 	try:
 		getSynth()._set_rate(nRate)
-	except:  # noqa: E722
+	except:  # noqa: E722, S110
 		pass
 	return 0
 
@@ -316,31 +303,64 @@ def nvdaController_setAppSleepMode(mode: int) -> SystemErrorCodes:
 	import appModuleHandler
 
 	pid = c_long()
-	winBindings.rpcrt4.I_RpcBindingInqLocalClientPID(None, byref(pid))  # noqa: F405
+	winBindings.rpcrt4.I_RpcBindingInqLocalClientPID(None, byref(pid))
 	pid = pid.value
 	if not pid:
 		log.error("Could not get process ID for RPC call")
 		return -1
 	curApp = appModuleHandler.getAppModuleFromProcessID(pid)
-	curApp.sleepMode = True if mode == 1 else False
+	curApp.sleepMode = mode == 1
 	return 0
 
 
+@WINFUNCTYPE(c_long)
+def nvdaController_isSpeakingJp() -> int:
+	from synthDriverHandler import getSynth
+
+	try:
+		synth = getSynth()
+		isSpeaking = getattr(synth, "isSpeaking", None)
+		if isSpeaking is not None:
+			state = bool(isSpeaking()) if callable(isSpeaking) else bool(isSpeaking)
+			return 1 if state else 0
+	except Exception:  # noqa: BLE001, S110
+		pass
+
+	try:
+		import speech
+
+		return 1 if speech.isSpeaking() else 0
+	except Exception:  # noqa: BLE001
+		return 0
+
+
 # END JP PATCH
+
+
+@WINFUNCTYPE(c_long, POINTER(c_bool))
+def nvdaController_isSpeaking(pSpeaking: _Pointer[c_bool]) -> int:
+	if not pSpeaking:
+		return SystemErrorCodes.INVALID_PARAMETER.value
+	import speech
+
+	pSpeaking[0] = speech.isSpeaking()
+	return SystemErrorCodes.SUCCESS.value
+
+
 def _lookupKeyboardLayoutNameWithHexString(layoutString):
 	buf = create_unicode_buffer(1024)
 	bufSize = c_ulong(2048)
-	key = HKEY()  # noqa: F405
+	key = HKEY()
 	if (
 		winBindings.advapi32.RegOpenKeyEx(
 			winreg.HKEY_LOCAL_MACHINE,
 			"SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts\\" + layoutString,
 			0,
 			winreg.KEY_QUERY_VALUE,
-			byref(key),  # noqa: F405
+			byref(key),
 		)
 		== 0
-	):  # noqa: F405
+	):
 		try:
 			if (
 				winBindings.advapi32.RegQueryValueEx(
@@ -352,7 +372,7 @@ def _lookupKeyboardLayoutNameWithHexString(layoutString):
 					byref(bufSize),
 				)
 				== 0
-			):  # noqa: F405
+			):
 				winBindings.shlwapi.SHLoadIndirectString(buf.value, buf, 1023, None)
 				return buf.value
 			if winBindings.advapi32.RegQueryValueEx(key, "Layout Text", None, None, buf, byref(bufSize)) == 0:
@@ -372,13 +392,13 @@ def nvdaControllerInternal_requestRegistration(uuidString):
 	bindingHandle = HANDLE()
 	bindingHandle.value = localLib.createRemoteBindingHandle(uuidString)
 	if not bindingHandle:
-		log.error("Could not bind to inproc rpc server for pid %d" % pid)
+		log.error("Could not bind to inproc rpc server for pid %d" % pid)  # noqa: UP031
 		return -1
 	registrationHandle = HANDLE()
-	res = localLib.nvdaInProcUtils_registerNVDAProcess(bindingHandle, byref(registrationHandle))  # noqa: F405
+	res = localLib.nvdaInProcUtils_registerNVDAProcess(bindingHandle, byref(registrationHandle))
 	if res != 0 or not registrationHandle:
 		log.error(
-			"Could not register NVDA with inproc rpc server for pid %d, res %d, registrationHandle %s"
+			"Could not register NVDA with inproc rpc server for pid %d, res %d, registrationHandle %s"  # noqa: UP031
 			% (pid, res, registrationHandle),
 		)
 		winBindings.rpcrt4.RpcBindingFree(byref(bindingHandle))
@@ -404,7 +424,7 @@ def nvdaControllerInternal_reportLiveRegion(text: str, politeness: str):
 	focus = api.getFocusObject()
 	if focus.sleepMode == focus.SLEEP_FULL:
 		return -1
-	import speech
+	import speech  # noqa: I001
 	import braille
 	from aria import AriaLivePoliteness
 	from speech.priorities import Spri
@@ -412,7 +432,7 @@ def nvdaControllerInternal_reportLiveRegion(text: str, politeness: str):
 	try:
 		politenessValue = AriaLivePoliteness(politeness.lower())
 	except ValueError:
-		log.error(
+		log.error(  # noqa: G201
 			f"nvdaControllerInternal_reportLiveRegion got unknown politeness of {politeness}",
 			exc_info=True,
 		)
@@ -459,7 +479,7 @@ def nvdaControllerInternal_logMessage(level, pid, message):
 	if pid:
 		from appModuleHandler import getAppNameFromProcessID
 
-		codepath = "RPC process %s (%s)" % (pid, getAppNameFromProcessID(pid, includeExt=True))
+		codepath = "RPC process %s (%s)" % (pid, getAppNameFromProcessID(pid, includeExt=True))  # noqa: UP031
 	else:
 		codepath = "NVDAHelperLocal"
 	log._log(level, message, [], codepath=codepath)
@@ -481,7 +501,7 @@ def _handleCompAttrCompositionEnd(lastString: str) -> None:
 
 
 def handleInputCompositionEnd(result, cancelled=False):
-	import speech
+	import speech  # noqa: I001
 	import characterProcessing
 	from NVDAObjects.inputComposition import InputComposition
 	from NVDAObjects.IAccessible.mscandui import ModernCandidateUICandidateItem
@@ -557,7 +577,7 @@ def handleInputCompositionEnd(result, cancelled=False):
 
 
 def handleInputCompositionStart(compositionString, selectionStart, selectionEnd, isReading):
-	import speech
+	import speech  # noqa: I001
 	from NVDAObjects.inputComposition import InputComposition
 	from NVDAObjects.behaviors import CandidateItem
 
@@ -665,7 +685,9 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 					ui.message(deletedString)
 					return 0
 	else:
-		log.debug(f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=} {lastHadCompAttr=}")
+		log.debug(
+			f"{compositionString=} {selectionStart=} {selectionEnd=} {isReading=} {lastCompString=} {lastHadCompAttr=}",
+		)
 		# (empty, -1, -1) can mean cancel (Esc/Backspace) or commit (Enter). IMEs that send compAttr
 		# (e.g. Google IME in Chrome) send (empty, -1, -1) for both; use lastKeyGesture to distinguish.
 		is_cancelled = (
@@ -678,14 +700,24 @@ def nvdaControllerInternal_inputCompositionUpdate(compositionString, selectionSt
 		if is_cancelled:
 			if not lastHadCompAttr:
 				# No compAttr: treat as cancel (Esc / Backspace all-delete).
-				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				queueHandler.queueFunction(
+					queueHandler.eventQueue,
+					handleInputCompositionEnd,
+					lastCompString,
+					True,
+				)
 				return 0
 			# compAttr IME: when key events are off, lastKeyGesture is not populated; treat as
 			# cancel so Esc/Back still get "Clear". When key events are on, defer cancel vs commit
 			# so Enter can set compositionCommitFromEnter before we decide (Google IME). MS-IME /
 			# ATOK send non-empty results on Enter, so (empty, -1, -1) without Enter is cancel.
 			if not config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-				queueHandler.queueFunction(queueHandler.eventQueue, handleInputCompositionEnd, lastCompString, True)
+				queueHandler.queueFunction(
+					queueHandler.eventQueue,
+					handleInputCompositionEnd,
+					lastCompString,
+					True,
+				)
 				return 0
 			queueHandler.queueFunction(queueHandler.eventQueue, _handleCompAttrCompositionEnd, lastCompString)
 			return 0
@@ -732,7 +764,7 @@ def handleInputCandidateListUpdate(candidatesString, selectionIndex, inputMethod
 		from NVDAObjects import inputComposition
 
 		if inputComposition.lastKeyGesture:
-			log.debug("lastKeyCode %x" % inputComposition.lastKeyGesture.vkCode)
+			log.debug(f"lastKeyCode {inputComposition.lastKeyGesture.vkCode:x}")
 		if not inputComposition.needDiscriminantReading(inputComposition.lastKeyGesture):
 			if isinstance(focus, CandidateItem):
 				oldSpeechMode = speech.getState().speechMode
@@ -950,7 +982,7 @@ def nvdaControllerInternal_inputLangChangeNotify(threadID, hkl, layoutString):
 		inputMethodName = "".join(inputMethodName.split(" - ")[1:])
 	# Include the language only if it changed.
 	if languageID != lastLanguageID:
-		msg = "{language} - {layout}".format(language=inputLanguageName, layout=inputMethodName)
+		msg = f"{inputLanguageName} - {inputMethodName}"
 	else:
 		msg = inputMethodName
 	lastLanguageID = languageID
@@ -1015,7 +1047,7 @@ def nvdaControllerInternal_handleRemoteURL(url):
 	:param url: The nvdaremote:// URL to process
 	:return: 0 on success, -1 on failure
 	"""
-	from _remoteClient import connectionInfo, _remoteClient as client
+	from _remoteClient import connectionInfo, _remoteClient as client  # noqa: I001
 
 	try:
 		if not client:
@@ -1029,7 +1061,7 @@ def nvdaControllerInternal_handleRemoteURL(url):
 		)
 		return 0
 	except Exception:
-		log.error("Error handling remote URL", exc_info=True)
+		log.error("Error handling remote URL", exc_info=True)  # noqa: G201
 		return -1
 
 
@@ -1126,7 +1158,7 @@ def badCompositionUpdate(compositionString: str, compAttr: str) -> bool:
 		and category(compositionString[0]) == "Lo"
 		and category(compositionString[-1]) == "Lo"
 	):
-		log.debug("(%s) (%s) should be ignored" % (compositionString, compAttr))
+		log.debug(f"({compositionString}) ({compAttr}) should be ignored")
 		return True
 	return False
 
@@ -1173,14 +1205,14 @@ def extractCompositionString(
 	if ("3" in compAttr) and ("1" not in compAttr):
 		endIndex = len(compositionString)
 		extractedString = extractString("3")
-	elif ("1" in compAttr) and (lastCompAttr is None or any([c != "0" for c in lastCompAttr])):
+	elif ("1" in compAttr) and (lastCompAttr is None or any(c != "0" for c in lastCompAttr)):
 		extractedString = extractString("1")
 	elif ("0" in compAttr) and ("2" in compAttr):
 		extractedString = extractString("0")
-	elif all([c == "0" for c in compAttr]) and 0 <= selectionStart == selectionEnd < len(compAttr):
+	elif all(c == "0" for c in compAttr) and 0 <= selectionStart == selectionEnd < len(compAttr):
 		# reviewing pre-edit character
 		extractedString = compositionString[selectionStart]
-		log.debug("((%s))" % extractedString)
+		log.debug(f"(({extractedString}))")
 	return extractedString, endIndex
 
 
@@ -1204,6 +1236,7 @@ def initialize() -> None:
 		("nvdaController_cancelSpeech", nvdaController_cancelSpeech),
 		("nvdaController_brailleMessage", nvdaController_brailleMessage),
 		("nvdaController_speakSpelling", nvdaController_speakSpelling),
+		("nvdaController_isSpeakingJp", nvdaController_isSpeakingJp),
 		("nvdaController_isSpeaking", nvdaController_isSpeaking),
 		("nvdaController_getPitch", nvdaController_getPitch),
 		("nvdaController_setPitch", nvdaController_setPitch),
@@ -1238,12 +1271,12 @@ def initialize() -> None:
 		try:
 			_setDllFuncPointer(localLib.dll, f"_{name}", func)
 		except AttributeError as e:
-			log.error(
-				"nvdaHelperLocal function pointer for %s could not be found, possibly old nvdaHelperLocal dll"
+			log.error(  # noqa: G201
+				"nvdaHelperLocal function pointer for %s could not be found, possibly old nvdaHelperLocal dll"  # noqa: UP031
 				% name,
 				exc_info=True,
 			)
-			raise e
+			raise e  # noqa: TRY201
 	localLib.nvdaHelperLocal_initialize(globalVars.appArgs.secure)
 	# The rest of this function (to do with injection) only applies if NVDA is not running as a Windows store application
 	if config.isAppX:
@@ -1259,9 +1292,9 @@ def initialize() -> None:
 		winKernel.LOAD_WITH_ALTERED_SEARCH_PATH,
 	)
 	if not h:
-		log.critical("Error loading nvdaHelperRemote.dll: %s" % WinError())  # noqa: F405
+		log.critical("Error loading nvdaHelperRemote.dll: %s" % WinError())  # noqa: UP031
 		return
-	_remoteLib = CDLL("nvdaHelperRemote", handle=h)  # noqa: F405
+	_remoteLib = CDLL("nvdaHelperRemote", handle=h)
 	if _remoteLib.injection_initialize() == 0:
 		raise RuntimeError("Error initializing NVDAHelperRemote")
 	if not _remoteLib.installIA2Support():
@@ -1277,7 +1310,7 @@ def initialize() -> None:
 	elif arch == "ARM64":
 		if ReadPaths.coreArchLibPath != ReadPaths.versionedLibX86Path:
 			_remoteLoaderX86 = _RemoteLoader(ReadPaths.versionedLibX86Path)
-		if ReadPaths.coreArchLibPath != ReadPaths.versionedLibAMD64Path:
+		if ReadPaths.coreArchLibPath != ReadPaths.versionedLibAMD64Path:  # noqa: SIM102
 			# Windows 10 on ARM does not support AMD64 emulation.
 			# Thus only start the AMD64 remote loader if on Windows 11 or above.
 			if winVersion.getWinVer() >= winVersion.WIN11:

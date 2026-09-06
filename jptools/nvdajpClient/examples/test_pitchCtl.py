@@ -1,4 +1,3 @@
-# coding: utf-8
 # NVDA日本語版拡張 nvdaController_getPitch / setPitch のデモ
 # Usage: python test_pitchCtl.py  (NVDA 起動後、examples/ から実行)
 

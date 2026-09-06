@@ -5,7 +5,7 @@
 
 """Unit tests for the characterProcessing module."""
 
-import unittest
+import unittest  # noqa: I001
 import re
 from characterProcessing import SpeechSymbolProcessor
 from characterProcessing import SymbolLevel
@@ -219,4 +219,3 @@ class TestLocaleDataMapFallback(unittest.TestCase):
 		"""An exact locale match should be used even when fallback is enabled."""
 		dataMap = self._makeMap()
 		self.assertEqual(dataMap.fetchLocaleData("fr", fallback=True), "data:fr")
-

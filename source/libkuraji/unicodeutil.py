@@ -1,5 +1,4 @@
 # unicodeutil.py (NFKC normalization with position maps)
-# -*- coding: utf-8 -*-
 # Copyright (C) 2026 Takuya Nishimoto
 # License: BSD 3-Clause. See LICENSE.
 # Originally _nvdajp_unicode.py in NVDA Japanese (nvdajp); relicensed
@@ -61,7 +60,7 @@ _PRE_NFKC_MAP = str.maketrans(
 		"�": "",  # replacement character
 		# converted to fullwidth by Mecab_text2mecab(); NFKC cannot restore it
 		"．": ".",  # fullwidth full stop
-	}
+	},
 )
 
 # characters folded after NFKC normalization
@@ -71,18 +70,63 @@ _POST_NFKC_MAP = str.maketrans(
 		"¥": "\\",  # yen sign
 		"〜": "~",  # wave dash
 		# accented Latin letters folded to ASCII
-		"À": "A", "Á": "A", "Â": "A", "Ä": "A", "Å": "A", "Æ": "AE",
-		"Ç": "C", "È": "E", "É": "E", "Ê": "E", "Ë": "E",
-		"Ì": "I", "Í": "I", "Î": "I", "Ï": "I", "Ñ": "N",
-		"Ò": "O", "Ó": "O", "Ô": "O", "Ö": "O", "Ø": "O",
-		"Ù": "U", "Ú": "U", "Û": "U", "Ü": "U", "Ý": "Y",
-		"à": "a", "á": "a", "â": "a", "ä": "a", "å": "a", "æ": "ae",
-		"ç": "c", "è": "e", "é": "e", "ê": "e", "ë": "e",
-		"ì": "i", "í": "i", "î": "i", "ï": "i", "ñ": "n",
-		"ò": "o", "ó": "o", "ô": "o", "ö": "o", "ø": "o",
-		"ù": "u", "ú": "u", "û": "u", "ü": "u", "ý": "y", "ÿ": "y",
-		"Œ": "OE", "œ": "oe", "Ÿ": "Y",
-	}
+		"À": "A",
+		"Á": "A",
+		"Â": "A",
+		"Ä": "A",
+		"Å": "A",
+		"Æ": "AE",
+		"Ç": "C",
+		"È": "E",
+		"É": "E",
+		"Ê": "E",
+		"Ë": "E",
+		"Ì": "I",
+		"Í": "I",
+		"Î": "I",
+		"Ï": "I",
+		"Ñ": "N",
+		"Ò": "O",
+		"Ó": "O",
+		"Ô": "O",
+		"Ö": "O",
+		"Ø": "O",
+		"Ù": "U",
+		"Ú": "U",
+		"Û": "U",
+		"Ü": "U",
+		"Ý": "Y",
+		"à": "a",
+		"á": "a",
+		"â": "a",
+		"ä": "a",
+		"å": "a",
+		"æ": "ae",
+		"ç": "c",
+		"è": "e",
+		"é": "e",
+		"ê": "e",
+		"ë": "e",
+		"ì": "i",
+		"í": "i",
+		"î": "i",
+		"ï": "i",
+		"ñ": "n",
+		"ò": "o",
+		"ó": "o",
+		"ô": "o",
+		"ö": "o",
+		"ø": "o",
+		"ù": "u",
+		"ú": "u",
+		"û": "u",
+		"ü": "u",
+		"ý": "y",
+		"ÿ": "y",
+		"Œ": "OE",
+		"œ": "oe",
+		"Ÿ": "Y",
+	},
 )
 
 

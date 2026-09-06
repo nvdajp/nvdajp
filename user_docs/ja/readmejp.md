@@ -4,7 +4,7 @@
 
 ## はじめに
 
-* 最終更新日：2026年8月26日
+* 最終更新日：2026年9月6日
 * 更新者：NVDA日本語チーム / 西本卓也 (Shuaruta Inc.)
 
 NVDA日本語版はNVDA日本語チームが NV Access の成果を利用して開発したものです。
@@ -784,6 +784,13 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 * [NvdaDemoApp (bitbucket.org)](https://bitbucket.org/nishimotz/nvdademoapp)
 
 ## バージョンごとの変更点
+
+### 2026.3jp の変更点
+
+* 本家版 2026.3 で NVDA コントローラークライアントに読み上げ中かどうかを確認する関数 `nvdaController_isSpeaking(boolean* speaking)` が正式に追加されました。
+  * これに伴い、従来の日本語版拡張にあった同名のゼロ引数関数（読み上げ中であれば 1、停止中であれば 0 を直接返す仕様）とのシンボル衝突を回避するため、日本語版独自関数を `nvdaController_isSpeakingJp()` として改名・提供します。
+  * 従来の旧バージョン `nvdaControllerClient.dll` を同梱した既存の外部アプリケーションとの互換性も RPC レベルで維持されており、既存のバイナリを変更せずにそのまま動作します。
+  * 新規開発または本家版と共通で動作させたいアプリケーションでは、本家版標準の `nvdaController_isSpeaking` を使用してください。
 
 ### 2026.2jp の変更点
 

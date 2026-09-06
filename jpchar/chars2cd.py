@@ -21,7 +21,7 @@ prev_char = chr(0)
 for char in sorted(characters_dict.keys()):
 	# 下から3桁目よりも上を比較する
 	if hex(ord(prev_char))[:-2] != hex(ord(char))[:-2]:
-		print("")
+		print()
 		hex_str = hex(ord(char))[2:-2] + "xx"
 		if len(hex_str) < 5:
 			hex_str = "0" * (5 - len(hex_str)) + hex_str

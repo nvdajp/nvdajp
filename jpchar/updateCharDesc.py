@@ -5,18 +5,18 @@
 # usage:
 # > python updateCharDesc.py
 
-from _checkCharDesc import *  # noqa: F403
+from _checkCharDesc import *
 from getord import getOrd
 
-ch = read_characters_file(CS_FILE)  # noqa: F405
+ch = read_characters_file(CS_FILE)
 
 
 def isZenkakuKatakana(c):
-	return re.search(r"[ァ-ヾ]", c) is not None  # noqa: F405
+	return re.search(r"[ァ-ヾ]", c) is not None
 
 
 def isHankakuKatakana(c):
-	return re.search(r"[ｦ-ﾝ]", c) is not None  # noqa: F405
+	return re.search(r"[ｦ-ﾝ]", c) is not None
 
 
 def isHalfShape(c):

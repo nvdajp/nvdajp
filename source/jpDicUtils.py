@@ -4,12 +4,13 @@
 # A part of NonVisual Desktop Access (NVDA)
 # for unittest, see ../jptools/jpDicTest.py
 
-import languageHandler
-import config
-import re
 import collections
+import re
 from dataclasses import dataclass
 from typing import Any
+
+import config
+import languageHandler
 
 RE_HIRAGANA = re.compile("^[\u3041-\u309e]+$")
 
@@ -103,7 +104,7 @@ def getAttrDesc(a):
 	if a.upper:
 		# Translators: cap will be spoken before the given letter when it is capitalized.
 		capMsg = _("cap %s")
-		(capMsgBefore, capMsgAfter) = capMsg.split("%s")
+		(capMsgBefore, _capMsgAfter) = capMsg.split("%s")
 		d.append(capMsgBefore)
 	return " ".join(d)
 
@@ -125,7 +126,7 @@ class JpAttr:
 
 
 def getJpAttr(locale: str, char: str, useDetails: bool) -> JpAttr:
-	""" """
+	"""Return Japanese character attributes for the given character."""
 	_isJa = isJa(locale)
 	jpZenkakuHiragana = _isJa and isZenkakuHiragana(char)
 	jpZenkakuKatakana = _isJa and isZenkakuKatakana(char)
@@ -158,15 +159,18 @@ def getJpAttr(locale: str, char: str, useDetails: bool) -> JpAttr:
 
 
 def getPitchChangeForCharAttr(uppercase: bool, jpAttr: JpAttr, capPitchChange: int) -> int:
-	""" """
+	"""Return the pitch change configured for character attributes."""
 	if uppercase and capPitchChange:
 		return capPitchChange
 	conf: dict[str, Any] = config.conf["language"]  # type: ignore[assignment]
 	if jpAttr.jpZenkakuKatakana and conf["jpKatakanaPitchChange"]:
 		return conf["jpKatakanaPitchChange"]
-	elif jpAttr.jpHankakuKatakana and conf["halfShapePitchChange"]:
-		return conf["halfShapePitchChange"]
-	elif jpAttr.halfShape and conf["halfShapePitchChange"]:
+	elif (
+		jpAttr.jpHankakuKatakana
+		and conf["halfShapePitchChange"]
+		or jpAttr.halfShape
+		and conf["halfShapePitchChange"]
+	):
 		return conf["halfShapePitchChange"]
 	return 0
 
@@ -187,9 +191,7 @@ def code2hex(code: int) -> str:
 def useAttrDesc(a):
 	if a[0] == "ー":
 		return False
-	if a[1].half or a[1].upper or a[1].hira or a[1].kata or a[1].full:
-		return True
-	return False
+	return bool(a[1].half or a[1].upper or a[1].hira or a[1].kata or a[1].full)
 
 
 def getOrd(s):
@@ -197,7 +199,7 @@ def getOrd(s):
 	if len(s) == 1:
 		return ord(s)
 	if len(s) != 2:
-		raise Exception
+		raise ValueError(f"Expected 1 or 2 characters, got {len(s)}")
 	o0 = ord(s[0])
 	o1 = ord(s[1])
 	uc = (o0 - 0xD800) * 0x800 + (o1 - 0xDC00)
@@ -233,9 +235,9 @@ def modifyTimeText(text: str) -> str:
 	if mo:
 		hour, minute = mo.group(1), mo.group(2)
 		if len(hour) == 2 and hour[0] == "0":
-			hour = hour[1:]  # noqa: E701
+			hour = hour[1:]
 		if len(minute) == 2 and minute[0] == "0":
-			minute = minute[1:]  # noqa: E701
+			minute = minute[1:]
 		# Translators: hour and minute
 		text = _("{hour}:{minute}").format(hour=hour, minute=minute)
 	else:
@@ -243,9 +245,9 @@ def modifyTimeText(text: str) -> str:
 		if mo:
 			am_or_pm, hour, minute = mo.group(1), mo.group(2), mo.group(3)
 			if len(hour) == 2 and hour[0] == "0":
-				hour = hour[1:]  # noqa: E701
+				hour = hour[1:]
 			if len(minute) == 2 and minute[0] == "0":
-				minute = minute[1:]  # noqa: E701
+				minute = minute[1:]
 			# Translators: hour and minute
 			text = am_or_pm + _("{hour}:{minute}").format(hour=hour, minute=minute)
 	return text

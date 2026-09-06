@@ -47,7 +47,7 @@ DirectBM.dll
 
 ## 2. 開発当時（〜2010 年代）と現行 NVDA 点字ドライバ仕様の差分
 
-KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto）NVDA 用に開発され、**ベンダ DLL（DirectBM）+ ctypes コールバック**という当時典型的な形で実装されている。  
+KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto）NVDA 用に開発され、**ベンダ DLL（DirectBM）+ ctypes コールバック**という当時典型的な形で実装されている。
 現行 betajp（NVDA **2026.1** 系）の `source/braille.py` および本家同梱ドライバが前提とする API との差を以下に整理する。
 
 ### 2.1 時代区分（目安）

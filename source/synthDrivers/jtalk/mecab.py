@@ -3,11 +3,11 @@
 
 CODE = "utf-8"
 
-import os  # noqa: E402
-import re  # noqa: E402
-import sys  # noqa: E402
-import threading  # noqa: E402
-from ctypes import (  # noqa: E402
+import os
+import re
+import sys
+import threading
+from ctypes import (
 	POINTER,
 	Structure,
 	byref,
@@ -30,8 +30,9 @@ from ctypes import (  # noqa: E402
 	string_at,
 	windll,
 )
-from pathlib import Path  # noqa: E402
-from typing import Callable, Optional  # noqa: E402
+from pathlib import Path
+from typing import Optional
+from collections.abc import Callable
 
 # Type alias for logging functions
 # Accepts both logHandler.log.debug (method) and custom print functions (callable)
@@ -148,11 +149,11 @@ mc_free.argtypes = [c_void_p]  # free(void *ptr)
 mc_free.restype = None
 
 
-class NonblockingMecabFeatures(object):
+class NonblockingMecabFeatures:
 	def __init__(self):
 		self.size = 0
 		self.feature = FEATURE_ptr_array()
-		for i in range(0, FECOUNT):
+		for i in range(FECOUNT):
 			buf = mc_malloc(FELEN)
 			if not buf:
 				# memmove into a NULL slot would corrupt memory silently;
@@ -162,7 +163,7 @@ class NonblockingMecabFeatures(object):
 			self.feature[i] = cast(buf, FEATURE_ptr)
 
 	def __del__(self):
-		for i in range(0, FECOUNT):
+		for i in range(FECOUNT):
 			try:
 				mc_free(self.feature[i])
 			except Exception:
@@ -177,21 +178,22 @@ class MecabFeatures(NonblockingMecabFeatures):
 		# MeCab consumer deadlocks waiting on the lock.
 		self._lock_held = True
 		try:
-			super(MecabFeatures, self).__init__()
+			super().__init__()
 		except Exception:
 			self._lock_held = False
 			lock.release()
 			raise
 
 	def __del__(self):
-		super(MecabFeatures, self).__del__()
+		super().__del__()
 		if getattr(self, "_lock_held", False):
 			self._lock_held = False
 			lock.release()
 
 
 def mecab_analyze_and_correct(
-	src: bytes, logwrite_: LogWriteFunc = None
+	src: bytes,
+	logwrite_: LogWriteFunc = None,
 ) -> NonblockingMecabFeatures:
 	"""Run Mecab_analysis and Mecab_correctFeatures with minimal lock duration.
 
@@ -376,7 +378,9 @@ def Mecab_initialize(
 
 
 def Mecab_analysis(
-	src: bytes, features: MecabFeatures | NonblockingMecabFeatures, logwrite_: LogWriteFunc = None
+	src: bytes,
+	features: MecabFeatures | NonblockingMecabFeatures,
+	logwrite_: LogWriteFunc = None,
 ) -> None:
 	# CRITICAL: Declare global mecab at the start of the function
 	# This must be before any reference to mecab to avoid SyntaxError
@@ -599,7 +603,7 @@ def Mecab_print(
 	s2 = ""
 	if output_header:
 		s2 += "Mecab_print size: %d\n" % size
-	for i in range(0, size):
+	for i in range(size):
 		s = string_at(feature[i])
 		if s:
 			if CODE_ is None:
@@ -617,7 +621,10 @@ def Mecab_getFeature(mf: MecabFeatures | NonblockingMecabFeatures, pos: int, COD
 
 
 def Mecab_setFeature(
-	mf: MecabFeatures | NonblockingMecabFeatures, pos: int, s: str, CODE_: str = CODE
+	mf: MecabFeatures | NonblockingMecabFeatures,
+	pos: int,
+	s: str,
+	CODE_: str = CODE,
 ) -> None:
 	s_encoded = s.encode(CODE_, "ignore")
 	buf = create_string_buffer(s_encoded)
@@ -695,15 +702,7 @@ def _makeFeatureFromLatinWordAndPostfix(org, ar, symbol=""):
 	yomi = _yomi + postfix
 	pron = _pron + postfix
 	mora = getMoraCount(ar[10]) + 1 if len(ar) > 10 else len(pron)
-	feature = "{h},{h1},{h2},{h3},*,*,*,{h},{y},{p},0/{m},C0".format(
-		h=hyoki,
-		h1=hin1,
-		h2=hin2,
-		h3=hin3,
-		y=yomi,
-		p=pron,
-		m=mora,
-	)
+	feature = f"{hyoki},{hin1},{hin2},{hin3},*,*,*,{hyoki},{yomi},{pron},0/{mora},C0"
 	return feature
 
 
@@ -732,7 +731,7 @@ def _makeBraillePatternReading(s):
 
 
 def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: str = CODE) -> None:
-	for pos in range(0, mf.size):
+	for pos in range(mf.size):
 		ar = Mecab_getFeature(mf, pos, CODE_=CODE_).split(",")
 		if pos >= 1:
 			ar2 = Mecab_getFeature(mf, pos - 1, CODE_=CODE_).split(",")
@@ -765,14 +764,7 @@ def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: s
 			if yomi:
 				pron = yomi
 				mora = len(yomi)
-				feature = "{h},{h1},{h2},*,*,*,*,{h},{y},{p},0/{m},C0".format(
-					h=hyoki,
-					h1=hin1,
-					h2=hin2,
-					y=yomi,
-					p=pron,
-					m=mora,
-				)
+				feature = f"{hyoki},{hin1},{hin2},*,*,*,*,{hyoki},{yomi},{pron},0/{mora},C0"
 				Mecab_setFeature(mf, pos - 2, ",,,*,*,*,*", CODE_=CODE_)
 				Mecab_setFeature(mf, pos - 1, ",,,*,*,*,*", CODE_=CODE_)
 				Mecab_setFeature(mf, pos, feature, CODE_=CODE_)
@@ -800,14 +792,14 @@ def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: s
 			nbmf = NonblockingMecabFeatures()
 			for c in hyoki:
 				Mecab_analysis(text2mecab(c, CODE_=CODE_), nbmf)
-				for pos2 in range(0, nbmf.size):
+				for pos2 in range(nbmf.size):
 					ar2 = Mecab_getFeature(nbmf, pos2, CODE_=CODE_).split(",")
 					if len(ar2) > 10:
 						yomi += ar2[8]
 						pron += ar2[9]
 						mora += getMoraCount(ar2[10])
 			nbmf = None
-			feature = "{h},名詞,普通名詞,*,*,*,*,{h},{y},{p},0/{m},C0".format(h=hyoki, y=yomi, p=pron, m=mora)
+			feature = f"{hyoki},名詞,普通名詞,*,*,*,*,{hyoki},{yomi},{pron},0/{mora},C0"
 			Mecab_setFeature(mf, pos, feature, CODE_=CODE_)
 		elif ar2 and ar[0] == "ー" and ar[1] == "名詞" and ar[2] == "一般":
 			# PATTERN 3
@@ -826,14 +818,7 @@ def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: s
 				yomi = ar2[8] + "ー"
 				pron = ar2[9] + "ー"
 				mora = getMoraCount(ar2[10]) + 1
-				feature = "{h},{h1},{h2},*,*,*,*,{h},{y},{p},0/{m},C0".format(
-					h=hyoki,
-					h1=hin1,
-					h2=hin2,
-					y=yomi,
-					p=pron,
-					m=mora,
-				)
+				feature = f"{hyoki},{hin1},{hin2},*,*,*,*,{hyoki},{yomi},{pron},0/{mora},C0"
 				Mecab_setFeature(mf, pos - 1, feature, CODE_=CODE_)
 			elif ar3 and ar2 and len(ar3) > 10 and ar3[1] != "記号":
 				hyoki = ar3[0] + ar2[0] + "ー"
@@ -842,14 +827,7 @@ def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: s
 				yomi = ar3[8] + ar2[0] + "ー"
 				pron = ar3[9] + ar2[0] + "ー"
 				mora = getMoraCount(ar3[10]) + len(ar2[0]) + 1
-				feature = "{h},{h1},{h2},*,*,*,*,{h},{y},{p},0/{m},C0".format(
-					h=hyoki,
-					h1=hin1,
-					h2=hin2,
-					y=yomi,
-					p=pron,
-					m=mora,
-				)
+				feature = f"{hyoki},{hin1},{hin2},*,*,*,*,{hyoki},{yomi},{pron},0/{mora},C0"
 				Mecab_setFeature(mf, pos - 2, feature, CODE_=CODE_)
 		elif _shouldWorkAroundLatinWordPostfix(ar3, ar2, ar):
 			# https://github.com/nvdajp/nvdajpmiscdep/issues/42
@@ -900,14 +878,7 @@ def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: s
 			if yomi:
 				pron = yomi
 				mora = len(yomi)
-				feature = "{h},{h1},{h2},*,*,*,*,{h},{y},{p},0/{m},C0".format(
-					h=hyoki,
-					h1=hin1,
-					h2=hin2,
-					y=yomi,
-					p=pron,
-					m=mora,
-				)
+				feature = f"{hyoki},{hin1},{hin2},*,*,*,*,{hyoki},{yomi},{pron},0/{mora},C0"
 				Mecab_setFeature(mf, pos - 1, ",,,*,*,*,*", CODE_=CODE_)
 				Mecab_setFeature(mf, pos, feature, CODE_=CODE_)
 		elif RE_FULLSHAPE_ALPHA.match(ar[0]) and ar[7] == "*":
@@ -927,7 +898,7 @@ def Mecab_correctFeatures(mf: MecabFeatures | NonblockingMecabFeatures, CODE_: s
 
 
 def Mecab_utf8_to_cp932(mf: MecabFeatures | NonblockingMecabFeatures) -> None:
-	for pos in range(0, mf.size):
+	for pos in range(mf.size):
 		s = Mecab_getFeature(mf, pos, CODE_="utf-8")
 		Mecab_setFeature(mf, pos, s, CODE_="cp932")
 
@@ -951,7 +922,8 @@ def Mecab_duplicateFeatures(
 
 
 def Mecab_splitFeatures(
-	mf: MecabFeatures | NonblockingMecabFeatures, CODE_: str = "utf-8"
+	mf: MecabFeatures | NonblockingMecabFeatures,
+	CODE_: str = "utf-8",
 ) -> list[NonblockingMecabFeatures]:
 	ar = []
 	startPos = 0

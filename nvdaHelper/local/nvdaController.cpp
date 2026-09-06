@@ -1,7 +1,7 @@
 /*
 This file is a part of the NVDA project.
 URL: http://www.nvda-project.org/
-Copyright 2006-2023 NV Access Limited, Leonard de Ruijter.
+Copyright 2006-2026 NV Access Limited, Leonard de Ruijter, Ethin Probst.
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2.0, as published by
     the Free Software Foundation.
@@ -61,13 +61,13 @@ error_status_t __stdcall nvdaController_speakSpelling(const wchar_t* text) {
 	return _nvdaController_speakSpelling(text);
 }
 
-// nvdajp: nullptr check for unregistered handlers (see controller-client.md)
-error_status_t(__stdcall *_nvdaController_isSpeaking)() = nullptr;
-error_status_t __stdcall nvdaController_isSpeaking() {
-	if (_nvdaController_isSpeaking == nullptr) {
+// nvdajp: nvdaController_isSpeakingJp (zero-argument convention: returns 1 for speaking, 0 for stopped)
+error_status_t(__stdcall *_nvdaController_isSpeakingJp)() = nullptr;
+error_status_t __stdcall nvdaController_isSpeakingJp() {
+	if (_nvdaController_isSpeakingJp == nullptr) {
 		return ERROR_CALL_NOT_IMPLEMENTED;
 	}
-	return _nvdaController_isSpeaking();
+	return _nvdaController_isSpeakingJp();
 }
 
 error_status_t(__stdcall *_nvdaController_getPitch)() = nullptr;
@@ -119,4 +119,12 @@ error_status_t __stdcall nvdaController_getProcessId(unsigned long* pid) {
 
 error_status_t __stdcall nvdaController_testIfRunning() {
 	return ERROR_SUCCESS;
+}
+
+error_status_t(__stdcall *_nvdaController_isSpeaking)(boolean*) = nullptr;
+
+error_status_t __stdcall nvdaController_isSpeaking(boolean* isSpeaking) {
+	if (isSpeaking == nullptr) return ERROR_INVALID_PARAMETER;
+	if (_nvdaController_isSpeaking == nullptr) return ERROR_CALL_NOT_IMPLEMENTED;
+	return _nvdaController_isSpeaking(isSpeaking);
 }

@@ -1,7 +1,7 @@
 # A part of NonVisual Desktop Access (NVDA)
-# This file is covered by the GNU General Public License.
-# See the file COPYING for more details.
-# Copyright (C) 2024 NV Access Limited, Leonard de Ruijter
+# Copyright (C) 2024-2026 NV Access Limited, Leonard de Ruijter
+# This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
+# For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
 """Unit tests for the louisHelper module."""
 
@@ -13,6 +13,9 @@ import brailleTables
 import config
 import louisHelper
 import NVDAState
+
+TABLES = ["en-us-comp8-ext.utb", "braille-patterns.cti"]
+"""An 8 dot computer braille table, which round trips ASCII without contractions."""
 
 
 class TestResolvingInternal(unittest.TestCase):
@@ -158,7 +161,8 @@ class TestTranslateNabccWithG2(unittest.TestCase):
 
 	@patch("synthDrivers.jtalk.translator2.translate")
 	def test_nabcc_passed_when_expandAtCursor_true_and_g2_table(
-		self, mock_jp_translate: MagicMock
+		self,
+		mock_jp_translate: MagicMock,
 	) -> None:
 		"""2級テーブル選択時、expandAtCursor=True なら nabcc=True が jpTranslate に渡ること。"""
 		mock_jp_translate.return_value = (
@@ -177,4 +181,20 @@ class TestTranslateNabccWithG2(unittest.TestCase):
 			config.conf["braille"]["expandAtCursor"] = False
 		mock_jp_translate.assert_called_once()
 		call_kwargs = mock_jp_translate.call_args[1]
-		self.assertTrue(call_kwargs["nabcc"], "nabcc=True should be passed for 2級 table when expandAtCursor is True")
+		self.assertTrue(
+			call_kwargs["nabcc"],
+			"nabcc=True should be passed for 2級 table when expandAtCursor is True",
+		)
+
+
+class TestBackTranslate(unittest.TestCase):
+	"""Ensures ``backTranslate`` encodes cells as liblouis expects."""
+
+	def test_roundTrip(self):
+		"""Cells produced by ``translate`` must back translate to the original text."""
+		cells = louisHelper.translate(TABLES, "test")[0]
+		self.assertEqual(louisHelper.backTranslate(TABLES, cells), "test")
+
+	def test_emptyInput(self):
+		"""Back translating no cells must produce no text."""
+		self.assertEqual(louisHelper.backTranslate(TABLES, []), "")
