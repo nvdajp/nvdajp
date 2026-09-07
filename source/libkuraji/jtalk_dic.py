@@ -34,7 +34,7 @@ from collections.abc import Callable
 # dictionary release is validated against the harness. Keep this in sync
 # with miscDepsJp/jptools/jtalk-dic-version.txt (checked by
 # tests/unit/test_jpDicPins.py).
-DEFAULT_DIC_TAG = "v1.1.10"
+DEFAULT_DIC_TAG = "v1.1.12"
 
 # Owner/repo of the dictionary release.
 DIC_REPO = "nishimotz/libkuraji-jtalk-dic"

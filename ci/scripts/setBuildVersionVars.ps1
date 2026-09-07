@@ -36,9 +36,10 @@ if ($env:GITHUB_REF_TYPE -eq "tag" -and $env:GITHUB_REF_NAME.StartsWith("release
 		# END JP PATCH
 	} else {
 		$version = "$env:GITHUB_REF_NAME-$BUILD_NUMBER,$commitVersion"
-		# BEGIN JP PATCH (betajp: use nowdate-based version like 2026.2jp-beta-260720a)
+		# BEGIN JP PATCH (betajp: derive version from buildVersion.py and nowdate, e.g. 2026.3jp-beta-260907a)
 		if ($env:GITHUB_REF_NAME -eq "betajp" -and $env:NOWDATE) {
-			$version = "2026.2jp-beta-$env:NOWDATE"
+			$baseVer = python -c "import sys; sys.path.append('source'); import buildVersion; min_part = f'.{buildVersion.version_minor}' if buildVersion.version_minor else ''; print(f'{buildVersion.version_year}.{buildVersion.version_major}{min_part}jp')"
+			$version = "$baseVer-beta-$env:NOWDATE"
 			$release = 1
 			$versionType = "nvdajpbeta"
 			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
@@ -46,7 +47,7 @@ if ($env:GITHUB_REF_TYPE -eq "tag" -and $env:GITHUB_REF_NAME.StartsWith("release
 		# END JP PATCH
 		# BEGIN JP PATCH (releasejp: derive version from buildVersion.py for workflow_dispatch signed releases)
 		if ($env:GITHUB_REF_NAME -eq "releasejp" -and $env:GITHUB_EVENT_NAME -eq "workflow_dispatch") {
-			$version = python -c "import sys; sys.path.append('source'); import buildVersion; print(f'{buildVersion.version_year}.{buildVersion.version_major}jp')"
+			$version = python -c "import sys; sys.path.append('source'); import buildVersion; min_part = f'.{buildVersion.version_minor}' if buildVersion.version_minor else ''; print(f'{buildVersion.version_year}.{buildVersion.version_major}{min_part}jp')"
 			$release = 1
 			$versionType = "nvdajp"
 			Write-Output "release=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
