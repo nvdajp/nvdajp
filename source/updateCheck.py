@@ -248,7 +248,7 @@ def checkForUpdate(auto: bool = False) -> UpdateInfo | None:
 		):
 			# #4803: Windows fetches trusted root certificates on demand.
 			# Python doesn't trigger this fetch (PythonIssue:20916), so try it ourselves
-			_updateWindowsRootCertificates()
+			_updateWindowsRootCertificates(url)
 			# Retry the update check
 			log.debug(f"Retrying update check from {url}")
 			res = urllib.request.urlopen(url, timeout=UPDATE_FETCH_TIMEOUT_S)
@@ -865,7 +865,24 @@ class UpdateDownloader(garbageHandler.TrackedObject):
 		# in some developing countries with the slowest internet.
 		# This yields an expected download time of 10min on slower networks.
 		UPDATE_DOWNLOAD_TIMEOUT = 60 * 30  # 30 min
-		remote = urllib.request.urlopen(url, timeout=UPDATE_DOWNLOAD_TIMEOUT)
+		# BEGIN JP PATCH (Handle untrusted root certificates during update download)
+		try:
+			remote = urllib.request.urlopen(url, timeout=UPDATE_DOWNLOAD_TIMEOUT)
+		except OSError as e:
+			reason = getattr(e, "reason", None)
+			if (
+				isinstance(reason, ssl.SSLCertVerificationError)
+				and reason.reason == "CERTIFICATE_VERIFY_FAILED"
+			):
+				# #4803: Windows fetches trusted root certificates on demand.
+				# Python doesn't trigger this fetch (PythonIssue:20916), so try it ourselves
+				_updateWindowsRootCertificates(url)
+				# Retry the download
+				log.debug(f"Retrying download from {url}")
+				remote = urllib.request.urlopen(url, timeout=UPDATE_DOWNLOAD_TIMEOUT)
+			else:
+				raise
+		# END JP PATCH
 		if remote.code != 200:
 			raise RuntimeError("Download failed with code %d" % remote.code)  # noqa: UP031
 		size = int(remote.headers["content-length"])
@@ -1087,41 +1104,48 @@ def terminate():
 		autoChecker = None
 
 
-def _updateWindowsRootCertificates():
+def _updateWindowsRootCertificates(url: str | None = None):
 	log.debug("Updating Windows root certificates")
-	with requests.get(
+	# BEGIN JP PATCH (Support arbitrary target URLs like GitHub Release download endpoints)
+	if not url:
 		# We must specify versionType so the server doesn't return a 404 error and
 		# thus cause an exception.
-		f"{_getCheckURL()}?versionType=stable",
-		timeout=UPDATE_FETCH_TIMEOUT_S,
-		# Use an unverified connection to avoid a certificate error.
-		verify=False,
-		stream=True,
-	) as response:
-		# Get the server certificate.
-		cert = response.raw.connection.sock.getpeercert(True)
-	# Convert to a form usable by Windows.
-	certCont = crypt32.CertCreateCertificateContext(
-		0x00000001,  # X509_ASN_ENCODING
-		ctypes.cast(cert, ctypes.POINTER(ctypes.c_byte)),
-		len(cert),
-	)
-	# Ask Windows to build a certificate chain, thus triggering a root certificate update.
-	chainCont = ctypes.c_void_p()
-	crypt32.CertGetCertificateChain(
-		None,
-		certCont,
-		None,
-		None,
-		ctypes.byref(
-			crypt32.CERT_CHAIN_PARA(
-				cbSize=ctypes.sizeof(crypt32.CERT_CHAIN_PARA),
-				RequestedUsage=crypt32.CERT_USAGE_MATCH(),
+		url = f"{_getCheckURL()}?versionType=stable"
+	try:
+		with requests.get(
+			url,
+			timeout=UPDATE_FETCH_TIMEOUT_S,
+			# Use an unverified connection to avoid a certificate error.
+			verify=False,
+			stream=True,
+		) as response:
+			# Get the server certificate.
+			cert = response.raw.connection.sock.getpeercert(True)
+		# Convert to a form usable by Windows.
+		certCont = crypt32.CertCreateCertificateContext(
+			0x00000001,  # X509_ASN_ENCODING
+			ctypes.cast(cert, ctypes.POINTER(ctypes.c_byte)),
+			len(cert),
+		)
+		# Ask Windows to build a certificate chain, thus triggering a root certificate update.
+		chainCont = ctypes.c_void_p()
+		crypt32.CertGetCertificateChain(
+			None,
+			certCont,
+			None,
+			None,
+			ctypes.byref(
+				crypt32.CERT_CHAIN_PARA(
+					cbSize=ctypes.sizeof(crypt32.CERT_CHAIN_PARA),
+					RequestedUsage=crypt32.CERT_USAGE_MATCH(),
+				),
 			),
-		),
-		0,
-		None,
-		ctypes.byref(chainCont),
-	)
-	crypt32.CertFreeCertificateChain(chainCont)
-	crypt32.CertFreeCertificateContext(certCont)
+			0,
+			None,
+			ctypes.byref(chainCont),
+		)
+		crypt32.CertFreeCertificateChain(chainCont)
+		crypt32.CertFreeCertificateContext(certCont)
+	except Exception:  # noqa: BLE001
+		log.debugWarning("Failed to update Windows root certificates", exc_info=True)
+	# END JP PATCH
