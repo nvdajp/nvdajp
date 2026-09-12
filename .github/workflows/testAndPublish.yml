@@ -61,9 +61,12 @@ env:
   # from the old sources must not be linked into the new tool.
   # Bumped to v5: force libopenjtalk rebuild so njd_set_digit stays SHIFT_JIS
   # (UTF-8 njd_set_digit + Mecab_utf8_to_cp932 breaks compound number readings).
+  # Bumped to v6: jtalkDicSource default changed prebuilt -> local to restore
+  # bep-eng.dic English readings; cached dictionary from the prebuilt path must
+  # not be reused.
   # Do not bump on every CI failure; investigate logs first.
   # See projectDocs/jp/tab-character-analysis.md "キャッシュキーで無効化".
-  SCONS_CACHE_SUFFIX: "-jp-v5"
+  SCONS_CACHE_SUFFIX: "-jp-v6"
 
 jobs:
   matrix:
