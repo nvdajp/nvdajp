@@ -765,10 +765,6 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			marker_path.write_text(marker_expected, encoding="utf-8")
 
 			print(f"jtalkSync: prebuilt dictionary installed (tag={pin['tag']}, sha256={digest}).")
-			print(
-				"jtalkSync: note: the prebuilt dictionary omits bep-eng.dic (GPL); "
-				"see projectDocs/jp/vendor-submodules.md.",
-			)
 			return 0
 
 		def _fetch_prebuilt_tool(repo_root: Path, dest_path: Path) -> int:

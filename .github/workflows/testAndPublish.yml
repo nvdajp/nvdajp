@@ -64,9 +64,11 @@ env:
   # Bumped to v6: jtalkDicSource default changed prebuilt -> local to restore
   # bep-eng.dic English readings; cached dictionary from the prebuilt path must
   # not be reused.
+  # Bumped to v7: jtalkDicSource default changed back to prebuilt using
+  # nvdajp/nvdajp-jtalk-dic v1.0.0 release (which includes bep-eng.dic).
   # Do not bump on every CI failure; investigate logs first.
   # See projectDocs/jp/tab-character-analysis.md "キャッシュキーで無効化".
-  SCONS_CACHE_SUFFIX: "-jp-v6"
+  SCONS_CACHE_SUFFIX: "-jp-v7"
 
 jobs:
   matrix:

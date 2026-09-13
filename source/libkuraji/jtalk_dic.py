@@ -29,15 +29,15 @@ import zipfile
 from pathlib import Path
 from collections.abc import Callable
 
-# Pinned default release tag of libkuraji-jtalk-dic. Override with the
+# Pinned default release tag of nvdajp-jtalk-dic. Override with the
 # LIBKURAJI_JTALK_DIC_TAG environment variable. Bump this when a new
 # dictionary release is validated against the harness. Keep this in sync
 # with miscDepsJp/jptools/jtalk-dic-version.txt (checked by
 # tests/unit/test_jpDicPins.py).
-DEFAULT_DIC_TAG = "v1.1.12"
+DEFAULT_DIC_TAG = "v1.0.0"
 
 # Owner/repo of the dictionary release.
-DIC_REPO = "nishimotz/libkuraji-jtalk-dic"
+DIC_REPO = "nvdajp/nvdajp-jtalk-dic"
 
 # Asset name pattern for the dictionary zip. Must match release-dic.yml
 # in libkuraji-jtalk-dic.

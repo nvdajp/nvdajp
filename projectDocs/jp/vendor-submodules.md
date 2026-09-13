@@ -43,9 +43,9 @@ JTalk 拡張辞書（NAIST-JDIC + nvdajp 独自拡張）は、点訳エンジン
 
 ### 方針転換の内容
 
-- **既定は `prebuilt`（2026-07-06 再改定）**: `libkuraji-jtalk-dic` の CI がビルドした辞書一式（`sys.dic` / `matrix.bin` / `char.bin` / `unk.dic` / `dicrc` / `DIC_VERSION` の 6 ファイル）を、`miscDepsJp/jptools/jtalk-dic-version.txt` に pin されたリリースタグ＋SHA256 チェックサムで検証したうえで取得・展開する（`scons jtalkSync`、引数なしで有効）。署名ビルドを含む全てのビルドがこの経路を使う。
-  - **再改定の理由**: JTalk 音声合成の利用者シェアは OneCore 音声の数分の一まで縮小しており、`bep-eng.dic`（GPL、除外済み）が担っていた英単語読みの網羅性低下（テストコーパス外の一般語彙）の実害は小さいと判断した。ビルド時間短縮（ローカルでの `mecab-dict-index` コンパイル・辞書ビルドを省略）のメリットを優先する。
-  - `libkuraji-jtalk-dic` は BSD 3-Clause のため GPL 由来の `bep-eng.dic`（英単語読みエントリ、`nvdajp-eng-dic` の元）を含まないが、この読みは `replace_alphabet_morphs` により点訳結果では常に元のアルファベット表記に上書きされる（実測確認済み）。**影響するのは JTalk の音声合成（発音）のみで、点訳精度は変わらない。** `libkuraji-jtalk-dic` v1.0.2 でテストコーパス（`mecabHarness.json`）既知ケースはクリーンルーム代替エントリで対応済み（0 件不一致）。
+- **既定は `prebuilt`**: `nvdajp/nvdajp-jtalk-dic`（GPL-2.0）の CI がビルドした辞書一式（`sys.dic` / `matrix.bin` / `char.bin` / `unk.dic` / `dicrc` / `DIC_VERSION` の 6 ファイル）を、`miscDepsJp/jptools/jtalk-dic-version.txt` に pin されたリリースタグ＋SHA256 チェックサムで検証したうえで取得・展開する（`scons jtalkSync`、引数なしで有効）。署名ビルドを含む全てのビルドがこの経路を使う。
+  - **`bep-eng.dic` を同梱**: この prebuilt 辞書は `bep-eng.dic`（GPL）を含んでビルドされており、英語単語の読み（カタカナ発音）の退行なしに、ビルド時間短縮（ローカルでの `mecab-dict-index` コンパイル・辞書ビルドを省略）のメリットを享受できる。
+  - 点訳エンジン側の [nishimotz/libkuraji-jtalk-dic](https://github.com/nishimotz/libkuraji-jtalk-dic)（BSD 3-Clause）とは独立した、nvdajp 専用の JTalk 拡張辞書リリースである。
 - **`local`（ローカルビルド）は明示的なオプトインとして維持**: `scons jtalkSync jtalkDicSource=local` で、リポジトリ内の NAIST-JDIC ソース＋ nvdajp 拡張エントリを `mecab-dict-index` でビルドする経路を使う。辞書の内容（品詞 ID・カスタムエントリ等）を編集する開発（roadmap タスク 2.8 等）では、変更が `libkuraji-jtalk-dic` のリリースに反映される前にこちらで検証する必要がある。
 - **チェックサム不一致時はローカルビルドへの黙ったフォールバックをしない**: ビルドを失敗させる。取得内容の完全性検証は妥協しない。
 - **pin は明示的な PR で更新する**: `latest` を追わず、固定タグ＋ハッシュを記録するファイル（`miscDepsJp/jptools/jtalk-dic-version.txt`）を用意し、更新は通常の依存バージョン bump と同様にレビューを経る。
