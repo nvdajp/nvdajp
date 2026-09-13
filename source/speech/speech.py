@@ -1593,15 +1593,16 @@ def speakTextInfo(
 ) -> bool:
 	# BEGIN JP PATCH
 	# nvdajp: Character description mode support
-	# useDetails=True matches the review-cursor path in globalCommands.py
-	# (script_navigatorScript_repeatCount) so caret and review navigation
-	# read the same detailed descriptions.
+	# Caret navigation (single character) uses useCharacterDescriptions=True
+	# without useDetails so character descriptions are spoken without
+	# prepending character type attributes ("hiragana", "half shape", etc.).
+	# Detailed descriptions with character types remain on review cursor repeatCount==1.
 	if (
 		config.conf["language"]["characterDescriptionMode"]
 		and reason == OutputReason.CARET
 		and unit == textInfos.UNIT_CHARACTER
 	):
-		speakSpelling(info.text, useCharacterDescriptions=True, useDetails=True)
+		speakSpelling(info.text, useCharacterDescriptions=True)
 		return True
 	# END JP PATCH
 	speechGen = getTextInfoSpeech(

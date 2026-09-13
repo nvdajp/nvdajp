@@ -855,9 +855,8 @@ PR #730（nvaccess/beta マージ）のレビューで判明した残課題を `
 * `reportTableHeaders` の行/列を音声側（`speech.getTableCellSpeech`）と同じ `ReportTableHeaders` enum ゲートに揃え、ROWS-only/COLUMNS-only 設定での点字と音声の乖離を解消。
 * `source/braille/regions/properties.py`: コメントアウトされた旧 `columnHeaderText` ブロック（デッドコード）を削除し、import ブロックの `# BEGIN/END JP PATCH` マーカーを対にした。
 
-### 文字説明モードの caret / review 乖離
-
-`source/speech/speech.py` の JP パッチ（CARET + `UNIT_CHARACTER` での `speakSpelling` 横流し）に `useDetails=True` を追加し、`globalCommands.py` のレビューカーソル経路（numpad2 の 2 回押し）と同じ詳細説明を読むように統一。
+### 文字説明モードの caret 動作
+`source/speech/speech.py` の JP パッチ（CARET + `UNIT_CHARACTER` での `speakSpelling` 横流し）は `useCharacterDescriptions=True` を指定して文字説明を行う。文字種別接頭辞（「ひらがな」「半角英字」など）を付加する `useDetails=True` はキャレット移動（左右カーソル）では不要なため指定しない（レビューカーソルでの 2 回押し `repeatCount==1` でのみ使用）。
 
 ### characterProcessing 辞書ローダーの統合
 
