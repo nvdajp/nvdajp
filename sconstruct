@@ -303,9 +303,7 @@ elif useAzureKvSigning:
 	def signExecAzureKv(target, source, env):
 		signable_exts = (".exe", ".dll", ".pyd")
 		filesToSign = [
-			targetFile.abspath
-			for targetFile in target
-			if targetFile.abspath.endswith(signable_exts)
+			targetFile.abspath for targetFile in target if targetFile.abspath.endswith(signable_exts)
 		]
 		if not filesToSign:
 			return 0
@@ -320,6 +318,7 @@ elif useAzureKvSigning:
 
 		print(f"Batch signing {len(filesToSign)} files with Azure Key Vault")
 		import tempfile
+
 		with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", delete=False, suffix=".txt") as f:
 			f.write("\n".join(filesToSign) + "\n")
 			list_path = f.name

@@ -1382,7 +1382,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 		# AzureSignTool skips already-signed files (-s flag).
 		use_azure_kv = bool(
 			env.get("useAzureKvSigning")
-			or (os.environ.get("AZURE_KV_SIGNING", "") not in ("", "0") and not env.get("skipSigning"))
+			or (os.environ.get("AZURE_KV_SIGNING", "") not in ("", "0") and not env.get("skipSigning")),
 		)
 		if use_azure_kv:
 			# Collect .pyd files from dist/ root, dist/include/, and dist/lib/<version>/
