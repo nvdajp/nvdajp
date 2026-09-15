@@ -1454,8 +1454,10 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	for mo in li:
 		if mo.hinshi1 == "空白":
 			mo.output = " "
+		elif mo.hyouki.startswith("•"):
+			# List bullet (U+2022) should be rendered as a bullet mark (U+2810, dot 5) in braille (#723)
+			mo.output = "\u2810"
 		elif mo.hinshi2 == "数" and mo.nhyouki.isdigit():
-			# digit numbers (not kanji characters)
 			mo.output = mo.nhyouki
 		elif RE_GREEK_CYRILLIC.match(mo.nhyouki):
 			# Greek and Cyrillic words are unknown to MeCab (no reading) and

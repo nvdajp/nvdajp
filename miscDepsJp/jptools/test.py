@@ -61,6 +61,24 @@ class JpBrailleTests(unittest.TestCase):
 		count, outfile = jpBrailleRunner.run_eng2_nabcc_regression()
 		self.assertEqual(count, 0, "eng2_nabcc_regression: %d error(s). see %s" % (count, outfile))
 
+	def test_bullet_braille_pattern(self):
+		"""List bullet (•, U+2022) should map to U+2810 (dot 5) in braille (#723)."""
+		import translator2
+
+		for text, expected in [
+			("•", "⠐"),
+			("•項目", "⠐ ⠪⠒⠾⠩"),
+			("• 項目", "⠐ ⠪⠒⠾⠩"),
+			("• item", "⠐ ⠰⠊⠞⠑⠍"),
+			("• 1番目", "⠐ ⠼⠁⠐⠥⠴⠿"),
+		]:
+			braille, inpos, outpos, cursor = translator2.translate(text, unicodeIO=True)
+			self.assertEqual(
+				braille,
+				expected,
+				f"Bullet braille translation failed for {text!r}: expected {expected!r}, got {braille!r}",
+			)
+
 
 class MecabTests(unittest.TestCase):
 	def test_all(self):
