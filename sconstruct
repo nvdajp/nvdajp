@@ -286,18 +286,56 @@ elif useAzureKvSigning:
 			f'-File ci\\scripts\\signAzureKV.ps1"'
 		)
 
+	def _azureKvSignBatchShellCmd(fileListPath: str) -> str:
+		cmdSets = ["set AZURE_KV_SIGNING=1", f"set NVDA_SIGN_FILE_LIST={fileListPath}"]
+		for key in _azureKvEnvKeys:
+			if val := os.environ.get(key):
+				if key == "ProgramFiles(x86)":
+					cmdSets.append(f'set "ProgramFiles(x86)={val}"')
+				else:
+					cmdSets.append(f"set {key}={val}")
+		setPrefix = "&&".join(cmdSets)
+		return (
+			f'cmd /c "{setPrefix}&& PowerShell -NoProfile -ExecutionPolicy Bypass '
+			f'-File ci\\scripts\\signAzureKV.ps1 -FileList {fileListPath}"'
+		)
+
 	def signExecAzureKv(target, source, env):
-		if len(target) > 1:
-			print(f"Iterating through {len(target)} files passed to signExecAzureKv")
-		retval = 1
-		for targetFile in target:
-			if (abspath := targetFile.abspath).endswith((".exe", ".dll")):
-				ps_cmd = _azureKvSignShellCmd(abspath)
-				if (retval := env.Execute(ps_cmd, shell=True)) != 0:
-					print(f"Error signing file: {abspath}")
-		return retval
+		signable_exts = (".exe", ".dll", ".pyd")
+		filesToSign = [
+			targetFile.abspath for targetFile in target if targetFile.abspath.endswith(signable_exts)
+		]
+		if not filesToSign:
+			return 0
+
+		if len(filesToSign) == 1:
+			abspath = filesToSign[0]
+			ps_cmd = _azureKvSignShellCmd(abspath)
+			retval = env.Execute(ps_cmd, shell=True)
+			if retval != 0:
+				print(f"Error signing file: {abspath}")
+			return retval
+
+		print(f"Batch signing {len(filesToSign)} files with Azure Key Vault")
+		import tempfile
+
+		with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", delete=False, suffix=".txt") as f:
+			f.write("\n".join(filesToSign) + "\n")
+			list_path = f.name
+		try:
+			ps_cmd = _azureKvSignBatchShellCmd(list_path)
+			retval = env.Execute(ps_cmd, shell=True)
+			if retval != 0:
+				print(f"Error batch signing files listed in: {list_path}")
+			return retval
+		finally:
+			try:
+				os.remove(list_path)
+			except OSError:
+				pass
 
 	env["signExec"] = signExecAzureKv
+	env["useAzureKvSigning"] = True
 # END JP PATCH (Azure Key Vault signing)
 
 # architecture-specific environments
