@@ -7,7 +7,7 @@
 # Copyright (C) 2013 Masamitsu Misono
 # Copyright (C) 2011-2022 Takuya Nishimoto
 
-from .kgs import _connectionBeepsEnabled
+from .kgs import _beep, _connectionBeepsEnabled
 
 import braille
 try:
@@ -91,12 +91,12 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	global fConnection, numCells, isUnknownEquipment
 	if nStatus == BMDRVS.DISCONNECTED:
 		fConnection = False
-		tones.beep(1000, 300)
+		_beep(1000, 300)
 		log.debug("disconnect")
 	elif nStatus == BMDRVS.CONNECTED:
 		numCells = nDispSize
 		fConnection = True
-		tones.beep(1000, 30)
+		_beep(1000, 30)
 		log.debug("display size:%d" % nDispSize)
 	elif nStatus == BMDRVS.DRIVER_CANNOT_OPEN:
 		fConnection = False
@@ -329,12 +329,10 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				log.debug("isUnknownEquipment")
 				break
 			time.sleep(0.5)
-			if _connectionBeepsEnabled():
-				tones.beep(400 + (loop * 20), 20)
+			_beep(400 + (loop * 20), 20)
 			processEvents()
 		else:
-			if _connectionBeepsEnabled():
-				tones.beep(200, 100)
+			_beep(200, 100)
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
@@ -357,11 +355,10 @@ def processEvents():
 def waitAfterDisconnect():
 	for loop in range(10):
 		time.sleep(0.5)
-		if _connectionBeepsEnabled():
-			try:
-				tones.beep(450 - (loop * 20), 20)
-			except:  # noqa: E722
-				pass
+		try:
+			_beep(450 - (loop * 20), 20)
+		except:  # noqa: E722
+			pass
 		processEvents()
 
 
