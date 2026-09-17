@@ -33,6 +33,7 @@ else:
 	byte = chr
 
 from .kgs import (
+	_beep,
 	_connectionBeepsEnabled,
 	kgsListComPorts,
 	waitAfterDisconnect,
@@ -55,12 +56,12 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	global fConnection, numCells, isUnknownEquipment
 	if nStatus == BMDRVS.DISCONNECTED:
 		fConnection = False
-		tones.beep(1000, 300)
+		_beep(1000, 300)
 		log.info("disconnect")
 	elif nStatus == BMDRVS.CONNECTED:
 		numCells = nDispSize
 		fConnection = True
-		tones.beep(1000, 30)
+		_beep(1000, 30)
 		log.info("display size:%d" % nDispSize)
 	elif nStatus == BMDRVS.DRIVER_CANNOT_OPEN:
 		fConnection = False
@@ -160,14 +161,12 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				log.info("isUnknownEquipment")
 				break
 			time.sleep(0.5)
-			if _connectionBeepsEnabled():
-				tones.beep(400 + (loop * 20), 20)
+			_beep(400 + (loop * 20), 20)
 			processEvents()
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
-		if _connectionBeepsEnabled():
-			tones.beep(200, 100)
+		_beep(200, 100)
 	log.info("connection:%d port:%d" % (fConnection, _port))
 	return fConnection, port
 

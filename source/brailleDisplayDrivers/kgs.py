@@ -21,6 +21,7 @@ import inputCore
 import hwPortUtils
 import time
 import globalVars
+import config
 import tones
 import os
 from collections import OrderedDict
@@ -52,6 +53,32 @@ locked = False
 def _connectionBeepsEnabled():
 	"""Return False during install or launcher so connection tones do not mask speech."""
 	return not (globalVars.appArgs.install or globalVars.appArgs.installSilent or globalVars.appArgs.launcher)
+
+
+def _getBeepVolume():
+	"""Return volume ratio (0.0 to 1.0) based on NVDA sound volume settings."""
+	try:
+		if config.conf["audio"]["soundVolumeFollowsVoice"]:
+			import synthDriverHandler
+
+			synth = synthDriverHandler.getSynth()
+			if synth and synth.isSupported("volume"):
+				return synth.volume / 100.0
+		return config.conf["audio"]["soundVolume"] / 100.0
+	except Exception:
+		return 1.0
+
+
+def _beep(hz, length):
+	"""Play connection tone respecting NVDA volume settings and launcher/install state."""
+	if not _connectionBeepsEnabled():
+		return
+	volRatio = _getBeepVolume()
+	if volRatio <= 0:
+		return
+	vol = int(50 * volRatio)
+	if vol > 0:
+		tones.beep(hz, length, left=vol, right=vol)
 
 
 def lock():
@@ -95,12 +122,12 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	global fConnection, numCells, isUnknownEquipment
 	if nStatus == BMDRVS.DISCONNECTED:
 		fConnection = False
-		tones.beep(1000, 300)
+		_beep(1000, 300)
 		log.debug("disconnect")
 	elif nStatus == BMDRVS.CONNECTED:
 		numCells = nDispSize
 		fConnection = True
-		tones.beep(1000, 30)
+		_beep(1000, 30)
 		log.debug("display size:%d" % nDispSize)
 	elif nStatus == BMDRVS.DRIVER_CANNOT_OPEN:
 		fConnection = False
@@ -385,12 +412,10 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				log.debug("isUnknownEquipment")
 				break
 			time.sleep(0.5)
-			if _connectionBeepsEnabled():
-				tones.beep(400 + (loop * 20), 20)
+			_beep(400 + (loop * 20), 20)
 			processEvents()
 		else:
-			if _connectionBeepsEnabled():
-				tones.beep(200, 100)
+			_beep(200, 100)
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
@@ -413,11 +438,10 @@ def processEvents():
 def waitAfterDisconnect():
 	for loop in range(10):
 		time.sleep(0.5)
-		if _connectionBeepsEnabled():
-			try:
-				tones.beep(450 - (loop * 20), 20)
-			except:  # noqa: E722
-				pass
+		try:
+			_beep(450 - (loop * 20), 20)
+		except:  # noqa: E722
+			pass
 		processEvents()
 
 
