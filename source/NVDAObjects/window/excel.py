@@ -929,7 +929,10 @@ class ExcelWorksheet(ExcelBase):
 		# .ab34
 		r"(\.(?P<minAddress>[a-zA-Z]+[0-9]+)?(\.(?P<maxAddress>[a-zA-Z]+[0-9]+)?"
 		# Optionally followed by a period (.) and extra random data (sometimes produced by other screen readers)
-		r"(\..*)*)?)?$",
+		# nvdajp #2: (?:\..*)? instead of (\..*)* to avoid catastrophic backtracking (CodeQL py/redos).
+		# The greedy .* already consumes the rest, so the star could never iterate twice in a successful
+		# match; only failed matches could split it, which is what caused the exponential blowup.
+		r"(?:\..*)?)?)?$",
 	)
 
 	def populateHeaderCellTrackerFromNames(self, headerCellTracker):
