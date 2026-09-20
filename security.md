@@ -21,6 +21,10 @@ NVDA本家版については info@nvaccess.org に英語で報告してくださ
 
 NVDA で扱われるセキュリティ問題の例は [NVDA日本語版](https://github.com/nvdajp/nvdajp/security/advisories) および [NVDA本家版](https://github.com/nvaccess/nvda/security/advisories) GitHub セキュリティ勧告のページにあります。
 
+Note for security researchers:
+We are a small, not-for-profit organisation, dedicated to creating and freely providing the NVDA screen reader, which enables blind people around the world to access the PC, for free.
+As such, we do not have a bug bounty program, however we will gratefully receive any reports of genuine issues.
+
 ## Security Advisory Group
 
 NV Access is committed to maintaining the highest standards of security in NVDA. In line with this commitment, we have established a Security Advisory Group. This group plays a pivotal role in enhancing the security of NVDA.
