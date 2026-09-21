@@ -30,7 +30,8 @@
   * コンポーネント詳細は `projectDocs/dev/createDevEnvironment.md` の「Microsoft Visual Studio」節と `.vsconfig` の import を正本とする。
 * Git for Windows
 * [uv](https://docs.astral.sh/uv/)（`ensureuv.ps1` がリポジトリの Python 3.13 環境を用意する）
-* synthDriverHost32Runtime 用に 32bit Python 3.13 も必要（`scons.bat` 実行時に uv が取得する）
+* synthDriverHost32Runtime 用に 32bit（x86）Python 3.13 も必要
+  * `python-preference = "only-system"` のため、uv は managed 版 32bit Python を取得しない。**システム側に 32bit Python を用意する必要がある**（後述「32bit Python の準備」）
 
 改行コードは LF 統一を推奨。clone 後に以下を実行する。
 
@@ -65,6 +66,52 @@
 ```
 
 synthDriverHost32Runtime は 32ビット SAPI に対応するための拡張モジュールで、明示的なターゲット指定が必要。
+
+#### 32bit Python の準備（synthDriverHost32Runtime 実行前に必要）
+
+`runtime-builders/synthDriverHost32` は `.python-version` で `cpython-3.13.15-windows-x86-none` を要求する。
+`python-preference = "only-system"` のため uv は managed 版の 32bit Python を取得できず、システム側に 32bit Python が無いと次のエラーで失敗する。
+
+```text
+error: No interpreter found for cpython-3.13.15-windows-x86-none in search path or registry
+hint: A managed Python download is available for cpython-3.13.15-windows-x86-none,
+      but the Python preference is set to 'only system'
+```
+
+対処は python.org の 32bit インストーラ（ファイル名にサフィックスの無い `python-3.13.15.exe`）で per-user インストールする。
+`PrependPath=0` として既存の PATH を変更しない（既に 64bit Python や別の 32bit が PATH 上にある環境で競合を避けるため）。
+
+```powershell
+> Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.13.15/python-3.13.15.exe -OutFile "$env:TEMP\python-3.13.15-x86.exe"
+> Start-Process "$env:TEMP\python-3.13.15-x86.exe" -Wait -ArgumentList '/quiet InstallAllUsers=0 PrependPath=0 Include_launcher=1 Include_test=0 Include_pip=1 Include_tcltk=1'
+```
+
+インストール後、`py -0p` に `-V:3.13-32` として現れ、uv が「system interpreter」として認識する。
+
+```text
+> py -0p
+ -V:3.13     C:\...\Programs\Python\Python313\python.exe
+ -V:3.13-32  C:\...\Programs\Python\Python313-32\python.exe
+```
+
+補足:
+
+* インストーラの Authenticode 署名は有効期限切れでも、タイムスタンプ署名により `Valid` と判定される。python.org 公式 FTP からの取得であれば問題ない。
+* 正規の per-user インストール先（`%LOCALAPPDATA%\Programs\Python\Python313-32`）に置くことで uv の system 判定に乗る。`~/.local/bin` 等の非標準パスに置いた 32bit は system 判定されない点に注意。
+
+#### `synthDriverHost32/.venv` が壊れた場合
+
+以前の失敗で venv が存在しない Python を指したまま残ると、uv が作り直せず次のエラーになる。
+
+```text
+error: failed to remove directory ...\runtime-builders\synthDriverHost32\.venv\Lib: アクセスが拒否されました (os error 5)
+```
+
+`.venv` は `.gitignore` 対象のビルド生成物なので削除してよい。ただし ACL の状態によっては非昇格プロセスでは削除できず、アクセス拒否が続く。その場合は昇格した PowerShell で削除してから再実行する。
+
+```powershell
+> Remove-Item "<repo>\runtime-builders\synthDriverHost32\.venv" -Recurse -Force
+```
 
 NVDA 本体を実行するには
 
