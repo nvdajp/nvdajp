@@ -516,6 +516,11 @@ jobs:
     name: Run JP Braille/JTalk smoke tests
     runs-on: ${{ needs.matrix.outputs.defaultRunner }}
     needs: [matrix, buildNVDA]
+    # Limit GITHUB_TOKEN scope (CodeQL actions/missing-workflow-permissions).
+    # actions: write is required by actions/cache/restore and actions/upload-artifact.
+    permissions:
+      contents: read
+      actions: write
     strategy:
       fail-fast: false
       matrix:
