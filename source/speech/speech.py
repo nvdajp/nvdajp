@@ -1171,6 +1171,7 @@ def speak(
 	@param symbolLevel: The symbol verbosity level; C{None} (default) to use the user's configuration.
 	@param priority: The speech priority.
 	"""
+	originalSpeechSequence = speechSequence.copy()
 	speechSequence = filter_speechSequence.apply(speechSequence)
 	logBadSequenceTypes(speechSequence)
 	# in case priority was explicitly passed in as None, set to default.
@@ -1182,7 +1183,12 @@ def speak(
 
 	if speechViewer.isActive:
 		speechViewer.appendSpeechSequence(speechSequence)
-	pre_speech.notify(speechSequence=speechSequence, symbolLevel=symbolLevel, priority=priority)
+	pre_speech.notify(
+		speechSequence=speechSequence,
+		originalSpeechSequence=originalSpeechSequence,
+		symbolLevel=symbolLevel,
+		priority=priority,
+	)
 	# BEGIN JP PATCH
 	# nvdajp: Send speech to JP braille viewer
 	from gui import jpBrailleViewer
