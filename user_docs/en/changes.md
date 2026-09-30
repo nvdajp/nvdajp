@@ -13,6 +13,10 @@
 
 ### Bug Fixes
 
+* The "Start NVDA after I sign in" and "Use NVDA during sign-in" settings: (#20864, @cary-rowen)
+  * Fixed an issue that could prevent automatic startup from being enabled on some systems.
+  * Saving other settings no longer unexpectedly disables automatic startup.
+  * If saving fails, NVDA now reports the error and continues saving other settings.
 * Corrected the English pronunciation of Unicode braille characters ⡸, ⢸ and ⣸, and several mathematical symbols. (#20632)
 
 #### Performance
@@ -208,9 +212,6 @@ Previously these keys had no function when pressed on their own. (#20366, @fla-r
 
 #### Terminals
 
-* In live text regions, such as terminals, NVDA no longer freezes when substantial amounts of text are dumped to the screen. (#20177, #20649, @ethindp, @codeofdusk)
-  * By default, when lines are skipped in a large text flood, NVDA emits a beep proportional to the length of the skipped material.
-  This can be disabled in the Advanced settings panel.
 * In Windows Terminal, NVDA is less likely to report stale characters when moving the caret in delayed remote sessions such as SSH. (#19503, @sheldon-im)
 * In Windows Terminal, mouse tracking now reports the line of text under the mouse pointer. (#20448, @DataTriny)
 
