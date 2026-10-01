@@ -142,7 +142,7 @@ def _verify_zip_sha256(zip_path: Path, expected_digest: str) -> None:
     expected = expected_digest.lower()
     if actual != expected:
         raise RuntimeError(
-            f"SHA-256 mismatch for {zip_path.name}: expected {expected}, got {actual}"
+            f"SHA-256 mismatch for {zip_path.name}: expected {expected}, got {actual}",
         )
 
 
@@ -231,7 +231,7 @@ def download_dic(
         if (cache / "sys.dic").exists():
             return cache
         raise FileNotFoundError(
-            f"LIBKURAJI_JTALK_DIC_DIR={cache} does not contain sys.dic"
+            f"LIBKURAJI_JTALK_DIC_DIR={cache} does not contain sys.dic",
         )
 
     extracted = cache / tag
@@ -267,7 +267,7 @@ def download_dic(
 
     if not (extracted / "sys.dic").exists():
         raise RuntimeError(
-            f"sys.dic not found in extracted {zip_name}; archive layout changed?"
+            f"sys.dic not found in extracted {zip_name}; archive layout changed?",
         )
     return extracted
 
@@ -314,7 +314,7 @@ class JTalkDicAnalyzer:
         except ImportError as e:
             raise ImportError(
                 "fugashi is required for JTalkDicAnalyzer; "
-                "install with `pip install -e .[integration]`"
+                "install with `pip install -e .[integration]`",
             ) from e
         # fugashi.Tagger (the Unidic variant) rejects dictionaries whose
         # feature field count doesn't match Unidic's schema, so we use the
@@ -381,7 +381,7 @@ def make_analyzer(
     if not _env_truthy("LIBKURAJI_INTEGRATION"):
         raise RuntimeError(
             "JTalk dictionary integration is opt-in; "
-            "set LIBKURAJI_INTEGRATION=1 to enable."
+            "set LIBKURAJI_INTEGRATION=1 to enable.",
         )
     dic_dir = download_dic(tag, logwrite=logwrite)
     return JTalkDicAnalyzer(dic_dir, logwrite=logwrite)

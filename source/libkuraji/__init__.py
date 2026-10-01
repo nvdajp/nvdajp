@@ -25,14 +25,14 @@ def initialize(analyzer=None, logwrite=None):
             raise ImportError(
                 "The default analyzer requires 'fugashi' and dictionary dependencies. "
                 "Please run 'pip install libkuraji[integration]' to install them, "
-                "or pass a custom analyzer instance."
+                "or pass a custom analyzer instance.",
             ) from e
     from . import translator2
     translator2.initialize(analyzer=analyzer, logwrite=logwrite)
 
 
 def translate_kanji(
-    text: str, cursorPos: int = 0, nabcc: bool = False, **kwargs
+    text: str, cursorPos: int = 0, nabcc: bool = False, **kwargs,
 ) -> tuple[str, list[int], list[int], int]:
     """Translate mixed Kanji/Kana Japanese text, returning braille and position maps.
 

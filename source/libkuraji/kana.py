@@ -72,7 +72,7 @@ KANA1.update(
         "ン": _cell(3, 5, 6),
         "ッ": _cell(2),
         "ー": _cell(2, 5),
-    }
+    },
 )
 
 _DAKUTEN = _cell(5)
@@ -112,7 +112,7 @@ for _table, _prefix in (
     for _kc, _row in _table.items():
         for _small, _v in _SMALL_VOWEL.items():
             KANA2[_kc + _small] = _prefix + _cell(
-                *(_VOWEL_DOTS[_v] + _ROW_EXTRA_DOTS[_row])
+                *(_VOWEL_DOTS[_v] + _ROW_EXTRA_DOTS[_row]),
             )
 
 
@@ -297,7 +297,7 @@ _QUOTE_SYMBOL.update(
         "%": _cell(5, 6) + _cell(1, 2, 3, 4),
         "*": _cell(3, 5) * 2,
         "+": _cell(2, 6),
-    }
+    },
 )
 
 # --- Cyrillic and Greek letters ---------------------------------------

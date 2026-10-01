@@ -39,5 +39,5 @@ def enforce_max_input_length(text: str) -> None:
     limit = get_max_input_chars()
     if limit is not None and len(text) > limit:
         raise InputTooLongError(
-            f"input length {len(text)} exceeds limit of {limit} characters"
+            f"input length {len(text)} exceeds limit of {limit} characters",
         )
