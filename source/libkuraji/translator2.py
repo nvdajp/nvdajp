@@ -13,7 +13,7 @@
 # optional braille-notation field, is part of that dictionary contract.
 
 import re
-from collections.abc import Callable
+from typing import Callable
 
 from .unicodeutil import unicode_normalize, nfkc_normalize_with_map
 from .limits import enforce_max_input_length
@@ -111,22 +111,22 @@ CONNECTED_MORPHS = {
 }
 
 
-class MecabMorph:
+class MecabMorph(object):
 	__slots__ = (
-		"accent",
+		"hyouki",
+		"nhyouki",
 		"hinshi1",
 		"hinshi2",
 		"hinshi3",
 		"hinshi4",
-		"hyouki",
-		"kana",
-		"kihon",
-		"nhyouki",
-		"output",
-		"sepflag",
 		"type1",
 		"type2",
+		"kihon",
+		"kana",
 		"yomi",
+		"accent",
+		"output",
+		"sepflag",
 	)
 
 	def __init__(self):
@@ -199,7 +199,7 @@ class MecabMorph:
 
 
 def update_phonetic_symbols(mo: MecabMorph) -> None:
-	for p in range(len(mo.yomi)):
+	for p in range(0, len(mo.yomi)):
 		# 点訳のてびき第3版 第2章 その1 1 5
 		# ５、長音の書き表し方 (1), (2)
 		# before: ああ,ああ,感動詞,*,*,*,アア,アー,1/2,アー,0
@@ -242,7 +242,7 @@ def mecab_to_morphs(feature_lines: list[str] | None) -> list[MecabMorph]:
 				yomi_raw = unicode_normalize(ar[9])
 				# Strip accent markers (’) from Japanese phonetic readings (which contain Katakana),
 				# but preserve literal quote characters in punctuation/symbols.
-				if any(0x30A0 <= ord(c) <= 0x30FF for c in yomi_raw):
+				if any(0x30a0 <= ord(c) <= 0x30ff for c in yomi_raw):
 					mo.yomi = yomi_raw.replace("’", "")
 				else:
 					mo.yomi = yomi_raw
@@ -454,9 +454,7 @@ RE_ASCII_SYMBOLS = re.compile(r"^[\,\.\:\;\!\?\@\#\\\$\%\&\*\|\+\-\/\=\<\>\"'\^\
 
 
 def replace_alphabet_morphs(
-	li: list[MecabMorph],
-	nabcc: bool = False,
-	use_foreign_quotes: bool = False,
+	li: list[MecabMorph], nabcc: bool = False, use_foreign_quotes: bool = False,
 ) -> list[MecabMorph]:
 	# アルファベットまたは記号だけで表記されている語を結合する
 	# 情報処理点字の部分文字列になる記号を前後にまとめる
@@ -474,36 +472,33 @@ def replace_alphabet_morphs(
 			next_mo = li[pos + 1]
 		else:
 			next_mo = None
-		if (
-			is_alpha_or_single(mo.nhyouki)
-			or mo.nhyouki
-			and mo.nhyouki in r",+@/#$%&*;<"
-			or mo.nhyouki == "\\"
-			or mo.nhyouki
-			and mo.nhyouki[0] in r",+@/#$%&*;"
-			and RE_ASCII_SYMBOLS.match(mo.nhyouki)
-			or (
-				alp_morphs
-				and mo.nhyouki in ",."
-				and (
-					(next_mo and next_mo.nhyouki == " ")
-					or (next_mo and next_mo.hinshi1 in ("助詞", "助動詞"))
-					or (not next_mo)
-				)
+		if is_alpha_or_single(mo.nhyouki):
+			alp_morphs.append(mo)
+		elif mo.nhyouki and mo.nhyouki in r",+@/#$%&*;<":
+			alp_morphs.append(mo)
+		elif mo.nhyouki == "\\":
+			alp_morphs.append(mo)
+		elif mo.nhyouki and mo.nhyouki[0] in r",+@/#$%&*;" and RE_ASCII_SYMBOLS.match(mo.nhyouki):
+			alp_morphs.append(mo)
+		elif (
+			alp_morphs
+			and mo.nhyouki in ",."
+			and (
+				(next_mo and next_mo.nhyouki == " ")
+				or (next_mo and next_mo.hinshi1 in ("助詞", "助動詞"))
+				or (not next_mo)
 			)
-			or alp_morphs
-			and mo.nhyouki == " "
-			and next_mo
-			and is_alpha_or_single(next_mo.nhyouki)
-			or alp_morphs
-			and mo.nhyouki.isdigit()
-			or alp_morphs
-			and mo.nhyouki in ",.:;!?@#\\$%&*|+-/=<>\"'^`_~{}[]，"
-			or nabcc
-			and mo.nhyouki in "”’‘＿"
-			or not alp_morphs
-			and mo.nhyouki in "[]"
 		):
+			alp_morphs.append(mo)
+		elif alp_morphs and mo.nhyouki == " " and next_mo and is_alpha_or_single(next_mo.nhyouki):
+			alp_morphs.append(mo)
+		elif alp_morphs and mo.nhyouki.isdigit():
+			alp_morphs.append(mo)
+		elif alp_morphs and mo.nhyouki in ",.:;!?@#\\$%&*|+-/=<>\"'^`_~{}[]，":
+			alp_morphs.append(mo)
+		elif nabcc and mo.nhyouki in "”’‘＿":
+			alp_morphs.append(mo)
+		elif not alp_morphs and mo.nhyouki in "[]":
 			alp_morphs.append(mo)
 		else:
 			if alp_morphs:
@@ -593,7 +588,7 @@ WAGO_DIC = {
 
 def fix_japanese_date_morphs(li):
 	new_li = []
-	for i in range(len(li)):
+	for i in range(0, len(li)):
 		prev2_mo = li[i - 2] if i - 2 >= 0 else None
 		prev_mo = li[i - 1] if i - 1 >= 0 else None
 		mo = li[i]
@@ -1039,7 +1034,9 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo, nabcc=False, logwrite=_logwr
 
 	# 数字の後のアルファベット
 	if prev_mo.hinshi2 == "数" and mo.hinshi2 == "アルファベット":
-		if nabcc or RE_ASCII_CHARS.match(mo.nhyouki):
+		if nabcc:
+			return False
+		elif RE_ASCII_CHARS.match(mo.nhyouki):
 			return False
 
 	if prev_mo.hinshi1 == "名詞" and mo.hinshi1 == "名詞" and mo.hinshi2 == "数":
@@ -1246,7 +1243,7 @@ def morphs_to_string(li, inbuf, logwrite):
 	outbuf = ""
 	inpos2 = []
 	p = 0
-	for i in range(len(li)):
+	for i in range(0, len(li)):
 		if not li[i].output:
 			continue
 		out = li[i].output
@@ -1300,7 +1297,9 @@ RE_PAREN_ASCII_BODY = re.compile(r"^[A-Za-z0-9\,\.\+\-'\!\? ]+$")
 # - 空白を含まない
 # - ドット `.` で区切られたラベルが 2 個以上
 # - 各ラベルは先頭が英数字、以降は英数字・ハイフン・アンダースコア
-RE_US_G2_DOTTED_TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$")
+RE_US_G2_DOTTED_TOKEN = re.compile(
+	r"^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$",
+)
 RE_KATAKANA = re.compile("^[ァ-ヾ]+$")
 RE_HIRAGANA = re.compile("^[ぁ-ゞ]+$")
 RE_HALF_KATAKANA = re.compile("^[ｦ-ﾟ]+$")  # ff66 .. ff9f
@@ -1455,7 +1454,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 		if mo.hinshi1 == "空白":
 			mo.output = " "
 		elif mo.hyouki.startswith("•"):
-			# List bullet (U+2022) should be rendered as a bullet mark (U+2810, dot 5) in braille (#723)
+			# List bullet (U+2022) should be rendered as a bullet mark (U+2810, dot 5) in braille (nvdajp#723)
 			mo.output = "\u2810"
 		elif mo.hinshi2 == "数" and mo.nhyouki.isdigit():
 			mo.output = mo.nhyouki
@@ -1569,7 +1568,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	# after:
 	# ’,’,記号,括弧閉,*,*,’,’,*/*,',0
 	# ０,0,名詞,数,*,*,ゼロ,ゼロ,1/2,0,0
-	for pos in range(len(li) - 1):
+	for pos in range(0, len(li) - 1):
 		if li[pos].hyouki == "’" and li[pos + 1].hinshi2 == "数":
 			li[pos].output = "'"
 
@@ -1651,7 +1650,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 
 	# 記号を Unicode 正規化
 	# 踊り字の処理
-	for i in range(len(li)):
+	for i in range(0, len(li)):
 		mo = li[i]
 		if mo.hinshi1 == "記号" and mo.hinshi2 == "一般":
 			if mo.hyouki == "〻":
@@ -1760,7 +1759,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 		li[i - 1].sepflag = should_separate(prev2_mo, prev_mo, li[i], next_mo, nabcc=nabcc, logwrite=logwrite)
 
 	# do not translate if string is unicode braille
-	for i in range(len(li)):
+	for i in range(0, len(li)):
 		mo = li[i]
 		if all((0x2800 <= ord(c) <= 0x28FF or c == "\u3000") for c in mo.hyouki):
 			mo.output = mo.hyouki.replace("\u3000", " ")
@@ -1960,10 +1959,7 @@ def translateWithInPos2(
 		already_braille = True
 	else:
 		outbuf, inpos2 = japanese_braille_separate(
-			inbuf,
-			logwrite,
-			nabcc=nabcc,
-			use_foreign_quotes=use_foreign_quotes,
+			inbuf, logwrite, nabcc=nabcc, use_foreign_quotes=use_foreign_quotes,
 		)
 		already_braille = False
 	# nvdajp: translator_louis — 外国語引用符内を liblouis 2級に変換。既に点字の入力はスキップ（no-op で位置がずれないように）。
