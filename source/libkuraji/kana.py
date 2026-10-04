@@ -191,6 +191,11 @@ _SYMBOL = {
     "*": _cell(5, 6) + _cell(1, 6),
     "&": _cell(5, 6) + _cell(1, 2, 3, 4, 6),
     "_": _cell(5) + _cell(3, 6),
+    "$": _cell(5, 6) + _cell(1, 4, 5, 6),
+    "|": _cell(2, 3, 5, 6),
+    "｜": _cell(2, 3, 5, 6),
+    ";": _cell(2, 3),
+    "\\": _cell(1, 6),
 }
 
 # words spelled out for symbols in kana context
