@@ -7,6 +7,7 @@
 
 from brailleDisplayDrivers import seikantk  # noqa: I001
 import unittest
+from unittest.mock import patch
 import braille
 import braille.display
 import braille.display.gesture
@@ -339,3 +340,47 @@ class TestBRLTTY(unittest.TestCase):
 			self.skipTest("brlapi module not available")
 		except Exception:  # noqa: BLE001
 			self.fail("Couldn't import the brlapi module")
+
+
+class TestKgsGestures(unittest.TestCase):
+	"""Tests cellIndexes initialization for KGS drivers."""
+
+	def test_kgs_input_gesture(self):
+		from brailleDisplayDrivers import kgs
+
+		with patch("braille.display.gesture.log.warning") as mock_warn:
+			gesture_routing = kgs.InputGesture(["route"], 5)
+			self.assertEqual(gesture_routing.cellIndexes, [5])
+			self.assertEqual(gesture_routing.id, "route")
+			mock_warn.assert_not_called()
+
+		gesture_key = kgs.InputGesture(["func1"], None)
+		self.assertIsNone(gesture_key.cellIndexes)
+		self.assertEqual(gesture_key.id, "func1")
+
+	def test_braillememo_input_gesture(self):
+		from brailleDisplayDrivers import brailleMemo
+
+		with patch("braille.display.gesture.log.warning") as mock_warn:
+			gesture_routing = brailleMemo.InputGesture(["route"], 3)
+			self.assertEqual(gesture_routing.cellIndexes, [3])
+			self.assertEqual(gesture_routing.id, "route")
+			mock_warn.assert_not_called()
+
+		gesture_dots = brailleMemo.InputGesture(["dot1", "dot2"], None)
+		self.assertIsNone(gesture_dots.cellIndexes)
+		self.assertEqual(gesture_dots.id, "dot1+dot2")
+		self.assertEqual(gesture_dots.dots, 3)
+
+	def test_kgsbn46_input_gesture(self):
+		from brailleDisplayDrivers import kgsbn46
+
+		with patch("braille.display.gesture.log.warning") as mock_warn:
+			gesture_routing = kgsbn46.InputGesture(["route"], 2)
+			self.assertEqual(gesture_routing.cellIndexes, [2])
+			self.assertEqual(gesture_routing.id, "route")
+			mock_warn.assert_not_called()
+
+		gesture_key = kgsbn46.InputGesture(["bk"], None)
+		self.assertIsNone(gesture_key.cellIndexes)
+		self.assertEqual(gesture_key.id, "bk")

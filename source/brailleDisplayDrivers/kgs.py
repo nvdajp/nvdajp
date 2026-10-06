@@ -773,4 +773,7 @@ class InputGesture(_BrailleDisplayGesture):
 	def __init__(self, names, routingIndex):
 		super().__init__()
 		self.id = "+".join(names)
-		self.routingIndex = routingIndex
+		if hasattr(self, "cellIndexes"):
+			self.cellIndexes = [routingIndex] if routingIndex is not None else None
+		else:
+			self.routingIndex = routingIndex

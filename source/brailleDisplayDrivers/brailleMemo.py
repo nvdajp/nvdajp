@@ -580,4 +580,7 @@ class InputGesture(_BrailleDisplayGesture, _BrailleInputGesture):
 		if "dot8" in names:
 			dots |= 1 << 7
 		self.dots = dots
-		self.routingIndex = routingIndex
+		if hasattr(self, "cellIndexes"):
+			self.cellIndexes = [routingIndex] if routingIndex is not None else None
+		else:
+			self.routingIndex = routingIndex
