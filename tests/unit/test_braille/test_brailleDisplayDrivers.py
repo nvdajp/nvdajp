@@ -384,6 +384,3 @@ class TestKgsGestures(unittest.TestCase):
 		gesture_key = kgsbn46.InputGesture(["bk"], None)
 		self.assertIsNone(gesture_key.cellIndexes)
 		self.assertEqual(gesture_key.id, "bk")
-
-
-
