@@ -48212,7 +48212,7 @@ $(ID:061d7d61-cfab-44b3-a92c-4e65cf63213b)
       </notes>
       <segment state="final">
         <source>BRLTTY</source>
-        <target>BRTTY</target>
+        <target>BRLTTY</target>
       </segment>
     </unit>
     <unit id="04f687c2-db6d-479e-ac5e-965ae532bc74">
