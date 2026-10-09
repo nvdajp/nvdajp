@@ -11,8 +11,8 @@ summary = "JTalk Japanese TTS"
 version = {args.nowdate}
 author = "Takuya Nishimoto <nishimotz@gmail.com>"
 description = "Japanese speech engine for NVDA, based on Open JTalk, MeCab and MMDAgent."
-url = http://www.nvda.jp/en/
+url = https://www.nvda.jp/en/
 minimumNVDAVersion = 2014.1.0
-lastTestedNVDAVersion = 2024.4.0
+lastTestedNVDAVersion = 2027.1.0
 """,
 	)
