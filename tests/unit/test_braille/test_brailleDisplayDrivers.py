@@ -410,3 +410,13 @@ class TestKgsSettings(unittest.TestCase):
 			with patch("tones.beep") as mock_beep:
 				kgs._beep(440, 50)
 				mock_beep.assert_called_once()
+
+	def test_get_possible_ports_includes_usb_and_bluetooth(self):
+		from brailleDisplayDrivers import kgs, brailleMemo
+
+		for mod in (kgs, brailleMemo):
+			with patch.object(mod, "kgsListComPorts", return_value=[]):
+				ports = mod.BrailleDisplayDriver.getPossiblePorts()
+				self.assertIn("auto", ports)
+				self.assertIn("usb", ports)
+				self.assertIn("bluetooth", ports)

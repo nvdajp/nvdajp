@@ -11,6 +11,16 @@ from .kgs import _beep, _connectionBeepsEnabled
 
 import braille
 try:
+	from braille.constants import (
+		AUTOMATIC_PORT,
+		BLUETOOTH_PORT,
+		USB_PORT,
+	)
+except ImportError:
+	AUTOMATIC_PORT = ("auto", _("Automatic"))
+	USB_PORT = ("usb", _("USB"))
+	BLUETOOTH_PORT = ("bluetooth", _("Bluetooth"))
+try:
 	import braille.display.driver
 	import braille.display.gesture
 	_BrailleDisplayDriver = braille.display.driver.BrailleDisplayDriver
@@ -483,7 +493,11 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 
 	@classmethod
 	def getPossiblePorts(cls):
-		ar = [cls.AUTOMATIC_PORT]
+		ar = [
+			cls.AUTOMATIC_PORT,
+			USB_PORT,
+			BLUETOOTH_PORT,
+		]
 		ports = {}
 		for p in kgsListComPorts():
 			log.debug(p)
