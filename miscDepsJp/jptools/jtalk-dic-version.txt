@@ -3,10 +3,10 @@
 # nvdajp/nvdajp-jtalk-dic release.
 # See projectDocs/jp/vendor-submodules.md ("辞書のビルド時取得（方針転換）").
 repo=nvdajp/nvdajp-jtalk-dic
-tag=v1.0.0
-asset=jtalk-dic-v1.0.0.zip
-sha256=a7169a942a4903914c5997c45639a8a15513be34d2721d41d2dd4674669dfb74
+tag=v1.0.1
+asset=jtalk-dic-v1.0.1.zip
+sha256=f23154376389a453cfe0ee55cda668a9669d73dca70691c3ca0461799a9ef529
 # mecab-dict-index.exe: used by build_userdic.py to compile jtusr.dic
 # (the user dictionary). Unsigned executable; verified via checksum before use.
-tool_asset=mecab-dict-index-v1.0.0.exe
-tool_sha256=f4cf8481925ce1dd7f6684299940651947924d2acdc0647cd70ca0c605d4da18
+tool_asset=mecab-dict-index-v1.0.1.exe
+tool_sha256=6b84499e9759113974cda47bcc75714a38213c409e8793f3694b8b7af8dc1b62
