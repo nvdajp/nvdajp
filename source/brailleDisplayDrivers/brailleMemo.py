@@ -330,7 +330,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
 	log.debug("bmStart(%s) returns %d" % (port, ret))
 	if ret:
-		for loop in range(15):
+		for loop in range(6):
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
 				log.debug("bmStartDisplayMode2() returns %d" % ret)
@@ -418,6 +418,21 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 
 		try:
 			config.conf["braille"][self.name]["connectionToneVolume"] = int(val)
+		except Exception:
+			pass
+
+	@property
+	def detectBluetooth(self) -> bool:
+		from .kgs import _isBluetoothDetectionEnabled
+
+		return _isBluetoothDetectionEnabled()
+
+	@detectBluetooth.setter
+	def detectBluetooth(self, val: bool) -> None:
+		import config
+
+		try:
+			config.conf["braille"][self.name]["detectBluetooth"] = bool(val)
 		except Exception:
 			pass
 

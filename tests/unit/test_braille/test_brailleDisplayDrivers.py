@@ -420,3 +420,18 @@ class TestKgsSettings(unittest.TestCase):
 				self.assertIn("auto", ports)
 				self.assertIn("usb", ports)
 				self.assertIn("bluetooth", ports)
+
+	def test_detect_bluetooth_setting_defined(self):
+		from brailleDisplayDrivers import kgs
+
+		kgs_setting_ids = [s.id for s in kgs.BrailleDisplayDriver.supportedSettings]
+		self.assertIn("detectBluetooth", kgs_setting_ids)
+
+	def test_scan_bluetooth_ports_respects_setting(self):
+		from brailleDisplayDrivers import kgs
+
+		with patch("brailleDisplayDrivers.kgs._isBluetoothDetectionEnabled", return_value=False):
+			with patch("hwPortUtils.listComPorts") as mock_list:
+				results = list(kgs._scanKgsBluetoothPorts(usb=False, bluetooth=True))
+				self.assertEqual(results, [])
+				mock_list.assert_not_called()

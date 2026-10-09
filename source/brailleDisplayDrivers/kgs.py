@@ -33,7 +33,7 @@ import time
 import globalVars
 import config
 import tones
-from autoSettingsUtils.driverSetting import NumericDriverSetting
+from autoSettingsUtils.driverSetting import BooleanDriverSetting, NumericDriverSetting
 import os
 from collections import OrderedDict
 from ctypes import *
@@ -90,6 +90,18 @@ def _getConnectionToneVolume():
 	except Exception:
 		pass
 	return 100
+
+
+def _isBluetoothDetectionEnabled():
+	"""Return whether Bluetooth automatic detection is enabled for KGS drivers."""
+	try:
+		for driverName in ("kgs", "brailleMemo", "kgsbn46"):
+			sec = config.conf["braille"].get(driverName)
+			if sec and "detectBluetooth" in sec:
+				return bool(sec["detectBluetooth"])
+	except Exception:
+		pass
+	return True
 
 
 def _beep(hz, length):
@@ -359,7 +371,7 @@ def _scanKgsRegistryUsbPorts(usb=False, bluetooth=False, limitToDevices=None):
 
 def _scanKgsBluetoothPorts(usb=False, bluetooth=False, limitToDevices=None):
 	"""Yield paired BM* Bluetooth serial ports (e.g. BM-NextTouch on COM5)."""
-	if not bluetooth:
+	if not bluetooth or not _isBluetoothDetectionEnabled():
 		return
 	if limitToDevices is not None and BrailleDisplayDriver.name not in limitToDevices:
 		return
@@ -429,7 +441,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
 	log.debug("bmStart(%s) returns %d" % (port, ret))
 	if ret:
-		for loop in range(15):
+		for loop in range(6):
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
 				log.debug("bmStartDisplayMode2() returns %d" % ret)
@@ -509,6 +521,12 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 			minVal=0,
 			maxVal=100,
 		),
+		BooleanDriverSetting(
+			"detectBluetooth",
+			# Translators: Label for a setting that controls whether KGS Bluetooth devices are automatically detected.
+			_("Include &Bluetooth devices in automatic detection"),
+			defaultVal=True,
+		),
 	)
 
 	@property
@@ -525,6 +543,17 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 	def connectionToneVolume(self, val: int) -> None:
 		try:
 			config.conf["braille"][self.name]["connectionToneVolume"] = int(val)
+		except Exception:
+			pass
+
+	@property
+	def detectBluetooth(self) -> bool:
+		return _isBluetoothDetectionEnabled()
+
+	@detectBluetooth.setter
+	def detectBluetooth(self, val: bool) -> None:
+		try:
+			config.conf["braille"][self.name]["detectBluetooth"] = bool(val)
 		except Exception:
 			pass
 
