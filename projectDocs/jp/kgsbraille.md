@@ -31,7 +31,7 @@
 | 生成 | `jptools/pack_kgs_addon.py`（SCons `jpAddons`）、手動は `pack_kgs_addon.cmd` |
 | 同梱ファイル | `manifest.ini`, `kgs.py`, `brailleMemo.py`, `DirectBM.dll` |
 | 非同梱 | `kgsbn46.py`（コア専用のまま） |
-| マニフェスト | `jptools/kgs_manifest.py`（`minimumNVDAVersion = 2026.1.0`、`lastTestedNVDAVersion = 2026.1.1`） |
+| マニフェスト | `jptools/kgs_manifest.py`（`minimumNVDAVersion = 2026.1.0`、`lastTestedNVDAVersion = 2027.1.0`） |
 
 ### 1.3 依存関係（論理）
 
@@ -315,6 +315,7 @@ def _connectionBeepsEnabled():
 | 2026-05-18 | アドオン `lastTestedNVDAVersion` を 2026.1.1 に更新 |
 | 2026-05-18 | Next Touch 40 向け `VID_10C4&PID_EA60` の bdDetect 登録、`kgs_bdDetect_probe.py` 追加 |
 | 2026-05-25 | §2.6: インストール／ランチャー時の接続プローブ音抑制（#470 / PR #659） |
+| 2026-10-09 | アドオン `lastTestedNVDAVersion` を 2027.1.0 に更新 |
 
 ---
 
