@@ -11,6 +11,16 @@ from .kgs import _beep, _connectionBeepsEnabled
 
 import braille
 try:
+	from braille.constants import (
+		AUTOMATIC_PORT,
+		BLUETOOTH_PORT,
+		USB_PORT,
+	)
+except ImportError:
+	AUTOMATIC_PORT = ("auto", _("Automatic"))
+	USB_PORT = ("usb", _("USB"))
+	BLUETOOTH_PORT = ("bluetooth", _("Bluetooth"))
+try:
 	import braille.display.driver
 	import braille.display.gesture
 	_BrailleDisplayDriver = braille.display.driver.BrailleDisplayDriver
@@ -320,7 +330,7 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 	ret = hBrl.bmStart(devName, _port, SPEED, statusCallbackInst)
 	log.debug("bmStart(%s) returns %d" % (port, ret))
 	if ret:
-		for loop in range(15):
+		for loop in range(6):
 			if fConnection:
 				ret = hBrl.bmStartDisplayMode2(KGS_DISPMODE, keyCallbackInst)
 				log.debug("bmStartDisplayMode2() returns %d" % ret)
@@ -389,6 +399,42 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 	isThreadSafe = True
 	_portName = None
 	_directBM = None
+
+	@property
+	def supportedSettings(self):
+		from .kgs import BrailleDisplayDriver as KgsDriver
+
+		return KgsDriver.supportedSettings
+
+	@property
+	def connectionToneVolume(self) -> int:
+		from .kgs import _getConnectionToneVolume
+
+		return _getConnectionToneVolume()
+
+	@connectionToneVolume.setter
+	def connectionToneVolume(self, val: int) -> None:
+		import config
+
+		try:
+			config.conf["braille"][self.name]["connectionToneVolume"] = int(val)
+		except Exception:
+			pass
+
+	@property
+	def detectBluetooth(self) -> bool:
+		from .kgs import _isBluetoothDetectionEnabled
+
+		return _isBluetoothDetectionEnabled()
+
+	@detectBluetooth.setter
+	def detectBluetooth(self, val: bool) -> None:
+		import config
+
+		try:
+			config.conf["braille"][self.name]["detectBluetooth"] = bool(val)
+		except Exception:
+			pass
 
 	def __init__(self, port="auto"):
 		super().__init__()
@@ -462,7 +508,11 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 
 	@classmethod
 	def getPossiblePorts(cls):
-		ar = [cls.AUTOMATIC_PORT]
+		ar = [
+			cls.AUTOMATIC_PORT,
+			USB_PORT,
+			BLUETOOTH_PORT,
+		]
 		ports = {}
 		for p in kgsListComPorts():
 			log.debug(p)

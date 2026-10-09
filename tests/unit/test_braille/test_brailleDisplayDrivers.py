@@ -384,3 +384,60 @@ class TestKgsGestures(unittest.TestCase):
 		gesture_key = kgsbn46.InputGesture(["bk"], None)
 		self.assertIsNone(gesture_key.cellIndexes)
 		self.assertEqual(gesture_key.id, "bk")
+
+
+class TestKgsSettings(unittest.TestCase):
+	"""Tests for KGS braille driver settings."""
+
+	def test_connection_tone_volume_setting_defined(self):
+		from brailleDisplayDrivers import kgs
+
+		kgs_setting_ids = [s.id for s in kgs.BrailleDisplayDriver.supportedSettings]
+		self.assertIn("connectionToneVolume", kgs_setting_ids)
+
+	def test_beep_respects_zero_volume(self):
+		from brailleDisplayDrivers import kgs
+
+		with (
+			patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=0),
+			patch("tones.beep") as mock_beep,
+		):
+			kgs._beep(440, 50)
+			mock_beep.assert_not_called()
+
+	def test_beep_plays_when_volume_nonzero(self):
+		from brailleDisplayDrivers import kgs
+
+		with (
+			patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=50),
+			patch("tones.beep") as mock_beep,
+		):
+			kgs._beep(440, 50)
+			mock_beep.assert_called_once()
+
+	def test_get_possible_ports_includes_usb_and_bluetooth(self):
+		from brailleDisplayDrivers import brailleMemo, kgs
+
+		for mod in (kgs, brailleMemo):
+			with patch.object(mod, "kgsListComPorts", return_value=[]):
+				ports = mod.BrailleDisplayDriver.getPossiblePorts()
+				self.assertIn("auto", ports)
+				self.assertIn("usb", ports)
+				self.assertIn("bluetooth", ports)
+
+	def test_detect_bluetooth_setting_defined(self):
+		from brailleDisplayDrivers import kgs
+
+		kgs_setting_ids = [s.id for s in kgs.BrailleDisplayDriver.supportedSettings]
+		self.assertIn("detectBluetooth", kgs_setting_ids)
+
+	def test_scan_bluetooth_ports_respects_setting(self):
+		from brailleDisplayDrivers import kgs
+
+		with (
+			patch("brailleDisplayDrivers.kgs._isBluetoothDetectionEnabled", return_value=False),
+			patch("hwPortUtils.listComPorts") as mock_list,
+		):
+			results = list(kgs._scanKgsBluetoothPorts(usb=False, bluetooth=True))
+			self.assertEqual(results, [])
+			mock_list.assert_not_called()
