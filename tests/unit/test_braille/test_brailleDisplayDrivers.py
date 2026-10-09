@@ -398,21 +398,25 @@ class TestKgsSettings(unittest.TestCase):
 	def test_beep_respects_zero_volume(self):
 		from brailleDisplayDrivers import kgs
 
-		with patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=0):
-			with patch("tones.beep") as mock_beep:
-				kgs._beep(440, 50)
-				mock_beep.assert_not_called()
+		with (
+			patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=0),
+			patch("tones.beep") as mock_beep,
+		):
+			kgs._beep(440, 50)
+			mock_beep.assert_not_called()
 
 	def test_beep_plays_when_volume_nonzero(self):
 		from brailleDisplayDrivers import kgs
 
-		with patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=50):
-			with patch("tones.beep") as mock_beep:
-				kgs._beep(440, 50)
-				mock_beep.assert_called_once()
+		with (
+			patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=50),
+			patch("tones.beep") as mock_beep,
+		):
+			kgs._beep(440, 50)
+			mock_beep.assert_called_once()
 
 	def test_get_possible_ports_includes_usb_and_bluetooth(self):
-		from brailleDisplayDrivers import kgs, brailleMemo
+		from brailleDisplayDrivers import brailleMemo, kgs
 
 		for mod in (kgs, brailleMemo):
 			with patch.object(mod, "kgsListComPorts", return_value=[]):
@@ -430,8 +434,10 @@ class TestKgsSettings(unittest.TestCase):
 	def test_scan_bluetooth_ports_respects_setting(self):
 		from brailleDisplayDrivers import kgs
 
-		with patch("brailleDisplayDrivers.kgs._isBluetoothDetectionEnabled", return_value=False):
-			with patch("hwPortUtils.listComPorts") as mock_list:
-				results = list(kgs._scanKgsBluetoothPorts(usb=False, bluetooth=True))
-				self.assertEqual(results, [])
-				mock_list.assert_not_called()
+		with (
+			patch("brailleDisplayDrivers.kgs._isBluetoothDetectionEnabled", return_value=False),
+			patch("hwPortUtils.listComPorts") as mock_list,
+		):
+			results = list(kgs._scanKgsBluetoothPorts(usb=False, bluetooth=True))
+			self.assertEqual(results, [])
+			mock_list.assert_not_called()
