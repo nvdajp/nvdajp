@@ -35,7 +35,7 @@ from typing import Callable, List, Optional
 # nvdajp keeps its own build pin in sync with this value: see
 # miscDepsJp/jptools/jtalk-dic-version.txt and tests/unit/test_jpDicPins.py
 # in the nvdajp repository.
-DEFAULT_DIC_TAG = "v1.0.0"
+DEFAULT_DIC_TAG = "v1.0.1"
 
 # Owner/repo of the dictionary release.
 DIC_REPO = "nvdajp/nvdajp-jtalk-dic"
