@@ -390,6 +390,27 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 	_portName = None
 	_directBM = None
 
+	@property
+	def supportedSettings(self):
+		from .kgs import BrailleDisplayDriver as KgsDriver
+
+		return KgsDriver.supportedSettings
+
+	@property
+	def connectionToneVolume(self) -> int:
+		from .kgs import _getConnectionToneVolume
+
+		return _getConnectionToneVolume()
+
+	@connectionToneVolume.setter
+	def connectionToneVolume(self, val: int) -> None:
+		import config
+
+		try:
+			config.conf["braille"][self.name]["connectionToneVolume"] = int(val)
+		except Exception:
+			pass
+
 	def __init__(self, port="auto"):
 		super().__init__()
 		global fConnection, numCells

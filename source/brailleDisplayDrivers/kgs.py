@@ -23,6 +23,7 @@ import time
 import globalVars
 import config
 import tones
+from autoSettingsUtils.driverSetting import NumericDriverSetting
 import os
 from collections import OrderedDict
 from ctypes import *
@@ -69,11 +70,26 @@ def _getBeepVolume():
 		return 1.0
 
 
+def _getConnectionToneVolume():
+	"""Return connection tone volume percentage (0 to 100)."""
+	try:
+		for driverName in ("kgs", "brailleMemo", "kgsbn46"):
+			sec = config.conf["braille"].get(driverName)
+			if sec and "connectionToneVolume" in sec:
+				return int(sec["connectionToneVolume"])
+	except Exception:
+		pass
+	return 100
+
+
 def _beep(hz, length):
-	"""Play connection tone respecting NVDA volume settings and launcher/install state."""
+	"""Play connection tone respecting NVDA volume settings, connectionToneVolume, and launcher/install state."""
 	if not _connectionBeepsEnabled():
 		return
-	volRatio = _getBeepVolume()
+	kgsVol = _getConnectionToneVolume()
+	if kgsVol <= 0:
+		return
+	volRatio = _getBeepVolume() * (kgsVol / 100.0)
 	if volRatio <= 0:
 		return
 	vol = int(50 * volRatio)
@@ -473,6 +489,34 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 	supportsAutomaticDetection = True
 	_portName = None
 	_directBM = None
+
+	supportedSettings = (
+		NumericDriverSetting(
+			"connectionToneVolume",
+			# Translators: Label for a setting that controls KGS connection tone volume.
+			_("Connection tone &volume:"),
+			defaultVal=100,
+			minVal=0,
+			maxVal=100,
+		),
+	)
+
+	@property
+	def connectionToneVolume(self) -> int:
+		try:
+			sec = config.conf["braille"].get(self.name)
+			if sec and "connectionToneVolume" in sec:
+				return int(sec["connectionToneVolume"])
+		except Exception:
+			pass
+		return 100
+
+	@connectionToneVolume.setter
+	def connectionToneVolume(self, val: int) -> None:
+		try:
+			config.conf["braille"][self.name]["connectionToneVolume"] = int(val)
+		except Exception:
+			pass
 
 	@classmethod
 	def registerAutomaticDetection(cls, driverRegistrar: bdDetect.DriverRegistrar):

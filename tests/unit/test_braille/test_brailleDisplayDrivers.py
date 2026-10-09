@@ -384,3 +384,29 @@ class TestKgsGestures(unittest.TestCase):
 		gesture_key = kgsbn46.InputGesture(["bk"], None)
 		self.assertIsNone(gesture_key.cellIndexes)
 		self.assertEqual(gesture_key.id, "bk")
+
+
+class TestKgsSettings(unittest.TestCase):
+	"""Tests for KGS braille driver settings."""
+
+	def test_connection_tone_volume_setting_defined(self):
+		from brailleDisplayDrivers import kgs
+
+		kgs_setting_ids = [s.id for s in kgs.BrailleDisplayDriver.supportedSettings]
+		self.assertIn("connectionToneVolume", kgs_setting_ids)
+
+	def test_beep_respects_zero_volume(self):
+		from brailleDisplayDrivers import kgs
+
+		with patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=0):
+			with patch("tones.beep") as mock_beep:
+				kgs._beep(440, 50)
+				mock_beep.assert_not_called()
+
+	def test_beep_plays_when_volume_nonzero(self):
+		from brailleDisplayDrivers import kgs
+
+		with patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=50):
+			with patch("tones.beep") as mock_beep:
+				kgs._beep(440, 50)
+				mock_beep.assert_called_once()
