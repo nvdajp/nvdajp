@@ -131,7 +131,7 @@ Azure CLI でサインインしておきます（または `AZURE_KV_ACCESS_TOKE
 > az login
 ```
 
-Key Vault / 証明書の詳細は `f:\shuaruta\code-signing\HOWTO.md` を参照してください。
+Key Vault / 証明書の詳細は `projectDocs/jp/code-signing-dependencies.md` を正本とします。
 
 #### ビルド実行
 
