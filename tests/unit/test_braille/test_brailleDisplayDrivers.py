@@ -1,7 +1,7 @@
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2017-2025 NV Access Limited, Leonard de Ruijter
+# Copyright (C) 2017-2026 NV Access Limited, Leonard de Ruijter, Christos Bouronikos
 
 """Unit tests for braille display drivers."""
 
@@ -11,6 +11,9 @@ from unittest.mock import patch
 import braille
 import braille.display
 import braille.display.gesture
+
+# The gesture map only resolves scripts for loaded modules.
+import globalCommands  # noqa: F401
 
 
 class FakeSeikantkDriver(seikantk.BrailleDisplayDriver):
@@ -197,6 +200,12 @@ class _ModelRoutingGesture(braille.display.gesture.BrailleDisplayGesture):
 	id = "routing"
 
 
+class _ModelKeyGesture(braille.display.gesture.BrailleDisplayGesture):
+	source = "testDriver"
+	model = "testModel"
+	id = "key1"
+
+
 class _ComboGesture(braille.display.gesture.BrailleDisplayGesture):
 	"""Gesture whose id contains '+', simulating a routing key combined with a modifier."""
 
@@ -309,6 +318,10 @@ class TestBrailleDisplayGestureCellIndexes(unittest.TestCase):
 			g.identifiers,
 		)
 
+	def test_identifiers_with_model_no_cellIndexes(self):
+		g = _ModelKeyGesture()
+		self.assertEqual(["br(testDriver.testModel):key1", "br(testDriver):key1"], g.identifiers)
+
 	def test_identifiers_combo_no_cellIndexesStr(self):
 		g = _ComboGesture()
 		g.cellIndexes = [2]
@@ -342,6 +355,26 @@ class TestBRLTTY(unittest.TestCase):
 			self.fail("Couldn't import the brlapi module")
 
 
+class _EurobrailleBnoteGesture(braille.display.gesture.BrailleDisplayGesture):
+	source = "eurobraille"
+	model = "bnote"
+	id = "joystick1Right"
+
+
+class TestModelSpecificGestures(unittest.TestCase):
+	"""Model specific gesture bindings must take priority over generic bindings for the same key."""
+
+	def test_modelSpecificBindingWins(self):
+		gmap = braille.display._getDisplayDriver("eurobraille").gestureMap
+		scripts = [
+			scriptName
+			for identifier in _EurobrailleBnoteGesture().normalizedIdentifiers
+			for cls, scriptName in gmap.getScriptsForGesture(identifier)
+		]
+		self.assertEqual(["braille_scrollForward", "review_nextCharacter"], scripts)
+
+
+# BEGIN JP PATCH
 class TestKgsGestures(unittest.TestCase):
 	"""Tests cellIndexes initialization for KGS drivers."""
 
@@ -441,3 +474,6 @@ class TestKgsSettings(unittest.TestCase):
 			results = list(kgs._scanKgsBluetoothPorts(usb=False, bluetooth=True))
 			self.assertEqual(results, [])
 			mock_list.assert_not_called()
+
+
+# END JP PATCH
