@@ -1150,6 +1150,7 @@ jobs:
           --title "${{ steps.getReleaseNotes.outputs.RELEASE_NAME }}" \
           --notes-file /tmp/releaseNotes.md \
           --verify-tag \
+          --target "${{ github.sha }}" \
           --discussion-category Releases \
           ${{ ( contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') ) && '--prerelease' || '' }} \
           $NVDA_EXE_NAME#Installer
@@ -1217,6 +1218,7 @@ jobs:
           jptools/kgsbraille-*.nvda-addon \
           output/nvda_*_controllerClientJp.zip \
           --repo ${{ github.repository }} \
+          --target "${{ github.sha }}" \
           --title "$version" \
           --notes-file "$notes_file" \
           --prerelease
@@ -1311,6 +1313,7 @@ jobs:
           jptools/kgsbraille-*.nvda-addon \
           output/nvda_*_controllerClientJp.zip \
           --repo ${{ github.repository }} \
+          --target "${{ github.sha }}" \
           --title "$version" \
           --notes-file "$notes_file" \
           --prerelease
@@ -1456,6 +1459,7 @@ jobs:
           jptools/kgsbraille-*.nvda-addon \
           output/nvda_*_controllerClientJp.zip \
           --repo ${{ github.repository }} \
+          --target "${{ github.sha }}" \
           --title "${title_text}$version" \
           --notes-file "$notes_file" \
           $PRERELEASE_FLAG
