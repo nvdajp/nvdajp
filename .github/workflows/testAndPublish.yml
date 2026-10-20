@@ -1150,6 +1150,7 @@ jobs:
           --title "${{ steps.getReleaseNotes.outputs.RELEASE_NAME }}" \
           --notes-file /tmp/releaseNotes.md \
           --verify-tag \
+          --target "${{ github.sha }}" \
           --discussion-category Releases \
           ${{ ( contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') ) && '--prerelease' || '' }} \
           $NVDA_EXE_NAME#Installer
