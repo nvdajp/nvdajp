@@ -11,7 +11,8 @@
 from synthDriverHandler import SynthDriver as BaseSynthDriver, VoiceInfo
 from collections import OrderedDict
 from logHandler import log
-from autoSettingsUtils.driverSetting import BooleanDriverSetting
+from autoSettingsUtils.driverSetting import BooleanDriverSetting, DriverSetting
+from autoSettingsUtils.utils import StringParameterInfo
 
 from speech.commands import (
 	BreakCommand,
@@ -47,6 +48,15 @@ class SynthDriver(BaseSynthDriver):
 	description = "JTalk"
 	supportedSettings = (
 		BaseSynthDriver.VoiceSetting(),
+		DriverSetting(
+			"engdic",
+			# Translators: Label for English reading dictionary setting in JTalk voice settings dialog.
+			_("英語読み辞書(&E)"),
+			availableInSettingsRing=True,
+			defaultVal="bep",
+			# Translators: Label for English reading dictionary setting in synth settings ring.
+			displayName=_("英語読み辞書"),
+		),
 		BaseSynthDriver.RateSetting(),
 		BaseSynthDriver.RateBoostSetting()
 		if hasattr(BaseSynthDriver, "RateBoostSetting")
@@ -70,6 +80,7 @@ class SynthDriver(BaseSynthDriver):
 
 	def __init__(self) -> None:
 		self.voice_id = "V4"
+		self._engdic = "bep"
 		self._volume = 100
 		self._pitch = 50
 		self._pitchOffset = 0
@@ -188,6 +199,22 @@ class SynthDriver(BaseSynthDriver):
 		for v in jtalkDriver._jtalk_voices:
 			voices[v["id"]] = VoiceInfo(v["id"], v["name"], v["lang"])
 		return voices
+
+	def _get_availableEngdics(self) -> OrderedDict[str, StringParameterInfo]:
+		engdics: OrderedDict[str, StringParameterInfo] = OrderedDict()
+		for mode_id, label in jtalkDriver.ENG_DIC_MODES:
+			engdics[mode_id] = StringParameterInfo(mode_id, _(label))
+		return engdics
+
+	def _get_engdic(self) -> str:
+		return self._engdic
+
+	def _set_engdic(self, value: str) -> None:
+		normalized = (value or "bep").strip().lower()
+		if normalized not in {m[0] for m in jtalkDriver.ENG_DIC_MODES}:
+			normalized = "bep"
+		self._engdic = normalized
+		jtalkDriver.set_eng_dic(normalized)
 
 	def _get_voice(self) -> str:
 		log.debug("_get_voice called")

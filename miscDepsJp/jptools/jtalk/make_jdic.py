@@ -119,6 +119,23 @@ def convert_file(src_file, src_enc, dest_file, dest_enc, apply_filter=False):
 
 def _main():
 	# MECAB_DICT_INDEX と OUTDIR は libopenjtalk/mecab-naist-jdic/_temp が基準
+	import argparse
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument(
+		"--eng-dic",
+		choices=("bep", "cmudict"),
+		default=os.environ.get("NVDAJP_ENG_DIC", "bep").strip().lower() or "bep",
+		help="English word-reading dictionary source: 'bep' (default) or 'cmudict'",
+	)
+	parser.add_argument(
+		"--outdir",
+		type=Path,
+		default=None,
+		help="Optional output directory override",
+	)
+	args, _ = parser.parse_known_args()
+
 	jtdir = Path(__file__).resolve().parent
 	engdic = jtdir / "bep-eng.dic"
 	cs_file = jtdir / "characters-ja.dic"
@@ -126,7 +143,12 @@ def _main():
 	thisdir = jtdir / "libopenjtalk" / "mecab-naist-jdic"
 	# Build output directly under source/ to avoid extra copy in jtalkSync.
 	repo_root = (jtdir / ".." / ".." / "..").resolve()
-	outdir = repo_root / "source" / "synthDrivers" / "jtalk" / "dic"
+	default_subdir = "dic_cmudict" if args.eng_dic == "cmudict" else "dic"
+	outdir = (
+		args.outdir.resolve()
+		if args.outdir
+		else (repo_root / "source" / "synthDrivers" / "jtalk" / default_subdir)
+	)
 	tempdir = thisdir / "_temp"
 	mecab_dict_index = thisdir.parent / "mecab" / "src" / "mecab-dict-index.exe"
 	code = "utf-8"  # cp932
@@ -136,7 +158,7 @@ def _main():
 		mkdir_p(outdir)
 		mkdir_p(tempdir)
 
-		eng_dic_maker.make_dic(engdic, code, thisdir)
+		eng_dic_maker.make_dic(engdic, code, thisdir, source=args.eng_dic)
 		tankan_dic_maker.make_dic(code, cs_file, thisdir)
 		custom_dic_maker.make_dic(code, thisdir)
 

@@ -1,31 +1,722 @@
 # eng_dic_maker.py for nvdajp_jtalk
 # -*- coding: utf-8 -*-
-# since 2010-12-05 by Takuya Nishimoto
-# bep-eng.dic is available at:
-# http://cpansearch.perl.org/src/MASH/Lingua-JA-Yomi-0.01/lib/Lingua/JA/bep-eng.dic
+# Copyright (C) 2010-2026 Takuya Nishimoto
+# Switchable English dictionary support (bep-eng.dic / CMUdict) by Shinji Sakiyama <shinjisakiyama@gmail.com>
+#
+# Supports two selectable English reading dictionary sources:
+# 1. "bep" (default): bep-eng.dic (CPAN Lingua::JA::Yomi, GPL-2.0) for standard
+#    Japanese katakana loanword readings.
+# 2. "cmudict": eng-dic-source/cmudict-subset.dict with arpabet_to_kana.py
+#    for phonetic English-based readings.
 
-IN_FILE_DEFAULT = "c:/work/nvda/bep-eng.dic"
-OUT_FILE = "nvdajp-eng-dic.csv"
-DEFAULT_COST = 1600
-
-
-open_file = lambda name, mode, encoding: open(name, mode, encoding=encoding)
-
-
+import os
+import re
+import sys
 from pathlib import Path
 
 from alpha2mb import alpha2mb
+from arpabet_to_kana import arpabet_to_accent, arpabet_to_kana, kana_speech_safe
+from custom_dic_maker import _to_mecab_surface
+
+IN_FILE_DEFAULT = "c:/work/nvda/bep-eng.dic"
+OUT_FILE = "nvdajp-eng-dic.csv"
+CMUDICT_OUT_FILE = "nvdajp-eng-cmudict.csv"
+CMUDICT_SOURCE_FILE = "cmudict-subset.dict"
+DEFAULT_COST = 1600
+CMUDICT_COST = 3000
+CMUDICT_OVERLAY_COST = 1200
+CMUDICT_POS = "名詞,一般,*,*,*,*"
+VALID_ENG_DIC_SOURCES = ("bep", "cmudict")
+
+open_file = lambda name, mode, encoding: open(name, mode, encoding=encoding)
+
+# Words excluded from the CMUdict-derived bulk dictionary because they are
+# either covered by hand-curated overrides in custom_dic_maker.py or are
+# Japanese proper names / short initialisms better handled by romaji/custom rules.
+EXCLUDED_WORDS = frozenset((
+	# Established katakana overrides (custom_dic_maker.py)
+	"amazon",
+	"campus",
+	"com",
+	"cure",
+	"director",
+	"directors",
+	"duties",
+	"duty",
+	"ikea",
+	"pure",
+	"components",
+	"contributing",
+	"distributed",
+	"document",
+	"plugins",
+	"software",
+	"yourself",
+	"anyone",
+	"derived",
+	"notice",
+	"notices",
+	"original",
+	"ours",
+	"requirement",
+	"requirements",
+	"responsibilities",
+	"responsibility",
+	"compass",
+	"company",
+	"originate",
+	"originated",
+	"originates",
+	"originating",
+	"carta",
+	"magna",
+	"kapamilya",
+	"bayanihan",
+	# Katakana loanword overrides (custom_dic_maker.py)
+	"pizza",
+	"pizzas",
+	"pantsuit",
+	"patsy",
+	"pulitzer",
+	"mozzarella",
+	"switzerland",
+	"schizophrenia",
+	"schweitzer",
+	"seltzer",
+	"etc",
+	"etcetera",
+	"godzilla",
+	"nazi",
+	"nazis",
+	"datsun",
+	# Compound words across morphological boundary [t.s] (custom_dic_maker.py)
+	"outside",
+	"outsider",
+	"outsiders",
+	"outset",
+	"outsourcing",
+	"itself",
+	"bestseller",
+	"bestsellers",
+	"whatsapp",
+	"whatsoever",
+	"whiteside",
+	"westside",
+	"stateside",
+	"shortsighted",
+	"sightseeing",
+	# Names with established Japanese katakana (custom_dic_maker.py)
+	"watson",
+	"robertson",
+	"matson",
+	"stetson",
+	"jetson",
+	"yeltsin",
+	"yitzhak",
+	"flotsam",
+	# Japanese loanwords in English (martial arts, culture, food, brands)
+	"jujitsu",
+	"jiujitsu",
+	"jujutsu",
+	"judo",
+	"karate",
+	"karaoke",
+	"sushi",
+	"tofu",
+	"tsunami",
+	"anime",
+	"manga",
+	"sake",
+	"kimono",
+	"sukiyaki",
+	"teriyaki",
+	"bento",
+	"bonsai",
+	"futon",
+	"geisha",
+	"haiku",
+	"kabuki",
+	"kamikaze",
+	"kanji",
+	"katana",
+	"koto",
+	"mikado",
+	"ninja",
+	"noh",
+	"origami",
+	"pachinko",
+	"ronin",
+	"samurai",
+	"satsuma",
+	"sensei",
+	"shinto",
+	"shogun",
+	"shoji",
+	"sumo",
+	"fuji",
+	"mitsubishi",
+	"toyota",
+	"honda",
+	"nissan",
+	"mazda",
+	"subaru",
+	"toshiba",
+	"yamaha",
+	"sony",
+	"nintendo",
+	# Japanese-origin proper names: romaji reading is correct
+	"suzuki",
+	"tanaka",
+	"sato",
+	"takahashi",
+	"watanabe",
+	"ito",
+	"yamamoto",
+	"nakamura",
+	"kobayashi",
+	"kato",
+	"yoshida",
+	"yamada",
+	"sasaki",
+	"yamaguchi",
+	"saito",
+	"inoue",
+	"kimura",
+	"hayashi",
+	"shimizu",
+	"yamazaki",
+	"mori",
+	"abe",
+	"ikeda",
+	"hashimoto",
+	"yamashita",
+	"nakajima",
+	"maeda",
+	"fujita",
+	"ogawa",
+	"goto",
+	"okada",
+	"hasegawa",
+	"murakami",
+	"kondo",
+	"ishii",
+	"sakamoto",
+	"endo",
+	"aoki",
+	"fujii",
+	"nishimura",
+	"fukuda",
+	"miura",
+	"fujiwara",
+	"okamoto",
+	"matsuda",
+	"nakagawa",
+	"nakano",
+	"harada",
+	"ono",
+	"tamura",
+	"takeuchi",
+	"kaneko",
+	"wada",
+	"nakayama",
+	"ishida",
+	"ueda",
+	"morita",
+	"shibata",
+	"sakai",
+	"hara",
+	"miyazaki",
+	"yokoyama",
+	"kudo",
+	"miyamoto",
+	"uchida",
+	"takagi",
+	"ando",
+	"taniguchi",
+	"matsui",
+	"matsumoto",
+	"michio",
+	"saki",
+	"shinichi",
+	"tadashi",
+	"tetsuo",
+	"tsui",
+	"oishi",
+	"aoi",
+	"aida",
+	"atsushi",
+	"otsuka",
+	"fujimoto",
+	"hamada",
+	"higuchi",
+	"hirata",
+	"hirayama",
+	"ichikawa",
+	"iwaki",
+	"kawahara",
+	"kawai",
+	"kawamura",
+	"kawashima",
+	"kojima",
+	"kurokawa",
+	"masaki",
+	"matsumura",
+	"mitsuru",
+	"nishida",
+	"noda",
+	"nomura",
+	"oshima",
+	"ozaki",
+	"sugiyama",
+	"tajima",
+	"takako",
+	"takao",
+	"takashi",
+	"takayama",
+	"takeda",
+	"takeo",
+	"tsu",
+	"tsuji",
+	"tsukamoto",
+	"tsutomu",
+	"yoshimura",
+	"yoshino",
+	"yoshio",
+	"kenji",
+	"taro",
+	"ichiro",
+	"hiroshi",
+	"kazuo",
+	"shigeru",
+	"koji",
+	"naoki",
+	"keiko",
+	"yoko",
+	"kyoko",
+	"akiko",
+	"noriko",
+	# Acronyms/initialisms: spell out each letter
+	"ceo",
+	"cia",
+	"aol",
+	"iou",
+	"sos",
+	"baa",
+	# Short proper names better read as romaji
+	"iona",
+	"iota",
+	"iain",
+	"yeo",
+	# Foreign-origin proper names where romaji reading is closer
+	"galleria",
+	"fabrizio",
+	"koreatown",
+	"darius",
+	"mariah",
+	"zachariah",
+	"ios",
+	"pariah",
+	"gonorrhea",
+	"diarrhea",
+	"diarrhoea",
+	"aorta",
+	"aortic",
+	"arroyo",
+	"psoriasis",
+	"oasis",
+	"notoriety",
+	"radio",
+	"radioactive",
+	"radioactivity",
+	# Custom dic overrides for complex ER/vowel patterns
+	"variety",
+	"varieties",
+	"various",
+	"parietal",
+	"pizzeria",
+	"maria",
+	"firearm",
+	"firearms",
+	"hierarchy",
+	"burrowing",
+	"electromagnetism",
+	"extraterrestrial",
+	"extraterrestrials",
+	"indistinguishable",
+	"institutionalized",
+	"triangulation",
+	"unsubstantiated",
+	"separation",
+	"monument",
+	"communicate",
+	"communicated",
+	"communicates",
+	"communicating",
+	"communication",
+	"communications",
+	"communique",
+	"community",
+	"communities",
+	"commune",
+	"communal",
+	"communism",
+	"communist",
+	"compile",
+	"complex",
+	"continue",
+	"enumerate",
+	"apartments",
+	"arraigned",
+	"artist",
+	"authoring",
+	"bargain",
+	"cancelling",
+	"conferences",
+	"congress",
+	"destroyer",
+	"digits",
+	"explorer",
+	"heritage",
+	"imaging",
+	"imposed",
+	"intercontinental",
+	"literally",
+	"logarithmic",
+	"member",
+	"memorial",
+	"monotone",
+	"noodle",
+	"objects",
+	"opinion",
+	"preferences",
+	"scanner",
+	"yesteryear",
+	"environmentalist",
+	"environmentalists",
+	# Pre-existing custom dic entries that were also in eng-dic
+	"accent",
+	"agreed",
+	"allowed",
+	"animation",
+	"anything",
+	"app",
+	"auto",
+	"automation",
+	"backup",
+	"backups",
+	"base",
+	"braille",
+	"buffer",
+	"buffers",
+	"button",
+	"buttons",
+	"certain",
+	"certainly",
+	"chain",
+	"change",
+	"changes",
+	"characters",
+	"choose",
+	"clicks",
+	"closed",
+	"command",
+	"commands",
+	"completely",
+	"considered",
+	"contains",
+	"contributions",
+	"controls",
+	"cost",
+	"created",
+	"currently",
+	"cycles",
+	"data",
+	"database",
+	"databases",
+	"date",
+	"dated",
+	"dates",
+	"designed",
+	"desktop",
+	"desktops",
+	"digital",
+	"directly",
+	"docs",
+	"documents",
+	"drawing",
+	"drivers",
+	"dryer",
+	"echo",
+	"edit",
+	"editor",
+	"editors",
+	"entered",
+	"errors",
+	"everyone",
+	"exit",
+	"exits",
+	"explicit",
+	"expressly",
+	"failed",
+	"family",
+	"favorites",
+	"files",
+	"firefox",
+	"firewall",
+	"foundation",
+	"foundations",
+	"game",
+	"gaming",
+	"git",
+	"guarantee",
+	"help",
+	"helps",
+	"him",
+	"homepage",
+	"how",
+	"images",
+	"impaired",
+	"incorporate",
+	"ink",
+	"inside",
+	"instagram",
+	"installed",
+	"into",
+	"japanese",
+	"june",
+	"keys",
+	"killed",
+	"labs",
+	"language",
+	"layered",
+	"levels",
+	"locks",
+	"make",
+	"makes",
+	"manage",
+	"meter",
+	"minute",
+	"minutes",
+	"mode",
+	"modes",
+	"mouse",
+	"moves",
+	"note",
+	"notes",
+	"obvious",
+	"obviously",
+	"one",
+	"opened",
+	"page",
+	"person",
+	"personal",
+	"personalities",
+	"personality",
+	"personalized",
+	"personally",
+	"persona",
+	"personification",
+	"personified",
+	"personnel",
+	"persons",
+	"picture",
+	"pos",
+	"position",
+	"possibility",
+	"power",
+	"powerpoint",
+	"previously",
+	"prompt",
+	"prompts",
+	"quick",
+	"quickly",
+	"rate",
+	"reason",
+	"recent",
+	"recently",
+	"reopen",
+	"required",
+	"reserve",
+	"reserved",
+	"reuse",
+	"right",
+	"rights",
+	"run",
+	"runs",
+	"seas",
+	"see",
+	"settings",
+	"shape",
+	"share",
+	"shares",
+	"shell",
+	"shells",
+	"simultaneously",
+	"size",
+	"someone",
+	"sometime",
+	"speaks",
+	"speech",
+	"stereo",
+	"sure",
+	"take",
+	"takes",
+	"task",
+	"tasks",
+	"text",
+	"theme",
+	"themes",
+	"thoroughly",
+	"threatened",
+	"through",
+	"top",
+	"tops",
+	"turns",
+	"types",
+	"undefined",
+	"uninstall",
+	"unknown",
+	"unlock",
+	"updated",
+	"updates",
+	"usa",
+	"usage",
+	"users",
+	"version",
+	"versions",
+	"very",
+	"viewing",
+	"warehouse",
+	"way",
+	"what",
+	"where",
+	"while",
+	"who",
+	"words",
+	"work",
+	"works",
+	"youtube",
+	"box",
+	"boxed",
+	"boxes",
+	"boxing",
+	"connect",
+	"connected",
+	"connecting",
+	"connection",
+	"connections",
+	"connectivity",
+	"connector",
+	"connects",
+	"copilot",
+	"disconnect",
+	"disconnected",
+	"disconnecting",
+	"disconnection",
+	"disconnects",
+	"dropbox",
+	"for",
+	"inbox",
+	"mailbox",
+	"mailboxes",
+	"microsoft",
+	"python",
+	"reconnect",
+	"reconnected",
+	"reconnecting",
+	"sandbox",
+	"toolbox",
+	"xbox",
+	# Phase 1 overrides (custom_dic_maker.py)
+	"authenticator",
+	"authenticate",
+	"authenticated",
+	"authentication",
+	"copyright",
+	"copy",
+	"copies",
+	"copied",
+	"copying",
+	"gnu",
+	"nonvisual",
+	"visual",
+	"visuals",
+	"secure",
+	"secured",
+	"securing",
+	"security",
+	"securities",
+	"office",
+	"offices",
+	"service",
+	"services",
+	"problem",
+	"problems",
+	"project",
+	"projects",
+	"product",
+	"products",
+))
 
 
-def make_dic(IN_FILE, CODE, THISDIR):
-	# Accept both str and Path objects for compatibility
-	if isinstance(IN_FILE, Path):
-		IN_FILE = str(IN_FILE)
-	if isinstance(THISDIR, Path):
-		THISDIR = Path(THISDIR)
+def _load_cmudict_source(source_path: Path) -> list[tuple[str, list[str]]]:
+	entries: list[tuple[str, list[str]]] = []
+	for line in source_path.read_text(encoding="utf-8").splitlines():
+		line = line.strip()
+		if not line or line.startswith("#"):
+			continue
+		parts = line.split()
+		word, phonemes = parts[0], parts[1:]
+		entries.append((word, phonemes))
+	return entries
+
+
+def make_cmudict_dic(
+	CODE: str,
+	THISDIR: str | Path,
+	source_path: str | Path | None = None,
+	out_file: str = OUT_FILE,
+	cost: int = CMUDICT_COST,
+) -> Path:
+	"""Generate English dictionary CSV from CMUdict + arpabet_to_kana.py."""
+	thisdir = Path(THISDIR)
+	if source_path is None:
+		source_path = thisdir.parent / "eng-dic-source" / CMUDICT_SOURCE_FILE
 	else:
-		THISDIR = Path(THISDIR)
-	import re
+		source_path = Path(source_path)
+	entries = _load_cmudict_source(source_path)
+	out_path = thisdir / out_file
+	with open(out_path, "w", encoding=CODE) as file:
+		for word, phonemes in entries:
+			if word.lower() in EXCLUDED_WORDS:
+				continue
+			k1 = _to_mecab_surface(word)
+			braille = arpabet_to_kana(phonemes, word=word)
+			speech = kana_speech_safe(braille)
+			accent = arpabet_to_accent(phonemes, word=word)
+			s = "%s,0,0,%d,%s,%s,%s,%s,%s,C0,%s\n" % (
+				k1,
+				cost,
+				CMUDICT_POS,
+				k1,
+				speech,
+				speech,
+				accent,
+				braille,
+			)
+			file.write(s)
+	return out_path
+
+
+def make_bep_dic(
+	IN_FILE: str | Path,
+	CODE: str,
+	THISDIR: str | Path,
+	out_file: str = OUT_FILE,
+) -> Path:
+	"""Generate English dictionary CSV from bep-eng.dic."""
+	in_file = str(IN_FILE)
+	thisdir = Path(THISDIR)
 
 	d = [
 		["alt", "オルト"],
@@ -39,26 +730,18 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["audio", "オーディオ", "1/4", 610],
 		["app", "アップ"],
 		["approximately", "アプロクシメットゥリー", "3/10"],
-		# ['anpi', 		'アンピ',			"1/3", 1000],
 		["asian", "アジアン", "1/4", 1000],
-		# ['asahi', 		'アサヒ',			"1/3", 1000],
 		["appropriately", "アプロプリエトリィ"],
 		["agreed", "アグリード"],
 		["akb", "エーケービー", "1/6", 1000],
 		["au", "エーユー", "1/4", 600],
 		["allowed", "アラウド", "2/4"],
-		[
-			"adsl",
-			"エーディーエスエル1/8",
-		],
+		["adsl", "エーディーエスエル1/8"],
 		["authenticator", "オーセンティケーター"],
 		["akita", "アキタ", None, 1000],
 		["aomori", "アオモリ", None, 1000],
-		[
-			"asshuku",
-			"アッシュク",
-			"0/4",
-		],
+		["asshuku", "アッシュク", "0/4"],
+		["bayanihan", "バヤニハン", "2/5", 1000],
 		["blank", "ブランク"],
 		["biz", "ビズ"],
 		["bazaar", "バザール"],
@@ -67,6 +750,7 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["box", "ボックス"],
 		["backups", "バックアップス"],
 		["cam", "キャム"],
+		["carta", "カルタ", "1/3", 1000],
 		["ctrl", "コントロール"],
 		["console", "コンソール"],
 		["caps", "キャプス"],
@@ -140,16 +824,12 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["gnu", "グニュー"],
 		["guidebook", "ガイドブック", None, 1000],
 		["gamba", "ガンバ", "1/3", 1000],
-		# ['genpatsu',	'ゲンパツ',		"1/4", 1000],
 		["git", "ギットゥ"],
 		["gpu", "ジーピーユー"],
 		["gaming", "ゲイミング"],
 		["hub", "ハブ"],
 		["href", "エイチレフ"],
 		["home", "ホーム", None, 1000],
-		# ['hinan', 		'ヒナン', 			"1/3", 1000],
-		# ['horijun',		'ホリジュン',		"1/4", 1000],
-		# ['hokkaido', 	'ホッカイドー', 	None, 1000],
 		["hachinohe", "ハチノヘ", None, 1000],
 		["homepage", "ホームページ", None, 1000],
 		["hidari", "ヒダリ"],
@@ -160,13 +840,11 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["incorporate", "インコーポレイト"],
 		["incorporates", "インコーポレイツ"],
 		["ioc", "アイオーシー"],
-		# ['inosenaoki',	'イノセナオキ',	"1/7", 1000],
 		["inaccurate", "インアキュレイト"],
 		["iconified", "アイコニファイド", "1/8"],
 		["interactively", "インタラクティブリィ"],
 		["iaea", "アイエーイーエー", "7/8", 1000],
 		["id", "アイディー", "3/4", 1000],
-		# ['it', 			'アイティー', 			"3/4", 1000],
 		["ime", "アイエムイー", "0/6", 600],
 		["iwate", "イワテ", None, 1000],
 		["inking", "インキング"],
@@ -177,13 +855,12 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["japan", "ジャパン", "2/3", 1000],
 		["japanese", "ジャパニーズ", "3/5", 900],
 		["jp", "ジェーピー", "1/4", 1000],
+		["kapamilya", "カパミリャ", "2/4", 1000],
 		["konica", "コニカ"],
 		["kinect", "キネクト"],
 		["kddi", "ケーディーディーアイ"],
 		["killed", "キルド"],
 		["keyboard", "キーボード", None, 1000],
-		# ['kahoku', 		'カホク', 			"1/3", 1000],
-		# ['kurogen',		'クロゲン',		"1/4", 1000],
 		["keys", "キーズ"],
 		["kesennuma", "ケセンヌマ", None, 1000],
 		["kantei", "カンテー", None, 1000],
@@ -193,6 +870,7 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["levels", "レベルズ"],
 		["locks", "ロックス"],
 		["layered", "レイヤード", "1/5"],
+		["magna", "マグナ", "1/3", 1000],
 		["manage", "マネイジ", None, 1000],
 		["micro", "マイクロ"],
 		["microsoft", "マイクロソフト"],
@@ -202,8 +880,6 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["matlab", "マトラブ", None, 1000],
 		["mouse", "マウス", "1/3", 500],
 		["medic", "メディック", "1/4", 1000],
-		# ['mizu',			'ミズ',			"2/2", 1000],
-		# ['minpo', 		'ミンポー',		"1/4", 1000],
 		["moves", "ムーブズ"],
 		["morioka", "モリオカ", "2/4", 1000],
 		["miyagi", "ミヤギ", "1/3", 1000],
@@ -213,11 +889,7 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["notepad", "ノートパッド", None, 1000],
 		["nullsoft", "ヌルソフト", None, 1000],
 		["npo", "エヌピーオー", "2/6", 1000],
-		[
-			"nec",
-			"エヌイーシー",
-			"1/6",
-		],
+		["nec", "エヌイーシー", "1/6"],
 		["nvda", "エヌブイディーエー", "1/8", 1000],
 		["nico", "ニコ", "1/2", 1000],
 		["niigata", "ニーガタ", "0/4", 1000],
@@ -233,10 +905,7 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["opened", "オープンド", "1/5"],
 		["oshu", "オーシュー", None, 1000],
 		["onsite", "オンサイトゥ", None, 1000],
-		[
-			"obviously",
-			"オブビアスリー",
-		],
+		["obviously", "オブビアスリー"],
 		["python", "パイソン"],
 		["pro", "プロ"],
 		["problem", "プロブレム"],
@@ -271,8 +940,6 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["shares", "シェアーズ"],
 		["suite", "スイート", "2/4", 1000],
 		["settings", "セッティングズ", "1/6"],
-		# ['seikatsu',	'セーカツ',		"1/4", 1000],
-		# ['sagasu',		'サガス',			"1/3", 1000],
 		["shimpo", "シンポー", "1/4", 1000],
 		["shimbun", "シンブン", "1/4", 1000],
 		["speaks", "スピークス"],
@@ -281,31 +948,11 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["shimane", "シマネ", "1/3"],
 		["sjis", "エスジス", "0/4", 1000],
 		["saigai", "サイガイ", None, 1000],
-		[
-			"sumaho",
-			"スマホ",
-			"1/3",
-		],
-		[
-			"smap",
-			"スマップ",
-			"2/4",
-		],
-		[
-			"sr",
-			"エスアール",
-			"3/5",
-		],
-		[
-			"someone",
-			"サムワン",
-			"1/4",
-		],
-		[
-			"sometime",
-			"サムタイム",
-			"1/5",
-		],
+		["sumaho", "スマホ", "1/3"],
+		["smap", "スマップ", "2/4"],
+		["sr", "エスアール", "3/5"],
+		["someone", "サムワン", "1/4"],
+		["sometime", "サムタイム", "1/5"],
 		["think", "シンク"],
 		["threatened", "スレッテンド"],
 		["thoroughly", "サラフリィ"],
@@ -318,10 +965,6 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["time", "タイム", None, 1000],
 		["tepco", "テプコ", "1/3", 1000],
 		["types", "タイプス"],
-		# ['teiden', 		'テーデン',		"1/4", 1000],
-		# ['tokuho',		'トクホー',		"1/4", 1000],
-		# ['takeyama', 	'タケヤマ',		"1/4", 1000],
-		# ['takeshi',		'タケシ',			"1/3", 1000],
 		["turns", "ターンズ"],
 		["toggles", "トグルズ"],
 		["tsukuba", "ツクバ", None, 1000],
@@ -340,7 +983,6 @@ def make_dic(IN_FILE, CODE, THISDIR):
 		["unenforceable", "アンエンフォーサブル"],
 		["unveil", "アンベイル"],
 		["undefined", "アンデファインドゥ"],
-		["unicode", "ユニコウドゥ"],
 		["untitled", "アンタイトルド"],
 		["unlocks", "アンロックス"],
 		["usb", "ユーエスビー", "1/6", 1000],
@@ -369,7 +1011,7 @@ def make_dic(IN_FILE, CODE, THISDIR):
 	k = {}
 	for i in d:
 		k[i[0]] = True
-	for line in open_file(IN_FILE, "r", "utf-8"):
+	for line in open_file(in_file, "r", "utf-8"):
 		if line[0] == "#":
 			continue
 		a1, a2 = line.rstrip().split(" ")
@@ -379,32 +1021,25 @@ def make_dic(IN_FILE, CODE, THISDIR):
 			d.append([a1, a2])
 			k[a1] = True
 	d.sort()
-	with open_file(str(THISDIR / OUT_FILE), "w", CODE) as file:
+	out_path = thisdir / out_file
+	with open_file(str(out_path), "w", CODE) as file:
 		for i in d:
-			k = i[0]
-			# skip such as SHE'LL
-			if "'" in k:
+			k_word = i[0]
+			if "'" in k_word:
 				continue
-			alpha_count = len(k)
-			k1 = alpha2mb(k.lower())
-			# https://github.com/nvdajp/nvdajpmiscdep/issues/53
-			# skip 'WORDS' (ワーズ)
+			alpha_count = len(k_word)
+			k1 = alpha2mb(k_word.lower())
 			if k1 == "ｗｏｒｄｓ":
 				continue
 			y = i[1]
-			# 'WORD' ワードゥ -> ワード
 			if y == "ワードゥ":
 				y = "ワード"
-			# work around ポッ゜シビリティー
 			y = re.sub("゜", "", y)
-			# default pros
 			mora_count = len(y)
 			pros = "0/%d" % mora_count
-			# default cost
 			cost = DEFAULT_COST
 			if alpha_count <= 2:
 				cost = cost * 5
-			# override by entry
 			hin1 = "一般"
 			if len(i) >= 3 and i[2] is not None:
 				pros = i[2]
@@ -412,16 +1047,7 @@ def make_dic(IN_FILE, CODE, THISDIR):
 				cost = i[3]
 			if len(i) >= 5 and i[4] is not None:
 				hin1 = i[4]
-			# naist-jdic の文脈ID (left-id.def/right-id.def) は
-			# 「名詞,固有名詞,一般,...」のように細分類2まで持つ。
-			# 「名詞,固有名詞,*,...」だと mecab-dict-index の文脈ID解決が
-			# 失敗するため、細分類2を補う。
 			hin2 = "一般" if hin1 == "固有名詞" else "*"
-			# 表層形,左文脈ID,右文脈ID,コスト,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形,活用型,原形,読み,発音
-			# 左右文脈IDは明示的に 0 (BOS/EOS) を指定する。空欄にすると
-			# mecab-dict-index の文脈ID解決に依存し、過去には解決失敗時の
-			# 未定義動作で sys.dic が非決定的になっていた。0,0 は従来の
-			# テスト済み挙動（読み・マスアケ）を保存する。
 			s = "%s,0,0,%d,名詞,%s,%s,*,*,*,%s,%s,%s,%s,C0\n" % (
 				k1,
 				cost,
@@ -433,7 +1059,38 @@ def make_dic(IN_FILE, CODE, THISDIR):
 				pros,
 			)
 			file.write(s)
+	return out_path
+
+
+def make_dic(*args, source: str | None = None, out_file: str = OUT_FILE) -> Path:
+	"""Build nvdajp-eng-dic.csv from the selected English dictionary source ('bep' or 'cmudict').
+
+	Supports both calling conventions:
+	- make_dic(IN_FILE, CODE, THISDIR, source="bep"|"cmudict")
+	- make_dic(CODE, THISDIR, source="cmudict"|"bep")
+	"""
+	resolved_source = (source or os.environ.get("NVDAJP_ENG_DIC", "bep")).strip().lower()
+	if resolved_source not in VALID_ENG_DIC_SOURCES:
+		raise ValueError(f"Unsupported English dictionary source: {resolved_source!r} (expected one of {VALID_ENG_DIC_SOURCES})")
+
+	if len(args) == 3:
+		in_file, code, thisdir = args
+	elif len(args) == 2:
+		code, thisdir = args
+		in_file = Path(thisdir).parent / "bep-eng.dic"
+	elif len(args) == 1:
+		in_file = args[0]
+		code = "utf-8"
+		thisdir = Path(__file__).resolve().parent / "naist-jdic-source"
+	else:
+		raise TypeError(f"make_dic expected 1 to 3 positional arguments, got {len(args)}")
+
+	if resolved_source == "cmudict":
+		return make_cmudict_dic(code, thisdir, out_file=out_file)
+	return make_bep_dic(in_file, code, thisdir, out_file=out_file)
 
 
 if __name__ == "__main__":
-	make_dic(IN_FILE_DEFAULT)
+	jtdir = Path(__file__).resolve().parent
+	make_dic(jtdir / "bep-eng.dic", "utf-8", jtdir / "naist-jdic-source")
+	print(f"wrote {OUT_FILE}", file=sys.stderr)
