@@ -764,6 +764,40 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				print(f"jtalkSync: warning: failed to write DIC_CODEPAGE: {e}")
 			marker_path.write_text(marker_expected, encoding="utf-8")
 
+			# Sync optional CMUdict phonetic dictionary archive if pinned in jtalk-dic-version.txt
+			if "cmudict_asset" in pin and "cmudict_sha256" in pin:
+				cmu_dst = jtalk_dir / "dic_cmudict"
+				cmu_dst.mkdir(parents=True, exist_ok=True)
+				cmu_marker = cmu_dst / "PREBUILT_SOURCE"
+				cmu_expected = f"repo={pin['repo']}\ntag={pin['tag']}\nsha256={pin['cmudict_sha256']}\n"
+				if not (
+					cmu_marker.exists()
+					and cmu_marker.read_text(encoding="utf-8") == cmu_expected
+					and (cmu_dst / "sys.dic").exists()
+				):
+					cmu_url = f"https://github.com/{pin['repo']}/releases/download/{pin['tag']}/{pin['cmudict_asset']}"
+					print(f"jtalkSync: fetching prebuilt CMUdict dictionary from {cmu_url}")
+					cmu_zip = cmu_dst.parent / pin["cmudict_asset"]
+					try:
+						urllib.request.urlretrieve(cmu_url, str(cmu_zip))
+						cmu_digest = hashlib.sha256(cmu_zip.read_bytes()).hexdigest()
+						if cmu_digest == pin["cmudict_sha256"]:
+							for name in ("sys.dic", "unk.dic", "matrix.bin", "char.bin", "dicrc", "DIC_VERSION"):
+								(cmu_dst / name).unlink(missing_ok=True)
+							with zipfile.ZipFile(cmu_zip) as zf:
+								zf.extractall(cmu_dst)
+							(cmu_dst / "DIC_CODEPAGE").write_text("utf-8", encoding="utf-8")
+							cmu_marker.write_text(cmu_expected, encoding="utf-8")
+							print(f"jtalkSync: prebuilt CMUdict dictionary installed (tag={pin['tag']}).")
+						else:
+							print(
+								f"jtalkSync: checksum mismatch for {pin['cmudict_asset']}: "
+								f"expected {pin['cmudict_sha256']}, got {cmu_digest}",
+							)
+							return 1
+					finally:
+						cmu_zip.unlink(missing_ok=True)
+
 			print(f"jtalkSync: prebuilt dictionary installed (tag={pin['tag']}, sha256={digest}).")
 			return 0
 

@@ -38,9 +38,15 @@ from . import jtalkPrepare
 from ..jtalk._nvdajp_unicode import unicode_normalize
 from ..jtalk import _bgthread
 import config
-from .jtalkDir import jtalk_dir, dic_dir, user_dics
+from .jtalkDir import jtalk_dir, dic_dir, user_dics, resolve_dic_config
 
 DEBUG = False
+
+ENG_DIC_MODES = (
+	("bep", "標準カタカナ英語 (bep-eng.dic)"),
+	("cmudict", "英語発音ベース (CMUdict)"),
+)
+eng_dic_mode: str = "bep"
 
 RATE_BOOST_MULTIPLIER = 1.5
 
@@ -386,8 +392,8 @@ def initialize(
 		)
 	if not _bgthread.bgThread:
 		_bgthread.initialize()
-	if not mecab:
-		Mecab_initialize(logwrite, jtalk_dir, dic_dir, user_dics)
+	active_dic_dir, active_user_dics = resolve_dic_config(eng_dic_mode)
+	Mecab_initialize(logwrite, jtalk_dir, active_dic_dir, active_user_dics)
 	jtalkPrepare.setup()
 
 	jt_dll = str(jtalk_dir / "libopenjtalk.dll")
@@ -458,3 +464,19 @@ def set_volume(vol: int) -> None:
 	max_level = int(326.67 * int(vol) + 100)  # 100..32767
 	thres_level = 128
 	thres2_level = 128
+
+
+def get_eng_dic() -> str:
+	return eng_dic_mode
+
+
+def set_eng_dic(mode: str) -> None:
+	global eng_dic_mode
+	normalized = (mode or "bep").strip().lower()
+	if normalized not in {m[0] for m in ENG_DIC_MODES}:
+		normalized = "bep"
+	if normalized == eng_dic_mode and mecab is not None:
+		return
+	eng_dic_mode = normalized
+	active_dic_dir, active_user_dics = resolve_dic_config(eng_dic_mode)
+	Mecab_initialize(logwrite, jtalk_dir, active_dic_dir, active_user_dics)
