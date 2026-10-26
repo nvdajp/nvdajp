@@ -24,20 +24,20 @@ symbols:
 # identifier	replacement[[	level][	preserve]][	# display name]
 
 # Complex symbols
-. sentence ending	ピリオド	some	never
-! sentence ending	カンタンフ	some	never
-? sentence ending	クエスチョン	some	never
-; phrase ending	セミコロン	some	never
-: phrase ending	コロン	some	never
-multiple .	複数のドット
+. sentence ending	ピリオド	all	always
+! sentence ending	カンタンフ	all	always
+? sentence ending	クエスチョン	all	always
+; phrase ending	セミコロン	most	always
+: phrase ending	コロン	most	always
+multiple .	複数のドット	all	always
 decimal point		none	always
 comma between numbers		none	always
 in-word '	アポストロフィ	some
 negative number	マイナス	none	norep
 文末の丸	マル	all	always
-文中の点	テン	some
-文末の感嘆符	カンタンフ	some
-文末の疑問符	ギモンフ	some
+文中の点	テン	all	always
+文末の感嘆符	カンタンフ	all	always
+文末の疑問符	ギモンフ	all	always
 単語中のピリオド	ドット	some
 数字の間の全角ピリオド		none	always
 数字の間の全角コンマ		none	always
@@ -71,7 +71,7 @@ $	ドル	none
 *	アスタリスク	some
 +	プラス
 −	マイナス
-,	コンマ	most	never
+,	コンマ	all	always
 ،	アラビック カンマ	-	norep
 -	マイナス	some	norep
 .	ピリオド	some
@@ -105,8 +105,8 @@ _	アンダーライン	some
 
 # Other characters
 •	ビュレット	most
-…	サンテン リーダ	some	norep
-...	ドットドットドット	-	norep
+…	サンテン リーダ	all	always
+...	ドットドットドット	all	always
 “	コーテイション	most
 ”	コーテイショントジ	most
 ‘	シングル	most
@@ -1134,7 +1134,7 @@ _	アンダーライン	some
 
 # U+3000 to U+3FFF
 　	ゼンカク スペース	char	always
-、	テン	most	norep
+、	テン	all	always
 。	マル	all	always
 〃	オナジク	all
 々	オドリジ	char	always
