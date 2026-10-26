@@ -1,13 +1,19 @@
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2017-2025 NV Access Limited, Leonard de Ruijter
+# Copyright (C) 2017-2026 NV Access Limited, Leonard de Ruijter, Christos Bouronikos
 
 """Unit tests for braille display drivers."""
 
-from brailleDisplayDrivers import seikantk
+from brailleDisplayDrivers import seikantk  # noqa: I001
 import unittest
+from unittest.mock import patch
 import braille
+import braille.display
+import braille.display.gesture
+
+# The gesture map only resolves scripts for loaded modules.
+import globalCommands  # noqa: F401
 
 
 class FakeSeikantkDriver(seikantk.BrailleDisplayDriver):
@@ -168,14 +174,172 @@ class TestGestureMap(unittest.TestCase):
 
 	def test_identifiers(self):
 		"""Checks whether all defined braille display gestures contain valid braille display key identifiers."""
-		for name, description in braille.getDisplayList(excludeNegativeChecks=False):
-			driver = braille._getDisplayDriver(name)
+		for name, description in braille.display.getDisplayList(excludeNegativeChecks=False):
+			driver = braille.display._getDisplayDriver(name)
 			gmap = driver.gestureMap
 			if not gmap:
 				continue
 			for cls, gesture, scriptName in gmap.getScriptsForAllGestures():
 				if gesture.startswith("br"):
-					self.assertRegex(gesture, braille.BrailleDisplayGesture.ID_PARTS_REGEX)
+					self.assertRegex(gesture, braille.display.gesture.BrailleDisplayGesture.ID_PARTS_REGEX)
+
+
+class _RoutingGesture(braille.display.gesture.BrailleDisplayGesture):
+	source = "test"
+	id = "routing"
+
+
+class _MultiRoutingGesture(braille.display.gesture.BrailleDisplayGesture):
+	source = "test"
+	id = "multiRouting"
+
+
+class _ModelRoutingGesture(braille.display.gesture.BrailleDisplayGesture):
+	source = "testDriver"
+	model = "testModel"
+	id = "routing"
+
+
+class _ModelKeyGesture(braille.display.gesture.BrailleDisplayGesture):
+	source = "testDriver"
+	model = "testModel"
+	id = "key1"
+
+
+class _ComboGesture(braille.display.gesture.BrailleDisplayGesture):
+	"""Gesture whose id contains '+', simulating a routing key combined with a modifier."""
+
+	source = "test"
+	id = "key1+routing"
+
+
+class TestBrailleDisplayGestureCellIndexes(unittest.TestCase):
+	"""Tests for :attr:`braille.BrailleDisplayGesture.cellIndexes` and the deprecated ``routingIndex`` shim."""
+
+	def test_default_cellIndexes_none(self):
+		g = _RoutingGesture()
+		self.assertIsNone(g.cellIndexes)
+
+	def test_idForCellCount(self):
+		self.assertEqual("routing", braille.display.gesture.BrailleDisplayGesture.idForCellCount(0))
+		self.assertEqual("routing", braille.display.gesture.BrailleDisplayGesture.idForCellCount(1))
+		self.assertEqual("multiRouting", braille.display.gesture.BrailleDisplayGesture.idForCellCount(2))
+		self.assertEqual("multiRouting", braille.display.gesture.BrailleDisplayGesture.idForCellCount(5))
+
+	def test_idForCellCount_custom_baseName(self):
+		self.assertEqual(
+			"secondRouting",
+			braille.display.gesture.BrailleDisplayGesture.idForCellCount(1, "secondRouting"),
+		)
+		self.assertEqual(
+			"multiSecondRouting",
+			braille.display.gesture.BrailleDisplayGesture.idForCellCount(2, "secondRouting"),
+		)
+		self.assertEqual("route", braille.display.gesture.BrailleDisplayGesture.idForCellCount(1, "route"))
+		self.assertEqual(
+			"multiRoute",
+			braille.display.gesture.BrailleDisplayGesture.idForCellCount(2, "route"),
+		)
+		self.assertEqual(
+			"multiUpperRouting",
+			braille.display.gesture.BrailleDisplayGesture.idForCellCount(3, "upperRouting"),
+		)
+
+	def test_routingIndex_getter_returns_highest_cell(self):
+		g = _RoutingGesture()
+		g.cellIndexes = [3, 7]
+		self.assertEqual(7, g.routingIndex)
+
+	def test_routingIndex_getter_none_when_empty(self):
+		g = _RoutingGesture()
+		self.assertIsNone(g.routingIndex)
+
+	def test_routingIndex_setter_wraps_into_cellIndexes(self):
+		g = _RoutingGesture()
+		g.routingIndex = 5
+		self.assertEqual([5], g.cellIndexes)
+
+	def test_routingIndex_setter_none_clears_cellIndexes(self):
+		g = _RoutingGesture()
+		g.cellIndexes = [1, 2]
+		g.routingIndex = None
+		self.assertIsNone(g.cellIndexes)
+
+	def test_multiRouting_identifier_matches_regex(self):
+		g = _MultiRoutingGesture()
+		g.cellIndexes = [0, 3, 7]
+		for identifier in g.identifiers:
+			if identifier.startswith("br"):
+				self.assertRegex(identifier, braille.display.gesture.BrailleDisplayGesture.ID_PARTS_REGEX)
+
+	def test_cellIndexesStr_none_when_no_cellIndexes(self):
+		g = _RoutingGesture()
+		self.assertIsNone(g._cellIndexesStr)
+
+	def test_cellIndexesStr_single_cell(self):
+		g = _RoutingGesture()
+		g.cellIndexes = [2]
+		self.assertEqual("3", g._cellIndexesStr)
+
+	def test_cellIndexesStr_multiple_cells(self):
+		g = _MultiRoutingGesture()
+		g.cellIndexes = [0, 3, 7]
+		self.assertEqual("1+4+8", g._cellIndexesStr)
+
+	def test_cellIndexesStr_none_when_id_contains_plus(self):
+		g = _ComboGesture()
+		g.cellIndexes = [2]
+		self.assertIsNone(g._cellIndexesStr)
+
+	def test_identifiers_no_cellIndexes(self):
+		g = _RoutingGesture()
+		self.assertEqual(["br(test):routing"], g.identifiers)
+
+	def test_identifiers_single_cell(self):
+		g = _RoutingGesture()
+		g.cellIndexes = [2]
+		self.assertEqual(["br(test):routing3", "br(test):routing"], g.identifiers)
+
+	def test_identifiers_multi_cell(self):
+		g = _MultiRoutingGesture()
+		g.cellIndexes = [0, 3]
+		self.assertEqual(["br(test):multiRouting1+4", "br(test):multiRouting"], g.identifiers)
+
+	def test_identifiers_with_model_single_cell(self):
+		g = _ModelRoutingGesture()
+		g.cellIndexes = [4]
+		self.assertEqual(
+			[
+				"br(testDriver.testModel):routing5",
+				"br(testDriver.testModel):routing",
+				"br(testDriver):routing5",
+				"br(testDriver):routing",
+			],
+			g.identifiers,
+		)
+
+	def test_identifiers_with_model_no_cellIndexes(self):
+		g = _ModelKeyGesture()
+		self.assertEqual(["br(testDriver.testModel):key1", "br(testDriver):key1"], g.identifiers)
+
+	def test_identifiers_combo_no_cellIndexesStr(self):
+		g = _ComboGesture()
+		g.cellIndexes = [2]
+		self.assertEqual(["br(test):key1+routing"], g.identifiers)
+
+	def test_displayName_no_cellIndexes(self):
+		g = _RoutingGesture()
+		self.assertEqual("routing", g.displayName)
+
+	def test_displayName_single_cell(self):
+		g = _RoutingGesture()
+		g.cellIndexes = [2]
+		self.assertEqual("routing3", g.displayName)
+
+	def test_displayName_multi_cell(self):
+		g = _MultiRoutingGesture()
+		g.cellIndexes = [0, 3, 7]
+		self.assertEqual("multiRouting1+4+8", g.displayName)
 
 
 class TestBRLTTY(unittest.TestCase):
@@ -187,5 +351,129 @@ class TestBRLTTY(unittest.TestCase):
 			import brlapi  # noqa: F401
 		except ImportError:
 			self.skipTest("brlapi module not available")
-		except Exception:
+		except Exception:  # noqa: BLE001
 			self.fail("Couldn't import the brlapi module")
+
+
+class _EurobrailleBnoteGesture(braille.display.gesture.BrailleDisplayGesture):
+	source = "eurobraille"
+	model = "bnote"
+	id = "joystick1Right"
+
+
+class TestModelSpecificGestures(unittest.TestCase):
+	"""Model specific gesture bindings must take priority over generic bindings for the same key."""
+
+	def test_modelSpecificBindingWins(self):
+		gmap = braille.display._getDisplayDriver("eurobraille").gestureMap
+		scripts = [
+			scriptName
+			for identifier in _EurobrailleBnoteGesture().normalizedIdentifiers
+			for cls, scriptName in gmap.getScriptsForGesture(identifier)
+		]
+		self.assertEqual(["braille_scrollForward", "review_nextCharacter"], scripts)
+
+
+# BEGIN JP PATCH
+class TestKgsGestures(unittest.TestCase):
+	"""Tests cellIndexes initialization for KGS drivers."""
+
+	def test_kgs_input_gesture(self):
+		from brailleDisplayDrivers import kgs
+
+		with patch("braille.display.gesture.log.warning") as mock_warn:
+			gesture_routing = kgs.InputGesture(["route"], 5)
+			self.assertEqual(gesture_routing.cellIndexes, [5])
+			self.assertEqual(gesture_routing.id, "route")
+			mock_warn.assert_not_called()
+
+		gesture_key = kgs.InputGesture(["func1"], None)
+		self.assertIsNone(gesture_key.cellIndexes)
+		self.assertEqual(gesture_key.id, "func1")
+
+	def test_braillememo_input_gesture(self):
+		from brailleDisplayDrivers import brailleMemo
+
+		with patch("braille.display.gesture.log.warning") as mock_warn:
+			gesture_routing = brailleMemo.InputGesture(["route"], 3)
+			self.assertEqual(gesture_routing.cellIndexes, [3])
+			self.assertEqual(gesture_routing.id, "route")
+			mock_warn.assert_not_called()
+
+		gesture_dots = brailleMemo.InputGesture(["dot1", "dot2"], None)
+		self.assertIsNone(gesture_dots.cellIndexes)
+		self.assertEqual(gesture_dots.id, "dot1+dot2")
+		self.assertEqual(gesture_dots.dots, 3)
+
+	def test_kgsbn46_input_gesture(self):
+		from brailleDisplayDrivers import kgsbn46
+
+		with patch("braille.display.gesture.log.warning") as mock_warn:
+			gesture_routing = kgsbn46.InputGesture(["route"], 2)
+			self.assertEqual(gesture_routing.cellIndexes, [2])
+			self.assertEqual(gesture_routing.id, "route")
+			mock_warn.assert_not_called()
+
+		gesture_key = kgsbn46.InputGesture(["bk"], None)
+		self.assertIsNone(gesture_key.cellIndexes)
+		self.assertEqual(gesture_key.id, "bk")
+
+
+class TestKgsSettings(unittest.TestCase):
+	"""Tests for KGS braille driver settings."""
+
+	def test_connection_tone_volume_setting_defined(self):
+		from brailleDisplayDrivers import kgs
+
+		kgs_setting_ids = [s.id for s in kgs.BrailleDisplayDriver.supportedSettings]
+		self.assertIn("connectionToneVolume", kgs_setting_ids)
+
+	def test_beep_respects_zero_volume(self):
+		from brailleDisplayDrivers import kgs
+
+		with (
+			patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=0),
+			patch("tones.beep") as mock_beep,
+		):
+			kgs._beep(440, 50)
+			mock_beep.assert_not_called()
+
+	def test_beep_plays_when_volume_nonzero(self):
+		from brailleDisplayDrivers import kgs
+
+		with (
+			patch("brailleDisplayDrivers.kgs._getConnectionToneVolume", return_value=50),
+			patch("tones.beep") as mock_beep,
+		):
+			kgs._beep(440, 50)
+			mock_beep.assert_called_once()
+
+	def test_get_possible_ports_includes_usb_and_bluetooth(self):
+		from brailleDisplayDrivers import brailleMemo, kgs
+
+		for mod in (kgs, brailleMemo):
+			with patch.object(mod, "kgsListComPorts", return_value=[]):
+				ports = mod.BrailleDisplayDriver.getPossiblePorts()
+				self.assertIn("auto", ports)
+				self.assertIn("usb", ports)
+				self.assertIn("bluetooth", ports)
+
+	def test_detect_bluetooth_setting_defined(self):
+		from brailleDisplayDrivers import kgs
+
+		kgs_setting_ids = [s.id for s in kgs.BrailleDisplayDriver.supportedSettings]
+		self.assertIn("detectBluetooth", kgs_setting_ids)
+
+	def test_scan_bluetooth_ports_respects_setting(self):
+		from brailleDisplayDrivers import kgs
+
+		with (
+			patch("brailleDisplayDrivers.kgs._isBluetoothDetectionEnabled", return_value=False),
+			patch("hwPortUtils.listComPorts") as mock_list,
+		):
+			results = list(kgs._scanKgsBluetoothPorts(usb=False, bluetooth=True))
+			self.assertEqual(results, [])
+			mock_list.assert_not_called()
+
+
+# END JP PATCH

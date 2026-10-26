@@ -16,6 +16,7 @@ import re
 from typing import Callable
 
 from .unicodeutil import unicode_normalize, nfkc_normalize_with_map
+from .limits import enforce_max_input_length
 from . import kana as translator1
 
 
@@ -238,7 +239,13 @@ def mecab_to_morphs(feature_lines: list[str] | None) -> list[MecabMorph]:
 			if len(ar) > 9:
 				mo.kana = unicode_normalize(ar[8])  # "（ニチ）" -> "(ニチ)"
 				# ありがとうございますー,感動詞,*,*,*,*,*,ありがとうございますー,アリガトウゴザイマスー,アリガトーゴザイマス’ー,0/1,C0
-				mo.yomi = unicode_normalize(ar[9]).replace("’", "")
+				yomi_raw = unicode_normalize(ar[9])
+				# Strip accent markers (’) from Japanese phonetic readings (which contain Katakana),
+				# but preserve literal quote characters in punctuation/symbols.
+				if any(0x30a0 <= ord(c) <= 0x30ff for c in yomi_raw):
+					mo.yomi = yomi_raw.replace("’", "")
+				else:
+					mo.yomi = yomi_raw
 				mo.accent = ar[10]
 				if len(ar) > 12:
 					# Mecab辞書の拡張フィールドの点訳表記があれば使用する
@@ -447,7 +454,7 @@ RE_ASCII_SYMBOLS = re.compile(r"^[\,\.\:\;\!\?\@\#\\\$\%\&\*\|\+\-\/\=\<\>\"'\^\
 
 
 def replace_alphabet_morphs(
-	li: list[MecabMorph], nabcc: bool = False, use_foreign_quotes: bool = False
+	li: list[MecabMorph], nabcc: bool = False, use_foreign_quotes: bool = False,
 ) -> list[MecabMorph]:
 	# アルファベットまたは記号だけで表記されている語を結合する
 	# 情報処理点字の部分文字列になる記号を前後にまとめる
@@ -1291,7 +1298,7 @@ RE_PAREN_ASCII_BODY = re.compile(r"^[A-Za-z0-9\,\.\+\-'\!\? ]+$")
 # - ドット `.` で区切られたラベルが 2 個以上
 # - 各ラベルは先頭が英数字、以降は英数字・ハイフン・アンダースコア
 RE_US_G2_DOTTED_TOKEN = re.compile(
-	r"^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$"
+	r"^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9][A-Za-z0-9_-]*)+$",
 )
 RE_KATAKANA = re.compile("^[ァ-ヾ]+$")
 RE_HIRAGANA = re.compile("^[ぁ-ゞ]+$")
@@ -1446,8 +1453,10 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 	for mo in li:
 		if mo.hinshi1 == "空白":
 			mo.output = " "
+		elif mo.hyouki.startswith("•"):
+			# List bullet (U+2022) should be rendered as a bullet mark (U+2810, dot 5) in braille (nvdajp#723)
+			mo.output = "\u2810"
 		elif mo.hinshi2 == "数" and mo.nhyouki.isdigit():
-			# digit numbers (not kanji characters)
 			mo.output = mo.nhyouki
 		elif RE_GREEK_CYRILLIC.match(mo.nhyouki):
 			# Greek and Cyrillic words are unknown to MeCab (no reading) and
@@ -1950,7 +1959,7 @@ def translateWithInPos2(
 		already_braille = True
 	else:
 		outbuf, inpos2 = japanese_braille_separate(
-			inbuf, logwrite, nabcc=nabcc, use_foreign_quotes=use_foreign_quotes
+			inbuf, logwrite, nabcc=nabcc, use_foreign_quotes=use_foreign_quotes,
 		)
 		already_braille = False
 	# nvdajp: translator_louis — 外国語引用符内を liblouis 2級に変換。既に点字の入力はスキップ（no-op で位置がずれないように）。
@@ -2023,6 +2032,7 @@ def translate(
 	@rtype: (str, list of int, list of int, int)
 	@raise RuntimeError: If a complete translation could not be done.
 	"""
+	enforce_max_input_length(inbuf)
 	sp, outbuf, inpos1, inpos2 = translateWithInPos2(
 		inbuf,
 		logwrite=logwrite,

@@ -1,1 +1,1 @@
-nmake /f all.mak clean 
+nmake /f all.mak clean

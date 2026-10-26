@@ -31,7 +31,7 @@
 | 生成 | `jptools/pack_kgs_addon.py`（SCons `jpAddons`）、手動は `pack_kgs_addon.cmd` |
 | 同梱ファイル | `manifest.ini`, `kgs.py`, `brailleMemo.py`, `DirectBM.dll` |
 | 非同梱 | `kgsbn46.py`（コア専用のまま） |
-| マニフェスト | `jptools/kgs_manifest.py`（`minimumNVDAVersion = 2026.1.0`、`lastTestedNVDAVersion = 2026.1.1`） |
+| マニフェスト | `jptools/kgs_manifest.py`（`minimumNVDAVersion = 2026.1.0`、`lastTestedNVDAVersion = 2027.1.0`） |
 
 ### 1.3 依存関係（論理）
 
@@ -47,7 +47,7 @@ DirectBM.dll
 
 ## 2. 開発当時（〜2010 年代）と現行 NVDA 点字ドライバ仕様の差分
 
-KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto）NVDA 用に開発され、**ベンダ DLL（DirectBM）+ ctypes コールバック**という当時典型的な形で実装されている。  
+KGS 系は **2011 年頃から**（著作権表記: Shinke / Misono / Nishimoto）NVDA 用に開発され、**ベンダ DLL（DirectBM）+ ctypes コールバック**という当時典型的な形で実装されている。
 現行 betajp（NVDA **2026.1** 系）の `source/braille.py` および本家同梱ドライバが前提とする API との差を以下に整理する。
 
 ### 2.1 時代区分（目安）
@@ -315,6 +315,7 @@ def _connectionBeepsEnabled():
 | 2026-05-18 | アドオン `lastTestedNVDAVersion` を 2026.1.1 に更新 |
 | 2026-05-18 | Next Touch 40 向け `VID_10C4&PID_EA60` の bdDetect 登録、`kgs_bdDetect_probe.py` 追加 |
 | 2026-05-25 | §2.6: インストール／ランチャー時の接続プローブ音抑制（#470 / PR #659） |
+| 2026-10-09 | アドオン `lastTestedNVDAVersion` を 2027.1.0 に更新 |
 
 ---
 

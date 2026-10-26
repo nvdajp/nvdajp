@@ -1,4 +1,3 @@
-# coding: utf-8
 # characters.dic 形式から Unicode 番号順に並べて symbols.dic 書式にする
 # 必ずこの文字で音声エンジンに読ませる場合のための定義
 #
@@ -29,7 +28,7 @@ prev_char = chr(0)
 for char in sorted(characters_dict.keys()):
 	# 下から3桁目よりも上を比較する
 	if hex(ord(prev_char))[:-2] != hex(ord(char))[:-2]:
-		print("")
+		print()
 		print(f"# {hex(ord(char))[:-2]}00-")
 	print(f"{char}\t{characters_dict[char][1]}")
 	prev_char = char

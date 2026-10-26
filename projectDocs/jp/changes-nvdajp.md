@@ -481,24 +481,39 @@ def buildConfigH(target, source, env):
 
 ### 3. NVDAHelper の機能復元
 
-#### 3.1 nvdaController 関数の復元
+#### 3.1 nvdaController 関数の復元と nvdaController_isSpeakingJp の導入
 
 `nvdaHelper/local/nvdaController.cpp` に以下の関数を復元：
 
 * `nvdaController_speakSpelling` - スペル読み上げ
-* `nvdaController_isSpeaking` - 読み上げ中かどうかの確認
+* `nvdaController_isSpeakingJp` - 読み上げ中かどうかの確認（従来の日本語版独自関数 nvdaController_isSpeaking を名称変更）
 * `nvdaController_getPitch` - ピッチ取得
 * `nvdaController_setPitch` - ピッチ設定
 * `nvdaController_getRate` - 速度取得
 * `nvdaController_setRate` - 速度設定
 * `nvdaController_setAppSleepMode` - アプリケーションスリープモード設定
 
-`nvdaController_isSpeaking` については、アドオン互換性維持のため、背後の synth 実装が `isSpeaking()`（callable）を提供する場合と `isSpeaking` 属性（bool）を提供する場合の両方を受け入れる方針を明記する。
+##### nvdaController_isSpeaking の衝突回避と nvdaController_isSpeakingJp
+
+本家版 2026.3 で `nvdaController_isSpeaking(boolean* speaking)`（`NvdaController3` インターフェース、戻り値は `error_status_t`、読み上げ中フラグは出力ポインタ引数）が正式に追加されました。
+従来の日本語版では引数なしで `int`（読み上げ中: 1 / 停止: 0）を直接返す同名関数が提供されていたため、シンボルおよびシグネチャの衝突が発生していました。
+
+このため、日本語版独自関数を `nvdaController_isSpeakingJp()` として改名・提供し、本家版の `nvdaController_isSpeaking()` と併存・両立させました。
+
+* **RPC ABI と既存アプリの後方互換性**:
+  Microsoft RPC では、インターフェース内のメソッド順序（Opnum）でディスパッチされます。従来の日本語版 `NvdaController` インターフェース（UUID `DFF50B99-F7FD-4ca7-A82C-DAEB3E025295`）の Opnum 5（`speakSpelling` の次、`getPitch` の前）の位置に `isSpeakingJp()` を配置しているため、旧バージョンの `nvdaControllerClient.dll` を同梱した既存の外部アプリケーションから `isSpeaking()` を呼び出した場合も、NVDA 側では Opnum 5 の `isSpeakingJp` 実装へ安全にルーティングされ、後方互換性が維持されます。
+* **新規開発での推奨**:
+  新規に作成する外部アプリケーションや、本家版 NVDA と共通で動作させるコードでは、本家版標準の `nvdaController_isSpeaking(boolean* speaking)` の使用が推奨されます。
+* **詳細仕様と相互互換マトリクス**:
+  Opnum の割り当て一覧、新旧クライアント DLL × 新旧/本家版 NVDA の詳細な相互互換性マトリクス、サードパーティ向け推奨実装パターンについては [`projectDocs/jp/controller-client.md`](controller-client.md) の「RPC アーキテクチャと新旧・本家版の相互互換性マトリクス」を参照してください。
 
 **関連ファイル**:
 
 * `nvdaHelper/interfaces/nvdaController/nvdaController.idl` - インターフェース定義
 * `nvdaHelper/interfaces/nvdaController/nvdaController.acf` - 属性設定
+* `nvdaHelper/client/nvdaControllerClient.def` - DLL エクスポート定義
+* `nvdaHelper/local/nvdaHelperLocal.def` - 内部エクスポート定義
+* `projectDocs/jp/controller-client.md` - コントローラークライアントの詳細仕様ドキュメント
 
 ### 4. テストの修正とドキュメント化
 
@@ -814,6 +829,59 @@ def shouldPlayErrorSound() -> bool:
 * nvdajp では、開発版でもリリース版でも同じ動作を提供するため、すべてのバージョンをリリース版として扱います
 * ユーザーが明示的に「する」を選択した場合のみエラー音が鳴るようにしています
 * これにより、開発版でもエラー音が意図せず鳴ることを防ぎます
+
+---
+
+## betajp-260906 ブランチでのレビュー修正点（2026.3jp、PR #730 マージ後）
+
+PR #730（nvaccess/beta マージ）のレビューで判明した残課題を `betajp-260906` ブランチで修正した。
+
+### libkuraji 入力長上限の例外ガード
+
+`source/libkuraji/limits.py`（v1.0.0+ 同期で導入）は 65,536 文字超の入力に `InputTooLongError` を送出するが、`louisHelper.translate` の `jpTranslate` 呼び出しが無防備で、改行なしの巨大テキストを点字表示すると `Region.update` 内で例外になり表示が止まる（2026.2jp 以前は上限なし）。
+
+* `source/louisHelper.py`: `InputTooLongError` を捕捉し、警告ログのうえ liblouis（日本語 1 級テーブル）へフォールバック。表示は更新される。
+* `source/synthDrivers/jtalk/translator2.py`: `translate()` の docstring に上限と例外の注意書きを追加（点字以外の呼び出し元は自前で扱う必要がある）。
+* `source/libkuraji/limits.py`: `get_max_input_chars()` を `functools.cache` でメモ化。点字レンダリング毎の環境変数再パースを解消（`cache_clear()` で再読み込み可能）。
+
+### jtalk 辞書バージョンピンの二重化
+
+* ビルド時ピン（`miscDepsJp/jptools/jtalk-dic-version.txt`、`tag=v1.1.10`）とランタイム既定（`source/libkuraji/jtalk_dic.py` の `DEFAULT_DIC_TAG`）が v1.1.7 と v1.1.10 に乖離していた。
+* `DEFAULT_DIC_TAG` を `v1.1.10` に更新して一致させ、乖離を検出する単体テスト `tests/unit/test_jpDicPins.py` を追加。
+
+### 点字テーブルヘッダー取得のゲート修正（issue #109 パッチ）
+
+* `source/braille/regions/NVDAObject.py`: `hasattr` によるゲートではプロパティゲッター（UIA の COM ラウンドトリップ）が設定オフでも実行され、設定オンでは 2 回実行されていた。設定値を先に評価し、`hasattr` を廃止（プロパティ未対応は `NotImplementedError` を捕捉）。
+* `reportTableHeaders` の行/列を音声側（`speech.getTableCellSpeech`）と同じ `ReportTableHeaders` enum ゲートに揃え、ROWS-only/COLUMNS-only 設定での点字と音声の乖離を解消。
+* `source/braille/regions/properties.py`: コメントアウトされた旧 `columnHeaderText` ブロック（デッドコード）を削除し、import ブロックの `# BEGIN/END JP PATCH` マーカーを対にした。
+
+### 文字説明モードの caret 動作
+`source/speech/speech.py` の JP パッチ（CARET + `UNIT_CHARACTER` での `speakSpelling` 横流し）は `useCharacterDescriptions=True` を指定して文字説明を行う。文字種別接頭辞（「ひらがな」「半角英字」など）を付加する `useDetails=True` はキャレット移動（左右カーソル）では不要なため指定しない（レビューカーソルでの 2 回押し `repeatCount==1` でのみ使用）。
+
+### characterProcessing 辞書ローダーの統合
+
+`source/characterProcessing.py` のほぼ同一な 4 つのタブ区切り辞書ローダー（characters.dic / cldr.dic / users characterDescriptions / users characters）をモジュール関数 `_iterNvdajpTabDic` に統合。`code = temp.pop(0)  # noqa: F841` の未使用変数も解消。cldr.dic の「コメント飛ばしなし・警告なし」の差分は引数で明示し挙動は不変。
+
+### キー入力ホットパスの設定参照順序
+
+`source/keyboardHandler.py` `isNVDAModifierKey` の JP 拡張 3 選言を「vkCode 比較が先、設定参照が後」に変更。押してもいない NonConvert/Convert/Escape 判定のための 6 回の設定辞書参照が英字キー 1 打毎に走るのを回避。
+
+### システムテストの characterDescriptionMode フリップ漏えい
+
+* `tests/system/libraries/SystemTestSpy/speechSpyGlobalPlugin.py`: 設定値を取得する `get_configValue` を追加（`set_configValue` は自動復元しないため）。
+* `tests/system/robot/symbolPronunciationTests.py`: `characterDescriptionMode` を `False` に一時変更する 3 テスト（`test_delayedDescriptions` / `test_symbolInSpeechUI` / `test_tableHeaders`）で、テスト終了時に元の値へ復元するようにした。将来の upstream マージで後続テストが JP CI のみ失敗する構造的な問題を緩和する。
+
+### MeCab feature バッファの境界チェック（セキュリティ修正）
+
+JTalk の MeCab 解析では各 feature を msvcrt `malloc` で確保した固定長 2,000 バイト（`mecab.py` の `FELEN`）のヒープバッファに格納する。解析パス（`Mecab_analysis`）には `assert len(s) < FELEN` があるが、解析後の補正処理（`Mecab_correctFeatures`）の書き戻しパスは無防備で、生成物の長さを確認せずに `memmove` で同じバッファへ書き戻していた。
+
+* 実測（2026-09-06、既定辞書）: 未知語の 1 形態素は最大約 29 文字で打ち切られ、補正による増幅は最大約 735 バイトで収まり、現行辞書では 2,000 バイトには届かない。ただしこの上限は MeCab の lattice 挙動と辞書内容に依存する非公式な不変条件であり、userdic や補正パターンの将来変更で崩れ得る。
+* `source/synthDrivers/jtalk/mecab.py`:
+  * `Mecab_setFeature`: `len(s_encoded) >= FELEN` で `ValueError` を送出し、ヒープ破壊の代わりに fail-fast する（解析パスの assert と整合）。
+  * `Mecab_correctFeatures`: PATTERN 1/2（読み未知の形態素を 1 文字ずつ再解析して読み・発音を連結）で、構築した feature が `FELEN` に収まらない場合は補正をスキップして元の形態素を残す（JTalk には読み未知のフォールバックが既にある）。スキップ時は `logwrite_` で記録。
+  * `mecab_analyze_and_correct`: `logwrite_` を `Mecab_correctFeatures` へ渡すようにした。
+* テスト: `tests/unit/test_jpMecabSetFeature.py`（境界単体テスト、MeCab DLL 不要）、`miscDepsJp/jptools/test.py` の `test_jtalk_long_unknown_run_feature_bounds`（実 MeCab パイプラインでの上限回帰テスト。`jtalk_pipeline_probe` の `_probe_one` に `maxFeatureLen` を追加）。
+* 同種の純 Python 実装 `source/libkuraji/mecab_correct.py`（libkuraji 上流由来）は固定長バッファを持たないため影響なし。nvdajpmiscdep 側の旧 jtalk ソースは 2023-09 に凍結済み（現行は本リポジトリの `source/synthDrivers/jtalk` を import する）。
 
 ---
 

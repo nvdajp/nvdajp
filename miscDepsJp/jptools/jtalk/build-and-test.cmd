@@ -3,8 +3,3 @@ call all-install.cmd
 cd ..\..\jptools
 call test-mecab.cmd
 cd ..\include\jtalk
-
-
-
-
-

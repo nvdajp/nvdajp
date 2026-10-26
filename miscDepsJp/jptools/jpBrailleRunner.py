@@ -327,13 +327,13 @@ def run_translator2(verboseMode=False):
 						error_details_parts.append(f"result: expected '{t['input']}', got '{result}'")
 					if "inpos2_mismatch" in error_types:
 						error_details_parts.append(
-							f"inpos2: expected '{correct_inpos2}', got '{result_inpos2}'"
+							f"inpos2: expected '{correct_inpos2}', got '{result_inpos2}'",
 						)
 					if "inpos_mismatch" in error_types:
 						error_details_parts.append(f"inpos: expected '{correct_inpos}', got '{result_inpos}'")
 					if "outpos_mismatch" in error_types:
 						error_details_parts.append(
-							f"outpos: expected '{correct_outpos}', got '{result_outpos}'"
+							f"outpos: expected '{correct_outpos}', got '{result_outpos}'",
 						)
 					error_details = " | ".join(error_details_parts)
 
@@ -487,7 +487,7 @@ def run_eng2_grade1():
 			output = io.StringIO()
 			try:
 				result, pat, inpos1, inpos2 = translator2.translateWithInPos2(
-					t["text"], logwrite=__print, nabcc=False, use_foreign_quotes=True
+					t["text"], logwrite=__print, nabcc=False, use_foreign_quotes=True,
 				)
 			except Exception as e:
 				count += 1
@@ -504,7 +504,7 @@ def run_eng2_grade1():
 				if "comment" in t:
 					f.write(
 						"comment: %s\n"
-						% (t["comment"] if isinstance(t["comment"], str) else ", ".join(t["comment"]))
+						% (t["comment"] if isinstance(t["comment"], str) else ", ".join(t["comment"])),
 					)
 				f.write("\n")
 		print("eng2_grade1: %d error(s). see %s" % (count, outfile))
@@ -671,7 +671,7 @@ def run_eng2_ueb_g2():
 				if "comment" in t:
 					f.write(
 						"comment: %s\n"
-						% (t["comment"] if isinstance(t["comment"], str) else ", ".join(t["comment"]))
+						% (t["comment"] if isinstance(t["comment"], str) else ", ".join(t["comment"])),
 					)
 				f.write("\n")
 		print("eng2_ueb_g2: %d error(s). see %s" % (count, outfile))
@@ -786,7 +786,7 @@ def run_eng2_us_g2():
 				if "comment" in t:
 					f.write(
 						"comment: %s\n"
-						% (t["comment"] if isinstance(t["comment"], str) else ", ".join(t["comment"]))
+						% (t["comment"] if isinstance(t["comment"], str) else ", ".join(t["comment"])),
 					)
 				f.write("\n")
 		print("eng2_us_g2: %d error(s). see %s" % (count, outfile))

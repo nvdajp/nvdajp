@@ -15,7 +15,7 @@ with codecs.open("../source/locale/ja/characters.dic", "r", "utf-8") as file:
 for line in lines:
 	line = line.rstrip()
 	if len(line) == 0 or line[0] == "#":
-		print("")
+		print()
 		continue
 	fields = line.split("\t")
 	if len(fields[1]) == 5:

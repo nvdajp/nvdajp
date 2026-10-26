@@ -1,12 +1,14 @@
 import sys
-from typing import Any, Optional, Mapping, cast
+from collections.abc import Mapping
+from typing import Any, cast
 
 try:
 	# Importing tests.unit triggers the unit test harness initialization
-	import tests.unit  # noqa: F401
-	import languageHandler
-	import config
 	import braille
+	import config
+	import languageHandler
+
+	import tests.unit  # noqa: F401
 
 	lang = languageHandler.getLanguage()
 	# Treat config.conf as a mapping for diagnostics; avoid over‑promising concrete types
@@ -14,7 +16,7 @@ try:
 	braille_conf: Any = conf_map.get("braille")
 	table = braille_conf.get("translationTable") if hasattr(braille_conf, "get") else None
 
-	handler: Optional[Any] = getattr(braille, "handler", None)
+	handler: Any | None = getattr(braille, "handler", None)
 	dims = getattr(handler, "displayDimensions", None)
 	disp = getattr(handler, "buffer", None)
 	size = getattr(disp, "displaySize", None)
@@ -27,6 +29,6 @@ try:
 	else:
 		print("[diag] displayDimensions=None")
 	print(f"[diag] buffer.displaySize={size}")
-except Exception as e:
+except Exception as e:  # noqa: BLE001
 	print(f"[diag] error: {e}")
 	sys.exit(0)

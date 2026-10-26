@@ -11,17 +11,18 @@ Other features include reporting candidates for misspellings if suggestions for 
 and managing cloud clipboard paste.
 This is applicable on Windows 10 Fall Creators Update and later."""
 
-import appModuleHandler
 import api
+import appModuleHandler
+import braille
+import config
+import controlTypes
 import eventHandler
 import speech
-import braille
 import ui
-import config
 import winVersion
-import controlTypes
+from NVDAObjects.behaviors import CandidateItem as CandidateItemBehavior
+from NVDAObjects.behaviors import EditableTextWithAutoSelectDetection
 from NVDAObjects.UIA import UIA, XamlEditableText
-from NVDAObjects.behaviors import CandidateItem as CandidateItemBehavior, EditableTextWithAutoSelectDetection
 
 
 class ImeCandidateUI(UIA):
@@ -58,7 +59,7 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 	keyboardShortcut = ""
 
 	def _get_candidateNumber(self):
-		number = super(ImeCandidateItem, self).keyboardShortcut
+		number = super().keyboardShortcut
 		try:
 			number = int(number)
 		except (ValueError, TypeError):
@@ -66,7 +67,7 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 		return number
 
 	def _get_parent(self):
-		parent = super(ImeCandidateItem, self).parent
+		parent = super().parent
 		if parent.UIAAutomationId == "TEMPLATE_PART_CandidatePanel":
 			return None
 		# Translators: A label for a 'candidate' list
@@ -79,16 +80,16 @@ class ImeCandidateItem(CandidateItemBehavior, UIA):
 		try:
 			number = int(self.candidateNumber)
 		except (TypeError, ValueError):
-			return super(ImeCandidateItem, self).name
-		candidate = super(ImeCandidateItem, self).name
+			return super().name
+		candidate = super().name
 		return self.getFormattedCandidateName(number, candidate)
 
 	def _get_description(self):
-		candidate = super(ImeCandidateItem, self).name
+		candidate = super().name
 		return self.getFormattedCandidateDescription(candidate)
 
 	def _get_basicText(self):
-		return super(ImeCandidateItem, self).name
+		return super().name
 
 	def event_UIA_elementSelected(self):
 		# In Windows 11, focus event is fired when a candidate item receives focus,
@@ -261,9 +262,7 @@ class AppModule(appModuleHandler.AppModule):
 	def event_nameChange(self, obj, nextHandler):
 		# Logic for IME candidate items is handled all within its own object
 		# Therefore pass these events straight on.
-		if isinstance(obj, ImeCandidateItem):
-			return nextHandler()
-		elif isinstance(obj, ImeCandidateUI):
+		if isinstance(obj, (ImeCandidateItem, ImeCandidateUI)):
 			return nextHandler()
 
 		if (
@@ -305,9 +304,8 @@ class AppModule(appModuleHandler.AppModule):
 			"TEMPLATE_PART_ExpressionFullViewItemsGrid",
 			"TEMPLATE_PART_ClipboardItemIndex",
 			"CandidateWindowControl",
-		):
-			if getattr(obj, "name", ""):
-				ui.message(obj.name)
+		) and getattr(obj, "name", ""):
+			ui.message(obj.name)
 		nextHandler()
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):

@@ -349,13 +349,14 @@ Python pip modules with acceptable licences are automatically limited by our bui
 
 In addition to these dependencies, the following are also included in NVDA:
 
-- eSpeak: GPL-3
-- LibLouis: LGPL-3
-- BrlAPI: LGPL-3
-- IAccessible 2: Simplified BSD 
-- Microsoft Detours: MIT 
-- Python: PSF
-- NSIS: zlib/libpng
+* eSpeak: GPL-3
+* LibLouis: LGPL-3
+* BrlAPI: LGPL-3
+* IAccessible 2: Simplified BSD
+* Microsoft Detours: MIT
+* Python: PSF
+* NSIS: zlib/libpng
+* cppjieba: MIT
 
 Furthermore, NVDA also utilises some static/binary dependencies, details of which can be found at the following URL:
 

@@ -1,4 +1,3 @@
-# coding: utf-8
 # NVDA日本語版拡張 nvdaController_getRate / setRate のデモ
 # Usage: python test_rateCtl.py  (NVDA 起動後、examples/ から実行)
 

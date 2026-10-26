@@ -1,4 +1,4 @@
-# Signs a single file with AzureSignTool + Azure Key Vault (GlobalSign HSM).
+# Signs a single file or a list of files with AzureSignTool + Azure Key Vault (GlobalSign HSM).
 # Invoked from SCons signExecAzureKv or jptools/buildSynthDriverHost32.ps1.
 #
 # Authentication (first match wins):
@@ -14,7 +14,10 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $false)]
-    [string]$FileToSign = $env:NVDA_SIGN_FILE
+    [string]$FileToSign = $env:NVDA_SIGN_FILE,
+
+    [Parameter(Mandatory = $false)]
+    [string]$FileList
 )
 
 $ErrorActionPreference = "Stop"
@@ -149,14 +152,35 @@ Set one of:
 "@
 }
 
-if (-not $FileToSign) {
-    throw "File to sign not specified. Pass -FileToSign or set NVDA_SIGN_FILE."
-}
+$files = @()
+$useFileList = $false
 
-$FileToSign = $FileToSign.Trim().Trim('"')
-
-if (-not (Test-Path -LiteralPath $FileToSign)) {
-    throw "File to sign not found: $FileToSign"
+if ($FileList) {
+    $FileList = $FileList.Trim().Trim('"')
+    if (-not (Test-Path -LiteralPath $FileList)) {
+        throw "File list not found: $FileList"
+    }
+    $files = Get-Content -LiteralPath $FileList |
+        ForEach-Object { $_.Trim().Trim('"') } |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+    if ($files.Count -eq 0) {
+        Write-Host "FileList is empty: $FileList. Nothing to sign."
+        exit 0
+    }
+    foreach ($file in $files) {
+        if (-not (Test-Path -LiteralPath $file)) {
+            throw "File to sign not found: $file (from $FileList)"
+        }
+    }
+    $useFileList = $true
+} elseif ($FileToSign) {
+    $FileToSign = $FileToSign.Trim().Trim('"')
+    if (-not (Test-Path -LiteralPath $FileToSign)) {
+        throw "File to sign not found: $FileToSign"
+    }
+    $files = @($FileToSign)
+} else {
+    throw "File to sign not specified. Pass -FileToSign, -FileList, or set NVDA_SIGN_FILE."
 }
 
 $keyVaultUri = if ($env:AZURE_KEY_VAULT_URI) { $env:AZURE_KEY_VAULT_URI } else { "https://shuaruta-codesign-kv.vault.azure.net/" }
@@ -175,22 +199,35 @@ $signArgs = @(
     "-fd", "sha256",
     "-v"
 )
-$signArgs += $FileToSign
+
+if ($useFileList) {
+    $signArgs += @("-s", "-ifl", $FileList)
+} else {
+    $signArgs += $FileToSign
+}
 
 & $azureSignTool @signArgs
 if ($LASTEXITCODE -ne 0) {
-    throw "AzureSignTool failed for $FileToSign (exit $LASTEXITCODE)"
+    $targetDesc = if ($useFileList) { "FileList: $FileList" } else { $FileToSign }
+    throw "AzureSignTool failed for $targetDesc (exit $LASTEXITCODE)"
 }
 
 $signtool = Find-SignToolExe
 if ($signtool) {
-    & $signtool verify /pa $FileToSign
-    if ($LASTEXITCODE -ne 0) {
-        throw "signtool verify failed for $FileToSign"
+    # Verify in chunks of up to 50 files to avoid command line length limits
+    $batchSize = 50
+    for ($i = 0; $i -lt $files.Count; $i += $batchSize) {
+        $chunk = $files[$i..([Math]::Min($i + $batchSize - 1, $files.Count - 1))]
+        & $signtool verify /pa @chunk
+        if ($LASTEXITCODE -ne 0) {
+            throw "signtool verify failed in batch starting at index $i"
+        }
     }
 } else {
-    $sig = Get-AuthenticodeSignature -LiteralPath $FileToSign
-    if ($sig.Status -ne "Valid") {
-        throw "Signature verification failed for ${FileToSign}: $($sig.Status)"
+    foreach ($file in $files) {
+        $sig = Get-AuthenticodeSignature -LiteralPath $file
+        if ($sig.Status -ne "Valid") {
+            throw "Signature verification failed for ${file}: $($sig.Status)"
+        }
     }
 }

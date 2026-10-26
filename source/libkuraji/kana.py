@@ -12,6 +12,8 @@
 import unicodedata
 from typing import List, Tuple
 
+from .limits import enforce_max_input_length
+
 
 def _cell(*dots: int) -> str:
     value = 0
@@ -70,7 +72,7 @@ KANA1.update(
         "ン": _cell(3, 5, 6),
         "ッ": _cell(2),
         "ー": _cell(2, 5),
-    }
+    },
 )
 
 _DAKUTEN = _cell(5)
@@ -110,7 +112,7 @@ for _table, _prefix in (
     for _kc, _row in _table.items():
         for _small, _v in _SMALL_VOWEL.items():
             KANA2[_kc + _small] = _prefix + _cell(
-                *(_VOWEL_DOTS[_v] + _ROW_EXTRA_DOTS[_row])
+                *(_VOWEL_DOTS[_v] + _ROW_EXTRA_DOTS[_row]),
             )
 
 
@@ -188,6 +190,12 @@ _SYMBOL = {
     "#": _cell(5, 6) + _cell(1, 4, 6),
     "*": _cell(5, 6) + _cell(1, 6),
     "&": _cell(5, 6) + _cell(1, 2, 3, 4, 6),
+    "_": _cell(5) + _cell(3, 6),
+    "$": _cell(5, 6) + _cell(1, 4, 5, 6),
+    "|": _cell(2, 3, 5, 6),
+    "｜": _cell(2, 3, 5, 6),
+    ";": _cell(2, 3),
+    "\\": _cell(1, 6),
 }
 
 # words spelled out for symbols in kana context
@@ -294,7 +302,7 @@ _QUOTE_SYMBOL.update(
         "%": _cell(5, 6) + _cell(1, 2, 3, 4),
         "*": _cell(3, 5) * 2,
         "+": _cell(2, 6),
-    }
+    },
 )
 
 # --- Cyrillic and Greek letters ---------------------------------------
@@ -416,6 +424,7 @@ _KANA2_FIRST = frozenset(key[0] for key in KANA2)
 
 def translate_with_pos(text: str, nabcc: bool = False) -> Tuple[str, List[int]]:
     """Translate kana text into braille; return (cells, input positions)."""
+    enforce_max_input_length(text)
     norm = _normalize(text)
     out: List[str] = []  # cell strings; joined at the end
     pos: List[int] = []  # one entry per cell

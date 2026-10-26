@@ -16,15 +16,15 @@ script_dir = Path(__file__).parent
 sys.path.append(str(script_dir.parent / "source"))
 sys.path.append(str(script_dir.parent / "miscdeps" / "python"))
 
-import languageHandler  # noqa: E402
+import languageHandler
 
 # Initialize globalVars before importing modules that depend on it.
-import globalVars  # noqa: E402
+import globalVars
 
 appDir = str(Path(__file__).parent.parent.resolve())
 globalVars.appDir = appDir
 
-import gettext  # noqa: E402
+import gettext
 
 
 # Mock config before importing jpDicUtils
@@ -53,7 +53,7 @@ class MockConfigModule:
 
 sys.modules["config"] = MockConfigModule()
 
-from jpDicUtils import (  # noqa: E402
+from jpDicUtils import (
 	isJa,
 	isZenkakuHiragana,
 	isZenkakuKatakana,

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # speech engine nvdajp_jtalk
 # Copyright (C) 2010-2014 Takuya Nishimoto (nishimotz.com)

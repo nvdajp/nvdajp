@@ -4,7 +4,7 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
-import dataclasses
+import dataclasses  # noqa: I001
 from enum import IntEnum, StrEnum
 from functools import cached_property
 import glob
@@ -14,13 +14,10 @@ import codecs
 import collections
 import re
 from typing import (
-	Callable,
-	Dict,
 	Generic,
-	List,
-	Optional,
 	TypeVar,
 )
+from collections.abc import Callable, Generator
 
 import NVDAState
 from logHandler import log
@@ -32,7 +29,7 @@ from NVDAState import WritePaths
 _LocaleDataT = TypeVar("_LocaleDataT")
 
 
-class LocaleDataMap(Generic[_LocaleDataT], object):
+class LocaleDataMap(Generic[_LocaleDataT]):  # noqa: UP046
 	"""Allows access to locale-specific data objects, dynamically loading them if needed on request"""
 
 	def __init__(
@@ -43,7 +40,7 @@ class LocaleDataMap(Generic[_LocaleDataT], object):
 		@param localeDataFactory: the factory to create data objects for the requested locale.
 		"""
 		self._localeDataFactory: Callable[[str], _LocaleDataT] = localeDataFactory
-		self._dataMap: Dict[str, _LocaleDataT] = {}
+		self._dataMap: dict[str, _LocaleDataT] = {}
 		self._noDataLocalesCache: set[str] = set()
 
 	def fetchLocaleData(self, locale: str, fallback: bool = True) -> _LocaleDataT:
@@ -95,7 +92,39 @@ class LocaleDataMap(Generic[_LocaleDataT], object):
 		self._noDataLocalesCache.clear()
 
 
-class CharacterDescriptions(object):
+def _iterNvdajpTabDic(
+	fileName: str,
+	*,
+	skipComments: bool = True,
+	hasCodeField: bool = False,
+	warnOnBadLine: bool = True,
+) -> Generator[tuple[str, list[str]]]:
+	"""Yield ``(key, fields)`` for each well-formed line of a nvdajp tab-separated dictionary.
+
+	``key`` is the first field; ``fields`` is the remainder of the line.
+	When ``hasCodeField`` is set, the second field (a code point used by the
+	characters.dic format) is consumed and discarded, so ``fields[0]`` is the
+	reading/description field. Blank, comment-only and unparseable lines are
+	skipped (with a warning when ``warnOnBadLine`` is set).
+	"""
+	with codecs.open(fileName, "r", "utf_8_sig", errors="replace") as f:
+		for line in f:
+			if skipComments and (line.isspace() or line.startswith("#")):
+				continue
+			line = line.rstrip("\r\n")
+			temp = line.split("\t")
+			if len(temp) <= 1:
+				if warnOnBadLine:
+					log.warning(f"can't parse line '{line}'")
+				continue
+			key = temp.pop(0)
+			if hasCodeField:
+				# The code field exists in the file format but is not used.
+				temp.pop(0)
+			yield key, temp
+
+
+class CharacterDescriptions:
 	"""
 	Represents a map of characters to one or more descriptions (examples) for that character.
 	The data is loaded from a file from the requested locale.
@@ -105,11 +134,11 @@ class CharacterDescriptions(object):
 		"""
 		@param locale: The characterDescriptions.dic file will be found by using this locale.
 		"""
-		self._entries: Dict[str, List[str]] = {}
+		self._entries: dict[str, list[str]] = {}
 		fileName = os.path.join(globalVars.appDir, "locale", locale, "characterDescriptions.dic")
 		if not os.path.isfile(fileName):
 			raise LookupError(fileName)
-		f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
+		f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")  # noqa: SIM115
 		for line in f:
 			if line.isspace() or line.startswith("#"):
 				continue
@@ -119,8 +148,8 @@ class CharacterDescriptions(object):
 				key = temp.pop(0)
 				self._entries[key] = temp
 			else:
-				log.warning("can't parse line '%s'" % line)
-		log.debug("Loaded %d entries." % len(self._entries))
+				log.warning("can't parse line '%s'" % line)  # noqa: UP031
+		log.debug("Loaded %d entries." % len(self._entries))  # noqa: UP031
 		f.close()
 
 		# BEGIN JP PATCH
@@ -128,88 +157,55 @@ class CharacterDescriptions(object):
 		self._readings = {}
 		fileName = os.path.join(globalVars.appDir, "locale", locale, "characters.dic")
 		if os.path.isfile(fileName):
-			f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
-			for line in f:
-				if line.isspace() or line.startswith("#"):
-					continue
-				line = line.rstrip("\r\n")
-				temp = line.split("\t")
-				if len(temp) > 1:
-					key = temp.pop(0)
-					code = temp.pop(0)
-					rd = temp.pop(0)
-					if rd.startswith("[") and rd.endswith("]"):
-						self._readings[key] = rd[1:-1]
-					self._entries[key] = temp
-				else:
-					log.warning("can't parse line '%s'" % line)
-			log.debug("Loaded %d readings." % len(self._readings))
-			f.close()
+			for key, fields in _iterNvdajpTabDic(fileName, hasCodeField=True):
+				rd = fields[0]
+				if rd.startswith("[") and rd.endswith("]"):
+					self._readings[key] = rd[1:-1]
+				self._entries[key] = fields[1:]
+			log.debug(f"Loaded {len(self._readings)} readings.")
 		# nvdajp characters.dic end
 
 		# nvdajp cldr emoji
+		# cldr.dic lines have no comment syntax and short lines are common,
+		# so comment skipping and bad-line warnings stay off here.
 		if "cldr" in config.conf["speech"]["symbolDictionaries"]:  # type: ignore
 			fileName = os.path.join(globalVars.appDir, "locale", locale, "cldr.dic")
 			if os.path.isfile(fileName):
 				import unicodedata
 
-				f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
-				for line in f:
-					line = line.rstrip("\r\n")
-					temp = line.split("\t")
-					if len(temp) > 1:
-						key = temp.pop(0)
-						if unicodedata.category(key[0]) not in ("So", "Cn"):
-							continue
-						rd = temp.pop(0)
-						self._readings[key] = rd
-						self._entries[key] = (rd,)
-				f.close()
+				for key, fields in _iterNvdajpTabDic(
+					fileName,
+					skipComments=False,
+					warnOnBadLine=False,
+				):
+					if unicodedata.category(key[0]) not in ("So", "Cn"):
+						continue
+					rd = fields[0]
+					self._readings[key] = rd
+					self._entries[key] = (rd,)
 		# nvdajp cldr emoji end
 
 		# nvdajp users chardesc
-		fileName = os.path.join(globalVars.appArgs.configPath, "characterDescriptions-%s.dic" % locale)
+		fileName = os.path.join(globalVars.appArgs.configPath, f"characterDescriptions-{locale}.dic")
 		if os.path.isfile(fileName):
-			log.debug("Loading users characterDescriptions-%s.dic" % locale)
-			f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
-			for line in f:
-				if line.isspace() or line.startswith("#"):
-					continue
-				line = line.rstrip("\r\n")
-				temp = line.split("\t")
-				if len(temp) > 1:
-					key = temp.pop(0)
-					self._entries[key] = temp
-				else:
-					log.warning("can't parse line '%s'" % line)
+			log.debug(f"Loading users characterDescriptions-{locale}.dic")
+			for key, fields in _iterNvdajpTabDic(fileName):
+				self._entries[key] = fields
 			log.debug("Loaded users characterDescriptions.")
-			f.close()
 		# nvdajp users chardesc end
 
 		# nvdajp users characters
-		fileName = os.path.join(globalVars.appArgs.configPath, "characters-%s.dic" % locale)
+		fileName = os.path.join(globalVars.appArgs.configPath, f"characters-{locale}.dic")
 		if os.path.isfile(fileName):
-			f = codecs.open(fileName, "r", "utf_8_sig", errors="replace")
-			for line in f:
-				if line.isspace() or line.startswith("#"):
-					continue
-				line = line.rstrip("\r\n")
-				temp = line.split("\t")
-				if len(temp) > 1:
-					key = temp.pop(0)
-					code = temp.pop(0)  # noqa: F841
-					rd = temp.pop(0)
-					if rd.startswith("[") and rd.endswith("]"):
-						self._readings[key] = rd[1:-1]
-					self._entries[key] = temp
-				else:
-					log.warning("can't parse line '%s'" % line)
-			log.debug("Loaded users characters.")
-			f.close()
+			for key, fields in _iterNvdajpTabDic(fileName, hasCodeField=True):
+				rd = fields[0]
+				if rd.startswith("[") and rd.endswith("]"):
+					self._readings[key] = rd[1:-1]
+				self._entries[key] = fields[1:]
 		# nvdajp users characters end
 		# END JP PATCH
 
-	def getCharacterDescription(self, character: str) -> Optional[List[str]]:
+	def getCharacterDescription(self, character: str) -> list[str] | None:
 		"""
 		Looks up the given character and returns a list containing all the description strings found.
 		"""
@@ -229,7 +225,7 @@ class CharacterDescriptions(object):
 _charDescLocaleDataMap: LocaleDataMap[CharacterDescriptions] = LocaleDataMap(CharacterDescriptions)
 
 
-def getCharacterDescription(locale: str, character: str) -> Optional[List[str]]:
+def getCharacterDescription(locale: str, character: str) -> list[str] | None:
 	"""
 	Finds a description or examples for the given character, which makes sense in the given locale.
 	@param locale: the locale (language[_COUNTRY]) the description should be for.
@@ -237,7 +233,7 @@ def getCharacterDescription(locale: str, character: str) -> Optional[List[str]]:
 	@return: the found description for the given character
 	"""
 	try:
-		l = _charDescLocaleDataMap.fetchLocaleData(locale)  # noqa: E741
+		l = _charDescLocaleDataMap.fetchLocaleData(locale)
 	except LookupError:
 		if not locale.startswith("en"):
 			return getCharacterDescription("en", character)
@@ -252,7 +248,7 @@ def getCharacterDescription(locale: str, character: str) -> Optional[List[str]]:
 # nvdajp
 def getCharacterReading(locale, character):
 	try:
-		l = _charDescLocaleDataMap.fetchLocaleData(locale)  # noqa: E741
+		l = _charDescLocaleDataMap.fetchLocaleData(locale)
 	except LookupError:
 		return character
 	return l.getCharacterReading(character)
@@ -310,8 +306,8 @@ SPEECH_SYMBOL_PRESERVE_LABELS = {
 SPEECH_SYMBOL_PRESERVES = (SYMPRES_NEVER, SYMPRES_ALWAYS, SYMPRES_NOREP)
 
 
-class SpeechSymbol(object):
-	__slots__ = ("identifier", "pattern", "replacement", "level", "preserve", "displayName")
+class SpeechSymbol:
+	__slots__ = ("displayName", "identifier", "level", "pattern", "preserve", "replacement")
 
 	def __init__(
 		self,
@@ -333,12 +329,9 @@ class SpeechSymbol(object):
 		attrs = []
 		for attr in self.__slots__:
 			attrs.append(
-				"{name}={val!r}".format(
-					name=attr,
-					val=getattr(self, attr),
-				),
+				f"{attr}={getattr(self, attr)!r}",
 			)
-		return "SpeechSymbol(%s)" % ", ".join(attrs)
+		return "SpeechSymbol(%s)" % ", ".join(attrs)  # noqa: UP031
 
 
 class SpeechSymbols:
@@ -380,10 +373,7 @@ class SpeechSymbols:
 						raise ValueError
 				except ValueError:
 					log.warning(
-						"Invalid line in file {file}: {line}".format(
-							file=fileName,
-							line=line,
-						),
+						f"Invalid line in file {fileName}: {line}",
 					)
 
 	def _loadComplexSymbol(self, line: str) -> None:
@@ -404,7 +394,7 @@ class SpeechSymbols:
 		except KeyError:
 			raise ValueError
 
-	IDENTIFIER_ESCAPES_INPUT = {
+	IDENTIFIER_ESCAPES_INPUT = {  # noqa: RUF012
 		"0": "\0",
 		"t": "\t",
 		"n": "\n",
@@ -414,21 +404,21 @@ class SpeechSymbols:
 		"#": "#",
 		"\\": "\\",
 	}
-	IDENTIFIER_ESCAPES_OUTPUT = {v: k for k, v in IDENTIFIER_ESCAPES_INPUT.items()}
-	LEVEL_INPUT = {
+	IDENTIFIER_ESCAPES_OUTPUT = {v: k for k, v in IDENTIFIER_ESCAPES_INPUT.items()}  # noqa: RUF012
+	LEVEL_INPUT = {  # noqa: RUF012
 		"none": SymbolLevel.NONE,
 		"some": SymbolLevel.SOME,
 		"most": SymbolLevel.MOST,
 		"all": SymbolLevel.ALL,
 		"char": SymbolLevel.CHAR,
 	}
-	LEVEL_OUTPUT = {v: k for k, v in LEVEL_INPUT.items()}
-	PRESERVE_INPUT = {
+	LEVEL_OUTPUT = {v: k for k, v in LEVEL_INPUT.items()}  # noqa: RUF012
+	PRESERVE_INPUT = {  # noqa: RUF012
 		"never": SYMPRES_NEVER,
 		"always": SYMPRES_ALWAYS,
 		"norep": SYMPRES_NOREP,
 	}
-	PRESERVE_OUTPUT = {v: k for k, v in PRESERVE_INPUT.items()}
+	PRESERVE_OUTPUT = {v: k for k, v in PRESERVE_INPUT.items()}  # noqa: RUF012
 
 	def _loadSymbol(self, line):
 		line = line.split("\t")
@@ -481,13 +471,13 @@ class SpeechSymbols:
 			if self.complexSymbols:
 				f.write("complexSymbols:\r\n")
 				for identifier, pattern in self.complexSymbols.items():
-					f.write("%s\t%s\r\n" % (identifier, pattern))
+					f.write("%s\t%s\r\n" % (identifier, pattern))  # noqa: UP031
 				f.write("\r\n")
 
 			if self.symbols:
 				f.write("symbols:\r\n")
 				for symbol in self.symbols.values():
-					f.write("%s\r\n" % self._saveSymbol(symbol))
+					f.write("%s\r\n" % self._saveSymbol(symbol))  # noqa: UP031
 
 	def _saveSymbolField(self, output, outputMap=None):
 		if output is None:
@@ -502,9 +492,12 @@ class SpeechSymbols:
 	def _saveSymbol(self, symbol):
 		identifier = symbol.identifier
 		try:
-			identifier = "\\%s%s" % (
-				self.IDENTIFIER_ESCAPES_OUTPUT[identifier[0]],
-				identifier[1:],
+			identifier = (
+				"\\%s%s"  # noqa: UP031
+				% (
+					self.IDENTIFIER_ESCAPES_OUTPUT[identifier[0]],
+					identifier[1:],
+				)
 			)
 		except KeyError:
 			pass
@@ -522,7 +515,7 @@ class SpeechSymbols:
 				# This field specifies a value, so no more fields can be stripped.
 				break
 		if symbol.displayName:
-			fields.append("# %s" % symbol.displayName)
+			fields.append("# %s" % symbol.displayName)  # noqa: UP031
 		return "\t".join(fields)
 
 
@@ -629,10 +622,7 @@ class SpeechSymbolProcessor:
 			if symbol.replacement is None:
 				# Symbols without a replacement specified are useless.
 				log.warning(
-					"Replacement not defined in locale {locale} for symbol: {symbol}".format(
-						symbol=symbol.identifier,
-						locale=self.locale,
-					),
+					f"Replacement not defined in locale {self.locale} for symbol: {symbol.identifier}",
 				)
 				del symbols[symbol.identifier]
 				try:
@@ -655,7 +645,7 @@ class SpeechSymbolProcessor:
 				symbol.displayName = symbol.identifier
 
 		# Make characters into a regexp character set.
-		characters = "[%s]" % re.escape("".join(characters))
+		characters = "[%s]" % re.escape("".join(characters))  # noqa: UP031
 		# The simple symbols must be ordered longest first so that the longer symbols will match.
 		multiChars.sort(key=lambda identifier: len(identifier), reverse=True)
 
@@ -663,16 +653,13 @@ class SpeechSymbolProcessor:
 		patterns: list[str] = []
 		# Complex symbols.
 		# Each complex symbol has its own named group so we know which symbol matched.
-		patterns.extend(
-			"(?P<c{index}>{pattern})".format(index=index, pattern=symbol.pattern)
-			for index, symbol in enumerate(complexSymbolsList)
-		)
+		patterns.extend(f"(?P<c{index}>{symbol.pattern})" for index, symbol in enumerate(complexSymbolsList))
 		patterns.extend(
 			[
 				# Strip repeated spaces from the end of the line to stop them from being picked up by repeated.
 				r"(?P<rstripSpace>  +$)",
 				# Repeated characters: more than 3 repeats.
-				r"(?P<repeated>(?P<repTmp>%s)(?P=repTmp){3,})" % characters,
+				r"(?P<repeated>(?P<repTmp>%s)(?P=repTmp){3,})" % characters,  # noqa: UP031
 			],
 		)
 		# Simple symbols.
@@ -688,7 +675,7 @@ class SpeechSymbolProcessor:
 		try:
 			self._regexp = re.compile(pattern, re.UNICODE)
 		except re.error as e:
-			log.error("Invalid complex symbol regular expression in locale %s: %s" % (locale, e))
+			log.error("Invalid complex symbol regular expression in locale %s: %s" % (locale, e))  # noqa: UP031
 			raise LookupError
 
 	def _replaceGroups(self, m: re.Match, string: str) -> str:
@@ -712,7 +699,7 @@ class SpeechSymbolProcessor:
 				elif char >= "0" and char <= "9":
 					result += m.group(m.lastindex + ord(char) - ord("0"))
 				else:
-					log.error("Invalid reference \\%string" % char)
+					log.error("Invalid reference \\%string" % char)  # noqa: UP031
 					raise LookupError
 				in_escape = False
 		if in_escape:
@@ -731,7 +718,7 @@ class SpeechSymbolProcessor:
 			text = m.group()
 			symbol = self.computedSymbols[text[0]]
 			if self._level >= symbol.level:
-				return "  {count} {char} ".format(count=len(text), char=symbol.replacement)
+				return f"  {len(text)} {symbol.replacement} "
 			elif symbol.preserve in [SYMPRES_ALWAYS, SYMPRES_NOREP]:
 				return text
 			else:
@@ -757,7 +744,7 @@ class SpeechSymbolProcessor:
 			else:
 				suffix = " "
 			if self._level >= symbol.level and replacement:
-				return " {repl}{suffix}".format(repl=replacement, suffix=suffix)
+				return f" {replacement}{suffix}"
 			else:
 				return suffix
 
@@ -953,10 +940,10 @@ class SymbolDictionaryDefinition:
 		else:
 			try:
 				symbols.load(self.path.format(locale=locale), self.allowComplexSymbols)
-			except IOError:
+			except OSError:
 				if raiseOnError:
 					raise
-				log.error(f"Error loading {self.name!r} data for locale {locale!r}", exc_info=True)
+				log.error(f"Error loading {self.name!r} data for locale {locale!r}", exc_info=True)  # noqa: G201
 		return symbols
 
 	@cached_property

@@ -5,8 +5,7 @@
 
 """NVDAObjects for the Chromium browser project"""
 
-import typing
-from typing import Dict, Optional
+import typing  # noqa: I001
 from comtypes import COMError
 
 import config
@@ -21,9 +20,9 @@ from logHandler import log
 if typing.TYPE_CHECKING:
 	# F401 imported but unused, actually used as a string within type annotation (to avoid having to import
 	# at run time)
-	from treeInterceptorHandler import TreeInterceptor  # noqa: F401
+	from treeInterceptorHandler import TreeInterceptor
 
-supportedAriaDetailsRoles: Dict[str, Optional[controlTypes.Role]] = {
+supportedAriaDetailsRoles: dict[str, controlTypes.Role | None] = {
 	"unknown": None,  # no explicit role, should be reported as "details"
 	"comment": controlTypes.Role.COMMENT,
 	"doc-footnote": controlTypes.Role.FOOTNOTE,
@@ -99,7 +98,7 @@ class ChromeVBuf(GeckoVBuf):
 
 
 class Document(ia2Web.Document):
-	def _get_treeInterceptorClass(self) -> typing.Type["TreeInterceptor"]:
+	def _get_treeInterceptorClass(self) -> type["TreeInterceptor"]:
 		shouldLoadVBufOnBusyFeatureFlag = bool(
 			config.conf["virtualBuffers"]["loadChromiumVBufOnBusyState"],
 		)
@@ -203,20 +202,14 @@ def findExtraOverlayClasses(obj, clsList):
 	# Mirror Mozilla's TextLeaf detection so that mouse tracking on
 	# Chromium-based browsers can skip over transparent text leaf nodes.
 	# See nvaccess/nvda#8076.
-	if (
-		isinstance(obj.IAccessibleObject, IA2.IAccessible2)
-		and obj.IAccessibleRole == oleacc.ROLE_SYSTEM_TEXT
-	):
+	if isinstance(obj.IAccessibleObject, IA2.IAccessible2) and obj.IAccessibleRole == oleacc.ROLE_SYSTEM_TEXT:
 		iaStates = obj.IAccessibleStates
 		# Text leaves are never focusable.
 		# Not unavailable excludes disabled editable text fields (which also aren't focusable).
 		if not (
-			iaStates & oleacc.STATE_SYSTEM_FOCUSABLE
-			or iaStates & oleacc.STATE_SYSTEM_UNAVAILABLE
-		):
-			# This excludes a non-focusable @role="textbox".
-			if not (obj.IA2States & IA2.IA2_STATE_EDITABLE):
-				clsList.append(TextLeaf)
+			iaStates & oleacc.STATE_SYSTEM_FOCUSABLE or iaStates & oleacc.STATE_SYSTEM_UNAVAILABLE
+		) and not (obj.IA2States & IA2.IA2_STATE_EDITABLE):
+			clsList.append(TextLeaf)
 	# END JP PATCH
 	if (
 		obj.role == controlTypes.Role.LISTITEM
