@@ -727,7 +727,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				and marker_path.read_text(encoding="utf-8") == marker_expected
 				and (dic_dst / "sys.dic").exists()
 			):
-				print(f"jtalkSync: prebuilt dictionary already up to date (tag={pin['tag']}); skipping fetch.")
+				print(
+					f"jtalkSync: prebuilt dictionary already up to date (tag={pin['tag']}); skipping fetch.",
+				)
 				return 0
 
 			url = f"https://github.com/{pin['repo']}/releases/download/{pin['tag']}/{pin['asset']}"
@@ -763,10 +765,6 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			marker_path.write_text(marker_expected, encoding="utf-8")
 
 			print(f"jtalkSync: prebuilt dictionary installed (tag={pin['tag']}, sha256={digest}).")
-			print(
-				"jtalkSync: note: the prebuilt dictionary omits bep-eng.dic (GPL); "
-				"see projectDocs/jp/vendor-submodules.md.",
-			)
 			return 0
 
 		def _fetch_prebuilt_tool(repo_root: Path, dest_path: Path) -> int:
@@ -867,7 +865,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			should_rebuild_dic = not (has_dic and is_utf8_dic and is_valid_cp)
 			if should_rebuild_dic:
 				print("jtalkSync: dictionary missing or not UTF-8; rebuilding via make_jdic.py.")
-				print(f"jtalkSync: repo_root={repo_root!r} builder_script_path.exists()={builder_script_path.exists()!r}")
+				print(
+					f"jtalkSync: repo_root={repo_root!r} builder_script_path.exists()={builder_script_path.exists()!r}",
+				)
 
 		def _build_mecab_bin(machine: str) -> int:
 			# Makefile.mak is in src subdirectory
@@ -931,7 +931,9 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						try:
 							make_jdic_mecab_bin.parent.mkdir(parents=True, exist_ok=True)
 							shutil.copy2(mecab_dict_index_bin, make_jdic_mecab_bin)
-							print(f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin} (for build_userdic.py)")
+							print(
+								f"jtalkSync: copied mecab-dict-index.exe to {make_jdic_mecab_bin} (for build_userdic.py)",
+							)
 						except Exception as e:
 							print(f"jtalkSync: failed to copy mecab-dict-index.exe for build_userdic.py: {e}")
 					else:
@@ -1374,6 +1376,24 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					for path in lib_version_dir.glob(pattern):
 						if path.is_file():
 							candidates.append(path)
+
+		# If Azure Key Vault signing is enabled, also sign .pyd files in dist/ to satisfy
+		# Windows Smart App Control (SAC) requirements (#737).
+		# AzureSignTool skips already-signed files (-s flag).
+		use_azure_kv = bool(
+			env.get("useAzureKvSigning")
+			or (os.environ.get("AZURE_KV_SIGNING", "") not in ("", "0") and not env.get("skipSigning")),
+		)
+		if use_azure_kv:
+			# Collect .pyd files from dist/ root, dist/include/, and dist/lib/<version>/
+			pyd_patterns = ["*.pyd", "include/**/*.pyd"]
+			if build_version:
+				pyd_patterns.append(f"lib/{build_version}/**/*.pyd")
+			for pattern in pyd_patterns:
+				for path in dist_dir.glob(pattern):
+					if path.is_file() and path not in candidates:
+						candidates.append(path)
+
 		# Note: nvdaHelper*.dll files (IAccessible2proxy.dll, ISimpleDOM.dll, nvdaHelperRemote.dll,
 		# nvdaHelperRemoteLoader.exe, UIARemote.dll, nvdaHelperLocal.dll, nvdaHelperLocalWin10.dll)
 		# are signed during source build (see nvdaHelper/archBuild_sconscript), but may lose signatures
@@ -1395,21 +1415,39 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			return 1
 		# Perform signing via upstream signExec
 		signed_count = 0
-		for path in candidates:
-			try:
-				print(f"jpCertExtras: signing {path}")
-				node = env.File(str(path))
-				rc = signExec([node], [node], env)
-				if rc != 0:
-					print(f"jpCertExtras: ERROR - signing failed for {path} (rc={rc})")
-					stamp_path.write_text(f"fail:{path}", encoding="utf-8")
-					return rc
-				signed_count += 1
-				print(f"jpCertExtras: successfully signed {path}")
-			except Exception as e:
-				print(f"jpCertExtras: ERROR - exception while signing {path}: {e}")
-				stamp_path.write_text(f"error:{path}:{e}", encoding="utf-8")
-				return 1
+		if candidates:
+			if use_azure_kv:
+				# Pass all candidates in a single call so signExecAzureKv can batch-sign them via -FileList
+				print(f"jpCertExtras: batch-signing {len(candidates)} file(s) with Azure Key Vault")
+				nodes = [env.File(str(p)) for p in candidates]
+				try:
+					rc = signExec(nodes, nodes, env)
+					if rc != 0:
+						print(f"jpCertExtras: ERROR - batch signing failed (rc={rc})")
+						stamp_path.write_text("fail:batch-signing", encoding="utf-8")
+						return rc
+					signed_count = len(candidates)
+					print(f"jpCertExtras: successfully batch-signed {signed_count} file(s)")
+				except Exception as e:
+					print(f"jpCertExtras: ERROR - exception while batch signing: {e}")
+					stamp_path.write_text(f"error:batch-signing:{e}", encoding="utf-8")
+					return 1
+			else:
+				for path in candidates:
+					try:
+						print(f"jpCertExtras: signing {path}")
+						node = env.File(str(path))
+						rc = signExec([node], [node], env)
+						if rc != 0:
+							print(f"jpCertExtras: ERROR - signing failed for {path} (rc={rc})")
+							stamp_path.write_text(f"fail:{path}", encoding="utf-8")
+							return rc
+						signed_count += 1
+						print(f"jpCertExtras: successfully signed {path}")
+					except Exception as e:
+						print(f"jpCertExtras: ERROR - exception while signing {path}: {e}")
+						stamp_path.write_text(f"error:{path}:{e}", encoding="utf-8")
+						return 1
 		if signed_count > 0:
 			print(f"jpCertExtras: signed {signed_count} file(s)")
 		else:
@@ -1605,7 +1643,7 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 				_check(exe, allow_ignored=False)
 				if dist_dir.exists():
 					dist_files: list[Path] = []
-					for pattern in ("**/*.exe", "**/*.dll"):
+					for pattern in ("**/*.exe", "**/*.dll", "**/*.pyd"):
 						dist_files.extend(dist_dir.glob(pattern))
 					dist_files = [p for p in dist_files if p.is_file()]
 					dist_files.sort(key=str)

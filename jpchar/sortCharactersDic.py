@@ -1,4 +1,3 @@
-# coding: utf-8
 # source/local/ja/characters.dic を Unicode 番号順に並べる
 
 FILENAME = r"..\source\locale\ja\characters.dic"
@@ -6,9 +5,7 @@ with open(FILENAME) as file:
 	items = {}
 	for src in file:
 		src = src.rstrip().decode("utf-8")
-		if not src:
-			continue
-		elif src[0] == "#":
+		if not src or src[0] == "#":
 			continue
 		elif src[0:2] == "\\#":
 			line = "#" + src[2:]

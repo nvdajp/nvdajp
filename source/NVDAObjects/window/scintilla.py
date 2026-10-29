@@ -4,8 +4,9 @@
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 
-import ctypes
+import ctypes  # noqa: I001
 import textInfos
+
 import textInfos.offsets
 import winKernel
 import winUser
@@ -348,7 +349,7 @@ class Scintilla(EditableTextWithAutoSelectDetection, Window):
 		return controlTypes.Role.EDITABLETEXT
 
 	def _get_states(self):
-		states = super(Scintilla, self)._get_states()
+		states = super()._get_states()
 		# Scintilla controls are always multiline.
 		states.add(controlTypes.State.MULTILINE)
 		return states

@@ -150,5 +150,6 @@ JTalk 辞書や日本語点字関連の CI 不安定化を調べるときは、G
 * `scons.bat jtalkSync`: JTalk 辞書を検査し、必要に応じて再生成する。
 * `scons.bat source`: NVDA 本体をビルドする。
 * `scons.bat synthDriverHost32Runtime`: 32bit SAPI 用 synth driver host をビルドする（`source` の前に実行）。
+  * **注意（Git の未コミット差分）**: 実行時に `setup-runtime.py` が `source/_bridge/runtimes/synthDriverHost/speech/__init__.py` を py2exe 依存関係解決用の最小限オーバーレイで動的に上書きするため、Git で `modified` 差分が発生します。マージやブランチ切り替え作業時には安全に一時退避（`git stash`）または破棄（`git restore`）して差し支えありません（次回ビルド時に再生成されます）。
 
 詳細は `projectDocs/jp/vendor-submodules.md` を参照すること。

@@ -11,8 +11,7 @@ import _checkCharDesc as cd
 def convert(sy_file, outfile):
 	sy, src = cd.read_symbol_file(sy_file, returnSource=True)
 	with open(outfile, "w") as of:
-		for line in src:
-			of.write(line.encode("utf-8") + "\n")
+		of.writelines(line.encode("utf-8") + "\n" for line in src)
 
 
 convert(r"..\..\srt\ja\symbols-newRevisions\11146\symbols.dic", "_en.dic")

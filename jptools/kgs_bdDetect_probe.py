@@ -116,7 +116,7 @@ def _decode_bytes(data: bytes, encodings: list[str] | None = None) -> tuple[str,
 
 	best_text = ""
 	best_enc = "utf-8(replace)"
-	best_score = -10**9
+	best_score = -(10**9)
 	for enc in candidates:
 		try:
 			text = data.decode(enc)

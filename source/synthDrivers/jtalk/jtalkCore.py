@@ -1,10 +1,9 @@
 # jtalkCore.py
-# -*- coding: utf-8 -*-
 # Copyright (C) 2013-2019 Takuya Nishimoto
 
 import os
 from pathlib import Path
-from typing import Callable, Optional
+from collections.abc import Callable
 from ctypes import (
 	POINTER,
 	Structure,
@@ -35,7 +34,7 @@ try:
 		MecabFeatures,  # noqa: F401
 		NonblockingMecabFeatures,  # noqa: F401
 	)
-	from .text2mecab import text2mecab  # noqa: F401
+	from .text2mecab import text2mecab
 except (ImportError, ValueError):
 	from mecab import (  # type: ignore
 		FEATURE_ptr_array_ptr,
@@ -300,7 +299,7 @@ FILENAME = c_char * FNLEN
 FILENAME_ptr = POINTER(FILENAME)
 FILENAME_ptr_ptr = POINTER(FILENAME_ptr)
 
-libjt: Optional[CDLL] = None
+libjt: CDLL | None = None
 njd: NJD = NJD()
 jpcommon: JPCommon = JPCommon()
 engine: HTS_Engine = HTS_Engine()
@@ -499,7 +498,7 @@ def libjt_clear() -> None:
 	libjt.HTS_Engine_clear(engine)
 
 
-libjt_on_done: Optional[Callable[[], None]] = None
+libjt_on_done: Callable[[], None] | None = None
 
 
 def libjt_set_on_done(func: Callable[[], None]) -> None:
@@ -564,7 +563,7 @@ def libjt_synthesis(
 		if feed_func_:
 			try:
 				feed_func_(buf)
-			except (WindowsError, RuntimeError):
+			except (OSError, RuntimeError):
 				pass
 		if libjt_on_done:
 			libjt_on_done()

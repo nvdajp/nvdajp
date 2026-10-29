@@ -43,7 +43,7 @@ class JpBrailleTests(unittest.TestCase):
 		"""translator_louis 単体: liblouis en-ueb-g2.ctb で英文を UEB G2 に変換。louis 未ビルド時はスキップ。"""
 		count, outfile = jpBrailleRunner.run_translator_louis()
 		self.assertEqual(
-			count, 0, "translator_louis: %d error(s). see %s (scons source required)" % (count, outfile)
+			count, 0, "translator_louis: %d error(s). see %s (scons source required)" % (count, outfile),
 		)
 
 	def test_eng2_ueb_g2(self):
@@ -60,6 +60,24 @@ class JpBrailleTests(unittest.TestCase):
 		"""nabcc+2級併用の回帰テスト。nabcc=True で louis 2級パイプラインを実行し、クラッシュせず正常終了することを検証。louis 未ビルド時はスキップ。"""
 		count, outfile = jpBrailleRunner.run_eng2_nabcc_regression()
 		self.assertEqual(count, 0, "eng2_nabcc_regression: %d error(s). see %s" % (count, outfile))
+
+	def test_bullet_braille_pattern(self):
+		"""List bullet (•, U+2022) should map to U+2810 (dot 5) in braille (#723)."""
+		import translator2
+
+		for text, expected in [
+			("•", "⠐"),
+			("•項目", "⠐ ⠪⠒⠾⠩"),
+			("• 項目", "⠐ ⠪⠒⠾⠩"),
+			("• item", "⠐ ⠰⠊⠞⠑⠍"),
+			("• 1番目", "⠐ ⠼⠁⠐⠥⠴⠿"),
+		]:
+			braille, inpos, outpos, cursor = translator2.translate(text, unicodeIO=True)
+			self.assertEqual(
+				braille,
+				expected,
+				f"Bullet braille translation failed for {text!r}: expected {expected!r}, got {braille!r}",
+			)
 
 
 class MecabTests(unittest.TestCase):
@@ -82,7 +100,7 @@ class MecabTests(unittest.TestCase):
 		baseSize = result["base"][0]
 		userSize, userReading, userBraille = result["user"]
 		self.assertGreater(
-			baseSize, 1, "base dictionary should split the sample word: %r" % (result["base"],)
+			baseSize, 1, "base dictionary should split the sample word: %r" % (result["base"],),
 		)
 		self.assertEqual(userSize, 1, "user dic entry not selected: %r" % (result["user"],))
 		# The braille segmentation must match the harness.json entry for the
@@ -125,6 +143,23 @@ class JtalkTests(unittest.TestCase):
 		self.assertTrue(
 			result["digitMerged"],
 			"njd_set_digit failed to merge 12; labels=%r" % result["labelsSnippet"],
+		)
+
+	def test_jtalk_long_unknown_run_feature_bounds(self):
+		"""Security regression: MeCab feature slots are fixed 2000-byte
+		heap buffers (mecab.py FELEN). A long unknown-word run is re-parsed
+		character by character in Mecab_correctFeatures (PATTERN 1/2), so
+		the corrected features must stay within the slot size instead of
+		overflowing the heap. The braille pattern characters here expand to
+		~14 kana each, which amplifies the reading the most.
+		"""
+		result = jtalk_pipeline_probe.probe_text("∫⣿♪" * 200)
+		self.assertTrue(result["hasWave"])
+		self.assertLess(
+			result["maxFeatureLen"],
+			2000,
+			"corrected MeCab feature exceeded the fixed slot size: %r"
+			% result["maxFeatureLen"],
 		)
 
 

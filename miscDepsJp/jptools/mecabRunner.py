@@ -185,20 +185,41 @@ def runTasks(enableUserDic=False):
 			item = i
 		clear_morph_buffer()
 		result = get_reading(item[0])
-		if item[1] is not None and item[1] and result[0] != item[1]:
+		# An expectation may be a list of accepted values. This keeps a task valid
+		# when the base dictionary legitimately gives different readings depending
+		# on how it was built (e.g. "roma" is not a bep-eng.dic entry, so the
+		# local build reads it ロマ while the CMUdict-based prebuilt reads ロウマ).
+		expected_reading = _as_expected_list(item[1])
+		if expected_reading and result[0] not in expected_reading:
 			__print("input:    " + item[0])
-			__print("reading expected: " + item[1])
+			__print("reading expected: " + " or ".join(expected_reading))
 			__print("reading result:   " + result[0])
 			print_morph_buffer()
 			count += 1
-		if len(item) > 2 and item[2] and result[1] != item[2]:
+		expected_braille = _as_expected_list(item[2]) if len(item) > 2 else []
+		if expected_braille and result[1] not in expected_braille:
 			__print("input:            " + item[0])
-			__print("braille expected: " + item[2])
+			__print("braille expected: " + " or ".join(expected_braille))
 			__print("braille result:   " + result[1])
 			print_morph_buffer()
 			count += 1
 
 	return count
+
+
+def _as_expected_list(value):
+	"""Normalize a harness expectation to a list of accepted strings.
+
+	A task may give a single string (the common case) or a list of strings when
+	more than one reading is acceptable. None and empty values yield [].
+	"""
+	if value is None:
+		return []
+	if isinstance(value, str):
+		return [value] if value else []
+	if isinstance(value, (list, tuple)):
+		return [v for v in value if v]
+	return []
 
 
 if __name__ == "__main__":

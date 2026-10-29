@@ -394,11 +394,20 @@ The BM Utility is used if it is installed to the computer. This driver is tested
 For USB connection, virtual serial driver must also be installed.
 The device should be configured to use 9600BPS connection speed for virtual serial driver.
 
-This driver allows you to choose connection port from the available serial ports and the detected BM series devices via USB or Bluetooth connection.
+This driver allows you to choose connection port from "Automatic", "USB", "Bluetooth", and individual COM ports.
 
-If NVDA's braille display driver is set to "automatic", NVDA may repeat the automatic detection of the braille display of KGS Corporation.
-This is especially likely in situations where you've plugged in a braille display of KGS Corporation, but it's not currently plugged in, especially with the Bluetooth connections.
-To work around this issue, set NVDA to "No Braille" or disable Bluetooth in the Windows settings.
+#### Avoiding connection delay and repeated beeps
+
+When braille display or port is set to "Automatic", NVDA may experience startup delays and repeated connection tones (rising beeps) due to communication timeouts on disconnected Bluetooth virtual COM ports.
+
+To resolve or avoid this issue, you can use the following options:
+
+1. **Explicit port selection**:
+   - When using a USB connection, select **"USB"** (or the specific COM port) instead of "Automatic" in Braille settings. This skips scanning Bluetooth ports and eliminates timeout delays.
+2. **Disable Bluetooth automatic detection**:
+   - Uncheck **"Include Bluetooth devices in automatic detection"** in the KGS driver settings within Braille settings. This prevents background Bluetooth scanning even when Braille display is set to "Automatic".
+3. **Connection tone volume adjustment / mute**:
+   - Use the **"Connection tone volume"** slider in the KGS driver settings to adjust the volume of connection and probe tones. Setting it to **0%** completely mutes the tones.
 
 KGS Braille Memo driver supports following commands:
 

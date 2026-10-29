@@ -1,5 +1,4 @@
 # _bgthread.py
-# -*- coding: utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # Copyright (C) 2006-2010 NVDA Contributors <http://www.nvda-project.org/>
 # Copyright (C) 2010-2012 Takuya Nishimoto (nishimotz.com)
@@ -9,7 +8,8 @@
 #
 # based on NVDA (synthDrivers/_espeak.py)
 
-from typing import Callable, Any
+from typing import Any
+from collections.abc import Callable
 from logHandler import log
 import threading
 

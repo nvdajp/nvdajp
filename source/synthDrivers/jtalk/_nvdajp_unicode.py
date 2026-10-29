@@ -1,5 +1,4 @@
 # _nvdajp_unicode.py (compatibility shim over the vendored libkuraji)
-# -*- coding: utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -16,4 +15,4 @@ except ImportError:
 	sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 	from libkuraji.unicodeutil import unicode_normalize, nfkc_normalize_with_map
 
-__all__ = ["unicode_normalize", "nfkc_normalize_with_map"]
+__all__ = ["nfkc_normalize_with_map", "unicode_normalize"]

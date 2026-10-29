@@ -13,7 +13,7 @@ NVDA日本語版では、標準のNVDAに加えて以下の拡張APIを提供し
 ## NVDA日本語版 2013.1jp 拡張API
 
 音声制御API:
-- nvdaController_isSpeaking(): 音声出力中かどうかの確認 (戻り値: 0=停止中, 1=出力中)
+- nvdaController_isSpeakingJp(): 音声出力中かどうかの確認 (従来の 0引数互換 API、戻り値: 0=停止中, 1=出力中)
 - nvdaController_getPitch(): 現在の音声ピッチ値の取得 (戻り値: ピッチ値)
 - nvdaController_setPitch(const int nPitch): 音声ピッチ値の変更 (範囲: 0-100)
 - nvdaController_getRate(): 現在の音声速度値の取得 (戻り値: 速度値)
@@ -26,6 +26,14 @@ NVDA日本語版では、標準のNVDAに加えて以下の拡張APIを提供し
   - mode = 0: スリープモード解除
   - mode = 1: スリープモード設定
 
+## NVDA 2026.3+ ControllerClient API 3.0 (NvdaController3, 本家共通)
+
+本家 NVDA 2026.3 以降で追加された音声状態取得 API:
+- nvdaController_isSpeaking(boolean* speaking): 音声出力中かどうかの確認
+  - 戻り値: 成功時 0 (error_status_t)
+  - パラメータ:
+    - speaking: 発話状態を受け取るブール型ポインタ (TRUE=発話中, FALSE=停止)
+
 ## 使用例
 
 ```c
@@ -35,8 +43,16 @@ NVDA日本語版では、標準のNVDAに加えて以下の拡張APIを提供し
 if (nvdaController_testIfRunning() == 0) {
     nvdaController_speakText(L"こんにちは");
     
-    // 音声出力の確認
-    int speaking = nvdaController_isSpeaking();
+    // 音声出力の確認（方式A: 本家 2026.3+ API 3.0 標準）
+    boolean speaking = FALSE;
+    if (nvdaController_isSpeaking(&speaking) == 0 && speaking) {
+        // 発話中
+    }
+
+    // 音声出力の確認（方式B: 日本語版 0引数互換 API）
+    if (nvdaController_isSpeakingJp()) {
+        // 発話中
+    }
     
     // ピッチと速度の調整
     int currentPitch = nvdaController_getPitch();

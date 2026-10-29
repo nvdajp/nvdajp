@@ -61,7 +61,7 @@ _PRE_NFKC_MAP = str.maketrans(
 		"�": "",  # replacement character
 		# converted to fullwidth by Mecab_text2mecab(); NFKC cannot restore it
 		"．": ".",  # fullwidth full stop
-	}
+	},
 )
 
 # characters folded after NFKC normalization
@@ -82,7 +82,7 @@ _POST_NFKC_MAP = str.maketrans(
 		"ò": "o", "ó": "o", "ô": "o", "ö": "o", "ø": "o",
 		"ù": "u", "ú": "u", "û": "u", "ü": "u", "ý": "y", "ÿ": "y",
 		"Œ": "OE", "œ": "oe", "Ÿ": "Y",
-	}
+	},
 )
 
 

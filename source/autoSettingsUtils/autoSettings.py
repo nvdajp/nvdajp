@@ -203,7 +203,7 @@ class AutoSettings(AutoPropertyObject):
 			val = conf[setting.id]
 			# Ensure proper type conversion for settings when config validation may have failed
 			if isinstance(val, str):
-				from .driverSetting import NumericDriverSetting, BooleanDriverSetting
+				from .driverSetting import BooleanDriverSetting, NumericDriverSetting
 
 				if isinstance(setting, NumericDriverSetting):
 					try:

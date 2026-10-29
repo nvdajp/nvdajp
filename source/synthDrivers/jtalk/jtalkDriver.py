@@ -1,11 +1,11 @@
 # jtalkDriver.py
-# -*- coding: utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # speech engine nvdajp_jtalk
 # Copyright (C) 2010-2019 Takuya Nishimoto (nishimotz.com)
 
 from logHandler import log
-from typing import Any, Callable, Optional, cast
+from typing import Any, cast
+from collections.abc import Callable
 
 import queue as Queue
 
@@ -15,7 +15,7 @@ import copy
 import nvwave
 from pathlib import Path
 
-from .jtalkCore import (  # noqa: E402
+from .jtalkCore import (
 	libjt_initialize,
 	libjt_load,
 	libjt_refresh,
@@ -25,7 +25,7 @@ from .jtalkCore import (  # noqa: E402
 	libjt_synthesis,
 	libjt_version,
 )
-from .mecab import (  # noqa: E402
+from .mecab import (
 	mecab,
 	Mecab_initialize,
 	Mecab_print,
@@ -33,12 +33,12 @@ from .mecab import (  # noqa: E402
 	Mecab_utf8_to_cp932,
 	mecab_analyze_and_correct,
 )
-from .text2mecab import text2mecab  # noqa: E402
-from . import jtalkPrepare  # noqa: E402
-from ..jtalk._nvdajp_unicode import unicode_normalize  # noqa: E402
-from ..jtalk import _bgthread  # noqa: E402
-import config  # noqa: E402
-from .jtalkDir import jtalk_dir, dic_dir, user_dics  # noqa: E402
+from .text2mecab import text2mecab
+from . import jtalkPrepare
+from ..jtalk._nvdajp_unicode import unicode_normalize
+from ..jtalk import _bgthread
+import config
+from .jtalkDir import jtalk_dir, dic_dir, user_dics
 
 DEBUG = False
 
@@ -103,12 +103,12 @@ _jtalk_voices = [
 	},
 ]
 default_jtalk_voice = _jtalk_voices[3]  # V4
-voice_args: Optional[dict[str, Any]] = None
+voice_args: dict[str, Any] | None = None
 
 
 class VoiceProperty(baseObject.AutoPropertyObject):
 	def __init__(self):
-		super(VoiceProperty, self).__init__()
+		super().__init__()
 
 
 # if samp_rate==16000: normal speed = 80samples period
@@ -121,13 +121,13 @@ thres2_level: int = 128
 speaker_attenuation: float = 1.0
 
 logwrite: Callable[[str], None] = log.debug
-lastIndex: Optional[int] = None
-currIndex: Optional[int] = None
-player: Optional[nvwave.WavePlayer] = None
+lastIndex: int | None = None
+currIndex: int | None = None
+player: nvwave.WavePlayer | None = None
 # 0: idle, 2: JTalk or silence. Value 1 belonged to the removed eSpeak
 # bridge; 2 is kept as is so that log output stays comparable.
 currentEngine: int = 0
-indexReachedFunc: Optional[Callable[[Optional[int]], None]] = None
+indexReachedFunc: Callable[[int | None], None] | None = None
 
 
 def isSpeaking() -> bool:
@@ -250,7 +250,7 @@ def _break(time_ms: int) -> None:
 
 
 indexCommands: list[int] = []
-lastIndexCommand: Optional[int] = None
+lastIndexCommand: int | None = None
 
 
 def _processIndexReached() -> None:
@@ -366,7 +366,8 @@ def pause(switch: bool) -> None:
 
 
 def initialize(
-	voice: dict[str, Any] = default_jtalk_voice, onIndexReached: Callable[[int | None], None] | None = None
+	voice: dict[str, Any] = default_jtalk_voice,
+	onIndexReached: Callable[[int | None], None] | None = None,
 ) -> None:
 	global player, voice_args
 	global speaker_attenuation

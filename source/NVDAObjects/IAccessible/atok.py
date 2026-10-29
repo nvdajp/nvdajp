@@ -1,14 +1,16 @@
 # NVDAObjects/IAccessible/atok.py
 
-import tones
-from . import IAccessible
-import controlTypes
-import speech
-import api
 import time
-import winUser
-import mouseHandler
+
+import api
 import config
+import controlTypes
+import mouseHandler
+import speech
+import tones
+import winUser
+
+from . import IAccessible
 
 
 class ATOKxxUIComment(IAccessible):

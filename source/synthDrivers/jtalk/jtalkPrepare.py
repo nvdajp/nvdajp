@@ -1,13 +1,12 @@
 # nvdajp_predic.py
-# -*- coding: utf-8 -*-
 # for python-jtalk
 
 import re
-from typing import Any, Optional
+from typing import Any
 
 re_ascii = re.ASCII
 
-predic: Optional[list[list[Any]]] = None
+predic: list[list[Any]] | None = None
 
 
 def setup() -> None:

@@ -5,7 +5,6 @@
 
 """This module provides custom asserts for system tests."""
 
-from typing import List
 from robot.libraries.BuiltIn import BuiltIn
 
 builtIn: BuiltIn = BuiltIn()
@@ -32,12 +31,7 @@ class AssertsLib:
 		except AssertionError:
 			# Occasionally on assert failure the repr of the string makes it easier to determine the differences.
 			builtIn.log(
-				"repr of ({}) actual vs expected (ignore_case={}):\n{}\nvs\n{}".format(
-					comparison,
-					ignore_case,
-					repr(actual),
-					repr(expected),
-				),
+				f"repr of ({comparison}) actual vs expected (ignore_case={ignore_case}):\n{actual!r}\nvs\n{expected!r}",
 				level="DEBUG",
 			)
 			raise
@@ -45,7 +39,7 @@ class AssertsLib:
 	@staticmethod
 	def string_contains_strings(
 		actual: str,
-		expectedSubStrings: List[str],
+		expectedSubStrings: list[str],
 		ignore_case: bool = False,
 		comparison: str = "speech",
 		message: str = "",
@@ -68,12 +62,7 @@ class AssertsLib:
 		except AssertionError:
 			# Occasionally on assert failure the repr of the string makes it easier to determine the differences.
 			builtIn.log(
-				"repr of ({}) actual vs expected (ignore_case={}):\n{}\nvs\n{}".format(
-					comparison,
-					ignore_case,
-					repr(actual),
-					repr(subString),
-				),
+				f"repr of ({comparison}) actual vs expected (ignore_case={ignore_case}):\n{actual!r}\nvs\n{subString!r}",
 				level="DEBUG",
 			)
 			raise
@@ -81,7 +70,7 @@ class AssertsLib:
 	@staticmethod
 	def strings_match_any(
 		actual,
-		expectedOptions: List[str],
+		expectedOptions: list[str],
 		ignore_case: bool = False,
 		comparison: str = "speech",
 		message: str = "",
@@ -101,18 +90,12 @@ class AssertsLib:
 					return
 		# None matched – fail with a message showing all options
 		builtIn.log(
-			"repr of ({}) actual vs expected options (ignore_case={}):\n{}\nvs\n{}".format(
-				comparison,
-				ignore_case,
-				repr(actual),
-				[repr(o) for o in expectedOptions],
-			),
+			f"repr of ({comparison}) actual vs expected options (ignore_case={ignore_case}):\n{actual!r}\nvs\n{[repr(o) for o in expectedOptions]}",
 			level="DEBUG",
 		)
 		builtIn.fail(
 			f"{message}{comparison} Actual != any Expected option.\n"
-			f"Actual:\n{actual}\n\nExpected one of:\n"
-			+ "\n---\n".join(expectedOptions),
+			f"Actual:\n{actual}\n\nExpected one of:\n" + "\n---\n".join(expectedOptions),
 		)
 
 	@staticmethod
@@ -122,7 +105,7 @@ class AssertsLib:
 	@staticmethod
 	def speech_contains(
 		actual: str,
-		expectedSpeechParts: List[str],
+		expectedSpeechParts: list[str],
 		ignore_case: bool = False,
 		message: str = "",
 	):
@@ -141,7 +124,7 @@ class AssertsLib:
 	@staticmethod
 	def braille_contains(
 		actual: str,
-		expectedBrailleParts: List[str],
+		expectedBrailleParts: list[str],
 		ignore_case: bool = False,
 		message: str = "",
 	):

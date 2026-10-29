@@ -8,23 +8,32 @@
 # Copyright (C) 2011-2019 Takuya Nishimoto
 
 import braille
+try:
+	import braille.display.driver
+	import braille.display.gesture
+	_BrailleDisplayDriver = braille.display.driver.BrailleDisplayDriver
+	_BrailleDisplayGesture = braille.display.gesture.BrailleDisplayGesture
+except (ImportError, AttributeError):
+	_BrailleDisplayDriver = braille.BrailleDisplayDriver
+	_BrailleDisplayGesture = braille.BrailleDisplayGesture
 import inputCore
 import time
 import tones
 import os
 from collections import OrderedDict
-from ctypes import *  # noqa: F403
-from ctypes.wintypes import *  # noqa: F403
+from ctypes import *
+from ctypes.wintypes import *
 from logHandler import log
 import sys
 
 if sys.version_info.major >= 3:
 	xrange = range
-	byte = lambda x: x.to_bytes(1, "big")  # noqa: E731
+	byte = lambda x: x.to_bytes(1, "big")
 else:
 	byte = chr
 
 from .kgs import (
+	_beep,
 	_connectionBeepsEnabled,
 	kgsListComPorts,
 	waitAfterDisconnect,
@@ -40,19 +49,19 @@ fConnection = False
 numCells = 0
 isUnknownEquipment = False
 
-KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)  # noqa: F405
+KGS_PSTATUSCALLBACK = WINFUNCTYPE(c_void_p, c_int, c_int)
 
 
 def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 	global fConnection, numCells, isUnknownEquipment
 	if nStatus == BMDRVS.DISCONNECTED:
 		fConnection = False
-		tones.beep(1000, 300)
+		_beep(1000, 300)
 		log.info("disconnect")
 	elif nStatus == BMDRVS.CONNECTED:
 		numCells = nDispSize
 		fConnection = True
-		tones.beep(1000, 30)
+		_beep(1000, 30)
 		log.info("display size:%d" % nDispSize)
 	elif nStatus == BMDRVS.DRIVER_CANNOT_OPEN:
 		fConnection = False
@@ -79,7 +88,7 @@ def nvdaKgsStatusChangedProc(nStatus, nDispSize):
 		log.info("status changed to %d" % nStatus)
 
 
-KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))  # noqa: F405
+KGS_PKEYCALLBACK = WINFUNCTYPE(c_int, POINTER(c_ubyte))
 
 
 def nvdaKgsHandleKeyInfoProc(lpKeys):
@@ -90,31 +99,31 @@ def nvdaKgsHandleKeyInfoProc(lpKeys):
 	routingIndex = None
 	if keys[0] == 0:
 		if keys[1] & 1:
-			names.append("lf")  # noqa: E701
+			names.append("lf")
 		if keys[1] & 2:
-			names.append("bk")  # noqa: E701
+			names.append("bk")
 		if keys[1] & 4:
-			names.append("sr")  # noqa: E701
+			names.append("sr")
 		if keys[1] & 8:
-			names.append("sl")  # noqa: E701
+			names.append("sl")
 		if keys[1] & 16:
-			names.append("func1")  # noqa: E701
+			names.append("func1")
 		if keys[1] & 32:
-			names.append("func2")  # noqa: E701
+			names.append("func2")
 		if keys[1] & 64:
-			names.append("func3")  # noqa: E701
+			names.append("func3")
 		if keys[1] & 128:
-			names.append("func4")  # noqa: E701
+			names.append("func4")
 	else:
 		tCode = 240
 		if keys[0] & 1 + tCode:
-			names.append("func1")  # noqa: E701
+			names.append("func1")
 		if keys[0] & 2 + tCode:
-			names.append("func2")  # noqa: E701
+			names.append("func2")
 		if keys[0] & 4 + tCode:
-			names.append("func3")  # noqa: E701
+			names.append("func3")
 		if keys[0] & 8 + tCode:
-			names.append("func4")  # noqa: E701
+			names.append("func4")
 		names.append("route")
 		routingIndex = keys[1] - 1
 	if routingIndex is not None:
@@ -152,14 +161,12 @@ def _fixConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 				log.info("isUnknownEquipment")
 				break
 			time.sleep(0.5)
-			if _connectionBeepsEnabled():
-				tones.beep(400 + (loop * 20), 20)
+			_beep(400 + (loop * 20), 20)
 			processEvents()
 	if not fConnection:
 		bmDisConnect(hBrl, _port)
 		port = None
-		if _connectionBeepsEnabled():
-			tones.beep(200, 100)
+		_beep(200, 100)
 	log.info("connection:%d port:%d" % (fConnection, _port))
 	return fConnection, port
 
@@ -176,12 +183,7 @@ def _autoConnection(hBrl, devName, port, keyCallbackInst, statusCallbackInst):
 		if btName and btName.lower() == "bm series":
 			continue
 		log.info(
-			"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}".format(
-				_port=_port,
-				hwID=hwID,
-				btName=btName,
-				frName=frName,
-			),
+			f"set port:{_port} hw:{hwID} fr:{frName} bt:{btName}",
 		)
 		ret, Port = _fixConnection(hBrl, devName, _port, keyCallbackInst, statusCallbackInst)
 		if ret:
@@ -219,7 +221,7 @@ def bmDisConnect(hBrl, port):
 	return ret
 
 
-class BrailleDisplayDriver(braille.BrailleDisplayDriver):
+class BrailleDisplayDriver(_BrailleDisplayDriver):
 	name = "kgsbn46"
 	# Translators: braille display driver description
 	description = _("KGS BrailleNote 46C/46D")
@@ -228,7 +230,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	_directBM = None
 
 	def __init__(self, port="auto"):
-		super(BrailleDisplayDriver, self).__init__()
+		super().__init__()
 		global fConnection, numCells
 		if not lock():
 			return
@@ -249,7 +251,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 		if sys.version_info.major <= 2:
 			kgs_dll = kgs_dll.encode("mbcs")
 		log.debug(kgs_dll)
-		self._directBM = windll.LoadLibrary(kgs_dll)  # noqa: F405
+		self._directBM = windll.LoadLibrary(kgs_dll)
 		if not self._directBM:
 			unlock()
 			raise RuntimeError("No KGS instance found")
@@ -275,14 +277,14 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	def terminate(self):
 		if not lock():
 			return
-		super(BrailleDisplayDriver, self).terminate()
+		super().terminate()
 		if self._directBM and self._directBM._handle:
 			bmDisConnect(self._directBM, self._portName)
 			waitAfterDisconnect()
 			# explicitly defining the argument and return types for FreeLibrary.
-			_FreeLibrary = windll.kernel32.FreeLibrary  # noqa: F405
-			_FreeLibrary.argtypes = [HMODULE]  # noqa: F405
-			_FreeLibrary.restype = BOOL  # noqa: F405
+			_FreeLibrary = windll.kernel32.FreeLibrary
+			_FreeLibrary.argtypes = [HMODULE]
+			_FreeLibrary.restype = BOOL
 			ret = _FreeLibrary(self._directBM._handle)
 			# ret is not zero if success
 			log.info("KGS driver terminated %d" % ret)
@@ -313,29 +315,29 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 
 	def display(self, data):
 		if not data:
-			return  # noqa: E701
+			return
 		s = b""
 		for c in data:
 			d = 0
 			if c & 0x01:
-				d += 0x80  # noqa: E701
+				d += 0x80
 			if c & 0x02:
-				d += 0x40  # noqa: E701
+				d += 0x40
 			if c & 0x04:
-				d += 0x20  # noqa: E701
+				d += 0x20
 			if c & 0x08:
-				d += 0x08  # noqa: E701
+				d += 0x08
 			if c & 0x10:
-				d += 0x04  # noqa: E701
+				d += 0x04
 			if c & 0x20:
-				d += 0x02  # noqa: E701
+				d += 0x02
 			if c & 0x40:
-				d += 0x10  # noqa: E701
+				d += 0x10
 			if c & 0x80:
-				d += 0x01  # noqa: E701
+				d += 0x01
 			s += byte(d)
-		dataBuf = create_string_buffer(s, 256)  # noqa: F405
-		cursorBuf = create_string_buffer(b"", 256)  # noqa: F405
+		dataBuf = create_string_buffer(s, 256)
+		cursorBuf = create_string_buffer(b"", 256)
 		try:
 			ret = self._directBM.bmDisplayData(dataBuf, cursorBuf, self.numCells)
 			log.debug("bmDisplayData %d" % ret)
@@ -365,10 +367,13 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
 	)
 
 
-class InputGesture(braille.BrailleDisplayGesture):
+class InputGesture(_BrailleDisplayGesture):
 	source = BrailleDisplayDriver.name
 
 	def __init__(self, names, routingIndex):
-		super(InputGesture, self).__init__()
+		super().__init__()
 		self.id = "+".join(names)
-		self.routingIndex = routingIndex
+		if hasattr(self, "cellIndexes"):
+			self.cellIndexes = [routingIndex] if routingIndex is not None else None
+		else:
+			self.routingIndex = routingIndex
