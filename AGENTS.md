@@ -5,7 +5,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 ## Scope
 
 - Target platform: Windows x64 with Python 3.13
-- Out of scope: arm64, CI releases using secrets
+- Out of scope: arm64
 - Related issues: #539 (workflow alignment)
 
 ## Principles
@@ -24,7 +24,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 - Prefer SCons/pure Python tooling; auxiliary `.cmd` or `nmake` usage should be limited to JP-specific overlays
 - Use `scons.bat` / `ensureuv.ps1` for builds and Python tooling; do not use the Windows `py` launcher
 - Do not use SCons `--all-cores` by default (parallel builds can fail with JP targets such as `jtalkPrep`)
-- Do not perform code-signing or releases in CI (no secrets). Official release builds happen locally.
+- Code-signing and release builds are performed in CI via Azure Key Vault (`AZURE_KV_SIGNING=1`). See `projectDocs/jp/code-signing-dependencies.md` for authoritative procedures.
 - Do not add machine-specific absolute paths (drive letters such as `f:\`, user-profile paths) to tracked documentation. Keep local environment notes outside the repository.
 
 ## Quick commands
@@ -37,7 +37,7 @@ This document summarizes the rules automation agents/scripts must obey when work
 
 - Base branch for PRs: `betajp`
 - Required checks: `allTestsPass`, etc.
-- Release/snapshot jobs stay disabled unless explicitly requested; avoid secrets.
+- Release and snapshot publishing jobs stay disabled for push events and must be manually triggered via `workflow_dispatch` (e.g. on `releasejp` for official releases and RCs, or `betajp`/`alphajp` for pre-releases).
 
 ## Commit & push policy
 
@@ -73,6 +73,7 @@ To reduce CI load and wait for completion:
 
 - JP landing page: `readme-nvdajp.md`
 - JP Docs Hub: `projectDocs/jp/README.md`
+- Release procedures (authoritative): `projectDocs/jp/code-signing-dependencies.md`
 - Roadmap: `projectDocs/jp/roadmap.md`
 - Build system strategy: `projectDocs/jp/miscdepsjp-overlay-strategy.md`
 - Upstream docs (when no JP diff exists):
