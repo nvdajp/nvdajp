@@ -3,7 +3,7 @@
 
 # Leonard de Ruijter, Derek Riemer, Babbage B.V., Davy Kager, Ethan Holliger, Łukasz Golonka, Accessolutions,
 # Julien Cochuyt, Jakub Lukowicz, Bill Dengler, Cyrille Bougot, Rob Meredith, Luke Davis,
-# Burman's Computer and Education Ltd, Cary-rowen.
+# Burman's Computer and Education Ltd, Cary-rowen, Carter Temm.
 # This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
@@ -458,7 +458,7 @@ class GlobalCommands(ScriptableObject):
 				ui.browseableMessage(info.text, copyButton=True, closeButton=True)
 				return
 
-			elif len(info.text) < speech.speech.MAX_LENGTH_FOR_SELECTION_REPORTING:
+			elif speech.speech._isSelectionShortEnoughToSpeak(info.text):
 				# BEGIN JP PATCH (character description mode)
 				speech.speakSpelling(
 					info.text,

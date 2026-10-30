@@ -6,7 +6,7 @@
 # Łukasz Golonka, Aaron Cannon, Adriani90, André-Abush Clause, Dawid Pieper,
 # Takuya Nishimoto, jakubl7545, Tony Malykh, Rob Meredith,
 # Burman's Computer and Education Ltd, hwf1324, Cary-rowen, Christopher Proß, Tianze
-# Neil Soiffer, Ryan McCleary, Wang Chong, Kefas Lungu, Andrew Johnson.
+# Neil Soiffer, Ryan McCleary, Wang Chong, Kefas Lungu, Andrew Johnson, Carter Temm.
 # This file may be used under the terms of the GNU General Public License, version 2 or later, as modified by the NVDA license.
 # For full terms and any additional permissions, see the NVDA license file: https://github.com/nvaccess/nvda/blob/master/copying.txt
 
@@ -2014,6 +2014,7 @@ class VoiceSettingsPanel(AutoSettingsMixin, SettingsPanel):
 		if isinstance(useSpellingVal, str):
 			useSpellingVal = useSpellingVal.lower() in ("true", "1", "yes")
 		self.useSpellingFunctionalityCheckBox.SetValue(bool(useSpellingVal))
+		self._appendMaxSelectionReportingLength(settingsSizerHelper)
 		self._appendSpeechModesList(settingsSizerHelper)
 
 	def _appendSymbolDictionariesList(self, settingsSizerHelper: guiHelper.BoxSizerHelper) -> None:
@@ -2063,6 +2064,19 @@ class VoiceSettingsPanel(AutoSettingsMixin, SettingsPanel):
 		]
 		self.speechModesList.Bind(wx.EVT_CHECKLISTBOX, self._onSpeechModesListChange)
 		self.speechModesList.Select(0)
+
+	def _appendMaxSelectionReportingLength(self, settingsSizerHelper: guiHelper.BoxSizerHelper) -> None:
+		validation = config.conf.getConfigValidation(("speech", "maxSelectionReportingLength"))
+		self.maxSelectionReportingLengthEdit = settingsSizerHelper.addLabeledControl(
+			# Translators: This is the label for an edit box in the voice settings panel.
+			# Longer selections are reported as a number of characters.
+			_("Speak selected &text if it has fewer characters than"),
+			nvdaControls.SelectOnFocusSpinCtrl,
+			min=int(validation.kwargs["min"]),
+			max=int(validation.kwargs["max"]),
+			initial=config.conf["speech"]["maxSelectionReportingLength"],
+		)
+		self.bindHelpEvent("MaxSelectionReportingLength", self.maxSelectionReportingLengthEdit)
 
 	def _appendDelayedCharacterDescriptions(self, settingsSizerHelper: guiHelper.BoxSizerHelper) -> None:
 		# Translators: This is the label for a checkbox in the voice settings panel.
@@ -2114,6 +2128,7 @@ class VoiceSettingsPanel(AutoSettingsMixin, SettingsPanel):
 		]
 		delayedDescriptions = self.delayedCharacterDescriptionsCheckBox.IsChecked()
 		config.conf["speech"]["delayedCharacterDescriptions"] = delayedDescriptions
+		config.conf["speech"]["maxSelectionReportingLength"] = self.maxSelectionReportingLengthEdit.Value
 		config.conf["speech"][self.driver.name]["capPitchChange"] = self.capPitchChangeEdit.Value
 		config.conf["speech"][self.driver.name]["sayCapForCapitals"] = self.sayCapForCapsCheckBox.IsChecked()
 		config.conf["speech"][self.driver.name]["beepForCapitals"] = self.beepForCapsCheckBox.IsChecked()
