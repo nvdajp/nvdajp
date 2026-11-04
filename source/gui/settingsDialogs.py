@@ -4177,6 +4177,7 @@ class RemoteSettingsPanel(SettingsPanel):
 			# Where users set the key for their connection.
 			_("&Key:"),
 			wx.TextCtrl,
+			style=wx.TE_PASSWORD if globalVars.appArgs.secure else 0,
 		)
 		self.bindHelpEvent("RemoteAutoconnectKey", self.key)
 
