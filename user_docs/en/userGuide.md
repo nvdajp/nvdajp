@@ -2340,7 +2340,7 @@ Note that this setting is only available when "[Unicode normalization](#SpeechUn
 ##### Include Unicode Consortium data (including emoji) when processing characters and symbols {#SpeechSettingsCLDR}
 
 When this checkbox is checked, NVDA will include additional symbol pronunciation dictionaries when pronouncing characters and symbols.
-These dictionaries contain descriptions for symbols (particularly emoji) that are provided by the [Unicode Consortium](https://www.unicode.org/consortium/) as part of their [Common Locale Data Repository](http://cldr.unicode.org/).
+These dictionaries contain descriptions for symbols (particularly emoji) that are provided by the [Unicode Consortium](https://www.unicode.org/consortium/) as part of their [Common Locale Data and Rules](http://cldr.unicode.org/).
 If you want NVDA to speak descriptions of emoji characters based on this data, you should enable this option.
 However, if you are using a speech synthesizer that supports speaking emoji descriptions natively, you may wish to turn this off.
 
@@ -2391,21 +2391,6 @@ For example, while reviewing a line by characters, when the letter "b" is read N
 This can be useful if it is hard to distinguish between pronunciation of symbols, or for hearing impaired users.
 
 The delayed character description will be cancelled if other text is spoken during that time, or if you press the `control` key.
-
-##### Speak selected text if it has fewer characters than {#MaxSelectionReportingLength}
-
-This setting controls how much selected text NVDA speaks.
-When you select text, or use the read selection command (`NVDA+shift+upArrow`), NVDA speaks the selected text if it has fewer characters than this value.
-If the selection has this many characters or more, NVDA reports the number of selected characters instead.
-
-Pressing the read selection command twice or three times spells the selection only if it has fewer characters than this value.
-
-Speaking very long selections can be slow or even lead to crashes with some speech synthesizers, so take care when setting a high value.
-
-| . {.hideHeaderRow} |.|
-| --- | --- |
-| Options | 1 to 10000 |
-| Default | 512 |
 
 ##### Modes available in the Cycle speech mode command {#SpeechModesDisabling}
 
