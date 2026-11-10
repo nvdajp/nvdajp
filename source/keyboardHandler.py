@@ -234,6 +234,7 @@ def internal_keyDownEvent(vkCode: int, scanCode: int, extended: bool, injected: 
 	):
 		return False
 	gestureExecuted = False
+	gesture = None
 	try:
 		global lastNVDAModifier, lastNVDAModifierReleaseTime, bypassNVDAModifier, passKeyThroughCount, lastPassThroughKeyDown, currentModifiers, keyCounter, stickyNVDAModifier, stickyNVDAModifierLocked  # noqa: PLW0602
 		# Injected keys should be ignored in some cases.
@@ -382,7 +383,7 @@ def internal_keyDownEvent(vkCode: int, scanCode: int, extended: bool, injected: 
 				for ch in charBuf[:res]:
 					eventHandler.queueEvent("typedCharacter", focus, ch=ch)
 	# nvdajp begin
-	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
+	if config.conf["keyboard"]["nvdajpEnableKeyEvents"] and gesture is not None:
 		try:
 			from NVDAObjects import inputComposition
 
