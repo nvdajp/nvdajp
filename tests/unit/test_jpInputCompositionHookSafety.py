@@ -27,7 +27,7 @@ class TestInputCompositionHookSafety(unittest.TestCase):
 		mockFocus = MagicMock()
 		mockFocus.processID = os.getpid()
 		type(mockFocus).parent = PropertyMock(
-			side_effect=AssertionError("focus.parent should not be accessed")
+			side_effect=AssertionError("focus.parent should not be accessed"),
 		)
 
 		result = inputComposition.isInInputComposition(mockFocus)
@@ -40,7 +40,7 @@ class TestInputCompositionHookSafety(unittest.TestCase):
 		mockFocus = MagicMock()
 		mockFocus.processID = os.getpid() + 1
 		type(mockFocus).parent = PropertyMock(
-			side_effect=OSError("access violation reading 0x00000000000002A0")
+			side_effect=OSError("access violation reading 0x00000000000002A0"),
 		)
 
 		result = inputComposition.isInInputComposition(mockFocus)
@@ -51,7 +51,7 @@ class TestInputCompositionHookSafety(unittest.TestCase):
 		mockFocus = MagicMock()
 		mockFocus.processID = os.getpid()
 		type(mockFocus).parent = PropertyMock(
-			side_effect=AssertionError("focus.parent should not be accessed")
+			side_effect=AssertionError("focus.parent should not be accessed"),
 		)
 
 		with patch("NVDAHelper.lastCompString", ""), patch("api.getFocusObject", return_value=mockFocus):
@@ -63,7 +63,7 @@ class TestInputCompositionHookSafety(unittest.TestCase):
 		mockFocus = MagicMock()
 		mockFocus.processID = os.getpid() + 1
 		type(mockFocus).parent = PropertyMock(
-			side_effect=OSError("access violation reading 0x00000000000002A0")
+			side_effect=OSError("access violation reading 0x00000000000002A0"),
 		)
 
 		with patch("NVDAHelper.lastCompString", ""), patch("api.getFocusObject", return_value=mockFocus):

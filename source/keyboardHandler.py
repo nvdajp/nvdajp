@@ -270,7 +270,8 @@ def internal_keyDownEvent(vkCode: int, scanCode: int, extended: bool, injected: 
 					inputComposition.noteCompositionKeyDown(vkCode)
 			except Exception:  # noqa: BLE001
 				log.debugWarning(
-					"Failed to note composition key down in internal_keyDownEvent", exc_info=True
+					"Failed to note composition key down in internal_keyDownEvent",
+					exc_info=True,
 				)
 		# nvdajp end
 		if not (stickyKeysFlags & winUser.SKF_STICKYKEYSON) and (
