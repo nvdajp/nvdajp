@@ -20,6 +20,7 @@ import jpUtils
 import winUser
 import time
 import braille
+import os
 # nvdajp end
 
 
@@ -99,14 +100,20 @@ def isCompositionActive() -> bool:
 		return False
 	import api
 
-	focus = api.getFocusObject()
-	if isinstance(focus, InputComposition):
-		comp = focus
-	elif isinstance(focus.parent, InputComposition):
-		comp = focus.parent
-	else:
+	try:
+		focus = api.getFocusObject()
+		if not focus or getattr(focus, "processID", None) == os.getpid():
+			return False
+		if isinstance(focus, InputComposition):
+			comp = focus
+		elif isinstance(focus.parent, InputComposition):
+			comp = focus.parent
+		else:
+			return False
+		return bool(comp.compositionString or comp.readingString)
+	except Exception:  # noqa: BLE001
+		log.debugWarning("Failed to check if composition is active", exc_info=True)
 		return False
-	return bool(comp.compositionString or comp.readingString)
 
 
 def isCompositionCommitFromEnter() -> bool:
@@ -118,16 +125,23 @@ def isCompositionCommitFromEnter() -> bool:
 
 
 def isInInputComposition(focus=None) -> bool:
-	if focus is None:
-		import api
+	try:
+		if focus is None:
+			import api
 
-		focus = api.getFocusObject()
-	if isinstance(focus, InputComposition):
-		return True
-	if isinstance(focus.parent, InputComposition):
-		return True
-	if isinstance(focus, CandidateItemBehavior):
-		return isinstance(focus.parent, InputComposition)
+			focus = api.getFocusObject()
+		if not focus or getattr(focus, "processID", None) == os.getpid():
+			return False
+		if isinstance(focus, InputComposition):
+			return True
+		parent = getattr(focus, "parent", None)
+		if isinstance(parent, InputComposition):
+			return True
+		if isinstance(focus, CandidateItemBehavior):
+			return isinstance(parent, InputComposition)
+	except Exception:  # noqa: BLE001
+		log.debugWarning("Failed to check if focus is in input composition", exc_info=True)
+		return False
 	return False
 
 
