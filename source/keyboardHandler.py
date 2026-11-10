@@ -262,11 +262,16 @@ def internal_keyDownEvent(vkCode: int, scanCode: int, extended: bool, injected: 
 		gesture = KeyboardInputGesture(currentModifiers, vkCode, scanCode, extended)
 		# nvdajp begin
 		if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-			from NVDAObjects import inputComposition
+			try:
+				from NVDAObjects import inputComposition
 
-			focus = api.getFocusObject()
-			if inputComposition.isInInputComposition(focus):
-				inputComposition.noteCompositionKeyDown(vkCode)
+				focus = api.getFocusObject()
+				if inputComposition.isInInputComposition(focus):
+					inputComposition.noteCompositionKeyDown(vkCode)
+			except Exception:  # noqa: BLE001
+				log.debugWarning(
+					"Failed to note composition key down in internal_keyDownEvent", exc_info=True
+				)
 		# nvdajp end
 		if not (stickyKeysFlags & winUser.SKF_STICKYKEYSON) and (
 			bypassNVDAModifier
@@ -377,9 +382,12 @@ def internal_keyDownEvent(vkCode: int, scanCode: int, extended: bool, injected: 
 					eventHandler.queueEvent("typedCharacter", focus, ch=ch)
 	# nvdajp begin
 	if config.conf["keyboard"]["nvdajpEnableKeyEvents"]:
-		from NVDAObjects import inputComposition
+		try:
+			from NVDAObjects import inputComposition
 
-		inputComposition.reportKeyDownEvent(gesture)
+			inputComposition.reportKeyDownEvent(gesture)
+		except Exception:  # noqa: BLE001
+			log.debugWarning("Failed to report key down event in internal_keyDownEvent", exc_info=True)
 	# nvdajp end
 	return True
 
