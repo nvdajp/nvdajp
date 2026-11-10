@@ -1432,8 +1432,9 @@ jobs:
         sha1="${{ steps.hashes.outputs.SHA1 }}"
         sha256="${{ steps.hashes.outputs.SHA256 }}"
         notes_file="/tmp/releaseNotes.md"
+        tag_version="${tag#release-}"
         if [ -n "$PRERELEASE_FLAG" ]; then
-          title_text="Pre-release "
+          release_title="Pre-release $tag_version"
           {
             echo "This is a pre-release of the NVDA Japanese Version. It is intended for testing and feedback before the stable release."
             echo ""
@@ -1442,7 +1443,7 @@ jobs:
             echo "* SHA256: \`$sha256\`"
           } > "$notes_file"
         else
-          title_text=""
+          release_title="$tag_version"
           prev_tag="${PREVIOUS_STABLE_TAG_INPUT}"
           if [ -z "$prev_tag" ]; then
             # Use the REST API to find the latest non-prerelease release tag.
@@ -1478,7 +1479,7 @@ jobs:
           output/nvda_*_controllerClientJp.zip \
           --repo ${{ github.repository }} \
           --target "${{ github.sha }}" \
-          --title "${title_text}$version" \
+          --title "$release_title" \
           --notes-file "$notes_file" \
           $PRERELEASE_FLAG
     outputs:
