@@ -92,7 +92,7 @@ def quits_from_menu(showExitDialog=True):
 			"\n".join(  # noqa: FLY002
 				[
 					"Exit NVDA  dialog",
-					"What would you like to do?  combo box  Exit  collapsed  Alt plus  d",
+					"What would you like to do?  combo box  Exit  collapsed  Alt plus d",
 				],
 			),
 		)
@@ -126,7 +126,7 @@ def quits_from_keyboard():
 		"\n".join(  # noqa: FLY002
 			[
 				"Exit NVDA  dialog",
-				"What would you like to do?  combo box  Exit  collapsed  Alt plus  d",
+				"What would you like to do?  combo box  Exit  collapsed  Alt plus d",
 			],
 		),
 	)
@@ -187,7 +187,7 @@ def read_welcome_dialog():
 					"NVDA, get help, and access other NVDA functions."
 				),
 				"Options  grouping",
-				"Keyboard layout:  combo box  desktop  collapsed  Alt plus  k",
+				"Keyboard layout:  combo box  desktop  collapsed  Alt plus k",
 			],
 		),
 	)
