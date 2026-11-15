@@ -79,6 +79,41 @@ class JpBrailleTests(unittest.TestCase):
 				f"Bullet braille translation failed for {text!r}: expected {expected!r}, got {braille!r}",
 			)
 
+	def test_kansuji_nakaten_decimal(self):
+		"""Distinguish Kansuji + middle dot decimals from repeated numeric signs (#778)."""
+		import translator2
+
+		for text, expected in [
+			# Decimal cases (#778)
+			("年一〇・八％", "⠞⠳ ⠼⠁⠚⠂⠓⠰⠏"),
+			("〇・五倍", "⠼⠚⠂⠑⠐⠥⠃"),
+			("一四・二％", "⠼⠁⠙⠂⠃⠰⠏"),
+			("四七・七％", "⠼⠙⠛⠂⠛⠰⠏"),
+			("二〇・一％", "⠼⠃⠚⠂⠁⠰⠏"),
+			("一三・五％", "⠼⠁⠉⠂⠑⠰⠏"),
+			("一・六％", "⠼⠁⠂⠋⠰⠏"),
+			("〇・八％", "⠼⠚⠂⠓⠰⠏"),
+			("〇・〇八％", "⠼⠚⠂⠚⠓⠰⠏"),
+			("三・〇五％", "⠼⠉⠂⠚⠑⠰⠏"),
+			("三・五割", "⠼⠉⠂⠑⠄⠓"),
+			("一・二五倍", "⠼⠁⠂⠃⠑⠐⠥⠃"),
+			("〇・五日", "⠼⠚⠂⠑⠇⠗"),
+			("三・一四", "⠼⠉⠂⠁⠙"),
+			# Non-decimal / repeated numeric sign cases
+			("七・五・三", "⠼⠛⠼⠑⠼⠉"),
+			("六・三・三制", "⠼⠋⠼⠉⠼⠉⠻⠃"),
+			("二・二六事件", "⠼⠃⠼⠃⠋ ⠐⠳⠫⠴"),
+			("五・一五事件", "⠼⠑⠼⠁⠑ ⠐⠳⠫⠴"),
+			("二・三日", "⠼⠃⠼⠉⠇⠗"),
+			("二・三人", "⠼⠃⠼⠉⠇⠴"),
+		]:
+			braille, inpos, outpos, cursor = translator2.translate(text, unicodeIO=True)
+			self.assertEqual(
+				braille,
+				expected,
+				f"Kansuji nakaten decimal translation failed for {text!r}: expected {expected!r}, got {braille!r}",
+			)
+
 
 class MecabTests(unittest.TestCase):
 	def test_all(self):
