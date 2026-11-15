@@ -346,8 +346,10 @@ def kansuji2arabic(text: str, logwrite: Callable[[str], None] | None = None) -> 
 		or (digit == 1000 and text[:1] in "千")
 	):
 		result += digit * numgroup
-	text = "%d" % result
-	return (1, text)  # 漢数字の場合
+	text_out = "%d" % result
+	if len(text) > 1 and all(c not in "十拾百千" for c in text):
+		text_out = text_out.zfill(len(text))
+	return (1, text_out)  # 漢数字の場合
 
 
 def rewrite_number(li: list[MecabMorph], logwrite: Callable[[str], None] | None = None) -> list[MecabMorph]:
@@ -596,7 +598,10 @@ def fix_japanese_date_morphs(li):
 			if prev_mo.hyouki in ("14", "24", "十四", "一四", "二四", "二十四"):
 				li[i].output = "カ"
 				new_li.append(li[i])
-			elif (prev2_mo is None or prev2_mo.hyouki != "、") and prev_mo.output in WAGO_DIC:
+			elif (
+				prev2_mo is None
+				or (prev2_mo.hyouki not in ("、", "・") and prev2_mo.output not in ("⠼", "."))
+			) and prev_mo.output in WAGO_DIC:
 				m = mo.clone()
 				m.hyouki = prev_mo.hyouki + mo.hyouki
 				m.nhyouki = prev_mo.nhyouki + mo.nhyouki
@@ -643,7 +648,7 @@ def should_separate(prev2_mo, prev_mo, mo, next_mo, nabcc=False, logwrite=_logwr
 	if (
 		mo_output_isdigit
 		and not nabcc
-		and prev_mo.output != "⠼"
+		and prev_mo.output not in ("⠼", ".")
 		and prev_mo.nhyouki
 		not in ("-", "，", ".", "’", "、", ":", "：", ",", "ー", "(", "第", "築", "二男", "中")
 	):
@@ -1305,6 +1310,67 @@ RE_HIRAGANA = re.compile("^[ぁ-ゞ]+$")
 RE_HALF_KATAKANA = re.compile("^[ｦ-ﾟ]+$")  # ff66 .. ff9f
 RE_DIGIT_SINGLE_ALPHA = re.compile("^[0-9]+'[A-Za-z]+$")
 
+_DECIMAL_UNIT_HYOUKI = frozenset({
+	"％", "%", "‰", "割", "分", "厘", "倍",
+	"メートル", "キロ", "センチ", "ミリ", "グラム", "トン",
+	"リットル", "ヘクタール", "アール", "秒", "時間", "度", "℃", "ポイント",
+})
+
+
+def _is_positional_kansuji(s: str) -> bool:
+	return bool(RE_KANSUJI.match(s)) and len(s) >= 2 and all(c not in "十拾百千" for c in s)
+
+
+def _is_decimal_nakaten(li: list[MecabMorph], pos: int) -> bool:
+	if (pos >= 2 and li[pos - 2].hyouki == "・") or (pos + 2 < len(li) and li[pos + 2].hyouki == "・"):
+		return False
+	left_mo = li[pos - 1]
+	right_mo = li[pos + 1]
+	after_mo = li[pos + 2] if pos + 2 < len(li) else None
+	if after_mo is not None and after_mo.hyouki.startswith("事件"):
+		return False
+	if left_mo.output == "0":
+		return True
+	if len(right_mo.output) >= 2 and right_mo.output.startswith("0"):
+		return True
+	if after_mo is not None:
+		if (
+			after_mo.hyouki in _DECIMAL_UNIT_HYOUKI
+			or after_mo.nhyouki == "%"
+			or "パーセント" in after_mo.yomi
+		):
+			return True
+		if after_mo.hinshi3 == "助数詞" or after_mo.hyouki in ("万", "億", "兆", "京"):
+			left_val = int(left_mo.output)
+			right_val = int(right_mo.output)
+			is_approx_pair = (right_val - left_val == 1) or (
+				left_val >= 10
+				and len(right_mo.output) == 1
+				and right_val - (left_val % 10) == 1
+				and any(c in "十拾" for c in left_mo.hyouki)
+			)
+			if not is_approx_pair:
+				return True
+	if (
+		_is_positional_kansuji(left_mo.hyouki)
+		and (int(left_mo.output) > 12 or "〇" in left_mo.hyouki or "零" in left_mo.hyouki)
+		and len(right_mo.output) == 1
+	):
+		return True
+	if _is_positional_kansuji(right_mo.hyouki) and int(left_mo.output) > 0:
+		left_val = int(left_mo.output)
+		right_val = int(right_mo.output)
+		is_month_day = (
+			len(right_mo.hyouki) == 2
+			and 1 <= left_val <= 12
+			and 1 <= right_val <= 31
+			and not (left_mo.hyouki == "三" and right_mo.hyouki == "一四")
+			and "〇" not in right_mo.hyouki
+		)
+		if not is_month_day:
+			return True
+	return False
+
 NO_DAKUON_DIC = {
 	"ガ": "カ",
 	"ギ": "キ",
@@ -1588,11 +1654,14 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 			else:
 				li[pos].output = "⠼"
 
-	# 算用数字ではさまれた中点を数符にする
+	# 算用数字ではさまれた中点を数符または小数点にする
 	if not nabcc:
 		for pos in range(1, len(li) - 1):
 			if li[pos - 1].output.isdigit() and li[pos].hyouki == "・" and li[pos + 1].output.isdigit():
-				li[pos].output = "⠼"
+				if _is_decimal_nakaten(li, pos):
+					li[pos].output = "."
+				else:
+					li[pos].output = "⠼"
 
 	# before: ａｂ,ab,名詞,一般,*,*,アブ,アブ,1/2,アブ,0
 	# after:  ａｂ,ab,名詞,一般,*,*,アブ,アブ,1/2,ab,0
@@ -1674,7 +1743,7 @@ def japanese_braille_separate(inbuf, logwrite, nabcc=False, use_foreign_quotes=F
 					mo.output = li[i - 1].output
 				else:
 					mo.output = ""  # FIXME
-			else:
+			elif not (mo.hyouki == "・" and mo.output in ("⠼", ".")):
 				mo.output = mo.nhyouki
 		if mo.hyouki == "．" and mo.hinshi1 == "名詞" and mo.hinshi2 == "数":
 			mo.output = "."
