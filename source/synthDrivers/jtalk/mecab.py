@@ -843,15 +843,6 @@ def Mecab_correctFeatures(
 				mora = getMoraCount(ar2[10]) + 1
 				feature = f"{hyoki},{hin1},{hin2},*,*,*,*,{hyoki},{yomi},{pron},0/{mora},C0"
 				Mecab_setFeature(mf, pos - 1, feature, CODE_=CODE_)
-			elif ar3 and ar2 and len(ar3) > 10 and ar3[1] != "記号":
-				hyoki = ar3[0] + ar2[0] + "ー"
-				hin1 = ar3[1]
-				hin2 = ar3[2]
-				yomi = ar3[8] + ar2[0] + "ー"
-				pron = ar3[9] + ar2[0] + "ー"
-				mora = getMoraCount(ar3[10]) + len(ar2[0]) + 1
-				feature = f"{hyoki},{hin1},{hin2},*,*,*,*,{hyoki},{yomi},{pron},0/{mora},C0"
-				Mecab_setFeature(mf, pos - 2, feature, CODE_=CODE_)
 		elif _shouldWorkAroundLatinWordPostfix(ar3, ar2, ar):
 			# https://github.com/nvdajp/nvdajpmiscdep/issues/42
 			# print ((unicode(ar3[0]) if ar3 else '*') + '/' + (unicode(ar2[0]) if ar2 else '*') + '/' + (unicode(ar[0]) if ar else '*')).encode('utf-8')

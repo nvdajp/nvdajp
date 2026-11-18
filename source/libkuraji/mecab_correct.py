@@ -380,17 +380,6 @@ def correct_features(
 					h=hyoki, h1=hin1, h2=hin2, y=yomi, p=pron, m=mora,
 				)
 				parsed[pos - 1] = feature.split(",")
-			elif ar3 and ar2 and len(ar3) > 10 and ar3[1] != "記号":
-				hyoki = ar3[0] + ar2[0] + "ー"
-				hin1 = ar3[1]
-				hin2 = ar3[2]
-				yomi = ar3[8] + ar2[0] + "ー"
-				pron = ar3[9] + ar2[0] + "ー"
-				mora = getMoraCount(ar3[10]) + len(ar2[0]) + 1
-				feature = "{h},{h1},{h2},*,*,*,*,{h},{y},{p},0/{m},C0".format(
-					h=hyoki, h1=hin1, h2=hin2, y=yomi, p=pron, m=mora,
-				)
-				parsed[pos - 2] = feature.split(",")
 		elif _shouldWorkAroundLatinWordPostfix(ar3, ar2, ar):
 			if ar3 and ar2 and ar2[0] in ("'", "’"):
 				parsed[pos - 2] = ",,,*,*,*,*".split(",")
