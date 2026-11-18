@@ -1677,7 +1677,7 @@ Once the magnifier is enabled, you can use the following keyboard commands to co
 | Name | Key | Description |
 |---|---|---|
 | Toggle the magnifier on and off | `NVDA+shift+w` | Enables or disables the magnifier |
-| Increase the magnification level | `NVDA+shift+equals` | Increases the zoom level. Starts the magnifier if it's not already running. |
+| Increase the magnification level, or start the magnifier | `NVDA+shift+equals` | Increases the zoom level. Starts the magnifier if it's not already running. |
 | Decrease the magnification level | `NVDA+shift+minus` | Decreases the zoom level |
 | Cycle color filters | `NVDA+shift+i` | Cycles through the available color filters (normal, grayscale, inverted) |
 | Cycle tracking mode | None | Cycles through tracking modes (center, relative) |
@@ -2394,6 +2394,21 @@ For example, while reviewing a line by characters, when the letter "b" is read N
 This can be useful if it is hard to distinguish between pronunciation of symbols, or for hearing impaired users.
 
 The delayed character description will be cancelled if other text is spoken during that time, or if you press the `control` key.
+
+##### Speak selected text if it has fewer characters than {#MaxSelectionReportingLength}
+
+This setting controls how much selected text NVDA speaks.
+When you select text, or use the read selection command (`NVDA+shift+upArrow`), NVDA speaks the selected text if it has fewer characters than this value.
+If the selection has this many characters or more, NVDA reports the number of selected characters instead.
+
+Pressing the read selection command twice or three times spells the selection only if it has fewer characters than this value.
+
+Speaking very long selections can be slow or even lead to crashes with some speech synthesizers, so take care when setting a high value.
+
+| . {.hideHeaderRow} |.|
+| --- | --- |
+| Options | 1 to 10000 |
+| Default | 512 |
 
 ##### Modes available in the Cycle speech mode command {#SpeechModesDisabling}
 
@@ -3470,6 +3485,7 @@ This category contains the following options:
 ##### Maximum Number of Characters on One Line {#BrowseModeSettingsMaxLength}
 
 This field sets the maximum length of a line in browse mode (in characters).
+It can be set from 0 to 1000 characters. If set to 0, lines are not split by length anymore, but rather by the full length of the element in focus.
 
 ##### Maximum Lines Per Page {#BrowseModeSettingsPageLines}
 
@@ -4514,7 +4530,11 @@ You can add new symbols by pressing the Add button.
 In the dialog that appears, enter the symbol and press the OK button.
 Then, change the fields for the new symbol as you would for other symbols.
 
-You can remove a symbol you previously added by pressing the Remove button.
+You can remove a symbol you previously added by using:
+
+* the Remove button,
+* the `delete` key, or,
+* the application key on the selected symbol, and activating the Remove option in the context menu.
 
 When you are finished, press the OK button to save your changes or the Cancel button to discard them.
 

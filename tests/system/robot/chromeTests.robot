@@ -282,7 +282,6 @@ Report link destination not a link
 	[Documentation]	NVDA+K reports 'Not a link' when caret is not on a link.
 	[Tags]	chrome_link
 	test_reportLinkDestination_notALink
-
 # BEGIN JP PATCH (WAIC tests - Japanese web accessibility compliance)
 ## chrome_waic tests
 ### WAIC aria-describedby tests (AS-0029-01 through AS-0029-08)
@@ -323,3 +322,12 @@ test_waic_as_0029_08
 	[Tags]	chrome_waic
 	test waic as 0029 08
 # END JP PATCH
+
+Maximum line length 0 is unbounded
+	[Documentation]	With the maximum number of characters on one line set to 0, a long paragraph is read as one line.
+	[Tags]	chrome_misc
+	test_maxLineLength_zeroIsUnbounded
+Maximum line length upper limit
+	[Documentation]	With the maximum number of characters on one line set to 1000, a long paragraph is split at the last word boundary within 1000 characters.
+	[Tags]	chrome_misc
+	test_maxLineLength_upperLimit
