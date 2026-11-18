@@ -1994,7 +1994,8 @@ class UIA(Window):
 		UIAHandler.UIA_DragIsGrabbedPropertyId,
 	}
 
-	_focusPrefetchUIAPropertyIDs = {  # noqa: RUF012
+	_focusPrefetchUIAPropertyIDs: typing.ClassVar[set[int]] = {
+		UIAHandler.UIA_NamePropertyId,
 		UIAHandler.UIA_FullDescriptionPropertyId,
 		UIAHandler.UIA_HelpTextPropertyId,
 		UIAHandler.UIA_AccessKeyPropertyId,

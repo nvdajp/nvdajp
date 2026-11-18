@@ -12,9 +12,12 @@
 * Update CLDR to version 49.0. (#21093, @OzancanKaratas)
 * The magnifier now follows what is being read when navigating in math expressions. (#20321, @CyrilleB79)
 * Windows OneCore voices now support spelling functionality. (#8237, #13596, #15301)
+* NVDA no longer supports Skype as it was discontinued by Microsoft in May 2025.
+Skype for Business remains supported. (#19781, @josephsl)
 
 ### Bug Fixes
 
+* NVDA now retries copying user settings for use during sign-in and on secure screens when a configuration file is temporarily locked. (#20118, @b-tanyileke)
 * The "Start NVDA after I sign in" and "Use NVDA during sign-in" settings: (#20864, @cary-rowen)
   * Fixed an issue that could prevent automatic startup from being enabled on some systems.
   * Saving other settings no longer unexpectedly disables automatic startup.
@@ -22,6 +25,7 @@
 * Corrected the English pronunciation of Unicode braille characters ⡸, ⢸ and ⣸, and several mathematical symbols. (#20632)
 * When using Windows OneCore voices, numbers in keyboard shortcuts are no longer run together with numbers immediately following them, such as a menu item's position in its menu. (#20828)
 * Prevent adding a duplicate gesture for the same script. (#20890, @theshippeys)
+* NVDA no longer announces the old name of an item that gains focus while its name changes, such as a file in File Explorer after renaming it, or a message in Unigram. (#21116, @LeonarddeR)
 * MathCAT no longer reports a division by zero error when the speech rate is 0%, and its pauses now take eSpeak's rate boost into account. (#19894, #21019, @tareh7z)
 * When installing or updating NVDA while another copy of NVDA is running on this system, such as on the Windows sign-in screen while connected over Remote Desktop, NVDA now offers to end that copy instead of failing with a "File in Use" error. (#9178, @LeonarddeR)
 * The NVDA settings dialog can now be cancelled after changing the synthesizer or reverting the configuration while it is open, and the voice settings are no longer drawn on top of each other. (#6469, @akj)
@@ -34,6 +38,7 @@
 
 * The "Prevent display from turning off during say all or reading with braille" setting now also applies while braille automatic scrolling is active. (#20790, @cary-rowen)
 * Automatic scrolling can be disabled immediately by pressing `NVDA+alt+k`. (#20950, @nvdaes)
+* When selecting text in browse mode with multiple routing keys, the selection is now announced and shown on the braille display. (#21086, @LeonarddeR)
 
 #### Web browsers
 
@@ -42,6 +47,7 @@
 
 #### Applications
 
+* In Adobe Acrobat, NVDA now reports the correct column for every cell in tables where a header or cell in the last column spans several rows, so table navigation no longer skips that cell or reports "edge of table". (#21020, #5140, @raebened)
 * Fixed an issue where formulas and notes were not listed in Excel's elements list when it was opened from a sheet with multiple cells selected. (#20806, @CyrilleB79)
 * In Microsoft Word accessed via UI Automation, NVDA no longer fails to report the text of a comment with the report comment command (`NVDA+alt+c`) and in the Elements List (`NVDA+f7`). (#14985, #4336, @LeonarddeR)
   * Replies are now reported after the comment they reply to, and listed under it in the Elements List.
@@ -58,6 +64,8 @@
 * Profiles no longer interfere with Magnifier settings.
 Previously, saving magnifier settings could be ineffective while a profile was active.
 The NVDA Magnifier settings window also incorrectly stated that its options were profile-dependent. (#21004, @CyrilleB79)
+* When disabling the Screen Curtain, NVDA no longer reports that it could not be disabled if the Magnifier has trouble determining what to follow, and the Magnifier is correctly restarted. (#20518, @JulienCochuyt)
+* NVDA no longer announces that the Magnifier is being disabled or re-enabled when toggling the Screen Curtain. (#19528, @JulienCochuyt)
 
 ### Changes for Developers
 
@@ -97,6 +105,7 @@ Refer to the [wxPython changelog](https://github.com/wxWidgets/Phoenix/blob/wxPy
   * `ITextDocument2` is now the Text Object Model 2 interface.
   The interface previously available under this name has been removed with no replacement.
   * `ITextMsgFilter`, `tomAlignGlyphs`, `tomAlignSnapGrid` and `tomMatchFontCharset` have been removed with no replacement.
+* Removed app module and support code for Skype (discontinued by Microsoft in May 2025). (#19781, @josephsl)
 
 #### Deprecations
 
