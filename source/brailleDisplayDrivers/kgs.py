@@ -572,12 +572,17 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 			_KGS_CP210X_USB_ID,
 			useAsFallback=True,
 		)
-		# Registry COM ports (e.g. COM3 for Next Touch) before generic USB ID matching.
-		driverRegistrar.addDeviceScanner(_scanKgsRegistryUsbPorts, moveToStart=True)
-
+		# nvdajp (#784): register the Bluetooth scanner first, then the USB scanner.
+		# Each addDeviceScanner(..., moveToStart=True) moves its scanner to the very start
+		# of the scanForDevices chain, so the later registration wins the first position.
+		# Resulting full-scan order: KGS USB -> KGS Bluetooth -> other USB -> other Bluetooth,
+		# keeping USB (wired) ahead of Bluetooth as upstream auto detection intends.
 		# "BM Series", "BMsmart-KGS", "BM-NextTouch" (BRLTTY)
 		driverRegistrar.addBluetoothDevices(lambda m: m.id.startswith("BM"))
 		driverRegistrar.addDeviceScanner(_scanKgsBluetoothPorts, moveToStart=True)
+		# Registry COM ports (e.g. COM3 for Next Touch) before generic USB ID matching,
+		# and before the KGS Bluetooth scanner registered above.
+		driverRegistrar.addDeviceScanner(_scanKgsRegistryUsbPorts, moveToStart=True)
 
 	def _cleanupFailedPort(self, port):
 		global fConnection, numCells
