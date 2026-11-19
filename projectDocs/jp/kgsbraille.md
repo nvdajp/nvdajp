@@ -316,6 +316,7 @@ def _connectionBeepsEnabled():
 | 2026-05-18 | Next Touch 40 向け `VID_10C4&PID_EA60` の bdDetect 登録、`kgs_bdDetect_probe.py` 追加 |
 | 2026-05-25 | §2.6: インストール／ランチャー時の接続プローブ音抑制（#470 / PR #659） |
 | 2026-10-09 | アドオン `lastTestedNVDAVersion` を 2027.1.0 に更新 |
+| 2026-11-19 | §8.1: 自動検出スキャン順序の整理（#784）。BT スキャナを先に、USB スキャナを後に登録し KGS USB → KGS BT の順に変更 |
 
 ---
 
@@ -332,7 +333,18 @@ BRLTTY [BrailleMemo ドライバ](https://github.com/brltty/brltty/commit/777575
 
 従来 `kgs` の bdDetect には **1148 ベンダのみ**登録されており、Next Touch 40 USB は **自動検出の対象外**だった（手動 COM 選択または汎用シリアル列挙経由のみ）。
 
-**注意:** 同一 `VID_10C4&PID_EA60` を `superBrl` も登録。`kgs` は `useAsFallback=True` で CP210x を試す（`superBrl` 失敗後）。**USB 用** `addDeviceScanner`（レジストリ COM）と **BT 用** `addDeviceScanner`（`bluetoothName` が `BM` で始まる COM）を別々に登録。
+**注意:** 同一 `VID_10C4&PID_EA60` を `superBrl` も登録。標準パス（`_bgScanUsb` 経由）では `kgs` は `useAsFallback=True` で CP210x を試す（`superBrl` 失敗後）。**USB 用** `addDeviceScanner`（レジストリ COM）と **BT 用** `addDeviceScanner`（`bluetoothName` が `BM` で始まる COM）を別々に登録。
+
+**自動検出のスキャン順序（#784 で整理）**
+
+`addDeviceScanner(..., moveToStart=True)` は呼び出しごとにチェーン先頭へ移動する（後勝ち）。kgs.py では **BT スキャナを先に、USB スキャナを後に**登録しているため、実効順序は次のとおり:
+
+1. `kgs._scanKgsRegistryUsbPorts`（KGS USB: レジストリ COM / 1148 ベンダ / CP210x）
+2. `kgs._scanKgsBluetoothPorts`（KGS BT: 「Bluetooth 機器を自動検出の対象に含める」が ON のときのみ）
+3. 他社ドライバの USB（`_bgScanUsb`、標準 HID Braille を含み superBrl などの fallback は最後）
+4. 他社ドライバの Bluetooth（`_bgScanBluetooth`）
+
+有線（USB）を Bluetooth より優先するという NVDA 本体（`brailleHandler.py`）の前提に合わせ、スキャナ登録順で USB を先行させている。なお (1) は他社 USB よりも先に試行される（CP210x COM では superBrl より先に kgs が試行される）点は、Next Touch 40 のレジストリ COM 検出の信頼性を優先した現行仕様。`detectBluetooth` 設定は (2) のスキャナにのみ効き、(4) で使われる `addBluetoothDevices` の登録には効かない（他の候補が見つからない場合は最後に BT `BM*` ポートが試行され得る）。
 
 **USB / Bluetooth の切り替え（Next Touch 40）**
 

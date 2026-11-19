@@ -8,6 +8,7 @@
 from brailleDisplayDrivers import seikantk  # noqa: I001
 import unittest
 from unittest.mock import patch
+import bdDetect
 import braille
 import braille.display
 import braille.display.gesture
@@ -474,6 +475,66 @@ class TestKgsSettings(unittest.TestCase):
 			results = list(kgs._scanKgsBluetoothPorts(usb=False, bluetooth=True))
 			self.assertEqual(results, [])
 			mock_list.assert_not_called()
+
+
+class TestKgsAutoDetectionOrder(unittest.TestCase):
+	"""Tests for KGS automatic detection scanner ordering (#784 / #752).
+
+	KGS registers USB and Bluetooth device scanners with ``moveToStart=True``.
+	Each call moves that scanner to the very start of ``bdDetect.scanForDevices``,
+	so the last registration ends up first. Registering the Bluetooth scanner
+	before the USB one results in the scan order:
+	KGS USB -> KGS Bluetooth -> other drivers' USB -> other drivers' Bluetooth,
+	keeping USB (wired) connections ahead of Bluetooth as upstream intends.
+	"""
+
+	def setUp(self):
+		from brailleDisplayDrivers import kgs
+
+		self.kgs = kgs
+		bdDetect._driverDevices.clear()
+		# Reset to the chain state as after bdDetect.initialize(): only the generic scanners.
+		bdDetect.scanForDevices.unregister(kgs._scanKgsRegistryUsbPorts)
+		bdDetect.scanForDevices.unregister(kgs._scanKgsBluetoothPorts)
+		bdDetect.scanForDevices.register(bdDetect._Detector._bgScanUsb)
+		bdDetect.scanForDevices.register(bdDetect._Detector._bgScanBluetooth)
+
+	def tearDown(self):
+		kgs = self.kgs
+		bdDetect.scanForDevices.unregister(kgs._scanKgsRegistryUsbPorts)
+		bdDetect.scanForDevices.unregister(kgs._scanKgsBluetoothPorts)
+		bdDetect.scanForDevices.unregister(bdDetect._Detector._bgScanUsb)
+		bdDetect.scanForDevices.unregister(bdDetect._Detector._bgScanBluetooth)
+		bdDetect._driverDevices.clear()
+
+	def test_kgs_usb_scanner_registered_after_bluetooth_scanner(self):
+		kgs = self.kgs
+		kgs.BrailleDisplayDriver.registerAutomaticDetection(
+			bdDetect.DriverRegistrar(kgs.BrailleDisplayDriver.name),
+		)
+		handlers = list(bdDetect.scanForDevices.handlers)
+		usbIndex = handlers.index(kgs._scanKgsRegistryUsbPorts)
+		btIndex = handlers.index(kgs._scanKgsBluetoothPorts)
+		# Both scanners use moveToStart=True, so the last registration (USB) wins the front:
+		# during a scan the KGS USB scanner is tried before the KGS Bluetooth scanner.
+		self.assertLess(usbIndex, btIndex)
+
+	def test_scanForDevices_iter_order(self):
+		"""Verify the effective full-scan iteration order: KGS USB, KGS BT, then the generic scans."""
+		kgs = self.kgs
+		kgs.BrailleDisplayDriver.registerAutomaticDetection(
+			bdDetect.DriverRegistrar(kgs.BrailleDisplayDriver.name),
+		)
+		scanners = {
+			id(kgs._scanKgsRegistryUsbPorts): "kgsUsb",
+			id(kgs._scanKgsBluetoothPorts): "kgsBt",
+			id(bdDetect._Detector._bgScanUsb): "otherUsb",
+			id(bdDetect._Detector._bgScanBluetooth): "otherBt",
+		}
+		handlers = list(bdDetect.scanForDevices.handlers)
+		order = [scanners[id(handler)] for handler in handlers if id(handler) in scanners]
+		# The scan chain order after registration: KGS USB -> KGS BT -> generic USB -> generic BT.
+		self.assertEqual(order, ["kgsUsb", "kgsBt", "otherUsb", "otherBt"])
 
 
 # END JP PATCH
