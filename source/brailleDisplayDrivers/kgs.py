@@ -7,6 +7,18 @@
 # Copyright (C) 2013 Masamitsu Misono
 # Copyright (C) 2011-2025 Takuya Nishimoto
 
+# nvdajp (#783): use add-on translations when loaded as kgsbraille add-on;
+# fall back to NVDA core builtins when running as a built-in driver or standalone.
+try:
+	import addonHandler
+except (ImportError, AttributeError):
+	pass
+else:
+	try:
+		addonHandler.initTranslation()
+	except addonHandler.AddonError:
+		pass
+
 import bdDetect
 import braille
 try:
@@ -516,7 +528,7 @@ class BrailleDisplayDriver(_BrailleDisplayDriver):
 		NumericDriverSetting(
 			"connectionToneVolume",
 			# Translators: Label for a setting that controls KGS connection tone volume.
-			_("Connection tone &volume:"),
+			_("Connection tone &volume"),
 			defaultVal=100,
 			minVal=0,
 			maxVal=100,

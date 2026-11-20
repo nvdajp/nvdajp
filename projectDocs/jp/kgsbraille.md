@@ -1,7 +1,7 @@
 # KGS 点字ディスプレイドライバ（kgsbraille）— 現状整理とメンテナンス方針
 
 日本語版 NVDA における KGS（協和技研）製点字ディスプレイ向けドライバ群の技術メモ。
-ビルド・アドオン生成（`jptools/pack_kgs_addon.*` など）の詳細は別途整理する。
+ビルド・アドオン生成およびローカライズ（`jptools/pack_kgs_addon.*`、`jptools/kgs_manifest.py`）の概要は §1.2・§1.4 を参照。
 
 **前提（2026 時点）**
 
@@ -28,10 +28,10 @@
 
 | 項目 | 内容 |
 |------|------|
-| 生成 | `jptools/pack_kgs_addon.py`（SCons `jpAddons`）、手動は `pack_kgs_addon.cmd` |
-| 同梱ファイル | `manifest.ini`, `kgs.py`, `brailleMemo.py`, `DirectBM.dll` |
+| 生成 | `jptools/pack_kgs_addon.py`（SCons `jpAddons` / CI `Build JP addons`）、手動は `pack_kgs_addon.cmd` |
+| 同梱ファイル | `manifest.ini`, `kgs.py`, `brailleMemo.py`, `DirectBM.dll`, `locale/<lang>/LC_MESSAGES/nvda.mo`, `locale/ja/manifest.ini` |
 | 非同梱 | `kgsbn46.py`（コア専用のまま） |
-| マニフェスト | `jptools/kgs_manifest.py`（`minimumNVDAVersion = 2026.1.0`、`lastTestedNVDAVersion = 2027.1.0`） |
+| マニフェスト | `jptools/kgs_manifest.py`（`minimumNVDAVersion = 2026.1.0`、`lastTestedNVDAVersion = 2027.1.0`、`--locale ja` で日本語マニフェスト出力） |
 
 ### 1.3 依存関係（論理）
 
@@ -42,6 +42,22 @@ DirectBM.dll
     ├── brailleMemo.py  … kgs とほぼ重複、BrailleInputGesture
     └── kgsbn46.py      … kgs から lock / ポート列挙等を import、接続・キー処理は独自
 ```
+
+### 1.4 ローカライズとアドオン生成（#783）
+
+`kgs.py` と `brailleMemo.py` は NVDA コア同梱と `kgsbraille` アドオンの双方で利用されるため、翻訳は次のように扱う:
+
+1. **ドライバ読み込み時の翻訳初期化**:
+   - `kgs.py` / `brailleMemo.py` 冒頭（`braille.constants` フォールバックの `_()` 評価より前）で `addonHandler.initTranslation()` を `try/except` ガード付きで呼び出す。
+   - アドオンとして読み込まれた場合はアドオン内の `locale/<lang>/LC_MESSAGES/nvda.mo` を使用し、コア同梱時やテスト実行時（`AddonError` / `ImportError` / `AttributeError`）は NVDA コアの `builtins._` にフォールバックする。
+2. **設定ラベルの末尾コロン規約**:
+   - `NumericDriverSetting`（`connectionToneVolume` の `"Connection tone &volume"`）は `settingsDialogs.AutoSettingsMixin._makeSliderSettingControl` 側で末尾 `:` を付与するため、ドライバ側 `msgid` には末尾コロンを付けない。
+3. **コア側（PO）の翻訳更新**:
+   - JP 固有の翻訳は `jptools/nvda-jp-patch.po` に追加し、`pwsh -NoProfile -ExecutionPolicy Bypass -File .\jptools\merge-jp-patch-po.ps1` で `source/locale/ja/LC_MESSAGES/nvda.po` へ反映する（既存部分の改行コードを維持したまま `# nvdajp from here`..`# end of nvdajp` だけを置換）。
+4. **アドオン生成時の `.mo` / `manifest.ini` 自動同梱**:
+   - `uv run --no-active python jptools/pack_kgs_addon.py [--version VERSION] [--output PATH]`（`jptools/pack_kgs_addon.cmd` は同スクリプトを呼び出すラッパー）。
+   - `kgs.py` / `brailleMemo.py` の AST から `_()` / `pgettext()` / `ngettext()` / `npgettext()` のキーを自動抽出し、`source/locale/*/LC_MESSAGES/nvda.po` の非 fuzzy・翻訳済みエントリを抽出して `miscDeps/tools/msgfmt.exe`（`ja` は `-c` 付き、他言語は本家 `gettextTool.py` と同様に `-o` のみ）で各言語の `locale/<lang>/LC_MESSAGES/nvda.mo` にコンパイルして同梱する（`"Serial: {portName}"` 等の既存コア翻訳も各言語で維持される）。
+   - あわせて `jptools/kgs_manifest.py` の `LOCALIZED_MANIFESTS`（現状 `ja`）から `locale/<lang>/manifest.ini`（UTF-8）を生成して同梱する。
 
 ---
 
@@ -277,7 +293,7 @@ def _connectionBeepsEnabled():
 | 内部共通化 | ポート列挙・`display()` ビット変換・DLL ロードを共有モジュール化 | 統合廃止ではない |
 | ドライバオプション | 接続音 on/off 等、1〜2 項目の `BooleanDriverSetting` | 実機不要なら導入しやすい |
 | bdDetect UI 本家化 | `getManualPorts` 化 | 回帰テスト必須 |
-| ビルド脚本 | `pack_kgs_addon.py` の整理（別ドキュメント） | ドライバ本体と独立 |
+| ビルド脚本 | `pack_kgs_addon.py` の多言語・日本語マニフェスト対応（§1.4） | #783 で自動化済み |
 
 ### 5.4 意図的に行わない（現方針）
 
@@ -298,10 +314,11 @@ def _connectionBeepsEnabled():
 | ドライバ設定 API | `source/autoSettingsUtils/driverSetting.py` |
 | 参考実装 | `source/brailleDisplayDrivers/brailleNote.py`, `hims.py`, `dotPad/driver.py` |
 | アドオン生成 | `jptools/pack_kgs_addon.py`, `pack_kgs_addon.cmd`, `kgs_manifest.py` |
+| 日本語翻訳 | `jptools/nvda-jp-patch.po`, `jptools/merge-jp-patch-po.ps1`, `source/locale/ja/LC_MESSAGES/nvda.po` |
 | bdDetect 検証 | `jptools/kgs_bdDetect_probe.py` |
 | 起動引数 | `source/argsParsing.py`, `source/globalVars.py`（`appArgs.install` / `installSilent` / `launcher`） |
 | ランチャー | `launcher/nvdaLauncher.nsi`（`--launcher` 付与） |
-| Issue / PR | [#470](https://github.com/nvdajp/nvdajp/issues/470), [#659](https://github.com/nvdajp/nvdajp/pull/659) |
+| Issue / PR | [#470](https://github.com/nvdajp/nvdajp/issues/470), [#659](https://github.com/nvdajp/nvdajp/pull/659), [#783](https://github.com/nvdajp/nvdajp/issues/783), [#784](https://github.com/nvdajp/nvdajp/issues/784), [#785](https://github.com/nvdajp/nvdajp/pull/785) |
 | ユーザ doc | `user_docs/en/readmejp.md` |
 | 変更履歴 | `projectDocs/jp/changes-nvdajp.md` |
 
@@ -317,6 +334,7 @@ def _connectionBeepsEnabled():
 | 2026-05-25 | §2.6: インストール／ランチャー時の接続プローブ音抑制（#470 / PR #659） |
 | 2026-10-09 | アドオン `lastTestedNVDAVersion` を 2027.1.0 に更新 |
 | 2026-11-19 | §8.1: 自動検出スキャン順序の整理（#784）。BT スキャナを先に、USB スキャナを後に登録し KGS USB → KGS BT の順に変更 |
+| 2026-11-20 | §1.4: KGS 設定文言の日本語化・末尾コロン除去と、アドオン向け多言語 `.mo` / `locale/ja/manifest.ini` 生成対応（#783） |
 
 ---
 

@@ -537,4 +537,103 @@ class TestKgsAutoDetectionOrder(unittest.TestCase):
 		self.assertEqual(order, ["kgsUsb", "kgsBt", "otherUsb", "otherBt"])
 
 
+class TestKgsLocalization(unittest.TestCase):
+	"""Verify KGS settings label fix, JP PO entries, and localized kgsbraille add-on bundle (#783)."""
+
+	def test_connection_tone_volume_has_no_trailing_colon(self):
+		from brailleDisplayDrivers import kgs
+
+		volumeSettings = [
+			s for s in kgs.BrailleDisplayDriver.supportedSettings if s.id == "connectionToneVolume"
+		]
+		self.assertEqual(len(volumeSettings), 1)
+		self.assertFalse(volumeSettings[0].displayName.endswith(":"))
+		self.assertFalse(volumeSettings[0].displayNameWithAccelerator.endswith(":"))
+
+	def test_core_drivers_do_not_shadow_builtin_gettext_outside_addon(self):
+		from brailleDisplayDrivers import brailleMemo, kgs
+
+		self.assertNotIn("_", vars(kgs))
+		self.assertNotIn("_", vars(brailleMemo))
+
+	def test_jp_po_files_contain_kgs_settings_translations(self):
+		import re
+		from pathlib import Path
+
+		repoRoot = Path(__file__).resolve().parents[3]
+		expectedTranslations = {
+			"KGS BrailleMemo series": "KGS BrailleMemo シリーズ",
+			"Connection tone &volume": "接続音の音量(&V)",
+			"Include &Bluetooth devices in automatic detection": "Bluetooth 機器を自動検出の対象に含める(&B)",
+		}
+		for relPath in ("jptools/nvda-jp-patch.po", "source/locale/ja/LC_MESSAGES/nvda.po"):
+			poText = (repoRoot / relPath).read_text(encoding="utf-8")
+			for msgid, msgstr in expectedTranslations.items():
+				pattern = rf'msgid "{re.escape(msgid)}"\r?\nmsgstr "{re.escape(msgstr)}"'
+				self.assertRegex(poText, pattern, f"Missing {msgid!r} translation in {relPath}")
+
+	def test_pack_kgs_addon_bundles_translations_and_localized_manifest(self):
+		import gettext
+		import io
+		import subprocess
+		import sys
+		import tempfile
+		import zipfile
+		from pathlib import Path
+
+		import addonHandler
+
+		repoRoot = Path(__file__).resolve().parents[3]
+		with tempfile.TemporaryDirectory() as tmpDir:
+			tmpPath = Path(tmpDir)
+			outAddon = tmpPath / "kgsbraille-test.nvda-addon"
+			subprocess.run(
+				[
+					sys.executable,
+					str(repoRoot / "jptools" / "pack_kgs_addon.py"),
+					"--version",
+					"261120",
+					"--output",
+					str(outAddon),
+				],
+				check=True,
+				capture_output=True,
+				text=True,
+			)
+
+			bundle = addonHandler.AddonBundle(str(outAddon))
+			self.assertIsNone(bundle.manifest.errors)
+
+			with zipfile.ZipFile(outAddon, "r") as zf:
+				names = set(zf.namelist())
+				self.assertIn("manifest.ini", names)
+				self.assertIn("locale/ja/manifest.ini", names)
+				self.assertIn("locale/ja/LC_MESSAGES/nvda.mo", names)
+				self.assertIn("locale/de/LC_MESSAGES/nvda.mo", names)
+
+				trManifest = addonHandler.AddonManifest(
+					io.BytesIO(zf.read("manifest.ini")),
+					translatedInput=io.BytesIO(zf.read("locale/ja/manifest.ini")),
+				)
+				self.assertEqual(trManifest["summary"], "KGS BrailleMemo ドライバー")
+				self.assertIn("Next Touch 40", trManifest["description"])
+
+				jaMo = gettext.GNUTranslations(io.BytesIO(zf.read("locale/ja/LC_MESSAGES/nvda.mo")))
+				self.assertEqual(jaMo.gettext("KGS BrailleMemo series"), "KGS BrailleMemo シリーズ")
+				self.assertEqual(jaMo.gettext("Connection tone &volume"), "接続音の音量(&V)")
+				self.assertEqual(
+					jaMo.gettext("Include &Bluetooth devices in automatic detection"),
+					"Bluetooth 機器を自動検出の対象に含める(&B)",
+				)
+				self.assertEqual(jaMo.gettext("Serial: {portName}"), "シリアルポート: {portName}")
+
+				extractDir = tmpPath / "kgsbraille"
+				zf.extractall(extractDir)
+
+			addon = addonHandler.Addon(str(extractDir))
+			with patch("languageHandler.getLanguage", return_value="ja"):
+				translations = addon.getTranslationsInstance()
+			self.assertEqual(translations.gettext("Connection tone &volume"), "接続音の音量(&V)")
+
+
 # END JP PATCH
