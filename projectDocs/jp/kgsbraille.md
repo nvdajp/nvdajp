@@ -56,7 +56,7 @@ DirectBM.dll
    - JP 固有の翻訳は `jptools/nvda-jp-patch.po` に追加し、`pwsh -NoProfile -ExecutionPolicy Bypass -File .\jptools\merge-jp-patch-po.ps1` で `source/locale/ja/LC_MESSAGES/nvda.po` へ反映する（既存部分の改行コードを維持したまま `# nvdajp from here`..`# end of nvdajp` だけを置換）。
 4. **アドオン生成時の `.mo` / `manifest.ini` 自動同梱**:
    - `uv run --no-active python jptools/pack_kgs_addon.py [--version VERSION] [--output PATH]`（`jptools/pack_kgs_addon.cmd` は同スクリプトを呼び出すラッパー）。
-   - `kgs.py` / `brailleMemo.py` の AST から `_()` / `pgettext()` / `ngettext()` / `npgettext()` のキーを自動抽出し、`source/locale/*/LC_MESSAGES/nvda.po` の非 fuzzy・翻訳済みエントリを抽出して `miscDeps/tools/msgfmt.exe -c` で各言語の `locale/<lang>/LC_MESSAGES/nvda.mo` にコンパイルして同梱する（`"Serial: {portName}"` 等の既存コア翻訳も各言語で維持される）。
+   - `kgs.py` / `brailleMemo.py` の AST から `_()` / `pgettext()` / `ngettext()` / `npgettext()` のキーを自動抽出し、`source/locale/*/LC_MESSAGES/nvda.po` の非 fuzzy・翻訳済みエントリを抽出して `miscDeps/tools/msgfmt.exe`（`ja` は `-c` 付き、他言語は本家 `gettextTool.py` と同様に `-o` のみ）で各言語の `locale/<lang>/LC_MESSAGES/nvda.mo` にコンパイルして同梱する（`"Serial: {portName}"` 等の既存コア翻訳も各言語で維持される）。
    - あわせて `jptools/kgs_manifest.py` の `LOCALIZED_MANIFESTS`（現状 `ja`）から `locale/<lang>/manifest.ini`（UTF-8）を生成して同梱する。
 
 ---
