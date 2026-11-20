@@ -16,20 +16,26 @@
 - "IME convert" → "変換"
 - "Use IME support of nvdajp" → "日本語版の文字入力拡張"
 - "Japanese Braille viewer" → "日本語点字ビューアー"
+- "KGS BrailleMemo series" → "KGS BrailleMemo シリーズ"
+- "Connection tone &volume" → "接続音の音量(&V)"
+- "Include &Bluetooth devices in automatic detection" → "Bluetooth 機器を自動検出の対象に含める(&B)"
 
 ## 影響範囲
 
 - 未適用時、機能自体は動作しても UI 文言の一部が英語化する。
+- `kgsbraille-*.nvda-addon` を生成する `jptools/pack_kgs_addon.py` は `source/locale/*/LC_MESSAGES/nvda.po`（JP 翻訳含む）から `kgs.py` / `brailleMemo.py` で使うエントリを抽出して `.mo` を同梱するため、`nvda.po` へのマージ漏れがあるとアドオン側の翻訳も欠落する。
 - リリース品質に直結するため、beta 取り込み後の確認が必要である。
 
 ## 確認ポイント
 
 - `source/gui/__init__.py` 周辺の表示文言
 - `source/gui/settingsDialogs.py` 周辺の設定項目文言
+- `source/brailleDisplayDrivers/kgs.py` の KGS 固有設定文言
 - `source/keyLabels.py` の IME 関連キー名
 
 ## 関連
 
 - 手順: `projectDocs/jp/po-merge-procedure.md`
+- KGS アドオン仕様: `projectDocs/jp/kgsbraille.md`
 - ロードマップ: `projectDocs/jp/roadmap.md`
 - 自動化ルール: `AGENTS.md`
