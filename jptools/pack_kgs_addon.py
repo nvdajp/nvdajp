@@ -81,6 +81,15 @@ def collect_driver_translation_keys(driver_paths: Iterable[Path]) -> set[tuple[s
 	return keys
 
 
+def _parse_po_string(raw: str) -> str | None:
+	"""Decode one PO double-quoted string literal, returning None if malformed."""
+	try:
+		value = ast.literal_eval(raw.strip())
+	except (SyntaxError, ValueError):
+		return None
+	return value if isinstance(value, str) else None
+
+
 def _parse_po_block(
 	block: list[str],
 ) -> tuple[str | None, str, bool, bool, list[str], list[str]] | None:
@@ -98,18 +107,29 @@ def _parse_po_block(
 		matched_prefix = False
 		for prefix in ("msgctxt ", "msgid ", "msgid_plural ", "msgstr "):
 			if line.startswith(prefix):
+				decoded = _parse_po_string(line[len(prefix) :])
+				if decoded is None:
+					return None
 				cur_field = prefix.strip()
-				fields[cur_field] = [ast.literal_eval(line[len(prefix) :])]
+				fields[cur_field] = [decoded]
 				matched_prefix = True
 				break
 		if matched_prefix:
 			continue
 		if line.startswith("msgstr["):
-			end_idx = line.index("]")
+			end_idx = line.find("]")
+			if end_idx < 0:
+				return None
+			decoded = _parse_po_string(line[end_idx + 1 :])
+			if decoded is None:
+				return None
 			cur_field = line[: end_idx + 1]
-			fields[cur_field] = [ast.literal_eval(line[end_idx + 1 :].strip())]
+			fields[cur_field] = [decoded]
 		elif line.startswith('"') and cur_field is not None:
-			fields[cur_field].append(ast.literal_eval(line))
+			decoded = _parse_po_string(line)
+			if decoded is None:
+				return None
+			fields[cur_field].append(decoded)
 
 	if "msgid" not in fields:
 		return None
@@ -201,7 +221,11 @@ def build_kgs_addon(repo_root: Path, version: str, out_zip: Path) -> Path:
 				tmp_po = tmp_dir / f"{lang}.po"
 				tmp_mo = tmp_dir / f"{lang}.mo"
 				tmp_po.write_text(subset_po, encoding="utf-8", newline="\n")
-				subprocess.check_call([str(msgfmt_path), "-c", "-o", str(tmp_mo), str(tmp_po)])
+				cmd = [str(msgfmt_path)]
+				if lang == "ja":
+					cmd.append("-c")
+				cmd.extend(["-o", str(tmp_mo), str(tmp_po)])
+				subprocess.check_call(cmd)
 				zf.write(tmp_mo, f"locale/{lang}/LC_MESSAGES/nvda.mo")
 
 	return out_zip

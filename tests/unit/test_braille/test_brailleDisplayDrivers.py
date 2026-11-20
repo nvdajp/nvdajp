@@ -587,7 +587,7 @@ class TestKgsLocalization(unittest.TestCase):
 		with tempfile.TemporaryDirectory() as tmpDir:
 			tmpPath = Path(tmpDir)
 			outAddon = tmpPath / "kgsbraille-test.nvda-addon"
-			subprocess.check_call(
+			subprocess.run(
 				[
 					sys.executable,
 					str(repoRoot / "jptools" / "pack_kgs_addon.py"),
@@ -596,6 +596,9 @@ class TestKgsLocalization(unittest.TestCase):
 					"--output",
 					str(outAddon),
 				],
+				check=True,
+				capture_output=True,
+				text=True,
 			)
 
 			bundle = addonHandler.AddonBundle(str(outAddon))
