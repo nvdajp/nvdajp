@@ -21403,6 +21403,16 @@ msgstr "NVDA日本語点字ビューアー"
 msgid "KGS BrailleMemo series"
 msgstr "KGS BrailleMemo シリーズ"
 
+#. Translators: Label for a setting that controls KGS connection tone volume.
+#: brailleDisplayDrivers\kgs.py
+msgid "Connection tone &volume"
+msgstr "接続音の音量(&V)"
+
+#. Translators: Label for a setting that controls whether KGS Bluetooth devices are automatically detected.
+#: brailleDisplayDrivers\kgs.py
+msgid "Include &Bluetooth devices in automatic detection"
+msgstr "Bluetooth 機器を自動検出の対象に含める(&B)"
+
 #: gui\__init.py:315
 msgid "Language settings..."
 msgstr "日本語設定(&L)..."
