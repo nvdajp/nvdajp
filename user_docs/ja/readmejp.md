@@ -842,13 +842,13 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 ### 2026.3.2jp の変更点
 
-* 本家版 2026.3.2 の変更を取り込みました（拡大鏡の色フィルター変更直後にスクリーンカーテンを有効にした際の一時的な表示漏れ修正など）。
+* 本家版 2026.3.2 の変更を取り込みました（拡大鏡の色フィルター変更直後にスクリーンカーテンを有効にした際の一時的な表示漏れ修正 [nvaccess/nvda#21109](https://github.com/nvaccess/nvda/issues/21109) など）。
 * [2026.3.2jp の変更点](https://github.com/nvdajp/nvdajp/milestone/86?closed=1)
 
 ### 2026.3.1jp の変更点
 
 * 本家版 2026.3.1 の変更を取り込みました（Remote Access のセキュリティ修正、Windows 10 タスクスイッチャーの読み上げ復元、eSpeak-NG のブラジルポルトガル語変更の差し戻しなど）。
-* Web 閲覧可能なメッセージ（`browseableMessage`）ダイアログやキーボード入力処理で発生することがあったエラーおよびアクセス違反を修正しました（[#775](https://github.com/nvdajp/nvdajp/issues/775) / [#776](https://github.com/nvdajp/nvdajp/pull/776)）。
+* Web 閲覧可能なメッセージ（`browseableMessage`）ダイアログやキーボード入力処理で発生することがあったエラーおよびアクセス違反を修正しました（[nvdajp#775](https://github.com/nvdajp/nvdajp/issues/775) / [nvdajp#776](https://github.com/nvdajp/nvdajp/pull/776)）。
 
 ### 2026.3jp の変更点
 
