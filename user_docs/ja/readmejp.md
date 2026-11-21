@@ -843,6 +843,10 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 ### 2026.3.2jp の変更点
 
 * 本家版 2026.3.2 の変更を取り込みました（拡大鏡の色フィルター変更直後にスクリーンカーテンを有効にした際の一時的な表示漏れ修正 [nvaccess/nvda#21109](https://github.com/nvaccess/nvda/issues/21109) など）。
+* 点訳エンジン（libkuraji）で漢数字の中黒小数点が点字の小数点として正しく変換されない問題を修正しました（[nvdajp#778](https://github.com/nvdajp/nvdajp/issues/778) / [nvdajp#779](https://github.com/nvdajp/nvdajp/pull/779)）。
+* JTalk 音声エンジンで未知語の直後に長音「ー」が続く場合に直前の形態素が壊れる問題を修正しました（[nvdajp#782](https://github.com/nvdajp/nvdajp/pull/782)）。
+* KGS 点字ディスプレイドライバー（`kgs`）の自動検出において、USB 接続を Bluetooth 接続より優先するよう修正しました（[nvdajp#784](https://github.com/nvdajp/nvdajp/issues/784) / [nvdajp#785](https://github.com/nvdajp/nvdajp/pull/785)）。
+* KGS 点字ディスプレイドライバー固有の設定文言（「接続音の音量」「Bluetooth 機器を自動検出の対象に含める」）を日本語化し、アドオン版（`kgsbraille`）にも翻訳と日本語マニフェストを同梱するようにしました（[nvdajp#783](https://github.com/nvdajp/nvdajp/issues/783) / [nvdajp#786](https://github.com/nvdajp/nvdajp/pull/786)）。
 * [2026.3.2jp の変更点](https://github.com/nvdajp/nvdajp/milestone/86?closed=1)
 
 ### 2026.3.1jp の変更点

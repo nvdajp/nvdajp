@@ -79,6 +79,68 @@ class JpBrailleTests(unittest.TestCase):
 				f"Bullet braille translation failed for {text!r}: expected {expected!r}, got {braille!r}",
 			)
 
+	def test_kansuji_nakaten_decimal(self):
+		"""Distinguish Kansuji + middle dot decimals from repeated numeric signs (#778)."""
+		import translator2
+
+		for text, expected in [
+			# Decimal cases (#778)
+			("年一〇・八％", "⠞⠳ ⠼⠁⠚⠂⠓⠰⠏"),
+			("〇・五倍", "⠼⠚⠂⠑⠐⠥⠃"),
+			("一四・二％", "⠼⠁⠙⠂⠃⠰⠏"),
+			("四七・七％", "⠼⠙⠛⠂⠛⠰⠏"),
+			("二〇・一％", "⠼⠃⠚⠂⠁⠰⠏"),
+			("一三・五％", "⠼⠁⠉⠂⠑⠰⠏"),
+			("一・六％", "⠼⠁⠂⠋⠰⠏"),
+			("〇・八％", "⠼⠚⠂⠓⠰⠏"),
+			("〇・〇八％", "⠼⠚⠂⠚⠓⠰⠏"),
+			("三・〇五％", "⠼⠉⠂⠚⠑⠰⠏"),
+			("三・五割", "⠼⠉⠂⠑⠄⠓"),
+			("一・二五倍", "⠼⠁⠂⠃⠑⠐⠥⠃"),
+			("〇・五日", "⠼⠚⠂⠑⠇⠗"),
+			("三・一四", "⠼⠉⠂⠁⠙"),
+			# Non-decimal / repeated numeric sign cases
+			("七・五・三", "⠼⠛⠼⠑⠼⠉"),
+			("六・三・三制", "⠼⠋⠼⠉⠼⠉⠻⠃"),
+			("二・二六事件", "⠼⠃⠼⠃⠋ ⠐⠳⠫⠴"),
+			("五・一五事件", "⠼⠑⠼⠁⠑ ⠐⠳⠫⠴"),
+			("二・三日", "⠼⠃⠼⠉⠇⠗"),
+			("二・三人", "⠼⠃⠼⠉⠇⠴"),
+		]:
+			braille, inpos, outpos, cursor = translator2.translate(text, unicodeIO=True)
+			self.assertEqual(
+				braille,
+				expected,
+				f"Kansuji nakaten decimal translation failed for {text!r}: expected {expected!r}, got {braille!r}",
+			)
+
+	def test_unknown_hiragana_choon(self):
+		"""Unknown hiragana before 'ー' must not corrupt preceding morpheme or cursor positions."""
+		import translator2
+
+		for text, expected, expected_inpos in [
+			("にゃんきーず", "⠈⠅⠴⠣⠒⠐⠹", [0, 1, 2, 3, 4, 5, 5]),
+			("これはにゃんきーずです。", "⠪⠛⠄⠈⠅⠴⠣⠒⠐⠹⠐⠟⠹⠲", [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9, 10, 11]),
+			("にゃんきー", "⠈⠅⠴⠣⠒", [0, 1, 2, 3, 4]),
+			("きゃんきー", "⠈⠡⠴⠣⠒", [0, 1, 2, 3, 4]),
+			("しゃんきー", "⠈⠱⠴⠣⠒", [0, 1, 2, 3, 4]),
+			("ぎゃんきー", "⠘⠡⠴⠣⠒", [0, 1, 2, 3, 4]),
+			("にゃんくー", "⠈⠅⠴⠩⠒", [0, 1, 2, 3, 4]),
+			("にゃんごー", "⠈⠅⠴⠐⠪⠒", [0, 1, 2, 3, 3, 4]),
+		]:
+			for nabcc in (False, True):
+				braille, inpos, outpos, cursor = translator2.translate(text, unicodeIO=True, nabcc=nabcc)
+				self.assertEqual(
+					braille,
+					expected,
+					f"Translation failed for {text!r} (nabcc={nabcc}): expected {expected!r}, got {braille!r}",
+				)
+				self.assertEqual(
+					list(inpos),
+					expected_inpos,
+					f"Cursor map failed for {text!r} (nabcc={nabcc}): expected {expected_inpos!r}, got {list(inpos)!r}",
+				)
+
 
 class MecabTests(unittest.TestCase):
 	def test_all(self):
