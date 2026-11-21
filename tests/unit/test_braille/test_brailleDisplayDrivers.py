@@ -8,6 +8,7 @@
 from brailleDisplayDrivers import seikantk  # noqa: I001
 import unittest
 from unittest.mock import patch
+import bdDetect
 import braille
 import braille.display
 import braille.display.gesture
@@ -474,6 +475,165 @@ class TestKgsSettings(unittest.TestCase):
 			results = list(kgs._scanKgsBluetoothPorts(usb=False, bluetooth=True))
 			self.assertEqual(results, [])
 			mock_list.assert_not_called()
+
+
+class TestKgsAutoDetectionOrder(unittest.TestCase):
+	"""Tests for KGS automatic detection scanner ordering (#784 / #752).
+
+	KGS registers USB and Bluetooth device scanners with ``moveToStart=True``.
+	Each call moves that scanner to the very start of ``bdDetect.scanForDevices``,
+	so the last registration ends up first. Registering the Bluetooth scanner
+	before the USB one results in the scan order:
+	KGS USB -> KGS Bluetooth -> other drivers' USB -> other drivers' Bluetooth,
+	keeping USB (wired) connections ahead of Bluetooth as upstream intends.
+	"""
+
+	def setUp(self):
+		from brailleDisplayDrivers import kgs
+
+		self.kgs = kgs
+		bdDetect._driverDevices.clear()
+		# Reset to the chain state as after bdDetect.initialize(): only the generic scanners.
+		bdDetect.scanForDevices.unregister(kgs._scanKgsRegistryUsbPorts)
+		bdDetect.scanForDevices.unregister(kgs._scanKgsBluetoothPorts)
+		bdDetect.scanForDevices.register(bdDetect._Detector._bgScanUsb)
+		bdDetect.scanForDevices.register(bdDetect._Detector._bgScanBluetooth)
+
+	def tearDown(self):
+		kgs = self.kgs
+		bdDetect.scanForDevices.unregister(kgs._scanKgsRegistryUsbPorts)
+		bdDetect.scanForDevices.unregister(kgs._scanKgsBluetoothPorts)
+		bdDetect.scanForDevices.unregister(bdDetect._Detector._bgScanUsb)
+		bdDetect.scanForDevices.unregister(bdDetect._Detector._bgScanBluetooth)
+		bdDetect._driverDevices.clear()
+
+	def test_kgs_usb_scanner_registered_after_bluetooth_scanner(self):
+		kgs = self.kgs
+		kgs.BrailleDisplayDriver.registerAutomaticDetection(
+			bdDetect.DriverRegistrar(kgs.BrailleDisplayDriver.name),
+		)
+		handlers = list(bdDetect.scanForDevices.handlers)
+		usbIndex = handlers.index(kgs._scanKgsRegistryUsbPorts)
+		btIndex = handlers.index(kgs._scanKgsBluetoothPorts)
+		# Both scanners use moveToStart=True, so the last registration (USB) wins the front:
+		# during a scan the KGS USB scanner is tried before the KGS Bluetooth scanner.
+		self.assertLess(usbIndex, btIndex)
+
+	def test_scanForDevices_iter_order(self):
+		"""Verify the effective full-scan iteration order: KGS USB, KGS BT, then the generic scans."""
+		kgs = self.kgs
+		kgs.BrailleDisplayDriver.registerAutomaticDetection(
+			bdDetect.DriverRegistrar(kgs.BrailleDisplayDriver.name),
+		)
+		scanners = {
+			id(kgs._scanKgsRegistryUsbPorts): "kgsUsb",
+			id(kgs._scanKgsBluetoothPorts): "kgsBt",
+			id(bdDetect._Detector._bgScanUsb): "otherUsb",
+			id(bdDetect._Detector._bgScanBluetooth): "otherBt",
+		}
+		handlers = list(bdDetect.scanForDevices.handlers)
+		order = [scanners[id(handler)] for handler in handlers if id(handler) in scanners]
+		# The scan chain order after registration: KGS USB -> KGS BT -> generic USB -> generic BT.
+		self.assertEqual(order, ["kgsUsb", "kgsBt", "otherUsb", "otherBt"])
+
+
+class TestKgsLocalization(unittest.TestCase):
+	"""Verify KGS settings label fix, JP PO entries, and localized kgsbraille add-on bundle (#783)."""
+
+	def test_connection_tone_volume_has_no_trailing_colon(self):
+		from brailleDisplayDrivers import kgs
+
+		volumeSettings = [
+			s for s in kgs.BrailleDisplayDriver.supportedSettings if s.id == "connectionToneVolume"
+		]
+		self.assertEqual(len(volumeSettings), 1)
+		self.assertFalse(volumeSettings[0].displayName.endswith(":"))
+		self.assertFalse(volumeSettings[0].displayNameWithAccelerator.endswith(":"))
+
+	def test_core_drivers_do_not_shadow_builtin_gettext_outside_addon(self):
+		from brailleDisplayDrivers import brailleMemo, kgs
+
+		self.assertNotIn("_", vars(kgs))
+		self.assertNotIn("_", vars(brailleMemo))
+
+	def test_jp_po_files_contain_kgs_settings_translations(self):
+		import re
+		from pathlib import Path
+
+		repoRoot = Path(__file__).resolve().parents[3]
+		expectedTranslations = {
+			"KGS BrailleMemo series": "KGS BrailleMemo シリーズ",
+			"Connection tone &volume": "接続音の音量(&V)",
+			"Include &Bluetooth devices in automatic detection": "Bluetooth 機器を自動検出の対象に含める(&B)",
+		}
+		for relPath in ("jptools/nvda-jp-patch.po", "source/locale/ja/LC_MESSAGES/nvda.po"):
+			poText = (repoRoot / relPath).read_text(encoding="utf-8")
+			for msgid, msgstr in expectedTranslations.items():
+				pattern = rf'msgid "{re.escape(msgid)}"\r?\nmsgstr "{re.escape(msgstr)}"'
+				self.assertRegex(poText, pattern, f"Missing {msgid!r} translation in {relPath}")
+
+	def test_pack_kgs_addon_bundles_translations_and_localized_manifest(self):
+		import gettext
+		import io
+		import subprocess
+		import sys
+		import tempfile
+		import zipfile
+		from pathlib import Path
+
+		import addonHandler
+
+		repoRoot = Path(__file__).resolve().parents[3]
+		with tempfile.TemporaryDirectory() as tmpDir:
+			tmpPath = Path(tmpDir)
+			outAddon = tmpPath / "kgsbraille-test.nvda-addon"
+			subprocess.run(
+				[
+					sys.executable,
+					str(repoRoot / "jptools" / "pack_kgs_addon.py"),
+					"--version",
+					"261120",
+					"--output",
+					str(outAddon),
+				],
+				check=True,
+				capture_output=True,
+				text=True,
+			)
+
+			bundle = addonHandler.AddonBundle(str(outAddon))
+			self.assertIsNone(bundle.manifest.errors)
+
+			with zipfile.ZipFile(outAddon, "r") as zf:
+				names = set(zf.namelist())
+				self.assertIn("manifest.ini", names)
+				self.assertIn("locale/ja/manifest.ini", names)
+				self.assertIn("locale/ja/LC_MESSAGES/nvda.mo", names)
+				self.assertIn("locale/de/LC_MESSAGES/nvda.mo", names)
+
+				trManifest = addonHandler.AddonManifest(
+					io.BytesIO(zf.read("manifest.ini")),
+					translatedInput=io.BytesIO(zf.read("locale/ja/manifest.ini")),
+				)
+				self.assertEqual(trManifest["summary"], "KGS BrailleMemo ドライバー")
+				self.assertIn("Next Touch 40", trManifest["description"])
+
+				jaMo = gettext.GNUTranslations(io.BytesIO(zf.read("locale/ja/LC_MESSAGES/nvda.mo")))
+				self.assertEqual(jaMo.gettext("KGS BrailleMemo series"), "KGS BrailleMemo シリーズ")
+				self.assertEqual(jaMo.gettext("Connection tone &volume"), "接続音の音量(&V)")
+				self.assertEqual(
+					jaMo.gettext("Include &Bluetooth devices in automatic detection"),
+					"Bluetooth 機器を自動検出の対象に含める(&B)",
+				)
+				self.assertEqual(jaMo.gettext("Serial: {portName}"), "シリアルポート: {portName}")
+
+				extractDir = tmpPath / "kgsbraille"
+				zf.extractall(extractDir)
+
+			addon = addonHandler.Addon(str(extractDir))
+			with patch("languageHandler.getLanguage", return_value="ja"):
+				translations = addon.getTranslationsInstance()
+			self.assertEqual(translations.gettext("Connection tone &volume"), "接続音の音量(&V)")
 
 
 # END JP PATCH

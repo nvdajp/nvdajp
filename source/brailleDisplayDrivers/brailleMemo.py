@@ -9,6 +9,18 @@
 
 from .kgs import _beep, _connectionBeepsEnabled
 
+# nvdajp (#783): use add-on translations when loaded as kgsbraille add-on;
+# fall back to NVDA core builtins when running as a built-in driver or standalone.
+try:
+	import addonHandler
+except (ImportError, AttributeError):
+	pass
+else:
+	try:
+		addonHandler.initTranslation()
+	except addonHandler.AddonError:
+		pass
+
 import braille
 try:
 	from braille.constants import (
