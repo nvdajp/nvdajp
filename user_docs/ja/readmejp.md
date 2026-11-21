@@ -840,12 +840,26 @@ NVDA 日本語チームに対するアプリ開発者様からのご相談は、
 
 ## バージョンごとの変更点
 
+### 2026.3.2jp の変更点
+
+* 本家版 2026.3.2 の変更を取り込みました（拡大鏡の色フィルター変更直後にスクリーンカーテンを有効にした際の一時的な表示漏れ修正 [nvaccess/nvda#21109](https://github.com/nvaccess/nvda/issues/21109) など）。
+* [2026.3.2jp の変更点](https://github.com/nvdajp/nvdajp/milestone/86?closed=1)
+
+### 2026.3.1jp の変更点
+
+* 本家版 2026.3.1 の変更を取り込みました（Remote Access のセキュリティ修正、Windows 10 タスクスイッチャーの読み上げ復元、eSpeak-NG のブラジルポルトガル語変更の差し戻しなど）。
+* Web 閲覧可能なメッセージ（`browseableMessage`）ダイアログやキーボード入力処理で発生することがあったエラーおよびアクセス違反を修正しました（[nvdajp#775](https://github.com/nvdajp/nvdajp/issues/775) / [nvdajp#776](https://github.com/nvdajp/nvdajp/pull/776)）。
+* [2026.3.1jp の変更点](https://github.com/nvdajp/nvdajp/milestone/85?closed=1)
+* [本家版 2026.3.1 の翻訳・関連作業](https://github.com/nvdajp/nvdajp/milestone/84?closed=1)
+
 ### 2026.3jp の変更点
 
 * 本家版 2026.3 で NVDA コントローラークライアントに読み上げ中かどうかを確認する関数 `nvdaController_isSpeaking(boolean* speaking)` が正式に追加されました。
   * これに伴い、従来の日本語版拡張にあった同名のゼロ引数関数（読み上げ中であれば 1、停止中であれば 0 を直接返す仕様）とのシンボル衝突を回避するため、日本語版独自関数を `nvdaController_isSpeakingJp()` として改名・提供します。
   * 従来の旧バージョン `nvdaControllerClient.dll` を同梱した既存の外部アプリケーションとの互換性も RPC レベルで維持されており、既存のバイナリを変更せずにそのまま動作します。
   * 新規開発または本家版と共通で動作させたいアプリケーションでは、本家版標準の `nvdaController_isSpeaking` を使用してください。
+* [2026.3jp の変更点](https://github.com/nvdajp/nvdajp/milestone/81?closed=1)
+* [本家版 2026.3 の翻訳](https://github.com/nvdajp/nvdajp/milestone/80?closed=1)
 
 ### 2026.2jp の変更点
 
