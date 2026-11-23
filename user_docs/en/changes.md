@@ -9,6 +9,9 @@
 * A new setting in NVDA's Speech settings, "Speak selected text if it has fewer characters than", sets how long a selection NVDA speaks before it reports only the number of selected characters. (#21066, @cartertemm)
 * Added context menu and shortcuts support to the Symbol Pronunciation dialog. (#20692, @amirmahdifard)
 * In rich edit controls, NVDA now reports headings with their level and list items with their bullet or number. (#20982, @LeonarddeR)
+* Two new unassigned commands have been added to open the NVDA Settings dialog in the Math and in the Document Navigation categories. (#21158, @CyrilleB79)
+* Small Caps has been added to Document Formatting settings.
+Currently this setting is only supported in Microsoft Word. (#20922, @burrm)
 
 ### Changes
 
@@ -58,6 +61,8 @@ Please refer to [the developer guide](https://download.nvaccess.org/documentatio
 
 ## 2027.1
 
+The NVDA interface is now translated to Turkmen.
+
 ### Important notes
 
 ### New Features
@@ -66,6 +71,7 @@ Please refer to [the developer guide](https://download.nvaccess.org/documentatio
 ### Changes
 
 * Update CLDR to version 49.0. (#21093, @OzancanKaratas)
+* The NVDA interface is now translated to Turkmen. (#21171)
 * The magnifier now follows what is being read when navigating in math expressions. (#20321, @CyrilleB79)
 * Windows OneCore voices now support spelling functionality. (#8237, #13596, #15301)
 * NVDA no longer supports Skype as it was discontinued by Microsoft in May 2025.
