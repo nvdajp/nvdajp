@@ -208,6 +208,13 @@ Export("outFilePrefix")
 outputDir = Dir(env["outputDir"])
 Export("outputDir")
 
+executablesToSign = (
+	".exe",  # Executables
+	".dll",  # DLLs
+	".pyd",  # Python C extensions
+)
+"""We must sign all files that contain executable code on Windows to comply with Smart App Control."""
+
 assert not (apiSigningToken and certFile), (
 	"Cannot specify signing with both API token (cloud) and local certificate"
 )
@@ -225,7 +232,7 @@ if apiSigningToken:
 			print(f"Iterating through {len(target)} files passed to signExecApi")
 		retval = 1  # error value
 		for targetFile in target:
-			if (abspath := targetFile.abspath).endswith((".exe", ".dll")):
+			if (abspath := targetFile.abspath).endswith(executablesToSign):
 				ps_cmd = (
 					rf"PowerShell -File ci\scripts\sign.ps1 -ApiToken {apiSigningToken} -FileToSign {abspath}"
 				)
@@ -488,6 +495,17 @@ for userGuideFileSub in env.Glob(os.path.join(userDocsDir.path, "*", "userGuide.
 env.SConscript("cldrDict_sconscript", exports=["env", "sourceDir"])
 
 
+def signAllBinaries(target, source, env):
+	bundlePath = target[0].abspath
+	for root, _dirs, files in os.walk(bundlePath):
+		for file in files:
+			if file.endswith(executablesToSign):
+				filePath = os.path.join(root, file)
+				result = env["signExec"]([File(filePath)], source, env)
+				if result != 0:
+					raise RuntimeError(f"Signing failed for {filePath}")
+
+
 # A builder to generate an NVDA distribution.
 def NVDADistGenerator(target, source, env, for_signature):
 	buildVersionFn = os.path.join(str(source[0]), "_buildVersion.py")
@@ -521,14 +539,13 @@ def NVDADistGenerator(target, source, env, for_signature):
 
 	action.append(buildCmd)
 
-	# BEGIN JP PATCH (certificate store signing support)
-	if signingEnabled:
-		# JP signs dist/*.exe via jpCertExtras after dist is built.  # nvdajp
-		# Signing these here (as part of NVDADistGenerator) introduces implicit dependencies on
-		# dist/l10nUtil.exe etc. which are not SCons targets, and can fail under -j2.  # nvdajp
-		pass  # nvdajp
-	# END JP PATCH (certificate store signing support)
-	# END JP PATCH (certificate store signing support)
+	# BEGIN JP PATCH (Azure Key Vault batch signing support)
+	if useAzureKvSigning:
+		# JP batch-signs all dist/**/*.{exe,dll,pyd} via jpCertExtras after dist is built.
+		pass
+	elif certFile or apiSigningToken:
+		action.append(signAllBinaries)
+	# END JP PATCH (Azure Key Vault batch signing support)
 
 	action.extend((Delete(buildVersionFn), Delete(importlib.util.cache_from_source(buildVersionFn))))
 
@@ -585,6 +602,27 @@ def ZipArchiveAction(target, source, env):
 
 env["BUILDERS"]["ZipArchive"] = Builder(action=ZipArchiveAction)
 
+# Plug-ins the launcher reserves and extracts before the install section runs.
+# Smart App Control blocks those extracted DLLs unless they are signed.
+# Sign copies so the NSIS tree under include/nsis stays unchanged.
+signedNsisPlugins = []
+signedNsisPluginsDefine: list[str] = []
+# BEGIN JP PATCH (Azure Key Vault signing support)
+if signingEnabled:
+	# END JP PATCH (Azure Key Vault signing support)
+	signedNsisPluginsDir = env.Dir("build/signedNsisPlugins")
+	nsisUnicodePluginsDir = env.Dir("include/nsis/NSIS/Plugins/x86-unicode")
+	for pluginName in ("System.dll", "Banner.dll"):
+		signedPlugin = env.Command(
+			signedNsisPluginsDir.File(pluginName),
+			nsisUnicodePluginsDir.File(pluginName),
+			Copy("$TARGET", "$SOURCE"),
+		)
+		env.AddPostAction(signedPlugin, env["signExec"])
+		signedNsisPlugins.append(signedPlugin)
+	env["SIGNED_NSIS_PLUGINS"] = signedNsisPluginsDir.abspath.replace("\\", "/")
+	signedNsisPluginsDefine = ["/DSIGNED_NSIS_PLUGINS=$SIGNED_NSIS_PLUGINS"]
+
 uninstFile = File("dist/uninstall.exe")
 uninstGen = env.Command(
 	File("uninstaller/uninstGen.exe"),
@@ -602,6 +640,7 @@ uninstGen = env.Command(
 			'/DVERSION_BUILD="$version_build"',
 			"/DUNINSTEXE=%s" % uninstFile.abspath,  # noqa: UP031
 			"/DINSTEXE=${TARGET.abspath}",
+			*signedNsisPluginsDefine,
 			"$SOURCE",
 		],
 	],
@@ -611,6 +650,8 @@ uninstaller = env.Command(uninstFile, uninstGen, [uninstGen])
 if signingEnabled:
 	# END JP PATCH (certificate store signing support)
 	env.AddPostAction(uninstaller, [env["signExec"]])
+if signedNsisPlugins:
+	env.Depends(uninstGen, signedNsisPlugins)
 
 devDocTargets = env.SConscript(
 	"projectDocs/dev/developerGuide/sconscript",
@@ -663,6 +704,7 @@ launcher = env.Command(
 			'/DVERSION_BUILD="$version_build"',
 			"/DNVDADistDir=${SOURCES[1].abspath}",
 			"/DLAUNCHEREXE=${TARGET.abspath}",
+			*signedNsisPluginsDefine,
 			"$SOURCE",
 		],
 	],
@@ -671,6 +713,8 @@ launcher = env.Command(
 if signingEnabled:
 	# END JP PATCH (certificate store signing support)
 	env.AddPostAction(launcher, [env["signExec"]])
+if signedNsisPlugins:
+	env.Depends(launcher, signedNsisPlugins)
 env.Alias("launcher", launcher)
 # BEGIN JP PATCH (build dependencies)
 if jp_cert_extras_stamp is not None:

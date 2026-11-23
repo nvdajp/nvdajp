@@ -1377,22 +1377,24 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 						if path.is_file():
 							candidates.append(path)
 
-		# If Azure Key Vault signing is enabled, also sign .pyd files in dist/ to satisfy
-		# Windows Smart App Control (SAC) requirements (#737).
-		# AzureSignTool skips already-signed files (-s flag).
+		# If Azure Key Vault signing is enabled, collect all .exe/.dll/.pyd files under dist/
+		# to satisfy Windows Smart App Control (SAC) requirements (nvdajp#737, nvaccess/nvda#21172).
+		# AzureSignTool skips already-signed files (-s flag) and batch-signs via -FileList.
 		use_azure_kv = bool(
 			env.get("useAzureKvSigning")
 			or (os.environ.get("AZURE_KV_SIGNING", "") not in ("", "0") and not env.get("skipSigning")),
 		)
 		if use_azure_kv:
-			# Collect .pyd files from dist/ root, dist/include/, and dist/lib/<version>/
-			pyd_patterns = ["*.pyd", "include/**/*.pyd"]
-			if build_version:
-				pyd_patterns.append(f"lib/{build_version}/**/*.pyd")
-			for pattern in pyd_patterns:
-				for path in dist_dir.glob(pattern):
-					if path.is_file() and path not in candidates:
-						candidates.append(path)
+			seen_paths = {p.resolve() for p in candidates}
+			signable_exts = (".exe", ".dll", ".pyd")
+			for root, _dirs, files in os.walk(dist_dir):
+				for filename in sorted(files):
+					if filename.lower().endswith(signable_exts):
+						path = Path(root) / filename
+						resolved = path.resolve()
+						if resolved not in seen_paths:
+							seen_paths.add(resolved)
+							candidates.append(path)
 
 		# Note: nvdaHelper*.dll files (IAccessible2proxy.dll, ISimpleDOM.dll, nvdaHelperRemote.dll,
 		# nvdaHelperRemoteLoader.exe, UIARemote.dll, nvdaHelperLocal.dll, nvdaHelperLocalWin10.dll)
