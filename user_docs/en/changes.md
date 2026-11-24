@@ -21,6 +21,7 @@ Currently this setting is only supported in Microsoft Word. (#20922, @burrm)
 
 ### Bug Fixes
 
+* In browsable message dialogs, navigating lines in plain text messages, paragraphs, and table cells in HTML messages now correctly scrolls content into view. (#21181, @daarshnicsanjeev)
 * NVDA can now start in Windows PE when optional components are unavailable.
   Depending on the image contents, affected features can include Remote Access, MathCAT, Sound Split, and audio device enumeration.
   The Remote Access enable control is disabled with an explanation when its optional client cannot be loaded.
@@ -32,6 +33,8 @@ Currently this setting is only supported in Microsoft Word. (#20922, @burrm)
 #### Braille
 
 #### Web browsers
+
+* In Chromium-based web browsers, opening the context menu from browse mode with the applications key or `shift+f10` no longer bounces focus back to browse mode. (#18670, @nibarAhmed)
 
 #### Applications
 
