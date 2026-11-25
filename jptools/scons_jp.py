@@ -1359,7 +1359,6 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 			"nvda_noUIAccess.exe",
 			"nvda_uiAccess.exe",
 			"nvda_slave.exe",
-			"l10nUtil.exe",
 			"uninstall.exe",
 		]:
 			exe_path = dist_dir / exe_name
@@ -1628,7 +1627,6 @@ def register_jp_builders(env: Any, dist_target: Any | None = None, source_dir: A
 					dist_dir / "nvda_noUIAccess.exe",
 					dist_dir / "nvda_uiAccess.exe",
 					dist_dir / "nvda_slave.exe",
-					dist_dir / "l10nUtil.exe",
 					dist_dir / "uninstall.exe",
 				]
 				if build_version:
