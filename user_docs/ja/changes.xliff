@@ -6542,7 +6542,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
       </notes>
       <segment state="final">
         <source>A bug fix is also included for an issue introduced in 2026.3 with the task switcher in Windows 10.</source>
-        <target>2026.3で起きたWindow2026.3 で発生した Windows 10 のタスクスイッチャーの問題に対するバグ修正も含まれています。s 10のタスクスイッチャーのバグの修正も含まれています。</target>
+        <target>2026.3 で発生した Windows 10 のタスクスイッチャーの問題に対するバグ修正も含まれています。</target>
       </segment>
     </unit>
     <unit id="1cf9c56e-ceac-44f9-991b-678f00205726">
@@ -6601,7 +6601,7 @@ $(ID:efa13148-65e5-4484-85b1-9e57c61df3e3)
       </notes>
       <segment state="final">
         <source>Fixed bug where on Windows 10, the classic `alt+tab` task switcher no longer announced changing the selected task. (#21052, @Cary-rowen)</source>
-        <target>Enter translation here</target>
+        <target>Windows 10で、従来のalt+tabタスクスイッチャーが選択タスクの変更を通知しなくなっていたバグを修正しました。(#21052, @Cary-rowen)</target>
       </segment>
     </unit>
     <unit id="deadfd40-9e01-4910-a36e-c9a6f66a3b47">
