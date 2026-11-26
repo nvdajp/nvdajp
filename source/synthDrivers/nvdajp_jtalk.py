@@ -69,6 +69,7 @@ class SynthDriver(BaseSynthDriver):
 		return True
 
 	def __init__(self) -> None:
+		super().__init__()
 		self.voice_id = "V4"
 		self._volume = 100
 		self._pitch = 50
@@ -154,6 +155,7 @@ class SynthDriver(BaseSynthDriver):
 		self.rate = rate
 
 	def terminate(self) -> None:
+		super().terminate()
 		jtalkDriver.terminate()
 
 	# The current rate; ranges between 0 and 100
